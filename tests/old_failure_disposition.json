@@ -1,0 +1,45 @@
+{
+  "schema_version": "old-main-failure-disposition-v1",
+  "authority_time": "2026-07-23T20:59:00+08:00",
+  "baseline_failure_total": 6,
+  "entries": [
+    {
+      "nodeid": "tests/test_t5_cache_benchmark.py::T5CacheBenchmarkTests::test_preflight_contract_without_freshness",
+      "original_issue": "neutral_extract旧SHA钉与当前模块漂移",
+      "disposition": "fixed_in_isolated_manifest_copy",
+      "current_expectation": "pass"
+    },
+    {
+      "nodeid": "tests/test_z57_default_contract_hotfix.py::Z57DefaultContractHotfixTests::test_full_default_registry_verification_passes_after_activation",
+      "original_issue": "历史默认登记验证误装入当前neutral_extract字节",
+      "disposition": "fixed_with_sha_verified_historical_fixture",
+      "current_expectation": "pass"
+    },
+    {
+      "nodeid": "tests/test_z57_default_contract_hotfix.py::Z57DefaultContractHotfixTests::test_full_rollback_drill_restores_predecessor_and_verifies",
+      "original_issue": "历史回滚验证误装入当前neutral_extract字节",
+      "disposition": "fixed_with_sha_verified_historical_fixture",
+      "current_expectation": "pass"
+    },
+    {
+      "nodeid": "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_successful_fake_run_is_strictly_5_13_19",
+      "original_issue": "成功假样张events为空且前轮运行实物已外置",
+      "disposition": "empty_event_fixed_and_strict_xfail_only_if_archived_fixture_missing",
+      "owner": "Codex主线（Z68便携夹具）",
+      "due_date": "2026-07-30",
+      "current_expectation": "xfail_when_fixture_missing"
+    },
+    {
+      "nodeid": "tests/test_zbatch.py::ZBatchTests::test_current_source_smoke_preflight_is_zero_call_and_passes",
+      "original_issue": "neutral_extract旧SHA钉与当前模块漂移",
+      "disposition": "fixed_in_isolated_batch_copy",
+      "current_expectation": "pass"
+    },
+    {
+      "nodeid": "tests/test_zbatch_cutover.py::ZBatchCutoverTests::test_zero_call_preflight_passes_without_loading_key",
+      "original_issue": "neutral_extract旧SHA钉与当前模块漂移",
+      "disposition": "fixed_in_isolated_batch_copy",
+      "current_expectation": "pass"
+    }
+  ]
+}

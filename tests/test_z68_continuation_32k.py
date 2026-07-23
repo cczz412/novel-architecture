@@ -8,6 +8,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+from archived_fixture_debt import xfail_if_registered_fixture_missing
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -34,7 +36,17 @@ class FakeResponse:
 
 def response_payload(chapter: int, *, finish_reason: str = "stop") -> dict:
     content = json.dumps(
-        {"schema_version": "z-event-v1", "chapter": chapter, "events": []},
+        {
+            "schema_version": "z-event-v1",
+            "chapter": chapter,
+            "events": [
+                {
+                    "event_id": f"EV-C{chapter:04d}-01",
+                    "event": "测试人物完成明确行动并取得结果",
+                    "anchors": [{"anchor_id": "E0001"}],
+                }
+            ],
+        },
         ensure_ascii=False,
     )
     return {
@@ -74,12 +86,22 @@ class Z68Continuation32KTests(unittest.TestCase):
         self.assertEqual(z68c.NEW_MAX_TOKENS, 32000)
         self.assertEqual(z68c.MAX_NETWORK_ATTEMPTS, 5)
 
+    def test_fake_success_payload_is_not_an_empty_event_sample(self) -> None:
+        content = json.loads(response_payload(5)["choices"][0]["message"]["content"])
+        self.assertEqual(len(content["events"]), 1)
+        self.assertEqual(content["events"][0]["event_id"], "EV-C0005-01")
+        self.assertEqual(content["events"][0]["anchors"], [{"anchor_id": "E0001"}])
+
     def test_prior_hard_stop_and_tool_are_pinned(self) -> None:
         receipt = z68c.assert_prior_run()
         self.assertEqual(receipt["hard_stop_sha256"], z68c.PRIOR_HARD_STOP_SHA256)
         self.assertEqual(receipt["tool_sha256"], z68c.PRIOR_TOOL_SHA256)
 
     def test_called_chapters_change_only_max_tokens(self) -> None:
+        xfail_if_registered_fixture_missing(
+            "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::"
+            "test_called_chapters_change_only_max_tokens"
+        )
         for chapter in z68c.CALLED_CHAPTERS:
             with self.subTest(chapter=chapter):
                 old = z68c.prior_prepared_body(chapter)

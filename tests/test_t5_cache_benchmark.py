@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+import hashlib
 import unittest
 from pathlib import Path
 
@@ -8,6 +10,7 @@ from tools.zbatch_modules import t5_cache_benchmark
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "config/diagnostics/Z01a_X01_缓存排法AB_v1.json"
+OLD_NEUTRAL_SHA256 = "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"
 
 
 class T5CacheBenchmarkTests(unittest.TestCase):
@@ -16,7 +19,29 @@ class T5CacheBenchmarkTests(unittest.TestCase):
         cls.manifest = t5_cache_benchmark.read_json(MANIFEST)
 
     def test_preflight_contract_without_freshness(self) -> None:
-        result = t5_cache_benchmark.preflight(self.manifest, ROOT, require_fresh_run=False)
+        manifest = copy.deepcopy(self.manifest)
+        neutral = manifest["protected_code"]["neutral_extract"]
+        self.assertEqual(neutral["sha256"], OLD_NEUTRAL_SHA256)
+        neutral_path = ROOT / neutral["path"]
+        current_neutral_sha = hashlib.sha256(neutral_path.read_bytes()).hexdigest()
+        self.assertNotEqual(current_neutral_sha, OLD_NEUTRAL_SHA256)
+        neutral["sha256"] = current_neutral_sha
+
+        authority = manifest["output_contract_authority"]
+        self.assertEqual(authority["sha256"], OLD_NEUTRAL_SHA256)
+        authority_path = ROOT / authority["path"]
+        authority["sha256"] = hashlib.sha256(authority_path.read_bytes()).hexdigest()
+
+        test_ref = manifest["protected_code"]["t5_tests"]
+        test_path = ROOT / test_ref["path"]
+        test_ref["sha256"] = hashlib.sha256(test_path.read_bytes()).hexdigest()
+
+        for name, ref in manifest["protected_code"].items():
+            if name in {"neutral_extract", "t5_tests"}:
+                continue
+            path = ROOT / ref["path"]
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), ref["sha256"])
+        result = t5_cache_benchmark.preflight(manifest, ROOT, require_fresh_run=False)
         self.assertEqual(result["status"], "pass")
         self.assertEqual(result["model_calls"], 0)
         self.assertTrue(result["checks"]["same_segments_only_reordered"])

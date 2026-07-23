@@ -312,7 +312,16 @@
 | SLIM-HYGIENE-RULER-LOCAL | 常检主刀＝磁盘观感；三行读数＝除 TEMP／Git tracked／外置旁仓另算；写入 `governance/hygiene_inspection_ruler.md`＋README 入口 | 件③云端代拍；文档级；0 改 check／`.py` |
 | SLIM-BATCH-STEP1-STOP-LOCAL | 支线瘦身批步一停点已回传；MOVE~117MB／HOLD~67MB；件②推荐搁置；件④方案 B＝另拍候选草图；步二未授权 | 团队有条件通过；Notion `3a65cadc4d0f81689ce4e29ba7132eed`；模型 API＝0；与第94道不混跑 |
 | SLIM-BATCH-STEP2-TEMP-MOVED-LOCAL | 件①非 overlay 91 项外置进 `archive_batch_slim_20260723`＋主仓 stub；overlay 6 项因 Z94 ready_to_run 时机闸本轮 HOLD；件②搁置；0 API | 云端 19:35 放行；hf 软链跟拷事故已清；governance --check 绿；Notion 回包另记 |
-| SLIM-BATCH-PASS-CLOSED-LOCAL | Notion 20:12 统一审收 PASS；支线瘦身批本批收口；本地对账 91/HOLD/overlay/治理绿齐；遗留三件另拍；本窗不施工、不改 CURRENT_STATE | 本地确认 `TEMP/archive_plan_20260723/slim_batch_审收PASS收口确认.md`；overlay 仍主仓真身 HOLD，勿当已外置 |
+| SLIM-BATCH-PASS-CLOSED-LOCAL | Notion 20:12 统一审收 PASS；支线瘦身批本批收口；本地对账 91/HOLD/overlay/治理绿齐；遗留三件另拍；本窗不施工、不改 CURRENT_STATE | 本地确认 `TEMP/archive_plan_20260723/slim_batch_审收PASS收口确认.md`；**当时** overlay 仍主仓真身 HOLD（后续见 OVERLAY-RESCAN-MOVED） |
+| OVERLAY-RESCAN-MOVED-LOCAL | overlay 6 项外置重扫窗：引用 0 命中＋Z94 已收口 → 外置进旁仓新批 `archive_batch_slim_overlay_z94_20260723`＋主仓 stub；与 slim 91 分账；不真删；0 API；不抢 TEST-DEBT CURRENT_STATE | 令＝队列 20:59 双令②；回执 `TEMP/archive_plan_20260723/overlay_完工回执.md` |
 | GIT-TRACKED-SLIM-LOCAL | 取消跟踪 `runs/`／`reports/`／`outbox/`／`work/zbatch_decisions/`（盘上保留）；tracked 约 41MB→**5.4MB**／418 文件；`.gitignore` 已写；不做 P3 历史瘦身 | CZ 2026-07-23 同意并令现在做；回执 `TEMP/archive_plan_20260723/git_tracked_slim_receipt.md`；治理 `--check` 绿 |
 | GIT-HISTORY-P3-ORPHAN-LOCAL | 孤儿分支重建 `main` 后 force-with-lease 推 GitHub：远程历史去掉 runs/reports 等累赘；盘上 runs/reports/TEMP 仍保留不删 | CZ 2026-07-23 明示「直接清理＋用现跟踪面重传」；仓库 `mhchen1/novel-architecture` |
 | CHATGPT-REVIEW-PACK-WORKFLOW-LOCAL | 可复用审仓打包：`tools/chatgpt_review_pack.py`＋`config/review_pack/profiles.json`；默认 standard；AGENTS 已写入口 | 产出在 `TEMP/chatgpt_review_packs/`；外发≠进 Git |
+| CHATGPT-REVIEW-PACK-REPLAY-TRIANGLE-LOCAL | 外审实锤缺 Z91 实验脚本；制度钉「复验三角」：活面＋`experiments/Z*`＋近停证据；打包器跟 CURRENT_STATE、扫 tests 引用，缺则 ABORT；已上传旧 zip 不改、只改配置现打 | 经验账见 `config/review_pack/README.md` |
+
+## 2026-07-23（九项第一道·旧测试挂账清账）
+
+| ID | 决策 | 备注 |
+|---|---|---|
+| TEST-DEBT-CLEANUP-01-LOCAL-STOP | 原主验收6项旧失败逐项清账：5项 neutral_extract 旧钉在隔离测试夹具内修正并真跑通过；Z68 空事件假成功修正，因前轮实物外置条件挂账；默认 pytest 不再收集 TEMP／Z53 | 仓库根默认命令 `696 passed／40 xfailed／169 subtests passed`，未解释失败0；40项外置夹具依赖全部进入精确登记，其中1项 Z68 子测试用登记册指定的运行期守卫；逐项负责人和到期日 2026-07-30；0模型API／0网络／0 token；六本金标、现役122条、默认链、分类规则、outbox与封存运行目录未改。 |
+| GIT-PUBLISH-PREFLIGHT-01 | 发布前修正审仓打包器误把 `experiments/model_benchmarks` 当作必须随包脚本的问题，并修复仓外 `--out-dir` 写清单失败；扫描范围收紧为制度规定的 `experiments/Z*`，仓外路径记绝对路径 | 停点旧账仍是696；新增2项测试后当前全套为 `698 passed／40 xfailed／169 subtests passed`；审仓 `--dry-run` 与仓外小包实跑均 PASS。 |
