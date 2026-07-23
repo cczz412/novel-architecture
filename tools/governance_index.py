@@ -46,6 +46,16 @@ GENERATED_PATHS = [
 
 STATUS_VALUES = {"可用", "在改", "试验"}
 ROUTE_STATUS_VALUES = {"in_trial", "failed", "retired", "allowed_to_reopen"}
+CURRENT_STATE_SCHEMA_V2 = "governance-current-state-v2"
+LEGACY_CURRENT_STATE_SCHEMA = "governance-current-state-v1"
+LEGACY_TOP_LEVEL_STATE_KEYS = {
+    "current_step",
+    "accepted_steps",
+    "mainline",
+    "run_states",
+    "open_issues",
+    "closure_policy",
+}
 
 
 def _must_dict(value: Any, name: str) -> dict[str, Any]:
@@ -58,6 +68,90 @@ def _must_list(value: Any, name: str) -> list[Any]:
     if not isinstance(value, list):
         raise ArtifactError(f"{name} 必须是数组")
     return value
+
+
+def _must_nonempty_string(value: Any, name: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ArtifactError(f"{name} 必须是非空字符串")
+    return value
+
+
+def _validate_relative_identity(value: Any, name: str) -> None:
+    if value is None:
+        return
+    text = _must_nonempty_string(value, name)
+    path = Path(text)
+    if path.is_absolute() or ".." in path.parts:
+        raise ArtifactError(f"{name} 必须是仓库相对路径")
+
+
+def state_layers(state: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """返回当前执行态与历史上下文；v1 只作迁移期只读兼容。"""
+
+    schema = state.get("schema_version")
+    if schema == CURRENT_STATE_SCHEMA_V2:
+        return (
+            _must_dict(state.get("current_execution"), "current_execution"),
+            _must_dict(state.get("historical_context"), "historical_context"),
+        )
+    if schema != LEGACY_CURRENT_STATE_SCHEMA:
+        raise ArtifactError(f"CURRENT_STATE schema_version 不支持：{schema}")
+
+    step = _must_dict(state.get("current_step"), "current_step")
+    current = {
+        "task": {
+            key: step.get(key)
+            for key in ("task_id", "label", "status", "status_label")
+        },
+        "authorization": {
+            "kind": step.get("authority_kind"),
+            "authority_time": step.get("authority_time"),
+            "ledger_url": step.get("authority_url")
+            or _must_dict(state.get("authority"), "authority")
+            .get("external_truth", {})
+            .get("ledger_url"),
+            "queue_url": step.get("work_order_url")
+            or _must_dict(state.get("authority"), "authority")
+            .get("external_truth", {})
+            .get("queue_url"),
+        },
+        "run": {
+            "run_id": step.get("run_id"),
+            "run_directory": step.get("run_directory"),
+        },
+        "controls": {
+            "quality_boundary": step.get("quality_boundary")
+            or step.get("evidence_boundary")
+            or "旧版状态未独立登记质量边界",
+            "evidence_boundary": step.get("evidence_boundary"),
+            "stop_rule": step.get("stop_rule"),
+            "next_action": step.get("next_action"),
+        },
+        "artifacts": {
+            key: step.get(key)
+            for key in (
+                "report_directory",
+                "local_stop_receipt",
+                "machine_receipt",
+                "notion_callback_url",
+            )
+        },
+        "usage": {
+            "model_api_logical_samples": step.get("model_api_logical_samples", 0),
+            "model_api_network_attempts": step.get("model_api_network_attempts", 0),
+            "model_api_usage_tokens": step.get("model_api_usage_tokens", 0),
+        },
+        "protection": step.get("protected_scope") or {},
+        "blockers": [],
+    }
+    history = {
+        "accepted_steps": state.get("accepted_steps"),
+        "legacy_mainline": state.get("mainline"),
+        "archived_run_states": state.get("run_states"),
+        "issue_ledger": state.get("open_issues"),
+        "closure_policy": state.get("closure_policy"),
+    }
+    return current, history
 
 
 def _path_status(root: Path, relative: str) -> dict[str, Any]:
@@ -132,12 +226,21 @@ def validate_control_plane(root: Path, control: dict[str, Any]) -> None:
         raise ArtifactError("根 README 缺治理索引的一跳入口")
 
 
-def validate_current_state(root: Path, state: dict[str, Any]) -> None:
-    for key in ("authority", "current_step", "mainline", "closure_policy"):
-        _must_dict(state.get(key), key)
-    accepted_steps = _must_list(state.get("accepted_steps"), "accepted_steps")
-    open_issues = _must_list(state.get("open_issues"), "open_issues")
-    run_states = _must_list(state.get("run_states"), "run_states")
+def _validate_historical_context(root: Path, history: dict[str, Any]) -> None:
+    for key in ("legacy_mainline", "closure_policy"):
+        _must_dict(history.get(key), f"historical_context.{key}")
+    accepted_steps = _must_list(
+        history.get("accepted_steps"),
+        "historical_context.accepted_steps",
+    )
+    open_issues = _must_list(
+        history.get("issue_ledger"),
+        "historical_context.issue_ledger",
+    )
+    run_states = _must_list(
+        history.get("archived_run_states"),
+        "historical_context.archived_run_states",
+    )
     if not any(_must_dict(row, "accepted_step").get("task_id") == "Z84-repo-hygiene" for row in accepted_steps):
         raise ArtifactError("CURRENT_STATE 缺第84道审收状态")
     issue_ids = [str(_must_dict(row, "open_issue").get("issue_id", "")) for row in open_issues]
@@ -233,7 +336,7 @@ def validate_current_state(root: Path, state: dict[str, Any]) -> None:
     if missing_run_ids:
         raise ArtifactError(f"CURRENT_STATE 漏登记 Z80/Z83 运行目录：{missing_run_ids}")
 
-    mainline = state["mainline"]
+    mainline = history["legacy_mainline"]
     original_ticket = str(mainline.get("original_hard_stop_ticket", ""))
     if not original_ticket.endswith("/main/hard_stop.json") or not resolve_repo_path(root, original_ticket).is_file():
         raise ArtifactError("第83道原运行硬停票缺失或层级错误")
@@ -259,10 +362,109 @@ def validate_current_state(root: Path, state: dict[str, Any]) -> None:
                 raise ArtifactError("retry04 硬停回传后第85道应解锁但不得冒充已启动")
 
 
+def _validate_current_execution(current: dict[str, Any]) -> None:
+    task = _must_dict(current.get("task"), "current_execution.task")
+    for key in ("task_id", "label", "status", "status_label"):
+        _must_nonempty_string(task.get(key), f"current_execution.task.{key}")
+
+    authorization = _must_dict(
+        current.get("authorization"),
+        "current_execution.authorization",
+    )
+    for key in ("kind", "authority_time", "ledger_url", "queue_url"):
+        _must_nonempty_string(
+            authorization.get(key),
+            f"current_execution.authorization.{key}",
+        )
+
+    run = _must_dict(current.get("run"), "current_execution.run")
+    run_id = run.get("run_id")
+    run_directory = run.get("run_directory")
+    if (run_id is None) != (run_directory is None):
+        raise ArtifactError("current_execution.run 的 run_id 与 run_directory 必须同时为空或同时存在")
+    if run_id is not None:
+        _must_nonempty_string(run_id, "current_execution.run.run_id")
+        _validate_relative_identity(
+            run_directory,
+            "current_execution.run.run_directory",
+        )
+        if not str(run_directory).startswith("runs/"):
+            raise ArtifactError("current_execution.run.run_directory 必须位于 runs/")
+
+    controls = _must_dict(current.get("controls"), "current_execution.controls")
+    for key in ("quality_boundary", "stop_rule", "next_action"):
+        _must_nonempty_string(
+            controls.get(key),
+            f"current_execution.controls.{key}",
+        )
+    if controls.get("evidence_boundary") is not None:
+        _must_nonempty_string(
+            controls.get("evidence_boundary"),
+            "current_execution.controls.evidence_boundary",
+        )
+
+    artifacts = _must_dict(current.get("artifacts"), "current_execution.artifacts")
+    for key in ("report_directory", "local_stop_receipt", "machine_receipt"):
+        _validate_relative_identity(
+            artifacts.get(key),
+            f"current_execution.artifacts.{key}",
+        )
+
+    usage = _must_dict(current.get("usage"), "current_execution.usage")
+    for key in (
+        "model_api_logical_samples",
+        "model_api_network_attempts",
+        "model_api_usage_tokens",
+    ):
+        value = usage.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            raise ArtifactError(f"current_execution.usage.{key} 必须是非负整数")
+
+    _must_dict(current.get("protection"), "current_execution.protection")
+    blockers = _must_list(current.get("blockers"), "current_execution.blockers")
+    blocker_ids: list[str] = []
+    for row in blockers:
+        item = _must_dict(row, "current_execution.blocker")
+        blocker_id = str(item.get("blocker_id") or item.get("issue_id") or "")
+        if not blocker_id:
+            raise ArtifactError("current_execution.blocker 缺编号")
+        _must_nonempty_string(item.get("summary"), f"{blocker_id}.summary")
+        blocker_ids.append(blocker_id)
+    if len(blocker_ids) != len(set(blocker_ids)):
+        raise ArtifactError("current_execution.blockers 编号重复")
+
+
+def validate_current_state(root: Path, state: dict[str, Any]) -> None:
+    _must_dict(state.get("authority"), "authority")
+    schema = state.get("schema_version")
+    if schema == CURRENT_STATE_SCHEMA_V2:
+        duplicate_keys = sorted(LEGACY_TOP_LEVEL_STATE_KEYS.intersection(state))
+        if duplicate_keys:
+            raise ArtifactError(f"CURRENT_STATE v2 不得保留旧顶层键：{duplicate_keys}")
+    current, history = state_layers(state)
+    _validate_current_execution(current)
+    _validate_historical_context(root, history)
+
+    task_id = current["task"]["task_id"]
+    accepted_task_ids = {
+        str(_must_dict(row, "accepted_step").get("task_id", ""))
+        for row in history["accepted_steps"]
+    }
+    if schema == CURRENT_STATE_SCHEMA_V2 and task_id in accepted_task_ids:
+        raise ArtifactError("当前任务不得同时出现在历史已收口任务中")
+    run_id = current["run"].get("run_id")
+    archived_run_ids = {
+        str(_must_dict(row, "archived_run_state").get("run_id", ""))
+        for row in history["archived_run_states"]
+    }
+    if schema == CURRENT_STATE_SCHEMA_V2 and run_id and run_id in archived_run_ids:
+        raise ArtifactError("当前运行不得同时出现在历史冻结运行中")
+
+
 def validate_route_registry(
     root: Path,
     registry: dict[str, Any],
-    current_state: dict[str, Any],
+    _current_state: dict[str, Any] | None = None,
 ) -> None:
     allowed = set(_must_list(registry.get("allowed_statuses"), "allowed_statuses"))
     if allowed != ROUTE_STATUS_VALUES:
@@ -301,23 +503,16 @@ def validate_route_registry(
     )
     if program_route is None:
         raise ArtifactError("路线登记缺程序侧治法")
-    unresolved_quality_statuses = {
-        "not_concluded",
-        "candidate_fail_output_contract_four_gates_not_reached",
-        "not_concluded_preflight_hard_stop_zero_call",
-        "not_concluded_semantic_pre_retry_capacity_hard_stop",
-        "not_concluded_targeted_rewrite_contract_hard_stop",
-        "not_concluded_anchor_object_schema_hard_stop",
-        "not_concluded_exact_count_hard_stop",
-    }
-    quality_status = str(current_state["mainline"].get("quality_status", ""))
-    if (
-        (quality_status in unresolved_quality_statuses or quality_status.startswith("not_concluded_"))
-        and program_route.get("status") == "failed"
+    program_lifecycle = _must_list(
+        program_route.get("lifecycle"),
+        "ROUTE-PROGRAM-SIDE-REPAIR.lifecycle",
+    )
+    latest_program_event = str(program_lifecycle[-1].get("event", ""))
+    if program_route.get("status") == "failed" and (
+        "route_not_concluded" in latest_program_event
+        or latest_program_event.startswith("candidate_")
     ):
-        raise ArtifactError("质量未判时不得把程序侧整条路线登记为失败")
-    if quality_status.startswith("candidate_fail_") and program_route.get("status") == "failed":
-        raise ArtifactError("单轮候选失败不得自动把程序侧整条路线登记为失败")
+        raise ArtifactError("路线末事件仍未判死，不得把程序侧整条路线登记为失败")
 
 
 def materialize_registry(root: Path, source: dict[str, Any]) -> dict[str, Any]:
@@ -389,17 +584,39 @@ def build_documents(
         formal_registry.get("entries"),
         "formal_gold_registry.entries",
     )
-    task = current_state["current_step"]
-    mainline = current_state["mainline"]
-    accepted_z84 = next(
-        row for row in current_state["accepted_steps"] if row["task_id"] == "Z84-repo-hygiene"
-    )
+    current, _history = state_layers(current_state)
+    task = current["task"]
+    authorization = current["authorization"]
+    run = current["run"]
+    controls = current["controls"]
+    artifacts = current["artifacts"]
+    usage = current["usage"]
+    blockers = current["blockers"]
     status_counts = registry["status_counts"]
     route_counts = {
         status: sum(1 for row in route_registry["routes"] if row["status"] == status)
         for status in ROUTE_STATUS_VALUES
     }
-    open_issues = current_state["open_issues"]
+    run_label = (
+        f"`{run['run_id']}`（`{run['run_directory']}`）"
+        if run.get("run_id")
+        else "无独立模型运行"
+    )
+    blocker_label = (
+        f"{len(blockers)} 项：{'；'.join(row['summary'] for row in blockers)}"
+        if blockers
+        else "0 项"
+    )
+    report_label = (
+        f"`{artifacts['report_directory']}`"
+        if artifacts.get("report_directory")
+        else "尚未登记"
+    )
+    receipt_label = (
+        f"`{artifacts['local_stop_receipt']}`"
+        if artifacts.get("local_stop_receipt")
+        else "尚未登记"
+    )
 
     index = f"""# 小说流水线治理索引
 
@@ -409,12 +626,12 @@ def build_documents(
 
 | 问题 | 当前答案 |
 |---|---|
-| 现在跑到哪道 | **{task['label']}**；状态＝**{task['status_label']}**；{accepted_z84['label']}＝**{accepted_z84['status_label']}**；{mainline['label']}＝**{mainline['original_run_status_label']}**；{mainline['authority_status_label']}；{mainline['retry01_status_label']}；{mainline['retry02_status_label']}；{mainline['local_observed_status_label']} |
+| 现在跑到哪道 | **{task['label']}**（`{task['task_id']}`）；状态＝**{task['status_label']}**；当前运行＝{run_label}；授权时间＝`{authorization['authority_time']}` |
 | 金标哪版哪指针 | 正式金标共 {len(formal_gold_entries)} 个入口：X01 第3章 **{gold['version']}**＋五本 v1.3；统一登记 `{formal_registry_control['path']}` |
 | 各模块什么状态 | 可用 {status_counts['可用']} 个版本／在改 {status_counts['在改']} 个版本／试验 {status_counts['试验']} 个版本；见 [模块状态登记](module_registry.json) |
 | 银标候选在哪 | 五本底稿、正反例候选、第75道样张及沙箱观察均在 [银标候选索引](indexes/silver_candidates.md)；正式件不从候选标题自动推断 |
 | 实验路线能不能再开 | 在试 {route_counts['in_trial']} 条／失败 {route_counts['failed']} 条／退役 {route_counts['retired']} 条／当前允许重开 {route_counts['allowed_to_reopen']} 条；见 [路线状态登记](route_registry.json) |
-| 治理还有什么挂账 | {len(open_issues)} 项：{'；'.join(row['summary'] for row in open_issues)} |
+| 当前任务有什么阻断 | {blocker_label} |
 
 ## 当前正式入口
 
@@ -440,7 +657,7 @@ def build_documents(
 
 ## 下一件
 
-{task['next_action']}
+{controls['next_action']}
 
 来源：Cursor（仓库治理窗）
 """
@@ -448,25 +665,22 @@ def build_documents(
     current = f"""# 当前运行与停点
 
 - 当前任务：{task['label']}
+- 任务编号：`{task['task_id']}`
 - 状态：{task['status_label']}
-- 当前停点：{task['stop_rule']}
-- 下一动作：{task['next_action']}
-- 第84道：{accepted_z84['status_label']}
-- 第83道拍板口径：{mainline['authority_status_label']}
-- 第83道原运行状态：{mainline['original_run_status_label']}
-- 第83道 retry01：{mainline['retry01_status_label']}
-- 第83道 retry02：{mainline['retry02_status_label']}
-- 第83道本地观测：{mainline['local_observed_status_label']}
-- 第83道原运行硬停票：`{mainline['original_hard_stop_ticket']}`
-- 第83道最近本地运行：`{mainline['latest_local_run_id']}`
-- 第83道质量状态：{mainline['quality_status_label']}
-- 治理挂账：{'；'.join(row['issue_id'] + ' ' + row['summary'] for row in open_issues)}
+- 授权：{authorization['kind']}，时间 `{authorization['authority_time']}`
+- 当前运行：{run_label}
+- 质量边界：{controls['quality_boundary']}
+- 当前停点：{controls['stop_rule']}
+- 下一动作：{controls['next_action']}
+- 当前阻断：{blocker_label}
+- 模型调用账：逻辑样本 {usage['model_api_logical_samples']}／网络尝试 {usage['model_api_network_attempts']}／token {usage['model_api_usage_tokens']}
+- 报告目录：{report_label}
+- 本地停点回执：{receipt_label}
 - 默认链：`{default['path']}`（{default['version']}）
 - 当前金标：`{gold['pointer_path']}` → `{gold['artifact_path']}`
 - 正式金标登记：`{formal_registry_control['path']}`，共 {len(formal_gold_entries)} 个独立 current 入口。
-- 最近成绩：`{control['recent_score']['path']}`
-- 真源账序：{control['source_authority']['ledger_url']}
-- 真源队列：{control['source_authority']['queue_url']}
+- 真源账序：{authorization['ledger_url']}
+- 真源队列：{authorization['queue_url']}
 
 本页由生成器维护，不再向根 `current.md` 手抄整段进度。
 

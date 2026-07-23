@@ -519,7 +519,7 @@ def test_longcat_model_catalog_requires_exact_presence_without_status(
 def test_prepare_is_zero_call_repeatable_and_uses_fixed_layout(tmp_path: Path) -> None:
     first = tmp_path / "first"
     second = tmp_path / "second"
-    prepare_qwen(first)
+    preflight = prepare_qwen(first)
     prepare_qwen(second)
 
     one = benchmark.verify_prepared(first)
@@ -533,8 +533,49 @@ def test_prepare_is_zero_call_repeatable_and_uses_fixed_layout(tmp_path: Path) -
     assert (first / "inputs/benchmark_defaults.json").is_file()
     assert (first / "prepared/request_body.json").is_file()
     assert not (first / "transport/run_claim.json").exists()
+    copied_targets = [row["target"] for row in preflight["copied_inputs"]]
+    assert copied_targets
+    assert all(not Path(target).is_absolute() for target in copied_targets)
+    assert all(target.startswith("inputs/") for target in copied_targets)
     state = benchmark.read_json(first / "state.json")
     assert state["status"] == "prepared_zero_call"
+
+
+def test_copy_file_records_repository_relative_target_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo_root = tmp_path / "repo"
+    run_root = repo_root / "experiments/model_benchmarks/path_identity"
+    source = repo_root / "config/source.json"
+    target = run_root / "inputs/source.json"
+    source.parent.mkdir(parents=True)
+    source.write_text('{"ok": true}\n', encoding="utf-8")
+    monkeypatch.setattr(benchmark, "ROOT", repo_root)
+
+    receipt = benchmark.copy_file(source, target, artifact_root=run_root)
+
+    assert receipt["source"] == "config/source.json"
+    assert (
+        receipt["target"]
+        == "experiments/model_benchmarks/path_identity/inputs/source.json"
+    )
+    assert not Path(receipt["target"]).is_absolute()
+
+
+def test_copy_file_records_run_relative_source_for_external_replay(
+    tmp_path: Path,
+) -> None:
+    run_root = tmp_path / "replay"
+    source = run_root / "incoming/adjudication.json"
+    target = run_root / "scorecard/adjudication.json"
+    source.parent.mkdir(parents=True)
+    source.write_text('{"ok": true}\n', encoding="utf-8")
+
+    receipt = benchmark.copy_file(source, target, artifact_root=run_root)
+
+    assert receipt["source"] == "incoming/adjudication.json"
+    assert receipt["target"] == "scorecard/adjudication.json"
+    assert all(not Path(receipt[key]).is_absolute() for key in ("source", "target"))
 
 
 def test_nondefault_temperature_requires_explicit_diagnostic_reason(

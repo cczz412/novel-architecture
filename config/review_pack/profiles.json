@@ -8,6 +8,9 @@
         "README.md",
         "decisions.md",
         ".gitignore",
+        ".python-version",
+        "pyproject.toml",
+        "uv.lock",
         "governance/**",
         "config/**",
         "tests/**",
@@ -32,6 +35,9 @@
         "README.md",
         "decisions.md",
         ".gitignore",
+        ".python-version",
+        "pyproject.toml",
+        "uv.lock",
         "governance/**",
         "config/**",
         "tests/**",
@@ -72,6 +78,9 @@
         "README.md",
         "decisions.md",
         ".gitignore",
+        ".python-version",
+        "pyproject.toml",
+        "uv.lock",
         "governance/**",
         "config/**",
         "tests/**",
@@ -132,15 +141,9 @@
     "hf_token"
   ],
   "current_state_path_keys": [
-    "run_directory",
-    "source_step1_run_directory",
-    "interrupted_sensenova_run_directory",
-    "step1_report_directory",
-    "report_directory",
-    "continuation2_report_directory",
-    "local_stop_receipt",
-    "continuation2_local_stop_receipt",
-    "continuation3_local_stop_receipt"
+    "run.run_directory",
+    "artifacts.report_directory",
+    "artifacts.local_stop_receipt"
   ],
   "default_profile": "standard",
   "max_zip_mb": 25

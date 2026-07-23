@@ -1,13 +1,13 @@
 {
   "generator": {
     "path": "tools/governance_index.py",
-    "sha256": "06a286b944b5d15fe48b4826123720245a505768f3ca5d7243c49162dc97424b"
+    "sha256": "36fd0fb4dcd2d65ef17bc2185fcbc0b7f9056dc23e4166af2b1513b8ee57934f"
   },
   "inputs": [
     {
-      "bytes": 52268,
+      "bytes": 54052,
       "path": "governance/CURRENT_STATE.json",
-      "sha256": "cb200ccf28d90201ca3ca4337caf78bc51755e56507c10837d53afd2f6b3e692"
+      "sha256": "43412b5a7f83496dd05e12f9695fef196f3c712c08ba30ee2a5c5783b2660fa9"
     },
     {
       "bytes": 12301,
@@ -20,9 +20,9 @@
       "sha256": "3cf41a5ae153caa41c36afd1b290c162c5b47e56b86ff89722fc368d5a22315a"
     },
     {
-      "bytes": 15159,
+      "bytes": 15225,
       "path": "governance/route_registry.json",
-      "sha256": "55cf63b22aa938d6e78aef42c00ae6ab203f97cd16e2b5e966e7478851d7658c"
+      "sha256": "43636d507a77a9c2e06cc8f26c141db23465629315c805581afe387f575641b0"
     }
   ],
   "outputs": [
@@ -32,14 +32,14 @@
       "sha256": "2f211eadeb34588099fa711e217e48bd4f527300816c05f8e3ecf2276c8538e1"
     },
     {
-      "bytes": 5225,
+      "bytes": 2490,
       "path": "governance/INDEX.md",
-      "sha256": "d742e985681eed7f5f300a86649ce86ae148b73ae874418c297439e4b48f5ca7"
+      "sha256": "05159822be8cffc79b7c9ea6d36330b806b46bfdc2fa85f40358fb8f1d2e6fbc"
     },
     {
-      "bytes": 5109,
+      "bytes": 1593,
       "path": "governance/current_run.md",
-      "sha256": "62b2e1fe8ab7a0edf59cb9fb4a45fa8663a81779023ddc9720a5da7ba9a7f66e"
+      "sha256": "6aece86df6f78bcacd1746c849e92c721042598a4150d16490eb573bf422b296"
     },
     {
       "bytes": 1235,
@@ -74,7 +74,7 @@
     {
       "bytes": 24367,
       "path": "governance/module_registry.json",
-      "sha256": "e43bd044531fa7afe9e2159eb1ab3ab3d58021d724b402db5e5953f57e4d9630"
+      "sha256": "596057d8a4fe8881916a374d9aaa54c2aac749f1b8f098de993918b8d4c2929a"
     }
   ],
   "schema_version": "governance-index-manifest-v1",

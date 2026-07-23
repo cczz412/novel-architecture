@@ -1,6 +1,6 @@
 {
   "schema_version": "experiment-route-registry-v1",
-  "updated_at": "2026-07-23T04:09:27+08:00",
+  "updated_at": "2026-07-23T22:48:47+08:00",
   "allowed_statuses": [
     "in_trial",
     "failed",
@@ -62,8 +62,8 @@
         {
           "step": "Z83",
           "event": "in_trial",
-          "evidence_kind": "current_state",
-          "evidence_ref": "governance/CURRENT_STATE.json#mainline"
+          "evidence_kind": "local_final_scorecard",
+          "evidence_ref": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final/scorecard.json"
         },
         {
           "step": "Z83-retry03-inspector",

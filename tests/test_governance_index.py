@@ -12,6 +12,17 @@ from tools.pipeline_common.artifacts import read_json, verify_manifest
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _as_v2(state: dict) -> dict:
+    current, history = governance_index.state_layers(copy.deepcopy(state))
+    return {
+        "schema_version": governance_index.CURRENT_STATE_SCHEMA_V2,
+        "snapshot_at": state["snapshot_at"],
+        "authority": copy.deepcopy(state["authority"]),
+        "current_execution": current,
+        "historical_context": history,
+    }
+
+
 class GovernanceIndexTests(unittest.TestCase):
     def test_registry_has_all_modules_and_only_three_states(self) -> None:
         source = read_json(ROOT / governance_index.REGISTRY_SOURCE_PATH)
@@ -49,12 +60,13 @@ class GovernanceIndexTests(unittest.TestCase):
         governance_index.validate_current_state(ROOT, state)
         governance_index.validate_route_registry(ROOT, routes, state)
 
+        current, history = governance_index.state_layers(state)
         self.assertNotIn("current_task", control)
         self.assertEqual(control["current_state_path"], governance_index.CURRENT_STATE_PATH)
-        current = state["current_step"]
+        task = current["task"]
         for key in ("task_id", "label", "status", "status_label"):
-            self.assertIsInstance(current.get(key), str)
-            self.assertTrue(current[key].strip(), key)
+            self.assertIsInstance(task.get(key), str)
+            self.assertTrue(task[key].strip(), key)
         self.assertEqual(
             state["authority"]["external_truth"]["ledger_url"],
             "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
@@ -90,24 +102,24 @@ class GovernanceIndexTests(unittest.TestCase):
             any(
                 row["issue_id"] == "Z93-X01-GOLD-C0003-07-N01-ANCHOR-ISSUE-001"
                 and row["status"] == "deferred_by_cz_choice_a_to_z92_anchor_gate"
-                for row in state["open_issues"]
+                for row in history["issue_ledger"]
             )
         )
         self.assertEqual(
-            state["mainline"]["latest_authorization"]["status"],
+            history["legacy_mainline"]["latest_authorization"]["status"],
             "executed_hard_stop",
         )
         self.assertTrue(
-            state["mainline"]["latest_authorization"]["local_process_observed"]
+            history["legacy_mainline"]["latest_authorization"]["local_process_observed"]
         )
         self.assertEqual(
-            state["mainline"]["z85_gate"]["status"],
+            history["legacy_mainline"]["z85_gate"]["status"],
             "completed_before_retry06",
         )
         self.assertTrue(
             any(
                 row["task_id"] == "Z84-repo-hygiene" and row["status"] == "accepted"
-                for row in state["accepted_steps"]
+                for row in history["accepted_steps"]
             )
         )
         self.assertTrue(
@@ -115,10 +127,10 @@ class GovernanceIndexTests(unittest.TestCase):
                 row["task_id"] == "Z93-five-formal-gold-promotion"
                 and row["status"] == "accepted_full_chain_closed"
                 and row["formal_gold_entry_total"] == 6
-                for row in state["accepted_steps"]
+                for row in history["accepted_steps"]
             )
         )
-        run_states = {row["run_id"]: row for row in state["run_states"]}
+        run_states = {row["run_id"]: row for row in history["archived_run_states"]}
         z89 = run_states["Z89_X01_DeepSeekV4Pro强模型对照_第3章_v1.0_20260723"]
         self.assertEqual(z89["effective_status"], "candidate_silver_scored_callback_returned")
         self.assertEqual(z89["strict_hit"], 10)
@@ -255,7 +267,7 @@ class GovernanceIndexTests(unittest.TestCase):
         self.assertEqual(route_states["ROUTE-PROGRAM-SIDE-REPAIR"], "in_trial")
         self.assertEqual(route_states["ROUTE-PROMPT-LEAK-REPAIR"], "retired")
         self.assertEqual(
-            {row["issue_id"] for row in state["open_issues"]},
+            {row["issue_id"] for row in history["issue_ledger"]},
             {
                 "Z83-RETRY13-ANCHOR-GOLD-ISSUE-001",
                 "Z83-RETRY13-OLD25-REGRESSION-ISSUE-001",
@@ -278,6 +290,7 @@ class GovernanceIndexTests(unittest.TestCase):
             },
         )
 
+        governance_index.validate_route_registry(ROOT, routes, {})
         overclaimed_routes = copy.deepcopy(routes)
         program = next(
             row
@@ -287,21 +300,54 @@ class GovernanceIndexTests(unittest.TestCase):
         program["status"] = "failed"
         with self.assertRaisesRegex(
             governance_index.ArtifactError,
-            "单轮候选失败不得自动把程序侧整条路线登记为失败",
+            "路线末事件仍未判死",
         ):
-            governance_index.validate_route_registry(ROOT, overclaimed_routes, state)
+            governance_index.validate_route_registry(ROOT, overclaimed_routes, {})
 
     def test_current_state_rejects_status_that_disagrees_with_hard_stop_ticket(self) -> None:
         state = read_json(ROOT / governance_index.CURRENT_STATE_PATH)
         broken = copy.deepcopy(state)
+        history = (
+            broken["historical_context"]
+            if broken.get("schema_version") == governance_index.CURRENT_STATE_SCHEMA_V2
+            else broken
+        )
+        run_states = (
+            history["archived_run_states"]
+            if "archived_run_states" in history
+            else history["run_states"]
+        )
         original = next(
             row
-            for row in broken["run_states"]
+            for row in run_states
             if row["run_id"] == "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722"
         )
         original["effective_status"] = "hard_stop_interrupted"
         with self.assertRaisesRegex(governance_index.ArtifactError, "中断状态与硬停票不符"):
             governance_index.validate_current_state(ROOT, broken)
+
+    def test_v2_layers_current_execution_and_rejects_legacy_top_level_aliases(self) -> None:
+        state = _as_v2(read_json(ROOT / governance_index.CURRENT_STATE_PATH))
+        governance_index.validate_current_state(ROOT, state)
+        for key in governance_index.LEGACY_TOP_LEVEL_STATE_KEYS:
+            self.assertNotIn(key, state)
+
+        broken = copy.deepcopy(state)
+        broken["current_step"] = {"task_id": "duplicate"}
+        with self.assertRaisesRegex(
+            governance_index.ArtifactError,
+            "不得保留旧顶层键",
+        ):
+            governance_index.validate_current_state(ROOT, broken)
+
+    def test_v2_rejects_absolute_current_artifact_identity(self) -> None:
+        state = _as_v2(read_json(ROOT / governance_index.CURRENT_STATE_PATH))
+        state["current_execution"]["artifacts"]["report_directory"] = "/tmp/report"
+        with self.assertRaisesRegex(
+            governance_index.ArtifactError,
+            "必须是仓库相对路径",
+        ):
+            governance_index.validate_current_state(ROOT, state)
 
     def test_governance_docs_pin_key_gates_and_check_stop_line(self) -> None:
         root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -324,22 +370,46 @@ class GovernanceIndexTests(unittest.TestCase):
         index = documents["governance/INDEX.md"]
         for phrase in ("现在跑到哪道", "金标哪版哪指针", "各模块什么状态", "银标候选在哪"):
             self.assertIn(phrase, index)
-        for phrase in (
-            "第84道仓库卫生批",
-            "04:25 已审收 PASS",
-            "第83道",
-            "401",
-            "retry01",
-            "retry02",
-            "retry03 检查员已硬停",
-            "retry06",
-            "短引",
-        ):
-            self.assertIn(phrase, index)
+        current, _history = governance_index.state_layers(current_state)
+        self.assertIn(current["task"]["label"], index)
+        self.assertIn(current["task"]["status_label"], index)
+        self.assertIn(current["controls"]["next_action"], index)
+        self.assertNotIn("retry01 第3章 HTTP 200", index)
         route = documents["governance/indexes/route_health.md"]
         self.assertIn("current.md", route)
         self.assertIn("governance/INDEX.md", route)
         self.assertIn("tools/zbatch_modules/README.md", route)
+
+    def test_generated_current_pages_do_not_render_historical_context(self) -> None:
+        control = read_json(ROOT / governance_index.CONTROL_PATH)
+        current_state = _as_v2(read_json(ROOT / governance_index.CURRENT_STATE_PATH))
+        routes = read_json(ROOT / governance_index.ROUTE_REGISTRY_PATH)
+        source = read_json(ROOT / governance_index.REGISTRY_SOURCE_PATH)
+        registry = governance_index.materialize_registry(ROOT, source)
+        current_state["current_execution"]["task"]["label"] = "V2当前任务唯一标记"
+        current_state["current_execution"]["controls"]["next_action"] = "V2当前下一动作唯一标记"
+        current_state["historical_context"]["legacy_mainline"][
+            "label"
+        ] = "禁止出现在路牌的历史标记"
+        current_state["historical_context"]["issue_ledger"][0][
+            "summary"
+        ] = "禁止出现在路牌的历史问题标记"
+        control["recent_score"]["path"] = "禁止出现在当前页的历史成绩标记"
+
+        documents = governance_index.build_documents(
+            ROOT,
+            control,
+            current_state,
+            routes,
+            registry,
+        )
+        for relative in ("governance/INDEX.md", "governance/current_run.md"):
+            text = documents[relative]
+            self.assertIn("V2当前任务唯一标记", text)
+            self.assertIn("V2当前下一动作唯一标记", text)
+            self.assertNotIn("禁止出现在路牌的历史标记", text)
+            self.assertNotIn("禁止出现在路牌的历史问题标记", text)
+            self.assertNotIn("禁止出现在当前页的历史成绩标记", text)
 
     def test_root_readme_has_one_hop_governance_route(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")

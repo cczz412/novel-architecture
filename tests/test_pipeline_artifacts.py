@@ -25,6 +25,22 @@ class PipelineArtifactTests(unittest.TestCase):
                 with self.assertRaises(artifacts.ArtifactError):
                     artifacts.resolve_repo_path(root, value)
 
+    def test_repo_relative_identity_is_stable_and_rejects_escape(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            nested = root / "nested/value.json"
+            self.assertEqual(
+                artifacts.repo_relative_identity(root, nested),
+                "nested/value.json",
+            )
+            self.assertEqual(
+                artifacts.repo_relative_identity(root, "nested\\value.json"),
+                "nested/value.json",
+            )
+            for value in (root, root.parent / "escape.json", "../escape.json"):
+                with self.assertRaises(artifacts.ArtifactError):
+                    artifacts.repo_relative_identity(root, value)
+
     def test_manifest_build_and_verify(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

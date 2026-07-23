@@ -43,6 +43,24 @@ def resolve_repo_path(root: Path, relative_path: str | Path) -> Path:
     return candidate
 
 
+def repo_relative_identity(root: Path, path: str | Path) -> str:
+    """把根目录内路径统一写成稳定的 POSIX 相对身份，拒绝越界。"""
+
+    resolved_root = root.resolve()
+    candidate = Path(path)
+    if candidate.is_absolute():
+        resolved = candidate.resolve()
+    else:
+        resolved = resolve_repo_path(resolved_root, path)
+    try:
+        relative = resolved.relative_to(resolved_root)
+    except ValueError as exc:
+        raise ArtifactError(f"路径越出仓库：{path}") from exc
+    if not relative.parts:
+        raise ArtifactError("工件身份不能指向仓库根目录")
+    return PurePosixPath(*relative.parts).as_posix()
+
+
 def read_json(path: Path) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))

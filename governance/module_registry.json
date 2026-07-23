@@ -499,7 +499,7 @@
           "exists": true,
           "kind": "file",
           "path": "tools/governance_index.py",
-          "sha256": "06a286b944b5d15fe48b4826123720245a505768f3ca5d7243c49162dc97424b"
+          "sha256": "36fd0fb4dcd2d65ef17bc2185fcbc0b7f9056dc23e4166af2b1513b8ee57934f"
         },
         {
           "exists": true,
@@ -511,7 +511,7 @@
           "exists": true,
           "kind": "file",
           "path": "tools/pipeline_common/artifacts.py",
-          "sha256": "cd37f3d055d55dc7e206beb3d216f93ae9ffa6e7f54f784705b02592dee5bb08"
+          "sha256": "211769099bf0f4acf91c69bc929bef3b8ed3fa32caa6b641c477fee21fb11ec4"
         },
         {
           "exists": true,
@@ -523,7 +523,7 @@
           "exists": true,
           "kind": "file",
           "path": "tests/test_governance_index.py",
-          "sha256": "a6717c544b6ad008f822f2b6a853a1a047eff3cb9dd9b8784f31e541580a20c0"
+          "sha256": "6ae6b8629e0e2d8de0672ce30d5f6aa882f723955676cff11762ce6e224a4af1"
         },
         {
           "exists": true,
@@ -535,7 +535,7 @@
           "exists": true,
           "kind": "file",
           "path": "tests/test_pipeline_artifacts.py",
-          "sha256": "36fc46f4d2abaebd56bf05ebd831403d052ff55d02f0800c24cbbab9e0abe7cd"
+          "sha256": "9ace1e2ebe7bbcccb92038907d5d0a9dd9ea40cad872467c640c21636aa9e912"
         }
       ],
       "status": "可用",

@@ -20,7 +20,14 @@ from typing import Any, Mapping, Sequence
 
 import z75_multidirection_score as z75_score
 import z79_fact_sheet_v3_pilot as z79
-from pipeline_common.artifacts import read_json, sha256_bytes, sha256_file, write_json_atomic
+from pipeline_common.artifacts import (
+    ArtifactError,
+    read_json,
+    repo_relative_identity,
+    sha256_bytes,
+    sha256_file,
+    write_json_atomic,
+)
 from zbatch_modules import neutral_extract, z83_retry_transport
 from zbatch_modules.errors import ZBatchError
 
@@ -112,17 +119,27 @@ def append_jsonl_fsync(path: Path, row: Mapping[str, Any]) -> None:
         os.fsync(handle.fileno())
 
 
-def copy_file(source: Path, target: Path) -> dict[str, Any]:
+def copy_file(
+    source: Path,
+    target: Path,
+    *,
+    artifact_root: Path,
+) -> dict[str, Any]:
+    try:
+        target_identity = repo_relative_identity(ROOT, target)
+    except ArtifactError:
+        # 单测或离线回放可把完整运行目录放在仓外；此时仍只记运行目录相对身份。
+        target_identity = repo_relative_identity(artifact_root, target)
+    try:
+        source_identity = repo_relative_identity(ROOT, source)
+    except ArtifactError:
+        source_identity = repo_relative_identity(artifact_root, source)
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(source, target)
     return {
-        "source": (
-            source.relative_to(ROOT).as_posix()
-            if source.is_relative_to(ROOT)
-            else str(source)
-        ),
+        "source": source_identity,
         "source_sha256": sha256_file(source),
-        "target": target.as_posix(),
+        "target": target_identity,
         "target_sha256": sha256_file(target),
     }
 
@@ -464,20 +481,38 @@ def prepare(
     }
     for source_name, target_name in copy_names.items():
         source = ROOT / stage["source_artifacts"][source_name]["path"]
-        copies.append(copy_file(source, root / "inputs" / target_name))
+        copies.append(
+            copy_file(source, root / "inputs" / target_name, artifact_root=root)
+        )
     copies.extend(
         [
-            copy_file(stage_path(stage_id), root / "inputs/stage_contract.json"),
-            copy_file(DEFAULTS_PATH, root / "inputs/benchmark_defaults.json"),
-            copy_file(provider_path, root / "inputs/provider_config.json"),
-            copy_file(ADAPTERS_PATH, root / "inputs/provider_adapters.json"),
+            copy_file(
+                stage_path(stage_id),
+                root / "inputs/stage_contract.json",
+                artifact_root=root,
+            ),
+            copy_file(
+                DEFAULTS_PATH,
+                root / "inputs/benchmark_defaults.json",
+                artifact_root=root,
+            ),
+            copy_file(
+                provider_path,
+                root / "inputs/provider_config.json",
+                artifact_root=root,
+            ),
+            copy_file(
+                ADAPTERS_PATH,
+                root / "inputs/provider_adapters.json",
+                artifact_root=root,
+            ),
         ]
     )
     runtime_dependencies = []
     for path in RUNTIME_DEPENDENCIES:
         relative = path.relative_to(ROOT)
         frozen = root / "inputs/runtime_dependencies" / relative
-        copies.append(copy_file(path, frozen))
+        copies.append(copy_file(path, frozen, artifact_root=root))
         runtime_dependencies.append(
             {
                 "path": relative.as_posix(),
@@ -1298,8 +1333,16 @@ def build_adjudication_template(
     if formal["denominator"] != denominator:
         raise ZBatchError("金标分母漂移")
     copies = [
-        copy_file(gold_pointer, root / "scorecard/score_only/正式金标指针.json"),
-        copy_file(gold_file, root / "scorecard/score_only/第3章结构层金标v1.2.json"),
+        copy_file(
+            gold_pointer,
+            root / "scorecard/score_only/正式金标指针.json",
+            artifact_root=root,
+        ),
+        copy_file(
+            gold_file,
+            root / "scorecard/score_only/第3章结构层金标v1.2.json",
+            artifact_root=root,
+        ),
     ]
     template = {
         "schema_version": "model-benchmark-adjudication-template-v1",
@@ -1695,7 +1738,7 @@ def score(root: Path, adjudication: Path) -> dict[str, Any]:
     }
     target = root / "scorecard/adjudication_completed.json"
     if adjudication.resolve() != target.resolve():
-        copy_file(adjudication.resolve(), target)
+        copy_file(adjudication.resolve(), target, artifact_root=root)
     write_json_exclusive(root / "scorecard/final.json", scorecard)
     (root / "summary.md").write_text(render_summary(spec, stage, scorecard), encoding="utf-8")
     receipt = f"""# 模型横向试验回执｜{spec['benchmark_id']}

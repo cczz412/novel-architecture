@@ -67,12 +67,10 @@ def _expand_tree_or_file(path: Path) -> list[Path]:
     return []
 
 
-def _manifest_path(path: Path) -> str:
-    resolved = path.resolve()
-    try:
-        return resolved.relative_to(ROOT.resolve()).as_posix()
-    except ValueError:
-        return str(resolved)
+def _manifest_path(path: Path, *, identity_root: Path = ROOT) -> str:
+    """把工件身份写成指定根下的相对路径，拒绝把主机绝对路径写进清单。"""
+
+    return path.resolve().relative_to(identity_root.resolve()).as_posix()
 
 
 def _expand_run_or_report_pattern(pattern: str) -> list[Path]:
@@ -121,19 +119,28 @@ def _looks_secret(rel: str, markers: list[str]) -> bool:
     return name.startswith(".env") or name.endswith((".pem", ".key"))
 
 
-def _load_current_step() -> dict[str, Any]:
+def _load_current_execution() -> dict[str, Any]:
     if not CURRENT_STATE.is_file():
         return {}
     data = json.loads(CURRENT_STATE.read_text(encoding="utf-8"))
-    step = data.get("current_step") or {}
-    return step if isinstance(step, dict) else {}
+    execution = data.get("current_execution") or {}
+    return execution if isinstance(execution, dict) else {}
+
+
+def _dotted_value(data: dict[str, Any], key: str) -> Any:
+    value: Any = data
+    for part in key.split("."):
+        if not isinstance(value, dict):
+            return None
+        value = value.get(part)
+    return value
 
 
 def _paths_from_current_state(keys: list[str]) -> list[str]:
-    step = _load_current_step()
+    execution = _load_current_execution()
     out: list[str] = []
     for key in keys:
-        val = step.get(key)
+        val = _dotted_value(execution, key)
         if isinstance(val, str) and val.startswith(("runs/", "reports/")):
             parts = val.split("/")
             # 目录级：runs/NAME 或 reports/NAME；单文件则仍按父目录收
@@ -301,7 +308,10 @@ def write_reviewer_readme(pack_dir: Path, profile_name: str, files: list[Path], 
     cs_path = ROOT / "governance/CURRENT_STATE.json"
     if cs_path.is_file():
         cs = json.loads(cs_path.read_text(encoding="utf-8"))
-    current = cs.get("current_step") or {}
+    execution = cs.get("current_execution") or {}
+    current = execution.get("task") or {}
+    run = execution.get("run") or {}
+    artifacts = execution.get("artifacts") or {}
     text = f"""# 给 ChatGPT／外审的读包说明（先读这个）
 
 生成时间：{datetime.now().isoformat(timespec="seconds")}
@@ -337,8 +347,8 @@ profile：`{profile_name}`
 - task_id: `{current.get("task_id")}`
 - label: `{current.get("label")}`
 - status: `{current.get("status")}`
-- run_directory: `{current.get("run_directory")}`
-- report_directory: `{current.get("report_directory")}`
+- run_directory: `{run.get("run_directory")}`
+- report_directory: `{artifacts.get("report_directory")}`
 
 ## 本包文件数
 
@@ -440,7 +450,7 @@ def main() -> int:
         "zip_mb": round(zsize / 1024 / 1024, 2),
         "max_zip_mb": max_mb,
         "notes": notes,
-        "zip_path": _manifest_path(zip_path),
+        "zip_path": _manifest_path(zip_path, identity_root=pack_dir),
         "readme": "00_READ_ME_FOR_REVIEWER.md",
     }
     (pack_dir / "MANIFEST.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

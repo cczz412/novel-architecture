@@ -3,7 +3,7 @@
 这里放当前状态、索引、模块状态、路线状态、合同和依赖关系，不复制大型运行工件。
 
 - `INDEX.md`：人看的唯一一跳入口，由生成器维护。
-- `CURRENT_STATE.json`：本地唯一机器可读当前任务／运行状态真源；Notion 拍板回读后，只在这里解释“现在到哪”和旧运行票据冲突。模块与实验路线各由自己的登记册负责。
+- `CURRENT_STATE.json`：本地唯一机器可读当前执行状态真源；Notion 拍板回读后，只在这里解释“现在到哪”。`current_execution` 只放现在这道，`historical_context` 留审计历史，生成路牌不再把历史重印成当前任务。
 - `route_registry.json`：实验路线状态登记册；没有明确重开凭证，换名字或版本号也不能复活退役路线。
 - `control_plane.json`：稳定入口、正式指针和保护件；不再保存当前任务。
 - `module_registry.source.json`：模块状态的人工审定源；生成器补齐现存路径和 SHA。
@@ -58,6 +58,20 @@ Notion 账序与队列仍是最终真源。本区只解决本地寻路和机械�
 
 - **每收口一道，重跑 INDEX**：`python3 tools/novel_pipeline.py governance refresh`，再用 `python3 tools/governance_index.py --check` 验漂移。
 - 本纪律写在本 README（不会被 refresh 覆盖）；不要手改 `INDEX.md`。
+
+## 当前状态分层与新工件身份（九项第二道写入）
+
+- 当前执行页只读 `CURRENT_STATE.json.current_execution`：任务、授权、运行、停点、下一动作、调用账和保护面。
+- 历史任务、封存运行、旧问题与收口规则只放 `historical_context`。历史不删，但不会再挤进 `INDEX.md`／`current_run.md`。
+- 新生成工件的身份统一写仓库相对 POSIX 路径。主机本地绝对路径若确需留作排障，只能单放 `*_host_local` 字段，不能当身份、不能参与跨机器 SHA 清单。
+- 本规则从九项第二道起生效；Notion 登记的旧账 `198处／36文件` 只作授权基线，不回改，也不把本轮不同范围的扫描数冒充成该母数。
+
+## 环境锁与历史回放
+
+- 默认复现环境由根目录 `.python-version`、`pyproject.toml`、`uv.lock` 三件共同锁定。基础环境只含现役测试与代码检查；停用的 MiniCPM／微调依赖不进入默认锁。
+- 日常仍保留现役 Homebrew Python 全链命令作等价对照；新环境可用 `uv sync --locked` 后复验。
+- 40 项历史测试恢复只走便携夹具小包：保留仓库相对路径，带逐文件 SHA，在干净 checkout 中证明 40 项全部真跑通过。不得为省事把大型旧运行目录塞回主仓。
+- review／replay 双包与外发工程证据清单见 [`config/review_pack/README.md`](../config/review_pack/README.md)。外发调查包必须带 commit、环境锁、manifest、原始响应索引和 SHA 清单。
 
 ## 状态收口纪律（第86道写入）
 
