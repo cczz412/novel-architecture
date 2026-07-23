@@ -315,3 +315,4 @@
 | SLIM-BATCH-PASS-CLOSED-LOCAL | Notion 20:12 统一审收 PASS；支线瘦身批本批收口；本地对账 91/HOLD/overlay/治理绿齐；遗留三件另拍；本窗不施工、不改 CURRENT_STATE | 本地确认 `TEMP/archive_plan_20260723/slim_batch_审收PASS收口确认.md`；overlay 仍主仓真身 HOLD，勿当已外置 |
 | GIT-TRACKED-SLIM-LOCAL | 取消跟踪 `runs/`／`reports/`／`outbox/`／`work/zbatch_decisions/`（盘上保留）；tracked 约 41MB→**5.4MB**／418 文件；`.gitignore` 已写；不做 P3 历史瘦身 | CZ 2026-07-23 同意并令现在做；回执 `TEMP/archive_plan_20260723/git_tracked_slim_receipt.md`；治理 `--check` 绿 |
 | GIT-HISTORY-P3-ORPHAN-LOCAL | 孤儿分支重建 `main` 后 force-with-lease 推 GitHub：远程历史去掉 runs/reports 等累赘；盘上 runs/reports/TEMP 仍保留不删 | CZ 2026-07-23 明示「直接清理＋用现跟踪面重传」；仓库 `mhchen1/novel-architecture` |
+| CHATGPT-REVIEW-PACK-WORKFLOW-LOCAL | 可复用审仓打包：`tools/chatgpt_review_pack.py`＋`config/review_pack/profiles.json`；默认 standard；AGENTS 已写入口 | 产出在 `TEMP/chatgpt_review_packs/`；外发≠进 Git |

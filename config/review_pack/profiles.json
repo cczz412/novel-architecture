@@ -1,0 +1,120 @@
+{
+  "schema_version": "chatgpt-review-pack-profile-v1",
+  "profiles": {
+    "surface": {
+      "label": "只要结构与治理活面",
+      "include_globs": [
+        "AGENTS.md",
+        "README.md",
+        "decisions.md",
+        ".gitignore",
+        "governance/**",
+        "config/**",
+        "tests/**",
+        "tools/**/*.py",
+        "tools/**/*.md",
+        "foundation/**",
+        "experiments/INDEX.md",
+        "experiments/README.md"
+      ],
+      "run_globs": [],
+      "report_globs": [],
+      "digest_z83_tickets": false
+    },
+    "standard": {
+      "label": "结构＋近停证据（默认，给ChatGPT常审）",
+      "include_globs": [
+        "AGENTS.md",
+        "README.md",
+        "decisions.md",
+        ".gitignore",
+        "governance/**",
+        "config/**",
+        "tests/**",
+        "tools/**/*.py",
+        "tools/**/*.md",
+        "foundation/**",
+        "experiments/INDEX.md",
+        "experiments/README.md",
+        "work/zbatch_prompts/**",
+        "references/book-meta/README.md"
+      ],
+      "run_globs": [
+        "runs/Z94_*",
+        "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722",
+        "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03",
+        "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry09",
+        "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13"
+      ],
+      "report_globs": [
+        "reports/Z94*",
+        "reports/Z93*",
+        "reports/Z91*",
+        "reports/Z89*",
+        "reports/Z84*",
+        "reports/Z83*"
+      ],
+      "digest_z83_tickets": true
+    },
+    "deep": {
+      "label": "加厚：整棵Z83林＋Z91/Z93 runs",
+      "include_globs": [
+        "AGENTS.md",
+        "README.md",
+        "decisions.md",
+        ".gitignore",
+        "governance/**",
+        "config/**",
+        "tests/**",
+        "tools/**/*.py",
+        "tools/**/*.md",
+        "foundation/**",
+        "experiments/**",
+        "work/zbatch_prompts/**",
+        "references/**"
+      ],
+      "run_globs": [
+        "runs/Z94_*",
+        "runs/Z93_*",
+        "runs/Z91_*",
+        "runs/Z89_*",
+        "runs/Z83_*"
+      ],
+      "report_globs": [
+        "reports/Z94*",
+        "reports/Z93*",
+        "reports/Z92*",
+        "reports/Z91*",
+        "reports/Z89*",
+        "reports/Z84*",
+        "reports/Z83*"
+      ],
+      "digest_z83_tickets": true
+    }
+  },
+  "always_exclude_globs": [
+    "**/.env",
+    "**/.env.*",
+    "**/*.pem",
+    "**/*.key",
+    "**/__pycache__/**",
+    "**/*.pyc",
+    "**/.DS_Store",
+    "TEMP/**",
+    ".git/**",
+    "**/node_modules/**"
+  ],
+  "secret_name_markers": [
+    ".env",
+    "api_key",
+    "apikey",
+    "secret",
+    "token",
+    "credentials",
+    ".pem",
+    ".key",
+    "hf_token"
+  ],
+  "default_profile": "standard",
+  "max_zip_mb": 25
+}

@@ -39,10 +39,32 @@
 
 - **自由施工**：文件夹不够就自己新建。
 - **本地是工作镜像**：改本地；回 Notion **新建页**交接。
-- **日常不读 Notion**：页面已全文下载进 `foundation/`，本地上下文足够；只有 CZ 说"打包"时才汇总本轮改动打包给他上传。
+- **日常不读 Notion**：页面已全文下载进 `foundation/`，本地上下文足够；只有 CZ 说"打包"时才汇总产出、打包给他上传。
 - **子 Agent 省额度**：需要派子 Agent 时（自派或 skill 派发）统一用 `cursor-grok-4.5-high`。
 - **正文不进仓**：`corpus-downloads` → 小说101-downloads。
 - **打包清版**：`tools/simple_pack.py`（不搬小说101 重 OPS）。
+
+## Git 边界（2026-07-23）
+
+| 进 Git／上 GitHub（活面） | 本机有、默认不进 Git |
+|---|---|
+| `AGENTS.md`、`governance/`、`config/`、`tools/`、`tests/`、`foundation/`、`references/` … | `runs/`、`reports/`、`outbox/`、`TEMP/` |
+
+说白了：Git 盯的是长期带着走的代码／配置／治理；跑批大件留本地回放。外审要看效果时，用下面「审仓打包」，**不要**把 ignore 目录重新 `git add` 回去。
+
+## ChatGPT／外审 · 审仓打包（可复用）
+
+做到一定程度拿去审结构／流程／近停差距：
+
+```bash
+python3 tools/chatgpt_review_pack.py              # 默认 standard
+python3 tools/chatgpt_review_pack.py --profile deep
+python3 tools/chatgpt_review_pack.py --dry-run
+```
+
+- 配置：[config/review_pack/profiles.json](config/review_pack/profiles.json)
+- 产出：`TEMP/chatgpt_review_packs/`（zip＋读包说明；TEMP 本身不进 Git）
+- 包内必有 `00_READ_ME_FOR_REVIEWER.md`；含近停 runs／reports 与 Z83 多轮票据摘要，不等于它们应进 Git
 
 ## 目录
 
@@ -52,8 +74,10 @@
 | `history/` | 上一轮（小说101／G100 前）轻记 |
 | `references/` | Notion／样本指针；书目元数据；**调查角度收件箱**（GitHub／短视频讲法，见 `references/survey-inbox/`） |
 | `side-tracks/` | **旁路／支线台账**（调查进度；不是主线路牌；主线看 `governance/INDEX.md`） |
-| `tools/` | 清版打包 |
-| `TEMP/` | 外发临时 |
+| `tools/` | 清版打包；Z 批工具；**审仓打包** `chatgpt_review_pack.py` |
+| `TEMP/` | 外发临时；含 `chatgpt_review_packs/` |
+| `runs/` | 本地跑批工件（不进 Git） |
+| `reports/` | 本地交件／停点回包（不进 Git） |
 | `decisions.md` | 本地决策流水 |
 | `current.md` | 历史三行路牌，已停更；当前状态不从这里读 |
 
