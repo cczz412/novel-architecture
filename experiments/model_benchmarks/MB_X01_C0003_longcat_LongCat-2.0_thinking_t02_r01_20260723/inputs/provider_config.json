@@ -1,0 +1,35 @@
+{
+  "schema_version": "provider-channel-v1",
+  "provider": "longcat_platform",
+  "display_name": "LongCat API 开放平台",
+  "base_url": "https://api.longcat.chat/openai/v1",
+  "endpoint": "/chat/completions",
+  "model_catalog_endpoint": "/models",
+  "model_catalog_check_required_before_run": true,
+  "model_catalog_status_policy": "presence_only",
+  "api_key_env": "LONGCAT_API_KEY",
+  "external_key_loader": "/Users/a1234/挣钱/danmaku-psychology-workspace/06_operations/api-pool/scripts/longcat-env.zsh",
+  "response_format_compatibility": "openai_chat_completions_prompt_json_local_gate",
+  "enabled_by_default": false,
+  "default_model": null,
+  "status": "configured_external_key_historical_smoke_passed_benchmark_only",
+  "model_selection_rule": "只允许显式选择精确 model_id；正式采样前须用模型目录确认精确 ID 存在，不自动换旧型号或近似型号。",
+  "models": [
+    {
+      "requested_name": "LongCat-2.0",
+      "model_id": "LongCat-2.0",
+      "call_ready": true,
+      "capabilities": ["thinking", "function_calling"],
+      "context_tokens": 1048576,
+      "max_output_tokens": 131072
+    }
+  ],
+  "official_docs": [
+    "https://longcat.chat/platform/docs/zh/",
+    "https://longcat.chat/platform/docs/zh/api-docs",
+    "https://longcat.chat/platform/docs/zh/api/chat",
+    "https://longcat.chat/platform/docs/zh/api/models",
+    "https://longcat.chat/platform/docs/zh/api/model",
+    "https://longcat.chat/platform/docs/zh/change-log"
+  ]
+}

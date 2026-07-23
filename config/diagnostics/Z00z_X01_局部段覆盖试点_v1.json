@@ -1,0 +1,103 @@
+{
+  "schema_version": "z-t4-local-segment-pilot-v1",
+  "batch_id": "Z00z",
+  "item_id": "X01",
+  "book_name": "诡秘之主",
+  "date": "20260718",
+  "base_config": {
+    "path": "config/batches/Z00w2_X01_分类规则v1.2审查修订重放_20章_v1.1.json",
+    "sha256": "16b3fe5f5db43db29b0784f0b8997d302f145e6a20c1272d02508f2d324560c7"
+  },
+  "historical_extract_reference": {
+    "run_id": "Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718",
+    "config_path": "config/batches/Z00r_X01_第14章单次重采样续跑_20章_v1.0.json",
+    "config_sha256": "575969703304b5080306a373fafedcf29fc1f155b9efad4c8e150fb2ce83ccf9",
+    "historical_runner_sha256": "bc8ba20848153693db8638cde654d893a663b21ac03a9073d5b8a1b22bc4bb13"
+  },
+  "prompt_change": {
+    "old_path": "work/zbatch_prompts/candidates/extract_event_only_no_self_audit_v1.1.md",
+    "old_sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f",
+    "new_path": "work/zbatch_prompts/candidates/extract_event_only_local_segment_v1.2.md",
+    "new_sha256": "e8e9c2807175ddfad7d4431d0f63e21a856da29de762906ce96c2a8f4940cee8",
+    "only_added_line": "- 局部段覆盖：沿冻结目录的原文顺序逐段检查；凡有冻结锚直接支持且以后可能被继续读取的原子事件，即使只出现在局部段、不构成本章主线，也照实单列。"
+  },
+  "coverage_targets": {
+    "path": "config/diagnostics/X01_ch1_20_coverage_targets_v1.json",
+    "sha256": "43420cf25e14e58f0c4def7033c9a323708d07df170107bbc1a5f828003b8561"
+  },
+  "pilot_chapters": [3, 4, 5, 13, 19],
+  "protected_current_chain": {
+    "runner": {
+      "path": "tools/zbatch.py",
+      "sha256": "0b9334a34fcc5b5f866f43b2b3bc40aeff4cedf79a8ff83c51957496061a8080"
+    },
+    "provider": {
+      "path": "config/providers/sensenova_modular_v1.json",
+      "sha256": "fc38a198e30bd58d4022d8cf0804979d428b75f1a81c24d560edeba209495dfb"
+    },
+    "stage_contract": {
+      "path": "config/contracts/sensenova_stage_sampling_v1.json",
+      "sha256": "8ac9f7fa639aba7a7500948438df32b5bd054895ceb8362b1402ae76f0fdbb8c"
+    },
+    "neutral_extract": {
+      "path": "tools/zbatch_modules/neutral_extract.py",
+      "sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"
+    },
+    "evidence_catalog": {
+      "path": "tools/zbatch_modules/evidence_catalog.py",
+      "sha256": "e20321e3c11f6c1c4dbcc904fce1aa97cc752d9c4ffaaee9b61f8836e39a3847"
+    },
+    "api_transport": {
+      "path": "tools/zbatch_modules/api_transport.py",
+      "sha256": "60452d0538a34070df2e49a7246f2f29ddb94a6855f58de86f2524d18dba8d93"
+    },
+    "classify_rules_v1_2": {
+      "path": "tools/zbatch_modules/classify_rules.py",
+      "sha256": "76b3c1e208abaf0ab47c8dafee4c4e1ccb7d6d4cb3d364fc30afa00c6179eb7b"
+    }
+  },
+  "t4_gate_code": {
+    "gate_module": {
+      "path": "tools/zbatch_modules/t4_local_segment.py",
+      "sha256": "e9e91bd1398b3da12f893c2570fa979cec4f8e689d3c93bd633e53cf973bdd7b"
+    },
+    "dedicated_cli": {
+      "path": "tools/zbatch_t4_pilot.py",
+      "sha256": "6fba5ebc9a9cbfd7b333142ec3d85064b99647cee03e6da9308a5e81a7ee3bbe"
+    },
+    "gate_tests": {
+      "path": "tests/test_t4_local_segment_pilot.py",
+      "sha256": "aae1f6b140c63dacc754b6b27d13e263a7917a228c663358677b58630a0bfd95"
+    }
+  },
+  "transport": {
+    "provider": "sensenova",
+    "model": "deepseek-v4-flash",
+    "temperature": 0.2,
+    "max_tokens": 16000,
+    "n": 1,
+    "reasoning_effort": "medium",
+    "response_format": {"type": "json_object"},
+    "network_attempts_per_logical_sample": 3,
+    "logical_samples_per_chapter": 1
+  },
+  "pilot_gate": {
+    "primary_target_anchor_span": "每个已知靶的主范围须由该章新事件的锚并集完整覆盖",
+    "required_quote_fragments": "每个必核短引须出现在被选中的冻结锚内",
+    "linked_event_no_regression": true,
+    "related_span_required": true,
+    "outside_catalog_anchor_count": 0,
+    "empty_chapter_count": 0,
+    "new_contract_failure_count": 0,
+    "hard_stop_on_failure": true
+  },
+  "expansion": {
+    "allowed_only_if_pilot_passes": true,
+    "chapters": [1, 20],
+    "reuse_exact_pilot_artifacts": true,
+    "expected_new_logical_samples_after_reuse": 15,
+    "classification_rules_sha256": "76b3c1e208abaf0ab47c8dafee4c4e1ccb7d6d4cb3d364fc30afa00c6179eb7b",
+    "recompute_three_measures": true
+  },
+  "rights": "仅内部结构研究；CZ于2026-07-18 10:17预授权T4局部段覆盖单变量轮；不升默认、不铺X02至X04、不写outbox。"
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "model-benchmark-mechanical-gates-v1",
+  "status": "pass",
+  "json_and_schema_gate": true,
+  "catalog_anchor_gate": true,
+  "length_and_contiguous_id_gate": true,
+  "event_count": 30,
+  "anchor_reference_count": 89,
+  "outside_catalog_anchor_count": 0,
+  "invalid_event_id_count": 0,
+  "events_without_anchors": 0,
+  "finish_reason": "stop",
+  "response_model": "qwen3.7-plus",
+  "content_sha256": "2222b89559605eb992bab667b18685d5d5a492d3324f5eaa540be1790fd05051",
+  "reasoning_content_sha256": "f74bc5aacc07c6ee2ff60d73b5750f0a736362444328419a0014a8477f4f3091"
+}

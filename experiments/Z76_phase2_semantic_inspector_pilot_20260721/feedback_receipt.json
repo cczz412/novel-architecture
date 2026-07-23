@@ -1,0 +1,15 @@
+{
+  "batch_id": "Z76P2-PILOT-01",
+  "contract_version": "semantic-inspector-feedback-receipt-v1",
+  "expanded_to_30_percent": false,
+  "final_truth": false,
+  "misjudged": 0,
+  "misjudgment_rate": 0.0,
+  "new_review_ids": [],
+  "reviewed": 1,
+  "sample_ids": [
+    "SEM-REAL-02"
+  ],
+  "sample_ratio": 0.1,
+  "threshold": 0.02
+}

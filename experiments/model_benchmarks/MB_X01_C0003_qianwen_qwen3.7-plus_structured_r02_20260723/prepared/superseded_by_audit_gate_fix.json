@@ -1,0 +1,9 @@
+{
+  "schema_version": "model-benchmark-supersession-v1",
+  "status": "superseded_zero_call_no_network",
+  "reason": "补齐密钥回显后的真实网络尝试账、样张完成票逐字段重建、检查点 ID 重算与成绩 usage 原账读取",
+  "model_api_calls": 0,
+  "network_attempts": 0,
+  "replacement_benchmark_id": "MB_X01_C0003_qianwen_qwen3.7-plus_structured_r03_20260723",
+  "preservation": "旧目录原样留档，不删除、不回写既有准备工件"
+}

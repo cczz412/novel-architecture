@@ -1,0 +1,19 @@
+{
+  "schema_version": "model-benchmark-v1",
+  "benchmark_id": "MB_X01_C0003_qianwen_qwen3.7-plus_thinking32k_t02_r06_20260723",
+  "stage_id": "neutral_extract_x01_ch0003_v3_t02",
+  "provider": "qianwen_platform",
+  "model": "qwen3.7-plus",
+  "profile": "thinking_32k_prompt_json",
+  "swap_module": "M04",
+  "write_root": "experiments/model_benchmarks/MB_X01_C0003_qianwen_qwen3.7-plus_thinking32k_t02_r06_20260723",
+  "single_sample_no_rerun": true,
+  "candidate_only": true,
+  "temperature_policy": {
+    "default_temperature": 0.2,
+    "actual_temperature": 0.2,
+    "is_diagnostic_exception": false,
+    "diagnostic_reason": null
+  },
+  "created_at": "2026-07-23T06:20:19.836695+08:00"
+}

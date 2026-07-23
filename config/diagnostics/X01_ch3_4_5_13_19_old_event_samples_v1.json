@@ -1,0 +1,17 @@
+{
+  "schema_version": "z-old-event-samples-v1",
+  "source_run": "Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718",
+  "boundary": "只做锚重叠机械抽查；通过不等于语义逐字等价，失败则登记旧已过事件可能劣化。",
+  "samples": [
+    {"chapter": 3, "event_id": "EV-C0003-01"},
+    {"chapter": 3, "event_id": "EV-C0003-05"},
+    {"chapter": 4, "event_id": "EV-C0004-02"},
+    {"chapter": 4, "event_id": "EV-C0004-05"},
+    {"chapter": 5, "event_id": "EV-C0005-03"},
+    {"chapter": 5, "event_id": "EV-C0005-13"},
+    {"chapter": 13, "event_id": "EV-C0013-06"},
+    {"chapter": 13, "event_id": "EV-C0013-15"},
+    {"chapter": 19, "event_id": "EV-C0019-04"},
+    {"chapter": 19, "event_id": "EV-C0019-09"}
+  ]
+}

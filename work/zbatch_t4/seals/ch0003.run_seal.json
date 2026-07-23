@@ -1,0 +1,241 @@
+{
+  "schema_version": "z-t4-run-seal-v1",
+  "chapter": 3,
+  "run_id": "Z00z_X01_局部段覆盖试点_ch0003_v1.0_20260718",
+  "config_path": "config/batches/Z00z_X01_局部段覆盖试点_ch0003_v1.0.json",
+  "config_sha256": "eaa446eed519a98e624e84c8c631bb4e4cce2b4cdf6177dde0782f039fec844a",
+  "run_tree": {
+    "files": 45,
+    "bytes": 757377,
+    "sha256": "f532e27ede9a453cb18326e83e6672013a341e24913c3a9f9734a4c870ae3673",
+    "entries": [
+      {
+        "path": ".api_call_budget.lock",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "01_extract/events/ch0003.json",
+        "sha256": "f856bd549029d9b474841303c330db63377c1e870a251717defa63c28b9a3068",
+        "bytes": 14764
+      },
+      {
+        "path": "01_extract/events/ch0003.json.receipt.json",
+        "sha256": "f644d78f2f5652630af27db0b43b3101a2ad67713e5d889dc4f64c3be3f4837f",
+        "bytes": 1301
+      },
+      {
+        "path": "01_extract/evidence_catalogs/ch0003.json",
+        "sha256": "2cc50e9a0c8b5fb807641e09c74f1748cbe423bf0fa700dbbbaa84ba20e58132",
+        "bytes": 26102
+      },
+      {
+        "path": "01_extract/metrics.json",
+        "sha256": "084c7fb72366be2946b724c4947716c2c8d30bffeb0f7a94abaf8bbf91ce10a1",
+        "bytes": 394
+      },
+      {
+        "path": "01_extract/program_audits/ch0003.json",
+        "sha256": "5fd546d503fdc8862f2e84ec183cee9204e64afd9d19ab53264ec15e0ba64718",
+        "bytes": 1727
+      },
+      {
+        "path": "call_attempts.jsonl",
+        "sha256": "28eca6120a8f60750612361875ff44f4f83e603281b30bc21a93ccc8abedf80a",
+        "bytes": 206
+      },
+      {
+        "path": "config_snapshot.json",
+        "sha256": "a9190b04fafb28cf08ca83f2187eecfe42286fc02d99ccf71f0c5d9a6a6cb506",
+        "bytes": 8376
+      },
+      {
+        "path": "preflight.json",
+        "sha256": "88571ae200ae59349c7c8873ae45e1d062ee665f0583248d57225436c19d26bd",
+        "bytes": 21451
+      },
+      {
+        "path": "provenance/manifest.json",
+        "sha256": "9b5dfea680551d029454108ad238a91f864f0448fbc56898d577156537496f1e",
+        "bytes": 11659
+      },
+      {
+        "path": "provenance/pinned/config/batches/Z00r_X01_第14章单次重采样续跑_20章_v1.0.json",
+        "sha256": "575969703304b5080306a373fafedcf29fc1f155b9efad4c8e150fb2ce83ccf9",
+        "bytes": 7613
+      },
+      {
+        "path": "provenance/pinned/config/batches/Z00z_X01_局部段覆盖试点_ch0003_v1.0.json",
+        "sha256": "eaa446eed519a98e624e84c8c631bb4e4cce2b4cdf6177dde0782f039fec844a",
+        "bytes": 7589
+      },
+      {
+        "path": "provenance/pinned/config/contracts/classify_rules_v1.2.json",
+        "sha256": "ad2ccc3b13e8b138a32a46b8566e928a3c4e35a60cf31c5494c7b9ba3dd021de",
+        "bytes": 6011
+      },
+      {
+        "path": "provenance/pinned/config/contracts/sensenova_stage_sampling_v1.json",
+        "sha256": "8ac9f7fa639aba7a7500948438df32b5bd054895ceb8362b1402ae76f0fdbb8c",
+        "bytes": 6298
+      },
+      {
+        "path": "provenance/pinned/config/providers/sensenova_modular_v1.json",
+        "sha256": "fc38a198e30bd58d4022d8cf0804979d428b75f1a81c24d560edeba209495dfb",
+        "bytes": 375
+      },
+      {
+        "path": "provenance/pinned/intake/manifests/X_X01_material.json",
+        "sha256": "0418c32d4c6f85b4d1c6a169acbba22b801b54168d4f4ae444303703657d870f",
+        "bytes": 492
+      },
+      {
+        "path": "provenance/pinned/reports/Z00w_分类规则v1.2全量重放_20260718/build_decisions_v1_2.py",
+        "sha256": "12933b38d52f42288595796839cc154d41a9a578838e441b0a559dd6aa405ddb",
+        "bytes": 9163
+      },
+      {
+        "path": "provenance/pinned/reports/Z00w_分类规则v1.2全量重放_20260718/prepare_zero_call_run.py",
+        "sha256": "764516ec53f461552d4eaa98026b80acdf7ea5d59f0cc50a5a215ee20adf1694",
+        "bytes": 4143
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/README.md",
+        "sha256": "717022fa53c629d9117bac01a38c558651b598f907866fed8789d7dab1b849bb",
+        "bytes": 1950
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/__init__.py",
+        "sha256": "f40a79b1eab6a95883565425104a95016c0d0c3997cbedabdce7eaeb2580f293",
+        "bytes": 623
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/anchor_kit.py",
+        "sha256": "ff50d46b4f48f8437dfde6d08529c7808d9137e35575a8b37a2cdb52705dd308",
+        "bytes": 8066
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/api_transport.py",
+        "sha256": "60452d0538a34070df2e49a7246f2f29ddb94a6855f58de86f2524d18dba8d93",
+        "bytes": 20861
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/candidate_envelope.py",
+        "sha256": "22050bd6063ef05c2c5e07e699558e38e28fb5c44d517eaf5c595310b17b726c",
+        "bytes": 6268
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/classify_rules.py",
+        "sha256": "76b3c1e208abaf0ab47c8dafee4c4e1ccb7d6d4cb3d364fc30afa00c6179eb7b",
+        "bytes": 36555
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/downstream_validate.py",
+        "sha256": "23667f2ea33d275d0d90941969039c4c69c4ab90098e96ec0d98298f196c0180",
+        "bytes": 23722
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/errors.py",
+        "sha256": "b796653ca1958c90c66e27827ba63c70a3be9adba102615368bf43a6e1529d86",
+        "bytes": 170
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/evidence_catalog.py",
+        "sha256": "e20321e3c11f6c1c4dbcc904fce1aa97cc752d9c4ffaaee9b61f8836e39a3847",
+        "bytes": 2355
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/neutral_extract.py",
+        "sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7",
+        "bytes": 8465
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/prompt_render_pin.py",
+        "sha256": "d6d848fc5ac651d19009318af07768c1c2edaf6c095b10854311a775f937185a",
+        "bytes": 1648
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/stage_sampling.py",
+        "sha256": "bbd436652ee440d4b0151b001ad603b17293bbb8cedf13ff896740f7f592bf71",
+        "bytes": 7760
+      },
+      {
+        "path": "provenance/pinned/tools/zbatch_modules/verbatim_restatement.py",
+        "sha256": "909cb937a519c474b73724d6568347f93a63adf485c80ee0d302616f0f39ce74",
+        "bytes": 6111
+      },
+      {
+        "path": "provenance/pinned/work/R10设计稿修订草案_v0.3_20260717.md",
+        "sha256": "381242e4a3cca559f49efa5bbac9da104cd1599533d74a05fb65a0cf2322f690",
+        "bytes": 8877
+      },
+      {
+        "path": "provenance/pinned/work/Z批本地测试执行单_20260717.md",
+        "sha256": "501b78ac8a185fa1799d5a851b0da27c08e432e2347f10053081c765d4fc2dff",
+        "bytes": 5930
+      },
+      {
+        "path": "provenance/pinned/work/zbatch_decisions/Z00w2_X01_ch1_20_main_control_decisions_v1.2.json",
+        "sha256": "7e2d0265491c6fc0d01be886b8cc8f5cb3d575fe0f8ca790e0affc66f9430b44",
+        "bytes": 268748
+      },
+      {
+        "path": "provenance/pinned/work/zbatch_prompts/candidates/extract_event_only_local_segment_v1.2.md",
+        "sha256": "e8e9c2807175ddfad7d4431d0f63e21a856da29de762906ce96c2a8f4940cee8",
+        "bytes": 2125
+      },
+      {
+        "path": "provenance/pinned/work/zbatch_prompts/candidates/extract_event_only_no_self_audit_v1.1.md",
+        "sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f",
+        "bytes": 1912
+      },
+      {
+        "path": "provenance/pinned/work/zbatch_prompts/candidates/main_control_classification_rules_v1.2.md",
+        "sha256": "514eb54735b2fe6de83824c10e63ec1134fcdbbe5b92fd6cd8c496ee9e78e433",
+        "bytes": 8210
+      },
+      {
+        "path": "provenance/pinned/work/zbatch_prompts/candidates/verbatim_restatement_v1.0.md",
+        "sha256": "a66900697a61e79a63c89174138ef0fbd4576d109ed9008b91aeab5f773e700c",
+        "bytes": 666
+      },
+      {
+        "path": "provenance/pinned/work/zbatch_t4/permits/ch0003.call_permit.json",
+        "sha256": "afb82fe4e5fd896e5289552c805f22147eaa96f68a1e701e8ddcdbbee96deab5",
+        "bytes": 425
+      },
+      {
+        "path": "provenance/runner_zbatch.py",
+        "sha256": "0b9334a34fcc5b5f866f43b2b3bc40aeff4cedf79a8ff83c51957496061a8080",
+        "bytes": 153962
+      },
+      {
+        "path": "requests/neutral_extract/ch0003_request.json",
+        "sha256": "c8dae96ebcafa5bbc625d76eaa87831389022336c0653ea24928202e20aea9a2",
+        "bytes": 24834
+      },
+      {
+        "path": "responses/neutral_extract/ch0003_meta.json",
+        "sha256": "abafd36b5035307c784447bf726fa2443873246e557c6d27b3047c44f26d9ca2",
+        "bytes": 843
+      },
+      {
+        "path": "responses/neutral_extract/ch0003_raw.json",
+        "sha256": "55503c818ab41a482c75166aeb682f4e646797c2c362a9b663a53f5127549c66",
+        "bytes": 27293
+      },
+      {
+        "path": "run_manifest.json",
+        "sha256": "8d86566fb285b1e1487473534ffac75e22f511bf471ed806383ba11093519f77",
+        "bytes": 265
+      },
+      {
+        "path": "usage.jsonl",
+        "sha256": "828aba6d2f59468c9c66e3cb2d8af61f499e279ca8846780f2fb9160e2ea6ff8",
+        "bytes": 1069
+      }
+    ]
+  },
+  "model": "deepseek-v4-flash",
+  "logical_sample_limit": 1
+}

@@ -1,0 +1,16 @@
+{
+  "batch": "X",
+  "item": "X02",
+  "kind": "material",
+  "registered_at": "2026-07-17T02:50:35+08:00",
+  "source_path": "TEMP/X批材料包_20260716/books/X02_十日终焉",
+  "registered_path": "TEMP/X批材料包_20260716/books/X02_十日终焉",
+  "copied": false,
+  "fingerprint": {
+    "kind": "directory",
+    "files": 203,
+    "bytes": 1419484,
+    "sha256": "5e9a8ca23e83a75c06b257668d7bc5253f32b0ed8a74a1a6a419e9365d455312"
+  },
+  "provenance": "X批本地原样材料，200章"
+}

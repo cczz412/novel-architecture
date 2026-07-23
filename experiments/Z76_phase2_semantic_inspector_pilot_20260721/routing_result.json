@@ -1,0 +1,167 @@
+{
+  "authority_boundary": "所有非机械结论只是分流候选；正式判词由强审或 CZ 权限节点给出。",
+  "batch_id": "Z76P2-PILOT-01",
+  "contract_version": "semantic-inspection-result-v1",
+  "counts": {
+    "provisional_pass_unreviewed": 0,
+    "strong_review": 5,
+    "strong_review_sample": 1
+  },
+  "decision_scope": "routing_only",
+  "deepseek_results": [
+    {
+      "confidence": 0.1,
+      "decision": "review_candidate",
+      "evidence": [
+        {
+          "anchor_id": "E0132",
+          "quote": "光，他侧过脑袋，查看额角的情况。\n　　清晰倒映的镜",
+          "reason": "仅涉及额角，与手臂骨折无关。"
+        },
+        {
+          "anchor_id": "E0135",
+          "quote": "太阳穴位置，边缘是烧灼的痕迹，周围沾满了血污",
+          "reason": "仅涉及太阳穴位置，与手臂骨折无关。"
+        }
+      ],
+      "final_truth": false,
+      "item_id": "SEM-CONTROL-01",
+      "needs_strong_review": true,
+      "reason": "锚点完全不支撑“手臂骨折”这一事实头，且与陈述主题无关。",
+      "rule_ids": [
+        "SEM-01"
+      ],
+      "support": "not_support"
+    },
+    {
+      "confidence": 0.7,
+      "decision": "review_candidate",
+      "evidence": [
+        {
+          "anchor_id": "E0132",
+          "quote": "光，他侧过脑袋，查看额角的情况。\n　　清晰倒映的镜",
+          "reason": "支撑“在镜中看到”，但未直接提及“狰狞伤口”中的“狰狞”一词。"
+        },
+        {
+          "anchor_id": "E0135",
+          "quote": "太阳穴位置，边缘是烧灼的痕迹，周围沾满了血污",
+          "reason": "支撑“太阳穴位置”和“边缘有烧灼痕迹”，但“伤口”一词是从血污和烧灼痕迹推断的，非直接表述；“狰狞”无直接对应。"
+        }
+      ],
+      "final_truth": false,
+      "item_id": "SEM-REAL-01",
+      "needs_strong_review": true,
+      "reason": "核心事实头（镜中、太阳穴位置、烧灼痕迹）有支撑，但“狰狞”缺乏直接对应，且“伤口”为推断，属于部分支撑。",
+      "rule_ids": [
+        "SEM-01"
+      ],
+      "support": "partial_support"
+    },
+    {
+      "confidence": 0.95,
+      "decision": "pass_candidate",
+      "evidence": [
+        {
+          "anchor_id": "E0105",
+          "quote": "，快步过来，一把拿走了怀表。\n　　她站在原地，先将",
+          "reason": "支撑“演示”动作的开始，即拿取怀表并准备操作。"
+        },
+        {
+          "anchor_id": "E0106",
+          "quote": "地，先将怀表顶端的按钮拔起，仅仅转动了几圈，",
+          "reason": "支撑“上弦”（转动）和“校时”（拔起按钮）的具体操作。"
+        },
+        {
+          "anchor_id": "E0112",
+          "quote": "怀表顶端的按钮拔高了一截，接着连续扭动，对好",
+          "reason": "进一步支撑校时操作（调整对时）。"
+        }
+      ],
+      "final_truth": false,
+      "item_id": "SEM-REAL-02",
+      "needs_strong_review": false,
+      "reason": "陈述的全部事实头（演示、上弦、校时）均被锚点直接支撑，无额外或矛盾信息。",
+      "rule_ids": [
+        "SEM-01"
+      ],
+      "support": "direct_support"
+    }
+  ],
+  "final_truth": false,
+  "routes": [
+    {
+      "confidence": 0.1,
+      "final_truth": false,
+      "item_id": "SEM-CONTROL-01",
+      "model_decision": "review_candidate",
+      "model_support": "not_support",
+      "reason": "锚点完全不支撑“手臂骨折”这一事实头，且与陈述主题无关。",
+      "route": "strong_review",
+      "source": "deepseek_router"
+    },
+    {
+      "confidence": 0.7,
+      "final_truth": false,
+      "item_id": "SEM-REAL-01",
+      "model_decision": "review_candidate",
+      "model_support": "partial_support",
+      "reason": "核心事实头（镜中、太阳穴位置、烧灼痕迹）有支撑，但“狰狞”缺乏直接对应，且“伤口”为推断，属于部分支撑。",
+      "route": "strong_review",
+      "source": "deepseek_router"
+    },
+    {
+      "confidence": 0.95,
+      "final_truth": false,
+      "item_id": "SEM-REAL-02",
+      "model_decision": "pass_candidate",
+      "model_support": "direct_support",
+      "reason": "陈述的全部事实头（演示、上弦、校时）均被锚点直接支撑，无额外或矛盾信息。",
+      "route": "strong_review_sample",
+      "source": "deepseek_router"
+    },
+    {
+      "all_detected_risks": [
+        "ambiguity"
+      ],
+      "final_truth": false,
+      "item_id": "SEM-RISK-AMB-01",
+      "risk_reasons": [
+        "ambiguity"
+      ],
+      "route": "strong_review",
+      "source": "rule_gate"
+    },
+    {
+      "all_detected_risks": [
+        "negation"
+      ],
+      "final_truth": false,
+      "item_id": "SEM-RISK-NEG-01",
+      "risk_reasons": [
+        "negation"
+      ],
+      "route": "strong_review",
+      "source": "rule_gate"
+    },
+    {
+      "all_detected_risks": [
+        "cross_chapter_causality"
+      ],
+      "final_truth": false,
+      "item_id": "SEM-RISK-XCH-01",
+      "risk_reasons": [
+        "cross_chapter_causality"
+      ],
+      "route": "strong_review",
+      "source": "rule_gate"
+    }
+  ],
+  "sample_policy": {
+    "base_ratio": 0.1,
+    "pass_bucket_size": 1,
+    "sample_ids": [
+      "SEM-REAL-02"
+    ],
+    "seed": "z76-phase2-20260721"
+  }
+}

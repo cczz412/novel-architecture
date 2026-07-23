@@ -1,0 +1,28 @@
+{
+  "schema_version": "structure-gold-current-pointer-v1",
+  "pointer_id": "Z74B-B02-unit0039-structure-gold-current",
+  "status": "active",
+  "book_id": "Z74B-B02",
+  "book": "大王饶命",
+  "inventory_unit": 39,
+  "label_tier": "gold",
+  "provenance_label": "Codex验闸＋Cursor攻击定稿、非CZ亲验",
+  "active_gold": {
+    "version": "v1.3",
+    "path": "reports/Z93_五本结构层金标v1.3转正_20260723/formal_gold/B02_大王饶命_库存第0039单元_结构层金标v1.3.json",
+    "sha256": "56bebe3581a0ff239fad21868b07a367fa6139e8bbfc1a750cd51f5ff5964e1a",
+    "schema_version": "structure-gold-v1.3",
+    "formal_denominator": 8,
+    "formal_part_total": 11,
+    "activated_by": "第93道续令③",
+    "activated_at": "2026-07-23T15:20:00+08:00"
+  },
+  "predecessor": {
+    "path": "reports/Z93_五本金标候选修订_20260723/revised_candidates/B02_大王饶命_库存第0039单元_结构层银标修订候选v1.3.json",
+    "sha256": "7b1d69354158c58d321745a8cd9aa1a3583af366e601e05cc5c45be11787476a",
+    "status": "archived_silver_candidate_not_formal_fallback",
+    "mutation": "none"
+  },
+  "consumer_rule": "后续验闸与跨书对照从本指针取正式金标；provenance随件携带；升默认或接现役链另拍。",
+  "rollback": "本书没有前代正式金标；回退时停用本指针并保留v1.3正式件，不得把银标候选冒充回退后的正式入口。"
+}

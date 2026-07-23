@@ -1,0 +1,189 @@
+{
+  "schema_version": "zbatch-default-registry-v1",
+  "default_id": "zbatch-v1.2-full-chain",
+  "status": "active",
+  "version": "v1.2",
+  "promoted_at": "2026-07-19T05:35:42+08:00",
+  "authority": "第44道重发第36道施工令升默认；第57道CZ拍a，仅改回归锚载体为稳定语义身份",
+  "source_adjudication": {
+    "decision": "v1.2全链升默认",
+    "notion_time": "2026-07-18 16:31原拍；2026-07-19 04:45重发",
+    "z00y3_net_benefit": {
+      "main": 17,
+      "strict": 5,
+      "wide": 26
+    },
+    "z00y3_audit": {
+      "path": "work/zbatch_audits/Z00y3_new_four_semantic_audit_v1.json",
+      "sha256": "d1785dc560e7269318d4eda7914885cf6a0ce1a0b7d69923e15318c251bb8e33"
+    }
+  },
+  "promotion_run_id": "Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719",
+  "chain": {
+    "runner": {
+      "path": "tools/zbatch.py",
+      "sha256": "160c28b3ef0210fd05c392f713534cf1ffdf041fa596ec790545b64955280850"
+    },
+    "provider": {
+      "path": "config/providers/sensenova_modular_v1.json",
+      "sha256": "fc38a198e30bd58d4022d8cf0804979d428b75f1a81c24d560edeba209495dfb"
+    },
+    "stage_sampling_contract": {
+      "path": "config/contracts/sensenova_stage_sampling_v1.json",
+      "sha256": "8ac9f7fa639aba7a7500948438df32b5bd054895ceb8362b1402ae76f0fdbb8c"
+    },
+    "neutral_extract_module": {
+      "path": "tools/zbatch_modules/neutral_extract.py",
+      "sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"
+    },
+    "neutral_extract_prompt": {
+      "path": "work/zbatch_prompts/candidates/extract_event_only_no_self_audit_v1.1.md",
+      "sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f"
+    },
+    "classify_rules_module": {
+      "path": "tools/zbatch_modules/classify_rules.py",
+      "sha256": "eed588211111f89f5c6968c490686124bf94e7cd09d65aee3f1bc02dd9011104"
+    },
+    "classify_contract": {
+      "path": "config/contracts/classify_rules_v1.2_semantic_identity_v1.json",
+      "sha256": "45f7610b86d5962e0d3d9d4d95886aad9022f1beaece200c2452b9a361f6c108"
+    },
+    "classification_prompt": {
+      "path": "work/zbatch_prompts/candidates/main_control_classification_rules_v1.2.md",
+      "sha256": "514eb54735b2fe6de83824c10e63ec1134fcdbbe5b92fd6cd8c496ee9e78e433"
+    },
+    "classification_decisions": {
+      "path": "work/zbatch_decisions/Z36_X01_ch1_20_main_control_decisions_v1.2.json",
+      "sha256": "218094f4e25f2c109ef25e851411f49af0fb96b037300535160706da63161eb2"
+    },
+    "program_inventory": [
+      {
+        "path": "tools/zbatch_modules/evidence_catalog.py",
+        "sha256": "e20321e3c11f6c1c4dbcc904fce1aa97cc752d9c4ffaaee9b61f8836e39a3847"
+      },
+      {
+        "path": "tools/zbatch_modules/anchor_kit.py",
+        "sha256": "ff50d46b4f48f8437dfde6d08529c7808d9137e35575a8b37a2cdb52705dd308"
+      },
+      {
+        "path": "tools/zbatch_modules/candidate_envelope.py",
+        "sha256": "22050bd6063ef05c2c5e07e699558e38e28fb5c44d517eaf5c595310b17b726c"
+      },
+      {
+        "path": "tools/zbatch_modules/prompt_render_pin.py",
+        "sha256": "d6d848fc5ac651d19009318af07768c1c2edaf6c095b10854311a775f937185a"
+      },
+      {
+        "path": "tools/zbatch_modules/downstream_validate.py",
+        "sha256": "23667f2ea33d275d0d90941969039c4c69c4ab90098e96ec0d98298f196c0180"
+      },
+      {
+        "path": "tools/zbatch_modules/api_transport.py",
+        "sha256": "60452d0538a34070df2e49a7246f2f29ddb94a6855f58de86f2524d18dba8d93"
+      },
+      {
+        "path": "tools/zbatch_modules/stage_sampling.py",
+        "sha256": "bbd436652ee440d4b0151b001ad603b17293bbb8cedf13ff896740f7f592bf71"
+      },
+      {
+        "path": "tools/zbatch_modules/neutral_extract.py",
+        "sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"
+      },
+      {
+        "path": "tools/zbatch_modules/classify_rules.py",
+        "sha256": "eed588211111f89f5c6968c490686124bf94e7cd09d65aee3f1bc02dd9011104"
+      }
+    ],
+    "transport": {
+      "model": "deepseek-v4-flash",
+      "profile": "d_mod_cutover_v1",
+      "neutral_extract": {
+        "temperature": 0.2,
+        "max_tokens": 16000,
+        "n": 1,
+        "reasoning_effort": "medium"
+      }
+    }
+  },
+  "adjudicated_product": {
+    "path": "runs/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/02_verify/valid_records.json",
+    "sha256": "dafa16901a6edb5018a5176f3f5f7388273e72051def7fe4e997489d01e804ba",
+    "records": 122,
+    "patch": "D-C0013-02保留E0129并补入E0130"
+  },
+  "historical_reference": {
+    "name": "extract_v1.3",
+    "status": "historical_reference_not_default",
+    "path": "work/zbatch_prompts/extract_v1.3.md",
+    "sha256": "b5f30ab1e3e9cae7870db6bf2a951448d391981c0cfb257bd577686bd0a2c6b9"
+  },
+  "outbox": {
+    "path": "outbox/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719",
+    "status": "unlocked_and_written_when_commit_marker_matches"
+  },
+  "activation": {
+    "requires_commit_marker": "config/defaults/zbatch_v1.2_full_chain.COMMITTED.json",
+    "rule": "活跃登记由提交标记绑定；第36道outbox保持历史快照，由compatibility_revision显式连接前代登记，不回写。"
+  },
+  "red_lines": {
+    "z01d_z01f_promoted": false,
+    "twenty_chapter_experiment_expanded": false,
+    "classification_rules_changed": false,
+    "old_runs_rewritten": false,
+    "regression_anchor_carrier_changed_by_z57": true,
+    "sequential_event_id_cross_run_semantics": false
+  },
+  "compatibility_revision": {
+    "schema_version": "zbatch-default-compatibility-revision-v1",
+    "revision_id": "Z57-stable-semantic-identity-v1",
+    "authority": "第57道；CZ 2026-07-19 19:41拍a",
+    "activated_at": "2026-07-19T19:41:00+08:00",
+    "predecessor_default_registry_sha256": "61bc6ca45fe450d382995b29dd998c9119ade2db6049d29963c83eee30c5f9da",
+    "predecessor_commit_marker_sha256": "9259d3958e97aed982a798545ae889e3c608a3c8ef12dad87ea9f18f9cdddc48",
+    "semantic_rules_changed": false,
+    "semantic_rules_sha256": "514eb54735b2fe6de83824c10e63ec1134fcdbbe5b92fd6cd8c496ee9e78e433",
+    "sequential_event_id_scope": "run_local_only",
+    "identity_carrier": "chapter+frozen-anchor-quote-fingerprint+semantic-term-groups",
+    "old_contract": {
+      "path": "config/contracts/classify_rules_v1.2.json",
+      "sha256": "ad2ccc3b13e8b138a32a46b8566e928a3c4e35a60cf31c5494c7b9ba3dd021de",
+      "status": "archived_unchanged_rollback_source"
+    },
+    "new_contract": {
+      "path": "config/contracts/classify_rules_v1.2_semantic_identity_v1.json",
+      "sha256": "45f7610b86d5962e0d3d9d4d95886aad9022f1beaece200c2452b9a361f6c108"
+    },
+    "classify_rules_module": {
+      "path": "tools/zbatch_modules/classify_rules.py",
+      "sha256": "eed588211111f89f5c6968c490686124bf94e7cd09d65aee3f1bc02dd9011104",
+      "predecessor_pinned_path": "runs/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/provenance/pinned/tools/zbatch_modules/classify_rules.py",
+      "predecessor_sha256": "76b3c1e208abaf0ab47c8dafee4c4e1ccb7d6d4cb3d364fc30afa00c6179eb7b"
+    },
+    "runner": {
+      "path": "tools/zbatch.py",
+      "sha256": "160c28b3ef0210fd05c392f713534cf1ffdf041fa596ec790545b64955280850",
+      "predecessor_pinned_path": "runs/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/provenance/runner_zbatch.py",
+      "predecessor_sha256": "4090169dd53a71badd21d42d3c1c1e8809bd54ac46f461ab3e33137e94c3ca11",
+      "behavior_change": "只把已落盘冻结证据目录交给稳定身份闸；旧合同路径行为等价"
+    },
+    "validation_fixture": {
+      "decisions_path": "work/zbatch_decisions/Z57_X01_ch1_20_main_control_decisions_v1.2.json",
+      "decisions_sha256": "ba856a487e6fcc416c83b05a0b9e6c458ea85f5d8a7e23354f8c2865b8e97650",
+      "source_extract_path": "runs/Z56b_X01_端到端全链体检_提取20章_v1.0_20260719/01_extract",
+      "event_total": 233,
+      "gate_failures": []
+    },
+    "frozen_outbox": {
+      "mode": "historical_promotion_snapshot_no_rewrite",
+      "manifest_path": "outbox/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/manifest.json",
+      "manifest_sha256": "aecfcf93a265fa5f9f61ee7003bf8f7118833a12b8e2a0ffcc4899631cec6aa2"
+    },
+    "rollback": {
+      "default_registry_archive": "config/defaults/history/zbatch_v1.2_full_chain_61bc6ca45fe450d382995b29dd998c9119ade2db6049d29963c83eee30c5f9da.json",
+      "commit_marker_archive": "config/defaults/history/zbatch_v1.2_full_chain.COMMITTED_9259d3958e97aed982a798545ae889e3c608a3c8ef12dad87ea9f18f9cdddc48.json",
+      "old_contract_path": "config/contracts/classify_rules_v1.2.json",
+      "old_runner_pinned_path": "runs/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/provenance/runner_zbatch.py",
+      "old_classify_module_pinned_path": "runs/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/provenance/pinned/tools/zbatch_modules/classify_rules.py"
+    }
+  }
+}

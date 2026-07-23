@@ -1,0 +1,53 @@
+{
+  "schema_version": "provider-channel-v1",
+  "provider": "qianwen_platform",
+  "display_name": "千问 AI 平台",
+  "account_profile": "standard_pay_as_you_go",
+  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "endpoint": "/chat/completions",
+  "api_key_env": "DASHSCOPE_API_KEY",
+  "response_format_compatibility": "openai_chat_completions",
+  "enabled_by_default": false,
+  "default_model": null,
+  "status": "configured_key_pending_not_wired_to_default",
+  "token_plan_key_supported_by_this_config": false,
+  "model_selection_rule": "只允许显式选择下列 model_id；不得自动降级或换近似模型。",
+  "models": [
+    {
+      "requested_name": "qwen3.7-plus",
+      "model_id": "qwen3.7-plus",
+      "call_ready": true
+    },
+    {
+      "requested_name": "qwen3.7-max",
+      "model_id": "qwen3.7-max",
+      "call_ready": true
+    },
+    {
+      "requested_name": "deepseek-v4-flash",
+      "model_id": "deepseek-v4-flash",
+      "call_ready": true
+    },
+    {
+      "requested_name": "deepseek-v4-pro",
+      "model_id": "deepseek-v4-pro",
+      "call_ready": true
+    },
+    {
+      "requested_name": "glm-5.2",
+      "model_id": "glm-5.2",
+      "call_ready": true
+    },
+    {
+      "requested_name": "kimi-k2.7-code",
+      "model_id": "kimi-k2.7-code",
+      "call_ready": true
+    }
+  ],
+  "official_docs": [
+    "https://platform.qianwenai.com/docs/developer-guides/getting-started/introduction",
+    "https://platform.qianwenai.com/docs/developer-guides/getting-started/first-api-call",
+    "https://platform.qianwenai.com/docs/developer-guides/getting-started/text-generation-models",
+    "https://platform.qianwenai.com/docs/api-reference/preparation/api-key"
+  ]
+}

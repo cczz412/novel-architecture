@@ -1,0 +1,14 @@
+{
+  "schema_version": "model-benchmark-supersession-v1",
+  "status": "superseded_zero_call_no_network",
+  "reason": "冻结 Prompt 明确要求 events 不得为空，但旧准备件冻结的验收器会误放行空数组；发网前补齐程序硬闸并改用新运行编号",
+  "model_api_calls": 0,
+  "network_attempts": 0,
+  "replacement_benchmark_id": "MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r03_20260723",
+  "fixed_runtime_sha256": "459aaa33ac852553cd3466592b98a6f88e005a2ad96821e0b2eb793b89919873",
+  "historical_equivalence": {
+    "qwen_nonthinking_r05": "36条事件，物化件与程序账逐字相同",
+    "qwen_thinking_r06": "30条事件，物化件与程序账逐字相同"
+  },
+  "preservation": "旧目录只新增本作废票与状态镜像，已冻结准备工件不删除、不改写"
+}

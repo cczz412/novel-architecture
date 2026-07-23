@@ -1,0 +1,625 @@
+{
+  "schema_version": "z-nonthinking-pilot-preflight-v1",
+  "status": "pass",
+  "at": "2026-07-19T06:00:17+08:00",
+  "model_calls": 0,
+  "batch_id": "Z01h",
+  "method": "omit_reasoning_effort",
+  "run_id": "Z01h_X01_非思考模式_5章_v1.0_20260719",
+  "config_sha256": "4b12955f16ff408b9a10e3693db00ef6366bd387ac78d4d04a957b71e1546ce7",
+  "default_activation": {
+    "status": "pass",
+    "default_registry_sha256": "61bc6ca45fe450d382995b29dd998c9119ade2db6049d29963c83eee30c5f9da",
+    "commit_marker_sha256": "9259d3958e97aed982a798545ae889e3c608a3c8ef12dad87ea9f18f9cdddc48",
+    "default_id": "zbatch-v1.2-full-chain"
+  },
+  "transport_audit": {
+    "status": "pass",
+    "baseline": {
+      "model": "deepseek-v4-flash",
+      "temperature": 0.2,
+      "max_tokens": 16000,
+      "n": 1,
+      "reasoning_effort": "medium",
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "candidate": {
+      "model": "deepseek-v4-flash",
+      "temperature": 0.2,
+      "max_tokens": 16000,
+      "n": 1,
+      "reasoning_effort_field": "omitted",
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "request_body_diff": {
+      "removed_keys": [
+        "reasoning_effort"
+      ],
+      "added_keys": [],
+      "changed_keys": []
+    },
+    "logical_samples": 5,
+    "max_network_attempts": 15
+  },
+  "baseline": {
+    "mode": "v1.2_default_reference",
+    "chapters": [
+      {
+        "chapter": 3,
+        "event_source": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0003.json",
+        "event_source_sha256": "aeede6bdeb17cb18890060d519a8a9be5ce433d1b5b023d2de33fd0108e46eef",
+        "target": {
+          "id": "A-F01-SUPPORT",
+          "label": "家庭责任的局部支撑段",
+          "chapter": 3,
+          "expected_anchor_ids": [
+            "E0050",
+            "E0051",
+            "E0052",
+            "E0053",
+            "E0063",
+            "E0064"
+          ],
+          "missing_anchor_ids": [
+            "E0050",
+            "E0051",
+            "E0052",
+            "E0053",
+            "E0063",
+            "E0064"
+          ],
+          "required_quote_checks": {
+            "长兄班森": false,
+            "帮哥哥负担": false
+          },
+          "pass": false,
+          "boundary": "只判六个预写锚是否进入事件并命中短语，不自动推导家庭责任改变返乡选择。"
+        },
+        "old_event_spot_audit": {
+          "chapter": 3,
+          "status": "pass",
+          "rows": [
+            {
+              "old_event_id": "EV-C0003-01",
+              "old_anchor_ids": [
+                "E0022"
+              ],
+              "new_matches": [
+                {
+                  "event_id": "EV-C0003-01",
+                  "shared_anchor_ids": [
+                    "E0022"
+                  ]
+                }
+              ],
+              "pass": true
+            },
+            {
+              "old_event_id": "EV-C0003-05",
+              "old_anchor_ids": [
+                "E0105",
+                "E0106",
+                "E0112"
+              ],
+              "new_matches": [
+                {
+                  "event_id": "EV-C0003-05",
+                  "shared_anchor_ids": [
+                    "E0105",
+                    "E0106",
+                    "E0112"
+                  ]
+                }
+              ],
+              "pass": true
+            }
+          ],
+          "boundary": "只要求每条预写旧事件至少有一个锚被新事件继续承接；不声称摘要逐字或语义完全等价。"
+        },
+        "audit_segment_total": 8,
+        "silent_segment_count": 3,
+        "usage_source": "runs/Z00p_X01_第1至20章正式扩大_20章_v1.0_20260718/usage.jsonl",
+        "usage_case_id": "ch0003",
+        "prompt_tokens": 5905,
+        "completion_tokens": 5239,
+        "total_tokens": 11144,
+        "reasoning_tokens": 4771,
+        "elapsed_ms": 54938
+      },
+      {
+        "chapter": 4,
+        "event_source": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0004.json",
+        "event_source_sha256": "ab611cf96d34271fbd24352792cf1d5a32c72d63b6a9400a70d0c0ef722e95d6",
+        "target": {
+          "id": "S-L01",
+          "label": "罗塞尔可能也是穿越者",
+          "chapter": 4,
+          "expected_anchor_ids": [
+            "E0208",
+            "E0209"
+          ],
+          "missing_anchor_ids": [
+            "E0208",
+            "E0209"
+          ],
+          "required_quote_checks": {
+            "穿越者前辈吧": false
+          },
+          "pass": false,
+          "boundary": "只判局部判断是否进入中性事件，不自动决定结构类型。"
+        },
+        "old_event_spot_audit": {
+          "chapter": 4,
+          "status": "pass",
+          "rows": [
+            {
+              "old_event_id": "EV-C0004-02",
+              "old_anchor_ids": [
+                "E0051",
+                "E0061",
+                "E0062"
+              ],
+              "new_matches": [
+                {
+                  "event_id": "EV-C0004-02",
+                  "shared_anchor_ids": [
+                    "E0051",
+                    "E0061",
+                    "E0062"
+                  ]
+                }
+              ],
+              "pass": true
+            },
+            {
+              "old_event_id": "EV-C0004-05",
+              "old_anchor_ids": [
+                "E0174",
+                "E0212",
+                "E0214"
+              ],
+              "new_matches": [
+                {
+                  "event_id": "EV-C0004-05",
+                  "shared_anchor_ids": [
+                    "E0174",
+                    "E0212",
+                    "E0214"
+                  ]
+                }
+              ],
+              "pass": true
+            }
+          ],
+          "boundary": "只要求每条预写旧事件至少有一个锚被新事件继续承接；不声称摘要逐字或语义完全等价。"
+        },
+        "audit_segment_total": 9,
+        "silent_segment_count": 2,
+        "usage_source": "runs/Z00p_X01_第1至20章正式扩大_20章_v1.0_20260718/usage.jsonl",
+        "usage_case_id": "ch0004",
+        "prompt_tokens": 7379,
+        "completion_tokens": 2663,
+        "total_tokens": 10042,
+        "reasoning_tokens": 2302,
+        "elapsed_ms": 24913
+      },
+      {
+        "chapter": 5,
+        "event_source": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0005.json",
+        "event_source_sha256": "695782071913d527f10624233c3dc046595222524063770e5d46d213c32285cf",
+        "target": {
+          "id": "S-L02",
+          "label": "免费塔罗在下一章实际执行",
+          "chapter": 5,
+          "expected_anchor_ids": [
+            "E0048",
+            "E0049",
+            "E0050",
+            "E0051",
+            "E0052",
+            "E0053",
+            "E0054",
+            "E0055",
+            "E0056",
+            "E0057",
+            "E0058",
+            "E0059",
+            "E0060",
+            "E0061",
+            "E0062"
+          ],
+          "missing_anchor_ids": [
+            "E0048",
+            "E0049",
+            "E0050",
+            "E0051",
+            "E0052",
+            "E0053",
+            "E0054",
+            "E0055",
+            "E0056",
+            "E0057",
+            "E0058",
+            "E0059",
+            "E0060",
+            "E0061",
+            "E0062"
+          ],
+          "required_quote_checks": {
+            "这张象征过去": false,
+            "愚者": false
+          },
+          "pass": false,
+          "boundary": "只判第5章实际占卜段是否事件化，不自动决定跨章类型。"
+        },
+        "old_event_spot_audit": {
+          "chapter": 5,
+          "status": "pass",
+          "rows": [
+            {
+              "old_event_id": "EV-C0005-03",
+              "old_anchor_ids": [
+                "E0110",
+                "E0111",
+                "E0112",
+                "E0113",
+                "E0114",
+                "E0115"
+              ],
+              "new_matches": [
+                {
+                  "event_id": "EV-C0005-03",
+                  "shared_anchor_ids": [
+                    "E0110",
+                    "E0111",
+                    "E0112",
+                    "E0113",
+                    "E0114",
+                    "E0115"
+                  ]
+                }
+              ],
+              "pass": true
+            },
+            {
+              "old_event_id": "EV-C0005-13",
+              "old_anchor_ids": [
+                "E0175",
+                "E0177",
+                "E0179"
+              ],
+              "new_matches": [
+                {
+                  "event_id": "EV-C0005-13",
+                  "shared_anchor_ids": [
+                    "E0175",
+                    "E0177",
+                    "E0179"
+                  ]
+                }
+              ],
+              "pass": true
+            }
+          ],
+          "boundary": "只要求每条预写旧事件至少有一个锚被新事件继续承接；不声称摘要逐字或语义完全等价。"
+        },
+        "audit_segment_total": 8,
+        "silent_segment_count": 4,
+        "usage_source": "runs/Z00p_X01_第1至20章正式扩大_20章_v1.0_20260718/usage.jsonl",
+        "usage_case_id": "ch0005",
+        "prompt_tokens": 6532,
+        "completion_tokens": 7627,
+        "total_tokens": 14159,
+        "reasoning_tokens": 6588,
+        "elapsed_ms": 59883
+      },
+      {
+        "chapter": 13,
+        "event_source": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0013.json",
+        "event_source_sha256": "c4a2f69603cdd782a93d265a871f4d7e4ec866ac4f793e35d6b868ffe911e323",
+        "target": {
+          "id": "S-L03",
+          "label": "延迟复发警告投射到自身风险",
+          "chapter": 13,
+          "expected_anchor_ids": [
+            "E0156",
+            "E0157",
+            "E0158",
+            "E0159"
+          ],
+          "missing_anchor_ids": [
+            "E0156",
+            "E0157",
+            "E0158",
+            "E0159"
+          ],
+          "required_quote_checks": {
+            "哪怕躲过了一劫": false,
+            "有什么办法能彻底解决": false
+          },
+          "pass": false,
+          "boundary": "只判个人反应是否事件化，不自动判断 C 类未结项。"
+        },
+        "old_event_spot_audit": {
+          "chapter": 13,
+          "status": "pass",
+          "rows": [
+            {
+              "old_event_id": "EV-C0013-06",
+              "old_anchor_ids": [
+                "E0062",
+                "E0064"
+              ],
+              "new_matches": [
+                {
+                  "event_id": "EV-C0013-06",
+                  "shared_anchor_ids": [
+                    "E0062",
+                    "E0064"
+                  ]
+                }
+              ],
+              "pass": true
+            },
+            {
+              "old_event_id": "EV-C0013-15",
+              "old_anchor_ids": [
+                "E0129"
+              ],
+              "new_matches": [
+                {
+                  "event_id": "EV-C0013-15",
+                  "shared_anchor_ids": [
+                    "E0129"
+                  ]
+                }
+              ],
+              "pass": true
+            }
+          ],
+          "boundary": "只要求每条预写旧事件至少有一个锚被新事件继续承接；不声称摘要逐字或语义完全等价。"
+        },
+        "audit_segment_total": 8,
+        "silent_segment_count": 0,
+        "usage_source": "runs/Z00q_X01_合同下限6字增量续跑_20章_v1.0_20260718/usage.jsonl",
+        "usage_case_id": "ch0013",
+        "prompt_tokens": 5805,
+        "completion_tokens": 7118,
+        "total_tokens": 12923,
+        "reasoning_tokens": 5998,
+        "elapsed_ms": 55488
+      },
+      {
+        "chapter": 19,
+        "event_source": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0019.json",
+        "event_source_sha256": "d5055b74d1a6329f017f6124e0ab087a5451b0324640bdd25230ae72966f7318",
+        "target": {
+          "id": "S-L04",
+          "label": "因斯·赞格威尔外貌识别信息",
+          "chapter": 19,
+          "expected_anchor_ids": [
+            "E0175",
+            "E0176",
+            "E0177",
+            "E0178",
+            "E0179"
+          ],
+          "missing_anchor_ids": [
+            "E0175",
+            "E0176",
+            "E0177",
+            "E0178",
+            "E0179"
+          ],
+          "required_quote_checks": {
+            "发色呈暗金": false,
+            "瞎了一只眼睛": false
+          },
+          "pass": false,
+          "boundary": "只判识别特征是否进入中性事件，不自动判断是否进入主账。"
+        },
+        "old_event_spot_audit": {
+          "chapter": 19,
+          "status": "pass",
+          "rows": [
+            {
+              "old_event_id": "EV-C0019-04",
+              "old_anchor_ids": [
+                "E0106",
+                "E0107",
+                "E0108",
+                "E0109",
+                "E0110"
+              ],
+              "new_matches": [
+                {
+                  "event_id": "EV-C0019-04",
+                  "shared_anchor_ids": [
+                    "E0106",
+                    "E0107",
+                    "E0108",
+                    "E0109",
+                    "E0110"
+                  ]
+                }
+              ],
+              "pass": true
+            },
+            {
+              "old_event_id": "EV-C0019-09",
+              "old_anchor_ids": [
+                "E0163",
+                "E0164",
+                "E0165",
+                "E0166",
+                "E0167",
+                "E0168"
+              ],
+              "new_matches": [
+                {
+                  "event_id": "EV-C0019-09",
+                  "shared_anchor_ids": [
+                    "E0163",
+                    "E0164",
+                    "E0165",
+                    "E0166",
+                    "E0167",
+                    "E0168"
+                  ]
+                }
+              ],
+              "pass": true
+            }
+          ],
+          "boundary": "只要求每条预写旧事件至少有一个锚被新事件继续承接；不声称摘要逐字或语义完全等价。"
+        },
+        "audit_segment_total": 9,
+        "silent_segment_count": 2,
+        "usage_source": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/usage.jsonl",
+        "usage_case_id": "ch0019",
+        "prompt_tokens": 6448,
+        "completion_tokens": 6661,
+        "total_tokens": 13109,
+        "reasoning_tokens": 5795,
+        "elapsed_ms": 68182
+      }
+    ],
+    "metrics": {
+      "target_hits": 0,
+      "old_event_spot_passes": 10,
+      "silent_segment_count": 11,
+      "prompt_tokens": 32069,
+      "completion_tokens": 29308,
+      "total_tokens": 61377,
+      "reasoning_tokens": 25454,
+      "elapsed_ms": 263404
+    }
+  },
+  "pins": [
+    {
+      "label": "protected_chain.runner",
+      "path": "tools/zbatch.py",
+      "sha256": "4090169dd53a71badd21d42d3c1c1e8809bd54ac46f461ab3e33137e94c3ca11"
+    },
+    {
+      "label": "protected_chain.neutral_extract",
+      "path": "tools/zbatch_modules/neutral_extract.py",
+      "sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"
+    },
+    {
+      "label": "protected_chain.evidence_catalog",
+      "path": "tools/zbatch_modules/evidence_catalog.py",
+      "sha256": "e20321e3c11f6c1c4dbcc904fce1aa97cc752d9c4ffaaee9b61f8836e39a3847"
+    },
+    {
+      "label": "protected_chain.api_transport",
+      "path": "tools/zbatch_modules/api_transport.py",
+      "sha256": "60452d0538a34070df2e49a7246f2f29ddb94a6855f58de86f2524d18dba8d93"
+    },
+    {
+      "label": "protected_chain.classify_rules",
+      "path": "tools/zbatch_modules/classify_rules.py",
+      "sha256": "76b3c1e208abaf0ab47c8dafee4c4e1ccb7d6d4cb3d364fc30afa00c6179eb7b"
+    },
+    {
+      "label": "experiment_code.module",
+      "path": "tools/zbatch_modules/nonthinking_pilot.py",
+      "sha256": "e774a912f93815cd12b96d956e76b7e9b0596154ade239d35db41e9f41a1859b"
+    },
+    {
+      "label": "experiment_code.cli",
+      "path": "tools/zbatch_nonthinking_pilot.py",
+      "sha256": "9d2627b9f045fa856b789ddb9895428c022a5e549e5655f94f59037b5a4e074b"
+    },
+    {
+      "label": "experiment_code.tests",
+      "path": "tests/test_nonthinking_pilot.py",
+      "sha256": "42d5af6a4a144412d865c3c2d4404aa4bf93890c7296bc7496d03b2e47492ea6"
+    }
+  ],
+  "artifact_paths": {
+    "run_dir": "runs/Z01h_X01_非思考模式_5章_v1.0_20260719",
+    "permit_path": "work/zbatch_nonthinking/permits/Z01h.call_permit.json",
+    "preflight_path": "work/zbatch_nonthinking/preflight/Z01h.json",
+    "rejection_path": "work/zbatch_nonthinking/rejections/Z01h.json"
+  },
+  "protected_state": {
+    "default_registry_sha256": "61bc6ca45fe450d382995b29dd998c9119ade2db6049d29963c83eee30c5f9da",
+    "default_commit_marker_sha256": "9259d3958e97aed982a798545ae889e3c608a3c8ef12dad87ea9f18f9cdddc48",
+    "outbox": {
+      "file_count": 18,
+      "sha256": "53bab21096d8a6042d6b078b8b1a9c604d5cc26da652882fb79f771f1eb083b4"
+    }
+  },
+  "chapters": [
+    {
+      "chapter": 3,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0003_第3章_梅丽莎（第一更求推荐票）.txt",
+      "chapter_file_sha256": "96f5e17cbec15433b5d00bef18912eb39710ad67962e3716bca37203d4c06288",
+      "catalog_anchor_count": 175,
+      "template_sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f",
+      "rendered_prompt_sha256": "76aac25929b9b1c1e28b5b32b7e6458d2f2dfd49812129ec304334a56ec494e0",
+      "catalog_sha256": "5832af07f683d65f33f6b559e459d8cee30ca1230b1401e0ca071f8e021c8a6d",
+      "target_id": "A-F01-SUPPORT",
+      "old_event_sample_count": 2,
+      "request_body_single_variable": "pass"
+    },
+    {
+      "chapter": 4,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0004_第4章_占卜（第二更求推荐票）.txt",
+      "chapter_file_sha256": "5cdf20f238c8390b54674ade0adc1beeccb4a5c0e76fad41bf37e707997eaa93",
+      "catalog_anchor_count": 215,
+      "template_sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f",
+      "rendered_prompt_sha256": "3a01910218211dca1f12874dbc9d1791c1cf46964292fee6a06fc4c9dae44878",
+      "catalog_sha256": "88cf508c537bdcec0c83947d4b34cfa71c286bda26c4d6e9dbab6fe104c10ec8",
+      "target_id": "S-L01",
+      "old_event_sample_count": 2,
+      "request_body_single_variable": "pass"
+    },
+    {
+      "chapter": 5,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0005_第5章_仪式（第三更求推荐票）.txt",
+      "chapter_file_sha256": "e1fb3a64e2987533c20fe2c707164eae580c497de78d00e219558514b69a2ce0",
+      "catalog_anchor_count": 184,
+      "template_sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f",
+      "rendered_prompt_sha256": "7f9793af5a741075b3b04f93bbc7fbd82db421d05c997b0f8e7484ca7c8790fe",
+      "catalog_sha256": "5a36472edf71e138d41dd68ed45a246f9b1411f9f4689bbf484e3ebe42abfb3b",
+      "target_id": "S-L02",
+      "old_event_sample_count": 2,
+      "request_body_single_variable": "pass"
+    },
+    {
+      "chapter": 13,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0013_第13章_值夜者.txt",
+      "chapter_file_sha256": "418efe90277893207d2623d14c9093a30a68f38f44dd51ebcee6315813ddd8c0",
+      "catalog_anchor_count": 172,
+      "template_sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f",
+      "rendered_prompt_sha256": "b7274f6534338d6bf57f66ce600d48d99cb4dc157f9a78106a398ebdd5f07d8b",
+      "catalog_sha256": "e485131c9d9b24305c0e4883fc4b754d8c47e4c6b8362c6774192e7c6109b0ce",
+      "target_id": "S-L03",
+      "old_event_sample_count": 2,
+      "request_body_single_variable": "pass"
+    },
+    {
+      "chapter": 19,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0019_第19章_封印物（第二更求推荐票）.txt",
+      "chapter_file_sha256": "127af1d2061e3e4cccca7f893ae98e511c2902a7ae06aecc9fa783eb22ca5caa",
+      "catalog_anchor_count": 197,
+      "template_sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f",
+      "rendered_prompt_sha256": "838f6929e7d2c262aa0a03b8821fd053598cc9220d5109afa185c7414d09cd65",
+      "catalog_sha256": "0f2f87f7018f178bad8f1fab09cb345f57e9969d312a444d08b520cc9b46bf5b",
+      "target_id": "S-L04",
+      "old_event_sample_count": 2,
+      "request_body_single_variable": "pass"
+    }
+  ],
+  "fresh_run_required": true,
+  "fresh_run_pass": true,
+  "api_key_environment_name": "SENSENOVA_API_KEY",
+  "api_key_present": false,
+  "rights": "仅内部结构研究；第44道解冻第41道件C，只跑五靶章单次采样，只登记质量与token／耗时对比；不固化、不升默认、不扩20章、不改分类规则、不写outbox。"
+}

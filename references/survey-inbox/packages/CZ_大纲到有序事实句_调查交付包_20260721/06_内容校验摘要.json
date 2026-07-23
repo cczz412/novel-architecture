@@ -1,0 +1,18 @@
+{
+  "samples": 14,
+  "routes": 18,
+  "p2_buckets": 16,
+  "p3_tags": 16,
+  "external_mappings": 14,
+  "p3_example_max_chars": 13,
+  "banned_terms_found": {},
+  "required_headings": [
+    "交付 A｜三大板块总框架",
+    "交付 B｜P2 可扩展分类体系（核心）",
+    "交付 C｜症状→药方路由表（可操作性核心）",
+    "交付 D｜Schema v0.1 够用性评估",
+    "交付 E｜两种工作流对比＋推荐默认路径",
+    "交付 F｜样本重排示范（14个）",
+    "交付 G｜P3 描写小标签草案（16个）"
+  ]
+}

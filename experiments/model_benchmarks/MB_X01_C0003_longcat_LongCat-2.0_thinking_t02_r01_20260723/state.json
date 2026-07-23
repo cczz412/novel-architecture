@@ -1,0 +1,10 @@
+{
+  "details": {
+    "hard_stop_path": "transport/hard_stop.json",
+    "reason_code": "process_sigkill_after_attempt_reservation",
+    "rerun_allowed": false
+  },
+  "schema_version": "model-benchmark-state-v1",
+  "status": "hard_stopped",
+  "updated_at": "2026-07-23T06:59:26+08:00"
+}

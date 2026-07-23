@@ -1,0 +1,29 @@
+{
+  "schema_version": "model-benchmark-sample-completion-v1",
+  "status": "sample_completed_awaiting_semantic_score",
+  "logical_samples": 1,
+  "network_attempts": 1,
+  "429_count": 0,
+  "response_model": "qwen3.7-plus",
+  "usage": {
+    "total_tokens": 16157,
+    "completion_tokens": 4762,
+    "prompt_tokens": 11395,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "text_tokens": 11395
+    }
+  },
+  "event_count": 36,
+  "mechanical_gates": "pass",
+  "checkpoint_id": "83262dfb14252e897c93d8493d6c3c0f8438027f9bb5a51bdf117edb36f24294",
+  "secret_scan": {
+    "exact_key_hits": [],
+    "exact_key_hit_count": 0,
+    "authorization_header_hits": [],
+    "authorization_header_hit_count": 0
+  },
+  "protected_unchanged": true,
+  "prepared_verification_sha256": "469263797d3d5ac132867bd17eca010bd46a365fb4fd19465de155c399b25fc0",
+  "completed_at": "2026-07-23T05:25:44.793999+08:00"
+}

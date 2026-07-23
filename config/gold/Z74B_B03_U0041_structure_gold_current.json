@@ -1,0 +1,28 @@
+{
+  "schema_version": "structure-gold-current-pointer-v1",
+  "pointer_id": "Z74B-B03-unit0041-structure-gold-current",
+  "status": "active",
+  "book_id": "Z74B-B03",
+  "book": "神秘复苏",
+  "inventory_unit": 41,
+  "label_tier": "gold",
+  "provenance_label": "Codex验闸＋Cursor攻击定稿、非CZ亲验",
+  "active_gold": {
+    "version": "v1.3",
+    "path": "reports/Z93_五本结构层金标v1.3转正_20260723/formal_gold/B03_神秘复苏_库存第0041单元_结构层金标v1.3.json",
+    "sha256": "cd935ee43163b143466b0cd3e8355e8b91794e75f424678be8adfe88e5f975ce",
+    "schema_version": "structure-gold-v1.3",
+    "formal_denominator": 16,
+    "formal_part_total": 18,
+    "activated_by": "第93道续令③",
+    "activated_at": "2026-07-23T15:20:00+08:00"
+  },
+  "predecessor": {
+    "path": "reports/Z93_五本金标候选修订_20260723/revised_candidates/B03_神秘复苏_库存第0041单元_结构层银标修订候选v1.3.json",
+    "sha256": "111e55195dc768219e33358ed2f917752a145350f922453c0b06431e48a45ec7",
+    "status": "archived_silver_candidate_not_formal_fallback",
+    "mutation": "none"
+  },
+  "consumer_rule": "后续验闸与跨书对照从本指针取正式金标；provenance随件携带；升默认或接现役链另拍。",
+  "rollback": "本书没有前代正式金标；回退时停用本指针并保留v1.3正式件，不得把银标候选冒充回退后的正式入口。"
+}

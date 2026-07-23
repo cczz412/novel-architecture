@@ -1,0 +1,175 @@
+{
+  "contract_version": "d-classify-rules-v1.2",
+  "role": "main_control_decision_validator_and_record_compiler",
+  "semantic_boundary": "主控负责人类语义决定；程序只验收、编译、留冲突账，不自动理解小说语义。",
+  "decision_schema_version": "z-main-control-classification-v1.2",
+  "rules": {
+    "path": "work/zbatch_prompts/candidates/main_control_classification_rules_v1.2.md",
+    "sha256": "514eb54735b2fe6de83824c10e63ec1134fcdbbe5b92fd6cd8c496ee9e78e433"
+  },
+  "approved_predecessor": {
+    "rules_sha256": "95ded675da3dac0fb3a7102c64175f1102eeea23af269f7cbed285d8cb21b804",
+    "decisions_path": "work/zbatch_decisions/Z00n_X01_ch6_10_main_control_decisions_v2_corrected.json",
+    "decisions_sha256": "f8178b910fcc8824a550587b60df5e2760136f8fc378d2decf36d308bfe53d81",
+    "run_id": "Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717",
+    "run_tree_fingerprint": "cbbfed07e516c3512335740dff3724e3b623ac7ef403d9449b25822e057d3fe1"
+  },
+  "policies": {
+    "duplicate_group": {
+      "minimum_members": 2,
+      "classified_exactly": 1,
+      "discarded_rule_id": "MC-07",
+      "conflict_reason_min_nonspace": 8
+    },
+    "single_observation": {
+      "trigger_rule_id": "D-03",
+      "forbidden_primary_type": "D",
+      "a_assertion": "推"
+    },
+    "shared_anchor": {
+      "diagnostic_only": true,
+      "does_not_imply_semantic_duplicate": true
+    },
+    "fallback_audit": {
+      "required_dispositions": ["unclassified", "discarded"],
+      "required_types": ["A", "B", "C", "D"],
+      "reason_min_nonspace": 8,
+      "required_rule_id": "MC-08",
+      "d_exclusion_rule_id": "D-02",
+      "classified_d_conflict_min_nonspace": 8,
+      "companion_rule_by_disposition": {
+        "unclassified": "EVIDENCE-BOUNDARY",
+        "discarded": "MC-07"
+      }
+    },
+    "source_scope": {
+      "allowed_source_levels": ["述"],
+      "allowed_scope_modes": ["probabilistic"],
+      "source_required_by_rule": {
+        "A-02": "述",
+        "D-04": "述"
+      },
+      "scope_required_by_rule": {
+        "D-04": "probabilistic"
+      },
+      "primary_required_by_rule": {
+        "A-02": "A",
+        "B-02": "B",
+        "C-02": "C",
+        "D-04": "D"
+      }
+    }
+  },
+  "rule_registry": {
+    "allowed": [
+      "A-01",
+      "A-02",
+      "B-01",
+      "B-02",
+      "C-01",
+      "C-02",
+      "D-01",
+      "D-02",
+      "D-03",
+      "D-04",
+      "MC-07",
+      "MC-08",
+      "EVIDENCE-BOUNDARY",
+      "主类型-3",
+      "主类型-4"
+    ],
+    "required_by_primary": {
+      "A": "A-01",
+      "B": "B-01",
+      "C": "C-01",
+      "D": "D-01"
+    },
+    "discarded_required": "MC-07"
+  },
+  "approved_regression_cases": [
+    {
+      "case_id": "return_mechanism_vs_offer",
+      "kind": "duplicate_group",
+      "duplicate_group": "DUP-C0006-RETURN",
+      "event_ids": ["EV-C0006-04", "EV-C0006-05"],
+      "winner": {"event_id": "EV-C0006-04", "disposition": "classified", "primary_type": "A"},
+      "losers": [{"event_id": "EV-C0006-05", "disposition": "discarded"}]
+    },
+    {
+      "case_id": "regular_meeting_vs_specific_schedule",
+      "kind": "duplicate_group",
+      "duplicate_group": "DUP-C0007-REGULAR-MEETING",
+      "event_ids": ["EV-C0007-09", "EV-C0007-10"],
+      "winner": {"event_id": "EV-C0007-10", "disposition": "classified", "primary_type": "B"},
+      "losers": [{"event_id": "EV-C0007-09", "disposition": "discarded"}]
+    },
+    {
+      "case_id": "single_observation_downgrades_to_a_inference",
+      "kind": "single_observation",
+      "event_id": "EV-C0007-25",
+      "expected": {"disposition": "classified", "primary_type": "A", "assertion": "推"},
+      "required_rule_ids": ["A-01", "D-02"]
+    }
+  ],
+  "current_regression_cases": [
+    {
+      "case_id": "current_return_mechanism_vs_offer",
+      "kind": "duplicate_group",
+      "duplicate_group": "DUP-C0006-RETURN",
+      "event_ids": ["EV-C0006-03", "EV-C0006-04"],
+      "winner": {"event_id": "EV-C0006-03", "disposition": "classified", "primary_type": "A"},
+      "losers": [{"event_id": "EV-C0006-04", "disposition": "discarded"}]
+    },
+    {
+      "case_id": "current_regular_meeting_vs_specific_schedule",
+      "kind": "duplicate_group",
+      "duplicate_group": "DUP-C0007-REGULAR-MEETING",
+      "event_ids": ["EV-C0007-05", "EV-C0007-06", "EV-C0009-06"],
+      "winner": {"event_id": "EV-C0007-06", "disposition": "classified", "primary_type": "B"},
+      "losers": [
+        {"event_id": "EV-C0007-05", "disposition": "discarded"},
+        {"event_id": "EV-C0009-06", "disposition": "discarded"}
+      ]
+    },
+    {
+      "case_id": "current_single_observation_downgrades_to_a_inference",
+      "kind": "single_observation",
+      "event_id": "EV-C0007-13",
+      "expected": {"disposition": "classified", "primary_type": "A", "assertion": "推"},
+      "required_rule_ids": ["A-01", "D-02", "D-03"]
+    },
+    {
+      "case_id": "t1_cross_chapter_immediate_execution",
+      "kind": "event_decision",
+      "event_id": "EV-C0004-05",
+      "expected": {"disposition": "classified", "primary_type": "B"},
+      "required_rule_ids": ["B-01", "B-02"]
+    },
+    {
+      "case_id": "t1_personal_risk_remains_open",
+      "kind": "event_decision",
+      "event_id": "EV-C0013-14",
+      "expected": {"disposition": "classified", "primary_type": "C"},
+      "required_rule_ids": ["C-01", "C-02"]
+    },
+    {
+      "case_id": "t1_probabilistic_stated_world_rule",
+      "kind": "event_decision",
+      "event_id": "EV-C0013-15",
+      "expected": {
+        "disposition": "classified",
+        "primary_type": "D",
+        "source_level": "述",
+        "scope_mode": "probabilistic"
+      },
+      "required_rule_ids": ["D-01", "D-04"]
+    },
+    {
+      "case_id": "t1_chanis_local_taboo_fallback",
+      "kind": "event_decision",
+      "event_id": "EV-C0019-05",
+      "expected": {"disposition": "classified", "primary_type": "A", "source_level": "述"},
+      "required_rule_ids": ["A-01", "A-02", "D-02"]
+    }
+  ]
+}

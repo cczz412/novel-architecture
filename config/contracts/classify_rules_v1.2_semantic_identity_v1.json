@@ -1,0 +1,283 @@
+{
+  "contract_version": "d-classify-rules-v1.2-z57-semantic-identity-v1",
+  "role": "main_control_decision_validator_and_record_compiler",
+  "semantic_boundary": "主控负责人类语义决定；程序只用章号、冻结原句锚指纹和语义词组解析跨轮身份，再验收、编译、留冲突账，不自动理解小说语义。顺序事件ID仅为本轮内部编号。",
+  "decision_schema_version": "z-main-control-classification-v1.2",
+  "rules": {
+    "path": "work/zbatch_prompts/candidates/main_control_classification_rules_v1.2.md",
+    "sha256": "514eb54735b2fe6de83824c10e63ec1134fcdbbe5b92fd6cd8c496ee9e78e433"
+  },
+  "approved_predecessor": {
+    "rules_sha256": "95ded675da3dac0fb3a7102c64175f1102eeea23af269f7cbed285d8cb21b804",
+    "decisions_path": "work/zbatch_decisions/Z00n_X01_ch6_10_main_control_decisions_v2_corrected.json",
+    "decisions_sha256": "f8178b910fcc8824a550587b60df5e2760136f8fc378d2decf36d308bfe53d81",
+    "run_id": "Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717",
+    "run_tree_fingerprint": "cbbfed07e516c3512335740dff3724e3b623ac7ef403d9449b25822e057d3fe1"
+  },
+  "stable_identity_policy": {
+    "carrier": "chapter+frozen-anchor-quote-fingerprint+semantic-term-groups",
+    "sequential_event_id_scope": "run_local_only",
+    "unique_match": "validate_expected_decision",
+    "zero_match": "audit_not_observed_and_never_bind_same_sequential_id",
+    "partial_duplicate_match": "audit_partially_not_observed_and_do_not_apply_duplicate_case",
+    "multiple_match_or_identity_collision": "hard_fail"
+  },
+  "policies": {
+    "duplicate_group": {
+      "minimum_members": 2,
+      "classified_exactly": 1,
+      "discarded_rule_id": "MC-07",
+      "conflict_reason_min_nonspace": 8
+    },
+    "single_observation": {
+      "trigger_rule_id": "D-03",
+      "forbidden_primary_type": "D",
+      "a_assertion": "推"
+    },
+    "shared_anchor": {
+      "diagnostic_only": true,
+      "does_not_imply_semantic_duplicate": true
+    },
+    "fallback_audit": {
+      "required_dispositions": ["unclassified", "discarded"],
+      "required_types": ["A", "B", "C", "D"],
+      "reason_min_nonspace": 8,
+      "required_rule_id": "MC-08",
+      "d_exclusion_rule_id": "D-02",
+      "classified_d_conflict_min_nonspace": 8,
+      "companion_rule_by_disposition": {
+        "unclassified": "EVIDENCE-BOUNDARY",
+        "discarded": "MC-07"
+      }
+    },
+    "source_scope": {
+      "allowed_source_levels": ["述"],
+      "allowed_scope_modes": ["probabilistic"],
+      "source_required_by_rule": {
+        "A-02": "述",
+        "D-04": "述"
+      },
+      "scope_required_by_rule": {
+        "D-04": "probabilistic"
+      },
+      "primary_required_by_rule": {
+        "A-02": "A",
+        "B-02": "B",
+        "C-02": "C",
+        "D-04": "D"
+      }
+    }
+  },
+  "rule_registry": {
+    "allowed": [
+      "A-01",
+      "A-02",
+      "B-01",
+      "B-02",
+      "C-01",
+      "C-02",
+      "D-01",
+      "D-02",
+      "D-03",
+      "D-04",
+      "MC-07",
+      "MC-08",
+      "EVIDENCE-BOUNDARY",
+      "主类型-3",
+      "主类型-4"
+    ],
+    "required_by_primary": {
+      "A": "A-01",
+      "B": "B-01",
+      "C": "C-01",
+      "D": "D-01"
+    },
+    "discarded_required": "MC-07"
+  },
+  "approved_regression_cases": [
+    {
+      "case_id": "return_mechanism_vs_offer",
+      "kind": "duplicate_group",
+      "duplicate_group": "DUP-C0006-RETURN",
+      "event_ids": ["EV-C0006-04", "EV-C0006-05"],
+      "winner": {"event_id": "EV-C0006-04", "disposition": "classified", "primary_type": "A"},
+      "losers": [{"event_id": "EV-C0006-05", "disposition": "discarded"}]
+    },
+    {
+      "case_id": "regular_meeting_vs_specific_schedule",
+      "kind": "duplicate_group",
+      "duplicate_group": "DUP-C0007-REGULAR-MEETING",
+      "event_ids": ["EV-C0007-09", "EV-C0007-10"],
+      "winner": {"event_id": "EV-C0007-10", "disposition": "classified", "primary_type": "B"},
+      "losers": [{"event_id": "EV-C0007-09", "disposition": "discarded"}]
+    },
+    {
+      "case_id": "single_observation_downgrades_to_a_inference",
+      "kind": "single_observation",
+      "event_id": "EV-C0007-25",
+      "expected": {"disposition": "classified", "primary_type": "A", "assertion": "推"},
+      "required_rule_ids": ["A-01", "D-02"]
+    }
+  ],
+  "current_regression_cases": [
+    {
+      "case_id": "current_return_mechanism_vs_offer",
+      "kind": "duplicate_group",
+      "duplicate_group": "DUP-C0006-RETURN",
+      "identities": [
+        {
+          "semantic_id": "chapter6.return_mechanism.cut_connection",
+          "legacy_event_id": "EV-C0006-03",
+          "locator": {
+            "chapter": 6,
+            "anchor_ids": ["E0050"],
+            "anchor_quote_sha256": "664e97fa694c84e017a490305089a205b4d590b5f41fb0639f4e693f6ced58d9",
+            "term_groups": [["切断"], ["联系"], ["回归"]]
+          },
+          "expected": {"role": "winner", "disposition": "classified", "primary_type": "A"}
+        },
+        {
+          "semantic_id": "chapter6.return_offer.on_formal_request",
+          "legacy_event_id": "EV-C0006-04",
+          "locator": {
+            "chapter": 6,
+            "anchor_ids": ["E0053"],
+            "anchor_quote_sha256": "b2441b7eb6dd1a814a9ab6deb3e23271dd8ac5bf9465d0a762003a1bd55ab75e",
+            "term_groups": [["正式提出"], ["让你回去"]]
+          },
+          "expected": {"role": "loser", "disposition": "discarded"}
+        }
+      ]
+    },
+    {
+      "case_id": "current_regular_meeting_vs_specific_schedule",
+      "kind": "duplicate_group",
+      "duplicate_group": "DUP-C0007-REGULAR-MEETING",
+      "identities": [
+        {
+          "semantic_id": "chapter7.regular_meeting.proposal",
+          "legacy_event_id": "EV-C0007-05",
+          "locator": {
+            "chapter": 7,
+            "anchor_ids": ["E0028"],
+            "anchor_quote_sha256": "97df72147ba62b6509b3378c265287699ebd6bc5501b565db1770788362fb652",
+            "term_groups": [["多几次", "定期"], ["尝试", "聚会"]]
+          },
+          "expected": {"role": "loser", "disposition": "discarded"}
+        },
+        {
+          "semantic_id": "chapter7.regular_meeting.specific_schedule",
+          "legacy_event_id": "EV-C0007-06",
+          "locator": {
+            "chapter": 7,
+            "anchor_ids": ["E0073"],
+            "anchor_quote_sha256": "e54cd5869d3f982e49e3877e8fcf07a5b6d774a15dadb95ea7fb37e7584fc053",
+            "term_groups": [["周一"], ["下午三点"]]
+          },
+          "expected": {"role": "winner", "disposition": "classified", "primary_type": "B"}
+        },
+        {
+          "semantic_id": "chapter9.regular_meeting.wait_for_next",
+          "legacy_event_id": "EV-C0009-06",
+          "locator": {
+            "chapter": 9,
+            "anchor_ids": ["E0104"],
+            "anchor_quote_sha256": "fa19cdce9402345765ff503fe1fd9f65103e0644b2bd3470e98baa93d4d51579",
+            "term_groups": [["等待下一次", "下一次的聚会"], ["旁听"]]
+          },
+          "expected": {"role": "loser", "disposition": "discarded"}
+        }
+      ]
+    },
+    {
+      "case_id": "current_single_observation_downgrades_to_a_inference",
+      "kind": "single_observation",
+      "identities": [
+        {
+          "semantic_id": "chapter7.grey_fog.time_flow_one_to_one",
+          "legacy_event_id": "EV-C0007-13",
+          "locator": {
+            "chapter": 7,
+            "anchor_ids": ["E0159"],
+            "anchor_quote_sha256": "3c0e11d8429bb9771de9fa7fcb3bc7dd04ca47b04b03948410b4e33156e68e43",
+            "term_groups": [["一比一"], ["时间流速"]]
+          },
+          "expected": {"disposition": "classified", "primary_type": "A", "assertion": "推"},
+          "required_rule_ids": ["A-01", "D-02", "D-03"]
+        }
+      ]
+    },
+    {
+      "case_id": "t1_cross_chapter_immediate_execution",
+      "kind": "event_decision",
+      "identities": [
+        {
+          "semantic_id": "chapter4.free_tarot_divination.acceptance",
+          "legacy_event_id": "EV-C0004-05",
+          "locator": {
+            "chapter": 4,
+            "anchor_ids": ["E0212"],
+            "anchor_quote_sha256": "128d98e855f9fe7b6c7d5ae851db3ee2351a34850f5e3e2a3a726ca86efdc788",
+            "term_groups": [["占卜"], ["试一试", "同意"]]
+          },
+          "expected": {"disposition": "classified", "primary_type": "B"},
+          "required_rule_ids": ["B-01", "B-02"]
+        }
+      ]
+    },
+    {
+      "case_id": "t1_personal_risk_remains_open",
+      "kind": "event_decision",
+      "identities": [
+        {
+          "semantic_id": "chapter13.personal_risk.theoretical_only",
+          "legacy_event_id": "EV-C0013-14",
+          "locator": {
+            "chapter": 13,
+            "anchor_ids": ["E0121"],
+            "anchor_quote_sha256": "01d3418202d1a2a46c71a990cf77034bea1df4ef63788b0bbb58057975ec1ccc",
+            "term_groups": [["理论上"]]
+          },
+          "expected": {"disposition": "classified", "primary_type": "C"},
+          "required_rule_ids": ["C-01", "C-02"]
+        }
+      ]
+    },
+    {
+      "case_id": "t1_probabilistic_stated_world_rule",
+      "kind": "event_decision",
+      "identities": [
+        {
+          "semantic_id": "chapter13.world_rule.probabilistic_recurrence",
+          "legacy_event_id": "EV-C0013-15",
+          "locator": {
+            "chapter": 13,
+            "anchor_ids": ["E0130"],
+            "anchor_quote_sha256": "b5cb93cddba00422e71bfed86b8d12f4656c3883800e52985fb233b6895f9cd2",
+            "term_groups": [["再次降临"], ["恐惧", "惊悚"]]
+          },
+          "expected": {"disposition": "classified", "primary_type": "D", "source_level": "述", "scope_mode": "probabilistic"},
+          "required_rule_ids": ["D-01", "D-04"]
+        }
+      ]
+    },
+    {
+      "case_id": "t1_chanis_local_taboo_fallback",
+      "kind": "event_decision",
+      "identities": [
+        {
+          "semantic_id": "chapter19.chanis_gate.local_taboo",
+          "legacy_event_id": "EV-C0019-05",
+          "locator": {
+            "chapter": 19,
+            "anchor_ids": ["E0120"],
+            "anchor_quote_sha256": "9008dcc6fd24479c3cdf60101a2623842c933a17527851c4d8706d21095f8a6c",
+            "term_groups": [["不要随意靠近"], ["厄运"]]
+          },
+          "expected": {"disposition": "classified", "primary_type": "A", "source_level": "述"},
+          "required_rule_ids": ["A-01", "A-02", "D-02"]
+        }
+      ]
+    }
+  ]
+}

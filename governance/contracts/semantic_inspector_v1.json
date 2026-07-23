@@ -1,0 +1,52 @@
+{
+  "contract_version": "semantic-inspector-sampling-v1",
+  "route": {
+    "provider": "sensenova",
+    "base_url": "https://token.sensenova.cn/v1",
+    "endpoint": "/chat/completions",
+    "allowed_models": [
+      "deepseek-v4-flash"
+    ],
+    "model": "deepseek-v4-flash",
+    "api_key_env": "SENSENOVA_API_KEY",
+    "timeout_seconds": 300,
+    "network_attempts": 3
+  },
+  "profiles": {
+    "z76_phase2_reviewer": {
+      "status": "approved_transport_reference",
+      "stages": {
+        "semantic_route": {
+          "temperature": 0.0,
+          "max_tokens": 8000,
+          "n": 1,
+          "reasoning_effort": "medium",
+          "response_format": {
+            "type": "json_object"
+          },
+          "status": "approved_transport_reference",
+          "note": "第76道第二期低成本语义分流；只给候选路由，不产正式真值。"
+        }
+      }
+    }
+  },
+  "candidate_registry": {
+    "semantic_route_next": {
+      "temperature": 0.0,
+      "max_tokens": 8000,
+      "n": 1,
+      "reasoning_effort": "medium",
+      "response_format": {
+        "type": "json_object"
+      },
+      "status": "candidate_unverified",
+      "note": "保留候选槽；默认拒绝调用。"
+    }
+  },
+  "mechanical_modules": {
+    "semantic_rule_gate": {
+      "temperature": null,
+      "note": "格式、风险词、跨章与抽样比例均由程序判。"
+    }
+  }
+}

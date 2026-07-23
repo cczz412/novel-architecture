@@ -1,0 +1,80 @@
+{
+  "contract_version": "d-classify-rules-v1",
+  "role": "main_control_decision_validator_and_record_compiler",
+  "semantic_boundary": "主控负责人类语义决定；程序只验收、编译、留冲突账，不自动理解小说语义。",
+  "decision_schema_version": "z-main-control-classification-v1",
+  "rules": {
+    "path": "work/zbatch_prompts/candidates/main_control_classification_rules_v1.1.md",
+    "sha256": "a486edb3e27eb215d4d6000c6ec4308c23f51e5bb9b5861799dbf58b0727be77"
+  },
+  "approved_predecessor": {
+    "rules_sha256": "95ded675da3dac0fb3a7102c64175f1102eeea23af269f7cbed285d8cb21b804",
+    "decisions_path": "work/zbatch_decisions/Z00n_X01_ch6_10_main_control_decisions_v2_corrected.json",
+    "decisions_sha256": "f8178b910fcc8824a550587b60df5e2760136f8fc378d2decf36d308bfe53d81",
+    "run_id": "Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717",
+    "run_tree_fingerprint": "cbbfed07e516c3512335740dff3724e3b623ac7ef403d9449b25822e057d3fe1"
+  },
+  "policies": {
+    "duplicate_group": {
+      "minimum_members": 2,
+      "classified_exactly": 1,
+      "discarded_rule_id": "MC-07",
+      "conflict_reason_min_nonspace": 8
+    },
+    "single_observation": {
+      "trigger_rule_id": "D-03",
+      "forbidden_primary_type": "D",
+      "a_assertion": "推"
+    },
+    "shared_anchor": {
+      "diagnostic_only": true,
+      "does_not_imply_semantic_duplicate": true
+    }
+  },
+  "rule_registry": {
+    "allowed": [
+      "A-01",
+      "B-01",
+      "C-01",
+      "D-01",
+      "D-02",
+      "D-03",
+      "MC-07",
+      "EVIDENCE-BOUNDARY",
+      "主类型-3",
+      "主类型-4"
+    ],
+    "required_by_primary": {
+      "A": "A-01",
+      "B": "B-01",
+      "C": "C-01",
+      "D": "D-01"
+    },
+    "discarded_required": "MC-07"
+  },
+  "approved_regression_cases": [
+    {
+      "case_id": "return_mechanism_vs_offer",
+      "kind": "duplicate_group",
+      "duplicate_group": "DUP-C0006-RETURN",
+      "event_ids": ["EV-C0006-04", "EV-C0006-05"],
+      "winner": {"event_id": "EV-C0006-04", "disposition": "classified", "primary_type": "A"},
+      "losers": [{"event_id": "EV-C0006-05", "disposition": "discarded"}]
+    },
+    {
+      "case_id": "regular_meeting_vs_specific_schedule",
+      "kind": "duplicate_group",
+      "duplicate_group": "DUP-C0007-REGULAR-MEETING",
+      "event_ids": ["EV-C0007-09", "EV-C0007-10"],
+      "winner": {"event_id": "EV-C0007-10", "disposition": "classified", "primary_type": "B"},
+      "losers": [{"event_id": "EV-C0007-09", "disposition": "discarded"}]
+    },
+    {
+      "case_id": "single_observation_downgrades_to_a_inference",
+      "kind": "single_observation",
+      "event_id": "EV-C0007-25",
+      "expected": {"disposition": "classified", "primary_type": "A", "assertion": "推"},
+      "required_rule_ids": ["A-01", "D-02"]
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "generator": {
+    "path": "tools/governance_index.py",
+    "sha256": "06a286b944b5d15fe48b4826123720245a505768f3ca5d7243c49162dc97424b"
+  },
+  "inputs": [
+    {
+      "bytes": 59718,
+      "path": "governance/CURRENT_STATE.json",
+      "sha256": "eb1d520590ffff19f0d70b9147cfd88bb26f8a7b815bff5b1940b8a7904ca0c5"
+    },
+    {
+      "bytes": 12301,
+      "path": "governance/control_plane.json",
+      "sha256": "b340158ed55343373a97681e578b1356889d281407d9025111d63858ac94941d"
+    },
+    {
+      "bytes": 14298,
+      "path": "governance/module_registry.source.json",
+      "sha256": "3cf41a5ae153caa41c36afd1b290c162c5b47e56b86ff89722fc368d5a22315a"
+    },
+    {
+      "bytes": 15159,
+      "path": "governance/route_registry.json",
+      "sha256": "55cf63b22aa938d6e78aef42c00ae6ab203f97cd16e2b5e966e7478851d7658c"
+    }
+  ],
+  "outputs": [
+    {
+      "bytes": 428,
+      "path": "experiments/INDEX.md",
+      "sha256": "2f211eadeb34588099fa711e217e48bd4f527300816c05f8e3ecf2276c8538e1"
+    },
+    {
+      "bytes": 5415,
+      "path": "governance/INDEX.md",
+      "sha256": "b1da1e37e3dd4e903a9f71c1d54b5f0d0ee3663fa074bb9de009ab0a253945ed"
+    },
+    {
+      "bytes": 5428,
+      "path": "governance/current_run.md",
+      "sha256": "0d0088e3cfb065ac53fa94e2032bca61b563adf6941d60c945ede823a3824ad2"
+    },
+    {
+      "bytes": 1235,
+      "path": "governance/dependency_map.json",
+      "sha256": "24aadd57ef2b733599abecbecb877293ba996a3a37d47874caadf5ee053ea894"
+    },
+    {
+      "bytes": 2219,
+      "path": "governance/indexes/gold_current.md",
+      "sha256": "fd131e9b28e40358c890222a0ac6c8f89d3dcd18a67fa86960d35f5af7ea88c3"
+    },
+    {
+      "bytes": 503,
+      "path": "governance/indexes/route_health.md",
+      "sha256": "682639e7b5d2bfd836f9d60d3e7401732e01fe70981364bd9bd006043f1caccc"
+    },
+    {
+      "bytes": 4021,
+      "path": "governance/indexes/runs_and_reports.md",
+      "sha256": "13245ce63639c60bf59b15f63fe0ef0d1fe67c4f4ec65acb1ec75d279e62d975"
+    },
+    {
+      "bytes": 2117,
+      "path": "governance/indexes/silver_candidates.md",
+      "sha256": "38401c582c2c5448547e0e198b63db1e6acaa572abd6eb6eda93dbcf9e2dae0f"
+    },
+    {
+      "bytes": 589,
+      "path": "governance/indexes/source_registry.md",
+      "sha256": "7aae2500eb54c5f50fee79321c25f29523041a7b123cc75279d4c5e376ae5431"
+    },
+    {
+      "bytes": 24367,
+      "path": "governance/module_registry.json",
+      "sha256": "78b2bf854fc84a796053fb7450fcc1a6b289dba91236c2c146b121227f5fd653"
+    }
+  ],
+  "schema_version": "governance-index-manifest-v1",
+  "verification": {
+    "checked": 10,
+    "errors": [],
+    "passed": true
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "schema_version": "pipeline-rule-check-registry-v1",
+  "checks": [
+    {
+      "check_id": "A01",
+      "name": "材料路径、来源、文件数与SHA",
+      "execution": "program",
+      "source_path": "tools/pipeline_common/artifacts.py",
+      "entrypoint": "build_manifest/verify_manifest"
+    },
+    {
+      "check_id": "A02",
+      "name": "章节号、重复、顺序与编码",
+      "execution": "program",
+      "source_path": "tools/zbatch.py",
+      "entrypoint": "load_chapters/preflight"
+    },
+    {
+      "check_id": "A03",
+      "name": "证据目录连续覆盖",
+      "execution": "program",
+      "source_path": "tools/zbatch_modules/evidence_catalog.py",
+      "entrypoint": "build_evidence_catalog"
+    },
+    {
+      "check_id": "A04",
+      "name": "短引逐字命中、长度与章次边界",
+      "execution": "program",
+      "source_path": "tools/zbatch_modules/anchor_kit.py",
+      "entrypoint": "anchor validation"
+    },
+    {
+      "check_id": "A05",
+      "name": "JSON、字段、枚举与ID唯一",
+      "execution": "program",
+      "source_path": "tools/pipeline_inspector.py",
+      "entrypoint": "validate_review_batch"
+    },
+    {
+      "check_id": "A06",
+      "name": "请求体与基线差异白名单",
+      "execution": "program",
+      "source_path": "tools/z68_revised_request_pilot.py",
+      "entrypoint": "diff_paths"
+    },
+    {
+      "check_id": "A07",
+      "name": "模型、温度、上限、采样数与JSON模式",
+      "execution": "program",
+      "source_path": "tools/zbatch_modules/stage_sampling.py",
+      "entrypoint": "StageSamplingContract"
+    },
+    {
+      "check_id": "A08",
+      "name": "调用预算、单次采样与同请求重试",
+      "execution": "program",
+      "source_path": "tools/zbatch_modules/api_transport.py",
+      "entrypoint": "ApiTransport._reserve_attempt"
+    },
+    {
+      "check_id": "A09",
+      "name": "HTTP、完成原因、空正文与截断",
+      "execution": "program",
+      "source_path": "tools/zbatch_modules/api_transport.py",
+      "entrypoint": "ApiTransport.call/response_content"
+    },
+    {
+      "check_id": "A10",
+      "name": "usage、token、耗时与重试账",
+      "execution": "program",
+      "source_path": "tools/zbatch_modules/api_transport.py",
+      "entrypoint": "usage.jsonl writer"
+    },
+    {
+      "check_id": "A11",
+      "name": "密钥与授权头痕迹",
+      "execution": "program",
+      "source_path": "tools/pipeline_inspector.py",
+      "entrypoint": "_secret_scan"
+    },
+    {
+      "check_id": "A12",
+      "name": "保护件施工前后指纹",
+      "execution": "program",
+      "source_path": "tools/governance_index.py",
+      "entrypoint": "validate_control_plane"
+    },
+    {
+      "check_id": "A13",
+      "name": "金标指针、目标SHA、分母与回退入口",
+      "execution": "program",
+      "source_path": "tools/z73_finalize_gold_v1_2.py",
+      "entrypoint": "verify_final_state"
+    },
+    {
+      "check_id": "A14",
+      "name": "映射无孤儿、重复计分与窗口边界",
+      "execution": "program",
+      "source_path": "tools/z73_finalize_gold_v1_2.py",
+      "entrypoint": "validate_mapping"
+    },
+    {
+      "check_id": "A15",
+      "name": "正反例专名与长片段泄题",
+      "execution": "program",
+      "source_path": "tools/z74a_rewrite_examples.py",
+      "entrypoint": "build_overlap_audit"
+    },
+    {
+      "check_id": "A16",
+      "name": "确定性双重放一致",
+      "execution": "program",
+      "source_path": "tools/governance_index.py",
+      "entrypoint": "refresh plus manifest verification"
+    },
+    {
+      "check_id": "A17",
+      "name": "报告链接、索引、清单与压缩包完整性",
+      "execution": "program",
+      "source_path": "tools/simple_pack.py",
+      "entrypoint": "package verification"
+    },
+    {
+      "check_id": "A18",
+      "name": "受影响消费者测试选择",
+      "execution": "program",
+      "source_path": "tools/test_impact.py",
+      "entrypoint": "build_plan"
+    }
+  ]
+}

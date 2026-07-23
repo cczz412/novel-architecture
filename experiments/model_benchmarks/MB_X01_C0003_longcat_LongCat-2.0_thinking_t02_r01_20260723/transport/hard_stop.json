@@ -1,0 +1,22 @@
+{
+  "schema_version": "model-benchmark-hard-stop-v1",
+  "status": "hard_stop_no_rerun_no_patch",
+  "reason_code": "process_sigkill_after_attempt_reservation",
+  "error_type": "ProcessTerminated",
+  "error": "正式采样进程在写入首发占用票后被 SIGKILL 终止，退出码 137；没有原始响应、真实尝试账或 usage，不能判断请求是否已到达模型服务。",
+  "logical_sample_count": 1,
+  "network_attempts": "unknown_after_reservation",
+  "model_api_response_count": 0,
+  "usage_tokens": "unknown",
+  "model_catalog_network_attempts": 1,
+  "model_catalog_api_calls": 0,
+  "rerun_allowed": false,
+  "evidence": {
+    "attempt_reservation_count": 1,
+    "call_attempt_count": 0,
+    "raw_model_response_count": 0,
+    "usage_row_count": 0,
+    "model_catalog_status": "pass_exact_model_present"
+  },
+  "created_at": "2026-07-23T06:59:26+08:00"
+}

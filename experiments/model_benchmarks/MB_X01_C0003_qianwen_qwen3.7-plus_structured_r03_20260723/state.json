@@ -1,0 +1,11 @@
+{
+  "schema_version": "model-benchmark-state-v1",
+  "status": "superseded_zero_call_no_network",
+  "updated_at": "2026-07-23T05:14:48+08:00",
+  "details": {
+    "reason": "终审发现429响应回显密钥时仍可能进入普通限流重试；旧准备件禁止发送",
+    "model_api_calls": 0,
+    "network_attempts": 0,
+    "replacement_benchmark_id": "MB_X01_C0003_qianwen_qwen3.7-plus_structured_r04_20260723"
+  }
+}

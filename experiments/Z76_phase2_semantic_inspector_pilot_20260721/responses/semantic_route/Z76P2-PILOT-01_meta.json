@@ -1,0 +1,23 @@
+{
+  "at": "2026-07-21T18:07:34+08:00",
+  "http_status": 200,
+  "elapsed_ms": 15780,
+  "provider": "sensenova",
+  "api_base_url": "https://token.sensenova.cn/v1",
+  "api_endpoint": "/chat/completions",
+  "requested_model": "deepseek-v4-flash",
+  "response_model": "deepseek-v4-flash",
+  "finish_reason": "stop",
+  "request_sha256": "69485abf1c59cad5f516225af66e86bec98c7b0c0e272444841e1d566409d280",
+  "raw_response_sha256": "0401f3250ef9a2ab42728b6564c76db47c64fa94d87e9bd29609a40cb76a1c09",
+  "headers": {
+    "Content-Type": "application/json; charset=utf-8",
+    "Date": "Tue, 21 Jul 2026 10:07:34 GMT",
+    "X-Request-Id": "15d74d16-a7f0-4854-9227-33b45d36c5a9"
+  },
+  "sampling_n": 1,
+  "stage_temperature": 0.0,
+  "stage_max_tokens": 8000,
+  "contract_status": "approved_transport_reference",
+  "unverified_candidate_override": false
+}

@@ -1,0 +1,91 @@
+# 治理区
+
+这里放当前状态、索引、模块状态、路线状态、合同和依赖关系，不复制大型运行工件。
+
+- `INDEX.md`：人看的唯一一跳入口，由生成器维护。
+- `CURRENT_STATE.json`：本地唯一机器可读当前任务／运行状态真源；Notion 拍板回读后，只在这里解释“现在到哪”和旧运行票据冲突。模块与实验路线各由自己的登记册负责。
+- `route_registry.json`：实验路线状态登记册；没有明确重开凭证，换名字或版本号也不能复活退役路线。
+- `control_plane.json`：稳定入口、正式指针和保护件；不再保存当前任务。
+- `module_registry.source.json`：模块状态的人工审定源；生成器补齐现存路径和 SHA。
+- `module_registry.json`、`dependency_map.json`：生成结果。
+- `indexes/`：金标、银标、运行报告、材料和旧路牌的固定入口。
+- `rule_check_registry.json`：18 类纯规则检查的程序入口账。
+- `test_policy.json`：按模块、合同和风险选择测试范围的正式纪律。
+- `tool_registry.json`：工具身份账；根层 Python 实体逐件登记，公共组件层、兼容软链和不逐件登记的分区另列说明。
+
+唯一全仓测试命令：
+
+```bash
+cd /Users/a1234/挣钱/小说架构 && PYTHONPATH=. /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q tests
+```
+
+刷新命令：
+
+```bash
+python3 tools/novel_pipeline.py governance refresh
+```
+
+只检查生成结果有没有漂移：
+
+```bash
+python3 tools/governance_index.py --check
+```
+
+语义检查只分流：
+
+```bash
+python3 tools/novel_pipeline.py inspect preflight --input <检查批.json> --run-dir <试验目录>
+python3 tools/novel_pipeline.py inspect run --input <检查批.json> --run-dir <试验目录>
+```
+
+计算本次该跑哪些测试：
+
+```bash
+python3 tools/novel_pipeline.py test-plan --spec <变更说明.json>
+```
+
+Notion 账序与队列仍是最终真源。本区只解决本地寻路和机械复现，不自行拍板状态。
+
+## 常检尺子（支线瘦身批件③写入）
+
+- **主刀＝磁盘观感**；常检读三行＝除 TEMP 磁盘体量／Git tracked 体量／外置旁仓另算。
+- 细则见 [hygiene_inspection_ruler.md](hygiene_inspection_ruler.md)（文档级；不改 check／`.py`）。
+- ❌ 不再拿整仓 `du -sh .` 单数字判胖瘦。
+
+## 收口纪律（第84道写入）
+
+- **每收口一道，重跑 INDEX**：`python3 tools/novel_pipeline.py governance refresh`，再用 `python3 tools/governance_index.py --check` 验漂移。
+- 本纪律写在本 README（不会被 refresh 覆盖）；不要手改 `INDEX.md`。
+
+## 状态收口纪律（第86道写入）
+
+- 第86道之后的新运行，只要主运行落了 `main/hard_stop.json`、检查员等子运行在本层落了 `hard_stop.json`，或形成获批收口票，就必须同步顶层 `run_manifest.json`、`governance/CURRENT_STATE.json`，再刷新并检查治理索引。
+- Z80、Z83 既有运行目录已经封存，不回写。旧顶层 `prepared` 与后续票据冲突时，由 `CURRENT_STATE.json` 对外裁定。
+- 硬停只认对应运行本层的 `hard_stop.json` 级票据，顶层必须引用。Z80 v1.3 是历史例外：旧目录没有这张票且禁止回写，所以只用目录外成绩裁定票记“失败后退役”，不伪造硬停票。
+
+## 密钥入口与双闸（第86道写入）
+
+- 现役加载入口只有 `tools/sensenova_deepseek_key.sh`。共享环境加载脚本和外部项目加载器都标记退役；历史记录不删。
+- 进程读取闸只证明子进程能读到非空密钥，回执不得显示密钥。
+- 供应商认证闸只由首个获批主采样请求的正常响应证明。不得把“密钥存在”写成“认证通过”，也不得另发试探请求。
+
+## 检查停手线（第86道写入）
+
+- 两份相互独立的证据给出同一结论就停，不再做第三份同义核验。
+- 先看输出实际结构，再写解析命令；解析失败时先修字段路径，不重复跑原任务。
+- 同一停点同时运行的子任务最多 3 个；已有子任务仍在运行时，不补派同义任务。
+
+## 工具身份与出生门槛（第87道写入）
+
+- `tools/` 根层每个实体 Python 文件只认一种主要身份：现役总入口、可复用组件、批次复现器、退役兼容件。证据不足时标“待定”端 CZ，不从文件名、测试存在或零引用自行推断去留。
+- 长期通用工具只有满足下面四条才准新增：
+  1. 已有两个互相独立的使用场景，或已有一位明确的下一消费者。
+  2. 输入短且稳定；核心逻辑不写死道次编号、批次目录或用户绝对路径。
+  3. 输出格式、覆盖规则、失败方式说得清；相同输入可以复跑并解释一致性。
+  4. 有 `--check` 或只读预演、有定向测试，并在创建时同步登记 `tool_registry.json`。
+- 新的批次专用脚本不再进入 `tools/` 根层：能走现有总入口的，使用总入口加规格单；不能走的，放在 `reports/<批次>/` 或 `experiments/<试验>/`，沿用试验目录合同。
+- 违反门槛却新增到 `tools/` 根层时，要把事实追加到 `tool_registry.json` 的违规账，不能靠事后补文档抹掉。
+- 第87道三件裁定工具此后若出现第二个互相独立使用场景（非同道次），并补齐定向测试，可直接机械转正“可复用组件”并报告登记册新 SHA；默认登记器的实际默认推广仍须另拍。
+- 第87道只登记，不治理：不删、不移、不改现有 Python；公共能力抽提、批次复现器归位、历史兼容归档和统一入口扩建都要另拍。
+
+来源：Cursor（仓库治理窗）

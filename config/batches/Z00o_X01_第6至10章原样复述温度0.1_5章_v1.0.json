@@ -1,0 +1,50 @@
+{
+  "batch_id": "Z00o",
+  "item_id": "X01",
+  "book_name": "诡秘之主",
+  "run_id": "Z00o_X01_第6至10章原样复述温度0.1_5章_v1.0_20260718",
+  "decision": "第27道_温度0.1单变量轮",
+  "source_run_id": "Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717",
+  "source_parsed_dir": "runs/Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717/01_event_extract/parsed",
+  "chapters": [6, 7, 8, 9, 10],
+  "expected_chapters": 5,
+  "source_item_field": "event",
+  "stage_sampling_contract": "config/contracts/sensenova_stage_sampling_v1.json",
+  "stage_sampling_profile": "d_mod_cutover_v1",
+  "stage": "verbatim_restatement",
+  "prompt": "work/zbatch_prompts/candidates/verbatim_restatement_v1.0.md",
+  "expected_model": "deepseek-v4-flash",
+  "expected_temperature": 0.1,
+  "expected_n": 1,
+  "expected_max_tokens": 8000,
+  "max_attempt_calls": 8,
+  "approved_candidate_override": true,
+  "one_request_per_chapter": true,
+  "pins": {
+    "tools/zbatch.py": "bc8ba20848153693db8638cde654d893a663b21ac03a9073d5b8a1b22bc4bb13",
+    "tools/zbatch_modules/verbatim_restatement.py": "909cb937a519c474b73724d6568347f93a63adf485c80ee0d302616f0f39ce74",
+    "tools/zbatch_modules/api_transport.py": "60452d0538a34070df2e49a7246f2f29ddb94a6855f58de86f2524d18dba8d93",
+    "config/contracts/sensenova_stage_sampling_v1.json": "8ac9f7fa639aba7a7500948438df32b5bd054895ceb8362b1402ae76f0fdbb8c",
+    "work/zbatch_prompts/candidates/verbatim_restatement_v1.0.md": "a66900697a61e79a63c89174138ef0fbd4576d109ed9008b91aeab5f773e700c",
+    "runs/Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717/01_event_extract/parsed/ch0006.json": "d95547608056b8c2e1ec584fae91746e709ddd54b8425d19aa31fa424535e2ca",
+    "runs/Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717/01_event_extract/parsed/ch0007.json": "db579edfdb1a3e13ebf0ac7067e1c99142604d809b06cb947c6e671c3c934537",
+    "runs/Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717/01_event_extract/parsed/ch0008.json": "7ad33a9cd61a6d0ffa958b2ff47a7aaea442beec7e2bd1b8c773ba01e9d56b12",
+    "runs/Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717/01_event_extract/parsed/ch0009.json": "12fbbee9c2d86ff7e65f24afd81cb840cdc6d413994bdcead117f425b52d64c6",
+    "runs/Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717/01_event_extract/parsed/ch0010.json": "8eb5061082cad63cfa73ab03ef006df1ee7af712976ae22c01975a52b4f10d3d"
+  },
+  "component_acceptance_prewrite": {
+    "exact_item_copy_rate": 1.0,
+    "chapters_completed": 5,
+    "finish_reason_stop_count": 5,
+    "empty_input_chapter_count": 0,
+    "changed_missing_reordered_item_count": 0
+  },
+  "global_three_gates_prewrite": {
+    "net_gain_main_at_least": 3,
+    "cross_type_duplicate_count": 0,
+    "wrong_D_count": 0,
+    "evaluation_scope": "本组件不产出A/B/C/D，三闸保留为未到达，不能用组件通过自动放行20章"
+  },
+  "rights": "仅供内部小说结构研究；CZ 第27道已授权 X01 第6至10章温度0.1原样复述单变量轮",
+  "stop_boundary": "一轮一停；不升默认、不扩20章、不写outbox、不删旧巨石、不重跑挑结果"
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": "model-benchmark-state-v1",
+  "status": "hard_stopped",
+  "updated_at": "2026-07-23T07:15:44+08:00",
+  "details": {
+    "hard_stop_path": "transport/hard_stop.json",
+    "reason_code": "process_terminated_after_attempt_reservation",
+    "rerun_allowed": false
+  }
+}

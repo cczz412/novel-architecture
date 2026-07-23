@@ -1,0 +1,53 @@
+{
+  "schema_version": "model-benchmark-prepared-verification-v1",
+  "status": "pass_twice_identical",
+  "first": {
+    "source_pins_sha256": "c892aac9bf007810498a05f0686e5e661c978af67ee06e2e791d635789106245",
+    "body_sha256": "993dca0da61048a50097e09e53375f6bc8ccde11ef261762091bf0d7817e8ca5",
+    "artifact_sha256": "76287e21886c019a9ae9a8fa2d14d4da02fd2541f848827a69d797a2ae15d2cc",
+    "messages_sha256": "8b261fb41e20abe33c7ebbc47d70cd3bcdbb1074c87e4342207929fbc4099593",
+    "messages_equal_baseline": true,
+    "changed_paths": [
+      "$.enable_thinking",
+      "$.max_tokens",
+      "$.model",
+      "$.reasoning_effort",
+      "$.response_format",
+      "$.thinking_budget"
+    ],
+    "secret_scan": {
+      "exact_key_hits": [],
+      "exact_key_hit_count": 0,
+      "authorization_header_hits": [],
+      "authorization_header_hit_count": 0
+    },
+    "provider_config_sha256": "e4207927ac31b3fd5af884484f19233f92ab06ff7a6e7053ddcae30cd3f0cd02",
+    "benchmark_defaults_sha256": "732168f0f54c050578df2ac091a184974a0b63b7622980d9b68f5bbf9bbfa05c",
+    "protected_before_sha256": "8b4d209e8d460fbbf594c75469a692d139d591c6375c39ca2b2753f1df44b453"
+  },
+  "second": {
+    "source_pins_sha256": "c892aac9bf007810498a05f0686e5e661c978af67ee06e2e791d635789106245",
+    "body_sha256": "993dca0da61048a50097e09e53375f6bc8ccde11ef261762091bf0d7817e8ca5",
+    "artifact_sha256": "76287e21886c019a9ae9a8fa2d14d4da02fd2541f848827a69d797a2ae15d2cc",
+    "messages_sha256": "8b261fb41e20abe33c7ebbc47d70cd3bcdbb1074c87e4342207929fbc4099593",
+    "messages_equal_baseline": true,
+    "changed_paths": [
+      "$.enable_thinking",
+      "$.max_tokens",
+      "$.model",
+      "$.reasoning_effort",
+      "$.response_format",
+      "$.thinking_budget"
+    ],
+    "secret_scan": {
+      "exact_key_hits": [],
+      "exact_key_hit_count": 0,
+      "authorization_header_hits": [],
+      "authorization_header_hit_count": 0
+    },
+    "provider_config_sha256": "e4207927ac31b3fd5af884484f19233f92ab06ff7a6e7053ddcae30cd3f0cd02",
+    "benchmark_defaults_sha256": "732168f0f54c050578df2ac091a184974a0b63b7622980d9b68f5bbf9bbfa05c",
+    "protected_before_sha256": "8b4d209e8d460fbbf594c75469a692d139d591c6375c39ca2b2753f1df44b453"
+  },
+  "vector_sha256": "f77649fb1d79b9af8b85d11cfeaacfdd1037933dad6c7e19c3f46fb6d85d395b"
+}

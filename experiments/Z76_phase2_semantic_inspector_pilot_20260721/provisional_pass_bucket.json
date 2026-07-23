@@ -1,0 +1,11 @@
+{
+  "batch_id": "Z76P2-PILOT-01",
+  "contract_version": "provisional-pass-bucket-v1",
+  "final_truth": false,
+  "item_ids": [
+    "SEM-REAL-02"
+  ],
+  "sample_ids": [
+    "SEM-REAL-02"
+  ]
+}

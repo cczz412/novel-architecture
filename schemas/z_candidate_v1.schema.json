@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "z-candidate-v1",
+  "type": "object",
+  "required": ["schema_version", "chapter", "decision_markers", "records"],
+  "properties": {
+    "schema_version": {"const": "z-candidate-v1"},
+    "chapter": {"type": "integer", "minimum": 1},
+    "decision_markers": {"type": "array", "items": {"type": "string"}},
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "status", "assertion", "related_ids", "anchors"],
+        "properties": {
+          "id": {"type": "string"},
+          "type": {"enum": ["A", "B", "C", "D"]},
+          "status": {"enum": ["开", "收", "废"]},
+          "type_state": {"type": "string"},
+          "assertion": {"enum": ["明", "推", "存疑"]},
+          "related_ids": {"type": "array", "items": {"type": "string"}},
+          "anchors": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["chapter", "quote"],
+              "properties": {
+                "chapter": {"type": "integer", "minimum": 1},
+                "quote": {"type": "string", "minLength": 10, "maxLength": 25}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

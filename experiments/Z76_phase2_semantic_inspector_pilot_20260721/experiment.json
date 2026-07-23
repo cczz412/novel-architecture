@@ -1,0 +1,11 @@
+{
+  "experiment_id": "Z76_phase2_semantic_inspector_pilot_20260721",
+  "input_sha256": "7f99bea992ad898162683731869c0d942fcc521718c2238b3bdf6a23e427c5d9",
+  "module_id": "M11",
+  "module_version": "semantic-review-router-v1",
+  "result_sha256": "3d8f1c63fd6c0f0aa3d2382b193f05c5c11c5b1dac19f1115929aff8c73617b2",
+  "rollback": "停用 inspect 命令并保留本目录；现役链未接入。",
+  "schema_version": "pipeline-experiment-v1",
+  "status": "complete",
+  "summary": "规则先验＋DeepSeek 只分流＋通过桶固定抽样；不产正式真值。"
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "model-benchmark-state-v1",
+  "status": "superseded_zero_call_no_network",
+  "updated_at": "2026-07-23T05:07:00+08:00",
+  "details": {
+    "reason": "发网前门禁补强后运行器 SHA 已变化，旧准备件禁止发送",
+    "model_api_calls": 0,
+    "network_attempts": 0,
+    "replacement_benchmark_id": "MB_X01_C0003_qianwen_qwen3.7-plus_structured_r02_20260723"
+  }
+}

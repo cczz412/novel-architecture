@@ -1,0 +1,43 @@
+{
+  "rule": "Antigravity P1 候选；有 tests/runner 硬路径引用→在用勿动；本轮仅物理挪 z60＋原位相对软链",
+  "moved": [
+    {
+      "from": "tools/z60_b_semantic_audit.py",
+      "to": "tools/_retired/z60_b_semantic_audit.py",
+      "before_sha": "941f15a645552ebd2354676e20ebf4a72d761832a8a2306f836dd0b138ace144",
+      "after_sha": "941f15a645552ebd2354676e20ebf4a72d761832a8a2306f836dd0b138ace144"
+    }
+  ],
+  "in_use_do_not_move": [
+    {
+      "file": "tools/z59_entity_supply_pilot.py",
+      "status": "在用勿动",
+      "reason": "tests/ or runner still hard-path reference"
+    },
+    {
+      "file": "tools/minicpm_preextract_pilot.py",
+      "status": "在用勿动",
+      "reason": "tests/ or runner still hard-path reference"
+    },
+    {
+      "file": "tools/z00l_classification_split.py",
+      "status": "在用勿动",
+      "reason": "tests/ or runner still hard-path reference"
+    },
+    {
+      "file": "tools/z00m_classification_split.py",
+      "status": "在用勿动",
+      "reason": "tests/ or runner still hard-path reference"
+    },
+    {
+      "file": "tools/z00n_classification_split.py",
+      "status": "在用勿动",
+      "reason": "tests/ or runner still hard-path reference"
+    },
+    {
+      "file": "tools/z00o_verbatim_pilot.py",
+      "status": "在用勿动",
+      "reason": "tests/ or runner still hard-path reference"
+    }
+  ]
+}

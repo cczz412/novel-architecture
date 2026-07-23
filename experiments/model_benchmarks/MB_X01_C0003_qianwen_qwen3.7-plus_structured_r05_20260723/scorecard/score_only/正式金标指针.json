@@ -1,0 +1,23 @@
+{
+  "schema_version": "structure-gold-current-pointer-v1",
+  "pointer_id": "X01-ch0003-structure-gold-current",
+  "status": "active",
+  "book": "X01_诡秘之主",
+  "chapter": 3,
+  "active_gold": {
+    "version": "v1.2",
+    "path": "reports/Z73_第3章金标v1.2定稿转正_20260721/第3章结构层金标v1.2.json",
+    "sha256": "0df08ede4fa1a33f4bd9e1aea3e45387c8d77131ce79ff1496fe1320fa48a10e",
+    "schema_version": "structure-gold-v1.2",
+    "formal_denominator": 23,
+    "activated_by": "第73道；CZ 2026-07-21 10:35 拍板"
+  },
+  "predecessor": {
+    "version": "v1.1",
+    "path": "reports/Z56_金标双轨分层与全链体检_20260719/第3章结构层金标v1.1.json",
+    "sha256": "8cca04f06ba21048e15420f178163c646d2effeead0970697fafbf5f45174b7c",
+    "status": "archived_formal_predecessor_unchanged"
+  },
+  "consumer_rule": "新建判分工具必须读本指针；旧编号试验保持原金标路径用于历史复现。",
+  "rollback": "把本指针的 active_gold 改回 predecessor 即可回退入口；v1.1 原件未改。"
+}

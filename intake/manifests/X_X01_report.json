@@ -1,0 +1,16 @@
+{
+  "batch": "X",
+  "item": "X01",
+  "kind": "report",
+  "registered_at": "2026-07-17T02:50:36+08:00",
+  "source_path": "TEMP/X批回包_20260716/X01_诡秘之主_跨章因果记录_1-200",
+  "registered_path": "TEMP/X批回包_20260716/X01_诡秘之主_跨章因果记录_1-200",
+  "copied": false,
+  "fingerprint": {
+    "kind": "directory",
+    "files": 8,
+    "bytes": 97107,
+    "sha256": "ab2626699e9186019b0c597d4bee6cd1ab4e3f5f1986b11347b97616fd8f1972"
+  },
+  "provenance": "X批ChatGPT回包，银标对照"
+}

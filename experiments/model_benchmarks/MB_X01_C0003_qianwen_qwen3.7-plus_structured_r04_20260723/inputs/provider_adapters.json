@@ -1,0 +1,39 @@
+{
+  "schema_version": "model-benchmark-provider-adapters-v1",
+  "providers": {
+    "qianwen_platform": {
+      "provider_config": "config/providers/qianwen_platform_multi_model.json",
+      "transport": "openai_chat_completions",
+      "key_loader": "tools/provider_keychain.sh run qianwen_platform",
+      "profiles": {
+        "structured_nonthinking": {
+          "purpose": "保持下游 JSON 合同可机械解析的首选横向档",
+          "drop_fields": [
+            "reasoning_effort",
+            "max_tokens"
+          ],
+          "set_fields": {
+            "enable_thinking": false
+          },
+          "keep_fields": [
+            "messages",
+            "temperature",
+            "n",
+            "response_format"
+          ],
+          "compatibility_notes": [
+            "千问 Chat Completions 不支持 reasoning_effort，该字段会被静默忽略，因此发网前明确移除并留账。",
+            "Qwen3.7-Plus 同时支持思考与非思考；本档为了保留 response_format=json_object 的机械 JSON 合同，显式选择 enable_thinking=false。思考档须另建兼容档，不得混算。",
+            "千问结构化输出文档建议不设置 max_tokens，避免 JSON 被截断，因此移除并记录为供应商兼容差异。"
+          ]
+        }
+      }
+    },
+    "volcengine_ark": {
+      "provider_config": "config/providers/volcengine_ark_multi_model.json",
+      "transport": "openai_chat_completions",
+      "key_loader": "tools/provider_keychain.sh run volcengine_ark",
+      "profiles": {}
+    }
+  }
+}

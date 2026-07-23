@@ -1,0 +1,19 @@
+{
+  "details": {
+    "score": {
+      "effective_recall": 11,
+      "effective_recall_rate": 0.4782608695652174,
+      "formal_denominator": 23,
+      "invalid_anchor_observation": 4,
+      "miss": 8,
+      "semantic_shadow": 7,
+      "strict_hit": 4,
+      "strict_hit_rate": 0.17391304347826086,
+      "surface_coverage": 15,
+      "surface_coverage_rate": 0.6521739130434783
+    }
+  },
+  "schema_version": "model-benchmark-state-v1",
+  "status": "completed_candidate_scored",
+  "updated_at": "2026-07-23T05:33:40.939592+08:00"
+}

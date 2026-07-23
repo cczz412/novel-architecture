@@ -1,0 +1,249 @@
+{
+  "schema_version": "model-benchmark-preflight-v1",
+  "status": "pass_zero_call_prepared",
+  "model_api_calls": 0,
+  "network_attempts": 0,
+  "benchmark": {
+    "schema_version": "model-benchmark-v1",
+    "benchmark_id": "MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723",
+    "stage_id": "neutral_extract_x01_ch0003_v3_t02",
+    "provider": "longcat_platform",
+    "model": "LongCat-2.0",
+    "profile": "thinking_prompt_json",
+    "swap_module": "M04",
+    "write_root": "experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723",
+    "single_sample_no_rerun": true,
+    "candidate_only": true,
+    "temperature_policy": {
+      "default_temperature": 0.2,
+      "actual_temperature": 0.2,
+      "is_diagnostic_exception": false,
+      "diagnostic_reason": null
+    },
+    "created_at": "2026-07-23T07:08:39.177377+08:00"
+  },
+  "source_pins": {
+    "status": "pass",
+    "rows": [
+      {
+        "name": "baseline_request",
+        "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/prepared_requests/ch0003.json",
+        "sha256": "18fe2a9e9d2f0a4d48b5b4de29803a90c0db0fe1087080ff8f68d00b81e98eb4"
+      },
+      {
+        "name": "chapter_text",
+        "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/inputs/chapters/0003_第3章_梅丽莎（第一更求推荐票）.txt",
+        "sha256": "96f5e17cbec15433b5d00bef18912eb39710ad67962e3716bca37203d4c06288"
+      },
+      {
+        "name": "evidence_catalog",
+        "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/inputs/evidence_catalogs/ch0003.json",
+        "sha256": "2cc50e9a0c8b5fb807641e09c74f1748cbe423bf0fa700dbbbaa84ba20e58132"
+      },
+      {
+        "name": "prompt_package",
+        "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/prompt_frozen/事实说明书注入包_v3.json",
+        "sha256": "a302920537349d37c75d5bac9df19a83bfab667891458ef65de9d98e84bc2116"
+      },
+      {
+        "name": "gold_pointer",
+        "path": "config/gold/X01_ch0003_structure_gold_current.json",
+        "sha256": "6a5c785dc98381ff4d9b7e207c599c29914f394e4b43e399d37f65093cc5a60c"
+      },
+      {
+        "name": "gold_file",
+        "path": "reports/Z73_第3章金标v1.2定稿转正_20260721/第3章结构层金标v1.2.json",
+        "sha256": "0df08ede4fa1a33f4bd9e1aea3e45387c8d77131ce79ff1496fe1320fa48a10e"
+      }
+    ]
+  },
+  "copied_inputs": [
+    {
+      "source": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/prepared_requests/ch0003.json",
+      "source_sha256": "18fe2a9e9d2f0a4d48b5b4de29803a90c0db0fe1087080ff8f68d00b81e98eb4",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/baseline_request.json",
+      "target_sha256": "18fe2a9e9d2f0a4d48b5b4de29803a90c0db0fe1087080ff8f68d00b81e98eb4"
+    },
+    {
+      "source": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/inputs/chapters/0003_第3章_梅丽莎（第一更求推荐票）.txt",
+      "source_sha256": "96f5e17cbec15433b5d00bef18912eb39710ad67962e3716bca37203d4c06288",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/chapter.txt",
+      "target_sha256": "96f5e17cbec15433b5d00bef18912eb39710ad67962e3716bca37203d4c06288"
+    },
+    {
+      "source": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/inputs/evidence_catalogs/ch0003.json",
+      "source_sha256": "2cc50e9a0c8b5fb807641e09c74f1748cbe423bf0fa700dbbbaa84ba20e58132",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/evidence_catalog.json",
+      "target_sha256": "2cc50e9a0c8b5fb807641e09c74f1748cbe423bf0fa700dbbbaa84ba20e58132"
+    },
+    {
+      "source": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/prompt_frozen/事实说明书注入包_v3.json",
+      "source_sha256": "a302920537349d37c75d5bac9df19a83bfab667891458ef65de9d98e84bc2116",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/prompt_package.json",
+      "target_sha256": "a302920537349d37c75d5bac9df19a83bfab667891458ef65de9d98e84bc2116"
+    },
+    {
+      "source": "config/model_benchmarks/stages/neutral_extract_x01_ch0003_v3_t02.json",
+      "source_sha256": "9008a19733ece1c2e3cb66e7011fd5b28a46c6d91c3b4a068d62abf2c8da6c94",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/stage_contract.json",
+      "target_sha256": "9008a19733ece1c2e3cb66e7011fd5b28a46c6d91c3b4a068d62abf2c8da6c94"
+    },
+    {
+      "source": "config/model_benchmarks/defaults.json",
+      "source_sha256": "732168f0f54c050578df2ac091a184974a0b63b7622980d9b68f5bbf9bbfa05c",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/benchmark_defaults.json",
+      "target_sha256": "732168f0f54c050578df2ac091a184974a0b63b7622980d9b68f5bbf9bbfa05c"
+    },
+    {
+      "source": "config/providers/longcat_platform.json",
+      "source_sha256": "6e595a7b5ac8cfeb8bfcff3037c32a7f5240f47d0c0ab70aec7e3f3f9157c17d",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/provider_config.json",
+      "target_sha256": "6e595a7b5ac8cfeb8bfcff3037c32a7f5240f47d0c0ab70aec7e3f3f9157c17d"
+    },
+    {
+      "source": "config/model_benchmarks/provider_adapters.json",
+      "source_sha256": "5f0b144e430cd3ac1c59ef979a393a6a7abd2dfb9302c201658f09b16eee20bd",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/provider_adapters.json",
+      "target_sha256": "5f0b144e430cd3ac1c59ef979a393a6a7abd2dfb9302c201658f09b16eee20bd"
+    },
+    {
+      "source": "tools/pipeline_common/model_benchmark.py",
+      "source_sha256": "d4ac89dc44d40f824dd46f010da73b7d05ae87b4ab2f7289a3e271ed018383f4",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/runtime_dependencies/tools/pipeline_common/model_benchmark.py",
+      "target_sha256": "d4ac89dc44d40f824dd46f010da73b7d05ae87b4ab2f7289a3e271ed018383f4"
+    },
+    {
+      "source": "tools/zbatch_modules/z83_retry_transport.py",
+      "source_sha256": "af656731cd70eb482c5b9a5f4a95b5cff7fb3aa703159e68aa455753fecf45ee",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/runtime_dependencies/tools/zbatch_modules/z83_retry_transport.py",
+      "target_sha256": "af656731cd70eb482c5b9a5f4a95b5cff7fb3aa703159e68aa455753fecf45ee"
+    },
+    {
+      "source": "tools/zbatch_modules/neutral_extract.py",
+      "source_sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/runtime_dependencies/tools/zbatch_modules/neutral_extract.py",
+      "target_sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"
+    },
+    {
+      "source": "tools/z75_multidirection_score.py",
+      "source_sha256": "74f4565269f046d29bd7b64a6d6f46948e66782f695bf22539d980de4a7cb3f1",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/runtime_dependencies/tools/z75_multidirection_score.py",
+      "target_sha256": "74f4565269f046d29bd7b64a6d6f46948e66782f695bf22539d980de4a7cb3f1"
+    },
+    {
+      "source": "tools/z79_fact_sheet_v3_pilot.py",
+      "source_sha256": "33016f0b9988362e1e43a3cfae8cd39b9d0fea969737e8d77acb571fc648671d",
+      "target": "/Users/a1234/挣钱/小说架构/experiments/model_benchmarks/MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r02_20260723/inputs/runtime_dependencies/tools/z79_fact_sheet_v3_pilot.py",
+      "target_sha256": "33016f0b9988362e1e43a3cfae8cd39b9d0fea969737e8d77acb571fc648671d"
+    }
+  ],
+  "protected_before": {
+    "source_pins": {
+      "status": "pass",
+      "rows": [
+        {
+          "name": "baseline_request",
+          "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/prepared_requests/ch0003.json",
+          "sha256": "18fe2a9e9d2f0a4d48b5b4de29803a90c0db0fe1087080ff8f68d00b81e98eb4"
+        },
+        {
+          "name": "chapter_text",
+          "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/inputs/chapters/0003_第3章_梅丽莎（第一更求推荐票）.txt",
+          "sha256": "96f5e17cbec15433b5d00bef18912eb39710ad67962e3716bca37203d4c06288"
+        },
+        {
+          "name": "evidence_catalog",
+          "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/inputs/evidence_catalogs/ch0003.json",
+          "sha256": "2cc50e9a0c8b5fb807641e09c74f1748cbe423bf0fa700dbbbaa84ba20e58132"
+        },
+        {
+          "name": "prompt_package",
+          "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/prompt_frozen/事实说明书注入包_v3.json",
+          "sha256": "a302920537349d37c75d5bac9df19a83bfab667891458ef65de9d98e84bc2116"
+        },
+        {
+          "name": "gold_pointer",
+          "path": "config/gold/X01_ch0003_structure_gold_current.json",
+          "sha256": "6a5c785dc98381ff4d9b7e207c599c29914f394e4b43e399d37f65093cc5a60c"
+        },
+        {
+          "name": "gold_file",
+          "path": "reports/Z73_第3章金标v1.2定稿转正_20260721/第3章结构层金标v1.2.json",
+          "sha256": "0df08ede4fa1a33f4bd9e1aea3e45387c8d77131ce79ff1496fe1320fa48a10e"
+        }
+      ]
+    },
+    "formal_and_default": {
+      "formal": {
+        "references/diagnostic-returns/Z66_中性原子事件请求诊断_三问法_20260720/原始回包/第3章LLM请求诊断_修正版与抽取结果/修正版_第3章_chat_completions_request.json": "5c19b48512117dd1cd52db5e76f94dcaa4802eb427df6108a802ab6689567e3d",
+        "reports/Z56_金标双轨分层与全链体检_20260719/第3章结构层金标v1.1.json": "8cca04f06ba21048e15420f178163c646d2effeead0970697fafbf5f45174b7c",
+        "runs/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/02_verify/valid_records.json": "dafa16901a6edb5018a5176f3f5f7388273e72051def7fe4e997489d01e804ba",
+        "config/defaults/zbatch_v1.2_full_chain.json": "b23b5cce26b9cfe584dd97dbff6422efa2b22ccd5cba38c6ed6a44c4543bc0a1",
+        "config/contracts/classify_rules_v1.2_semantic_identity_v1.json": "45f7610b86d5962e0d3d9d4d95886aad9022f1beaece200c2452b9a361f6c108",
+        "config/contracts/sensenova_stage_sampling_v1.json": "8ac9f7fa639aba7a7500948438df32b5bd054895ceb8362b1402ae76f0fdbb8c",
+        "config/providers/sensenova_modular_v1.json": "fc38a198e30bd58d4022d8cf0804979d428b75f1a81c24d560edeba209495dfb",
+        "config/experiments/Z59_第3章抽取评分预写尺_v1.json": "457e6f889c5133b7585d537aa041373bd62175e4bdfb003fbfd0b6d7f0320bda",
+        "tools/zbatch.py": "160c28b3ef0210fd05c392f713534cf1ffdf041fa596ec790545b64955280850",
+        "config/gold/X01_ch0003_structure_gold_current.json": "6a5c785dc98381ff4d9b7e207c599c29914f394e4b43e399d37f65093cc5a60c",
+        "reports/Z73_第3章金标v1.2定稿转正_20260721/第3章结构层金标v1.2.json": "0df08ede4fa1a33f4bd9e1aea3e45387c8d77131ce79ff1496fe1320fa48a10e"
+      },
+      "outbox": {
+        "files": 18,
+        "bytes": 942264,
+        "sha256": "d67a3be7df95bc34089237213049b201d6f8e22c2b971d7f6b76f48e125cc38d"
+      },
+      "z75_untracked_artifacts": {
+        "files": 293,
+        "bytes": 6151549,
+        "sha256": "60a3545a061fddd8d7d0f1fbf2f76eb996624fedd7079cc7a47c545b15580e87"
+      }
+    }
+  },
+  "request": {
+    "body_sha256": "b0925f6bb71cbe91c8bd93258c6a5d0bca3ef116a34a3759d39fe53049fc603e",
+    "artifact_sha256": "018699abfe4c6836eef77aae0d6fa3da353792d06716884f92fc7d26610178cd",
+    "messages_sha256": "8b261fb41e20abe33c7ebbc47d70cd3bcdbb1074c87e4342207929fbc4099593",
+    "messages_equal_baseline": true,
+    "changed_paths": [
+      "$.model",
+      "$.n",
+      "$.reasoning_effort",
+      "$.response_format",
+      "$.thinking"
+    ],
+    "gold_or_answer_hits": []
+  },
+  "runtime_dependencies": [
+    {
+      "path": "tools/pipeline_common/model_benchmark.py",
+      "sha256": "d4ac89dc44d40f824dd46f010da73b7d05ae87b4ab2f7289a3e271ed018383f4",
+      "frozen_path": "inputs/runtime_dependencies/tools/pipeline_common/model_benchmark.py",
+      "frozen_sha256": "d4ac89dc44d40f824dd46f010da73b7d05ae87b4ab2f7289a3e271ed018383f4"
+    },
+    {
+      "path": "tools/zbatch_modules/z83_retry_transport.py",
+      "sha256": "af656731cd70eb482c5b9a5f4a95b5cff7fb3aa703159e68aa455753fecf45ee",
+      "frozen_path": "inputs/runtime_dependencies/tools/zbatch_modules/z83_retry_transport.py",
+      "frozen_sha256": "af656731cd70eb482c5b9a5f4a95b5cff7fb3aa703159e68aa455753fecf45ee"
+    },
+    {
+      "path": "tools/zbatch_modules/neutral_extract.py",
+      "sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7",
+      "frozen_path": "inputs/runtime_dependencies/tools/zbatch_modules/neutral_extract.py",
+      "frozen_sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"
+    },
+    {
+      "path": "tools/z75_multidirection_score.py",
+      "sha256": "74f4565269f046d29bd7b64a6d6f46948e66782f695bf22539d980de4a7cb3f1",
+      "frozen_path": "inputs/runtime_dependencies/tools/z75_multidirection_score.py",
+      "frozen_sha256": "74f4565269f046d29bd7b64a6d6f46948e66782f695bf22539d980de4a7cb3f1"
+    },
+    {
+      "path": "tools/z79_fact_sheet_v3_pilot.py",
+      "sha256": "33016f0b9988362e1e43a3cfae8cd39b9d0fea969737e8d77acb571fc648671d",
+      "frozen_path": "inputs/runtime_dependencies/tools/z79_fact_sheet_v3_pilot.py",
+      "frozen_sha256": "33016f0b9988362e1e43a3cfae8cd39b9d0fea969737e8d77acb571fc648671d"
+    }
+  ],
+  "created_at": "2026-07-23T07:08:39.189194+08:00"
+}

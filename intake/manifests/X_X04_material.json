@@ -1,0 +1,16 @@
+{
+  "batch": "X",
+  "item": "X04",
+  "kind": "material",
+  "registered_at": "2026-07-17T02:50:36+08:00",
+  "source_path": "TEMP/X批材料包_20260716/books/X04_仙笼",
+  "registered_path": "TEMP/X批材料包_20260716/books/X04_仙笼",
+  "copied": false,
+  "fingerprint": {
+    "kind": "directory",
+    "files": 203,
+    "bytes": 2011691,
+    "sha256": "d404ac03b4ee2e769377edce02231667593fa7b508359eaa47be2d2d1149a81a"
+  },
+  "provenance": "X批本地原样材料，200章"
+}

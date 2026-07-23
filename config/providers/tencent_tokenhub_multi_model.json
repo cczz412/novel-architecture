@@ -1,0 +1,158 @@
+{
+  "schema_version": "provider-channel-v1",
+  "provider": "tencent_tokenhub",
+  "display_name": "腾讯云 TokenHub（广州／中国大陆）",
+  "base_url": "https://tokenhub.tencentmaas.com/v1",
+  "endpoint": "/chat/completions",
+  "model_catalog_endpoint": "/models",
+  "model_catalog_check_required_before_run": true,
+  "api_key_env": "TENCENT_TOKENHUB_API_KEY",
+  "response_format_compatibility": "openai_chat_completions",
+  "enabled_by_default": false,
+  "default_model": null,
+  "deepseek_v4_pro_benchmark_profile": "deepseek_v4_pro_medium_prompt_json",
+  "status": "configured_key_pending_not_wired_to_default",
+  "model_selection_rule": "只允许显式选择精确 model_id；正式采样前必须用 /v1/models 确认该钥匙下模型状态为 online，不得自动换近似型号。",
+  "quota_note": "CZ 报告各模型有100万额度；腾讯新人免费体验包官方口径为每模型100万Token、90天有效，真实剩余额度始终以控制台为准。",
+  "models": [
+    {
+      "requested_name": "Hy3",
+      "model_id": "hy3",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 262144,
+      "max_input_tokens": 196608,
+      "max_output_tokens": 131072
+    },
+    {
+      "requested_name": "Hy-Role",
+      "model_id": "hy-role",
+      "call_ready": true,
+      "capabilities": ["role_play"],
+      "context_tokens": 32768,
+      "max_input_tokens": 28672,
+      "max_output_tokens": 4096,
+      "benchmark_note": "未标结构化输出，不进入现有小说事实抽取兼容档。"
+    },
+    {
+      "requested_name": "DeepSeek-V4-Flash 原厂直供",
+      "model_id": "deepseek-v4-flash-202605",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 1048576,
+      "max_input_tokens": 1048576,
+      "max_output_tokens": 393216
+    },
+    {
+      "requested_name": "DeepSeek-V4-Pro 原厂直供",
+      "model_id": "deepseek-v4-pro-202606",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 1048576,
+      "max_input_tokens": 1048576,
+      "max_output_tokens": 393216
+    },
+    {
+      "requested_name": "DeepSeek-V4-Flash",
+      "model_id": "deepseek-v4-flash",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 1048576,
+      "max_input_tokens": 1048576,
+      "max_output_tokens": 393216
+    },
+    {
+      "requested_name": "DeepSeek-V4-Pro",
+      "model_id": "deepseek-v4-pro",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 1048576,
+      "max_input_tokens": 1048576,
+      "max_output_tokens": 393216
+    },
+    {
+      "requested_name": "GLM-5.2",
+      "model_id": "glm-5.2",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 1048576,
+      "max_input_tokens": 1048576,
+      "max_output_tokens": 131072
+    },
+    {
+      "requested_name": "GLM-5.1",
+      "model_id": "glm-5.1",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 204800,
+      "max_input_tokens": 204800,
+      "max_output_tokens": 131072
+    },
+    {
+      "requested_name": "Kimi K2.7 Code HighSpeed",
+      "model_id": "kimi-k2.7-code-highspeed",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 262144,
+      "max_input_tokens": 262144,
+      "max_output_tokens": 262144
+    },
+    {
+      "requested_name": "Kimi K3",
+      "model_id": "kimi-k3",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 1048576,
+      "max_input_tokens": 1048576,
+      "max_output_tokens": 1048576
+    },
+    {
+      "requested_name": "Kimi K2.7 Code",
+      "model_id": "kimi-k2.7-code",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 262144,
+      "max_input_tokens": 262144,
+      "max_output_tokens": 262144
+    },
+    {
+      "requested_name": "Kimi-K2.6",
+      "model_id": "kimi-k2.6",
+      "call_ready": true,
+      "capabilities": ["thinking", "structured_output", "function_calling", "cache"],
+      "context_tokens": 262144,
+      "max_input_tokens": 262144,
+      "max_output_tokens": 262144
+    },
+    {
+      "requested_name": "MiniMax-M3",
+      "model_id": "minimax-m3",
+      "call_ready": true,
+      "capabilities": ["thinking", "function_calling", "cache"],
+      "context_tokens": 1048576,
+      "max_input_tokens": 1048576,
+      "max_output_tokens": null,
+      "benchmark_note": "官方未标结构化输出且未给最大输出值，不进入现有小说事实抽取兼容档。"
+    },
+    {
+      "requested_name": "MiniMax-M2.7",
+      "model_id": "minimax-m2.7",
+      "call_ready": true,
+      "capabilities": ["thinking", "function_calling", "cache"],
+      "context_tokens": 204800,
+      "max_input_tokens": 204800,
+      "max_output_tokens": 131072,
+      "benchmark_note": "官方未标结构化输出，不进入现有小说事实抽取兼容档。"
+    }
+  ],
+  "official_docs": [
+    "https://cloud.tencent.com/document/product/1823/130078",
+    "https://cloud.tencent.com/document/product/1823/130079",
+    "https://cloud.tencent.com/document/product/1823/130051",
+    "https://cloud.tencent.com/document/product/1823/131208",
+    "https://cloud.tencent.com/document/product/1823/132252",
+    "https://cloud.tencent.com/document/product/1823/132248",
+    "https://cloud.tencent.com/document/product/1823/133811",
+    "https://cloud.tencent.com/document/product/1823/130053"
+  ]
+}

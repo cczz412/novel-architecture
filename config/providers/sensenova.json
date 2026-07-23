@@ -1,0 +1,22 @@
+{
+  "provider": "sensenova",
+  "base_url": "https://token.sensenova.cn/v1",
+  "endpoint": "/chat/completions",
+  "allowed_models": [
+    "deepseek-v4-flash",
+    "sensenova-6.7-flash-lite"
+  ],
+  "model": "deepseek-v4-flash",
+  "api_key_env": "SENSENOVA_API_KEY",
+  "temperature": 0.2,
+  "reasoning_effort": "medium",
+  "timeout_seconds": 600,
+  "network_attempts": 3,
+  "max_tokens_by_stage": {
+    "extract": 8000,
+    "thin": 16000,
+    "fold": 12000,
+    "answer": 12000,
+    "compare": 12000
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "structure-gold-current-pointer-v1",
+  "pointer_id": "Z74B-B04-unit0003-structure-gold-current",
+  "status": "active",
+  "book_id": "Z74B-B04",
+  "book": "无限恐怖",
+  "inventory_unit": 3,
+  "label_tier": "gold",
+  "provenance_label": "Codex验闸＋Cursor攻击定稿、非CZ亲验",
+  "active_gold": {
+    "version": "v1.3",
+    "path": "reports/Z93_五本结构层金标v1.3转正_20260723/formal_gold/B04_无限恐怖_库存第0003单元_结构层金标v1.3.json",
+    "sha256": "2577db655d76695ed77a5a036281a851a2d3d5332ed48b0f1272f6fe115af540",
+    "schema_version": "structure-gold-v1.3",
+    "formal_denominator": 21,
+    "formal_part_total": 24,
+    "activated_by": "第93道续令③",
+    "activated_at": "2026-07-23T15:20:00+08:00"
+  },
+  "predecessor": {
+    "path": "reports/Z93_五本金标候选修订_20260723/revised_candidates/B04_无限恐怖_库存第0003单元_结构层银标修订候选v1.3.json",
+    "sha256": "873d2cab6f644d6254be463e59340275fe5e62b97dd11c3889f421e51b4c5e55",
+    "status": "archived_silver_candidate_not_formal_fallback",
+    "mutation": "none"
+  },
+  "consumer_rule": "后续验闸与跨书对照从本指针取正式金标；provenance随件携带；升默认或接现役链另拍。",
+  "rollback": "本书没有前代正式金标；回退时停用本指针并保留v1.3正式件，不得把银标候选冒充回退后的正式入口。"
+}

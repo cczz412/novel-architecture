@@ -1,0 +1,51 @@
+{
+  "provider": "deepseek_official",
+  "enabled_by_default": false,
+  "base_url": "https://api.deepseek.com",
+  "endpoint": "/chat/completions",
+  "allowed_models": [
+    "deepseek-v4-pro"
+  ],
+  "model": "deepseek-v4-pro",
+  "api_key_env": "DEEPSEEK_API_KEY",
+  "thinking": {
+    "type": "enabled"
+  },
+  "reasoning_effort": "high",
+  "response_format_compatibility": "openai_chat_completions",
+  "capabilities": {
+    "context_length": "1M",
+    "max_output_length": "384K",
+    "json_output": true,
+    "tool_calls": true
+  },
+  "request_rules": {
+    "omit_in_thinking_mode": [
+      "temperature",
+      "top_p",
+      "presence_penalty",
+      "frequency_penalty"
+    ],
+    "reasoning_effort_aliases": {
+      "low": "high",
+      "medium": "high",
+      "xhigh": "max"
+    }
+  },
+  "status": "permanently_disabled_unless_current_explicit_positive_user_authorization",
+  "activation_policy_ref": "config/providers/provider_access_policy.json#deepseek_official",
+  "activation_policy": {
+    "default_action": "deny",
+    "positive_user_intent_required": true,
+    "required_user_wording": "用官方的API",
+    "negative_or_ambiguous_wording_authorizes": false,
+    "approval_scope": "current_task_one_command_only",
+    "loader_ack_env": "CZ_DEEPSEEK_OFFICIAL_API_APPROVAL",
+    "loader_ack_exact_value": "USE_OFFICIAL_DEEPSEEK_API_ONCE"
+  },
+  "official_docs": [
+    "https://api-docs.deepseek.com/zh-cn/",
+    "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+    "https://api-docs.deepseek.com/zh-cn/guides/thinking_mode/"
+  ]
+}

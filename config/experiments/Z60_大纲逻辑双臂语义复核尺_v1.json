@@ -1,0 +1,60 @@
+{
+  "schema_version": "z60-b-semantic-review-rubric-v1",
+  "task": "第60道试点B：大纲／逻辑句段实体供料双臂语义复核",
+  "frozen_before_model_calls": true,
+  "target_chapters": [3, 4, 5, 13, 19],
+  "arms": {
+    "base": "不带实体表",
+    "entity": "含全程演员表输入"
+  },
+  "comparison_boundary": "两臂同池同章同模型同参数，各n=1；并列展示样张，不直接判长期胜负，也不排除采样波动",
+  "source_of_truth": "每条逻辑句只能由其source_event_ids指向的第56道落盘中性事件支撑；实体表只可帮助名称对齐，不可独立提供故事事实",
+  "row_review_fields": [
+    "arm",
+    "chapter",
+    "item_id",
+    "source_event_ids",
+    "source_semantic_support",
+    "actor_action_object_completeness",
+    "causal_claim_support",
+    "state_change_support",
+    "entity_table_effect",
+    "verdict",
+    "judgement"
+  ],
+  "allowed_values": {
+    "source_semantic_support": ["full", "partial", "contradiction", "unsupported"],
+    "actor_action_object_completeness": ["complete", "partial", "not_applicable"],
+    "causal_claim_support": ["supported", "no_causal_claim", "unsupported"],
+    "state_change_support": ["supported", "explicit_none_correct", "incorrect"],
+    "entity_table_effect": ["none", "normalization_only", "supported_detail_change", "entity_table_only_fact"],
+    "verdict": ["pass", "quality_loss", "new_failure"]
+  },
+  "hard_stop_triggers": [
+    "schema_or_source_id_contract_failure",
+    "unsupported_by_source_events",
+    "contradiction_with_source_events",
+    "unsupported_causal_claim",
+    "incorrect_state_change",
+    "entity_table_only_story_fact"
+  ],
+  "aggregate_metrics": [
+    "source_event_id_coverage",
+    "semantically_supported_item_rate",
+    "actor_action_object_complete_rate",
+    "supported_or_explicit_none_state_rate",
+    "unsupported_detail_count"
+  ],
+  "diff_categories": [
+    "exact_same",
+    "normalization_only",
+    "more_specific_supported",
+    "less_specific",
+    "different_grouping",
+    "unsupported_change",
+    "base_only",
+    "entity_only"
+  ],
+  "shadow_score_policy": "禁止直接引用机器影子分；如需影子类判断，逐条语义复核后另列",
+  "decision_policy": "结果只进候选池；任一hard_stop_triggers成立即硬停，不修提示、不重跑、不启动补样"
+}

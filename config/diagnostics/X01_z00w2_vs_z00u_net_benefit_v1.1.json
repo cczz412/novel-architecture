@@ -1,0 +1,145 @@
+{
+  "schema_version": "z-net-benefit-recompute-config-v1.1",
+  "run_id": "Z00y2_X01_净收益零调用重算_20章_v1.1_20260718",
+  "comparison_id": "Z00y2_Z00w2_vs_Z00u_X01_ch1_20",
+  "model_calls": 0,
+  "candidate_pool_eligible": false,
+  "outbox_allowed": false,
+  "baseline": {
+    "path": "runs/Z00u_X01_extract_v1.3同范围对照_20章_v1.0_20260718/02_verify/valid_records.json",
+    "sha256": "343be7c9a40adb429e73d60214b18c49709e732981affd105a13897425fb2e56"
+  },
+  "candidate": {
+    "path": "runs/Z00w2_X01_分类规则v1.2审查修订重放_20章_v1.1_20260718/02_verify/valid_records.json",
+    "sha256": "f569d75739f3e7b4914e72219ef8a7a27aa75c4cc8623046b5edfc09eb190dc0"
+  },
+  "old_candidate": {
+    "path": "runs/Z00s_X01_20章分类正门兼容_20章_v1.0_20260718/02_verify/valid_records.json",
+    "sha256": "cd7cbe8dff9eed8abcfd3851268bbe08764814c7623331e80505154e0ad506b7"
+  },
+  "prior_alignment": {
+    "path": "reports/Z00u_extract_v1.3同范围对照_20260718/语义对齐与三闸重算.json",
+    "sha256": "fc614f16a633504edcea730c572e4544db2b6995c31e52504b67358323ea277d"
+  },
+  "candidate_metrics": {
+    "path": "runs/Z00w2_X01_分类规则v1.2审查修订重放_20章_v1.1_20260718/01_classify/metrics.json",
+    "sha256": "3e62da8807f76ce047baceff8060d8a41f3943c3c4c351b417bd8a93f342eee6"
+  },
+  "protected_sha256": {
+    "tools/zbatch.py": "0b9334a34fcc5b5f866f43b2b3bc40aeff4cedf79a8ff83c51957496061a8080",
+    "tools/zbatch_modules/classify_rules.py": "76b3c1e208abaf0ab47c8dafee4c4e1ccb7d6d4cb3d364fc30afa00c6179eb7b",
+    "tools/zbatch_modules/__init__.py": "f40a79b1eab6a95883565425104a95016c0d0c3997cbedabdce7eaeb2580f293"
+  },
+  "recoveries": [
+    {
+      "recovery_id": "REC-01",
+      "label": "免费塔罗章末待执行安排",
+      "candidate_records": [
+        {
+          "record_id": "B-C0004-01",
+          "type": "B",
+          "source_event_id": "EV-C0004-05",
+          "anchors": [
+            {"chapter": 4, "anchor_id": "E0174"},
+            {"chapter": 4, "anchor_id": "E0212"},
+            {"chapter": 4, "anchor_id": "E0214"}
+          ],
+          "required_anchor_fragments": ["第一位来占卜的人，免费"],
+          "required_record_fragments": ["完成免费占卜并取得占卜结果"]
+        }
+      ],
+      "covers": {"main": [], "strict": ["S-L02"], "wide": []},
+      "counting_boundary": "只恢复第4章已接受且待执行的期待；第5章实际占卜仍是 T4 提取靶，不能冒充已覆盖。"
+    },
+    {
+      "recovery_id": "REC-02",
+      "label": "延迟复发世界规律与个人未结项双收",
+      "candidate_records": [
+        {
+          "record_id": "C-C0013-01",
+          "type": "C",
+          "source_event_id": "EV-C0013-14",
+          "anchors": [
+            {"chapter": 13, "anchor_id": "E0120"},
+            {"chapter": 13, "anchor_id": "E0121"}
+          ],
+          "required_anchor_fragments": ["理论上"],
+          "required_record_fragments": ["风险是否真的能够彻底解除"]
+        },
+        {
+          "record_id": "D-C0013-02",
+          "type": "D",
+          "source_event_id": "EV-C0013-15",
+          "anchors": [
+            {"chapter": 13, "anchor_id": "E0129"}
+          ],
+          "required_anchor_fragments": ["事情结束", "恢复正常", "它会"],
+          "required_record_fragments": ["仍有时可能", "不得提升为必然铁律"],
+          "exact_fields": {"source_level": "述", "scope_mode": "probabilistic"}
+        }
+      ],
+      "covers": {"main": ["M-L02"], "strict": ["S-L03"], "wide": ["非凡事件可能延迟复发"]},
+      "counting_boundary": "C 与 D 是同一事实的个人债和概率规律两种读法，只恢复一个旧失分单位，不按两条记录加两分。"
+    },
+    {
+      "recovery_id": "REC-03",
+      "label": "查尼斯门局部禁忌改收人物认知变化",
+      "candidate_records": [
+        {
+          "record_id": "A-C0019-01",
+          "type": "A",
+          "source_event_id": "EV-C0019-05",
+          "anchors": [
+            {"chapter": 19, "anchor_id": "E0119"},
+            {"chapter": 19, "anchor_id": "E0120"}
+          ],
+          "required_anchor_fragments": ["否则会沾染厄运"],
+          "required_record_fragments": ["随意靠近查尼斯门会沾染厄运", "局部禁忌"],
+          "exact_fields": {"source_level": "述"}
+        }
+      ],
+      "covers": {"main": ["M-L04"], "strict": ["S-L05"], "wide": ["查尼斯门风险部分"]},
+      "counting_boundary": "旧基线把它标 D，新链按 A 保存同一可消费事实；换类型不重复计分，因斯外貌仍缺。"
+    }
+  ],
+  "remaining_absent_spans": [
+    {
+      "id": "S-L01",
+      "label": "罗塞尔可能也是穿越者的判断",
+      "chapter": 4,
+      "anchor_ids": ["E0208", "E0209"]
+    },
+    {
+      "id": "S-L04",
+      "label": "因斯·赞格威尔的外貌识别信息",
+      "chapter": 19,
+      "anchor_ids": ["E0175", "E0176", "E0177", "E0178", "E0179"]
+    }
+  ],
+  "loss_transforms": {
+    "main": {"recovered_ids": ["M-L02", "M-L04"]},
+    "strict": {"recovered_ids": ["S-L02", "S-L03", "S-L05"]},
+    "wide": {
+      "expected_old_lost_units": [
+        "罗塞尔可能也是穿越者",
+        "非凡事件可能延迟复发",
+        "因斯外貌与查尼斯门风险（宽松合并为同一封印物调查侧信息段）"
+      ],
+      "changes": [
+        "非凡事件延迟复发已恢复",
+        "查尼斯门风险已恢复；旧合并组收窄为只剩因斯外貌"
+      ],
+      "remaining_lost_units": [
+        "罗塞尔可能也是穿越者",
+        "因斯·赞格威尔外貌识别信息"
+      ]
+    }
+  },
+  "wrong_d_derivation": {
+    "expected_old_wrong_d_count": 0,
+    "expected_new_d_ids": ["D-C0013-02"],
+    "approved_new_d_ids": ["D-C0013-02"],
+    "reason": "Z00s 错误D为0；Z00w2 唯一新增D是第35道拍板的概率限定述源规律，锚E0129且不升铁律。"
+  },
+  "expected_net": {"main": 17, "strict": 5, "wide": 26}
+}

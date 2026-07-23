@@ -1,0 +1,80 @@
+{
+  "schema_version": "z-nonthinking-pilot-v1",
+  "batch_id": "Z01h",
+  "method": "omit_reasoning_effort",
+  "run_id": "Z01h_X01_非思考模式_5章_v1.0_20260719",
+  "book_dir": "TEMP/X批材料包_20260716/books/X01_诡秘之主",
+  "chapters": [3, 4, 5, 13, 19],
+  "audit_segment_size": 24,
+  "default_registry": {
+    "path": "config/defaults/zbatch_v1.2_full_chain.json",
+    "sha256": "61bc6ca45fe450d382995b29dd998c9119ade2db6049d29963c83eee30c5f9da"
+  },
+  "default_commit_marker": {
+    "path": "config/defaults/zbatch_v1.2_full_chain.COMMITTED.json",
+    "sha256": "9259d3958e97aed982a798545ae889e3c608a3c8ef12dad87ea9f18f9cdddc48"
+  },
+  "prompt": {
+    "path": "work/zbatch_prompts/candidates/extract_event_only_no_self_audit_v1.1.md",
+    "sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f"
+  },
+  "provider": {
+    "path": "config/providers/sensenova_modular_v1.json",
+    "sha256": "fc38a198e30bd58d4022d8cf0804979d428b75f1a81c24d560edeba209495dfb"
+  },
+  "stage_contract": {
+    "path": "config/contracts/sensenova_stage_sampling_v1.json",
+    "sha256": "8ac9f7fa639aba7a7500948438df32b5bd054895ceb8362b1402ae76f0fdbb8c",
+    "profile": "d_mod_cutover_v1",
+    "stage": "neutral_extract"
+  },
+  "targets": {
+    "path": "config/diagnostics/X01_ch3_4_5_13_19_known_targets_v2.json",
+    "sha256": "9e0b5b7d966fdfbfdc4a6b666177b9777a184723ad0e0ed403323224136bb172"
+  },
+  "old_event_samples": {
+    "path": "config/diagnostics/X01_ch3_4_5_13_19_old_event_samples_v1.json",
+    "sha256": "0c3a7dbd2580dd965403fa49194f6e98a90d253e2b296d2c02a41a43d3ccef66",
+    "source_run": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718",
+    "source_files": [
+      {"chapter": 3, "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0003.json", "sha256": "aeede6bdeb17cb18890060d519a8a9be5ce433d1b5b023d2de33fd0108e46eef"},
+      {"chapter": 4, "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0004.json", "sha256": "ab611cf96d34271fbd24352792cf1d5a32c72d63b6a9400a70d0c0ef722e95d6"},
+      {"chapter": 5, "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0005.json", "sha256": "695782071913d527f10624233c3dc046595222524063770e5d46d213c32285cf"},
+      {"chapter": 13, "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0013.json", "sha256": "c4a2f69603cdd782a93d265a871f4d7e4ec866ac4f793e35d6b868ffe911e323"},
+      {"chapter": 19, "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0019.json", "sha256": "d5055b74d1a6329f017f6124e0ab087a5451b0324640bdd25230ae72966f7318"}
+    ]
+  },
+  "baseline_usage_sources": [
+    {"chapter": 3, "case_id": "ch0003", "path": "runs/Z00p_X01_第1至20章正式扩大_20章_v1.0_20260718/usage.jsonl", "sha256": "7a74578bcbb474f2437e89dd4606b18b69ec4046bea5c23443a1257b93be22f6"},
+    {"chapter": 4, "case_id": "ch0004", "path": "runs/Z00p_X01_第1至20章正式扩大_20章_v1.0_20260718/usage.jsonl", "sha256": "7a74578bcbb474f2437e89dd4606b18b69ec4046bea5c23443a1257b93be22f6"},
+    {"chapter": 5, "case_id": "ch0005", "path": "runs/Z00p_X01_第1至20章正式扩大_20章_v1.0_20260718/usage.jsonl", "sha256": "7a74578bcbb474f2437e89dd4606b18b69ec4046bea5c23443a1257b93be22f6"},
+    {"chapter": 13, "case_id": "ch0013", "path": "runs/Z00q_X01_合同下限6字增量续跑_20章_v1.0_20260718/usage.jsonl", "sha256": "ff407b008256891a5c092c9ba6224aef588ce50256dfd56048859feb75412adf"},
+    {"chapter": 19, "case_id": "ch0019", "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/usage.jsonl", "sha256": "eac72fe0f7a7ce1f012e4e43f91eed68d042b4ee5987fd53d0ea7d53bbd34a23"}
+  ],
+  "protected_chain": {
+    "runner": {"path": "tools/zbatch.py", "sha256": "4090169dd53a71badd21d42d3c1c1e8809bd54ac46f461ab3e33137e94c3ca11"},
+    "neutral_extract": {"path": "tools/zbatch_modules/neutral_extract.py", "sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"},
+    "evidence_catalog": {"path": "tools/zbatch_modules/evidence_catalog.py", "sha256": "e20321e3c11f6c1c4dbcc904fce1aa97cc752d9c4ffaaee9b61f8836e39a3847"},
+    "api_transport": {"path": "tools/zbatch_modules/api_transport.py", "sha256": "60452d0538a34070df2e49a7246f2f29ddb94a6855f58de86f2524d18dba8d93"},
+    "classify_rules": {"path": "tools/zbatch_modules/classify_rules.py", "sha256": "76b3c1e208abaf0ab47c8dafee4c4e1ccb7d6d4cb3d364fc30afa00c6179eb7b"}
+  },
+  "experiment_code": {
+    "module": {"path": "tools/zbatch_modules/nonthinking_pilot.py", "sha256": "e774a912f93815cd12b96d956e76b7e9b0596154ade239d35db41e9f41a1859b"},
+    "cli": {"path": "tools/zbatch_nonthinking_pilot.py", "sha256": "9d2627b9f045fa856b789ddb9895428c022a5e549e5655f94f59037b5a4e074b"},
+    "tests": {"path": "tests/test_nonthinking_pilot.py", "sha256": "42d5af6a4a144412d865c3c2d4404aa4bf93890c7296bc7496d03b2e47492ea6"}
+  },
+  "baseline_transport": {
+    "model": "deepseek-v4-flash",
+    "temperature": 0.2,
+    "max_tokens": 16000,
+    "n": 1,
+    "reasoning_effort": "medium",
+    "response_format": {"type": "json_object"}
+  },
+  "transport_limits": {
+    "logical_samples": 5,
+    "max_network_attempts": 15
+  },
+  "permit_path": "work/zbatch_nonthinking/permits/Z01h.call_permit.json",
+  "rights": "仅内部结构研究；第44道解冻第41道件C，只跑五靶章单次采样，只登记质量与token／耗时对比；不固化、不升默认、不扩20章、不改分类规则、不写outbox。"
+}

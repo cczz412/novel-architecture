@@ -1,0 +1,51 @@
+{
+  "schema_version": "model-benchmark-prepared-verification-v1",
+  "status": "pass_twice_identical",
+  "first": {
+    "source_pins_sha256": "c892aac9bf007810498a05f0686e5e661c978af67ee06e2e791d635789106245",
+    "body_sha256": "b0925f6bb71cbe91c8bd93258c6a5d0bca3ef116a34a3759d39fe53049fc603e",
+    "artifact_sha256": "d5c7a86beea0bcbcf56b2afed249a9c1e6034378d6fff838a80482984d4ef2b8",
+    "messages_sha256": "8b261fb41e20abe33c7ebbc47d70cd3bcdbb1074c87e4342207929fbc4099593",
+    "messages_equal_baseline": true,
+    "changed_paths": [
+      "$.model",
+      "$.n",
+      "$.reasoning_effort",
+      "$.response_format",
+      "$.thinking"
+    ],
+    "secret_scan": {
+      "exact_key_hits": [],
+      "exact_key_hit_count": 0,
+      "authorization_header_hits": [],
+      "authorization_header_hit_count": 0
+    },
+    "provider_config_sha256": "6e595a7b5ac8cfeb8bfcff3037c32a7f5240f47d0c0ab70aec7e3f3f9157c17d",
+    "benchmark_defaults_sha256": "732168f0f54c050578df2ac091a184974a0b63b7622980d9b68f5bbf9bbfa05c",
+    "protected_before_sha256": "8b4d209e8d460fbbf594c75469a692d139d591c6375c39ca2b2753f1df44b453"
+  },
+  "second": {
+    "source_pins_sha256": "c892aac9bf007810498a05f0686e5e661c978af67ee06e2e791d635789106245",
+    "body_sha256": "b0925f6bb71cbe91c8bd93258c6a5d0bca3ef116a34a3759d39fe53049fc603e",
+    "artifact_sha256": "d5c7a86beea0bcbcf56b2afed249a9c1e6034378d6fff838a80482984d4ef2b8",
+    "messages_sha256": "8b261fb41e20abe33c7ebbc47d70cd3bcdbb1074c87e4342207929fbc4099593",
+    "messages_equal_baseline": true,
+    "changed_paths": [
+      "$.model",
+      "$.n",
+      "$.reasoning_effort",
+      "$.response_format",
+      "$.thinking"
+    ],
+    "secret_scan": {
+      "exact_key_hits": [],
+      "exact_key_hit_count": 0,
+      "authorization_header_hits": [],
+      "authorization_header_hit_count": 0
+    },
+    "provider_config_sha256": "6e595a7b5ac8cfeb8bfcff3037c32a7f5240f47d0c0ab70aec7e3f3f9157c17d",
+    "benchmark_defaults_sha256": "732168f0f54c050578df2ac091a184974a0b63b7622980d9b68f5bbf9bbfa05c",
+    "protected_before_sha256": "8b4d209e8d460fbbf594c75469a692d139d591c6375c39ca2b2753f1df44b453"
+  },
+  "vector_sha256": "669330c7e36872a4aebe61d5a76dbf6b434777ea3bf11c98e4a064255efa9b7b"
+}

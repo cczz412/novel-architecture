@@ -1,0 +1,21 @@
+{
+  "ingested_at": "2026-07-18T13:17:54+08:00",
+  "basket": "ST-002_prototype_borrow",
+  "not": [
+    "ST-001_corpus_relabel",
+    "ST-003_worldview_paper"
+  ],
+  "files": {
+    "hotlist_md": "TEMP/dr_prototype_borrow_20260718/returns/p1_batch01_hotlist.md",
+    "deep_md": "TEMP/dr_prototype_borrow_20260718/returns/p2_w01_deep10.md",
+    "candidates_csv": "side-tracks/tracks/ST-002_prototype_borrow/tables/prototype_candidates.csv",
+    "deep_csv": "side-tracks/tracks/ST-002_prototype_borrow/tables/prototype_deep.csv",
+    "downstream_csv": "side-tracks/tracks/ST-002_prototype_borrow/tables/borrow_downstream.csv",
+    "exclude_txt": "side-tracks/tracks/ST-002_prototype_borrow/tables/exclude_fingerprints_batch01.txt"
+  },
+  "counts": {
+    "candidates_rows": 78,
+    "deep_prototypes": 10,
+    "downstream_rows": 44
+  }
+}

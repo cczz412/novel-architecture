@@ -1,0 +1,52 @@
+{
+  "batch_id": "Z00m",
+  "item_id": "X01",
+  "book_name": "诡秘之主",
+  "run_id": "Z00m_X01_第6至10章分类收权单变量复跑_5章_v1.0_20260717",
+  "runner_sha256": "cc4f42f798f8f537524f5a458008ae76f0bbbfea8588c7618dc03be17cbe437b",
+  "provider_config": "config/providers/sensenova_z00m.json",
+  "provider_config_sha256": "157c892fde90e8230036e59a5f9aa441809cb529696b1a93f989f42cc9ff9545",
+  "intake_manifest": "intake/manifests/X_X01_material.json",
+  "intake_manifest_sha256": "0418c32d4c6f85b4d1c6a169acbba22b801b54168d4f4ae444303703657d870f",
+  "book_dir": "TEMP/X批材料包_20260716/books/X01_诡秘之主",
+  "source_zip": "TEMP/X批材料包_20260716/zips/X01_诡秘之主.zip",
+  "source_zip_sha256": "10a595b35c91f14b6c2240ff9f97379a0b5bfd7cf8aa0f9ed14cef38c8775f62",
+  "silver_answer": "TEMP/X批回包_20260716/X01_诡秘之主_跨章因果记录_1-200/04_验收答题.md",
+  "silver_answer_sha256": "e7acc5d68ec4035fba15bc569a312b9c8179ffc001dcfada07c4f6f40530475d",
+  "silver_manifest": "TEMP/X批回包_20260716/X01_诡秘之主_跨章因果记录_1-200/manifest.json",
+  "silver_manifest_sha256": "e08757a8268e32b11adfead02929ba36ea02375c0bb28b84d508677358bae47a",
+  "spec_snapshots": [
+    "work/R10设计稿修订草案_v0.3_20260717.md",
+    "work/Z批本地测试执行单_20260717.md",
+    "work/zbatch_prompts/extract_v1.3.md",
+    "work/zbatch_contracts/z_event_v1.md",
+    "tools/z00l_classification_split.py",
+    "tools/z00m_classification_split.py"
+  ],
+  "prompts": {
+    "event_extract": "work/zbatch_prompts/candidates/extract_event_only_v1.0.md",
+    "classifier_rules": "work/zbatch_prompts/candidates/main_control_classification_rules_v1.0.md"
+  },
+  "pinned_sha256": {
+    "work/R10设计稿修订草案_v0.3_20260717.md": "381242e4a3cca559f49efa5bbac9da104cd1599533d74a05fb65a0cf2322f690",
+    "work/Z批本地测试执行单_20260717.md": "501b78ac8a185fa1799d5a851b0da27c08e432e2347f10053081c765d4fc2dff",
+    "work/zbatch_prompts/extract_v1.3.md": "b5f30ab1e3e9cae7870db6bf2a951448d391981c0cfb257bd577686bd0a2c6b9",
+    "work/zbatch_contracts/z_event_v1.md": "380588b94bd92da2e157cb24dcf68dcfd4071286e7dd13eb08b647bbc103196b",
+    "tools/z00l_classification_split.py": "7a28e1c151b0d0f21aede010eeace5ba3cc54f1b8003e06869397e516f8504ec",
+    "tools/z00m_classification_split.py": "913f1abf502567dd4235df1e657574d2f32d12f2cd8b1de0cb4e1483e599db95",
+    "work/zbatch_prompts/candidates/extract_event_only_v1.0.md": "9beb1bfd83863cc39b3e899a706a9dc60fb901ef47547ae859bda2720a9a411c",
+    "work/zbatch_prompts/candidates/main_control_classification_rules_v1.0.md": "95ded675da3dac0fb3a7102c64175f1102eeea23af269f7cbed285d8cb21b804"
+  },
+  "chapter_start": 6,
+  "chapter_end": 10,
+  "expected_chapters": 5,
+  "max_calls": 8,
+  "stages": [
+    "event_extract",
+    "classify",
+    "verify"
+  ],
+  "rights": "仅内部结构研究；CZ 于 2026-07-17 明确授权 Z00m 使用 SenseNova deepseek-v4-flash 测试 X01 第6至10章",
+  "silver_role": "对照银标，不作裁判",
+  "prompt_change_note": "与 Z00l 完全同一中性事件 Prompt 和主控分类规则，不改一字；只把 extract max_tokens 从 8000 提到 16000，并在旧运输请求中显式钉死 n=1；reasoning_effort 仍为 medium；另开 Z00m 编号，不续跑 Z00l，不接 D-MOD 新模块"
+}

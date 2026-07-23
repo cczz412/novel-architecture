@@ -1,0 +1,69 @@
+{
+  "schema_version": "model-benchmark-scorecard-v1",
+  "status": "candidate_silver_scored",
+  "benchmark_id": "MB_X01_C0003_qianwen_qwen3.7-plus_thinking32k_t02_r06_20260723",
+  "provider": "qianwen_platform",
+  "model": "qwen3.7-plus",
+  "profile": "thinking_32k_prompt_json",
+  "gold_chapter_3": {
+    "formal_denominator": 23,
+    "strict_hit": 3,
+    "semantic_shadow": 9,
+    "effective_recall": 12,
+    "surface_coverage": 15,
+    "invalid_anchor_observation": 3,
+    "miss": 8,
+    "strict_hit_rate": 0.13043478260869565,
+    "effective_recall_rate": 0.5217391304347826,
+    "surface_coverage_rate": 0.6521739130434783
+  },
+  "baselines": {
+    "retry03_deepseek_v4_flash": {
+      "strict_hit": 6,
+      "effective_recall": 20
+    },
+    "z79_v3_historical_best": {
+      "strict_hit": 10
+    },
+    "z89_deepseek_v4_pro": {
+      "strict_hit": 10,
+      "effective_recall": 20,
+      "scorecard_path": "runs/Z89_X01_DeepSeekV4Pro强模型对照_第3章_v1.0_20260723/final/scorecard.json",
+      "scorecard_sha256": "edb78f2d1a6bc2320e73e4912516ec8821fe5323b36feb79df64aba11119290c"
+    }
+  },
+  "mechanical_gates": {
+    "schema_version": "model-benchmark-mechanical-gates-v1",
+    "status": "pass",
+    "json_and_schema_gate": true,
+    "catalog_anchor_gate": true,
+    "length_and_contiguous_id_gate": true,
+    "event_count": 30,
+    "anchor_reference_count": 89,
+    "outside_catalog_anchor_count": 0,
+    "invalid_event_id_count": 0,
+    "events_without_anchors": 0,
+    "finish_reason": "stop",
+    "response_model": "qwen3.7-plus",
+    "content_sha256": "2222b89559605eb992bab667b18685d5d5a492d3324f5eaa540be1790fd05051",
+    "reasoning_content_sha256": "f74bc5aacc07c6ee2ff60d73b5750f0a736362444328419a0014a8477f4f3091"
+  },
+  "usage": {
+    "total_tokens": 18862,
+    "completion_tokens": 7471,
+    "prompt_tokens": 11391,
+    "completion_tokens_details": {
+      "reasoning_tokens": 4851,
+      "text_tokens": 7471
+    },
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "text_tokens": 11391
+    }
+  },
+  "single_sample_no_rerun": true,
+  "candidate_tier": "silver_only",
+  "promoted_or_default_changed": false,
+  "compatibility_diff_sha256": "e32a36c15820f117b03e7c27d5450fe2b20bab3ef6fe8fc826556674ee102f01",
+  "created_at": "2026-07-23T06:33:08.784425+08:00"
+}

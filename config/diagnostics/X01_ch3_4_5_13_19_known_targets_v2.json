@@ -1,0 +1,47 @@
+{
+  "schema_version": "z-known-targets-v2",
+  "book": "X01_诡秘之主",
+  "chapters": [3, 4, 5, 13, 19],
+  "targets": [
+    {
+      "id": "A-F01-SUPPORT",
+      "label": "家庭责任的局部支撑段",
+      "chapter": 3,
+      "anchor_ids": ["E0050", "E0051", "E0052", "E0053", "E0063", "E0064"],
+      "required_quote_fragments": ["长兄班森", "帮哥哥负担"],
+      "boundary": "只判六个预写锚是否进入事件并命中短语，不自动推导家庭责任改变返乡选择。"
+    },
+    {
+      "id": "S-L01",
+      "label": "罗塞尔可能也是穿越者",
+      "chapter": 4,
+      "anchor_ids": ["E0208", "E0209"],
+      "required_quote_fragments": ["穿越者前辈吧"],
+      "boundary": "只判局部判断是否进入中性事件，不自动决定结构类型。"
+    },
+    {
+      "id": "S-L02",
+      "label": "免费塔罗在下一章实际执行",
+      "chapter": 5,
+      "anchor_ids": ["E0048", "E0049", "E0050", "E0051", "E0052", "E0053", "E0054", "E0055", "E0056", "E0057", "E0058", "E0059", "E0060", "E0061", "E0062"],
+      "required_quote_fragments": ["这张象征过去", "愚者"],
+      "boundary": "只判第5章实际占卜段是否事件化，不自动决定跨章类型。"
+    },
+    {
+      "id": "S-L03",
+      "label": "延迟复发警告投射到自身风险",
+      "chapter": 13,
+      "anchor_ids": ["E0156", "E0157", "E0158", "E0159"],
+      "required_quote_fragments": ["哪怕躲过了一劫", "有什么办法能彻底解决"],
+      "boundary": "只判个人反应是否事件化，不自动判断 C 类未结项。"
+    },
+    {
+      "id": "S-L04",
+      "label": "因斯·赞格威尔外貌识别信息",
+      "chapter": 19,
+      "anchor_ids": ["E0175", "E0176", "E0177", "E0178", "E0179"],
+      "required_quote_fragments": ["发色呈暗金", "瞎了一只眼睛"],
+      "boundary": "只判识别特征是否进入中性事件，不自动判断是否进入主账。"
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "schema_version": "z-t4-chapter-stop-v1",
+  "status": "fail",
+  "chapter": 3,
+  "completed_chapters": [
+    3
+  ],
+  "checks": {
+    "all_completed_runs_valid": true,
+    "newest_chapter_has_due_target": true,
+    "all_available_targets_pass": false
+  },
+  "runs": [
+    {
+      "chapter": 3,
+      "run_id": "Z00z_X01_局部段覆盖试点_ch0003_v1.0_20260718",
+      "status": "pass",
+      "checks": {
+        "run_completed": true,
+        "preflight_pass": true,
+        "attempt_ledger_pass": true,
+        "run_manifest_call_count_matches": true,
+        "http_200": true,
+        "finish_reason_stop": true,
+        "raw_finish_reason_stop": true,
+        "model_exact": true,
+        "sampling_exact": true,
+        "program_contract_pass": true,
+        "catalog_rebuild_equal": true,
+        "raw_to_output_equal": true,
+        "program_audit_rebuild_equal": true,
+        "outside_catalog_anchor_zero": true,
+        "nonempty": true,
+        "system_message_exact": true,
+        "receipt_hashes_pass": true,
+        "run_tree_seal_pass": true
+      },
+      "receipt_checks": {
+        "stage": true,
+        "case_id": true,
+        "output_path": true,
+        "request_path": true,
+        "raw_response_path": true,
+        "response_meta_path": true,
+        "output_sha256": true,
+        "request_sha256": true,
+        "raw_response_sha256": true,
+        "response_meta_sha256": true,
+        "input_sha256": true,
+        "prompt_sha256": true,
+        "runner_sha256": true,
+        "provider_config_sha256": true
+      },
+      "attempt_ledger": {
+        "status": "pass",
+        "count": 1,
+        "retries": 0,
+        "checks": {
+          "one_logical_sample": true,
+          "attempt_sequence_contiguous": true,
+          "call_number_sequence_contiguous": true,
+          "same_case": true,
+          "same_stage": true,
+          "same_request_sha": true
+        },
+        "attempts": [
+          1
+        ],
+        "call_numbers": [
+          1
+        ],
+        "request_sha256": "c8dae96ebcafa5bbc625d76eaa87831389022336c0653ea24928202e20aea9a2"
+      },
+      "network_attempts": 1,
+      "retries": 0,
+      "event_count": 13,
+      "anchor_reference_count": 73,
+      "request_sha256": "c8dae96ebcafa5bbc625d76eaa87831389022336c0653ea24928202e20aea9a2",
+      "raw_response_sha256": "55503c818ab41a482c75166aeb682f4e646797c2c362a9b663a53f5127549c66",
+      "output_sha256": "f856bd549029d9b474841303c330db63377c1e870a251717defa63c28b9a3068",
+      "catalog_sha256": "2cc50e9a0c8b5fb807641e09c74f1748cbe423bf0fa700dbbbaa84ba20e58132",
+      "program_audit_sha256": "5fd546d503fdc8862f2e84ec183cee9204e64afd9d19ab53264ec15e0ba64718",
+      "run_manifest_sha256": "8d86566fb285b1e1487473534ffac75e22f511bf471ed806383ba11093519f77",
+      "preflight_sha256": "88571ae200ae59349c7c8873ae45e1d062ee665f0583248d57225436c19d26bd",
+      "run_seal_sha256": "86f3a32c0e96de12eb07f998e1d969de88d7a39860f4213d726154b3bc47d3ef"
+    }
+  ],
+  "targets": [
+    {
+      "id": "A-F01-SUPPORT",
+      "label": "A-F01 家庭责任的局部支撑段",
+      "chapter": 3,
+      "expected_anchor_ids": [
+        "E0050",
+        "E0051",
+        "E0052",
+        "E0053",
+        "E0054",
+        "E0055",
+        "E0056",
+        "E0057",
+        "E0058",
+        "E0059",
+        "E0060",
+        "E0061",
+        "E0062",
+        "E0063",
+        "E0064"
+      ],
+      "missing_anchor_ids": [
+        "E0050",
+        "E0051",
+        "E0052",
+        "E0053",
+        "E0063",
+        "E0064"
+      ],
+      "required_quote_checks": {
+        "长兄班森": false,
+        "帮哥哥负担": false
+      },
+      "semantic_term_diagnostics": {
+        "班森": true,
+        "哥哥": false,
+        "负担": false,
+        "维持生活": true
+      },
+      "linked_events": [
+        {
+          "chapter": 3,
+          "role": "现有事件只保存转运仪式与回家愿望",
+          "historical_event_id": "EV-C0003-08",
+          "expected_anchor_ids": [
+            "E0173"
+          ],
+          "coherent_matches": [
+            {
+              "event_id": "EV-C0003-13",
+              "event": "周明瑞将心思移到了转运仪式之上",
+              "anchor_ids": [
+                "E0173",
+                "E0174"
+              ]
+            }
+          ],
+          "coherent_event_ids": [],
+          "summary_fragment_checks": {
+            "转运仪式": true,
+            "回家": false
+          },
+          "pass": false,
+          "id_boundary": "历史事件ID只作旧账定位；新增局部事件可能引起顺序重编号，验收要求同一条新事件完整承接全部关联锚与摘要。"
+        }
+      ],
+      "related_spans": [
+        {
+          "chapter": 3,
+          "role": "现有 E0173 事件之后仍未引用的明确回家表达",
+          "missing_anchor_ids": [
+            "E0175"
+          ],
+          "required_quote_checks": {
+            "真地想回家": true
+          },
+          "pass": false
+        }
+      ],
+      "interpretation_boundary": "程序只能并出“家庭负担段未事件化＋回家事件已存在”；家庭责任改变返乡选择仍是跨段推断，不能由词面扫描自动宣判。",
+      "pass": false
+    }
+  ],
+  "newly_due_target_ids": [
+    "A-F01-SUPPORT"
+  ],
+  "next_action": "hard_stop_no_more_calls"
+}

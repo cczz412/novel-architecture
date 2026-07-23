@@ -1,0 +1,40 @@
+{
+  "batch_id": "Z00iB",
+  "item_id": "X01",
+  "book_name": "诡秘之主",
+  "run_id": "Z00iB_X01_第6至10章注意力层序_5章_v1.5_20260717",
+  "runner_sha256": "6e03f75d8ab88e46425c2a01e5270691db4976e81c05514d4fddb91f6f10d612",
+  "provider_config": "config/providers/sensenova.json",
+  "provider_config_sha256": "82231d8cda763786eac2eea8f2d759f647bc57cc515121ada8d79f96a18a4a87",
+  "intake_manifest": "intake/manifests/X_X01_material.json",
+  "intake_manifest_sha256": "0418c32d4c6f85b4d1c6a169acbba22b801b54168d4f4ae444303703657d870f",
+  "book_dir": "TEMP/X批材料包_20260716/books/X01_诡秘之主",
+  "source_zip": "TEMP/X批材料包_20260716/zips/X01_诡秘之主.zip",
+  "source_zip_sha256": "10a595b35c91f14b6c2240ff9f97379a0b5bfd7cf8aa0f9ed14cef38c8775f62",
+  "silver_answer": "TEMP/X批回包_20260716/X01_诡秘之主_跨章因果记录_1-200/04_验收答题.md",
+  "silver_answer_sha256": "e7acc5d68ec4035fba15bc569a312b9c8179ffc001dcfada07c4f6f40530475d",
+  "silver_manifest": "TEMP/X批回包_20260716/X01_诡秘之主_跨章因果记录_1-200/manifest.json",
+  "silver_manifest_sha256": "e08757a8268e32b11adfead02929ba36ea02375c0bb28b84d508677358bae47a",
+  "spec_snapshots": [
+    "work/R10设计稿修订草案_v0.3_20260717.md",
+    "work/Z批本地测试执行单_20260717.md",
+    "work/小说101注意力结构_翻译清单_20260717.md"
+  ],
+  "prompts": {
+    "extract": "work/zbatch_prompts/candidates/extract_attention_v1.5.md"
+  },
+  "pinned_sha256": {
+    "work/R10设计稿修订草案_v0.3_20260717.md": "381242e4a3cca559f49efa5bbac9da104cd1599533d74a05fb65a0cf2322f690",
+    "work/Z批本地测试执行单_20260717.md": "501b78ac8a185fa1799d5a851b0da27c08e432e2347f10053081c765d4fc2dff",
+    "work/小说101注意力结构_翻译清单_20260717.md": "655478ea287c083b5f9e5ba5824776a0c1604c8e27cd727daae065234bb9c330",
+    "work/zbatch_prompts/candidates/extract_attention_v1.5.md": "096e23804e55d061821486263b9b793d4f93d4735fd9827689c37a909ed6d89f"
+  },
+  "chapter_start": 6,
+  "chapter_end": 10,
+  "expected_chapters": 5,
+  "max_calls": 8,
+  "stages": ["extract", "verify"],
+  "rights": "仅内部结构研究；CZ 于 2026-07-17 明确授权本轮使用 SenseNova API 测试 X 批材料",
+  "silver_role": "对照银标，不作裁判",
+  "prompt_change_note": "5章B臂：全文→冻结目录→JSON契约，通用微型边界例＋事实去重尾提醒；整包比较不作单层归因"
+}

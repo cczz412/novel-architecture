@@ -1,0 +1,68 @@
+{
+  "schema_version": "z-extraction-method-arm-v1",
+  "arm": "A",
+  "method": "segment_tasks",
+  "batch_id": "Z01b",
+  "run_id": "Z01b_X01_段级任务拆分_5章_v1.0_20260718",
+  "book_dir": "TEMP/X批材料包_20260716/books/X01_诡秘之主",
+  "chapters": [3, 4, 5, 13, 19],
+  "segment_size": 24,
+  "prompt": {
+    "path": "work/zbatch_prompts/candidates/extract_event_segment_tasks_v1.2.md",
+    "sha256": "71b03232d76e4198f53852a807200f9de9cd31b64bda283acd44841cb500fc44"
+  },
+  "baseline_prompt": {
+    "path": "work/zbatch_prompts/candidates/extract_event_only_no_self_audit_v1.1.md",
+    "sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f"
+  },
+  "provider": {
+    "path": "config/providers/sensenova_modular_v1.json",
+    "sha256": "fc38a198e30bd58d4022d8cf0804979d428b75f1a81c24d560edeba209495dfb"
+  },
+  "stage_contract": {
+    "path": "config/contracts/sensenova_stage_sampling_v1.json",
+    "sha256": "8ac9f7fa639aba7a7500948438df32b5bd054895ceb8362b1402ae76f0fdbb8c",
+    "profile": "d_mod_cutover_v1",
+    "stage": "neutral_extract"
+  },
+  "targets": {
+    "path": "config/diagnostics/X01_ch3_4_5_13_19_known_targets_v2.json",
+    "sha256": "9e0b5b7d966fdfbfdc4a6b666177b9777a184723ad0e0ed403323224136bb172"
+  },
+  "old_event_samples": {
+    "path": "config/diagnostics/X01_ch3_4_5_13_19_old_event_samples_v1.json",
+    "sha256": "0c3a7dbd2580dd965403fa49194f6e98a90d253e2b296d2c02a41a43d3ccef66",
+    "source_run": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718",
+    "source_files": [
+      {"chapter": 3, "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0003.json", "sha256": "aeede6bdeb17cb18890060d519a8a9be5ce433d1b5b023d2de33fd0108e46eef"},
+      {"chapter": 4, "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0004.json", "sha256": "ab611cf96d34271fbd24352792cf1d5a32c72d63b6a9400a70d0c0ef722e95d6"},
+      {"chapter": 5, "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0005.json", "sha256": "695782071913d527f10624233c3dc046595222524063770e5d46d213c32285cf"},
+      {"chapter": 13, "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0013.json", "sha256": "c4a2f69603cdd782a93d265a871f4d7e4ec866ac4f793e35d6b868ffe911e323"},
+      {"chapter": 19, "path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0019.json", "sha256": "d5055b74d1a6329f017f6124e0ab087a5451b0324640bdd25230ae72966f7318"}
+    ]
+  },
+  "protected_chain": {
+    "runner": {"path": "tools/zbatch.py", "sha256": "0b9334a34fcc5b5f866f43b2b3bc40aeff4cedf79a8ff83c51957496061a8080"},
+    "neutral_extract": {"path": "tools/zbatch_modules/neutral_extract.py", "sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"},
+    "evidence_catalog": {"path": "tools/zbatch_modules/evidence_catalog.py", "sha256": "e20321e3c11f6c1c4dbcc904fce1aa97cc752d9c4ffaaee9b61f8836e39a3847"},
+    "api_transport": {"path": "tools/zbatch_modules/api_transport.py", "sha256": "60452d0538a34070df2e49a7246f2f29ddb94a6855f58de86f2524d18dba8d93"},
+    "classify_rules_v1_2": {"path": "tools/zbatch_modules/classify_rules.py", "sha256": "76b3c1e208abaf0ab47c8dafee4c4e1ccb7d6d4cb3d364fc30afa00c6179eb7b"}
+  },
+  "experiment_code": {
+    "module": {"path": "tools/zbatch_modules/extraction_method_ab.py", "sha256": "847d433ac71968d7b26545f201adfa50ec0a9323a46b107de3eaa9bb1512de38"},
+    "cli": {"path": "tools/zbatch_extraction_method_ab.py", "sha256": "0fc43e07a268a5a60061a17c386a80be22fdbc8fb50677a6b09a1ea0b0c4d980"},
+    "tests": {"path": "tests/test_extraction_method_ab.py", "sha256": "083803a12dac160d870be2453214eabbd5b12a6ad48fdcc9660842b8cee1fb49"}
+  },
+  "transport": {
+    "model": "deepseek-v4-flash",
+    "temperature": 0.2,
+    "max_tokens": 16000,
+    "n": 1,
+    "reasoning_effort": "medium",
+    "response_format": {"type": "json_object"},
+    "logical_samples": 5,
+    "max_network_attempts": 15
+  },
+  "permit_path": "work/zbatch_ab/permits/Z01b.call_permit.json",
+  "rights": "仅内部结构研究；第37道只跑五章单次采样，不固化、不扩20章、不重分类、不写outbox。"
+}

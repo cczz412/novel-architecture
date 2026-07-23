@@ -1,0 +1,65 @@
+{
+  "schema_version": "model-benchmark-scorecard-v1",
+  "status": "candidate_silver_scored",
+  "benchmark_id": "MB_X01_C0003_qianwen_qwen3.7-plus_structured_r05_20260723",
+  "provider": "qianwen_platform",
+  "model": "qwen3.7-plus",
+  "profile": "structured_nonthinking",
+  "gold_chapter_3": {
+    "formal_denominator": 23,
+    "strict_hit": 4,
+    "semantic_shadow": 7,
+    "effective_recall": 11,
+    "surface_coverage": 15,
+    "invalid_anchor_observation": 4,
+    "miss": 8,
+    "strict_hit_rate": 0.17391304347826086,
+    "effective_recall_rate": 0.4782608695652174,
+    "surface_coverage_rate": 0.6521739130434783
+  },
+  "baselines": {
+    "retry03_deepseek_v4_flash": {
+      "strict_hit": 6,
+      "effective_recall": 20
+    },
+    "z79_v3_historical_best": {
+      "strict_hit": 10
+    },
+    "z89_deepseek_v4_pro": {
+      "strict_hit": 10,
+      "effective_recall": 20,
+      "scorecard_path": "runs/Z89_X01_DeepSeekV4Pro强模型对照_第3章_v1.0_20260723/final/scorecard.json",
+      "scorecard_sha256": "edb78f2d1a6bc2320e73e4912516ec8821fe5323b36feb79df64aba11119290c"
+    }
+  },
+  "mechanical_gates": {
+    "schema_version": "model-benchmark-mechanical-gates-v1",
+    "status": "pass",
+    "json_and_schema_gate": true,
+    "catalog_anchor_gate": true,
+    "length_and_contiguous_id_gate": true,
+    "event_count": 36,
+    "anchor_reference_count": 139,
+    "outside_catalog_anchor_count": 0,
+    "invalid_event_id_count": 0,
+    "events_without_anchors": 0,
+    "finish_reason": "stop",
+    "response_model": "qwen3.7-plus",
+    "content_sha256": "7444fc01a0a8d79a80485fc36954c50de5633f399485dcad0ec404e49c98f010",
+    "reasoning_content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "usage": {
+    "total_tokens": 16157,
+    "completion_tokens": 4762,
+    "prompt_tokens": 11395,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "text_tokens": 11395
+    }
+  },
+  "single_sample_no_rerun": true,
+  "candidate_tier": "silver_only",
+  "promoted_or_default_changed": false,
+  "compatibility_diff_sha256": "973fdccded7f6356c4fde7f8b74cb3d9e3f2017dcd8d82cb315740a7819d74fa",
+  "created_at": "2026-07-23T05:33:40.937115+08:00"
+}

@@ -1,0 +1,75 @@
+{
+  "edges": [
+    {
+      "contract_gate": true,
+      "from": "M00",
+      "to": "M01"
+    },
+    {
+      "contract_gate": true,
+      "from": "M01",
+      "to": "M02"
+    },
+    {
+      "contract_gate": true,
+      "from": "M02",
+      "to": "M03"
+    },
+    {
+      "contract_gate": true,
+      "from": "M03",
+      "to": "M04"
+    },
+    {
+      "contract_gate": true,
+      "from": "M04",
+      "to": "M05"
+    },
+    {
+      "contract_gate": true,
+      "from": "M05",
+      "to": "M06"
+    },
+    {
+      "contract_gate": true,
+      "from": "M06",
+      "to": "M07"
+    },
+    {
+      "contract_gate": true,
+      "from": "M07",
+      "to": "M08"
+    },
+    {
+      "contract_gate": true,
+      "from": "M08",
+      "to": "M09"
+    },
+    {
+      "contract_gate": true,
+      "from": "M09",
+      "to": "M10"
+    },
+    {
+      "contract_gate": true,
+      "from": "M10",
+      "to": "M11"
+    }
+  ],
+  "mainline_order": [
+    "M00",
+    "M01",
+    "M02",
+    "M03",
+    "M04",
+    "M05",
+    "M06",
+    "M07",
+    "M08",
+    "M09",
+    "M10",
+    "M11"
+  ],
+  "sandbox_rule": "只替换一个模块版本；上游只读；先验输出合同；候选只写 experiments/。",
+  "schema_version": "pipeline-dependency-map-v1"
+}

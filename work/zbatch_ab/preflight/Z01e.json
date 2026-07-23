@@ -1,0 +1,190 @@
+{
+  "schema_version": "z-extraction-method-preflight-v1",
+  "status": "pass",
+  "at": "2026-07-19T07:10:24+08:00",
+  "model_calls": 0,
+  "arm": "C",
+  "method": "structure_map_preface",
+  "run_id": "Z01e_X01_结构地图前置块_5章_v1.0_20260719",
+  "config_sha256": "f0ed7506da04fca55db6f602c5022775c14d69722f9362344298d1ef55918952",
+  "prompt_audit": {
+    "status": "pass",
+    "arm": "C",
+    "checks": {
+      "baseline_body_preserved_in_order": true,
+      "baseline_placeholder_order_preserved": true,
+      "no_method_payload_placeholder_added": true,
+      "same_output_schema": true,
+      "classification_still_forbidden": true,
+      "structure_map_precedes_dynamic_payload": true,
+      "structure_map_names_current_and_later_components": true
+    },
+    "baseline_prompt_sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f",
+    "experiment_prompt_sha256": "8118b82b749c13713f22e2ad0e490cc8521a3794df8ac2ea5df485e617fb90a2",
+    "placeholder_order": [
+      "CHAPTER_PADDED",
+      "CHAPTER_NUMBER",
+      "CHAPTER_PADDED",
+      "CHAPTER_NUMBER",
+      "CHAPTER_FILENAME",
+      "EVIDENCE_CATALOG_JSON"
+    ],
+    "cache_layers": {
+      "layer_1_system_sha256": "7b4776b253d5653813776e6531045bf68833ab50072d48e88e61d00e5041b2f7",
+      "layer_2_fixed_task_prefix_sha256": "5677be9fef612bd4ff070bdbe491da696af966455faa8eb624795c16cd8c4509",
+      "layer_2_fixed_task_prefix_bytes": 2073,
+      "layer_3_dynamic_payloads": [
+        "CHAPTER_PADDED",
+        "CHAPTER_NUMBER",
+        "CHAPTER_PADDED",
+        "CHAPTER_NUMBER",
+        "CHAPTER_FILENAME",
+        "EVIDENCE_CATALOG_JSON"
+      ],
+      "claim_boundary": "只证明三层位置固定，不声称服务端缓存命中。"
+    }
+  },
+  "transport_audit": {
+    "status": "pass",
+    "values": {
+      "model": "deepseek-v4-flash",
+      "temperature": 0.2,
+      "max_tokens": 16000,
+      "n": 1,
+      "reasoning_effort": "medium",
+      "response_format": {
+        "type": "json_object"
+      },
+      "logical_samples": 5,
+      "max_network_attempts": 15
+    },
+    "route_network_attempts_per_logical_sample": 3,
+    "maximum_reserved_attempts": 15
+  },
+  "default_activation": {
+    "status": "pass",
+    "default_id": "zbatch-v1.2-full-chain",
+    "default_registry_sha256": "61bc6ca45fe450d382995b29dd998c9119ade2db6049d29963c83eee30c5f9da",
+    "commit_marker_sha256": "9259d3958e97aed982a798545ae889e3c608a3c8ef12dad87ea9f18f9cdddc48"
+  },
+  "pins": [
+    {
+      "label": "protected_chain.runner",
+      "path": "tools/zbatch.py",
+      "sha256": "4090169dd53a71badd21d42d3c1c1e8809bd54ac46f461ab3e33137e94c3ca11"
+    },
+    {
+      "label": "protected_chain.neutral_extract",
+      "path": "tools/zbatch_modules/neutral_extract.py",
+      "sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"
+    },
+    {
+      "label": "protected_chain.evidence_catalog",
+      "path": "tools/zbatch_modules/evidence_catalog.py",
+      "sha256": "e20321e3c11f6c1c4dbcc904fce1aa97cc752d9c4ffaaee9b61f8836e39a3847"
+    },
+    {
+      "label": "protected_chain.api_transport",
+      "path": "tools/zbatch_modules/api_transport.py",
+      "sha256": "60452d0538a34070df2e49a7246f2f29ddb94a6855f58de86f2524d18dba8d93"
+    },
+    {
+      "label": "protected_chain.classify_rules",
+      "path": "tools/zbatch_modules/classify_rules.py",
+      "sha256": "76b3c1e208abaf0ab47c8dafee4c4e1ccb7d6d4cb3d364fc30afa00c6179eb7b"
+    },
+    {
+      "label": "experiment_code.module",
+      "path": "tools/zbatch_modules/extraction_method_ab.py",
+      "sha256": "6ab54e0ff544dc4bbb27c986cdc61f4c97925f5a4655cc105f11e64b9aaa0859"
+    },
+    {
+      "label": "experiment_code.cli",
+      "path": "tools/zbatch_extraction_method_ab.py",
+      "sha256": "1a49d29735ec8b8d66b4b28115ac1010a88306fcb3708c3fdbb7c7fa2badeb25"
+    },
+    {
+      "label": "experiment_code.tests",
+      "path": "tests/test_extraction_method_ab.py",
+      "sha256": "23ca302c3a41e1f49d7f4658fe4f26a5bc0224a421b2bfd5a4f1bec118a6f6ba"
+    }
+  ],
+  "artifact_paths": {
+    "run_dir": "runs/Z01e_X01_结构地图前置块_5章_v1.0_20260719",
+    "permit_path": "work/zbatch_ab/permits/Z01e.call_permit.json",
+    "preflight_path": "work/zbatch_ab/preflight/Z01e.json",
+    "rejection_path": "work/zbatch_ab/rejections/Z01e.json"
+  },
+  "chapters": [
+    {
+      "chapter": 3,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0003_第3章_梅丽莎（第一更求推荐票）.txt",
+      "chapter_file_sha256": "96f5e17cbec15433b5d00bef18912eb39710ad67962e3716bca37203d4c06288",
+      "catalog_anchor_count": 175,
+      "method_row_count": 8,
+      "method_payload_sha256": "9e32050c2296a8fa3d75da701a33f20d2fd82acf5b9833898b555d8d93ae0449",
+      "rendered_prompt_sha256": "3308297aff9412f3a5d18fd690064507e1ad2d1262614829ca36b52c5652d847",
+      "method_payload_check": "pass",
+      "old_event_sample_count": 2,
+      "old_event_source_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0003.json",
+      "old_event_source_sha256": "aeede6bdeb17cb18890060d519a8a9be5ce433d1b5b023d2de33fd0108e46eef"
+    },
+    {
+      "chapter": 4,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0004_第4章_占卜（第二更求推荐票）.txt",
+      "chapter_file_sha256": "5cdf20f238c8390b54674ade0adc1beeccb4a5c0e76fad41bf37e707997eaa93",
+      "catalog_anchor_count": 215,
+      "method_row_count": 9,
+      "method_payload_sha256": "1f1be4ea78f99ddff47276df6b300bb335f3d37ca303981073285c2d974e433f",
+      "rendered_prompt_sha256": "c29be8860ea857a8444289f5b6272d44a9d93c5a1b445ed8607cbd5ba27c8518",
+      "method_payload_check": "pass",
+      "old_event_sample_count": 2,
+      "old_event_source_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0004.json",
+      "old_event_source_sha256": "ab611cf96d34271fbd24352792cf1d5a32c72d63b6a9400a70d0c0ef722e95d6"
+    },
+    {
+      "chapter": 5,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0005_第5章_仪式（第三更求推荐票）.txt",
+      "chapter_file_sha256": "e1fb3a64e2987533c20fe2c707164eae580c497de78d00e219558514b69a2ce0",
+      "catalog_anchor_count": 184,
+      "method_row_count": 8,
+      "method_payload_sha256": "9cb9ee82826f896181e5f4d95bc3a49c255c117a4b538b126d53e76a3f513e4c",
+      "rendered_prompt_sha256": "ddac41540babe7796d3109673b347b49bbcbd0df8a3507867e0930eed1418496",
+      "method_payload_check": "pass",
+      "old_event_sample_count": 2,
+      "old_event_source_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0005.json",
+      "old_event_source_sha256": "695782071913d527f10624233c3dc046595222524063770e5d46d213c32285cf"
+    },
+    {
+      "chapter": 13,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0013_第13章_值夜者.txt",
+      "chapter_file_sha256": "418efe90277893207d2623d14c9093a30a68f38f44dd51ebcee6315813ddd8c0",
+      "catalog_anchor_count": 172,
+      "method_row_count": 8,
+      "method_payload_sha256": "2510c0edbaea14695ac4ba76e69b4a863ae3d8752637e9b0a673a52677acd3f9",
+      "rendered_prompt_sha256": "96549881176eeded0cc6b2c76c7a84e1438eae8bd4dfe305343440d879fc5bb7",
+      "method_payload_check": "pass",
+      "old_event_sample_count": 2,
+      "old_event_source_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0013.json",
+      "old_event_source_sha256": "c4a2f69603cdd782a93d265a871f4d7e4ec866ac4f793e35d6b868ffe911e323"
+    },
+    {
+      "chapter": 19,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0019_第19章_封印物（第二更求推荐票）.txt",
+      "chapter_file_sha256": "127af1d2061e3e4cccca7f893ae98e511c2902a7ae06aecc9fa783eb22ca5caa",
+      "catalog_anchor_count": 197,
+      "method_row_count": 9,
+      "method_payload_sha256": "5af8054c136825d4e4773661c7a1ddf74617a01399504496610c8770d91b13b1",
+      "rendered_prompt_sha256": "eb7fc3404b1b2230f69960d0bcdc2de596c0d9a52fa0aac246a7ff4a25cdde3b",
+      "method_payload_check": "pass",
+      "old_event_sample_count": 2,
+      "old_event_source_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0019.json",
+      "old_event_source_sha256": "d5055b74d1a6329f017f6124e0ab087a5451b0324640bdd25230ae72966f7318"
+    }
+  ],
+  "fresh_run_required": true,
+  "fresh_run_pass": true,
+  "api_key_environment_name": "SENSENOVA_API_KEY",
+  "api_key_present": false,
+  "rights": "仅内部结构研究；第46道件A只跑五靶章单次采样。结构地图前置块只作候选，不固化、不升默认、不扩20章、不改分类规则、不写outbox；任一新失败面硬停不缝补。"
+}

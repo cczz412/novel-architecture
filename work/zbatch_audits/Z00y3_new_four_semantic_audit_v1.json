@@ -1,0 +1,207 @@
+{
+  "schema_version": "z-differential-semantic-audit-v1",
+  "audit_id": "Z00y3-new-four-vs-z00s118",
+  "scope": {
+    "old_candidate_records": 118,
+    "new_candidate_records": 122,
+    "differential_record_total": 4,
+    "new_vs_old_pair_total": 472,
+    "new_vs_new_pair_total": 6,
+    "purpose": "只审 Z00w2 相对 Z00s 新增四条的跨类型语义重复与新增 D；旧118条沿用已钉住的人审账。",
+    "not_a_default_promotion": true
+  },
+  "inputs": {
+    "old_candidate": {
+      "path": "runs/Z00s_X01_20章分类正门兼容_20章_v1.0_20260718/02_verify/valid_records.json",
+      "sha256": "cd7cbe8dff9eed8abcfd3851268bbe08764814c7623331e80505154e0ad506b7"
+    },
+    "new_candidate": {
+      "path": "runs/Z00w2_X01_分类规则v1.2审查修订重放_20章_v1.1_20260718/02_verify/valid_records.json",
+      "sha256": "f569d75739f3e7b4914e72219ef8a7a27aa75c4cc8623046b5edfc09eb190dc0"
+    },
+    "old_human_gate_audit": {
+      "path": "reports/Z00s_X01_20章分类正门兼容_20260718/三闸语义清点.json",
+      "sha256": "2a5ad6dabc2dd5a3722eb4faa7eaffdb35cae07dc3ca8a8798b8255c989326c3"
+    },
+    "classification_authority": {
+      "path": "work/zbatch_prompts/candidates/main_control_classification_rules_v1.2.md",
+      "sha256": "514eb54735b2fe6de83824c10e63ec1134fcdbbe5b92fd6cd8c496ee9e78e433",
+      "authority_excerpt": "D 收世界层的概率规律，C 收人物层的未结风险；两者事实头不同才允许双收。"
+    },
+    "chapter13_catalog": {
+      "path": "runs/Z00w2_X01_分类规则v1.2审查修订重放_20章_v1.1_20260718/01_extract/evidence_catalogs/ch0013.json",
+      "sha256": "47d5a5f13b227e4c1470530a1962060f7800f05f30e9e73b815a17604bd9457e"
+    }
+  },
+  "old_gate_carry_forward": {
+    "cross_type_duplicate_count": 0,
+    "wrong_d_count": 0,
+    "boundary": "只对旧118条生效；新增四条必须过本差分账，不能用旧0直接覆盖。"
+  },
+  "differential_records": [
+    {
+      "record_id": "B-C0004-01",
+      "type": "B",
+      "source_event_id": "EV-C0004-05",
+      "anchor_ids": ["4:E0174", "4:E0212", "4:E0214"],
+      "semantic_head": "已接受免费占卜、待下一章执行",
+      "consumer": "跨章待执行动作",
+      "compared_against_old_record_total": 118,
+      "semantic_duplicate_old_record_ids": [],
+      "nearest_old_records": [
+        {
+          "record_id": "A-C0004-01",
+          "verdict": "different",
+          "reason": "旧记录是携枪与弹巢变化，不是占卜安排。"
+        }
+      ],
+      "cross_type_duplicate": false
+    },
+    {
+      "record_id": "C-C0013-01",
+      "type": "C",
+      "source_event_id": "EV-C0013-14",
+      "anchor_ids": ["13:E0120", "13:E0121"],
+      "semantic_head": "克莱恩自身风险能否彻底解除仍未回答",
+      "consumer": "人物层未结问题及后文还账检查",
+      "compared_against_old_record_total": 118,
+      "semantic_duplicate_old_record_ids": [],
+      "nearest_old_records": [
+        {
+          "record_id": "B-C0013-02",
+          "verdict": "different",
+          "reason": "旧B是专家检查后解除直接嫌疑的待动作，不回答个人风险是否彻底解除。"
+        }
+      ],
+      "cross_type_duplicate": false
+    },
+    {
+      "record_id": "D-C0013-02",
+      "type": "D",
+      "source_event_id": "EV-C0013-15",
+      "anchor_ids": ["13:E0129"],
+      "semantic_head": "超自然案件看似结束后仍有时可能再次降临",
+      "consumer": "世界层概率规律及后续风险解释",
+      "compared_against_old_record_total": 118,
+      "semantic_duplicate_old_record_ids": [],
+      "nearest_old_records": [
+        {
+          "record_id": "D-C0013-01",
+          "verdict": "different",
+          "reason": "旧D是梦境操作者暴露目标真实倾向的规则，不是案件延迟复发规律。"
+        }
+      ],
+      "cross_type_duplicate": false
+    },
+    {
+      "record_id": "A-C0019-01",
+      "type": "A",
+      "source_event_id": "EV-C0019-05",
+      "anchor_ids": ["19:E0119", "19:E0120"],
+      "semantic_head": "克莱恩获知靠近查尼斯门会沾染厄运的局部禁忌",
+      "consumer": "人物认知变化及后续接近该处时的避险知识",
+      "compared_against_old_record_total": 118,
+      "semantic_duplicate_old_record_ids": [],
+      "nearest_old_records": [
+        {
+          "record_id": "D-C0019-01",
+          "verdict": "different",
+          "reason": "旧D是封印物零至三级知情与处置规则，不是查尼斯门局部禁忌。"
+        },
+        {
+          "record_id": "D-C0019-02",
+          "verdict": "different",
+          "reason": "旧D是封印物编号含义，不是靠近查尼斯门的风险。"
+        }
+      ],
+      "cross_type_duplicate": false
+    }
+  ],
+  "new_record_pairwise_audit": [
+    {
+      "left": "B-C0004-01",
+      "right": "C-C0013-01",
+      "relationship": "different",
+      "cross_type_duplicate": false,
+      "reason": "章节、对象、事实头与用途均不同。"
+    },
+    {
+      "left": "B-C0004-01",
+      "right": "D-C0013-02",
+      "relationship": "different",
+      "cross_type_duplicate": false,
+      "reason": "待执行占卜与延迟复发规律无同一事实头。"
+    },
+    {
+      "left": "B-C0004-01",
+      "right": "A-C0019-01",
+      "relationship": "different",
+      "cross_type_duplicate": false,
+      "reason": "占卜安排与查尼斯门认知变化无同一事实头。"
+    },
+    {
+      "left": "C-C0013-01",
+      "right": "D-C0013-02",
+      "relationship": "related_not_duplicate",
+      "cross_type_duplicate": false,
+      "reason": "C问人物自身风险是否彻底解除，D记世界层的概率复发规律；证据段、事实头、消费者与后文用途不同。净收益只恢复一个旧失分格，避免计分双加。"
+    },
+    {
+      "left": "C-C0013-01",
+      "right": "A-C0019-01",
+      "relationship": "different",
+      "cross_type_duplicate": false,
+      "reason": "个人风险未结与地点禁忌认知变化无同一事实头。"
+    },
+    {
+      "left": "D-C0013-02",
+      "right": "A-C0019-01",
+      "relationship": "different",
+      "cross_type_duplicate": false,
+      "reason": "概率规律与一次局部禁忌的已获知事实不同。"
+    }
+  ],
+  "cross_type_duplicate_gate": {
+    "old_118_count": 0,
+    "differential_count": 0,
+    "combined_count": 0,
+    "passed": true,
+    "reason": "旧118条由已钉住人审账担保；新增四条对旧118及彼此的差分审计未发现同一语义单元跨类型重复。"
+  },
+  "new_d_gate": {
+    "record_id": "D-C0013-02",
+    "type": "D",
+    "source_level": "述",
+    "scope_mode": "probabilistic",
+    "attached_record_anchor_ids": ["13:E0129"],
+    "supplemental_original_text_evidence": [
+      {
+        "chapter": 13,
+        "anchor_id": "E0129",
+        "quote": "以为事情结束，一切都已经恢复正常的时候，它会"
+      },
+      {
+        "chapter": 13,
+        "anchor_id": "E0130",
+        "quote": "候，它会以让人恐惧的、惊悚的方式再次降临。”"
+      }
+    ],
+    "authority_rule": "D-04 概率限定的述源规律；D收世界层概率规律，C收人物层未结风险。",
+    "wrong_d": false,
+    "reason": "E0129＋E0130原文完整支持事情结束后再次降临；规则钉死来源述、概率范围且不升必然铁律，分类为D不是错误D。",
+    "record_anchor_limitation": "Z00w2成品只挂E0129，没把E0130写入自身anchors；本审计只裁错误D语义闸，不把该锚完整性留口伪装成已修。T4重提取时须把完整局部段纳入硬回归。"
+  },
+  "wrong_d_gate": {
+    "old_118_count": 0,
+    "differential_wrong_d_count": 0,
+    "combined_count": 0,
+    "passed": true
+  },
+  "audit_boundary": {
+    "net_benefit_counts_changed": false,
+    "default_promoted": false,
+    "x02_x04_started": false,
+    "outbox_written": false,
+    "known_record_anchor_limitation_open": true
+  }
+}

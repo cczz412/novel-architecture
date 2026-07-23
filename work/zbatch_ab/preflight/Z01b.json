@@ -1,0 +1,185 @@
+{
+  "schema_version": "z-extraction-method-preflight-v1",
+  "status": "pass",
+  "at": "2026-07-18T17:52:14+08:00",
+  "model_calls": 0,
+  "arm": "A",
+  "method": "segment_tasks",
+  "run_id": "Z01b_X01_段级任务拆分_5章_v1.0_20260718",
+  "config_sha256": "88f784a7f913c6d0c81b57ab7efdbdf971ee448becc3781611340e51e5720854",
+  "prompt_audit": {
+    "status": "pass",
+    "arm": "A",
+    "checks": {
+      "baseline_body_preserved_in_order": true,
+      "baseline_placeholder_order_preserved": true,
+      "one_method_payload_placeholder_added": true,
+      "same_output_schema": true,
+      "classification_still_forbidden": true,
+      "method_payload_after_catalog": true
+    },
+    "baseline_prompt_sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f",
+    "experiment_prompt_sha256": "71b03232d76e4198f53852a807200f9de9cd31b64bda283acd44841cb500fc44",
+    "placeholder_order": [
+      "CHAPTER_PADDED",
+      "CHAPTER_NUMBER",
+      "CHAPTER_PADDED",
+      "CHAPTER_NUMBER",
+      "CHAPTER_FILENAME",
+      "EVIDENCE_CATALOG_JSON",
+      "SEGMENT_TASKS_JSON"
+    ],
+    "cache_layers": {
+      "layer_1_system_sha256": "7b4776b253d5653813776e6531045bf68833ab50072d48e88e61d00e5041b2f7",
+      "layer_2_fixed_task_prefix_sha256": "943cedcc59bf446975b8afeaeaaa813d6dbe8da138798395603b32dc0b368790",
+      "layer_2_fixed_task_prefix_bytes": 1929,
+      "layer_3_dynamic_payloads": [
+        "CHAPTER_PADDED",
+        "CHAPTER_NUMBER",
+        "CHAPTER_PADDED",
+        "CHAPTER_NUMBER",
+        "CHAPTER_FILENAME",
+        "EVIDENCE_CATALOG_JSON",
+        "SEGMENT_TASKS_JSON"
+      ],
+      "claim_boundary": "只证明三层位置固定，不声称服务端缓存命中。"
+    }
+  },
+  "transport_audit": {
+    "status": "pass",
+    "values": {
+      "model": "deepseek-v4-flash",
+      "temperature": 0.2,
+      "max_tokens": 16000,
+      "n": 1,
+      "reasoning_effort": "medium",
+      "response_format": {
+        "type": "json_object"
+      },
+      "logical_samples": 5,
+      "max_network_attempts": 15
+    },
+    "route_network_attempts_per_logical_sample": 3,
+    "maximum_reserved_attempts": 15
+  },
+  "pins": [
+    {
+      "label": "protected_chain.runner",
+      "path": "tools/zbatch.py",
+      "sha256": "0b9334a34fcc5b5f866f43b2b3bc40aeff4cedf79a8ff83c51957496061a8080"
+    },
+    {
+      "label": "protected_chain.neutral_extract",
+      "path": "tools/zbatch_modules/neutral_extract.py",
+      "sha256": "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"
+    },
+    {
+      "label": "protected_chain.evidence_catalog",
+      "path": "tools/zbatch_modules/evidence_catalog.py",
+      "sha256": "e20321e3c11f6c1c4dbcc904fce1aa97cc752d9c4ffaaee9b61f8836e39a3847"
+    },
+    {
+      "label": "protected_chain.api_transport",
+      "path": "tools/zbatch_modules/api_transport.py",
+      "sha256": "60452d0538a34070df2e49a7246f2f29ddb94a6855f58de86f2524d18dba8d93"
+    },
+    {
+      "label": "protected_chain.classify_rules_v1_2",
+      "path": "tools/zbatch_modules/classify_rules.py",
+      "sha256": "76b3c1e208abaf0ab47c8dafee4c4e1ccb7d6d4cb3d364fc30afa00c6179eb7b"
+    },
+    {
+      "label": "experiment_code.module",
+      "path": "tools/zbatch_modules/extraction_method_ab.py",
+      "sha256": "847d433ac71968d7b26545f201adfa50ec0a9323a46b107de3eaa9bb1512de38"
+    },
+    {
+      "label": "experiment_code.cli",
+      "path": "tools/zbatch_extraction_method_ab.py",
+      "sha256": "0fc43e07a268a5a60061a17c386a80be22fdbc8fb50677a6b09a1ea0b0c4d980"
+    },
+    {
+      "label": "experiment_code.tests",
+      "path": "tests/test_extraction_method_ab.py",
+      "sha256": "083803a12dac160d870be2453214eabbd5b12a6ad48fdcc9660842b8cee1fb49"
+    }
+  ],
+  "artifact_paths": {
+    "run_dir": "runs/Z01b_X01_段级任务拆分_5章_v1.0_20260718",
+    "permit_path": "work/zbatch_ab/permits/Z01b.call_permit.json",
+    "preflight_path": "work/zbatch_ab/preflight/Z01b.json",
+    "rejection_path": "work/zbatch_ab/rejections/Z01b.json"
+  },
+  "chapters": [
+    {
+      "chapter": 3,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0003_第3章_梅丽莎（第一更求推荐票）.txt",
+      "chapter_file_sha256": "96f5e17cbec15433b5d00bef18912eb39710ad67962e3716bca37203d4c06288",
+      "catalog_anchor_count": 175,
+      "method_row_count": 8,
+      "method_payload_sha256": "9e32050c2296a8fa3d75da701a33f20d2fd82acf5b9833898b555d8d93ae0449",
+      "rendered_prompt_sha256": "b421821e54ba896c1b47a90d7c996645585391f01769d2f2667a1fd7b7a1f038",
+      "method_payload_check": "pass",
+      "old_event_sample_count": 2,
+      "old_event_source_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0003.json",
+      "old_event_source_sha256": "aeede6bdeb17cb18890060d519a8a9be5ce433d1b5b023d2de33fd0108e46eef"
+    },
+    {
+      "chapter": 4,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0004_第4章_占卜（第二更求推荐票）.txt",
+      "chapter_file_sha256": "5cdf20f238c8390b54674ade0adc1beeccb4a5c0e76fad41bf37e707997eaa93",
+      "catalog_anchor_count": 215,
+      "method_row_count": 9,
+      "method_payload_sha256": "1f1be4ea78f99ddff47276df6b300bb335f3d37ca303981073285c2d974e433f",
+      "rendered_prompt_sha256": "713d847c2d7826c4d0111be7a647575399b167f061913ef7671184af30eb539c",
+      "method_payload_check": "pass",
+      "old_event_sample_count": 2,
+      "old_event_source_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0004.json",
+      "old_event_source_sha256": "ab611cf96d34271fbd24352792cf1d5a32c72d63b6a9400a70d0c0ef722e95d6"
+    },
+    {
+      "chapter": 5,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0005_第5章_仪式（第三更求推荐票）.txt",
+      "chapter_file_sha256": "e1fb3a64e2987533c20fe2c707164eae580c497de78d00e219558514b69a2ce0",
+      "catalog_anchor_count": 184,
+      "method_row_count": 8,
+      "method_payload_sha256": "9cb9ee82826f896181e5f4d95bc3a49c255c117a4b538b126d53e76a3f513e4c",
+      "rendered_prompt_sha256": "943dc1b64c0567b9993ec959b4f524d6fa48197dbc9c2c73db64e01f4b7c1a2b",
+      "method_payload_check": "pass",
+      "old_event_sample_count": 2,
+      "old_event_source_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0005.json",
+      "old_event_source_sha256": "695782071913d527f10624233c3dc046595222524063770e5d46d213c32285cf"
+    },
+    {
+      "chapter": 13,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0013_第13章_值夜者.txt",
+      "chapter_file_sha256": "418efe90277893207d2623d14c9093a30a68f38f44dd51ebcee6315813ddd8c0",
+      "catalog_anchor_count": 172,
+      "method_row_count": 8,
+      "method_payload_sha256": "2510c0edbaea14695ac4ba76e69b4a863ae3d8752637e9b0a673a52677acd3f9",
+      "rendered_prompt_sha256": "08f9bc6ed23df395e7b9e6903122ccd35d906cbeb44afc2ef7c925d93242a69f",
+      "method_payload_check": "pass",
+      "old_event_sample_count": 2,
+      "old_event_source_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0013.json",
+      "old_event_source_sha256": "c4a2f69603cdd782a93d265a871f4d7e4ec866ac4f793e35d6b868ffe911e323"
+    },
+    {
+      "chapter": 19,
+      "chapter_file": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters/0019_第19章_封印物（第二更求推荐票）.txt",
+      "chapter_file_sha256": "127af1d2061e3e4cccca7f893ae98e511c2902a7ae06aecc9fa783eb22ca5caa",
+      "catalog_anchor_count": 197,
+      "method_row_count": 9,
+      "method_payload_sha256": "5af8054c136825d4e4773661c7a1ddf74617a01399504496610c8770d91b13b1",
+      "rendered_prompt_sha256": "c49c09da64b40d5f7fde035ef4c88303fb8e2f372857807bb1abcd209e60c7c3",
+      "method_payload_check": "pass",
+      "old_event_sample_count": 2,
+      "old_event_source_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718/01_extract/events/ch0019.json",
+      "old_event_source_sha256": "d5055b74d1a6329f017f6124e0ab087a5451b0324640bdd25230ae72966f7318"
+    }
+  ],
+  "fresh_run_required": true,
+  "fresh_run_pass": true,
+  "api_key_environment_name": "SENSENOVA_API_KEY",
+  "api_key_present": false,
+  "rights": "仅内部结构研究；第37道只跑五章单次采样，不固化、不扩20章、不重分类、不写outbox。"
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "zbatch-default-commit-v1",
+  "status": "committed",
+  "committed_at": "2026-07-19T05:35:42+08:00",
+  "default_id": "zbatch-v1.2-full-chain",
+  "default_registry": {
+    "path": "config/defaults/zbatch_v1.2_full_chain.json",
+    "sha256": "61bc6ca45fe450d382995b29dd998c9119ade2db6049d29963c83eee30c5f9da"
+  },
+  "outbox_manifest": {
+    "path": "outbox/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/manifest.json",
+    "sha256": "aecfcf93a265fa5f9f61ee7003bf8f7118833a12b8e2a0ffcc4899631cec6aa2"
+  }
+}

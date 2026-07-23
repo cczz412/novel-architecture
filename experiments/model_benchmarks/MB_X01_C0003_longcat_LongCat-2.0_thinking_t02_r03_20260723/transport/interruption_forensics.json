@@ -1,0 +1,19 @@
+{
+  "schema_version": "model-benchmark-interruption-forensics-v1",
+  "status": "transport_outcome_unknown_no_rerun",
+  "observed_process_exit": "unexpected_termination_without_catchable_response",
+  "sigkill_sender": "unknown",
+  "attempt_reserved_at": "2026-07-23T07:14:27.883371+08:00",
+  "hard_stop_recorded_at": "2026-07-23T07:15:44+08:00",
+  "request_artifact_sha256": "d5c7a86beea0bcbcf56b2afed249a9c1e6034378d6fff838a80482984d4ef2b8",
+  "reservation_request_artifact_sha256": "d5c7a86beea0bcbcf56b2afed249a9c1e6034378d6fff838a80482984d4ef2b8",
+  "wire_body_sha256": "7d4c34804d7d4db53d6d3025f311ce5facd2d7b447fc74c78b90206a8204eb96",
+  "reservation_wire_body_sha256": "7d4c34804d7d4db53d6d3025f311ce5facd2d7b447fc74c78b90206a8204eb96",
+  "provider_model_catalog_receipt_sha256": "d0b1645a7ebadbd3b649b1ce157fffed43b4924ef27f174bcabc124e82c7ab8b",
+  "provider_model_catalog_raw_sha256": "e31eaf446a1e11060b8b40480acb3afd2491ca3b8c1a05a1f27ea597682410a3",
+  "call_attempt_count": 0,
+  "raw_model_response_count": 0,
+  "usage_row_count": 0,
+  "local_memory_kill_log_found": false,
+  "interpretation": "精确模型目录查询已成功；正式 POST 在写入占用票后可能已开始，但本地无任何 HTTP 结果、原始响应或 usage，不能证明供应商未接收，也不能登记模型质量成绩。"
+}

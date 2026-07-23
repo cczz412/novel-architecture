@@ -1,0 +1,23 @@
+{
+  "children": [
+    {
+      "object": "block",
+      "type": "file",
+      "file": {
+        "type": "file_upload",
+        "file_upload": {
+          "id": "3a35cadc-4d0f-815d-8cec-00b2e74da6cb"
+        },
+        "name": "小说中性原子事件诊断_三问法_全MD_20260720.zip",
+        "caption": [
+          {
+            "type": "text",
+            "text": {
+              "content": "全MD整包｜45个Markdown文件｜SHA-256 a20b65455893b22b20f4bef8ed0be47828b32d79e328ac920b464910891e04f6"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

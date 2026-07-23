@@ -1,0 +1,12 @@
+{
+  "status": "pass",
+  "chapter": 3,
+  "config_path": "config/batches/Z00z_X01_局部段覆盖试点_ch0003_v1.0.json",
+  "config_sha256": "eaa446eed519a98e624e84c8c631bb4e4cce2b4cdf6177dde0782f039fec844a",
+  "run_id": "Z00z_X01_局部段覆盖试点_ch0003_v1.0_20260718",
+  "prior_chapters": [],
+  "existing_run_reuse_allowed": false,
+  "model": "deepseek-v4-flash",
+  "logical_sample_limit": 1,
+  "network_attempt_limit": 3
+}

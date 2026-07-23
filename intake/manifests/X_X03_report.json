@@ -1,0 +1,16 @@
+{
+  "batch": "X",
+  "item": "X03",
+  "kind": "report",
+  "registered_at": "2026-07-17T02:50:36+08:00",
+  "source_path": "TEMP/X批回包_20260716/X03_清河仙族_跨章因果最小结构_盲拆实证.md",
+  "registered_path": "TEMP/X批回包_20260716/X03_清河仙族_跨章因果最小结构_盲拆实证.md",
+  "copied": false,
+  "fingerprint": {
+    "kind": "file",
+    "files": 1,
+    "bytes": 109110,
+    "sha256": "2a3c604695833e614abb9d3fd7eee588ef1f3835bdbea3bcc02fd2dc7ec62e93"
+  },
+  "provenance": "X批回包，银标对照"
+}

@@ -1,0 +1,182 @@
+from __future__ import annotations
+
+import json
+import subprocess
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def load_provider(name: str) -> dict:
+    return json.loads((ROOT / "config/providers" / name).read_text(encoding="utf-8"))
+
+
+def test_provider_policy_keeps_official_deepseek_default_denied() -> None:
+    policy = load_provider("provider_access_policy.json")
+    official = policy["providers"]["deepseek_official"]
+    assert policy["default_chain_provider"] == "sensenova"
+    assert policy["default_chain_changed"] is False
+    assert official["default_action"] == "deny"
+    assert official["approval_scope"] == "current_task_one_command_only"
+    assert official["loader_ack_exact_value"] == "USE_OFFICIAL_DEEPSEEK_API_ONCE"
+
+
+def test_volcengine_ark_channel_and_requested_models_are_exact() -> None:
+    provider = load_provider("volcengine_ark_multi_model.json")
+    assert provider["base_url"] == "https://ark.cn-beijing.volces.com/api/v3"
+    assert provider["endpoint"] == "/chat/completions"
+    assert provider["api_key_env"] == "ARK_API_KEY"
+    assert provider["enabled_by_default"] is False
+    models = {row["requested_name"]: row for row in provider["models"]}
+    assert models["GLM-5.2"]["model_id"] == "glm-5-2-260617"
+    assert models["Doubao-Seed-Evolving"]["model_id"] == "doubao-seed-evolving"
+    assert models["Doubao-Seed-2.1-turbo"]["model_id"] == "doubao-seed-2-1-turbo-260628"
+    assert models["Doubao-Seed-2.1-pro"]["model_id"] == "doubao-seed-2-1-pro-260628"
+    assert models["DeepSeek-V4-pro"]["model_id"] == "deepseek-v4-pro-260425"
+    assert models["DeepSeek-V4-flash"]["model_id"] == "deepseek-v4-flash-260425"
+    assert models["Kimi-K2"]["model_id"] is None
+    assert models["Kimi-K2"]["call_ready"] is False
+
+
+def test_qianwen_channel_and_requested_models_are_exact() -> None:
+    provider = load_provider("qianwen_platform_multi_model.json")
+    assert provider["base_url"] == "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    assert provider["endpoint"] == "/chat/completions"
+    assert provider["api_key_env"] == "DASHSCOPE_API_KEY"
+    assert provider["enabled_by_default"] is False
+    assert provider["token_plan_key_supported_by_this_config"] is False
+    assert [row["model_id"] for row in provider["models"]] == [
+        "qwen3.7-plus",
+        "qwen3.7-max",
+        "deepseek-v4-flash",
+        "deepseek-v4-pro",
+        "glm-5.2",
+        "kimi-k2.7-code",
+    ]
+    assert all(row["call_ready"] for row in provider["models"])
+
+
+def test_tencent_tokenhub_channel_and_requested_models_are_exact() -> None:
+    provider = load_provider("tencent_tokenhub_multi_model.json")
+    assert provider["base_url"] == "https://tokenhub.tencentmaas.com/v1"
+    assert provider["endpoint"] == "/chat/completions"
+    assert provider["model_catalog_endpoint"] == "/models"
+    assert provider["model_catalog_check_required_before_run"] is True
+    assert provider["api_key_env"] == "TENCENT_TOKENHUB_API_KEY"
+    assert provider["enabled_by_default"] is False
+    assert provider["default_model"] is None
+    assert [row["model_id"] for row in provider["models"]] == [
+        "hy3",
+        "hy-role",
+        "deepseek-v4-flash-202605",
+        "deepseek-v4-pro-202606",
+        "deepseek-v4-flash",
+        "deepseek-v4-pro",
+        "glm-5.2",
+        "glm-5.1",
+        "kimi-k2.7-code-highspeed",
+        "kimi-k3",
+        "kimi-k2.7-code",
+        "kimi-k2.6",
+        "minimax-m3",
+        "minimax-m2.7",
+    ]
+    models = {row["model_id"]: row for row in provider["models"]}
+    assert "structured_output" not in models["hy-role"]["capabilities"]
+    assert "structured_output" not in models["minimax-m3"]["capabilities"]
+    assert "structured_output" not in models["minimax-m2.7"]["capabilities"]
+
+
+def test_longcat_channel_uses_external_key_pool_and_exact_model() -> None:
+    provider = load_provider("longcat_platform.json")
+    assert provider["base_url"] == "https://api.longcat.chat/openai/v1"
+    assert provider["endpoint"] == "/chat/completions"
+    assert provider["model_catalog_endpoint"] == "/models"
+    assert provider["model_catalog_check_required_before_run"] is True
+    assert provider["model_catalog_status_policy"] == "presence_only"
+    assert provider["api_key_env"] == "LONGCAT_API_KEY"
+    assert provider["enabled_by_default"] is False
+    assert provider["default_model"] is None
+    assert provider["status"] == "configured_catalog_verified_benchmark_transport_hard_stopped"
+    structured = provider["structured_output_contract"]
+    assert structured["status"] == "not_documented_by_provider"
+    assert structured["do_not_send"] == [
+        "response_format",
+        "json_object",
+        "json_schema",
+    ]
+    assert structured["tool_calling_is_not_structured_output"] is True
+    assert provider["models"] == [
+        {
+            "requested_name": "LongCat-2.0",
+            "model_id": "LongCat-2.0",
+            "call_ready": True,
+            "capabilities": ["thinking", "function_calling"],
+            "context_tokens": 1048576,
+            "max_output_tokens": 131072,
+        }
+    ]
+    loader = Path(provider["external_key_loader"])
+    assert loader == Path(
+        "/Users/a1234/挣钱/danmaku-psychology-workspace/06_operations/api-pool/"
+        "scripts/longcat-env.zsh"
+    )
+    assert loader.is_file()
+
+
+def test_tencent_tokenhub_policy_stays_isolated_and_catalog_gated() -> None:
+    policy = load_provider("provider_access_policy.json")
+    tencent = policy["providers"]["tencent_tokenhub"]
+    assert tencent["default_action"] == "deny_until_explicit_model_run_order"
+    assert tencent["may_replace_default_chain"] is False
+    assert tencent["require_live_model_catalog_check"] is True
+
+
+def test_longcat_policy_stays_isolated_and_catalog_gated() -> None:
+    policy = load_provider("provider_access_policy.json")
+    longcat = policy["providers"]["longcat_platform"]
+    assert longcat["default_action"] == "deny_until_explicit_model_run_order"
+    assert longcat["may_replace_default_chain"] is False
+    assert longcat["require_live_model_catalog_check"] is True
+    assert longcat["key_source"] == "external_api_pool"
+
+
+def test_shared_keychain_loader_is_zero_call_and_names_all_providers() -> None:
+    result = subprocess.run(
+        [str(ROOT / "tools/provider_keychain.sh"), "help"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert "volcengine_ark" in result.stdout
+    assert "qianwen_platform" in result.stdout
+    assert "tencent_tokenhub" in result.stdout
+    assert "不会试调用模型" in result.stdout
+
+    shell = (ROOT / "tools/provider_keychain.sh").read_text(encoding="utf-8")
+    swift = (ROOT / "tools/provider_key_save.swift").read_text(encoding="utf-8")
+    for service, account in [
+        ("cn.cz.novel-architecture.volcengine.ark", "ARK_API_KEY"),
+        ("cn.cz.novel-architecture.qianwen.platform", "DASHSCOPE_API_KEY"),
+        (
+            "cn.cz.novel-architecture.tencent.tokenhub",
+            "TENCENT_TOKENHUB_API_KEY",
+        ),
+    ]:
+        assert service in shell
+        assert account in shell
+        assert account in swift or "CommandLine.arguments[3]" in swift
+
+
+def test_unknown_provider_is_rejected_before_any_keychain_read() -> None:
+    result = subprocess.run(
+        [str(ROOT / "tools/provider_keychain.sh"), "check", "unknown_provider"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 2
+    assert "不认识的供应商" in result.stderr

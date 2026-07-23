@@ -1,0 +1,13 @@
+{
+  "schema_version": "model-benchmark-v1",
+  "benchmark_id": "MB_X01_C0003_qianwen_qwen3.7-plus_structured_r04_20260723",
+  "stage_id": "neutral_extract_x01_ch0003_v3",
+  "provider": "qianwen_platform",
+  "model": "qwen3.7-plus",
+  "profile": "structured_nonthinking",
+  "swap_module": "M04",
+  "write_root": "experiments/model_benchmarks/MB_X01_C0003_qianwen_qwen3.7-plus_structured_r04_20260723",
+  "single_sample_no_rerun": true,
+  "candidate_only": true,
+  "created_at": "2026-07-23T05:15:32.981597+08:00"
+}

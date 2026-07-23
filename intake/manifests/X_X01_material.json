@@ -1,0 +1,16 @@
+{
+  "batch": "X",
+  "item": "X01",
+  "kind": "material",
+  "registered_at": "2026-07-17T02:50:35+08:00",
+  "source_path": "TEMP/X批材料包_20260716/books/X01_诡秘之主",
+  "registered_path": "TEMP/X批材料包_20260716/books/X01_诡秘之主",
+  "copied": false,
+  "fingerprint": {
+    "kind": "directory",
+    "files": 203,
+    "bytes": 2061780,
+    "sha256": "4dfc91ff39fcd268a63683f9dc359480d9ec4757568a1b940c5efe9b3907fe43"
+  },
+  "provenance": "X批本地原样材料，200章"
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": "model-benchmark-compatibility-diff-v1",
+  "baseline_request": {
+    "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/prepared_requests/ch0003.json",
+    "sha256": "18fe2a9e9d2f0a4d48b5b4de29803a90c0db0fe1087080ff8f68d00b81e98eb4",
+    "model": "deepseek-v4-flash"
+  },
+  "candidate": {
+    "provider": "longcat_platform",
+    "model": "LongCat-2.0"
+  },
+  "changed_paths": [
+    "$.model",
+    "$.n",
+    "$.reasoning_effort",
+    "$.response_format",
+    "$.thinking"
+  ],
+  "changes": [
+    {
+      "path": "$.model",
+      "baseline": "deepseek-v4-flash",
+      "candidate": "LongCat-2.0",
+      "kind": "model_selection"
+    },
+    {
+      "path": "$.n",
+      "baseline": 1,
+      "candidate": "__ABSENT__",
+      "kind": "provider_compatibility"
+    },
+    {
+      "path": "$.reasoning_effort",
+      "baseline": "medium",
+      "candidate": "__ABSENT__",
+      "kind": "provider_compatibility"
+    },
+    {
+      "path": "$.response_format",
+      "baseline": {
+        "type": "json_object"
+      },
+      "candidate": "__ABSENT__",
+      "kind": "provider_compatibility"
+    },
+    {
+      "path": "$.thinking",
+      "baseline": "__ABSENT__",
+      "candidate": {
+        "type": "enabled"
+      },
+      "kind": "provider_compatibility"
+    }
+  ],
+  "compatibility_notes": [
+    "LongCat 官方合同只给 thinking.type=enabled/disabled，不发送 reasoning_effort 或自造思考档位。",
+    "官方参数表未列 response_format 与 n；请求依靠冻结 Prompt 要求 JSON，最终正文由本地机械闸验收。",
+    "max_tokens=32000 与本阶段基线相同，低于 LongCat-2.0 官方 131072 上限。",
+    "钥匙继续由同级公共 API 池加载，不复制进本仓。"
+  ],
+  "messages_byte_equal": true,
+  "messages_sha256": "8b261fb41e20abe33c7ebbc47d70cd3bcdbb1074c87e4342207929fbc4099593",
+  "gold_or_answer_hits": [],
+  "comparison_label": "longcat_platform／LongCat-2.0／temperature=0.2／供应商兼容档条件成绩"
+}

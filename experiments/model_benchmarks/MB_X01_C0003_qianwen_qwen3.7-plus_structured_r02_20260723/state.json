@@ -1,0 +1,11 @@
+{
+  "schema_version": "model-benchmark-state-v1",
+  "status": "superseded_zero_call_no_network",
+  "updated_at": "2026-07-23T05:12:01+08:00",
+  "details": {
+    "reason": "终审发现密钥回显尝试计数与完工摘要重建仍有缺口；旧准备件禁止发送",
+    "model_api_calls": 0,
+    "network_attempts": 0,
+    "replacement_benchmark_id": "MB_X01_C0003_qianwen_qwen3.7-plus_structured_r03_20260723"
+  }
+}

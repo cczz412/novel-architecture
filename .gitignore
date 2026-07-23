@@ -1,0 +1,69 @@
+# macOS / editor noise
+.DS_Store
+**/.DS_Store
+.idea/
+.vscode/
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+/coverage.xml
+htmlcov/
+.venv/
+venv/
+.tox/
+.nox/
+.hypothesis/
+**/.cache/
+**/.ipynb_checkpoints/
+
+# Local credentials and transport headers
+.env
+.env.*
+*.env
+*.env.*
+!*.env.example
+!*.env.sample
+**/.hf_token.env
+**/.curl_hf.header
+.envrc
+.direnv/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Temporary packaging and scratch work
+/TEMP/
+
+# Runtime / batch artifacts — keep on disk for local replay, do not track
+# 2026-07-23 tracked slim（目标 Git tracked ≤10MB；不删盘上文件、不做历史 filter）
+/runs/
+/reports/
+/outbox/
+/work/zbatch_decisions/
+
+# Root build outputs and editor leftovers
+/build/
+/dist/
+*.egg-info/
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+*.rej
+*.tmp
+*.temp
+
+# Local model and training weights stay outside Git history
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.onnx

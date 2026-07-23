@@ -1,0 +1,636 @@
+{
+  "available_criteria": [
+    "输入与输出合同已明确且主版本固定",
+    "代码、配置、提示词或规则均可用 SHA 复现",
+    "定向测试通过，且至少两份真实冻结样本通过",
+    "零调用模块相同输入重复生成一致；API 模块留有请求、原始回包、usage 与预算账",
+    "直接下游合同已通过，没有未处置的新失败面",
+    "回退版本与不可覆盖规则已写明"
+  ],
+  "major_regression_triggers": [
+    "任一输入或输出合同升主版本",
+    "章节、证据锚或稳定语义身份规则改变",
+    "总运行器、API 运输、预算或安全清洗改变",
+    "分类语义规则改变",
+    "正式金标合同、分母含义或评分口径改变",
+    "文件路由改变导致工件定位或内容地址变化",
+    "多个模块同时升版且影响图无法证明只落在局部"
+  ],
+  "modules": [
+    {
+      "certificate": "现有 intake 清单可回读；缺独立合同测试。",
+      "compatibility": "沿用 zbatch register 参数。",
+      "consumers": [
+        "M01"
+      ],
+      "input_contract": "文件或目录＋来源说明",
+      "limitations": "材料登记与章节冻结尚未拆成独立合同。",
+      "module_id": "M00",
+      "name": "材料入站",
+      "output_contract": "intake-manifest-v1（现役格式尚未独立成 schema）",
+      "rollback": "继续直接使用 tools/zbatch.py register。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch.py",
+          "sha256": "160c28b3ef0210fd05c392f713534cf1ffdf041fa596ec790545b64955280850"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "intake/README.md",
+          "sha256": "485318fe48d593f36694a3a68f0fe91a3db26737f9f9e9bcb682683d6a358131"
+        }
+      ],
+      "status": "在改",
+      "version": "zbatch-register-v1"
+    },
+    {
+      "certificate": "现役 20 章链路可运行；独立章节包未形成。",
+      "compatibility": "只保证现役 zbatch 批次配置。",
+      "consumers": [
+        "M02",
+        "M07"
+      ],
+      "input_contract": "入站材料",
+      "limitations": "后续工具仍可能直接按路径重读章节。",
+      "module_id": "M01",
+      "name": "章节冻结",
+      "output_contract": "chapter-bundle-v1（目标合同，尚未独立落盘）",
+      "rollback": "保留 zbatch.load_chapters。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch.py",
+          "sha256": "160c28b3ef0210fd05c392f713534cf1ffdf041fa596ec790545b64955280850"
+        }
+      ],
+      "status": "在改",
+      "version": "zbatch-load-chapters-v1"
+    },
+    {
+      "certificate": "现役模块、真实章节等价回归和全套测试。",
+      "compatibility": "供 M03、M05、M07 使用。",
+      "consumers": [
+        "M03",
+        "M05",
+        "M07"
+      ],
+      "input_contract": "章号＋冻结正文",
+      "limitations": "目前仍由 extract 大阶段统一编排。",
+      "module_id": "M02",
+      "name": "证据目录",
+      "output_contract": "evidence-catalog-v1",
+      "rollback": "运行器内兼容薄转发仍保留。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch_modules/evidence_catalog.py",
+          "sha256": "e20321e3c11f6c1c4dbcc904fce1aa97cc752d9c4ffaaee9b61f8836e39a3847"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_zbatch_module_equivalence.py",
+          "sha256": "07070944e9485a4ffd66363c2adef86d25e137ea773e66ddbccf35ea91a9d678"
+        }
+      ],
+      "status": "可用",
+      "version": "evidence-catalog-v1"
+    },
+    {
+      "certificate": "现役请求可复现；第66道完成逐字打印。",
+      "compatibility": "当前 v1.2 抽取提示词与证据目录。",
+      "consumers": [
+        "M04"
+      ],
+      "input_contract": "正文／证据目录＋Prompt 与参数",
+      "limitations": "请求包尚未成为总入口可独立复用的工件合同。",
+      "module_id": "M03",
+      "name": "请求构造",
+      "output_contract": "request-bundle-v1（目标合同，现役为内嵌请求体）",
+      "rollback": "继续由 zbatch.stage_extract 内部构造。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch_modules/neutral_extract.py",
+          "sha256": "459aaa33ac852553cd3466592b98a6f88e005a2ad96821e0b2eb793b89919873"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch_modules/prompt_render_pin.py",
+          "sha256": "d6d848fc5ac651d19009318af07768c1c2edaf6c095b10854311a775f937185a"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "work/zbatch_prompts/candidates/extract_event_only_no_self_audit_v1.1.md",
+          "sha256": "91270576f44986bc0c2610bedb93e28fca90000688bb0f5a40caa72a594c3c7f"
+        }
+      ],
+      "status": "在改",
+      "version": "neutral-extract-request-current"
+    },
+    {
+      "certificate": "运输异常、重试、密钥清洗、预算与 finish_reason 回归通过。",
+      "compatibility": "deepseek-v4-flash；d_mod_cutover_v1。",
+      "consumers": [
+        "M05"
+      ],
+      "input_contract": "messages＋阶段采样合同＋预算",
+      "limitations": "只允许钉死模型和阶段参数；不替语义质量背书。",
+      "module_id": "M04",
+      "name": "API 运输",
+      "output_contract": "transport-result-v1",
+      "rollback": "现役 zbatch 入口不变。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch_modules/api_transport.py",
+          "sha256": "60452d0538a34070df2e49a7246f2f29ddb94a6855f58de86f2524d18dba8d93"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch_modules/stage_sampling.py",
+          "sha256": "bbd436652ee440d4b0151b001ad603b17293bbb8cedf13ff896740f7f592bf71"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "config/contracts/sensenova_stage_sampling_v1.json",
+          "sha256": "8ac9f7fa639aba7a7500948438df32b5bd054895ceb8362b1402ae76f0fdbb8c"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_api_transport_contract.py",
+          "sha256": "146a6ff3b3d6a7478c7877feb7a285cc2ed2b0dfc3800ad837865f9b7b4b30cb"
+        }
+      ],
+      "status": "可用",
+      "version": "d-mod-cutover-v1"
+    },
+    {
+      "certificate": "第57道已从 233 条落盘中性事件续跑分类；模块等价测试通过。",
+      "compatibility": "M02 现役目录、M06 v1.2 分类。",
+      "consumers": [
+        "M06"
+      ],
+      "input_contract": "运输结果＋证据目录",
+      "limitations": "顺序事件 ID 只在本轮内部使用。",
+      "module_id": "M05",
+      "name": "中性事件",
+      "output_contract": "neutral-events-v1",
+      "rollback": "保留原始运输回包和现役解析件。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch_modules/neutral_extract.py",
+          "sha256": "459aaa33ac852553cd3466592b98a6f88e005a2ad96821e0b2eb793b89919873"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_extract_module_contracts.py",
+          "sha256": "54be566a547787070a2c70c7f5da5fd3aa4410c80104be265adada3dc2166684"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_zbatch_module_equivalence.py",
+          "sha256": "07070944e9485a4ffd66363c2adef86d25e137ea773e66ddbccf35ea91a9d678"
+        }
+      ],
+      "status": "可用",
+      "version": "neutral-events-v1"
+    },
+    {
+      "certificate": "稳定语义身份迁移与第57道 233 条中段续跑通过。",
+      "compatibility": "A/B/C/D 语义规则保持 v1.2。",
+      "consumers": [
+        "M07"
+      ],
+      "input_contract": "neutral-events-v1＋人工决定单",
+      "limitations": "程序只验收与编译，不冒充自动语义分类。",
+      "module_id": "M06",
+      "name": "分类裁定",
+      "output_contract": "classified-events-v1",
+      "rollback": "旧合同与旧决定单留档。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch_modules/classify_rules.py",
+          "sha256": "eed588211111f89f5c6968c490686124bf94e7cd09d65aee3f1bc02dd9011104"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "config/contracts/classify_rules_v1.2_semantic_identity_v1.json",
+          "sha256": "45f7610b86d5962e0d3d9d4d95886aad9022f1beaece200c2452b9a361f6c108"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "work/zbatch_decisions/Z57_X01_ch1_20_main_control_decisions_v1.2.json",
+          "sha256": "ba856a487e6fcc416c83b05a0b9e6c458ea85f5d8a7e23354f8c2865b8e97650"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_z57_stable_semantic_identity.py",
+          "sha256": "cbc348ef817482e5b8eaba493f1f45a12c923f869ca63158190599065fe814aa"
+        }
+      ],
+      "status": "可用",
+      "version": "classify-rules-v1.2-semantic-identity-v1"
+    },
+    {
+      "certificate": "现役 122 条正式记录与核锚回归。",
+      "compatibility": "M06 v1.2 与 M02 现役目录。",
+      "consumers": [
+        "M08",
+        "M10"
+      ],
+      "input_contract": "classified-events-v1＋章节与证据目录",
+      "limitations": "编排仍在总运行器内。",
+      "module_id": "M07",
+      "name": "正式记录核对",
+      "output_contract": "verified-records-v1",
+      "rollback": "现役 122 条和历史运行工件不可回写。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch.py",
+          "sha256": "160c28b3ef0210fd05c392f713534cf1ffdf041fa596ec790545b64955280850"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch_modules/anchor_kit.py",
+          "sha256": "ff50d46b4f48f8437dfde6d08529c7808d9137e35575a8b37a2cdb52705dd308"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "runs/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/02_verify/valid_records.json",
+          "sha256": "dafa16901a6edb5018a5176f3f5f7388273e72051def7fe4e997489d01e804ba"
+        }
+      ],
+      "status": "可用",
+      "version": "verified-records-v1.2"
+    },
+    {
+      "certificate": "thin／fold／answer／compare 有阶段闸；统一结构合同未冻结。",
+      "compatibility": "现役 zbatch 阶段顺序。",
+      "consumers": [
+        "M10",
+        "M11"
+      ],
+      "input_contract": "verified-records-v1",
+      "limitations": "不同阶段仍有 API 与专项产物差异。",
+      "module_id": "M08",
+      "name": "结构装配",
+      "output_contract": "structure-ledger-v1（目标统一合同）",
+      "rollback": "按旧阶段白名单运行。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch.py",
+          "sha256": "160c28b3ef0210fd05c392f713534cf1ffdf041fa596ec790545b64955280850"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/zbatch_modules/downstream_validate.py",
+          "sha256": "23667f2ea33d275d0d90941969039c4c69c4ab90098e96ec0d98298f196c0180"
+        }
+      ],
+      "status": "在改",
+      "version": "zbatch-downstream-current"
+    },
+    {
+      "certificate": "第73道正式转正、指针回读和双跑机械验收。",
+      "compatibility": "第3章正式评分分母 23。",
+      "consumers": [
+        "M10"
+      ],
+      "input_contract": "冻结正文证据＋审定处置",
+      "limitations": "只覆盖当前已转正书章。",
+      "module_id": "M09",
+      "name": "金标与候选尺",
+      "output_contract": "gold-reference-v1",
+      "rollback": "v1.1 原件留档，只切指针。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "config/gold/X01_ch0003_structure_gold_current.json",
+          "sha256": "6a5c785dc98381ff4d9b7e207c599c29914f394e4b43e399d37f65093cc5a60c"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "reports/Z73_第3章金标v1.2定稿转正_20260721/第3章结构层金标v1.2.json",
+          "sha256": "0df08ede4fa1a33f4bd9e1aea3e45387c8d77131ce79ff1496fe1320fa48a10e"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_z73_finalize_gold_v1_2.py",
+          "sha256": "15133afd4f35ce44f097ee7cb115b7ea1047e50ae8db2e35cd0523dbc59b3e94"
+        }
+      ],
+      "status": "可用",
+      "version": "X01-ch0003-structure-gold-v1.2"
+    },
+    {
+      "certificate": "机械回读通过；尚未逐本转正。",
+      "compatibility": "候选底稿，不接正式评分。",
+      "consumers": [],
+      "input_contract": "五本冻结窗口＋原书锚",
+      "limitations": "不能冒充正式金标。",
+      "module_id": "M09",
+      "name": "金标与候选尺",
+      "output_contract": "silver-draft-v1",
+      "rollback": "删除候选指针即可；历史原件不动。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "reports/Z74B_五本结构层金标底稿_v1.1_20260721/report_manifest.json",
+          "sha256": "a56da8a66d74a7def19d380b01b93278d2cbe62ae52041b57a43b2b8dc65c1c8"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/z74b_gold_draft_pipeline.py",
+          "sha256": "0a4e7b3ef3b9abca8c154e81ea97cac29e8ffc4350a6f94d5a675183d185d043"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_z74b_gold_draft_pipeline.py",
+          "sha256": "5347296eae8d52ab3d5a2020c36f32951b5c9e441bc61ed5853a417d57f9d279"
+        }
+      ],
+      "status": "试验",
+      "version": "five-books-silver-v1.1"
+    },
+    {
+      "certificate": "五本105条语义载荷零改转正、184锚保留、五指针回读、机械双跑一致。",
+      "compatibility": "可作后续验闸与跨书对照真值；不自动接默认链。",
+      "consumers": [
+        "M10"
+      ],
+      "input_contract": "五份v1.3修订候选＋续令②审收PASS＋续令③转正授权",
+      "limitations": "provenance须随件携带；升默认或接现役链另拍。",
+      "module_id": "M09",
+      "name": "金标与候选尺",
+      "output_contract": "formal-gold-registry-v1＋五个独立gold current指针",
+      "rollback": "按书停用对应current；正式件、候选原件和历史审查账均保留。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "config/gold/formal_gold_registry.json",
+          "sha256": "f1d5fced2a00e7284273e6a17d100beeabbd98ae491fde63c1945e0e5ca691ad"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "reports/Z93_五本结构层金标v1.3转正_20260723/report_manifest.json",
+          "sha256": "d646ec9b4f364cec44ef43e5af5572b9ea4011df29de417e521dc582341d9488"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/z93_five_gold_promote.py",
+          "sha256": "4b597bcf9b20634bceb852636564d163ad08f4a4969fa1d9881ed0ca962ccf1e"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_z93_five_gold_promote.py",
+          "sha256": "7eb981e6bf382f3c237a3a8728bd7a343453ff101dea2bb80443d7f03f6f7f16"
+        }
+      ],
+      "status": "可用",
+      "version": "five-books-structure-gold-v1.3"
+    },
+    {
+      "certificate": "第72～75道有可回读成绩；工具仍按题号分散。",
+      "compatibility": "第3章 v1.2 与旧34条不劣化账。",
+      "consumers": [
+        "M11"
+      ],
+      "input_contract": "候选产物＋金标／回归尺",
+      "limitations": "严格、有效召回和表面覆盖还没有统一自动判分器。",
+      "module_id": "M10",
+      "name": "评分与差距",
+      "output_contract": "scorecard-v1（目标统一合同）",
+      "rollback": "保留逐道成绩与人工判词。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/z73_finalize_gold_v1_2.py",
+          "sha256": "777208abf61d281335efed46c206e942812a3230d6b269b6df5f6e34a7923990"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/z75_multidirection_score.py",
+          "sha256": "74f4565269f046d29bd7b64a6d6f46948e66782f695bf22539d980de4a7cb3f1"
+        }
+      ],
+      "status": "在改",
+      "version": "scorecard-current-mixed"
+    },
+    {
+      "certificate": "三完整方向全未过旧事件不劣化闸；留档。",
+      "compatibility": "只作候选观察。",
+      "consumers": [],
+      "input_contract": "第75道四方向样张＋正式金标／旧事件尺",
+      "limitations": "没有可固化胜者。",
+      "module_id": "M10",
+      "name": "评分与差距",
+      "output_contract": "第75道专项成绩单",
+      "rollback": "不接默认即完成回退。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "reports/Z75_正反例全文回传与内测_20260721/item2/三方向完整成绩单.json",
+          "sha256": "70c3c5fb7ab79ca4394752886e904fcc31ede8e2d11b8de1ecb3796511e5ffe4"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/z75_multidirection_score.py",
+          "sha256": "74f4565269f046d29bd7b64a6d6f46948e66782f695bf22539d980de4a7cb3f1"
+        }
+      ],
+      "status": "试验",
+      "version": "Z75-multidirection-v1"
+    },
+    {
+      "certificate": "治理索引双生成一致；统一入口的零调用预演、状态查询与错误路径均和旧入口等价；全套机械测试通过。",
+      "compatibility": "新增旁路，不改现役 zbatch。",
+      "consumers": [],
+      "input_contract": "模块登记＋工件清单＋审查结果",
+      "limitations": "第二期检查员分流与测试纪律尚未接线。",
+      "module_id": "M11",
+      "name": "审查与交付",
+      "output_contract": "review-receipt-v1＋治理索引",
+      "rollback": "停用 tools/novel_pipeline.py，继续使用 tools/zbatch.py。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/governance_index.py",
+          "sha256": "06a286b944b5d15fe48b4826123720245a505768f3ca5d7243c49162dc97424b"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/novel_pipeline.py",
+          "sha256": "a214bef21e511d874de244ca037644e6ebc41b61ca7b9c65c551c44201246597"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/pipeline_common/artifacts.py",
+          "sha256": "cd37f3d055d55dc7e206beb3d216f93ae9ffa6e7f54f784705b02592dee5bb08"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "governance/control_plane.json",
+          "sha256": "b340158ed55343373a97681e578b1356889d281407d9025111d63858ac94941d"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_governance_index.py",
+          "sha256": "1bc1b44a0c282e3a3696ff09964c94e9ef13f13c8b64c70a13b2d956cd97ded9"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_novel_pipeline.py",
+          "sha256": "eb82c7d0e63d51cf15d77099a4acc59be0c71580c9b48801c566a95e414a5ebf"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_pipeline_artifacts.py",
+          "sha256": "36fc46f4d2abaebd56bf05ebd831403d052ff55d02f0800c24cbbab9e0abe7cd"
+        }
+      ],
+      "status": "可用",
+      "version": "governance-phase1-v1"
+    },
+    {
+      "certificate": "A01～A18纯规则登记18／18；6条试料中3条规则升级、3条DeepSeek分流；1次请求HTTP 200、usage齐、密钥痕迹0；通过桶10%抽样实审1条。",
+      "compatibility": "独立 M11 旁路；读取冻结锚，不接写现役记录、金标或分类件。",
+      "consumers": [],
+      "input_contract": "semantic-inspection-batch-v1",
+      "limitations": "只给候选路由，不是真值；疑义、否定、跨章因果和非通过项必须强审。",
+      "module_id": "M11",
+      "name": "审查与交付",
+      "output_contract": "semantic-inspection-result-v1＋strong-review-queue-v1",
+      "rollback": "停止调用 inspect 命令并保留试验目录；旧入口和现役链无需切换。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/pipeline_inspector.py",
+          "sha256": "eb7824e263bc421cd41d3dfabab0aebd0cbf2163f71eea2c2a8c34ed7fef4a62"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "governance/contracts/semantic_inspector_v1.json",
+          "sha256": "5a0ccbd262b34c2d074e34a9ca435d489313d0ce5daf02f887c1fe4f91c57158"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "governance/rule_check_registry.json",
+          "sha256": "7588e184433ae21ce7fdfff78169871b02d0b66b8ae1bcea7fef2bca9c64b63f"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_pipeline_inspector.py",
+          "sha256": "66bfc0ebe0e9070f3427b50fb330f6ce2b2e559162043f9020e1e8058eb74f4b"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "experiments/Z76_phase2_semantic_inspector_pilot_20260721/run_receipt.json",
+          "sha256": "0a46f90cac79100a5a7dd790109bb94896bb558bee0b4a888f59accc67690829"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "experiments/Z76_phase2_semantic_inspector_pilot_20260721/feedback_receipt.json",
+          "sha256": "98dc8a4ec18fc670154f0d2486426fd9284f3506ab687e187086e303f0c1660e"
+        }
+      ],
+      "status": "可用",
+      "version": "semantic-review-router-v1"
+    },
+    {
+      "certificate": "文档、局部模块、现役合同变化、统一入口与未知路径五类计划测试通过；本期统一入口变化按纪律触发全链。",
+      "compatibility": "从 module_registry.json 读取模块状态和消费者；不修改被测模块。",
+      "consumers": [],
+      "input_contract": "pipeline-change-spec-v1",
+      "limitations": "未知路径保守升级全链；隔离新增合同不等同于替换现役合同。",
+      "module_id": "M11",
+      "name": "审查与交付",
+      "output_contract": "pipeline-test-plan-v1",
+      "rollback": "停用 test-plan 命令，测试执行不受影响；纪律文件保留审计。",
+      "source_refs": [
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tools/test_impact.py",
+          "sha256": "58473012e769e51028c5514c9dcc3973eefddb682ded5494a8b60433097bf3d1"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "governance/test_policy.json",
+          "sha256": "bc6038c06c42fefe8ff82874a11c98fb6077d89b1bb4dc9167350279a4509b9a"
+        },
+        {
+          "exists": true,
+          "kind": "file",
+          "path": "tests/test_test_impact.py",
+          "sha256": "0aafacbb2b522b9397434634d7017a49041fe90f5868c2227fb1248c8e9912f6"
+        }
+      ],
+      "status": "可用",
+      "version": "test-impact-policy-v1"
+    }
+  ],
+  "schema_version": "pipeline-module-registry-v1",
+  "status_counts": {
+    "可用": 10,
+    "在改": 5,
+    "试验": 2
+  },
+  "status_rule": "状态挂在模块版本上；同一模块可同时有可用正式版与试验候选版。"
+}

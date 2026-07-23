@@ -1,0 +1,94 @@
+{
+  "schema_version": "z91-short-summary-exception-contract-v1",
+  "contract_id": "Z91-v2-short-summary-subject-predicate-side-ledger-v1",
+  "status": "frozen_experiment_only_not_production",
+  "scope": {
+    "task": "Z91 step2 v2 six-sample cross-book comparison",
+    "production_contract_changed": false,
+    "prompt_changed": false,
+    "model_visible": false,
+    "allowed_shared_reason_template": "{event_id}事件摘要长度非法",
+    "all_other_shared_reasons": "hard_stop"
+  },
+  "length_rule": {
+    "production_min_nonspace_chars": 6,
+    "exception_min_nonspace_chars": 2,
+    "exception_max_nonspace_chars": 5,
+    "production_max_nonspace_chars_unchanged": 100,
+    "whitespace_policy": "remove Unicode whitespace only for parsing; preserve original event text"
+  },
+  "complete_subject_predicate_rule": {
+    "rule_id": "explicit-subject-finite-predicate-v1",
+    "normalization": "Unicode NFC, then remove Unicode whitespace; no other character rewrite",
+    "terminal_punctuation": ["。", "！", "？", ".", "!", "?"],
+    "terminal_punctuation_rule": "remove zero or one terminal punctuation mark before parsing; reject punctuation elsewhere",
+    "subject_pattern": "one or more CJK letters, ASCII letters, digits, or middle dot; exact membership in the frozen subject allowlist is also mandatory",
+    "subject_allowlist": {
+      "source_boundary": "global pronouns are grammar fixtures; every by_case item was frozen before calls and must occur byte-for-byte in that case's frozen chapter body; no gold, prior arm output, or answer is a source",
+      "global_pronouns": ["我", "你", "他", "她", "它", "我们", "你们", "他们", "她们", "它们", "众人", "大家", "两人", "三人", "几人", "一人", "对方", "双方", "全员"],
+      "by_case": {
+        "X02-C0031": ["齐夏", "林檎", "甜甜", "乔家劲", "人鼠", "房间", "房门", "仓库", "货架", "白炽灯", "灯", "天", "游戏", "挑战", "罐头", "纸箱", "小球"],
+        "X03-C0019": ["宋长廉", "宋长风", "宋清泽", "宋青鸣", "刘天龙", "杜少康", "宋古柏", "乌西云", "宋古山", "刘家", "宋家", "杜家", "三家", "四家", "修士", "妖兽", "银甲蟹", "银甲蟹妖", "阵法", "金网", "铁钳", "铁爪", "水潭", "洞穴", "老者"],
+        "X04-C0046": ["余列", "老旦", "老仆", "大头娃娃", "瓦家老仆", "瓦家", "道人", "道童", "道童们", "道庭", "灵石", "符钱", "灵气", "黑水镇", "掌柜", "伙计们", "赌坊", "钱庄", "过道", "山海界", "天地", "地脉", "矿脉"]
+      }
+    },
+    "sentence_initial_forbidden_adverbials": ["此时", "这时", "当时", "随后", "然后", "于是", "因此", "所以", "突然", "忽然", "终于", "已经", "正在", "马上", "接着", "立刻", "随即", "继而", "此后", "之后", "后来", "眼下", "方才", "刚才", "刚刚", "仍然", "依然", "一度", "当即", "转眼", "片刻", "不久"],
+    "sentence_initial_rule": "if the normalized sentence starts with any frozen adverbial, reject the whole sentence instead of treating part of the adverbial or following verb as a subject",
+    "subject_forbidden_exact": ["此时", "这时", "当时", "随后", "然后", "于是", "因此", "所以", "突然", "终于", "已经", "正在"],
+    "subject_forbidden_suffix": ["很", "更", "最", "也", "都", "又", "仍", "正", "已", "曾", "将", "才", "就", "却", "还", "只", "未", "没", "不", "再"],
+    "predicate_prefix_modifiers": ["很", "更", "最", "也", "都", "又", "仍", "正", "已", "曾", "将", "才", "就", "却", "还", "只", "未", "没", "不", "再", "已在", "正在"],
+    "predicate_heads": [
+      "点头", "摇头", "起身", "坐下", "站起", "跪下", "转身", "回头", "抬头", "低头", "睁眼", "闭眼", "开口", "闭嘴", "沉默",
+      "醒来", "醒转", "睡着", "昏倒", "倒下", "摔倒", "死亡", "受伤", "失踪", "出现", "消失", "离开", "返回", "回来", "出去", "进来", "进入", "退出",
+      "走出", "走进", "跑出", "跑进", "出门", "回家", "启程", "出发", "归来", "答应", "决定", "选择", "知道", "明白", "发现", "想起", "记得", "忘记",
+      "相信", "怀疑", "害怕", "担心", "生气", "震惊", "惊讶", "察觉", "看见", "看到", "听见", "听到", "拿起", "放下", "打开", "关上", "关闭", "推开", "拉开",
+      "丢下", "交出", "给出", "收下", "带走", "杀死", "救下", "阻止", "接受", "拒绝", "承认", "否认", "同意", "放弃", "获胜", "失败", "开始", "结束", "完成", "停止",
+      "改变", "恢复", "破裂", "碎裂", "熄灭", "亮起", "到达", "离去", "留下", "失去", "得到", "拥有", "丢失", "答复", "回应", "回答", "确认", "命令", "要求", "提醒",
+      "警告", "宣布", "认出", "看向", "望向", "点燃", "烧毁", "毁坏", "倒塌", "崩溃", "成立", "生效", "失效",
+      "紧张", "安全", "危险", "清醒", "平静", "正常", "异常", "有效", "无效", "成功",
+      "醒", "死", "活", "走", "跑", "逃", "追", "停", "跪", "坐", "站", "躺", "哭", "笑", "喊", "叫", "说", "问", "答", "想", "看", "听", "拿", "放", "推", "拉", "开", "关", "来", "去", "变", "有", "无", "是", "成", "好", "坏", "对", "错", "真", "假", "快", "慢", "高", "低", "强", "弱", "冷", "热"
+      , "亮", "灭", "赢", "输", "睡", "飞"
+    ],
+    "predicate_heads_requiring_lexical_tail": ["有", "无", "是", "成", "说", "问", "答", "想", "看", "听", "拿", "放", "推", "拉", "真", "假"],
+    "aspect_only_tail_characters": ["了", "着", "过"],
+    "predicate_suffix_rule": "after an optional frozen modifier, the predicate must begin with one frozen head; the remaining one or two characters are treated as an explicit object, complement, or aspect tail",
+    "split_algorithm": "reject a frozen sentence-initial adverbial first; enumerate every non-empty subject/predicate split; require exact subject membership in the frozen global or current-case subject allowlist; reject forbidden subjects; accept parses whose predicate matches the frozen rule; choose the parse with the shortest subject, then the longest predicate head, then lexical order",
+    "acceptance": "at least one deterministic parse exists",
+    "semantic_truth_claim": "none; this is only a narrow mechanical sentence-shape exception"
+  },
+  "anchor_rule": {
+    "must_be_nonempty": true,
+    "leaf_keys_unchanged": ["anchor_id"],
+    "all_anchor_ids_must_exist_in_frozen_catalog": true,
+    "duplicate_anchor_ids_rejected": true,
+    "semantic_support_not_inferred_by_this_exception": true
+  },
+  "side_ledger": {
+    "schema_version": "z91-short-summary-side-ledger-v1",
+    "path_per_sample": "candidate/z91_v2_short_summary_ledger.json",
+    "write_zero_row_ledger": true,
+    "decision": "short_summary_violation_observed_but_sample_effective",
+    "entered_formal_record": false,
+    "changed_shared_contract": false,
+    "required_entry_fields": ["event_id", "event", "nonspace_chars", "shared_reason", "decision", "subject", "predicate", "predicate_head", "terminal_punctuation", "anchor_ids"]
+  },
+  "worked_examples": {
+    "pass": [
+      {"event": "齐夏点头。", "subject": "齐夏", "predicate": "点头"},
+      {"event": "甜甜醒了", "subject": "甜甜", "predicate": "醒了"},
+      {"event": "他问她。", "subject": "他", "predicate": "问她"}
+    ],
+    "reject": [
+      {"event": "点头。", "reason": "no_explicit_subject"},
+      {"event": "很紧张。", "reason": "no_explicit_subject"},
+      {"event": "此时醒了", "reason": "forbidden_adverbial_subject"},
+      {"event": "随后打开", "reason": "forbidden_sentence_initial_adverbial"},
+      {"event": "突然回来", "reason": "forbidden_sentence_initial_adverbial"},
+      {"event": "微笑离开", "reason": "subject_not_in_frozen_allowlist"},
+      {"event": "转身离开", "reason": "subject_not_in_frozen_allowlist"},
+      {"event": "齐夏有", "reason": "transitive_or_copular_head_missing_lexical_tail"},
+      {"event": "事情是", "reason": "transitive_or_copular_head_missing_lexical_tail"},
+      {"event": "真相真", "reason": "predicate_head_missing_lexical_tail"}
+    ]
+  }
+}

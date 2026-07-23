@@ -1,0 +1,37 @@
+{
+  "schema_version": "z-t4-pilot-preparation-v1",
+  "status": "prepared",
+  "model_calls": 0,
+  "configs": [
+    {
+      "chapter": 3,
+      "config_path": "config/batches/Z00z_X01_局部段覆盖试点_ch0003_v1.0.json",
+      "config_sha256": "eaa446eed519a98e624e84c8c631bb4e4cce2b4cdf6177dde0782f039fec844a",
+      "run_id": "Z00z_X01_局部段覆盖试点_ch0003_v1.0_20260718"
+    },
+    {
+      "chapter": 4,
+      "config_path": "config/batches/Z00z_X01_局部段覆盖试点_ch0004_v1.0.json",
+      "config_sha256": "f03220153d2b388c67dea50e9c4e50007d967c34d369bdc15da7304acaad8367",
+      "run_id": "Z00z_X01_局部段覆盖试点_ch0004_v1.0_20260718"
+    },
+    {
+      "chapter": 5,
+      "config_path": "config/batches/Z00z_X01_局部段覆盖试点_ch0005_v1.0.json",
+      "config_sha256": "9a67f00c303941b5356d374cc275b69c0821e59e763168e31aa7b8f75c7c7b48",
+      "run_id": "Z00z_X01_局部段覆盖试点_ch0005_v1.0_20260718"
+    },
+    {
+      "chapter": 13,
+      "config_path": "config/batches/Z00z_X01_局部段覆盖试点_ch0013_v1.0.json",
+      "config_sha256": "5855a989ce3486b608486b1d5e660800e6f92b55f9aa54b4d01cee0e0f596a9b",
+      "run_id": "Z00z_X01_局部段覆盖试点_ch0013_v1.0_20260718"
+    },
+    {
+      "chapter": 19,
+      "config_path": "config/batches/Z00z_X01_局部段覆盖试点_ch0019_v1.0.json",
+      "config_sha256": "33b4391834c4e31bdb742d2ef6d6b6a39c012acd6c9820a00102d682afaa58df",
+      "run_id": "Z00z_X01_局部段覆盖试点_ch0019_v1.0_20260718"
+    }
+  ]
+}

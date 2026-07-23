@@ -1,0 +1,15 @@
+{
+  "window": "w01",
+  "basket": "ST-001",
+  "counts": {
+    "parsed_books": 50,
+    "high_conf": 43,
+    "not_found": 2,
+    "next_w02": 50
+  },
+  "files": {
+    "report": "TEMP/dr_corpus_relabel_20260718/returns/w01_trial50.md",
+    "csv": "side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv",
+    "next_prompt": "TEMP/dr_corpus_relabel_20260718/next/Prompt_w02_paste.txt"
+  }
+}

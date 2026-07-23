@@ -1,0 +1,7 @@
+{
+  "status": "authorized",
+  "arm": "C",
+  "permit_path": "work/zbatch_ab/permits/Z01e.call_permit.json",
+  "permit_sha256": "1671946765fd90212d4688eefd5f88df2cc40cf282ff1c3a6d4d2676a3a5e907",
+  "model_calls": 0
+}

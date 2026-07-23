@@ -1,0 +1,13 @@
+{
+  "schema_version": "model-benchmark-completion-audit-v1",
+  "status": "pass_rebuilt_from_raw",
+  "benchmark_id": "MB_X01_C0003_qianwen_qwen3.7-plus_thinking32k_t02_r06_20260723",
+  "request_sha256": "76287e21886c019a9ae9a8fa2d14d4da02fd2541f848827a69d797a2ae15d2cc",
+  "raw_response_sha256": "8a2934b2ff031a9b59bf60892cfaad378025645407a643de623145dc65e3ad28",
+  "attempt_count": 1,
+  "successful_response_count": 1,
+  "usage_row_count": 1,
+  "event_count": 30,
+  "checkpoint_id": "471e11ad8f2ea89e22ae7d4c4013525a6141c8658ab191662fb0cb0e3a03ccf3",
+  "secret_authorization_hits": 0
+}

@@ -1,0 +1,663 @@
+{
+  "schema_version": "z59-entity-supply-rules-v1",
+  "task": "第59道件⓪：前20章模拟实体供料",
+  "source_window": {
+    "chapter_start": 1,
+    "chapter_end": 20,
+    "chapter_dir": "TEMP/X批材料包_20260716/books/X01_诡秘之主/chapters",
+    "strip_exported_chapter_headers": true
+  },
+  "source_policy": {
+    "allowed_primary_source": "前20章本地正文",
+    "alias_candidate_path": "TEMP/side_night_batch_20260718/39_data_pipeline/outputs/alias_skeleton.jsonl",
+    "alias_candidate_sha256": "696b900f65f92332fc20128d496a9f37358f507cdc4745272ab7b7c6d9bf0d3c",
+    "alias_candidate_rule": "只作候选；规范名或别名必须在前20章正文逐字命中，且必须进入本规则的同一语义实体组，才允许展示",
+    "forbidden_sources": [
+      "reports/Z56_金标双轨分层与全链体检_20260719/第3章结构层金标v1.1.json",
+      "reports/Z52续令_候选桶语义清洗与金标转换_20260719/第3章结构层金标v1.json",
+      "runs/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/02_verify/valid_records.json",
+      "外部设定卡"
+    ]
+  },
+  "recognition_policy": {
+    "matching": "literal_exact_global_longest_span_wins",
+    "equal_length_conflict": "hard_fail",
+    "person_min_window_mentions": 3,
+    "person_min_distinct_chapters": 2,
+    "nonperson_min_window_mentions": 1,
+    "person_grading": "主角固定为PER-001；其余人物须同时达到前20章至少3次且跨至少2章，才标重要配角；低频或仅在单章集中出现者记龙套并不入表",
+    "chapter_filter": "实体至少一个经范围约束的词面在本章正文命中才进入本章表",
+    "frequency": "剔除导出章标题后，在前20章正文按不重叠最长词面累计",
+    "range": "按实际命中章次压缩为PDF页码式连续区间"
+  },
+  "entities": [
+    {
+      "entity_id": "PER-001",
+      "canonical": "克莱恩.莫雷蒂",
+      "aliases": ["克莱恩", "周明瑞", "愚者"],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "主角",
+      "surfaces": [
+        {"text": "克莱恩.莫雷蒂"},
+        {"text": "克莱恩"},
+        {"text": "周明瑞"},
+        {"text": "愚者", "chapters": [6, 7, 8, 16]}
+      ]
+    },
+    {
+      "entity_id": "PER-002",
+      "canonical": "梅丽莎",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "梅丽莎"}]
+    },
+    {
+      "entity_id": "PER-003",
+      "canonical": "班森",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "班森"}]
+    },
+    {
+      "entity_id": "PER-004",
+      "canonical": "韦尔奇",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "韦尔奇"}]
+    },
+    {
+      "entity_id": "PER-005",
+      "canonical": "娜娅",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "娜娅"}]
+    },
+    {
+      "entity_id": "PER-006",
+      "canonical": "邓恩.史密斯",
+      "aliases": ["邓恩", "队长"],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [
+        {"text": "邓恩.史密斯"},
+        {"text": "邓恩"},
+        {"text": "队长", "chapters": [17, 19, 20]}
+      ]
+    },
+    {
+      "entity_id": "PER-007",
+      "canonical": "戴莉",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "戴莉"}]
+    },
+    {
+      "entity_id": "PER-008",
+      "canonical": "老尼尔",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "老尼尔"}]
+    },
+    {
+      "entity_id": "PER-009",
+      "canonical": "罗珊",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "罗珊"}]
+    },
+    {
+      "entity_id": "PER-010",
+      "canonical": "奥黛丽.霍尔",
+      "aliases": ["奥黛丽", "正义"],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [
+        {"text": "奥黛丽.霍尔"},
+        {"text": "奥黛丽"},
+        {"text": "正义", "chapters": [7, 9, 13, 16]}
+      ]
+    },
+    {
+      "entity_id": "PER-011",
+      "canonical": "阿尔杰.威尔逊",
+      "aliases": ["阿尔杰", "倒吊人"],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [
+        {"text": "阿尔杰.威尔逊"},
+        {"text": "阿尔杰"},
+        {"text": "倒吊人", "chapters": [7, 9, 13, 16, 18]}
+      ]
+    },
+    {
+      "entity_id": "PER-012",
+      "canonical": "奥利安娜",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "奥利安娜"}]
+    },
+    {
+      "entity_id": "PER-013",
+      "canonical": "伦纳德",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "伦纳德"}]
+    },
+    {
+      "entity_id": "PER-014",
+      "canonical": "弗兰奇",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "弗兰奇"}]
+    },
+    {
+      "entity_id": "PER-015",
+      "canonical": "安妮",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "安妮"}]
+    },
+    {
+      "entity_id": "PER-016",
+      "canonical": "赛德斯",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "赛德斯"}]
+    },
+    {
+      "entity_id": "PER-017",
+      "canonical": "阿古希德.尼根",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "阿古希德.尼根"}]
+    },
+    {
+      "entity_id": "PER-018",
+      "canonical": "帕拉斯.尼根",
+      "aliases": ["帕拉斯"],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "帕拉斯.尼根"}, {"text": "帕拉斯"}]
+    },
+    {
+      "entity_id": "PER-019",
+      "canonical": "温蒂斯林",
+      "aliases": [],
+      "category": "人物",
+      "table": "人物演员表",
+      "importance": "重要配角",
+      "surfaces": [{"text": "温蒂斯林"}]
+    },
+    {
+      "entity_id": "LOC-001",
+      "canonical": "廷根市",
+      "aliases": ["廷根"],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "廷根市"}, {"text": "廷根"}]
+    },
+    {
+      "entity_id": "LOC-002",
+      "canonical": "贝克兰德",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "贝克兰德"}]
+    },
+    {
+      "entity_id": "LOC-003",
+      "canonical": "鲁恩王国",
+      "aliases": ["鲁恩"],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "鲁恩王国"}, {"text": "鲁恩"}]
+    },
+    {
+      "entity_id": "LOC-004",
+      "canonical": "廷根大学",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "廷根大学"}]
+    },
+    {
+      "entity_id": "LOC-005",
+      "canonical": "贝克兰德大学",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "贝克兰德大学"}]
+    },
+    {
+      "entity_id": "LOC-006",
+      "canonical": "霍伊大学",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "霍伊大学"}]
+    },
+    {
+      "entity_id": "LOC-007",
+      "canonical": "廷根技术学校",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "廷根技术学校"}]
+    },
+    {
+      "entity_id": "LOC-008",
+      "canonical": "铁十字街",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "铁十字街"}]
+    },
+    {
+      "entity_id": "LOC-009",
+      "canonical": "佐特兰街",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "佐特兰街"}]
+    },
+    {
+      "entity_id": "LOC-010",
+      "canonical": "阿霍瓦郡",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "阿霍瓦郡"}]
+    },
+    {
+      "entity_id": "LOC-011",
+      "canonical": "北大陆",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "北大陆"}]
+    },
+    {
+      "entity_id": "LOC-012",
+      "canonical": "南大陆",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "南大陆"}]
+    },
+    {
+      "entity_id": "LOC-013",
+      "canonical": "因蒂斯共和国",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "因蒂斯共和国"}]
+    },
+    {
+      "entity_id": "LOC-014",
+      "canonical": "霍纳奇斯山脉",
+      "aliases": [],
+      "category": "地名",
+      "table": "地名表",
+      "surfaces": [{"text": "霍纳奇斯山脉"}]
+    },
+    {
+      "entity_id": "ORG-001",
+      "canonical": "黑夜女神教会",
+      "aliases": [],
+      "category": "势力",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "黑夜女神教会"}]
+    },
+    {
+      "entity_id": "ORG-002",
+      "canonical": "值夜者",
+      "aliases": [],
+      "category": "势力",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "值夜者"}]
+    },
+    {
+      "entity_id": "ORG-003",
+      "canonical": "代罚者",
+      "aliases": [],
+      "category": "势力",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "代罚者"}]
+    },
+    {
+      "entity_id": "ORG-004",
+      "canonical": "机械之心",
+      "aliases": [],
+      "category": "势力",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "机械之心"}]
+    },
+    {
+      "entity_id": "ORG-005",
+      "canonical": "风暴之主教会",
+      "aliases": [],
+      "category": "势力",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "风暴之主教会"}]
+    },
+    {
+      "entity_id": "ORG-006",
+      "canonical": "蒸汽与机械之神教会",
+      "aliases": [],
+      "category": "势力",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "蒸汽与机械之神教会"}]
+    },
+    {
+      "entity_id": "ORG-007",
+      "canonical": "黑荆棘安保公司",
+      "aliases": [],
+      "category": "势力",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "黑荆棘安保公司"}]
+    },
+    {
+      "entity_id": "ORG-008",
+      "canonical": "塔罗会",
+      "aliases": [],
+      "category": "势力",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "塔罗会"}]
+    },
+    {
+      "entity_id": "ORG-009",
+      "canonical": "安提哥努斯家族",
+      "aliases": [],
+      "category": "势力",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "安提哥努斯家族"}]
+    },
+    {
+      "entity_id": "PATH-001",
+      "canonical": "占卜家",
+      "aliases": [],
+      "category": "流派",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "占卜家"}]
+    },
+    {
+      "entity_id": "PATH-002",
+      "canonical": "不眠者",
+      "aliases": [],
+      "category": "流派",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "不眠者"}]
+    },
+    {
+      "entity_id": "PATH-003",
+      "canonical": "水手",
+      "aliases": [],
+      "category": "流派",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "水手"}]
+    },
+    {
+      "entity_id": "ARC-001",
+      "canonical": "转运仪式",
+      "aliases": [],
+      "category": "秘术",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "转运仪式"}]
+    },
+    {
+      "entity_id": "ARC-002",
+      "canonical": "占卜",
+      "aliases": [],
+      "category": "秘术",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "占卜"}]
+    },
+    {
+      "entity_id": "ARC-003",
+      "canonical": "通灵",
+      "aliases": [],
+      "category": "秘术",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "通灵"}]
+    },
+    {
+      "entity_id": "ARC-004",
+      "canonical": "恶魔仪式",
+      "aliases": [],
+      "category": "秘术",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "恶魔仪式"}]
+    },
+    {
+      "entity_id": "TTL-001",
+      "canonical": "黑夜女神",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "黑夜女神"}]
+    },
+    {
+      "entity_id": "TTL-002",
+      "canonical": "绯红之主",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "绯红之主"}]
+    },
+    {
+      "entity_id": "TTL-003",
+      "canonical": "通灵者",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "通灵者"}]
+    },
+    {
+      "entity_id": "TTL-004",
+      "canonical": "隐秘之母",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "隐秘之母"}]
+    },
+    {
+      "entity_id": "TTL-005",
+      "canonical": "厄难与恐惧的女皇",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "厄难与恐惧的女皇"}]
+    },
+    {
+      "entity_id": "TTL-006",
+      "canonical": "安眠和寂静的领主",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "安眠和寂静的领主"}]
+    },
+    {
+      "entity_id": "TTL-007",
+      "canonical": "风暴之主",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "风暴之主"}]
+    },
+    {
+      "entity_id": "TTL-008",
+      "canonical": "永恒烈阳",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "永恒烈阳"}]
+    },
+    {
+      "entity_id": "TTL-009",
+      "canonical": "蒸汽与机械之神",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "蒸汽与机械之神"}]
+    },
+    {
+      "entity_id": "TTL-010",
+      "canonical": "大地母神",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "大地母神"}]
+    },
+    {
+      "entity_id": "TTL-011",
+      "canonical": "战神",
+      "aliases": [],
+      "category": "称号",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "战神"}]
+    },
+    {
+      "entity_id": "EVT-001",
+      "canonical": "克莱恩自杀",
+      "aliases": [],
+      "category": "事例",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "克莱恩自杀"}]
+    },
+    {
+      "entity_id": "EVT-002",
+      "canonical": "所有人都会死，包括我",
+      "aliases": [],
+      "category": "事例",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "所有人都会死，包括我"}]
+    },
+    {
+      "entity_id": "CON-001",
+      "canonical": "红月",
+      "aliases": ["绯红之月"],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "红月"}, {"text": "绯红之月"}]
+    },
+    {
+      "entity_id": "CON-002",
+      "canonical": "灰雾",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "灰雾"}]
+    },
+    {
+      "entity_id": "CON-003",
+      "canonical": "封印物",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "封印物"}]
+    },
+    {
+      "entity_id": "CON-004",
+      "canonical": "非凡者",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "非凡者"}]
+    },
+    {
+      "entity_id": "CON-005",
+      "canonical": "魔药",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "魔药"}]
+    },
+    {
+      "entity_id": "CON-006",
+      "canonical": "序列",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "序列"}]
+    },
+    {
+      "entity_id": "CON-007",
+      "canonical": "塔罗牌",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "塔罗牌"}]
+    },
+    {
+      "entity_id": "CON-008",
+      "canonical": "灵性",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "灵性"}]
+    },
+    {
+      "entity_id": "CON-009",
+      "canonical": "灵界",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "灵界"}]
+    },
+    {
+      "entity_id": "CON-010",
+      "canonical": "安提哥努斯家族笔记",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "安提哥努斯家族笔记"}]
+    },
+    {
+      "entity_id": "CON-011",
+      "canonical": "查尼斯门",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "查尼斯门"}]
+    },
+    {
+      "entity_id": "CON-012",
+      "canonical": "黑暗圣徽",
+      "aliases": [],
+      "category": "特殊概念",
+      "table": "事例／概念表",
+      "surfaces": [{"text": "黑暗圣徽"}]
+    }
+  ]
+}

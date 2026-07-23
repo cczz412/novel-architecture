@@ -1,0 +1,168 @@
+{
+  "schema_version": "pipeline-test-policy-v1",
+  "full_chain_command": "cd /Users/a1234/挣钱/小说架构 && PYTHONPATH=. /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q tests",
+  "lint_command": "ruff check",
+  "documentation_commands": [
+    "python3 tools/governance_index.py --check"
+  ],
+  "unknown_path_full_chain": true,
+  "full_chain_flags": [
+    "module_contract_changed",
+    "chapter_identity_changed",
+    "anchor_identity_changed",
+    "semantic_identity_changed",
+    "unified_entry_changed",
+    "transport_changed",
+    "call_budget_changed",
+    "security_cleaning_changed",
+    "classification_semantics_changed",
+    "gold_contract_changed",
+    "score_denominator_changed",
+    "file_routing_changed",
+    "multi_module_unknown_impact"
+  ],
+  "module_tests": {
+    "M00": ["tests/test_zbatch.py"],
+    "M01": ["tests/test_zbatch.py"],
+    "M02": ["tests/test_zbatch_module_equivalence.py"],
+    "M03": ["tests/test_extract_module_contracts.py"],
+    "M04": ["tests/test_api_transport_contract.py"],
+    "M05": ["tests/test_extract_module_contracts.py"],
+    "M06": ["tests/test_z57_stable_semantic_identity.py"],
+    "M07": ["tests/test_zbatch_cutover.py"],
+    "M08": ["tests/test_zbatch.py"],
+    "M09": ["tests/test_z73_finalize_gold_v1_2.py"],
+    "M10": ["tests/test_z75_multidirection_score.py"],
+    "M11": [
+      "tests/test_governance_index.py",
+      "tests/test_novel_pipeline.py",
+      "tests/test_pipeline_artifacts.py",
+      "tests/test_pipeline_inspector.py",
+      "tests/test_test_impact.py"
+    ]
+  },
+  "path_rules": [
+    {
+      "name": "统一薄入口",
+      "pattern": "tools/novel_pipeline.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_novel_pipeline.py"],
+      "full_chain": true
+    },
+    {
+      "name": "现役总运行器与运输",
+      "pattern": "tools/zbatch*.py",
+      "modules": ["M00", "M01", "M04", "M07", "M08"],
+      "tests": ["tests/test_zbatch.py", "tests/test_api_transport_contract.py"],
+      "full_chain": true
+    },
+    {
+      "name": "现役运输模块",
+      "pattern": "tools/zbatch_modules/api_transport.py",
+      "modules": ["M04"],
+      "tests": ["tests/test_api_transport_contract.py"],
+      "full_chain": true
+    },
+    {
+      "name": "公共工件库",
+      "pattern": "tools/pipeline_common/*.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_pipeline_artifacts.py", "tests/test_pipeline_inspector.py"],
+      "full_chain": true
+    },
+    {
+      "name": "语义检查分流器",
+      "pattern": "tools/pipeline_inspector.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_pipeline_inspector.py"],
+      "full_chain": false
+    },
+    {
+      "name": "测试影响规划器",
+      "pattern": "tools/test_impact.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_test_impact.py"],
+      "full_chain": false
+    },
+    {
+      "name": "治理机器合同",
+      "pattern": "governance/*.json",
+      "modules": ["M11"],
+      "tests": ["tests/test_governance_index.py", "tests/test_pipeline_inspector.py", "tests/test_test_impact.py"],
+      "full_chain": false
+    },
+    {
+      "name": "治理模块合同",
+      "pattern": "governance/contracts/*.json",
+      "modules": ["M11"],
+      "tests": ["tests/test_pipeline_inspector.py"],
+      "full_chain": false
+    },
+    {
+      "name": "治理生成器",
+      "pattern": "tools/governance_index.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_governance_index.py"],
+      "full_chain": false
+    },
+    {
+      "name": "治理与报告文字",
+      "pattern": "governance/**/*.md",
+      "modules": [],
+      "tests": [],
+      "documentation_only": true,
+      "full_chain": false
+    },
+    {
+      "name": "治理顶层文字",
+      "pattern": "governance/*.md",
+      "modules": [],
+      "tests": [],
+      "documentation_only": true,
+      "full_chain": false
+    },
+    {
+      "name": "回包文字",
+      "pattern": "reports/**/*.md",
+      "modules": [],
+      "tests": [],
+      "documentation_only": true,
+      "full_chain": false
+    },
+    {
+      "name": "M11正式测试",
+      "pattern": "tests/test_pipeline_*.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_pipeline_inspector.py", "tests/test_pipeline_artifacts.py"],
+      "full_chain": false
+    },
+    {
+      "name": "统一入口测试",
+      "pattern": "tests/test_novel_pipeline.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_novel_pipeline.py"],
+      "full_chain": false
+    },
+    {
+      "name": "治理索引测试",
+      "pattern": "tests/test_governance_index.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_governance_index.py"],
+      "full_chain": false
+    },
+    {
+      "name": "测试纪律测试",
+      "pattern": "tests/test_test_impact.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_test_impact.py"],
+      "full_chain": false
+    },
+    {
+      "name": "局部评分器",
+      "pattern": "tools/*score*.py",
+      "modules": ["M10"],
+      "tests": ["tests/test_z75_multidirection_score.py"],
+      "full_chain": false
+    }
+  ]
+}

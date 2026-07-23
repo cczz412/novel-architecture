@@ -1,0 +1,1950 @@
+{
+  "schema_version": "governance-tool-registry-v1",
+  "registry_id": "Z87-tool-identity-registry",
+  "registered_at": "2026-07-22T07:38:00+08:00",
+  "updated_at": "2026-07-23T05:10:00+08:00",
+  "authority": {
+    "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
+    "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
+    "source_investigation": "https://app.notion.com/p/3a45cadc4d0f8124b98de90f2f201886",
+    "scope_rule": "第87道只登记身份与出生门槛；不删除、不移动、不重命名、不改写任何现有 Python 文件。"
+  },
+  "evidence_boundary": {
+    "method": "文件枚举、AST 静态导入、测试文本引用、现有治理文档与批次路径线索。",
+    "not_proven": "静态引用不能证明最近真实执行时间；零引用不能直接证明死代码。",
+    "identity_rule": "每个根层实体只认一种主要身份；证据不足时使用 pending，不从文件名或结果反推。"
+  },
+  "identities": {
+    "active_entry": "现役总入口",
+    "reusable_component": "可复用组件",
+    "batch_reproducer": "批次复现器",
+    "retired_compat": "退役兼容件",
+    "pending": "待定；只作为四选一无法诚实判定时的停点例外，必须端 CZ 决定。"
+  },
+  "scope": {
+    "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
+    "root_entity_count": 47,
+    "root_visible_python_entry_count": 48,
+    "component_layer_count": 2,
+    "partition_notes": [
+      {
+        "path": "reports/",
+        "python_file_count": 44,
+        "registration_rule": "报告内 Python 多为批次生成器或证据；第87道不逐件登记，不据数量删除。"
+      },
+      {
+        "path": "TEMP/",
+        "python_file_count": 53,
+        "registration_rule": "临时区 Python 第87道不逐件登记；是否清理由仓库卫生另拍。"
+      },
+      {
+        "path": "runs/",
+        "python_file_count": 183,
+        "registration_rule": "运行目录内 Python 多为 provenance 快照；只作证据，不逐件登记、不回写。"
+      }
+    ]
+  },
+  "birth_gate": {
+    "applies_to": "第87道之后拟新增的长期通用工具。",
+    "admission_criteria": [
+      "已有两个互相独立的使用场景，或已有一位明确的下一消费者。",
+      "输入短且稳定；核心逻辑不得写死道次编号、批次目录或用户绝对路径。",
+      "输出格式、覆盖规则、失败方式明确；相同输入可以复跑并解释一致性。",
+      "提供 --check 或只读预演、定向测试，并在创建时同步登记本册。"
+    ],
+    "batch_script_placement_rule": "新的批次专用脚本不得进入 tools/ 根层；优先走现有总入口加规格单，否则放在 reports/<批次>/ 或 experiments/<试验>/。",
+    "violation_rule": "不满足门槛却新增到 tools/ 根层时，必须追加 birth_gate_violations；不得用事后补文档抹掉违规事实。",
+    "birth_gate_violations": [
+      {
+        "detected_at": "2026-07-23T04:12:00+08:00",
+        "task_id": "Z89",
+        "path": "tools/z89_deepseek_v4_pro_benchmark.py",
+        "violation": "第89道批次专用运行器新增在 tools/ 根层，不符合批次脚本应进入 reports/<批次>/ 或 experiments/<试验>/ 的放置规则。",
+        "current_disposition": "只登记、不搬动、不删除；本轮仍由定向测试与 --help/verify 类只读入口约束。",
+        "follow_up": "后续仓库治理获批时迁入试验区或改由统一入口加规格单承接，并同步更新引用与测试。"
+      }
+    ]
+  },
+  "mechanical_promotion_gate": {
+    "applies_to": [
+      "tools/zbatch_coverage_diagnostic.py",
+      "tools/zbatch_default_registry.py",
+      "tools/zbatch_net_benefit_recompute.py"
+    ],
+    "promotion_conditions": [
+      "裁定后出现第二个互相独立的使用场景，且不是同一道次内的重复执行。",
+      "定向测试齐备并通过。"
+    ],
+    "promotion_action": "两项条件同时满足时，无需另拍，登记册当场将主要身份机械转正为 reusable_component，并报告登记册新 SHA-256。",
+    "default_registry_exception": "tools/zbatch_default_registry.py 的身份机械转正不授权默认推广；默认推广实际执行仍须另拍拍板。"
+  },
+  "component_layers": [
+    {
+      "path": "tools/zbatch_modules/",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component_layer",
+      "python_file_count": 18,
+      "human_command": "不直接作为总入口；由 tools/zbatch.py、批次适配器和测试按模块导入。",
+      "inputs": [
+        "章节、证据目录、请求体、阶段合同、模型回包与规则配置"
+      ],
+      "outputs": [
+        "证据目录、校验结果、运输结果、候选包与下游机械成绩"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "仅 api_transport 在获批 API 阶段联网；其余模块本地处理。"
+      },
+      "current_consumers": [
+        "tools/zbatch.py",
+        "多份登记在本册的批次复现器",
+        "tests/ 定向测试"
+      ],
+      "test_references": [
+        "tests/test_zbatch_module_equivalence.py",
+        "tests/test_api_transport_contract.py",
+        "tests/test_extract_module_contracts.py"
+      ],
+      "last_use_clues": [
+        "tools/zbatch_modules/README.md",
+        "governance/module_registry.source.json"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "现役模块层；版本、合同、运输与固定 SHA 改动必须另拍并跑等价／全仓测试。"
+    },
+    {
+      "path": "tools/pipeline_common/",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component_layer",
+      "python_file_count": 3,
+      "human_command": "不直接作为总入口；由治理索引、检查员、测试计划、模型横向试验与统一入口导入。",
+      "inputs": [
+        "本地 JSON、路径与工件清单",
+        "模型横向试验阶段规格、供应商配置与冻结请求包"
+      ],
+      "outputs": [
+        "统一读写、清单与工件校验结果",
+        "隔离的模型候选样张、运输账、机械闸与横向成绩单"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "公共工件函数纯本地；model_benchmark 只有在显式 run、精确模型已准入且对应钥匙临时注入时调用供应商 API。"
+      },
+      "current_consumers": [
+        "tools/governance_index.py",
+        "tools/novel_pipeline.py",
+        "tools/pipeline_inspector.py",
+        "tools/test_impact.py",
+        "experiments/model_benchmarks/"
+      ],
+      "test_references": [
+        "tests/test_pipeline_artifacts.py",
+        "tests/test_model_benchmark.py",
+        "tests/test_novel_pipeline.py"
+      ],
+      "last_use_clues": [
+        "governance/module_registry.source.json",
+        "tests/test_pipeline_artifacts.py",
+        "config/model_benchmarks/stages/neutral_extract_x01_ch0003_v3.json",
+        "experiments/model_benchmarks/README.md"
+      ],
+      "next_confirmed_consumer": "CZ 已明确后续会持续切换多个供应商与模型做同阶段横向试验。",
+      "retirement_condition_and_compatibility_boundary": "现役公共工件层；批次路径只能进入阶段规格单，核心逻辑不得写死道次或模型。"
+    }
+  ],
+  "compatibility_aliases": [
+    {
+      "path": "tools/z60_b_semantic_audit.py",
+      "target": "_retired/z60_b_semantic_audit.py",
+      "identity": "retired_compat",
+      "status": "relative_symlink_only",
+      "registration_rule": "软链不是根层实体，不重复计入 47 件；目标原件由 tools/_retired/MANIFEST.json 管。"
+    }
+  ],
+  "identity_summary": {
+    "reusable_component": 6,
+    "batch_reproducer": 36,
+    "active_entry": 2,
+    "retired_compat": 3,
+    "pending": 0
+  },
+  "unresolved_identity_paths": [],
+  "reuse_guard_verification": [
+    {
+      "path": "tools/z68_revised_request_pilot.py",
+      "expected_minimum_consumer_count": 9,
+      "observed_consumer_count": 9,
+      "passed": true,
+      "consumers": [
+        "tools/z68_continuation_32k.py",
+        "tools/z70_compression_contract_pilot.py",
+        "tools/z70_compression_contract_report.py",
+        "tools/z71_semantic_fill_pilot.py",
+        "tools/z75_triplet_prompt_pilot.py",
+        "tools/z77_fact_sheet_v2_pilot.py",
+        "tools/z79_fact_sheet_v3_pilot.py",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py",
+        "tools/z83_program_side_repair_pilot.py"
+      ]
+    },
+    {
+      "path": "tools/z70_compression_contract_pilot.py",
+      "expected_minimum_consumer_count": 4,
+      "observed_consumer_count": 4,
+      "passed": true,
+      "consumers": [
+        "tools/z75_triplet_prompt_pilot.py",
+        "tools/z77_fact_sheet_v2_pilot.py",
+        "tools/z79_fact_sheet_v3_pilot.py",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py"
+      ]
+    },
+    {
+      "path": "tools/z77_fact_sheet_v2_pilot.py",
+      "expected_minimum_consumer_count": 3,
+      "observed_consumer_count": 3,
+      "passed": true,
+      "consumers": [
+        "tools/z79_fact_sheet_v3_pilot.py",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py",
+        "tools/z83_program_side_repair_pilot.py"
+      ]
+    },
+    {
+      "path": "tools/z79_fact_sheet_v3_pilot.py",
+      "expected_minimum_consumer_count": 2,
+      "observed_consumer_count": 2,
+      "passed": true,
+      "consumers": [
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py",
+        "tools/z83_program_side_repair_pilot.py"
+      ]
+    },
+    {
+      "path": "tools/zbatch_default_registry.py",
+      "expected_minimum_consumer_count": 1,
+      "observed_consumer_count": 1,
+      "passed": true,
+      "consumers": [
+        "tools/z57_activate_semantic_identity_contract.py"
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "tool_id": "TOOL-001",
+      "path": "tools/aa_anchor_audit.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "现役",
+      "purpose": "证据锚机械审计。",
+      "human_command": "python3 tools/aa_anchor_audit.py --split-root <拆分目录> --books-root <正文目录> --output-dir <输出目录>",
+      "inputs": [
+        "拆分包、书目正文、审计代码与抽样参数"
+      ],
+      "outputs": [
+        "指定输出目录中的审计 JSON／Markdown"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_aa_anchor_audit.py"
+      ],
+      "last_use_clues": [
+        "tools/README.md",
+        "reports/AA续22本证据锚审计停点1_20260717/summary.json",
+        "tests/test_aa_anchor_audit.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "已有独立测试与多批审计线索；只负责机械锚核验，不替代语义判断。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-002",
+      "path": "tools/governance_index.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "现役",
+      "purpose": "从机器真源生成或检查治理索引。",
+      "human_command": "python3 tools/governance_index.py --check",
+      "inputs": [
+        "governance/CURRENT_STATE.json、模块／路线／控制登记件"
+      ],
+      "outputs": [
+        "只查模式输出漂移结果；刷新模式生成治理索引文件"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [
+        "tools/novel_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_governance_index.py"
+      ],
+      "last_use_clues": [
+        "governance/README.md",
+        "tests/test_governance_index.py",
+        "tools/novel_pipeline.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "由 novel_pipeline 治理子命令调用；不得把生成索引反写成 Notion 拍板真源。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-003",
+      "path": "tools/minicpm_preextract_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "试验留档·未升默认",
+      "purpose": "MiniCPM5-1B 本地中性事件 Prompt 上限试点。",
+      "human_command": "python3 tools/minicpm_preextract_pilot.py <preflight|run> --config <试点配置>",
+      "inputs": [
+        "登记过的试点配置、本地模型、冻结章节与证据目录"
+      ],
+      "outputs": [
+        "试点 run 目录、清单与机械摘要"
+      ],
+      "network_or_model": {
+        "network": "none_by_design",
+        "model": "local_model",
+        "note": "运行本地模型，不走 SenseNova；模型运行仍须单独施工令。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z27_pilots.py"
+      ],
+      "last_use_clues": [
+        "tools/README.md",
+        "tests/test_z27_pilots.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "仅本地模型试点，未升现役默认；再次运行须新施工令。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-004",
+      "path": "tools/novel_pipeline.py",
+      "primary_identity": "active_entry",
+      "primary_identity_label": "现役总入口",
+      "status": "active_entry",
+      "status_label": "现役",
+      "purpose": "小说流水线统一薄入口，分流治理、检查、测试计划与旧 zbatch 命令。",
+      "human_command": "python3 tools/novel_pipeline.py <governance|inspect|test-plan|zbatch子命令> ...",
+      "inputs": [
+        "子命令及对应配置／规格单"
+      ],
+      "outputs": [
+        "对应治理、检查、测试计划或流水线工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_novel_pipeline.py",
+        "tests/test_test_impact.py"
+      ],
+      "last_use_clues": [
+        "governance/README.md",
+        "tests/test_novel_pipeline.py",
+        "tests/test_test_impact.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "只做薄分流；第87道不扩建命令，也不改 zbatch 现役行为。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-005",
+      "path": "tools/package_diagnostic_returns.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "把第66道外部诊断回包归档成全 Markdown 可审计 ZIP。",
+      "human_command": "python3 tools/package_diagnostic_returns.py --check --target <第66道目标目录>",
+      "inputs": [
+        "第66道三组外部诊断来源目录"
+      ],
+      "outputs": [
+        "固定诊断归档目录、清单、回执与 ZIP"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "脚本内固定 Z66 目标与三个 Downloads 来源；未发现外部代码／测试引用"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "默认来源和包名写死第66道，只作该批复现，不是通用打包入口。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-006",
+      "path": "tools/pipeline_inspector.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "现役",
+      "purpose": "M11 语义检查员：规则先验，模型只分流不裁真值。",
+      "human_command": "python3 tools/novel_pipeline.py inspect <preflight|run> --input <检查批.json> --run-dir <隔离目录>",
+      "inputs": [
+        "检查批、检查合同、阶段采样档案"
+      ],
+      "outputs": [
+        "规则分流、模型分流、反馈与审计工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/novel_pipeline.py",
+        "tools/z83_program_side_repair_pilot.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_pipeline_inspector.py",
+        "tests/test_test_impact.py",
+        "tests/test_z83_program_side_repair_pilot.py"
+      ],
+      "last_use_clues": [
+        "governance/README.md",
+        "tests/test_pipeline_inspector.py",
+        "tools/z83_program_side_repair_pilot.py",
+        "tools/novel_pipeline.py",
+        "tests/test_test_impact.py",
+        "tests/test_z83_program_side_repair_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "模型结果不是正式语义真值；当前被统一入口和第83道批次运行器复用。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-007",
+      "path": "tools/simple_pack.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "现役",
+      "purpose": "清版外发包：Prompt 文件加章节 ZIP。",
+      "human_command": "python3 tools/simple_pack.py --prompt <说明.md> --out-dir <目录> --zip-name <名称.zip> <章节文件...>",
+      "inputs": [
+        "一份 Prompt／说明文件和章节文件列表"
+      ],
+      "outputs": [
+        "指定目录中的清版 ZIP"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "AGENTS.md",
+        "tools/README.md",
+        "governance/rule_check_registry.json"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "独立清版工具，不承接小说101 重型 OPS，也不替代来源与版权审查。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-008",
+      "path": "tools/test_impact.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "现役",
+      "purpose": "按变更影响选择测试，未知影响保守升级。",
+      "human_command": "python3 tools/novel_pipeline.py test-plan --spec <变更说明.json>",
+      "inputs": [
+        "变更说明、测试政策、模块登记册"
+      ],
+      "outputs": [
+        "测试计划 JSON／标准输出"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [
+        "tools/novel_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_test_impact.py"
+      ],
+      "last_use_clues": [
+        "governance/README.md",
+        "tests/test_test_impact.py",
+        "tools/novel_pipeline.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "只生成计划，不修改测试内容；跨合同或未知变更必须升级测试范围。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-009",
+      "path": "tools/z00l_classification_split.py",
+      "primary_identity": "retired_compat",
+      "primary_identity_label": "退役兼容件",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "Z00l 分类收权早期试验适配器。",
+      "human_command": "python3 tools/z00l_classification_split.py <preflight|extract|classify> --config <历史配置>",
+      "inputs": [
+        "Z00l 历史配置与主控决定"
+      ],
+      "outputs": [
+        "历史试验运行／分类工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/z00m_classification_split.py",
+        "tools/z00n_classification_split.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_api_transport_contract.py",
+        "tests/test_extract_module_contracts.py",
+        "tests/test_z00l_classification_split.py",
+        "tests/test_z00m_classification_split.py",
+        "tests/test_z00n_classification_split.py"
+      ],
+      "last_use_clues": [
+        "tools/README.md",
+        "tools/zbatch_modules/README.md",
+        "tools/z00m_classification_split.py",
+        "tools/z00n_classification_split.py",
+        "tests/test_api_transport_contract.py",
+        "tests/test_extract_module_contracts.py",
+        "tests/test_z00l_classification_split.py",
+        "tests/test_z00m_classification_split.py",
+        "tests/test_z00n_classification_split.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "历史配置与路径不回改；仍被 Z00m／Z00n 导入，必须保留兼容。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-010",
+      "path": "tools/z00m_classification_split.py",
+      "primary_identity": "retired_compat",
+      "primary_identity_label": "退役兼容件",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "Z00m 分类收权复跑兼容入口。",
+      "human_command": "python3 tools/z00m_classification_split.py <preflight|extract|classify> --config <历史配置>",
+      "inputs": [
+        "Z00m 历史配置与主控决定"
+      ],
+      "outputs": [
+        "历史复跑工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/z00n_classification_split.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_api_transport_contract.py",
+        "tests/test_extract_module_contracts.py",
+        "tests/test_z00m_classification_split.py",
+        "tests/test_z00n_classification_split.py"
+      ],
+      "last_use_clues": [
+        "tools/README.md",
+        "tools/zbatch_modules/README.md",
+        "tools/z00n_classification_split.py",
+        "tests/test_api_transport_contract.py",
+        "tests/test_extract_module_contracts.py",
+        "tests/test_z00m_classification_split.py",
+        "tests/test_z00n_classification_split.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "历史复跑入口；仍被 Z00n 导入，不能按未接主链误删。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-011",
+      "path": "tools/z00n_classification_split.py",
+      "primary_identity": "retired_compat",
+      "primary_identity_label": "退役兼容件",
+      "status": "retained_for_compatibility",
+      "status_label": "退役兼容·保留原路径",
+      "purpose": "Z00n 分类收权单变量历史入口。",
+      "human_command": "python3 tools/z00n_classification_split.py <preflight|extract|classify> --config <历史配置>",
+      "inputs": [
+        "Z00n 历史配置与主控决定"
+      ],
+      "outputs": [
+        "程序清点与分类复跑工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_extract_module_contracts.py",
+        "tests/test_z00n_classification_split.py"
+      ],
+      "last_use_clues": [
+        "tools/README.md",
+        "tools/zbatch_modules/README.md",
+        "tests/test_z00n_classification_split.py",
+        "tests/test_extract_module_contracts.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "历史入口只保留追溯与等价验证；不作为现役默认入口。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-012",
+      "path": "tools/z00n_event_audit.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "现役",
+      "purpose": "中性事件连续编号与冻结证据 ID 的机械清点器。",
+      "human_command": "由 tools/z00n_classification_split.py 导入调用；无独立 CLI。",
+      "inputs": [
+        "events 与冻结证据 ID 集合"
+      ],
+      "outputs": [
+        "事件清点账和机械违规原因"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [
+        "tools/z00n_classification_split.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_extract_module_contracts.py",
+        "tests/test_z00n_classification_split.py",
+        "tests/test_z00n_event_audit.py"
+      ],
+      "last_use_clues": [
+        "tools/README.md",
+        "tests/test_z00n_event_audit.py",
+        "tools/z00n_classification_split.py",
+        "tests/test_extract_module_contracts.py",
+        "tests/test_z00n_classification_split.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "只做机械清点，不判断语义遗漏，也不改写模型回包。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-013",
+      "path": "tools/z00o_verbatim_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "试验留档·未升默认",
+      "purpose": "原样复述 0.1 单变量试点入口。",
+      "human_command": "python3 tools/z00o_verbatim_pilot.py <preflight|run> --config <试点配置>",
+      "inputs": [
+        "登记过的 Z00o 配置与冻结来源"
+      ],
+      "outputs": [
+        "试点 run 目录与机械摘要"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z27_pilots.py"
+      ],
+      "last_use_clues": [
+        "tools/README.md",
+        "tests/test_z27_pilots.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "组件级候选参数，未升全链默认；再次调用须新施工令。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-014",
+      "path": "tools/z57_activate_semantic_identity_contract.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第57道稳定语义身份合同激活器。",
+      "human_command": "python3 tools/z57_activate_semantic_identity_contract.py --root <仓库根>",
+      "inputs": [
+        "第57道冻结目录、默认登记器与合同原件"
+      ],
+      "outputs": [
+        "默认合同切换、归档与验收工件"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z57_default_contract_hotfix.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z57_default_contract_hotfix.py",
+        "reports/Z57_稳定语义身份解耦与全链后半_20260719"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "会触及默认登记，现仅保留第57道复现；未经新拍不得重跑。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-015",
+      "path": "tools/z59_entity_supply_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第59道实体供料与双臂旁路试点。",
+      "human_command": "python3 tools/z59_entity_supply_pilot.py <build-supply|verify-supply|prepare-a|run-a|analyze-a|prepare-b|run-b|analyze-b> ...",
+      "inputs": [
+        "第56／36道冻结运行、章节、金标与实体供料"
+      ],
+      "outputs": [
+        "第59道供料、隔离运行与分析工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/z68_continuation_32k.py",
+        "tools/z68_revised_request_pilot.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z59_entity_supply_pilot.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z59_entity_supply_pilot.py",
+        "reports/Z59_A_实体供料注入中性抽取_20260719",
+        "tools/z68_continuation_32k.py",
+        "tools/z68_revised_request_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "批次路径写死；公共辅助函数已被 Z68 两件导入，不能按一次性脚本删搬。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-016",
+      "path": "tools/z64_apply_semantic_verdicts.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第64道把本地逐条判词写入机械工作底稿。",
+      "human_command": "python3 tools/z64_apply_semantic_verdicts.py --out <Z64目录> [--check]",
+      "inputs": [
+        "第64道冻结样本与人工判词"
+      ],
+      "outputs": [
+        "Z64 机械工作底稿与 Markdown"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "reports/Z64_三窗回包语义抽查与差距表_20260720"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定第64道报告目录，无测试与其他工具消费者；只作批次复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-017",
+      "path": "tools/z64_build_review_workbook.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第64道为冻结样本补齐正文上下文。",
+      "human_command": "python3 tools/z64_build_review_workbook.py --out <Z64目录> [--check]",
+      "inputs": [
+        "第64道冻结样本、章节与证据目录"
+      ],
+      "outputs": [
+        "Z64 人工复核工作簿"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "reports/Z64_三窗回包语义抽查与差距表_20260720"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "不自动判语义；固定第64道报告目录，只作批次复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-018",
+      "path": "tools/z64_freeze_samples.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第64道冻结分层语义抽查名单。",
+      "human_command": "python3 tools/z64_freeze_samples.py --out <Z64目录> [--check]",
+      "inputs": [
+        "第64道事件／证据来源"
+      ],
+      "outputs": [
+        "冻结样本清单"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [
+        "tools/z64_measure_comparisons.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "reports/Z64_三窗回包语义抽查与差距表_20260720",
+        "tools/z64_measure_comparisons.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "被 Z64 比较核算脚本导入；保留原位，仍只认第64道复现身份。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-019",
+      "path": "tools/z64_measure_comparisons.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第64道机械核算多窗口与七类包密度。",
+      "human_command": "python3 tools/z64_measure_comparisons.py --out <Z64目录> [--check]",
+      "inputs": [
+        "Z64 冻结样本、历史运行与金标"
+      ],
+      "outputs": [
+        "比较核算 JSON"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "reports/Z64_三窗回包语义抽查与差距表_20260720"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "依赖 Z64 冻结函数，但无其他当前消费者；只作该批复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-020",
+      "path": "tools/z64_render_bc_reports.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第64道生成 B／C 差距表和横向对比表。",
+      "human_command": "python3 tools/z64_render_bc_reports.py --out <Z64目录> [--check]",
+      "inputs": [
+        "Z64 核算结果、人工判词与历史成绩"
+      ],
+      "outputs": [
+        "Z64 差距表／横向对比表"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "reports/Z64_三窗回包语义抽查与差距表_20260720"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定第64道报告目录，无测试与工具消费者；只作批次复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-021",
+      "path": "tools/z66_export_request_bodies.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第66道从历史落盘账导出模型可见请求体。",
+      "human_command": "python3 tools/z66_export_request_bodies.py --out <Z66目录> [--check]",
+      "inputs": [
+        "Z56／Z59／Z60 固定运行与五个指定章节"
+      ],
+      "outputs": [
+        "脱敏请求体、索引与审计工件"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "reports/Z66_请求体全量打印诊断_20260720"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定历史运行与章节，只作第66道复现；不得误当通用请求导出器。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-022",
+      "path": "tools/z68_continuation_32k.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第68道 32k 参数兼容续跑器。",
+      "human_command": "python3 tools/z68_continuation_32k.py <prepare|run|analyze|verify> --run-dir <隔离目录>",
+      "inputs": [
+        "Z68 原运行、冻结请求与 32k 单变量合同"
+      ],
+      "outputs": [
+        "Z68C 续跑工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/z68_continuation_report.py",
+        "tools/z70_compression_contract_report.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z68_continuation_32k.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z68_continuation_32k.py",
+        "reports/Z68续令_32k参数兼容修复与裸考成绩_20260720",
+        "tools/z68_continuation_report.py",
+        "tools/z70_compression_contract_report.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "被 Z68／Z70 报告器导入；固定批次复现且不得删搬。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-023",
+      "path": "tools/z68_continuation_report.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第68道 32k 续跑成绩与停点报告生成器。",
+      "human_command": "python3 tools/z68_continuation_report.py <build|check> --report-dir <Z68报告目录>",
+      "inputs": [
+        "Z68C 运行、金标与历史成绩"
+      ],
+      "outputs": [
+        "成绩、差距账与停点报告"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z68_continuation_report.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z68_continuation_report.py",
+        "reports/Z68续令_32k参数兼容修复与裸考成绩_20260720"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定第68道输入和报告目录，只作批次复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-024",
+      "path": "tools/z68_revised_request_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第68道修正版请求体五靶章裸考旁路。",
+      "human_command": "python3 tools/z68_revised_request_pilot.py <prepare|run|analyze|verify> --run-dir <隔离目录>",
+      "inputs": [
+        "Z56／36 冻结来源、修正版请求体与五靶章"
+      ],
+      "outputs": [
+        "Z68 隔离运行与分析工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/z68_continuation_32k.py",
+        "tools/z70_compression_contract_pilot.py",
+        "tools/z70_compression_contract_report.py",
+        "tools/z71_semantic_fill_pilot.py",
+        "tools/z75_triplet_prompt_pilot.py",
+        "tools/z77_fact_sheet_v2_pilot.py",
+        "tools/z79_fact_sheet_v3_pilot.py",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py",
+        "tools/z83_program_side_repair_pilot.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z68_revised_request_pilot.py",
+        "tests/test_z70_compression_contract_pilot.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z68_revised_request_pilot.py",
+        "reports/Z68_修正版请求体裸考_20260720",
+        "tools/z68_continuation_32k.py",
+        "tools/z70_compression_contract_pilot.py",
+        "tools/z70_compression_contract_report.py",
+        "tools/z71_semantic_fill_pilot.py",
+        "tools/z75_triplet_prompt_pilot.py",
+        "tools/z77_fact_sheet_v2_pilot.py",
+        "tools/z79_fact_sheet_v3_pilot.py",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py",
+        "tools/z83_program_side_repair_pilot.py",
+        "tests/test_z70_compression_contract_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "已被多个后续道次当作辅助库；主身份仍是批次复现器，必须保留原位兼容。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-025",
+      "path": "tools/z70_compression_contract_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第70道事件句压缩合同单变量旁路。",
+      "human_command": "python3 tools/z70_compression_contract_pilot.py <prepare|run|verify> --run-dir <隔离目录>",
+      "inputs": [
+        "Z68C 冻结输入与第70道单变量合同"
+      ],
+      "outputs": [
+        "Z70 运行与验证工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/z75_triplet_prompt_pilot.py",
+        "tools/z77_fact_sheet_v2_pilot.py",
+        "tools/z79_fact_sheet_v3_pilot.py",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z70_compression_contract_pilot.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z70_compression_contract_pilot.py",
+        "reports/Z70_压缩病灶合同条款单变量_20260721",
+        "tools/z75_triplet_prompt_pilot.py",
+        "tools/z77_fact_sheet_v2_pilot.py",
+        "tools/z79_fact_sheet_v3_pilot.py",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "已被 Z75／77／79／80 导入；不得按一次性脚本删搬。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-026",
+      "path": "tools/z70_compression_contract_report.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第70道从冻结工件与人工判词生成停点报告。",
+      "human_command": "python3 tools/z70_compression_contract_report.py <build|check> --output-dir <Z70目录> ...",
+      "inputs": [
+        "Z70 run、旧成绩、金标、人工判词与测试回执"
+      ],
+      "outputs": [
+        "第70道成绩、差距账和停点回包"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z70_compression_contract_report.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z70_compression_contract_report.py",
+        "reports/Z70_压缩病灶合同条款单变量_20260721"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定第70道材料，只作零调用批次复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-027",
+      "path": "tools/z71_semantic_fill_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第71道 Z68C 事件池抽后语义补全旁路。",
+      "human_command": "python3 tools/z71_semantic_fill_pilot.py <prepare|run|verify> --run-dir <隔离目录>",
+      "inputs": [
+        "Z68C 五章事件池与补全合同"
+      ],
+      "outputs": [
+        "Z71 隔离运行与验证工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/z71_semantic_fill_report.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z71_semantic_fill_pilot.py",
+        "tests/test_z71_semantic_fill_report.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z71_semantic_fill_pilot.py",
+        "reports/Z71_z70语义补全旁路_20260721",
+        "tools/z71_semantic_fill_report.py",
+        "tests/test_z71_semantic_fill_report.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "被同批报告器导入；固定五靶章与25批调度，只作批次复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-028",
+      "path": "tools/z71_semantic_fill_report.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第71道语义补全停点报告生成器。",
+      "human_command": "python3 tools/z71_semantic_fill_report.py <build|check> --report-dir <Z71目录> ...",
+      "inputs": [
+        "Z71 run、人工判词、Z68／Z70成绩与金标"
+      ],
+      "outputs": [
+        "第71道成绩、差距账和停点报告"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z71_semantic_fill_report.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z71_semantic_fill_report.py",
+        "reports/Z71_z70语义补全旁路_20260721"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定第71道材料，只作零调用批次复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-029",
+      "path": "tools/z72_gold_granularity_candidate.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第72道机械生成第3章金标 v1.2 候选。",
+      "human_command": "python3 tools/z72_gold_granularity_candidate.py --output-dir <Z72目录>",
+      "inputs": [
+        "第3章旧金标、证据目录与 Z68C／70／71 观察"
+      ],
+      "outputs": [
+        "金标候选、四轮重判账与 Markdown"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z72_gold_granularity_candidate.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z72_gold_granularity_candidate.py",
+        "reports/Z72_第3章金标粒度候选_20260721"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "只生成候选，不自行转正；固定第3章与第72道来源。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-030",
+      "path": "tools/z73_finalize_gold_v1_2.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第73道按拍板机械定稿第3章金标 v1.2。",
+      "human_command": "python3 tools/z73_finalize_gold_v1_2.py --output-dir <Z73目录>",
+      "inputs": [
+        "第72道候选、旧金标、证据目录与 CZ 三点拍板"
+      ],
+      "outputs": [
+        "第3章正式金标 v1.2、映射与基线工件"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z73_finalize_gold_v1_2.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z73_finalize_gold_v1_2.py",
+        "reports/Z73_第3章金标v1.2定稿转正_20260721"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "历史正式化脚本；未经新拍不得重跑或改现役金标指针。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-031",
+      "path": "tools/z74a_rewrite_examples.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第74道 A 线生成通用正反例并做六本文本解耦核验。",
+      "human_command": "python3 tools/z74a_rewrite_examples.py --out-dir <Z74A目录> [--verify-only]",
+      "inputs": [
+        "Z71／Z73 来源与六本文本"
+      ],
+      "outputs": [
+        "三联例候选、来源账与解耦核验"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [
+        "tools/z79_fact_sheet_v3_pilot.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z74a_rewrite_examples.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z74a_rewrite_examples.py",
+        "reports/Z74A_正反例换皮候选_20260721",
+        "tools/z79_fact_sheet_v3_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "被 Z79 导入；保留原位兼容，主身份仍是第74道复现器。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-032",
+      "path": "tools/z74b_gold_draft_pipeline.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第74道 B 线生成五本结构层金标候选底稿。",
+      "human_command": "python3 tools/z74b_gold_draft_pipeline.py --output-dir <Z74B目录>",
+      "inputs": [
+        "Downloads／小说101-downloads 的冻结来源与书目选择"
+      ],
+      "outputs": [
+        "五本银标／金标候选底稿与清单"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z74b_gold_draft_pipeline.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z74b_gold_draft_pipeline.py",
+        "reports/Z74B_五本结构层金标底稿_v1.1_20260721",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "被 Z80 导入且含绝对来源路径；不得删搬，也不算通用跨仓工具。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-033",
+      "path": "tools/z75_item1_prepare.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第75道件①准备正反例全文回传材料。",
+      "human_command": "python3 tools/z75_item1_prepare.py --out-dir <Z75/item1目录> [--verify-only]",
+      "inputs": [
+        "Z74A 来源与三联例候选"
+      ],
+      "outputs": [
+        "落点表、字段说明、拆分文件与索引"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z75_item1_prepare.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z75_item1_prepare.py",
+        "reports/Z75_正反例全文回传与内测_20260721"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定第74A／75道材料，只作交件复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-034",
+      "path": "tools/z75_multidirection_score.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第75道件②聚合多方向人工判词与 usage 账。",
+      "human_command": "python3 tools/z75_multidirection_score.py --direction <判词.json> --usage <调用账> --output <成绩.json>",
+      "inputs": [
+        "多方向人工判词、usage、正式金标与旧34条基线"
+      ],
+      "outputs": [
+        "聚合成绩与不劣化闸结果"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [
+        "tools/z83_program_side_repair_pilot.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z75_multidirection_score.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z75_multidirection_score.py",
+        "reports/Z75_正反例全文回传与内测_20260721",
+        "tools/z83_program_side_repair_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "被 Z83 导入；不得按一次性脚本删搬，仍不把人工判词自动化。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-035",
+      "path": "tools/z75_triplet_prompt_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第75道 A 线正反例多方向内测运输器。",
+      "human_command": "python3 tools/z75_triplet_prompt_pilot.py <prepare|run|verify> --direction <方向> --run-dir <隔离目录>",
+      "inputs": [
+        "Z74A 三联例、第73道金标与方向参数"
+      ],
+      "outputs": [
+        "第75道多方向隔离运行工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/z77_fact_sheet_v2_pilot.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z75_triplet_prompt_pilot.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z75_triplet_prompt_pilot.py",
+        "reports/Z75_正反例全文回传与内测_20260721",
+        "tools/z77_fact_sheet_v2_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "被 Z77 导入；批次合同和方向枚举不得脱离原运行解释。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-036",
+      "path": "tools/z77_fact_sheet_v2_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第77道事实说明书注入包 v2 三章隔离复验器。",
+      "human_command": "python3 tools/z77_fact_sheet_v2_pilot.py <prepare|run|verify|show-package> --run-dir <隔离目录>",
+      "inputs": [
+        "Z68／70／75 冻结来源、三章材料与 v2 合同"
+      ],
+      "outputs": [
+        "v2 Prompt 包、运行、定点重写与验证工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/z79_fact_sheet_v3_pilot.py",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py",
+        "tools/z83_program_side_repair_pilot.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z77_fact_sheet_v2_pilot.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z77_fact_sheet_v2_pilot.py",
+        "reports/Z77_事实说明书注入包v2三章复验_20260721",
+        "tools/z79_fact_sheet_v3_pilot.py",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py",
+        "tools/z83_program_side_repair_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "已被 Z79／80／83 导入；必须保留原位和旧批次兼容。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-037",
+      "path": "tools/z79_fact_sheet_v3_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "第79道事实说明书注入包 v3 三章隔离复验器。",
+      "human_command": "python3 tools/z79_fact_sheet_v3_pilot.py <prepare|run|verify|show-package> --run-dir <隔离目录>",
+      "inputs": [
+        "Z68／70／74A／77 冻结来源与 v3 单变量修复"
+      ],
+      "outputs": [
+        "v3 Prompt 包、运行与验证工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py",
+        "tools/z83_program_side_repair_pilot.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z79_fact_sheet_v3_pilot.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z79_fact_sheet_v3_pilot.py",
+        "reports/Z79_事实说明书注入包v3三章复验_20260721",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py",
+        "tools/z83_program_side_repair_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "已被 Z80／83 导入；不得按一次性脚本删搬。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-038",
+      "path": "tools/z80_fact_sheet_v4_crossbook_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_route_retired",
+      "status_label": "路线已退役·只留复现",
+      "purpose": "第80道事实说明书 v4 三组顺序复验器。",
+      "human_command": "python3 tools/z80_fact_sheet_v4_crossbook_pilot.py <prepare|verify-prepared|run-group|verify-group|show-package> --run-dir <目录> --group <组>",
+      "inputs": [
+        "Z79 v3、Z74B 跨书材料与三组合同"
+      ],
+      "outputs": [
+        "v4 Prompt 包、分组运行与成绩工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z80_fact_sheet_v4_crossbook_pilot.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z80_fact_sheet_v4_crossbook_pilot.py",
+        "governance/route_registry.json"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "Prompt 治漏路线已退役；只保留历史复现，重开必须有 CZ 新拍凭证。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-039",
+      "path": "tools/z83_program_side_repair_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "current_batch_hard_stop_frozen",
+      "status_label": "当前批次已硬停封存",
+      "purpose": "第83道程序侧复查、检查员分流与定点重写运行器。",
+      "human_command": "python3 tools/z83_program_side_repair_pilot.py <指定 action> --run-dir <获批隔离目录>",
+      "inputs": [
+        "Z79 v3 冻结主样张、检查合同、人工判词与重试授权"
+      ],
+      "outputs": [
+        "第83道准备、主样张、检查员、重试与最终复核工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z83_program_side_repair_pilot.py"
+      ],
+      "last_use_clues": [
+        "tests/test_z83_program_side_repair_pilot.py",
+        "governance/CURRENT_STATE.json"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "retry05 已硬停并封存；不得续跑、清洗回包或自转新改法。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-040",
+      "path": "tools/zbatch.py",
+      "primary_identity": "active_entry",
+      "primary_identity_label": "现役总入口",
+      "status": "active_entry",
+      "status_label": "现役",
+      "purpose": "Z 批现役本地编排入口。",
+      "human_command": "python3 tools/zbatch.py <register|preflight|run|status|attest> ...",
+      "inputs": [
+        "批次配置、冻结材料、阶段白名单与运行授权"
+      ],
+      "outputs": [
+        "intake、runs、reports 与打包工件，具体由子命令决定"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [
+        "tools/novel_pipeline.py",
+        "tools/z00l_classification_split.py",
+        "tools/z00m_classification_split.py",
+        "tools/z00n_classification_split.py",
+        "tools/z00n_event_audit.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_api_transport_contract.py",
+        "tests/test_extract_module_contracts.py",
+        "tests/test_extraction_method_ab.py",
+        "tests/test_nonthinking_pilot.py",
+        "tests/test_t4_local_segment_pilot.py",
+        "tests/test_z00m_classification_split.py",
+        "tests/test_z00n_classification_split.py",
+        "tests/test_z27_pilots.py",
+        "tests/test_zbatch.py",
+        "tests/test_zbatch_cutover.py",
+        "tests/test_zbatch_module_equivalence.py"
+      ],
+      "last_use_clues": [
+        "tools/README.md",
+        "tools/zbatch_modules/README.md",
+        "tests/test_zbatch.py",
+        "tools/novel_pipeline.py",
+        "tools/z00l_classification_split.py",
+        "tools/z00m_classification_split.py",
+        "tools/z00n_classification_split.py",
+        "tools/z00n_event_audit.py",
+        "tests/test_api_transport_contract.py",
+        "tests/test_extract_module_contracts.py",
+        "tests/test_extraction_method_ab.py",
+        "tests/test_nonthinking_pilot.py",
+        "tests/test_t4_local_segment_pilot.py",
+        "tests/test_z00m_classification_split.py",
+        "tests/test_z00n_classification_split.py",
+        "tests/test_z27_pilots.py",
+        "tests/test_zbatch_cutover.py",
+        "tests/test_zbatch_module_equivalence.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "现役路径固定走 zbatch_modules；旧公开名与 SHA 兼容受测试保护，不能顺手重构。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-041",
+      "path": "tools/zbatch_coverage_diagnostic.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "X01 中性事件提取覆盖诊断命令。",
+      "human_command": "python3 tools/zbatch_coverage_diagnostic.py --book-dir <书目录> --source-run <来源运行> --output-dir <输出目录>",
+      "inputs": [
+        "书目录、来源运行、目标与章节范围"
+      ],
+      "outputs": [
+        "coverage_diagnostic.json"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "reports/Z00x4_提取覆盖诊断器_20260718/build_reports.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "Z00x4 道复现器；当前仅一次明确使用且无定向测试。批次复现器身份不构成删除、搬动或改造授权。",
+      "identity_decision": {
+        "decision_id": "Z87-PENDING-001",
+        "decision": "batch_reproducer",
+        "historical_scope": "Z00x4",
+        "basis": "仅一次明确使用、无定向测试，未满足出生门槛第1条的两个互相独立使用场景。"
+      },
+      "mechanical_promotion_gate": {
+        "promotion_to": "reusable_component",
+        "eligible_when": "裁定后出现第二个互相独立使用场景（非同道次），且定向测试齐备并通过。",
+        "separate_approval_boundary": null
+      },
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-042",
+      "path": "tools/zbatch_default_registry.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "reused_do_not_delete_or_move",
+      "status_label": "已被复用·不得按一次性脚本删搬",
+      "purpose": "默认链登记、校验与 outbox 打包器。",
+      "human_command": "python3 tools/zbatch_default_registry.py <promote|verify> --plan <计划> --default <默认配置>",
+      "inputs": [
+        "推广计划、默认配置及其固定 SHA"
+      ],
+      "outputs": [
+        "默认登记、归档与 outbox 包"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [
+        "tools/z57_activate_semantic_identity_contract.py"
+      ],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_z57_default_contract_hotfix.py",
+        "tests/test_zbatch_default_registry.py"
+      ],
+      "last_use_clues": [
+        "tests/test_zbatch_default_registry.py",
+        "reports/Z36_E0130补锚与v1.2默认升版_20260719/promotion_plan.json",
+        "tools/z57_activate_semantic_identity_contract.py",
+        "tests/test_z57_default_contract_hotfix.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "第36／57道同一默认推广链复现器；已有测试并被第57道激活器静态导入。已被复用，不得按一次性脚本删搬；批次复现器身份不构成删除、搬动、改造或默认推广授权。",
+      "identity_decision": {
+        "decision_id": "Z87-PENDING-002",
+        "decision": "batch_reproducer",
+        "historical_scope": "第36／57道同一默认推广链",
+        "basis": "第36与第57道属于同一条默认推广链，不构成两个互相独立使用场景；未满足出生门槛第1条。既有测试与第57道激活器消费者照实保留。"
+      },
+      "mechanical_promotion_gate": {
+        "promotion_to": "reusable_component",
+        "eligible_when": "裁定后出现第二个互相独立使用场景（非同道次），且定向测试齐备并通过。",
+        "separate_approval_boundary": "身份机械转正不授权默认推广；默认推广实际执行仍须另拍拍板。"
+      },
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-043",
+      "path": "tools/zbatch_extraction_method_ab.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "Z01b～f 提取方法单臂试验与 A/B 比较入口。",
+      "human_command": "python3 tools/zbatch_extraction_method_ab.py <preflight|authorize|run|compare> --arm <A|B|C|D>",
+      "inputs": [
+        "登记过的 Z01b～f 标准配置"
+      ],
+      "outputs": [
+        "预演、授权、run 结果与比较报告"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [
+        "tests/test_extraction_method_ab.py"
+      ],
+      "last_use_clues": [
+        "tests/test_extraction_method_ab.py",
+        "reports/Z01bc_提取漏对照轮_20260718"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "正式运行只接受历史标准配置；只作对应实验复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-044",
+      "path": "tools/zbatch_net_benefit_recompute.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "Z 批净收益三口径零调用重算入口。",
+      "human_command": "python3 tools/zbatch_net_benefit_recompute.py --config <配置> --output-dir <目录>",
+      "inputs": [
+        "净收益重算配置与冻结成绩"
+      ],
+      "outputs": [
+        "net_benefit_recompute.json"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "reports/Z00y_净收益零调用重算_20260718/build_reports.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "Z00y 道复现器；当前仅一次明确使用且无独立入口测试。批次复现器身份不构成删除、搬动或改造授权。",
+      "identity_decision": {
+        "decision_id": "Z87-PENDING-003",
+        "decision": "batch_reproducer",
+        "historical_scope": "Z00y",
+        "basis": "仅一次明确使用、无独立入口测试，未满足出生门槛第1条的两个互相独立使用场景。"
+      },
+      "mechanical_promotion_gate": {
+        "promotion_to": "reusable_component",
+        "eligible_when": "裁定后出现第二个互相独立使用场景（非同道次），且定向测试齐备并通过。",
+        "separate_approval_boundary": null
+      },
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-045",
+      "path": "tools/zbatch_nonthinking_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "第41道非思考模式单变量试验入口。",
+      "human_command": "python3 tools/zbatch_nonthinking_pilot.py <preflight|authorize|run> --config <Z01h配置>",
+      "inputs": [
+        "登记过的 Z01h 标准配置"
+      ],
+      "outputs": [
+        "预演、授权与五章结果"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "reports/Z01h_非思考模式单变量轮_20260719",
+        "config/diagnostics/Z01h_X01_非思考模式_5章_v1.json"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "正式运行只接受 Z01h 标准配置；只作历史单变量复现。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-046",
+      "path": "tools/zbatch_t4_pilot.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "T4 局部段覆盖试点准备、运行与停点判定。",
+      "human_command": "python3 tools/zbatch_t4_pilot.py <prepare|baseline-audit|run-chapter|evaluate> --manifest <Z00z清单>",
+      "inputs": [
+        "Z00z 默认试点清单与五章准备单"
+      ],
+      "outputs": [
+        "work/zbatch_t4 下的准备、调用闸与评估工件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "config/diagnostics/Z00z_X01_局部段覆盖试点_v1.json",
+        "tests/test_t4_local_segment_pilot.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "正式调用只允许默认 T4 清单；运行会转调 zbatch，须新授权。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-047",
+      "path": "tools/zbatch_t5_cache_benchmark.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "T5 SenseNova 缓存排法小实验。",
+      "human_command": "python3 tools/zbatch_t5_cache_benchmark.py <preflight|run> --manifest <Z01a清单>",
+      "inputs": [
+        "Z01a 默认缓存实验清单、章节与采样合同"
+      ],
+      "outputs": [
+        "缓存实验 run 与比较摘要"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "预演／检查阶段零调用；只有获批 run 类动作才可访问供应商模型。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
+      "test_references": [],
+      "last_use_clues": [
+        "config/diagnostics/Z01a_X01_缓存排法AB_v1.json",
+        "tools/zbatch_modules/t5_cache_benchmark.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "正式工具只允许默认 Z01a 清单；只作历史缓存实验复现。",
+      "review_needed": false
+    }
+  ]
+}

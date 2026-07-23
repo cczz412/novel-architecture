@@ -1,0 +1,13 @@
+{
+  "schema_version": "z57-default-contract-transaction-v1",
+  "revision_id": "Z57-stable-semantic-identity-v1",
+  "status": "committed",
+  "planned_default_registry_sha256": "b23b5cce26b9cfe584dd97dbff6422efa2b22ccd5cba38c6ed6a44c4543bc0a1",
+  "planned_commit_marker_sha256": "0c8f0024f3ddbb0be992883d2ba79789a4b50b7e003761c26aaea3692ba448de",
+  "rollback_default_registry": "config/defaults/history/zbatch_v1.2_full_chain_61bc6ca45fe450d382995b29dd998c9119ade2db6049d29963c83eee30c5f9da.json",
+  "rollback_commit_marker": "config/defaults/history/zbatch_v1.2_full_chain.COMMITTED_9259d3958e97aed982a798545ae889e3c608a3c8ef12dad87ea9f18f9cdddc48.json",
+  "outbox_manifest_sha256": "aecfcf93a265fa5f9f61ee7003bf8f7118833a12b8e2a0ffcc4899631cec6aa2",
+  "outbox_rewritten": false,
+  "committed_default_registry_sha256": "b23b5cce26b9cfe584dd97dbff6422efa2b22ccd5cba38c6ed6a44c4543bc0a1",
+  "committed_commit_marker_sha256": "0c8f0024f3ddbb0be992883d2ba79789a4b50b7e003761c26aaea3692ba448de"
+}

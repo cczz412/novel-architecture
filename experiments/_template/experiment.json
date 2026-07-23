@@ -1,0 +1,15 @@
+{
+  "schema_version": "pipeline-experiment-v1",
+  "experiment_id": "REPLACE_ME",
+  "status": "planned",
+  "summary": "只替换一个模块的候选试验",
+  "replace_module": "M05",
+  "candidate_version": "vNext",
+  "base_artifact_refs": [],
+  "write_root": "experiments/REPLACE_ME",
+  "red_lines": [
+    "上游正式工件只读",
+    "候选不得覆盖 runs、reports、config 或 outbox",
+    "输出合同不过则后段不启动"
+  ]
+}

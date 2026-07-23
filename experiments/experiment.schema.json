@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "experiment-v1",
+  "title": "小说流水线单模块试验",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "status",
+    "replace_module",
+    "base_artifact_refs",
+    "write_root",
+    "red_lines"
+  ],
+  "properties": {
+    "schema_version": {"const": "pipeline-experiment-v1"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["planned", "running", "hard_stopped", "completed_candidate", "retired"]},
+    "summary": {"type": "string"},
+    "replace_module": {"pattern": "^M(0[0-9]|1[01])$"},
+    "candidate_version": {"type": "string"},
+    "base_artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "write_root": {"type": "string", "pattern": "^experiments/[^/]+$"},
+    "red_lines": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

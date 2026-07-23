@@ -1,0 +1,88 @@
+---
+description: 本地路径必须可点击；中文路径勿用绝对路径当 href
+alwaysApply: true
+---
+
+# 本地链接可点击
+
+对用户**聊天回复**，以及写给 CZ 看的 **TEMP／references 文稿**里出现的本地文件／文件夹，一律做成可点击 Markdown 链接。
+
+## 🔥 Cursor 坑（2026-07-18 实锤）
+
+把带**中文**的绝对路径写成 Markdown href 时，Cursor 会先做 URL 编码，再拿乱码去找文件：
+
+```text
+你写的：/Users/a1234/挣钱/小说架构/references/book-meta/README.md
+它找的：/Users/a1234/%E6%8C%A3%E9%92%B1/%E5%B0%8F%E8%AF%B4…/README.md
+结果：File not found
+```
+
+所以：**禁止**把 `/Users/a1234/挣钱/…` 这类含中文的绝对路径放进 `](…)` 链接目标。
+
+🔥 **第二坑**：相对路径里只要有一段中文文件夹名，一样会被编成 `%E6…` 然后 File not found。  
+例：`TEMP/cursor侧_语料重标_…/x.md` → 点不开；`TEMP/dr_corpus_relabel_20260718/x.md` → 可点。
+
+**Agent 新建 TEMP／对外交付路径：文件夹名必须 ASCII**（可用英文＋数字＋下划线）。需要中文说明写进文件正文，不要写进路径。
+
+## ✅ 正确写法（按优先级）
+
+### 1. 聊天回复里 → 相对**仓库根**
+
+```markdown
+✅ [README.md](references/book-meta/README.md)
+✅ 文件夹：[book-meta/](references/book-meta/)
+✅ TEMP：[returns/](TEMP/cursor侧_语料重标_DeepResearch_20260718/returns/)
+```
+
+### 1b. 仓库内 md 文稿里 → 相对**当前文件**
+
+```markdown
+✅ 同目录：[INDEX.md](INDEX.md)
+✅ 上溯软链：[诡秘之主/](../../corpus-downloads/08_连载长伏笔/诡秘之主/)
+```
+
+链接文字可用短中文名；**括号里不要出现 `/Users/a1234/挣钱`**。
+
+### 2. 正文库 → 走本仓软链 `corpus-downloads/`（不要写小说101-downloads 绝对路径）
+
+```markdown
+✅ [诡秘之主/](corpus-downloads/08_连载长伏笔/诡秘之主/)
+❌ [诡秘之主/](/Users/a1234/挣钱/小说101-downloads/08_连载长伏笔/诡秘之主/)
+```
+
+### 3. 仅纯 ASCII 的绝对路径（无中文）→ 仍可用绝对路径
+
+```markdown
+✅ [clickable-local-links.mdc](/Users/a1234/.cursor/rules/clickable-local-links.mdc)
+```
+
+### 4. 工作区外又含中文的路径
+
+先拷进本仓 `TEMP/` 或 `references/` 再链相对路径；或在回复里用可点的仓内入口＋一句「完整绝对路径如下（复制用，勿当 href）」：
+
+```markdown
+入口：[book-meta/](references/book-meta/)
+复制用：`/Users/a1234/挣钱/小说架构/references/book-meta/`
+```
+
+注意：复制用的绝对路径用**反引号**，不要做成 `](绝对路径)`。
+
+## ❌ 禁止
+
+```markdown
+❌ [README](/Users/a1234/挣钱/小说架构/references/book-meta/README.md)
+❌ [README](INDEX.md)          ← 相对「当前 md 文件」时在聊天里也常点不开；统一相对仓库根
+❌ [TEMP/…](…)                 ← 省略号假路径
+❌ 手动把中文改成 %E6%8C%A3… 再塞进路径
+❌ 只丢裸路径或只包反引号却说「点这里」
+```
+
+## 规则摘要
+
+1. 聊天 + 给人看的 md：**链接目标优先＝相对本仓根**；中文目录名保持汉字，勿百分号编码
+2. 正文一律 `corpus-downloads/…`
+3. 含中文的 `/Users/…` **只可出现在反引号复制用**，不可当 href
+4. 同一条回复里同一入口至少首次可点
+5. 远程 URL（Notion 等）照常可点击
+
+来源：CZ 2026-07-18 明示偏好；同日实锤——中文绝对路径 href → `%E6…` 乱码 File not found

@@ -1,0 +1,63 @@
+{
+  "schema_version": "provider-channel-v1",
+  "provider": "volcengine_ark",
+  "display_name": "火山方舟",
+  "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+  "endpoint": "/chat/completions",
+  "api_key_env": "ARK_API_KEY",
+  "response_format_compatibility": "openai_chat_completions",
+  "enabled_by_default": false,
+  "default_model": null,
+  "deepseek_v4_pro_benchmark_profile": "deepseek_v4_pro_medium_prompt_json",
+  "status": "configured_key_pending_not_wired_to_default",
+  "model_selection_rule": "只允许显式选择 call_ready=true 的 model_id；不得从显示名猜 ID，不得自动降级或换近似模型。",
+  "models": [
+    {
+      "requested_name": "GLM-5.2",
+      "model_id": "glm-5-2-260617",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Doubao-Seed-Evolving",
+      "model_id": "doubao-seed-evolving",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Doubao-Seed-2.1-turbo",
+      "model_id": "doubao-seed-2-1-turbo-260628",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Doubao-Seed-2.1-pro",
+      "model_id": "doubao-seed-2-1-pro-260628",
+      "call_ready": true
+    },
+    {
+      "requested_name": "DeepSeek-V4-pro",
+      "model_id": "deepseek-v4-pro-260425",
+      "call_ready": true
+    },
+    {
+      "requested_name": "DeepSeek-V4-flash",
+      "model_id": "deepseek-v4-flash-260425",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Kimi-K2",
+      "model_id": null,
+      "call_ready": false,
+      "status": "blocked_pending_current_console_model_id",
+      "note": "当前火山方舟公开模型表未给出 Kimi-K2 的可用精确 ID；不得静默替换为 Kimi-K2.5 或旧 Kimi-K2-thinking。"
+    }
+  ],
+  "official_docs": [
+    "https://www.volcengine.com/docs/82379/1099455",
+    "https://www.volcengine.com/docs/82379/1330310",
+    "https://www.volcengine.com/docs/82379/1449737",
+    "https://www.volcengine.com/docs/82379/1568221",
+    "https://www.volcengine.com/docs/82379/1399009",
+    "https://www.volcengine.com/docs/82379/1299023",
+    "https://www.volcengine.com/docs/82379/1298459",
+    "https://api.volcengine.com/api-docs/view?action=ChatCompletions&serviceCode=ark&version=2024-01-01"
+  ]
+}

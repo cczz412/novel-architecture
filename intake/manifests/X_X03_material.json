@@ -1,0 +1,16 @@
+{
+  "batch": "X",
+  "item": "X03",
+  "kind": "material",
+  "registered_at": "2026-07-17T02:50:35+08:00",
+  "source_path": "TEMP/X批材料包_20260716/books/X03_清河仙族",
+  "registered_path": "TEMP/X批材料包_20260716/books/X03_清河仙族",
+  "copied": false,
+  "fingerprint": {
+    "kind": "directory",
+    "files": 203,
+    "bytes": 1443238,
+    "sha256": "5a67fca466e004f6b7c67929cc8cdfb647df54ec4136aa74606c80693113a964"
+  },
+  "provenance": "X批本地原样材料，200章"
+}

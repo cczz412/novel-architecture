@@ -1,0 +1,38 @@
+{
+  "schema_version": "provider-access-policy-v1",
+  "default_chain_provider": "sensenova",
+  "default_chain_changed": false,
+  "providers": {
+    "deepseek_official": {
+      "default_action": "deny",
+      "status": "permanently_disabled_unless_current_explicit_positive_user_authorization",
+      "user_rule": "CZ 未在当前任务里明确正向要求‘用官方的API’时，一律不得使用 DeepSeek 官方 API。否定句、转述、模型名或仅出现‘官方API’字样均不授权。",
+      "approval_scope": "current_task_one_command_only",
+      "loader_ack_env": "CZ_DEEPSEEK_OFFICIAL_API_APPROVAL",
+      "loader_ack_exact_value": "USE_OFFICIAL_DEEPSEEK_API_ONCE"
+    },
+    "volcengine_ark": {
+      "default_action": "deny_until_explicit_model_run_order",
+      "status": "isolated_configuration_only",
+      "may_replace_default_chain": false
+    },
+    "qianwen_platform": {
+      "default_action": "deny_until_explicit_model_run_order",
+      "status": "isolated_configuration_only",
+      "may_replace_default_chain": false
+    },
+    "tencent_tokenhub": {
+      "default_action": "deny_until_explicit_model_run_order",
+      "status": "isolated_configuration_only",
+      "may_replace_default_chain": false,
+      "require_live_model_catalog_check": true
+    },
+    "longcat_platform": {
+      "default_action": "deny_until_explicit_model_run_order",
+      "status": "isolated_benchmark_only",
+      "may_replace_default_chain": false,
+      "require_live_model_catalog_check": true,
+      "key_source": "external_api_pool"
+    }
+  }
+}

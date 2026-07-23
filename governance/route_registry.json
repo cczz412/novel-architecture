@@ -1,0 +1,321 @@
+{
+  "schema_version": "experiment-route-registry-v1",
+  "updated_at": "2026-07-23T04:09:27+08:00",
+  "allowed_statuses": [
+    "in_trial",
+    "failed",
+    "retired",
+    "allowed_to_reopen"
+  ],
+  "status_labels": {
+    "in_trial": "在试",
+    "failed": "失败",
+    "retired": "退役",
+    "allowed_to_reopen": "允许重开"
+  },
+  "routes": [
+    {
+      "route_id": "ROUTE-PROMPT-LEAK-REPAIR",
+      "name": "Prompt 侧治漏与事实说明书定点修复",
+      "status": "retired",
+      "status_label": "退役",
+      "reopen_requires": "CZ 新拍明确重开凭证；仅换版本号或目录名不算重开。",
+      "lifecycle": [
+        {
+          "step": "Z47",
+          "event": "retired",
+          "evidence_kind": "local_decision",
+          "evidence_ref": "decisions.md#Z47-PROMPT-ROUTE-DEAD-LOCAL"
+        },
+        {
+          "step": "Z77-Z80",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_authorization_mirrored_by_local_receipts",
+          "evidence_refs": [
+            "reports/Z77_事实说明书注入包v2三章复验_20260721/Notion回传回读.json",
+            "reports/Z79_事实说明书注入包v3三章复验_20260721/Notion回传回读.json",
+            "reports/Z80_事实说明书注入包v4三组复验_20260721/Notion回传回读票据.json"
+          ]
+        },
+        {
+          "step": "Z80",
+          "event": "retired",
+          "evidence_kind": "local_adjudication",
+          "evidence_ref": "reports/Z80_事实说明书注入包v4三组复验_20260721/G1_X01_成绩与硬停总表.json"
+        }
+      ]
+    },
+    {
+      "route_id": "ROUTE-PROGRAM-SIDE-REPAIR",
+      "name": "抽取线程序侧治法",
+      "status": "in_trial",
+      "status_label": "在试（retry13 已完成并按候选质量失败硬停；路线未判死，等待 CZ 审收与新拍）",
+      "current_run_gate": "retry13 已封存：机械闸通过，但旧25零退化、金标门槛、语义锚无效0三闸失败，另有1条程序风险阻断；不得二次重写或自行开 retry14。",
+      "reopen_requires": "CZ 新拍明确重开凭证，并指定三类质量缺口的处置；仅换运行编号、补提示或沿用旧授权均不算重开。retry03～13封存件禁捞回。",
+      "lifecycle": [
+        {
+          "step": "Z83",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_authorization",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-04-58"
+        },
+        {
+          "step": "Z83",
+          "event": "in_trial",
+          "evidence_kind": "current_state",
+          "evidence_ref": "governance/CURRENT_STATE.json#mainline"
+        },
+        {
+          "step": "Z83-retry03-inspector",
+          "event": "hard_stop_quality_not_concluded",
+          "evidence_kind": "local_subrun_hard_stop",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/review/inspector/hard_stop.json",
+            "https://app.notion.com/p/3a45cadc4d0f817699d6d9b8d29ee8e0"
+          ]
+        },
+        {
+          "step": "Z83-retry04-inspector-32k",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_authorization",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-05-53"
+        },
+        {
+          "step": "Z83-retry04-inspector-32k",
+          "event": "hard_stop_quality_not_concluded",
+          "evidence_kind": "local_subrun_hard_stop_and_notion_callback",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry04/review/inspector/hard_stop.json",
+            "https://app.notion.com/p/3a45cadc4d0f81f38569e57520175532"
+          ]
+        },
+        {
+          "step": "Z83-retry05-inspector-verbatim-quote",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_authorization",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-06-50"
+        },
+        {
+          "step": "Z83-retry05-inspector-verbatim-quote",
+          "event": "hard_stop_candidate_fail_route_not_concluded",
+          "evidence_kind": "local_subrun_hard_stop_and_notion_callback",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry05/review/inspector/hard_stop.json",
+            "https://app.notion.com/p/3a45cadc4d0f8135bf6ee000547f2bb6"
+          ]
+        },
+        {
+          "step": "Z83-retry06-anchor-authoritative-substring",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_authorization",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-42"
+        },
+        {
+          "step": "Z83-retry06-anchor-authoritative-substring",
+          "event": "hard_stop_candidate_fail_route_not_concluded",
+          "evidence_kind": "local_subrun_hard_stop_and_notion_callback",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry06/review/inspector/hard_stop.json",
+            "https://app.notion.com/p/3a55cadc4d0f811d89b2f8658d6481ff"
+          ]
+        },
+        {
+          "step": "Z83-retry07-punctuation-normalized-substring",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_authorization",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-09-16"
+        },
+        {
+          "step": "Z83-retry07-punctuation-normalized-substring",
+          "event": "hard_stop_engineering_preflight_zero_call_route_not_concluded",
+          "evidence_kind": "local_main_hard_stop_review_receipt_and_notion_callback",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry07/main/hard_stop.json",
+            "reports/Z83_程序侧治法_retry07发网前终审硬停_20260722/发网前独立终审票.json",
+            "https://app.notion.com/p/3a55cadc4d0f819e829ce7c23019b661"
+          ]
+        },
+        {
+          "step": "Z83-retry08-typed-punctuation-and-raw-rebuild",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_authorization",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-10-29"
+        },
+        {
+          "step": "Z83-retry08-typed-punctuation-and-raw-rebuild",
+          "event": "hard_stop_semantic_pre_retry_capacity_route_not_concluded",
+          "evidence_kind": "local_semantic_hard_stop_and_notion_callback",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry08/review/semantic_pre_retry_hard_stop.json",
+            "reports/Z83_程序侧治法_retry08语义重写容量硬停_20260722/硬停回执.json",
+            "https://app.notion.com/p/3a55cadc4d0f814cb16be5e29e9aaf8c"
+          ]
+        },
+        {
+          "step": "Z83-retry09-chapter3-four-item-override-and-closeout",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_authorization",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-12-36"
+        },
+        {
+          "step": "Z83-retry09-chapter3-four-item-override-and-closeout",
+          "event": "hard_stop_total_retry_capacity_route_not_concluded",
+          "evidence_kind": "local_semantic_hard_stop_and_notion_callback",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry09/review/semantic_pre_retry_hard_stop.json",
+            "reports/Z83_程序侧治法_retry09整轮容量硬停_20260722/硬停回执.json",
+            "https://app.notion.com/p/3a55cadc4d0f81a0b49dcfee3de681fe"
+          ]
+        },
+        {
+          "step": "Z83-retry10-thirteen-item-one-time-override",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_authorization",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-14-21"
+        },
+        {
+          "step": "Z83-retry10-thirteen-item-one-time-override",
+          "event": "hard_stop_targeted_rewrite_contract_route_not_concluded",
+          "evidence_kind": "local_repair_hard_stop_and_notion_callback",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry10/repair/hard_stop.json",
+            "reports/Z83_程序侧治法_retry10第5条合同硬停_20260722/硬停回执.json",
+            "https://app.notion.com/p/3a55cadc4d0f81fe8bf3e03e1aafa881"
+          ]
+        },
+        {
+          "step": "Z83-retry11-visible-exact-count-contract",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_authorization",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-14-57"
+        },
+        {
+          "step": "Z83-retry11-visible-exact-count-contract",
+          "event": "hard_stop_anchor_object_schema_route_not_concluded",
+          "evidence_kind": "local_repair_hard_stop_and_notion_callback",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry11/repair/hard_stop.json",
+            "reports/Z83_程序侧治法_retry11第2条锚字段硬停_20260722/硬停回执.json",
+            "https://app.notion.com/p/3a55cadc4d0f8106ad44d161b7b002ef"
+          ]
+        },
+        {
+          "step": "Z83-retry12-anchor-leaf-strip",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_authorization",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-15-45"
+        },
+        {
+          "step": "Z83-retry12-anchor-leaf-strip",
+          "event": "hard_stop_exact_count_contract_route_not_concluded",
+          "evidence_kind": "local_repair_hard_stop_and_notion_callback",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry12/repair/hard_stop.json",
+            "reports/Z83_程序侧治法_retry12第9条份数硬停_20260722/硬停回执.json",
+            "https://app.notion.com/p/3a55cadc4d0f814da99cf953c5837bc4"
+          ]
+        },
+        {
+          "step": "Z83-retry13-dual-contract-atomic-repair",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_and_ledger_readback",
+          "evidence_refs": [
+            "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-17-24",
+            "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c#2026-07-22-17-24",
+            "reports/Z83_retry13发网授权_20260722/Notion续令⑪回读票.json"
+          ]
+        },
+        {
+          "step": "Z83-retry13-dual-contract-atomic-repair",
+          "event": "zero_call_preflight_pass",
+          "evidence_kind": "local_atomic_plan_and_double_preflight_verification",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/repair/atomic_plan.json",
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/repair/atomic_preflight.json"
+          ]
+        },
+        {
+          "step": "Z83-retry13-dual-contract-atomic-repair",
+          "event": "hard_stop_candidate_failed_four_gates_route_not_concluded",
+          "evidence_kind": "local_final_scorecard_and_semantic_adjudication",
+          "evidence_refs": [
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final/scorecard.json",
+            "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final_review/adjudication_final.json",
+            "reports/Z83_retry13双合同原子化硬停_20260722/硬停回执.json",
+            "https://app.notion.com/p/3a55cadc4d0f81c6a4eef4b2c05ff6d2"
+          ]
+        }
+      ]
+    },
+    {
+      "route_id": "ROUTE-STRONG-MODEL-COMPARISON",
+      "name": "强模型替换归因对照",
+      "status": "in_trial",
+      "status_label": "在试（Z89 第3章单次裸考达到严格10/23门槛；只登记模型能力是病因之一，等待CZ审收与换臂／跨书复验拍板）",
+      "current_run_gate": "Z89 样张已封存为候选银标；不得重跑挑结果，不得把 DeepSeek 官方通道接入默认链。",
+      "reopen_requires": "CZ 另拍拍板是否做跨书复验、扩大章次或固化换模型臂；当前单章成绩不能自动升默认。",
+      "lifecycle": [
+        {
+          "step": "Z89",
+          "event": "allowed_to_reopen",
+          "evidence_kind": "notion_queue_and_ledger_work_order",
+          "evidence_refs": [
+            "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-23-03-26",
+            "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c#2026-07-23-03-26"
+          ]
+        },
+        {
+          "step": "Z89",
+          "event": "candidate_silver_scored_threshold_met",
+          "evidence_kind": "local_scorecard_and_notion_callback",
+          "evidence_refs": [
+            "runs/Z89_X01_DeepSeekV4Pro强模型对照_第3章_v1.0_20260723/final/scorecard.json",
+            "reports/Z89_DeepSeekV4Pro强模型对照_20260723/第89道停点回包｜DeepSeekV4Pro第3章强模型对照裸考_20260723.md",
+            "https://app.notion.com/p/3a55cadc4d0f8184be6df75615aca197"
+          ]
+        }
+      ]
+    },
+    {
+      "route_id": "ROUTE-NER-GLINERX-FINETUNE",
+      "name": "NER／GLiNER-X 微调",
+      "status": "retired",
+      "status_label": "退役",
+      "reopen_requires": "CZ 新拍明确重开凭证；不得把兼容修通当成质量放行。",
+      "lifecycle": [
+        {
+          "step": "Z53",
+          "event": "failed",
+          "evidence_kind": "local_decision",
+          "evidence_ref": "decisions.md#Z53-GLINERX-PREDICTION-EXPLOSION-HARD-STOP-LOCAL"
+        },
+        {
+          "step": "Z53-retirement",
+          "event": "retired",
+          "evidence_kind": "local_decision_and_archive",
+          "evidence_refs": [
+            "decisions.md#Z53-GLINERX-ROUTE-RETIRED-LOCAL",
+            "TEMP/弃用路线归档_20260721/Z53_GLiNERX试验版微调_20260719"
+          ]
+        }
+      ]
+    },
+    {
+      "route_id": "ROUTE-BOOK-SPLIT-FINETUNE",
+      "name": "拆书微调",
+      "status": "retired",
+      "status_label": "退役",
+      "reopen_requires": "CZ 新拍明确重开凭证。",
+      "evidence_grade": "external_authority_only",
+      "evidence_boundary": "本地未找到独立训练运行或质量票；退役结论只按第86道 05:02 已拍施工令登记，不推断历史实验细节。",
+      "lifecycle": [
+        {
+          "step": "Z86-work-order",
+          "event": "retired",
+          "evidence_kind": "notion_queue_work_order",
+          "evidence_ref": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-05-02"
+        }
+      ]
+    }
+  ]
+}

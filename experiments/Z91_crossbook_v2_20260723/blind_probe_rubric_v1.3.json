@@ -1,0 +1,35 @@
+{
+  "schema_version": "z91-crossbook-blind-probe-rubric-v1.3",
+  "status": "frozen_for_z91_step2_v2_only",
+  "name": "跨书盲审探针差分尺 v1.3",
+  "base_rubric": {
+    "path": "runs/Z91_双臂跨书基线_步一试卷_v1.2_20260723/rubric_candidate.json",
+    "sha256": "765b5a73af4053b3af7db49eb3a7e4456e155995283fff4e0f55f999bf50e7e9",
+    "inheritance": "all fields and thresholds are inherited byte-for-byte unless named in the sole overlay below"
+  },
+  "sole_overlay": {
+    "scope": "mechanical sample validity only",
+    "production_six_char_rule_changed": false,
+    "experiment_exception_contract_path": "experiments/Z91_crossbook_v2_20260723/short_summary_exception_v1.json",
+    "rule": "an event below 6 non-whitespace characters that is a mechanically complete subject-predicate sentence and has otherwise legal anchors is logged as short_summary_violation and does not invalidate the sample",
+    "all_other_mechanical_failures": "unchanged hard stop",
+    "side_ledger_counts_as_quality_score": false
+  },
+  "unchanged_base_sections": [
+    "truth_boundary",
+    "per_chapter_human_budget",
+    "arm_blinding",
+    "output_group_sampling_algorithm",
+    "judgment_dimensions",
+    "reported_metrics",
+    "scoring_formulas",
+    "directional_lead_rule",
+    "production_candidate_extra_gate",
+    "hard_stop_rules"
+  ],
+  "only_final_states": [
+    "pro_directional_lead",
+    "no_crossbook_pro_lead"
+  ],
+  "semantic_score_claim_boundary": "directional cross-book observation only; not recall, formal accuracy, default promotion, or provider cutover evidence by itself"
+}

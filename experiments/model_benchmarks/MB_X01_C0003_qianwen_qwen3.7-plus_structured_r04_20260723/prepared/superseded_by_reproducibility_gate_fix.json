@@ -1,0 +1,9 @@
+{
+  "schema_version": "model-benchmark-supersession-v1",
+  "status": "superseded_zero_call_no_network",
+  "reason": "发网前复核现役保护件；完工审计验证429行、等待票、重试链与尝试占用票；关键运行依赖同时冻结SHA和源码副本",
+  "model_api_calls": 0,
+  "network_attempts": 0,
+  "replacement_benchmark_id": "MB_X01_C0003_qianwen_qwen3.7-plus_structured_r05_20260723",
+  "preservation": "旧目录原样留档，不删除、不回写既有准备工件"
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": "model-benchmark-stage-v1",
+  "stage_id": "neutral_extract_x01_ch0003_v3_t02",
+  "display_name": "X01 第3章中性事件抽取·v3冻结请求·默认温度0.2",
+  "stage_role": "default_model_comparison",
+  "swap_module": "M04",
+  "upstream_contract": "M03 冻结请求包，只读",
+  "downstream_contract": "M05 neutral-events-v1",
+  "chapter": 3,
+  "source_artifacts": {
+    "baseline_request": {
+      "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/prepared_requests/ch0003.json",
+      "sha256": "18fe2a9e9d2f0a4d48b5b4de29803a90c0db0fe1087080ff8f68d00b81e98eb4"
+    },
+    "chapter_text": {
+      "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/inputs/chapters/0003_第3章_梅丽莎（第一更求推荐票）.txt",
+      "sha256": "96f5e17cbec15433b5d00bef18912eb39710ad67962e3716bca37203d4c06288"
+    },
+    "evidence_catalog": {
+      "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/inputs/evidence_catalogs/ch0003.json",
+      "sha256": "2cc50e9a0c8b5fb807641e09c74f1748cbe423bf0fa700dbbbaa84ba20e58132"
+    },
+    "prompt_package": {
+      "path": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/prompt_frozen/事实说明书注入包_v3.json",
+      "sha256": "a302920537349d37c75d5bac9df19a83bfab667891458ef65de9d98e84bc2116"
+    },
+    "gold_pointer": {
+      "path": "config/gold/X01_ch0003_structure_gold_current.json",
+      "sha256": "6a5c785dc98381ff4d9b7e207c599c29914f394e4b43e399d37f65093cc5a60c"
+    },
+    "gold_file": {
+      "path": "reports/Z73_第3章金标v1.2定稿转正_20260721/第3章结构层金标v1.2.json",
+      "sha256": "0df08ede4fa1a33f4bd9e1aea3e45387c8d77131ce79ff1496fe1320fa48a10e"
+    }
+  },
+  "invariants": {
+    "messages_byte_equal_to_baseline": true,
+    "single_sample_no_rerun": true,
+    "temperature": 0.2,
+    "n": 1,
+    "output_schema": "z-event-v1",
+    "gold_denominator": 23,
+    "gold_never_model_visible": true
+  },
+  "baseline_scores": {
+    "retry03_deepseek_v4_flash": {
+      "strict_hit": 6,
+      "effective_recall": 20
+    },
+    "z79_v3_historical_best": {
+      "strict_hit": 10
+    },
+    "z89_deepseek_v4_pro": {
+      "strict_hit": 10,
+      "effective_recall": 20,
+      "scorecard_path": "runs/Z89_X01_DeepSeekV4Pro强模型对照_第3章_v1.0_20260723/final/scorecard.json",
+      "scorecard_sha256": "edb78f2d1a6bc2320e73e4912516ec8821fe5323b36feb79df64aba11119290c"
+    }
+  },
+  "red_lines": [
+    "不得回写任何 source_artifacts",
+    "不得把金标或判词放入模型请求",
+    "不得重跑挑好结果",
+    "结果只进 experiments/model_benchmarks 候选区"
+  ]
+}

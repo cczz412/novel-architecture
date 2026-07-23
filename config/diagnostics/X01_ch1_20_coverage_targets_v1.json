@@ -1,0 +1,94 @@
+{
+  "schema_version": "z-coverage-targets-v1",
+  "book": "X01_诡秘之主",
+  "chapters": [1, 20],
+  "targets": [
+    {
+      "id": "S-L01",
+      "label": "罗塞尔可能也是穿越者",
+      "chapter": 4,
+      "start_anchor_id": "E0208",
+      "end_anchor_id": "E0209",
+      "required_quote_fragments": ["穿越者前辈吧"],
+      "semantic_terms": ["穿越者", "前辈"],
+      "expected_anchor_status": "anchor_span_unreferenced",
+      "interpretation_boundary": "只证明该局部判断没有被同章事件引用；不自动决定 A/B/C/D。",
+      "t4_regression_target": true
+    },
+    {
+      "id": "S-L02",
+      "label": "免费塔罗在下一章实际执行",
+      "chapter": 5,
+      "start_anchor_id": "E0048",
+      "end_anchor_id": "E0062",
+      "required_quote_fragments": ["这张象征过去", "愚者"],
+      "semantic_terms": ["占卜", "愚者"],
+      "expected_anchor_status": "anchor_span_unreferenced",
+      "linked_events": [
+        {
+          "chapter": 4,
+          "event_id": "EV-C0004-05",
+          "role": "上章已接受免费占卜",
+          "expected_anchor_ids": ["E0174", "E0212", "E0214"],
+          "required_summary_fragments": ["同意免费占卜"]
+        }
+      ],
+      "interpretation_boundary": "只证明第5章兑现段没有事件化；跨章主类型由分类规则另判。",
+      "t4_regression_target": true
+    },
+    {
+      "id": "S-L03",
+      "label": "克莱恩把延迟复发警告投射到自身风险",
+      "chapter": 13,
+      "start_anchor_id": "E0156",
+      "end_anchor_id": "E0159",
+      "required_quote_fragments": ["哪怕躲过了一劫", "有什么办法能彻底解决"],
+      "semantic_terms": ["凄惨结局", "逃得了一时", "彻底解决"],
+      "expected_anchor_status": "anchor_span_unreferenced",
+      "interpretation_boundary": "只证明个人反应未事件化；C 未结项是否成立由分类规则另判。",
+      "t4_regression_target": true
+    },
+    {
+      "id": "S-L04",
+      "label": "因斯·赞格威尔外貌识别信息",
+      "chapter": 19,
+      "start_anchor_id": "E0175",
+      "end_anchor_id": "E0179",
+      "required_quote_fragments": ["发色呈暗金", "瞎了一只眼睛"],
+      "semantic_terms": ["发色", "瞳孔", "瞎了一只眼睛"],
+      "expected_anchor_status": "anchor_span_unreferenced",
+      "interpretation_boundary": "只证明识别特征没有进入中性事件；不自动判断是否值得进入主账。",
+      "t4_regression_target": true
+    },
+    {
+      "id": "A-F01-SUPPORT",
+      "label": "A-F01 家庭责任的局部支撑段",
+      "chapter": 3,
+      "start_anchor_id": "E0050",
+      "end_anchor_id": "E0064",
+      "required_quote_fragments": ["长兄班森", "帮哥哥负担"],
+      "semantic_terms": ["班森", "哥哥", "负担", "维持生活"],
+      "expected_anchor_status": "anchor_span_unreferenced",
+      "linked_events": [
+        {
+          "chapter": 3,
+          "event_id": "EV-C0003-08",
+          "role": "现有事件只保存转运仪式与回家愿望",
+          "expected_anchor_ids": ["E0173"],
+          "required_summary_fragments": ["转运仪式", "回家"]
+        }
+      ],
+      "related_spans": [
+        {
+          "chapter": 3,
+          "start_anchor_id": "E0174",
+          "end_anchor_id": "E0175",
+          "role": "现有 E0173 事件之后仍未引用的明确回家表达",
+          "required_quote_fragments": ["真地想回家"]
+        }
+      ],
+      "interpretation_boundary": "程序只能并出“家庭负担段未事件化＋回家事件已存在”；家庭责任改变返乡选择仍是跨段推断，不能由词面扫描自动宣判。",
+      "t4_regression_target": true
+    }
+  ]
+}

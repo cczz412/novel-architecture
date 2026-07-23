@@ -1,0 +1,30 @@
+{
+  "provider": "sensenova",
+  "api_base_url": "https://token.sensenova.cn/v1",
+  "api_endpoint": "/chat/completions",
+  "stage": "semantic_route",
+  "case_id": "Z76P2-PILOT-01",
+  "contract_status": "approved_transport_reference",
+  "unverified_candidate_override": false,
+  "body": {
+    "model": "deepseek-v4-flash",
+    "messages": [
+      {
+        "role": "system",
+        "content": "你是小说流水线里的低成本语义检查分流员，不是真值裁判。\n你只能判断输入陈述与所给原文锚之间的语义支撑关系，并把条目分到候选桶；不得改写输入、补写事实、修改金标、修改分类规则或宣布正式结论。\n只有陈述中的全部事实头都被锚直接支撑时，才能给 pass_candidate。部分支撑、证据不托、粒度或类型存在疑问时给 review_candidate；拿不准时给 uncertain。\n输出必须是单个 JSON 对象，严格服从用户消息里的输出合同，不要输出代码围栏或额外说明。"
+      },
+      {
+        "role": "user",
+        "content": "{\n  \"contract_version\": \"semantic-router-input-v1\",\n  \"batch_id\": \"Z76P2-PILOT-01\",\n  \"decision_scope\": \"routing_only\",\n  \"rules\": {\n    \"pass_candidate\": \"陈述的全部事实头都被所给锚直接支撑；仍不是正式真值。\",\n    \"review_candidate\": \"存在部分支撑、不支撑、粒度／类型疑义，转强审。\",\n    \"uncertain\": \"无法可靠判断，转强审。\",\n    \"no_rewrite\": \"不得改写 claim，不得添加输入没有的事实。\"\n  },\n  \"output_contract\": {\n    \"contract_version\": \"semantic-router-output-v1\",\n    \"results\": [\n      {\n        \"item_id\": \"原 item_id\",\n        \"decision\": \"pass_candidate|review_candidate|uncertain\",\n        \"support\": \"direct_support|partial_support|not_support|uncertain\",\n        \"rule_ids\": [\n          \"SEM-01\"\n        ],\n        \"evidence\": [\n          {\n            \"anchor_id\": \"输入锚ID\",\n            \"quote\": \"输入原文短引\",\n            \"reason\": \"支撑或不支撑理由\"\n          }\n        ],\n        \"confidence\": \"0到1数字\",\n        \"needs_strong_review\": \"布尔值\",\n        \"reason\": \"简短判词\"\n      }\n    ]\n  },\n  \"items\": [\n    {\n      \"item_id\": \"SEM-REAL-01\",\n      \"check_type\": \"semantic_support\",\n      \"source_kind\": \"formal_record_readonly_sample\",\n      \"claim\": \"周明瑞在镜中看到太阳穴位置有狰狞伤口，边缘有烧灼痕迹。\",\n      \"anchors\": [\n        {\n          \"anchor_id\": \"E0132\",\n          \"chapter\": 1,\n          \"quote\": \"光，他侧过脑袋，查看额角的情况。\\n　　清晰倒映的镜\"\n        },\n        {\n          \"anchor_id\": \"E0135\",\n          \"chapter\": 1,\n          \"quote\": \"太阳穴位置，边缘是烧灼的痕迹，周围沾满了血污\"\n        }\n      ],\n      \"declared_risks\": [],\n      \"metadata\": {\n        \"source_record_id\": \"A-C0001-04\",\n        \"read_only\": true\n      },\n      \"detected_risks\": []\n    },\n    {\n      \"item_id\": \"SEM-REAL-02\",\n      \"check_type\": \"semantic_support\",\n      \"source_kind\": \"formal_record_readonly_sample\",\n      \"claim\": \"梅丽莎演示怀表的上弦与校时操作。\",\n      \"anchors\": [\n        {\n          \"anchor_id\": \"E0105\",\n          \"chapter\": 3,\n          \"quote\": \"，快步过来，一把拿走了怀表。\\n　　她站在原地，先将\"\n        },\n        {\n          \"anchor_id\": \"E0106\",\n          \"chapter\": 3,\n          \"quote\": \"地，先将怀表顶端的按钮拔起，仅仅转动了几圈，\"\n        },\n        {\n          \"anchor_id\": \"E0112\",\n          \"chapter\": 3,\n          \"quote\": \"怀表顶端的按钮拔高了一截，接着连续扭动，对好\"\n        }\n      ],\n      \"declared_risks\": [],\n      \"metadata\": {\n        \"source_record_id\": \"A-C0003-03\",\n        \"read_only\": true\n      },\n      \"detected_risks\": []\n    },\n    {\n      \"item_id\": \"SEM-CONTROL-01\",\n      \"check_type\": \"semantic_support\",\n      \"source_kind\": \"synthetic_negative_control\",\n      \"claim\": \"周明瑞在镜中发现自己的手臂骨折。\",\n      \"anchors\": [\n        {\n          \"anchor_id\": \"E0132\",\n          \"chapter\": 1,\n          \"quote\": \"光，他侧过脑袋，查看额角的情况。\\n　　清晰倒映的镜\"\n        },\n        {\n          \"anchor_id\": \"E0135\",\n          \"chapter\": 1,\n          \"quote\": \"太阳穴位置，边缘是烧灼的痕迹，周围沾满了血污\"\n        }\n      ],\n      \"declared_risks\": [],\n      \"metadata\": {\n        \"purpose\": \"只验证分流器能否把明显不托锚条送强审；不作小说事实。\"\n      },\n      \"detected_risks\": []\n    }\n  ]\n}"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8000,
+    "n": 1,
+    "response_format": {
+      "type": "json_object"
+    },
+    "reasoning_effort": "medium"
+  },
+  "_security": "no_api_key_no_authorization"
+}
