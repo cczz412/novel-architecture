@@ -62,9 +62,11 @@ python3 tools/chatgpt_review_pack.py --profile deep
 python3 tools/chatgpt_review_pack.py --dry-run
 ```
 
+- 制度说明：[config/review_pack/README.md](config/review_pack/README.md)（复验三角、旧包不改、经验账）
 - 配置：[config/review_pack/profiles.json](config/review_pack/profiles.json)
 - 产出：`TEMP/chatgpt_review_packs/`（zip＋读包说明；TEMP 本身不进 Git）
-- 包内必有 `00_READ_ME_FOR_REVIEWER.md`；含近停 runs／reports 与 Z83 多轮票据摘要，不等于它们应进 Git
+- 包内必有 `00_READ_ME_FOR_REVIEWER.md`；含 `experiments/Z*`＋近停 runs／reports 与 Z83 票据摘要；**不等于**它们应进 Git
+- 做到一定程度就**现打**；外审指出缺口 → 改 profiles／脚本再打新包，勿回头改已上传 zip
 
 ## 目录
 

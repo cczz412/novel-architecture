@@ -16,8 +16,10 @@
 唯一全仓测试命令：
 
 ```bash
-cd /Users/a1234/挣钱/小说架构 && PYTHONPATH=. /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q tests
+cd /Users/a1234/挣钱/小说架构 && /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q
 ```
+
+默认只收集 `tests/`，不会进入 `TEMP/`、`runs/`、`reports/`、`outbox/`。依赖已外置历史实物的测试只在必需夹具确实缺失时严格挂账；逐项负责人、到期日和精确测试名见 `tests/test_debt_registry.json`。夹具恢复后会自动恢复真跑，不能继续拿挂账遮住回归。
 
 刷新命令：
 

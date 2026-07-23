@@ -12,6 +12,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
+LEGACY_NEUTRAL_EXTRACT = ROOT / (
+    "experiments/model_benchmarks/"
+    "MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r01_20260723/"
+    "inputs/runtime_dependencies/tools/zbatch_modules/neutral_extract.py"
+)
+LEGACY_NEUTRAL_SHA256 = "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7"
+
 import z57_activate_semantic_identity_contract as activate_z57  # noqa: E402
 
 
@@ -59,7 +66,11 @@ class Z57DefaultContractHotfixTests(unittest.TestCase):
         ):
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source_overrides.get(relative, ROOT / relative), target)
+            source = source_overrides.get(relative, ROOT / relative)
+            if relative == Path("tools/zbatch_modules/neutral_extract.py"):
+                self.assertEqual(sha256(LEGACY_NEUTRAL_EXTRACT), LEGACY_NEUTRAL_SHA256)
+                source = LEGACY_NEUTRAL_EXTRACT
+            shutil.copy2(source, target)
         for relative in (
             activate_z57.SOURCE_EXTRACT_PATH,
             Path("runs/Z00n_X01_第6至10章程序清点单变量_5章_v1.1_20260717"),

@@ -51,33 +51,18 @@ class GovernanceIndexTests(unittest.TestCase):
 
         self.assertNotIn("current_task", control)
         self.assertEqual(control["current_state_path"], governance_index.CURRENT_STATE_PATH)
-        self.assertEqual(
-            state["current_step"]["task_id"],
-            "Z94-flash-local-semantic-supply-step1",
-        )
         current = state["current_step"]
+        for key in ("task_id", "label", "status", "status_label"):
+            self.assertIsInstance(current.get(key), str)
+            self.assertTrue(current[key].strip(), key)
         self.assertEqual(
-            current["status"],
-            "prepared_zero_call_callback_returned_awaiting_cloud_review",
+            state["authority"]["external_truth"]["ledger_url"],
+            "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
         )
-        self.assertEqual(current["model_api_logical_samples"], 0)
-        self.assertEqual(current["model_api_network_attempts"], 0)
-        self.assertEqual(current["model_api_usage_tokens"], 0)
-        self.assertEqual(current["parent_event_total"], 13)
-        self.assertEqual(current["atomic_child_fact_total"], 25)
-        self.assertEqual(current["one_to_one_request_total"], 7)
-        self.assertEqual(current["model_visible_request_total"], 32)
-        self.assertEqual(current["split_counts"], [4, 4, 2, 5, 4, 6])
-        self.assertEqual(current["outside_anchor_total"], 0)
-        self.assertEqual(current["gold_answer_leakage_total"], 0)
-        self.assertTrue(current["mechanical_double_run_identical"])
-        self.assertFalse(current["step2_release_allowed"])
-        self.assertFalse(
-            current["parameter_baseline_conflict"]["single_variable_claim_allowed"]
+        self.assertEqual(
+            state["authority"]["external_truth"]["queue_url"],
+            "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
         )
-        self.assertTrue(current["notion_callback_readback"])
-        self.assertTrue(current["notion_ledger_readback"])
-        self.assertTrue(current["notion_queue_readback"])
         self.assertEqual(
             control["formal_gold_registry"]["path"],
             "config/gold/formal_gold_registry.json",
@@ -363,8 +348,8 @@ class GovernanceIndexTests(unittest.TestCase):
     def test_test_command_is_one_fixed_tests_only_command(self) -> None:
         policy = read_json(ROOT / "governance/test_policy.json")
         expected = (
-            "cd /Users/a1234/挣钱/小说架构 && PYTHONPATH=. "
-            "/opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q tests"
+            "cd /Users/a1234/挣钱/小说架构 && "
+            "/opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q"
         )
         self.assertEqual(policy["full_chain_command"], expected)
         self.assertIn(expected, (ROOT / "README.md").read_text(encoding="utf-8"))

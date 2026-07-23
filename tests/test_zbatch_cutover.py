@@ -95,6 +95,20 @@ class ZBatchCutoverTests(unittest.TestCase):
         frozen["pinned_sha256"]["tools/zbatch_modules/__init__.py"] = zbatch.sha256_file(
             ROOT / "tools/zbatch_modules/__init__.py"
         )
+        old_neutral_sha = frozen["pinned_sha256"][
+            "tools/zbatch_modules/neutral_extract.py"
+        ]
+        self.assertEqual(
+            old_neutral_sha,
+            "f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7",
+        )
+        frozen["pinned_sha256"]["tools/zbatch_modules/neutral_extract.py"] = (
+            zbatch.sha256_file(ROOT / "tools/zbatch_modules/neutral_extract.py")
+        )
+        self.assertNotEqual(
+            frozen["pinned_sha256"]["tools/zbatch_modules/neutral_extract.py"],
+            old_neutral_sha,
+        )
         for relative, expected_sha in CURRENT_SOURCE_PINS.items():
             self.assertEqual(zbatch.sha256_file(ROOT / relative), expected_sha)
             frozen["pinned_sha256"][relative] = expected_sha

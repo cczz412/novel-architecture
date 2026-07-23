@@ -1,7 +1,12 @@
 {
   "schema_version": "pipeline-test-policy-v1",
-  "full_chain_command": "cd /Users/a1234/挣钱/小说架构 && PYTHONPATH=. /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q tests",
+  "full_chain_command": "cd /Users/a1234/挣钱/小说架构 && /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q",
   "lint_command": "ruff check",
+  "default_collection_root": "tests",
+  "retired_collection_roots": ["TEMP", "runs", "reports", "outbox"],
+  "archived_fixture_debt_registry": "tests/test_debt_registry.json",
+  "old_failure_disposition": "tests/old_failure_disposition.json",
+  "archived_fixture_rule": "只有登记的必需夹具确实缺失时才strict xfail；夹具恢复后必须恢复真跑，挂账到期即阻断收集。",
   "documentation_commands": [
     "python3 tools/governance_index.py --check"
   ],
@@ -152,9 +157,9 @@
     },
     {
       "name": "测试纪律测试",
-      "pattern": "tests/test_test_impact.py",
+      "pattern": "tests/test_test_*.py",
       "modules": ["M11"],
-      "tests": ["tests/test_test_impact.py"],
+      "tests": ["tests/test_test_impact.py", "tests/test_test_debt_policy.py"],
       "full_chain": false
     },
     {

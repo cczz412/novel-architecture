@@ -30,7 +30,7 @@
 先跑不花 API 额度的机械测试：
 
 ```bash
-cd /Users/a1234/挣钱/小说架构 && PYTHONPATH=. /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q tests
+cd /Users/a1234/挣钱/小说架构 && /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q
 ```
 
 这条是全仓唯一测试启动命令：固定工作路径、固定 Python 3.11，只收集 `tests/`，不会扫进 `TEMP/`。

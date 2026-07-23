@@ -20,6 +20,36 @@ import z83_program_side_repair_pilot as z83  # noqa: E402
 import z94_local_semantic_live as live  # noqa: E402
 
 
+@pytest.fixture(autouse=True)
+def _freeze_z94_release_authority(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state_path = tmp_path / "z94_release_authority.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "current_step": {
+                    "task_id": live.TENCENT_RELEASE_TASK_ID,
+                    "step2_release_allowed": True,
+                    "authority_time": live.TENCENT_RELEASE_AUTHORITY_TIME,
+                    "step2_release_authority": {
+                        "authority_kind": "cz_direct_provider_override",
+                        "provider": "tencent_tokenhub",
+                        "model": live.TENCENT_MODEL,
+                        "temperature": 0.2,
+                        "max_tokens": 8000,
+                        "full_rerun_required": True,
+                    },
+                }
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(live, "CURRENT_STATE", state_path)
+
+
 class FakeClock:
     def __init__(self) -> None:
         self.value = 0.0

@@ -15,11 +15,15 @@
         "tools/**/*.md",
         "foundation/**",
         "experiments/INDEX.md",
-        "experiments/README.md"
+        "experiments/README.md",
+        "experiments/experiment.schema.json"
       ],
       "run_globs": [],
       "report_globs": [],
-      "digest_z83_tickets": false
+      "digest_z83_tickets": false,
+      "follow_current_state": false,
+      "include_test_referenced_experiments": false,
+      "require_test_experiment_coverage": false
     },
     "standard": {
       "label": "结构＋近停证据（默认，给ChatGPT常审）",
@@ -36,6 +40,8 @@
         "foundation/**",
         "experiments/INDEX.md",
         "experiments/README.md",
+        "experiments/experiment.schema.json",
+        "experiments/Z*/**",
         "work/zbatch_prompts/**",
         "references/book-meta/README.md"
       ],
@@ -54,7 +60,10 @@
         "reports/Z84*",
         "reports/Z83*"
       ],
-      "digest_z83_tickets": true
+      "digest_z83_tickets": true,
+      "follow_current_state": true,
+      "include_test_referenced_experiments": true,
+      "require_test_experiment_coverage": true
     },
     "deep": {
       "label": "加厚：整棵Z83林＋Z91/Z93 runs",
@@ -69,7 +78,10 @@
         "tools/**/*.py",
         "tools/**/*.md",
         "foundation/**",
-        "experiments/**",
+        "experiments/INDEX.md",
+        "experiments/README.md",
+        "experiments/experiment.schema.json",
+        "experiments/Z*/**",
         "work/zbatch_prompts/**",
         "references/**"
       ],
@@ -89,7 +101,10 @@
         "reports/Z84*",
         "reports/Z83*"
       ],
-      "digest_z83_tickets": true
+      "digest_z83_tickets": true,
+      "follow_current_state": true,
+      "include_test_referenced_experiments": true,
+      "require_test_experiment_coverage": true
     }
   },
   "always_exclude_globs": [
@@ -102,7 +117,8 @@
     "**/.DS_Store",
     "TEMP/**",
     ".git/**",
-    "**/node_modules/**"
+    "**/node_modules/**",
+    "experiments/model_benchmarks/**"
   ],
   "secret_name_markers": [
     ".env",
@@ -114,6 +130,17 @@
     ".pem",
     ".key",
     "hf_token"
+  ],
+  "current_state_path_keys": [
+    "run_directory",
+    "source_step1_run_directory",
+    "interrupted_sensenova_run_directory",
+    "step1_report_directory",
+    "report_directory",
+    "continuation2_report_directory",
+    "local_stop_receipt",
+    "continuation2_local_stop_receipt",
+    "continuation3_local_stop_receipt"
   ],
   "default_profile": "standard",
   "max_zip_mb": 25
