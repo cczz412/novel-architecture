@@ -1,0 +1,532 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:novel-architecture:corpus-rights-registry:v0.2-parallel-b",
+  "title": "语料授权并行B研究登记册 v0.2",
+  "description": "落实 D-RIGHTS-001，并为黄金三章候选书目增加独立材料身份。材料质量身份与版权授权身份分账；本 schema 只约束并行B研究登记册，不等于放行任何材料，也不接现役链。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "registry_id",
+    "status",
+    "generated_at",
+    "policy",
+    "entries",
+    "counts"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "./01_schema.json"
+    },
+    "schema_version": {
+      "const": "corpus-rights-registry-v0.2-parallel-b"
+    },
+    "registry_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "candidate_not_enabled"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "policy": {
+      "$ref": "#/$defs/policy"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    },
+    "counts": {
+      "$ref": "#/$defs/counts"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "production_gate",
+        "purpose_enum",
+        "permission_enum",
+        "internal_retrieval_internal_only",
+        "product_must_not_emit_other_books_text",
+        "distillation_default"
+      ],
+      "properties": {
+        "decision_id": {
+          "const": "D-RIGHTS-001"
+        },
+        "production_gate": {
+          "const": "无授权状态不准进生产下游"
+        },
+        "purpose_enum": {
+          "const": [
+            "盲测题源池",
+            "统计基线库",
+            "内部检索例证库",
+            "蒸馏储备"
+          ]
+        },
+        "permission_enum": {
+          "const": [
+            "允许",
+            "仅内部研究允许",
+            "待补授权凭据",
+            "禁止"
+          ]
+        },
+        "internal_retrieval_internal_only": {
+          "const": true
+        },
+        "product_must_not_emit_other_books_text": {
+          "const": true
+        },
+        "distillation_default": {
+          "const": "禁止"
+        }
+      }
+    },
+    "material_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "membership_type",
+        "member_id",
+        "roles",
+        "source_refs"
+      ],
+      "properties": {
+        "membership_type": {
+          "enum": [
+            "X批材料",
+            "五本金标底本",
+            "Z91试卷",
+            "X01主线基线",
+            "黄金三章候选书目"
+          ]
+        },
+        "member_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "source_object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "source_kind",
+        "path",
+        "sha256",
+        "hash_scope",
+        "truth_role"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_kind": {
+          "enum": [
+            "材料目录指纹",
+            "材料压缩包",
+            "单章原文",
+            "单体全文",
+            "正式金标工件",
+            "批次配置",
+            "授权声明",
+            "材料身份清单"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "hash_scope": {
+          "enum": [
+            "文件字节",
+            "登记册目录指纹"
+          ]
+        },
+        "truth_role": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "rights_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis_status",
+        "public_domain_status",
+        "evidence_strength",
+        "evidence_refs",
+        "authorized_scope_summary",
+        "missing_evidence"
+      ],
+      "properties": {
+        "basis_status": {
+          "enum": [
+            "自有已核",
+            "书面授权已核",
+            "公版已核",
+            "仅内部研究声明",
+            "依据不足"
+          ]
+        },
+        "public_domain_status": {
+          "enum": [
+            "已核公版",
+            "已核非公版",
+            "未核验"
+          ]
+        },
+        "evidence_strength": {
+          "enum": [
+            "充分",
+            "有限",
+            "不足"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "authorized_scope_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "missing_evidence": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "scope",
+        "basis_refs",
+        "hard_limits"
+      ],
+      "properties": {
+        "decision": {
+          "enum": [
+            "允许",
+            "仅内部研究允许",
+            "待补授权凭据",
+            "禁止"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "hard_limits": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "purpose_permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "盲测题源池",
+        "统计基线库",
+        "内部检索例证库",
+        "蒸馏储备"
+      ],
+      "properties": {
+        "盲测题源池": {
+          "$ref": "#/$defs/permission"
+        },
+        "统计基线库": {
+          "$ref": "#/$defs/permission"
+        },
+        "内部检索例证库": {
+          "$ref": "#/$defs/permission"
+        },
+        "蒸馏储备": {
+          "$ref": "#/$defs/permission"
+        }
+      }
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gap_type",
+        "description",
+        "effect"
+      ],
+      "properties": {
+        "gap_type": {
+          "enum": [
+            "授权凭据缺失",
+            "授权范围不足",
+            "术语可能误读",
+            "公版状态未核",
+            "来源身份不等于授权"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effect": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "book_key",
+        "title",
+        "canonical_ids",
+        "material_identities",
+        "source_objects",
+        "rights_basis",
+        "risk_level",
+        "production_gate",
+        "purpose_permissions",
+        "conflicts_or_gaps",
+        "notes"
+      ],
+      "properties": {
+        "book_key": {
+          "type": "string",
+          "pattern": "^BOOK-[0-9]{3}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "canonical_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "material_identities": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/material_identity"
+          }
+        },
+        "source_objects": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source_object"
+          }
+        },
+        "rights_basis": {
+          "$ref": "#/$defs/rights_basis"
+        },
+        "risk_level": {
+          "enum": [
+            "低",
+            "中",
+            "高",
+            "阻断"
+          ]
+        },
+        "production_gate": {
+          "enum": [
+            "放行",
+            "阻断"
+          ]
+        },
+        "purpose_permissions": {
+          "$ref": "#/$defs/purpose_permissions"
+        },
+        "conflicts_or_gaps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/gap"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_total",
+        "membership_identity_total",
+        "x_batch_membership_total",
+        "gold_base_membership_total",
+        "z91_membership_total",
+        "x01_baseline_membership_total",
+        "golden_three_candidate_membership_total",
+        "limited_statement_entry_total",
+        "insufficient_basis_entry_total",
+        "public_domain_verified_total",
+        "high_risk_total",
+        "blocked_production_total",
+        "permission_cell_total",
+        "permission_decisions"
+      ],
+      "properties": {
+        "entry_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "membership_identity_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "x_batch_membership_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gold_base_membership_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "z91_membership_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "x01_baseline_membership_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "golden_three_candidate_membership_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limited_statement_entry_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "insufficient_basis_entry_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "public_domain_verified_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "high_risk_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blocked_production_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "permission_cell_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "permission_decisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "允许",
+            "仅内部研究允许",
+            "待补授权凭据",
+            "禁止"
+          ],
+          "properties": {
+            "允许": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "仅内部研究允许": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "待补授权凭据": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "禁止": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

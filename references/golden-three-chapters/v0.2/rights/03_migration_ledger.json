@@ -1,0 +1,117 @@
+{
+  "artifact_id": "parallel_b_rights_registry_v0_2_migration_ledger_20260724",
+  "status": "completed_not_enabled",
+  "authority": {
+    "decision_time": "2026-07-24T12:15:00+08:00",
+    "ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+    "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
+    "decisions": [
+      "第五本勘正为《全职高手》；《诡秘之主》沿用既有 BOOK-001",
+      "批准另存 v0.2，新增“黄金三章候选书目”身份",
+      "旧 v0.1 schema 与原9本登记册留档不回写",
+      "v0.2 只作并行B研究登记，不升默认、不接现役链"
+    ]
+  },
+  "protected_sources": [
+    {
+      "path": "reports/九项第四道_⑥语料授权清单_20260724/01_schema.json",
+      "sha256": "8bd91633f71a113faa33355f414326c3742b9a659823428ed6b11f476ed56109",
+      "changed": false
+    },
+    {
+      "path": "reports/九项第四道_⑥语料授权清单_20260724/02_registry_candidate.json",
+      "sha256": "cffb38a88e1ad57f1d906a001818f9b903b11133e96654abf1d5bc5af50b5ad8",
+      "changed": false
+    },
+    {
+      "path": "reports/九项第四道_黄金三章网文书单重做_20260724/04_授权登记补账候选.json",
+      "sha256": "96cf9a677b96e125834d40adb64593d48f83267495debc9270fbbc154e4384c8",
+      "changed": false
+    }
+  ],
+  "schema_migration": {
+    "from": "corpus-rights-registry-v0.1-candidate",
+    "to": "corpus-rights-registry-v0.2-parallel-b",
+    "allowed_changes": [
+      "$id、title、description 与 schema_version 常量切到 v0.2",
+      "material_identity.membership_type 增加“黄金三章候选书目”",
+      "counts 增加 golden_three_candidate_membership_total 必填计数"
+    ],
+    "all_other_contract_fields_changed": false
+  },
+  "registry_migration": {
+    "from_registry_id": "RIGHTS-REGISTRY-INITIAL-20260724",
+    "to_registry_id": "RIGHTS-REGISTRY-PARALLEL-B-v0.2-20260724",
+    "old_entry_total": 9,
+    "new_entry_total": 14,
+    "old_first_n_entries_canonical_sha256": "380a4d00e10bd7c7af9291acd9c98f563d32abf91cbf40fb4b5f2ddee2d5975d",
+    "new_first_n_entries_canonical_sha256": "380a4d00e10bd7c7af9291acd9c98f563d32abf91cbf40fb4b5f2ddee2d5975d",
+    "old_entries_changed": false,
+    "new_entries_canonical_sha256": "4f2f376697dd0fb602dd374f6eec4662d5269747626802d653afc037bd0ef19c",
+    "new_entries": [
+      {
+        "book_key": "BOOK-010",
+        "title": "斗破苍穹",
+        "member_id": "G3-02",
+        "canonical_id": "FIT-S005"
+      },
+      {
+        "book_key": "BOOK-011",
+        "title": "万族之劫",
+        "member_id": "G3-03",
+        "canonical_id": "FIT-S2383"
+      },
+      {
+        "book_key": "BOOK-012",
+        "title": "道诡异仙",
+        "member_id": "G3-06",
+        "canonical_id": "FIT-S009"
+      },
+      {
+        "book_key": "BOOK-013",
+        "title": "夜的命名术",
+        "member_id": "G3-09",
+        "canonical_id": "FIT-S010"
+      },
+      {
+        "book_key": "BOOK-014",
+        "title": "全职高手",
+        "member_id": "G3-11",
+        "canonical_id": "FIT-S017"
+      }
+    ],
+    "all_new_entries": {
+      "membership_type": "黄金三章候选书目",
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "盲测题源池": "待补授权凭据",
+      "统计基线库": "待补授权凭据",
+      "内部检索例证库": "待补授权凭据",
+      "蒸馏储备": "禁止",
+      "text_read": false,
+      "enabled": false
+    }
+  },
+  "counts": {
+    "entry_total": 14,
+    "membership_identity_total": 18,
+    "golden_three_candidate_membership_total": 5,
+    "limited_statement_entry_total": 4,
+    "insufficient_basis_entry_total": 10,
+    "high_risk_total": 14,
+    "blocked_production_total": 14,
+    "permission_cell_total": 56,
+    "permission_decisions": {
+      "允许": 0,
+      "仅内部研究允许": 8,
+      "待补授权凭据": 34,
+      "禁止": 14
+    }
+  },
+  "usage": {
+    "model_api_logical_samples": 0,
+    "network_attempts": 0,
+    "model_tokens": 0,
+    "novel_text_files_read": 0
+  }
+}

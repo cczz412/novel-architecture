@@ -1,0 +1,211 @@
+{
+  "artifact_id": "golden_three_chapters_webnovel_template_route_v2_1_20260724",
+  "version": "0.2.1-candidate-template-route",
+  "status": "prepared_not_enabled",
+  "route_scope": "只替换12个template路径；书单、分层、校准顺序、授权状态与启用状态沿用v2且不作改判",
+  "source_roster": {
+    "path": "reports/九项第四道_黄金三章网文书单重做_20260724/03_研究批次清单_v2.json",
+    "sha256": "3ff5d3a19440466d6807401558230c4578a90b853a71809c499983fe12a79936"
+  },
+  "supersedes_template_route_prefix": "reports/九项第四道_拍板后备料_20260724/黄金三章_12本书单/templates/",
+  "research_enabled": false,
+  "supersedes": {
+    "artifact_id": "golden_three_chapters_round1_roster_20260724",
+    "path": "reports/九项第四道_拍板后备料_20260724/黄金三章_12本书单/03_研究批次清单.json",
+    "reason": "旧版从对外展示白名单选入经典文学，和网文黄金三章研究对象不匹配；旧件保留但不再用于本研究。"
+  },
+  "decision": {
+    "book_count": 12,
+    "chapters_per_book": 8,
+    "unique_chapter_units_if_all_books_clear": 96,
+    "calibration_books": 3,
+    "review_mode": "human_only",
+    "reviewers_per_book": 2,
+    "model_assistance_enabled": false
+  },
+  "current_usage": {
+    "books_enabled": 0,
+    "books_authorized_for_this_study": 0,
+    "chapters_read": 0,
+    "novel_text_files_read": 0,
+    "content_judgments": 0,
+    "model_api_calls": 0,
+    "network_calls": 0
+  },
+  "source_policy": {
+    "allowed_sources": [
+      "CZ本地小说库的既有书目登记",
+      "已交付的小说101样本登记或榜单书目",
+      "既有⑥道语料授权登记册"
+    ],
+    "forbidden_shortcuts": [
+      "对外结构示例白名单",
+      "凭常识补书名",
+      "把下载状态或金标身份写成研究授权",
+      "读取正文后再挑书"
+    ]
+  },
+  "authorization_gate": {
+    "required_gate": "九项第四道⑥语料授权清单逐书闸",
+    "registered_books_still_need_study_specific_ticket": true,
+    "unregistered_books_require_registry_backfill_before_text_access": true,
+    "chapter_1_to_8_and_internal_short_quotes_require_ticket": true,
+    "chapter_1_to_3_only_action": "mode_A_only_and_mode_B_blank",
+    "default_action": "BLOCK"
+  },
+  "review_plan": {
+    "mode_A_chapters": [1, 2, 3],
+    "mode_B_chapters": [1, 2, 3, 4, 5, 6, 7, 8],
+    "calibration_order": ["G3-04", "G3-01", "G3-07"],
+    "calibration_stop_rule": "五类对象分歧率超过35%或出现波及现役结构的概念冲突时停止扩展到余下9本",
+    "scores_cannot_be_combined": true
+  },
+  "books": [
+    {
+      "case_id": "G3-01",
+      "title": "凡人修仙传",
+      "stratum": "growth_upgrade_xianxia",
+      "calibration_candidate": true,
+      "calibration_order": 2,
+      "rights_registry": "BOOK-009",
+      "authorization_status": "registered_but_blocked",
+      "source_refs": ["RIGHTS-REGISTRY:BOOK-009", "SAMPLE_REGISTRY.md:32", "GENRE_REGISTRY.md:207"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-01_凡人修仙传.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-02",
+      "title": "斗破苍穹",
+      "stratum": "growth_upgrade_xianxia",
+      "calibration_candidate": false,
+      "rights_registry": null,
+      "authorization_status": "registry_backfill_candidate_blocked",
+      "source_refs": ["SAMPLE_REGISTRY.md:15", "GENRE_REGISTRY.md:1363"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-02_斗破苍穹.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-03",
+      "title": "万族之劫",
+      "stratum": "growth_upgrade_urban_gaowu",
+      "calibration_candidate": false,
+      "rights_registry": null,
+      "authorization_status": "registry_backfill_candidate_blocked",
+      "source_refs": ["SAMPLE_REGISTRY.md:2343", "corpus_relabel.csv:19"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-03_万族之劫.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-04",
+      "title": "十日终焉",
+      "stratum": "mystery_rules_survival",
+      "calibration_candidate": true,
+      "calibration_order": 1,
+      "rights_registry": "BOOK-002",
+      "authorization_status": "registered_scope_does_not_cover_this_study",
+      "source_refs": ["RIGHTS-REGISTRY:BOOK-002", "SAMPLE_REGISTRY.md:13", "GENRE_REGISTRY.md:878"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-04_十日终焉.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-05",
+      "title": "神秘复苏",
+      "stratum": "mystery_rules_survival",
+      "calibration_candidate": false,
+      "rights_registry": "BOOK-007",
+      "authorization_status": "registered_but_blocked",
+      "source_refs": ["RIGHTS-REGISTRY:BOOK-007", "corpus_relabel.csv:302"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-05_神秘复苏.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-06",
+      "title": "道诡异仙",
+      "stratum": "mystery_rules_unreliable_view",
+      "calibration_candidate": false,
+      "rights_registry": null,
+      "authorization_status": "registry_backfill_candidate_blocked",
+      "source_refs": ["SAMPLE_REGISTRY.md:19", "corpus_relabel.csv:347"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-06_道诡异仙.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-07",
+      "title": "庶女明兰传（知否？知否？应是绿肥红瘦）",
+      "stratum": "relationship_identity_realistic_context",
+      "calibration_candidate": true,
+      "calibration_order": 3,
+      "rights_registry": "BOOK-005",
+      "authorization_status": "registered_but_blocked",
+      "source_refs": ["RIGHTS-REGISTRY:BOOK-005", "SAMPLE_REGISTRY.md:26", "GENRE_REGISTRY.md:937"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-07_庶女明兰传_知否.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-08",
+      "title": "大王饶命",
+      "stratum": "urban_power_growth",
+      "calibration_candidate": false,
+      "rights_registry": "BOOK-006",
+      "authorization_status": "registered_but_blocked",
+      "source_refs": ["RIGHTS-REGISTRY:BOOK-006", "corpus_relabel.csv:359"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-08_大王饶命.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-09",
+      "title": "夜的命名术",
+      "stratum": "urban_multiline_identity",
+      "calibration_candidate": false,
+      "rights_registry": null,
+      "authorization_status": "registry_backfill_candidate_blocked",
+      "source_refs": ["SAMPLE_REGISTRY.md:20", "GENRE_REGISTRY.md:1747"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-09_夜的命名术.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-10",
+      "title": "诡秘之主",
+      "stratum": "long_foreshadowing_worldbuilding",
+      "calibration_candidate": false,
+      "rights_registry": "BOOK-001",
+      "authorization_status": "registered_scope_does_not_cover_this_study",
+      "source_refs": ["RIGHTS-REGISTRY:BOOK-001", "SAMPLE_REGISTRY.md:14", "GENRE_REGISTRY.md:1501"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-10_诡秘之主.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-11",
+      "title": "全职高手",
+      "stratum": "profession_mission_stage",
+      "calibration_candidate": false,
+      "rights_registry": null,
+      "authorization_status": "registry_backfill_candidate_blocked",
+      "source_refs": ["SAMPLE_REGISTRY.md:27", "GENRE_REGISTRY.md:1098"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-11_全职高手.md",
+      "enabled": false
+    },
+    {
+      "case_id": "G3-12",
+      "title": "无限恐怖",
+      "stratum": "strong_goal_mission_survival",
+      "calibration_candidate": false,
+      "rights_registry": "BOOK-008",
+      "authorization_status": "registered_but_blocked",
+      "source_refs": ["RIGHTS-REGISTRY:BOOK-008", "SAMPLE_REGISTRY.md:2505"],
+      "template": "reports/九项第四道_并行B收尾_20260724/templates/G3-12_无限恐怖.md",
+      "enabled": false
+    }
+  ],
+  "stratum_counts": {
+    "growth_upgrade": 3,
+    "mystery_rules": 3,
+    "urban_relationship_identity": 3,
+    "worldbuilding_profession_mission": 3
+  },
+  "registry_counts": {
+    "already_registered_but_blocked": 7,
+    "registry_backfill_candidates_blocked": 5,
+    "enabled": 0
+  }
+}

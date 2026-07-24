@@ -1,0 +1,1920 @@
+{
+  "$schema": "./01_schema.json",
+  "schema_version": "corpus-rights-registry-v0.2-parallel-b",
+  "registry_id": "RIGHTS-REGISTRY-PARALLEL-B-v0.2-20260724",
+  "status": "candidate_not_enabled",
+  "generated_at": "2026-07-24T12:15:00+08:00",
+  "policy": {
+    "decision_id": "D-RIGHTS-001",
+    "production_gate": "无授权状态不准进生产下游",
+    "purpose_enum": [
+      "盲测题源池",
+      "统计基线库",
+      "内部检索例证库",
+      "蒸馏储备"
+    ],
+    "permission_enum": [
+      "允许",
+      "仅内部研究允许",
+      "待补授权凭据",
+      "禁止"
+    ],
+    "internal_retrieval_internal_only": true,
+    "product_must_not_emit_other_books_text": true,
+    "distillation_default": "禁止"
+  },
+  "entries": [
+    {
+      "book_key": "BOOK-001",
+      "title": "诡秘之主",
+      "canonical_ids": [
+        "X01",
+        "X01-ch0003-structure-v1.2"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "X批材料",
+          "member_id": "X01",
+          "roles": [
+            "X批四本之一",
+            "前200章库内摘录样本"
+          ],
+          "unit": "第1—200章",
+          "source_refs": [
+            "src-x01-material-dir",
+            "src-x01-rights-note"
+          ]
+        },
+        {
+          "membership_type": "X01主线基线",
+          "member_id": "X01",
+          "roles": [
+            "主线结构实验样本",
+            "第3章正式金标"
+          ],
+          "unit": "主线配置第1—20章；正式金标第3章",
+          "source_refs": [
+            "src-x01-z00r-config",
+            "src-x01-formal-gold"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-x01-material-dir",
+          "source_kind": "材料目录指纹",
+          "path": "TEMP/X批材料包_20260716/books/X01_诡秘之主",
+          "sha256": "4dfc91ff39fcd268a63683f9dc359480d9ec4757568a1b940c5efe9b3907fe43",
+          "hash_scope": "登记册目录指纹",
+          "truth_role": "X批原样材料身份；指纹来自 intake/manifests/X_X01_material.json"
+        },
+        {
+          "source_id": "src-x01-rights-note",
+          "source_kind": "授权声明",
+          "path": "TEMP/X批材料包_20260716/books/X01_诡秘之主/00_用途声明.md",
+          "sha256": "9035c0712431e6ef5fab682bb209912e41438b09be9f21ee0235f76a21571179",
+          "hash_scope": "文件字节",
+          "truth_role": "仅内部结构研究、仅摘录分析的项目内用途声明"
+        },
+        {
+          "source_id": "src-x01-z00r-config",
+          "source_kind": "批次配置",
+          "path": "config/batches/Z00r_X01_第14章单次重采样续跑_20章_v1.0.json",
+          "sha256": "575969703304b5080306a373fafedcf29fc1f155b9efad4c8e150fb2ce83ccf9",
+          "hash_scope": "文件字节",
+          "truth_role": "只证明第30道特定内部结构研究运行范围，不外推为一般授权"
+        },
+        {
+          "source_id": "src-x01-formal-gold",
+          "source_kind": "正式金标工件",
+          "path": "reports/Z73_第3章金标v1.2定稿转正_20260721/第3章结构层金标v1.2.json",
+          "sha256": "0df08ede4fa1a33f4bd9e1aea3e45387c8d77131ce79ff1496fe1320fa48a10e",
+          "hash_scope": "文件字节",
+          "truth_role": "结构标注质量身份；不构成版权授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "仅内部研究声明",
+        "public_domain_status": "未核验",
+        "evidence_strength": "有限",
+        "evidence_refs": [
+          "src-x01-rights-note",
+          "src-x01-z00r-config"
+        ],
+        "authorized_scope_summary": "现有本地证据只支持库内摘录样本用于特定内部结构研究和已登记实验，不支持商用、公开传播全文、跨用户复用或蒸馏。",
+        "missing_evidence": [
+          "权利人或合法授权链的书面凭据",
+          "统计基线长期复用范围的明示条款",
+          "内部索引与检索许可条款",
+          "训练或蒸馏许可条款",
+          "可撤回机制和撤回后的删除范围"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "仅内部研究允许",
+          "scope": "只限 X批跨章盲拆与已登记的 X01 内部结构实验范围。",
+          "basis_refs": [
+            "src-x01-rights-note",
+            "src-x01-z00r-config"
+          ],
+          "hard_limits": [
+            "不得公开原文或整章",
+            "不得把特定批次运行授权外推为常设授权",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "仅内部研究允许",
+          "scope": "只限现有 X01 内部实验成绩与正式金标的封闭研究对照，不得扩成共享产品数据集。",
+          "basis_refs": [
+            "src-x01-rights-note",
+            "src-x01-z00r-config",
+            "src-x01-formal-gold"
+          ],
+          "hard_limits": [
+            "只能保存统计结果和结构标签",
+            "不得以金标身份替代版权授权",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "现有声明没有明示允许建立长期全文或片段索引。",
+          "basis_refs": [
+            "src-x01-rights-note"
+          ],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "没有单独、明示、可撤回的训练或蒸馏授权。",
+          "basis_refs": [
+            "src-x01-rights-note"
+          ],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已做结构标注而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权范围不足",
+          "description": "用途声明只到内部结构研究和仅摘录分析，没有覆盖四类用途的完整授权链。",
+          "effect": "生产下游继续阻断；只有已明确落过的内部研究范围可保留。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "X批身份、主线样本身份和正式金标身份只说明材料角色与质量。",
+          "effect": "不得把材料已使用、测试已通过或金标已转正当成版权许可。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "Z00r 的“授权”是特定道次施工许可，不是作品版权许可。",
+        "正式金标可作为结构标注真值，但不能扩大语料用途。"
+      ]
+    },
+    {
+      "book_key": "BOOK-002",
+      "title": "十日终焉",
+      "canonical_ids": [
+        "X02",
+        "X02-C0031"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "X批材料",
+          "member_id": "X02",
+          "roles": [
+            "X批四本之一",
+            "前200章库内摘录样本"
+          ],
+          "unit": "第1—200章",
+          "source_refs": [
+            "src-x02-material-dir",
+            "src-x02-rights-note"
+          ]
+        },
+        {
+          "membership_type": "Z91试卷",
+          "member_id": "X02-C0031",
+          "roles": [
+            "跨书双臂方向性试卷"
+          ],
+          "unit": "第31章《鼠类游戏》",
+          "source_refs": [
+            "src-z91-selection",
+            "src-x02-c0031"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-x02-material-dir",
+          "source_kind": "材料目录指纹",
+          "path": "TEMP/X批材料包_20260716/books/X02_十日终焉",
+          "sha256": "5e9a8ca23e83a75c06b257668d7bc5253f32b0ed8a74a1a6a419e9365d455312",
+          "hash_scope": "登记册目录指纹",
+          "truth_role": "X批原样材料身份；指纹来自 intake/manifests/X_X02_material.json"
+        },
+        {
+          "source_id": "src-x02-rights-note",
+          "source_kind": "授权声明",
+          "path": "TEMP/X批材料包_20260716/books/X02_十日终焉/00_用途声明.md",
+          "sha256": "4502318da32cdabcdbb72bb2e73ceefddea6f5e2d4d523a756a36355cc147870",
+          "hash_scope": "文件字节",
+          "truth_role": "仅内部结构研究、仅摘录分析的项目内用途声明"
+        },
+        {
+          "source_id": "src-z91-selection",
+          "source_kind": "材料身份清单",
+          "path": "runs/Z91_双臂跨书基线_步一试卷_v1.1_20260723/selection.json",
+          "sha256": "d2acd1e0d6e1b08b3198939136f622f4124273de477988ace97d92225604f7aa",
+          "hash_scope": "文件字节",
+          "truth_role": "Z91试卷范围与单章身份；只覆盖方向性跨书复验"
+        },
+        {
+          "source_id": "src-x02-c0031",
+          "source_kind": "单章原文",
+          "path": "TEMP/X批材料包_20260716/books/X02_十日终焉/chapters/0031_第31章_鼠类游戏.txt",
+          "sha256": "c1eed251e687332b49fb709565f9a70620e262527212824468c9a160cb491da1",
+          "hash_scope": "文件字节",
+          "truth_role": "Z91试卷冻结原始单章"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "仅内部研究声明",
+        "public_domain_status": "未核验",
+        "evidence_strength": "有限",
+        "evidence_refs": [
+          "src-x02-rights-note",
+          "src-z91-selection"
+        ],
+        "authorized_scope_summary": "现有本地证据只支持库内摘录样本用于内部结构研究，并证明第31章曾进入 Z91 方向性试卷；不支持一般生产、公开展示、检索索引或蒸馏。",
+        "missing_evidence": [
+          "权利人或合法授权链的书面凭据",
+          "长期统计基线复用条款",
+          "内部索引与检索许可条款",
+          "训练或蒸馏许可条款",
+          "可撤回机制"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "仅内部研究允许",
+          "scope": "只限 X批内部盲拆和 Z91 已冻结第31章方向性试卷。",
+          "basis_refs": [
+            "src-x02-rights-note",
+            "src-z91-selection",
+            "src-x02-c0031"
+          ],
+          "hard_limits": [
+            "不得公开原文或整章",
+            "不得扩章或扩批",
+            "不得把方向性试卷冒充总体授权"
+          ]
+        },
+        "统计基线库": {
+          "decision": "仅内部研究允许",
+          "scope": "只限 Z91 已有封闭实验的方向性统计结果，不得扩成长期共享语料库。",
+          "basis_refs": [
+            "src-x02-rights-note",
+            "src-z91-selection"
+          ],
+          "hard_limits": [
+            "只保存统计结果和结构标签",
+            "不得保留面向产品的正文载荷",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "现有声明没有明示允许建立长期全文或片段索引。",
+          "basis_refs": [
+            "src-x02-rights-note"
+          ],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "没有单独、明示、可撤回的训练或蒸馏授权。",
+          "basis_refs": [
+            "src-x02-rights-note"
+          ],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因 Z91 已跑过而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权范围不足",
+          "description": "用途声明只到内部结构研究和仅摘录分析。",
+          "effect": "生产下游继续阻断；只保留已明确的内部研究窄范围。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "Z91试卷入选只证明实验成员身份。",
+          "effect": "不得把试卷冻结、模型调用或成绩当成作品授权。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "Z91明确只覆盖方向性跨书复验，不代表总体泛化，也不扩大语料权利。"
+      ]
+    },
+    {
+      "book_key": "BOOK-003",
+      "title": "清河仙族",
+      "canonical_ids": [
+        "X03",
+        "X03-C0019"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "X批材料",
+          "member_id": "X03",
+          "roles": [
+            "X批四本之一",
+            "前200章库内摘录样本"
+          ],
+          "unit": "第1—200章",
+          "source_refs": [
+            "src-x03-material-dir",
+            "src-x03-rights-note"
+          ]
+        },
+        {
+          "membership_type": "Z91试卷",
+          "member_id": "X03-C0019",
+          "roles": [
+            "跨书双臂方向性试卷"
+          ],
+          "unit": "第19章《金网伏妖》",
+          "source_refs": [
+            "src-z91-selection",
+            "src-x03-c0019"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-x03-material-dir",
+          "source_kind": "材料目录指纹",
+          "path": "TEMP/X批材料包_20260716/books/X03_清河仙族",
+          "sha256": "5a67fca466e004f6b7c67929cc8cdfb647df54ec4136aa74606c80693113a964",
+          "hash_scope": "登记册目录指纹",
+          "truth_role": "X批原样材料身份；指纹来自 intake/manifests/X_X03_material.json"
+        },
+        {
+          "source_id": "src-x03-rights-note",
+          "source_kind": "授权声明",
+          "path": "TEMP/X批材料包_20260716/books/X03_清河仙族/00_用途声明.md",
+          "sha256": "df9a1ac4c1e3579d6918f3b327fe88d7b86d70a764edd9e0bc1152c56cc590d3",
+          "hash_scope": "文件字节",
+          "truth_role": "仅内部结构研究、仅摘录分析的项目内用途声明"
+        },
+        {
+          "source_id": "src-z91-selection",
+          "source_kind": "材料身份清单",
+          "path": "runs/Z91_双臂跨书基线_步一试卷_v1.1_20260723/selection.json",
+          "sha256": "d2acd1e0d6e1b08b3198939136f622f4124273de477988ace97d92225604f7aa",
+          "hash_scope": "文件字节",
+          "truth_role": "Z91试卷范围与单章身份；只覆盖方向性跨书复验"
+        },
+        {
+          "source_id": "src-x03-c0019",
+          "source_kind": "单章原文",
+          "path": "TEMP/X批材料包_20260716/books/X03_清河仙族/chapters/0019_第19章_金网伏妖.txt",
+          "sha256": "dc72f94776344a69e00c0635cf823501f7adf5f14785aa6b10fda91e95b9e3fc",
+          "hash_scope": "文件字节",
+          "truth_role": "Z91试卷冻结原始单章"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "仅内部研究声明",
+        "public_domain_status": "未核验",
+        "evidence_strength": "有限",
+        "evidence_refs": [
+          "src-x03-rights-note",
+          "src-z91-selection"
+        ],
+        "authorized_scope_summary": "现有本地证据只支持库内摘录样本用于内部结构研究，并证明第19章曾进入 Z91 方向性试卷；不支持一般生产、公开展示、检索索引或蒸馏。",
+        "missing_evidence": [
+          "权利人或合法授权链的书面凭据",
+          "长期统计基线复用条款",
+          "内部索引与检索许可条款",
+          "训练或蒸馏许可条款",
+          "可撤回机制"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "仅内部研究允许",
+          "scope": "只限 X批内部盲拆和 Z91 已冻结第19章方向性试卷。",
+          "basis_refs": [
+            "src-x03-rights-note",
+            "src-z91-selection",
+            "src-x03-c0019"
+          ],
+          "hard_limits": [
+            "不得公开原文或整章",
+            "不得扩章或扩批",
+            "不得把方向性试卷冒充总体授权"
+          ]
+        },
+        "统计基线库": {
+          "decision": "仅内部研究允许",
+          "scope": "只限 Z91 已有封闭实验的方向性统计结果，不得扩成长期共享语料库。",
+          "basis_refs": [
+            "src-x03-rights-note",
+            "src-z91-selection"
+          ],
+          "hard_limits": [
+            "只保存统计结果和结构标签",
+            "不得保留面向产品的正文载荷",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "现有声明没有明示允许建立长期全文或片段索引。",
+          "basis_refs": [
+            "src-x03-rights-note"
+          ],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "没有单独、明示、可撤回的训练或蒸馏授权。",
+          "basis_refs": [
+            "src-x03-rights-note"
+          ],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因 Z91 已跑过而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权范围不足",
+          "description": "用途声明只到内部结构研究和仅摘录分析。",
+          "effect": "生产下游继续阻断；只保留已明确的内部研究窄范围。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "Z91试卷入选只证明实验成员身份。",
+          "effect": "不得把试卷冻结、模型调用或成绩当成作品授权。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "Z91明确只覆盖方向性跨书复验，不代表总体泛化，也不扩大语料权利。"
+      ]
+    },
+    {
+      "book_key": "BOOK-004",
+      "title": "仙笼",
+      "canonical_ids": [
+        "X04",
+        "X04-C0046"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "X批材料",
+          "member_id": "X04",
+          "roles": [
+            "X批四本之一",
+            "前200章库内摘录样本"
+          ],
+          "unit": "第1—200章",
+          "source_refs": [
+            "src-x04-material-dir",
+            "src-x04-rights-note"
+          ]
+        },
+        {
+          "membership_type": "Z91试卷",
+          "member_id": "X04-C0046",
+          "roles": [
+            "跨书双臂方向性试卷"
+          ],
+          "unit": "第46章《符钱灵石体系》",
+          "source_refs": [
+            "src-z91-selection",
+            "src-x04-c0046"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-x04-material-dir",
+          "source_kind": "材料目录指纹",
+          "path": "TEMP/X批材料包_20260716/books/X04_仙笼",
+          "sha256": "d404ac03b4ee2e769377edce02231667593fa7b508359eaa47be2d2d1149a81a",
+          "hash_scope": "登记册目录指纹",
+          "truth_role": "X批原样材料身份；指纹来自 intake/manifests/X_X04_material.json"
+        },
+        {
+          "source_id": "src-x04-rights-note",
+          "source_kind": "授权声明",
+          "path": "TEMP/X批材料包_20260716/books/X04_仙笼/00_用途声明.md",
+          "sha256": "7c87a2a045ed97dbfbf003fd4a9a2ef3eb8a7a64b2c27896b92f5c25af7069b8",
+          "hash_scope": "文件字节",
+          "truth_role": "仅内部结构研究、仅摘录分析的项目内用途声明"
+        },
+        {
+          "source_id": "src-z91-selection",
+          "source_kind": "材料身份清单",
+          "path": "runs/Z91_双臂跨书基线_步一试卷_v1.1_20260723/selection.json",
+          "sha256": "d2acd1e0d6e1b08b3198939136f622f4124273de477988ace97d92225604f7aa",
+          "hash_scope": "文件字节",
+          "truth_role": "Z91试卷范围与单章身份；只覆盖方向性跨书复验"
+        },
+        {
+          "source_id": "src-x04-c0046",
+          "source_kind": "单章原文",
+          "path": "TEMP/X批材料包_20260716/books/X04_仙笼/chapters/0046_第46章_符钱灵石体系.txt",
+          "sha256": "ec92bbf4f47f0fa94a0d3f35fa89ad50c21484a64bb321d2e29f02e15c471b00",
+          "hash_scope": "文件字节",
+          "truth_role": "Z91试卷冻结原始单章"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "仅内部研究声明",
+        "public_domain_status": "未核验",
+        "evidence_strength": "有限",
+        "evidence_refs": [
+          "src-x04-rights-note",
+          "src-z91-selection"
+        ],
+        "authorized_scope_summary": "现有本地证据只支持库内摘录样本用于内部结构研究，并证明第46章曾进入 Z91 方向性试卷；不支持一般生产、公开展示、检索索引或蒸馏。",
+        "missing_evidence": [
+          "权利人或合法授权链的书面凭据",
+          "长期统计基线复用条款",
+          "内部索引与检索许可条款",
+          "训练或蒸馏许可条款",
+          "可撤回机制"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "仅内部研究允许",
+          "scope": "只限 X批内部盲拆和 Z91 已冻结第46章方向性试卷。",
+          "basis_refs": [
+            "src-x04-rights-note",
+            "src-z91-selection",
+            "src-x04-c0046"
+          ],
+          "hard_limits": [
+            "不得公开原文或整章",
+            "不得扩章或扩批",
+            "不得把方向性试卷冒充总体授权"
+          ]
+        },
+        "统计基线库": {
+          "decision": "仅内部研究允许",
+          "scope": "只限 Z91 已有封闭实验的方向性统计结果，不得扩成长期共享语料库。",
+          "basis_refs": [
+            "src-x04-rights-note",
+            "src-z91-selection"
+          ],
+          "hard_limits": [
+            "只保存统计结果和结构标签",
+            "不得保留面向产品的正文载荷",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "现有声明没有明示允许建立长期全文或片段索引。",
+          "basis_refs": [
+            "src-x04-rights-note"
+          ],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "没有单独、明示、可撤回的训练或蒸馏授权。",
+          "basis_refs": [
+            "src-x04-rights-note"
+          ],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因 Z91 已跑过而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权范围不足",
+          "description": "用途声明只到内部结构研究和仅摘录分析。",
+          "effect": "生产下游继续阻断；只保留已明确的内部研究窄范围。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "Z91试卷入选只证明实验成员身份。",
+          "effect": "不得把试卷冻结、模型调用或成绩当成作品授权。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "Z91明确只覆盖方向性跨书复验，不代表总体泛化，也不扩大语料权利。"
+      ]
+    },
+    {
+      "book_key": "BOOK-005",
+      "title": "庶女明兰传（知否？知否？应是绿肥红瘦）",
+      "canonical_ids": [
+        "Z74B-B01",
+        "Z74B-B01-unit0033-structure-v1.3"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "五本金标底本",
+          "member_id": "Z74B-B01",
+          "roles": [
+            "Z74B原书真值底本",
+            "Z93正式金标底本"
+          ],
+          "unit": "库存第0033单元",
+          "source_refs": [
+            "src-b01-fulltext",
+            "src-b01-formal-gold"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-b01-fulltext",
+          "source_kind": "单体全文",
+          "path": "/Users/a1234/挣钱/小说101-downloads/05_感情关系/庶女明兰传（知否？知否？应是绿肥红瘦）/庶女明兰传（知否？知否？应是绿肥红瘦）(关心则乱).txt",
+          "sha256": "b1738fe6c97211143589f082c36a0ed701326807ca13af12e8477e7e6a1a2b2d",
+          "hash_scope": "文件字节",
+          "truth_role": "Z74B连续原文真值底本；真值资格不等于版权许可"
+        },
+        {
+          "source_id": "src-b01-formal-gold",
+          "source_kind": "正式金标工件",
+          "path": "reports/Z93_五本结构层金标v1.3转正_20260723/formal_gold/B01_知否_库存第0033单元_结构层金标v1.3.json",
+          "sha256": "bbc2d37898ff4bc375907cd429aff9e50d3a284913da6c6ddb09cbf67c05b327",
+          "hash_scope": "文件字节",
+          "truth_role": "Z93正式金标身份；不构成作品版权授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "依据不足",
+        "public_domain_status": "未核验",
+        "evidence_strength": "不足",
+        "evidence_refs": [],
+        "authorized_scope_summary": "只确认本地底本、原文真值资格和正式金标身份；未发现权利人授权、公版核验或四类用途许可。",
+        "missing_evidence": [
+          "材料取得来源与合法持有依据",
+          "权利人或合法授权链的书面凭据",
+          "盲测、统计、检索的明示许可范围",
+          "训练或蒸馏许可条款",
+          "可撤回机制"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "待补授权凭据",
+          "scope": "金标底本身份不能替代盲测题源授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得新增盲测",
+            "不得公开原文或整章",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "待补授权凭据",
+          "scope": "可保留已生成金标的身份账，但不得据此新建长期统计语料库。",
+          "basis_refs": [
+            "src-b01-formal-gold"
+          ],
+          "hard_limits": [
+            "补证前不得扩用",
+            "正式金标只证明标注地位",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "未发现建立全文或片段索引的许可。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "默认不进训练；没有单独、明示、可撤回的蒸馏授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已转正式金标而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权凭据缺失",
+          "description": "盘点只见底本与结构金标身份，未见作品权利许可。",
+          "effect": "四类用途均不放行；蒸馏直接禁止。"
+        },
+        {
+          "gap_type": "术语可能误读",
+          "description": "Z93工件中的“授权转正”指金标转正施工令，不是版权授权。",
+          "effect": "不得拿该措辞填充版权授权字段。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "truth_eligible 和 active_gold 只说明真值与标注地位。",
+          "effect": "不得扩大语料用途。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "本条不追认历史使用是否合法，只登记当前证据边界。"
+      ]
+    },
+    {
+      "book_key": "BOOK-006",
+      "title": "大王饶命",
+      "canonical_ids": [
+        "Z74B-B02",
+        "Z74B-B02-unit0039-structure-v1.3"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "五本金标底本",
+          "member_id": "Z74B-B02",
+          "roles": [
+            "Z74B原书真值底本",
+            "Z93正式金标底本"
+          ],
+          "unit": "库存第0039单元",
+          "source_refs": [
+            "src-b02-fulltext",
+            "src-b02-formal-gold"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-b02-fulltext",
+          "source_kind": "单体全文",
+          "path": "/Users/a1234/挣钱/小说101-downloads/01_单主角升级线/大王饶命/大王饶命(会说话的肘子).txt",
+          "sha256": "451e9758b48f1dcbe31fca8c2f487335597a1a6b2583116a63e8080ff0ef583c",
+          "hash_scope": "文件字节",
+          "truth_role": "Z74B连续原文真值底本；真值资格不等于版权许可"
+        },
+        {
+          "source_id": "src-b02-formal-gold",
+          "source_kind": "正式金标工件",
+          "path": "reports/Z93_五本结构层金标v1.3转正_20260723/formal_gold/B02_大王饶命_库存第0039单元_结构层金标v1.3.json",
+          "sha256": "56bebe3581a0ff239fad21868b07a367fa6139e8bbfc1a750cd51f5ff5964e1a",
+          "hash_scope": "文件字节",
+          "truth_role": "Z93正式金标身份；不构成作品版权授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "依据不足",
+        "public_domain_status": "未核验",
+        "evidence_strength": "不足",
+        "evidence_refs": [],
+        "authorized_scope_summary": "只确认本地底本、原文真值资格和正式金标身份；未发现权利人授权、公版核验或四类用途许可。",
+        "missing_evidence": [
+          "材料取得来源与合法持有依据",
+          "权利人或合法授权链的书面凭据",
+          "盲测、统计、检索的明示许可范围",
+          "训练或蒸馏许可条款",
+          "可撤回机制"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "待补授权凭据",
+          "scope": "金标底本身份不能替代盲测题源授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得新增盲测",
+            "不得公开原文或整章",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "待补授权凭据",
+          "scope": "可保留已生成金标的身份账，但不得据此新建长期统计语料库。",
+          "basis_refs": [
+            "src-b02-formal-gold"
+          ],
+          "hard_limits": [
+            "补证前不得扩用",
+            "正式金标只证明标注地位",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "未发现建立全文或片段索引的许可。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "默认不进训练；没有单独、明示、可撤回的蒸馏授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已转正式金标而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权凭据缺失",
+          "description": "盘点只见底本与结构金标身份，未见作品权利许可。",
+          "effect": "四类用途均不放行；蒸馏直接禁止。"
+        },
+        {
+          "gap_type": "术语可能误读",
+          "description": "Z93工件中的“授权转正”指金标转正施工令，不是版权授权。",
+          "effect": "不得拿该措辞填充版权授权字段。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "truth_eligible 和 active_gold 只说明真值与标注地位。",
+          "effect": "不得扩大语料用途。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "本条不追认历史使用是否合法，只登记当前证据边界。"
+      ]
+    },
+    {
+      "book_key": "BOOK-007",
+      "title": "神秘复苏",
+      "canonical_ids": [
+        "Z74B-B03",
+        "Z74B-B03-unit0041-structure-v1.3"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "五本金标底本",
+          "member_id": "Z74B-B03",
+          "roles": [
+            "Z74B原书真值底本",
+            "Z93正式金标底本"
+          ],
+          "unit": "库存第0041单元",
+          "source_refs": [
+            "src-b03-fulltext",
+            "src-b03-formal-gold"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-b03-fulltext",
+          "source_kind": "单体全文",
+          "path": "/Users/a1234/挣钱/小说101-downloads/01_单主角升级线/神秘复苏/神秘复苏(佛前献花).txt",
+          "sha256": "f11c5562f1dc4d1e6c8e05f9c275b65efe5ace003f22e8127ac6467e55b536d5",
+          "hash_scope": "文件字节",
+          "truth_role": "Z74B连续原文真值底本；真值资格不等于版权许可"
+        },
+        {
+          "source_id": "src-b03-formal-gold",
+          "source_kind": "正式金标工件",
+          "path": "reports/Z93_五本结构层金标v1.3转正_20260723/formal_gold/B03_神秘复苏_库存第0041单元_结构层金标v1.3.json",
+          "sha256": "cd935ee43163b143466b0cd3e8355e8b91794e75f424678be8adfe88e5f975ce",
+          "hash_scope": "文件字节",
+          "truth_role": "Z93正式金标身份；不构成作品版权授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "依据不足",
+        "public_domain_status": "未核验",
+        "evidence_strength": "不足",
+        "evidence_refs": [],
+        "authorized_scope_summary": "只确认本地底本、原文真值资格和正式金标身份；未发现权利人授权、公版核验或四类用途许可。",
+        "missing_evidence": [
+          "材料取得来源与合法持有依据",
+          "权利人或合法授权链的书面凭据",
+          "盲测、统计、检索的明示许可范围",
+          "训练或蒸馏许可条款",
+          "可撤回机制"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "待补授权凭据",
+          "scope": "金标底本身份不能替代盲测题源授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得新增盲测",
+            "不得公开原文或整章",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "待补授权凭据",
+          "scope": "可保留已生成金标的身份账，但不得据此新建长期统计语料库。",
+          "basis_refs": [
+            "src-b03-formal-gold"
+          ],
+          "hard_limits": [
+            "补证前不得扩用",
+            "正式金标只证明标注地位",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "未发现建立全文或片段索引的许可。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "默认不进训练；没有单独、明示、可撤回的蒸馏授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已转正式金标而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权凭据缺失",
+          "description": "盘点只见底本与结构金标身份，未见作品权利许可。",
+          "effect": "四类用途均不放行；蒸馏直接禁止。"
+        },
+        {
+          "gap_type": "术语可能误读",
+          "description": "Z93工件中的“授权转正”指金标转正施工令，不是版权授权。",
+          "effect": "不得拿该措辞填充版权授权字段。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "truth_eligible 和 active_gold 只说明真值与标注地位。",
+          "effect": "不得扩大语料用途。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "本条不追认历史使用是否合法，只登记当前证据边界。"
+      ]
+    },
+    {
+      "book_key": "BOOK-008",
+      "title": "无限恐怖",
+      "canonical_ids": [
+        "Z74B-B04",
+        "Z74B-B04-unit0003-structure-v1.3"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "五本金标底本",
+          "member_id": "Z74B-B04",
+          "roles": [
+            "Z74B原书真值底本",
+            "Z93正式金标底本"
+          ],
+          "unit": "库存第0003单元",
+          "source_refs": [
+            "src-b04-fulltext",
+            "src-b04-formal-gold"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-b04-fulltext",
+          "source_kind": "单体全文",
+          "path": "/Users/a1234/挣钱/小说101-downloads/01_单主角升级线/无限恐怖/无限恐怖(zhttty).txt",
+          "sha256": "22806d9c3742b572f489193909fcb904307b4db62bea83726f262d5088aca32e",
+          "hash_scope": "文件字节",
+          "truth_role": "Z74B连续原文真值底本；真值资格不等于版权许可"
+        },
+        {
+          "source_id": "src-b04-formal-gold",
+          "source_kind": "正式金标工件",
+          "path": "reports/Z93_五本结构层金标v1.3转正_20260723/formal_gold/B04_无限恐怖_库存第0003单元_结构层金标v1.3.json",
+          "sha256": "2577db655d76695ed77a5a036281a851a2d3d5332ed48b0f1272f6fe115af540",
+          "hash_scope": "文件字节",
+          "truth_role": "Z93正式金标身份；不构成作品版权授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "依据不足",
+        "public_domain_status": "未核验",
+        "evidence_strength": "不足",
+        "evidence_refs": [],
+        "authorized_scope_summary": "只确认本地底本、原文真值资格和正式金标身份；未发现权利人授权、公版核验或四类用途许可。",
+        "missing_evidence": [
+          "材料取得来源与合法持有依据",
+          "权利人或合法授权链的书面凭据",
+          "盲测、统计、检索的明示许可范围",
+          "训练或蒸馏许可条款",
+          "可撤回机制"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "待补授权凭据",
+          "scope": "金标底本身份不能替代盲测题源授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得新增盲测",
+            "不得公开原文或整章",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "待补授权凭据",
+          "scope": "可保留已生成金标的身份账，但不得据此新建长期统计语料库。",
+          "basis_refs": [
+            "src-b04-formal-gold"
+          ],
+          "hard_limits": [
+            "补证前不得扩用",
+            "正式金标只证明标注地位",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "未发现建立全文或片段索引的许可。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "默认不进训练；没有单独、明示、可撤回的蒸馏授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已转正式金标而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权凭据缺失",
+          "description": "盘点只见底本与结构金标身份，未见作品权利许可。",
+          "effect": "四类用途均不放行；蒸馏直接禁止。"
+        },
+        {
+          "gap_type": "术语可能误读",
+          "description": "Z93工件中的“授权转正”指金标转正施工令，不是版权授权。",
+          "effect": "不得拿该措辞填充版权授权字段。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "truth_eligible 和 active_gold 只说明真值与标注地位。",
+          "effect": "不得扩大语料用途。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "本条不追认历史使用是否合法，只登记当前证据边界。"
+      ]
+    },
+    {
+      "book_key": "BOOK-009",
+      "title": "凡人修仙传",
+      "canonical_ids": [
+        "Z74B-B05",
+        "Z74B-B05-unit0030-structure-v1.3"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "五本金标底本",
+          "member_id": "Z74B-B05",
+          "roles": [
+            "Z74B原书真值底本",
+            "Z93正式金标底本"
+          ],
+          "unit": "库存第0030单元",
+          "source_refs": [
+            "src-b05-fulltext",
+            "src-b05-formal-gold"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-b05-fulltext",
+          "source_kind": "单体全文",
+          "path": "/Users/a1234/挣钱/小说101-downloads/07_历史世界规则/凡人修仙传/凡人修仙传(忘语).txt",
+          "sha256": "9736ed57ec5880b4b2571099e9721b36764e0c80f14f2d860da68ef87b4f8234",
+          "hash_scope": "文件字节",
+          "truth_role": "Z74B连续原文真值底本；真值资格不等于版权许可"
+        },
+        {
+          "source_id": "src-b05-formal-gold",
+          "source_kind": "正式金标工件",
+          "path": "reports/Z93_五本结构层金标v1.3转正_20260723/formal_gold/B05_凡人修仙传_库存第0030单元_结构层金标v1.3.json",
+          "sha256": "5552e4743eed15bc2e7d405ced8e578336da57ad2be213aa9c3854a975f2e8b3",
+          "hash_scope": "文件字节",
+          "truth_role": "Z93正式金标身份；不构成作品版权授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "依据不足",
+        "public_domain_status": "未核验",
+        "evidence_strength": "不足",
+        "evidence_refs": [],
+        "authorized_scope_summary": "只确认本地底本、原文真值资格和正式金标身份；未发现权利人授权、公版核验或四类用途许可。",
+        "missing_evidence": [
+          "材料取得来源与合法持有依据",
+          "权利人或合法授权链的书面凭据",
+          "盲测、统计、检索的明示许可范围",
+          "训练或蒸馏许可条款",
+          "可撤回机制"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "待补授权凭据",
+          "scope": "金标底本身份不能替代盲测题源授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得新增盲测",
+            "不得公开原文或整章",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "待补授权凭据",
+          "scope": "可保留已生成金标的身份账，但不得据此新建长期统计语料库。",
+          "basis_refs": [
+            "src-b05-formal-gold"
+          ],
+          "hard_limits": [
+            "补证前不得扩用",
+            "正式金标只证明标注地位",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "未发现建立全文或片段索引的许可。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "默认不进训练；没有单独、明示、可撤回的蒸馏授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已转正式金标而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权凭据缺失",
+          "description": "盘点只见底本与结构金标身份，未见作品权利许可。",
+          "effect": "四类用途均不放行；蒸馏直接禁止。"
+        },
+        {
+          "gap_type": "术语可能误读",
+          "description": "Z93工件中的“授权转正”指金标转正施工令，不是版权授权。",
+          "effect": "不得拿该措辞填充版权授权字段。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "truth_eligible 和 active_gold 只说明真值与标注地位。",
+          "effect": "不得扩大语料用途。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "本条不追认历史使用是否合法，只登记当前证据边界。"
+      ]
+    },
+    {
+      "book_key": "BOOK-010",
+      "title": "斗破苍穹",
+      "canonical_ids": [
+        "G3-02",
+        "FIT-S005"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "黄金三章候选书目",
+          "member_id": "G3-02",
+          "roles": [
+            "小说101书目登记",
+            "黄金三章候选"
+          ],
+          "unit": "黄金三章候选；计划第1—8章，未授权、未读取",
+          "source_refs": [
+            "src-g3-02-sample-registry",
+            "src-g3-02-genre-registry"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-g3-02-sample-registry",
+          "source_kind": "材料身份清单",
+          "path": "/Users/a1234/挣钱/小说101/structure/SAMPLE_REGISTRY.md",
+          "sha256": "44626aec6d1a4aeaeed5c8157cd198abbce5a402e03a99a9bbb8a831488c6acd",
+          "hash_scope": "文件字节",
+          "truth_role": "第15行只证明《斗破苍穹》的书名、结构主类、库内路径与已下载状态，不证明授权"
+        },
+        {
+          "source_id": "src-g3-02-genre-registry",
+          "source_kind": "材料身份清单",
+          "path": "/Users/a1234/挣钱/小说101/structure/GENRE_REGISTRY.md",
+          "sha256": "40071522af5edaa5731c6365f51eef46a06b4598897bf5a397e190ef576cf5e1",
+          "hash_scope": "文件字节",
+          "truth_role": "第1363行只证明《斗破苍穹》的玄幻题材与单主角升级线登记，不证明授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "依据不足",
+        "public_domain_status": "未核验",
+        "evidence_strength": "不足",
+        "evidence_refs": [],
+        "authorized_scope_summary": "只确认书目与题材元数据身份；不支持黄金三章第1—8章正文、内部10～25字短引、盲测、统计、检索或蒸馏用途。",
+        "missing_evidence": [
+          "材料合法取得与权利链凭据",
+          "黄金三章第1—8章正文与内部短引许可",
+          "盲测、统计与内部检索的明示许可",
+          "保存期限、撤回机制与撤回后的删除范围"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "待补授权凭据",
+          "scope": "书目候选身份不能替代盲测题源授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得读取第1—8章正文或新增盲测",
+            "不得公开原文或整章",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "待补授权凭据",
+          "scope": "现有元数据不足以建立正文统计基线。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得读取正文或建立统计基线",
+            "书目登记不等于使用许可",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "未发现建立全文或片段索引的许可。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "没有单独、明示、可撤回的训练或蒸馏授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已下载或列入研究候选而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权凭据缺失",
+          "description": "当前只见书目与题材登记，未见作品权利许可。",
+          "effect": "四类用途均不放行；蒸馏直接禁止。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "库内路径、已下载状态和研究候选身份只说明材料存在与角色。",
+          "effect": "不得据此读取正文、取材或进入生产下游。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "本条只作并行B研究登记，不升默认、不接现役链。",
+        "本轮未读取小说正文。"
+      ]
+    },
+    {
+      "book_key": "BOOK-011",
+      "title": "万族之劫",
+      "canonical_ids": [
+        "G3-03",
+        "FIT-S2383"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "黄金三章候选书目",
+          "member_id": "G3-03",
+          "roles": [
+            "小说101书目登记",
+            "黄金三章候选"
+          ],
+          "unit": "黄金三章候选；计划第1—8章，未授权、未读取",
+          "source_refs": [
+            "src-g3-03-sample-registry",
+            "src-g3-03-corpus-relabel"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-g3-03-sample-registry",
+          "source_kind": "材料身份清单",
+          "path": "/Users/a1234/挣钱/小说101/structure/SAMPLE_REGISTRY.md",
+          "sha256": "44626aec6d1a4aeaeed5c8157cd198abbce5a402e03a99a9bbb8a831488c6acd",
+          "hash_scope": "文件字节",
+          "truth_role": "第2343行只证明《万族之劫》的书名、历史高人气样本身份、库内路径与已下载状态，不证明授权"
+        },
+        {
+          "source_id": "src-g3-03-corpus-relabel",
+          "source_kind": "材料身份清单",
+          "path": "side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv",
+          "sha256": "fd01231c3f265280d05721f7b3227deabdc58ac431fc230600ea4fe766b4cd5a",
+          "hash_scope": "文件字节",
+          "truth_role": "第19行只证明《万族之劫》的平台、作者与都市高武、万族争霸候选标签，不证明授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "依据不足",
+        "public_domain_status": "未核验",
+        "evidence_strength": "不足",
+        "evidence_refs": [],
+        "authorized_scope_summary": "只确认书目与题材元数据身份；不支持黄金三章第1—8章正文、内部10～25字短引、盲测、统计、检索或蒸馏用途。",
+        "missing_evidence": [
+          "材料合法取得与权利链凭据",
+          "黄金三章第1—8章正文与内部短引许可",
+          "盲测、统计与内部检索的明示许可",
+          "保存期限、撤回机制与撤回后的删除范围"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "待补授权凭据",
+          "scope": "书目候选身份不能替代盲测题源授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得读取第1—8章正文或新增盲测",
+            "不得公开原文或整章",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "待补授权凭据",
+          "scope": "现有元数据不足以建立正文统计基线。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得读取正文或建立统计基线",
+            "书目登记不等于使用许可",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "未发现建立全文或片段索引的许可。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "没有单独、明示、可撤回的训练或蒸馏授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已下载或列入研究候选而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权凭据缺失",
+          "description": "当前只见书目与题材登记，未见作品权利许可。",
+          "effect": "四类用途均不放行；蒸馏直接禁止。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "库内路径、已下载状态和研究候选身份只说明材料存在与角色。",
+          "effect": "不得据此读取正文、取材或进入生产下游。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "本条只作并行B研究登记，不升默认、不接现役链。",
+        "本轮未读取小说正文。"
+      ]
+    },
+    {
+      "book_key": "BOOK-012",
+      "title": "道诡异仙",
+      "canonical_ids": [
+        "G3-06",
+        "FIT-S009"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "黄金三章候选书目",
+          "member_id": "G3-06",
+          "roles": [
+            "小说101书目登记",
+            "黄金三章候选"
+          ],
+          "unit": "黄金三章候选；计划第1—8章，未授权、未读取",
+          "source_refs": [
+            "src-g3-06-sample-registry",
+            "src-g3-06-corpus-relabel"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-g3-06-sample-registry",
+          "source_kind": "材料身份清单",
+          "path": "/Users/a1234/挣钱/小说101/structure/SAMPLE_REGISTRY.md",
+          "sha256": "44626aec6d1a4aeaeed5c8157cd198abbce5a402e03a99a9bbb8a831488c6acd",
+          "hash_scope": "文件字节",
+          "truth_role": "第19行只证明《道诡异仙》的书名、多视角与悬疑分类、库内路径和已下载状态，不证明授权"
+        },
+        {
+          "source_id": "src-g3-06-corpus-relabel",
+          "source_kind": "材料身份清单",
+          "path": "side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv",
+          "sha256": "fd01231c3f265280d05721f7b3227deabdc58ac431fc230600ea4fe766b4cd5a",
+          "hash_scope": "文件字节",
+          "truth_role": "第347行只证明《道诡异仙》的平台、作者与规则诡异、真假难辨候选标签，不证明授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "依据不足",
+        "public_domain_status": "未核验",
+        "evidence_strength": "不足",
+        "evidence_refs": [],
+        "authorized_scope_summary": "只确认书目与题材元数据身份；不支持黄金三章第1—8章正文、内部10～25字短引、盲测、统计、检索或蒸馏用途。",
+        "missing_evidence": [
+          "材料合法取得与权利链凭据",
+          "黄金三章第1—8章正文与内部短引许可",
+          "盲测、统计与内部检索的明示许可",
+          "保存期限、撤回机制与撤回后的删除范围"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "待补授权凭据",
+          "scope": "书目候选身份不能替代盲测题源授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得读取第1—8章正文或新增盲测",
+            "不得公开原文或整章",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "待补授权凭据",
+          "scope": "现有元数据不足以建立正文统计基线。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得读取正文或建立统计基线",
+            "书目登记不等于使用许可",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "未发现建立全文或片段索引的许可。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "没有单独、明示、可撤回的训练或蒸馏授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已下载或列入研究候选而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权凭据缺失",
+          "description": "当前只见书目与题材登记，未见作品权利许可。",
+          "effect": "四类用途均不放行；蒸馏直接禁止。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "库内路径、已下载状态和研究候选身份只说明材料存在与角色。",
+          "effect": "不得据此读取正文、取材或进入生产下游。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "本条只作并行B研究登记，不升默认、不接现役链。",
+        "本轮未读取小说正文。"
+      ]
+    },
+    {
+      "book_key": "BOOK-013",
+      "title": "夜的命名术",
+      "canonical_ids": [
+        "G3-09",
+        "FIT-S010"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "黄金三章候选书目",
+          "member_id": "G3-09",
+          "roles": [
+            "小说101书目登记",
+            "黄金三章候选"
+          ],
+          "unit": "黄金三章候选；计划第1—8章，未授权、未读取",
+          "source_refs": [
+            "src-g3-09-sample-registry",
+            "src-g3-09-genre-registry"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-g3-09-sample-registry",
+          "source_kind": "材料身份清单",
+          "path": "/Users/a1234/挣钱/小说101/structure/SAMPLE_REGISTRY.md",
+          "sha256": "44626aec6d1a4aeaeed5c8157cd198abbce5a402e03a99a9bbb8a831488c6acd",
+          "hash_scope": "文件字节",
+          "truth_role": "第20行只证明《夜的命名术》的书名、多视角分类、库内路径与已下载状态，不证明授权"
+        },
+        {
+          "source_id": "src-g3-09-genre-registry",
+          "source_kind": "材料身份清单",
+          "path": "/Users/a1234/挣钱/小说101/structure/GENRE_REGISTRY.md",
+          "sha256": "40071522af5edaa5731c6365f51eef46a06b4598897bf5a397e190ef576cf5e1",
+          "hash_scope": "文件字节",
+          "truth_role": "第1747行只证明《夜的命名术》的都市与多视角登记，不证明授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "依据不足",
+        "public_domain_status": "未核验",
+        "evidence_strength": "不足",
+        "evidence_refs": [],
+        "authorized_scope_summary": "只确认书目与题材元数据身份；不支持黄金三章第1—8章正文、内部10～25字短引、盲测、统计、检索或蒸馏用途。",
+        "missing_evidence": [
+          "材料合法取得与权利链凭据",
+          "黄金三章第1—8章正文与内部短引许可",
+          "盲测、统计与内部检索的明示许可",
+          "保存期限、撤回机制与撤回后的删除范围"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "待补授权凭据",
+          "scope": "书目候选身份不能替代盲测题源授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得读取第1—8章正文或新增盲测",
+            "不得公开原文或整章",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "待补授权凭据",
+          "scope": "现有元数据不足以建立正文统计基线。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得读取正文或建立统计基线",
+            "书目登记不等于使用许可",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "未发现建立全文或片段索引的许可。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "没有单独、明示、可撤回的训练或蒸馏授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已下载或列入研究候选而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权凭据缺失",
+          "description": "当前只见书目与题材登记，未见作品权利许可。",
+          "effect": "四类用途均不放行；蒸馏直接禁止。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "库内路径、已下载状态和研究候选身份只说明材料存在与角色。",
+          "effect": "不得据此读取正文、取材或进入生产下游。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "本条只作并行B研究登记，不升默认、不接现役链。",
+        "本轮未读取小说正文。"
+      ]
+    },
+    {
+      "book_key": "BOOK-014",
+      "title": "全职高手",
+      "canonical_ids": [
+        "G3-11",
+        "FIT-S017"
+      ],
+      "material_identities": [
+        {
+          "membership_type": "黄金三章候选书目",
+          "member_id": "G3-11",
+          "roles": [
+            "小说101书目登记",
+            "黄金三章候选"
+          ],
+          "unit": "黄金三章候选；计划第1—8章，未授权、未读取",
+          "source_refs": [
+            "src-g3-11-sample-registry",
+            "src-g3-11-genre-registry"
+          ]
+        }
+      ],
+      "source_objects": [
+        {
+          "source_id": "src-g3-11-sample-registry",
+          "source_kind": "材料身份清单",
+          "path": "/Users/a1234/挣钱/小说101/structure/SAMPLE_REGISTRY.md",
+          "sha256": "44626aec6d1a4aeaeed5c8157cd198abbce5a402e03a99a9bbb8a831488c6acd",
+          "hash_scope": "文件字节",
+          "truth_role": "第27行只证明《全职高手》的书名、系统关卡分类、库内路径与已下载状态，不证明授权"
+        },
+        {
+          "source_id": "src-g3-11-genre-registry",
+          "source_kind": "材料身份清单",
+          "path": "/Users/a1234/挣钱/小说101/structure/GENRE_REGISTRY.md",
+          "sha256": "40071522af5edaa5731c6365f51eef46a06b4598897bf5a397e190ef576cf5e1",
+          "hash_scope": "文件字节",
+          "truth_role": "第1098行只证明《全职高手》的游戏竞技与系统关卡登记，不证明授权"
+        }
+      ],
+      "rights_basis": {
+        "basis_status": "依据不足",
+        "public_domain_status": "未核验",
+        "evidence_strength": "不足",
+        "evidence_refs": [],
+        "authorized_scope_summary": "只确认书目与题材元数据身份；不支持黄金三章第1—8章正文、内部10～25字短引、盲测、统计、检索或蒸馏用途。",
+        "missing_evidence": [
+          "材料合法取得与权利链凭据",
+          "黄金三章第1—8章正文与内部短引许可",
+          "盲测、统计与内部检索的明示许可",
+          "保存期限、撤回机制与撤回后的删除范围"
+        ]
+      },
+      "risk_level": "高",
+      "production_gate": "阻断",
+      "purpose_permissions": {
+        "盲测题源池": {
+          "decision": "待补授权凭据",
+          "scope": "书目候选身份不能替代盲测题源授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得读取第1—8章正文或新增盲测",
+            "不得公开原文或整章",
+            "不得进入生产下游"
+          ]
+        },
+        "统计基线库": {
+          "decision": "待补授权凭据",
+          "scope": "现有元数据不足以建立正文统计基线。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得读取正文或建立统计基线",
+            "书目登记不等于使用许可",
+            "不得跨用户复用正文"
+          ]
+        },
+        "内部检索例证库": {
+          "decision": "待补授权凭据",
+          "scope": "未发现建立全文或片段索引的许可。",
+          "basis_refs": [],
+          "hard_limits": [
+            "补证前不得入库",
+            "即使以后获准也只限内部自用",
+            "产品内不得出现他书正文"
+          ]
+        },
+        "蒸馏储备": {
+          "decision": "禁止",
+          "scope": "没有单独、明示、可撤回的训练或蒸馏授权。",
+          "basis_refs": [],
+          "hard_limits": [
+            "不得作为训练、微调或蒸馏语料",
+            "不得因已下载或列入研究候选而改判可用",
+            "如需启用必须另取书面授权并重审"
+          ]
+        }
+      },
+      "conflicts_or_gaps": [
+        {
+          "gap_type": "授权凭据缺失",
+          "description": "当前只见书目与题材登记，未见作品权利许可。",
+          "effect": "四类用途均不放行；蒸馏直接禁止。"
+        },
+        {
+          "gap_type": "来源身份不等于授权",
+          "description": "库内路径、已下载状态和研究候选身份只说明材料存在与角色。",
+          "effect": "不得据此读取正文、取材或进入生产下游。"
+        },
+        {
+          "gap_type": "公版状态未核",
+          "description": "本轮没有公版核验材料。",
+          "effect": "不得按公版放行。"
+        }
+      ],
+      "notes": [
+        "本条只作并行B研究登记，不升默认、不接现役链。",
+        "本轮未读取小说正文。"
+      ]
+    }
+  ],
+  "counts": {
+    "entry_total": 14,
+    "membership_identity_total": 18,
+    "x_batch_membership_total": 4,
+    "gold_base_membership_total": 5,
+    "z91_membership_total": 3,
+    "x01_baseline_membership_total": 1,
+    "golden_three_candidate_membership_total": 5,
+    "limited_statement_entry_total": 4,
+    "insufficient_basis_entry_total": 10,
+    "public_domain_verified_total": 0,
+    "high_risk_total": 14,
+    "blocked_production_total": 14,
+    "permission_cell_total": 56,
+    "permission_decisions": {
+      "允许": 0,
+      "仅内部研究允许": 8,
+      "待补授权凭据": 34,
+      "禁止": 14
+    }
+  }
+}

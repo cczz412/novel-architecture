@@ -1,0 +1,99 @@
+{
+  "schema_version": "golden-three-chapters-git-mirror-manifest-v1",
+  "published_at": "2026-07-24T13:25:00+08:00",
+  "status": "accepted_mirror_not_enabled",
+  "notion_authority": {
+    "ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+    "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
+    "authority_time": "2026-07-24T13:25:00+08:00"
+  },
+  "policy": {
+    "source_files_rewritten": false,
+    "source_and_target_bytes_equal": true,
+    "research_enabled": false,
+    "production_enabled": false,
+    "force_added_reports": false
+  },
+  "files": [
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/04_研究批次清单_v2.1_template_route.json",
+      "target": "references/golden-three-chapters/v0.2/template_route_source.json",
+      "sha256": "f6a0d00ba7b4c12ead8fa17f8340c3d26ee43e00b6d20d05a76271a79e8650c5"
+    },
+    {
+      "source": "reports/九项第四道_并行B正式入册_v0.2_20260724/01_schema.json",
+      "target": "references/golden-three-chapters/v0.2/rights/01_schema.json",
+      "sha256": "c73cf90254ff9c98698ed1443aa48d5dc1d3936f0762c8eb2b4fdb6a3462748f"
+    },
+    {
+      "source": "reports/九项第四道_并行B正式入册_v0.2_20260724/02_registry_candidate.json",
+      "target": "references/golden-three-chapters/v0.2/rights/02_registry_candidate.json",
+      "sha256": "cc00c26c24538b6f6e5637e7d6311480020d39b2614f951a429fcecf1b95aba7"
+    },
+    {
+      "source": "reports/九项第四道_并行B正式入册_v0.2_20260724/03_migration_ledger.json",
+      "target": "references/golden-three-chapters/v0.2/rights/03_migration_ledger.json",
+      "sha256": "a5133840b6c4663032bed98adbe3c711191731f95c6979057e2f594db2c0e2fd"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-01_凡人修仙传.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-01_凡人修仙传.md",
+      "sha256": "f53b72aee028c00aede61bf783c29d70316692e550f4cceb361e77a9bddaeef6"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-02_斗破苍穹.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-02_斗破苍穹.md",
+      "sha256": "68d0d3a349f041cb3f5338a3b12338356f05a5192e1c98804cffb3e2e371b425"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-03_万族之劫.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-03_万族之劫.md",
+      "sha256": "44a6161119c029646814d480d9ae05fd4057647f8bf4946d170b954698dd82c1"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-04_十日终焉.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-04_十日终焉.md",
+      "sha256": "3f24a20e10485708b2cfbf63c98e747b9739f44eb3de188d9f4b094d3c8c0eae"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-05_神秘复苏.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-05_神秘复苏.md",
+      "sha256": "970c4610d1864f9eb1268691793208ac6a84c1e098e5816a1f64b37124a98f4f"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-06_道诡异仙.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-06_道诡异仙.md",
+      "sha256": "186b6416afbba02b5abc0ac07f92611d311a658dfc055d6aeed0acfeb1f78092"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-07_庶女明兰传_知否.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-07_庶女明兰传_知否.md",
+      "sha256": "a534ac2b0f4c67e61f0ecb6ea44e1df633766c2e619b1f1ffebdf2e7a1c7cc8c"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-08_大王饶命.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-08_大王饶命.md",
+      "sha256": "f7da4abaacba01a081f9c71f57ce5517b073ab3e106e5118c996c3e1a7ba7f66"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-09_夜的命名术.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-09_夜的命名术.md",
+      "sha256": "a365e3d9b0ca0d702db5479737cd1fbce3ee2bcb1802f64cd9dc43c7c4097f89"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-10_诡秘之主.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-10_诡秘之主.md",
+      "sha256": "140a0a49c9192f916761abf111cf53a828336f59d36a314a9995bfbd5ae2db8e"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-11_全职高手.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-11_全职高手.md",
+      "sha256": "d97bddd097d0c5acc260590c07c54d68c87a3e923a7a17caabee457130ed7d99"
+    },
+    {
+      "source": "reports/九项第四道_并行B收尾_20260724/templates/G3-12_无限恐怖.md",
+      "target": "references/golden-three-chapters/v0.2/templates/G3-12_无限恐怖.md",
+      "sha256": "ff05334ecfbf4b06a7a97f466ca3f327ea774d2aaed1b824e7ca5781f97e0374"
+    }
+  ]
+}
