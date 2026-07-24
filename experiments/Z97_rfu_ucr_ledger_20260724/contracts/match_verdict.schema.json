@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "match_verdict.schema.json",
+  "title": "Frozen Match Verdict v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "rfu_id",
+    "claim_id",
+    "head_match",
+    "reason_codes",
+    "qualifier_results",
+    "anchor_component_results",
+    "atomicity",
+    "confidence",
+    "judge_id",
+    "judge_config_sha256",
+    "candidate_arm",
+    "human_review_required",
+    "frozen_reason",
+    "adjudication_source_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "match-verdict-v1"
+    },
+    "rfu_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claim_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "head_match": {
+      "enum": [
+        "yes",
+        "partial",
+        "no",
+        "contradiction"
+      ]
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "qualifier_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "qualifier_id",
+          "status"
+        ],
+        "properties": {
+          "qualifier_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "present",
+              "missing",
+              "contradicted",
+              "unclear"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "anchor_component_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "component_id",
+          "status"
+        ],
+        "properties": {
+          "component_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "supported",
+              "partial",
+              "unsupported",
+              "wrong_anchor"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "atomicity": {
+      "enum": [
+        "atomic",
+        "mechanically_splittable",
+        "merged_unaddressable"
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "judge_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "judge_config_sha256": {
+      "$ref": "rfu.schema.json#/$defs/sha256"
+    },
+    "candidate_arm": {
+      "type": "string",
+      "minLength": 1
+    },
+    "human_review_required": {
+      "type": "boolean"
+    },
+    "frozen_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adjudication_source_sha256": {
+      "$ref": "rfu.schema.json#/$defs/sha256"
+    }
+  },
+  "additionalProperties": false
+}

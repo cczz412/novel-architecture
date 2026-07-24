@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "judge_eligibility.schema.json",
+  "title": "Judge Eligibility v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "candidate_provider",
+    "candidate_family",
+    "candidate_checkpoint",
+    "candidate_training_lineage",
+    "judge_kind",
+    "judge_provider",
+    "judge_family",
+    "judge_checkpoint",
+    "judge_training_lineage",
+    "same_family",
+    "same_checkpoint",
+    "judge_trained_on_scored_outputs",
+    "candidate_identity_visible",
+    "historical_scores_visible",
+    "repair_logs_visible",
+    "eligible",
+    "main_judge",
+    "reasons"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "judge-eligibility-v1"
+    },
+    "candidate_provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_family": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_checkpoint": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_training_lineage": {
+      "type": "string",
+      "minLength": 1
+    },
+    "judge_kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "judge_provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "judge_family": {
+      "type": "string",
+      "minLength": 1
+    },
+    "judge_checkpoint": {
+      "type": "string",
+      "minLength": 1
+    },
+    "judge_training_lineage": {
+      "type": "string",
+      "minLength": 1
+    },
+    "same_family": {
+      "type": "boolean"
+    },
+    "same_checkpoint": {
+      "type": "boolean"
+    },
+    "judge_trained_on_scored_outputs": {
+      "type": "boolean"
+    },
+    "candidate_identity_visible": {
+      "type": "boolean"
+    },
+    "historical_scores_visible": {
+      "type": "boolean"
+    },
+    "repair_logs_visible": {
+      "type": "boolean"
+    },
+    "eligible": {
+      "type": "boolean"
+    },
+    "main_judge": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}

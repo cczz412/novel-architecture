@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-state-v2",
-  "snapshot_at": "2026-07-24T14:56:16+08:00",
+  "snapshot_at": "2026-07-24T16:12:00+08:00",
   "authority": {
     "role": "本地唯一机器可读当前执行状态真源",
     "external_truth": {
@@ -19,73 +19,66 @@
   },
   "current_execution": {
     "task": {
-      "task_id": "Z96-A_PLUS-ANCHOR-EVIDENCE-CLOSURE",
-      "label": "第96道·续令②·脆弱断言单点修复＋r03整仓复验",
+      "task_id": "Z97-RFU-UCR-LEDGER",
+      "label": "第97道·RFU建账＋UCR五层候选",
       "status": "accepted_engineering_closed_git_release_approved",
-      "status_label": "2026-07-24 14:55 r03统一审收PASS；第96道工程面收口、质量未判；候选程序／测试修复／治理路牌获精确Git放行"
+      "status_label": "2026-07-24 15:55 统一审收PASS；工程面收口、质量未判；精确范围获准提交推送main"
     },
     "authorization": {
       "kind": "notion_ledger_and_queue_work_order",
-      "authority_time": "2026-07-24T14:30:00+08:00",
+      "authority_time": "2026-07-24T14:55:00+08:00",
       "ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
       "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "readback_at": "2026-07-24T14:31:00+08:00"
+      "readback_at": "2026-07-24T14:56:00+08:00"
     },
     "acceptance": {
       "kind": "notion_unified_acceptance_and_scoped_git_release",
-      "authority_time": "2026-07-24T14:55:00+08:00",
+      "authority_time": "2026-07-24T15:55:00+08:00",
       "status": "PASS_ENGINEERING_CLOSED",
+      "quality_status": "UNJUDGED",
       "git_release_approved": true,
-      "readback_at": "2026-07-24T14:56:00+08:00"
+      "readback_at": "2026-07-24T16:00:00+08:00"
     },
     "run": {
-      "run_id": "Z96-r03",
-      "run_directory": "runs/Z96_刀B_Aplus锚层与证据闭包_r03_20260724",
-      "status_label": "r03统一审收PASS；0模型API、0网络；r02封存未漂；质量胜负未登记"
+      "run_id": "Z97-RFU-UCR-LEDGER-v1.0",
+      "run_directory": "runs/Z97_RFU建账与UCR五层候选_v1.0_20260724",
+      "status_label": "0模型API；RFU 23条；Z89仅历史离线演示；retry03不可计分；候选未接运行器"
     },
     "controls": {
-      "quality_boundary": "续令②只修 tests/test_chatgpt_review_pack.py 的目标断言：期望值直接来自 CURRENT_STATE 当前运行与报告目录；候选程序、业务代码、r02候选和机械读数均不改。r02夹具读数仍不登记质量胜负。",
-      "evidence_boundary": "r03只产出测试修复与整仓复验证据；r02 runs／reports 封存，禁止复制样张、捞回结论或原位重跑。r02机械双跑证据因受审字节未变继续照录，不在r03冒充新生成。",
-      "stop_rule": "目标断言未转绿、测试改动超出该目标测试、候选或业务代码发生任何漂移、r02封存树指纹漂移、整仓复验出现任一新失败，立即硬停不缝补。",
-      "next_action": "按精确白名单提交并推送第96道候选程序、目标测试修复与治理路牌；禁夹带decisions.md、runs、reports与无关未跟踪件；推送后切换第97道RFU建账。"
+      "quality_boundary": "本道只收工程胜负：RFU与五层计分合同、隔离区、资格表、CANARY和可复算票据是否成立。Z89新列仅作历史离线演示；retry03因无冻结语义判词只建候选账、不计分；候选fact_head的实体位与actuality仍是占位，不作语义真值；不登记质量胜负。",
+      "evidence_boundary": "正式金标v1.2的23个计分原子只读转候选RFU；Z89只复用既有23行人工判词；retry03只建58条候选账；被拒原始响应禁用；旧严格成绩与历史成绩一律不回写。RFU／CandidateClaim的未知字段拒收尚未全层统一，只能称候选合同，不得冒充已冻结发布合同。",
+      "stop_rule": "任一未冻结语义被程序自动补判、合同字段漂移、保护面漂移、候选接入现役运行器或全仓出现新失败，立即硬停不缝补。",
+      "next_action": "精确提交并推送第97道获批候选程序、测试与治理路牌；随后另开第98道步一零调用运行，禁止把第98道工件夹入本提交。"
     },
     "artifacts": {
-      "report_directory": "reports/Z96_刀B_Aplus锚层与证据闭包_r03_20260724",
-      "local_stop_receipt": "reports/Z96_刀B_Aplus锚层与证据闭包_r03_20260724/第96道续令②停点回包.md",
-      "candidate_directory": "experiments/Z96_anchor_layer_evidence_closure_r02_20260724",
-      "authorization_mirror": "reports/Z96_刀B_Aplus锚层与证据闭包_r03_20260724/00_续令②与封存边界镜像.md",
-      "machine_receipt": "reports/Z96_刀B_Aplus锚层与证据闭包_r03_20260724/机械验收票.json",
-      "first_run_sealed_directory": "reports/Z96_刀B_Aplus锚层与证据闭包_20260724",
-      "first_run_hard_stop_ticket": "reports/Z96_刀B_Aplus锚层与证据闭包_20260724/12_终审硬停票.json",
-      "r02_notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f81658c1bc7d77d0d824f",
-      "notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f81f184a8df45d9dcdf9a"
+      "report_directory": "reports/Z97_RFU建账与UCR五层候选_20260724",
+      "local_stop_receipt": "reports/Z97_RFU建账与UCR五层候选_20260724/第97道停点回包.md",
+      "candidate_directory": "experiments/Z97_rfu_ucr_ledger_20260724",
+      "machine_receipt": "runs/Z97_RFU建账与UCR五层候选_v1.0_20260724/audit/validation_summary.json",
+      "run_manifest": "runs/Z97_RFU建账与UCR五层候选_v1.0_20260724/run_manifest.json",
+      "rfu_ledger": "runs/Z97_RFU建账与UCR五层候选_v1.0_20260724/J-REF/rfu_ledger.json",
+      "z89_score_ticket": "runs/Z97_RFU建账与UCR五层候选_v1.0_20260724/SCORE/z89_score_ticket.json",
+      "retry03_accounting_ticket": "runs/Z97_RFU建账与UCR五层候选_v1.0_20260724/SCORE/retry03_accounting_only_ticket.json",
+      "contract_validation_receipt": "runs/Z97_RFU建账与UCR五层候选_v1.0_20260724/audit/contract_validation_receipt.json",
+      "notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f81139c67d3799050f0c7"
     },
     "validation": {
-      "first_run_hard_stop_acceptance": "PASS_EXECUTION_ONLY；2026-07-24 13:25 Notion审收，质量未判，三读数作废只记夹具演示",
-      "longline_scope_calibration": "PASS；同道r02、0 API、首轮整体封存；不实现UCR、不接运行器、不顺带RFU或刀A",
-      "team_preflight": "PASS_WITH_GATES；输入隔离、三档冻结、token证据、endpoint反例、受控读取、双跑与输出后保护指纹均列硬闸",
-      "input_allowlist_and_answer_isolation": "PASS；候选SHA于序号61冻结，答案源只在序号63／64读入，评分后候选SHA不变",
-      "three_way_frozen_materials": "PASS；原子主张／评分答案／渲染期望三份SHA互异",
-      "token_accounting": "PASS_INTERNAL；无可审计V4精确tokenizer，39份封存usage覆盖39／39，采用经验保守上界，非真实token计数",
-      "canary_A_01_A_02": "PASS_INTERNAL；5／5含多中间锚与ID顺序错位反例",
-      "x04_85_disposition_ledger": "PASS_INTERNAL_HELD；85／85进入候选、84唯一锚，因整仓回归硬停暂不入正式账",
-      "retry03_z89_read_only_replay": "PASS_INTERNAL_HELD；retry03 156事件、Z89 56事件只读复算完成，暂不登记质量胜负",
-      "evidence_closure_metrics": "PASS_INTERNAL_HELD；独立缺锚88／88，新增候选锚语义精度未全标，不冒充正式准确率",
-      "mechanical_double_run": "PASS；37份业务文件路径与字节逐份一致，保护面3298／3298未漂移",
-      "r02_full_repository_regression": "HARD_STOP；734 passed／40 xfailed／169 subtests passed／1 failed，失败为旧测试写死2026-07-23报告路径",
-      "r02_hard_stop_acceptance": "PASS_EXECUTION_ONLY；2026-07-24 14:30 Notion审收；唯一失败裁定为测试面病，续令②批准动态断言与r03整仓复验",
-      "r03_targeted_regression": "PASS；目标测试1项过、目标测试文件3项过、Ruff过",
-      "r03_full_repository_regression": "PASS；两遍机械复验与最终路牌刷新后确认均为735 passed／40 xfailed／169 subtests passed／0 failed",
-      "r03_r02_sealed_fingerprint_check": "PASS；r02运行树与回包树前后SHA一致，未原位重跑、未捞回",
-      "notion_callback_page_readback": true,
-      "notion_ledger_readback": true,
-      "notion_queue_readback": true
+      "longline_preflight": "PASS；正式金标23个计分原子、retry03安全输入面与Z89既有人工判词边界已校准",
+      "terra_review": "PASS；两项P0已修：限定状态不再默认present、MatchVerdict／JudgeEligibility／ScoreTicket的合同字段与实物对齐；未宣称五份合同都已完成全层未知字段拒收",
+      "contract_validation": "PASS_WITH_P1；RFU 23条／CandidateClaim 137条／MatchVerdict 23条必填字段与当前实物一致；RFU／CandidateClaim顶层及部分嵌套结构仍允许额外字段，后续冻结发布合同前须收紧",
+      "canary": "PASS；8／8，含否定、限定缺失、错锚、半托、未知字段、资格与候选全集边界",
+      "mechanical_double_run": "PASS；23份业务文件两次字节一致，树SHA 850d2e013186d2d3f114ae75c47429f2cdfb9da8418d87afee877c16f651b206",
+      "official_copy_readback": "PASS；运行副本SHA 13e7541796f45a4d7298ffccea0fb478cd65dcad9f7f18ab4497ba3a70d88ad5；报告副本SHA d594fea5beeeb3cdc9d4afaaee9badf9389214ebda67b6af06a7110d2519b837",
+      "targeted_tests": "PASS；Ruff全过；定向30项过，其中Z97自身16项",
+      "full_repository_regression": "PASS；治理路牌刷新前后各一遍，均为751 passed／40 xfailed／169 subtests passed／0 failed",
+      "final_luna_review": "PASS_WITH_P1；P0=0；三项非阻断边界已钉：未知字段拒收未全层统一、fact_head含候选占位、Z89离线数值不可误读为正式成绩",
+      "notion_callback_readback": "PASS；正文页、04批账序尾条、Z批队列尾条三处均已回读命中"
     },
     "usage": {
       "model_api_logical_samples": 0,
       "model_api_network_attempts": 0,
       "model_api_usage_tokens": 0,
-      "novel_body_read_count": 10
+      "novel_body_read_count": 0
     },
     "protection": {
       "formal_gold_or_pointers_changed": false,
@@ -149,6 +142,19 @@
   ],
   "historical_context": {
     "accepted_steps": [
+      {
+        "task_id": "Z96-A_PLUS-ANCHOR-EVIDENCE-CLOSURE",
+        "label": "第96道·刀B A+锚层与证据闭包候选",
+        "status": "accepted_engineering_closed_git_published",
+        "status_label": "2026-07-24 14:55 r03统一审收PASS；工程收口、质量未判；精确范围已推main",
+        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
+        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+        "authority_time": "2026-07-24T14:55:00+08:00",
+        "local_receipt": "reports/Z96_刀B_Aplus锚层与证据闭包_r03_20260724/第96道续令②停点回包.md",
+        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f81f184a8df45d9dcdf9a",
+        "git_commit": "cfa8666fed9abfa39b8b7ed08a925db1982bdaa5",
+        "evidence_boundary": "只收工程胜负；r02夹具读数不入正式账；新增候选锚语义精度仍待新尺。"
+      },
       {
         "task_id": "GOLDEN3-RIGHTS-REGISTRY-v0.2-BACKFILL",
         "label": "并行B收尾·v0.2五本正式入册补账",

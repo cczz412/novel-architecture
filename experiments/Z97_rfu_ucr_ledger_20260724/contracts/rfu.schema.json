@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rfu.schema.json",
+  "title": "Reference Fact Unit v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "reference_version",
+    "chapter_id",
+    "rfu_id",
+    "source_order",
+    "fact_head",
+    "required_qualifiers",
+    "optional_details",
+    "minimal_support_sets",
+    "pathology_tags",
+    "criticality",
+    "weight",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "rfu-v1"
+    },
+    "reference_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "chapter_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rfu_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_order": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "fact_head": {
+      "$ref": "#/$defs/fact_head"
+    },
+    "required_qualifiers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/qualifier"
+      }
+    },
+    "optional_details": {
+      "type": "array"
+    },
+    "minimal_support_sets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "support_set_id",
+          "anchor_ids",
+          "minimality"
+        ],
+        "properties": {
+          "support_set_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "anchor_ids": {
+            "$ref": "#/$defs/anchor_ids"
+          },
+          "minimality": {
+            "enum": [
+              "adjudicated",
+              "not_adjudicated"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "pathology_tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "criticality": {
+      "enum": [
+        "normal",
+        "critical"
+      ]
+    },
+    "weight": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "origin",
+        "annotators",
+        "adjudicator",
+        "source_sha256",
+        "anchor_catalog_sha256"
+      ],
+      "properties": {
+        "origin": {
+          "enum": [
+            "human_gold",
+            "dual_judge_consensus",
+            "single_judge_provisional"
+          ]
+        },
+        "annotators": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "adjudicator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "anchor_catalog_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "anchor_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^ch[0-9]{4}:E[0-9]{4}$"
+      },
+      "uniqueItems": true
+    },
+    "fact_head": {
+      "type": "object",
+      "required": [
+        "subject_entity_ids",
+        "predicate",
+        "object_entity_ids",
+        "result",
+        "polarity",
+        "actuality"
+      ],
+      "properties": {
+        "subject_entity_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "predicate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "object_entity_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "result": {
+          "type": "string"
+        },
+        "polarity": {
+          "enum": [
+            "positive",
+            "negative"
+          ]
+        },
+        "actuality": {
+          "enum": [
+            "occurred",
+            "reported",
+            "believed",
+            "planned",
+            "hypothetical",
+            "unresolved"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "qualifier": {
+      "type": "object",
+      "required": [
+        "qualifier_id",
+        "type",
+        "normalized_value",
+        "why_required",
+        "support_anchor_ids"
+      ],
+      "properties": {
+        "qualifier_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "time",
+            "frequency",
+            "condition",
+            "source",
+            "attribution",
+            "modality",
+            "purpose",
+            "quantity",
+            "location",
+            "scope"
+          ]
+        },
+        "normalized_value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why_required": {
+          "type": "string",
+          "minLength": 1
+        },
+        "support_anchor_ids": {
+          "$ref": "#/$defs/anchor_ids"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "score_ticket.schema.json",
+  "title": "UCR Five-layer Score Ticket v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "ticket_id",
+    "status",
+    "metric_contract",
+    "metrics",
+    "formal_score_eligible",
+    "eligibility",
+    "selected_matches",
+    "per_rfu",
+    "unmatched_rfu_ids",
+    "unmatched_claim_ids",
+    "legacy_metrics_read_only",
+    "legacy_metrics_sha256_before",
+    "legacy_metrics_sha256_after"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ucr-score-ticket-v1"
+    },
+    "ticket_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "candidate_metrics_complete_not_released",
+        "candidate_metrics_incomplete"
+      ]
+    },
+    "metric_contract": {
+      "type": "object"
+    },
+    "metrics": {
+      "type": "object",
+      "required": [
+        "FCR",
+        "QCR_full",
+        "ASR_full",
+        "UCR",
+        "SOP"
+      ]
+    },
+    "formal_score_eligible": {
+      "type": "boolean"
+    },
+    "eligibility": {
+      "$ref": "judge_eligibility.schema.json"
+    },
+    "selected_matches": {
+      "type": "array"
+    },
+    "per_rfu": {
+      "type": "array"
+    },
+    "unmatched_rfu_ids": {
+      "type": "array"
+    },
+    "unmatched_claim_ids": {
+      "type": "array"
+    },
+    "legacy_metrics_read_only": {},
+    "legacy_metrics_sha256_before": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "legacy_metrics_sha256_after": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

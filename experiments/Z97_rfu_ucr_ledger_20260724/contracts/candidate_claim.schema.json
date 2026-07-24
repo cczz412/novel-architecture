@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "candidate_claim.schema.json",
+  "title": "Candidate Claim v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "chapter_id",
+    "event_id",
+    "claim_id",
+    "clause_index",
+    "event_text",
+    "fact_head",
+    "qualifiers",
+    "claim_components",
+    "listed_anchor_ids",
+    "is_addressable",
+    "atomic_clause_count",
+    "parse_origin",
+    "candidate_output_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "candidate-claim-v1"
+    },
+    "chapter_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claim_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "clause_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "event_text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fact_head": {
+      "$ref": "rfu.schema.json#/$defs/fact_head"
+    },
+    "qualifiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "qualifier_id",
+          "type",
+          "normalized_value"
+        ],
+        "properties": {
+          "qualifier_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "enum": [
+              "time",
+              "frequency",
+              "condition",
+              "source",
+              "attribution",
+              "modality",
+              "purpose",
+              "quantity",
+              "location",
+              "scope"
+            ]
+          },
+          "normalized_value": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "claim_components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "component_id",
+          "text",
+          "anchor_ids"
+        ],
+        "properties": {
+          "component_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "anchor_ids": {
+            "$ref": "rfu.schema.json#/$defs/anchor_ids"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "listed_anchor_ids": {
+      "$ref": "rfu.schema.json#/$defs/anchor_ids"
+    },
+    "is_addressable": {
+      "type": "boolean"
+    },
+    "atomic_clause_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "parse_origin": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_output_sha256": {
+      "$ref": "rfu.schema.json#/$defs/sha256"
+    },
+    "source_event_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": true
+}
