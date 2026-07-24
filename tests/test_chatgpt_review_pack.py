@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from tools import chatgpt_review_pack
@@ -27,8 +28,16 @@ def test_manifest_path_uses_the_declared_identity_root(
 
 
 def test_current_state_v2_paths_follow_dotted_keys() -> None:
+    state = json.loads(
+        chatgpt_review_pack.CURRENT_STATE.read_text(encoding="utf-8")
+    )
+    execution = state["current_execution"]
+    expected_paths = [
+        "/".join(execution["run"]["run_directory"].split("/")[:2]),
+        "/".join(execution["artifacts"]["report_directory"].split("/")[:2]),
+    ]
     paths = chatgpt_review_pack._paths_from_current_state(
         ["run.run_directory", "artifacts.report_directory"]
     )
 
-    assert "reports/九项第二道_真源分层_20260723" in paths
+    assert paths == expected_paths

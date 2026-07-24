@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-state-v2",
-  "snapshot_at": "2026-07-24T10:20:00+08:00",
+  "snapshot_at": "2026-07-24T14:56:16+08:00",
   "authority": {
     "role": "本地唯一机器可读当前执行状态真源",
     "external_truth": {
@@ -19,51 +19,64 @@
   },
   "current_execution": {
     "task": {
-      "task_id": "PRE-NET-G2-RIGHTS-AND-GOLDEN3-MATERIALS",
-      "label": "G2发网前凭据备料＋黄金三章12本工作台备料",
-      "status": "accepted_closed_git_release_approved",
-      "status_label": "2026-07-24 10:20 Notion统一审收PASS；备料道收口；0模型API、0网络、0正文语义读取；Git放行"
+      "task_id": "Z96-A_PLUS-ANCHOR-EVIDENCE-CLOSURE",
+      "label": "第96道·续令②·脆弱断言单点修复＋r03整仓复验",
+      "status": "accepted_engineering_closed_git_release_approved",
+      "status_label": "2026-07-24 14:55 r03统一审收PASS；第96道工程面收口、质量未判；候选程序／测试修复／治理路牌获精确Git放行"
     },
     "authorization": {
-      "kind": "notion_ledger_and_queue_post_decision_work_order",
-      "authority_time": "2026-07-24T09:20:00+08:00",
+      "kind": "notion_ledger_and_queue_work_order",
+      "authority_time": "2026-07-24T14:30:00+08:00",
       "ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
       "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "readback_at": "2026-07-24T09:24:00+08:00"
+      "readback_at": "2026-07-24T14:31:00+08:00"
     },
     "acceptance": {
-      "kind": "notion_ledger_and_queue_unified_acceptance",
-      "authority_time": "2026-07-24T10:20:00+08:00",
-      "status": "PASS",
+      "kind": "notion_unified_acceptance_and_scoped_git_release",
+      "authority_time": "2026-07-24T14:55:00+08:00",
+      "status": "PASS_ENGINEERING_CLOSED",
       "git_release_approved": true,
-      "readback_at": "2026-07-24T10:25:00+08:00"
+      "readback_at": "2026-07-24T14:56:00+08:00"
     },
     "run": {
-      "run_id": null,
-      "run_directory": null,
-      "status_label": "本道无模型运行目录；只生成授权凭据备料、候选书单、排班与空白模板"
+      "run_id": "Z96-r03",
+      "run_directory": "runs/Z96_刀B_Aplus锚层与证据闭包_r03_20260724",
+      "status_label": "r03统一审收PASS；0模型API、0网络；r02封存未漂；质量胜负未登记"
     },
     "controls": {
-      "quality_boundary": "G2四章仅为供补凭据的预备目标，不是正式候选池或试题；黄金三章12本均为候选未启用，白名单提案不等于授权或公版已核。",
-      "evidence_boundary": "0模型API、0网络、0正文语义读取；G2章位只用文件身份、SHA与固定哈希公式机械生成；黄金三章只用已审收白名单提案做书名与排班备料。",
-      "stop_rule": "真实授权凭据与逐章权利票未通过前，正式候选池、G2答案、人审正文接触、模型发网均保持0；黄金三章逐书未过第⑥道闸时不得读第1至8章。",
-      "next_action": "CZ提供覆盖X02与X03四个预备目标章位的真实、可核验授权凭据；本地归档算SHA、填四张逐章票并审收，再逐章过证据目录覆盖与正文完整性机械验收，全部通过后才建候选池。黄金三章按逐书权利票推进，当前不启动人审。"
+      "quality_boundary": "续令②只修 tests/test_chatgpt_review_pack.py 的目标断言：期望值直接来自 CURRENT_STATE 当前运行与报告目录；候选程序、业务代码、r02候选和机械读数均不改。r02夹具读数仍不登记质量胜负。",
+      "evidence_boundary": "r03只产出测试修复与整仓复验证据；r02 runs／reports 封存，禁止复制样张、捞回结论或原位重跑。r02机械双跑证据因受审字节未变继续照录，不在r03冒充新生成。",
+      "stop_rule": "目标断言未转绿、测试改动超出该目标测试、候选或业务代码发生任何漂移、r02封存树指纹漂移、整仓复验出现任一新失败，立即硬停不缝补。",
+      "next_action": "按精确白名单提交并推送第96道候选程序、目标测试修复与治理路牌；禁夹带decisions.md、runs、reports与无关未跟踪件；推送后切换第97道RFU建账。"
     },
     "artifacts": {
-      "report_directory": "reports/九项第四道_拍板后备料_20260724",
-      "local_stop_receipt": "reports/九项第四道_拍板后备料_20260724/盲测发网前置链与并行B备料停点回包.md",
-      "machine_receipt": "reports/九项第四道_拍板后备料_20260724/mechanical_receipt.json",
-      "artifact_manifest_sha256": "fc58ca97768414b3eea191f4f4b42fbacffd881bb80c7abd168ced6dc6687a8b",
-      "notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f816d9f7bfa81800a82d5"
+      "report_directory": "reports/Z96_刀B_Aplus锚层与证据闭包_r03_20260724",
+      "local_stop_receipt": "reports/Z96_刀B_Aplus锚层与证据闭包_r03_20260724/第96道续令②停点回包.md",
+      "candidate_directory": "experiments/Z96_anchor_layer_evidence_closure_r02_20260724",
+      "authorization_mirror": "reports/Z96_刀B_Aplus锚层与证据闭包_r03_20260724/00_续令②与封存边界镜像.md",
+      "machine_receipt": "reports/Z96_刀B_Aplus锚层与证据闭包_r03_20260724/机械验收票.json",
+      "first_run_sealed_directory": "reports/Z96_刀B_Aplus锚层与证据闭包_20260724",
+      "first_run_hard_stop_ticket": "reports/Z96_刀B_Aplus锚层与证据闭包_20260724/12_终审硬停票.json",
+      "r02_notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f81658c1bc7d77d0d824f",
+      "notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f81f184a8df45d9dcdf9a"
     },
     "validation": {
-      "longline_scope_calibration": "PASS；真源、权利闸与预备章位身份边界已校准",
-      "team_execution": "PASS；件一、件二、边界核对独立并行，无文件面冲突",
-      "json_and_source_footer_checks": "PASS",
-      "sub_manifest_and_source_sha_checks": "PASS",
-      "g2_counts": "PASS；2本×每本2个预备目标、4张逐章票全BLOCK、正式候选池0",
-      "golden_three_chapters_counts": "PASS；12本、3本校准册、12份空白模板、启用0",
-      "notion_unified_acceptance": "PASS；2026-07-24 10:20",
+      "first_run_hard_stop_acceptance": "PASS_EXECUTION_ONLY；2026-07-24 13:25 Notion审收，质量未判，三读数作废只记夹具演示",
+      "longline_scope_calibration": "PASS；同道r02、0 API、首轮整体封存；不实现UCR、不接运行器、不顺带RFU或刀A",
+      "team_preflight": "PASS_WITH_GATES；输入隔离、三档冻结、token证据、endpoint反例、受控读取、双跑与输出后保护指纹均列硬闸",
+      "input_allowlist_and_answer_isolation": "PASS；候选SHA于序号61冻结，答案源只在序号63／64读入，评分后候选SHA不变",
+      "three_way_frozen_materials": "PASS；原子主张／评分答案／渲染期望三份SHA互异",
+      "token_accounting": "PASS_INTERNAL；无可审计V4精确tokenizer，39份封存usage覆盖39／39，采用经验保守上界，非真实token计数",
+      "canary_A_01_A_02": "PASS_INTERNAL；5／5含多中间锚与ID顺序错位反例",
+      "x04_85_disposition_ledger": "PASS_INTERNAL_HELD；85／85进入候选、84唯一锚，因整仓回归硬停暂不入正式账",
+      "retry03_z89_read_only_replay": "PASS_INTERNAL_HELD；retry03 156事件、Z89 56事件只读复算完成，暂不登记质量胜负",
+      "evidence_closure_metrics": "PASS_INTERNAL_HELD；独立缺锚88／88，新增候选锚语义精度未全标，不冒充正式准确率",
+      "mechanical_double_run": "PASS；37份业务文件路径与字节逐份一致，保护面3298／3298未漂移",
+      "r02_full_repository_regression": "HARD_STOP；734 passed／40 xfailed／169 subtests passed／1 failed，失败为旧测试写死2026-07-23报告路径",
+      "r02_hard_stop_acceptance": "PASS_EXECUTION_ONLY；2026-07-24 14:30 Notion审收；唯一失败裁定为测试面病，续令②批准动态断言与r03整仓复验",
+      "r03_targeted_regression": "PASS；目标测试1项过、目标测试文件3项过、Ruff过",
+      "r03_full_repository_regression": "PASS；两遍机械复验与最终路牌刷新后确认均为735 passed／40 xfailed／169 subtests passed／0 failed",
+      "r03_r02_sealed_fingerprint_check": "PASS；r02运行树与回包树前后SHA一致，未原位重跑、未捞回",
       "notion_callback_page_readback": true,
       "notion_ledger_readback": true,
       "notion_queue_readback": true
@@ -71,7 +84,8 @@
     "usage": {
       "model_api_logical_samples": 0,
       "model_api_network_attempts": 0,
-      "model_api_usage_tokens": 0
+      "model_api_usage_tokens": 0,
+      "novel_body_read_count": 10
     },
     "protection": {
       "formal_gold_or_pointers_changed": false,
@@ -81,23 +95,11 @@
       "outbox_changed": false,
       "sealed_run_originals_rewritten": false,
       "corpus_originals_changed": false,
-      "candidate_whitelist_enabled": false,
-      "golden_three_chapters_books_enabled": false
+      "historical_scores_rewritten": false,
+      "candidate_connected_to_runner": false,
+      "rejected_artifacts_recovered": false
     },
-    "blockers": [
-      {
-        "blocker_id": "RIGHTS-G2-001",
-        "summary": "G2下游缺覆盖X02/X03四个预备目标章位、两模型通道、六个人审职责、留存与撤回的真实授权凭据",
-        "owner": "CZ",
-        "release_condition": "真实凭据归档并算SHA，四张逐章权利票、证据目录覆盖与正文完整性机械验收全部通过"
-      },
-      {
-        "blocker_id": "RIGHTS-GOLDEN3-001",
-        "summary": "黄金三章12本尚未逐书核定具体底本或译本与第1至8章阅读、内部短引许可",
-        "owner": "CZ与逐书权利票审查",
-        "release_condition": "逐书权利票通过；只获准前三章时只解锁模式A，模式B保持不可做"
-      }
-    ]
+    "blockers": []
   },
   "parallel_work": [
     {
@@ -110,15 +112,93 @@
     },
     {
       "task_id": "GOLDEN3-ROSTER-PREP-01",
-      "label": "件二·黄金三章12本候选、3本校准册与空白模板",
-      "status": "accepted_closed",
+      "label": "件二·旧经典文学12本候选、3本校准册与空白模板",
+      "status": "accepted_then_invalidated_by_cz_selection_scope_change",
       "output_directory": "reports/九项第四道_拍板后备料_20260724/黄金三章_12本书单",
       "artifact_manifest_sha256": "397712389c153fa1f1100680829abdc5e96937c89496d7d0883a2f05f88b0928",
-      "boundary": "12本均候选未启用；3本双人校准只排班未启动；0正文读取、0内容判断、0模型辅助。"
+      "boundary": "2026-07-24 10:25 CZ改判：经典文学不适配网文黄金三章研究，本件只保留历史；模板与双人工作法继续复用，书单不得启用。",
+      "superseded_by": "GOLDEN3-WEBNOVEL-ROSTER-REWORK"
+    },
+    {
+      "task_id": "GOLDEN3-WEBNOVEL-ROSTER-REWORK",
+      "label": "黄金三章12本网文书单重做",
+      "status": "accepted_closed",
+      "output_directory": "reports/九项第四道_黄金三章网文书单重做_20260724",
+      "artifact_manifest_sha256": "2ff9b127c94c814d48266c1443d8ec45aa123e9ea6419a22d73c03646ff32b07",
+      "notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f81528d88c9fc711f70d9",
+      "boundary": "2026-07-24 10:55统一审收后作为并行B收尾供料；12本均为网文候选且启用0，3本校准只换映射未启动，7本已登记仍阻断、5本补账候选未并入。"
+    },
+    {
+      "task_id": "GOLDEN3-WEBNOVEL-TEMPLATE-CLOSEOUT-AND-REGISTRY-HARD-STOP",
+      "label": "并行B收尾·12份网文模板＋登记身份闸",
+      "status": "template_subtask_accepted_registry_hard_stop_resolved",
+      "output_directory": "reports/九项第四道_并行B收尾_20260724",
+      "artifact_manifest_sha256": "6df4b305c5909d035df8f0f859a0a3daee29c146f652c627556ec9d7ff838ac3",
+      "notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f811c8afdfe7d3f49b6e0",
+      "boundary": "2026-07-24 12:15 模板子件审收PASS；第五本勘正为《全职高手》并批准另存v0.2登记结构，原身份硬停销账。"
+    },
+    {
+      "task_id": "GOLDEN3-RIGHTS-REGISTRY-v0.2-BACKFILL",
+      "label": "并行B收尾·v0.2五本正式入册补账",
+      "status": "accepted_closed_git_release_approved",
+      "output_directory": "reports/九项第四道_并行B正式入册_v0.2_20260724",
+      "artifact_manifest_sha256": "af8a7bd34798a2e7c2fe5595efc33fe05a0ecb53ace686f54d45825d5bb57c8b",
+      "notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f8102ab51d14a49a91c42",
+      "boundary": "2026-07-24 13:25统一审收PASS并获Git放行；另存v0.2与14本候选登记册，新增五条身份全部阻断；审收镜像发布到references，实际取材仍须逐书权利票。"
     }
   ],
   "historical_context": {
     "accepted_steps": [
+      {
+        "task_id": "GOLDEN3-RIGHTS-REGISTRY-v0.2-BACKFILL",
+        "label": "并行B收尾·v0.2五本正式入册补账",
+        "status": "accepted_closed_git_release_approved",
+        "status_label": "2026-07-24 13:25统一审收PASS；BOOK-010～014全部生产阻断；模板与登记件获Git放行",
+        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
+        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+        "authority_time": "2026-07-24T13:25:00+08:00",
+        "local_receipt": "reports/九项第四道_并行B正式入册_v0.2_20260724/并行B正式入册v0.2停点回包.md",
+        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f8102ab51d14a49a91c42",
+        "evidence_boundary": "14本登记仍为candidate_not_enabled；高风险14、生产阻断14、无条件允许0；实际取材仍须逐书权利票。",
+        "git_mirror_directory": "references/golden-three-chapters/v0.2"
+      },
+      {
+        "task_id": "GOLDEN3-WEBNOVEL-TEMPLATE-CLOSEOUT",
+        "label": "并行B收尾·12份网文模板子件",
+        "status": "accepted_closed",
+        "status_label": "2026-07-24 12:15 统一审收PASS；12份新网文模板与v2.1路由生效为候选供料，研究启用仍为0",
+        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
+        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+        "authority_time": "2026-07-24T12:15:00+08:00",
+        "local_receipt": "reports/九项第四道_并行B收尾_20260724/并行B收尾停点回包.md",
+        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f811c8afdfe7d3f49b6e0",
+        "evidence_boundary": "只验收空白模板与路由；不代表五本授权登记已审收，不允许正文读取、取材、人审或模型调用。"
+      },
+      {
+        "task_id": "GOLDEN3-WEBNOVEL-ROSTER-REWORK",
+        "label": "黄金三章12本网文书单重做",
+        "status": "accepted_closed",
+        "status_label": "2026-07-24 10:55统一审收PASS，作为并行B模板收尾供料；研究启用仍为0",
+        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
+        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+        "authority_time": "2026-07-24T10:55:00+08:00",
+        "local_receipt": "reports/九项第四道_黄金三章网文书单重做_20260724/重做停点回包.md",
+        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f81528d88c9fc711f70d9",
+        "evidence_boundary": "书单、分层、校准册与5本补账候选通过；不代表作品授权通过，也未启动正文读取、人审或模型实验。"
+      },
+      {
+        "task_id": "PRE-NET-G2-RIGHTS-AND-GOLDEN3-MATERIALS",
+        "label": "G2发网前凭据备料＋旧黄金三章12本工作台备料",
+        "status": "accepted_closed_git_published_then_golden3_roster_superseded",
+        "status_label": "2026-07-24 10:20统一审收PASS；治理路牌已推送；其中G2件保持有效，旧黄金三章经典文学选书于10:25被CZ改判作废",
+        "authority_kind": "notion_ledger_and_queue_unified_acceptance_then_scope_change",
+        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+        "authority_time": "2026-07-24T10:20:00+08:00",
+        "local_receipt": "reports/九项第四道_拍板后备料_20260724/盲测发网前置链与并行B备料停点回包.md",
+        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f816d9f7bfa81800a82d5",
+        "git_commit": "6c8ca01c69109ff07110e0a416b21662f1c9cb33",
+        "evidence_boundary": "G2的X02／X03凭据备料继续有效；旧黄金三章书单只保留历史，不再作为研究选书池。"
+      },
       {
         "task_id": "NINE-ITEMS-04-RIGHTS-AND-PARALLEL-PREP",
         "label": "九项落地第四道·⑥语料授权清单＋并行A/B/C",
