@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-state-v2",
-  "snapshot_at": "2026-07-24T08:20:00+08:00",
+  "snapshot_at": "2026-07-24T10:20:00+08:00",
   "authority": {
     "role": "本地唯一机器可读当前执行状态真源",
     "external_truth": {
@@ -19,49 +19,51 @@
   },
   "current_execution": {
     "task": {
-      "task_id": "NINE-ITEMS-04-CORPUS-RIGHTS-REGISTRY",
-      "label": "九项落地第四道·⑥语料授权清单",
-      "status": "accepted_closed",
-      "status_label": "2026-07-24 08:20 Notion统一审收PASS；⑥道与并行A/B/C各自收口；0模型API"
+      "task_id": "PRE-NET-G2-RIGHTS-AND-GOLDEN3-MATERIALS",
+      "label": "G2发网前凭据备料＋黄金三章12本工作台备料",
+      "status": "accepted_closed_git_release_approved",
+      "status_label": "2026-07-24 10:20 Notion统一审收PASS；备料道收口；0模型API、0网络、0正文语义读取；Git放行"
     },
     "authorization": {
-      "kind": "notion_ledger_and_queue_work_order",
-      "authority_time": "2026-07-23T23:58:00+08:00",
+      "kind": "notion_ledger_and_queue_post_decision_work_order",
+      "authority_time": "2026-07-24T09:20:00+08:00",
       "ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
       "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "readback_at": "2026-07-24T00:02:00+08:00"
+      "readback_at": "2026-07-24T09:24:00+08:00"
     },
     "acceptance": {
       "kind": "notion_ledger_and_queue_unified_acceptance",
-      "authority_time": "2026-07-24T08:20:00+08:00",
+      "authority_time": "2026-07-24T10:20:00+08:00",
       "status": "PASS",
       "git_release_approved": true,
-      "readback_at": "2026-07-24T08:20:00+08:00"
+      "readback_at": "2026-07-24T10:25:00+08:00"
     },
     "run": {
       "run_id": null,
       "run_directory": null,
-      "status_label": "本道无模型运行目录；只生成候选登记册与说明文档"
+      "status_label": "本道无模型运行目录；只生成授权凭据备料、候选书单、排班与空白模板"
     },
     "controls": {
-      "quality_boundary": "授权登记册、首批在用语料补账与约20本对外结构示例白名单都只作候选银标；白名单不自动启用，对外展示仍须CZ亲拍。",
-      "evidence_boundary": "0模型API、0新书爬取；只认现有本地来源、明确授权凭据、公版状态与Notion拍板，不能把文件名、知名度或公开网页自动当授权。",
-      "stop_rule": "授权依据缺失或相互冲突时只降级风险并停在候选，不擅自写成可训练、可跨用户复用或可对外展示。",
-      "next_action": "等待CZ拍三题：授权凭据补齐范围、跨书盲测发网预算、并行B产品参数。硬前置顺序＝补齐授权凭据→逐书权利票→G2选章→CZ拍发网预算；此前不发网、不启用20本提案。并行C只按长期令低优先续产候选，不得直接训练。"
+      "quality_boundary": "G2四章仅为供补凭据的预备目标，不是正式候选池或试题；黄金三章12本均为候选未启用，白名单提案不等于授权或公版已核。",
+      "evidence_boundary": "0模型API、0网络、0正文语义读取；G2章位只用文件身份、SHA与固定哈希公式机械生成；黄金三章只用已审收白名单提案做书名与排班备料。",
+      "stop_rule": "真实授权凭据与逐章权利票未通过前，正式候选池、G2答案、人审正文接触、模型发网均保持0；黄金三章逐书未过第⑥道闸时不得读第1至8章。",
+      "next_action": "CZ提供覆盖X02与X03四个预备目标章位的真实、可核验授权凭据；本地归档算SHA、填四张逐章票并审收，再逐章过证据目录覆盖与正文完整性机械验收，全部通过后才建候选池。黄金三章按逐书权利票推进，当前不启动人审。"
     },
     "artifacts": {
-      "report_directory": "reports/九项第四道_⑥语料授权清单_20260724",
-      "local_stop_receipt": "reports/九项第四道_⑥语料授权清单_20260724/第⑥道停点回包.md",
-      "machine_receipt": "reports/九项第四道_⑥语料授权清单_20260724/mechanical_receipt.json",
-      "artifact_manifest_sha256": "a55fe26573edeb623f73d21c4efebd407d82e0f0d2a274b3c19532a43e064222",
-      "notion_callback_url": "https://app.notion.com/p/3a65cadc4d0f81d5916bfad65b84883b"
+      "report_directory": "reports/九项第四道_拍板后备料_20260724",
+      "local_stop_receipt": "reports/九项第四道_拍板后备料_20260724/盲测发网前置链与并行B备料停点回包.md",
+      "machine_receipt": "reports/九项第四道_拍板后备料_20260724/mechanical_receipt.json",
+      "artifact_manifest_sha256": "fc58ca97768414b3eea191f4f4b42fbacffd881bb80c7abd168ced6dc6687a8b",
+      "notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f816d9f7bfa81800a82d5"
     },
     "validation": {
-      "longline_scope_calibration": "PASS；Luna确认⑧道提交面无夹带，并指出第39道两套产物不可混用",
-      "team_execution": "PASS；四线独立停点，无文件面冲突",
+      "longline_scope_calibration": "PASS；真源、权利闸与预备章位身份边界已校准",
+      "team_execution": "PASS；件一、件二、边界核对独立并行，无文件面冲突",
       "json_and_source_footer_checks": "PASS",
-      "terra_crossline_final_audit": "PASS；P0=0、P1=0、P2=0",
-      "notion_unified_acceptance": "PASS；2026-07-24 08:20",
+      "sub_manifest_and_source_sha_checks": "PASS",
+      "g2_counts": "PASS；2本×每本2个预备目标、4张逐章票全BLOCK、正式候选池0",
+      "golden_three_chapters_counts": "PASS；12本、3本校准册、12份空白模板、启用0",
+      "notion_unified_acceptance": "PASS；2026-07-24 10:20",
       "notion_callback_page_readback": true,
       "notion_ledger_readback": true,
       "notion_queue_readback": true
@@ -79,41 +81,57 @@
       "outbox_changed": false,
       "sealed_run_originals_rewritten": false,
       "corpus_originals_changed": false,
-      "candidate_whitelist_enabled": false
+      "candidate_whitelist_enabled": false,
+      "golden_three_chapters_books_enabled": false
     },
-    "blockers": []
+    "blockers": [
+      {
+        "blocker_id": "RIGHTS-G2-001",
+        "summary": "G2下游缺覆盖X02/X03四个预备目标章位、两模型通道、六个人审职责、留存与撤回的真实授权凭据",
+        "owner": "CZ",
+        "release_condition": "真实凭据归档并算SHA，四张逐章权利票、证据目录覆盖与正文完整性机械验收全部通过"
+      },
+      {
+        "blocker_id": "RIGHTS-GOLDEN3-001",
+        "summary": "黄金三章12本尚未逐书核定具体底本或译本与第1至8章阅读、内部短引许可",
+        "owner": "CZ与逐书权利票审查",
+        "release_condition": "逐书权利票通过；只获准前三章时只解锁模式A，模式B保持不可做"
+      }
+    ]
   },
   "parallel_work": [
     {
-      "task_id": "NINE-ITEMS-04A-CROSSBOOK-BLIND-DESIGN",
-      "label": "并行A·下轮跨书盲测设计预写案",
+      "task_id": "G2-RIGHTS-PREP-01",
+      "label": "件一·G2凭据清单、四个预备章位与逐章权利票",
       "status": "accepted_closed",
-      "output_directory": "reports/九项第四道_A_下轮跨书盲测设计_20260724",
-      "artifact_manifest_sha256": "98f7037070fcf515ba19395dc0e7ac483764cb482a6fd844184f9820f280db0c",
-      "notion_callback_url": "https://app.notion.com/p/3a65cadc4d0f81398ec8ff8e7f0edb53",
-      "boundary": "0模型API；只设计G1/G2、密封盲集、A/B/C三架构、3次重复、统一指标与预算；语料授权票未过不得选章或开卷；当前自动入卷0；不得发网或把Z91方向性结论冒充正式准确率。"
+      "output_directory": "reports/九项第四道_拍板后备料_20260724/G2_凭据与章位",
+      "artifact_manifest_sha256": "09c018702a191d119b302020d0ae58db3fb1bd56bf5e733bf69a7313248b96cb",
+      "boundary": "X02与X03各2个供补凭据的预备目标；四张逐章票全BLOCK；正式候选池、人审、答案、API和网络均0。"
     },
     {
-      "task_id": "NINE-ITEMS-04B-GOLDEN-THREE-CHAPTER-WORKBENCH",
-      "label": "并行B·黄金三章工作台与闪光点／钩子研究设计",
+      "task_id": "GOLDEN3-ROSTER-PREP-01",
+      "label": "件二·黄金三章12本候选、3本校准册与空白模板",
       "status": "accepted_closed",
-      "output_directory": "reports/九项第四道_B_黄金三章工作台与闪光钩子研究设计_20260724",
-      "artifact_manifest_sha256": "0bb3a2da23b655c25ed3e0ed9eda78fc0907cd19c1ea1a3c421a9002929eec10",
-      "notion_callback_url": "https://app.notion.com/p/3a65cadc4d0f81e8be64edf4fb2320b8",
-      "boundary": "0模型API；只出研究口径、双模式检测尺、小样本设计与预算；故事内Hook触发器和章末悬念钩子必须分账，实际选书等⑥清单过闸。"
-    },
-    {
-      "task_id": "NINE-ITEMS-04C-Z39-SFT-ALIAS-CONTINUATION",
-      "label": "并行C·第39道SFT对齐对与别名候选续产",
-      "status": "accepted_closed",
-      "output_directory": "TEMP/side_night_batch_20260718/39_data_pipeline/continuation_sft_alias_20260724",
-      "artifact_manifest_sha256": "1327e83019dd6ba6a7425564ac0683d656800daf88870e7b8d70e30f0f7fb285",
-      "notion_callback_url": "https://app.notion.com/p/3a65cadc4d0f810082a3cb7cae229570",
-      "boundary": "0模型API；只用同一Z00r前20章事件与正文缓存，NER/BIO停产；产出263条SFT候选与8条别名证据行／7对名称；不混用旧out与outputs，不继承旧47条别名、33条随机负样本或41B全书设定卡，不训练、不评测、不接默认。"
+      "output_directory": "reports/九项第四道_拍板后备料_20260724/黄金三章_12本书单",
+      "artifact_manifest_sha256": "397712389c153fa1f1100680829abdc5e96937c89496d7d0883a2f05f88b0928",
+      "boundary": "12本均候选未启用；3本双人校准只排班未启动；0正文读取、0内容判断、0模型辅助。"
     }
   ],
   "historical_context": {
     "accepted_steps": [
+      {
+        "task_id": "NINE-ITEMS-04-RIGHTS-AND-PARALLEL-PREP",
+        "label": "九项落地第四道·⑥语料授权清单＋并行A/B/C",
+        "status": "accepted_closed_git_published",
+        "status_label": "2026-07-24 08:20 统一审收PASS；四线各自收口；Git已推送main",
+        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
+        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+        "authority_time": "2026-07-24T08:20:00+08:00",
+        "local_receipt": "reports/九项第四道_⑥语料授权清单_20260724/第⑥道停点回包.md",
+        "notion_receipt_url": "https://app.notion.com/p/3a65cadc4d0f81d5916bfad65b84883b",
+        "git_commit": "2e1e11aba15915f6bbdb3897480adabeec461368",
+        "evidence_boundary": "⑥登记册与20本白名单提案、并行A/B设计及并行C候选生产均已审收；白名单未自动启用，权利票未过前不发网、不取材，SFT候选不得直接训练。"
+      },
       {
         "task_id": "NINE-ITEMS-03-CLAIM-ANCHOR-DESIGN",
         "label": "九项落地第三道·⑧主张级核锚并单设计",

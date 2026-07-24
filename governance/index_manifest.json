@@ -5,9 +5,9 @@
   },
   "inputs": [
     {
-      "bytes": 58714,
+      "bytes": 59731,
       "path": "governance/CURRENT_STATE.json",
-      "sha256": "ada45836509090132fd6477ac719cde6566c888d781619172efcdd8fa543c578"
+      "sha256": "ea3940a25973e237d3913f3bf59183c04ebe26547d7dda4644656a9db3719a8d"
     },
     {
       "bytes": 12301,
@@ -32,14 +32,14 @@
       "sha256": "2f211eadeb34588099fa711e217e48bd4f527300816c05f8e3ecf2276c8538e1"
     },
     {
-      "bytes": 2695,
+      "bytes": 2969,
       "path": "governance/INDEX.md",
-      "sha256": "4fdd0fd02425034bf061281d62cf11c92b8fcfec373e9ac0e7e13f05c68f45fc"
+      "sha256": "f1ba20c3581745b42c74f1b13245b8e3681c6c326e3bd27157665cb2d42fbf09"
     },
     {
-      "bytes": 1861,
+      "bytes": 2224,
       "path": "governance/current_run.md",
-      "sha256": "4dcd3e9e961893414a849dac698bb25556023e7c33d0d54f3e18097e39c537d6"
+      "sha256": "feea34e8dc913a58cf4bcd39c870dbb1bc9b1e64708d9a2a33fef3fe73692fd6"
     },
     {
       "bytes": 1235,
