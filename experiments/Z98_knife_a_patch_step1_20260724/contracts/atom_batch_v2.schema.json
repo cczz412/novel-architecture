@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atom_batch_v2.schema.json",
+  "title": "Experimental atom batch v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "request_id",
+    "items",
+    "receipt"
+  ],
+  "properties": {
+    "schema": {
+      "const": "atom-batch-v2"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "items": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 8,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/ok_item"
+          },
+          {
+            "$ref": "#/$defs/split_item"
+          },
+          {
+            "$ref": "#/$defs/context_item"
+          },
+          {
+            "$ref": "#/$defs/unsupported_item"
+          }
+        ]
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "returned_slot_ids"
+      ],
+      "properties": {
+        "returned_slot_ids": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^SLOT-ch[0-9]{4}-[0-9]{2}$"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "slot_id": {
+      "type": "string",
+      "pattern": "^SLOT-ch[0-9]{4}-[0-9]{2}$"
+    },
+    "span_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^ch[0-9]{4}:E[0-9]{4}$"
+      }
+    },
+    "ok_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slot_id",
+        "status",
+        "atom",
+        "split_span_ids",
+        "missing_context_codes"
+      ],
+      "properties": {
+        "slot_id": {
+          "$ref": "#/$defs/slot_id"
+        },
+        "status": {
+          "const": "ok"
+        },
+        "atom": {
+          "$ref": "knife_a_patch_v1.schema.json"
+        },
+        "split_span_ids": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "missing_context_codes": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    },
+    "split_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slot_id",
+        "status",
+        "atom",
+        "split_span_ids",
+        "missing_context_codes"
+      ],
+      "properties": {
+        "slot_id": {
+          "$ref": "#/$defs/slot_id"
+        },
+        "status": {
+          "const": "split_required"
+        },
+        "atom": {
+          "type": "null"
+        },
+        "split_span_ids": {
+          "$ref": "#/$defs/span_ids"
+        },
+        "missing_context_codes": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    },
+    "context_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slot_id",
+        "status",
+        "atom",
+        "split_span_ids",
+        "missing_context_codes"
+      ],
+      "properties": {
+        "slot_id": {
+          "$ref": "#/$defs/slot_id"
+        },
+        "status": {
+          "const": "needs_context"
+        },
+        "atom": {
+          "type": "null"
+        },
+        "split_span_ids": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "missing_context_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "speaker",
+              "antecedent",
+              "condition",
+              "source"
+            ]
+          }
+        }
+      }
+    },
+    "unsupported_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slot_id",
+        "status",
+        "atom",
+        "split_span_ids",
+        "missing_context_codes"
+      ],
+      "properties": {
+        "slot_id": {
+          "$ref": "#/$defs/slot_id"
+        },
+        "status": {
+          "const": "unsupported"
+        },
+        "atom": {
+          "type": "null"
+        },
+        "split_span_ids": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "missing_context_codes": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    }
+  }
+}

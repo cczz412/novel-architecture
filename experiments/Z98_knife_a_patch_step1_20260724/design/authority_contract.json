@@ -1,0 +1,35 @@
+{
+  "schema_version": "z98-authority-contract-v1",
+  "authority": {
+    "notion_queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
+    "notion_ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+    "authority_time": "2026-07-24T15:55:00+08:00",
+    "unified_design_page_id": "e3cfee94-c8d0-4df4-9b2f-454b9e01b1d7"
+  },
+  "verbatim_core_formulas": [
+    "T1=I1+O1",
+    "T2≤0.25T1",
+    "q×T3≤0.10T1",
+    "R=(T1+T2+q×T3)/T1≤1.35"
+  ],
+  "patch_operations": [
+    "KEEP",
+    "ADD",
+    "SPLIT",
+    "NARROW",
+    "RECLASSIFY",
+    "ADD_ANCHOR_CANDIDATE"
+  ],
+  "atom_batch_v2_fixed_item_fields": [
+    "slot_id",
+    "status",
+    "atom",
+    "split_span_ids",
+    "missing_context_codes"
+  ],
+  "disputes": {
+    "dispute_2": "刀A补丁臂 vs Z96刀B A+锚层候选重放 vs retry03基线",
+    "dispute_3": "同一 selected slots 下 atom-batch-v2 vs 现役单对象合同"
+  },
+  "sha_boundary": "本文件SHA只证明本地冻结摘录字节未变，不冒充Notion页面原始字节SHA"
+}

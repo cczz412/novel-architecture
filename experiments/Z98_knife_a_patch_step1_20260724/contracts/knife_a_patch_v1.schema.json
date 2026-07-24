@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "knife_a_patch_v1.schema.json",
+  "title": "Knife A P2 single patch v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "op",
+    "target_event_ids",
+    "source_span_ids",
+    "actor",
+    "predicate",
+    "object_or_result",
+    "hard_qualifiers",
+    "fact_class",
+    "speaker",
+    "anchor_candidates"
+  ],
+  "properties": {
+    "op": {
+      "enum": [
+        "KEEP",
+        "ADD",
+        "SPLIT",
+        "NARROW",
+        "RECLASSIFY",
+        "ADD_ANCHOR_CANDIDATE"
+      ]
+    },
+    "target_event_ids": {
+      "type": "array",
+      "maxItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^EV-C[0-9]{4}-[0-9]{2,}$"
+      }
+    },
+    "source_span_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^ch[0-9]{4}:E[0-9]{4}$"
+      }
+    },
+    "actor": {
+      "type": "string"
+    },
+    "predicate": {
+      "type": "string"
+    },
+    "object_or_result": {
+      "type": "string"
+    },
+    "hard_qualifiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "value",
+          "source_span_ids"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "time",
+              "frequency",
+              "condition",
+              "source",
+              "attribution",
+              "modality",
+              "purpose",
+              "quantity",
+              "location",
+              "scope"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_span_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^ch[0-9]{4}:E[0-9]{4}$"
+            }
+          }
+        }
+      }
+    },
+    "fact_class": {
+      "enum": [
+        "event",
+        "state",
+        "knowledge",
+        "intention",
+        "background",
+        "dialogue",
+        "setting"
+      ]
+    },
+    "speaker": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "anchor_candidates": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^ch[0-9]{4}:E[0-9]{4}$"
+      }
+    }
+  }
+}
