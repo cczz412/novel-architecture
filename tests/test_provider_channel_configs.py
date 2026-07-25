@@ -49,12 +49,21 @@ def test_qianwen_channel_and_requested_models_are_exact() -> None:
     assert [row["model_id"] for row in provider["models"]] == [
         "qwen3.7-plus",
         "qwen3.7-max",
+        "qwen3.7-max-2026-05-20",
         "deepseek-v4-flash",
         "deepseek-v4-pro",
         "glm-5.2",
         "kimi-k2.7-code",
     ]
     assert all(row["call_ready"] for row in provider["models"])
+    fixed_max = next(
+        row
+        for row in provider["models"]
+        if row["model_id"] == "qwen3.7-max-2026-05-20"
+    )
+    assert fixed_max["fixed_snapshot"] is True
+    assert fixed_max["structured_output"] is False
+    assert fixed_max["live_catalog_check_required_before_run"] is True
 
 
 def test_tencent_tokenhub_channel_and_requested_models_are_exact() -> None:
@@ -125,6 +134,44 @@ def test_longcat_channel_uses_external_key_pool_and_exact_model() -> None:
     assert loader.is_file()
 
 
+def test_ant_ling_channel_uses_exact_ling_3_flash_contract() -> None:
+    provider = load_provider("ant_ling.json")
+    assert provider["provider"] == "ant_ling"
+    assert provider["base_url"] == "https://api.ant-ling.com/v1"
+    assert provider["endpoint"] == "/chat/completions"
+    assert provider["api_key_env"] == "ANT_LING_API_KEY"
+    assert provider["enabled_by_default"] is False
+    assert provider["default_model"] is None
+    assert provider["models"] == [
+        {
+            "requested_name": "Ling 3.0 Flash",
+            "model_id": "Ling-3.0-flash",
+            "call_ready": True,
+            "capabilities": [
+                "thinking",
+                "structured_output",
+                "function_calling",
+            ],
+            "context_tokens": 262144,
+            "max_expandable_context_tokens": 1048576,
+            "max_output_tokens": None,
+            "thinking_contract": {
+                "field": "thinking.type",
+                "default": "enable",
+                "allowed_values": ["enable", "disable"],
+            },
+            "structured_output_contract": {
+                "json_object": True,
+                "json_schema": True,
+            },
+            "benchmark_note": (
+                "官方未在已读文档中给出最大输出 token 数，因此不臆造上限；"
+                "每次正式试验须按当次任务冻结护栏并以供应商响应为准。"
+            ),
+        }
+    ]
+
+
 def test_tencent_tokenhub_policy_stays_isolated_and_catalog_gated() -> None:
     policy = load_provider("provider_access_policy.json")
     tencent = policy["providers"]["tencent_tokenhub"]
@@ -142,6 +189,17 @@ def test_longcat_policy_stays_isolated_and_catalog_gated() -> None:
     assert longcat["key_source"] == "external_api_pool"
 
 
+def test_ant_ling_policy_stays_isolated_from_default_chain() -> None:
+    policy = load_provider("provider_access_policy.json")
+    ant_ling = policy["providers"]["ant_ling"]
+    assert policy["default_chain_provider"] == "sensenova"
+    assert policy["default_chain_changed"] is False
+    assert ant_ling["default_action"] == "deny_until_explicit_model_run_order"
+    assert ant_ling["status"] == "isolated_configuration_only"
+    assert ant_ling["may_replace_default_chain"] is False
+    assert ant_ling["exact_model_id_required"] is True
+
+
 def test_shared_keychain_loader_is_zero_call_and_names_all_providers() -> None:
     result = subprocess.run(
         [str(ROOT / "tools/provider_keychain.sh"), "help"],
@@ -153,6 +211,7 @@ def test_shared_keychain_loader_is_zero_call_and_names_all_providers() -> None:
     assert "volcengine_ark" in result.stdout
     assert "qianwen_platform" in result.stdout
     assert "tencent_tokenhub" in result.stdout
+    assert "ant_ling" in result.stdout
     assert "不会试调用模型" in result.stdout
 
     shell = (ROOT / "tools/provider_keychain.sh").read_text(encoding="utf-8")
@@ -164,6 +223,7 @@ def test_shared_keychain_loader_is_zero_call_and_names_all_providers() -> None:
             "cn.cz.novel-architecture.tencent.tokenhub",
             "TENCENT_TOKENHUB_API_KEY",
         ),
+        ("cn.cz.novel-architecture.ant-ling.api", "ANT_LING_API_KEY"),
     ]:
         assert service in shell
         assert account in shell

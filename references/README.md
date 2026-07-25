@@ -1,6 +1,6 @@
 # references／参考区
 
-这里放指针和调查材料，不是 Z 批主线路牌。主线仍看根目录 `current.md` 与 `reports/Z*`。
+这里放指针和调查材料，不是 Z 批主线路牌。当前任务只从 [治理索引](../governance/INDEX.md) 进入；根 `current.md` 与历史 `reports/Z*` 只作回放证据。
 
 ## 子区
 
@@ -15,4 +15,6 @@
 - [notion-links.md](notion-links.md) — Notion 深挖指针（可能滞后，以 04 批账序／Z 批队列为准）
 - [corpus-pointers.md](corpus-pointers.md) — 正文库软链入口说明
 
-来源：第69道步一草稿（待审后落盘）
+外部报告、模型回包和调查意见都只作候选线索；正式金标、当前任务和默认链不能从本目录标题推断。
+
+来源：Codex

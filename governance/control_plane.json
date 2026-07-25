@@ -99,6 +99,12 @@
       "usage_boundary": "不等于Flash胜出；不是正式召回率或准确率；只复用冻结样张与判词，不重采、不升默认。"
     },
     {
+      "name": "六本金标 UCR 核准回包",
+      "path": "references/diagnostic-returns/六本金标UCR核准回包_20260724",
+      "status": "2026-07-24 20:20 收件审收 PASS；12份候选银标原件已按SHA归档",
+      "usage_boundary": "不替换现役六本金标；未走金标拆分与MRP-72发布门前不得作现役真值。"
+    },
+    {
       "name": "第93道五本金标候选逐条验闸判词",
       "path": "reports/Z93_五本金标候选逐条验闸_20260723",
       "status": "Codex验闸与Cursor六件攻击均已完成；攻击结果已进入后续修订",

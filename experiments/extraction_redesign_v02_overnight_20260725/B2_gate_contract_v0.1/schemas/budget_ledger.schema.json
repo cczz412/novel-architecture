@@ -1,0 +1,155 @@
+{
+  "$id": "https://local.invalid/contracts/v02/budget_ledger.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "block_size_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "large": {
+          "const": "LARGE_BLOCK_SIZE_MISSING"
+        },
+        "medium": {
+          "const": "MEDIUM_BLOCK_SIZE_MISSING"
+        },
+        "small": {
+          "const": "SMALL_BLOCK_SIZE_MISSING"
+        }
+      },
+      "required": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "type": "object"
+    },
+    "budget_ok": {
+      "const": false
+    },
+    "budget_status": {
+      "const": "BLOCKED_MISSING_INPUTS"
+    },
+    "call_caps": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_b": {
+          "const": "B_MISSING"
+        },
+        "key_chapter_cap": {
+          "const": "B_PLUS_5"
+        },
+        "normal_chapter_cap": {
+          "const": "B_PLUS_3"
+        }
+      },
+      "required": [
+        "baseline_b",
+        "normal_chapter_cap",
+        "key_chapter_cap"
+      ],
+      "type": "object"
+    },
+    "candidate_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "contract_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "failure_codes": {
+      "const": [
+        "BUDGET_T1_DEFINITION_MISSING",
+        "BUDGET_T1_VALUE_MISSING",
+        "BUDGET_UNIT_PRICE_MISSING",
+        "BUDGET_K_MISSING"
+      ]
+    },
+    "k_value": {
+      "const": "K_VALUE_MISSING"
+    },
+    "ledger_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "module_id": {
+      "const": "M07"
+    },
+    "repair_ratio": {
+      "additionalProperties": false,
+      "properties": {
+        "cap_multiplier": {
+          "const": 1.35
+        },
+        "formula": {
+          "const": "R <= 1.35 * T1"
+        },
+        "observed_r": {
+          "const": "R_OBSERVED_MISSING"
+        }
+      },
+      "required": [
+        "observed_r",
+        "formula",
+        "cap_multiplier"
+      ],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "v02-budget-ledger-v0.1"
+    },
+    "t1_definition": {
+      "const": "T1_DEFINITION_MISSING"
+    },
+    "t1_value": {
+      "const": "T1_VALUE_MISSING"
+    },
+    "unit_price": {
+      "const": "UNIT_PRICE_MISSING"
+    },
+    "upgrade_routing": {
+      "additionalProperties": false,
+      "properties": {
+        "denominator": {
+          "const": "FACT_PACKAGE_COUNT_MISSING"
+        },
+        "numerator": {
+          "const": "UPGRADED_FACT_PACKAGE_COUNT_MISSING"
+        },
+        "observed_u": {
+          "const": "U_OBSERVED_MISSING"
+        },
+        "u_cap": {
+          "const": 0.4
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator",
+        "observed_u",
+        "u_cap"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "ledger_id",
+    "module_id",
+    "candidate_id",
+    "contract_hash",
+    "t1_definition",
+    "t1_value",
+    "unit_price",
+    "k_value",
+    "block_size_policy",
+    "call_caps",
+    "upgrade_routing",
+    "repair_ratio",
+    "budget_status",
+    "budget_ok",
+    "failure_codes"
+  ],
+  "title": "Budget ledger with explicit missing inputs v0.1",
+  "type": "object"
+}

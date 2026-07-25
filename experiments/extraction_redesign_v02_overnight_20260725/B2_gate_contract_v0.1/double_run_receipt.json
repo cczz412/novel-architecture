@@ -1,0 +1,14 @@
+{
+  "byte_identical": true,
+  "candidate_id": "B2_gate_contract_v0.1",
+  "compared_file_count": 23,
+  "model_api_calls": 0,
+  "network_requests": 0,
+  "pass1_tree_sha256": "4737f36fa35f0cdd8325e34895a77911e1e6b84ec4ed97b039c458fca3095141",
+  "pass1_validation": "PASS",
+  "pass2_tree_sha256": "4737f36fa35f0cdd8325e34895a77911e1e6b84ec4ed97b039c458fca3095141",
+  "pass2_validation": "PASS",
+  "schema_version": "v02-b2-double-run-receipt-v0.1",
+  "target_tree_sha256": "4737f36fa35f0cdd8325e34895a77911e1e6b84ec4ed97b039c458fca3095141",
+  "target_validation": "PASS"
+}

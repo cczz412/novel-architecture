@@ -41,7 +41,9 @@
 - **本地是工作镜像**：改本地；回 Notion **新建页**交接。
 - **日常不读 Notion**：页面已全文下载进 `foundation/`，本地上下文足够；只有 CZ 说"打包"时才汇总产出、打包给他上传。
 - **子 Agent 省额度**：需要派子 Agent 时（自派或 skill 派发）统一用 `cursor-grok-4.5-high`。
-- **正文不进仓**：`corpus-downloads` → 小说101-downloads。
+- **正文不进仓**：仓内 `corpus-downloads` 只指向被 Git 忽略的
+  `.local/corpus-downloads`；每台机器再把后者连到自己的小说101正文库。
+  初始化与断链检查见 `references/corpus-pointers.md`。
 - **打包清版**：`tools/simple_pack.py`（不搬小说101 重 OPS）。
 
 ## Git 边界（2026-07-23）

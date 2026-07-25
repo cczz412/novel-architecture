@@ -1,0 +1,26 @@
+{
+  "activation_allowed": true,
+  "allowed_judge_output_fields": [
+    "verdict",
+    "h_codes",
+    "fact_id"
+  ],
+  "blind_judging_required": true,
+  "candidate_id": "EXAMPLE-CANDIDATE-001",
+  "candidate_lock_status": "HASH_LOCKED",
+  "candidate_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "engineering_gate": "GREEN",
+  "fact_id": "EXAMPLE-FACT-001",
+  "failure_codes": [],
+  "format_mode": "ISSUED",
+  "h_codes": [],
+  "issuance_status": "ISSUED",
+  "judge_family_must_differ_from_producer": true,
+  "module_id": "M06",
+  "schema_version": "v02-judge-green-ticket-v0.1",
+  "signature": "FABRICATED-SIGNATURE",
+  "ticket_id": "FORMAT-ONLY-JUDGE-TICKET-001",
+  "trust_root_id": "FABRICATED-TRUST-ROOT",
+  "trust_root_status": "TRUSTED",
+  "verdict": "PASS"
+}

@@ -1,0 +1,27 @@
+{
+  "actual_snapshot_count": 3,
+  "actual_snapshot_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "candidate_id": "EXAMPLE-CANDIDATE-001",
+  "candidate_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "contract_hash": "6041b9822b3b8beea5f0d45f59f0d9276cfe7e7e31b22a370c1a71e342e69013",
+  "expected_snapshot_count": 3,
+  "expected_snapshot_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "failure_codes": [],
+  "independent_recompute": true,
+  "metrics": {
+    "asr_full": 1.0,
+    "fcr": 1.0,
+    "qcr_full": 1.0,
+    "sop": 0.99,
+    "ucr": 1.0
+  },
+  "module_id": "M05",
+  "receipt_id": "EXAMPLE-SNAPSHOT-001",
+  "remaining_h_code_count": 0,
+  "schema_version": "v02-snapshot-receipt-v0.1",
+  "terminal_flags": {
+    "accepted": true,
+    "hard_stopped": false,
+    "rejected": false
+  }
+}

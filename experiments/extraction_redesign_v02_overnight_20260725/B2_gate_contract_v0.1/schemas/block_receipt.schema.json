@@ -1,0 +1,200 @@
+{
+  "$id": "https://local.invalid/contracts/v02/block_receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "block_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "block_size_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "large": {
+          "const": "LARGE_BLOCK_SIZE_MISSING"
+        },
+        "medium": {
+          "const": "MEDIUM_BLOCK_SIZE_MISSING"
+        },
+        "small": {
+          "const": "SMALL_BLOCK_SIZE_MISSING"
+        }
+      },
+      "required": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "type": "object"
+    },
+    "chapter_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "contract_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "coordinate_unique": {
+      "const": true
+    },
+    "core_char_count": {
+      "maximum": 800,
+      "minimum": 400,
+      "type": "integer"
+    },
+    "core_end_char_exclusive": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "core_start_char": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "failure_codes": {
+      "items": {
+        "enum": [
+          "PF_ZIP_UNPARSEABLE",
+          "PF_WHITELIST_INCOMPLETE",
+          "PF_BODY_EMPTY",
+          "PF_CONTRACT_HASH_UNLOCKED",
+          "PF_FORMAL_GOLD_PLAINTEXT_PRESENT",
+          "PF_SECRET_PRESENT",
+          "S0_CORE_BELOW_400",
+          "S0_CORE_ABOVE_800",
+          "S0_CORE_GAP",
+          "S0_CORE_OVERLAP",
+          "S0_PHYSICAL_LINE_COORD_MISSING",
+          "S0_SOURCE_HASH_MISSING",
+          "S0_BLOCK_SIZE_POLICY_MISSING",
+          "S1_LEDGER_ID_DUPLICATE",
+          "S1_ENTITY_ID_DUPLICATE",
+          "S1_COORDINATE_UNPARSEABLE",
+          "S1_S0_REFERENCE_UNRESOLVABLE",
+          "M03_RULE_HASH_UNLOCKED",
+          "M03_SCHEMA_HASH_UNLOCKED",
+          "M03_PROMPT_HASH_UNLOCKED",
+          "M03_CANARY_HASH_UNLOCKED",
+          "S3_ID_INVALID",
+          "S3_ENUM_INVALID",
+          "S3_REQUIRED_FIELD_MISSING",
+          "S3_SUPPORT_SET_INVALID",
+          "S3_VERBATIM_LOCATOR_INVALID",
+          "S3_DENOMINATOR_MISMATCH",
+          "S3_UPGRADE_RATE_OVER_0_40",
+          "H01_ATOMIC_BOUNDARY",
+          "H02_SUBJECT_MISSING_OR_WRONG",
+          "H03_PREDICATE_MISSING_OR_WRONG",
+          "H04_OBJECT_MISSING_OR_WRONG",
+          "H05_RESULT_MISSING_OR_WRONG",
+          "H06_POLARITY_MISMATCH",
+          "H07_ACTUALITY_EVIDENCE_MISMATCH",
+          "H08_UNSUPPORTED_STRENGTHENING",
+          "H09_REQUIRED_QUALIFIER_TYPE_MISSING",
+          "H10_QUALIFIER_VALUE_IMPRECISE",
+          "H11_ATTRIBUTION_MODALITY_SCOPE_ERROR",
+          "H12_MINIMAL_SUPPORT_SET_INVALID",
+          "S6_FIVE_LAYER_RECOMPUTE_FAILED",
+          "S6_H_CODE_NOT_ZERO",
+          "S6_SNAPSHOT_COUNT_MISMATCH",
+          "S6_SNAPSHOT_HASH_MISMATCH",
+          "S6_SOP_BELOW_0_98",
+          "S6_MULTIPLE_TERMINAL_STATES",
+          "J_CANDIDATE_SHA_UNLOCKED",
+          "J_NOT_BLIND",
+          "J_SAME_PRODUCER_FAMILY",
+          "J_OUTPUT_SCOPE_VIOLATION",
+          "J_TRUST_ROOT_MISSING",
+          "J_TICKET_UNSIGNED",
+          "BUDGET_T1_DEFINITION_MISSING",
+          "BUDGET_T1_VALUE_MISSING",
+          "BUDGET_UNIT_PRICE_MISSING",
+          "BUDGET_K_MISSING",
+          "BUDGET_B_PLUS_3_EXCEEDED",
+          "BUDGET_B_PLUS_5_EXCEEDED",
+          "BUDGET_U_DENOMINATOR_INVALID",
+          "BUDGET_U_OVER_0_40",
+          "BUDGET_R_OVER_1_35_T1",
+          "R_PROGRAM_GREEN_MISSING",
+          "R_JUDGE_GREEN_MISSING",
+          "R_ENGINEERING_GREEN_MISSING",
+          "R_HASH_UNLOCKED",
+          "R_BUDGET_NOT_OK",
+          "R_CANDIDATE_STATUS_INVALID",
+          "R_ACTIVE_POINTER_MUTATION",
+          "R_PRODUCER_SELF_CHECK_AS_PROGRAM_GREEN"
+        ]
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "module_id": {
+      "const": "M02"
+    },
+    "next_core_start_char": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "physical_line_end": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "physical_line_start": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "previous_core_end_char_exclusive": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "receipt_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "receipt_status": {
+      "const": "BLOCKED_POLICY_MISSING"
+    },
+    "s0_reference_resolvable": {
+      "const": true
+    },
+    "schema_version": {
+      "const": "v02-block-receipt-v0.1"
+    },
+    "sequence_gap_chars": {
+      "const": 0
+    },
+    "sequence_overlap_chars": {
+      "const": 0
+    },
+    "source_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "module_id",
+    "chapter_id",
+    "block_id",
+    "source_hash",
+    "contract_hash",
+    "core_start_char",
+    "core_end_char_exclusive",
+    "core_char_count",
+    "physical_line_start",
+    "physical_line_end",
+    "previous_core_end_char_exclusive",
+    "next_core_start_char",
+    "sequence_gap_chars",
+    "sequence_overlap_chars",
+    "coordinate_unique",
+    "s0_reference_resolvable",
+    "block_size_policy",
+    "receipt_status",
+    "failure_codes"
+  ],
+  "title": "S0 block receipt v0.1",
+  "type": "object"
+}

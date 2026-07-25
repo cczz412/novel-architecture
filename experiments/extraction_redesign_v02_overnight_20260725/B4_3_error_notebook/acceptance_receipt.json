@@ -1,0 +1,51 @@
+{
+  "candidate_id": "B4_3_error_notebook",
+  "candidate_status": "candidate_silver_not_active",
+  "checks": {
+    "allowed_entry_field_count": 7,
+    "b2_fine_code_count": 69,
+    "canary_cases_passed": 7,
+    "dedupe_identity_rule_active": true,
+    "invalid_example_rejected_before_schema": true,
+    "sample_append_only_ledger_readback": true,
+    "six_route_count": 6,
+    "strict_schema": true,
+    "valid_example_accepted": true
+  },
+  "result": "PASS_ENGINEERING_CANDIDATE_ONLY",
+  "schema_version": "v02-b4-3-error-notebook-acceptance-v0.1",
+  "scope": {
+    "current_state_mutations": 0,
+    "default_route_mutations": 0,
+    "formal_gold_mutations": 0,
+    "model_api_calls": 0,
+    "network_requests": 0,
+    "notion_writes": 0,
+    "outbox_mutations": 0
+  },
+  "source_allowlist": {
+    "contract_hash": "6041b9822b3b8beea5f0d45f59f0d9276cfe7e7e31b22a370c1a71e342e69013",
+    "kind": "B2_FINE_CODE_MAP_READ_ONLY",
+    "sha256": "7d609bb5b16e2ee53c58c59501cfd1d82e6db68c16818b64956440bdac07d44f"
+  },
+  "storage_boundary": {
+    "active_runner_connected": false,
+    "allowed_fields": [
+      "error_candidate_id",
+      "candidate_sha256",
+      "failure_fine_code",
+      "failure_route",
+      "program_assertion",
+      "status",
+      "source_receipt_sha256"
+    ],
+    "candidate_statuses_only": [
+      "RECORDED_ERROR_CANDIDATE",
+      "QUARANTINED_ERROR_CANDIDATE",
+      "RETIRED_ERROR_CANDIDATE"
+    ],
+    "free_text_fields": 0,
+    "semantic_auto_repair": false,
+    "truth_promotion_allowed": false
+  }
+}

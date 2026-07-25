@@ -3,6 +3,7 @@
 **/.DS_Store
 .idea/
 .vscode/
+/.local/
 
 # Python caches and local environments
 __pycache__/
@@ -47,6 +48,26 @@ venv/
 /reports/
 /outbox/
 /work/zbatch_decisions/
+
+# Local-only experiment evidence
+# V02 C1-C11 contains supplied-text windows, requests, votes, mappings and
+# replay results. Keep the reusable tools/tests in Git and distribute only the
+# four fully synthetic contract fixtures required by clean-clone tests.
+/experiments/extraction_redesign_v02_overnight_20260725/*
+!/experiments/extraction_redesign_v02_overnight_20260725/B2_gate_contract_v0.1/
+!/experiments/extraction_redesign_v02_overnight_20260725/B2_gate_contract_v0.1/**
+!/experiments/extraction_redesign_v02_overnight_20260725/B4_1_granularity_casebook/
+!/experiments/extraction_redesign_v02_overnight_20260725/B4_1_granularity_casebook/**
+!/experiments/extraction_redesign_v02_overnight_20260725/B4_2_density_fence_calculator/
+!/experiments/extraction_redesign_v02_overnight_20260725/B4_2_density_fence_calculator/**
+!/experiments/extraction_redesign_v02_overnight_20260725/B4_3_error_notebook/
+!/experiments/extraction_redesign_v02_overnight_20260725/B4_3_error_notebook/**
+
+# Z99 outputs are regenerated from local gold/review/run evidence. Keep only
+# the route note in Git; the evidence and generated candidates remain local.
+/experiments/Z99_external_finalization_supply_20260724/*
+!/experiments/Z99_external_finalization_supply_20260724/README.md
+/references/diagnostic-returns/六本金标UCR核准回包_20260724/原始回包/
 
 # Root build outputs and editor leftovers
 /build/

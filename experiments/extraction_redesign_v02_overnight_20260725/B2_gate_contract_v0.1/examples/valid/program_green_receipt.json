@@ -1,0 +1,29 @@
+{
+  "candidate_id": "EXAMPLE-CANDIDATE-001",
+  "candidate_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "contract_hash": "6041b9822b3b8beea5f0d45f59f0d9276cfe7e7e31b22a370c1a71e342e69013",
+  "example_only": true,
+  "failure_code_map_sha256": "7d609bb5b16e2ee53c58c59501cfd1d82e6db68c16818b64956440bdac07d44f",
+  "five_layers_independently_recomputed": true,
+  "hash_locked": true,
+  "issuer_id": "EXAMPLE-INDEPENDENT-VALIDATOR-001",
+  "issuer_role": "INDEPENDENT_PROGRAM_VALIDATOR",
+  "metrics": {
+    "asr_full": 1.0,
+    "fcr": 1.0,
+    "qcr_full": 1.0,
+    "sop": 0.99,
+    "ucr": 1.0
+  },
+  "module_id": "M05",
+  "producer_id": "EXAMPLE-PRODUCER-001",
+  "producer_selfcheck_evidence_role": "DIAGNOSTIC_ONLY_NOT_GREEN_TICKET",
+  "producer_selfcheck_present": true,
+  "producer_selfcheck_used_as_program_green": false,
+  "receipt_id": "EXAMPLE-PROGRAM-GREEN-001",
+  "receipt_status": "EXAMPLE_PROGRAM_GREEN_FORMAT_VALID",
+  "remaining_h_code_count": 0,
+  "schema_version": "v02-program-green-receipt-v0.1",
+  "snapshot_count_and_hash_match": true,
+  "snapshot_receipt_sha256": "eba951b457cb4bb61e4582509de4294265e50f7e93e4a4fcd55faa2c5112abda"
+}

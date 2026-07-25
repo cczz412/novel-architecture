@@ -566,6 +566,64 @@ def _markdown_path(row: dict[str, Any]) -> str:
     return f"{exists} `{path}`"
 
 
+def discover_registered_experiment_files(root: Path) -> list[Path]:
+    """只返回按合同登记的试验，避免生成页随本机候选目录漂移。"""
+
+    experiments_root = root / "experiments"
+    if not experiments_root.is_dir():
+        return []
+
+    directories = sorted(
+        (
+            path
+            for path in experiments_root.iterdir()
+            if path.is_dir() and not path.name.startswith(("_", "."))
+        ),
+        key=lambda path: path.name,
+    )
+    registered = [
+        path / "experiment.json"
+        for path in directories
+        if (path / "experiment.json").is_file()
+    ]
+    return registered
+
+
+def render_experiments_index(root: Path) -> str:
+    registered = discover_registered_experiment_files(root)
+    lines = [
+        "# 试验专区索引",
+        "",
+        "新专项试验只写 `experiments/<experiment_id>/`。历史 `runs/`、`reports/` 原件不搬、不回写。",
+        "",
+        "## 当前登记",
+        "",
+        "| 试验 | 状态 | 位置 | 说明 |",
+        "|---|---|---|---|",
+    ]
+    for path in registered:
+        data = read_json(path)
+        lines.append(
+            f"| {data.get('experiment_id')} | {data.get('status')} | "
+            f"`{path.parent.relative_to(root).as_posix()}` | "
+            f"{data.get('summary', '')} |"
+        )
+    if not registered:
+        lines.append("| 暂无已登记试验 | — | — | — |")
+
+    lines.extend(
+        [
+            "",
+            "未登记的本地候选与证据目录不写进生成页，避免干净副本和当前机器得到两张不同路牌。",
+            "本机只读盘点方式见 `experiments/README.md`。",
+            "",
+            "来源：Codex",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def build_documents(
     root: Path,
     control: dict[str, Any],
@@ -781,28 +839,6 @@ def build_documents(
         ]
     )
 
-    experiment_lines = [
-        "# 试验专区索引",
-        "",
-        "新专项试验只写 `experiments/<experiment_id>/`。历史 `runs/`、`reports/` 原件不搬、不回写。",
-        "",
-        "## 当前登记",
-        "",
-        "| 试验 | 状态 | 位置 | 说明 |",
-        "|---|---|---|---|",
-    ]
-    experiment_dirs = sorted((root / "experiments").glob("*/experiment.json")) if (root / "experiments").is_dir() else []
-    for path in experiment_dirs:
-        if path.parent.name.startswith("_"):
-            continue
-        data = read_json(path)
-        experiment_lines.append(
-            f"| {data.get('experiment_id')} | {data.get('status')} | `{path.parent.relative_to(root).as_posix()}` | {data.get('summary', '')} |"
-        )
-    if len(experiment_lines) == 8:
-        experiment_lines.append("| 暂无新制试验 | — | — | 旧候选见银标索引；不做搬迁 |")
-    experiment_lines.extend(["", "来源：Codex", ""])
-
     return {
         "governance/INDEX.md": index,
         "governance/current_run.md": current,
@@ -811,7 +847,7 @@ def build_documents(
         "governance/indexes/runs_and_reports.md": "\n".join(runs_lines),
         "governance/indexes/source_registry.md": "\n".join(source_lines),
         "governance/indexes/route_health.md": route_page,
-        "experiments/INDEX.md": "\n".join(experiment_lines),
+        "experiments/INDEX.md": render_experiments_index(root),
     }
 
 

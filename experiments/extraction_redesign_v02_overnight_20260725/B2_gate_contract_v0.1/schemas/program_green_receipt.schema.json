@@ -1,0 +1,138 @@
+{
+  "$id": "https://local.invalid/contracts/v02/program_green_receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "candidate_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "contract_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "example_only": {
+      "const": true
+    },
+    "failure_code_map_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "five_layers_independently_recomputed": {
+      "const": true
+    },
+    "hash_locked": {
+      "const": true
+    },
+    "issuer_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "issuer_role": {
+      "const": "INDEPENDENT_PROGRAM_VALIDATOR"
+    },
+    "metrics": {
+      "additionalProperties": false,
+      "properties": {
+        "asr_full": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "fcr": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "qcr_full": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "sop": {
+          "maximum": 1,
+          "minimum": 0.98,
+          "type": "number"
+        },
+        "ucr": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "fcr",
+        "qcr_full",
+        "asr_full",
+        "ucr",
+        "sop"
+      ],
+      "type": "object"
+    },
+    "module_id": {
+      "const": "M05"
+    },
+    "producer_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "producer_selfcheck_evidence_role": {
+      "const": "DIAGNOSTIC_ONLY_NOT_GREEN_TICKET"
+    },
+    "producer_selfcheck_present": {
+      "type": "boolean"
+    },
+    "producer_selfcheck_used_as_program_green": {
+      "const": false
+    },
+    "receipt_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "receipt_status": {
+      "const": "EXAMPLE_PROGRAM_GREEN_FORMAT_VALID"
+    },
+    "remaining_h_code_count": {
+      "const": 0
+    },
+    "schema_version": {
+      "const": "v02-program-green-receipt-v0.1"
+    },
+    "snapshot_count_and_hash_match": {
+      "const": true
+    },
+    "snapshot_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "module_id",
+    "example_only",
+    "receipt_status",
+    "candidate_id",
+    "candidate_sha256",
+    "contract_hash",
+    "snapshot_receipt_sha256",
+    "failure_code_map_sha256",
+    "producer_id",
+    "issuer_id",
+    "issuer_role",
+    "producer_selfcheck_present",
+    "producer_selfcheck_evidence_role",
+    "producer_selfcheck_used_as_program_green",
+    "remaining_h_code_count",
+    "snapshot_count_and_hash_match",
+    "five_layers_independently_recomputed",
+    "metrics",
+    "hash_locked"
+  ],
+  "title": "Independent program-green format example v0.1",
+  "type": "object"
+}

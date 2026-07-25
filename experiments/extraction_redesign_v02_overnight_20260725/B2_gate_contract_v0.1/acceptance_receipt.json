@@ -1,0 +1,30 @@
+{
+  "candidate_id": "B2_gate_contract_v0.1",
+  "candidate_status": "candidate_silver_not_active",
+  "checks": {
+    "activation_allowed": false,
+    "b2_schema_bundle_hash_locked": true,
+    "draft_2020_12_schema_count": 7,
+    "duplicate_codes": 0,
+    "engineering_gate": "RED",
+    "fabricated_judge_trust_root_rejected": true,
+    "fine_codes_mapped": 69,
+    "full_chain_hash_locked": false,
+    "invalid_examples_rejected": 7,
+    "judge_ticket_issued": false,
+    "producer_selfcheck_as_green_rejected": true,
+    "six_routes_covered": 6,
+    "snapshot_three_terminal_states_rejected": true,
+    "strict_object_schema_nodes": 21,
+    "unknown_field_injections_rejected": 7,
+    "unknown_fine_code_rejected": true,
+    "unmapped_codes": 0,
+    "valid_examples_passed": 7
+  },
+  "contract_hash": "6041b9822b3b8beea5f0d45f59f0d9276cfe7e7e31b22a370c1a71e342e69013",
+  "manifest_sha256": "e22156b69edf96abfd8df81620a0eaf8584b90b178a4a7ba0569178397a65555",
+  "model_api_calls": 0,
+  "network_requests": 0,
+  "result": "PASS_CONTRACT_FORMAT_ONLY_NOT_ACTIVATED",
+  "schema_version": "v02-b2-gate-contract-acceptance-v0.1"
+}

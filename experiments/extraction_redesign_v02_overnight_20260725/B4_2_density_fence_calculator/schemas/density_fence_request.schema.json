@@ -1,0 +1,77 @@
+{
+  "$id": "https://local.invalid/contracts/v02-density-fence-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "description": "盲产 97-184 不得作为章型输入；章型只按 load_ratio 公式产生。",
+      "not": {
+        "required": [
+          "blind_production_count"
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "block_size_policy": {
+      "const": "BLOCK_SIZE_POLICY_MISSING",
+      "description": "小中大三类块尺寸尚缺材料。"
+    },
+    "chapter_type_source": {
+      "const": "LOAD_RATIO_FORMULA_ONLY"
+    },
+    "l50_chars": {
+      "description": "没有用户显式输入时只能写 L50_MISSING，不得内置猜值。",
+      "oneOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "const": "L50_MISSING"
+        }
+      ]
+    },
+    "length_chars": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "n_est": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "p_est": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "raw_candidate_count": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "v02-b4-2-density-fence-request-v0.1"
+    }
+  },
+  "required": [
+    "schema_version",
+    "length_chars",
+    "l50_chars",
+    "n_est",
+    "p_est",
+    "chapter_type_source",
+    "block_size_policy"
+  ],
+  "title": "v0.2 B4.2 密度围栏计算请求",
+  "type": "object",
+  "x_forbidden_chapter_type_input": {
+    "allowed_as_chapter_type_input": false,
+    "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+    "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+    "maximum_inclusive": 184,
+    "minimum_inclusive": 97
+  },
+  "x_missing_policy_codes": [
+    "L50_MISSING",
+    "BLOCK_SIZE_POLICY_MISSING"
+  ]
+}

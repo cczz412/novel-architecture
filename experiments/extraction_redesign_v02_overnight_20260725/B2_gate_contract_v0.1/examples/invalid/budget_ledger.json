@@ -1,0 +1,35 @@
+{
+  "block_size_policy": {
+    "large": "LARGE_BLOCK_SIZE_MISSING",
+    "medium": "MEDIUM_BLOCK_SIZE_MISSING",
+    "small": "SMALL_BLOCK_SIZE_MISSING"
+  },
+  "budget_ok": true,
+  "budget_status": "PASS",
+  "call_caps": {
+    "baseline_b": "B_MISSING",
+    "key_chapter_cap": "B_PLUS_5",
+    "normal_chapter_cap": "B_PLUS_3"
+  },
+  "candidate_id": "EXAMPLE-CANDIDATE-001",
+  "contract_hash": "6041b9822b3b8beea5f0d45f59f0d9276cfe7e7e31b22a370c1a71e342e69013",
+  "failure_codes": [],
+  "k_value": "K_VALUE_MISSING",
+  "ledger_id": "EXAMPLE-BUDGET-001",
+  "module_id": "M07",
+  "repair_ratio": {
+    "cap_multiplier": 1.35,
+    "formula": "R <= 1.35 * T1",
+    "observed_r": "R_OBSERVED_MISSING"
+  },
+  "schema_version": "v02-budget-ledger-v0.1",
+  "t1_definition": "T1_DEFINITION_MISSING",
+  "t1_value": "T1_VALUE_MISSING",
+  "unit_price": "UNIT_PRICE_MISSING",
+  "upgrade_routing": {
+    "denominator": "FACT_PACKAGE_COUNT_MISSING",
+    "numerator": "UPGRADED_FACT_PACKAGE_COUNT_MISSING",
+    "observed_u": "U_OBSERVED_MISSING",
+    "u_cap": 0.4
+  }
+}

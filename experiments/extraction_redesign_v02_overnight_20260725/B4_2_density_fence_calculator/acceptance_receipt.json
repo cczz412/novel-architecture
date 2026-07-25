@@ -1,0 +1,38 @@
+{
+  "blind_production_range_used_for_chapter_type": false,
+  "block_size_values_invented": false,
+  "candidate_id": "B4_2_density_fence_calculator",
+  "coverage": [
+    "load_ratio_below_0.75",
+    "load_ratio_equal_0.75_normal",
+    "load_ratio_equal_1.25_normal",
+    "load_ratio_above_1.25",
+    "len_coef_low_clip",
+    "len_coef_high_clip",
+    "base_25_32_40_mapping",
+    "round_half_up_tie",
+    "legitimate_underfill_no_fill",
+    "over_upper_merge_deduplicate_no_truncation",
+    "strictly_over_two_times_upper_anomaly",
+    "l50_missing_no_calculation",
+    "blind_production_97_184_forbidden"
+  ],
+  "numeric_l50_default_built_in": false,
+  "open_policy_gaps": [
+    "L50_MISSING",
+    "BLOCK_SIZE_POLICY_MISSING",
+    "ROUND_HALF_UP_PRODUCT_POLICY_UNCONFIRMED"
+  ],
+  "passed_count": 15,
+  "result": "PASS_CANDIDATE_WITH_OPEN_POLICY_GAPS",
+  "schema_version": "v02-b4-2-acceptance-v0.1",
+  "scope": {
+    "default_route_mutations": 0,
+    "formal_gold_mutations": 0,
+    "governance_mutations": 0,
+    "model_api_calls": 0,
+    "network_requests": 0,
+    "notion_writes": 0
+  },
+  "vector_count": 15
+}

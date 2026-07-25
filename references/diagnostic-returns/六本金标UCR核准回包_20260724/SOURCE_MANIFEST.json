@@ -1,0 +1,110 @@
+{
+  "schema_version": "diagnostic-return-source-manifest-v2",
+  "batch_id": "six-gold-ucr-review-returns-20260724",
+  "title": "六本金标 UCR 核准回包",
+  "received_count": 12,
+  "book_count": 6,
+  "label_tier": "silver_candidate",
+  "notion_authority": {
+    "queue_page": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
+    "ledger_page": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+    "authority_time": "2026-07-24T20:20:00+08:00",
+    "receipt_status": "PASS",
+    "formal_gold_replacement_allowed": false,
+    "mrp_72_passed": false
+  },
+  "boundaries": {
+    "formal_gold_registry_modified": false,
+    "current_pointers_modified": false,
+    "active_122_records_modified": false,
+    "default_pipeline_modified": false,
+    "outbox_modified": false
+  },
+  "source_path_policy": "CZ 提供的附件；机器绝对下载路径不入 Git，只登记归档相对路径、大小与 SHA-256",
+  "files": [
+    {
+      "book_id": "X01",
+      "role": "candidate_json",
+      "archived_path": "原始回包/X01-ch0003-structure-v1.2_candidate_RFU_UCR_review.json",
+      "size_bytes": 139034,
+      "sha256": "8056fe4a810ae255881b04028128e11e7c08a7abafe5baaf58cf8ba0b7ad3f1a"
+    },
+    {
+      "book_id": "X01",
+      "role": "review_report",
+      "archived_path": "原始回包/X01-ch0003-structure-v1.2_candidate_RFU_UCR_review.md",
+      "size_bytes": 15438,
+      "sha256": "39d8e52cee3a47d7ae1e76f9c87528f56f987bab0b02a59a6828a42c78d9848b"
+    },
+    {
+      "book_id": "B01",
+      "role": "candidate_json",
+      "archived_path": "原始回包/Z74B-B01-unit0033-candidate-rfu-review.json",
+      "size_bytes": 66520,
+      "sha256": "35a2201062490dd25d6738e7b0ce22dc73a9e3b6716c1940a2abe73f6c7b0231"
+    },
+    {
+      "book_id": "B01",
+      "role": "review_report",
+      "archived_path": "原始回包/Z74B-B01-unit0033-review-report.md",
+      "size_bytes": 23239,
+      "sha256": "a361b09d3b64de59c1d5c4faaeb1e454fbbb6cff638fd6530635493dbdd0ea99"
+    },
+    {
+      "book_id": "B02",
+      "role": "candidate_json",
+      "archived_path": "原始回包/Z74B-B02-unit0039-structure-v1.3_candidate_review.json",
+      "size_bytes": 30419,
+      "sha256": "1e2f79d3f2c5f96a274a3566087693beb420fb1e7380add911884a47cffc5174"
+    },
+    {
+      "book_id": "B02",
+      "role": "review_report",
+      "archived_path": "原始回包/大王饶命·第39章｜结构层金标核准结果.md",
+      "size_bytes": 19335,
+      "sha256": "0815a76220d92b0aebcb4011565fdf5abee3226673ee2ce778fd1574be9930ee"
+    },
+    {
+      "book_id": "B03",
+      "role": "candidate_json",
+      "archived_path": "原始回包/Z74B-B03-unit0041-structure-v1.3_candidate_corrected.json",
+      "size_bytes": 46286,
+      "sha256": "e4a216ad3d8ebdd27b431148ae79ea0d7e1c2197d6e13a5625c6449908066d83"
+    },
+    {
+      "book_id": "B03",
+      "role": "review_report",
+      "archived_path": "原始回包/Z74B-B03-unit0041-structure-v1.3_candidate_review.md",
+      "size_bytes": 25250,
+      "sha256": "02dcf62f5b156c418059bd2033f03bf95792d7df0e2b1f60c439400570db3418"
+    },
+    {
+      "book_id": "B04",
+      "role": "candidate_json",
+      "archived_path": "原始回包/Z74B-B04-unit0003-structure-candidate-review.json",
+      "size_bytes": 53018,
+      "sha256": "91f231e43987f1ae91f07de8732600878d09433eb4f820e9e48c7bc49d7e05ef"
+    },
+    {
+      "book_id": "B04",
+      "role": "review_report",
+      "archived_path": "原始回包/Z74B-B04-unit0003-structure-review-report.md",
+      "size_bytes": 32343,
+      "sha256": "dc03fccc2b9af97eb49214a8e246797b01260fe7833e6718ab3125ef372f2eb8"
+    },
+    {
+      "book_id": "B05",
+      "role": "candidate_json",
+      "archived_path": "原始回包/Z74B-B05-unit0030-structure-candidate-rfu-v1.4.json",
+      "size_bytes": 38581,
+      "sha256": "453100fef255fb9d6a465ff6f008c55f5ec392c2ec88906e2406763a63034427"
+    },
+    {
+      "book_id": "B05",
+      "role": "review_report",
+      "archived_path": "原始回包/Z74B-B05-unit0030-structure-review-report-v1.4.md",
+      "size_bytes": 30535,
+      "sha256": "59b4e448bcc0835930a7b2354b7c462b92733dba2ff9f46ff176981ae53b5def"
+    }
+  ]
+}

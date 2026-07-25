@@ -1,0 +1,110 @@
+{
+  "artifact_count": 4,
+  "artifacts": [
+    {
+      "bytes": 1031,
+      "path": "acceptance_receipt.json",
+      "sha256": "608fc8c362ce861825e08f45a1c437cb4f07a6e54f4e021a7af177873254dc91"
+    },
+    {
+      "bytes": 34352,
+      "path": "case_results.json",
+      "sha256": "fad9b83bac6df9011099526bdc89fb86c38d13b6b32ee75304caa61298bd273d"
+    },
+    {
+      "bytes": 33768,
+      "path": "casebook.json",
+      "sha256": "d01558891c4e5527667ee2e49d3ef1819af8a2612fb70bd3090712dd9668efb5"
+    },
+    {
+      "bytes": 4039,
+      "path": "casebook.md",
+      "sha256": "1dbad7cd766024a871473cb2fd494ab7c74559c1b665b0710ffc09ddabb16515"
+    }
+  ],
+  "authority_boundary": {
+    "design": "统一设计稿｜抽取工序重设计 v0.2",
+    "section": "三｜怎么算一条",
+    "source_use": "只继承封闭结构判据，不复制六本专名、原句或可回指情节。",
+    "work_order": "连夜施工令 B4.1"
+  },
+  "bundle_content_hash": "fed865e0222afbf8b17eeaf6745e5e307c9ce31cf670db85c9a4852fa9194ac3",
+  "candidate_id": "B4_1_granularity_casebook",
+  "candidate_status": "candidate_silver_not_active",
+  "case_summary": {
+    "all_merge_reason_codes_covered": true,
+    "all_split_reason_codes_covered": true,
+    "decision_counts": {
+      "MERGE": 5,
+      "NEEDS_ADJUDICATION": 0,
+      "SPLIT": 5
+    },
+    "evaluated_cases": 10,
+    "merge_reason_codes_covered": [
+      "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+      "M_SAME_EVENT_WINDOW_OR_SPEECH",
+      "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY",
+      "M_TAIL_IS_DEPENDENT",
+      "M_TOP_LEVEL_ACTUALITY_SAME"
+    ],
+    "passed_cases": 10,
+    "required_cases": 10,
+    "split_reason_codes_covered": [
+      "S_ACTUALITY_DIFFERENT",
+      "S_CAUSAL_ENDPOINTS_REUSABLE",
+      "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+      "S_DIFFERENT_SUBJECT_INDEPENDENT_ACTION",
+      "S_DIFFERENT_TIME_WINDOW",
+      "S_EITHER_HALF_STANDALONE",
+      "S_INDEPENDENT_RESULTS"
+    ],
+    "uncovered_boundary_count": 0
+  },
+  "fictionalization_guard": {
+    "book_title_bracket_hits": 0,
+    "case_mode": "fully_fictional_structural_examples",
+    "source_quotes_used": 0,
+    "source_specific_token_hits": []
+  },
+  "release_isolation": {
+    "activation_allowed": false,
+    "current_state_changed": false,
+    "default_chain_changed": false,
+    "formal_gold_changed": false
+  },
+  "rule_freeze": {
+    "atom_criteria_codes": [
+      "A_COMPLETE_FACT_HEAD",
+      "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT",
+      "C_STANDALONE_OUTLINE_REUSE",
+      "D_EXACTLY_ONE_PRIMARY_FUNCTION"
+    ],
+    "merge_reason_codes": [
+      "M_SAME_EVENT_WINDOW_OR_SPEECH",
+      "M_TOP_LEVEL_ACTUALITY_SAME",
+      "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+      "M_TAIL_IS_DEPENDENT",
+      "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+    ],
+    "new_semantic_rules_added": 0,
+    "split_reason_codes": [
+      "S_DIFFERENT_TIME_WINDOW",
+      "S_ACTUALITY_DIFFERENT",
+      "S_DIFFERENT_SUBJECT_INDEPENDENT_ACTION",
+      "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+      "S_INDEPENDENT_RESULTS",
+      "S_CAUSAL_ENDPOINTS_REUSABLE",
+      "S_EITHER_HALF_STANDALONE"
+    ],
+    "unsupported_boundary_policy": "NEEDS_ADJUDICATION"
+  },
+  "schema_version": "v02-b4-1-granularity-manifest-v0.1",
+  "scope": {
+    "default_route_mutations": 0,
+    "formal_gold_mutations": 0,
+    "governance_mutations": 0,
+    "model_api_calls": 0,
+    "network_requests": 0,
+    "notion_writes": 0
+  }
+}

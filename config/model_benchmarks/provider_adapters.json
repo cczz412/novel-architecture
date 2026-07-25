@@ -238,6 +238,42 @@
           ]
         }
       }
+    },
+    "ant_ling": {
+      "provider_config": "config/providers/ant_ling.json",
+      "transport": "openai_chat_completions",
+      "key_loader": "tools/provider_keychain.sh run ant_ling",
+      "profiles": {
+        "ling_flash_thinking_json": {
+          "purpose": "Ling-3.0-flash 显式开启思考并使用官方 JSON 对象模式；用于隔离的模型横向试验",
+          "validated_model_ids": [
+            "Ling-3.0-flash"
+          ],
+          "drop_fields": [
+            "reasoning_effort",
+            "n"
+          ],
+          "set_fields": {
+            "thinking": {
+              "type": "enable"
+            }
+          },
+          "single_sample_via_response_gate": true,
+          "keep_fields": [
+            "messages",
+            "temperature",
+            "max_tokens",
+            "response_format"
+          ],
+          "compatibility_notes": [
+            "Ling-3.0-flash 的官方思考开关是 thinking.type=enable/disable，不得写成其他供应商的 enabled/disabled。",
+            "官方明确支持 response_format=json_object 与 json_schema；本档保留阶段合同的 json_object，并继续走本地 JSON、Schema 与证据锚机械闸。",
+            "官方未给 Ling-3.0-flash 定义 reasoning_effort，禁止套用 medium/high；也不发送参数表未列出的 n，由单请求与 choice 数量闸保证单次采样。",
+            "默认温度沿用横测工作流的 0.2；温度 0 只在出现明确漂移并另开诊断轮时使用。",
+            "配置只进入隔离横测入口，不改 SenseNova 现役默认链。"
+          ]
+        }
+      }
     }
   }
 }

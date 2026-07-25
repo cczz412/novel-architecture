@@ -1,0 +1,1159 @@
+{
+  "candidate_id": "B4_1_granularity_casebook",
+  "results": [
+    {
+      "atom_contracts": [
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 2,
+          "independent_ledger_keys": [
+            "character_state:值班员:knowledge:药材箱受潮"
+          ],
+          "part_ids": [
+            "B4-G01-P01",
+            "B4-G01-P02"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "revelation"
+          ],
+          "standalone_part_ids": [
+            "B4-G01-P01"
+          ]
+        }
+      ],
+      "boundaries": [
+        {
+          "left_part_id": "B4-G01-P01",
+          "merge_condition_codes_missing": [],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "outcome": "MERGE",
+          "right_part_id": "B4-G01-P02",
+          "split_reason_codes": []
+        }
+      ],
+      "case_id": "B4-G01",
+      "expectation_checks": {
+        "all_output_atoms_pass_A_to_D": true,
+        "atom_count_matches": true,
+        "decision_matches": true,
+        "no_uncovered_boundary": true,
+        "reason_codes_match": true
+      },
+      "expected": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "rationale": "提示灯只限定发现条件，没有独立账本键或第二个主情节功能。",
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "observed": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "groups": [
+          [
+            "B4-G01-P01",
+            "B4-G01-P02"
+          ]
+        ],
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "passed": true,
+      "schema_version": "v02-b4-1-granularity-case-result-v0.1",
+      "title": "提示条件不另立中心事实"
+    },
+    {
+      "atom_contracts": [
+        {
+          "causal_endpoint_ids": [
+            "CE-B4-G02"
+          ],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "character_state:监测员:knowledge:冷却液泄漏"
+          ],
+          "part_ids": [
+            "B4-G02-P01"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "revelation"
+          ],
+          "standalone_part_ids": [
+            "B4-G02-P01"
+          ]
+        },
+        {
+          "causal_endpoint_ids": [
+            "CE-B4-G02"
+          ],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "timeline:CH-A_SCENE-02:关闭主阀"
+          ],
+          "part_ids": [
+            "B4-G02-P02"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "action_result"
+          ],
+          "standalone_part_ids": [
+            "B4-G02-P02"
+          ]
+        }
+      ],
+      "boundaries": [
+        {
+          "left_part_id": "B4-G02-P01",
+          "merge_condition_codes_missing": [
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME"
+          ],
+          "outcome": "SPLIT",
+          "right_part_id": "B4-G02-P02",
+          "split_reason_codes": [
+            "S_DIFFERENT_SUBJECT_INDEPENDENT_ACTION",
+            "S_INDEPENDENT_RESULTS",
+            "S_CAUSAL_ENDPOINTS_REUSABLE",
+            "S_EITHER_HALF_STANDALONE"
+          ]
+        }
+      ],
+      "case_id": "B4-G02",
+      "expectation_checks": {
+        "all_output_atoms_pass_A_to_D": true,
+        "atom_count_matches": true,
+        "decision_matches": true,
+        "no_uncovered_boundary": true,
+        "reason_codes_match": true
+      },
+      "expected": {
+        "atom_count": 2,
+        "decision": "SPLIT",
+        "rationale": "确认与关阀各有主体、结果和复用价值，并形成显式因果两端。",
+        "reason_codes": [
+          "S_DIFFERENT_SUBJECT_INDEPENDENT_ACTION",
+          "S_INDEPENDENT_RESULTS",
+          "S_CAUSAL_ENDPOINTS_REUSABLE",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "observed": {
+        "atom_count": 2,
+        "decision": "SPLIT",
+        "groups": [
+          [
+            "B4-G02-P01"
+          ],
+          [
+            "B4-G02-P02"
+          ]
+        ],
+        "reason_codes": [
+          "S_DIFFERENT_SUBJECT_INDEPENDENT_ACTION",
+          "S_INDEPENDENT_RESULTS",
+          "S_CAUSAL_ENDPOINTS_REUSABLE",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "passed": true,
+      "schema_version": "v02-b4-1-granularity-case-result-v0.1",
+      "title": "确认风险与处置动作分立"
+    },
+    {
+      "atom_contracts": [
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 2,
+          "independent_ledger_keys": [
+            "timeline:CH-B_SCENE-01:培养皿封存"
+          ],
+          "part_ids": [
+            "B4-G03-P01",
+            "B4-G03-P02"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "action_result"
+          ],
+          "standalone_part_ids": [
+            "B4-G03-P01"
+          ]
+        }
+      ],
+      "boundaries": [
+        {
+          "left_part_id": "B4-G03-P01",
+          "merge_condition_codes_missing": [],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "outcome": "MERGE",
+          "right_part_id": "B4-G03-P02",
+          "split_reason_codes": []
+        }
+      ],
+      "case_id": "B4-G03",
+      "expectation_checks": {
+        "all_output_atoms_pass_A_to_D": true,
+        "atom_count_matches": true,
+        "decision_matches": true,
+        "no_uncovered_boundary": true,
+        "reason_codes_match": true
+      },
+      "expected": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "rationale": "扣门闩只完成同一次封存，没有第二个独立账本写入。",
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "observed": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "groups": [
+          [
+            "B4-G03-P01",
+            "B4-G03-P02"
+          ]
+        ],
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "passed": true,
+      "schema_version": "v02-b4-1-granularity-case-result-v0.1",
+      "title": "放入与封存完成动作合并"
+    },
+    {
+      "atom_contracts": [
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 3,
+          "independent_ledger_keys": [
+            "timeline:CH-B_SCENE-02:仪表校准"
+          ],
+          "part_ids": [
+            "B4-G04-P01",
+            "B4-G04-P02",
+            "B4-G04-P03"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "action_result"
+          ],
+          "standalone_part_ids": [
+            "B4-G04-P01"
+          ]
+        }
+      ],
+      "boundaries": [
+        {
+          "left_part_id": "B4-G04-P01",
+          "merge_condition_codes_missing": [],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "outcome": "MERGE",
+          "right_part_id": "B4-G04-P02",
+          "split_reason_codes": []
+        },
+        {
+          "left_part_id": "B4-G04-P02",
+          "merge_condition_codes_missing": [],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "outcome": "MERGE",
+          "right_part_id": "B4-G04-P03",
+          "split_reason_codes": []
+        }
+      ],
+      "case_id": "B4-G04",
+      "expectation_checks": {
+        "all_output_atoms_pass_A_to_D": true,
+        "atom_count_matches": true,
+        "decision_matches": true,
+        "no_uncovered_boundary": true,
+        "reason_codes_match": true
+      },
+      "expected": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "rationale": "两段后续动作都是同一校准终态的步骤与完成动作。",
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "observed": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "groups": [
+          [
+            "B4-G04-P01",
+            "B4-G04-P02",
+            "B4-G04-P03"
+          ]
+        ],
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "passed": true,
+      "schema_version": "v02-b4-1-granularity-case-result-v0.1",
+      "title": "连续校准步骤合并"
+    },
+    {
+      "atom_contracts": [
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 2,
+          "independent_ledger_keys": [
+            "timeline:CH-C_SCENE-01:搬运通知"
+          ],
+          "part_ids": [
+            "B4-G05-P01",
+            "B4-G05-P02"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "decision_plan"
+          ],
+          "standalone_part_ids": [
+            "B4-G05-P01"
+          ]
+        }
+      ],
+      "boundaries": [
+        {
+          "left_part_id": "B4-G05-P01",
+          "merge_condition_codes_missing": [],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "outcome": "MERGE",
+          "right_part_id": "B4-G05-P02",
+          "split_reason_codes": []
+        }
+      ],
+      "case_id": "B4-G05",
+      "expectation_checks": {
+        "all_output_atoms_pass_A_to_D": true,
+        "atom_count_matches": true,
+        "decision_matches": true,
+        "no_uncovered_boundary": true,
+        "reason_codes_match": true
+      },
+      "expected": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "rationale": "这是同一次通知；六箱和不得拆封是计划内容的参数与约束。",
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "observed": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "groups": [
+          [
+            "B4-G05-P01",
+            "B4-G05-P02"
+          ]
+        ],
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "passed": true,
+      "schema_version": "v02-b4-1-granularity-case-result-v0.1",
+      "title": "同一发言中的数量与禁令合并"
+    },
+    {
+      "atom_contracts": [
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 2,
+          "independent_ledger_keys": [
+            "character_state:巡检员:location:备用机房"
+          ],
+          "part_ids": [
+            "B4-G06-P01",
+            "B4-G06-P02"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "state_change"
+          ],
+          "standalone_part_ids": [
+            "B4-G06-P01"
+          ]
+        }
+      ],
+      "boundaries": [
+        {
+          "left_part_id": "B4-G06-P01",
+          "merge_condition_codes_missing": [],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "outcome": "MERGE",
+          "right_part_id": "B4-G06-P02",
+          "split_reason_codes": []
+        }
+      ],
+      "case_id": "B4-G06",
+      "expectation_checks": {
+        "all_output_atoms_pass_A_to_D": true,
+        "atom_count_matches": true,
+        "decision_matches": true,
+        "no_uncovered_boundary": true,
+        "reason_codes_match": true
+      },
+      "expected": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "rationale": "进入机房是同一次移动的到达完成态，不另写位置账。",
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "observed": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "groups": [
+          [
+            "B4-G06-P01",
+            "B4-G06-P02"
+          ]
+        ],
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "passed": true,
+      "schema_version": "v02-b4-1-granularity-case-result-v0.1",
+      "title": "移动目的地完成动作合并"
+    },
+    {
+      "atom_contracts": [
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "character_state:研究员:knowledge:样本污染"
+          ],
+          "part_ids": [
+            "B4-G07-P01"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "revelation"
+          ],
+          "standalone_part_ids": [
+            "B4-G07-P01"
+          ]
+        },
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "character_state:研究员:plan:暂停试验"
+          ],
+          "part_ids": [
+            "B4-G07-P02"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "decision_plan"
+          ],
+          "standalone_part_ids": [
+            "B4-G07-P02"
+          ]
+        }
+      ],
+      "boundaries": [
+        {
+          "left_part_id": "B4-G07-P01",
+          "merge_condition_codes_missing": [
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME"
+          ],
+          "outcome": "SPLIT",
+          "right_part_id": "B4-G07-P02",
+          "split_reason_codes": [
+            "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+            "S_INDEPENDENT_RESULTS",
+            "S_EITHER_HALF_STANDALONE"
+          ]
+        }
+      ],
+      "case_id": "B4-G07",
+      "expectation_checks": {
+        "all_output_atoms_pass_A_to_D": true,
+        "atom_count_matches": true,
+        "decision_matches": true,
+        "no_uncovered_boundary": true,
+        "reason_codes_match": true
+      },
+      "expected": {
+        "atom_count": 2,
+        "decision": "SPLIT",
+        "rationale": "得知写知识槽，决定写计划槽；两者可以分别被大纲引用。",
+        "reason_codes": [
+          "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "observed": {
+        "atom_count": 2,
+        "decision": "SPLIT",
+        "groups": [
+          [
+            "B4-G07-P01"
+          ],
+          [
+            "B4-G07-P02"
+          ]
+        ],
+        "reason_codes": [
+          "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "passed": true,
+      "schema_version": "v02-b4-1-granularity-case-result-v0.1",
+      "title": "同一主体的不同状态槽拆分"
+    },
+    {
+      "atom_contracts": [
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "unresolved:ISSUE-B4-G08-01"
+          ],
+          "part_ids": [
+            "B4-G08-P01"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "unresolved_change"
+          ],
+          "standalone_part_ids": [
+            "B4-G08-P01"
+          ]
+        },
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "unresolved:ISSUE-B4-G08-02"
+          ],
+          "part_ids": [
+            "B4-G08-P02"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "unresolved_change"
+          ],
+          "standalone_part_ids": [
+            "B4-G08-P02"
+          ]
+        },
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "unresolved:ISSUE-B4-G08-03"
+          ],
+          "part_ids": [
+            "B4-G08-P03"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "unresolved_change"
+          ],
+          "standalone_part_ids": [
+            "B4-G08-P03"
+          ]
+        },
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "unresolved:ISSUE-B4-G08-04"
+          ],
+          "part_ids": [
+            "B4-G08-P04"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "unresolved_change"
+          ],
+          "standalone_part_ids": [
+            "B4-G08-P04"
+          ]
+        }
+      ],
+      "boundaries": [
+        {
+          "left_part_id": "B4-G08-P01",
+          "merge_condition_codes_missing": [
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION"
+          ],
+          "outcome": "SPLIT",
+          "right_part_id": "B4-G08-P02",
+          "split_reason_codes": [
+            "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+            "S_INDEPENDENT_RESULTS",
+            "S_EITHER_HALF_STANDALONE"
+          ]
+        },
+        {
+          "left_part_id": "B4-G08-P02",
+          "merge_condition_codes_missing": [
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION"
+          ],
+          "outcome": "SPLIT",
+          "right_part_id": "B4-G08-P03",
+          "split_reason_codes": [
+            "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+            "S_INDEPENDENT_RESULTS",
+            "S_EITHER_HALF_STANDALONE"
+          ]
+        },
+        {
+          "left_part_id": "B4-G08-P03",
+          "merge_condition_codes_missing": [
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION"
+          ],
+          "outcome": "SPLIT",
+          "right_part_id": "B4-G08-P04",
+          "split_reason_codes": [
+            "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+            "S_INDEPENDENT_RESULTS",
+            "S_EITHER_HALF_STANDALONE"
+          ]
+        }
+      ],
+      "case_id": "B4-G08",
+      "expectation_checks": {
+        "all_output_atoms_pass_A_to_D": true,
+        "atom_count_matches": true,
+        "decision_matches": true,
+        "no_uncovered_boundary": true,
+        "reason_codes_match": true
+      },
+      "expected": {
+        "atom_count": 4,
+        "decision": "SPLIT",
+        "rationale": "四个 issue_id 可在不同位置分别更新或解决，不能压成一个问题。",
+        "reason_codes": [
+          "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "observed": {
+        "atom_count": 4,
+        "decision": "SPLIT",
+        "groups": [
+          [
+            "B4-G08-P01"
+          ],
+          [
+            "B4-G08-P02"
+          ],
+          [
+            "B4-G08-P03"
+          ],
+          [
+            "B4-G08-P04"
+          ]
+        ],
+        "reason_codes": [
+          "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "passed": true,
+      "schema_version": "v02-b4-1-granularity-case-result-v0.1",
+      "title": "四个未决事项分别立账"
+    },
+    {
+      "atom_contracts": [
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "character_state:检修员:plan:检查天窗"
+          ],
+          "part_ids": [
+            "B4-G09-P01"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "decision_plan"
+          ],
+          "standalone_part_ids": [
+            "B4-G09-P01"
+          ]
+        },
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "timeline:CH-E_DAY-01:天窗检查完成"
+          ],
+          "part_ids": [
+            "B4-G09-P02"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "action_result"
+          ],
+          "standalone_part_ids": [
+            "B4-G09-P02"
+          ]
+        },
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "timeline:CH-E_DAY-01:漏水风险报告"
+          ],
+          "part_ids": [
+            "B4-G09-P03"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "revelation"
+          ],
+          "standalone_part_ids": [
+            "B4-G09-P03"
+          ]
+        }
+      ],
+      "boundaries": [
+        {
+          "left_part_id": "B4-G09-P01",
+          "merge_condition_codes_missing": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "merge_condition_codes_passed": [],
+          "outcome": "SPLIT",
+          "right_part_id": "B4-G09-P02",
+          "split_reason_codes": [
+            "S_DIFFERENT_TIME_WINDOW",
+            "S_ACTUALITY_DIFFERENT",
+            "S_INDEPENDENT_RESULTS",
+            "S_EITHER_HALF_STANDALONE"
+          ]
+        },
+        {
+          "left_part_id": "B4-G09-P02",
+          "merge_condition_codes_missing": [
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "merge_condition_codes_passed": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_TOP_LEVEL_ACTUALITY_SAME"
+          ],
+          "outcome": "SPLIT",
+          "right_part_id": "B4-G09-P03",
+          "split_reason_codes": [
+            "S_INDEPENDENT_RESULTS",
+            "S_EITHER_HALF_STANDALONE"
+          ]
+        }
+      ],
+      "case_id": "B4-G09",
+      "expectation_checks": {
+        "all_output_atoms_pass_A_to_D": true,
+        "atom_count_matches": true,
+        "decision_matches": true,
+        "no_uncovered_boundary": true,
+        "reason_codes_match": true
+      },
+      "expected": {
+        "atom_count": 3,
+        "decision": "SPLIT",
+        "rationale": "计划、完成检查、发生报告各自成条；报告内容仍保持“可能”的归因判断。",
+        "reason_codes": [
+          "S_DIFFERENT_TIME_WINDOW",
+          "S_ACTUALITY_DIFFERENT",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "observed": {
+        "atom_count": 3,
+        "decision": "SPLIT",
+        "groups": [
+          [
+            "B4-G09-P01"
+          ],
+          [
+            "B4-G09-P02"
+          ],
+          [
+            "B4-G09-P03"
+          ]
+        ],
+        "reason_codes": [
+          "S_DIFFERENT_TIME_WINDOW",
+          "S_ACTUALITY_DIFFERENT",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "passed": true,
+      "schema_version": "v02-b4-1-granularity-case-result-v0.1",
+      "title": "计划、执行与带情态报告拆分"
+    },
+    {
+      "atom_contracts": [
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "timeline:CH-F01_MONDAY:急救包借出"
+          ],
+          "part_ids": [
+            "B4-G10-P01"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "action_result"
+          ],
+          "standalone_part_ids": [
+            "B4-G10-P01"
+          ]
+        },
+        {
+          "causal_endpoint_ids": [],
+          "checks": {
+            "A_COMPLETE_FACT_HEAD": true,
+            "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": true,
+            "C_STANDALONE_OUTLINE_REUSE": true,
+            "D_EXACTLY_ONE_PRIMARY_FUNCTION": true
+          },
+          "complete_fact_head_part_count": 1,
+          "independent_ledger_keys": [
+            "timeline:CH-F02_FRIDAY:演练日期通知"
+          ],
+          "part_ids": [
+            "B4-G10-P02"
+          ],
+          "passes": true,
+          "primary_functions": [
+            "revelation"
+          ],
+          "standalone_part_ids": [
+            "B4-G10-P02"
+          ]
+        }
+      ],
+      "boundaries": [
+        {
+          "left_part_id": "B4-G10-P01",
+          "merge_condition_codes_missing": [
+            "M_SAME_EVENT_WINDOW_OR_SPEECH",
+            "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+            "M_TAIL_IS_DEPENDENT",
+            "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+          ],
+          "merge_condition_codes_passed": [
+            "M_TOP_LEVEL_ACTUALITY_SAME"
+          ],
+          "outcome": "SPLIT",
+          "right_part_id": "B4-G10-P02",
+          "split_reason_codes": [
+            "S_DIFFERENT_TIME_WINDOW",
+            "S_INDEPENDENT_RESULTS",
+            "S_EITHER_HALF_STANDALONE"
+          ]
+        }
+      ],
+      "case_id": "B4-G10",
+      "expectation_checks": {
+        "all_output_atoms_pass_A_to_D": true,
+        "atom_count_matches": true,
+        "decision_matches": true,
+        "no_uncovered_boundary": true,
+        "reason_codes_match": true
+      },
+      "expected": {
+        "atom_count": 2,
+        "decision": "SPLIT",
+        "rationale": "两件事跨章、跨时间窗，结果和后续回收点都不同。",
+        "reason_codes": [
+          "S_DIFFERENT_TIME_WINDOW",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "observed": {
+        "atom_count": 2,
+        "decision": "SPLIT",
+        "groups": [
+          [
+            "B4-G10-P01"
+          ],
+          [
+            "B4-G10-P02"
+          ]
+        ],
+        "reason_codes": [
+          "S_DIFFERENT_TIME_WINDOW",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "passed": true,
+      "schema_version": "v02-b4-1-granularity-case-result-v0.1",
+      "title": "跨章独立结果硬拆"
+    }
+  ],
+  "schema_version": "v02-b4-1-granularity-case-results-v0.1",
+  "summary": {
+    "all_merge_reason_codes_covered": true,
+    "all_split_reason_codes_covered": true,
+    "decision_counts": {
+      "MERGE": 5,
+      "NEEDS_ADJUDICATION": 0,
+      "SPLIT": 5
+    },
+    "evaluated_cases": 10,
+    "merge_reason_codes_covered": [
+      "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+      "M_SAME_EVENT_WINDOW_OR_SPEECH",
+      "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY",
+      "M_TAIL_IS_DEPENDENT",
+      "M_TOP_LEVEL_ACTUALITY_SAME"
+    ],
+    "passed_cases": 10,
+    "required_cases": 10,
+    "split_reason_codes_covered": [
+      "S_ACTUALITY_DIFFERENT",
+      "S_CAUSAL_ENDPOINTS_REUSABLE",
+      "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+      "S_DIFFERENT_SUBJECT_INDEPENDENT_ACTION",
+      "S_DIFFERENT_TIME_WINDOW",
+      "S_EITHER_HALF_STANDALONE",
+      "S_INDEPENDENT_RESULTS"
+    ],
+    "uncovered_boundary_count": 0
+  }
+}

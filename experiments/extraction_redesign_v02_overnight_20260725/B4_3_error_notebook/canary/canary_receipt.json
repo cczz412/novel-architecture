@@ -1,0 +1,38 @@
+{
+  "canary_id": "B4_3_ERROR_NOTEBOOK_LEAK_AND_IDENTITY_CANARY_V1",
+  "case_count": 7,
+  "cases": [
+    {
+      "case_id": "FORBIDDEN_FIELD",
+      "result": "REJECTED_AS_EXPECTED"
+    },
+    {
+      "case_id": "SUSPECTED_BODY",
+      "result": "REJECTED_AS_EXPECTED"
+    },
+    {
+      "case_id": "SUSPECTED_SECRET",
+      "result": "REJECTED_AS_EXPECTED"
+    },
+    {
+      "case_id": "UNKNOWN_FINE_CODE",
+      "result": "REJECTED_AS_EXPECTED"
+    },
+    {
+      "case_id": "ROUTE_MISMATCH",
+      "result": "REJECTED_AS_EXPECTED"
+    },
+    {
+      "case_id": "TRUTH_PROMOTION_STATUS",
+      "result": "REJECTED_AS_EXPECTED"
+    },
+    {
+      "case_id": "DUPLICATE_IDENTITY",
+      "result": "REJECTED_AS_EXPECTED"
+    }
+  ],
+  "passed_count": 7,
+  "real_secret_or_novel_text_used": false,
+  "result": "PASS",
+  "runtime_inputs_persisted": false
+}

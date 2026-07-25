@@ -109,6 +109,8 @@ def test_prepare_refreezes_tencent_compatibility_profile_and_preserves_sources(
         "retry13": z68.tree_fingerprint(live.SOURCE_RETRY13),
     }
     preflight = live.read_json(run_dir / "repair/atomic_preflight.json")
+    root_preflight = live.read_json(run_dir / "preflight.json")
+    assert root_preflight["protected_before"] == z83.protected_snapshot()
     assert preflight["z94_step2_supply_slice_only"] is False
     assert preflight["z94_tencent_provider_override"] is True
     for row in preflight["rows"]:

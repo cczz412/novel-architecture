@@ -1,0 +1,53 @@
+{
+  "schema_version": "provider-channel-v1",
+  "provider": "ant_ling",
+  "display_name": "蚂蚁百灵 API",
+  "account_profile": "standard_api_token",
+  "base_url": "https://api.ant-ling.com/v1",
+  "endpoint": "/chat/completions",
+  "api_key_env": "ANT_LING_API_KEY",
+  "response_format_compatibility": "openai_chat_completions",
+  "enabled_by_default": false,
+  "default_model": null,
+  "status": "configured_key_stored_unvalidated_benchmark_only_not_wired_to_default",
+  "recommended_benchmark_profile": "ling_flash_thinking_json",
+  "recommended_temperature": 0.2,
+  "model_selection_rule": "只允许显式选择精确 model_id；不得自动换近似型号、其他 Ling 版本或其他供应商。",
+  "models": [
+    {
+      "requested_name": "Ling 3.0 Flash",
+      "model_id": "Ling-3.0-flash",
+      "call_ready": true,
+      "capabilities": [
+        "thinking",
+        "structured_output",
+        "function_calling"
+      ],
+      "context_tokens": 262144,
+      "max_expandable_context_tokens": 1048576,
+      "max_output_tokens": null,
+      "thinking_contract": {
+        "field": "thinking.type",
+        "default": "enable",
+        "allowed_values": [
+          "enable",
+          "disable"
+        ]
+      },
+      "structured_output_contract": {
+        "json_object": true,
+        "json_schema": true
+      },
+      "benchmark_note": "官方未在已读文档中给出最大输出 token 数，因此不臆造上限；每次正式试验须按当次任务冻结护栏并以供应商响应为准。"
+    }
+  ],
+  "official_docs": [
+    "https://developer.ant-ling.com/zh-CN/docs",
+    "https://developer.ant-ling.com/zh-CN/docs/getting-started/prerequisites/",
+    "https://developer.ant-ling.com/zh-CN/docs/getting-started/quickstart/",
+    "https://developer.ant-ling.com/zh-CN/docs/models/ling/",
+    "https://developer.ant-ling.com/zh-CN/docs/api-reference/openai/",
+    "https://developer.ant-ling.com/zh-CN/docs/tutorials/structured-outputs/",
+    "https://developer.ant-ling.com/zh-CN/docs/tutorials/effort/"
+  ]
+}

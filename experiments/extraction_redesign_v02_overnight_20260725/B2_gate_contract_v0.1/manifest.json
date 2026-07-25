@@ -1,0 +1,317 @@
+{
+  "activation_formula": "PROGRAM_GREEN && JUDGE_GREEN && ENGINEERING_GREEN && HASH_LOCKED && BUDGET_OK && candidate_silver_not_active",
+  "artifact_count": 21,
+  "artifacts": [
+    {
+      "bytes": 955,
+      "path": "examples/invalid/block_receipt.json",
+      "sha256": "0c6325dedd8328e57d87563ece1f44a9ecddeaf80b2d2baad67e6c02520da783"
+    },
+    {
+      "bytes": 1051,
+      "path": "examples/invalid/budget_ledger.json",
+      "sha256": "f85a4a9f79c71bfbfd1cb9f2a5990f5b979615655ffd91d2469db186fbf27bf5"
+    },
+    {
+      "bytes": 15665,
+      "path": "examples/invalid/failure_code_map.json",
+      "sha256": "f087cea4983e6d90d4c64efc842bc9fb47e2b02a3f4a50c0eeb6671fdba61400"
+    },
+    {
+      "bytes": 796,
+      "path": "examples/invalid/judge_green_ticket.json",
+      "sha256": "86b46598dc79a09a740cdf055d32ecdc3bef44449981dfabdc401ef81e3f4c29"
+    },
+    {
+      "bytes": 891,
+      "path": "examples/invalid/preflight.json",
+      "sha256": "f377726eb1b056e855b220e1ba31413ce14846c027579765a403c8a73227f197"
+    },
+    {
+      "bytes": 1167,
+      "path": "examples/invalid/program_green_receipt.json",
+      "sha256": "ef55f5a65818814778ab38bcffbe26939d16826a4ce230a215890da14123eb8d"
+    },
+    {
+      "bytes": 883,
+      "path": "examples/invalid/snapshot_receipt.json",
+      "sha256": "ba074c6acc0f11e7ed7762f0c4155b39c3710f3a0511404465545e7c18ca786d"
+    },
+    {
+      "bytes": 955,
+      "path": "examples/valid/block_receipt.json",
+      "sha256": "8350053c43409b571d9aace1b79d15e281a2654ce6691288fcf08715d62efc68"
+    },
+    {
+      "bytes": 1196,
+      "path": "examples/valid/budget_ledger.json",
+      "sha256": "8093dae7056666f2cf347e02542d8e305e10c717ef2e08e52d59bac8decf2792"
+    },
+    {
+      "bytes": 15477,
+      "path": "examples/valid/failure_code_map.json",
+      "sha256": "7d609bb5b16e2ee53c58c59501cfd1d82e6db68c16818b64956440bdac07d44f"
+    },
+    {
+      "bytes": 845,
+      "path": "examples/valid/judge_green_ticket.json",
+      "sha256": "c3690575d24b675e4c944716c0bb7ef50e331cb1155fb768bc3b4755568b8f6d"
+    },
+    {
+      "bytes": 849,
+      "path": "examples/valid/preflight.json",
+      "sha256": "33da024a2752b500dad7eb59a3dd5f027a05fbbb327f34acd8f4b6b54af8d252"
+    },
+    {
+      "bytes": 1181,
+      "path": "examples/valid/program_green_receipt.json",
+      "sha256": "84f7c890b5d0c564a29defe53f0063b7ef9910df535392d5dba904e171ac06de"
+    },
+    {
+      "bytes": 885,
+      "path": "examples/valid/snapshot_receipt.json",
+      "sha256": "eba951b457cb4bb61e4582509de4294265e50f7e93e4a4fcd55faa2c5112abda"
+    },
+    {
+      "bytes": 5331,
+      "path": "schemas/block_receipt.schema.json",
+      "sha256": "1d3713a604ca137f727a014c994b1adbeabda6442a28281daee2b7ed61c33114"
+    },
+    {
+      "bytes": 3338,
+      "path": "schemas/budget_ledger.schema.json",
+      "sha256": "11d6cae55cf13c0d3ebc979b142e433bd505a832cfd28df41a1937310a74f257"
+    },
+    {
+      "bytes": 7604,
+      "path": "schemas/failure_code_map.schema.json",
+      "sha256": "20c6347bca192ecc127a4b69fd06d3a37dc8e0d5fe9a2dcc5a74bf80ae593d5d"
+    },
+    {
+      "bytes": 2116,
+      "path": "schemas/judge_green_ticket.schema.json",
+      "sha256": "86d59917641796345c1c24ce90d2c02440f720ad89aeda268fe48af59cff5c87"
+    },
+    {
+      "bytes": 4384,
+      "path": "schemas/preflight.schema.json",
+      "sha256": "9d69b87e4e4e5ca3844a04f6271d7be6ab9776e6bf0dd8f0276de318fa09c2e1"
+    },
+    {
+      "bytes": 3089,
+      "path": "schemas/program_green_receipt.schema.json",
+      "sha256": "2e560e1e6355804f42e18df9f7e1dbc1074bc28a6826a2f12e6d9884f5cc5561"
+    },
+    {
+      "bytes": 6265,
+      "path": "schemas/snapshot_receipt.schema.json",
+      "sha256": "063c4ded7243df08884ff6c3c31dfc486195b70ec2c7c4d2ae9f452affd4fd1e"
+    }
+  ],
+  "authority_boundary": {
+    "design": "统一设计稿｜抽取工序重设计 v0.2",
+    "local_b2_freeze": "v0.2 未给既定细码命名表；本候选按逐闸要求首次冻结完整细码集。",
+    "sections": [
+      "一",
+      "四",
+      "五",
+      "九",
+      "十",
+      "十一",
+      "十二"
+    ],
+    "work_order": "连夜施工令 B2"
+  },
+  "bundle_content_hash": "dd4a9a779e71390b111bfe27d46166280e362870fe0b4a3f4fbe37597e6aea2a",
+  "candidate_id": "B2_gate_contract_v0.1",
+  "candidate_status": "candidate_silver_not_active",
+  "contract_hash": "6041b9822b3b8beea5f0d45f59f0d9276cfe7e7e31b22a370c1a71e342e69013",
+  "contract_hash_scope": "B2_SCHEMA_BUNDLE_ONLY",
+  "explicit_missing_values": [
+    "T1_DEFINITION_MISSING",
+    "T1_VALUE_MISSING",
+    "UNIT_PRICE_MISSING",
+    "K_VALUE_MISSING",
+    "SMALL_BLOCK_SIZE_MISSING",
+    "MEDIUM_BLOCK_SIZE_MISSING",
+    "LARGE_BLOCK_SIZE_MISSING",
+    "RULES_HASH_MISSING",
+    "PROMPT_HASH_MISSING",
+    "CANARY_HASH_MISSING",
+    "FULL_CHAIN_CONTRACT_HASH_MISSING"
+  ],
+  "failure_code_coverage": {
+    "content_hard_item_count": 12,
+    "covered_routes": [
+      "STRUCTURE",
+      "BOUNDARY",
+      "FACT",
+      "QUALIFIER",
+      "ANCHOR",
+      "PROVENANCE_BUDGET"
+    ],
+    "duplicate_code_count": 0,
+    "fine_code_count": 69,
+    "route_count": 6,
+    "unknown_code_policy": "REJECT",
+    "unmapped_code_count": 0
+  },
+  "full_chain_contract_lock": {
+    "canary_sha256": "CANARY_HASH_MISSING",
+    "engineering_gate": "RED",
+    "full_chain_contract_hash": "FULL_CHAIN_CONTRACT_HASH_MISSING",
+    "full_chain_hash_locked": false,
+    "prompt_sha256": "PROMPT_HASH_MISSING",
+    "required_components": [
+      "rules",
+      "schemas",
+      "prompt",
+      "canary"
+    ],
+    "rules_sha256": "RULES_HASH_MISSING",
+    "schemas_sha256": "6041b9822b3b8beea5f0d45f59f0d9276cfe7e7e31b22a370c1a71e342e69013"
+  },
+  "module_ownership": [
+    {
+      "artifacts": [
+        "preflight"
+      ],
+      "module_id": "M01",
+      "responsibility": "P-1 预检与硬停回执"
+    },
+    {
+      "artifacts": [
+        "block_receipt"
+      ],
+      "module_id": "M02",
+      "responsibility": "S0 坐标与 block_receipt"
+    },
+    {
+      "artifacts": [
+        "manifest.contract_hash",
+        "manifest.full_chain_contract_lock",
+        "schema_inventory"
+      ],
+      "module_id": "M03",
+      "responsibility": "规则、Schema、Prompt、哨兵的 contract_hash 锁"
+    },
+    {
+      "artifacts": [
+        "failure_code_map"
+      ],
+      "module_id": "M04",
+      "responsibility": "全部细失败码唯一归一到六类路由"
+    },
+    {
+      "artifacts": [
+        "snapshot_receipt",
+        "program_green_receipt"
+      ],
+      "module_id": "M05",
+      "responsibility": "S6 快照独立重算与程序绿票格式"
+    },
+    {
+      "artifacts": [
+        "judge_green_ticket"
+      ],
+      "module_id": "M06",
+      "responsibility": "裁判票格式与信任根缺失红灯"
+    },
+    {
+      "artifacts": [
+        "budget_ledger"
+      ],
+      "module_id": "M07",
+      "responsibility": "B+3、B+5、u、R 的预算总账"
+    },
+    {
+      "artifacts": [
+        "manifest.release_isolation"
+      ],
+      "module_id": "M09",
+      "responsibility": "candidate_silver_not_active 发布隔离"
+    }
+  ],
+  "producer_selfcheck_authority": "DIAGNOSTIC_ONLY_NOT_GREEN_TICKET",
+  "release_isolation": {
+    "activation_allowed": false,
+    "b2_schema_bundle_hash_locked": true,
+    "budget_ok": false,
+    "engineering_green": false,
+    "full_chain_hash_locked": false,
+    "judge_green_issued": false,
+    "program_green_issued": false,
+    "required_candidate_status": "candidate_silver_not_active"
+  },
+  "schema_inventory": [
+    {
+      "draft": "2020-12",
+      "invalid_example_path": "examples/invalid/preflight.json",
+      "name": "preflight",
+      "schema_path": "schemas/preflight.schema.json",
+      "valid_example_path": "examples/valid/preflight.json"
+    },
+    {
+      "draft": "2020-12",
+      "invalid_example_path": "examples/invalid/block_receipt.json",
+      "name": "block_receipt",
+      "schema_path": "schemas/block_receipt.schema.json",
+      "valid_example_path": "examples/valid/block_receipt.json"
+    },
+    {
+      "draft": "2020-12",
+      "invalid_example_path": "examples/invalid/failure_code_map.json",
+      "name": "failure_code_map",
+      "schema_path": "schemas/failure_code_map.schema.json",
+      "valid_example_path": "examples/valid/failure_code_map.json"
+    },
+    {
+      "draft": "2020-12",
+      "invalid_example_path": "examples/invalid/snapshot_receipt.json",
+      "name": "snapshot_receipt",
+      "schema_path": "schemas/snapshot_receipt.schema.json",
+      "valid_example_path": "examples/valid/snapshot_receipt.json"
+    },
+    {
+      "draft": "2020-12",
+      "invalid_example_path": "examples/invalid/program_green_receipt.json",
+      "name": "program_green_receipt",
+      "schema_path": "schemas/program_green_receipt.schema.json",
+      "valid_example_path": "examples/valid/program_green_receipt.json"
+    },
+    {
+      "draft": "2020-12",
+      "invalid_example_path": "examples/invalid/judge_green_ticket.json",
+      "name": "judge_green_ticket",
+      "schema_path": "schemas/judge_green_ticket.schema.json",
+      "valid_example_path": "examples/valid/judge_green_ticket.json"
+    },
+    {
+      "draft": "2020-12",
+      "invalid_example_path": "examples/invalid/budget_ledger.json",
+      "name": "budget_ledger",
+      "schema_path": "schemas/budget_ledger.schema.json",
+      "valid_example_path": "examples/valid/budget_ledger.json"
+    }
+  ],
+  "schema_version": "v02-b2-gate-contract-manifest-v0.1",
+  "scope": {
+    "active_pointer_changed": false,
+    "default_chain_changed": false,
+    "formal_gold_changed": false,
+    "model_api_calls": 0,
+    "network_requests": 0,
+    "pipeline": [
+      "P-1",
+      "S0",
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "J",
+      "R"
+    ]
+  }
+}

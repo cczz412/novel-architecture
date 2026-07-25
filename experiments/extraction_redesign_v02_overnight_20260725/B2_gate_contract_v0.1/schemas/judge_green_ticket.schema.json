@@ -1,0 +1,101 @@
+{
+  "$id": "https://local.invalid/contracts/v02/judge_green_ticket.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "activation_allowed": {
+      "const": false
+    },
+    "allowed_judge_output_fields": {
+      "const": [
+        "verdict",
+        "h_codes",
+        "fact_id"
+      ]
+    },
+    "blind_judging_required": {
+      "const": true
+    },
+    "candidate_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "candidate_lock_status": {
+      "const": "HASH_LOCKED"
+    },
+    "candidate_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "engineering_gate": {
+      "const": "RED"
+    },
+    "fact_id": {
+      "type": "null"
+    },
+    "failure_codes": {
+      "const": [
+        "J_TRUST_ROOT_MISSING",
+        "J_TICKET_UNSIGNED"
+      ]
+    },
+    "format_mode": {
+      "const": "FORMAT_ONLY_UNISSUED"
+    },
+    "h_codes": {
+      "type": "null"
+    },
+    "issuance_status": {
+      "const": "UNISSUED"
+    },
+    "judge_family_must_differ_from_producer": {
+      "const": true
+    },
+    "module_id": {
+      "const": "M06"
+    },
+    "schema_version": {
+      "const": "v02-judge-green-ticket-v0.1"
+    },
+    "signature": {
+      "type": "null"
+    },
+    "ticket_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "trust_root_id": {
+      "const": "TRUST_ROOT_ID_MISSING"
+    },
+    "trust_root_status": {
+      "const": "TRUST_ROOT_MISSING"
+    },
+    "verdict": {
+      "type": "null"
+    }
+  },
+  "required": [
+    "schema_version",
+    "ticket_id",
+    "module_id",
+    "format_mode",
+    "candidate_id",
+    "candidate_sha256",
+    "candidate_lock_status",
+    "blind_judging_required",
+    "judge_family_must_differ_from_producer",
+    "allowed_judge_output_fields",
+    "issuance_status",
+    "trust_root_status",
+    "trust_root_id",
+    "signature",
+    "verdict",
+    "h_codes",
+    "fact_id",
+    "engineering_gate",
+    "activation_allowed",
+    "failure_codes"
+  ],
+  "title": "Judge-green ticket format-only placeholder v0.1",
+  "type": "object"
+}

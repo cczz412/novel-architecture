@@ -1,0 +1,78 @@
+{
+  "authority": {
+    "ledger_time": "2026-07-24T17:55:00+08:00",
+    "notion_ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+    "notion_queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc"
+  },
+  "budget": {
+    "cz_direct_round_token_allowance": 500000,
+    "cz_direct_round_token_allowance_source": "CZ 当前对话直令：Qwen3.7 Max 有50万 tokens额度，所以先放心测",
+    "conservative_cost_rule": "每次裁判全部 token 帽按输出价 36 元/百万计算；micro-CNY 上限=token_cap×36",
+    "input_price_cny_per_million_tokens": 12,
+    "output_price_cny_per_million_tokens": 36,
+    "runtime_dynamic_recalculation_required": true,
+    "runtime_dynamic_recalculation_scope": "实际P2结果插入后的完整messages＋4k输出上限",
+    "cost_send_preflight_rule": "actual_accumulated_micro_cny + next_conservative_cap_micro_cny <= 10000000",
+    "token_send_preflight_rule": "actual_accumulated_tokens + next_conservative_token_projection <= 500000",
+    "total_cost_cap_cny": 10,
+    "total_cost_cap_micro_cny": 10000000,
+    "legacy_token_caps_source": "runs/Z98_刀A小额补丁实验_步一备料_v1.0_20260724/receipts/budget_receipt.json",
+    "legacy_token_caps_status": "保留作实验差异账，不再作裁判发送阻断；发送总帽以CZ直批50万为准",
+    "usage_is_only_formal_account": true
+  },
+  "eligibility": {
+    "blind_tested_provider_and_arm_labels": true,
+    "contract_mode_explicit_label_hidden": true,
+    "contract_mode_cardinality_side_channel": "已登记：单条恒1项、批式4或5项；裁判可猜分组规模，不等于看到平台或臂名",
+    "full_statistical_contract_mode_blind": false,
+    "different_family_from_tested_models": true,
+    "forbidden_model_visible_material": [
+      "gold",
+      "answers",
+      "human_verdicts",
+      "historical_scores",
+      "repair_logs",
+      "tested_provider",
+      "tested_arm",
+      "contract_mode"
+    ],
+    "judge_family": "qwen",
+    "judge_must_not_edit_candidates": true,
+    "single_judge_lane_only": true,
+    "tested_family": "deepseek"
+  },
+  "provider": {
+    "api_key_env": "DASHSCOPE_API_KEY",
+    "api_key_value_must_not_be_read_or_logged_during_freeze": true,
+    "configured_alias": "qwen3.7-max",
+    "endpoint": "/chat/completions",
+    "exact_model_id": "qwen3.7-max-2026-05-20",
+    "family": "qwen",
+    "live_exact_model_catalog_check": "PENDING_BEFORE_NETWORK_RELEASE",
+    "no_cross_provider_failover": true,
+    "provider_id": "qianwen_platform",
+    "snapshot_basis": "Notion 17:55 fixed-version authority text"
+  },
+  "request_profile": {
+    "direct_http_body_enable_thinking": false,
+    "max_completion_tokens": 4000,
+    "n": 1,
+    "response_format": null,
+    "sdk_note": "OpenAI SDK extra_body is a client wrapper; direct POST request_body uses top-level enable_thinking=false",
+    "structured_output_boundary": "model has no response_format support; pure JSON contract plus strict local parser",
+    "temperature": 0.0,
+    "timeout_seconds": 120
+  },
+  "schema_version": "z98-independent-judge-authority-v1",
+  "transport": {
+    "http_401_403_5xx_auto_retry": false,
+    "model_api_calls_during_freeze": 0,
+    "network_attempts_during_freeze": 0,
+    "retry_after_over_300_seconds_hard_stop": true,
+    "same_request_429_retry_delays_seconds": [
+      5,
+      10
+    ],
+    "same_request_429_retry_limit": 2
+  }
+}

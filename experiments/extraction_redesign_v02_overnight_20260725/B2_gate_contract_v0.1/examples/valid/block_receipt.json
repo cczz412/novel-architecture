@@ -1,0 +1,29 @@
+{
+  "block_id": "EXAMPLE-BLOCK-001",
+  "block_size_policy": {
+    "large": "LARGE_BLOCK_SIZE_MISSING",
+    "medium": "MEDIUM_BLOCK_SIZE_MISSING",
+    "small": "SMALL_BLOCK_SIZE_MISSING"
+  },
+  "chapter_id": "EXAMPLE-CHAPTER-001",
+  "contract_hash": "6041b9822b3b8beea5f0d45f59f0d9276cfe7e7e31b22a370c1a71e342e69013",
+  "coordinate_unique": true,
+  "core_char_count": 640,
+  "core_end_char_exclusive": 1040,
+  "core_start_char": 400,
+  "failure_codes": [
+    "S0_BLOCK_SIZE_POLICY_MISSING"
+  ],
+  "module_id": "M02",
+  "next_core_start_char": 1040,
+  "physical_line_end": 52,
+  "physical_line_start": 21,
+  "previous_core_end_char_exclusive": 400,
+  "receipt_id": "EXAMPLE-BLOCK-001",
+  "receipt_status": "BLOCKED_POLICY_MISSING",
+  "s0_reference_resolvable": true,
+  "schema_version": "v02-block-receipt-v0.1",
+  "sequence_gap_chars": 0,
+  "sequence_overlap_chars": 0,
+  "source_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+}

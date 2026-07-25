@@ -22,7 +22,14 @@ python3 tools/chatgpt_review_pack.py --dry-run
 ```
 
 产出：`TEMP/chatgpt_review_packs/<profile>_<时间戳>/`
-主文件：`chatgpt_review_*.zip`＋包内 `00_READ_ME_FOR_REVIEWER.md`
+主文件：
+
+- `chatgpt_review_*.zip`
+- 包内 `00_READ_ME_FOR_REVIEWER.md`、`MANIFEST.json`、`SHA256SUMS`
+- 包外 `PACKAGE_RECEIPT.json`（ZIP SHA、CRC、成员集合和逐文件回读结果）
+
+`--dry-run` 只读输入并打印清单，**不会创建输出目录、摘要或半成品**。
+正式打包也先在同级临时目录完成并回读，全部通过后才把整包原子落到目标目录。
 
 🔥 **旧 zip 一旦已上传／已在审，就别再改那一包。**
 外审吐槽缺东西 → **改 `profiles.json`／打包脚本**，下次重新打；不要回头补丁旧包。
@@ -69,6 +76,8 @@ MiniCPM／微调重依赖塞回来。
 
 - 不带 `TEMP/`、密钥、正文语料
 - zip 默认 ≤25MB；超限须 `--allow-large`
+- 同名 ZIP 成员直接拒收，不静默拿后一个覆盖前一个
+- CRC、成员集合、字节数或 SHA 任一不符，都不报打包成功
 - 外发读盘 ≠ 把 `runs/`／`reports/` 重新进 Git
 - 配置真源：本目录；入口也写在 [`AGENTS.md`](../../AGENTS.md)
 - 新清单里的文件身份一律写仓库相对路径；主机本地绝对路径不是工件身份

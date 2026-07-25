@@ -1,0 +1,979 @@
+{
+  "authority_boundary": {
+    "design": "统一设计稿｜抽取工序重设计 v0.2",
+    "section": "三｜怎么算一条",
+    "source_use": "只继承封闭结构判据，不复制六本专名、原句或可回指情节。",
+    "work_order": "连夜施工令 B4.1"
+  },
+  "candidate_id": "B4_1_granularity_casebook",
+  "candidate_status": "candidate_silver_not_active",
+  "case_count": 10,
+  "cases": [
+    {
+      "case_id": "B4-G01",
+      "expected": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "rationale": "提示灯只限定发现条件，没有独立账本键或第二个主情节功能。",
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "parts": [
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-A_SCENE-01",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "药材箱受潮",
+            "polarity": "positive",
+            "predicate": "发现",
+            "result": "受潮事实进入处置视野",
+            "subject": "值班员"
+          },
+          "independent_action": false,
+          "independent_result_key": "受潮事实被发现",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "值班员:knowledge:药材箱受潮",
+              "state_slot": "knowledge",
+              "view": "character_state"
+            }
+          ],
+          "part_id": "B4-G01-P01",
+          "primary_functions": [
+            "revelation"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "值班员发现药材箱受潮。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-A_SCENE-01",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "仓库高湿提示",
+            "polarity": "positive",
+            "predicate": "亮起",
+            "result": "限定发现发生的条件",
+            "subject": "湿度提示灯"
+          },
+          "independent_action": false,
+          "independent_result_key": null,
+          "ledger_writes": [],
+          "part_id": "B4-G01-P02",
+          "primary_functions": [
+            "revelation"
+          ],
+          "relation_to_previous": "condition",
+          "speech_event_id": null,
+          "standalone_outline_reuse": false,
+          "text": "发现发生在湿度提示灯亮起之后。"
+        }
+      ],
+      "text": "值班员发现药材箱受潮；这个发现发生在湿度提示灯亮起之后。",
+      "title": "提示条件不另立中心事实"
+    },
+    {
+      "case_id": "B4-G02",
+      "expected": {
+        "atom_count": 2,
+        "decision": "SPLIT",
+        "rationale": "确认与关阀各有主体、结果和复用价值，并形成显式因果两端。",
+        "reason_codes": [
+          "S_DIFFERENT_SUBJECT_INDEPENDENT_ACTION",
+          "S_INDEPENDENT_RESULTS",
+          "S_CAUSAL_ENDPOINTS_REUSABLE",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "parts": [
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [
+            "CE-B4-G02"
+          ],
+          "event_window": "CH-A_SCENE-02",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "冷却液泄漏",
+            "polarity": "positive",
+            "predicate": "确认",
+            "result": "泄漏事实被确认",
+            "subject": "监测员"
+          },
+          "independent_action": true,
+          "independent_result_key": "泄漏事实被确认",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "监测员:knowledge:冷却液泄漏",
+              "state_slot": "knowledge",
+              "view": "character_state"
+            }
+          ],
+          "part_id": "B4-G02-P01",
+          "primary_functions": [
+            "revelation"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "监测员确认冷却液泄漏。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [
+            "CE-B4-G02"
+          ],
+          "event_window": "CH-A_SCENE-02",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "冷却系统主阀",
+            "polarity": "positive",
+            "predicate": "关闭",
+            "result": "冷却液继续流出被截断",
+            "subject": "维修员"
+          },
+          "independent_action": true,
+          "independent_result_key": "主阀关闭",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "CH-A_SCENE-02:关闭主阀",
+              "state_slot": null,
+              "view": "timeline"
+            }
+          ],
+          "part_id": "B4-G02-P02",
+          "primary_functions": [
+            "action_result"
+          ],
+          "relation_to_previous": "result",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "维修员随后关闭主阀。"
+        }
+      ],
+      "text": "监测员确认冷却液泄漏，维修员随后关闭主阀。",
+      "title": "确认风险与处置动作分立"
+    },
+    {
+      "case_id": "B4-G03",
+      "expected": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "rationale": "扣门闩只完成同一次封存，没有第二个独立账本写入。",
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "parts": [
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-B_SCENE-01",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "培养皿与恒温柜",
+            "polarity": "positive",
+            "predicate": "放入",
+            "result": "培养皿进入封存位置",
+            "subject": "库管"
+          },
+          "independent_action": true,
+          "independent_result_key": "培养皿完成封存",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "CH-B_SCENE-01:培养皿封存",
+              "state_slot": null,
+              "view": "timeline"
+            }
+          ],
+          "part_id": "B4-G03-P01",
+          "primary_functions": [
+            "action_result"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "库管把培养皿放进恒温柜。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-B_SCENE-01",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "恒温柜门闩",
+            "polarity": "positive",
+            "predicate": "扣上",
+            "result": "培养皿封存完成",
+            "subject": "库管"
+          },
+          "independent_action": false,
+          "independent_result_key": null,
+          "ledger_writes": [],
+          "part_id": "B4-G03-P02",
+          "primary_functions": [
+            "action_result"
+          ],
+          "relation_to_previous": "completion",
+          "speech_event_id": null,
+          "standalone_outline_reuse": false,
+          "text": "库管扣上柜门门闩完成封存。"
+        }
+      ],
+      "text": "库管把培养皿放进恒温柜，并扣上柜门门闩完成封存。",
+      "title": "放入与封存完成动作合并"
+    },
+    {
+      "case_id": "B4-G04",
+      "expected": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "rationale": "两段后续动作都是同一校准终态的步骤与完成动作。",
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "parts": [
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-B_SCENE-02",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "仪表校准程序",
+            "polarity": "positive",
+            "predicate": "启动",
+            "result": "仪表进入校准流程",
+            "subject": "技师"
+          },
+          "independent_action": true,
+          "independent_result_key": "仪表完成校准",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "CH-B_SCENE-02:仪表校准",
+              "state_slot": null,
+              "view": "timeline"
+            }
+          ],
+          "part_id": "B4-G04-P01",
+          "primary_functions": [
+            "action_result"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "技师启动仪表校准。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-B_SCENE-02",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "仪表调节钮",
+            "polarity": "positive",
+            "predicate": "旋动",
+            "result": "读数归零",
+            "subject": "技师"
+          },
+          "independent_action": false,
+          "independent_result_key": null,
+          "ledger_writes": [],
+          "part_id": "B4-G04-P02",
+          "primary_functions": [
+            "action_result"
+          ],
+          "relation_to_previous": "step",
+          "speech_event_id": null,
+          "standalone_outline_reuse": false,
+          "text": "技师旋动调节钮使读数归零。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-B_SCENE-02",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "仪表确认键",
+            "polarity": "positive",
+            "predicate": "按下",
+            "result": "校准流程完成",
+            "subject": "技师"
+          },
+          "independent_action": false,
+          "independent_result_key": null,
+          "ledger_writes": [],
+          "part_id": "B4-G04-P03",
+          "primary_functions": [
+            "action_result"
+          ],
+          "relation_to_previous": "completion",
+          "speech_event_id": null,
+          "standalone_outline_reuse": false,
+          "text": "技师按确认键完成仪表校准。"
+        }
+      ],
+      "text": "技师启动校准，旋动调节钮归零，再按确认键完成仪表校准。",
+      "title": "连续校准步骤合并"
+    },
+    {
+      "case_id": "B4-G05",
+      "expected": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "rationale": "这是同一次通知；六箱和不得拆封是计划内容的参数与约束。",
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "parts": [
+        {
+          "attributed_content": {
+            "fact_head": {
+              "actuality": "planned",
+              "object": "六箱滤芯",
+              "polarity": "positive",
+              "predicate": "搬运",
+              "result": "搬运任务待执行",
+              "subject": "学徒"
+            },
+            "modality": "instructed_future",
+            "source_attribution": "领班"
+          },
+          "causal_endpoint_ids": [],
+          "event_window": "CH-C_SCENE-01",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "学徒搬运六箱滤芯",
+            "polarity": "positive",
+            "predicate": "通知",
+            "result": "搬运安排被下达",
+            "subject": "领班"
+          },
+          "independent_action": true,
+          "independent_result_key": "搬运安排被下达",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "CH-C_SCENE-01:搬运通知",
+              "state_slot": null,
+              "view": "timeline"
+            }
+          ],
+          "part_id": "B4-G05-P01",
+          "primary_functions": [
+            "decision_plan"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": "SP-B4-G05",
+          "standalone_outline_reuse": true,
+          "text": "领班通知学徒明早搬运六箱滤芯。"
+        },
+        {
+          "attributed_content": {
+            "fact_head": {
+              "actuality": "planned",
+              "object": "六箱滤芯",
+              "polarity": "negative",
+              "predicate": "拆封",
+              "result": "滤芯保持封装",
+              "subject": "学徒"
+            },
+            "modality": "prohibited_future",
+            "source_attribution": "领班"
+          },
+          "causal_endpoint_ids": [],
+          "event_window": "CH-C_SCENE-01",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "搬运前不得拆封",
+            "polarity": "positive",
+            "predicate": "强调",
+            "result": "封装约束被说明",
+            "subject": "领班"
+          },
+          "independent_action": false,
+          "independent_result_key": null,
+          "ledger_writes": [],
+          "part_id": "B4-G05-P02",
+          "primary_functions": [
+            "decision_plan"
+          ],
+          "relation_to_previous": "reported_content",
+          "speech_event_id": "SP-B4-G05",
+          "standalone_outline_reuse": false,
+          "text": "领班并强调搬运前不得拆封。"
+        }
+      ],
+      "text": "领班通知学徒明早搬运六箱滤芯，并强调搬运前不得拆封。",
+      "title": "同一发言中的数量与禁令合并"
+    },
+    {
+      "case_id": "B4-G06",
+      "expected": {
+        "atom_count": 1,
+        "decision": "MERGE",
+        "rationale": "进入机房是同一次移动的到达完成态，不另写位置账。",
+        "reason_codes": [
+          "M_SAME_EVENT_WINDOW_OR_SPEECH",
+          "M_TOP_LEVEL_ACTUALITY_SAME",
+          "M_EXACTLY_ONE_PRIMARY_FUNCTION",
+          "M_TAIL_IS_DEPENDENT",
+          "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY"
+        ]
+      },
+      "parts": [
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-C_SCENE-02",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "备用机房",
+            "polarity": "positive",
+            "predicate": "前往",
+            "result": "巡检位置转向备用机房",
+            "subject": "巡检员"
+          },
+          "independent_action": true,
+          "independent_result_key": "巡检员抵达备用机房",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "巡检员:location:备用机房",
+              "state_slot": "location",
+              "view": "character_state"
+            }
+          ],
+          "part_id": "B4-G06-P01",
+          "primary_functions": [
+            "state_change"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "巡检员沿北廊前往备用机房。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-C_SCENE-02",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "备用机房",
+            "polarity": "positive",
+            "predicate": "进入",
+            "result": "移动到达目的地",
+            "subject": "巡检员"
+          },
+          "independent_action": false,
+          "independent_result_key": null,
+          "ledger_writes": [],
+          "part_id": "B4-G06-P02",
+          "primary_functions": [
+            "state_change"
+          ],
+          "relation_to_previous": "completion",
+          "speech_event_id": null,
+          "standalone_outline_reuse": false,
+          "text": "巡检员随后进入机房。"
+        }
+      ],
+      "text": "巡检员沿北廊前往备用机房，随后进入机房。",
+      "title": "移动目的地完成动作合并"
+    },
+    {
+      "case_id": "B4-G07",
+      "expected": {
+        "atom_count": 2,
+        "decision": "SPLIT",
+        "rationale": "得知写知识槽，决定写计划槽；两者可以分别被大纲引用。",
+        "reason_codes": [
+          "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "parts": [
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-D_SCENE-01",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "样本已污染",
+            "polarity": "positive",
+            "predicate": "得知",
+            "result": "污染信息被掌握",
+            "subject": "研究员"
+          },
+          "independent_action": false,
+          "independent_result_key": "污染信息被掌握",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "研究员:knowledge:样本污染",
+              "state_slot": "knowledge",
+              "view": "character_state"
+            }
+          ],
+          "part_id": "B4-G07-P01",
+          "primary_functions": [
+            "revelation"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "研究员得知样本已污染。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-D_SCENE-01",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "暂停后续试验",
+            "polarity": "positive",
+            "predicate": "决定",
+            "result": "暂停计划成立",
+            "subject": "研究员"
+          },
+          "independent_action": false,
+          "independent_result_key": "暂停计划成立",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "研究员:plan:暂停试验",
+              "state_slot": "plan",
+              "view": "character_state"
+            }
+          ],
+          "part_id": "B4-G07-P02",
+          "primary_functions": [
+            "decision_plan"
+          ],
+          "relation_to_previous": "result",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "研究员决定暂停后续试验。"
+        }
+      ],
+      "text": "研究员得知样本已污染，并决定暂停后续试验。",
+      "title": "同一主体的不同状态槽拆分"
+    },
+    {
+      "case_id": "B4-G08",
+      "expected": {
+        "atom_count": 4,
+        "decision": "SPLIT",
+        "rationale": "四个 issue_id 可在不同位置分别更新或解决，不能压成一个问题。",
+        "reason_codes": [
+          "S_DIFFERENT_STATE_SLOT_OR_ISSUE",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "parts": [
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-D_SCENE-02",
+          "fact_head": {
+            "actuality": "unresolved",
+            "object": "故障来源",
+            "polarity": "positive",
+            "predicate": "待查",
+            "result": "故障原因事项保持开放",
+            "subject": "备用泵停机原因"
+          },
+          "independent_action": false,
+          "independent_result_key": "ISSUE-B4-G08-01:open",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": "ISSUE-B4-G08-01",
+              "key": "ISSUE-B4-G08-01",
+              "state_slot": null,
+              "view": "unresolved"
+            }
+          ],
+          "part_id": "B4-G08-P01",
+          "primary_functions": [
+            "unresolved_change"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "备用泵停机原因待查。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-D_SCENE-02",
+          "fact_head": {
+            "actuality": "unresolved",
+            "object": "修改来源",
+            "polarity": "positive",
+            "predicate": "待查",
+            "result": "修改者事项保持开放",
+            "subject": "排班表修改者"
+          },
+          "independent_action": false,
+          "independent_result_key": "ISSUE-B4-G08-02:open",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": "ISSUE-B4-G08-02",
+              "key": "ISSUE-B4-G08-02",
+              "state_slot": null,
+              "view": "unresolved"
+            }
+          ],
+          "part_id": "B4-G08-P02",
+          "primary_functions": [
+            "unresolved_change"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "排班表修改者待查。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-D_SCENE-02",
+          "fact_head": {
+            "actuality": "unresolved",
+            "object": "钥匙去向",
+            "polarity": "positive",
+            "predicate": "待查",
+            "result": "钥匙去向事项保持开放",
+            "subject": "缺失钥匙的位置"
+          },
+          "independent_action": false,
+          "independent_result_key": "ISSUE-B4-G08-03:open",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": "ISSUE-B4-G08-03",
+              "key": "ISSUE-B4-G08-03",
+              "state_slot": null,
+              "view": "unresolved"
+            }
+          ],
+          "part_id": "B4-G08-P03",
+          "primary_functions": [
+            "unresolved_change"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "缺失钥匙的位置待查。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-D_SCENE-02",
+          "fact_head": {
+            "actuality": "unresolved",
+            "object": "退水时点",
+            "polarity": "positive",
+            "predicate": "待查",
+            "result": "退水时点事项保持开放",
+            "subject": "积水退去时间"
+          },
+          "independent_action": false,
+          "independent_result_key": "ISSUE-B4-G08-04:open",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": "ISSUE-B4-G08-04",
+              "key": "ISSUE-B4-G08-04",
+              "state_slot": null,
+              "view": "unresolved"
+            }
+          ],
+          "part_id": "B4-G08-P04",
+          "primary_functions": [
+            "unresolved_change"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "积水退去时间待查。"
+        }
+      ],
+      "text": "应急会上留下四个待查项：备用泵为何停机、谁改了排班表、缺失钥匙在哪、积水何时退去。",
+      "title": "四个未决事项分别立账"
+    },
+    {
+      "case_id": "B4-G09",
+      "expected": {
+        "atom_count": 3,
+        "decision": "SPLIT",
+        "rationale": "计划、完成检查、发生报告各自成条；报告内容仍保持“可能”的归因判断。",
+        "reason_codes": [
+          "S_DIFFERENT_TIME_WINDOW",
+          "S_ACTUALITY_DIFFERENT",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "parts": [
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-E_DAY-00",
+          "fact_head": {
+            "actuality": "planned",
+            "object": "天窗",
+            "polarity": "positive",
+            "predicate": "检查",
+            "result": "检查计划成立",
+            "subject": "检修员"
+          },
+          "independent_action": true,
+          "independent_result_key": "检查计划成立",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "检修员:plan:检查天窗",
+              "state_slot": "plan",
+              "view": "character_state"
+            }
+          ],
+          "part_id": "B4-G09-P01",
+          "primary_functions": [
+            "decision_plan"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "检修员计划次日检查天窗。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-E_DAY-01",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "天窗",
+            "polarity": "positive",
+            "predicate": "完成检查",
+            "result": "天窗检查完成",
+            "subject": "检修员"
+          },
+          "independent_action": true,
+          "independent_result_key": "天窗检查完成",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "CH-E_DAY-01:天窗检查完成",
+              "state_slot": null,
+              "view": "timeline"
+            }
+          ],
+          "part_id": "B4-G09-P02",
+          "primary_functions": [
+            "action_result"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "次日检修员完成天窗检查。"
+        },
+        {
+          "attributed_content": {
+            "fact_head": {
+              "actuality": "believed",
+              "object": "雨水",
+              "polarity": "positive",
+              "predicate": "漏水",
+              "result": "存在进水风险",
+              "subject": "天窗"
+            },
+            "modality": "possible",
+            "source_attribution": "检修员"
+          },
+          "causal_endpoint_ids": [],
+          "event_window": "CH-E_DAY-01",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "天窗可能漏水",
+            "polarity": "positive",
+            "predicate": "报告",
+            "result": "漏水风险判断被报告",
+            "subject": "检修员"
+          },
+          "independent_action": true,
+          "independent_result_key": "漏水风险判断被报告",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "CH-E_DAY-01:漏水风险报告",
+              "state_slot": null,
+              "view": "timeline"
+            }
+          ],
+          "part_id": "B4-G09-P03",
+          "primary_functions": [
+            "revelation"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": "SP-B4-G09",
+          "standalone_outline_reuse": true,
+          "text": "检修员随后报告天窗可能漏水。"
+        }
+      ],
+      "text": "检修员计划次日检查天窗；次日完成检查；随后报告天窗可能漏水。",
+      "title": "计划、执行与带情态报告拆分"
+    },
+    {
+      "case_id": "B4-G10",
+      "expected": {
+        "atom_count": 2,
+        "decision": "SPLIT",
+        "rationale": "两件事跨章、跨时间窗，结果和后续回收点都不同。",
+        "reason_codes": [
+          "S_DIFFERENT_TIME_WINDOW",
+          "S_INDEPENDENT_RESULTS",
+          "S_EITHER_HALF_STANDALONE"
+        ]
+      },
+      "parts": [
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-F01_MONDAY",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "急救包借出",
+            "polarity": "positive",
+            "predicate": "登记",
+            "result": "借用记录成立",
+            "subject": "管理员"
+          },
+          "independent_action": true,
+          "independent_result_key": "借用记录成立",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "CH-F01_MONDAY:急救包借出",
+              "state_slot": null,
+              "view": "timeline"
+            }
+          ],
+          "part_id": "B4-G10-P01",
+          "primary_functions": [
+            "action_result"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "管理员周一登记借出急救包。"
+        },
+        {
+          "attributed_content": null,
+          "causal_endpoint_ids": [],
+          "event_window": "CH-F02_FRIDAY",
+          "fact_head": {
+            "actuality": "occurred",
+            "object": "下月演练日期",
+            "polarity": "positive",
+            "predicate": "通知",
+            "result": "演练日程被传达",
+            "subject": "管理员"
+          },
+          "independent_action": true,
+          "independent_result_key": "演练日程被传达",
+          "ledger_writes": [
+            {
+              "independent": true,
+              "issue_id": null,
+              "key": "CH-F02_FRIDAY:演练日期通知",
+              "state_slot": null,
+              "view": "timeline"
+            }
+          ],
+          "part_id": "B4-G10-P02",
+          "primary_functions": [
+            "revelation"
+          ],
+          "relation_to_previous": "independent",
+          "speech_event_id": null,
+          "standalone_outline_reuse": true,
+          "text": "管理员周五通知下月演练日期。"
+        }
+      ],
+      "text": "管理员周一登记借出急救包；周五另行通知下月演练日期。",
+      "title": "跨章独立结果硬拆"
+    }
+  ],
+  "closed_rule_contract": {
+    "atom_criteria": {
+      "A_COMPLETE_FACT_HEAD": "一条具有 subject、predicate、object、result、polarity、actuality 六值。",
+      "B_INDEPENDENT_LEDGER_OR_CAUSAL_ENDPOINT": "一条写入独立账本键，或充当可独立复用的因果端点。",
+      "C_STANDALONE_OUTLINE_REUSE": "拿掉相邻句后，这条仍可单独供大纲使用。",
+      "D_EXACTLY_ONE_PRIMARY_FUNCTION": "一条有且只有一个主情节功能。"
+    },
+    "merge_requirements": {
+      "M_EXACTLY_ONE_PRIMARY_FUNCTION": "合并后仍只有一个主情节功能。",
+      "M_SAME_EVENT_WINDOW_OR_SPEECH": "同一事件时间窗，或同一言语行为。",
+      "M_TAIL_HAS_NO_INDEPENDENT_LEDGER_KEY": "后半没有独立账本键，也不是独立因果端点。",
+      "M_TAIL_IS_DEPENDENT": "后半是限定、步骤、完成动作，或同一言语行为中的归因内容。",
+      "M_TOP_LEVEL_ACTUALITY_SAME": "顶层 actuality 相同。"
+    },
+    "speech_exception": "说话行为的顶层 actuality 可为 occurred；被归因内容保留自己的 fact_head actuality 与 modality，不能随说话行为升级。",
+    "split_triggers": {
+      "S_ACTUALITY_DIFFERENT": "顶层 actuality 不同。",
+      "S_CAUSAL_ENDPOINTS_REUSABLE": "因果两端都能离开相邻句独立复用。",
+      "S_DIFFERENT_STATE_SLOT_OR_ISSUE": "写入不同人物状态槽或不同未决事项。",
+      "S_DIFFERENT_SUBJECT_INDEPENDENT_ACTION": "不同主体分别完成独立动作。",
+      "S_DIFFERENT_TIME_WINDOW": "不同章节或不同事件时间窗。",
+      "S_EITHER_HALF_STANDALONE": "删除任一部分后，另一部分仍是完整且有用的事实。",
+      "S_INDEPENDENT_RESULTS": "两部分各自形成不同的独立结果。"
+    },
+    "unsupported_boundary_policy": "既未命中拆分条件、又未满足全部合并条件时返回 NEEDS_ADJUDICATION；不得补语义规则。"
+  },
+  "schema_version": "v02-b4-1-granularity-casebook-v0.1"
+}

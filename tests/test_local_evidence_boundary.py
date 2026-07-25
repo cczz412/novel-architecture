@@ -1,0 +1,76 @@
+from __future__ import annotations
+
+import json
+import subprocess
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+REGISTRY = ROOT / "tests/local_evidence_registry.json"
+
+
+def _git(*args: str) -> str:
+    result = subprocess.run(
+        ["git", *args],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout
+
+
+def test_local_evidence_registry_is_complete_and_points_to_tests() -> None:
+    document = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    assert document["schema_version"] == "pytest-local-evidence-v1"
+    group_ids = [row["group_id"] for row in document["groups"]]
+    assert len(group_ids) == len(set(group_ids))
+    for row in document["groups"]:
+        patterns = row.get("test_file_globs", [])
+        nodeids = row.get("nodeids", [])
+        matched = {
+            path.name
+            for pattern in patterns
+            for path in (ROOT / "tests").glob(pattern)
+        }
+        assert matched or nodeids, row["group_id"]
+        for nodeid in nodeids:
+            test_path = nodeid.split("::", 1)[0]
+            assert test_path.startswith("tests/")
+            assert (ROOT / test_path).is_file(), nodeid
+        assert row["required_paths"]
+        assert row["reason"].strip()
+
+
+def test_legacy_local_evidence_keeps_pure_tests_outside_the_skip_boundary() -> None:
+    document = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    legacy = next(
+        row
+        for row in document["groups"]
+        if row["group_id"] == "LEGACY-LOCAL-REPLAY-EVIDENCE"
+    )
+    assert "test_governance_index.py" not in legacy["test_file_globs"]
+    assert "test_model_benchmark.py" not in legacy["test_file_globs"]
+    assert (
+        "tests/test_governance_index.py::GovernanceIndexTests::"
+        "test_root_readme_has_one_hop_governance_route"
+        not in legacy["nodeids"]
+    )
+    assert (
+        "tests/test_model_benchmark.py::"
+        "test_official_deepseek_is_not_available_through_generic_slot"
+        not in legacy["nodeids"]
+    )
+
+
+def test_local_evidence_roots_are_ignored_and_not_tracked() -> None:
+    document = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    for row in document["groups"]:
+        for relative in row["required_paths"]:
+            result = subprocess.run(
+                ["git", "check-ignore", "-q", relative],
+                cwd=ROOT,
+                check=False,
+            )
+            assert result.returncode == 0, relative
+            assert _git("ls-files", "--", relative) == ""

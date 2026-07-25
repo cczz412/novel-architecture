@@ -376,6 +376,11 @@ def _copy_file(source: Path, target: Path) -> None:
 def _adapt_root_preflight(run_dir: Path) -> dict[str, Any]:
     preflight = copy.deepcopy(read_json(SOURCE_RETRY13 / "preflight.json"))
     preflight["run_id"] = run_dir.name
+    # retry13 的票记录的是它当时的完整保护树。Z94 是新的派生运行，
+    # 应在准备时重新冻结“此刻”的保护树，再由 verify_prepared 核对
+    # 准备过程没有改动它；否则历史报告后来只增一张回读票，也会让
+    # 新运行永远无法准备。
+    preflight["protected_before"] = z83.protected_snapshot()
     for row in preflight["copied_inputs"]:
         target = Path(str(row["target"]))
         source_relative = target.relative_to(SOURCE_RETRY13)

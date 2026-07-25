@@ -1,33 +1,32 @@
-# 回包怎么扔｜别乱
+# 回包怎么接｜归档后的恢复规则
 
-你以后基本两步循环：**扔报告 → 要下一窗 Prompt**。  
-Agent 按下面分流；你也可以自己丢进对应 `returns/`。
+⚠️ 下面三条旧工作夹已经外置，仓内只剩 `ARCHIVED.md` stub。**现在不能把新回包直接丢进旧 `returns/`，也不能照旧“下一窗”文字直接续跑。**
 
-## 一张表：报告属于哪条支线
+## 旧工作夹从哪找
 
-| 支线 | 工作夹（Prompt／书单） | **回包只进这里** | TRACK |
+| 支线 | 仓内 stub | 真身入口 | TRACK |
 |---|---|---|---|
-| ST-001 语料重标 | [dr_corpus_relabel_20260718/](../TEMP/dr_corpus_relabel_20260718/) | [returns/](../TEMP/dr_corpus_relabel_20260718/returns/) | [ST-001](tracks/ST-001_corpus_relabel/TRACK.md) |
-| ST-002 原型书 | [dr_prototype_borrow_20260718/](../TEMP/dr_prototype_borrow_20260718/) | [returns/](../TEMP/dr_prototype_borrow_20260718/returns/) | [ST-002](tracks/ST-002_prototype_borrow/TRACK.md) |
-| ST-003 世界观纸面 | [dr_worldview_paper_20260718/](../TEMP/dr_worldview_paper_20260718/) | [returns/](../TEMP/dr_worldview_paper_20260718/returns/) | [ST-003](tracks/ST-003_worldview_paper/TRACK.md) |
+| ST-001 语料重标 | [dr_corpus_relabel_20260718/](../TEMP/dr_corpus_relabel_20260718/) | 读 stub 内的外置绝对路径与 manifest | [ST-001](tracks/ST-001_corpus_relabel/TRACK.md) |
+| ST-002 原型书 | [dr_prototype_borrow_20260718/](../TEMP/dr_prototype_borrow_20260718/) | 读 stub 内的外置绝对路径与 manifest | [ST-002](tracks/ST-002_prototype_borrow/TRACK.md) |
+| ST-003 世界观纸面 | [dr_worldview_paper_20260718/](../TEMP/dr_worldview_paper_20260718/) | 读 stub 内的外置绝对路径与 manifest | [ST-003](tracks/ST-003_worldview_paper/TRACK.md) |
 
-看不清是哪条？先丢 [inbox/](inbox/)，并说一句「这是 ST-00X」或「语料／原型／世界观」。
+看不清是哪条时，可以先放 [inbox/](inbox/) 并写明「这是 ST-00X」或「语料／原型／世界观」；不要猜一个旧 returns 路径硬塞。
 
-## Agent 接到报告后必须做的
+## Agent 接到新回包后必须做的
 
-1. **落盘**：拷进上表对应 `returns/`，文件名带窗号，例：`w01_trial50.md`、`p1_batch01.md`  
-2. **记进度**：改该支线 `TRACK.md` 窗进度表＋往 `LOG.md` 追加一行  
-3. **更新** [BOARD.md](BOARD.md) 那一行的「进度一句话／下一手」  
-4. **可选沉淀**：锚点／值得留的介绍 → [book-meta/](../references/book-meta/)（仍不进正文）  
-5. **结构化大表**：ST-002 用 CSV 追加（见 [tables/](tracks/ST-002_prototype_borrow/tables/)）；ST-001 语料重标回包稳定后再建同款 CSV  
-6. **交下一窗**：切好下一份 Prompt（仍 ASCII 路径），在回复里给可点链接  
+1. **先核身份**：确认属于哪条 TRACK、旧真身是否仍需回读、当前是否有继续授权。
+2. **另建工作夹**：使用新的 ASCII 路径；旧 `ARCHIVED.md` stub 一字不动。
+3. **登记来源**：写原路径、目标路径、文件身份和 SHA，再拷入新工作夹。
+4. **记进度**：更新 TRACK／LOG／BOARD，明确旧窗已归档、新窗从哪里接。
+5. **可选沉淀**：锚点或介绍可进 [book-meta/](../references/book-meta/)；外部意见仍不替代正文真值。
+6. **交下一窗**：只从新工作夹生成 Prompt，回复里给可点路径。
 
-❌ 不要：写进 `current.md`／`decisions.md`／`reports/`；不要把正文拷进仓。
+❌ 不要：写进 `governance/CURRENT_STATE.json`、`decisions.md` 或主线 `reports/`；不要把正文拷进仓；**禁止往 stub 里续写**。
 
-💡 三表产品字段（浅表／深拆／试验）与新 Prompt 口径：[团队裁决](../TEMP/cursor_team_three_tables_20260718/团队裁决_三表与Prompt优化.md)。入站时按新硬字段核：浅表有无 `reader_synopsis`；深潜有无 `arch_slot_candidate`／`mountability`；试验有无 `demo_usage`＋`paper_only`。
+💡 旧三表产品字段和 Prompt 口径在外置归档里。恢复时先按 stub 指针回读真身，不能把仓内缺失文件当作仍可直接打开的现役合同。
 
 ## 你怎么跟我说就行
 
 - 「这是语料第1窗回包」＋贴路径或丢 Downloads  
-- 「下一窗」→ 我按 TRACK 切下一批 50 本 Prompt  
-- 「这是原型清单回包」→ 进 ST-002 returns，再问你要不要勾 30 本开深潜  
+- 「下一窗」→ 先核该 TRACK 是否已经恢复并登记新工作夹，再切 Prompt
+- 「这是原型清单回包」→ 先恢复 ST-002 身份并登记新工作夹，再决定是否勾 30 本开深潜

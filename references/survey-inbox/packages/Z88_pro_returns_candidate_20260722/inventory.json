@@ -1,0 +1,74 @@
+{
+  "schema": "z88-pro-returns-candidate-v1",
+  "received_at": "2026-07-22T14:17:00+08:00",
+  "status": "candidate_silver_awaiting_unified_review",
+  "status_label": "候选池银标底料，统一审收前不得改现役件",
+  "api_calls": 0,
+  "file_count": 6,
+  "files": [
+    {
+      "pack": "pack_A_short_quote_validation_return",
+      "path": "returns/pack_A_short_quote_validation_return.md",
+      "bytes": 26524,
+      "sha256": "ee050a484440dcc7723296c66ff480ab8041541818abe7a3865939d7ba1ef6bb",
+      "source_download_name": "包A｜短引校验去留调查.md"
+    },
+    {
+      "pack": "pack_B_scoring_methods_return",
+      "path": "returns/pack_B_scoring_methods_return.md",
+      "bytes": 35230,
+      "sha256": "d76ce050344c204ba744173a0677475b04cf3063e942e2a6973c899d64f50dfa",
+      "source_download_name": "包B｜判分法改法调查.md"
+    },
+    {
+      "pack": "pack_C_longform_extraction_arch_return",
+      "path": "returns/pack_C_longform_extraction_arch_return.md",
+      "bytes": 35588,
+      "sha256": "fb24fca4675a07e42c44d7ff50651d9230eb962b0a0a72ca0ed180ac75a4d0e9",
+      "source_download_name": "包C｜长篇结构化抽取架构调查.md"
+    },
+    {
+      "pack": "pack_D_reproducible_pipeline_return",
+      "path": "returns/pack_D_reproducible_pipeline_return.md",
+      "bytes": 52987,
+      "sha256": "68589d8020298fa1141dcdd400e2e4e6777ab183e58c159945b9804a4b9d6a8b",
+      "source_download_name": "包 D｜LLM 数据管线可复现工程调查.md"
+    }
+  ],
+  "original_pack_page": "https://app.notion.com/p/3a55cadc4d0f81cfa74ce7c84a10a0a9",
+  "boundary": "不改 .py／默认链／金标／122／outbox；不升默认；不接现役链",
+  "notion_receipt_url": "https://app.notion.com/p/3a55cadc4d0f815c9d1df00c968ce0b3",
+  "attachments": "cz_manual_upload",
+  "files_all": [
+    {
+      "path": "inventory.json",
+      "bytes": 1692,
+      "sha256": "299b78be201d9cedc056dc93b85636d3ceb61534be321fadd6f1a7284411e9bd"
+    },
+    {
+      "path": "returns/pack_A_short_quote_validation_return.md",
+      "bytes": 26524,
+      "sha256": "ee050a484440dcc7723296c66ff480ab8041541818abe7a3865939d7ba1ef6bb"
+    },
+    {
+      "path": "returns/pack_B_scoring_methods_return.md",
+      "bytes": 35230,
+      "sha256": "d76ce050344c204ba744173a0677475b04cf3063e942e2a6973c899d64f50dfa"
+    },
+    {
+      "path": "returns/pack_C_longform_extraction_arch_return.md",
+      "bytes": 35588,
+      "sha256": "fb24fca4675a07e42c44d7ff50651d9230eb962b0a0a72ca0ed180ac75a4d0e9"
+    },
+    {
+      "path": "returns/pack_D_reproducible_pipeline_return.md",
+      "bytes": 52987,
+      "sha256": "68589d8020298fa1141dcdd400e2e4e6777ab183e58c159945b9804a4b9d6a8b"
+    },
+    {
+      "path": "第88道回包收件汇报.md",
+      "bytes": 2928,
+      "sha256": "42ed81b99cc1d5ede3a250101743d86a88c0a6ae905a710ff360ed50d4516b80"
+    }
+  ]
+}

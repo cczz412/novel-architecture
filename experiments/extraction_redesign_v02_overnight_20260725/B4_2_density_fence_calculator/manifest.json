@@ -1,0 +1,97 @@
+{
+  "artifact_count": 8,
+  "artifacts": [
+    {
+      "bytes": 1115,
+      "path": "acceptance_receipt.json",
+      "sha256": "007188141b50fe3a39886ec044212cdb9b1910a86d52f945337c172ee0e8ed29"
+    },
+    {
+      "bytes": 270,
+      "path": "examples/block_size_policy_missing_request.json",
+      "sha256": "3c9b905b9016fdb58ecb618467120e78db4c43f88b332700e80bc703d9133a27"
+    },
+    {
+      "bytes": 2459,
+      "path": "examples/calculated_candidate_result.json",
+      "sha256": "e2daf15e8d13252a4a1fc5144f015eb1be7477248884947f6ceb6cfc40ad4490"
+    },
+    {
+      "bytes": 279,
+      "path": "examples/l50_missing_request.json",
+      "sha256": "c62be85ebcfd82735e534eaaf11eb7a18865bcf429427860fc48079c1f7a6124"
+    },
+    {
+      "bytes": 1124,
+      "path": "examples/l50_missing_result.json",
+      "sha256": "75126e50e09db7f190b5c7c9654c81d4de76aa7b070dbf68d11fe3c2778b6003"
+    },
+    {
+      "bytes": 2822,
+      "path": "formula_freeze.json",
+      "sha256": "64f486aad57e6e7e5c668d207a88518a135b68c505a8f22c2e2fca8afd45e6a3"
+    },
+    {
+      "bytes": 1877,
+      "path": "schemas/density_fence_request.schema.json",
+      "sha256": "9282b91f529962dcaf9813b0a33bfb91004f2afd282500c3aadde5b394b249a6"
+    },
+    {
+      "bytes": 48750,
+      "path": "test_vectors.json",
+      "sha256": "ace8830c236d1f298e278376599e9aef6e88d83c1e7a5e96d2d1a21406ceea25"
+    }
+  ],
+  "bundle_content_hash": "905d8be0488ac1f7ad61cc5cdf0c3df69547d917e5343267705dc527c37cb999",
+  "candidate_id": "B4_2_density_fence_calculator",
+  "candidate_status": "candidate_silver_not_active",
+  "chapter_type_guard": {
+    "allowed_as_chapter_type_input": false,
+    "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+    "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+    "maximum_inclusive": 184,
+    "minimum_inclusive": 97
+  },
+  "formula_freeze": {
+    "base_fence_mapping": {
+      "25": "lower_bound",
+      "32": "reference_budget",
+      "40": "upper_bound"
+    },
+    "density_coef_mapping": {
+      "HIGH_INFORMATION_load_ratio_gt_1.25": "1.25",
+      "NORMAL_0.75_to_1.25_inclusive": "1.00",
+      "WATER_load_ratio_lt_0.75": "0.80"
+    },
+    "len_coef": "clip(sqrt(L/L50),0.80,1.25)",
+    "load_ratio": "(N_est+0.25*max(0,P_est-N_est))/(32*len_coef)",
+    "rounding_policy": {
+      "authority_claim": "候选机械口径，不冒充已拍产品事实",
+      "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+      "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+      "product_policy_status": "PENDING_CONFIRMATION",
+      "python_builtin_round_used": false,
+      "tie_example": "32.5 -> 33"
+    }
+  },
+  "open_policy_gaps": [
+    "L50_MISSING",
+    "BLOCK_SIZE_POLICY_MISSING",
+    "ROUND_HALF_UP_PRODUCT_POLICY_UNCONFIRMED"
+  ],
+  "release_isolation": {
+    "activation_allowed": false,
+    "current_state_changed": false,
+    "default_chain_changed": false,
+    "formal_gold_changed": false
+  },
+  "schema_version": "v02-b4-2-density-fence-manifest-v0.1",
+  "scope": {
+    "default_route_mutations": 0,
+    "formal_gold_mutations": 0,
+    "governance_mutations": 0,
+    "model_api_calls": 0,
+    "network_requests": 0,
+    "notion_writes": 0
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "candidate_id": "B4_1_granularity_casebook",
+  "candidate_status": "candidate_silver_not_active",
+  "case_results_sha256": "fad9b83bac6df9011099526bdc89fb86c38d13b6b32ee75304caa61298bd273d",
+  "casebook_sha256": "d01558891c4e5527667ee2e49d3ef1819af8a2612fb70bd3090712dd9668efb5",
+  "checks": {
+    "all_five_merge_requirements_covered": true,
+    "all_output_atoms_pass_A_to_D": true,
+    "all_seven_split_triggers_covered": true,
+    "book_title_bracket_hits": 0,
+    "case_count": 10,
+    "case_pass_count": 10,
+    "merge_case_count": 5,
+    "new_semantic_rules_added": 0,
+    "source_specific_token_hits": [],
+    "speech_content_actuality_preserved": true,
+    "split_case_count": 5,
+    "uncovered_boundary_count": 0
+  },
+  "result": "PASS_10_OF_10_CLOSED_RULES_ONLY",
+  "schema_version": "v02-b4-1-granularity-acceptance-v0.1",
+  "scope": {
+    "default_route_mutations": 0,
+    "formal_gold_mutations": 0,
+    "governance_mutations": 0,
+    "model_api_calls": 0,
+    "network_requests": 0,
+    "notion_writes": 0
+  }
+}

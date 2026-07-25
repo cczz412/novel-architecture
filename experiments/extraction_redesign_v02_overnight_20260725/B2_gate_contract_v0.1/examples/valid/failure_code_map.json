@@ -1,0 +1,527 @@
+{
+  "content_hard_items": [
+    {
+      "hard_item_id": "H01",
+      "meaning": "原子边界",
+      "normalized_route": "BOUNDARY"
+    },
+    {
+      "hard_item_id": "H02",
+      "meaning": "subject",
+      "normalized_route": "FACT"
+    },
+    {
+      "hard_item_id": "H03",
+      "meaning": "predicate",
+      "normalized_route": "FACT"
+    },
+    {
+      "hard_item_id": "H04",
+      "meaning": "object",
+      "normalized_route": "FACT"
+    },
+    {
+      "hard_item_id": "H05",
+      "meaning": "result",
+      "normalized_route": "FACT"
+    },
+    {
+      "hard_item_id": "H06",
+      "meaning": "polarity",
+      "normalized_route": "FACT"
+    },
+    {
+      "hard_item_id": "H07",
+      "meaning": "actuality 与证据一致",
+      "normalized_route": "FACT"
+    },
+    {
+      "hard_item_id": "H08",
+      "meaning": "不得强化",
+      "normalized_route": "QUALIFIER"
+    },
+    {
+      "hard_item_id": "H09",
+      "meaning": "必要限定类型",
+      "normalized_route": "QUALIFIER"
+    },
+    {
+      "hard_item_id": "H10",
+      "meaning": "限定值精度",
+      "normalized_route": "QUALIFIER"
+    },
+    {
+      "hard_item_id": "H11",
+      "meaning": "归因与情态作用域",
+      "normalized_route": "QUALIFIER"
+    },
+    {
+      "hard_item_id": "H12",
+      "meaning": "最小承托组",
+      "normalized_route": "ANCHOR"
+    }
+  ],
+  "contract_hash": "6041b9822b3b8beea5f0d45f59f0d9276cfe7e7e31b22a370c1a71e342e69013",
+  "coverage": {
+    "covered_routes": [
+      "STRUCTURE",
+      "BOUNDARY",
+      "FACT",
+      "QUALIFIER",
+      "ANCHOR",
+      "PROVENANCE_BUDGET"
+    ],
+    "duplicate_codes": [],
+    "mapped_fine_code_count": 69,
+    "registered_fine_code_count": 69,
+    "route_count": 6,
+    "unmapped_codes": []
+  },
+  "fine_codes": [
+    {
+      "fine_code": "PF_ZIP_UNPARSEABLE",
+      "meaning": "输入 zip 不能完整解析。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "P-1"
+    },
+    {
+      "fine_code": "PF_WHITELIST_INCOMPLETE",
+      "meaning": "白名单材料不齐。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "P-1"
+    },
+    {
+      "fine_code": "PF_BODY_EMPTY",
+      "meaning": "正文为空。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "P-1"
+    },
+    {
+      "fine_code": "PF_CONTRACT_HASH_UNLOCKED",
+      "meaning": "合同散列未冻结。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "P-1"
+    },
+    {
+      "fine_code": "PF_FORMAL_GOLD_PLAINTEXT_PRESENT",
+      "meaning": "供料中出现正式金标原文答案。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "P-1"
+    },
+    {
+      "fine_code": "PF_SECRET_PRESENT",
+      "meaning": "供料中出现密钥或秘密值。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "P-1"
+    },
+    {
+      "fine_code": "S0_CORE_BELOW_400",
+      "meaning": "核心块少于 400 字。",
+      "normalized_route": "BOUNDARY",
+      "source_stage": "S0"
+    },
+    {
+      "fine_code": "S0_CORE_ABOVE_800",
+      "meaning": "核心块多于 800 字。",
+      "normalized_route": "BOUNDARY",
+      "source_stage": "S0"
+    },
+    {
+      "fine_code": "S0_CORE_GAP",
+      "meaning": "相邻核心块之间存在缺口。",
+      "normalized_route": "BOUNDARY",
+      "source_stage": "S0"
+    },
+    {
+      "fine_code": "S0_CORE_OVERLAP",
+      "meaning": "相邻核心块发生重叠。",
+      "normalized_route": "BOUNDARY",
+      "source_stage": "S0"
+    },
+    {
+      "fine_code": "S0_PHYSICAL_LINE_COORD_MISSING",
+      "meaning": "核心块缺少物理行号坐标。",
+      "normalized_route": "ANCHOR",
+      "source_stage": "S0"
+    },
+    {
+      "fine_code": "S0_SOURCE_HASH_MISSING",
+      "meaning": "核心块缺少来源散列。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "S0"
+    },
+    {
+      "fine_code": "S0_BLOCK_SIZE_POLICY_MISSING",
+      "meaning": "小中大三类块尺寸边界尚未拍板。",
+      "normalized_route": "BOUNDARY",
+      "source_stage": "S0"
+    },
+    {
+      "fine_code": "S1_LEDGER_ID_DUPLICATE",
+      "meaning": "章节账目身份不唯一。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "S1"
+    },
+    {
+      "fine_code": "S1_ENTITY_ID_DUPLICATE",
+      "meaning": "实体身份不唯一。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "S1"
+    },
+    {
+      "fine_code": "S1_COORDINATE_UNPARSEABLE",
+      "meaning": "账目坐标不能被程序解析。",
+      "normalized_route": "ANCHOR",
+      "source_stage": "S1"
+    },
+    {
+      "fine_code": "S1_S0_REFERENCE_UNRESOLVABLE",
+      "meaning": "账目或实体不能回引 S0 块。",
+      "normalized_route": "ANCHOR",
+      "source_stage": "S1"
+    },
+    {
+      "fine_code": "M03_RULE_HASH_UNLOCKED",
+      "meaning": "规则散列未纳入合同锁。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M03"
+    },
+    {
+      "fine_code": "M03_SCHEMA_HASH_UNLOCKED",
+      "meaning": "Schema 散列未纳入合同锁。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M03"
+    },
+    {
+      "fine_code": "M03_PROMPT_HASH_UNLOCKED",
+      "meaning": "Prompt 散列未纳入合同锁。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M03"
+    },
+    {
+      "fine_code": "M03_CANARY_HASH_UNLOCKED",
+      "meaning": "哨兵散列未纳入合同锁。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M03"
+    },
+    {
+      "fine_code": "S3_ID_INVALID",
+      "meaning": "身份字段非法。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "S3"
+    },
+    {
+      "fine_code": "S3_ENUM_INVALID",
+      "meaning": "枚举值非法。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "S3"
+    },
+    {
+      "fine_code": "S3_REQUIRED_FIELD_MISSING",
+      "meaning": "必填字段缺失。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "S3"
+    },
+    {
+      "fine_code": "S3_SUPPORT_SET_INVALID",
+      "meaning": "支持集为空、重复或不可解析。",
+      "normalized_route": "ANCHOR",
+      "source_stage": "S3"
+    },
+    {
+      "fine_code": "S3_VERBATIM_LOCATOR_INVALID",
+      "meaning": "逐字短引不能按坐标定位。",
+      "normalized_route": "ANCHOR",
+      "source_stage": "S3"
+    },
+    {
+      "fine_code": "S3_DENOMINATOR_MISMATCH",
+      "meaning": "风险路由分母不一致。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "S3"
+    },
+    {
+      "fine_code": "S3_UPGRADE_RATE_OVER_0_40",
+      "meaning": "事实包升级率超过 0.40。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "S3"
+    },
+    {
+      "fine_code": "H01_ATOMIC_BOUNDARY",
+      "meaning": "内容硬项 H01：原子边界失败。",
+      "normalized_route": "BOUNDARY",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H02_SUBJECT_MISSING_OR_WRONG",
+      "meaning": "内容硬项 H02：subject 缺失或错误。",
+      "normalized_route": "FACT",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H03_PREDICATE_MISSING_OR_WRONG",
+      "meaning": "内容硬项 H03：predicate 缺失或错误。",
+      "normalized_route": "FACT",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H04_OBJECT_MISSING_OR_WRONG",
+      "meaning": "内容硬项 H04：object 缺失或错误。",
+      "normalized_route": "FACT",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H05_RESULT_MISSING_OR_WRONG",
+      "meaning": "内容硬项 H05：result 缺失或错误。",
+      "normalized_route": "FACT",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H06_POLARITY_MISMATCH",
+      "meaning": "内容硬项 H06：polarity 不一致。",
+      "normalized_route": "FACT",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H07_ACTUALITY_EVIDENCE_MISMATCH",
+      "meaning": "内容硬项 H07：actuality 与证据不一致。",
+      "normalized_route": "FACT",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H08_UNSUPPORTED_STRENGTHENING",
+      "meaning": "内容硬项 H08：出现无证强化。",
+      "normalized_route": "QUALIFIER",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H09_REQUIRED_QUALIFIER_TYPE_MISSING",
+      "meaning": "内容硬项 H09：必要限定类型缺失。",
+      "normalized_route": "QUALIFIER",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H10_QUALIFIER_VALUE_IMPRECISE",
+      "meaning": "内容硬项 H10：限定值不精确。",
+      "normalized_route": "QUALIFIER",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H11_ATTRIBUTION_MODALITY_SCOPE_ERROR",
+      "meaning": "内容硬项 H11：归因或情态作用域错误。",
+      "normalized_route": "QUALIFIER",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "H12_MINIMAL_SUPPORT_SET_INVALID",
+      "meaning": "内容硬项 H12：最小承托组失败。",
+      "normalized_route": "ANCHOR",
+      "source_stage": "S3_CONTENT"
+    },
+    {
+      "fine_code": "S6_FIVE_LAYER_RECOMPUTE_FAILED",
+      "meaning": "五层指标不能独立重算。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "S6"
+    },
+    {
+      "fine_code": "S6_H_CODE_NOT_ZERO",
+      "meaning": "进入终审时仍有 H 类失败。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "S6"
+    },
+    {
+      "fine_code": "S6_SNAPSHOT_COUNT_MISMATCH",
+      "meaning": "快照数量不一致。",
+      "normalized_route": "ANCHOR",
+      "source_stage": "S6"
+    },
+    {
+      "fine_code": "S6_SNAPSHOT_HASH_MISMATCH",
+      "meaning": "快照散列不一致。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "S6"
+    },
+    {
+      "fine_code": "S6_SOP_BELOW_0_98",
+      "meaning": "SOP 低于 0.98。",
+      "normalized_route": "ANCHOR",
+      "source_stage": "S6"
+    },
+    {
+      "fine_code": "S6_MULTIPLE_TERMINAL_STATES",
+      "meaning": "同一快照同时声明多个终态。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "S6"
+    },
+    {
+      "fine_code": "J_CANDIDATE_SHA_UNLOCKED",
+      "meaning": "裁判输入候选 SHA 未锁。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "J"
+    },
+    {
+      "fine_code": "J_NOT_BLIND",
+      "meaning": "裁判未按盲判要求执行。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "J"
+    },
+    {
+      "fine_code": "J_SAME_PRODUCER_FAMILY",
+      "meaning": "裁判与生产者属于同一家族。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "J"
+    },
+    {
+      "fine_code": "J_OUTPUT_SCOPE_VIOLATION",
+      "meaning": "裁判输出超出 verdict、H 码和 fact_id。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "J"
+    },
+    {
+      "fine_code": "J_TRUST_ROOT_MISSING",
+      "meaning": "裁判信任根缺失。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "J"
+    },
+    {
+      "fine_code": "J_TICKET_UNSIGNED",
+      "meaning": "裁判绿票未签发。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "J"
+    },
+    {
+      "fine_code": "BUDGET_T1_DEFINITION_MISSING",
+      "meaning": "T1 定义尚未拍板。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M07"
+    },
+    {
+      "fine_code": "BUDGET_T1_VALUE_MISSING",
+      "meaning": "T1 数值缺失。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M07"
+    },
+    {
+      "fine_code": "BUDGET_UNIT_PRICE_MISSING",
+      "meaning": "单价缺失。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M07"
+    },
+    {
+      "fine_code": "BUDGET_K_MISSING",
+      "meaning": "K 缺失。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M07"
+    },
+    {
+      "fine_code": "BUDGET_B_PLUS_3_EXCEEDED",
+      "meaning": "普通章调用数超过 B+3。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M07"
+    },
+    {
+      "fine_code": "BUDGET_B_PLUS_5_EXCEEDED",
+      "meaning": "关键章调用数超过 B+5。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M07"
+    },
+    {
+      "fine_code": "BUDGET_U_DENOMINATOR_INVALID",
+      "meaning": "u 未使用事实包数量作分母。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M07"
+    },
+    {
+      "fine_code": "BUDGET_U_OVER_0_40",
+      "meaning": "u 超过 0.40。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M07"
+    },
+    {
+      "fine_code": "BUDGET_R_OVER_1_35_T1",
+      "meaning": "整链成本超过 1.35×T1。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "M07"
+    },
+    {
+      "fine_code": "R_PROGRAM_GREEN_MISSING",
+      "meaning": "缺程序绿票。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "R"
+    },
+    {
+      "fine_code": "R_JUDGE_GREEN_MISSING",
+      "meaning": "缺裁判绿票。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "R"
+    },
+    {
+      "fine_code": "R_ENGINEERING_GREEN_MISSING",
+      "meaning": "缺工程绿票。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "R"
+    },
+    {
+      "fine_code": "R_HASH_UNLOCKED",
+      "meaning": "候选或合同散列未锁。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "R"
+    },
+    {
+      "fine_code": "R_BUDGET_NOT_OK",
+      "meaning": "预算闸未通过。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "R"
+    },
+    {
+      "fine_code": "R_CANDIDATE_STATUS_INVALID",
+      "meaning": "发布对象不是 candidate_silver_not_active。",
+      "normalized_route": "STRUCTURE",
+      "source_stage": "R"
+    },
+    {
+      "fine_code": "R_ACTIVE_POINTER_MUTATION",
+      "meaning": "候选施工改动了现役指针。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "R"
+    },
+    {
+      "fine_code": "R_PRODUCER_SELF_CHECK_AS_PROGRAM_GREEN",
+      "meaning": "生产者自检被冒充程序绿票。",
+      "normalized_route": "PROVENANCE_BUDGET",
+      "source_stage": "R"
+    }
+  ],
+  "module_id": "M04",
+  "registry_status": "FIRST_COMPLETE_FREEZE",
+  "routing_categories": [
+    {
+      "definition": "机器结构、身份、枚举、必填、唯一性、分母结构和终态互斥。",
+      "route_id": "STRUCTURE"
+    },
+    {
+      "definition": "软分块与事实原子的边界，包括无缺口、无重叠和端点范围。",
+      "route_id": "BOUNDARY"
+    },
+    {
+      "definition": "主语、谓语、宾语、结果、极性、事实性及其证据一致。",
+      "route_id": "FACT"
+    },
+    {
+      "definition": "不得强化、必要限定、限定精度、归因与情态作用域。",
+      "route_id": "QUALIFIER"
+    },
+    {
+      "definition": "支持集、逐字定位、物理坐标、最小承托和快照数量。",
+      "route_id": "ANCHOR"
+    },
+    {
+      "definition": "来源散列、合同锁、隔离、独立裁判、预算和发布闸。",
+      "route_id": "PROVENANCE_BUDGET"
+    }
+  ],
+  "schema_version": "v02-failure-code-map-v0.1",
+  "six_routes_are_not_content_h01_h12": true,
+  "unknown_code_policy": "REJECT"
+}

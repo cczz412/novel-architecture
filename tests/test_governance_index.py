@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -24,6 +25,60 @@ def _as_v2(state: dict) -> dict:
 
 
 class GovernanceIndexTests(unittest.TestCase):
+    def test_experiment_index_only_lists_registered_directories(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            experiments = root / "experiments"
+            experiments.mkdir()
+            for name in (
+                "z_unregistered",
+                "_template",
+                "a_registered",
+                "m_unregistered",
+            ):
+                (experiments / name).mkdir()
+            (experiments / "a_registered" / "experiment.json").write_text(
+                json.dumps(
+                    {
+                        "experiment_id": "EXP-A",
+                        "status": "trial",
+                        "summary": "已登记样例",
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            (experiments / "_template" / "experiment.json").write_text(
+                json.dumps(
+                    {
+                        "experiment_id": "TEMPLATE",
+                        "status": "template",
+                        "summary": "不得进入索引",
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            registered = governance_index.discover_registered_experiment_files(root)
+            self.assertEqual(
+                [path.parent.name for path in registered],
+                ["a_registered"],
+            )
+
+            first = governance_index.render_experiments_index(root)
+            second = governance_index.render_experiments_index(root)
+            self.assertEqual(first, second)
+            self.assertIn("## 当前登记", first)
+            self.assertIn("| EXP-A | trial | `experiments/a_registered`", first)
+            self.assertIn("未登记的本地候选与证据目录不写进生成页", first)
+            self.assertNotIn("m_unregistered", first)
+            self.assertNotIn("z_unregistered", first)
+            self.assertNotIn("TEMPLATE", first)
+            self.assertNotIn("_template", first)
+
     def test_registry_has_all_modules_and_only_three_states(self) -> None:
         source = read_json(ROOT / governance_index.REGISTRY_SOURCE_PATH)
         registry = governance_index.materialize_registry(ROOT, source)

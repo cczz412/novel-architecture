@@ -1,0 +1,95 @@
+{
+  "authority_boundary": {
+    "design": "统一设计稿｜抽取工序重设计 v0.2",
+    "section": "三｜冻结公式",
+    "work_order": "连夜施工令 B4.2"
+  },
+  "base_fence_mapping": [
+    {
+      "base_value": 25,
+      "label_zh": "下限",
+      "role": "lower_bound"
+    },
+    {
+      "base_value": 32,
+      "label_zh": "参考值",
+      "role": "reference_budget"
+    },
+    {
+      "base_value": 40,
+      "label_zh": "上限",
+      "role": "upper_bound"
+    }
+  ],
+  "base_mapping_interpretation": "25/32/40 同时形成下限/参考值/上限；不是分别绑定三种章型。章型只选择 density_coef。",
+  "candidate_id": "B4_2_density_fence_calculator",
+  "chapter_type_input_policy": {
+    "allowed_as_chapter_type_input": false,
+    "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+    "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+    "maximum_inclusive": 184,
+    "minimum_inclusive": 97
+  },
+  "count_rules": {
+    "above_upper": {
+      "auto_truncation_allowed": false,
+      "next_action": "REVIEW_MERGE_AND_DEDUPLICATE_NO_TRUNCATION"
+    },
+    "below_lower": {
+      "auto_fill_allowed": false,
+      "status": "legitimate_underfill"
+    },
+    "granularity_anomaly": {
+      "condition": "raw_candidate_count > 2 * upper_bound",
+      "strict_operator": ">"
+    }
+  },
+  "density_mapping": [
+    {
+      "condition": "load_ratio < 0.75",
+      "density_class": "WATER",
+      "density_coef": "0.80",
+      "density_label": "水文"
+    },
+    {
+      "condition": "0.75 <= load_ratio <= 1.25",
+      "density_class": "NORMAL",
+      "density_coef": "1.00",
+      "density_label": "普通"
+    },
+    {
+      "condition": "load_ratio > 1.25",
+      "density_class": "HIGH_INFORMATION",
+      "density_coef": "1.25",
+      "density_label": "高信息"
+    }
+  ],
+  "formulas": {
+    "budget": "round(base_value*len_coef*density_coef)",
+    "len_coef": "clip(sqrt(L/L50),0.80,1.25)",
+    "load_ratio": "(N_est+0.25*max(0,P_est-N_est))/(32*len_coef)"
+  },
+  "missing_material_policy": {
+    "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+    "calculation_requires_explicit_l50": true,
+    "l50": "L50_MISSING",
+    "numeric_l50_default_built_in": false
+  },
+  "rounding_policy": {
+    "authority_claim": "候选机械口径，不冒充已拍产品事实",
+    "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+    "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+    "product_policy_status": "PENDING_CONFIRMATION",
+    "python_builtin_round_used": false,
+    "tie_example": "32.5 -> 33"
+  },
+  "schema_version": "v02-b4-2-formula-freeze-v0.1",
+  "scope": {
+    "default_route_mutations": 0,
+    "formal_gold_mutations": 0,
+    "governance_mutations": 0,
+    "model_api_calls": 0,
+    "network_requests": 0,
+    "notion_writes": 0
+  }
+}

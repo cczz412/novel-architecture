@@ -1,0 +1,8 @@
+# SHA256 — Z88 Pro returns candidate
+
+`299b78be201d9cedc056dc93b85636d3ceb61534be321fadd6f1a7284411e9bd`     1692  inventory.json
+`ee050a484440dcc7723296c66ff480ab8041541818abe7a3865939d7ba1ef6bb`    26524  returns/pack_A_short_quote_validation_return.md
+`d76ce050344c204ba744173a0677475b04cf3063e942e2a6973c899d64f50dfa`    35230  returns/pack_B_scoring_methods_return.md
+`fb24fca4675a07e42c44d7ff50651d9230eb962b0a0a72ca0ed180ac75a4d0e9`    35588  returns/pack_C_longform_extraction_arch_return.md
+`68589d8020298fa1141dcdd400e2e4e6777ab183e58c159945b9804a4b9d6a8b`    52987  returns/pack_D_reproducible_pipeline_return.md
+`42ed81b99cc1d5ede3a250101743d86a88c0a6ae905a710ff360ed50d4516b80`     2928  第88道回包收件汇报.md

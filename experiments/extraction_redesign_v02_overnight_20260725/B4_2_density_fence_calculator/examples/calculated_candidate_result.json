@@ -1,0 +1,82 @@
+{
+  "blind_production_input_guard": {
+    "allowed_as_chapter_type_input": false,
+    "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+    "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+    "maximum_inclusive": 184,
+    "minimum_inclusive": 97
+  },
+  "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+  "calculation": {
+    "adjusted_load_numerator": "24.00",
+    "budget_fence": {
+      "lower_bound": {
+        "base_value": 25,
+        "budget": 25,
+        "label_zh": "下限",
+        "role": "lower_bound",
+        "unrounded": "25.00"
+      },
+      "reference_budget": {
+        "base_value": 32,
+        "budget": 32,
+        "label_zh": "参考值",
+        "role": "reference_budget",
+        "unrounded": "32.00"
+      },
+      "upper_bound": {
+        "base_value": 40,
+        "budget": 40,
+        "label_zh": "上限",
+        "role": "upper_bound",
+        "unrounded": "40.00"
+      }
+    },
+    "count_assessment": {
+      "anomaly_threshold_strictly_above": 80,
+      "auto_fill_allowed": false,
+      "auto_truncation_allowed": false,
+      "granularity_anomaly": false,
+      "lower_bound": 25,
+      "next_action": "REVIEW_MERGE_AND_DEDUPLICATE_NO_TRUNCATION",
+      "raw_candidate_count": 41,
+      "status": "over_upper_review_required",
+      "upper_bound": 40
+    },
+    "density_class": "NORMAL",
+    "density_coef": "1.00",
+    "density_condition": "0.75 <= load_ratio <= 1.25",
+    "density_label": "普通",
+    "len_coef": "1",
+    "len_coef_clip": {
+      "maximum": "1.25",
+      "minimum": "0.80"
+    },
+    "length_ratio": "1",
+    "load_ratio": "0.75",
+    "p_surplus_over_n": 0,
+    "raw_len_coef": "1"
+  },
+  "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+  "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+  "inputs": {
+    "l50_chars": 1000,
+    "length_chars": 1000,
+    "n_est": 24,
+    "p_est": 24,
+    "raw_candidate_count": 41
+  },
+  "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+  "missing_policy_codes": [
+    "BLOCK_SIZE_POLICY_MISSING"
+  ],
+  "rounding_policy": {
+    "authority_claim": "候选机械口径，不冒充已拍产品事实",
+    "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+    "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+    "product_policy_status": "PENDING_CONFIRMATION",
+    "python_builtin_round_used": false,
+    "tie_example": "32.5 -> 33"
+  },
+  "schema_version": "v02-b4-2-density-fence-result-v0.1"
+}

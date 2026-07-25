@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -65,6 +67,29 @@ def model_output(
 
 
 class PipelineInspectorTests(unittest.TestCase):
+    def test_direct_and_unified_help_exit_zero(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        commands = (
+            [sys.executable, str(root / "tools/pipeline_inspector.py"), "--help"],
+            [
+                sys.executable,
+                str(root / "tools/novel_pipeline.py"),
+                "inspect",
+                "--help",
+            ],
+        )
+        for command in commands:
+            with self.subTest(command=command):
+                completed = subprocess.run(
+                    command,
+                    cwd=root,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(completed.returncode, 0, completed.stderr)
+                self.assertIn("feedback", completed.stdout)
+
     def test_batch_contract_and_duplicate_ids(self) -> None:
         normalized = inspector.validate_review_batch(sample_batch())
         self.assertEqual(normalized["items"][0]["item_id"], "ITEM-1")

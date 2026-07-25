@@ -1,0 +1,29 @@
+{
+  "checks": {
+    "body_nonempty": true,
+    "contract_hash_locked": false,
+    "formal_gold_plaintext_absent": true,
+    "secrets_absent": true,
+    "whitelist_complete": true,
+    "zip_parseable": true
+  },
+  "contract_components": {
+    "canary_sha256": "CANARY_HASH_MISSING",
+    "prompt_sha256": "PROMPT_HASH_MISSING",
+    "rules_sha256": "RULES_HASH_MISSING",
+    "schemas_sha256": "6041b9822b3b8beea5f0d45f59f0d9276cfe7e7e31b22a370c1a71e342e69013"
+  },
+  "contract_hash": "FULL_CHAIN_CONTRACT_HASH_MISSING",
+  "contract_hash_scope": "B2_SCHEMA_BUNDLE_ONLY",
+  "failure_codes": [
+    "PF_CONTRACT_HASH_UNLOCKED"
+  ],
+  "gate_status": "HARD_STOP",
+  "model_api_calls": 0,
+  "module_id": "M01",
+  "network_requests": 0,
+  "receipt_id": "EXAMPLE-PREFLIGHT-001",
+  "run_id": "EXAMPLE-RUN-001",
+  "schema_version": "v02-preflight-receipt-v0.1",
+  "unexpected_field": "must be rejected"
+}

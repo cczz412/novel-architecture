@@ -42,6 +42,17 @@
       "call_ready": true
     },
     {
+      "requested_name": "qwen3.7-max-fixed-text",
+      "model_id": "qwen3.7-max-2026-05-20",
+      "call_ready": true,
+      "fixed_snapshot": true,
+      "input_mode": "text",
+      "structured_output": false,
+      "thinking_mode": "hybrid_can_disable",
+      "live_catalog_check_required_before_run": true,
+      "validation_scope": "Z98 独立裁判候选；发网前仍须核对千问模型目录中的精确 ID，当前不冒充已通过实调。"
+    },
+    {
       "requested_name": "deepseek-v4-flash",
       "model_id": "deepseek-v4-flash",
       "call_ready": true

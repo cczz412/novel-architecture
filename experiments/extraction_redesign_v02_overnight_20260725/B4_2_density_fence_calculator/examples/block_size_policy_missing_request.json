@@ -1,0 +1,10 @@
+{
+  "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+  "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+  "l50_chars": 1000,
+  "length_chars": 1000,
+  "n_est": 24,
+  "p_est": 24,
+  "raw_candidate_count": 41,
+  "schema_version": "v02-b4-2-density-fence-request-v0.1"
+}

@@ -234,10 +234,37 @@ def test_longcat_thinking_profile_uses_only_official_parameters() -> None:
     assert profile["require_nonempty_reasoning_content"] is True
 
 
+def test_ant_ling_profile_uses_official_thinking_and_json_contract() -> None:
+    stage = benchmark.load_stage("neutral_extract_x01_ch0003_v3_t02")
+    provider, adapter, _ = benchmark.load_provider("ant_ling")
+    profile = benchmark.resolve_profile(
+        adapter,
+        "ling_flash_thinking_json",
+        "Ling-3.0-flash",
+        provider=provider,
+    )
+
+    body, diff = benchmark.build_body(
+        stage, provider, "Ling-3.0-flash", profile
+    )
+
+    assert body["model"] == "Ling-3.0-flash"
+    assert body["temperature"] == 0.2
+    assert body["max_tokens"] == 32000
+    assert body["thinking"] == {"type": "enable"}
+    assert body["response_format"] == {"type": "json_object"}
+    assert "reasoning_effort" not in body
+    assert "n" not in body
+    assert profile["single_sample_via_response_gate"] is True
+    assert diff["messages_byte_equal"] is True
+    assert diff["gold_or_answer_hits"] == []
+
+
 @pytest.mark.parametrize(
     "model_id",
     [
         "qwen3.7-max",
+        "qwen3.7-max-2026-05-20",
         "deepseek-v4-flash",
         "deepseek-v4-pro",
         "glm-5.2",
@@ -317,6 +344,7 @@ def test_list_only_exposes_verified_runnable_pairs() -> None:
     ]
     assert qwen["registered_models_without_validated_profile"] == [
         "qwen3.7-max",
+        "qwen3.7-max-2026-05-20",
         "deepseek-v4-flash",
         "glm-5.2",
         "kimi-k2.7-code",
@@ -388,6 +416,12 @@ def test_list_only_exposes_verified_runnable_pairs() -> None:
         {"model": "LongCat-2.0", "profile": "thinking_prompt_json"}
     ]
     assert longcat["registered_models_without_validated_profile"] == []
+
+    ant_ling = options["providers"]["ant_ling"]
+    assert ant_ling["runnable_pairs"] == [
+        {"model": "Ling-3.0-flash", "profile": "ling_flash_thinking_json"}
+    ]
+    assert ant_ling["registered_models_without_validated_profile"] == []
 
 
 def test_tencent_model_catalog_requires_exact_online_model(tmp_path: Path) -> None:

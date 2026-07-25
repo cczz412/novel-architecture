@@ -1,0 +1,34 @@
+{
+  "blind_production_input_guard": {
+    "allowed_as_chapter_type_input": false,
+    "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+    "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+    "maximum_inclusive": 184,
+    "minimum_inclusive": 97
+  },
+  "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+  "calculation": null,
+  "calculation_status": "L50_MISSING",
+  "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+  "inputs": {
+    "l50_chars": "L50_MISSING",
+    "length_chars": 1000,
+    "n_est": 24,
+    "p_est": 24,
+    "raw_candidate_count": 24
+  },
+  "l50_scope": "NO_VALUE_SUPPLIED_NO_CALCULATION",
+  "missing_policy_codes": [
+    "L50_MISSING",
+    "BLOCK_SIZE_POLICY_MISSING"
+  ],
+  "rounding_policy": {
+    "authority_claim": "候选机械口径，不冒充已拍产品事实",
+    "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+    "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+    "product_policy_status": "PENDING_CONFIRMATION",
+    "python_builtin_round_used": false,
+    "tie_example": "32.5 -> 33"
+  },
+  "schema_version": "v02-b4-2-density-fence-result-v0.1"
+}

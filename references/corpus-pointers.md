@@ -1,6 +1,29 @@
 # 样本指针（优书 · 正文不进仓）
 
-正文真源：[corpus-downloads/](../corpus-downloads/)（软链到小说101-downloads）  
+正文真源：[corpus-downloads/](../corpus-downloads/)。
+
+仓库只跟踪这一层相对指针：
+
+```text
+corpus-downloads -> .local/corpus-downloads
+```
+
+`.local/` 不进 Git。每台机器第一次使用时，把第二层指向自己的正文库：
+
+```bash
+cd /Users/a1234/挣钱/小说架构
+mkdir -p .local
+ln -s /你的/小说101-downloads .local/corpus-downloads
+```
+
+检查有没有接好：
+
+```bash
+test -d corpus-downloads && echo "正文库可读" || echo "请重建 .local/corpus-downloads"
+```
+
+这套二级指针保留所有既有 `corpus-downloads/...` 路径，同时避免 Git 记住某台机器的用户名和绝对路径。干净克隆后正文仍不会自动出现，这是“正文不进仓”的既定边界，不是仓库损坏。
+
 名单出处：小说101 `structure/SAMPLE_REGISTRY.md`（FIT-24）。外发时选 1～3 本 × 几章即可。
 
 | 主类 | 书 | 正文文件夹（可点） |

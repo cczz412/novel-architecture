@@ -16,11 +16,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
-import zipfile
+import shutil
+import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+TOOLS_DIR = Path(__file__).resolve().parent
+if str(TOOLS_DIR) not in sys.path:
+    sys.path.insert(0, str(TOOLS_DIR))
+
+from pipeline_common import artifacts  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES = ROOT / "config/review_pack/profiles.json"
@@ -247,12 +256,11 @@ def collect_files(
     return sorted(uniq.values(), key=lambda x: x.as_posix()), notes
 
 
-def build_z83_ticket_digest(dest_root: Path) -> list[Path]:
-    """把每棵 Z83_* 的关键票据摘要进包，覆盖「修了几十轮」叙事且不带全林。"""
-    out_files: list[Path] = []
-    digest_dir = dest_root / "_digest" / "z83_tickets"
-    digest_dir.mkdir(parents=True, exist_ok=True)
-    rows = []
+def build_z83_ticket_digest() -> dict[str, bytes]:
+    """在内存中生成 Z83 关键票据摘要；dry-run 不得落盘。"""
+
+    payloads: dict[str, bytes] = {}
+    rows: list[dict[str, Any]] = []
     for run_dir in sorted((ROOT / "runs").glob("Z83_*")):
         if not run_dir.is_dir():
             continue
@@ -266,13 +274,15 @@ def build_z83_ticket_digest(dest_root: Path) -> list[Path]:
             run_dir / "review" / "semantic_pre_retry_hard_stop.json",
             run_dir / "run_manifest.json",
         ]
-        found = []
+        found: list[str] = []
         for t in ticket_candidates:
             if t.is_file():
-                target = digest_dir / run_dir.name / t.relative_to(run_dir)
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(t.read_bytes())
-                out_files.append(target)
+                member = (
+                    Path("_digest/z83_tickets")
+                    / run_dir.name
+                    / t.relative_to(run_dir)
+                ).as_posix()
+                payloads[member] = t.read_bytes()
                 found.append(t.relative_to(ROOT).as_posix())
         rows.append({"run": run_dir.name, "tickets": found})
     index = {
@@ -297,13 +307,19 @@ def build_z83_ticket_digest(dest_root: Path) -> list[Path]:
         ],
         "copied": rows,
     }
-    idx_path = digest_dir / "INDEX.json"
-    idx_path.write_text(json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    out_files.append(idx_path)
-    return out_files
+    payloads["_digest/z83_tickets/INDEX.json"] = (
+        json.dumps(index, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    ).encode("utf-8")
+    return payloads
 
 
-def write_reviewer_readme(pack_dir: Path, profile_name: str, files: list[Path], notes: list[str]) -> Path:
+def render_reviewer_readme(
+    profile_name: str,
+    *,
+    file_count: int,
+    notes: list[str],
+    generated_at: datetime,
+) -> bytes:
     cs = {}
     cs_path = ROOT / "governance/CURRENT_STATE.json"
     if cs_path.is_file():
@@ -314,7 +330,7 @@ def write_reviewer_readme(pack_dir: Path, profile_name: str, files: list[Path], 
     artifacts = execution.get("artifacts") or {}
     text = f"""# 给 ChatGPT／外审的读包说明（先读这个）
 
-生成时间：{datetime.now().isoformat(timespec="seconds")}
+生成时间：{generated_at.isoformat(timespec="seconds")}
 profile：`{profile_name}`
 
 ## 你要用这包做什么
@@ -352,7 +368,7 @@ profile：`{profile_name}`
 
 ## 本包文件数
 
-{len(files)} 个文件。
+{file_count} 个业务文件；包内另带机械生成的 `MANIFEST.json` 与 `SHA256SUMS`。
 
 ## 打包告警
 
@@ -366,19 +382,17 @@ profile：`{profile_name}`
 4. **明确不要动什么**（金标／现役链／误删本地证据等）
 5. **复验缺口**（若 tests／experiments 仍缺什么，直接点名路径）
 """
-    path = pack_dir / "00_READ_ME_FOR_REVIEWER.md"
-    path.write_text(text, encoding="utf-8")
-    return path
+    return text.encode("utf-8")
 
 
-def zip_pack(pack_dir: Path, zip_path: Path, files: list[tuple[str, Path]]) -> int:
-    raw = 0
-    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
-        for arc, src in files:
-            data = src.read_bytes()
-            raw += len(data)
-            zf.writestr(arc, data)
-    return raw
+def _add_payload(
+    payloads: dict[str, bytes],
+    member: str,
+    data: bytes,
+) -> None:
+    if member in payloads:
+        raise SystemExit(f"ABORT ZIP 成员重名：{member}")
+    payloads[member] = data
 
 
 def main() -> int:
@@ -399,31 +413,25 @@ def main() -> int:
     max_mb = float(cfg.get("max_zip_mb") or 25)
 
     files, notes = collect_files(profile, cfg, exclude, markers)
-    stamp = datetime.now().strftime("%Y%m%d_%H%M")
+    generated_at = datetime.now()
+    stamp = generated_at.strftime("%Y%m%d_%H%M%S")
     pack_dir = args.out_dir or (OUT_ROOT / f"{profile_name}_{stamp}")
-    pack_dir.mkdir(parents=True, exist_ok=True)
+    if pack_dir.exists():
+        raise SystemExit(f"输出目录已存在，拒绝覆盖：{pack_dir}")
 
-    # digest into pack_dir then include
-    extra: list[Path] = []
-    if profile.get("digest_z83_tickets"):
-        extra = build_z83_ticket_digest(pack_dir)
-
-    readme = write_reviewer_readme(pack_dir, profile_name, files + extra, notes)
-
-    # arcname map
-    mapped: list[tuple[str, Path]] = [("00_READ_ME_FOR_REVIEWER.md", readme)]
+    payloads: dict[str, bytes] = {}
     for p in files:
-        mapped.append((p.relative_to(ROOT).as_posix(), p))
-    for p in extra:
-        mapped.append((p.relative_to(pack_dir).as_posix() if p.is_relative_to(pack_dir) else p.name, p))
-        # digest files live under pack_dir
-        mapped[-1] = (p.relative_to(pack_dir).as_posix(), p)
-
-    # de-dupe arcs
-    uniq: dict[str, Path] = {}
-    for arc, src in mapped:
-        uniq[arc] = src
-    mapped = sorted(uniq.items())
+        _add_payload(payloads, p.relative_to(ROOT).as_posix(), p.read_bytes())
+    if profile.get("digest_z83_tickets"):
+        for member, data in build_z83_ticket_digest().items():
+            _add_payload(payloads, member, data)
+    readme = render_reviewer_readme(
+        profile_name,
+        file_count=len(payloads),
+        notes=notes,
+        generated_at=generated_at,
+    )
+    _add_payload(payloads, "00_READ_ME_FOR_REVIEWER.md", readme)
 
     missing = [n for n in notes if n.startswith("MISSING_REQUIRED")]
     if missing:
@@ -431,37 +439,75 @@ def main() -> int:
 
     zip_path = pack_dir / f"chatgpt_review_{profile_name}_{stamp}.zip"
     if args.dry_run:
-        total = sum(p.stat().st_size for _, p in mapped)
-        print(f"dry-run profile={profile_name} files={len(mapped)} bytes={total} (~{total/1024/1024:.1f}MB raw)")
-        for arc, _ in mapped[:30]:
-            print(" ", arc)
+        total = sum(len(data) for data in payloads.values())
+        print(
+            f"dry-run profile={profile_name} files={len(payloads)} "
+            f"bytes={total} (~{total/1024/1024:.1f}MB raw)（零写入）"
+        )
+        for member in sorted(payloads)[:30]:
+            print(" ", member)
         print("  ...")
         return 0
 
-    raw = zip_pack(pack_dir, zip_path, mapped)
-    zsize = zip_path.stat().st_size
-    manifest = {
-        "schema_version": "chatgpt-review-pack-manifest-v1",
-        "profile": profile_name,
-        "created_at": datetime.now().isoformat(timespec="seconds"),
-        "file_count": len(mapped),
-        "raw_bytes": raw,
-        "zip_bytes": zsize,
-        "zip_mb": round(zsize / 1024 / 1024, 2),
-        "max_zip_mb": max_mb,
-        "notes": notes,
-        "zip_path": _manifest_path(zip_path, identity_root=pack_dir),
-        "readme": "00_READ_ME_FOR_REVIEWER.md",
-    }
-    (pack_dir / "MANIFEST.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    pack_dir.parent.mkdir(parents=True, exist_ok=True)
+    stage = Path(
+        tempfile.mkdtemp(
+            dir=pack_dir.parent,
+            prefix=f".{pack_dir.name}.",
+        )
+    )
+    try:
+        staged_zip = stage / zip_path.name
+        integrity = artifacts.write_verified_zip(
+            staged_zip,
+            payloads,
+            metadata={
+                "package_kind": "chatgpt-review-pack-v2",
+                "profile": profile_name,
+                "created_at": generated_at.isoformat(timespec="seconds"),
+            },
+        )
+        zsize = int(integrity["zip_bytes"])
+        if zsize / 1024 / 1024 > max_mb and not args.allow_large:
+            raise SystemExit(
+                f"ABORT zip {zsize/1024/1024:.1f}MB > max {max_mb}MB"
+                "（加 --allow-large 才允许生成）"
+            )
+        (stage / "00_READ_ME_FOR_REVIEWER.md").write_bytes(readme)
+        receipt = {
+            "schema_version": "chatgpt-review-pack-receipt-v2",
+            "profile": profile_name,
+            "created_at": generated_at.isoformat(timespec="seconds"),
+            "payload_file_count": len(payloads),
+            "raw_bytes": sum(len(data) for data in payloads.values()),
+            "zip": {
+                "path": zip_path.name,
+                "bytes": zsize,
+                "sha256": integrity["zip_sha256"],
+            },
+            "max_zip_mb": max_mb,
+            "notes": notes,
+            "integrity": integrity,
+        }
+        (stage / "PACKAGE_RECEIPT.json").write_text(
+            json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True)
+            + "\n",
+            encoding="utf-8",
+        )
+        os.replace(stage, pack_dir)
+    except Exception:
+        shutil.rmtree(stage, ignore_errors=True)
+        raise
 
     print(f"profile={profile_name}")
-    print(f"files={len(mapped)} raw_MB={raw/1024/1024:.1f} zip_MB={zsize/1024/1024:.2f}")
+    print(
+        f"files={len(payloads)} "
+        f"raw_MB={sum(len(data) for data in payloads.values())/1024/1024:.1f} "
+        f"zip_MB={zsize/1024/1024:.2f}"
+    )
     print(f"zip={zip_path}")
-    print(f"readme={readme}")
-    if zsize / 1024 / 1024 > max_mb and not args.allow_large:
-        print(f"ABORT zip {zsize/1024/1024:.1f}MB > max {max_mb}MB（加 --allow-large 可强行保留）")
-        return 2
+    print(f"readme={pack_dir / '00_READ_ME_FOR_REVIEWER.md'}")
+    print(f"receipt={pack_dir / 'PACKAGE_RECEIPT.json'}")
     if notes:
         print("notes:")
         for n in notes:

@@ -1421,7 +1421,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--profile", default=DEFAULT_PROFILE)
     run.add_argument("--max-calls", type=int, default=3)
 
-    feedback = subparsers.add_parser("feedback", help="录入强审抽查，必要时扩到 30%")
+    feedback = subparsers.add_parser("feedback", help="录入强审抽查，必要时扩到 30%%")
     feedback.add_argument("--result", type=Path, required=True)
     feedback.add_argument("--feedback", type=Path, required=True)
     feedback.add_argument("--output", type=Path, required=True)

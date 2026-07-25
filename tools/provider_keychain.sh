@@ -7,14 +7,14 @@ readonly SCRIPT_DIR="${${0:A}:h}"
 usage() {
   cat <<'EOF'
 用法：
-  tools/provider_keychain.sh save <volcengine_ark|qianwen_platform|tencent_tokenhub>
+  tools/provider_keychain.sh save <volcengine_ark|qianwen_platform|tencent_tokenhub|ant_ling>
       弹出隐藏输入框，把对应 API Key 保存到 macOS 钥匙串。
 
-  tools/provider_keychain.sh check <volcengine_ark|qianwen_platform|tencent_tokenhub>
+  tools/provider_keychain.sh check <volcengine_ark|qianwen_platform|tencent_tokenhub|ant_ling>
       只检查钥匙是否存在，不显示内容。
 
-  tools/provider_keychain.sh run <volcengine_ark|qianwen_platform|tencent_tokenhub> <命令> [参数...]
-      只在该命令进程里注入 ARK_API_KEY、DASHSCOPE_API_KEY 或 TENCENT_TOKENHUB_API_KEY。
+  tools/provider_keychain.sh run <volcengine_ark|qianwen_platform|tencent_tokenhub|ant_ling> <命令> [参数...]
+      只在该命令进程里注入对应的 API Key 环境变量。
 
 这里只保存钥匙，不会试调用模型，也不会改变现役默认链。
 EOF
@@ -36,6 +36,11 @@ configure_provider() {
       KEYCHAIN_SERVICE="cn.cz.novel-architecture.tencent.tokenhub"
       KEYCHAIN_ACCOUNT="TENCENT_TOKENHUB_API_KEY"
       PROVIDER_TITLE="腾讯云 TokenHub（标准在线推理接口）"
+      ;;
+    ant_ling)
+      KEYCHAIN_SERVICE="cn.cz.novel-architecture.ant-ling.api"
+      KEYCHAIN_ACCOUNT="ANT_LING_API_KEY"
+      PROVIDER_TITLE="蚂蚁百灵（Ling-3.0-flash）"
       ;;
     *)
       print -u2 -- "不认识的供应商：$1"

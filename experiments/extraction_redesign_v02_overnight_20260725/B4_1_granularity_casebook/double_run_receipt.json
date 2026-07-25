@@ -1,0 +1,15 @@
+{
+  "byte_identical": true,
+  "candidate_id": "B4_1_granularity_casebook",
+  "case_pass_count_each_run": 10,
+  "model_api_calls": 0,
+  "network_requests": 0,
+  "pass1_tree_sha256": "08491412479c3ee0c76d0284a46eb13728755298689bd75e0204d01ff43784b9",
+  "pass2_tree_sha256": "08491412479c3ee0c76d0284a46eb13728755298689bd75e0204d01ff43784b9",
+  "result": "PASS_BYTE_IDENTICAL",
+  "runs": 2,
+  "schema_version": "v02-b4-1-granularity-double-run-v0.1",
+  "target_manifest_sha256": "1e71a96a917ccacddc02e149108682f6e70cb7ec6ffd7422325c23267fd79ae5",
+  "target_tree_sha256": "08491412479c3ee0c76d0284a46eb13728755298689bd75e0204d01ff43784b9",
+  "uncovered_boundary_count_each_run": 0
+}

@@ -1,0 +1,29 @@
+{
+  "activation_allowed": false,
+  "allowed_judge_output_fields": [
+    "verdict",
+    "h_codes",
+    "fact_id"
+  ],
+  "blind_judging_required": true,
+  "candidate_id": "EXAMPLE-CANDIDATE-001",
+  "candidate_lock_status": "HASH_LOCKED",
+  "candidate_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "engineering_gate": "RED",
+  "fact_id": null,
+  "failure_codes": [
+    "J_TRUST_ROOT_MISSING",
+    "J_TICKET_UNSIGNED"
+  ],
+  "format_mode": "FORMAT_ONLY_UNISSUED",
+  "h_codes": null,
+  "issuance_status": "UNISSUED",
+  "judge_family_must_differ_from_producer": true,
+  "module_id": "M06",
+  "schema_version": "v02-judge-green-ticket-v0.1",
+  "signature": null,
+  "ticket_id": "FORMAT-ONLY-JUDGE-TICKET-001",
+  "trust_root_id": "TRUST_ROOT_ID_MISSING",
+  "trust_root_status": "TRUST_ROOT_MISSING",
+  "verdict": null
+}

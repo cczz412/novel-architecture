@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-state-v2",
-  "snapshot_at": "2026-07-24T17:24:00+08:00",
+  "snapshot_at": "2026-07-25T19:45:00+08:00",
   "authority": {
     "role": "本地唯一机器可读当前执行状态真源",
     "external_truth": {
@@ -19,58 +19,49 @@
   },
   "current_execution": {
     "task": {
-      "task_id": "Z98-KNIFE-A-PATCH-STEP1",
-      "label": "第98道·刀A小额补丁实验·步二发网",
-      "status": "step2_released_preflight_pending",
-      "status_label": "2026-07-24 17:15 步一审收PASS并放行步二；正在做Git精确推送与发网前零调用核验"
+      "task_id": "REPO-GOVERNANCE-OPTIMIZATION-20260725",
+      "label": "主线施工窗已结束｜仓库寻路与可移植性治理",
+      "status": "maintenance_complete_mainline_frozen",
+      "status_label": "2026-07-25 仓库寻路、可移植性、打包安全与干净克隆治理完成；C9／C10 工程候选保留，未完成的语义与质量结论继续冻结"
     },
     "authorization": {
-      "kind": "notion_ledger_and_queue_work_order",
-      "authority_time": "2026-07-24T15:55:00+08:00",
+      "kind": "cz_current_conversation_direct_authorization",
+      "authority_time": "2026-07-25T19:02:26+08:00",
       "ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
       "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "step2_release_time": "2026-07-24T17:15:00+08:00",
-      "step2_release_readback_at": "2026-07-24T17:22:00+08:00",
-      "unified_design_page_id": "e3cfee94-c8d0-4df4-9b2f-454b9e01b1d7",
-      "readback_at": "2026-07-24T16:00:00+08:00",
-      "local_frozen_excerpt_sha256": "ea40a843a766cf4954ba06f092d0908349b2b2f0e34578cee83d0d0155862081",
-      "sha_boundary": "只证明本地冻结摘录字节未变，不冒充Notion页面原始字节SHA"
+      "notion_readback_for_this_transition": false,
+      "scope": "仓库导航、README、工具登记、依赖与配置整理、可移植性、缓存清理、测试、精确提交与推送；不恢复任何模型主线"
     },
     "run": {
-      "run_id": "Z98-KNIFE-A-PATCH-STEP1-v1.0",
-      "run_directory": "runs/Z98_刀A小额补丁实验_步一备料_v1.0_20260724",
-      "status_label": "步一冻结件审收PASS；step2_release_allowed=true；真实发网前仍须17份请求SHA、三章事件SHA与腾讯精确型号在线闸全部通过"
+      "run_id": null,
+      "run_directory": null,
+      "status_label": "无主线模型运行；仓库治理只做本地工程操作"
     },
     "controls": {
-      "quality_boundary": "步一只收备料工程胜负：同卷、选位、合同、预算上限、未知字段硬化、泄漏闸和可追溯票据是否成立；不登记模型质量胜负，不把UCR候选列冒充正式成绩。",
-      "evidence_boundary": "只读 retry03 第3／13／19章唯一有效事件样张、实发请求、usage与冻结锚目录；Z96刀B与Z94单对象合同只作只读候选参照；金标、人工判词、评分答案和历史成绩均不进入模型可见面。",
-      "stop_rule": "步二无Notion明确放行不得发网；任一来源SHA漂移、答案面泄漏、章限额超标、未知字段漏收、保护面漂移或新增全仓失败，立即硬停不缝补。",
-      "next_action": "精确推送第98道步一候选；另开步二运行目录，完成17份请求与两通道零调用预检后按冻结顺序单次采样。"
+      "quality_boundary": "只登记仓库工程治理是否通过；不重判 C9／C10、Z98 或任何模型路线的语义与质量胜负。",
+      "evidence_boundary": "长期代码、配置、schema、README 与小型审计件可入 Git；runs／reports／TEMP、候选大池、UCR 原始回包及可还原小说正文的 catalogs／requests 只留本机。",
+      "stop_rule": "不得把小说正文切片、密钥、封存运行原件或未决语义结论写进 Git；干净副本、整仓测试、治理检查或安全扫描出现新失败即停下修复，不绕过。",
+      "next_action": "等待 CZ 的下一道明确施工令；恢复任何模型主线、语义判定或候选升格都须重新授权。"
     },
     "artifacts": {
-      "report_directory": "reports/Z98_刀A小额补丁实验_步一备料_20260724",
-      "local_stop_receipt": "reports/Z98_刀A小额补丁实验_步一备料_20260724/第98道步一停点回包.md",
-      "candidate_directory": "experiments/Z98_knife_a_patch_step1_20260724",
-      "bundle_manifest": "runs/Z98_刀A小额补丁实验_步一备料_v1.0_20260724/bundle_manifest.json",
-      "preflight": "runs/Z98_刀A小额补丁实验_步一备料_v1.0_20260724/preflight.json",
-      "selection_receipt": "runs/Z98_刀A小额补丁实验_步一备料_v1.0_20260724/receipts/selection_receipt.json",
-      "budget_receipt": "runs/Z98_刀A小额补丁实验_步一备料_v1.0_20260724/receipts/budget_receipt.json",
-      "leak_scan": "runs/Z98_刀A小额补丁实验_步一备料_v1.0_20260724/receipts/model_window_leak_scan.json",
-      "p1_hardening_diff": "runs/Z98_刀A小额补丁实验_步一备料_v1.0_20260724/receipts/p1_hardening_diff.json",
-      "frozen_task_registry": "runs/Z98_刀A小额补丁实验_步一备料_v1.0_20260724/design/frozen_task_registry.json",
-      "notion_callback_url": "https://app.notion.com/p/3a75cadc4d0f815b842dc07700a236d7"
+      "report_directory": null,
+      "local_stop_receipt": null,
+      "machine_receipt": "governance/repository_hygiene_audit_20260725.md"
     },
     "validation": {
-      "longline_preflight": "PASS；Notion 15:55施工边界、retry03三章真源、Z94/Z96/Z97候选身份与零调用停点已校准",
-      "same_exam": "PASS；实发请求／事件／usage三类SHA逐章钉死，总事件156、历史T1共83297 token",
-      "selection_and_budget": "PASS_PREP_ONLY；修复位5／4／5共14；逐格公式预检过；实际修复与核验usage均为null，预算状态PRE_REGISTERED_NOT_MEASURED",
-      "contracts": "PASS；knife-a-patch-v1与atom-batch-v2全层拒绝未知字段；批式五字段同形、slot全集等值、状态互斥；Z97原Schema未回写",
-      "leak_and_canary": "PASS；模型可见请求泄漏命中0；预算／章限额／臂与章隔离／错源SHA／未知字段五类CANARY全过",
-      "mechanical_double_run": "PASS；34文件两次逐字一致，manifest SHA cc531aae0aed79af1cc2811ec4af41aa214f24738271db98b2888d5b9e43ee20",
-      "targeted_tests": "PASS；13 passed；Ruff／compileall／git diff --check全过",
-      "full_repository_regression": "PASS；764 passed／40 xfailed／169 subtests passed／0 failed",
-      "terra_review": "PASS；初查P1为RFU optional_details运行时类型闸与Schema不完全等价；已收紧只准JSON基础值并补嵌套数组回归，复核P0/P1=0，修后官方34文件重建逐字一致",
-      "notion_callback_readback": "PASS；正文回包、04P账序与Z批队列三处均回读命中0调用、质量未判与step2_release_allowed=false"
+      "status": "PASS",
+      "completed_checks": [
+        "仓库寻路与目录职责盘点",
+        "正文相关本地证据精确隔离",
+        "Z88 外部软链实体化与正文库二级本地指针",
+        "打包器 dry-run、manifest、SHA、CRC 与危险成员路径回读",
+        "根工具身份登记补齐",
+        "生成页刷新与一致性检查",
+        "拟提交面本机回归（排除另窗未跟踪 C11 测试）：1253 passed／40 xfailed／1003 subtests passed",
+        "干净克隆回归：539 passed／702 local-evidence skipped／40 xfailed／50 subtests passed",
+        "暂存路径、密钥形态与大文件安全扫描"
+      ],
+      "pending_checks": []
     },
     "usage": {
       "model_api_logical_samples": 0,
@@ -88,7 +79,9 @@
       "corpus_originals_changed": false,
       "historical_scores_rewritten": false,
       "candidate_connected_to_runner": false,
-      "rejected_artifacts_recovered": false
+      "rejected_artifacts_recovered": false,
+      "mainline_run_resumed": false,
+      "repository_maintenance_only": true
     },
     "blockers": []
   },
@@ -139,6 +132,20 @@
     }
   ],
   "historical_context": {
+    "frozen_mainline_snapshots": [
+      {
+        "task_id": "Z98-KNIFE-A-PATCH-STEP2-EXECUTOR-REHEARSAL",
+        "status": "engineering_pass_live_not_started_frozen",
+        "run_id": "Z98-KNIFE-A-PATCH-STEP2-EXECUTOR-REHEARSAL-r07-v1.3",
+        "run_directory": "runs/Z98_刀A小额补丁实验_步二正式执行器预演_r07_v1.3_20260724",
+        "boundary": "68节点零调用预演工程通过；外部信任根未齐时从未发第一个模型请求；用户现已结束该主线施工窗，恢复须新授权与新运行编号。"
+      },
+      {
+        "task_id": "V02-C9-C10-ENGINEERING-CANDIDATES",
+        "status": "engineering_candidates_frozen_semantic_quality_unresolved",
+        "boundary": "C9 工程闸候选仍有语义分歧，C10 只证明可计分性与报告口径；均不得冒充质量结论、正式映射或现役升级。"
+      }
+    ],
     "accepted_steps": [
       {
         "task_id": "Z97-RFU-UCR-LEDGER",

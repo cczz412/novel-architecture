@@ -1,0 +1,1402 @@
+{
+  "passed_count": 15,
+  "schema_version": "v02-b4-2-test-vectors-v0.1",
+  "synthetic_fixture_notice": "这些 L50 是回归向量显式输入，不是产品默认值或校准结论。",
+  "vector_count": 15,
+  "vectors": [
+    {
+      "checks": {
+        "calculation.density_class": "WATER",
+        "calculation.density_coef": "0.80"
+      },
+      "inputs": {
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 23,
+        "p_est": 23
+      },
+      "observed": {
+        "calculation.density_class": "WATER",
+        "calculation.density_coef": "0.80"
+      },
+      "passed": true,
+      "purpose": "低于 0.75 归水文。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "23.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 20,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "20.00"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 26,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "25.60"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 32,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "32.00"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 64,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 20,
+            "next_action": "NO_COUNT_ACTION",
+            "raw_candidate_count": null,
+            "status": "RAW_CANDIDATE_COUNT_NOT_PROVIDED",
+            "upper_bound": 32
+          },
+          "density_class": "WATER",
+          "density_coef": "0.80",
+          "density_condition": "load_ratio < 0.75",
+          "density_label": "水文",
+          "len_coef": "1",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1",
+          "load_ratio": "0.71875",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "1"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 1000,
+          "length_chars": 1000,
+          "n_est": 23,
+          "p_est": 23,
+          "raw_candidate_count": null
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-THRESHOLD-001"
+    },
+    {
+      "checks": {
+        "calculation.density_class": "NORMAL",
+        "calculation.load_ratio": "0.75"
+      },
+      "inputs": {
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 24,
+        "p_est": 24
+      },
+      "observed": {
+        "calculation.density_class": "NORMAL",
+        "calculation.load_ratio": "0.75"
+      },
+      "passed": true,
+      "purpose": "0.75 边界归普通。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "24.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 25,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "25.00"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 32,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "32.00"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 40,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "40.00"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 80,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 25,
+            "next_action": "NO_COUNT_ACTION",
+            "raw_candidate_count": null,
+            "status": "RAW_CANDIDATE_COUNT_NOT_PROVIDED",
+            "upper_bound": 40
+          },
+          "density_class": "NORMAL",
+          "density_coef": "1.00",
+          "density_condition": "0.75 <= load_ratio <= 1.25",
+          "density_label": "普通",
+          "len_coef": "1",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1",
+          "load_ratio": "0.75",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "1"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 1000,
+          "length_chars": 1000,
+          "n_est": 24,
+          "p_est": 24,
+          "raw_candidate_count": null
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-THRESHOLD-002"
+    },
+    {
+      "checks": {
+        "calculation.density_class": "NORMAL",
+        "calculation.load_ratio": "1.25"
+      },
+      "inputs": {
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 40,
+        "p_est": 40
+      },
+      "observed": {
+        "calculation.density_class": "NORMAL",
+        "calculation.load_ratio": "1.25"
+      },
+      "passed": true,
+      "purpose": "1.25 边界归普通。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "40.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 25,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "25.00"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 32,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "32.00"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 40,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "40.00"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 80,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 25,
+            "next_action": "NO_COUNT_ACTION",
+            "raw_candidate_count": null,
+            "status": "RAW_CANDIDATE_COUNT_NOT_PROVIDED",
+            "upper_bound": 40
+          },
+          "density_class": "NORMAL",
+          "density_coef": "1.00",
+          "density_condition": "0.75 <= load_ratio <= 1.25",
+          "density_label": "普通",
+          "len_coef": "1",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1",
+          "load_ratio": "1.25",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "1"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 1000,
+          "length_chars": 1000,
+          "n_est": 40,
+          "p_est": 40,
+          "raw_candidate_count": null
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-THRESHOLD-003"
+    },
+    {
+      "checks": {
+        "calculation.density_class": "HIGH_INFORMATION",
+        "calculation.density_coef": "1.25"
+      },
+      "inputs": {
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 41,
+        "p_est": 41
+      },
+      "observed": {
+        "calculation.density_class": "HIGH_INFORMATION",
+        "calculation.density_coef": "1.25"
+      },
+      "passed": true,
+      "purpose": "高于 1.25 归高信息。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "41.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 31,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "31.25"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 40,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "40.00"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 50,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "50.00"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 100,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 31,
+            "next_action": "NO_COUNT_ACTION",
+            "raw_candidate_count": null,
+            "status": "RAW_CANDIDATE_COUNT_NOT_PROVIDED",
+            "upper_bound": 50
+          },
+          "density_class": "HIGH_INFORMATION",
+          "density_coef": "1.25",
+          "density_condition": "load_ratio > 1.25",
+          "density_label": "高信息",
+          "len_coef": "1",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1",
+          "load_ratio": "1.28125",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "1"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 1000,
+          "length_chars": 1000,
+          "n_est": 41,
+          "p_est": 41,
+          "raw_candidate_count": null
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-THRESHOLD-004"
+    },
+    {
+      "checks": {
+        "calculation.adjusted_load_numerator": "24.00",
+        "calculation.density_class": "NORMAL",
+        "calculation.load_ratio": "0.75"
+      },
+      "inputs": {
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 20,
+        "p_est": 36
+      },
+      "observed": {
+        "calculation.adjusted_load_numerator": "24.00",
+        "calculation.density_class": "NORMAL",
+        "calculation.load_ratio": "0.75"
+      },
+      "passed": true,
+      "purpose": "P_est 只对超过 N_est 的部分计入四分之一。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "24.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 25,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "25.00"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 32,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "32.00"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 40,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "40.00"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 80,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 25,
+            "next_action": "NO_COUNT_ACTION",
+            "raw_candidate_count": null,
+            "status": "RAW_CANDIDATE_COUNT_NOT_PROVIDED",
+            "upper_bound": 40
+          },
+          "density_class": "NORMAL",
+          "density_coef": "1.00",
+          "density_condition": "0.75 <= load_ratio <= 1.25",
+          "density_label": "普通",
+          "len_coef": "1",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1",
+          "load_ratio": "0.75",
+          "p_surplus_over_n": 16,
+          "raw_len_coef": "1"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 1000,
+          "length_chars": 1000,
+          "n_est": 20,
+          "p_est": 36,
+          "raw_candidate_count": null
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-LOAD-001"
+    },
+    {
+      "checks": {
+        "calculation.len_coef": "0.80"
+      },
+      "inputs": {
+        "l50_chars": 100,
+        "length_chars": 25,
+        "n_est": 16,
+        "p_est": 16
+      },
+      "observed": {
+        "calculation.len_coef": "0.80"
+      },
+      "passed": true,
+      "purpose": "长度系数低端裁到 0.80。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "16.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 16,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "16.0000"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 20,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "20.4800"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 26,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "25.6000"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 52,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 16,
+            "next_action": "NO_COUNT_ACTION",
+            "raw_candidate_count": null,
+            "status": "RAW_CANDIDATE_COUNT_NOT_PROVIDED",
+            "upper_bound": 26
+          },
+          "density_class": "WATER",
+          "density_coef": "0.80",
+          "density_condition": "load_ratio < 0.75",
+          "density_label": "水文",
+          "len_coef": "0.80",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "0.25",
+          "load_ratio": "0.625",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "0.5"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 100,
+          "length_chars": 25,
+          "n_est": 16,
+          "p_est": 16,
+          "raw_candidate_count": null
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-CLIP-001"
+    },
+    {
+      "checks": {
+        "calculation.len_coef": "1.25"
+      },
+      "inputs": {
+        "l50_chars": 100,
+        "length_chars": 400,
+        "n_est": 40,
+        "p_est": 40
+      },
+      "observed": {
+        "calculation.len_coef": "1.25"
+      },
+      "passed": true,
+      "purpose": "长度系数高端裁到 1.25。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "40.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 31,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "31.2500"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 40,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "40.0000"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 50,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "50.0000"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 100,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 31,
+            "next_action": "NO_COUNT_ACTION",
+            "raw_candidate_count": null,
+            "status": "RAW_CANDIDATE_COUNT_NOT_PROVIDED",
+            "upper_bound": 50
+          },
+          "density_class": "NORMAL",
+          "density_coef": "1.00",
+          "density_condition": "0.75 <= load_ratio <= 1.25",
+          "density_label": "普通",
+          "len_coef": "1.25",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "4",
+          "load_ratio": "1",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "2"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 100,
+          "length_chars": 400,
+          "n_est": 40,
+          "p_est": 40,
+          "raw_candidate_count": null
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-CLIP-002"
+    },
+    {
+      "checks": {
+        "calculation.budget_fence.lower_bound.base_value": 25,
+        "calculation.budget_fence.lower_bound.budget": 25,
+        "calculation.budget_fence.reference_budget.base_value": 32,
+        "calculation.budget_fence.reference_budget.budget": 32,
+        "calculation.budget_fence.upper_bound.base_value": 40,
+        "calculation.budget_fence.upper_bound.budget": 40
+      },
+      "inputs": {
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 32,
+        "p_est": 32
+      },
+      "observed": {
+        "calculation.budget_fence.lower_bound.base_value": 25,
+        "calculation.budget_fence.lower_bound.budget": 25,
+        "calculation.budget_fence.reference_budget.base_value": 32,
+        "calculation.budget_fence.reference_budget.budget": 32,
+        "calculation.budget_fence.upper_bound.base_value": 40,
+        "calculation.budget_fence.upper_bound.budget": 40
+      },
+      "passed": true,
+      "purpose": "25/32/40 固定对应下限/参考值/上限。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "32.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 25,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "25.00"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 32,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "32.00"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 40,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "40.00"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 80,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 25,
+            "next_action": "NO_COUNT_ACTION",
+            "raw_candidate_count": null,
+            "status": "RAW_CANDIDATE_COUNT_NOT_PROVIDED",
+            "upper_bound": 40
+          },
+          "density_class": "NORMAL",
+          "density_coef": "1.00",
+          "density_condition": "0.75 <= load_ratio <= 1.25",
+          "density_label": "普通",
+          "len_coef": "1",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1",
+          "load_ratio": "1.00",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "1"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 1000,
+          "length_chars": 1000,
+          "n_est": 32,
+          "p_est": 32,
+          "raw_candidate_count": null
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-BASE-001"
+    },
+    {
+      "checks": {
+        "calculation.budget_fence.reference_budget.budget": 33,
+        "calculation.budget_fence.reference_budget.unrounded": "32.50000000",
+        "rounding_policy.policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED"
+      },
+      "inputs": {
+        "l50_chars": 4096,
+        "length_chars": 4225,
+        "n_est": 32,
+        "p_est": 32
+      },
+      "observed": {
+        "calculation.budget_fence.reference_budget.budget": 33,
+        "calculation.budget_fence.reference_budget.unrounded": "32.50000000",
+        "rounding_policy.policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED"
+      },
+      "passed": true,
+      "purpose": "32.5 明确按 half-up 候选口径得到 33。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "32.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 25,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "25.39062500"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 33,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "32.50000000"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 41,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "40.62500000"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 82,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 25,
+            "next_action": "NO_COUNT_ACTION",
+            "raw_candidate_count": null,
+            "status": "RAW_CANDIDATE_COUNT_NOT_PROVIDED",
+            "upper_bound": 41
+          },
+          "density_class": "NORMAL",
+          "density_coef": "1.00",
+          "density_condition": "0.75 <= load_ratio <= 1.25",
+          "density_label": "普通",
+          "len_coef": "1.015625",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1.031494140625",
+          "load_ratio": "0.98461538461538461538461538461538461538461538461538",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "1.015625"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 4096,
+          "length_chars": 4225,
+          "n_est": 32,
+          "p_est": 32,
+          "raw_candidate_count": null
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-ROUND-001"
+    },
+    {
+      "checks": {
+        "calculation.count_assessment.auto_fill_allowed": false,
+        "calculation.count_assessment.status": "legitimate_underfill"
+      },
+      "inputs": {
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 24,
+        "p_est": 24,
+        "raw_candidate_count": 24
+      },
+      "observed": {
+        "calculation.count_assessment.auto_fill_allowed": false,
+        "calculation.count_assessment.status": "legitimate_underfill"
+      },
+      "passed": true,
+      "purpose": "低于下限是合法欠产出，不补条。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "24.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 25,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "25.00"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 32,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "32.00"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 40,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "40.00"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 80,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 25,
+            "next_action": "DO_NOT_ADD_ITEMS",
+            "raw_candidate_count": 24,
+            "status": "legitimate_underfill",
+            "upper_bound": 40
+          },
+          "density_class": "NORMAL",
+          "density_coef": "1.00",
+          "density_condition": "0.75 <= load_ratio <= 1.25",
+          "density_label": "普通",
+          "len_coef": "1",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1",
+          "load_ratio": "0.75",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "1"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 1000,
+          "length_chars": 1000,
+          "n_est": 24,
+          "p_est": 24,
+          "raw_candidate_count": 24
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-UNDERFILL-001"
+    },
+    {
+      "checks": {
+        "calculation.count_assessment.auto_truncation_allowed": false,
+        "calculation.count_assessment.next_action": "REVIEW_MERGE_AND_DEDUPLICATE_NO_TRUNCATION",
+        "calculation.count_assessment.status": "over_upper_review_required"
+      },
+      "inputs": {
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 32,
+        "p_est": 32,
+        "raw_candidate_count": 41
+      },
+      "observed": {
+        "calculation.count_assessment.auto_truncation_allowed": false,
+        "calculation.count_assessment.next_action": "REVIEW_MERGE_AND_DEDUPLICATE_NO_TRUNCATION",
+        "calculation.count_assessment.status": "over_upper_review_required"
+      },
+      "passed": true,
+      "purpose": "高于上限先合并去重，不截断。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "32.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 25,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "25.00"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 32,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "32.00"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 40,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "40.00"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 80,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 25,
+            "next_action": "REVIEW_MERGE_AND_DEDUPLICATE_NO_TRUNCATION",
+            "raw_candidate_count": 41,
+            "status": "over_upper_review_required",
+            "upper_bound": 40
+          },
+          "density_class": "NORMAL",
+          "density_coef": "1.00",
+          "density_condition": "0.75 <= load_ratio <= 1.25",
+          "density_label": "普通",
+          "len_coef": "1",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1",
+          "load_ratio": "1.00",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "1"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 1000,
+          "length_chars": 1000,
+          "n_est": 32,
+          "p_est": 32,
+          "raw_candidate_count": 41
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-UPPER-001"
+    },
+    {
+      "checks": {
+        "calculation.count_assessment.granularity_anomaly": false
+      },
+      "inputs": {
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 32,
+        "p_est": 32,
+        "raw_candidate_count": 80
+      },
+      "observed": {
+        "calculation.count_assessment.granularity_anomaly": false
+      },
+      "passed": true,
+      "purpose": "正好两倍上限不标颗粒度异常。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "32.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 25,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "25.00"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 32,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "32.00"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 40,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "40.00"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 80,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": false,
+            "lower_bound": 25,
+            "next_action": "REVIEW_MERGE_AND_DEDUPLICATE_NO_TRUNCATION",
+            "raw_candidate_count": 80,
+            "status": "over_upper_review_required",
+            "upper_bound": 40
+          },
+          "density_class": "NORMAL",
+          "density_coef": "1.00",
+          "density_condition": "0.75 <= load_ratio <= 1.25",
+          "density_label": "普通",
+          "len_coef": "1",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1",
+          "load_ratio": "1.00",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "1"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 1000,
+          "length_chars": 1000,
+          "n_est": 32,
+          "p_est": 32,
+          "raw_candidate_count": 80
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-ANOMALY-001"
+    },
+    {
+      "checks": {
+        "calculation.count_assessment.auto_truncation_allowed": false,
+        "calculation.count_assessment.granularity_anomaly": true,
+        "calculation.count_assessment.status": "granularity_anomaly"
+      },
+      "inputs": {
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 32,
+        "p_est": 32,
+        "raw_candidate_count": 81
+      },
+      "observed": {
+        "calculation.count_assessment.auto_truncation_allowed": false,
+        "calculation.count_assessment.granularity_anomaly": true,
+        "calculation.count_assessment.status": "granularity_anomaly"
+      },
+      "passed": true,
+      "purpose": "严格高于两倍上限才标颗粒度异常。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": {
+          "adjusted_load_numerator": "32.00",
+          "budget_fence": {
+            "lower_bound": {
+              "base_value": 25,
+              "budget": 25,
+              "label_zh": "下限",
+              "role": "lower_bound",
+              "unrounded": "25.00"
+            },
+            "reference_budget": {
+              "base_value": 32,
+              "budget": 32,
+              "label_zh": "参考值",
+              "role": "reference_budget",
+              "unrounded": "32.00"
+            },
+            "upper_bound": {
+              "base_value": 40,
+              "budget": 40,
+              "label_zh": "上限",
+              "role": "upper_bound",
+              "unrounded": "40.00"
+            }
+          },
+          "count_assessment": {
+            "anomaly_threshold_strictly_above": 80,
+            "auto_fill_allowed": false,
+            "auto_truncation_allowed": false,
+            "granularity_anomaly": true,
+            "lower_bound": 25,
+            "next_action": "REVIEW_MERGE_AND_DEDUPLICATE_NO_TRUNCATION",
+            "raw_candidate_count": 81,
+            "status": "granularity_anomaly",
+            "upper_bound": 40
+          },
+          "density_class": "NORMAL",
+          "density_coef": "1.00",
+          "density_condition": "0.75 <= load_ratio <= 1.25",
+          "density_label": "普通",
+          "len_coef": "1",
+          "len_coef_clip": {
+            "maximum": "1.25",
+            "minimum": "0.80"
+          },
+          "length_ratio": "1",
+          "load_ratio": "1.00",
+          "p_surplus_over_n": 0,
+          "raw_len_coef": "1"
+        },
+        "calculation_status": "CALCULATED_WITH_OPEN_POLICY_GAPS",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": 1000,
+          "length_chars": 1000,
+          "n_est": 32,
+          "p_est": 32,
+          "raw_candidate_count": 81
+        },
+        "l50_scope": "EXPLICIT_SINGLE_CALCULATION_INPUT_NOT_GLOBAL_POLICY",
+        "missing_policy_codes": [
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-ANOMALY-002"
+    },
+    {
+      "checks": {
+        "calculation": null,
+        "calculation_status": "L50_MISSING"
+      },
+      "inputs": {
+        "l50_chars": null,
+        "length_chars": 1000,
+        "n_est": 24,
+        "p_est": 24
+      },
+      "observed": {
+        "calculation": null,
+        "calculation_status": "L50_MISSING"
+      },
+      "passed": true,
+      "purpose": "未显式给 L50 时不计算。",
+      "result": {
+        "blind_production_input_guard": {
+          "allowed_as_chapter_type_input": false,
+          "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+          "failure_code": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+          "maximum_inclusive": 184,
+          "minimum_inclusive": 97
+        },
+        "block_size_policy": "BLOCK_SIZE_POLICY_MISSING",
+        "calculation": null,
+        "calculation_status": "L50_MISSING",
+        "chapter_type_source": "LOAD_RATIO_FORMULA_ONLY",
+        "inputs": {
+          "l50_chars": "L50_MISSING",
+          "length_chars": 1000,
+          "n_est": 24,
+          "p_est": 24,
+          "raw_candidate_count": null
+        },
+        "l50_scope": "NO_VALUE_SUPPLIED_NO_CALCULATION",
+        "missing_policy_codes": [
+          "L50_MISSING",
+          "BLOCK_SIZE_POLICY_MISSING"
+        ],
+        "rounding_policy": {
+          "authority_claim": "候选机械口径，不冒充已拍产品事实",
+          "method": "Decimal.quantize(1, rounding=ROUND_HALF_UP)",
+          "policy_id": "ROUND_HALF_UP_CANDIDATE_UNCONFIRMED",
+          "product_policy_status": "PENDING_CONFIRMATION",
+          "python_builtin_round_used": false,
+          "tie_example": "32.5 -> 33"
+        },
+        "schema_version": "v02-b4-2-density-fence-result-v0.1"
+      },
+      "vector_id": "B4-F-MISSING-001"
+    },
+    {
+      "expected_error": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+      "inputs": {
+        "chapter_type_input": 97,
+        "l50_chars": 1000,
+        "length_chars": 1000,
+        "n_est": 32,
+        "p_est": 32
+      },
+      "observed_error": "BLIND_PRODUCTION_97_184_FORBIDDEN_AS_CHAPTER_TYPE_INPUT",
+      "passed": true,
+      "purpose": "盲产 97-184 不得作为章型输入。",
+      "vector_id": "B4-F-BLIND-001"
+    }
+  ]
+}

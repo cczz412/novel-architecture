@@ -1,0 +1,117 @@
+{
+  "$id": "z98_independent_verdict_v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "items": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "anchor_support": {
+            "enum": [
+              "FULL",
+              "PARTIAL",
+              "UNSUPPORTED",
+              "INVALID_ID"
+            ]
+          },
+          "atomicity": {
+            "enum": [
+              "ATOMIC",
+              "COMPOUND"
+            ]
+          },
+          "fact_support": {
+            "enum": [
+              "SUPPORTED",
+              "PARTIAL",
+              "UNSUPPORTED"
+            ]
+          },
+          "item_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "qualifier_support": {
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "INCORRECT",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "reason_codes": {
+            "items": {
+              "enum": [
+                "NONE",
+                "FACT_PARTIAL",
+                "FACT_UNSUPPORTED",
+                "QUALIFIER_MISSING",
+                "QUALIFIER_INCORRECT",
+                "ANCHOR_PARTIAL",
+                "ANCHOR_UNSUPPORTED",
+                "ANCHOR_INVALID",
+                "NOT_ATOMIC",
+                "CONTEXT_INSUFFICIENT"
+              ]
+            },
+            "minItems": 1,
+            "type": "array",
+            "uniqueItems": true
+          },
+          "verdict": {
+            "enum": [
+              "PASS",
+              "REJECT"
+            ]
+          }
+        },
+        "required": [
+          "item_id",
+          "verdict",
+          "fact_support",
+          "qualifier_support",
+          "anchor_support",
+          "atomicity",
+          "reason_codes"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "receipt": {
+      "additionalProperties": false,
+      "properties": {
+        "returned_item_ids": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "returned_item_ids"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "z98-independent-verdict-v1"
+    }
+  },
+  "required": [
+    "schema",
+    "case_id",
+    "items",
+    "receipt"
+  ],
+  "title": "Z98 independent judge verdict v1",
+  "type": "object"
+}

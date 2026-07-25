@@ -1,0 +1,205 @@
+{
+  "$id": "https://local.invalid/contracts/v02/preflight.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "properties": {
+        "checks": {
+          "properties": {
+            "body_nonempty": {
+              "const": true
+            },
+            "contract_hash_locked": {
+              "const": true
+            },
+            "formal_gold_plaintext_absent": {
+              "const": true
+            },
+            "secrets_absent": {
+              "const": true
+            },
+            "whitelist_complete": {
+              "const": true
+            },
+            "zip_parseable": {
+              "const": true
+            }
+          }
+        },
+        "failure_codes": {
+          "maxItems": 0
+        },
+        "gate_status": {
+          "const": "PASS"
+        }
+      }
+    },
+    {
+      "properties": {
+        "failure_codes": {
+          "minItems": 1
+        },
+        "gate_status": {
+          "const": "HARD_STOP"
+        }
+      }
+    }
+  ],
+  "properties": {
+    "checks": {
+      "additionalProperties": false,
+      "properties": {
+        "body_nonempty": {
+          "type": "boolean"
+        },
+        "contract_hash_locked": {
+          "type": "boolean"
+        },
+        "formal_gold_plaintext_absent": {
+          "type": "boolean"
+        },
+        "secrets_absent": {
+          "type": "boolean"
+        },
+        "whitelist_complete": {
+          "type": "boolean"
+        },
+        "zip_parseable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "zip_parseable",
+        "whitelist_complete",
+        "body_nonempty",
+        "contract_hash_locked",
+        "formal_gold_plaintext_absent",
+        "secrets_absent"
+      ],
+      "type": "object"
+    },
+    "contract_components": {
+      "additionalProperties": false,
+      "properties": {
+        "canary_sha256": {
+          "oneOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "const": "CANARY_HASH_MISSING"
+            }
+          ]
+        },
+        "prompt_sha256": {
+          "oneOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "const": "PROMPT_HASH_MISSING"
+            }
+          ]
+        },
+        "rules_sha256": {
+          "oneOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "const": "RULES_HASH_MISSING"
+            }
+          ]
+        },
+        "schemas_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rules_sha256",
+        "schemas_sha256",
+        "prompt_sha256",
+        "canary_sha256"
+      ],
+      "type": "object"
+    },
+    "contract_hash": {
+      "oneOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "const": "FULL_CHAIN_CONTRACT_HASH_MISSING"
+        }
+      ]
+    },
+    "contract_hash_scope": {
+      "enum": [
+        "FULL_CHAIN_CONTRACT",
+        "B2_SCHEMA_BUNDLE_ONLY"
+      ]
+    },
+    "failure_codes": {
+      "items": {
+        "enum": [
+          "PF_ZIP_UNPARSEABLE",
+          "PF_WHITELIST_INCOMPLETE",
+          "PF_BODY_EMPTY",
+          "PF_CONTRACT_HASH_UNLOCKED",
+          "PF_FORMAL_GOLD_PLAINTEXT_PRESENT",
+          "PF_SECRET_PRESENT"
+        ]
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "gate_status": {
+      "enum": [
+        "PASS",
+        "HARD_STOP"
+      ]
+    },
+    "model_api_calls": {
+      "const": 0
+    },
+    "module_id": {
+      "const": "M01"
+    },
+    "network_requests": {
+      "const": 0
+    },
+    "receipt_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "run_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "v02-preflight-receipt-v0.1"
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "module_id",
+    "run_id",
+    "contract_hash",
+    "contract_hash_scope",
+    "contract_components",
+    "checks",
+    "gate_status",
+    "failure_codes",
+    "model_api_calls",
+    "network_requests"
+  ],
+  "title": "P-1 preflight receipt v0.1",
+  "type": "object"
+}

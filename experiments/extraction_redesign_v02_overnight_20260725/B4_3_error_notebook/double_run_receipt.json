@@ -1,0 +1,11 @@
+{
+  "byte_identical": true,
+  "compared_file_count": 9,
+  "hash_scope": "ALL_BUNDLE_FILES_EXCEPT_DOUBLE_RUN_RECEIPT",
+  "model_api_calls": 0,
+  "network_requests": 0,
+  "pass1_tree_sha256": "125ed85d74572d8d26d654e58c44c20652129f46dd641a95a31f4290e8fb1744",
+  "pass2_tree_sha256": "125ed85d74572d8d26d654e58c44c20652129f46dd641a95a31f4290e8fb1744",
+  "result": "PASS",
+  "schema_version": "v02-b4-3-double-run-receipt-v0.1"
+}

@@ -8,4 +8,7 @@
 |---|---|---|---|
 | Z76_phase2_semantic_inspector_pilot_20260721 | complete | `experiments/Z76_phase2_semantic_inspector_pilot_20260721` | 规则先验＋DeepSeek 只分流＋通过桶固定抽样；不产正式真值。 |
 
+未登记的本地候选与证据目录不写进生成页，避免干净副本和当前机器得到两张不同路牌。
+本机只读盘点方式见 `experiments/README.md`。
+
 来源：Codex

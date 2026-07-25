@@ -1,0 +1,17 @@
+{
+  "canary_id": "B4_3_ERROR_NOTEBOOK_LEAK_AND_IDENTITY_CANARY_V1",
+  "case_ids": [
+    "FORBIDDEN_FIELD",
+    "SUSPECTED_BODY",
+    "SUSPECTED_SECRET",
+    "UNKNOWN_FINE_CODE",
+    "ROUTE_MISMATCH",
+    "TRUTH_PROMOTION_STATUS",
+    "DUPLICATE_IDENTITY"
+  ],
+  "expected_result": "ALL_REJECTED",
+  "real_secret_or_novel_text_used": false,
+  "runtime_inputs_generated_in_memory": true,
+  "runtime_inputs_persisted": false,
+  "schema_version": "v02-b4-3-error-notebook-canary-v1"
+}
