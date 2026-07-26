@@ -1,0 +1,40 @@
+{
+  "schema_version": "v02-c13-r07-narrow-git-delta-allowlist.v1",
+  "base_commit_sha": "649a59b81d797ed659cd319e0e9f10fe6d1afcaa",
+  "files": [
+    {
+      "path": "tests/test_v02_c13_execution_runner.py",
+      "sha256": "be9be2b2b32e45a3235d06fb8df89c80b3542140c7eddf21b5e1f8f18b56bede"
+    },
+    {
+      "path": "tools/v02_c13_execution_runner.py",
+      "sha256": "e2f3cec9d3e8420404b9b25c61d5b14c81662f2ea30cf177dd7bd0690c36ccf5"
+    }
+  ],
+  "runtime_files": [
+    {
+      "path": "config/providers/c13_provider_catalog_gate_v1.json",
+      "sha256": "ecf1049cc95d5c7dc0adb7729c357146733420dac0e20918f1b8af2ee4bc463d"
+    },
+    {
+      "path": "experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/v02_c13_downstream_consumer.py",
+      "sha256": "3288d1e5a8ec7f6771e2e98177b6edbb8aa9b709e814f5f27670b3648cfbbd2f"
+    },
+    {
+      "path": "experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/v02_c13_provider_wire.py",
+      "sha256": "235e2c72242358a4fd4b2ade3492d72fe8016b3cbb24bb4c920833a2cd3f14f6"
+    },
+    {
+      "path": "experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/v02_c13_signoff_floor_v2.py",
+      "sha256": "bf969b134f84b42568fa00538dd80e9d3f00a36c9450b17d3c6c8cb82a527891"
+    },
+    {
+      "path": "tools/v02_c13_catalog_gate.py",
+      "sha256": "7f8c9a893849ed0b1290e0921f3f77c97ae020cabbf7d9c0d1aa0cdbb28dd1fb"
+    },
+    {
+      "path": "tools/v02_c13_execution_runner.py",
+      "sha256": "e2f3cec9d3e8420404b9b25c61d5b14c81662f2ea30cf177dd7bd0690c36ccf5"
+    }
+  ]
+}

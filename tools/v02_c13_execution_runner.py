@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V02/C13 r06 正式 90 节点执行器。
+"""V02/C13 r07 正式 90 节点执行器。
 
 本文件只负责把 r02/r03/r04 已签工件接成可复验的执行状态机：
 
@@ -8,7 +8,9 @@
 - 只允许从完整检查点前缀后的第一个未尝试节点续跑；
 - 每家 30、整轮 90 的逻辑题位硬帽由程序机械强制；
 - 真运输必须持有绑定本 runner、顺序票、预演票、Git 冻结点、
-  三家型号票与密钥存在性证明的 execute 票。
+  三家型号票与密钥存在性证明的 execute 票；
+- 主读数臂型号闸失败时整轮硬停；复现臂型号闸失败时，该家 30
+  个题位逐位封签为 ``SKIPPED_PROVIDER_GATE``，其余家按原顺序继续。
 
 本轮权威令没有给出重试次数与连续失败阈值的数值。为不从旧路线
 静默继承，本版采用最保守且可审计的冻结值：每题总尝试 1 次（0
@@ -127,6 +129,11 @@ EXPECTED_PROVIDER_GATE_STATUS = {
     "volcengine_ark": "PASS_EXACT_MODEL_SINGLE_MINIMAL_HANDSHAKE",
     "tencent_tokenhub": "PASS_EXACT_MODEL_LIVE_CATALOG",
 }
+MAIN_PROVIDER_ID = "qianwen_platform"
+REPLICA_PROVIDER_IDS = frozenset(
+    {"volcengine_ark", "tencent_tokenhub"}
+)
+PROVIDER_GATE_FAILED = "PROVIDER_GATE_FAILED"
 
 TOTAL_NODE_HARD_CAP = 90
 PER_PROVIDER_NODE_HARD_CAP = 30
@@ -161,8 +168,13 @@ TERMINAL_NODE_STATUSES = {
     "ACCEPTED",
     "REJECTED_CONTRACT",
     "HARD_STOP_TRANSPORT",
+    "SKIPPED_PROVIDER_GATE",
 }
-RESUMABLE_NODE_STATUSES = {"ACCEPTED", "REJECTED_CONTRACT"}
+RESUMABLE_NODE_STATUSES = {
+    "ACCEPTED",
+    "REJECTED_CONTRACT",
+    "SKIPPED_PROVIDER_GATE",
+}
 
 
 class C13ExecutionError(RuntimeError):
@@ -679,6 +691,7 @@ def _ticket_template(
             }
             for provider_id, model_id in EXPECTED_PROVIDER_MODELS.items()
         ],
+        "provider_gate_failures": [],
         "approved_at": "REQUIRED_ISO8601",
     }
 
@@ -856,6 +869,7 @@ def _node_root(run_dir: Path, node: Mapping[str, Any]) -> Path:
 def _checkpoint_paths(run_dir: Path, node: Mapping[str, Any]) -> dict[str, Path]:
     root = _node_root(run_dir, node)
     return {
+        "provider_gate_skip": root / "00_provider_gate_skip.json",
         "request": root / "01_request.raw",
         "response": root / "02_response.raw",
         "response_absent": root / "02_response_absent.json",
@@ -872,6 +886,124 @@ def _checkpoint_paths(run_dir: Path, node: Mapping[str, Any]) -> dict[str, Path]
             root / "attempts/attempt_01/01_no_response.json"
         ),
     }
+
+
+def _provider_gate_scope(
+    statuses: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    """把三家型号闸结果机械化成唯一执行范围。"""
+
+    normalized = (
+        {
+            provider_id: "PASS"
+            for provider_id in EXPECTED_PROVIDER_MODELS
+        }
+        if statuses is None
+        else dict(statuses)
+    )
+    if set(normalized) != set(EXPECTED_PROVIDER_MODELS) or any(
+        status not in {"PASS", PROVIDER_GATE_FAILED}
+        for status in normalized.values()
+    ):
+        raise C13ExecutionError(
+            "provider_gate_scope_invalid",
+            "型号闸执行范围必须逐家且只能是 PASS／PROVIDER_GATE_FAILED",
+        )
+    if normalized[MAIN_PROVIDER_ID] != "PASS":
+        raise C13ExecutionError(
+            "main_provider_gate_failed",
+            "主读数臂 Qwen 3.7 Max 型号闸失败；整轮不得只跑复现臂",
+        )
+    skipped = sorted(
+        provider_id
+        for provider_id in REPLICA_PROVIDER_IDS
+        if normalized[provider_id] == PROVIDER_GATE_FAILED
+    )
+    eligible = [
+        provider_id
+        for provider_id in EXPECTED_PROVIDER_MODELS
+        if provider_id not in skipped
+    ]
+    return {
+        "statuses": normalized,
+        "eligible_provider_ids": eligible,
+        "skipped_provider_ids": skipped,
+        "planned_node_total": TOTAL_NODE_HARD_CAP,
+        "sent_node_hard_cap": (
+            len(eligible) * PER_PROVIDER_NODE_HARD_CAP
+        ),
+        "skipped_node_total": (
+            len(skipped) * PER_PROVIDER_NODE_HARD_CAP
+        ),
+        "unused_quota_reallocated": False,
+    }
+
+
+def _provider_gate_statuses_from_ticket(
+    ticket: Mapping[str, Any],
+) -> dict[str, str]:
+    statuses = {
+        str(row["provider_id"]): "PASS"
+        for row in ticket["provider_gate_receipts"]
+    }
+    statuses.update(
+        {
+            str(row["provider_id"]): PROVIDER_GATE_FAILED
+            for row in ticket["provider_gate_failures"]
+        }
+    )
+    return statuses
+
+
+def _write_provider_gate_skip_checkpoint(
+    run_dir: Path,
+    *,
+    node: Mapping[str, Any],
+    execution_kind: str,
+) -> dict[str, Any]:
+    """不发请求，只把已失败复现臂的题位逐位封签为跳过。"""
+
+    paths = _checkpoint_paths(run_dir, node)
+    skip = {
+        "schema_version": "v02-c13-r07-provider-gate-skip.v1",
+        "node_id": node["node_id"],
+        "dispatch_id": node["dispatch_id"],
+        "provider_id": node["provider_id"],
+        "exact_model_id": node["model_id"],
+        "status": "SKIPPED_PROVIDER_GATE",
+        "reason_code": PROVIDER_GATE_FAILED,
+        "model_api_requests": 0,
+        "network_attempts": 0,
+        "quota_reallocated": False,
+    }
+    _write_exclusive(
+        paths["provider_gate_skip"],
+        canonical_bytes(skip),
+    )
+    seal = {
+        "schema_version": "v02-c13-r06-node-seal.v1",
+        "contract_version": CONTRACT_VERSION,
+        "node_id": node["node_id"],
+        "node_sequence": node["sequence"],
+        "dispatch_id": node["dispatch_id"],
+        "provider_id": node["provider_id"],
+        "base_call_id": node["base_call_id"],
+        "task": node["task"],
+        "status": "SKIPPED_PROVIDER_GATE",
+        "execution_kind": execution_kind,
+        "sealed_at": _now_iso(),
+        "node_order_sha256": _read_json(
+            run_dir / "prepared/run_plan.json"
+        )["node_order_sha256"],
+        "artifacts": {
+            "provider_gate_skip": {
+                "path": _display_path(paths["provider_gate_skip"]),
+                "sha256": sha256_file(paths["provider_gate_skip"]),
+            }
+        },
+    }
+    _write_exclusive(paths["seal"], canonical_bytes(seal))
+    return _validate_checkpoint(run_dir, node)
 
 
 def _task_b_evidence_paths(
@@ -938,6 +1070,56 @@ def _validate_checkpoint(
             "checkpoint_artifact_map_invalid",
             f"{node['node_id']} 封签缺工件表",
         )
+    if seal["status"] == "SKIPPED_PROVIDER_GATE":
+        skip_path = paths["provider_gate_skip"]
+        forbidden_paths = [
+            paths[name]
+            for name in (
+                "request",
+                "response",
+                "response_absent",
+                "judgment",
+                "attempt",
+                "attempt_reservation",
+                "attempt_response",
+                "attempt_response_absent",
+            )
+        ]
+        forbidden_paths.extend(_task_b_evidence_paths(run_dir, node).values())
+        if (
+            set(artifact_rows) != {"provider_gate_skip"}
+            or not skip_path.is_file()
+            or any(path.is_file() for path in forbidden_paths)
+        ):
+            raise C13ExecutionError(
+                "checkpoint_provider_gate_skip_artifacts_invalid",
+                f"{node['node_id']} 跳过封签夹带了请求、响应或判词",
+            )
+        row = artifact_rows["provider_gate_skip"]
+        skip = _read_json(skip_path)
+        if (
+            not isinstance(row, Mapping)
+            or row.get("path") != _display_path(skip_path)
+            or row.get("sha256") != sha256_file(skip_path)
+            or skip
+            != {
+                "schema_version": "v02-c13-r07-provider-gate-skip.v1",
+                "node_id": node["node_id"],
+                "dispatch_id": node["dispatch_id"],
+                "provider_id": node["provider_id"],
+                "exact_model_id": node["model_id"],
+                "status": "SKIPPED_PROVIDER_GATE",
+                "reason_code": PROVIDER_GATE_FAILED,
+                "model_api_requests": 0,
+                "network_attempts": 0,
+                "quota_reallocated": False,
+            }
+        ):
+            raise C13ExecutionError(
+                "checkpoint_provider_gate_skip_invalid",
+                f"{node['node_id']} 跳过票字段或 SHA 漂移",
+            )
+        return dict(seal)
     if paths["response"].is_file() == paths["response_absent"].is_file():
         raise C13ExecutionError(
             "checkpoint_response_cardinality_invalid",
@@ -1333,6 +1515,9 @@ def _prior_response_identities(
         paths = _checkpoint_paths(run_dir, node)
         if not paths["seal"].is_file():
             continue
+        seal = _read_json(paths["seal"])
+        if seal.get("status") == "SKIPPED_PROVIDER_GATE":
+            continue
         judgment = _read_json(paths["judgment"])
         raw_sha = judgment.get("raw_response_sha256")
         response_id = judgment.get("provider_response_id")
@@ -1495,6 +1680,7 @@ def execute_with_transport(
     execution_kind: str,
     stop_after_completed: int | None = None,
     live_execute_ticket_path: Path | None = None,
+    provider_gate_statuses: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
     """按固定顺序执行；transport 可由测试注入，函数自身不挑结果。"""
 
@@ -1504,12 +1690,23 @@ def execute_with_transport(
             "execution_kind 只能是假运输预演或已授权真运输",
         )
     if execution_kind == "LIVE_AUTHORIZED":
-        _validate_execute_ticket(run_dir, live_execute_ticket_path)
+        ticket = _validate_execute_ticket(run_dir, live_execute_ticket_path)
+        ticket_gate_statuses = _provider_gate_statuses_from_ticket(ticket)
+        if (
+            provider_gate_statuses is not None
+            and dict(provider_gate_statuses) != ticket_gate_statuses
+        ):
+            raise C13ExecutionError(
+                "provider_gate_scope_ticket_mismatch",
+                "调用方给出的型号闸范围不等于已签 execute 票",
+            )
+        provider_gate_statuses = ticket_gate_statuses
     elif live_execute_ticket_path is not None:
         raise C13ExecutionError(
             "rehearsal_execute_ticket_forbidden",
             "假运输预演不得携带真执行票",
         )
+    gate_scope = _provider_gate_scope(provider_gate_statuses)
     verify_prepared(run_dir)
     plan = _read_json(run_dir / "prepared/run_plan.json")
     position = audit_resume_position(run_dir)
@@ -1547,6 +1744,14 @@ def execute_with_transport(
                 "total_node_cap_exceeded",
                 "即将超过整轮 90 题硬帽",
             )
+        if node["provider_id"] in gate_scope["skipped_provider_ids"]:
+            _write_provider_gate_skip_checkpoint(
+                run_dir,
+                node=node,
+                execution_kind=execution_kind,
+            )
+            completed += 1
+            continue
         provider_done = sum(
             1
             for prior in plan["nodes"][:completed]
@@ -1751,11 +1956,15 @@ def finalize(run_dir: Path) -> dict[str, Any]:
     missing_buckets: dict[str, Counter[str]] = {
         provider_id: Counter() for provider_id in EXPECTED_PROVIDER_MODELS
     }
+    skipped_provider_ids: set[str] = set()
     for node in plan["nodes"]:
         seal = _validate_checkpoint(run_dir, node)
         provider_counts[str(node["provider_id"])] += 1
         status_counts[str(seal["status"])] += 1
         task_counts[str(node["task"])] += 1
+        if seal["status"] == "SKIPPED_PROVIDER_GATE":
+            skipped_provider_ids.add(str(node["provider_id"]))
+            continue
         attempt = _read_json(_checkpoint_paths(run_dir, node)["attempt"])
         usage = attempt.get("usage")
         if isinstance(usage, Mapping) and type(usage.get("total_tokens")) is int:
@@ -1780,14 +1989,40 @@ def finalize(run_dir: Path) -> dict[str, Any]:
             "finalize_provider_denominator_drift",
             "收口时每家不再是30节点",
         )
+    if any(
+        sum(
+            1
+            for node in plan["nodes"]
+            if node["provider_id"] == provider_id
+            and _read_json(_checkpoint_paths(run_dir, node)["seal"])[
+                "status"
+            ]
+            == "SKIPPED_PROVIDER_GATE"
+        )
+        not in {0, PER_PROVIDER_NODE_HARD_CAP}
+        for provider_id in EXPECTED_PROVIDER_MODELS
+    ):
+        raise C13ExecutionError(
+            "finalize_provider_gate_skip_partial",
+            "供应商型号闸跳过必须逐家整30题，禁止局部跳过",
+        )
     provider_floors = {
-        provider_id: r04.evaluate_provider_claim_floor(
-            _task_b_floor_pairs(
-                run_dir,
+        provider_id: (
+            {
+                "status": PROVIDER_GATE_FAILED,
+                "readout_included": False,
+                "node_total_sent": 0,
+                "node_total_skipped": PER_PROVIDER_NODE_HARD_CAP,
+            }
+            if provider_id in skipped_provider_ids
+            else r04.evaluate_provider_claim_floor(
+                _task_b_floor_pairs(
+                    run_dir,
+                    provider_id=provider_id,
+                    nodes=plan["nodes"],
+                ),
                 provider_id=provider_id,
-                nodes=plan["nodes"],
-            ),
-            provider_id=provider_id,
+            )
         )
         for provider_id in EXPECTED_PROVIDER_MODELS
     }
@@ -1799,8 +2034,12 @@ def finalize(run_dir: Path) -> dict[str, Any]:
         for provider_id, counts in missing_buckets.items()
     }
     receipt = {
-        "schema_version": "v02-c13-r06-finalize-receipt.v1",
-        "status": "COMPLETE_90_DIAGNOSTIC_ONLY",
+        "schema_version": "v02-c13-r07-finalize-receipt.v1",
+        "status": (
+            "COMPLETE_PROVIDER_ISOLATED_DIAGNOSTIC_ONLY"
+            if skipped_provider_ids
+            else "COMPLETE_90_DIAGNOSTIC_ONLY"
+        ),
         "diagnostic_tier": "PROVISIONAL_AI_DOWNSTREAM",
         "quality_verdict": "NOT_A_QUALITY_VERDICT",
         "route_winner_declared": False,
@@ -1813,6 +2052,16 @@ def finalize(run_dir: Path) -> dict[str, Any]:
         "node_order_sha256": plan["node_order_sha256"],
         "wire_plan_sha256": EXPECTED_WIRE_PLAN_SHA256,
         "node_total": TOTAL_NODE_HARD_CAP,
+        "planned_node_total": TOTAL_NODE_HARD_CAP,
+        "sent_node_total": (
+            TOTAL_NODE_HARD_CAP
+            - len(skipped_provider_ids) * PER_PROVIDER_NODE_HARD_CAP
+        ),
+        "skipped_node_total": (
+            len(skipped_provider_ids) * PER_PROVIDER_NODE_HARD_CAP
+        ),
+        "skipped_provider_ids": sorted(skipped_provider_ids),
+        "unused_quota_reallocated": False,
         "per_provider_node_total": dict(provider_counts),
         "task_node_total": dict(task_counts),
         "node_status_counts": dict(status_counts),
@@ -2150,20 +2399,58 @@ def _validate_narrow_git_freeze(
             "白名单 manifest 与冻结 commit 内字节不一致",
         )
     manifest = _read_json(manifest_path)
-    if (
-        not isinstance(manifest, Mapping)
-        or set(manifest) != {"schema_version", "files"}
-        or manifest.get("schema_version")
-        != "v02-c13-r06-narrow-git-allowlist.v1"
-        or not isinstance(manifest.get("files"), list)
-        or not manifest["files"]
-    ):
+    schema_version = manifest.get("schema_version")
+    if schema_version == "v02-c13-r06-narrow-git-allowlist.v1":
+        if (
+            set(manifest) != {"schema_version", "files"}
+            or not isinstance(manifest.get("files"), list)
+            or not manifest["files"]
+        ):
+            raise C13ExecutionError(
+                "execute_ticket_git_manifest_contract_invalid",
+                "白名单 manifest 不符合 r06 窄冻结合同",
+        )
+        changed_rows = list(manifest["files"])
+        runtime_rows = list(manifest["files"])
+    elif schema_version == "v02-c13-r07-narrow-git-delta-allowlist.v1":
+        if (
+            set(manifest)
+            != {"schema_version", "base_commit_sha", "files", "runtime_files"}
+            or not isinstance(manifest.get("files"), list)
+            or not manifest["files"]
+            or not isinstance(manifest.get("runtime_files"), list)
+            or not manifest["runtime_files"]
+            or not re.fullmatch(
+                r"[0-9a-f]{40}",
+                str(manifest.get("base_commit_sha", "")),
+            )
+        ):
+            raise C13ExecutionError(
+                "execute_ticket_git_manifest_contract_invalid",
+                "白名单 manifest 不符合 r07 增量窄冻结合同",
+            )
+        expected_parent = str(manifest["base_commit_sha"])
+        actual_parent = _git_text("rev-parse", f"{commit_sha}^")
+        if actual_parent != expected_parent:
+            raise C13ExecutionError(
+                "execute_ticket_git_parent_mismatch",
+                "r07 窄提交的父提交不等于 r06 冻结点",
+            )
+        changed_rows = list(manifest["files"])
+        runtime_rows = list(manifest["runtime_files"])
+    else:
         raise C13ExecutionError(
             "execute_ticket_git_manifest_contract_invalid",
-            "白名单 manifest 不符合 r06 窄冻结合同",
+            "白名单 manifest 版本不是 r06 全量或 r07 增量合同",
         )
+
     seen: set[str] = set()
-    for row in manifest["files"]:
+    changed_seen: set[str] = set()
+    expected_sha_by_rel: dict[str, str] = {}
+    for source_name, row in [
+        *(("changed", row) for row in changed_rows),
+        *(("runtime", row) for row in runtime_rows),
+    ]:
         if not isinstance(row, Mapping) or set(row) != {"path", "sha256"}:
             raise C13ExecutionError(
                 "execute_ticket_git_manifest_contract_invalid",
@@ -2173,11 +2460,25 @@ def _validate_narrow_git_freeze(
             row["path"],
             field_name="allowed file path",
         )
-        if rel in seen or not _is_sha256(row["sha256"]):
+        if not _is_sha256(row["sha256"]):
             raise C13ExecutionError(
                 "execute_ticket_git_manifest_contract_invalid",
-                "白名单文件重复或 SHA 不是64位小写十六进制",
+                "白名单 SHA 不是64位小写十六进制",
             )
+        if (
+            rel in expected_sha_by_rel
+            and expected_sha_by_rel[rel] != row["sha256"]
+        ):
+            raise C13ExecutionError(
+                "execute_ticket_git_manifest_contract_invalid",
+                "同一白名单文件在改动表与运行表登记了不同 SHA",
+            )
+        if source_name == "changed" and rel in changed_seen:
+            raise C13ExecutionError(
+                "execute_ticket_git_manifest_contract_invalid",
+                "改动白名单文件重复",
+            )
+        expected_sha_by_rel[rel] = str(row["sha256"])
         if (
             rel.startswith("config/gold/")
             or "/gold/" in rel
@@ -2199,6 +2500,8 @@ def _validate_narrow_git_freeze(
                 f"白名单文件未与 commit／工作树三向一致：{rel}",
             )
         seen.add(rel)
+        if source_name == "changed":
+            changed_seen.add(rel)
     if not NARROW_GIT_REQUIRED_RUNTIME_PATHS.issubset(seen):
         missing = sorted(NARROW_GIT_REQUIRED_RUNTIME_PATHS - seen)
         raise C13ExecutionError(
@@ -2207,7 +2510,7 @@ def _validate_narrow_git_freeze(
         )
     if not any(
         rel.startswith("tests/test_v02_c13_") and rel.endswith(".py")
-        for rel in seen
+        for rel in changed_seen
     ):
         raise C13ExecutionError(
             "execute_ticket_git_test_path_missing",
@@ -2225,7 +2528,7 @@ def _validate_narrow_git_freeze(
         ).splitlines()
         if line
     }
-    expected_changed_paths = seen | {manifest_rel}
+    expected_changed_paths = changed_seen | {manifest_rel}
     if changed_paths != expected_changed_paths:
         raise C13ExecutionError(
             "execute_ticket_git_commit_scope_mismatch",
@@ -2310,6 +2613,7 @@ def _validate_execute_ticket(
         "zero_call_rehearsal_receipt",
         "key_presence",
         "provider_gate_receipts",
+        "provider_gate_failures",
         "approved_at",
     }
     if set(ticket) != required:
@@ -2425,10 +2729,15 @@ def _validate_execute_ticket(
             "execute 票引用的预演票不是 90 节点零调用 PASS",
         )
     gate_refs = ticket["provider_gate_receipts"]
-    if not isinstance(gate_refs, list) or len(gate_refs) != 3:
+    failure_refs = ticket["provider_gate_failures"]
+    if (
+        not isinstance(gate_refs, list)
+        or not isinstance(failure_refs, list)
+        or len(gate_refs) + len(failure_refs) != 3
+    ):
         raise C13ExecutionError(
             "execute_ticket_provider_gate_total_invalid",
-            "execute 票必须恰有三家型号子票",
+            "execute 票必须用 PASS 票或失败票恰好覆盖三家型号闸",
         )
     seen: set[str] = set()
     for ref in gate_refs:
@@ -2626,11 +2935,88 @@ def _validate_execute_ticket(
                 f"{provider_id} 型号子票内容不合同",
             )
         seen.add(provider_id)
+    for ref in failure_refs:
+        if not isinstance(ref, Mapping) or set(ref) != {
+            "provider_id",
+            "exact_model_id",
+            "failure_path",
+            "failure_sha256",
+            "status",
+        }:
+            raise C13ExecutionError(
+                "execute_ticket_provider_gate_failure_fields_invalid",
+                "型号失败票引用字段不合同",
+            )
+        provider_id = str(ref["provider_id"])
+        if (
+            provider_id in seen
+            or provider_id not in REPLICA_PROVIDER_IDS
+            or ref["exact_model_id"] != EXPECTED_PROVIDER_MODELS[provider_id]
+            or ref["status"] != PROVIDER_GATE_FAILED
+        ):
+            raise C13ExecutionError(
+                "execute_ticket_provider_gate_failure_identity_invalid",
+                "只有复现臂可带精确绑定的型号失败票",
+            )
+        gate_root = (
+            run_dir / "prepared/provider_gates" / provider_id
+        ).resolve()
+        failure_path = _require_path_within(
+            _resolve_recorded_path(str(ref["failure_path"])),
+            gate_root,
+            label=f"{provider_id} provider gate failure",
+        )
+        if (
+            not failure_path.is_file()
+            or not _is_sha256(ref["failure_sha256"])
+            or sha256_file(failure_path) != ref["failure_sha256"]
+        ):
+            raise C13ExecutionError(
+                "execute_ticket_provider_gate_failure_sha_drift",
+                f"{provider_id} 型号失败票实物漂移",
+            )
+        failure = _read_json(failure_path)
+        if (
+            failure.get("provider_id") != provider_id
+            or failure.get("exact_model_id")
+            != EXPECTED_PROVIDER_MODELS[provider_id]
+            or failure.get("status")
+            != "HARD_STOP_PROVIDER_DO_NOT_SEND_C13_90_PROMPTS"
+            or failure.get("automatic_fallback_allowed") is not False
+            or failure.get("network_attempt_total") not in {0, 1}
+        ):
+            raise C13ExecutionError(
+                "execute_ticket_provider_gate_failure_invalid",
+                f"{provider_id} 型号失败票不能证明该家独立停用",
+            )
+        started_at = _parse_iso8601(
+            failure.get("started_at"),
+            field_name=f"{provider_id}.failed_gate_started_at",
+        )
+        finished_at = _parse_iso8601(
+            failure.get("finished_at"),
+            field_name=f"{provider_id}.failed_gate_finished_at",
+        )
+        _require_provider_gate_time_order(
+            provider_id=provider_id,
+            git_committed_at=_parse_iso8601(
+                git_freeze_receipt["committed_at"],
+                field_name="Git commit 实际时间",
+            ),
+            started_at=started_at,
+            finished_at=finished_at,
+            execute_approved_at=_parse_iso8601(
+                ticket["approved_at"],
+                field_name="approved_at",
+            ),
+        )
+        seen.add(provider_id)
     if seen != set(EXPECTED_PROVIDER_MODELS):
         raise C13ExecutionError(
             "execute_ticket_provider_gate_missing",
             "execute 票型号子票缺家或越界",
         )
+    _provider_gate_scope(_provider_gate_statuses_from_ticket(ticket))
     _parse_iso8601(ticket["approved_at"], field_name="approved_at")
     if git_freeze_receipt["allowed_file_total"] < len(
         NARROW_GIT_REQUIRED_RUNTIME_PATHS
@@ -2644,9 +3030,21 @@ def _validate_execute_ticket(
 
 def _load_live_keys_after_ticket(
     plan: Mapping[str, Any],
+    *,
+    eligible_provider_ids: Sequence[str] | None = None,
 ) -> dict[str, str]:
     keys: dict[str, str] = {}
-    for provider_id in EXPECTED_PROVIDER_MODELS:
+    eligible = (
+        list(EXPECTED_PROVIDER_MODELS)
+        if eligible_provider_ids is None
+        else list(eligible_provider_ids)
+    )
+    if not set(eligible).issubset(EXPECTED_PROVIDER_MODELS):
+        raise C13ExecutionError(
+            "eligible_provider_ids_invalid",
+            "待发网供应商范围越出冻结三家目录",
+        )
+    for provider_id in eligible:
         nodes = [
             node for node in plan["nodes"] if node["provider_id"] == provider_id
         ]
@@ -2746,11 +3144,17 @@ def run_live(
         canonical_bytes(ticket),
     )
     plan = _read_json(run_dir / "prepared/run_plan.json")
-    keys = _load_live_keys_after_ticket(plan)
+    gate_statuses = _provider_gate_statuses_from_ticket(ticket)
+    gate_scope = _provider_gate_scope(gate_statuses)
+    keys = _load_live_keys_after_ticket(
+        plan,
+        eligible_provider_ids=gate_scope["eligible_provider_ids"],
+    )
     return execute_with_transport(
         run_dir,
         transport=_live_http_transport(keys),
         execution_kind="LIVE_AUTHORIZED",
+        provider_gate_statuses=gate_statuses,
         live_execute_ticket_path=(
             run_dir / "runtime/authority/execute_ticket.json"
         ),
@@ -2817,6 +3221,56 @@ def rehearse(run_dir: Path) -> dict[str, Any]:
             "无 execute 票没有在密钥与网络前被拒绝",
         )
 
+    single_replica_dir = (
+        run_dir / "rehearsal_probes/single_replica_gate_failed"
+    )
+    prepare(single_replica_dir)
+    single_replica_transport = RehearsalTransport("full")
+    single_replica = execute_with_transport(
+        single_replica_dir,
+        transport=single_replica_transport,
+        execution_kind="REHEARSAL_FAKE_TRANSPORT",
+        provider_gate_statuses={
+            "qianwen_platform": "PASS",
+            "volcengine_ark": PROVIDER_GATE_FAILED,
+            "tencent_tokenhub": "PASS",
+        },
+    )
+
+    both_replicas_dir = (
+        run_dir / "rehearsal_probes/both_replica_gates_failed"
+    )
+    prepare(both_replicas_dir)
+    both_replicas_transport = RehearsalTransport("full")
+    both_replicas = execute_with_transport(
+        both_replicas_dir,
+        transport=both_replicas_transport,
+        execution_kind="REHEARSAL_FAKE_TRANSPORT",
+        provider_gate_statuses={
+            "qianwen_platform": "PASS",
+            "volcengine_ark": PROVIDER_GATE_FAILED,
+            "tencent_tokenhub": PROVIDER_GATE_FAILED,
+        },
+    )
+
+    main_failed_dir = run_dir / "rehearsal_probes/main_gate_failed"
+    prepare(main_failed_dir)
+    main_failed_transport = RehearsalTransport("full")
+    main_failed_reason: str | None = None
+    try:
+        execute_with_transport(
+            main_failed_dir,
+            transport=main_failed_transport,
+            execution_kind="REHEARSAL_FAKE_TRANSPORT",
+            provider_gate_statuses={
+                "qianwen_platform": PROVIDER_GATE_FAILED,
+                "volcengine_ark": "PASS",
+                "tencent_tokenhub": "PASS",
+            },
+        )
+    except C13ExecutionError as exc:
+        main_failed_reason = exc.reason_code
+
     rejected_codes: Counter[str] = Counter()
     for node in _read_json(run_dir / "prepared/run_plan.json")["nodes"]:
         judgment = _read_json(
@@ -2841,6 +3295,30 @@ def rehearse(run_dir: Path) -> dict[str, Any]:
         "checkpoint_resume": paused["completed_prefix_count"] == 45,
         "unsigned_live_denied": unsigned_reason
         == "execute_ticket_required_before_live_transport",
+        "single_replica_gate_failure_isolated": (
+            len(single_replica_transport.calls) == 60
+            and single_replica.get("sent_node_total") == 60
+            and single_replica.get("skipped_node_total") == 30
+            and single_replica.get("skipped_provider_ids")
+            == ["volcengine_ark"]
+            and single_replica.get("unused_quota_reallocated") is False
+        ),
+        "both_replica_gate_failures_isolated": (
+            len(both_replicas_transport.calls) == 30
+            and both_replicas.get("sent_node_total") == 30
+            and both_replicas.get("skipped_node_total") == 60
+            and both_replicas.get("skipped_provider_ids")
+            == ["tencent_tokenhub", "volcengine_ark"]
+            and both_replicas.get("unused_quota_reallocated") is False
+        ),
+        "main_gate_failure_stops_before_transport": (
+            main_failed_reason == "main_provider_gate_failed"
+            and len(main_failed_transport.calls) == 0
+            and audit_resume_position(main_failed_dir)[
+                "completed_prefix_count"
+            ]
+            == 0
+        ),
     }
     if not all(required_observations.values()):
         raise C13ExecutionError(
@@ -2848,7 +3326,7 @@ def rehearse(run_dir: Path) -> dict[str, Any]:
             f"假运输没有覆盖全部必测场景：{required_observations}",
         )
     receipt = {
-        "schema_version": "v02-c13-r06-zero-call-rehearsal.v1",
+        "schema_version": "v02-c13-r07-zero-call-rehearsal.v1",
         "status": "PASS_ZERO_CALL_FULL_CHAIN_REHEARSAL",
         "run_id": run_dir.name,
         "runner_sha256": sha256_file(Path(__file__)),
@@ -2867,6 +3345,16 @@ def rehearse(run_dir: Path) -> dict[str, Any]:
         "timeout_probe_call_total": len(timeout_transport.calls),
         "timeout_probe_hard_stop_reason": timeout_reason,
         "unsigned_live_rejection_reason": unsigned_reason,
+        "single_replica_gate_failure_transport_call_total": len(
+            single_replica_transport.calls
+        ),
+        "both_replica_gate_failure_transport_call_total": len(
+            both_replicas_transport.calls
+        ),
+        "main_gate_failure_transport_call_total": len(
+            main_failed_transport.calls
+        ),
+        "main_gate_failure_reason": main_failed_reason,
         "model_api_requests": 0,
         "network_attempts": 0,
         "key_values_read": 0,

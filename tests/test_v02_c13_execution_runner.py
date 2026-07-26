@@ -75,6 +75,7 @@ def test_prepare_keeps_execute_closed_and_binds_every_external_proof(
         "node_order_sha256",
     }
     assert len(template["provider_gate_receipts"]) == 3
+    assert template["provider_gate_failures"] == []
     for row in template["provider_gate_receipts"]:
         assert row["attempt_no"] == 1
         assert "attempt_ledger_path" in row
@@ -109,6 +110,73 @@ def test_full_rehearsal_is_zero_call_and_covers_all_required_paths(
     assert receipt["resumed_from_node"] == "C13-R06-046"
     assert all(receipt["scenarios"].values())
     assert runner.audit_resume_position(run_dir)["status"] == "COMPLETE_90"
+
+
+def test_provider_gate_scope_stops_main_and_isolates_replicas() -> None:
+    single = runner._provider_gate_scope(
+        {
+            "qianwen_platform": "PASS",
+            "volcengine_ark": runner.PROVIDER_GATE_FAILED,
+            "tencent_tokenhub": "PASS",
+        }
+    )
+    assert single["eligible_provider_ids"] == [
+        "qianwen_platform",
+        "tencent_tokenhub",
+    ]
+    assert single["skipped_provider_ids"] == ["volcengine_ark"]
+    assert single["sent_node_hard_cap"] == 60
+    assert single["skipped_node_total"] == 30
+    assert single["unused_quota_reallocated"] is False
+
+    with pytest.raises(
+        runner.C13ExecutionError,
+        match="整轮不得只跑复现臂",
+    ) as caught:
+        runner._provider_gate_scope(
+            {
+                "qianwen_platform": runner.PROVIDER_GATE_FAILED,
+                "volcengine_ark": "PASS",
+                "tencent_tokenhub": "PASS",
+            }
+        )
+    assert caught.value.reason_code == "main_provider_gate_failed"
+
+
+def test_replica_gate_failure_writes_only_skip_checkpoints(
+    tmp_path: Path,
+) -> None:
+    run_dir = tmp_path / "V02_C13_r07_replica_gate_skip"
+    runner.prepare(run_dir)
+    transport = runner.RehearsalTransport("full")
+    receipt = runner.execute_with_transport(
+        run_dir,
+        transport=transport,
+        execution_kind="REHEARSAL_FAKE_TRANSPORT",
+        provider_gate_statuses={
+            "qianwen_platform": "PASS",
+            "volcengine_ark": runner.PROVIDER_GATE_FAILED,
+            "tencent_tokenhub": "PASS",
+        },
+    )
+
+    assert len(transport.calls) == 60
+    assert receipt["sent_node_total"] == 60
+    assert receipt["skipped_node_total"] == 30
+    assert receipt["node_status_counts"]["SKIPPED_PROVIDER_GATE"] == 30
+    skipped = [
+        node
+        for node in runner.build_run_plan()["nodes"]
+        if node["provider_id"] == "volcengine_ark"
+    ]
+    for node in skipped:
+        paths = runner._checkpoint_paths(run_dir, node)
+        assert paths["provider_gate_skip"].is_file()
+        assert paths["seal"].is_file()
+        assert not paths["request"].exists()
+        assert not paths["response"].exists()
+        assert not paths["judgment"].exists()
+        assert not paths["attempt"].exists()
 
 
 def test_live_entry_rejects_missing_execute_ticket_before_key_read(
