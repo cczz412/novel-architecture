@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-07-25T18:50:00+08:00",
+  "updated_at": "2026-07-26T08:05:00+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 90,
-    "root_visible_python_entry_count": 91,
+    "root_entity_count": 92,
+    "root_visible_python_entry_count": 93,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -398,6 +398,22 @@
         "violation": "批次专用复现器新增在 tools/ 根层，且创建时未同步登记，不符合批次脚本放置与出生同步门槛。",
         "current_disposition": "只补登记、不搬动、不删除；继续由对应候选隔离边界与定向测试约束。",
         "follow_up": "后续获批目录治理时迁入对应 experiments/ 目录或由统一入口加规格单承接；出生违规事实永久保留。"
+      },
+      {
+        "detected_at": "2026-07-26T08:05:00+08:00",
+        "task_id": "V02-C13-R06",
+        "path": "tools/v02_c13_catalog_gate.py",
+        "violation": "C13 专用型号验票解析器放在 tools/ 根层，不符合批次脚本优先进入 experiments/ 的位置门槛。",
+        "current_disposition": "随 r06 窄提交补登记，不搬动、不删除、不接默认链。",
+        "follow_up": "后续获批目录治理时迁入 C13 experiments 目录或由统一供应商入口承接；本条出生记录永久保留。"
+      },
+      {
+        "detected_at": "2026-07-26T08:05:00+08:00",
+        "task_id": "V02-C13-R06",
+        "path": "tools/v02_c13_execution_runner.py",
+        "violation": "C13 的 90 节点专用执行器放在 tools/ 根层，不符合批次脚本优先进入 experiments/ 的位置门槛。",
+        "current_disposition": "随 r06 窄提交补登记，不搬动、不删除、不接默认链。",
+        "follow_up": "后续获批目录治理时迁入 C13 experiments 目录或由统一执行入口承接；本条出生记录永久保留。"
       }
     ]
   },
@@ -507,7 +523,7 @@
   ],
   "identity_summary": {
     "reusable_component": 7,
-    "batch_reproducer": 78,
+    "batch_reproducer": 80,
     "active_entry": 2,
     "retired_compat": 3,
     "pending": 0
@@ -3660,6 +3676,77 @@
       ],
       "next_confirmed_consumer": null,
       "retirement_condition_and_compatibility_boundary": "批次候选复现器；只在对应冻结材料与施工令边界内使用，不接默认链、不自动升组件。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-091",
+      "path": "tools/v02_c13_catalog_gate.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "试验留档·未升默认",
+      "purpose": "C13 r06：离线复验千问、火山与腾讯三家精确型号验票原包，不自行联网。",
+      "human_command": "python3 tools/v02_c13_catalog_gate.py --help",
+      "inputs": [
+        "冻结的型号验票配置、尝试账与原始响应"
+      ],
+      "outputs": [
+        "可复验的精确型号在线票或硬停判词"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "本工具只解析已落盘验票原包；型号目录查询或最小握手由获批运输步骤另行发起。"
+      },
+      "current_consumers": [
+        "tools/v02_c13_execution_runner.py"
+      ],
+      "consumer_evidence_rule": "只登记本轮 r06 的明确执行消费者与定向测试，不据未来可能用途升格通用组件。",
+      "test_references": [
+        "tests/test_v02_c13_catalog_gate.py",
+        "tests/test_v02_c13_execution_runner.py"
+      ],
+      "last_use_clues": [
+        "config/providers/c13_provider_catalog_gate_v1.json",
+        "tests/test_v02_c13_catalog_gate.py"
+      ],
+      "next_confirmed_consumer": "第98道 C13 r06 三家型号验票复验",
+      "retirement_condition_and_compatibility_boundary": "只服务 C13 r06 冻结型号合同；不自动切别名、不跨平台兜底、不接默认链。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-092",
+      "path": "tools/v02_c13_execution_runner.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "试验留档·未升默认",
+      "purpose": "C13 r06：按冻结顺序驱动90节点、逐节点封签、断点审计与诊断收口。",
+      "human_command": "python3 tools/v02_c13_execution_runner.py --help",
+      "inputs": [
+        "r02题面、r03运输外壳、r04地板判定器、型号票、窄Git票与全局执行票"
+      ],
+      "outputs": [
+        "逐节点五件套、硬停票、CLAIM与合同双账、诊断收口票"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "prepare／verify／rehearse 零调用；只有持完整全局执行票的 run／resume 才可读取密钥并联网。"
+      },
+      "current_consumers": [
+        "第98道 C13 r06 正式执行"
+      ],
+      "consumer_evidence_rule": "只登记已拍的 C13 r06 90节点任务，不把候选执行器冒充现役默认入口。",
+      "test_references": [
+        "tests/test_v02_c13_execution_runner.py"
+      ],
+      "last_use_clues": [
+        "runs/V02_C13_downstream_consumer_rehearsal_r06_20260726/rehearsal/rehearsal_receipt.json",
+        "tests/test_v02_c13_execution_runner.py"
+      ],
+      "next_confirmed_consumer": "第98道 C13 r06 三家90节点发网",
+      "retirement_condition_and_compatibility_boundary": "本轮候选执行器；签字、型号票、窄Git票或全局执行票缺一即拒绝真运输，不接默认链。",
       "review_needed": false
     }
   ]

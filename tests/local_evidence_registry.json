@@ -32,6 +32,22 @@
       "reason": "V02 回放测试依赖本机候选包；其中锚目录与请求含可还原小说正文的滑窗短引，禁止进 Git"
     },
     {
+      "group_id": "V02-C13-LOCAL-EVIDENCE",
+      "test_file_globs": [
+        "test_v02_c13_downstream_consumer.py",
+        "test_v02_c13_provider_wire.py",
+        "test_v02_c13_signoff_floor_v2.py",
+        "test_v02_c13_execution_runner.py"
+      ],
+      "required_paths": [
+        "runs/V02_实验A锚先行倒装_C4_r03_20260725/samples/main/B01-U0033/candidate/model_json.json",
+        "experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_r02_20260726/artifact_manifest.json",
+        "experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_wire_r03_20260726/artifact_manifest.json",
+        "experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_signoff_floor_v2_r04_20260726/artifact_manifest.json"
+      ],
+      "reason": "C13 程序与执行器回放依赖本机冻结题面、运输外壳和签票实物；这些工件含私有材料并按仓规留在本机"
+    },
+    {
       "group_id": "Z98-SEALED-RUN-EVIDENCE",
       "test_file_globs": [
         "test_z98_independent_verifier_freeze.py",

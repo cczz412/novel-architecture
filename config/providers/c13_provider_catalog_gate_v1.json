@@ -1,0 +1,109 @@
+{
+  "schema_version": "c13-provider-catalog-gate-v1",
+  "scope": "C13 r06 three-provider exact-model admission only; this is not a 90-prompt dispatch contract.",
+  "global_rules": {
+    "model_api_calls_by_this_verifier": 0,
+    "key_value_read_by_this_verifier": false,
+    "automatic_fallback_allowed": false,
+    "near_match_model_id_allowed": false,
+    "provider_failure_action": "HARD_STOP_PROVIDER_DO_NOT_SEND_C13_90_PROMPTS"
+  },
+  "providers": [
+    {
+      "provider_id": "qianwen_platform",
+      "exact_model_id": "qwen3.7-max-2026-05-20",
+      "source_provider_config_path": "config/providers/qianwen_platform_multi_model.json",
+      "verification_mode": "NOTION_AUTHORIZED_SINGLE_MINIMAL_HANDSHAKE",
+      "notion_authorization_required": true,
+      "network_attempt_cap": 1,
+      "counts_toward_c13_90_prompt_cap": false,
+      "request_contract": {
+        "method": "POST",
+        "url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "request_model_must_equal_exact_model_id": true,
+        "purpose": "MINIMAL_HANDSHAKE_NOT_C13_PROMPT",
+        "frozen_request_body_sha256": "821f90de435a85bbb86bab88bb86c5185b8c086ff8f86498356486e5e2845f56",
+        "frozen_request_body": {
+          "model": "qwen3.7-max-2026-05-20",
+          "messages": [
+            {
+              "role": "user",
+              "content": "只回复一个 JSON 对象：{\"ok\":true}"
+            }
+          ],
+          "temperature": 0.0,
+          "stream": false,
+          "enable_thinking": false
+        }
+      },
+      "response_contract": {
+        "response_model_path": "model",
+        "response_model_must_equal_exact_model_id": true,
+        "request_id_required": true,
+        "usage_required": true,
+        "unique_choice_required": true
+      },
+      "failure_action": "HARD_STOP_PROVIDER_DO_NOT_SEND_C13_90_PROMPTS"
+    },
+    {
+      "provider_id": "volcengine_ark",
+      "exact_model_id": "doubao-seed-2-1-pro-260628",
+      "source_provider_config_path": "config/providers/volcengine_ark_multi_model.json",
+      "verification_mode": "NOTION_AUTHORIZED_SINGLE_MINIMAL_HANDSHAKE",
+      "notion_authorization_required": true,
+      "network_attempt_cap": 1,
+      "counts_toward_c13_90_prompt_cap": false,
+      "request_contract": {
+        "method": "POST",
+        "url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+        "request_model_must_equal_exact_model_id": true,
+        "purpose": "MINIMAL_HANDSHAKE_NOT_C13_PROMPT",
+        "frozen_request_body_sha256": "11b28448eeaa4c41250a830228bb7a90186936973d44d989bae55ded6d4a6194",
+        "frozen_request_body": {
+          "model": "doubao-seed-2-1-pro-260628",
+          "messages": [
+            {
+              "role": "user",
+              "content": "只回复一个 JSON 对象：{\"ok\":true}"
+            }
+          ],
+          "temperature": 0.0,
+          "stream": false,
+          "max_tokens": 64,
+          "thinking": {
+            "type": "disabled"
+          }
+        }
+      },
+      "response_contract": {
+        "response_model_path": "model",
+        "response_model_must_equal_exact_model_id": true,
+        "request_id_required": true,
+        "usage_required": true,
+        "unique_choice_required": true
+      },
+      "failure_action": "HARD_STOP_PROVIDER_DO_NOT_SEND_C13_90_PROMPTS"
+    },
+    {
+      "provider_id": "tencent_tokenhub",
+      "exact_model_id": "minimax-m3",
+      "source_provider_config_path": "config/providers/tencent_tokenhub_multi_model.json",
+      "verification_mode": "LIVE_MODEL_CATALOG",
+      "network_attempt_cap": 1,
+      "counts_toward_c13_90_prompt_cap": false,
+      "request_contract": {
+        "method": "GET",
+        "url": "https://tokenhub.tencentmaas.com/v1/models",
+        "purpose": "EXACT_MODEL_CATALOG_NOT_C13_PROMPT"
+      },
+      "catalog_contract": {
+        "data_path": "data",
+        "exact_model_id_field": "id",
+        "required_status": "online",
+        "status_field": "status",
+        "exact_match_total": 1
+      },
+      "failure_action": "HARD_STOP_PROVIDER_DO_NOT_SEND_C13_90_PROMPTS"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": "v02-c13-r06-narrow-git-allowlist.v1",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "8d21beffab042c4578b2b50e761b3f16c2a27715b39fd5e49e69a3e240f8c9a4"
+    },
+    {
+      "path": "config/providers/c13_provider_catalog_gate_v1.json",
+      "sha256": "ecf1049cc95d5c7dc0adb7729c357146733420dac0e20918f1b8af2ee4bc463d"
+    },
+    {
+      "path": "experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/v02_c13_downstream_consumer.py",
+      "sha256": "3288d1e5a8ec7f6771e2e98177b6edbb8aa9b709e814f5f27670b3648cfbbd2f"
+    },
+    {
+      "path": "experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/v02_c13_provider_wire.py",
+      "sha256": "235e2c72242358a4fd4b2ade3492d72fe8016b3cbb24bb4c920833a2cd3f14f6"
+    },
+    {
+      "path": "experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/v02_c13_signoff_floor_v2.py",
+      "sha256": "bf969b134f84b42568fa00538dd80e9d3f00a36c9450b17d3c6c8cb82a527891"
+    },
+    {
+      "path": "governance/tool_registry.json",
+      "sha256": "f25cb3a6a8040e22eb11260a11ca62150c466ae9b77dfede06cd6672c44b1457"
+    },
+    {
+      "path": "tests/local_evidence_registry.json",
+      "sha256": "dca7c771c022b185077a4a040a4bbbc9a97a493e574ac3cb28fc75de2fca4612"
+    },
+    {
+      "path": "tests/test_v02_c13_catalog_gate.py",
+      "sha256": "1b4cb0126e5e112168bec7bac1456cd039f31ebfeb54338f86062e3b89a97247"
+    },
+    {
+      "path": "tests/test_v02_c13_downstream_consumer.py",
+      "sha256": "4ab3dd1c379bfb4cf7d221f2444cb3b7e9b6417398c7e222bff7a8b4f0e525e2"
+    },
+    {
+      "path": "tests/test_v02_c13_execution_runner.py",
+      "sha256": "2848815285dea5bcfe4c6a799d61190e1afc097aca01b97e19f8030d8f94e3ad"
+    },
+    {
+      "path": "tests/test_v02_c13_provider_wire.py",
+      "sha256": "f77c409ebf31318df31c29d2457cc2635d716fa353678e7fe8c81d703f460dd3"
+    },
+    {
+      "path": "tests/test_v02_c13_signoff_floor_v2.py",
+      "sha256": "f6e0be1c275e4739faca8a8fe7d75c2512957e9675b38374ca207f3b9d244ef7"
+    },
+    {
+      "path": "tools/v02_c13_catalog_gate.py",
+      "sha256": "7f8c9a893849ed0b1290e0921f3f77c97ae020cabbf7d9c0d1aa0cdbb28dd1fb"
+    },
+    {
+      "path": "tools/v02_c13_execution_runner.py",
+      "sha256": "6318c0666580bc944c0fcb603c845e8fb4189253e91d57f996fd5a77a2b5a85b"
+    }
+  ]
+}

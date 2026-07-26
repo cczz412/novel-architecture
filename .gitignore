@@ -62,6 +62,11 @@ venv/
 !/experiments/extraction_redesign_v02_overnight_20260725/B4_2_density_fence_calculator/**
 !/experiments/extraction_redesign_v02_overnight_20260725/B4_3_error_notebook/
 !/experiments/extraction_redesign_v02_overnight_20260725/B4_3_error_notebook/**
+!/experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/
+/experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/*
+!/experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/v02_c13_downstream_consumer.py
+!/experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/v02_c13_provider_wire.py
+!/experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_program_20260725/v02_c13_signoff_floor_v2.py
 
 # Z99 outputs are regenerated from local gold/review/run evidence. Keep only
 # the route note in Git; the evidence and generated candidates remain local.
