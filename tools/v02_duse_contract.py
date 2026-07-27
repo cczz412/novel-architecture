@@ -88,6 +88,33 @@ FREEZE_MARKER_NAMES = (
     "question_freeze_receipt.json",
     "prompt_freeze_receipt.json",
 )
+C11_WORK_ORDER_PAGE_ID = "eb8821e57b67472db9f220b46110dcfd"
+C11_WORK_ORDER_PAGE_URL = (
+    "https://app.notion.com/p/"
+    "v0-2-0API-A-CZ-Codex-_20260725-eb8821e57b67472db9f220b46110dcfd"
+)
+C11_AUTHORITY_READBACK_AT = "2026-07-25T10:46:11.303Z"
+C11_2_AUTHORITY_EXCERPT = """### C11.2 D-USE 题面扩题（❌ 仍不写答案、仍 HUMAN_REQUIRED、❌ 仍只准看章节原文）
+<callout icon="⏳">
+\t**时间窗硬约束**：题面一旦出 SHA 冻结就不准改，故本条必须在冻结**之前**完成，与 C10.3 一次性并入。
+</callout>
+- **并入研究包六类查询题型**（只拿来定**题型**，❌ 不得拿来定答案）：主角最近一次资源减少在何时／反派目前知道到哪一步／两章内必须收的线／这条世界规则之前在哪些事件里生效／仍未兑现的读者承诺／某章某角色做决定时有没有足够信息。
+- **新增三类产品题型（由产品北极星页第五节推出）**：① **分镜可重建题**——给定第 N 章，能否只凭底账重建出场景与镜头（现阶段预期大量失败，**失败本身就是画面／情绪层缺失的量化证据**）；② **角色降智题**——第 N 章某角色做决定时，系统能否报出该角色**当时已知的信息集合**（直接对应归属层与 X14）；③ **计划兑现题**——前文放下的铺垫到后章是否被标为已兑现／未兑现／被推翻。
+- **缺字段归因表由七桶扩为九桶**：新增⑧ **画面／场景信息缺失**、⑨ **情绪／强度信息缺失**。其余七桶与记数规则照 §9.1-E.4 不变。
+- ❌ 不得因为新增题型而放宽「出题只准看章节原文」；❌ 不得由任何模型代写题目或答案（D-USE 回包已自行守住此线，继续保持）。"""
+C11_QUESTION_EXPANSION_RELATIVE_PATHS = (
+    "README.md",
+    "attribution_receipt.json",
+    "authority_excerpt.json",
+    "catalog/missing_field_bucket_expansion.json",
+    "catalog/question_family_catalog.json",
+    "contracts/missing_field_bucket_registry.v1.schema.json",
+    "contracts/missing_field_diagnostic_row.v1.schema.json",
+    "contracts/question_family_candidate.v1.schema.json",
+    "preflight/human_required_block_receipt.json",
+    "preflight/question_expansion_preflight.json",
+    "templates/question_family.blank.json",
+)
 
 
 class DUseContractError(RuntimeError):
@@ -416,6 +443,14 @@ def missing_field_bucket_registry_schema() -> dict[str, Any]:
                 "formal_diagnostic_freeze_allowed": {
                     "type": "boolean",
                     "const": False,
+                },
+                "formal_diagnostic_row_count": {
+                    "type": "integer",
+                    "const": 0,
+                },
+                "formal_score_count": {
+                    "type": "integer",
+                    "const": 0,
                 },
             }
         ),
@@ -1071,6 +1106,17 @@ def build_c11_question_expansion_artifacts() -> dict[str, bytes]:
 
 来源：Codex
 """
+    authority_excerpt = {
+        "schema_version": "v02-duse-c11.2-authority-excerpt.v1",
+        "page_id": C11_WORK_ORDER_PAGE_ID,
+        "page_url": C11_WORK_ORDER_PAGE_URL,
+        "connector_readback_at": C11_AUTHORITY_READBACK_AT,
+        "excerpt_scope": "C11.2",
+        "excerpt_text": C11_2_AUTHORITY_EXCERPT,
+        "notion_full_page_content_sha256": None,
+        "notion_full_page_content_sha256_status": ("NOT_AVAILABLE_NOT_INVENTED"),
+    }
+    authority_excerpt_raw = canonical_json_bytes(authority_excerpt)
     values: dict[str, Any] = {
         (
             "contracts/question_family_candidate.v1.schema.json"
@@ -1086,9 +1132,18 @@ def build_c11_question_expansion_artifacts() -> dict[str, bytes]:
         "templates/question_family.blank.json": templates,
         "preflight/question_expansion_preflight.json": preflight,
         "preflight/human_required_block_receipt.json": block,
+        "authority_excerpt.json": authority_excerpt,
         "attribution_receipt.json": {
             "schema_version": "v02-duse-c11.2-attribution-receipt.v1",
             "ownership": "V02_NEW_AREA",
+            "notion_work_order": {
+                "page_id": C11_WORK_ORDER_PAGE_ID,
+                "url": C11_WORK_ORDER_PAGE_URL,
+                "content_sha256": None,
+                "content_sha256_status": "NOT_AVAILABLE_NOT_INVENTED",
+            },
+            "authority_excerpt_path": "authority_excerpt.json",
+            "authority_excerpt_sha256": sha256_bytes(authority_excerpt_raw),
             "read_surfaces": [
                 "Notion 施工令 C11.2",
                 (
@@ -1117,6 +1172,11 @@ def build_c11_question_expansion_artifacts() -> dict[str, bytes]:
     }
     artifacts = {path: canonical_json_bytes(value) for path, value in values.items()}
     artifacts["README.md"] = readme.encode("utf-8")
+    if set(artifacts) != set(C11_QUESTION_EXPANSION_RELATIVE_PATHS):
+        raise DUseContractError("C11.2 生成器固定工件清单漂移")
+    schema_keys = set(missing_field_bucket_registry_schema()["properties"])
+    if set(bucket_expansion) != schema_keys:
+        raise DUseContractError("C11.2 缺字段桶实例与发布 schema 字段不一致")
     return artifacts
 
 
@@ -1181,7 +1241,12 @@ def verify_c11_question_expansion_artifacts(
         canonical_json_bytes(inventory)
     ):
         raise DUseContractError("C11.2 manifest inventory 摘要漂移")
-    expected_paths = {row["path"] for row in inventory}
+    inventory_paths = [row.get("path") for row in inventory]
+    if len(inventory_paths) != len(set(inventory_paths)) or set(inventory_paths) != set(
+        C11_QUESTION_EXPANSION_RELATIVE_PATHS
+    ):
+        raise DUseContractError("C11.2 manifest 不等于生成器固定工件清单")
+    expected_paths = set(C11_QUESTION_EXPANSION_RELATIVE_PATHS)
     actual_paths = {
         path.relative_to(output_dir).as_posix()
         for path in output_dir.rglob("*")
@@ -1226,6 +1291,20 @@ def verify_c11_question_expansion_artifacts(
         "case_kinds_unchanged"
     ] != list(CASE_KINDS):
         raise DUseContractError("C11.2 不得替换 query_type 或 case_kind")
+    bucket_expansion = json.loads(
+        (output_dir / "catalog/missing_field_bucket_expansion.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    if set(bucket_expansion) != set(
+        missing_field_bucket_registry_schema()["properties"]
+    ):
+        raise DUseContractError("C11.2 缺字段桶实例与发布 schema 字段不一致")
+    if (
+        bucket_expansion["formal_diagnostic_row_count"] != 0
+        or bucket_expansion["formal_score_count"] != 0
+    ):
+        raise DUseContractError("C11.2 正式诊断或分数字段必须保持为 0")
     return {
         "status": "PASS_HUMAN_REQUIRED_BLOCK_ACTIVE",
         "manifest_sha256": sha256_file(manifest_path),

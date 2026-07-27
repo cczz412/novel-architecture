@@ -22,7 +22,7 @@ import shutil
 import sys
 import tempfile
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 TOOLS_DIR = Path(__file__).resolve().parent
@@ -33,13 +33,39 @@ from pipeline_common import artifacts  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES = ROOT / "config/review_pack/profiles.json"
+ROUTES = ROOT / "config/review_pack/routes.json"
 OUT_ROOT = ROOT / "TEMP/chatgpt_review_packs"
 CURRENT_STATE = ROOT / "governance/CURRENT_STATE.json"
 EXPERIMENT_REF_RE = re.compile(r"experiments/Z[A-Za-z0-9_\u4e00-\u9fff-]+")
+ROUTE_LAYERS = (
+    "current_truth",
+    "current_route",
+    "upstream_evidence",
+    "external_reviews",
+)
+ROUTE_LAYER_DIRS = {
+    "current_truth": "01_current_truth",
+    "current_route": "02_current_route",
+    "upstream_evidence": "03_upstream_evidence",
+    "external_reviews": "04_external_reviews",
+}
+SECRET_VALUE_PATTERNS = {
+    "bearer_token": re.compile(rb"Bearer\s+[A-Za-z0-9._~+/=-]{12,}", re.I),
+    "sk_token": re.compile(rb"\bsk-[A-Za-z0-9_-]{12,}\b"),
+    "api_key_assignment": re.compile(
+        rb"(?:API[_-]?KEY|ACCESS[_-]?TOKEN|SECRET[_-]?KEY)"
+        rb"[\"']?\s*[=:]\s*[\"'][A-Za-z0-9._~+/=-]{12,}[\"']",
+        re.I,
+    ),
+}
 
 
 def _load_profiles() -> dict[str, Any]:
     return json.loads(PROFILES.read_text(encoding="utf-8"))
+
+
+def _load_routes() -> dict[str, Any]:
+    return json.loads(ROUTES.read_text(encoding="utf-8"))
 
 
 def _iter_glob(pattern: str) -> list[Path]:
@@ -102,13 +128,19 @@ def _expand_run_or_report_pattern(pattern: str) -> list[Path]:
     return expanded
 
 
-def _excluded(rel: str, exclude_globs: list[str]) -> bool:
-    for g in exclude_globs:
+def _matches_configured_globs(rel: str, globs: list[str]) -> bool:
+    for g in globs:
         if Path(rel).match(g) or Path(rel).match(g.lstrip("/")):
             return True
         # 简单前缀
         if g.endswith("/**") and rel.startswith(g[:-3]):
             return True
+    return False
+
+
+def _excluded(rel: str, exclude_globs: list[str]) -> bool:
+    if _matches_configured_globs(rel, exclude_globs):
+        return True
     if "__pycache__" in rel.split("/"):
         return True
     return False
@@ -256,6 +288,345 @@ def collect_files(
     return sorted(uniq.values(), key=lambda x: x.as_posix()), notes
 
 
+def _validate_route_pattern(pattern: str) -> None:
+    pure = PurePosixPath(pattern)
+    if pure.is_absolute() or ".." in pure.parts or "\\" in pattern:
+        raise SystemExit(f"ABORT route 路径必须是仓库相对路径且不得越界：{pattern}")
+    if not pattern.strip() or pattern.startswith(".git/"):
+        raise SystemExit(f"ABORT route 路径不合法：{pattern}")
+
+
+def _route_pattern_files(pattern: str) -> list[Path]:
+    _validate_route_pattern(pattern)
+    literal_prefix = re.split(r"[*?[]", pattern, maxsplit=1)[0].rstrip("/")
+    prefix = ROOT / literal_prefix if literal_prefix else ROOT
+    if prefix.is_symlink():
+        raise SystemExit(f"ABORT route 根是软链：{pattern}")
+    if prefix.is_dir():
+        symlinks = [p for p in prefix.rglob("*") if p.is_symlink()]
+        if symlinks:
+            rels = [
+                p.relative_to(ROOT).as_posix()
+                for p in symlinks[:20]
+                if p.is_relative_to(ROOT)
+            ]
+            raise SystemExit(
+                f"ABORT route 根内含软链：{pattern}\n  " + "\n  ".join(rels)
+            )
+
+    expanded: list[Path] = []
+    for hit in _iter_glob(pattern):
+        if hit.is_symlink():
+            raise SystemExit(f"ABORT route 命中软链：{hit}")
+        if hit.is_dir():
+            expanded.extend(
+                p for p in hit.rglob("*") if p.is_file() and not p.is_symlink()
+            )
+        elif hit.is_file():
+            expanded.append(hit)
+
+    safe: dict[str, Path] = {}
+    root_resolved = ROOT.resolve()
+    for path in expanded:
+        if path.is_symlink():
+            raise SystemExit(f"ABORT route 命中软链：{path}")
+        try:
+            path.resolve().relative_to(root_resolved)
+        except ValueError as exc:
+            raise SystemExit(f"ABORT route 路径逃逸仓库：{path}") from exc
+        safe[path.relative_to(ROOT).as_posix()] = path
+    return sorted(safe.values(), key=lambda item: item.as_posix())
+
+
+def _parse_external_args(rows: list[str]) -> dict[str, Path]:
+    parsed: dict[str, Path] = {}
+    for row in rows:
+        if "=" not in row:
+            raise SystemExit(
+                "ABORT --external 格式必须是 slot_id=/真实路径："
+                f"{row}"
+            )
+        slot_id, raw_path = row.split("=", 1)
+        slot_id = slot_id.strip()
+        if not slot_id or slot_id in parsed:
+            raise SystemExit(f"ABORT external slot 重复或为空：{slot_id}")
+        parsed[slot_id] = Path(raw_path).expanduser()
+    return parsed
+
+
+def _external_slot_files(path: Path) -> list[tuple[str, Path]]:
+    if not path.exists():
+        raise SystemExit(f"ABORT 外部回包不存在：{path}")
+    if path.is_symlink():
+        raise SystemExit(f"ABORT 外部回包不得是软链：{path}")
+    if path.is_file():
+        return [(path.name, path)]
+    rows: list[tuple[str, Path]] = []
+    for item in sorted(path.rglob("*")):
+        if item.is_symlink():
+            raise SystemExit(f"ABORT 外部回包目录含软链：{item}")
+        if item.is_file():
+            rows.append((item.relative_to(path).as_posix(), item))
+    if not rows:
+        raise SystemExit(f"ABORT 外部回包目录为空：{path}")
+    return rows
+
+
+def collect_route_payloads(
+    route_name: str,
+    selected_layers: list[str],
+    external_args: list[str],
+    cfg: dict[str, Any],
+) -> tuple[dict[str, bytes], list[str], dict[str, Any]]:
+    routes_cfg = _load_routes()
+    routes = routes_cfg.get("routes") or {}
+    if route_name not in routes:
+        raise SystemExit(
+            f"未知 route: {route_name}; 可选 {sorted(routes)}"
+        )
+    route = routes[route_name]
+    configured_layers = route.get("layers") or {}
+    unknown_layers = [
+        layer
+        for layer in selected_layers
+        if layer not in ROUTE_LAYERS or layer not in configured_layers
+    ]
+    if unknown_layers:
+        raise SystemExit(
+            f"ABORT 未知 route layer：{unknown_layers}; 可选 {list(configured_layers)}"
+        )
+    if not selected_layers:
+        raise SystemExit("ABORT route 至少选择一层")
+
+    exclude = list(cfg.get("always_exclude_globs") or [])
+    markers = list(cfg.get("secret_name_markers") or [])
+    payloads: dict[str, bytes] = {}
+    notes: list[str] = []
+    source_records: list[dict[str, Any]] = []
+
+    for layer in selected_layers:
+        layer_cfg = configured_layers[layer]
+        layer_dir = ROUTE_LAYER_DIRS[layer]
+        for root_cfg in layer_cfg.get("roots") or []:
+            root_id = str(root_cfg.get("root_id") or "")
+            if not root_id:
+                raise SystemExit(f"ABORT {route_name}/{layer} 有空 root_id")
+            root_files: dict[str, Path] = {}
+            root_excludes = [
+                str(pattern) for pattern in root_cfg.get("exclude_globs") or []
+            ]
+            for pattern in root_excludes:
+                _validate_route_pattern(pattern)
+            for pattern in root_cfg.get("globs") or []:
+                matches = _route_pattern_files(str(pattern))
+                if not matches:
+                    if root_cfg.get("required"):
+                        raise SystemExit(
+                            "ABORT route required glob 缺件："
+                            f"{route_name}/{layer}/{root_id} -> {pattern}"
+                        )
+                    notes.append(
+                        "OPTIONAL_ROUTE_GLOB_MISSING:"
+                        f"{route_name}/{layer}/{root_id}:{pattern}"
+                    )
+                    continue
+                for path in matches:
+                    rel = path.relative_to(ROOT).as_posix()
+                    if _matches_configured_globs(rel, root_excludes):
+                        notes.append(
+                            "ROUTE_FILE_EXCLUDED_BY_ROOT:"
+                            f"{route_name}/{layer}/{root_id}:{rel}"
+                        )
+                        continue
+                    if _looks_secret(rel, markers):
+                        raise SystemExit(
+                            f"ABORT route 命中疑似密钥路径：{rel}"
+                        )
+                    if _excluded(rel, exclude):
+                        notes.append(
+                            "ROUTE_FILE_EXCLUDED:"
+                            f"{route_name}/{layer}/{root_id}:{rel}"
+                        )
+                        continue
+                    root_files[rel] = path
+            if root_cfg.get("required") and not root_files:
+                raise SystemExit(
+                    f"ABORT route required root 为空：{route_name}/{layer}/{root_id}"
+                )
+            for rel, path in sorted(root_files.items()):
+                member = f"{layer_dir}/{rel}"
+                _add_payload(payloads, member, path.read_bytes())
+                source_records.append(
+                    {
+                        "member": member,
+                        "layer": layer,
+                        "root_id": root_id,
+                        "source_ref": rel,
+                        "authority": root_cfg.get("authority"),
+                        "status": root_cfg.get("status"),
+                    }
+                )
+
+    provided_external = _parse_external_args(external_args)
+    slot_rows = {
+        str(row.get("slot_id")): row
+        for row in route.get("external_slots") or []
+    }
+    unknown_slots = sorted(set(provided_external) - set(slot_rows))
+    if unknown_slots:
+        raise SystemExit(
+            f"ABORT 未知 external slot：{unknown_slots}; 可选 {sorted(slot_rows)}"
+        )
+    if provided_external and "external_reviews" not in selected_layers:
+        raise SystemExit(
+            "ABORT 提供了 --external，但没有选择 external_reviews 层"
+        )
+    if "external_reviews" in selected_layers:
+        for slot_id, slot_cfg in slot_rows.items():
+            path = provided_external.get(slot_id)
+            if path is None:
+                if slot_cfg.get("required"):
+                    raise SystemExit(
+                        "ABORT route required external slot 缺件："
+                        f"{route_name}/{slot_id}"
+                    )
+                notes.append(
+                    f"OPTIONAL_EXTERNAL_SLOT_MISSING:{route_name}/{slot_id}"
+                )
+                continue
+            for rel, source in _external_slot_files(path):
+                member = (
+                    f"{ROUTE_LAYER_DIRS['external_reviews']}/"
+                    f"{slot_id}/{rel}"
+                )
+                if _looks_secret(member, markers):
+                    raise SystemExit(
+                        f"ABORT 外部回包命中疑似密钥路径：{member}"
+                    )
+                _add_payload(payloads, member, source.read_bytes())
+                source_records.append(
+                    {
+                        "member": member,
+                        "layer": "external_reviews",
+                        "root_id": slot_id,
+                        "source_ref": f"external_slot:{slot_id}/{rel}",
+                        "authority": slot_cfg.get("provider"),
+                        "status": slot_cfg.get("status"),
+                        "model": slot_cfg.get("model"),
+                        "local_only": True,
+                    }
+                )
+
+    forbidden_source_globs = [
+        str(pattern) for pattern in route.get("forbidden_source_globs") or []
+    ]
+    for pattern in forbidden_source_globs:
+        _validate_route_pattern(pattern)
+    forbidden_hits = [
+        {
+            "member": str(row["member"]),
+            "source_ref": str(row["source_ref"]),
+        }
+        for row in source_records
+        if _matches_configured_globs(
+            str(row["member"]), forbidden_source_globs
+        )
+        or _matches_configured_globs(
+            str(row["source_ref"]), forbidden_source_globs
+        )
+    ]
+    if forbidden_hits:
+        raise SystemExit(
+            "ABORT route 命中禁止外发的金标／答案锁箱：\n"
+            + json.dumps(forbidden_hits, ensure_ascii=False, indent=2)
+        )
+
+    selection = {
+        "schema_version": "chatgpt-review-route-selection-v1",
+        "route_id": route_name,
+        "label": route.get("label"),
+        "purpose": route.get("purpose"),
+        "snapshot_at": route.get("snapshot_at"),
+        "truth_source": route.get("truth_source"),
+        "selected_layers": selected_layers,
+        "layer_directories": {
+            layer: ROUTE_LAYER_DIRS[layer] for layer in selected_layers
+        },
+        "source_count": len(source_records),
+        "sources": source_records,
+        "external_slots": route.get("external_slots") or [],
+        "forbidden_source_globs": forbidden_source_globs,
+        "local_path_redaction_enabled": bool(
+            route.get("redact_local_absolute_paths")
+        ),
+        "notes": notes,
+    }
+    return payloads, notes, selection
+
+
+def _scan_secret_values(payloads: dict[str, bytes]) -> dict[str, Any]:
+    hits: list[dict[str, str]] = []
+    for member, data in payloads.items():
+        for label, pattern in SECRET_VALUE_PATTERNS.items():
+            if pattern.search(data):
+                hits.append({"member": member, "pattern": label})
+    return {
+        "result": "PASS" if not hits else "FAIL",
+        "scanned_members": len(payloads),
+        "hit_count": len(hits),
+        "hits": hits,
+    }
+
+
+def _redact_local_absolute_paths(
+    payloads: dict[str, bytes],
+) -> tuple[dict[str, bytes], dict[str, Any]]:
+    repo_root = ROOT.resolve().as_posix().encode("utf-8")
+    user_home = Path.home().resolve().as_posix().encode("utf-8")
+    replacements = [
+        (repo_root + b"/", b"<repo-root>/", "repo_root"),
+        (repo_root, b"<repo-root>", "repo_root"),
+    ]
+    if user_home != repo_root:
+        replacements.extend(
+            [
+                (user_home + b"/", b"<user-home>/", "user_home"),
+                (user_home, b"<user-home>", "user_home"),
+            ]
+        )
+
+    redacted: dict[str, bytes] = {}
+    rows: list[dict[str, Any]] = []
+    for member, original in payloads.items():
+        sanitized = original
+        counts: dict[str, int] = {}
+        for needle, replacement, label in replacements:
+            count = sanitized.count(needle)
+            if count:
+                sanitized = sanitized.replace(needle, replacement)
+                counts[label] = counts.get(label, 0) + count
+        redacted[member] = sanitized
+        if sanitized != original:
+            rows.append(
+                {
+                    "member": member,
+                    "replacement_counts": counts,
+                    "original_sha256": artifacts.sha256_bytes(original),
+                    "sanitized_sha256": artifacts.sha256_bytes(sanitized),
+                }
+            )
+    return redacted, {
+        "schema_version": "chatgpt-review-local-path-redaction-v1",
+        "result": "PASS",
+        "changed_member_count": len(rows),
+        "changed_members": rows,
+        "note": (
+            "只改外发副本：仓库绝对路径替换为 <repo-root>，"
+            "用户目录替换为 <user-home>；本地原件未改。"
+        ),
+    }
+
+
 def build_z83_ticket_digest() -> dict[str, bytes]:
     """在内存中生成 Z83 关键票据摘要；dry-run 不得落盘。"""
 
@@ -385,11 +756,93 @@ profile：`{profile_name}`
     return text.encode("utf-8")
 
 
+def render_route_map(
+    selection: dict[str, Any],
+    *,
+    file_count: int,
+    generated_at: datetime,
+) -> bytes:
+    truth = selection.get("truth_source") or {}
+    layer_dirs = selection.get("layer_directories") or {}
+    layer_rows = []
+    for layer in selection.get("selected_layers") or []:
+        layer_rows.append(
+            f"| `{layer}` | `{layer_dirs.get(layer)}` |"
+        )
+    source_counts: dict[str, int] = {}
+    for row in selection.get("sources") or []:
+        layer = str(row.get("layer"))
+        source_counts[layer] = source_counts.get(layer, 0) + 1
+    count_rows = [
+        f"| `{layer}` | {source_counts.get(layer, 0)} |"
+        for layer in selection.get("selected_layers") or []
+    ]
+    notes = selection.get("notes") or []
+    text = f"""# 路线取材地图｜{selection.get("label")}
+
+生成时间：{generated_at.isoformat(timespec="seconds")}
+route：`{selection.get("route_id")}`
+路线快照：`{selection.get("snapshot_at")}`
+
+## 这包怎么分层
+
+| 取材层 | 包内目录 |
+| --- | --- |
+{chr(10).join(layer_rows)}
+
+| 取材层 | 文件数 |
+| --- | ---: |
+{chr(10).join(count_rows)}
+
+全包业务成员：{file_count}。
+
+## 当前真源
+
+- 权威：{truth.get("authority")}
+- 账序：{truth.get("ledger_url")}
+- 队列：{truth.get("queue_url")}
+- 本地 CURRENT_STATE 身份：`{truth.get("local_current_state_status")}`
+- 说明：{truth.get("note")}
+
+🔥 `CURRENT_STATE.json` 如果标成 `stale_mirror_only`，只能帮助理解旧治理结构，不能自动选当前 runs／reports，也不能覆盖上面的 Notion 行。
+
+## 每个文件为什么进包
+
+逐成员来源、所属层、来源根、权威身份与状态见：
+
+`_route/ROUTE_SELECTION.json`
+
+外部回包在清单里只写稳定的 `external_slot:<槽名>/文件名`，不把主机绝对路径写成工件身份。
+
+## 顾问入口
+
+R2 通用顾问 Prompt：
+
+`01_current_truth/config/review_pack/prompts/r2_question_retrieval.md`
+
+## 打包告警
+
+{chr(10).join("- " + note for note in notes) if notes else "（无）"}
+
+来源：Codex
+"""
+    return text.encode("utf-8")
+
+
 def _add_payload(
     payloads: dict[str, bytes],
     member: str,
     data: bytes,
 ) -> None:
+    pure = PurePosixPath(member)
+    if (
+        not member
+        or "\\" in member
+        or pure.is_absolute()
+        or ".." in pure.parts
+        or "." in pure.parts
+    ):
+        raise SystemExit(f"ABORT ZIP 成员路径不安全：{member}")
     if member in payloads:
         raise SystemExit(f"ABORT ZIP 成员重名：{member}")
     payloads[member] = data
@@ -397,53 +850,175 @@ def _add_payload(
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="ChatGPT 审仓打包")
-    ap.add_argument("--profile", default=None, help="surface|standard|deep")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--profile", default=None, help="surface|standard|deep")
+    mode.add_argument("--route", default=None, help="按路线取材地图打包")
+    ap.add_argument(
+        "--layers",
+        default=None,
+        help="route 模式选层，逗号分隔；默认使用路线登记的 default_layers",
+    )
+    ap.add_argument(
+        "--external",
+        action="append",
+        default=[],
+        help="route 外部回包：slot_id=/真实路径；可重复",
+    )
+    ap.add_argument(
+        "--list-routes",
+        action="store_true",
+        help="列出可用 route 后退出，零写入",
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--allow-large", action="store_true", help="允许超过 max_zip_mb")
     ap.add_argument("--out-dir", type=Path, default=None)
     args = ap.parse_args()
 
     cfg = _load_profiles()
-    profile_name = args.profile or cfg.get("default_profile") or "standard"
-    if profile_name not in cfg["profiles"]:
-        raise SystemExit(f"未知 profile: {profile_name}; 可选 {list(cfg['profiles'])}")
-    profile = cfg["profiles"][profile_name]
-    exclude = list(cfg.get("always_exclude_globs") or [])
-    markers = list(cfg.get("secret_name_markers") or [])
-    max_mb = float(cfg.get("max_zip_mb") or 25)
+    routes_cfg = _load_routes()
+    routes = routes_cfg.get("routes") or {}
+    if args.list_routes:
+        for route_id, route in sorted(routes.items()):
+            defaults = ",".join(route.get("default_layers") or [])
+            print(f"{route_id}\t{route.get('label')}\tdefault_layers={defaults}")
+        return 0
+    if (args.layers or args.external) and not args.route:
+        raise SystemExit("ABORT --layers/--external 只能与 --route 一起使用")
 
-    files, notes = collect_files(profile, cfg, exclude, markers)
+    max_mb = float(cfg.get("max_zip_mb") or 25)
     generated_at = datetime.now()
     stamp = generated_at.strftime("%Y%m%d_%H%M%S")
-    pack_dir = args.out_dir or (OUT_ROOT / f"{profile_name}_{stamp}")
+
+    route_selection: dict[str, Any] | None = None
+    route_secret_scan: dict[str, Any] | None = None
+    route_redaction_receipt: dict[str, Any] | None = None
+    if args.route:
+        if args.route not in routes:
+            raise SystemExit(
+                f"未知 route: {args.route}; 可选 {sorted(routes)}"
+            )
+        route = routes[args.route]
+        selected_layers = (
+            [part.strip() for part in args.layers.split(",") if part.strip()]
+            if args.layers
+            else list(route.get("default_layers") or [])
+        )
+        payloads, notes, route_selection = collect_route_payloads(
+            args.route,
+            selected_layers,
+            list(args.external),
+            cfg,
+        )
+        route_map = render_route_map(
+            route_selection,
+            file_count=len(payloads),
+            generated_at=generated_at,
+        )
+        _add_payload(payloads, "00_ROUTE_MAP.md", route_map)
+        _add_payload(
+            payloads,
+            "_route/ROUTE_SELECTION.json",
+            (
+                json.dumps(
+                    route_selection,
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                )
+                + "\n"
+            ).encode("utf-8"),
+        )
+        readme = route_map
+        _add_payload(payloads, "00_READ_ME_FOR_REVIEWER.md", readme)
+        if route.get("redact_local_absolute_paths"):
+            payloads, route_redaction_receipt = (
+                _redact_local_absolute_paths(payloads)
+            )
+            _add_payload(
+                payloads,
+                "_route/LOCAL_PATH_REDACTION.json",
+                (
+                    json.dumps(
+                        route_redaction_receipt,
+                        ensure_ascii=False,
+                        indent=2,
+                        sort_keys=True,
+                    )
+                    + "\n"
+                ).encode("utf-8"),
+            )
+        route_secret_scan = _scan_secret_values(payloads)
+        if route_secret_scan["result"] != "PASS":
+            raise SystemExit(
+                "ABORT route 包命中疑似真实密钥值：\n"
+                + json.dumps(route_secret_scan, ensure_ascii=False, indent=2)
+            )
+        _add_payload(
+            payloads,
+            "_route/SECRET_SCAN.json",
+            (
+                json.dumps(
+                    route_secret_scan,
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                )
+                + "\n"
+            ).encode("utf-8"),
+        )
+        package_name = args.route
+        pack_dir = args.out_dir or (OUT_ROOT / f"route_{args.route}_{stamp}")
+        zip_name = f"chatgpt_review_route_{args.route}_{stamp}.zip"
+        profile_name = None
+    else:
+        profile_name = args.profile or cfg.get("default_profile") or "standard"
+        if profile_name not in cfg["profiles"]:
+            raise SystemExit(
+                f"未知 profile: {profile_name}; 可选 {list(cfg['profiles'])}"
+            )
+        profile = cfg["profiles"][profile_name]
+        exclude = list(cfg.get("always_exclude_globs") or [])
+        markers = list(cfg.get("secret_name_markers") or [])
+        files, notes = collect_files(profile, cfg, exclude, markers)
+        payloads = {}
+        for path in files:
+            _add_payload(
+                payloads,
+                path.relative_to(ROOT).as_posix(),
+                path.read_bytes(),
+            )
+        if profile.get("digest_z83_tickets"):
+            for member, data in build_z83_ticket_digest().items():
+                _add_payload(payloads, member, data)
+        readme = render_reviewer_readme(
+            profile_name,
+            file_count=len(payloads),
+            notes=notes,
+            generated_at=generated_at,
+        )
+        _add_payload(payloads, "00_READ_ME_FOR_REVIEWER.md", readme)
+        missing = [note for note in notes if note.startswith("MISSING_REQUIRED")]
+        if missing:
+            raise SystemExit(
+                "ABORT required runs missing:\n  " + "\n  ".join(missing)
+            )
+        package_name = profile_name
+        pack_dir = args.out_dir or (OUT_ROOT / f"{profile_name}_{stamp}")
+        zip_name = f"chatgpt_review_{profile_name}_{stamp}.zip"
+
     if pack_dir.exists():
         raise SystemExit(f"输出目录已存在，拒绝覆盖：{pack_dir}")
 
-    payloads: dict[str, bytes] = {}
-    for p in files:
-        _add_payload(payloads, p.relative_to(ROOT).as_posix(), p.read_bytes())
-    if profile.get("digest_z83_tickets"):
-        for member, data in build_z83_ticket_digest().items():
-            _add_payload(payloads, member, data)
-    readme = render_reviewer_readme(
-        profile_name,
-        file_count=len(payloads),
-        notes=notes,
-        generated_at=generated_at,
-    )
-    _add_payload(payloads, "00_READ_ME_FOR_REVIEWER.md", readme)
-
-    missing = [n for n in notes if n.startswith("MISSING_REQUIRED")]
-    if missing:
-        raise SystemExit("ABORT required runs missing:\n  " + "\n  ".join(missing))
-
-    zip_path = pack_dir / f"chatgpt_review_{profile_name}_{stamp}.zip"
+    zip_path = pack_dir / zip_name
     if args.dry_run:
         total = sum(len(data) for data in payloads.values())
         print(
-            f"dry-run profile={profile_name} files={len(payloads)} "
+            f"dry-run {('route=' + args.route) if args.route else ('profile=' + str(profile_name))} "
+            f"files={len(payloads)} "
             f"bytes={total} (~{total/1024/1024:.1f}MB raw)（零写入）"
         )
+        if route_selection:
+            print(" layers=" + ",".join(route_selection["selected_layers"]))
         for member in sorted(payloads)[:30]:
             print(" ", member)
         print("  ...")
@@ -462,8 +1037,13 @@ def main() -> int:
             staged_zip,
             payloads,
             metadata={
-                "package_kind": "chatgpt-review-pack-v2",
+                "package_kind": (
+                    "chatgpt-review-route-pack-v1"
+                    if args.route
+                    else "chatgpt-review-pack-v2"
+                ),
                 "profile": profile_name,
+                "route": args.route,
                 "created_at": generated_at.isoformat(timespec="seconds"),
             },
         )
@@ -475,8 +1055,23 @@ def main() -> int:
             )
         (stage / "00_READ_ME_FOR_REVIEWER.md").write_bytes(readme)
         receipt = {
-            "schema_version": "chatgpt-review-pack-receipt-v2",
+            "schema_version": (
+                "chatgpt-review-route-pack-receipt-v1"
+                if args.route
+                else "chatgpt-review-pack-receipt-v2"
+            ),
             "profile": profile_name,
+            "route": args.route,
+            "route_snapshot_at": (
+                route_selection.get("snapshot_at")
+                if route_selection
+                else None
+            ),
+            "selected_layers": (
+                route_selection.get("selected_layers")
+                if route_selection
+                else None
+            ),
             "created_at": generated_at.isoformat(timespec="seconds"),
             "payload_file_count": len(payloads),
             "raw_bytes": sum(len(data) for data in payloads.values()),
@@ -487,6 +1082,8 @@ def main() -> int:
             },
             "max_zip_mb": max_mb,
             "notes": notes,
+            "secret_scan": route_secret_scan,
+            "local_path_redaction": route_redaction_receipt,
             "integrity": integrity,
         }
         (stage / "PACKAGE_RECEIPT.json").write_text(
@@ -499,7 +1096,7 @@ def main() -> int:
         shutil.rmtree(stage, ignore_errors=True)
         raise
 
-    print(f"profile={profile_name}")
+    print(f"{'route' if args.route else 'profile'}={package_name}")
     print(
         f"files={len(payloads)} "
         f"raw_MB={sum(len(data) for data in payloads.values())/1024/1024:.1f} "

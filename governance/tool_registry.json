@@ -2309,13 +2309,13 @@
       "primary_identity_label": "可复用组件",
       "status": "active_component",
       "status_label": "现役",
-      "purpose": "ChatGPT／外部强模型 · 审仓打包（可复用）。",
-      "human_command": "python3 tools/chatgpt_review_pack.py --help",
+      "purpose": "ChatGPT／外部强模型 · 全仓 profile 与四层路线取材打包（可复用）。",
+      "human_command": "python3 tools/chatgpt_review_pack.py --list-routes",
       "inputs": [
-        "审仓 profile、当前治理真源、仓内代码／合同与获准的近停证据"
+        "审仓 profile 或路线取材地图、当前治理真源、仓内代码／合同、获准的近停证据与显式外部回包槽"
       ],
       "outputs": [
-        "带包内清单、逐文件 SHA 与回读验收票的 review ZIP"
+        "带四层来源票、包内清单、逐文件 SHA、安全扫描与回读验收票的 review ZIP"
       ],
       "network_or_model": {
         "network": "none",

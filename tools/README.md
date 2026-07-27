@@ -34,7 +34,7 @@
 | 工具 | 用途 | 保护线 |
 |---|---|---|
 | `simple_pack.py` | 小型 Prompt＋材料外发包 | `--dry-run` 真零写入；同名成员拒收；包内带 manifest／SHA，写后做 CRC 与逐文件回读 |
-| `chatgpt_review_pack.py` | 仓库结构与近停证据审查包 | profile 收件；包内 manifest／SHA；包外验收票；所有回读通过后才落目标目录 |
+| `chatgpt_review_pack.py` | 仓库结构与路线证据审查包 | 全仓用 profile；高频产品线用四层 route 取材地图；包内 manifest／SHA／来源票；包外验收票；所有回读通过后才落目标目录 |
 
 打包成功只说明归档字节完整，不等于材料的语义结论已经审收。
 

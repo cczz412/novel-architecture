@@ -318,6 +318,8 @@
 | GIT-HISTORY-P3-ORPHAN-LOCAL | 孤儿分支重建 `main` 后 force-with-lease 推 GitHub：远程历史去掉 runs/reports 等累赘；盘上 runs/reports/TEMP 仍保留不删 | CZ 2026-07-23 明示「直接清理＋用现跟踪面重传」；仓库 `mhchen1/novel-architecture` |
 | CHATGPT-REVIEW-PACK-WORKFLOW-LOCAL | 可复用审仓打包：`tools/chatgpt_review_pack.py`＋`config/review_pack/profiles.json`；默认 standard；AGENTS 已写入口 | 产出在 `TEMP/chatgpt_review_packs/`；外发≠进 Git |
 | CHATGPT-REVIEW-PACK-REPLAY-TRIANGLE-LOCAL | 外审实锤缺 Z91 实验脚本；制度钉「复验三角」：活面＋`experiments/Z*`＋近停证据；打包器跟 CURRENT_STATE、扫 tests 引用，缺则 ABORT；已上传旧 zip 不改、只改配置现打 | 经验账见 `config/review_pack/README.md` |
+| Z95-EXTRACT-DESIGN-CONSULT-PACK-LOCAL | 第95道抽取设计问诊打包成稿：六问粘贴件＋zip；证据含 Flash/Pro／Z83／Z89／Z91／Z93总计数／X04／Z90回包；金标原文答案未入包；leakage=0；0 API；待 CZ 亲手发 ChatGPT Pro | `reports/Z95_extract_design_consult_pack_20260724/`；Notion https://app.notion.com/p/3a75cadc4d0f81ab942feb1379c88777 |
+| GOLD-UCR-REVALIDATE-SIXPACK-LOCAL | 六本金标按 UCR 五层核准重做：六窗一书一包（zip＋prompt）；共用规则单同 SHA；formal 金标＋单章原文；泄漏0；0 API；不改现役指针；待 CZ 过目亲发 | `TEMP/gold_ucr_revalidate_pack_20260724/`；令 https://app.notion.com/p/27af916070424622b2a98bbdedf27350 |
 
 ## 2026-07-23（九项第一道·旧测试挂账清账）
 

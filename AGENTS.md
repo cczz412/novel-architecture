@@ -2,9 +2,9 @@
 
 0. **人看当前状态**：[governance/INDEX.md](governance/INDEX.md)（由 `python3 tools/novel_pipeline.py governance refresh` 生成）
 1. **机器读取当前任务／运行状态只认这一份**：[governance/CURRENT_STATE.json](governance/CURRENT_STATE.json)
-2. **活批母页（04批交接／账序真源）**：https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c
-3. **Z批队列页**：https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc
-4. **真源边界**：拍板以 Notion 账序／队列为准；本地 `CURRENT_STATE.json` 是回读后的唯一当前任务／运行状态机器镜像；模块与实验路线各看自己的登记册；`current.md` 已停更，`reports/` 只放镜像与交件。
+2. **账序真源 v2（2026-07-27 起，新条只进这里）**：https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6
+3. **LEGACY 在跑队列（R2 跑完即冻结留指针）**：https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc
+4. **真源边界**：拍板以 Notion 账序真源 v2／队列为准；旧 04 页 `4a46597c…` 已冻结，禁止再写一字。本地 `CURRENT_STATE.json` 是回读后的唯一当前任务／运行状态机器镜像；模块与实验路线各看自己的登记册；`current.md` 已停更，`reports/` 只放镜像与交件。
 
 > 本段故意不写“当前是第几道”，避免本文件再次变成竞争路牌。下方旧第68道路由只作考古。
 
@@ -62,6 +62,8 @@
 python3 tools/chatgpt_review_pack.py              # 默认 standard
 python3 tools/chatgpt_review_pack.py --profile deep
 python3 tools/chatgpt_review_pack.py --dry-run
+python3 tools/chatgpt_review_pack.py --list-routes
+python3 tools/chatgpt_review_pack.py --route r2-question-retrieval --dry-run
 ```
 
 - 制度说明：[config/review_pack/README.md](config/review_pack/README.md)（复验三角、旧包不改、经验账）
@@ -69,6 +71,9 @@ python3 tools/chatgpt_review_pack.py --dry-run
 - 产出：`TEMP/chatgpt_review_packs/`（zip＋读包说明；TEMP 本身不进 Git）
 - 包内必有 `00_READ_ME_FOR_REVIEWER.md`；含 `experiments/Z*`＋近停 runs／reports 与 Z83 票据摘要；**不等于**它们应进 Git
 - 做到一定程度就**现打**；外审指出缺口 → 改 profiles／脚本再打新包，勿回头改已上传 zip
+- 同一路线反复外发时优先用 `--route`：四层取材地图在
+  `config/review_pack/routes.json`，required 根缺件直接停，外部回包用
+  `--external 槽名=/真实路径` 显式供入；不要再临时手写一长串来源路径
 
 ## 目录
 

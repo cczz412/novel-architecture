@@ -7,13 +7,13 @@ readonly SCRIPT_DIR="${${0:A}:h}"
 usage() {
   cat <<'EOF'
 用法：
-  tools/provider_keychain.sh save <volcengine_ark|qianwen_platform|tencent_tokenhub|ant_ling>
+  tools/provider_keychain.sh save <volcengine_ark|volcengine_agent_plan|qianwen_platform|tencent_tokenhub|ant_ling>
       弹出隐藏输入框，把对应 API Key 保存到 macOS 钥匙串。
 
-  tools/provider_keychain.sh check <volcengine_ark|qianwen_platform|tencent_tokenhub|ant_ling>
+  tools/provider_keychain.sh check <volcengine_ark|volcengine_agent_plan|qianwen_platform|tencent_tokenhub|ant_ling>
       只检查钥匙是否存在，不显示内容。
 
-  tools/provider_keychain.sh run <volcengine_ark|qianwen_platform|tencent_tokenhub|ant_ling> <命令> [参数...]
+  tools/provider_keychain.sh run <volcengine_ark|volcengine_agent_plan|qianwen_platform|tencent_tokenhub|ant_ling> <命令> [参数...]
       只在该命令进程里注入对应的 API Key 环境变量。
 
 这里只保存钥匙，不会试调用模型，也不会改变现役默认链。
@@ -26,6 +26,11 @@ configure_provider() {
       KEYCHAIN_SERVICE="cn.cz.novel-architecture.volcengine.ark"
       KEYCHAIN_ACCOUNT="ARK_API_KEY"
       PROVIDER_TITLE="火山方舟"
+      ;;
+    volcengine_agent_plan)
+      KEYCHAIN_SERVICE="cn.cz.novel-architecture.volcengine.agent-plan"
+      KEYCHAIN_ACCOUNT="VOLCENGINE_AGENT_PLAN_API_KEY"
+      PROVIDER_TITLE="火山方舟 Agent Plan"
       ;;
     qianwen_platform)
       KEYCHAIN_SERVICE="cn.cz.novel-architecture.qianwen.platform"
@@ -91,6 +96,11 @@ run_with_key() {
   fi
 
   export "${KEYCHAIN_ACCOUNT}=${api_key}"
+  if [[ "$PROVIDER_ID" == "volcengine_agent_plan" ]]; then
+    # Ark CLI 的数据面只识别 ARK_API_KEY。这里仅给当前子进程做别名映射，
+    # 不覆盖钥匙串里的普通按量 Key，也不污染命令结束后的终端。
+    export ARK_API_KEY="$api_key"
+  fi
   unset api_key
   exec "$@"
 }

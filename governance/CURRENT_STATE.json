@@ -1,12 +1,13 @@
 {
   "schema_version": "governance-current-state-v2",
-  "snapshot_at": "2026-07-25T19:45:00+08:00",
+  "snapshot_at": "2026-07-27T14:12:00+08:00",
   "authority": {
     "role": "本地唯一机器可读当前执行状态真源",
     "external_truth": {
-      "ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+      "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
       "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "rule": "拍板状态以 Notion 账序与队列为最终真源；回读后只在本文件形成当前状态镜像。"
+      "legacy_frozen_ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+      "rule": "2026-07-27 起拍板状态只以账序真源 v2 与 LEGACY 在跑队列为准；旧 04 页已冻结，禁止新增或修改。回读后只在本文件形成当前状态镜像。"
     },
     "local_precedence": [
       "子运行 main/hard_stop.json",
@@ -15,53 +16,72 @@
       "子运行 run_manifest.json",
       "顶层 run_manifest.json"
     ],
-    "legacy_freeze_rule": "Z80、Z83 已形成的旧运行目录不回写；目录内旧 prepared 与后续硬停或裁定冲突时，由本文件对外裁定。"
+    "legacy_freeze_rule": "旧 04 账序页及 Z80、Z83 已形成的旧运行目录不回写；目录内旧 prepared 与后续硬停或裁定冲突时，由本文件对外裁定。"
   },
   "current_execution": {
     "task": {
-      "task_id": "REPO-GOVERNANCE-OPTIMIZATION-20260725",
-      "label": "主线施工窗已结束｜仓库寻路与可移植性治理",
-      "status": "maintenance_complete_mainline_frozen",
-      "status_label": "2026-07-25 仓库寻路、可移植性、打包安全与干净克隆治理完成；C9／C10 工程候选保留，未完成的语义与质量结论继续冻结"
+      "task_id": "R2-A8-EVENT-GRAPH-PLANNER-AB-20260727",
+      "label": "R2 问题驱动按需回取｜A8 事件图规划器同卷对照",
+      "status": "a8_negative_candidate_cut",
+      "status_label": "ChatGPT Pro 外审已回收并筛选；A8 唯一正式离线计分完成，2,500字档由A5的16/28、78/115回退到15/28、75/115，B01仍0/10且事实头17→15，照预注册止损线砍掉。"
     },
     "authorization": {
-      "kind": "cz_current_conversation_direct_authorization",
-      "authority_time": "2026-07-25T19:02:26+08:00",
-      "ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+      "kind": "notion_ledger_v2_autonomous_r2_authorization",
+      "authority_time": "2026-07-27T12:05:00+08:00",
+      "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
       "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "notion_readback_for_this_transition": false,
-      "scope": "仓库导航、README、工具登记、依赖与配置整理、可移植性、缓存清理、测试、精确提交与推送；不恢复任何模型主线"
+      "notion_readback_for_this_transition": true,
+      "scope": "R2 A8 事件图规划器新运行号、0 API 单变量同卷对照；先外审、再冻结合同、只跑一次隐藏评分；不改现役、不升默认、不推送。"
     },
     "run": {
-      "run_id": null,
-      "run_directory": null,
-      "status_label": "无主线模型运行；仓库治理只做本地工程操作"
+      "run_id": "V02-R2-A8-event-graph-planner-ab-r01-20260727",
+      "run_directory": "runs/V02_R2_A8_event_graph_planner_ab_r01_20260727",
+      "status_label": "A8正式负结果停点；CUT_PRIMARY_REGRESSION，不进A10、不重跑、不调参。"
     },
     "controls": {
-      "quality_boundary": "只登记仓库工程治理是否通过；不重判 C9／C10、Z98 或任何模型路线的语义与质量胜负。",
-      "evidence_boundary": "长期代码、配置、schema、README 与小型审计件可入 Git；runs／reports／TEMP、候选大池、UCR 原始回包及可还原小说正文的 catalogs／requests 只留本机。",
-      "stop_rule": "不得把小说正文切片、密钥、封存运行原件或未决语义结论写进 Git；干净副本、整仓测试、治理检查或安全扫描出现新失败即停下修复，不绕过。",
-      "next_action": "等待 CZ 的下一道明确施工令；恢复任何模型主线、语义判定或候选升格都须重新授权。"
+      "quality_boundary": "A8只测冻结开发集候选窗口的机械覆盖，不等于答案正确率或R2正式终验；正式终验门槛仍为新30题可回答不少于15且关键错误不多于10。",
+      "evidence_boundary": "A8在A5查询前缀后追加244条显式事件关系查询，2,500字档总体完整题16→15、必答头78→75，B01完整题仍0且事实头17→15，B03也回退；只证明当前追加式实现不值得继续，不证明事件图思想永久无效。",
+      "stop_rule": "不再写旧04页；A8已砍，不得重跑、调阈值、挑预算或自动进入A10；不得改现役、升默认、推送或发未经新授权的模型请求。",
+      "next_action": "A8停点已回传R2 Notion页并回读；若继续R2，须另立单变量路线，优先验证少量可控关系槽或逐题回取合同，并继续先走ChatGPT Pro外审。"
     },
     "artifacts": {
       "report_directory": null,
-      "local_stop_receipt": null,
-      "machine_receipt": "governance/repository_hygiene_audit_20260725.md"
+      "local_stop_receipt": "runs/V02_R2_A8_event_graph_planner_ab_r01_20260727/STOP_RECEIPT.md",
+      "machine_receipt": "runs/V02_R2_A8_event_graph_planner_ab_r01_20260727/official_run_receipt.json"
     },
     "validation": {
-      "status": "PASS",
+      "status": "A8_NEGATIVE_RESULT_CUT",
       "completed_checks": [
-        "仓库寻路与目录职责盘点",
-        "正文相关本地证据精确隔离",
-        "Z88 外部软链实体化与正文库二级本地指针",
-        "打包器 dry-run、manifest、SHA、CRC 与危险成员路径回读",
-        "根工具身份登记补齐",
-        "生成页刷新与一致性检查",
-        "拟提交面本机回归（排除另窗未跟踪 C11 测试）：1253 passed／40 xfailed／1003 subtests passed",
-        "干净克隆回归：539 passed／702 local-evidence skipped／40 xfailed／50 subtests passed",
-        "暂存路径、密钥形态与大文件安全扫描"
+        "A3 外审六个 P0 缺证即拒硬化",
+        "Luna 范围核验与 Terra 两轮复核",
+        "A4／A4h 同环境七档离线对照",
+        "整仓 1650 passed／41 xfailed／1003 subtests／新增失败 0",
+        "Ruff 通过",
+        "A4h／A5 同卷七档离线对照：A5 2,500字档完整题16／28、必答头78／115",
+        "B01 A5：完整题0／10、必答头17／52",
+        "A5／A6同卷七档对照：2,500字档均16／28完整题、78／115必答头",
+        "B01 A6：完整题0／10、必答头17／52",
+        "R2相关定向测试25 passed",
+        "整仓1652 passed／41 xfailed／1003 subtests／0 failed",
+        "治理路牌刷新10份生成件复验0错误",
+        "ChatGPT外审原文与回执入库，密钥痕迹0",
+        "A5新runner七档输出7／7字节复现",
+        "A7候选帧251／251与查询251／251逐字回贴",
+        "A5／A7同卷420格离线对照：A7总体完整题13／28、必答头83／115",
+        "A7 B01完整题0／10、必答头25／52；B02与B03回退，触发预注册砍线",
+        "R2相关71 passed；A5／A7专项23 passed；Ruff通过；治理生成件10／10一致",
+        "整仓1645 passed／17 failed／41 xfailed／1003 subtests；17项均由本轮前已存在的routes状态断言与provider policy冻结SHA漂移触发，本轮未顺手修",
+        "ChatGPT Pro A8外审包、原始回包与回收票据SHA闭合，密钥痕迹0",
+        "A8合同、A5七档输出7/7与选择投影7/7、三份事件图与30格查询前缀均在隐藏评分前过闸",
+        "A8唯一隐藏评分：2,500字档15/28完整题、75/115必答头；B01为0/10、15/52，触发预注册回退线",
+        "R2相关79 passed；A8专项8 passed；Ruff通过；Terra固定终审PASS、P0=0",
+        "整仓1654 passed／16 failed／41 xfailed／1003 subtests；16项均为既有C13 provider policy冻结SHA漂移，本轮新增失败0",
+        "R2 Notion任务页A8停点回包已追加并回读"
       ],
-      "pending_checks": []
+      "pending_checks": [
+        "若继续R2，等待下一条新单变量路线授权",
+        "若开发线达到申请条件，再冻结新30题终验"
+      ]
     },
     "usage": {
       "model_api_logical_samples": 0,
@@ -81,7 +101,7 @@
       "candidate_connected_to_runner": false,
       "rejected_artifacts_recovered": false,
       "mainline_run_resumed": false,
-      "repository_maintenance_only": true
+      "repository_maintenance_only": false
     },
     "blockers": []
   },

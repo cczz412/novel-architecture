@@ -1,0 +1,233 @@
+{
+  "schema_version": "chatgpt-review-source-routes-v1",
+  "layer_order": [
+    "current_truth",
+    "current_route",
+    "upstream_evidence",
+    "external_reviews"
+  ],
+  "routes": {
+    "r2-question-retrieval": {
+      "label": "R2｜问题驱动按需回取",
+      "purpose": "审 R2 当前地基、开发路线、上游证据和外部顾问回包；不把顾问意见冒充施工令。",
+      "snapshot_at": "2026-07-27T14:12:00+08:00",
+      "truth_source": {
+        "authority": "Notion 账序与 Z 批队列",
+        "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
+        "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
+        "local_current_state_status": "current_readback_mirror",
+        "note": "旧 04 账序页已冻结；Notion 账序真源 v2 于 12:05 放行 A8，本地 CURRENT_STATE 已在 14:12 回读登记 A8 正式负结果与砍线停点。若继续 R2，须另立新授权和新运行编号。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews"
+      ],
+      "forbidden_source_globs": [
+        "**/scoring_lockbox/**",
+        "**/*.lockbox.json",
+        "config/gold/**",
+        "**/question_gold*.json"
+      ],
+      "redact_local_absolute_paths": true,
+      "layers": {
+        "current_truth": {
+          "label": "当前任务与边界",
+          "roots": [
+            {
+              "root_id": "r2_route_contract",
+              "required": true,
+              "authority": "review_pack_route_contract",
+              "status": "active",
+              "description": "本路线取材地图、打包规则与专用顾问 Prompt。",
+              "globs": [
+                "config/review_pack/routes.json",
+                "config/review_pack/README.md",
+                "config/review_pack/CHATGPT_REVIEW_SOP.md",
+                "config/review_pack/prompts/r2_question_retrieval.md",
+                "config/review_pack/prompts/r2_a8_event_graph_review.md"
+              ]
+            },
+            {
+              "root_id": "local_governance_mirror",
+              "required": true,
+              "authority": "local_governance_mirror",
+            "status": "current_readback_mirror",
+            "description": "本地治理入口和供应商红线；CURRENT_STATE 已回读登记 A8 负结果，拍板仍只认账序真源 v2 与队列。",
+              "globs": [
+                "AGENTS.md",
+                "governance/INDEX.md",
+                "governance/CURRENT_STATE.json",
+                "governance/progress/README.md",
+                "governance/progress/current-progress.md",
+                "governance/progress/r2-chatgpt-review-cycle.md",
+                "config/providers/provider_access_policy.json",
+                ".python-version",
+                "pyproject.toml",
+                "uv.lock"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "R2 当前路线实物",
+          "roots": [
+            {
+              "root_id": "r2_p0_program",
+              "required": true,
+              "authority": "notion_accepted_engineering_candidate",
+              "status": "engineering_pass_quality_unjudged",
+              "description": "R2 P0 候选程序与边界文档。",
+              "globs": [
+                "experiments/V02_R2_question_driven_retrieval_p0_20260726/**"
+              ]
+            },
+            {
+              "root_id": "r2_p0_tests",
+              "required": true,
+              "authority": "local_mechanical_validation",
+              "status": "active_test",
+              "description": "R2 P0 定向测试。",
+              "globs": [
+                "tests/test_v02_r2_question_driven_p0.py"
+              ]
+            },
+            {
+              "root_id": "r2_p0_latest_run",
+              "required": true,
+              "authority": "notion_accepted_r04_receipts",
+              "status": "accepted_engineering_evidence",
+              "description": "R2 P0 r04 当前验收工件；旧 r01-r03 不自动并入。",
+              "globs": [
+                "runs/V02_R2_question_driven_retrieval_p0_r04_20260726/**"
+              ],
+              "exclude_globs": [
+                "runs/V02_R2_question_driven_retrieval_p0_r04_20260726/scoring_lockbox/**"
+              ]
+            },
+          {
+            "root_id": "r2_p0_report",
+              "required": true,
+              "authority": "codex_stop_receipt",
+              "status": "accepted_engineering_report",
+              "description": "R2 P0 停点回包。",
+              "globs": [
+              "reports/V02_R2_问题驱动按需回取_P0_20260726/**"
+            ]
+          },
+          {
+            "root_id": "r2_dev_hardening_candidate",
+            "required": true,
+            "authority": "local_zero_api_candidate",
+            "status": "engineering_candidate_a8_negative_cut",
+            "description": "R2 开发边界硬化、离线路线、A8 事件图规划器与隔离评分入口；A8 已按预注册回退线砍掉，只留负结果证据。",
+            "globs": [
+              "experiments/V02_R2_development_hardening_r01_20260727/**",
+              "tests/test_v02_r2_development_hardening_r01.py",
+              "tests/test_v02_r2_offline_route_comparison.py"
+            ]
+          },
+          {
+            "root_id": "r2_dev_hardening_run",
+            "required": true,
+            "authority": "local_zero_api_mechanical_comparison",
+            "status": "a8_negative_candidate_cut",
+            "description": "基础六路线及 A4h／A5／A6／A7／A8 单变量封存输出、运行票与离线机械覆盖票；A7、A8 均按预注册回退线砍掉，不等于回答正确率。",
+            "globs": [
+              "runs/V02_R2_development_hardening_r01_20260727/**",
+              "runs/V02_R2_A4_A4h_nonzero_fusion_ab_r02_20260727/**",
+              "runs/V02_R2_A4h_A5_observable_bridge_ab_r01_20260727/**",
+              "runs/V02_R2_A5_A6_head_minimum_ab_r02_20260727/**",
+              "runs/V02_R2_A5_A7_obligation_planner_ab_r01_20260727/**",
+              "runs/V02_R2_A8_event_graph_planner_ab_r01_20260727/**"
+            ],
+            "exclude_globs": [
+              "runs/V02_R2_development_hardening_r01_20260727/preregistered_input_workspace/**",
+              "runs/V02_R2_development_hardening_r01_20260727/route_assets/**",
+              "runs/V02_R2_A4_A4h_nonzero_fusion_ab_r02_20260727/preregistered_input_workspace/**",
+              "runs/V02_R2_A4_A4h_nonzero_fusion_ab_r02_20260727/route_assets/**",
+              "runs/V02_R2_A4h_A5_observable_bridge_ab_r01_20260727/route_assets/**",
+              "runs/V02_R2_A5_A6_head_minimum_ab_r02_20260727/route_assets/**"
+            ]
+          },
+          {
+            "root_id": "r2_dev_hardening_report",
+            "required": true,
+            "authority": "codex_candidate_stop_receipt",
+            "status": "a8_negative_result_returned_to_notion",
+            "description": "当前横评、A8 正式负结果停点与 B01 高密度章风险说明。",
+            "globs": [
+              "reports/V02_R2_development_hardening_r01_20260727/**"
+            ]
+          }
+        ]
+        },
+        "upstream_evidence": {
+          "label": "R1／C15 上游证据",
+          "roots": [
+            {
+              "root_id": "r1_route_evidence",
+              "required": true,
+              "authority": "sealed_historical_experiment",
+              "status": "read_only_upstream",
+              "description": "R1 三路线合同、执行、成绩与测试。",
+              "globs": [
+                "experiments/extraction_redesign_v02_overnight_20260725/V02_R1_scope_preregistration_20260726/**",
+                "experiments/extraction_redesign_v02_overnight_20260725/V02_R1_route_comparison_r02_20260726/**",
+                "runs/V02_R1_route_comparison_r02_20260726/**",
+                "runs/V02_R1_route_comparison_r03_20260726/**",
+                "runs/V02_R1_route_comparison_r04_20260726/**",
+                "reports/V02_R1_scope_preregistration_20260726/**",
+                "reports/V02_R1_route_comparison_20260726/**",
+                "tests/test_v02_r1_scope_preregistration.py",
+                "tests/test_v02_r1_route_comparison.py",
+                "tests/test_v02_r1_route_runner.py",
+                "tests/test_v02_r1_route_r03.py",
+                "tests/test_v02_r1_route_r04.py"
+              ],
+              "exclude_globs": [
+                "runs/V02_R1_route_comparison_r*_20260726/frozen/question_reference_map.lockbox.json"
+              ]
+            },
+            {
+              "root_id": "c15_pipeline_assets",
+              "required": true,
+              "authority": "accepted_candidate_pipeline_assets",
+              "status": "read_only_upstream",
+              "description": "C15 来源冻结、程序回填与窄补丁合同。",
+              "globs": [
+                "experiments/extraction_redesign_v02_overnight_20260725/V02_C15_pipeline_v1_20260726/**",
+                "runs/V02_C15_pipeline_v1_r01_20260726/**",
+                "reports/V02_C15_pipeline_v1_20260726/**",
+                "tests/test_v02_c15_pipeline_v1.py"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "外部顾问回包",
+          "roots": []
+        }
+      },
+      "external_slots": [
+        {
+          "slot_id": "prior_r2_chatgpt_report",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "candidate_advisory_not_decision",
+          "description": "上一轮 R2 病根评审与施工蓝图；通过 --external 显式供入。"
+        },
+        {
+          "slot_id": "c14_advisory_pack",
+          "required": false,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "optional_historical_context",
+          "description": "需要追 C14 原始证据时再显式供入，不默认把旧大包塞进每次外审。"
+        }
+      ]
+    }
+  }
+}

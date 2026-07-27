@@ -16,12 +16,13 @@ def test_default_environment_is_pinned_without_retired_model_dependencies() -> N
     assert project["project"]["requires-python"] == ">=3.11,<3.12"
     assert project["project"]["dependencies"] == []
     assert project["dependency-groups"]["dev"] == [
+        "jsonschema==4.26.0",
         "pytest==9.0.2",
         "ruff==0.15.22",
     ]
 
     locked_names = {row["name"] for row in lock["package"]}
-    assert {"pytest", "ruff"} <= locked_names
+    assert {"jsonschema", "pytest", "ruff"} <= locked_names
     assert {"mlx", "mlx-lm", "huggingface-hub"}.isdisjoint(locked_names)
 
 
@@ -46,3 +47,71 @@ def test_package_standard_distinguishes_review_from_replay() -> None:
     assert "PACKAGE_RECEIPT.json" in standard
     assert "--dry-run" in standard
     assert "不会创建输出目录" in standard
+
+
+def test_route_review_pack_has_four_layers_and_progress_pointer() -> None:
+    routes = json.loads(
+        (ROOT / "config/review_pack/routes.json").read_text(encoding="utf-8")
+    )
+    route = routes["routes"]["r2-question-retrieval"]
+
+    assert route["default_layers"] == [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews",
+    ]
+    assert set(route["layers"]) == set(routes["layer_order"])
+    assert route["snapshot_at"] == "2026-07-27T14:12:00+08:00"
+    assert route["truth_source"]["local_current_state_status"] == (
+        "current_readback_mirror"
+    )
+    assert any(
+        slot["slot_id"] == "prior_r2_chatgpt_report"
+        and slot["required"] is True
+        for slot in route["external_slots"]
+    )
+    assert "**/scoring_lockbox/**" in route["forbidden_source_globs"]
+    assert "**/*.lockbox.json" in route["forbidden_source_globs"]
+    assert route["redact_local_absolute_paths"] is True
+    r2_run_root = next(
+        root
+        for root in route["layers"]["current_route"]["roots"]
+        if root["root_id"] == "r2_p0_latest_run"
+    )
+    assert any("scoring_lockbox" in pattern for pattern in r2_run_root["exclude_globs"])
+    dev_run_root = next(
+        root
+        for root in route["layers"]["current_route"]["roots"]
+        if root["root_id"] == "r2_dev_hardening_run"
+    )
+    assert "runs/V02_R2_A8_event_graph_planner_ab_r01_20260727/**" in (
+        dev_run_root["globs"]
+    )
+    r1_root = next(
+        root
+        for root in route["layers"]["upstream_evidence"]["roots"]
+        if root["root_id"] == "r1_route_evidence"
+    )
+    assert any("lockbox" in pattern for pattern in r1_root["exclude_globs"])
+    current_truth_globs = {
+        glob
+        for root in route["layers"]["current_truth"]["roots"]
+        for glob in root["globs"]
+    }
+    assert "config/review_pack/CHATGPT_REVIEW_SOP.md" in current_truth_globs
+    assert "governance/progress/current-progress.md" in current_truth_globs
+
+    sop = (ROOT / "config/review_pack/CHATGPT_REVIEW_SOP.md").read_text(
+        encoding="utf-8"
+    )
+    progress = (ROOT / "governance/progress/current-progress.md").read_text(
+        encoding="utf-8"
+    )
+    assert "$chatgpt-review-cycle" in sop
+    assert "$codex-longline-teams" in sop
+    assert "第一次没有旧顾问回包" in sop
+    assert "本页不复制总 SOP" in sop
+    assert "resume_from:" in progress
+    assert "must_not_repeat:" in progress
+    assert "must_not_skip:" in progress

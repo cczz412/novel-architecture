@@ -1,0 +1,107 @@
+{
+  "schema_version": "provider-channel-v1",
+  "provider": "volcengine_agent_plan",
+  "display_name": "火山方舟 Agent Plan（个人版 Small）",
+  "base_url": "https://ark.cn-beijing.volces.com/api/plan/v3",
+  "transport": "arkcli_responses",
+  "api_key_env": "VOLCENGINE_AGENT_PLAN_API_KEY",
+  "arkcli_profile": "agent-plan_cn-beijing_personal",
+  "enabled_by_default": false,
+  "default_model": null,
+  "auto_model_allowed": false,
+  "exact_model_id_required": true,
+  "live_model_catalog_check_required_before_run": true,
+  "request_response_model_binding_required": true,
+  "preferred_usage": "用于 DeepSeek V4 Pro、豆包、GLM、Kimi、MiniMax 等显式对照测试；DeepSeek V4 Flash 默认继续走 SenseNova 免费次数通道。",
+  "model_selection_rule": "每次调用必须显式传入下列 model_id；缺省、auto、别名或名单外 ID 一律在发网前拒绝。响应中的实际模型须符合该行 expected_response_model，不能静默换模。",
+  "catalog_source": "arkcli plans model-list --plan agent-plan --format json",
+  "catalog_checked_on": "2026-07-27",
+  "models": [
+    {
+      "requested_name": "Doubao-Seed-Evolving",
+      "model_id": "doubao-seed-evolving-latest-version",
+      "expected_response_model": "doubao-seed-evolving",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Doubao-Seed-2.1-Turbo",
+      "model_id": "doubao-seed-2-1-turbo-260628",
+      "expected_response_model": "doubao-seed-2-1-turbo-260628",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Doubao-Seed-2.0-Code",
+      "model_id": "doubao-seed-2-0-code-preview-260215",
+      "expected_response_model": "doubao-seed-2-0-code-preview-260215",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Doubao-Seed-2.0-Pro",
+      "model_id": "doubao-seed-2-0-pro-260215",
+      "expected_response_model": "doubao-seed-2-0-pro-260215",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Doubao-Seed-2.0-Lite",
+      "model_id": "doubao-seed-2-0-lite-260215",
+      "expected_response_model": "doubao-seed-2-0-lite-260215",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Doubao-Seed-2.0-Mini",
+      "model_id": "doubao-seed-2-0-mini-260215",
+      "expected_response_model": "doubao-seed-2-0-mini-260215",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Kimi-K3",
+      "model_id": "kimi-k3-260701",
+      "expected_response_model": "kimi-k3",
+      "call_ready": true
+    },
+    {
+      "requested_name": "GLM-5.2",
+      "model_id": "glm-5-2-260601",
+      "expected_response_model": "glm-5-2-260617",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Kimi-K2.7-Code",
+      "model_id": "kimi-k2-7-code-260601",
+      "expected_response_model": "kimi-k2.7-code",
+      "call_ready": true
+    },
+    {
+      "requested_name": "MiniMax-M3",
+      "model_id": "minimax-m3-modelhub",
+      "expected_response_model": "minimax-m3",
+      "call_ready": true
+    },
+    {
+      "requested_name": "DeepSeek-V4-Flash",
+      "model_id": "deepseek-v4-flash-260425",
+      "expected_response_model": "deepseek-v4-flash-260425",
+      "call_ready": false,
+      "status": "blocked_prefer_sensenova_free_quota",
+      "override_rule": "只有 CZ 在当前任务里明确要求使用 Agent Plan 的 Flash，才可为该次调用临时放行。"
+    },
+    {
+      "requested_name": "DeepSeek-V4-Pro",
+      "model_id": "deepseek-v4-pro-260425",
+      "expected_response_model": "deepseek-v4-pro-260425",
+      "call_ready": true
+    },
+    {
+      "requested_name": "MiniMax-M2.7",
+      "model_id": "minimax-m2-7-modelhub",
+      "expected_response_model": "minimax-m2.7",
+      "call_ready": true
+    },
+    {
+      "requested_name": "Kimi-K2.6",
+      "model_id": "kimi-k2-6-modelhub",
+      "expected_response_model": "kimi-k2.6",
+      "call_ready": true
+    }
+  ]
+}

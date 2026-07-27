@@ -39,6 +39,42 @@ def test_volcengine_ark_channel_and_requested_models_are_exact() -> None:
     assert models["Kimi-K2"]["call_ready"] is False
 
 
+def test_volcengine_agent_plan_forbids_auto_and_requires_exact_models() -> None:
+    provider = load_provider("volcengine_agent_plan.json")
+    assert provider["base_url"] == "https://ark.cn-beijing.volces.com/api/plan/v3"
+    assert provider["api_key_env"] == "VOLCENGINE_AGENT_PLAN_API_KEY"
+    assert provider["arkcli_profile"] == "agent-plan_cn-beijing_personal"
+    assert provider["enabled_by_default"] is False
+    assert provider["default_model"] is None
+    assert provider["auto_model_allowed"] is False
+    assert provider["exact_model_id_required"] is True
+    assert provider["request_response_model_binding_required"] is True
+    model_ids = {row["model_id"] for row in provider["models"]}
+    assert "auto" not in model_ids
+    assert "deepseek-v4-pro-260425" in model_ids
+    assert "deepseek-v4-flash-260425" in model_ids
+    assert "doubao-seed-2-1-turbo-260628" in model_ids
+    models = {row["model_id"]: row for row in provider["models"]}
+    flash = models["deepseek-v4-flash-260425"]
+    assert flash["call_ready"] is False
+    assert flash["status"] == "blocked_prefer_sensenova_free_quota"
+    assert all(
+        row["call_ready"]
+        for model_id, row in models.items()
+        if model_id != "deepseek-v4-flash-260425"
+    )
+
+    policy = load_provider("provider_access_policy.json")
+    agent_plan = policy["providers"]["volcengine_agent_plan"]
+    assert agent_plan["may_replace_default_chain"] is False
+    assert agent_plan["require_live_model_catalog_check"] is True
+    assert agent_plan["exact_model_id_required"] is True
+    assert agent_plan["auto_model_forbidden"] is True
+    flash_route = agent_plan["model_route_overrides"]["deepseek-v4-flash-260425"]
+    assert flash_route["default_action"] == "deny"
+    assert flash_route["preferred_provider"] == "sensenova"
+
+
 def test_qianwen_channel_and_requested_models_are_exact() -> None:
     provider = load_provider("qianwen_platform_multi_model.json")
     assert provider["base_url"] == "https://dashscope.aliyuncs.com/compatible-mode/v1"
@@ -218,6 +254,10 @@ def test_shared_keychain_loader_is_zero_call_and_names_all_providers() -> None:
     swift = (ROOT / "tools/provider_key_save.swift").read_text(encoding="utf-8")
     for service, account in [
         ("cn.cz.novel-architecture.volcengine.ark", "ARK_API_KEY"),
+        (
+            "cn.cz.novel-architecture.volcengine.agent-plan",
+            "VOLCENGINE_AGENT_PLAN_API_KEY",
+        ),
         ("cn.cz.novel-architecture.qianwen.platform", "DASHSCOPE_API_KEY"),
         (
             "cn.cz.novel-architecture.tencent.tokenhub",
@@ -228,6 +268,8 @@ def test_shared_keychain_loader_is_zero_call_and_names_all_providers() -> None:
         assert service in shell
         assert account in shell
         assert account in swift or "CommandLine.arguments[3]" in swift
+    assert 'PROVIDER_ID" == "volcengine_agent_plan"' in shell
+    assert 'export ARK_API_KEY="$api_key"' in shell
 
 
 def test_unknown_provider_is_rejected_before_any_keychain_read() -> None:

@@ -12,6 +12,9 @@
 
 定期把「结构 + 能复验的代码 + 近停证据」打成 zip，上传 ChatGPT（或同类）审：仓库乱不乱、测试流程、近几轮效果差在哪、下一刀怎么改。
 
+完整接力不要只跑打包命令。唯一总控是 `$chatgpt-review-cycle`；本仓只在
+[`CHATGPT_REVIEW_SOP.md`](CHATGPT_REVIEW_SOP.md) 保留项目适配，不复制总流程。
+
 ## 一键（永远现打，不复用旧 zip）
 
 ```bash
@@ -19,6 +22,10 @@ cd /Users/a1234/挣钱/小说架构
 python3 tools/chatgpt_review_pack.py              # 默认 standard ≈ 常审
 python3 tools/chatgpt_review_pack.py --profile deep
 python3 tools/chatgpt_review_pack.py --dry-run
+python3 tools/chatgpt_review_pack.py --list-routes
+python3 tools/chatgpt_review_pack.py \
+  --route r2-question-retrieval \
+  --external prior_r2_chatgpt_report=/绝对路径/顾问回包.md
 ```
 
 产出：`TEMP/chatgpt_review_packs/<profile>_<时间戳>/`
@@ -30,6 +37,60 @@ python3 tools/chatgpt_review_pack.py --dry-run
 
 `--dry-run` 只读输入并打印清单，**不会创建输出目录、摘要或半成品**。
 正式打包也先在同级临时目录完成并回读，全部通过后才把整包原子落到目标目录。
+
+## 高频外发：按路线取材，不再临时猜路径
+
+三档 profile 适合看整仓；针对同一产品线反复问 ChatGPT 时，用
+[`routes.json`](routes.json) 的路线取材地图。
+
+每条路线只认四层：
+
+| 层 | 放什么 |
+|---|---|
+| `current_truth` | 当前任务、边界、路线合同与治理镜像 |
+| `current_route` | 本路线现役候选程序、测试、最新运行与停点回包 |
+| `upstream_evidence` | 真正支撑当前判断的上游实验，不把整仓历史都塞进来 |
+| `external_reviews` | ChatGPT 等外部顾问回包；通过命名槽显式传入 |
+
+例如：
+
+```bash
+# 只看有哪些路线，零写入
+python3 tools/chatgpt_review_pack.py --list-routes
+
+# 先看三层本地材料会取什么，零写入
+python3 tools/chatgpt_review_pack.py \
+  --route r2-question-retrieval \
+  --layers current_truth,current_route,upstream_evidence \
+  --dry-run
+
+# 带上上一轮 ChatGPT 回包正式打包
+python3 tools/chatgpt_review_pack.py \
+  --route r2-question-retrieval \
+  --external prior_r2_chatgpt_report=/Users/.../R2报告.md
+```
+
+route 模式会把包内目录固定成 `01_current_truth/` 到
+`04_external_reviews/`，并生成：
+
+- `00_ROUTE_MAP.md`：人读的四层地图；
+- `_route/ROUTE_SELECTION.json`：逐文件来源、所属层、权威身份和状态；
+- `_route/SECRET_SCAN.json`：疑似真实密钥值扫描票。
+
+🔥 required 根或 required 外部槽缺件会直接 ABORT；optional 缺件必须写告警，
+不能静默掉料。外部文件可以来自仓外，但包内只记
+`external_slot:<槽名>/文件名`，不把主机绝对路径当工件身份。
+
+金标、答案锁箱必须在每个来源根的 `exclude_globs` 先剥离；路线顶层的
+`forbidden_source_globs` 再做第二道包级拒收。漏配任意一边都不能生成 ZIP。
+
+路线启用 `redact_local_absolute_paths` 后，只在外发副本里把本仓绝对路径替换为
+`<repo-root>`、用户目录替换为 `<user-home>`；原件不改，并在
+`_route/LOCAL_PATH_REDACTION.json` 记录脱敏前后 SHA。
+
+⚠️ route 的 `snapshot_at` 和 `truth_source` 要随最新 Notion 验收行为刷新。
+若本地 `CURRENT_STATE.json` 仍是旧镜像，必须登记
+`stale_mirror_only`；打包器不会拿它自动替路线挑 runs。
 
 🔥 **旧 zip 一旦已上传／已在审，就别再改那一包。**
 外审吐槽缺东西 → **改 `profiles.json`／打包脚本**，下次重新打；不要回头补丁旧包。
@@ -115,3 +176,4 @@ xfail。夹具只进临时 checkout，不回写当前主仓。
 | 日期 | 外审指出 | 制度怎么改 |
 |---|---|---|
 | 2026-07-23 | 缺 Z91 实验脚本，无法完整复验 | standard 必带 `experiments/Z*`；打包器扫 tests 引用，缺则 ABORT；旧包不改、下次现打 |
+| 2026-07-27 | R2 顾问包仍需手写约 30 个路径并直接引用 Downloads | 增加四层 route 取材地图、required/optional 根、外部回包槽和逐成员来源票；保留旧 profile 命令 |

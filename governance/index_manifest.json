@@ -5,9 +5,9 @@
   },
   "inputs": [
     {
-      "bytes": 67191,
+      "bytes": 69323,
       "path": "governance/CURRENT_STATE.json",
-      "sha256": "7ed7fe7c14b36c1bb4a747ae7560b3a5e6f3bf35a2b3edc50d2307a560caea68"
+      "sha256": "1d1fca5302cc1fea62e12a8a5362ab7fb9f6a6b9a0b945f886f27e173ec569bc"
     },
     {
       "bytes": 12660,
@@ -32,14 +32,14 @@
       "sha256": "81e8ba12b69164f24ed271e853640070142ef3762ac1417f96c69654d2f41d99"
     },
     {
-      "bytes": 2606,
+      "bytes": 2790,
       "path": "governance/INDEX.md",
-      "sha256": "d58f453c8ecd73794ec305e1171c3c53bc519778db73e6b4864e21f1d68c5354"
+      "sha256": "36ca479fabfbed571cc55093c9cd4c30e926e4576bb2ba35ce89eaf36c40d3c7"
     },
     {
-      "bytes": 1682,
+      "bytes": 1955,
       "path": "governance/current_run.md",
-      "sha256": "4072e758c21524f0295573d16564b26bd64a21b1cf04c29eb1c8a5c70397f235"
+      "sha256": "4833b659440e97336b2fc5d7e40b511d2873df4480c3c315a901a6b2b738c560"
     },
     {
       "bytes": 1235,
@@ -74,7 +74,7 @@
     {
       "bytes": 24367,
       "path": "governance/module_registry.json",
-      "sha256": "cc4845627e9a3e7a204a0945cf87a919fbdd47fd8f064e815b9a64e5f2c858e2"
+      "sha256": "0b11d7ceee2025e7ab4097678c4127ab075dc605c8a49fe7efacbb828b9d9e7a"
     }
   ],
   "schema_version": "governance-index-manifest-v1",

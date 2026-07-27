@@ -106,6 +106,18 @@ def test_c11_1_emits_three_reporting_views_without_quality_verdict(tmp_path):
     assert sufficiency["c8_p0_items_fixed"] is False
     assert receipt["quality_result_registered"] is False
     assert receipt["experiment_a_single_variable_claim_allowed"] is False
+    authority = _read(tmp_path / "c11/authority_receipt.json")
+    excerpt_path = tmp_path / "c11/authority_excerpt.json"
+    assert authority["notion_work_order_page_id"] == (
+        "eb8821e57b67472db9f220b46110dcfd"
+    )
+    assert (
+        authority["authority_excerpt_sha256"]
+        == hashlib.sha256(excerpt_path.read_bytes()).hexdigest()
+    )
+    excerpt = _read(excerpt_path)
+    assert excerpt["excerpt_scope"] == "C11.1"
+    assert excerpt["notion_full_page_content_sha256"] is None
 
 
 @pytest.mark.v02
@@ -121,3 +133,50 @@ def test_c11_1_is_deterministic_and_rejects_output_drift(tmp_path):
     target.write_text("{}\n", encoding="utf-8")
     with pytest.raises(module.C11FinalizeError, match="既有输出字节漂移"):
         module.write_or_verify(control, c11)
+
+
+@pytest.mark.v02
+def test_c11_1_allows_only_the_two_exact_auxiliary_subtrees(tmp_path):
+    module = _load_module()
+    control = tmp_path / "control"
+    c11 = tmp_path / "c11"
+    module.write_or_verify(control, c11)
+    (c11 / "N10_active").mkdir()
+    (c11 / "N10_active/receipt.json").write_text("{}\n", encoding="utf-8")
+    (c11 / "N11_active").mkdir()
+    (c11 / "N11_active/receipt.json").write_text("{}\n", encoding="utf-8")
+    module.verify_existing_outputs(control, c11)
+
+    (c11 / "N10_active_evil").mkdir()
+    (c11 / "N10_active_evil/receipt.json").write_text(
+        "{}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(module.C11FinalizeError, match="工件集合不闭合"):
+        module.verify_existing_outputs(control, c11)
+
+
+@pytest.mark.v02
+def test_c11_1_rejects_unknown_parent_file(tmp_path):
+    module = _load_module()
+    control = tmp_path / "control"
+    c11 = tmp_path / "c11"
+    module.write_or_verify(control, c11)
+    (c11 / "forged_quality_score.json").write_text(
+        "{}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(module.C11FinalizeError, match="工件集合不闭合"):
+        module.verify_existing_outputs(control, c11)
+
+
+@pytest.mark.v02
+def test_c11_1_actual_delivery_verifies_read_only():
+    module = _load_module()
+    result = module.verify_existing_outputs()
+    assert result["existing_outputs_verified"] is True
+    assert result["approved_auxiliary_subtrees"] == [
+        "N10_active",
+        "N11_active",
+    ]
+    assert result["quality_result_registered"] is False

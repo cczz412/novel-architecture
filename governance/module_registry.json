@@ -523,7 +523,7 @@
           "exists": true,
           "kind": "file",
           "path": "tests/test_governance_index.py",
-          "sha256": "136c607bd7f2133d85eebb66c24068271cf1ff95396283d3316957608e640082"
+          "sha256": "4df7dc17b1d4527ea5f419e826b9f26a4a162bc216165f671d6e7c7d7c4deeeb"
         },
         {
           "exists": true,

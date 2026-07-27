@@ -16,6 +16,22 @@
       "status": "isolated_configuration_only",
       "may_replace_default_chain": false
     },
+    "volcengine_agent_plan": {
+      "default_action": "deny_until_explicit_model_run_order",
+      "status": "isolated_configuration_only",
+      "may_replace_default_chain": false,
+      "require_live_model_catalog_check": true,
+      "exact_model_id_required": true,
+      "auto_model_forbidden": true,
+      "model_route_overrides": {
+        "deepseek-v4-flash-260425": {
+          "default_action": "deny",
+          "preferred_provider": "sensenova",
+          "reason": "SenseNova 当前提供 V4 Flash 免费次数；不得无意消耗 Agent Plan AFP。",
+          "approval_scope": "current_task_explicit_agent_plan_flash_only"
+        }
+      }
+    },
     "qianwen_platform": {
       "default_action": "deny_until_explicit_model_run_order",
       "status": "isolated_configuration_only",

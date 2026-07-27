@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from jsonschema import Draft202012Validator
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -182,6 +183,16 @@ def test_c11_missing_bucket_arithmetic_does_not_invent_old_names() -> None:
     assert b"LEGACY_BUCKET_07" not in raw
 
 
+def test_c11_missing_bucket_instance_matches_the_published_schema() -> None:
+    built = _built_c11()
+    schema = built["contracts/missing_field_bucket_registry.v1.schema.json"]
+    expansion = built["catalog/missing_field_bucket_expansion.json"]
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(schema).validate(expansion)
+    assert expansion["formal_diagnostic_row_count"] == 0
+    assert expansion["formal_score_count"] == 0
+
+
 def test_c11_expansion_writes_only_blocked_candidate_artifacts(
     tmp_path: Path,
 ) -> None:
@@ -222,3 +233,53 @@ def test_c11_expansion_rejects_manifest_inventory_drift(
     )
     with pytest.raises(dc.DUseContractError, match="工件数量漂移"):
         dc.verify_c11_question_expansion_artifacts(tmp_path)
+
+
+def test_c11_expansion_rejects_forged_score_even_if_manifest_is_resigned(
+    tmp_path: Path,
+) -> None:
+    dc.write_c11_question_expansion_artifacts(tmp_path)
+    forged = tmp_path / "formal_score.json"
+    forged.write_text('{"formal_score": 1}\n', encoding="utf-8")
+    manifest_path = tmp_path / "artifact_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["inventory"].append(
+        {
+            "path": "formal_score.json",
+            "sha256": dc.sha256_file(forged),
+            "bytes": forged.stat().st_size,
+        }
+    )
+    manifest["artifact_count_without_manifest"] = len(manifest["inventory"])
+    manifest["inventory_sha256"] = dc.sha256_bytes(
+        dc.canonical_json_bytes(manifest["inventory"])
+    )
+    manifest_path.write_bytes(dc.canonical_json_bytes(manifest))
+    with pytest.raises(dc.DUseContractError, match="固定工件清单"):
+        dc.verify_c11_question_expansion_artifacts(tmp_path)
+
+
+def test_c11_attribution_binds_page_identity_without_invented_content_sha() -> None:
+    built = _built_c11()
+    receipt = built["attribution_receipt.json"]
+    source = receipt["notion_work_order"]
+    assert source["page_id"] == "eb8821e57b67472db9f220b46110dcfd"
+    assert source["url"].endswith(source["page_id"])
+    assert source["content_sha256"] is None
+    assert source["content_sha256_status"] == "NOT_AVAILABLE_NOT_INVENTED"
+    excerpt_path = "authority_excerpt.json"
+    assert receipt["authority_excerpt_path"] == excerpt_path
+    assert receipt["authority_excerpt_sha256"] == dc.sha256_bytes(
+        dc.build_c11_question_expansion_artifacts()[excerpt_path]
+    )
+    excerpt = built[excerpt_path]
+    assert excerpt["excerpt_scope"] == "C11.2"
+    assert excerpt["notion_full_page_content_sha256"] is None
+
+
+def test_c11_actual_delivery_matches_generator_fixed_inventory() -> None:
+    receipt = dc.verify_c11_question_expansion_artifacts(dc.DEFAULT_C11_OUTPUT_DIR)
+    assert receipt["formal_scores_emitted"] is False
+    assert receipt["artifact_count"] == (
+        len(dc.C11_QUESTION_EXPANSION_RELATIVE_PATHS) + 1
+    )

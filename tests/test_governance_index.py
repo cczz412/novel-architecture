@@ -124,6 +124,10 @@ class GovernanceIndexTests(unittest.TestCase):
             self.assertTrue(task[key].strip(), key)
         self.assertEqual(
             state["authority"]["external_truth"]["ledger_url"],
+            "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
+        )
+        self.assertEqual(
+            state["authority"]["external_truth"]["legacy_frozen_ledger_url"],
             "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
         )
         self.assertEqual(
