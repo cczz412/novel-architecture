@@ -79,6 +79,7 @@ def _load_local_evidence_registry() -> dict:
         group_id = str(group.get("group_id") or "").strip()
         globs = group.get("test_file_globs", [])
         nodeids = group.get("nodeids", [])
+        portable_program_paths = group.get("portable_program_paths", [])
         required_paths = group.get("required_paths")
         if not group_id or group_id in seen:
             raise pytest.UsageError("本地证据测试分组 ID 缺失或重复")
@@ -93,6 +94,11 @@ def _load_local_evidence_registry() -> dict:
             if nodeid in seen_nodeids:
                 raise pytest.UsageError(f"本地证据测试节点重复：{nodeid}")
             seen_nodeids.add(nodeid)
+        if not isinstance(portable_program_paths, list) or any(
+            not isinstance(path, str) or not path.strip()
+            for path in portable_program_paths
+        ):
+            raise pytest.UsageError("可移植程序路径必须是非空字符串列表")
         if not isinstance(required_paths, list) or not required_paths:
             raise pytest.UsageError("本地证据测试分组必须写证据路径")
         if not str(group.get("reason") or "").strip():

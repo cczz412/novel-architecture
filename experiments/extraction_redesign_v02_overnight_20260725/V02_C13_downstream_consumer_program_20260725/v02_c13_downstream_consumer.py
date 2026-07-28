@@ -100,7 +100,8 @@ INPUTS = {
 }
 
 EXPECTED_POLICY_SHAS = {
-    ACCESS_POLICY: "f4e350e5b9daacd95c7f573222d5dba91b24186904b14dbe0b1021132a1f0528",
+    # M1-04：接受 e0b79ff 已落库的隔离 Agent Plan 治理改动，保护闸不放宽。
+    ACCESS_POLICY: "c38570e28906651538e9cf5abefce45dcf5a66867249f85d84fe3672b3b5f3b5",
     QWEN_PROVIDER_CONFIG: (
         "0ec8891beff5016a4b6b79bd4c5f63d7b7e34fc2d068cd05119e445e9f59bd4e"
     ),

@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from . import event_graph_planner as a8_graph
+from . import qec_activate as qec
 from . import r2_dev_hardening as hardening
 
 
@@ -22,7 +23,7 @@ QUERY_MAP_SCHEMA = "r2-query-map.v1"
 SELECTION_PROJECTION_SCHEMA = "r2-selection-projection.v1"
 BUDGETS = (300, 600, 900, 1200, 1500, 2000, 2500)
 ROUTES = ("A0", "A1a", "A1b", "A1c", "A3", "A4")
-SUPPORTED_ROUTES = (*ROUTES, "A4h", "A5", "A6", "A7", "A8")
+SUPPORTED_ROUTES = (*ROUTES, "A4h", "A5", "A6", "A7", "A8", "QEC")
 CASE_IDS = ("B01-U0033", "B02-U0039", "B03-U0041")
 FORBIDDEN_INPUT_PARTS = {"gold", "lockbox", "scoring_lockbox"}
 PLAN_SPLIT_PATTERN = re.compile(r"[，,；;？?]|以及|或者|或|、")
@@ -1389,6 +1390,95 @@ def run_routes(
     catalogs = _load_catalogs(workspace / "source_catalog_v2")
     index = build_sparse_index(catalogs)
     aliases = _extract_high_confidence_aliases(catalogs)
+    qec_plans: dict[str, dict[str, Any]] = {}
+    qec_query_maps: dict[str, dict[str, Any]] = {}
+    qec_query_bindings: dict[str, dict[str, Any]] = {}
+    qec_rank_cells: dict[str, dict[str, Any]] = {}
+    qec_rankings: dict[str, list[list[dict[str, Any]]]] = {}
+    qec_merged_rows: dict[str, list[dict[str, Any]]] = {}
+    qec_rank_collection: dict[str, Any] | None = None
+    qec_rank_collection_file_sha256: str | None = None
+    qec_a5_query_map_file_sha256: str | None = None
+    if "QEC" in route_ids:
+        planner_artifact_sha256 = sha256_file(Path(qec.__file__))
+        a5_query_cells: list[dict[str, Any]] = []
+        rank_cells: list[dict[str, Any]] = []
+        for catalog in catalogs:
+            case_id = catalog["source_id"]
+            for question in questions:
+                audit_key = f"{case_id}::{question['question_id']}"
+                legacy_plan = plan_question(question["question_text"])
+                queries = _query_variants(
+                    route_id="A5",
+                    question_text=question["question_text"],
+                    plan=legacy_plan,
+                    aliases=aliases,
+                    case_id=case_id,
+                )
+                a5_query_map = _legacy_query_map(
+                    route_id="A5",
+                    case_id=case_id,
+                    question_id=question["question_id"],
+                    queries=queries,
+                )
+                qec_query_map = _legacy_query_map(
+                    route_id="QEC",
+                    case_id=case_id,
+                    question_id=question["question_id"],
+                    queries=queries,
+                )
+                plan = qec.build_question_plan(
+                    question_id=question["question_id"],
+                    question_text=question["question_text"],
+                    planner_artifact_sha256=planner_artifact_sha256,
+                )
+                prior_plan = qec_plans.setdefault(question["question_id"], plan)
+                if prior_plan != plan:
+                    raise RouteRunnerError(
+                        f"QEC_PUBLIC_PLAN_DRIFT:{question['question_id']}"
+                    )
+                rankings = [
+                    rank_paragraphs(
+                        query_text=query,
+                        case_id=case_id,
+                        index=index,
+                    )
+                    for query in queries
+                ]
+                rank_cell = qec.build_rank_stream_cell(
+                    case_id=case_id,
+                    question_id=question["question_id"],
+                    query_map=qec_query_map,
+                    rankings=rankings,
+                )
+                binding = qec.bind_a5_queries_to_units(
+                    plan=plan,
+                    query_map=qec_query_map,
+                )
+                qec_query_maps[audit_key] = qec_query_map
+                qec_query_bindings[audit_key] = binding
+                qec_rank_cells[audit_key] = rank_cell
+                qec_rankings[audit_key] = rankings
+                qec_merged_rows[audit_key] = _merge_rankings_nonzero_fusion(
+                    rankings
+                )
+                a5_query_cells.append(a5_query_map)
+                rank_cells.append(rank_cell)
+        a5_query_collection = {
+            "schema_version": "r2-query-map-collection.v1",
+            "route_id": "A5",
+            "cells": sorted(
+                a5_query_cells,
+                key=lambda row: f"{row['case_id']}::{row['question_id']}",
+            ),
+        }
+        qec_a5_query_map_file_sha256 = sha256_bytes(
+            canonical_bytes(a5_query_collection)
+        )
+        qec_rank_collection = qec.build_rank_stream_collection(rank_cells)
+        qec_rank_collection_file_sha256 = sha256_bytes(
+            canonical_bytes(qec_rank_collection)
+        )
     planner_visible_source_records: list[dict[str, str]] = []
     planner_visible_sources: dict[str, dict[str, Any]] = {}
     for catalog in catalogs:
@@ -1446,6 +1536,32 @@ def run_routes(
         },
     )
     write_json(output_dir / "route_assets/sparse_index.json", index)
+    if "QEC" in route_ids:
+        if qec_rank_collection is None:
+            raise RouteRunnerError("QEC_RANK_COLLECTION_NOT_BUILT")
+        write_json(
+            output_dir / "route_assets/qec/rank_streams.json",
+            qec_rank_collection,
+        )
+        write_json(
+            output_dir / "route_assets/qec/question_plans.json",
+            {
+                "schema_version": "r2-question-plan-collection.v2",
+                "planner_kind": "DETERMINISTIC_PUBLIC_QUESTION_GRAMMAR",
+                "unique_question_count": len(qec_plans),
+                "plans": [qec_plans[key] for key in sorted(qec_plans)],
+            },
+        )
+        write_json(
+            output_dir / "route_assets/qec/query_bindings.json",
+            {
+                "schema_version": "r2-a5-query-facet-binding-collection.v1",
+                "cell_count": len(qec_query_bindings),
+                "cells": [
+                    qec_query_bindings[key] for key in sorted(qec_query_bindings)
+                ],
+            },
+        )
 
     outputs: list[dict[str, Any]] = []
     route_obligation_plans: dict[str, dict[str, dict[str, Any]]] = {}
@@ -1455,6 +1571,18 @@ def run_routes(
     ] = {}
     route_event_triggers: dict[str, dict[str, dict[str, Any]]] = {}
     selection_projection_records: dict[str, list[dict[str, Any]]] = {}
+    qec_traces: dict[str, dict[int, list[dict[str, Any]]]] = {
+        "A5": {},
+        "QEC": {},
+    }
+    qec_evidence: dict[str, dict[int, list[dict[str, Any]]]] = {
+        "A5": {},
+        "QEC": {},
+    }
+    qec_answers: dict[str, dict[int, list[dict[str, Any]]]] = {
+        "A5": {},
+        "QEC": {},
+    }
     for route_id in route_ids:
         for budget in BUDGETS:
             cells: list[dict[str, Any]] = []
@@ -1467,7 +1595,19 @@ def run_routes(
                     plan = plan_question(question["question_text"])
                     audit_key = f"{case_id}::{question['question_id']}"
                     event_trigger: dict[str, Any] | None = None
-                    if route_id == "A8":
+                    if route_id == "QEC":
+                        if (
+                            qec_rank_collection_file_sha256 is None
+                            or qec_a5_query_map_file_sha256 is None
+                        ):
+                            raise RouteRunnerError("QEC_FROZEN_STREAM_BINDING_MISSING")
+                        obligation_plan = qec_plans[question["question_id"]]
+                        query_map = qec_query_maps[audit_key]
+                        queries = [
+                            row["query_text"] for row in query_map["queries"]
+                        ]
+                        candidate_frames = []
+                    elif route_id == "A8":
                         if a8_contract is None:
                             raise RouteRunnerError(
                                 "A8_EVENT_GRAPH_CONTRACT_NOT_LOADED"
@@ -1561,19 +1701,24 @@ def run_routes(
                             raise RouteRunnerError(
                                 f"EVENT_TRIGGER_DRIFT:{route_id}:{audit_key}"
                             )
-                    rankings = [
-                        rank_paragraphs(
-                            query_text=query,
-                            case_id=case_id,
-                            index=index,
-                        )
-                        for query in queries
-                    ]
-                    merged = (
-                        _merge_rankings_nonzero_fusion(rankings)
-                        if route_id in {"A4h", "A5", "A6", "A7", "A8"}
-                        else _merge_rankings(rankings)
+                    rankings = (
+                        qec_rankings[audit_key]
+                        if route_id == "QEC"
+                        else [
+                            rank_paragraphs(
+                                query_text=query,
+                                case_id=case_id,
+                                index=index,
+                            )
+                            for query in queries
+                        ]
                     )
+                    if route_id == "QEC":
+                        merged = qec_merged_rows[audit_key]
+                    elif route_id in {"A4h", "A5", "A6", "A7", "A8"}:
+                        merged = _merge_rankings_nonzero_fusion(rankings)
+                    else:
+                        merged = _merge_rankings(rankings)
                     if route_id == "A1c":
                         selected = _pack_conditional_neighbors(
                             merged,
@@ -1591,6 +1736,22 @@ def run_routes(
                             request_head_rankings=rankings[: len(plan)],
                             budget=budget,
                         )
+                    elif route_id == "QEC":
+                        selected, trace = qec.execute_question_state(
+                            plan=qec_plans[question["question_id"]],
+                            query_binding=qec_query_bindings[audit_key],
+                            rank_stream_cell=qec_rank_cells[audit_key],
+                            merged_rows=merged,
+                            paragraph_text_by_id={
+                                row["paragraph_id"]: row["original_text"]
+                                for row in case_documents
+                            },
+                            budget_chars=budget,
+                            a5_query_map_sha256=qec_a5_query_map_file_sha256,
+                            rank_stream_manifest_sha256=(
+                                qec_rank_collection_file_sha256
+                            ),
+                        )
                     elif route_id in {"A4h", "A5", "A7", "A8"}:
                         selected = _pack_nonzero_fusion(merged, budget=budget)
                     else:
@@ -1606,7 +1767,7 @@ def run_routes(
                                 row["char_count"] for row in selected
                             ),
                         }
-                    if route_id in {"A4h", "A5", "A6", "A7", "A8"}:
+                    if route_id in {"A4h", "A5", "A6", "A7", "A8", "QEC"}:
                         actual = [
                             row
                             for row in selected
@@ -1629,6 +1790,44 @@ def run_routes(
                                 ),
                             }
                         )
+                    if "QEC" in route_ids and route_id in {"A5", "QEC"}:
+                        plan_for_sidecar = qec_plans[question["question_id"]]
+                        paragraph_text_by_id = {
+                            row["paragraph_id"]: row["original_text"]
+                            for row in case_documents
+                        }
+                        if route_id == "A5":
+                            if (
+                                qec_rank_collection_file_sha256 is None
+                                or qec_a5_query_map_file_sha256 is None
+                            ):
+                                raise RouteRunnerError(
+                                    "QEC_SHADOW_STREAM_BINDING_MISSING"
+                                )
+                            trace = qec.build_shadow_trace(
+                                plan=plan_for_sidecar,
+                                cell_id=audit_key,
+                                selected_windows=selected,
+                                paragraph_text_by_id=paragraph_text_by_id,
+                                budget_chars=budget,
+                                a5_query_map_sha256=qec_a5_query_map_file_sha256,
+                                rank_stream_manifest_sha256=(
+                                    qec_rank_collection_file_sha256
+                                ),
+                            )
+                        evidence_records, answer = qec.backfill_evidence_and_answer(
+                            plan=plan_for_sidecar,
+                            trace=trace,
+                            catalog=catalog,
+                        )
+                        qec_traces[route_id].setdefault(budget, []).append(trace)
+                        qec_evidence[route_id].setdefault(budget, []).append(
+                            {
+                                "cell_id": audit_key,
+                                "records": evidence_records,
+                            }
+                        )
+                        qec_answers[route_id].setdefault(budget, []).append(answer)
                     cells.append(cell)
             output: dict[str, Any] = {
                 "schema_version": ROUTE_OUTPUT_SCHEMA,
@@ -1765,6 +1964,43 @@ def run_routes(
         )
         write_json(trigger_collection_path, trigger_collection)
 
+    if "QEC" in route_ids:
+        sidecar_groups = (
+            (
+                "traces",
+                "r2-question-retrieval-trace-collection.v1",
+                qec_traces,
+            ),
+            (
+                "evidence",
+                "v02-r2-evidence-record-collection.v1",
+                qec_evidence,
+            ),
+            (
+                "answers",
+                "v02-r2-answer-with-sources-collection.v2",
+                qec_answers,
+            ),
+        )
+        for arm in ("A5", "QEC"):
+            for budget in BUDGETS:
+                for directory, schema_version, records in sidecar_groups:
+                    cells = records[arm][budget]
+                    write_json(
+                        output_dir
+                        / "route_assets/qec"
+                        / directory
+                        / arm
+                        / f"{budget}.json",
+                        {
+                            "schema_version": schema_version,
+                            "route_id": arm,
+                            "budget_chars": budget,
+                            "cell_count": len(cells),
+                            "cells": cells,
+                        },
+                    )
+
     parent_map = {
         "A0": None,
         "A1a": "A0",
@@ -1777,6 +2013,7 @@ def run_routes(
         "A6": "A5",
         "A7": "A5",
         "A8": "A5",
+        "QEC": "A5",
     }
     single_change = {
         "A0": "BASELINE_QUESTION_ONLY",
@@ -1790,6 +2027,7 @@ def run_routes(
         "A6": "REQUEST_HEAD_MINIMUM_WINDOW_BEFORE_A5_GLOBAL_FILL_ONLY",
         "A7": "PROGRAM_ONTOLOGY_GROUNDED_OBLIGATION_PLANNER_ONLY",
         "A8": "A5_FROZEN_QUERY_PREFIX_PLUS_EXACT_RELATION_QUERY_APPEND_ONLY",
+        "QEC": "QUESTION_STATE_FEEDBACK_ON_FROZEN_A5_QUERY_RANK_STREAMS_ONLY",
     }
     runner_sha256 = sha256_file(Path(__file__))
     hardening_sha256 = sha256_file(Path(hardening.__file__))

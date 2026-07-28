@@ -63,6 +63,40 @@ def test_legacy_local_evidence_keeps_pure_tests_outside_the_skip_boundary() -> N
     )
 
 
+def test_v02_portable_programs_keep_pure_tests_in_clean_clone() -> None:
+    document = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    group = next(
+        row
+        for row in document["groups"]
+        if row["group_id"] == "V02-C11-C12-C15-R1-LOCAL-EVIDENCE-NODES"
+    )
+    assert group["test_file_globs"] == []
+    assert len(group["nodeids"]) == 81
+    assert len(set(group["nodeids"])) == 81
+    assert len(group["portable_program_paths"]) == 18
+    assert (
+        "tests/test_v02_r1_route_r04.py"
+        not in {nodeid.split("::", 1)[0] for nodeid in group["nodeids"]}
+    )
+    for relative in group["portable_program_paths"]:
+        assert (ROOT / relative).is_file(), relative
+        result = subprocess.run(
+            ["git", "check-ignore", "-q", relative],
+            cwd=ROOT,
+            check=False,
+        )
+        assert result.returncode == 1, relative
+
+    r2_group = next(
+        row
+        for row in document["groups"]
+        if row["group_id"] == "V02-C11-R2-A8-QEC-LOCAL-EVIDENCE-NODES"
+    )
+    assert r2_group["test_file_globs"] == []
+    assert len(r2_group["nodeids"]) == 39
+    assert len(set(r2_group["nodeids"])) == 39
+
+
 def test_local_evidence_roots_are_ignored_and_not_tracked() -> None:
     document = json.loads(REGISTRY.read_text(encoding="utf-8"))
     for row in document["groups"]:

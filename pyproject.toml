@@ -1,7 +1,7 @@
 [project]
 name = "novel-architecture-pipeline"
 version = "0.0.0"
-requires-python = ">=3.11,<3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = []
 
 [dependency-groups]
@@ -13,3 +13,11 @@ dev = [
 
 [tool.uv]
 package = false
+
+[tool.ruff.lint.per-file-ignores]
+"tools/z00n_classification_split.py" = ["F401"]
+"tools/z59_entity_supply_pilot.py" = ["F841"]
+"tools/z64_apply_semantic_verdicts.py" = ["F401"]
+"tools/z64_measure_comparisons.py" = ["F401"]
+"tools/zbatch_modules/nonthinking_pilot.py" = ["F401"]
+"tools/zbatch_modules/t4_local_segment.py" = ["F841"]

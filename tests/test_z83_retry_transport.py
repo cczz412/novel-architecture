@@ -156,7 +156,9 @@ class RetryTransportTests(unittest.TestCase):
         self.assertEqual(5, state.total_429)
 
     def test_retry_after_seconds_and_http_date(self) -> None:
-        now = lambda: datetime(2026, 7, 22, 0, 0, tzinfo=timezone.utc)
+        def now() -> datetime:
+            return datetime(2026, 7, 22, 0, 0, tzinfo=timezone.utc)
+
         self.assertEqual(12.0, transport.parse_retry_after_seconds("12", now=now))
         self.assertEqual(
             30.0,

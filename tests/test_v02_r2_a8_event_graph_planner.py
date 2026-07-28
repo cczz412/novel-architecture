@@ -29,6 +29,9 @@ CATALOG_DIR = (
 )
 BASELINE_RUN = REPO / "runs/V02_R2_A5_A7_obligation_planner_ab_r01_20260727"
 A8_RUN = REPO / "runs/V02_R2_A8_event_graph_planner_ab_r01_20260727"
+A8_FROZEN_ENVIRONMENT = (
+    REPO / "tests/fixtures/a8_frozen_environment_20260727"
+)
 CONTRACT_PATH = A8_RUN / "preregistered/event_graph_contract.json"
 CONTRACT_SHA256 = "f6b0849d448454cdd8e633a3fd3eb047bf92dd2f306f366b04cfa26697758fab"
 EXPERIMENT_CONTRACT_SHA256 = (
@@ -286,12 +289,30 @@ def test_a8_official_runner_verifies_frozen_baseline_before_score() -> None:
     receipt = a8_experiment_runner.verify_frozen_baseline(
         contract=contract,
         repo=REPO,
+        environment_snapshot_root=A8_FROZEN_ENVIRONMENT,
     )
     assert receipt["status"] == "PASS"
     assert len(receipt["budget_checks"]) == 7
+    assert receipt["environment_checks"] == contract["environment_sha256"]
     assert receipt["function_checks"]["offline_scorer_file"] == (
         contract["frozen_function_sha256"]["offline_scorer_file"]
     )
+
+
+def test_a8_active_verification_rejects_current_environment_migration() -> None:
+    contract_path = A8_RUN / "preregistered/a8_experiment_contract.json"
+    contract = a8_experiment_runner.load_experiment_contract(
+        contract_path,
+        expected_sha256=EXPERIMENT_CONTRACT_SHA256,
+    )
+    with pytest.raises(
+        a8_experiment_runner.A8ExperimentError,
+        match=r"A8_ENVIRONMENT_DRIFT:\.python-version",
+    ):
+        a8_experiment_runner.verify_frozen_baseline(
+            contract=contract,
+            repo=REPO,
+        )
 
 
 def test_a8_primary_decision_requires_b01_complete_question_gain() -> None:

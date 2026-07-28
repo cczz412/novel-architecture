@@ -9,14 +9,14 @@
   "routes": {
     "r2-question-retrieval": {
       "label": "R2｜问题驱动按需回取",
-      "purpose": "审 R2 当前地基、开发路线、上游证据和外部顾问回包；不把顾问意见冒充施工令。",
-      "snapshot_at": "2026-07-27T14:12:00+08:00",
+      "purpose": "审 R2 最后一道开发语义臂与一次性终验隔离合同；不把顾问意见冒充施工令，也不让顾问接触或生成终验题。",
+      "snapshot_at": "2026-07-27T17:50:00+08:00",
       "truth_source": {
         "authority": "Notion 账序与 Z 批队列",
         "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
         "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-        "local_current_state_status": "current_readback_mirror",
-        "note": "旧 04 账序页已冻结；Notion 账序真源 v2 于 12:05 放行 A8，本地 CURRENT_STATE 已在 14:12 回读登记 A8 正式负结果与砍线停点。若继续 R2，须另立新授权和新运行编号。"
+        "local_current_state_status": "stale_at_a8_does_not_override_notion_1750",
+        "note": "旧 04 账序页已冻结；Notion 账序真源 v2 于 17:50 拍板 QEC 计入收敛配额、剩余最后 1 道语义臂，跑完无论正负立即进入新 30 题一次性终验。本地 CURRENT_STATE 仍停在 A8，只作待刷新旧镜像。"
       },
       "default_layers": [
         "current_truth",
@@ -45,16 +45,27 @@
                 "config/review_pack/routes.json",
                 "config/review_pack/README.md",
                 "config/review_pack/CHATGPT_REVIEW_SOP.md",
-                "config/review_pack/prompts/r2_question_retrieval.md",
-                "config/review_pack/prompts/r2_a8_event_graph_review.md"
+                "config/review_pack/prompts/r2_final_semantic_terminal_review.md"
+              ]
+            },
+            {
+              "root_id": "m1_02_m1_03_authorization",
+              "required": true,
+              "authority": "notion_ledger_v2_20260727_1750_readback",
+              "status": "active_external_truth_snapshot",
+              "description": "17:50 最新拍板、最后一道语义臂与终验一次性授权；优先级高于包内旧治理镜像和 QEC 历史合同。",
+              "globs": [
+                "reports/V02_R2_M1_02_M1_03_external_review_20260727/TRUTH_SNAPSHOT_PUBLIC.md",
+                "reports/V02_R2_M1_02_M1_03_external_review_20260727/AUTHORIZATION_TICKET_PUBLIC.json",
+                "reports/V02_R2_M1_02_M1_03_external_review_20260727/M1_03_AUTHORITY_ADDENDUM_PUBLIC.md"
               ]
             },
             {
               "root_id": "local_governance_mirror",
               "required": true,
               "authority": "local_governance_mirror",
-            "status": "current_readback_mirror",
-            "description": "本地治理入口和供应商红线；CURRENT_STATE 已回读登记 A8 负结果，拍板仍只认账序真源 v2 与队列。",
+            "status": "stale_at_a8_read_only_mirror",
+            "description": "本地治理入口和供应商红线；CURRENT_STATE 仍停在 A8，不能覆盖包内 17:50 最新真源快照。",
               "globs": [
                 "AGENTS.md",
                 "governance/INDEX.md",
@@ -120,12 +131,13 @@
             "root_id": "r2_dev_hardening_candidate",
             "required": true,
             "authority": "local_zero_api_candidate",
-            "status": "engineering_candidate_a8_negative_cut",
-            "description": "R2 开发边界硬化、离线路线、A8 事件图规划器与隔离评分入口；A8 已按预注册回退线砍掉，只留负结果证据。",
+            "status": "engineering_candidate_qec_negative_cut",
+            "description": "R2 开发边界硬化、离线路线、A8 与 QEC 候选程序及隔离评分入口；A8、QEC 均已砍掉，只留负结果证据。",
             "globs": [
               "experiments/V02_R2_development_hardening_r01_20260727/**",
               "tests/test_v02_r2_development_hardening_r01.py",
-              "tests/test_v02_r2_offline_route_comparison.py"
+              "tests/test_v02_r2_offline_route_comparison.py",
+              "tests/test_v02_r2_qec_activate.py"
             ]
           },
           {
@@ -152,11 +164,33 @@
             ]
           },
           {
+            "root_id": "r2_qec_negative_run",
+            "required": true,
+            "authority": "formal_development_negative_result",
+            "status": "qec_cut_no_b01_recovery_historical_evidence",
+            "description": "QEC 正式负结果、跑前合同、一次评分判词和评分后只读归因。合同内 14:30 授权与剩余 2 道属于历史字段，当前执行口径只认 17:50 真源快照。",
+            "globs": [
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/preregistered/qec_experiment_contract.json",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/preregistered/qec_contract_errata.json",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/preregistered/pre_score_gate.json",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/preregistered/qec_sidecar_manifest.json",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/route_manifests/QEC.json",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/post_score_diagnostics.json",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/POST_SCORE_DIAGNOSTIC.md",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/STOP_RECEIPT.md",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/INDEPENDENT_CLOSEOUT_REVIEW.md",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/official_run_receipt.json",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/offline_score.json",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/score_gate_decision.json",
+              "runs/V02_R2_QEC_activate_ab_r01_20260727/preflight/external_review_assessment.md"
+            ]
+          },
+          {
             "root_id": "r2_dev_hardening_report",
             "required": true,
             "authority": "codex_candidate_stop_receipt",
-            "status": "a8_negative_result_returned_to_notion",
-            "description": "当前横评、A8 正式负结果停点与 B01 高密度章风险说明。",
+            "status": "qec_negative_result_returned_to_notion",
+            "description": "当前横评、A8／QEC 正式负结果停点与 B01 高密度章风险说明。",
             "globs": [
               "reports/V02_R2_development_hardening_r01_20260727/**"
             ]

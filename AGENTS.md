@@ -40,7 +40,10 @@
 - **自由施工**：文件夹不够就自己新建。
 - **本地是工作镜像**：改本地；回 Notion **新建页**交接。
 - **日常不读 Notion**：页面已全文下载进 `foundation/`，本地上下文足够；只有 CZ 说"打包"时才汇总产出、打包给他上传。
-- **子 Agent 省额度**：需要派子 Agent 时（自派或 skill 派发）统一用 `cursor-grok-4.5-high`。
+- **子 Agent 按运行环境分流**：Cursor 窗里的机械子任务才用
+  `cursor-grok-4.5-high`。Codex 窗一旦启用 `$codex-longline-teams`，只认
+  Codex 固定的 Luna／Terra／Sol 角色与该 Skill 的档位配置；不得套用 Cursor
+  模型，也不得因 Cursor 模型不可用而输出“模型不一致”说明。
 - **正文不进仓**：仓内 `corpus-downloads` 只指向被 Git 忽略的
   `.local/corpus-downloads`；每台机器再把后者连到自己的小说101正文库。
   初始化与断链检查见 `references/corpus-pointers.md`。

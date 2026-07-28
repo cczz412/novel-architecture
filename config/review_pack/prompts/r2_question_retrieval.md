@@ -40,4 +40,10 @@
 10. 施工顺序；
 11. 证据索引。
 
+交付文件：
+
+- 把完整报告写入 `R2_question_retrieval_ChatGPT_Pro_review_YYYYMMDD.md`；
+- 把该 Markdown 与本轮生成的其他交付文件一起压成 `R2_question_retrieval_ChatGPT_Pro_review_YYYYMMDD.zip`；
+- 最终消息必须附上这个可下载 ZIP。ZIP 根目录直接放 Markdown，不再套第二层 ZIP；聊天正文可以简短，完整内容以 ZIP 内文件为准。
+
 来源：Codex

@@ -474,10 +474,10 @@ def test_default_and_official_python_build_identical(tmp_path: Path) -> None:
     script = Path(coverage.__file__).resolve()
     interpreters = [
         Path(sys.executable),
-        Path("/opt/homebrew/opt/python@3.11/bin/python3.11"),
+        Path("/opt/homebrew/opt/python@3.12/bin/python3.12"),
     ]
     if not all(path.is_file() for path in interpreters):
-        pytest.skip("默认或官方 Python 3.11 不可用")
+        pytest.skip("默认或官方 Python 3.12 不可用")
     outputs: list[dict[str, bytes]] = []
     for index, interpreter in enumerate(interpreters):
         output = tmp_path / f"python-{index}"

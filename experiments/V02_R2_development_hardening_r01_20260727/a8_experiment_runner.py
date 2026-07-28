@@ -108,11 +108,19 @@ def _function_sha(function: Any) -> str:
 
 
 def verify_frozen_baseline(
-    *, contract: Mapping[str, Any], repo: Path
+    *,
+    contract: Mapping[str, Any],
+    repo: Path,
+    environment_snapshot_root: Path | None = None,
 ) -> dict[str, Any]:
     parent = repo / contract["parent_route"]["run_directory"]
     if not parent.is_dir() or parent.is_symlink():
         raise A8ExperimentError("A8_PARENT_RUN_MISSING")
+    if environment_snapshot_root is not None and (
+        not environment_snapshot_root.is_dir()
+        or environment_snapshot_root.is_symlink()
+    ):
+        raise A8ExperimentError("A8_ENVIRONMENT_SNAPSHOT_ROOT_INVALID")
 
     exact_files = {
         "workspace_manifest_sha256": parent / "preregistered/workspace_manifest.json",
@@ -194,8 +202,9 @@ def verify_frozen_baseline(
     function_checks["offline_scorer_file"] = scorer_sha
 
     environment_checks: dict[str, str] = {}
+    environment_root = environment_snapshot_root or repo
     for relative, expected in contract["environment_sha256"].items():
-        actual = sha256_file(repo / relative)
+        actual = sha256_file(environment_root / relative)
         if actual != expected:
             raise A8ExperimentError(f"A8_ENVIRONMENT_DRIFT:{relative}")
         environment_checks[relative] = actual

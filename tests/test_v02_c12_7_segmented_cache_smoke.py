@@ -157,12 +157,12 @@ def test_cache_identity_uses_role_bound_bytes_not_path_name_or_mtime(
 def test_locked_python_runtime_is_explicit_and_wrong_runtime_is_rejected() -> None:
     c127.validate_runtime(
         implementation="cpython",
-        version=(3, 11, 14),
+        version=(3, 12, 12),
     )
     with pytest.raises(c127.C127Error, match="运行环境不符合仓库锁"):
         c127.validate_runtime(
             implementation="cpython",
-            version=(3, 12, 12),
+            version=(3, 13, 0),
         )
 
 

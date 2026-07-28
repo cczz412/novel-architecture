@@ -12,8 +12,8 @@ def test_default_environment_is_pinned_without_retired_model_dependencies() -> N
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     lock = tomllib.loads((ROOT / "uv.lock").read_text(encoding="utf-8"))
 
-    assert (ROOT / ".python-version").read_text(encoding="utf-8").strip() == "3.11.14"
-    assert project["project"]["requires-python"] == ">=3.11,<3.12"
+    assert (ROOT / ".python-version").read_text(encoding="utf-8").strip() == "3.12.12"
+    assert project["project"]["requires-python"] == ">=3.12,<3.13"
     assert project["project"]["dependencies"] == []
     assert project["dependency-groups"]["dev"] == [
         "jsonschema==4.26.0",
@@ -62,9 +62,9 @@ def test_route_review_pack_has_four_layers_and_progress_pointer() -> None:
         "external_reviews",
     ]
     assert set(route["layers"]) == set(routes["layer_order"])
-    assert route["snapshot_at"] == "2026-07-27T14:12:00+08:00"
+    assert route["snapshot_at"] == "2026-07-27T17:50:00+08:00"
     assert route["truth_source"]["local_current_state_status"] == (
-        "current_readback_mirror"
+        "stale_at_a8_does_not_override_notion_1750"
     )
     assert any(
         slot["slot_id"] == "prior_r2_chatgpt_report"

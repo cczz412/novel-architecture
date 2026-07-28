@@ -54,13 +54,13 @@ python3 tools/novel_pipeline.py governance status
 python3 tools/governance_index.py --check
 
 # 全仓唯一测试命令（固定工作路径、固定 Python，只收集 tests/）
-cd /Users/a1234/挣钱/小说架构 && /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q
+cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q
 
 # 预览外审包会收哪些文件（不发网）
 python3 tools/chatgpt_review_pack.py --dry-run
 ```
 
-环境可用 `uv sync --locked` 重建，但整仓验收仍只认上面的固定 Python 3.11 命令。
+环境可用 `uv sync --locked` 重建，但整仓验收仍只认上面的固定 Python 3.12 命令。
 
 ## 新文件放哪里
 

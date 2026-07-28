@@ -5,10 +5,10 @@
 ## 怎么跑
 
 ```bash
-cd /Users/a1234/挣钱/小说架构 && /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q
+cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q
 ```
 
-这是全仓唯一正式测试命令：固定工作路径、固定 Python 3.11。`uv sync --locked` 可以重建环境，但不另造一条验收口径。
+这是全仓唯一正式测试命令：固定工作路径、固定 Python 3.12。`uv sync --locked` 可以重建环境，但不另造一条验收口径。
 
 `pytest.ini` 只收集 `tests/`，不会把 `TEMP/`、`runs/`、`reports/` 或 `outbox/` 里的历史脚本误当现役测试。
 

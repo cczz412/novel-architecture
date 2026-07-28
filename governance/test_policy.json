@@ -1,6 +1,6 @@
 {
   "schema_version": "pipeline-test-policy-v1",
-  "full_chain_command": "cd /Users/a1234/挣钱/小说架构 && /opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q",
+  "full_chain_command": "cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q",
   "lint_command": "ruff check",
   "default_collection_root": "tests",
   "retired_collection_roots": ["TEMP", "runs", "reports", "outbox"],

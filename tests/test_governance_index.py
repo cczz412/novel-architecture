@@ -478,7 +478,7 @@ class GovernanceIndexTests(unittest.TestCase):
         policy = read_json(ROOT / "governance/test_policy.json")
         expected = (
             "cd /Users/a1234/挣钱/小说架构 && "
-            "/opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q"
+            "/Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q"
         )
         self.assertEqual(policy["full_chain_command"], expected)
         self.assertIn(expected, (ROOT / "README.md").read_text(encoding="utf-8"))

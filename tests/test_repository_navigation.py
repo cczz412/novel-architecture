@@ -56,7 +56,7 @@ def test_root_readme_is_a_durable_one_hop_map() -> None:
 def test_test_readme_uses_the_fixed_full_chain_command() -> None:
     expected = (
         "cd /Users/a1234/挣钱/小说架构 && "
-        "/opt/homebrew/opt/python@3.11/bin/python3.11 -m pytest -q"
+        "/Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q"
     )
     assert expected in _read("tests/README.md")
     assert "uv run pytest" not in _read("tests/README.md")

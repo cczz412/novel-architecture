@@ -182,8 +182,6 @@ class Z59EntitySupplyTests(unittest.TestCase):
             self.assertEqual(Z59.tree_fingerprint(left), Z59.tree_fingerprint(right))
 
     def test_alias_audit_rejects_cross_entity_identity_row(self) -> None:
-        rules = Z59.load_rules()
-        chapters = Z59.load_chapters(rules)
         with tempfile.TemporaryDirectory() as temp:
             output = Path(temp) / "supply"
             Z59.build_supply(output)
