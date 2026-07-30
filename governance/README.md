@@ -8,7 +8,9 @@
 - `control_plane.json`：稳定入口、正式指针和保护件；不再保存当前任务。
 - `module_registry.source.json`：模块状态的人工审定源；生成器补齐现存路径和 SHA。
 - `module_registry.json`、`dependency_map.json`：生成结果。
+- `directory_registry.json`：顶层目录的身份、读取规则、生命周期和 Git 边界；只管容器，不管当前任务。
 - `indexes/`：金标、银标、运行报告、材料和旧路牌的固定入口。
+- `indexes/directory_map.md`、`indexes/new_file_routing.md`：由目录身份账生成的人看地图，禁止手改。
 - `rule_check_registry.json`：18 类纯规则检查的程序入口账。
 - `test_policy.json`：按模块、合同和风险选择测试范围的正式纪律。
 - `tool_registry.json`：工具身份账；根层 Python 实体逐件登记，公共组件层、兼容软链和不逐件登记的分区另列说明。
@@ -50,6 +52,11 @@ Wave 1 修改治理生成器或它的测试时，精确写集必须包含会记�
 `module_registry.json`。本波不准在主仓运行全量 `governance refresh`；只允许把生成
 结果写到临时目录做逐字比对，再把实际发生字节变化的白名单文件落回主仓，避免无变化
 的旧生成件也被整批重写。
+
+目录身份账的权限低于当前状态、模块、工具、路线和外置对象登记。目录身份默认不向
+子目录递归，不能拿“父目录叫实验区”覆盖某个已登记工具或模块的真实身份。新文件
+先查 `indexes/new_file_routing.md`；没有合适位置就进 `work/<id>` 等待归位，不新造
+`active/`、`staging/`、`frozen/`、`runtime/` 顶层目录。
 
 ```bash
 python3 tools/governance_index.py \

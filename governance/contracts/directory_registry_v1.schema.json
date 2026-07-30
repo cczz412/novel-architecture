@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/governance/contracts/directory_registry_v1.schema.json",
+  "title": "Repository directory registry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "registry_id",
+    "updated_at",
+    "authority",
+    "inherit_to_children_default",
+    "identity_precedence",
+    "git_policy_semantics",
+    "directories"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "directory-registry-v1"
+    },
+    "registry_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "may_define_current_task",
+        "may_override_object_registries",
+        "conflict_rule"
+      ],
+      "properties": {
+        "scope": {
+          "const": "container_identity_only"
+        },
+        "may_define_current_task": {
+          "const": false
+        },
+        "may_override_object_registries": {
+          "const": false
+        },
+        "conflict_rule": {
+          "const": "higher_precedence_registry_wins"
+        }
+      }
+    },
+    "inherit_to_children_default": {
+      "const": false
+    },
+    "identity_precedence": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": "governance/CURRENT_STATE.json"
+        },
+        {
+          "const": "governance/module_registry.json"
+        },
+        {
+          "const": "governance/tool_registry.json"
+        },
+        {
+          "const": "governance/route_registry.json"
+        },
+        {
+          "const": "governance/external_archive_registry.json"
+        },
+        {
+          "const": "governance/directory_registry.json"
+        }
+      ],
+      "items": false,
+      "minItems": 6,
+      "maxItems": 6
+    },
+    "git_policy_semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tracked",
+        "ignored",
+        "mixed",
+        "local_untracked",
+        "tracked_pointer"
+      ],
+      "properties": {
+        "tracked": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "ignored": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "mixed": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "local_untracked": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "tracked_pointer": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "directories": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/directory"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repoPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//).+$"
+    },
+    "acceptedContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_id",
+        "label",
+        "target_pattern",
+        "rule"
+      ],
+      "properties": {
+        "object_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "target_pattern": {
+          "$ref": "#/$defs/repoPath"
+        },
+        "rule": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "directory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "directory_id",
+        "path",
+        "path_kind",
+        "identity",
+        "category",
+        "container_authority",
+        "load_policy",
+        "lifecycle",
+        "git_policy",
+        "consumers",
+        "new_content_rule",
+        "accepted_content",
+        "externalization",
+        "evidence_refs",
+        "open_decisions",
+        "inherit_to_children"
+      ],
+      "properties": {
+        "directory_id": {
+          "type": "string",
+          "pattern": "^DIR-[A-Z0-9-]+$"
+        },
+        "path": {
+          "$ref": "#/$defs/repoPath"
+        },
+        "path_kind": {
+          "enum": [
+            "directory",
+            "symlink"
+          ]
+        },
+        "identity": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "category": {
+          "enum": [
+            "governance",
+            "configuration",
+            "schema",
+            "code",
+            "construction",
+            "experiment",
+            "source",
+            "reference",
+            "seed",
+            "history",
+            "run",
+            "report",
+            "transport",
+            "temporary",
+            "local_dependency"
+          ]
+        },
+        "container_authority": {
+          "enum": [
+            "current",
+            "candidate",
+            "historical",
+            "derived",
+            "transport",
+            "local_only"
+          ]
+        },
+        "load_policy": {
+          "enum": [
+            "always_read",
+            "task_scoped",
+            "source_only",
+            "default_excluded"
+          ]
+        },
+        "lifecycle": {
+          "enum": [
+            "mutable",
+            "candidate",
+            "frozen",
+            "sealed",
+            "historical",
+            "local_active"
+          ]
+        },
+        "git_policy": {
+          "enum": [
+            "tracked",
+            "ignored",
+            "mixed",
+            "local_untracked",
+            "tracked_pointer"
+          ]
+        },
+        "ignored_probe": {
+          "$ref": "#/$defs/repoPath"
+        },
+        "consumers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "uniqueItems": true
+        },
+        "new_content_rule": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "accepted_content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/acceptedContent"
+          }
+        },
+        "externalization": {
+          "enum": [
+            "prohibited",
+            "per_object_candidate",
+            "active_local_link_only",
+            "not_applicable"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/repoPath"
+          },
+          "uniqueItems": true
+        },
+        "open_decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "uniqueItems": true
+        },
+        "inherit_to_children": {
+          "const": false
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "git_policy": {
+                "const": "mixed"
+              }
+            },
+            "required": [
+              "git_policy"
+            ]
+          },
+          "then": {
+            "required": [
+              "ignored_probe"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "ignored_probe"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

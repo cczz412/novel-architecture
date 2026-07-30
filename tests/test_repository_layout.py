@@ -1,0 +1,229 @@
+from __future__ import annotations
+
+import copy
+import hashlib
+import json
+import subprocess
+import tempfile
+from pathlib import Path
+
+import pytest
+from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+from tools import governance_index
+
+
+ROOT = Path(__file__).resolve().parents[1]
+REGISTRY_PATH = ROOT / governance_index.DIRECTORY_REGISTRY_PATH
+SCHEMA_PATH = ROOT / governance_index.DIRECTORY_REGISTRY_SCHEMA_PATH
+
+
+def _read_json(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _git(*args: str, check: bool = True) -> subprocess.CompletedProcess[bytes]:
+    return subprocess.run(
+        ["git", *args],
+        cwd=ROOT,
+        check=check,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+
+def _tracked_paths() -> set[str]:
+    raw = _git("ls-files", "-z").stdout
+    try:
+        decoded = raw.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as exc:
+        pytest.fail(f"Git 跟踪路径必须是 UTF-8：{exc}")
+    return {item for item in decoded.split("\0") if item}
+
+
+def _has_tracked_path(tracked: set[str], path: str) -> bool:
+    return path in tracked or any(item.startswith(f"{path}/") for item in tracked)
+
+
+def test_directory_registry_matches_schema_and_runtime_contract() -> None:
+    schema = _read_json(SCHEMA_PATH)
+    registry = _read_json(REGISTRY_PATH)
+
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(
+        schema,
+        format_checker=FormatChecker(),
+    ).validate(registry)
+    governance_index.validate_directory_registry(ROOT, registry)
+
+
+def test_directory_registry_rejects_unknown_business_state_fields() -> None:
+    schema = _read_json(SCHEMA_PATH)
+    registry = _read_json(REGISTRY_PATH)
+    broken = copy.deepcopy(registry)
+    broken["directories"][0]["active_task"] = "不得进入目录身份账"
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(schema).validate(broken)
+    with pytest.raises(
+        governance_index.ArtifactError,
+        match="不符合正式 schema",
+    ):
+        governance_index.validate_directory_registry(ROOT, broken)
+
+
+@pytest.mark.parametrize("unsafe", ["含空字节\u0000", "含代理字符\ud800"])
+def test_directory_registry_rejects_unsafe_generated_text(unsafe: str) -> None:
+    registry = _read_json(REGISTRY_PATH)
+    registry["directories"][0]["new_content_rule"] = unsafe
+
+    with pytest.raises(
+        governance_index.ArtifactError,
+        match="控制字符|无法写成 UTF-8",
+    ):
+        governance_index.validate_directory_registry(ROOT, registry)
+
+
+def test_directory_identities_and_new_file_objects_are_unique() -> None:
+    registry = _read_json(REGISTRY_PATH)
+    rows = registry["directories"]
+
+    for key in ("directory_id", "path", "identity"):
+        values = [row[key] for row in rows]
+        assert len(values) == len(set(values)), key
+    object_ids = [
+        item["object_id"]
+        for row in rows
+        for item in row["accepted_content"]
+    ]
+    assert len(object_ids) == len(set(object_ids))
+    assert all(row["inherit_to_children"] is False for row in rows)
+
+
+def test_registered_top_level_scope_is_exact_and_creates_no_nvm_style_layers() -> None:
+    registry = _read_json(REGISTRY_PATH)
+    registered = {row["path"] for row in registry["directories"]}
+    assert registered == {
+        ".cursor",
+        ".local",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv",
+        "TEMP",
+        "analysis_library",
+        "config",
+        "corpus-downloads",
+        "experiments",
+        "foundation",
+        "governance",
+        "history",
+        "intake",
+        "outbox",
+        "references",
+        "reports",
+        "runs",
+        "schemas",
+        "seed",
+        "side-tracks",
+        "tests",
+        "tools",
+        "work",
+    }
+    actual_top_level = {
+        path.name
+        for path in ROOT.iterdir()
+        if path.name != ".git" and (path.is_dir() or path.is_symlink())
+    }
+    assert actual_top_level <= registered
+    tracked_top_level = {
+        item.split("/", 1)[0]
+        for item in _tracked_paths()
+        if "/" in item or (ROOT / item).is_dir() or (ROOT / item).is_symlink()
+    }
+    assert tracked_top_level <= registered
+    for forbidden in ("active", "staging", "frozen", "runtime"):
+        assert forbidden not in registered
+        assert not (ROOT / forbidden).exists()
+
+
+def test_git_policy_matches_repository_facts_with_nul_safe_listing() -> None:
+    registry = _read_json(REGISTRY_PATH)
+    tracked = _tracked_paths()
+
+    for row in registry["directories"]:
+        path = row["path"]
+        policy = row["git_policy"]
+        is_tracked = _has_tracked_path(tracked, path)
+        ignored = _git("check-ignore", "--quiet", "--", path, check=False).returncode == 0
+
+        if policy == "tracked":
+            assert is_tracked, path
+        elif policy == "ignored":
+            assert ignored, path
+            assert not is_tracked, path
+        elif policy == "mixed":
+            assert is_tracked, path
+            probe = row["ignored_probe"]
+            assert _git(
+                "check-ignore",
+                "--quiet",
+                "--no-index",
+                "--",
+                probe,
+                check=False,
+            ).returncode == 0, probe
+        elif policy == "local_untracked":
+            assert not is_tracked, path
+            assert not ignored, path
+        elif policy == "tracked_pointer":
+            assert path in tracked
+            assert (ROOT / path).is_symlink()
+        else:
+            pytest.fail(f"未知 Git 规则：{path}={policy}")
+
+
+def test_analysis_library_is_not_misreported_as_ignored() -> None:
+    registry = _read_json(REGISTRY_PATH)
+    row = next(
+        item for item in registry["directories"] if item["path"] == "analysis_library"
+    )
+    assert row["git_policy"] == "local_untracked"
+    assert _git(
+        "check-ignore",
+        "--quiet",
+        "--",
+        "analysis_library",
+        check=False,
+    ).returncode != 0
+
+
+def test_directory_views_are_generated_only_from_registry() -> None:
+    registry = _read_json(REGISTRY_PATH)
+    assert (
+        ROOT / "governance/indexes/directory_map.md"
+    ).read_text(encoding="utf-8") == governance_index.render_directory_map(registry)
+    assert (
+        ROOT / "governance/indexes/new_file_routing.md"
+    ).read_text(encoding="utf-8") == governance_index.render_new_file_routing(registry)
+
+
+def test_temporary_refresh_does_not_modify_current_state() -> None:
+    current_state = ROOT / governance_index.CURRENT_STATE_PATH
+    before = current_state.read_bytes()
+    before_sha = hashlib.sha256(before).hexdigest()
+
+    with tempfile.TemporaryDirectory() as temporary:
+        manifest = governance_index.refresh(ROOT, Path(temporary))
+
+    after = current_state.read_bytes()
+    assert hashlib.sha256(after).hexdigest() == before_sha
+    assert after == before
+    assert governance_index.DIRECTORY_REGISTRY_PATH in {
+        item["path"] for item in manifest["inputs"]
+    }
+    assert governance_index.DIRECTORY_REGISTRY_SCHEMA_PATH in {
+        item["path"] for item in manifest["inputs"]
+    }
+    outputs = {item["path"] for item in manifest["outputs"]}
+    assert "governance/indexes/directory_map.md" in outputs
+    assert "governance/indexes/new_file_routing.md" in outputs

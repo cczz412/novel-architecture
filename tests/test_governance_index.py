@@ -953,8 +953,16 @@ class GovernanceIndexTests(unittest.TestCase):
         route_registry = read_json(ROOT / governance_index.ROUTE_REGISTRY_PATH)
         source = read_json(ROOT / governance_index.REGISTRY_SOURCE_PATH)
         registry = governance_index.materialize_registry(ROOT, source)
+        directory_registry = read_json(
+            ROOT / governance_index.DIRECTORY_REGISTRY_PATH
+        )
         documents = governance_index.build_documents(
-            ROOT, control, current_state, route_registry, registry
+            ROOT,
+            control,
+            current_state,
+            route_registry,
+            registry,
+            directory_registry,
         )
         index = documents["governance/INDEX.md"]
         for phrase in ("现在跑到哪道", "金标哪版哪指针", "各模块什么状态", "银标候选在哪"):
@@ -975,6 +983,9 @@ class GovernanceIndexTests(unittest.TestCase):
         routes = read_json(ROOT / governance_index.ROUTE_REGISTRY_PATH)
         source = read_json(ROOT / governance_index.REGISTRY_SOURCE_PATH)
         registry = governance_index.materialize_registry(ROOT, source)
+        directory_registry = read_json(
+            ROOT / governance_index.DIRECTORY_REGISTRY_PATH
+        )
         current_state["current_execution"]["task"]["label"] = "V2当前任务唯一标记"
         current_state["current_execution"]["controls"]["next_action"] = "V2当前下一动作唯一标记"
         current_state["historical_context"]["legacy_mainline"][
@@ -991,6 +1002,7 @@ class GovernanceIndexTests(unittest.TestCase):
             current_state,
             routes,
             registry,
+            directory_registry,
         )
         for relative in ("governance/INDEX.md", "governance/current_run.md"):
             text = documents[relative]

@@ -499,7 +499,7 @@
           "exists": true,
           "kind": "file",
           "path": "tools/governance_index.py",
-          "sha256": "71d66c29423cab5ed50c2929a509d8205d58b6af1ab7153be8eec4449edefd12"
+          "sha256": "3d43dec00c36249585bddee7c0143a6fcceab6697edbb87fe5712e069c61e34f"
         },
         {
           "exists": true,
@@ -523,7 +523,7 @@
           "exists": true,
           "kind": "file",
           "path": "tests/test_governance_index.py",
-          "sha256": "6e84850e759050b871fc009c4862c86d3011225bab6594f0b3a9c14716974591"
+          "sha256": "3fffd3b7ee6010bcaaf6c3465f678f355ef22c3a8f5e432deb5c28f8bd056799"
         },
         {
           "exists": true,
@@ -613,7 +613,7 @@
           "exists": true,
           "kind": "file",
           "path": "governance/test_policy.json",
-          "sha256": "af76b0e61e974cb054269c118d264f9f145e7e6165ebf5a8d39d440114601514"
+          "sha256": "da0cb8d6603ae30f4c3cc29e37aad45b89b365fb7e66f373bea33efa9e32cdbd"
         },
         {
           "exists": true,

@@ -24,6 +24,7 @@
     "gold_contract_changed",
     "score_denominator_changed",
     "file_routing_changed",
+    "repository_layout_changed",
     "multi_module_unknown_impact"
   ],
   "module_tests": {
@@ -40,6 +41,7 @@
     "M10": ["tests/test_z75_multidirection_score.py"],
     "M11": [
       "tests/test_governance_index.py",
+      "tests/test_repository_layout.py",
       "tests/test_novel_pipeline.py",
       "tests/test_pipeline_artifacts.py",
       "tests/test_pipeline_inspector.py",
@@ -88,6 +90,20 @@
       "modules": ["M11"],
       "tests": ["tests/test_test_impact.py"],
       "full_chain": false
+    },
+    {
+      "name": "目录身份与新文件落点",
+      "pattern": "governance/directory_registry.json",
+      "modules": ["M11"],
+      "tests": ["tests/test_repository_layout.py", "tests/test_governance_index.py"],
+      "full_chain": true
+    },
+    {
+      "name": "目录身份合同",
+      "pattern": "governance/contracts/directory_registry_v1.schema.json",
+      "modules": ["M11"],
+      "tests": ["tests/test_repository_layout.py"],
+      "full_chain": true
     },
     {
       "name": "治理机器合同",
@@ -154,6 +170,13 @@
       "modules": ["M11"],
       "tests": ["tests/test_governance_index.py"],
       "full_chain": false
+    },
+    {
+      "name": "仓库目录合同测试",
+      "pattern": "tests/test_repository_layout.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_repository_layout.py"],
+      "full_chain": true
     },
     {
       "name": "测试纪律测试",

@@ -1,7 +1,7 @@
 {
   "generator": {
     "path": "tools/governance_index.py",
-    "sha256": "71d66c29423cab5ed50c2929a509d8205d58b6af1ab7153be8eec4449edefd12"
+    "sha256": "3d43dec00c36249585bddee7c0143a6fcceab6697edbb87fe5712e069c61e34f"
   },
   "inputs": [
     {
@@ -10,9 +10,19 @@
       "sha256": "1d1fca5302cc1fea62e12a8a5362ab7fb9f6a6b9a0b945f886f27e173ec569bc"
     },
     {
+      "bytes": 7262,
+      "path": "governance/contracts/directory_registry_v1.schema.json",
+      "sha256": "bfc0b7b70114b2a480cd570710024a1bb3d972ab47992edaa33615da10be7059"
+    },
+    {
       "bytes": 12660,
       "path": "governance/control_plane.json",
       "sha256": "e2e11cce842a1539b834632b7f2095265bdf2fe312c2fd1132db3c54db98d779"
+    },
+    {
+      "bytes": 24318,
+      "path": "governance/directory_registry.json",
+      "sha256": "4a0b6c03a2534e99f761400ea330048e9bc5cca4ab3c3c4787b59da57cede5a6"
     },
     {
       "bytes": 14298,
@@ -47,9 +57,19 @@
       "sha256": "24aadd57ef2b733599abecbecb877293ba996a3a37d47874caadf5ee053ea894"
     },
     {
+      "bytes": 5737,
+      "path": "governance/indexes/directory_map.md",
+      "sha256": "f5c11e5368ab7fecbfd50839e6b20043239e8f2dad687199f3a985f615bf2e53"
+    },
+    {
       "bytes": 2219,
       "path": "governance/indexes/gold_current.md",
       "sha256": "fd131e9b28e40358c890222a0ac6c8f89d3dcd18a67fa86960d35f5af7ea88c3"
+    },
+    {
+      "bytes": 3302,
+      "path": "governance/indexes/new_file_routing.md",
+      "sha256": "f5a8fe2427de97879c0aed94c2a9fece702dc9d7fbb6fe0ee59cc6d56e0cb829"
     },
     {
       "bytes": 503,
@@ -74,12 +94,12 @@
     {
       "bytes": 24367,
       "path": "governance/module_registry.json",
-      "sha256": "7b7faa6b2761e28e1cd5a2ce1ba2e73bac188070850213d45b0b4510e5dd9ebe"
+      "sha256": "d2cafea56ea77282c097266a83d79cc59b03eb96f3fecba4c32f6154a0cc1454"
     }
   ],
   "schema_version": "governance-index-manifest-v1",
   "verification": {
-    "checked": 10,
+    "checked": 12,
     "errors": [],
     "passed": true
   }

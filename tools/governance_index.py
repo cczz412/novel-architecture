@@ -15,6 +15,9 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema.exceptions import SchemaError, ValidationError
+
 TOOLS_DIR = Path(__file__).resolve().parent
 if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
@@ -36,6 +39,10 @@ CONTROL_PATH = "governance/control_plane.json"
 CURRENT_STATE_PATH = "governance/CURRENT_STATE.json"
 ROUTE_REGISTRY_PATH = "governance/route_registry.json"
 REGISTRY_SOURCE_PATH = "governance/module_registry.source.json"
+DIRECTORY_REGISTRY_PATH = "governance/directory_registry.json"
+DIRECTORY_REGISTRY_SCHEMA_PATH = (
+    "governance/contracts/directory_registry_v1.schema.json"
+)
 
 GENERATED_PATHS = [
     "governance/INDEX.md",
@@ -47,6 +54,8 @@ GENERATED_PATHS = [
     "governance/indexes/runs_and_reports.md",
     "governance/indexes/source_registry.md",
     "governance/indexes/route_health.md",
+    "governance/indexes/directory_map.md",
+    "governance/indexes/new_file_routing.md",
     "experiments/INDEX.md",
 ]
 
@@ -237,6 +246,25 @@ def _must_nonempty_string(value: Any, name: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ArtifactError(f"{name} 必须是非空字符串")
     return value
+
+
+def _reject_unsafe_text(value: Any, name: str) -> None:
+    if isinstance(value, str):
+        try:
+            value.encode("utf-8", errors="strict")
+        except UnicodeEncodeError as exc:
+            raise ArtifactError(f"{name} 含无法写成 UTF-8 的字符") from exc
+        if any(ord(character) < 32 or 127 <= ord(character) <= 159 for character in value):
+            raise ArtifactError(f"{name} 含控制字符")
+        return
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            _reject_unsafe_text(item, f"{name}[{index}]")
+        return
+    if isinstance(value, dict):
+        for key, item in value.items():
+            _reject_unsafe_text(key, f"{name}.key")
+            _reject_unsafe_text(item, f"{name}.{key}")
 
 
 def _validate_relative_identity(value: Any, name: str) -> None:
@@ -1033,6 +1061,208 @@ def dependency_map(registry: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def validate_directory_registry(root: Path, registry: dict[str, Any]) -> None:
+    _reject_unsafe_text(registry, "directory_registry")
+    schema = _must_dict(
+        read_json(root / DIRECTORY_REGISTRY_SCHEMA_PATH),
+        "directory_registry_schema",
+    )
+    try:
+        Draft202012Validator.check_schema(schema)
+        Draft202012Validator(
+            schema,
+            format_checker=FormatChecker(),
+        ).validate(registry)
+    except (SchemaError, ValidationError) as exc:
+        raise ArtifactError(f"目录登记不符合正式 schema：{exc.message}") from exc
+    if registry.get("schema_version") != "directory-registry-v1":
+        raise ArtifactError("目录登记 schema_version 必须是 directory-registry-v1")
+    if registry.get("inherit_to_children_default") is not False:
+        raise ArtifactError("目录身份默认不得递归覆盖子对象")
+    authority = _must_dict(registry.get("authority"), "directory_registry.authority")
+    if authority != {
+        "scope": "container_identity_only",
+        "may_define_current_task": False,
+        "may_override_object_registries": False,
+        "conflict_rule": "higher_precedence_registry_wins",
+    }:
+        raise ArtifactError("目录登记权限必须只限容器身份")
+    expected_precedence = [
+        CURRENT_STATE_PATH,
+        "governance/module_registry.json",
+        "governance/tool_registry.json",
+        ROUTE_REGISTRY_PATH,
+        "governance/external_archive_registry.json",
+        DIRECTORY_REGISTRY_PATH,
+    ]
+    if registry.get("identity_precedence") != expected_precedence:
+        raise ArtifactError("目录身份优先级漂移")
+
+    rows = _must_list(registry.get("directories"), "directory_registry.directories")
+    seen_ids: set[str] = set()
+    seen_paths: set[str] = set()
+    seen_identities: set[str] = set()
+    seen_objects: set[str] = set()
+    forbidden_state_keys = {
+        "current_task",
+        "current_run",
+        "next_action",
+        "business_status",
+        "business_conclusion",
+    }
+    allowed_git_policies = {
+        "tracked",
+        "ignored",
+        "mixed",
+        "local_untracked",
+        "tracked_pointer",
+    }
+    for index, raw in enumerate(rows):
+        row = _must_dict(raw, f"directory_registry.directories[{index}]")
+        leaked = sorted(forbidden_state_keys & set(row))
+        if leaked:
+            raise ArtifactError(f"目录登记不得保存当前业务状态字段：{leaked}")
+        directory_id = _must_nonempty_string(
+            row.get("directory_id"),
+            f"directories[{index}].directory_id",
+        )
+        path = _repo_relative_path(row.get("path"), f"directories[{index}].path")
+        identity = _must_nonempty_string(
+            row.get("identity"),
+            f"directories[{index}].identity",
+        )
+        if len(PurePosixPath(path).parts) != 1:
+            raise ArtifactError(f"Wave 1 只登记仓库顶层目录：{path}")
+        if directory_id in seen_ids:
+            raise ArtifactError(f"目录编号重复：{directory_id}")
+        if path in seen_paths:
+            raise ArtifactError(f"目录路径重复：{path}")
+        if identity in seen_identities:
+            raise ArtifactError(f"目录身份重复：{identity}")
+        seen_ids.add(directory_id)
+        seen_paths.add(path)
+        seen_identities.add(identity)
+
+        if row.get("inherit_to_children") is not False:
+            raise ArtifactError(f"目录身份不得递归覆盖子对象：{path}")
+        path_kind = row.get("path_kind")
+        if path_kind not in {"directory", "symlink"}:
+            raise ArtifactError(f"目录路径类型非法：{path}")
+        candidate = root / Path(*PurePosixPath(path).parts)
+        if candidate.is_symlink() and path_kind != "symlink":
+            raise ArtifactError(f"软链目录必须明确登记：{path}")
+        if candidate.exists() and not candidate.is_symlink() and not candidate.is_dir():
+            raise ArtifactError(f"登记路径不是目录：{path}")
+        if row.get("git_policy") not in allowed_git_policies:
+            raise ArtifactError(f"目录 Git 规则非法：{path}")
+        if row.get("git_policy") == "mixed":
+            ignored_probe = _repo_relative_path(
+                row.get("ignored_probe"),
+                f"{path}.ignored_probe",
+            )
+            if PurePosixPath(ignored_probe).parts[0] != path:
+                raise ArtifactError(f"Git 忽略探针越出登记目录：{path}")
+        elif "ignored_probe" in row:
+            raise ArtifactError(f"非 mixed 目录不得登记忽略探针：{path}")
+        if path == "analysis_library" and row.get("git_policy") == "ignored":
+            raise ArtifactError("analysis_library 当前未被 .gitignore 忽略，不得写成 ignored")
+
+        _must_list(row.get("consumers"), f"{path}.consumers")
+        _must_nonempty_string(row.get("new_content_rule"), f"{path}.new_content_rule")
+        _must_list(row.get("open_decisions"), f"{path}.open_decisions")
+        evidence_refs = _must_list(row.get("evidence_refs"), f"{path}.evidence_refs")
+        if not evidence_refs:
+            raise ArtifactError(f"目录登记缺证据引用：{path}")
+        for ref in evidence_refs:
+            relative = _repo_relative_path(ref, f"{path}.evidence_ref")
+            if not (root / Path(*PurePosixPath(relative).parts)).exists():
+                raise ArtifactError(f"目录证据不存在：{path}：{relative}")
+
+        accepted = _must_list(row.get("accepted_content"), f"{path}.accepted_content")
+        for accepted_index, raw_content in enumerate(accepted):
+            content = _must_dict(
+                raw_content,
+                f"{path}.accepted_content[{accepted_index}]",
+            )
+            object_id = _must_nonempty_string(
+                content.get("object_id"),
+                f"{path}.accepted_content[{accepted_index}].object_id",
+            )
+            if object_id in seen_objects:
+                raise ArtifactError(f"新文件对象身份重复：{object_id}")
+            seen_objects.add(object_id)
+            target = _repo_relative_path(
+                content.get("target_pattern"),
+                f"{path}.accepted_content[{accepted_index}].target_pattern",
+            )
+            if PurePosixPath(target).parts[0] != path:
+                raise ArtifactError(f"新文件落点越出登记目录：{object_id}：{target}")
+            _must_nonempty_string(content.get("label"), f"{object_id}.label")
+            _must_nonempty_string(content.get("rule"), f"{object_id}.rule")
+
+
+def render_directory_map(registry: dict[str, Any]) -> str:
+    lines = [
+        "# 仓库目录身份图",
+        "",
+        "这张表只解释容器身份，不解释当前任务。子对象身份冲突时，按登记表里的优先级让位。",
+        "",
+        "| 目录 | 主要身份 | 类别 | 权限 | 读取规则 | 生命周期 | Git 规则 | 新内容规则 |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for row in registry["directories"]:
+        lines.append(
+            f"| `{row['path']}` | `{row['identity']}` | `{row['category']}` | "
+            f"`{row['container_authority']}` | `{row['load_policy']}` | "
+            f"`{row['lifecycle']}` | `{row['git_policy']}` | {row['new_content_rule']} |"
+        )
+    git_semantics = registry["git_policy_semantics"]
+    lines.extend(
+        [
+            "",
+            "Git 规则口径："
+            f"`tracked`＝{git_semantics['tracked']}；"
+            f"`ignored`＝{git_semantics['ignored']}；"
+            f"`mixed`＝{git_semantics['mixed']}；"
+            f"`local_untracked`＝{git_semantics['local_untracked']}；"
+            f"`tracked_pointer`＝{git_semantics['tracked_pointer']}。",
+            "",
+            "默认规则：目录身份不递归覆盖子对象；当前状态、模块、工具、路线和外置对象登记的权限都高于本表。",
+            "",
+            "来源：Codex",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def render_new_file_routing(registry: dict[str, Any]) -> str:
+    lines = [
+        "# 新文件放哪里",
+        "",
+        "这张表从目录身份账生成。找不到合适落点时先放 `work/<id>`，不要临时发明新的顶层目录。",
+        "",
+        "| 要放的对象 | 目标位置 | 准入规则 | 容器身份 |",
+        "|---|---|---|---|",
+    ]
+    for row in registry["directories"]:
+        for content in row["accepted_content"]:
+            lines.append(
+                f"| {content['label']} | `{content['target_pattern']}` | "
+                f"{content['rule']} | `{row['identity']}` |"
+            )
+    lines.extend(
+        [
+            "",
+            "本表不授权移动旧文件，也不授权创建 `active/`、`staging/`、`frozen/`、`runtime/` 顶层目录。",
+            "",
+            "来源：Codex",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def _markdown_path(row: dict[str, Any]) -> str:
     path = str(row.get("path", ""))
     if not path:
@@ -1105,6 +1335,7 @@ def build_documents(
     current_state: dict[str, Any],
     route_registry: dict[str, Any],
     registry: dict[str, Any],
+    directory_registry: dict[str, Any],
 ) -> dict[str, str]:
     default = control["current_default"]
     gold = control["current_gold"]
@@ -1322,6 +1553,12 @@ def build_documents(
         "governance/indexes/runs_and_reports.md": "\n".join(runs_lines),
         "governance/indexes/source_registry.md": "\n".join(source_lines),
         "governance/indexes/route_health.md": route_page,
+        "governance/indexes/directory_map.md": render_directory_map(
+            directory_registry
+        ),
+        "governance/indexes/new_file_routing.md": render_new_file_routing(
+            directory_registry
+        ),
         "experiments/INDEX.md": render_experiments_index(root),
     }
 
@@ -1333,11 +1570,23 @@ def refresh(root: Path = ROOT, output_root: Path | None = None) -> dict[str, Any
     current_state = _must_dict(read_json(root / CURRENT_STATE_PATH), "CURRENT_STATE")
     route_registry = _must_dict(read_json(root / ROUTE_REGISTRY_PATH), "route_registry")
     registry_source = _must_dict(read_json(root / REGISTRY_SOURCE_PATH), "module_registry.source")
+    directory_registry = _must_dict(
+        read_json(root / DIRECTORY_REGISTRY_PATH),
+        "directory_registry",
+    )
     validate_control_plane(root, control)
     validate_current_state(root, current_state)
     validate_route_registry(root, route_registry, current_state)
+    validate_directory_registry(root, directory_registry)
     registry = materialize_registry(root, registry_source)
-    documents = build_documents(root, control, current_state, route_registry, registry)
+    documents = build_documents(
+        root,
+        control,
+        current_state,
+        route_registry,
+        registry,
+        directory_registry,
+    )
 
     for relative, text in documents.items():
         write_text_atomic(destination / relative, text)
@@ -1353,7 +1602,14 @@ def refresh(root: Path = ROOT, output_root: Path | None = None) -> dict[str, Any
         },
         "inputs": build_manifest(
             root,
-            [CONTROL_PATH, CURRENT_STATE_PATH, ROUTE_REGISTRY_PATH, REGISTRY_SOURCE_PATH],
+            [
+                CONTROL_PATH,
+                CURRENT_STATE_PATH,
+                ROUTE_REGISTRY_PATH,
+                REGISTRY_SOURCE_PATH,
+                DIRECTORY_REGISTRY_PATH,
+                DIRECTORY_REGISTRY_SCHEMA_PATH,
+            ],
         ),
         "outputs": build_manifest(destination, manifest_paths),
     }
