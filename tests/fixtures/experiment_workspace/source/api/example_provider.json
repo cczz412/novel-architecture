@@ -1,0 +1,7 @@
+{
+  "base_url": "https://api.example.invalid/v1",
+  "request_shape": {
+    "messages": [],
+    "model": "example-model"
+  }
+}

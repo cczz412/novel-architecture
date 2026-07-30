@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-07-30T15:10:31+08:00",
+  "updated_at": "2026-07-30T16:16:42+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 93,
-    "root_visible_python_entry_count": 94,
+    "root_entity_count": 94,
+    "root_visible_python_entry_count": 95,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -522,7 +522,7 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 8,
+    "reusable_component": 9,
     "batch_reproducer": 80,
     "active_entry": 2,
     "retired_compat": 3,
@@ -3789,6 +3789,46 @@
       ],
       "next_confirmed_consumer": "后续隔离模型试验按 profile_id 自取调用规则。",
       "retirement_condition_and_compatibility_boundary": "候选公共零件；只负责离线校验和预览，不持有密钥、不发网、不授权模型调用，也不自动接入现役流水线。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-094",
+      "path": "tools/experiment_workspace.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·未接默认链",
+      "purpose": "按冻结计划把登记过的本地零件复制进一次性试验工作区，并留下来源、复制与运行身份票。",
+      "human_command": "python3 tools/experiment_workspace.py materialize --plan <仓库内计划.json>",
+      "inputs": [
+        "experiments/ 或测试夹具下的物化计划",
+        "计划登记的本地程序、API 规则、Prompt、上下文、结构约束、校验器或输入文件",
+        "S0 机械开工票、当前 Git 提交和复制器代码哈希"
+      ],
+      "outputs": [
+        "runs/<运行号>/ 下的一次性复制工作区",
+        "RUN_IDENTITY.json、SOURCE_MANIFEST.json、COPY_RECEIPT.json"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "S0 只复制和验收文件；没有预检、运行、联网、模型调用、删除或覆盖子命令。"
+      },
+      "current_consumers": [
+        "tests/test_experiment_workspace.py",
+        "tests/test_experiment_workspace_security.py"
+      ],
+      "consumer_evidence_rule": "只登记当前测试消费者和 S0 复制合同；不把未来试验运行当成已经接入。",
+      "test_references": [
+        "tests/test_experiment_workspace.py",
+        "tests/test_experiment_workspace_security.py"
+      ],
+      "last_use_clues": [
+        "tests/fixtures/experiment_workspace/",
+        "tools/README.md"
+      ],
+      "next_confirmed_consumer": "后续获批的隔离模型试验先按计划复制零件，再单独申请预检与运行能力。",
+      "retirement_condition_and_compatibility_boundary": "候选公共零件；只允许从白名单来源复制到固定 runs 工作区，拒绝软链、硬链、敏感内容、来源漂移和重复运行号。S0 不证明断网隔离，也不授权执行程序。",
       "review_needed": false
     }
   ]
