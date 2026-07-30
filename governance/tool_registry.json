@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-07-30T13:44:37+08:00",
+  "updated_at": "2026-07-30T15:10:31+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -632,13 +632,15 @@
       "primary_identity_label": "可复用组件",
       "status": "active_component",
       "status_label": "现役",
-      "purpose": "从机器真源生成或检查治理索引。",
-      "human_command": "python3 tools/governance_index.py --check",
+      "purpose": "从机器真源生成或检查治理索引，并为仓库重构生成两级机器闸和独占 Wave 锁。",
+      "human_command": "python3 tools/governance_index.py <--check|--baseline-plan|--wave-lock-request|--wave-plan> ...",
       "inputs": [
-        "governance/CURRENT_STATE.json、模块／路线／控制登记件"
+        "governance/CURRENT_STATE.json、模块／路线／控制登记件",
+        "重构基线计划及一级票、同任务人工回读的 S0 决策票、精确 Wave 计划、测试影响单与冲突锁请求"
       ],
       "outputs": [
-        "只查模式输出漂移结果；刷新模式生成治理索引文件"
+        "只查模式输出漂移结果；刷新模式生成治理索引文件",
+        "TEMP 下不可覆盖且写后复核现场与全部证据 SHA 的一级基线票、二级 Wave 票和固定路径冲突锁"
       ],
       "network_or_model": {
         "network": "none",
@@ -658,7 +660,7 @@
         "tools/novel_pipeline.py"
       ],
       "next_confirmed_consumer": null,
-      "retirement_condition_and_compatibility_boundary": "由 novel_pipeline 治理子命令调用；不得把生成索引反写成 Notion 拍板真源。",
+      "retirement_condition_and_compatibility_boundary": "由 novel_pipeline 治理子命令调用；重构票只验证写盘后仍稳定的本地现场、完整一级计划和精确 Wave，受绑定 JSON 用同一次读取的字节完成 SHA 与解析，写后重验全部证据 SHA，写盘父路径逐级拒绝软链替换；S0 还要用实际二级计划、二级票、逐文件 SHA 与完全等于写集的 Git 起止提交证明 Wave1 完成。二级 PASS 只代表机械条件满足，authorizes_wave 永远为 false；真正施工必须在原任务回读 CZ 的明确选择。不得把生成索引反写成 Notion 拍板真源，也不得授权 Notion／模型 API／外置清退。",
       "review_needed": false
     },
     {

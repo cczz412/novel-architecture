@@ -33,6 +33,45 @@ python3 tools/novel_pipeline.py governance refresh
 python3 tools/governance_index.py --check
 ```
 
+仓库重构只认两级机器票。一级票只校准 HEAD、治理索引、账序和脏路径，不能放行
+Wave；CZ 选定路线并补齐配套口径后，二级票还要绑定精确写集、测试影响单和固定路径
+冲突锁，才能把票面写明的一个 Wave 标成“机械条件满足”。
+
+二级票不能只看一级票写着 `PASS`：它必须同时绑定原始一级计划，逐项核对一级票的
+完整检查集，并拿当前现场重放一次。一级计划、一级票、CZ 决策票、测试影响单、冲突锁
+和二级计划还要使用同一个授权上下文。CZ 决策来自当前任务内人工回读，不冒充密码学
+签名；离开原任务上下文后不能单拿 JSON 自行放行。
+
+二级 `PASS` 永远不等于自动授权：票面 `authorizes_wave` 固定为 `false`。它只会写明
+哪个 Wave 的机械条件满足；真正动手还要在同一个任务里回读 CZ 的明确选择。这个边界
+是故意保留的，因为本机 JSON 无法给自己制造可信数字签名。
+
+```bash
+python3 tools/governance_index.py \
+  --baseline-plan <一级计划.json> \
+  --baseline-output <TEMP下全新一级票.json>
+
+python3 tools/governance_index.py \
+  --wave-lock-request <冲突锁请求.json> \
+  --wave-lock-output <TEMP下该Wave固定锁路径>
+
+python3 tools/governance_index.py \
+  --wave-plan <二级计划.json> \
+  --wave-output <TEMP下全新二级票.json>
+```
+
+机器闸自己采集 Git HEAD、脏路径和治理漂移，并在出票前后复核快照没有变化；调用者
+不能传一份自称干净的快照绕过现场。票或锁实际写盘后还要再核一次；期间现场变化就
+撤销刚写出的文件并硬停。每份受绑定 JSON 都只打开一次，同一份字节同时用于算 SHA
+和解析内容；票写盘后还会重验本轮实际读过的全部证据 SHA，避免 TEMP 忽略文件在中途
+被换掉。机器票和锁都只写
+`TEMP/restructure_wave_preflight/`，拒绝覆盖旧票，也拒绝经过软链父目录写到仓外。
+所有受绑定的输入也逐级拒绝父目录软链。S0 的 `materialize-only` 还必须绑定已通过的
+Wave 1 实际二级计划、二级票、完整检查集、逐文件输出 SHA，以及可由 Git 回查并与
+精确写集完全相等的起止提交；不能手写一对“票据 + 完成票”接续。写盘时逐级用真实
+目录描述符打开父路径，父目录在检查后被换成软链也会硬停。S0 不等于断网预检通过，
+也不授权移动、删除、Notion、模型 API 或外置清退。
+
 语义检查只分流：
 
 ```bash

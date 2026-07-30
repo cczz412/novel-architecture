@@ -6,6 +6,7 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -63,6 +64,13 @@ LEGACY_TOP_LEVEL_STATE_KEYS = {
 }
 RESTRUCTURE_BASELINE_PLAN_V1 = "repository-restructure-baseline-plan-v1"
 RESTRUCTURE_BASELINE_RECEIPT_V1 = "repository-restructure-baseline-receipt-v1"
+RESTRUCTURE_WAVE_PLAN_V1 = "repository-restructure-wave-plan-v1"
+RESTRUCTURE_WAVE_RECEIPT_V1 = "repository-restructure-wave-receipt-v1"
+RESTRUCTURE_WAVE_COMPLETION_V1 = "repository-restructure-wave-completion-v1"
+RESTRUCTURE_DECISION_TICKET_V1 = "repository-restructure-decision-ticket-v1"
+RESTRUCTURE_WAVE_LOCK_REQUEST_V1 = "repository-restructure-wave-lock-request-v1"
+RESTRUCTURE_WAVE_LOCK_RECEIPT_V1 = "repository-restructure-wave-lock-receipt-v1"
+RESTRUCTURE_TEST_IMPACT_V1 = "repository-restructure-test-impact-v1"
 RESTRUCTURE_BASELINE_REQUIRED_INPUTS = {
     "AGENTS.md",
     CURRENT_STATE_PATH,
@@ -91,6 +99,123 @@ RESTRUCTURE_BASELINE_FIXED_READ_SCOPES = {
     "tests",
     "tools",
     "work",
+}
+RESTRUCTURE_WAVE_FIXED_READ_SCOPES = {
+    ".git",
+    ".gitignore",
+    "AGENTS.md",
+    "TEMP/restructure_wave_preflight",
+    "governance",
+    "tests",
+    "tools",
+}
+S0_DECISION_VALUES = {
+    "D-01": ("approved", "route_a_plus_register_only_no_move"),
+    "D-02": (
+        "approved",
+        "work_only_mutable_construction_area_formal_parts_return_fixed_dirs",
+    ),
+    "D-03": ("approved", "no_new_top_level_active_staging_frozen_runtime"),
+    "D-04": (
+        "approved",
+        "analysis_library_local_truth_and_semantic_candidate_no_git_no_externalize",
+    ),
+    "D-05": (
+        "approved",
+        "new_experiment_programs_only_experiments_id_program",
+    ),
+    "D-06": (
+        "approved",
+        "side_tracks_closed_to_new_lines_history_stays_new_candidates_enter_work",
+    ),
+    "D-07": ("approved", "config_prompts_and_config_context_recipes"),
+    "D-08": ("approved", "s0"),
+    "D-09": ("deferred", "external_retention_and_cleanup_not_authorized"),
+    "D-10": (
+        "approved",
+        "materialize_only_no_preflight_no_isolation_claim",
+    ),
+}
+WAVE1_DIRECTORY_REGISTRY = "WAVE1_DIRECTORY_REGISTRY"
+S0_MATERIALIZE_ONLY = "S0_MATERIALIZE_ONLY"
+RESTRUCTURE_WAVE_SPECS = {
+    WAVE1_DIRECTORY_REGISTRY: {
+        "candidate_write_paths": [
+            "governance/directory_registry.json",
+            "governance/contracts/directory_registry_v1.schema.json",
+            "governance/indexes/directory_map.md",
+            "governance/indexes/new_file_routing.md",
+            "tests/test_repository_layout.py",
+            "governance/README.md",
+            "governance/index_manifest.json",
+            "governance/test_policy.json",
+            "tools/governance_index.py",
+            "tests/test_governance_index.py",
+        ],
+        "required_decisions": [f"D-{number:02d}" for number in range(1, 9)],
+        "required_inputs": {
+            ".gitignore",
+            "AGENTS.md",
+            CURRENT_STATE_PATH,
+            CONTROL_PATH,
+            "governance/module_registry.json",
+            "governance/index_manifest.json",
+            "governance/tool_registry.json",
+            "governance/test_policy.json",
+            "tools/governance_index.py",
+            "tests/test_governance_index.py",
+        },
+        "capability_limits": {
+            "register_only": True,
+            "physical_move": False,
+            "delete_source": False,
+            "materialize_only": False,
+            "preflight": False,
+            "network": False,
+            "model_api": False,
+            "notion_write": False,
+            "external_removal": False,
+        },
+        "requires_wave1_receipt": False,
+    },
+    S0_MATERIALIZE_ONLY: {
+        "candidate_write_paths": [
+            "tools/experiment_workspace.py",
+            "tools/experiment_workspace_modules",
+            "tests/test_experiment_workspace.py",
+            "tests/test_experiment_workspace_security.py",
+            "tests/fixtures/experiment_workspace",
+            "tools/README.md",
+            "tests/README.md",
+            "governance/tool_registry.json",
+            "governance/test_policy.json",
+        ],
+        "required_decisions": ["D-08", "D-10"],
+        "required_inputs": {
+            ".gitignore",
+            "AGENTS.md",
+            CURRENT_STATE_PATH,
+            CONTROL_PATH,
+            "governance/module_registry.json",
+            "governance/index_manifest.json",
+            "governance/tool_registry.json",
+            "governance/test_policy.json",
+            "tools/governance_index.py",
+            "tests/test_governance_index.py",
+        },
+        "capability_limits": {
+            "register_only": False,
+            "physical_move": False,
+            "delete_source": False,
+            "materialize_only": True,
+            "preflight": False,
+            "network": False,
+            "model_api": False,
+            "notion_write": False,
+            "external_removal": False,
+        },
+        "requires_wave1_receipt": True,
+    },
 }
 
 
@@ -140,6 +265,93 @@ def _aware_datetime(value: Any, name: str) -> datetime:
     return parsed
 
 
+def _canonical_json_sha256(value: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+
+
+def _sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _sha256_list(values: list[str]) -> str:
+    return hashlib.sha256("\0".join(values).encode("utf-8")).hexdigest()
+
+
+def _sha256_reference(value: Any, name: str) -> dict[str, str]:
+    row = _must_dict(value, name)
+    path = _repo_relative_path(row.get("path"), f"{name}.path")
+    digest = _must_nonempty_string(row.get("sha256"), f"{name}.sha256")
+    if not re.fullmatch(r"[0-9a-f]{64}", digest):
+        raise ArtifactError(f"{name}.sha256 必须是小写 SHA-256")
+    return {"path": path, "sha256": digest}
+
+
+def _reference_payload(
+    root: Path,
+    reference: dict[str, str],
+    *,
+    evidence_reads: dict[str, str] | None = None,
+    captured_bytes: dict[str, bytes] | None = None,
+) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    try:
+        path = _repo_path_without_symlinks(
+            root,
+            Path(reference["path"]),
+            name=f"受绑定输入 {reference['path']}",
+        )
+        path_error = None
+    except ArtifactError as exc:
+        path = root / reference["path"]
+        path_error = str(exc)
+    evidence: dict[str, Any] = {
+        "path": reference["path"],
+        "expected_sha256": reference["sha256"],
+        "exists": path.is_file(),
+        "symlink": path.is_symlink() or path_error is not None,
+        "actual_sha256": None,
+        "sha256_matched": False,
+        "json_object": False,
+        "error": path_error,
+    }
+    if path_error is not None or not path.is_file() or path.is_symlink():
+        return None, evidence
+    try:
+        raw = (
+            captured_bytes[reference["path"]]
+            if captured_bytes is not None
+            and reference["path"] in captured_bytes
+            else _read_repo_bytes_once(root, reference["path"])
+        )
+    except (ArtifactError, OSError) as exc:
+        evidence["error"] = str(exc)
+        return None, evidence
+    actual = hashlib.sha256(raw).hexdigest()
+    evidence["actual_sha256"] = actual
+    evidence["sha256_matched"] = actual == reference["sha256"]
+    if evidence_reads is not None:
+        prior = evidence_reads.setdefault(reference["path"], actual)
+        if prior != actual:
+            evidence["error"] = "同一证据在本轮读取期间内容发生变化"
+            return None, evidence
+    if actual != reference["sha256"]:
+        return None, evidence
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+        payload = _must_dict(payload, reference["path"])
+    except (ArtifactError, UnicodeDecodeError, ValueError) as exc:
+        evidence["error"] = str(exc)
+        return None, evidence
+    evidence["json_object"] = True
+    return payload, evidence
+
+
 def _markdown_authority_url(text: str, label: str) -> str:
     match = re.search(rf"{re.escape(label)}[^\n]*：(?P<url>https://[^\s*]+)", text)
     if match is None:
@@ -158,6 +370,108 @@ def _path_is_allowed(path: str, allowed: str) -> bool:
     path_parts = PurePosixPath(path).parts
     allowed_parts = PurePosixPath(allowed).parts
     return path_parts[: len(allowed_parts)] == allowed_parts
+
+
+def _repo_path_without_symlinks(
+    root: Path,
+    value: Path,
+    *,
+    name: str,
+) -> Path:
+    root = root.resolve()
+    raw = value if value.is_absolute() else root / value
+    path = Path(os.path.abspath(raw))
+    if path != root and root not in path.parents:
+        raise ArtifactError(f"{name} 必须位于仓库内")
+    current = root
+    for part in path.relative_to(root).parts[:-1]:
+        current = current / part
+        if current.is_symlink():
+            raise ArtifactError(f"{name} 的父目录不得是软链：{current}")
+        if current.exists() and not current.is_dir():
+            raise ArtifactError(f"{name} 的父路径不是目录：{current}")
+    if path.is_symlink():
+        raise ArtifactError(f"{name} 本身不得是软链：{path}")
+    return path
+
+
+def _open_repo_directory_chain(
+    root: Path,
+    parts: tuple[str, ...],
+    *,
+    create: bool,
+) -> int:
+    flags = os.O_RDONLY
+    if hasattr(os, "O_DIRECTORY"):
+        flags |= os.O_DIRECTORY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    descriptor = os.open(root, flags)
+    try:
+        for part in parts:
+            if create:
+                try:
+                    os.mkdir(part, 0o700, dir_fd=descriptor)
+                except FileExistsError:
+                    pass
+            next_descriptor = os.open(part, flags, dir_fd=descriptor)
+            os.close(descriptor)
+            descriptor = next_descriptor
+    except BaseException:
+        os.close(descriptor)
+        raise
+    return descriptor
+
+
+def _read_repo_bytes_once(root: Path, relative_path: str) -> bytes:
+    root = root.resolve()
+    path = _repo_path_without_symlinks(
+        root,
+        Path(relative_path),
+        name=f"受绑定输入 {relative_path}",
+    )
+    relative = path.relative_to(root)
+    directory_descriptor = _open_repo_directory_chain(
+        root,
+        relative.parts[:-1],
+        create=False,
+    )
+    flags = os.O_RDONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    descriptor: int | None = None
+    try:
+        descriptor = os.open(
+            relative.name,
+            flags,
+            dir_fd=directory_descriptor,
+        )
+        chunks: list[bytes] = []
+        while True:
+            chunk = os.read(descriptor, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        opened_stat = os.fstat(descriptor)
+        visible_path = _repo_path_without_symlinks(
+            root,
+            path,
+            name=f"已读受绑定输入 {relative_path}",
+        )
+        visible_stat = os.stat(visible_path, follow_symlinks=False)
+        if (
+            visible_stat.st_dev,
+            visible_stat.st_ino,
+        ) != (
+            opened_stat.st_dev,
+            opened_stat.st_ino,
+        ):
+            raise ArtifactError(f"受绑定输入读取期间被替换：{relative_path}")
+        return b"".join(chunks)
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        os.close(directory_descriptor)
 
 
 def _git_path_set(root: Path, args: list[str]) -> set[str]:
@@ -193,6 +507,55 @@ def git_head(root: Path = ROOT) -> str:
         stderr=subprocess.PIPE,
     )
     return completed.stdout.strip()
+
+
+def git_is_ancestor(root: Path, older_sha: str, newer_sha: str) -> bool:
+    completed = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", older_sha, newer_sha],
+        cwd=root,
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if completed.returncode not in {0, 1}:
+        raise ArtifactError(
+            "无法核对 Wave Git 祖先关系："
+            + completed.stderr.decode("utf-8", errors="replace").strip()
+        )
+    return completed.returncode == 0
+
+
+def git_name_status_between(
+    root: Path,
+    older_sha: str,
+    newer_sha: str,
+) -> list[dict[str, str]]:
+    completed = subprocess.run(
+        [
+            "git",
+            "diff",
+            "--no-renames",
+            "--name-status",
+            "-z",
+            older_sha,
+            newer_sha,
+        ],
+        cwd=root,
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    chunks = [
+        chunk.decode("utf-8")
+        for chunk in completed.stdout.split(b"\0")
+        if chunk
+    ]
+    if len(chunks) % 2:
+        raise ArtifactError("无法解析 Wave Git 变更清单")
+    return [
+        {"status": chunks[index], "path": chunks[index + 1]}
+        for index in range(0, len(chunks), 2)
+    ]
 
 
 def state_layers(state: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -1095,7 +1458,7 @@ def _baseline_plan(value: Any) -> dict[str, Any]:
     return plan
 
 
-def evaluate_restructure_baseline(
+def _evaluate_restructure_baseline_snapshot(
     root: Path,
     plan_raw: Any,
     *,
@@ -1118,6 +1481,36 @@ def evaluate_restructure_baseline(
     now = evaluated_at or datetime.now(timezone.utc)
     if now.tzinfo is None:
         raise ArtifactError("evaluated_at 必须带时区")
+
+    bound_bytes: dict[str, bytes] = {}
+    evidence_reads: dict[str, str] = {}
+    binding_results: list[dict[str, Any]] = []
+    binding_passed = True
+    for binding in plan["bound_inputs"]:
+        path_error = None
+        try:
+            raw = _read_repo_bytes_once(root, binding["path"])
+            actual = hashlib.sha256(raw).hexdigest()
+            prior = evidence_reads.setdefault(binding["path"], actual)
+            if prior != actual:
+                raise ArtifactError("同一输入在本轮读取期间内容发生变化")
+            bound_bytes[binding["path"]] = raw
+            exists = True
+        except (ArtifactError, OSError) as exc:
+            actual = None
+            exists = False
+            path_error = str(exc)
+        matched = exists and actual == binding["sha256"]
+        binding_passed = binding_passed and matched
+        binding_results.append(
+            {
+                "path": binding["path"],
+                "expected_sha256": binding["sha256"],
+                "actual_sha256": actual,
+                "matched": matched,
+                "path_error": path_error,
+            }
+        )
 
     checks: list[dict[str, Any]] = []
 
@@ -1165,9 +1558,18 @@ def evaluate_restructure_baseline(
         },
     )
 
-    agents_text = (root / "AGENTS.md").read_text(encoding="utf-8")
-    current_state = _must_dict(read_json(root / CURRENT_STATE_PATH), "CURRENT_STATE")
-    control = _must_dict(read_json(root / CONTROL_PATH), "control_plane")
+    try:
+        agents_text = bound_bytes["AGENTS.md"].decode("utf-8")
+        current_state = _must_dict(
+            json.loads(bound_bytes[CURRENT_STATE_PATH].decode("utf-8")),
+            "CURRENT_STATE",
+        )
+        control = _must_dict(
+            json.loads(bound_bytes[CONTROL_PATH].decode("utf-8")),
+            "control_plane",
+        )
+    except (KeyError, UnicodeDecodeError, ValueError) as exc:
+        raise ArtifactError("一级计划的现役真源无法从受绑定字节解析") from exc
     authority = _must_dict(current_state.get("authority"), "CURRENT_STATE.authority")
     external = _must_dict(authority.get("external_truth"), "CURRENT_STATE.authority.external_truth")
     control_source = _must_dict(control.get("source_authority"), "control_plane.source_authority")
@@ -1222,22 +1624,6 @@ def evaluate_restructure_baseline(
         },
     )
 
-    binding_results: list[dict[str, Any]] = []
-    binding_passed = True
-    for binding in plan["bound_inputs"]:
-        path = root / binding["path"]
-        exists = path.is_file() and not path.is_symlink()
-        actual = sha256_file(path) if exists else None
-        matched = exists and actual == binding["sha256"]
-        binding_passed = binding_passed and matched
-        binding_results.append(
-            {
-                "path": binding["path"],
-                "expected_sha256": binding["sha256"],
-                "actual_sha256": actual,
-                "matched": matched,
-            }
-        )
     add("bound_input_sha", binding_passed, binding_results)
 
     normalized_dirty = sorted(
@@ -1298,20 +1684,1445 @@ def evaluate_restructure_baseline(
             "tracked_repository_writes": 0,
             "receipt_writes": 1,
         },
+        "evidence_snapshot": [
+            {"path": path, "sha256": digest}
+            for path, digest in sorted(evidence_reads.items())
+        ],
         "checks": checks,
         "blockers": [row["check_id"] for row in checks if not row["passed"]],
     }
 
 
+def _wave_plan(value: Any) -> dict[str, Any]:
+    plan = _must_dict(value, "第二级 Wave 计划")
+    if plan.get("contract_version") != RESTRUCTURE_WAVE_PLAN_V1:
+        raise ArtifactError(
+            f"第二级 Wave 计划 contract_version 必须是 {RESTRUCTURE_WAVE_PLAN_V1}"
+        )
+    _must_nonempty_string(plan.get("plan_id"), "plan_id")
+    if plan.get("route") != "S0":
+        raise ArtifactError("第二级 Wave 计划 route 只接受 S0")
+    wave_id = _must_nonempty_string(plan.get("wave_id"), "wave_id")
+    if wave_id not in RESTRUCTURE_WAVE_SPECS:
+        raise ArtifactError(f"不支持的 Wave：{wave_id}")
+    expected_head = _must_nonempty_string(plan.get("expected_head_sha"), "expected_head_sha")
+    if not re.fullmatch(r"[0-9a-f]{40}", expected_head):
+        raise ArtifactError("expected_head_sha 必须是小写 40 位 Git SHA")
+    for key in (
+        "expected_baseline_plan_id",
+        "expected_decision_ticket_id",
+        "expected_lock_id",
+    ):
+        _must_nonempty_string(plan.get(key), key)
+    plan["baseline_plan"] = _sha256_reference(
+        plan.get("baseline_plan"),
+        "baseline_plan",
+    )
+    plan["baseline_receipt"] = _sha256_reference(
+        plan.get("baseline_receipt"),
+        "baseline_receipt",
+    )
+    plan["decision_ticket"] = _sha256_reference(
+        plan.get("decision_ticket"),
+        "decision_ticket",
+    )
+    plan["conflict_lock"] = _sha256_reference(
+        plan.get("conflict_lock"),
+        "conflict_lock",
+    )
+    plan["test_impact"] = _sha256_reference(
+        plan.get("test_impact"),
+        "test_impact",
+    )
+
+    window = _must_dict(plan.get("responsibility_window"), "responsibility_window")
+    for key in (
+        "source_system",
+        "authorization_context_id",
+        "owner",
+        "task_id",
+        "wave_id",
+        "starts_at",
+        "expires_at",
+    ):
+        _must_nonempty_string(window.get(key), f"responsibility_window.{key}")
+    if window["wave_id"] != wave_id:
+        raise ArtifactError("responsibility_window.wave_id 与计划 wave_id 不一致")
+    starts_at = _aware_datetime(window["starts_at"], "responsibility_window.starts_at")
+    expires_at = _aware_datetime(window["expires_at"], "responsibility_window.expires_at")
+    if expires_at <= starts_at:
+        raise ArtifactError("责任窗口 expires_at 必须晚于 starts_at")
+    for key in ("read_allowlist", "candidate_write_paths"):
+        values = _must_list(window.get(key), f"responsibility_window.{key}")
+        normalized = [
+            _repo_relative_path(item, f"responsibility_window.{key}")
+            for item in values
+        ]
+        if len(normalized) != len(set(normalized)):
+            raise ArtifactError(f"responsibility_window.{key} 不能重复")
+        window[key] = normalized
+
+    limits = _must_dict(plan.get("capability_limits"), "capability_limits")
+    normalized_limits: dict[str, bool] = {}
+    for key in RESTRUCTURE_WAVE_SPECS[wave_id]["capability_limits"]:
+        value = limits.get(key)
+        if not isinstance(value, bool):
+            raise ArtifactError(f"capability_limits.{key} 必须是布尔值")
+        normalized_limits[key] = value
+    plan["capability_limits"] = normalized_limits
+
+    bindings = _must_list(plan.get("bound_inputs"), "bound_inputs")
+    normalized_bindings: list[dict[str, str]] = []
+    seen_paths: set[str] = set()
+    seen_roles: set[str] = set()
+    for index, value in enumerate(bindings):
+        row = _must_dict(value, f"bound_inputs[{index}]")
+        path = _repo_relative_path(row.get("path"), f"bound_inputs[{index}].path")
+        digest = _must_nonempty_string(
+            row.get("sha256"),
+            f"bound_inputs[{index}].sha256",
+        )
+        role = _must_nonempty_string(row.get("role"), f"bound_inputs[{index}].role")
+        if not re.fullmatch(r"[0-9a-f]{64}", digest):
+            raise ArtifactError(f"bound_inputs[{index}].sha256 必须是小写 SHA-256")
+        if path in seen_paths:
+            raise ArtifactError(f"bound_inputs 路径重复：{path}")
+        if role in seen_roles:
+            raise ArtifactError(f"bound_inputs role 重复：{role}")
+        seen_paths.add(path)
+        seen_roles.add(role)
+        normalized_bindings.append(
+            {"path": path, "sha256": digest, "role": role}
+        )
+    plan["bound_inputs"] = normalized_bindings
+
+    dependencies = _must_list(plan.get("dependencies"), "dependencies")
+    normalized_dependencies: list[dict[str, str]] = []
+    for index, value in enumerate(dependencies):
+        row = _must_dict(value, f"dependencies[{index}]")
+        reference = _sha256_reference(row, f"dependencies[{index}]")
+        reference["wave_id"] = _must_nonempty_string(
+            row.get("wave_id"),
+            f"dependencies[{index}].wave_id",
+        )
+        normalized_dependencies.append(reference)
+    plan["dependencies"] = normalized_dependencies
+    return plan
+
+
+def _decision_ticket_evidence(
+    ticket: dict[str, Any] | None,
+    *,
+    expected_ticket_id: str,
+    wave_id: str,
+    expected_context_id: str,
+) -> tuple[bool, dict[str, Any]]:
+    if ticket is None:
+        return False, {"valid": False, "errors": ["决策票不存在或 SHA 不匹配"]}
+    errors: list[str] = []
+    if ticket.get("contract_version") != RESTRUCTURE_DECISION_TICKET_V1:
+        errors.append("contract_version 不匹配")
+    if ticket.get("ticket_id") != expected_ticket_id:
+        errors.append("ticket_id 不匹配")
+    if ticket.get("authority") != "CZ":
+        errors.append("authority 必须是 CZ")
+    if ticket.get("authorization_context_id") != expected_context_id:
+        errors.append("authorization_context_id 不匹配")
+    if ticket.get("evidence_class") != "same_task_human_readback":
+        errors.append("evidence_class 必须是 same_task_human_readback")
+    review = ticket.get("human_readback")
+    if review != {
+        "required": True,
+        "confirmed": True,
+        "cryptographic_proof": False,
+    }:
+        errors.append("human_readback 必须明确同任务人工回读且不冒充密码学证明")
+    if ticket.get("selected_route") != "S0":
+        errors.append("selected_route 必须是 S0")
+    selected_scope = ticket.get("selected_scope")
+    if not isinstance(selected_scope, list) or wave_id not in selected_scope:
+        errors.append("selected_scope 未包含当前 Wave")
+    messages = ticket.get("source_messages")
+    message_evidence: list[dict[str, Any]] = []
+    source_texts: set[str] = set()
+    if not isinstance(messages, list):
+        errors.append("source_messages 必须是数组")
+    else:
+        for index, raw in enumerate(messages):
+            if not isinstance(raw, dict):
+                errors.append(f"source_messages[{index}] 不是对象")
+                continue
+            text = raw.get("text")
+            digest = raw.get("sha256")
+            matched = (
+                isinstance(text, str)
+                and isinstance(digest, str)
+                and _sha256_text(text) == digest
+            )
+            if isinstance(text, str):
+                source_texts.add(text)
+            message_evidence.append(
+                {"index": index, "sha256_matched": matched}
+            )
+            if not matched:
+                errors.append(f"source_messages[{index}] SHA 不匹配")
+    if not {"按s0", "S-01-A"} <= source_texts:
+        errors.append("source_messages 缺少 CZ 的两次原始选择")
+
+    decisions = ticket.get("decisions")
+    decision_evidence: dict[str, Any] = {}
+    if not isinstance(decisions, dict):
+        errors.append("decisions 必须是对象")
+        decisions = {}
+    for decision_id, expected in S0_DECISION_VALUES.items():
+        raw = decisions.get(decision_id)
+        actual = (
+            (raw.get("status"), raw.get("value"))
+            if isinstance(raw, dict)
+            else None
+        )
+        matched = actual == expected
+        decision_evidence[decision_id] = {
+            "expected": {"status": expected[0], "value": expected[1]},
+            "actual": (
+                {"status": actual[0], "value": actual[1]}
+                if actual is not None
+                else None
+            ),
+            "matched": matched,
+        }
+        if not matched:
+            errors.append(f"{decision_id} 缺失或口径不匹配")
+    if set(decisions) != set(S0_DECISION_VALUES):
+        errors.append("decisions 必须恰好包含 D-01～D-10")
+
+    boundary = ticket.get("authorization_boundary")
+    expected_boundary = {
+        "authorizes_wave_without_second_level_pass": False,
+        "authorizes_notion_write": False,
+        "authorizes_model_api": False,
+        "authorizes_preflight": False,
+        "authorizes_external_removal": False,
+    }
+    if boundary != expected_boundary:
+        errors.append("authorization_boundary 不匹配")
+    return not errors, {
+        "valid": not errors,
+        "errors": errors,
+        "source_messages": message_evidence,
+        "decisions": decision_evidence,
+    }
+
+
+def _baseline_receipt_evidence(
+    root: Path,
+    plan: dict[str, Any] | None,
+    receipt: dict[str, Any] | None,
+    *,
+    expected_plan_id: str,
+    expected_head_sha: str,
+    expected_context_id: str,
+    dirty_paths: list[str],
+    governance_mismatch_paths: list[str],
+    evidence_reads: dict[str, str],
+    now: datetime,
+) -> tuple[bool, dict[str, Any]]:
+    errors: list[str] = []
+    fixed_check_ids = {
+        "responsibility_window_time",
+        "governance_generated_green",
+        "read_allowlist_complete",
+        "current_authority_three_way",
+        "historical_authority_exact_match",
+        "bound_input_sha",
+        "candidate_write_paths_disjoint_from_foreign_dirty",
+        "head_frozen",
+        "live_snapshot_stable",
+    }
+    if plan is None:
+        return False, {"valid": False, "errors": ["一级计划不存在或 SHA 不匹配"]}
+    if receipt is None:
+        return False, {"valid": False, "errors": ["一级票不存在或 SHA 不匹配"]}
+    try:
+        normalized_plan = _baseline_plan(copy.deepcopy(plan))
+    except ArtifactError as exc:
+        return False, {"valid": False, "errors": [f"一级计划无效：{exc}"]}
+    plan_sha256 = _canonical_json_sha256(normalized_plan)
+    if normalized_plan.get("plan_id") != expected_plan_id:
+        errors.append("一级计划 plan_id 不匹配")
+    plan_window = normalized_plan.get("responsibility_window")
+    if (
+        not isinstance(plan_window, dict)
+        or plan_window.get("authorization_context_id") != expected_context_id
+    ):
+        errors.append("一级计划 authorization_context_id 不匹配")
+    if receipt.get("contract_version") != RESTRUCTURE_BASELINE_RECEIPT_V1:
+        errors.append("contract_version 不匹配")
+    if receipt.get("plan_id") != expected_plan_id:
+        errors.append("plan_id 不匹配")
+    if receipt.get("status") != "PASS" or receipt.get("blockers") != []:
+        errors.append("一级票不是无 blocker 的 PASS")
+    if receipt.get("head_sha") != expected_head_sha:
+        errors.append("一级票 HEAD 不匹配")
+    if receipt.get("plan_content_sha256") != plan_sha256:
+        errors.append("一级票没有绑定原始一级计划内容")
+    checks = receipt.get("checks")
+    if not isinstance(checks, list):
+        errors.append("一级票缺完整 checks")
+    else:
+        check_ids = {
+            row.get("check_id")
+            for row in checks
+            if isinstance(row, dict)
+        }
+        if check_ids != fixed_check_ids or len(checks) != len(fixed_check_ids):
+            errors.append("一级票 checks 集合不完整或有重复")
+        if any(
+            not isinstance(row, dict) or row.get("passed") is not True
+            for row in checks
+        ):
+            errors.append("一级票存在未通过 check")
+    boundary = receipt.get("authorization_boundary")
+    expected_boundary = {
+        "authorizes_wave": False,
+        "authorizes_notion_write": False,
+        "authorizes_model_api": False,
+        "authorization_context_claim_is_cryptographic_proof": False,
+        "next_human_decision_if_pass": "D-08",
+    }
+    if boundary != expected_boundary:
+        errors.append("一级票越权")
+    window = receipt.get("responsibility_window")
+    if not isinstance(window, dict):
+        errors.append("一级票缺责任窗口")
+    else:
+        if window != plan_window:
+            errors.append("一级票责任窗口与一级计划不一致")
+        if window.get("authorization_context_id") != expected_context_id:
+            errors.append("一级票 authorization_context_id 不匹配")
+        try:
+            starts = _aware_datetime(window.get("starts_at"), "baseline.starts_at")
+            expires = _aware_datetime(window.get("expires_at"), "baseline.expires_at")
+            if not starts <= now <= expires:
+                errors.append("一级票责任窗口已失效")
+        except ArtifactError as exc:
+            errors.append(str(exc))
+    fresh = _evaluate_restructure_baseline_snapshot(
+        root,
+        normalized_plan,
+        dirty_paths=dirty_paths,
+        head_sha=expected_head_sha,
+        governance_mismatch_paths=governance_mismatch_paths,
+        evaluated_at=now,
+    )
+    for row in fresh.get("evidence_snapshot", []):
+        if not isinstance(row, dict):
+            errors.append("一级重放证据快照格式无效")
+            continue
+        path = row.get("path")
+        digest = row.get("sha256")
+        if not isinstance(path, str) or not isinstance(digest, str):
+            errors.append("一级重放证据快照字段无效")
+            continue
+        prior = evidence_reads.setdefault(path, digest)
+        if prior != digest:
+            errors.append(f"一级重放期间证据发生变化：{path}")
+    if fresh["status"] != "PASS":
+        errors.append("一级计划按当前现场重放不是 PASS")
+    return not errors, {
+        "valid": not errors,
+        "errors": errors,
+        "plan_content_sha256": plan_sha256,
+        "fresh_status": fresh["status"],
+        "fresh_blockers": fresh["blockers"],
+    }
+
+
+def _lock_receipt_evidence(
+    receipt: dict[str, Any] | None,
+    *,
+    expected_lock_id: str,
+    wave_id: str,
+    expected_head_sha: str,
+    owner: str,
+    candidate_write_paths: list[str],
+    expected_context_id: str,
+    now: datetime,
+) -> tuple[bool, dict[str, Any]]:
+    errors: list[str] = []
+    if receipt is None:
+        return False, {"valid": False, "errors": ["冲突锁不存在或 SHA 不匹配"]}
+    if receipt.get("contract_version") != RESTRUCTURE_WAVE_LOCK_RECEIPT_V1:
+        errors.append("contract_version 不匹配")
+    if receipt.get("status") != "ACTIVE":
+        errors.append("冲突锁不是 ACTIVE")
+    if receipt.get("lock_id") != expected_lock_id:
+        errors.append("lock_id 不匹配")
+    if receipt.get("scope") != wave_id:
+        errors.append("scope 不匹配")
+    if receipt.get("holder") != owner:
+        errors.append("holder 不匹配")
+    if receipt.get("authorization_context_id") != expected_context_id:
+        errors.append("authorization_context_id 不匹配")
+    if receipt.get("head_sha") != expected_head_sha:
+        errors.append("冲突锁 HEAD 不匹配")
+    expected_paths_sha = _sha256_list(candidate_write_paths)
+    if receipt.get("candidate_write_paths_sha256") != expected_paths_sha:
+        errors.append("冲突锁写集 SHA 不匹配")
+    try:
+        starts = _aware_datetime(receipt.get("starts_at"), "lock.starts_at")
+        expires = _aware_datetime(receipt.get("expires_at"), "lock.expires_at")
+        if not starts <= now <= expires:
+            errors.append("冲突锁不在有效期")
+    except ArtifactError as exc:
+        errors.append(str(exc))
+    return not errors, {"valid": not errors, "errors": errors}
+
+
+def _test_impact_evidence(
+    impact: dict[str, Any] | None,
+    *,
+    wave_id: str,
+    expected_head_sha: str,
+    candidate_write_paths: list[str],
+    expected_context_id: str,
+    policy: dict[str, Any],
+) -> tuple[bool, dict[str, Any]]:
+    errors: list[str] = []
+    if impact is None:
+        return False, {"valid": False, "errors": ["测试影响单不存在或 SHA 不匹配"]}
+    if impact.get("contract_version") != RESTRUCTURE_TEST_IMPACT_V1:
+        errors.append("contract_version 不匹配")
+    if impact.get("wave_id") != wave_id or impact.get("route") != "S0":
+        errors.append("Wave 或路线不匹配")
+    if impact.get("head_sha") != expected_head_sha:
+        errors.append("测试影响单 HEAD 不匹配")
+    if impact.get("authorization_context_id") != expected_context_id:
+        errors.append("测试影响单 authorization_context_id 不匹配")
+    if impact.get("classification") != "full_chain_required":
+        errors.append("未知新路径必须标为 full_chain_required")
+    if impact.get("planned_changed_paths") != candidate_write_paths:
+        errors.append("planned_changed_paths 与精确写集不一致")
+    evidence = impact.get("pre_start_evidence")
+    if not isinstance(evidence, dict):
+        errors.append("缺少 pre_start_evidence")
+    else:
+        if evidence.get("governance_check") != "PASS":
+            errors.append("治理检查没有 PASS")
+        if evidence.get("ruff_check") != "PASS":
+            errors.append("Ruff 没有 PASS")
+        full_suite = evidence.get("full_suite")
+        if not isinstance(full_suite, dict):
+            errors.append("缺少整仓测试证据")
+        else:
+            if full_suite.get("status") != "KNOWN_FAILURE_SET_UNCHANGED":
+                errors.append("整仓测试状态不认识")
+            if full_suite.get("new_failure_count") != 0:
+                errors.append("出现新增失败")
+            failed = full_suite.get("failed")
+            nodeids = full_suite.get("known_failure_nodeids")
+            if (
+                not isinstance(failed, int)
+                or not isinstance(nodeids, list)
+                or failed != len(nodeids)
+                or len(nodeids) != len(set(nodeids))
+            ):
+                errors.append("已知失败数量与 nodeid 清单不一致")
+    commands = impact.get("required_after_change_commands")
+    required_commands = {
+        policy.get("full_chain_command"),
+        policy.get("lint_command"),
+        "python3 tools/governance_index.py --check",
+    }
+    if not isinstance(commands, list) or not required_commands <= set(commands):
+        errors.append("改动后必跑命令不完整")
+    return not errors, {"valid": not errors, "errors": errors}
+
+
+def _wave_dependency_evidence(
+    root: Path,
+    dependencies: list[dict[str, str]],
+    *,
+    wave_id: str,
+    expected_head_sha: str,
+    expected_context_id: str,
+    evidence_reads: dict[str, str] | None = None,
+) -> tuple[bool, dict[str, Any]]:
+    requires_wave1 = bool(
+        RESTRUCTURE_WAVE_SPECS[wave_id]["requires_wave1_receipt"]
+    )
+    if not requires_wave1:
+        return not dependencies, {
+            "valid": not dependencies,
+            "errors": [] if not dependencies else ["Wave1 不得声明上游 Wave 依赖"],
+        }
+    errors: list[str] = []
+    rows: list[dict[str, Any]] = []
+    if len(dependencies) != 1 or dependencies[0]["wave_id"] != WAVE1_DIRECTORY_REGISTRY:
+        return False, {
+            "valid": False,
+            "errors": ["S0 materialize 必须绑定唯一 Wave1 完成票"],
+        }
+    payload, reference = _reference_payload(
+        root,
+        dependencies[0],
+        evidence_reads=evidence_reads,
+    )
+    rows.append(reference)
+    if payload is None:
+        errors.append("Wave1 完成票不存在或 SHA 不匹配")
+    else:
+        if payload.get("contract_version") != RESTRUCTURE_WAVE_COMPLETION_V1:
+            errors.append("Wave1 完成票 contract_version 不匹配")
+        if payload.get("wave_id") != WAVE1_DIRECTORY_REGISTRY:
+            errors.append("Wave1 完成票 wave_id 不匹配")
+        if payload.get("status") != "PASS":
+            errors.append("Wave1 完成票不是 PASS")
+        if payload.get("head_sha") != expected_head_sha:
+            errors.append("Wave1 完成票 HEAD 不匹配")
+        if payload.get("authorization_context_id") != expected_context_id:
+            errors.append("Wave1 完成票 authorization_context_id 不匹配")
+        try:
+            wave_plan_reference = _sha256_reference(
+                payload.get("wave_plan"),
+                "Wave1 完成票.wave_plan",
+            )
+        except ArtifactError as exc:
+            errors.append(str(exc))
+            wave_plan_reference = None
+        wave_plan = None
+        wave_plan_evidence = None
+        normalized_wave_plan = None
+        if wave_plan_reference is not None:
+            wave_plan, wave_plan_evidence = _reference_payload(
+                root,
+                wave_plan_reference,
+                evidence_reads=evidence_reads,
+            )
+            if wave_plan is None:
+                errors.append("Wave1 二级计划不存在或 SHA 不匹配")
+            else:
+                try:
+                    normalized_wave_plan = _wave_plan(
+                        copy.deepcopy(wave_plan)
+                    )
+                except ArtifactError as exc:
+                    errors.append(f"Wave1 二级计划无效：{exc}")
+        wave_plan_sha = (
+            _canonical_json_sha256(normalized_wave_plan)
+            if normalized_wave_plan is not None
+            else None
+        )
+        if normalized_wave_plan is not None:
+            plan_window = normalized_wave_plan["responsibility_window"]
+            expected_wave_spec = RESTRUCTURE_WAVE_SPECS[
+                WAVE1_DIRECTORY_REGISTRY
+            ]
+            if (
+                normalized_wave_plan.get("wave_id")
+                != WAVE1_DIRECTORY_REGISTRY
+                or normalized_wave_plan.get("expected_head_sha")
+                != payload.get("pre_wave_head_sha")
+                or plan_window.get("authorization_context_id")
+                != expected_context_id
+                or plan_window.get("candidate_write_paths")
+                != expected_wave_spec["candidate_write_paths"]
+                or normalized_wave_plan.get("capability_limits")
+                != expected_wave_spec["capability_limits"]
+                or normalized_wave_plan.get("dependencies") != []
+            ):
+                errors.append("Wave1 二级计划范围、HEAD 或授权上下文不匹配")
+            if payload.get("wave_plan_content_sha256") != wave_plan_sha:
+                errors.append("Wave1 完成票没有绑定实际二级计划内容")
+        try:
+            wave_receipt_reference = _sha256_reference(
+                payload.get("wave_receipt"),
+                "Wave1 完成票.wave_receipt",
+            )
+        except ArtifactError as exc:
+            errors.append(str(exc))
+            wave_receipt_reference = None
+        wave_receipt = None
+        wave_receipt_evidence = None
+        if wave_receipt_reference is not None:
+            wave_receipt, wave_receipt_evidence = _reference_payload(
+                root,
+                wave_receipt_reference,
+                evidence_reads=evidence_reads,
+            )
+            if wave_receipt is None:
+                errors.append("Wave1 二级开工票不存在或 SHA 不匹配")
+        expected_wave_checks = {
+            "responsibility_window_time",
+            "governance_generated_green",
+            "head_frozen",
+            "wave_scope_exact",
+            "baseline_receipt_current",
+            "decision_ticket_exact",
+            "conflict_lock_active",
+            "test_impact_complete",
+            "bound_input_sha",
+            "read_allowlist_complete",
+            "candidate_write_paths_disjoint_from_dirty",
+            "wave_dependencies_satisfied",
+            "live_snapshot_stable",
+        }
+        if wave_receipt is not None:
+            if (
+                wave_receipt.get("contract_version")
+                != RESTRUCTURE_WAVE_RECEIPT_V1
+                or wave_receipt.get("wave_id") != WAVE1_DIRECTORY_REGISTRY
+                or wave_receipt.get("status") != "PASS"
+                or wave_receipt.get("blockers") != []
+            ):
+                errors.append("Wave1 二级开工票不是无 blocker 的 PASS")
+            wave_window = wave_receipt.get("responsibility_window")
+            if (
+                not isinstance(wave_window, dict)
+                or wave_window.get("authorization_context_id")
+                != expected_context_id
+            ):
+                errors.append("Wave1 二级开工票授权上下文不匹配")
+            wave_checks = wave_receipt.get("checks")
+            if not isinstance(wave_checks, list):
+                errors.append("Wave1 二级开工票缺完整 checks")
+            else:
+                wave_check_ids = {
+                    row.get("check_id")
+                    for row in wave_checks
+                    if isinstance(row, dict)
+                }
+                if (
+                    wave_check_ids != expected_wave_checks
+                    or len(wave_checks) != len(expected_wave_checks)
+                    or any(
+                        not isinstance(row, dict)
+                        or row.get("passed") is not True
+                        for row in wave_checks
+                    )
+                ):
+                    errors.append("Wave1 二级开工票 checks 不完整或未全过")
+            boundary = wave_receipt.get("authorization_boundary")
+            expected_paths = RESTRUCTURE_WAVE_SPECS[
+                WAVE1_DIRECTORY_REGISTRY
+            ]["candidate_write_paths"]
+            if (
+                not isinstance(boundary, dict)
+                or boundary.get("authorizes_wave") is not False
+                or boundary.get("mechanical_preconditions_pass") is not True
+                or boundary.get("requires_same_task_human_readback") is not True
+                or boundary.get("eligible_wave_id")
+                != WAVE1_DIRECTORY_REGISTRY
+                or boundary.get("eligible_write_paths") != expected_paths
+            ):
+                errors.append("Wave1 二级票机械范围或人工回读边界不匹配")
+            plan_sha = wave_receipt.get("plan_content_sha256")
+            if (
+                not isinstance(plan_sha, str)
+                or not re.fullmatch(r"[0-9a-f]{64}", plan_sha)
+                or wave_plan_sha != plan_sha
+            ):
+                errors.append("Wave1 完成票没有绑定二级计划 SHA")
+            if (
+                normalized_wave_plan is None
+                or wave_receipt.get("plan_id")
+                != normalized_wave_plan.get("plan_id")
+            ):
+                errors.append("Wave1 二级票 plan_id 与实际计划不一致")
+            if payload.get("pre_wave_head_sha") != wave_receipt.get("head_sha"):
+                errors.append("Wave1 完成票起始 HEAD 与二级票不一致")
+
+        outputs = payload.get("outputs")
+        expected_output_paths = RESTRUCTURE_WAVE_SPECS[
+            WAVE1_DIRECTORY_REGISTRY
+        ]["candidate_write_paths"]
+        output_evidence: list[dict[str, Any]] = []
+        if not isinstance(outputs, list):
+            errors.append("Wave1 完成票缺逐文件输出清单")
+            outputs = []
+        actual_output_paths = [
+            row.get("path") for row in outputs if isinstance(row, dict)
+        ]
+        if actual_output_paths != expected_output_paths:
+            errors.append("Wave1 完成票输出路径不等于 Wave1 精确写集")
+        for index, row in enumerate(outputs):
+            if not isinstance(row, dict):
+                errors.append(f"Wave1 outputs[{index}] 不是对象")
+                continue
+            try:
+                _repo_path_without_symlinks(
+                    root,
+                    Path(row.get("path", "")),
+                    name=f"Wave1 outputs[{index}]",
+                )
+            except (ArtifactError, TypeError) as exc:
+                errors.append(str(exc))
+                continue
+            expected_sha = row.get("sha256")
+            try:
+                output_raw = _read_repo_bytes_once(
+                    root,
+                    row.get("path", ""),
+                )
+                actual_sha = hashlib.sha256(output_raw).hexdigest()
+                exists = True
+                if evidence_reads is not None:
+                    prior = evidence_reads.setdefault(
+                        row.get("path", ""),
+                        actual_sha,
+                    )
+                    if prior != actual_sha:
+                        raise ArtifactError(
+                            "同一 Wave1 输出在本轮读取期间内容发生变化"
+                        )
+            except (ArtifactError, OSError, TypeError) as exc:
+                exists = False
+                actual_sha = None
+                errors.append(str(exc))
+            matched = (
+                exists
+                and isinstance(expected_sha, str)
+                and re.fullmatch(r"[0-9a-f]{64}", expected_sha) is not None
+                and actual_sha == expected_sha
+            )
+            output_evidence.append(
+                {
+                    "path": row.get("path"),
+                    "expected_sha256": expected_sha,
+                    "actual_sha256": actual_sha,
+                    "matched": matched,
+                }
+            )
+            if not matched:
+                errors.append(f"Wave1 输出文件不匹配：{row.get('path')}")
+        if payload.get("output_manifest_sha256") != _canonical_json_sha256(outputs):
+            errors.append("Wave1 输出清单 SHA 不匹配")
+
+        pre_wave_head = payload.get("pre_wave_head_sha")
+        if (
+            not isinstance(pre_wave_head, str)
+            or re.fullmatch(r"[0-9a-f]{40}", pre_wave_head) is None
+        ):
+            errors.append("Wave1 完成票缺合法起始 HEAD")
+            git_evidence = {"valid": False}
+        else:
+            try:
+                current_head = git_head(root)
+                ancestor = git_is_ancestor(
+                    root,
+                    pre_wave_head,
+                    expected_head_sha,
+                )
+                changes = git_name_status_between(
+                    root,
+                    pre_wave_head,
+                    expected_head_sha,
+                )
+                changed_paths = [row["path"] for row in changes]
+                changes_valid = (
+                    len(changes) == len(expected_output_paths)
+                    and all(row["status"] in {"A", "M"} for row in changes)
+                    and set(changed_paths) == set(expected_output_paths)
+                )
+                if current_head != expected_head_sha:
+                    errors.append("当前 Git HEAD 不是 Wave1 完成 HEAD")
+                if not ancestor:
+                    errors.append("Wave1 起始 HEAD 不是完成 HEAD 的祖先")
+                if not changes_valid:
+                    errors.append("Wave1 Git 变更不等于精确写集或含删除")
+                git_evidence = {
+                    "valid": (
+                        current_head == expected_head_sha
+                        and ancestor
+                        and changes_valid
+                    ),
+                    "current_head": current_head,
+                    "ancestor": ancestor,
+                    "changes": changes,
+                }
+            except (ArtifactError, OSError, subprocess.SubprocessError) as exc:
+                errors.append(f"Wave1 Git 变更无法回查：{exc}")
+                git_evidence = {"valid": False, "error": str(exc)}
+        rows.append(
+            {
+                "wave_plan": wave_plan_evidence,
+                "wave_receipt": wave_receipt_evidence,
+                "outputs": output_evidence,
+                "git_transition": git_evidence,
+            }
+        )
+    return not errors, {"valid": not errors, "errors": errors, "references": rows}
+
+
+def _evaluate_restructure_wave_snapshot(
+    root: Path,
+    plan_raw: Any,
+    *,
+    dirty_paths: list[str],
+    head_sha: str,
+    governance_mismatch_paths: list[str],
+    evaluated_at: datetime | None = None,
+) -> dict[str, Any]:
+    root = root.resolve()
+    plan = _wave_plan(copy.deepcopy(plan_raw))
+    wave_id = plan["wave_id"]
+    spec = RESTRUCTURE_WAVE_SPECS[wave_id]
+    window = plan["responsibility_window"]
+    now = evaluated_at or datetime.now(timezone.utc)
+    if now.tzinfo is None:
+        raise ArtifactError("evaluated_at 必须带时区")
+    evidence_reads: dict[str, str] = {}
+    bound_bytes: dict[str, bytes] = {}
+    binding_results: list[dict[str, Any]] = []
+    bindings_passed = True
+    for binding in plan["bound_inputs"]:
+        path_error = None
+        try:
+            raw = _read_repo_bytes_once(root, binding["path"])
+            actual = hashlib.sha256(raw).hexdigest()
+            prior = evidence_reads.setdefault(binding["path"], actual)
+            if prior != actual:
+                raise ArtifactError("同一输入在本轮读取期间内容发生变化")
+            bound_bytes[binding["path"]] = raw
+            exists = True
+        except (ArtifactError, OSError) as exc:
+            actual = None
+            exists = False
+            path_error = str(exc)
+        matched = exists and actual == binding["sha256"]
+        bindings_passed = bindings_passed and matched
+        binding_results.append(
+            {
+                **binding,
+                "exists": exists,
+                "actual_sha256": actual,
+                "matched": matched,
+                "path_error": path_error,
+            }
+        )
+    checks: list[dict[str, Any]] = []
+
+    def add(check_id: str, passed: bool, evidence: Any) -> None:
+        checks.append({"check_id": check_id, "passed": passed, "evidence": evidence})
+
+    add(
+        "responsibility_window_time",
+        _aware_datetime(window["starts_at"], "starts_at") <= now
+        <= _aware_datetime(window["expires_at"], "expires_at"),
+        {
+            "starts_at": window["starts_at"],
+            "evaluated_at": now.isoformat(),
+            "expires_at": window["expires_at"],
+        },
+    )
+    add(
+        "governance_generated_green",
+        not governance_mismatch_paths,
+        {"mismatches": sorted(governance_mismatch_paths)},
+    )
+    add(
+        "head_frozen",
+        head_sha == plan["expected_head_sha"],
+        {
+            "expected_head_sha": plan["expected_head_sha"],
+            "actual_head_sha": head_sha,
+        },
+    )
+    expected_paths = list(spec["candidate_write_paths"])
+    add(
+        "wave_scope_exact",
+        window["candidate_write_paths"] == expected_paths
+        and plan["capability_limits"] == spec["capability_limits"],
+        {
+            "expected_candidate_write_paths": expected_paths,
+            "actual_candidate_write_paths": window["candidate_write_paths"],
+            "expected_capability_limits": spec["capability_limits"],
+            "actual_capability_limits": plan["capability_limits"],
+        },
+    )
+
+    baseline_plan, baseline_plan_reference = _reference_payload(
+        root,
+        plan["baseline_plan"],
+        evidence_reads=evidence_reads,
+        captured_bytes=bound_bytes,
+    )
+    baseline, baseline_reference = _reference_payload(
+        root,
+        plan["baseline_receipt"],
+        evidence_reads=evidence_reads,
+        captured_bytes=bound_bytes,
+    )
+    baseline_passed, baseline_evidence = _baseline_receipt_evidence(
+        root,
+        baseline_plan,
+        baseline,
+        expected_plan_id=plan["expected_baseline_plan_id"],
+        expected_head_sha=plan["expected_head_sha"],
+        expected_context_id=window["authorization_context_id"],
+        dirty_paths=dirty_paths,
+        governance_mismatch_paths=governance_mismatch_paths,
+        evidence_reads=evidence_reads,
+        now=now,
+    )
+    baseline_evidence["plan_reference"] = baseline_plan_reference
+    baseline_evidence["reference"] = baseline_reference
+    add("baseline_receipt_current", baseline_passed, baseline_evidence)
+
+    decision, decision_reference = _reference_payload(
+        root,
+        plan["decision_ticket"],
+        evidence_reads=evidence_reads,
+        captured_bytes=bound_bytes,
+    )
+    decision_passed, decision_evidence = _decision_ticket_evidence(
+        decision,
+        expected_ticket_id=plan["expected_decision_ticket_id"],
+        wave_id=wave_id,
+        expected_context_id=window["authorization_context_id"],
+    )
+    decision_evidence["reference"] = decision_reference
+    add("decision_ticket_exact", decision_passed, decision_evidence)
+
+    lock, lock_reference = _reference_payload(
+        root,
+        plan["conflict_lock"],
+        evidence_reads=evidence_reads,
+        captured_bytes=bound_bytes,
+    )
+    lock_passed, lock_evidence = _lock_receipt_evidence(
+        lock,
+        expected_lock_id=plan["expected_lock_id"],
+        wave_id=wave_id,
+        expected_head_sha=plan["expected_head_sha"],
+        owner=window["owner"],
+        candidate_write_paths=expected_paths,
+        expected_context_id=window["authorization_context_id"],
+        now=now,
+    )
+    lock_evidence["reference"] = lock_reference
+    add("conflict_lock_active", lock_passed, lock_evidence)
+
+    try:
+        policy = _must_dict(
+            json.loads(
+                bound_bytes["governance/test_policy.json"].decode("utf-8")
+            ),
+            "test_policy",
+        )
+    except (KeyError, UnicodeDecodeError, ValueError) as exc:
+        raise ArtifactError("测试纪律无法从受绑定字节解析") from exc
+    impact, impact_reference = _reference_payload(
+        root,
+        plan["test_impact"],
+        evidence_reads=evidence_reads,
+        captured_bytes=bound_bytes,
+    )
+    impact_passed, impact_evidence = _test_impact_evidence(
+        impact,
+        wave_id=wave_id,
+        expected_head_sha=plan["expected_head_sha"],
+        candidate_write_paths=expected_paths,
+        expected_context_id=window["authorization_context_id"],
+        policy=policy,
+    )
+    impact_evidence["reference"] = impact_reference
+    add("test_impact_complete", impact_passed, impact_evidence)
+
+    required_paths = set(spec["required_inputs"]) | {
+        plan["baseline_plan"]["path"],
+        plan["baseline_receipt"]["path"],
+        plan["decision_ticket"]["path"],
+        plan["conflict_lock"]["path"],
+        plan["test_impact"]["path"],
+        *(row["path"] for row in plan["dependencies"]),
+    }
+    binding_paths = {row["path"] for row in plan["bound_inputs"]}
+    missing_inputs = sorted(required_paths - binding_paths)
+    bindings_passed = bindings_passed and not missing_inputs
+    add(
+        "bound_input_sha",
+        bindings_passed,
+        {"missing_required_inputs": missing_inputs, "inputs": binding_results},
+    )
+
+    read_allowlist = window["read_allowlist"]
+    missing_read_scopes = sorted(
+        path
+        for path in RESTRUCTURE_WAVE_FIXED_READ_SCOPES
+        if not any(_path_is_allowed(path, allowed) for allowed in read_allowlist)
+    )
+    reads_outside = sorted(
+        path
+        for path in binding_paths
+        if not any(_path_is_allowed(path, allowed) for allowed in read_allowlist)
+    )
+    add(
+        "read_allowlist_complete",
+        bool(read_allowlist) and not missing_read_scopes and not reads_outside,
+        {
+            "read_allowlist": read_allowlist,
+            "missing_fixed_scopes": missing_read_scopes,
+            "bound_inputs_outside_allowlist": reads_outside,
+        },
+    )
+
+    normalized_dirty = sorted(
+        {_repo_relative_path(path, "dirty_path") for path in dirty_paths}
+    )
+    conflicts = sorted(
+        {
+            dirty
+            for dirty in normalized_dirty
+            for candidate in expected_paths
+            if _path_overlap(dirty, candidate)
+        }
+    )
+    add(
+        "candidate_write_paths_disjoint_from_dirty",
+        not conflicts,
+        {
+            "dirty_path_count": len(normalized_dirty),
+            "dirty_paths_sha256": _sha256_list(normalized_dirty),
+            "candidate_write_paths": expected_paths,
+            "conflicts": conflicts,
+        },
+    )
+
+    dependency_passed, dependency_evidence = _wave_dependency_evidence(
+        root,
+        plan["dependencies"],
+        wave_id=wave_id,
+        expected_head_sha=plan["expected_head_sha"],
+        expected_context_id=window["authorization_context_id"],
+        evidence_reads=evidence_reads,
+    )
+    add("wave_dependencies_satisfied", dependency_passed, dependency_evidence)
+
+    passed = all(row["passed"] for row in checks)
+    return {
+        "contract_version": RESTRUCTURE_WAVE_RECEIPT_V1,
+        "plan_id": plan["plan_id"],
+        "plan_content_sha256": _canonical_json_sha256(plan),
+        "status": "PASS" if passed else "BLOCKED",
+        "evaluated_at": now.isoformat(),
+        "head_sha": head_sha,
+        "route": "S0",
+        "wave_id": wave_id,
+        "responsibility_window": window,
+        "authorization_boundary": {
+            "authorizes_wave": False,
+            "mechanical_preconditions_pass": passed,
+            "eligible_wave_id": wave_id if passed else None,
+            "eligible_write_paths": expected_paths if passed else [],
+            "requires_same_task_human_readback": True,
+            "authorizes_physical_move": False,
+            "authorizes_delete": False,
+            "authorizes_preflight": False,
+            "authorizes_notion_write": False,
+            "authorizes_model_api": False,
+            "authorizes_external_removal": False,
+            "authorization_context_claim_is_cryptographic_proof": False,
+        },
+        "runtime_effects": {
+            "network_attempts": 0,
+            "model_api_calls": 0,
+            "tracked_repository_writes": 0,
+            "receipt_writes": 1,
+        },
+        "evidence_snapshot": [
+            {"path": path, "sha256": digest}
+            for path, digest in sorted(evidence_reads.items())
+        ],
+        "checks": checks,
+        "blockers": [row["check_id"] for row in checks if not row["passed"]],
+    }
+
+
+def _wave_lock_request(value: Any) -> dict[str, Any]:
+    request = _must_dict(value, "Wave 冲突锁请求")
+    if request.get("contract_version") != RESTRUCTURE_WAVE_LOCK_REQUEST_V1:
+        raise ArtifactError(
+            f"Wave 冲突锁 contract_version 必须是 {RESTRUCTURE_WAVE_LOCK_REQUEST_V1}"
+        )
+    for key in (
+        "lock_id",
+        "scope",
+        "holder",
+        "authorization_context_id",
+        "expected_head_sha",
+        "starts_at",
+        "expires_at",
+    ):
+        _must_nonempty_string(request.get(key), key)
+    wave_id = request["scope"]
+    if wave_id not in RESTRUCTURE_WAVE_SPECS:
+        raise ArtifactError(f"不支持的 Wave 锁范围：{wave_id}")
+    if not re.fullmatch(r"[0-9a-f]{40}", request["expected_head_sha"]):
+        raise ArtifactError("expected_head_sha 必须是小写 40 位 Git SHA")
+    starts_at = _aware_datetime(request["starts_at"], "starts_at")
+    expires_at = _aware_datetime(request["expires_at"], "expires_at")
+    if expires_at <= starts_at:
+        raise ArtifactError("冲突锁 expires_at 必须晚于 starts_at")
+    paths = _must_list(request.get("candidate_write_paths"), "candidate_write_paths")
+    request["candidate_write_paths"] = [
+        _repo_relative_path(path, "candidate_write_paths") for path in paths
+    ]
+    if request["candidate_write_paths"] != RESTRUCTURE_WAVE_SPECS[wave_id][
+        "candidate_write_paths"
+    ]:
+        raise ArtifactError("冲突锁写集必须与 Wave 精确白名单一致")
+    return request
+
+
+def _wave_lock_output_path(root: Path, value: Path, wave_id: str) -> Path:
+    root = root.resolve()
+    path = _repo_path_without_symlinks(
+        root,
+        value,
+        name="Wave 冲突锁",
+    )
+    expected = (
+        root
+        / "TEMP/restructure_wave_preflight/locks"
+        / f"{wave_id}.lock.json"
+    )
+    if path != expected:
+        raise ArtifactError(f"Wave 冲突锁只能写入固定路径：{expected}")
+    if path.exists():
+        raise ArtifactError(f"拒绝覆盖既有 Wave 冲突锁：{path}")
+    return path
+
+
+def _safe_unlink_repo_file(root: Path, output: Path) -> bool:
+    root = root.resolve()
+    try:
+        path = _repo_path_without_symlinks(
+            root,
+            output,
+            name="待撤销重构机器票",
+        )
+        relative = path.relative_to(root)
+        directory_descriptor = _open_repo_directory_chain(
+            root,
+            relative.parts[:-1],
+            create=False,
+        )
+    except (ArtifactError, OSError, ValueError):
+        return False
+    try:
+        os.unlink(relative.name, dir_fd=directory_descriptor)
+        os.fsync(directory_descriptor)
+        return True
+    except FileNotFoundError:
+        return True
+    finally:
+        os.close(directory_descriptor)
+
+
+def _write_json_exclusive(root: Path, output: Path, value: dict[str, Any]) -> None:
+    root = root.resolve()
+    output = _repo_path_without_symlinks(root, output, name="重构机器票")
+    relative = output.relative_to(root)
+    encoded = (
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    ).encode("utf-8")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        directory_descriptor = _open_repo_directory_chain(
+            root,
+            relative.parts[:-1],
+            create=True,
+        )
+    except OSError as exc:
+        raise ArtifactError(
+            f"重构机器票目录无法安全逐级打开：{output.parent}"
+        ) from exc
+    descriptor: int | None = None
+    created = False
+    try:
+        try:
+            descriptor = os.open(
+                relative.name,
+                flags,
+                0o600,
+                dir_fd=directory_descriptor,
+            )
+            created = True
+        except FileExistsError as exc:
+            raise ArtifactError(f"拒绝覆盖既有重构机器票：{output}") from exc
+        try:
+            with os.fdopen(descriptor, "wb", closefd=False) as stream:
+                stream.write(encoded)
+                stream.flush()
+            os.fsync(descriptor)
+            written_stat = os.fstat(descriptor)
+            verified_path = _repo_path_without_symlinks(
+                root,
+                output,
+                name="已写重构机器票",
+            )
+            visible_stat = os.stat(verified_path, follow_symlinks=False)
+            if (
+                visible_stat.st_dev,
+                visible_stat.st_ino,
+            ) != (
+                written_stat.st_dev,
+                written_stat.st_ino,
+            ):
+                raise ArtifactError("机器票写入路径在落盘期间被替换")
+            os.fsync(directory_descriptor)
+        except BaseException:
+            if created:
+                try:
+                    os.unlink(relative.name, dir_fd=directory_descriptor)
+                except FileNotFoundError:
+                    pass
+            raise
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        os.close(directory_descriptor)
+
+
+def _acquire_restructure_wave_lock_snapshot(
+    root: Path,
+    request_raw: Any,
+    *,
+    output_path: Path,
+    head_sha: str,
+    acquired_at: datetime | None = None,
+) -> dict[str, Any]:
+    root = root.resolve()
+    request = _wave_lock_request(copy.deepcopy(request_raw))
+    now = acquired_at or datetime.now(timezone.utc)
+    if now.tzinfo is None:
+        raise ArtifactError("acquired_at 必须带时区")
+    if head_sha != request["expected_head_sha"]:
+        raise ArtifactError("当前 HEAD 与冲突锁请求不一致")
+    if not (
+        _aware_datetime(request["starts_at"], "starts_at")
+        <= now
+        <= _aware_datetime(request["expires_at"], "expires_at")
+    ):
+        raise ArtifactError("冲突锁请求不在有效期")
+    output = _wave_lock_output_path(root, output_path, request["scope"])
+    receipt = {
+        "contract_version": RESTRUCTURE_WAVE_LOCK_RECEIPT_V1,
+        "status": "ACTIVE",
+        "lock_id": request["lock_id"],
+        "scope": request["scope"],
+        "holder": request["holder"],
+        "authorization_context_id": request["authorization_context_id"],
+        "head_sha": head_sha,
+        "starts_at": request["starts_at"],
+        "acquired_at": now.isoformat(),
+        "expires_at": request["expires_at"],
+        "candidate_write_paths_sha256": _sha256_list(
+            request["candidate_write_paths"]
+        ),
+        "authorization_boundary": {
+            "authorizes_wave": False,
+            "authorizes_notion_write": False,
+            "authorizes_model_api": False,
+        },
+    }
+    _write_json_exclusive(root, output, receipt)
+    return receipt
+
+
 def _receipt_output_path(root: Path, value: Path) -> Path:
-    path = value if value.is_absolute() else root / value
-    resolved = path.resolve()
-    allowed_root = (root / "TEMP/restructure_wave_preflight").resolve()
-    if allowed_root != resolved and allowed_root not in resolved.parents:
-        raise ArtifactError("第一级校准票只能写入 TEMP/restructure_wave_preflight/")
-    if resolved.exists():
-        raise ArtifactError(f"拒绝覆盖既有校准票：{resolved}")
-    return resolved
+    root = root.resolve()
+    path = _repo_path_without_symlinks(
+        root,
+        value,
+        name="重构机器票",
+    )
+    allowed_root = root / "TEMP/restructure_wave_preflight"
+    if allowed_root != path and allowed_root not in path.parents:
+        raise ArtifactError("重构机器票只能写入 TEMP/restructure_wave_preflight/")
+    if path.exists():
+        raise ArtifactError(f"拒绝覆盖既有重构机器票：{path}")
+    return path
+
+
+def _live_restructure_snapshot(root: Path) -> dict[str, Any]:
+    return {
+        "head_sha": git_head(root),
+        "dirty_paths": git_dirty_paths(root),
+        "governance_mismatch_paths": generated_mismatches(root),
+    }
+
+
+def _finish_live_snapshot_receipt(
+    receipt: dict[str, Any],
+    before: dict[str, Any],
+    after: dict[str, Any],
+) -> dict[str, Any]:
+    stable = before == after
+    receipt["checks"].append(
+        {
+            "check_id": "live_snapshot_stable",
+            "passed": stable,
+            "evidence": {
+                "before": before,
+                "after": after,
+            },
+        }
+    )
+    receipt["status"] = (
+        "PASS" if all(row["passed"] for row in receipt["checks"]) else "BLOCKED"
+    )
+    receipt["blockers"] = [
+        row["check_id"] for row in receipt["checks"] if not row["passed"]
+    ]
+    if receipt.get("wave_id"):
+        passed = receipt["status"] == "PASS"
+        boundary = receipt["authorization_boundary"]
+        boundary["authorizes_wave"] = False
+        boundary["mechanical_preconditions_pass"] = passed
+        boundary["eligible_wave_id"] = receipt["wave_id"] if passed else None
+        if not passed:
+            boundary["eligible_write_paths"] = []
+    return receipt
+
+
+def _verify_snapshot_after_receipt_write(
+    root: Path,
+    receipt: dict[str, Any],
+    output: Path,
+) -> None:
+    snapshot_check = next(
+        (
+            row
+            for row in receipt.get("checks", [])
+            if isinstance(row, dict)
+            and row.get("check_id") == "live_snapshot_stable"
+        ),
+        None,
+    )
+    expected = (
+        snapshot_check.get("evidence", {}).get("after")
+        if isinstance(snapshot_check, dict)
+        and isinstance(snapshot_check.get("evidence"), dict)
+        else None
+    )
+    actual = _live_restructure_snapshot(root)
+    evidence_errors: list[str] = []
+    evidence_snapshot = receipt.get("evidence_snapshot")
+    if not isinstance(evidence_snapshot, list) or not evidence_snapshot:
+        evidence_errors.append("缺少出票所用证据快照")
+    else:
+        seen_paths: set[str] = set()
+        for index, row in enumerate(evidence_snapshot):
+            if not isinstance(row, dict):
+                evidence_errors.append(f"evidence_snapshot[{index}] 格式无效")
+                continue
+            path = row.get("path")
+            expected_sha = row.get("sha256")
+            if (
+                not isinstance(path, str)
+                or path in seen_paths
+                or not isinstance(expected_sha, str)
+            ):
+                evidence_errors.append(f"evidence_snapshot[{index}] 字段无效")
+                continue
+            seen_paths.add(path)
+            try:
+                actual_sha = hashlib.sha256(
+                    _read_repo_bytes_once(root, path)
+                ).hexdigest()
+            except (ArtifactError, OSError) as exc:
+                evidence_errors.append(f"{path}: {exc}")
+                continue
+            if actual_sha != expected_sha:
+                evidence_errors.append(f"{path}: SHA 已变化")
+    if expected != actual or evidence_errors:
+        removed = _safe_unlink_repo_file(root, output)
+        result = "已撤销新票" if removed else "无法安全撤销新票"
+        reason = (
+            "现场快照发生变化"
+            if expected != actual
+            else "受绑定证据发生变化"
+        )
+        raise ArtifactError(f"机器票写入后{reason}，{result}")
+
+
+def evaluate_restructure_baseline(
+    root: Path,
+    plan_raw: Any,
+    *,
+    evaluated_at: datetime | None = None,
+) -> dict[str, Any]:
+    root = root.resolve()
+    before = _live_restructure_snapshot(root)
+    receipt = _evaluate_restructure_baseline_snapshot(
+        root,
+        plan_raw,
+        dirty_paths=before["dirty_paths"],
+        head_sha=before["head_sha"],
+        governance_mismatch_paths=before["governance_mismatch_paths"],
+        evaluated_at=evaluated_at,
+    )
+    return _finish_live_snapshot_receipt(
+        receipt,
+        before,
+        _live_restructure_snapshot(root),
+    )
+
+
+def evaluate_restructure_wave(
+    root: Path,
+    plan_raw: Any,
+    *,
+    evaluated_at: datetime | None = None,
+) -> dict[str, Any]:
+    root = root.resolve()
+    before = _live_restructure_snapshot(root)
+    receipt = _evaluate_restructure_wave_snapshot(
+        root,
+        plan_raw,
+        dirty_paths=before["dirty_paths"],
+        head_sha=before["head_sha"],
+        governance_mismatch_paths=before["governance_mismatch_paths"],
+        evaluated_at=evaluated_at,
+    )
+    return _finish_live_snapshot_receipt(
+        receipt,
+        before,
+        _live_restructure_snapshot(root),
+    )
+
+
+def acquire_restructure_wave_lock(
+    root: Path,
+    request_raw: Any,
+    *,
+    output_path: Path,
+    acquired_at: datetime | None = None,
+) -> dict[str, Any]:
+    root = root.resolve()
+    before = _live_restructure_snapshot(root)
+    receipt = _acquire_restructure_wave_lock_snapshot(
+        root,
+        request_raw,
+        output_path=output_path,
+        head_sha=before["head_sha"],
+        acquired_at=acquired_at,
+    )
+    after = _live_restructure_snapshot(root)
+    if after != before:
+        lock_path = (
+            root
+            / "TEMP/restructure_wave_preflight/locks"
+            / f"{receipt['scope']}.lock.json"
+        )
+        removed = _safe_unlink_repo_file(root, lock_path)
+        result = "已撤销新锁" if removed else "无法安全撤销新锁"
+        raise ArtifactError(f"冲突锁创建期间现场发生变化，{result}")
+    return receipt
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -1319,25 +3130,64 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--check", action="store_true", help="在临时目录生成并与当前索引逐字比较")
     parser.add_argument("--baseline-plan", type=Path, help="读取第一级仓库重构基线校准计划")
     parser.add_argument("--baseline-output", type=Path, help="把机器校准票写入 TEMP 的新路径")
+    parser.add_argument("--wave-plan", type=Path, help="读取第二级精确 Wave 开工计划")
+    parser.add_argument("--wave-output", type=Path, help="把第二级 Wave 票写入 TEMP 的新路径")
+    parser.add_argument("--wave-lock-request", type=Path, help="读取 Wave 冲突锁请求")
+    parser.add_argument("--wave-lock-output", type=Path, help="原子创建固定 Wave 冲突锁")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    if bool(args.baseline_plan) != bool(args.baseline_output):
-        raise ArtifactError("--baseline-plan 与 --baseline-output 必须同时提供")
-    if args.check and args.baseline_plan:
-        raise ArtifactError("--check 与 --baseline-plan 不能同时使用")
+    pairs = (
+        ("--baseline-plan", args.baseline_plan, "--baseline-output", args.baseline_output),
+        ("--wave-plan", args.wave_plan, "--wave-output", args.wave_output),
+        (
+            "--wave-lock-request",
+            args.wave_lock_request,
+            "--wave-lock-output",
+            args.wave_lock_output,
+        ),
+    )
+    for left_name, left, right_name, right in pairs:
+        if bool(left) != bool(right):
+            raise ArtifactError(f"{left_name} 与 {right_name} 必须同时提供")
+    selected_modes = sum(
+        (
+            bool(args.check),
+            bool(args.baseline_plan),
+            bool(args.wave_plan),
+            bool(args.wave_lock_request),
+        )
+    )
+    if selected_modes > 1:
+        raise ArtifactError("治理检查、一级票、二级票和冲突锁模式不能同时使用")
     if args.baseline_plan:
         receipt = evaluate_restructure_baseline(
             ROOT,
             read_json(args.baseline_plan),
-            dirty_paths=git_dirty_paths(ROOT),
-            head_sha=git_head(ROOT),
-            governance_mismatch_paths=generated_mismatches(ROOT),
         )
         output = _receipt_output_path(ROOT, args.baseline_output)
-        write_json_atomic(output, receipt)
+        _write_json_exclusive(ROOT, output, receipt)
+        _verify_snapshot_after_receipt_write(ROOT, receipt, output)
+        print(json.dumps(receipt, ensure_ascii=False, indent=2))
+        return 0 if receipt["status"] == "PASS" else 2
+    if args.wave_lock_request:
+        receipt = acquire_restructure_wave_lock(
+            ROOT,
+            read_json(args.wave_lock_request),
+            output_path=args.wave_lock_output,
+        )
+        print(json.dumps(receipt, ensure_ascii=False, indent=2))
+        return 0
+    if args.wave_plan:
+        receipt = evaluate_restructure_wave(
+            ROOT,
+            read_json(args.wave_plan),
+        )
+        output = _receipt_output_path(ROOT, args.wave_output)
+        _write_json_exclusive(ROOT, output, receipt)
+        _verify_snapshot_after_receipt_write(ROOT, receipt, output)
         print(json.dumps(receipt, ensure_ascii=False, indent=2))
         return 0 if receipt["status"] == "PASS" else 2
     if not args.check:
