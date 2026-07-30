@@ -39,8 +39,16 @@ python3 tools/historical_test_replay.py run \
 v1 包仍保持封存，不改原字节。第一次真实回放使用提交
 `ed0dddcd2428fae8daf726ca2985571843df263d`，结果是 38 项通过、2 项失败；两项
 都因为 v1 少收了 Z01d 的覆盖诊断文件，不是业务断言失败。失败工作区和票据继续
-保留，不能写成 40 项通过。v2 只补登记的 Z01d 旧运行取件单位，仍须使用新的
-Git 提交和新运行号实际回放。
+保留，不能写成 40 项通过。
+
+v2 只补登记的 Z01d 旧运行取件单位，已经在提交
+`d8371ea36ca2fc9b98300df6699f2e4bdb0468dc` 上用运行号
+`s05b-historical-replay-r02-20260731` 实际回放：40 项通过、3 个子测试通过、
+pytest 退出码为 0。三份外置工作区票据 SHA 分别是：
+
+- 物化票：`21404e9c8ba68ec0735d97bbdf17aa39787604d5ede0c0f3a5fd1d48b399d429`
+- 运行票：`3bffb9e23518a182c68617952c04a8c6f5884971ab768641a5afdd2c3ae3eeb2`
+- 文件读取票：`940c63a3738b4e01ba9ee58327e7ee0d26c1a131f337d249419466f60bf86714`
 
 `seal` 只用于建立一个全新版本，命令是
 `python3 tools/historical_test_replay.py seal`。现有包已经存在时会拒绝覆盖；要换取件

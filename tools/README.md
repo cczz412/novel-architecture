@@ -183,6 +183,9 @@ python3 tools/experiment_workspace.py materialize \
 
 v1 包在提交 `ed0dddcd2428fae8daf726ca2985571843df263d` 上实际得到 38 项通过、
 2 项因少收 Z01d 覆盖诊断文件而失败。v1 包和失败工作区保持原样；当前 v2 是补齐
-固定取件单位后的新修订，必须绑定新的 Git 提交和新运行号再跑，不能继承 v1 的结果。
+固定取件单位后的新修订。v2 已绑定提交
+`d8371ea36ca2fc9b98300df6699f2e4bdb0468dc` 和运行号
+`s05b-historical-replay-r02-20260731` 实际得到 40 项通过、3 个子测试通过；
+两轮结果各看自己的工作区票据，不能相互覆盖。
 
 来源：Codex

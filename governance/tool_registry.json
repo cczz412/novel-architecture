@@ -3876,7 +3876,7 @@
         "config/test_replay/historical_replays.json",
         "tests/README.md"
       ],
-      "next_confirmed_consumer": "v1 在提交 ed0dddcd2428fae8daf726ca2985571843df263d 上真实得到 38 项通过、2 项因少收 Z01d 覆盖诊断文件而失败；v2 补齐取件单位后，须绑定新提交和新运行号实际回放，再按读取票评估能否缩小材料包。",
+      "next_confirmed_consumer": "v1 在提交 ed0dddcd2428fae8daf726ca2985571843df263d 上真实得到 38 项通过、2 项因少收 Z01d 覆盖诊断文件而失败；v2 在提交 d8371ea36ca2fc9b98300df6699f2e4bdb0468dc 上用新运行号得到 40 项通过、3 个子测试通过，后续只按 v2 文件读取票评估能否缩小材料包。",
       "retirement_condition_and_compatibility_boundary": "候选历史复验组件；不删除或移动原件，不覆盖旧包和旧工作区，不读取主仓未提交字节，不接默认业务链，不写 Notion，不发网或调用模型。",
       "review_needed": false
     }
