@@ -3866,7 +3866,7 @@
         "tests/test_historical_test_replay.py",
         "tests/test_test_debt_policy.py"
       ],
-      "consumer_evidence_rule": "只登记 S-05-B 的 40 个精确历史节点、固定外置包和复制式回放；默认测试只报告 deselected，不把未运行写成通过。",
+      "consumer_evidence_rule": "只登记 S-05-B 的 40 个精确历史节点、固定外置包和复制式回放；默认测试只报告 deselected；v1 的缺件失败与 v2 的新回放必须分账，不把未运行或旧失败写成通过。",
       "test_references": [
         "tests/test_historical_test_replay.py",
         "tests/test_test_debt_policy.py"
@@ -3876,7 +3876,7 @@
         "config/test_replay/historical_replays.json",
         "tests/README.md"
       ],
-      "next_confirmed_consumer": "第一次真实 40 项回放在本工具和封签登记进入同一 Git 提交后执行，再按读取票评估能否缩小材料包。",
+      "next_confirmed_consumer": "v1 在提交 ed0dddcd2428fae8daf726ca2985571843df263d 上真实得到 38 项通过、2 项因少收 Z01d 覆盖诊断文件而失败；v2 补齐取件单位后，须绑定新提交和新运行号实际回放，再按读取票评估能否缩小材料包。",
       "retirement_condition_and_compatibility_boundary": "候选历史复验组件；不删除或移动原件，不覆盖旧包和旧工作区，不读取主仓未提交字节，不接默认业务链，不写 Notion，不发网或调用模型。",
       "review_needed": false
     }

@@ -1,6 +1,6 @@
 {
   "schema_version": "historical-test-replay-registry-v1",
-  "registry_id": "S05B-HISTORICAL-REPLAY-20260731-01",
+  "registry_id": "S05B-HISTORICAL-REPLAY-20260731-02",
   "decision": {
     "authority": "CZ",
     "choice": "S-05-B",
@@ -21,11 +21,11 @@
     ]
   },
   "source_package": {
-    "package_id": "historical_test_replay_s05b_20260731_v1",
+    "package_id": "historical_test_replay_s05b_20260731_v2",
     "status": "sealed",
     "external_root_id": "repository_sibling_external_archive_v1",
-    "relative_path": "historical_test_replay_s05b_20260731_v1",
-    "manifest_sha256": "f2f2b3b612ac4b18f98abbabdd0bf500337fde9cfe62be8dacf1ab03f6a5503a"
+    "relative_path": "historical_test_replay_s05b_20260731_v2",
+    "manifest_sha256": "1e1c003ec5fe1adb9c045584d7dc33415623607baef63c3e6e1060166ec4cca4"
   },
   "source_roots": [
     {
@@ -80,6 +80,12 @@
       "unit_id": "external_z00x4_run",
       "root_id": "archive_batch_20260723",
       "repo_relative_path": "runs/Z00x4_X01_提取覆盖诊断_20章_v2.0_20260718",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z01d_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z01d_step1_X01_程序点名器全覆盖自检_20章_v1.0_20260719",
       "kind": "directory"
     },
     {
@@ -197,6 +203,7 @@
       ],
       "source_unit_ids": [
         "external_z00x4_run",
+        "external_z01d_run",
         "local_z00r_run",
         "local_x01_book"
       ]

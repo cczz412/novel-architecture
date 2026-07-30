@@ -30,10 +30,17 @@ python3 tools/historical_test_replay.py run \
 
 当前外置包已经封签：
 
-- 文件数：2,055
-- 总字节：31,700,875
+- 包编号：`historical_test_replay_s05b_20260731_v2`
+- 文件数：2,057
+- 总字节：32,346,449
 - `MANIFEST.json` SHA：
-  `f2f2b3b612ac4b18f98abbabdd0bf500337fde9cfe62be8dacf1ab03f6a5503a`
+  `1e1c003ec5fe1adb9c045584d7dc33415623607baef63c3e6e1060166ec4cca4`
+
+v1 包仍保持封存，不改原字节。第一次真实回放使用提交
+`ed0dddcd2428fae8daf726ca2985571843df263d`，结果是 38 项通过、2 项失败；两项
+都因为 v1 少收了 Z01d 的覆盖诊断文件，不是业务断言失败。失败工作区和票据继续
+保留，不能写成 40 项通过。v2 只补登记的 Z01d 旧运行取件单位，仍须使用新的
+Git 提交和新运行号实际回放。
 
 `seal` 只用于建立一个全新版本，命令是
 `python3 tools/historical_test_replay.py seal`。现有包已经存在时会拒绝覆盖；要换取件

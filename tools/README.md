@@ -181,4 +181,8 @@ python3 tools/experiment_workspace.py materialize \
 默认 `pytest` 只会把这 40 项报告成 `deselected`。不能把这个数字写成历史回放通过；
 真结果看同级工作区里的 `HISTORICAL_REPLAY_RUN_RECEIPT.json`。
 
+v1 包在提交 `ed0dddcd2428fae8daf726ca2985571843df263d` 上实际得到 38 项通过、
+2 项因少收 Z01d 覆盖诊断文件而失败。v1 包和失败工作区保持原样；当前 v2 是补齐
+固定取件单位后的新修订，必须绑定新的 Git 提交和新运行号再跑，不能继承 v1 的结果。
+
 来源：Codex

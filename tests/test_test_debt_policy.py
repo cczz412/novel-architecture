@@ -120,8 +120,14 @@ def test_historical_registry_has_exact_real_nodes_and_source_units() -> None:
     used_unit_ids = {
         unit_id for group in registry["groups"] for unit_id in group["source_unit_ids"]
     }
-    assert len(unit_ids) == 24
+    assert len(unit_ids) == 25
     assert used_unit_ids == unit_ids
+    extraction_group = next(
+        group
+        for group in registry["groups"]
+        if group["group_id"] == "extraction_method_ab_archived_runs"
+    )
+    assert "external_z01d_run" in extraction_group["source_unit_ids"]
     for unit in registry["source_units"]:
         relative = Path(unit["repo_relative_path"])
         assert not relative.is_absolute()
@@ -131,12 +137,12 @@ def test_historical_registry_has_exact_real_nodes_and_source_units() -> None:
         "a7560f2fc95503f3c9ce35c250437f19f9cb75fd53b5c78c02fcd68df74320a0"
     )
     assert registry["source_package"] == {
-        "package_id": "historical_test_replay_s05b_20260731_v1",
+        "package_id": "historical_test_replay_s05b_20260731_v2",
         "status": "sealed",
         "external_root_id": "repository_sibling_external_archive_v1",
-        "relative_path": "historical_test_replay_s05b_20260731_v1",
+        "relative_path": "historical_test_replay_s05b_20260731_v2",
         "manifest_sha256": (
-            "f2f2b3b612ac4b18f98abbabdd0bf500337fde9cfe62be8dacf1ab03f6a5503a"
+            "1e1c003ec5fe1adb9c045584d7dc33415623607baef63c3e6e1060166ec4cca4"
         ),
     }
 
