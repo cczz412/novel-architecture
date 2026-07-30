@@ -70,6 +70,10 @@ python3 tools/governance_index.py \
 python3 tools/governance_index.py \
   --wave-plan <二级计划.json> \
   --wave-output <TEMP下全新二级票.json>
+
+python3 tools/governance_index.py \
+  --wave-completion-request <完成请求.json> \
+  --wave-completion-output <TEMP下全新完成票v2.json>
 ```
 
 机器闸自己采集 Git HEAD、脏路径和治理漂移，并在出票前后复核快照没有变化；调用者
@@ -78,11 +82,112 @@ python3 tools/governance_index.py \
 和解析内容；票写盘后还会重验本轮实际读过的全部证据 SHA，避免 TEMP 忽略文件在中途
 被换掉。机器票和锁都只写
 `TEMP/restructure_wave_preflight/`，拒绝覆盖旧票，也拒绝经过软链父目录写到仓外。
-所有受绑定的输入也逐级拒绝父目录软链。S0 的 `materialize-only` 还必须绑定已通过的
+所有受绑定的输入也逐级拒绝父目录软链。输入文件若是硬链接，也会在读取内容前拒绝，
+不能给私有文件换个允许路径的别名。S0 的 `materialize-only` 还必须绑定已通过的
 Wave 1 实际二级计划、二级票、完整检查集、逐文件输出 SHA，以及可由 Git 回查并与
 精确写集完全相等的起止提交；不能手写一对“票据 + 完成票”接续。写盘时逐级用真实
 目录描述符打开父路径，父目录在检查后被换成软链也会硬停。S0 不等于断网预检通过，
 也不授权移动、删除、Notion、模型 API 或外置清退。
+
+完成票 v2 只干一件事：证明某个已完成 Wave 在两个 Git 提交之间改了哪些仓库文件。
+请求只填起止提交和原二级计划／开工票引用，不接受自报输出，也不接收测试报告。工具
+直接从 Git 历史对象取变更、普通文件 blob、Git blob SHA 和内容 SHA-256；当前工作树
+后来改过同名文件，也不能替代历史提交里的字节。删除、改名、范围外文件、非祖先提交
+或原票 SHA 漂移都会得到 `BLOCKED`；全过时状态是 `GIT_SCOPE_PASS`。
+
+⚠️ `GIT_SCOPE_PASS` 不证明、也不评价测试有没有跑。当前 Wave 的测试仍由新基线和
+测试影响单负责。各环节交接完成请求时照这个骨架填；`wave_plan` 和 `wave_receipt`
+都是“仓库相对路径＋文件 SHA-256”，不要加 `outputs` 或测试字段：
+
+```json
+{
+  "contract_version": "repository-restructure-wave-completion-request-v2",
+  "completion_id": "<本次唯一编号>",
+  "wave_id": "S0_MATERIALIZE_ONLY",
+  "authorization_context_id": "<同任务授权上下文>",
+  "pre_commit_sha": "<施工前40位Git提交>",
+  "post_commit_sha": "<施工后40位Git提交>",
+  "wave_plan": {"path": "<原计划路径>", "sha256": "<原计划SHA-256>"},
+  "wave_receipt": {"path": "<原开工票路径>", "sha256": "<原开工票SHA-256>"}
+}
+```
+
+`WAVE2_RULE_BUNDLES` 也只干一件事：为一个合成 JSON 试点准备“调用档合同＋提示词
+清单＋上下文配方＋离线解析工具”。它沿用现有登记布局，不另造平行目录。唯一试点调用档是
+`qianwen_qwen3_7_flash_json_object_no_thinking`，唯一试点工件编号是
+`wave2_synthetic_json_probe_v1`。
+
+候选写集固定为下面 22 个文件，任一增删都会被机器闸拒绝：
+
+```text
+config/model_call_profiles/contracts/README.md
+config/model_call_profiles/contracts/contract_bundle.schema.json
+config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/bundle.json
+config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/request_envelope.schema.json
+config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/response_envelope.schema.json
+config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/normalization.json
+config/prompts/README.md
+config/prompts/prompt_manifest.schema.json
+config/prompts/wave2_synthetic_json_probe_v1/prompt.md
+config/prompts/wave2_synthetic_json_probe_v1/manifest.json
+config/context_recipes/README.md
+config/context_recipes/context_recipe.schema.json
+config/context_recipes/wave2_synthetic_json_probe_v1.json
+config/contracts/wave2_synthetic_json_probe_v1.schema.json
+config/model_call_profiles/registry.json
+config/model_call_profiles/README.md
+config/README.md
+tools/model_call_profiles.py
+tests/test_model_call_profiles.py
+tools/README.md
+tests/README.md
+governance/tool_registry.json
+```
+
+这 22 项全是精确文件路径，没有目录前缀权限。即使文件位于上面列出的合同目录或提示词
+目录里，清单外的 `run.py`、`secret.env`、`part.json` 也会被拒绝；Git 不需要登记空目录。
+
+读取范围也按文件逐项登记：只含仓库规则、`TEMP/restructure_wave_preflight`
+下的受绑定票据、上面的候选写路径，以及规格列出的现役调用档、千问供应商规则和治理
+输入。它不能读取整个 `config/`、`governance/`、`tests/` 或 `tools/`，像
+`config/private/secret.json`、`.git/config` 这样的额外输入会在打开任何文件前被拒绝。
+工具内部仍可调用 Git 核对历史，但计划不能把 `.git` 声明成业务输入。Wave 1 和 S0 的
+旧读取范围不变。Wave2 还必须恰好声明一条 `S0_MATERIALIZE_ONLY` 完成票依赖；类型
+错误或多出第二条依赖，也会在读取依赖内容前硬停。
+Wave2 固定一级计划内部的 `bound_inputs` 也必须与一级基线的 6 个必绑输入完全相等；
+多塞 TEMP 私有文件或少绑任一必需文件，都会在一级重放和文件读取前硬停。
+
+六类票据只认下面这些固定槽位，不能拿别的 TEMP 文件冒充：
+
+```text
+一级计划：TEMP/restructure_wave_preflight/route-a-plus-wave2-20260730/BASELINE_PLAN_WAVE2_20260730.json
+一级票：TEMP/restructure_wave_preflight/route-a-plus-wave2-20260730/BASELINE_RECEIPT_WAVE2_20260730.json
+准备票：TEMP/restructure_wave_preflight/route-a-plus-wave2-20260730/WAVE2_PREPARATION_TICKET_20260730.json
+冲突锁：TEMP/restructure_wave_preflight/locks/WAVE2_RULE_BUNDLES.lock.json
+测试影响单：TEMP/restructure_wave_preflight/route-a-plus-wave2-20260730/WAVE2_TEST_IMPACT_20260730.json
+S0 完成票：TEMP/restructure_wave_preflight/route-a-plus-s0-20260730/S0_MATERIALIZE_COMPLETION_V2_20260730.json
+```
+
+交接顺序是：
+
+1. S0 提交后生成可重放的 `GIT_SCOPE_PASS` 完成票 v2。
+2. 在新 HEAD 重新生成一级基线票；旧基线票不能沿用。
+3. 新建 `repository-restructure-wave2-preparation-ticket-v1` 准备票，记录本任务
+   的 `a`（S-02-A），并绑定本次 S0 完成票。旧 S0 决策票不能改写或复用。
+4. 准备 Wave2 冲突锁、当前测试影响单和二级计划，再跑机械闸。
+5. 即使二级票 PASS，也必须回到同一任务，请 CZ 另给一次明确的正向确认，才能开始写
+   Wave2 候选文件。
+
+当前 `a` 只说明可以补 S0 完成证据并扩建 Wave2 机器闸；准备票和二级 PASS 都不授权
+写 Wave2 文件。能力字段必须与机器规格完全相等，多一个未知字段也会拒绝；预检、联网、
+读密钥、发请求、模型 API、Notion 和外置清退始终不在本闸授权里。
+本波不含 `config/experiment_assembly`：它还没进入当前目录身份账，可信签发要留到
+Wave9 另开合同，不能顺手塞进 Wave2。
+
+Wave2 规格还钉住本次真实 S0 的计划／开工票路径、文件 SHA 和起止提交；换一套自造票
+会硬停。S0 历史输出必须与当前 HEAD 一一对应。只有
+`governance/tool_registry.json` 可因扩建机器闸发生内容变化，但仍须是普通文件；
+其余 S0 输出只要内容或 Git 模式变化、被替换或删除，Wave2 依赖检查就会阻断。
 
 语义检查只分流：
 

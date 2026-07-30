@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import inspect
 import json
+import subprocess
 import tempfile
 import unittest
 from datetime import datetime, timezone
@@ -554,6 +555,124 @@ def _evaluate_s0_fixture(
         )
 
 
+def _git(root: Path, *args: str) -> str:
+    return subprocess.run(
+        ["git", *args],
+        cwd=root,
+        check=True,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ).stdout.strip()
+
+
+def _completion_v2_fixture(
+    root: Path,
+) -> tuple[dict, dict, Path, Path]:
+    plan, _ = _wave_fixture(root, governance_index.S0_MATERIALIZE_ONLY)
+    _git(root, "init", "-q")
+    _git(root, "config", "user.email", "tests@example.invalid")
+    _git(root, "config", "user.name", "Governance Tests")
+    _git(root, "add", ".")
+    _git(root, "commit", "-qm", "pre wave")
+    pre_commit = _git(root, "rev-parse", "HEAD")
+
+    plan["expected_head_sha"] = pre_commit
+    plan_path = (
+        root
+        / "TEMP/restructure_wave_preflight/test/S0_COMPLETION_SOURCE_PLAN.json"
+    )
+    _write_json(plan_path, plan)
+    normalized_plan = governance_index._wave_plan(copy.deepcopy(plan))
+    plan_sha = governance_index._canonical_json_sha256(normalized_plan)
+    source_receipt = {
+        "contract_version": governance_index.RESTRUCTURE_WAVE_RECEIPT_V1,
+        "plan_id": normalized_plan["plan_id"],
+        "plan_content_sha256": plan_sha,
+        "status": "PASS",
+        "blockers": [],
+        "head_sha": pre_commit,
+        "route": "S0",
+        "wave_id": governance_index.S0_MATERIALIZE_ONLY,
+        "responsibility_window": copy.deepcopy(
+            normalized_plan["responsibility_window"]
+        ),
+        "authorization_boundary": {
+            "authorizes_wave": False,
+            "mechanical_preconditions_pass": True,
+            "requires_same_task_human_readback": True,
+            "eligible_wave_id": governance_index.S0_MATERIALIZE_ONLY,
+            "eligible_write_paths": list(
+                governance_index.RESTRUCTURE_WAVE_SPECS[
+                    governance_index.S0_MATERIALIZE_ONLY
+                ]["candidate_write_paths"]
+            ),
+        },
+        "checks": [
+            {"check_id": check_id, "passed": True, "evidence": {"fixture": True}}
+            for check_id in (
+                "responsibility_window_time",
+                "governance_generated_green",
+                "head_frozen",
+                "wave_scope_exact",
+                "baseline_receipt_current",
+                "decision_ticket_exact",
+                "conflict_lock_active",
+                "test_impact_complete",
+                "bound_input_sha",
+                "read_allowlist_complete",
+                "candidate_write_paths_disjoint_from_dirty",
+                "wave_dependencies_satisfied",
+                "live_snapshot_stable",
+            )
+        ],
+    }
+    source_receipt_path = (
+        root
+        / "TEMP/restructure_wave_preflight/test/S0_COMPLETION_SOURCE_RECEIPT.json"
+    )
+    _write_json(source_receipt_path, source_receipt)
+
+    output_path = root / "tools/experiment_workspace.py"
+    output_path.write_text("print('historical blob')\n", encoding="utf-8")
+    _write_json(
+        root / "governance/tool_registry.json",
+        {"schema_version": "test", "s0_registered": True},
+    )
+    _git(
+        root,
+        "add",
+        "governance/tool_registry.json",
+        "tools/experiment_workspace.py",
+    )
+    _git(root, "commit", "-qm", "complete s0")
+    post_commit = _git(root, "rev-parse", "HEAD")
+
+    request = {
+        "contract_version": (
+            governance_index.RESTRUCTURE_WAVE_COMPLETION_REQUEST_V2
+        ),
+        "completion_id": "S0-COMPLETION-V2-TEST",
+        "wave_id": governance_index.S0_MATERIALIZE_ONLY,
+        "authorization_context_id": "test-context",
+        "pre_commit_sha": pre_commit,
+        "post_commit_sha": post_commit,
+        "wave_plan": {
+            "path": plan_path.relative_to(root).as_posix(),
+            "sha256": governance_index.sha256_file(plan_path),
+        },
+        "wave_receipt": {
+            "path": source_receipt_path.relative_to(root).as_posix(),
+            "sha256": governance_index.sha256_file(source_receipt_path),
+        },
+    }
+    receipt = governance_index.evaluate_restructure_wave_completion_v2(
+        root,
+        request,
+    )
+    return request, receipt, plan_path, source_receipt_path
+
+
 class GovernanceIndexTests(unittest.TestCase):
     def test_experiment_index_only_lists_registered_directories(
         self,
@@ -1090,17 +1209,25 @@ class GovernanceIndexTests(unittest.TestCase):
             root = Path(temporary)
             plan = _baseline_fixture(root)
             plan["responsibility_window"]["read_allowlist"] = []
-            receipt = governance_index._evaluate_restructure_baseline_snapshot(
-                root,
-                plan,
-                dirty_paths=[],
-                head_sha="a" * 40,
-                governance_mismatch_paths=[],
-                evaluated_at=datetime(2026, 7, 30, 5, 0, tzinfo=timezone.utc),
-            )
-
-        self.assertEqual(receipt["status"], "BLOCKED")
-        self.assertIn("read_allowlist_complete", receipt["blockers"])
+            with self.assertRaisesRegex(
+                governance_index.ArtifactError,
+                "固定读取范围完全相等",
+            ):
+                governance_index._evaluate_restructure_baseline_snapshot(
+                    root,
+                    plan,
+                    dirty_paths=[],
+                    head_sha="a" * 40,
+                    governance_mismatch_paths=[],
+                    evaluated_at=datetime(
+                        2026,
+                        7,
+                        30,
+                        5,
+                        0,
+                        tzinfo=timezone.utc,
+                    ),
+                )
 
     def test_restructure_baseline_blocks_historical_authority_rewrite(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1273,6 +1400,170 @@ class GovernanceIndexTests(unittest.TestCase):
         self.assertEqual(receipt["status"], "BLOCKED")
         self.assertIn("baseline_receipt_current", receipt["blockers"])
 
+    def test_restructure_wave_rejects_nested_baseline_read_before_access(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            plan, now = _wave_fixture(root)
+            probe_path = root / "foundation/probe.json"
+            _write_json(probe_path, {"must_not_be_read": True})
+            baseline_path = root / plan["baseline_plan"]["path"]
+            baseline_plan = read_json(baseline_path)
+            baseline_plan["bound_inputs"].append(
+                {
+                    "path": "foundation/probe.json",
+                    "sha256": governance_index.sha256_file(probe_path),
+                }
+            )
+            _write_json(baseline_path, baseline_plan)
+            _refresh_plan_reference(plan, "baseline_plan", baseline_path)
+            with patch.object(
+                governance_index,
+                "_read_repo_bytes_once",
+                wraps=governance_index._read_repo_bytes_once,
+            ) as reader:
+                receipt = governance_index._evaluate_restructure_wave_snapshot(
+                    root,
+                    plan,
+                    dirty_paths=[],
+                    head_sha="a" * 40,
+                    governance_mismatch_paths=[],
+                    evaluated_at=now,
+                )
+            read_paths = [
+                call.args[1]
+                for call in reader.call_args_list
+                if len(call.args) >= 2
+            ]
+
+        self.assertEqual(receipt["status"], "BLOCKED")
+        self.assertIn("baseline_receipt_current", receipt["blockers"])
+        self.assertNotIn("foundation/probe.json", read_paths)
+
+    def test_wave2_rejects_nonexact_nested_baseline_inputs_before_replay(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            plan, now = _wave_fixture(root)
+            baseline_plan = read_json(root / plan["baseline_plan"]["path"])
+            baseline_receipt = read_json(
+                root / plan["baseline_receipt"]["path"]
+            )
+            private_path = (
+                root
+                / "TEMP/restructure_wave_preflight/test/"
+                "PRIVATE_NESTED_BASELINE.json"
+            )
+            _write_json(private_path, {"must_not_be_read": True})
+            baseline_plan["bound_inputs"].append(
+                {
+                    "path": private_path.relative_to(root).as_posix(),
+                    "sha256": governance_index.sha256_file(private_path),
+                }
+            )
+            baseline_receipt["plan_content_sha256"] = (
+                governance_index._canonical_json_sha256(
+                    governance_index._baseline_plan(
+                        copy.deepcopy(baseline_plan)
+                    )
+                )
+            )
+            with (
+                patch.object(
+                    governance_index,
+                    "_evaluate_restructure_baseline_snapshot",
+                ) as replay,
+                patch.object(
+                    governance_index,
+                    "_read_repo_bytes_once",
+                    wraps=governance_index._read_repo_bytes_once,
+                ) as reader,
+            ):
+                passed, evidence = (
+                    governance_index._baseline_receipt_evidence(
+                        root,
+                        baseline_plan,
+                        baseline_receipt,
+                        expected_plan_id=baseline_receipt["plan_id"],
+                        expected_head_sha="a" * 40,
+                        expected_context_id="test-context",
+                        outer_wave_id=governance_index.WAVE2_RULE_BUNDLES,
+                        outer_read_scopes=(
+                            governance_index.WAVE2_REQUIRED_READ_SCOPES
+                        ),
+                        dirty_paths=[],
+                        governance_mismatch_paths=[],
+                        evidence_reads={},
+                        now=now,
+                    )
+                )
+
+            self.assertFalse(passed)
+            self.assertIn(
+                "Wave2 的一级计划 bound_inputs "
+                "必须与一级基线必绑输入完全相等",
+                "\n".join(evidence["errors"]),
+            )
+            self.assertEqual(
+                evidence["nested_binding_extra"],
+                [private_path.relative_to(root).as_posix()],
+            )
+            self.assertEqual(evidence["nested_binding_missing"], [])
+            replay.assert_not_called()
+            reader.assert_not_called()
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            plan, now = _wave_fixture(root)
+            baseline_plan = read_json(root / plan["baseline_plan"]["path"])
+            baseline_receipt = read_json(
+                root / plan["baseline_receipt"]["path"]
+            )
+            baseline_plan["bound_inputs"] = [
+                row
+                for row in baseline_plan["bound_inputs"]
+                if row["path"] != "AGENTS.md"
+            ]
+            with (
+                patch.object(
+                    governance_index,
+                    "_evaluate_restructure_baseline_snapshot",
+                ) as replay,
+                patch.object(
+                    governance_index,
+                    "_read_repo_bytes_once",
+                    wraps=governance_index._read_repo_bytes_once,
+                ) as reader,
+            ):
+                passed, evidence = (
+                    governance_index._baseline_receipt_evidence(
+                        root,
+                        baseline_plan,
+                        baseline_receipt,
+                        expected_plan_id=baseline_receipt["plan_id"],
+                        expected_head_sha="a" * 40,
+                        expected_context_id="test-context",
+                        outer_wave_id=governance_index.WAVE2_RULE_BUNDLES,
+                        outer_read_scopes=(
+                            governance_index.WAVE2_REQUIRED_READ_SCOPES
+                        ),
+                        dirty_paths=[],
+                        governance_mismatch_paths=[],
+                        evidence_reads={},
+                        now=now,
+                    )
+                )
+
+            self.assertFalse(passed)
+            self.assertIn(
+                "一级计划无效：bound_inputs 缺少必绑输入：AGENTS.md",
+                evidence["errors"],
+            )
+            replay.assert_not_called()
+            reader.assert_not_called()
+
     def test_restructure_wave_gate_binds_one_authorization_context(self) -> None:
         for reference_name in ("decision_ticket", "conflict_lock"):
             with self.subTest(reference_name=reference_name):
@@ -1437,6 +1728,41 @@ class GovernanceIndexTests(unittest.TestCase):
         self.assertEqual(receipt["status"], "BLOCKED")
         self.assertIn("wave_dependencies_satisfied", receipt["blockers"])
 
+    def test_s0_dependency_rejects_nested_wave1_read_before_access(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            plan, now = _wave_fixture(
+                root,
+                governance_index.S0_MATERIALIZE_ONLY,
+            )
+            probe_path = root / "foundation/probe.json"
+            _write_json(probe_path, {"must_not_be_read": True})
+            completion_path = root / plan["dependencies"][0]["path"]
+            completion = read_json(completion_path)
+            completion["wave_plan"] = {
+                "path": "foundation/probe.json",
+                "sha256": governance_index.sha256_file(probe_path),
+            }
+            _write_json(completion_path, completion)
+            _refresh_dependency_reference(plan, 0, completion_path)
+            with patch.object(
+                governance_index,
+                "_read_repo_bytes_once",
+                wraps=governance_index._read_repo_bytes_once,
+            ) as reader:
+                receipt = _evaluate_s0_fixture(root, plan, now)
+            read_paths = [
+                call.args[1]
+                for call in reader.call_args_list
+                if len(call.args) >= 2
+            ]
+
+        self.assertEqual(receipt["status"], "BLOCKED")
+        self.assertIn("wave_dependencies_satisfied", receipt["blockers"])
+        self.assertNotIn("foundation/probe.json", read_paths)
+
     def test_s0_materialize_gate_blocks_out_of_scope_git_transition(
         self,
     ) -> None:
@@ -1499,6 +1825,1275 @@ class GovernanceIndexTests(unittest.TestCase):
 
         self.assertEqual(receipt["status"], "BLOCKED")
         self.assertIn("wave_dependencies_satisfied", receipt["blockers"])
+
+    def test_completion_v2_derives_exact_historical_blobs_not_worktree(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            request, receipt, _, _ = _completion_v2_fixture(root)
+            historical = copy.deepcopy(receipt)
+            (root / "tools/experiment_workspace.py").write_text(
+                "print('dirty worktree replacement')\n",
+                encoding="utf-8",
+            )
+            replayed = (
+                governance_index.evaluate_restructure_wave_completion_v2(
+                    root,
+                    request,
+                )
+            )
+
+        self.assertEqual(receipt["status"], "GIT_SCOPE_PASS")
+        self.assertEqual(receipt, replayed)
+        self.assertEqual(
+            [row["path"] for row in receipt["git_blob_manifest"]],
+            [
+                "governance/tool_registry.json",
+                "tools/experiment_workspace.py",
+            ],
+        )
+        self.assertRegex(
+            receipt["git_blob_manifest"][0]["git_blob_sha"],
+            r"^[0-9a-f]{40}$",
+        )
+        self.assertEqual(receipt["git_blob_manifest"], historical["git_blob_manifest"])
+        self.assertTrue(
+            receipt["authorization_boundary"][
+                "tests_not_proven_or_evaluated"
+            ]
+        )
+        self.assertFalse(
+            any(key.startswith("source_test") for key in receipt)
+        )
+        self.assertFalse(any("failure" in key for key in receipt))
+
+    def test_completion_v2_rejects_bad_source_plan_or_receipt_sha(self) -> None:
+        for reference_name, blocker in (
+            ("wave_plan", "source_wave_plan_bound"),
+            ("wave_receipt", "source_wave_receipt_pass"),
+        ):
+            with self.subTest(reference_name=reference_name):
+                with tempfile.TemporaryDirectory() as temporary:
+                    root = Path(temporary)
+                    request, _, _, _ = _completion_v2_fixture(root)
+                    request[reference_name]["sha256"] = "0" * 64
+                    receipt = (
+                        governance_index.evaluate_restructure_wave_completion_v2(
+                            root,
+                            request,
+                        )
+                    )
+                self.assertEqual(receipt["status"], "BLOCKED")
+                self.assertIn(blocker, receipt["blockers"])
+
+    def test_completion_v2_rejects_reference_before_out_of_scope_read(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            request, _, plan_path, _ = _completion_v2_fixture(root)
+            copied_plan_path = root / "foundation/copied_valid_plan.json"
+            _write_json(copied_plan_path, read_json(plan_path))
+            request["wave_plan"] = {
+                "path": copied_plan_path.relative_to(root).as_posix(),
+                "sha256": governance_index.sha256_file(copied_plan_path),
+            }
+            with (
+                patch.object(
+                    governance_index,
+                    "_read_repo_bytes_once",
+                    wraps=governance_index._read_repo_bytes_once,
+                ) as reader,
+                self.assertRaisesRegex(
+                    governance_index.ArtifactError,
+                    "完成请求引用超出",
+                ),
+            ):
+                governance_index.evaluate_restructure_wave_completion_v2(
+                    root,
+                    request,
+                )
+
+        reader.assert_not_called()
+
+    def test_completion_v2_rejects_non_ancestor_outside_delete_and_rename(
+        self,
+    ) -> None:
+        cases = (
+            (
+                "non_ancestor",
+                {"git_is_ancestor": False},
+                "git_ancestry",
+            ),
+            (
+                "outside",
+                {
+                    "changes": [
+                        {"status": "M", "path": "foundation/forbidden.md"}
+                    ]
+                },
+                "git_diff_exact_scope",
+            ),
+            (
+                "delete",
+                {
+                    "changes": [
+                        {
+                            "status": "D",
+                            "path": "tools/experiment_workspace.py",
+                        }
+                    ]
+                },
+                "git_diff_exact_scope",
+            ),
+            (
+                "rename",
+                {
+                    "changes": [
+                        {
+                            "status": "R100",
+                            "old_path": "tools/experiment_workspace.py",
+                            "path": "tools/renamed_workspace.py",
+                        }
+                    ]
+                },
+                "git_diff_exact_scope",
+            ),
+        )
+        for label, overrides, blocker in cases:
+            with self.subTest(case=label):
+                with tempfile.TemporaryDirectory() as temporary:
+                    root = Path(temporary)
+                    request, _, _, _ = _completion_v2_fixture(root)
+                    patches = []
+                    if "git_is_ancestor" in overrides:
+                        patches.append(
+                            patch.object(
+                                governance_index,
+                                "git_is_ancestor",
+                                return_value=overrides["git_is_ancestor"],
+                            )
+                        )
+                    if "changes" in overrides:
+                        patches.append(
+                            patch.object(
+                                governance_index,
+                                "git_name_status_between_exact",
+                                return_value=overrides["changes"],
+                            )
+                        )
+                    for active_patch in patches:
+                        active_patch.start()
+                    try:
+                        receipt = (
+                            governance_index.evaluate_restructure_wave_completion_v2(
+                                root,
+                                request,
+                            )
+                        )
+                    finally:
+                        for active_patch in reversed(patches):
+                            active_patch.stop()
+                self.assertEqual(receipt["status"], "BLOCKED")
+                self.assertIn(blocker, receipt["blockers"])
+
+    def test_wave2_completion_rejects_descendants_of_file_candidates(
+        self,
+    ) -> None:
+        forbidden_paths = (
+            "config/model_call_profiles/contracts/"
+            "qianwen_qwen3_7_flash_json_object_no_thinking/run.py",
+            "config/model_call_profiles/contracts/"
+            "qianwen_qwen3_7_flash_json_object_no_thinking/secret.env",
+            "config/prompts/wave2_synthetic_json_probe_v1/part.json",
+            "config/README.md/evil.json",
+        )
+        for forbidden_path in forbidden_paths:
+            with self.subTest(forbidden_path=forbidden_path):
+                with tempfile.TemporaryDirectory() as temporary:
+                    root = Path(temporary)
+                    plan, _ = _wave_fixture(root)
+                    wave2_spec = governance_index.RESTRUCTURE_WAVE_SPECS[
+                        governance_index.WAVE2_RULE_BUNDLES
+                    ]
+                    plan["route"] = "A_PLUS"
+                    plan["wave_id"] = governance_index.WAVE2_RULE_BUNDLES
+                    plan["responsibility_window"]["wave_id"] = (
+                        governance_index.WAVE2_RULE_BUNDLES
+                    )
+                    plan["responsibility_window"]["read_allowlist"] = list(
+                        wave2_spec["required_read_scopes"]
+                    )
+                    plan["responsibility_window"][
+                        "candidate_write_paths"
+                    ] = list(wave2_spec["candidate_write_paths"])
+                    plan["capability_limits"] = copy.deepcopy(
+                        wave2_spec["capability_limits"]
+                    )
+                    required_references = wave2_spec[
+                        "required_reference_paths"
+                    ]
+                    for reference_name in (
+                        "baseline_plan",
+                        "baseline_receipt",
+                        "decision_ticket",
+                        "conflict_lock",
+                        "test_impact",
+                    ):
+                        plan[reference_name] = {
+                            "path": required_references[reference_name],
+                            "sha256": "2" * 64,
+                        }
+                    plan["dependencies"] = [
+                        {
+                            "path": required_references["dependency"]["path"],
+                            "sha256": "1" * 64,
+                            "wave_id": required_references["dependency"][
+                                "wave_id"
+                            ],
+                        }
+                    ]
+                    required_binding_paths = (
+                        set(wave2_spec["required_inputs"])
+                        | {
+                            plan[reference_name]["path"]
+                            for reference_name in (
+                                "baseline_plan",
+                                "baseline_receipt",
+                                "decision_ticket",
+                                "conflict_lock",
+                                "test_impact",
+                            )
+                        }
+                        | {
+                            dependency["path"]
+                            for dependency in plan["dependencies"]
+                        }
+                    )
+                    plan["bound_inputs"] = [
+                        {
+                            "path": path,
+                            "sha256": "0" * 64,
+                            "role": f"wave2_input_{index:02d}",
+                        }
+                        for index, path in enumerate(
+                            sorted(required_binding_paths),
+                            start=1,
+                        )
+                    ]
+
+                    _git(root, "init", "-q")
+                    _git(root, "config", "user.email", "tests@example.invalid")
+                    _git(root, "config", "user.name", "Governance Tests")
+                    _git(root, "add", ".")
+                    _git(root, "commit", "-qm", "pre wave2")
+                    pre_commit = _git(root, "rev-parse", "HEAD")
+                    plan["expected_head_sha"] = pre_commit
+                    plan_path = (
+                        root
+                        / "TEMP/restructure_wave_preflight/test/"
+                        "WAVE2_COMPLETION_SOURCE_PLAN.json"
+                    )
+                    _write_json(plan_path, plan)
+                    normalized_plan = governance_index._wave_plan(
+                        copy.deepcopy(plan)
+                    )
+                    receipt = {
+                        "contract_version": (
+                            governance_index.RESTRUCTURE_WAVE_RECEIPT_V1
+                        ),
+                        "plan_id": normalized_plan["plan_id"],
+                        "plan_content_sha256": (
+                            governance_index._canonical_json_sha256(
+                                normalized_plan
+                            )
+                        ),
+                        "status": "PASS",
+                        "blockers": [],
+                        "head_sha": pre_commit,
+                        "route": "A_PLUS",
+                        "wave_id": governance_index.WAVE2_RULE_BUNDLES,
+                        "responsibility_window": copy.deepcopy(
+                            normalized_plan["responsibility_window"]
+                        ),
+                        "authorization_boundary": {
+                            "authorizes_wave": False,
+                            "mechanical_preconditions_pass": True,
+                            "eligible_wave_id": (
+                                governance_index.WAVE2_RULE_BUNDLES
+                            ),
+                            "eligible_write_paths": list(
+                                wave2_spec["candidate_write_paths"]
+                            ),
+                        },
+                        "checks": [
+                            {
+                                "check_id": check_id,
+                                "passed": True,
+                                "evidence": {"fixture": True},
+                            }
+                            for check_id in (
+                                "responsibility_window_time",
+                                "governance_generated_green",
+                                "head_frozen",
+                                "wave_scope_exact",
+                                "baseline_receipt_current",
+                                "decision_ticket_exact",
+                                "conflict_lock_active",
+                                "test_impact_complete",
+                                "bound_input_sha",
+                                "read_allowlist_complete",
+                                "candidate_write_paths_disjoint_from_dirty",
+                                "wave_dependencies_satisfied",
+                                "live_snapshot_stable",
+                            )
+                        ],
+                    }
+                    receipt_path = (
+                        root
+                        / "TEMP/restructure_wave_preflight/test/"
+                        "WAVE2_COMPLETION_SOURCE_RECEIPT.json"
+                    )
+                    _write_json(receipt_path, receipt)
+                    target = root / forbidden_path
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_text("forbidden\n", encoding="utf-8")
+                    _git(root, "add", forbidden_path)
+                    _git(root, "commit", "-qm", "forbidden descendant")
+                    post_commit = _git(root, "rev-parse", "HEAD")
+                    request = {
+                        "contract_version": (
+                            governance_index.RESTRUCTURE_WAVE_COMPLETION_REQUEST_V2
+                        ),
+                        "completion_id": "WAVE2-FILE-BOUNDARY-TEST",
+                        "wave_id": governance_index.WAVE2_RULE_BUNDLES,
+                        "authorization_context_id": "test-context",
+                        "pre_commit_sha": pre_commit,
+                        "post_commit_sha": post_commit,
+                        "wave_plan": {
+                            "path": plan_path.relative_to(root).as_posix(),
+                            "sha256": governance_index.sha256_file(plan_path),
+                        },
+                        "wave_receipt": {
+                            "path": receipt_path.relative_to(root).as_posix(),
+                            "sha256": governance_index.sha256_file(
+                                receipt_path
+                            ),
+                        },
+                    }
+                    result = (
+                        governance_index.evaluate_restructure_wave_completion_v2(
+                            root,
+                            request,
+                        )
+                    )
+
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertIn("git_diff_exact_scope", result["blockers"])
+
+    def test_completion_v2_rejects_request_reported_outputs(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            request, _, _, _ = _completion_v2_fixture(root)
+            forged = copy.deepcopy(request)
+            forged["outputs"] = [
+                {
+                    "path": "foundation/forbidden.md",
+                    "sha256": "0" * 64,
+                }
+            ]
+            with self.assertRaisesRegex(
+                governance_index.ArtifactError,
+                "字段必须完全相等",
+            ):
+                governance_index.evaluate_restructure_wave_completion_v2(
+                    root,
+                    forged,
+                )
+
+    def test_wave2_dependency_requires_exact_s0_completion_v2(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            request, completion, _, _ = _completion_v2_fixture(root)
+            completion_path = (
+                root
+                / "TEMP/restructure_wave_preflight/test/S0_COMPLETION_V2.json"
+            )
+            _write_json(completion_path, completion)
+            dependency = {
+                "path": completion_path.relative_to(root).as_posix(),
+                "sha256": governance_index.sha256_file(completion_path),
+                "wave_id": governance_index.S0_MATERIALIZE_ONLY,
+            }
+            trusted_source = {
+                "wave_plan": completion["source_wave_plan"],
+                "wave_receipt": completion["source_wave_receipt"],
+                "pre_commit_sha": completion["pre_commit_sha"],
+                "post_commit_sha": completion["post_commit_sha"],
+            }
+
+            def evaluate_dependency(
+                dependencies: list[dict],
+                *,
+                context_id: str = "test-context",
+                head_sha: str = completion["post_commit_sha"],
+            ) -> tuple[bool, dict]:
+                spec = governance_index.RESTRUCTURE_WAVE_SPECS[
+                    governance_index.WAVE2_RULE_BUNDLES
+                ]
+                with patch.dict(
+                    spec,
+                    {"required_completion_source": trusted_source},
+                ):
+                    return governance_index._wave_dependency_evidence(
+                        root,
+                        dependencies,
+                        wave_id=governance_index.WAVE2_RULE_BUNDLES,
+                        expected_head_sha=head_sha,
+                        expected_context_id=context_id,
+                    )
+
+            passed, _ = evaluate_dependency([dependency])
+            missing, _ = evaluate_dependency([])
+            bad_sha = copy.deepcopy(dependency)
+            bad_sha["sha256"] = "0" * 64
+            bad, _ = evaluate_dependency([bad_sha])
+            wrong_context, _ = evaluate_dependency(
+                [dependency],
+                context_id="foreign-context",
+            )
+            with patch.object(
+                governance_index,
+                "git_name_status_between_exact",
+                return_value=[],
+            ):
+                blocked_completion = (
+                    governance_index.evaluate_restructure_wave_completion_v2(
+                        root,
+                        request,
+                    )
+                )
+            blocked_path = completion_path.with_name("S0_COMPLETION_BLOCKED.json")
+            _write_json(blocked_path, blocked_completion)
+            blocked_dependency = {
+                "path": blocked_path.relative_to(root).as_posix(),
+                "sha256": governance_index.sha256_file(blocked_path),
+                "wave_id": governance_index.S0_MATERIALIZE_ONLY,
+            }
+            non_pass, _ = evaluate_dependency([blocked_dependency])
+            probe_path = root / "foundation/probe.json"
+            _write_json(probe_path, {"must_not_be_read": True})
+            forged_completion = copy.deepcopy(completion)
+            forged_completion["completion_request"]["wave_plan"] = {
+                "path": "foundation/probe.json",
+                "sha256": governance_index.sha256_file(probe_path),
+            }
+            forged_path = completion_path.with_name("S0_COMPLETION_FORGED.json")
+            _write_json(forged_path, forged_completion)
+            forged_dependency = {
+                "path": forged_path.relative_to(root).as_posix(),
+                "sha256": governance_index.sha256_file(forged_path),
+                "wave_id": governance_index.S0_MATERIALIZE_ONLY,
+            }
+            early_reads: dict[str, str] = {}
+            spec = governance_index.RESTRUCTURE_WAVE_SPECS[
+                governance_index.WAVE2_RULE_BUNDLES
+            ]
+            with patch.dict(
+                spec,
+                {"required_completion_source": trusted_source},
+            ):
+                forged_passed, _ = (
+                    governance_index._wave_dependency_evidence(
+                        root,
+                        [forged_dependency],
+                        wave_id=governance_index.WAVE2_RULE_BUNDLES,
+                        expected_head_sha=completion["post_commit_sha"],
+                        expected_context_id="test-context",
+                        evidence_reads=early_reads,
+                    )
+                )
+            wrong_source = copy.deepcopy(trusted_source)
+            wrong_source["post_commit_sha"] = "0" * 40
+            with patch.dict(
+                spec,
+                {"required_completion_source": wrong_source},
+            ):
+                untrusted, _ = governance_index._wave_dependency_evidence(
+                    root,
+                    [dependency],
+                    wave_id=governance_index.WAVE2_RULE_BUNDLES,
+                    expected_head_sha=completion["post_commit_sha"],
+                    expected_context_id="test-context",
+                )
+            _write_json(
+                root / "governance/tool_registry.json",
+                {
+                    "schema_version": "test",
+                    "s0_registered": True,
+                    "gate_extension": True,
+                },
+            )
+            _git(root, "add", "governance/tool_registry.json")
+            _git(root, "commit", "-qm", "extend gate registry")
+            allowed_drift_head = _git(root, "rev-parse", "HEAD")
+            allowed_drift_passed, allowed_drift_evidence = (
+                evaluate_dependency(
+                    [dependency],
+                    head_sha=allowed_drift_head,
+                )
+            )
+            (root / "tools/experiment_workspace.py").write_text(
+                "print('unauthorized replacement')\n",
+                encoding="utf-8",
+            )
+            _git(root, "add", "tools/experiment_workspace.py")
+            _git(root, "commit", "-qm", "replace s0 output")
+            replaced_head = _git(root, "rev-parse", "HEAD")
+            replaced_output, replaced_evidence = evaluate_dependency(
+                [dependency],
+                head_sha=replaced_head,
+            )
+            (root / "tools/experiment_workspace.py").unlink()
+            _git(root, "add", "-u", "tools/experiment_workspace.py")
+            _git(root, "commit", "-qm", "remove s0 output")
+            deleted_head = _git(root, "rev-parse", "HEAD")
+            missing_output, _ = evaluate_dependency(
+                [dependency],
+                head_sha=deleted_head,
+            )
+
+        self.assertTrue(passed)
+        self.assertFalse(missing)
+        self.assertFalse(bad)
+        self.assertFalse(wrong_context)
+        self.assertFalse(non_pass)
+        self.assertFalse(forged_passed)
+        self.assertNotIn("foundation/probe.json", early_reads)
+        self.assertFalse(untrusted)
+        self.assertTrue(allowed_drift_passed)
+        self.assertEqual(
+            [
+                row["path"]
+                for row in allowed_drift_evidence[
+                    "allowed_current_head_blob_drift"
+                ]
+            ],
+            ["governance/tool_registry.json"],
+        )
+        self.assertFalse(replaced_output)
+        self.assertEqual(
+            [
+                row["path"]
+                for row in replaced_evidence[
+                    "unauthorized_current_head_blob_drift"
+                ]
+            ],
+            ["tools/experiment_workspace.py"],
+        )
+        self.assertFalse(missing_output)
+
+    def test_wave2_requires_new_preparation_ticket_without_construction_auth(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _, completion, plan_path, _ = _completion_v2_fixture(root)
+            completion_path = (
+                root
+                / "TEMP/restructure_wave_preflight/test/S0_COMPLETION_V2.json"
+            )
+            _write_json(completion_path, completion)
+            dependency = {
+                "path": completion_path.relative_to(root).as_posix(),
+                "sha256": governance_index.sha256_file(completion_path),
+                "wave_id": governance_index.S0_MATERIALIZE_ONLY,
+            }
+            ticket = {
+                "contract_version": (
+                    governance_index.RESTRUCTURE_WAVE2_PREPARATION_TICKET_V1
+                ),
+                "ticket_id": "WAVE2-PREPARATION-TEST",
+                "ticket_kind": "wave2_gate_extension_eligibility",
+                "authority": "CZ",
+                "authorization_context_id": "test-context",
+                "evidence_class": "same_task_human_readback",
+                "human_readback": {
+                    "required": True,
+                    "confirmed": True,
+                    "cryptographic_proof": False,
+                },
+                "selected_route": "A_PLUS",
+                "selected_scope": [governance_index.WAVE2_RULE_BUNDLES],
+                "source_messages": [
+                    {
+                        "text": governance_index.WAVE2_PREPARATION_SOURCE_TEXT,
+                        "sha256": governance_index._sha256_text(
+                            governance_index.WAVE2_PREPARATION_SOURCE_TEXT
+                        ),
+                    }
+                ],
+                "decisions": {
+                    decision_id: {"status": status, "value": value}
+                    for decision_id, (status, value) in (
+                        governance_index.WAVE2_PREPARATION_VALUES.items()
+                    )
+                },
+                "upstream_completion": {
+                    "path": dependency["path"],
+                    "sha256": dependency["sha256"],
+                },
+                "eligibility_capability_ceiling": copy.deepcopy(
+                    governance_index.RESTRUCTURE_WAVE_SPECS[
+                        governance_index.WAVE2_RULE_BUNDLES
+                    ]["capability_limits"]
+                ),
+                "authorization_boundary": {
+                    "authorizes_wave": False,
+                    "authorizes_rule_bundle_construction": False,
+                    "authorizes_offline_resolve": False,
+                    "authorizes_preflight": False,
+                    "authorizes_network": False,
+                    "authorizes_credential_read": False,
+                    "authorizes_request_send": False,
+                    "authorizes_model_api": False,
+                    "authorizes_notion_write": False,
+                    "authorizes_external_removal": False,
+                    "requires_later_same_task_positive_construction_confirmation": True,
+                },
+            }
+            self.assertFalse(
+                any(
+                    value
+                    for key, value in ticket["authorization_boundary"].items()
+                    if key.startswith("authorizes_")
+                )
+            )
+            s0_plan = read_json(plan_path)
+
+            def evaluate_ticket(
+                value: dict,
+                *,
+                ticket_path: str,
+                ticket_id: str,
+            ) -> tuple[bool, dict]:
+                spec = governance_index.RESTRUCTURE_WAVE_SPECS[
+                    governance_index.WAVE2_RULE_BUNDLES
+                ]
+                with patch.dict(
+                    spec,
+                    {
+                        "required_prior_decision_ticket": s0_plan[
+                            "decision_ticket"
+                        ]
+                    },
+                ):
+                    return (
+                        governance_index._wave2_preparation_ticket_evidence(
+                            root,
+                            value,
+                            ticket_path=ticket_path,
+                            upstream_dependency=dependency,
+                            expected_ticket_id=ticket_id,
+                            expected_context_id="test-context",
+                        )
+                    )
+
+            passed, _ = evaluate_ticket(
+                ticket,
+                ticket_path=(
+                    "TEMP/restructure_wave_preflight/test/"
+                    "WAVE2_RULE_BUNDLES_PREPARATION.json"
+                ),
+                ticket_id="WAVE2-PREPARATION-TEST",
+            )
+            old_ticket_path = root / s0_plan["decision_ticket"]["path"]
+            old_ticket = read_json(old_ticket_path)
+            reused, _ = evaluate_ticket(
+                old_ticket,
+                ticket_path=s0_plan["decision_ticket"]["path"],
+                ticket_id=old_ticket["ticket_id"],
+            )
+            construction_claim = copy.deepcopy(ticket)
+            construction_claim["source_messages"] = [
+                {
+                    "text": "现在开始写 Wave2 候选文件",
+                    "sha256": governance_index._sha256_text(
+                        "现在开始写 Wave2 候选文件"
+                    ),
+                }
+            ]
+            construction_claim_passed, _ = evaluate_ticket(
+                construction_claim,
+                ticket_path=(
+                    "TEMP/restructure_wave_preflight/test/"
+                    "WAVE2_RULE_BUNDLES_CONSTRUCTION_CLAIM.json"
+                ),
+                ticket_id="WAVE2-PREPARATION-TEST",
+            )
+            forged_authorization = copy.deepcopy(ticket)
+            forged_authorization["authorization_boundary"][
+                "authorizes_rule_bundle_construction"
+            ] = True
+            forged_authorization_passed, _ = evaluate_ticket(
+                forged_authorization,
+                ticket_path=(
+                    "TEMP/restructure_wave_preflight/test/"
+                    "WAVE2_RULE_BUNDLES_FORGED_AUTH.json"
+                ),
+                ticket_id="WAVE2-PREPARATION-TEST",
+            )
+
+        self.assertTrue(passed)
+        self.assertFalse(reused)
+        self.assertFalse(construction_claim_passed)
+        self.assertFalse(forged_authorization_passed)
+
+    def test_wave2_does_not_expand_old_read_scopes_and_rejects_capability_keys(
+        self,
+    ) -> None:
+        self.assertNotIn(
+            "config",
+            governance_index.RESTRUCTURE_WAVE_SPECS[
+                governance_index.WAVE1_DIRECTORY_REGISTRY
+            ]["required_read_scopes"],
+        )
+        self.assertIn(
+            ".git",
+            governance_index.RESTRUCTURE_WAVE_SPECS[
+                governance_index.WAVE1_DIRECTORY_REGISTRY
+            ]["required_read_scopes"],
+        )
+        self.assertNotIn(
+            "config",
+            governance_index.RESTRUCTURE_WAVE_SPECS[
+                governance_index.S0_MATERIALIZE_ONLY
+            ]["required_read_scopes"],
+        )
+        self.assertIn(
+            ".git",
+            governance_index.RESTRUCTURE_WAVE_SPECS[
+                governance_index.S0_MATERIALIZE_ONLY
+            ]["required_read_scopes"],
+        )
+        wave2_spec = governance_index.RESTRUCTURE_WAVE_SPECS[
+            governance_index.WAVE2_RULE_BUNDLES
+        ]
+        self.assertEqual(
+            wave2_spec["required_read_scopes"],
+            governance_index.WAVE2_REQUIRED_READ_SCOPES,
+        )
+        for broad_scope in (
+            ".git",
+            "config",
+            "governance",
+            "tests",
+            "tools",
+        ):
+            self.assertNotIn(
+                broad_scope,
+                wave2_spec["required_read_scopes"],
+            )
+        self.assertIn(
+            "config/model_call_profiles/profile.schema.json",
+            wave2_spec["required_read_scopes"],
+        )
+        self.assertEqual(
+            wave2_spec["candidate_write_paths"],
+            governance_index.WAVE2_CANDIDATE_WRITE_PATHS,
+        )
+        self.assertEqual(len(wave2_spec["candidate_write_paths"]), 22)
+        self.assertEqual(
+            wave2_spec["required_reference_paths"],
+            {
+                "baseline_plan": (
+                    "TEMP/restructure_wave_preflight/"
+                    "route-a-plus-wave2-20260730/"
+                    "BASELINE_PLAN_WAVE2_20260730.json"
+                ),
+                "baseline_receipt": (
+                    "TEMP/restructure_wave_preflight/"
+                    "route-a-plus-wave2-20260730/"
+                    "BASELINE_RECEIPT_WAVE2_20260730.json"
+                ),
+                "decision_ticket": (
+                    "TEMP/restructure_wave_preflight/"
+                    "route-a-plus-wave2-20260730/"
+                    "WAVE2_PREPARATION_TICKET_20260730.json"
+                ),
+                "conflict_lock": (
+                    "TEMP/restructure_wave_preflight/locks/"
+                    "WAVE2_RULE_BUNDLES.lock.json"
+                ),
+                "test_impact": (
+                    "TEMP/restructure_wave_preflight/"
+                    "route-a-plus-wave2-20260730/"
+                    "WAVE2_TEST_IMPACT_20260730.json"
+                ),
+                "dependency": {
+                    "path": (
+                        "TEMP/restructure_wave_preflight/"
+                        "route-a-plus-s0-20260730/"
+                        "S0_MATERIALIZE_COMPLETION_V2_20260730.json"
+                    ),
+                    "wave_id": governance_index.S0_MATERIALIZE_ONLY,
+                },
+            },
+        )
+        expanded_exact_files = {
+            "config/model_call_profiles/contracts/"
+            "qianwen_qwen3_7_flash_json_object_no_thinking/bundle.json",
+            "config/model_call_profiles/contracts/"
+            "qianwen_qwen3_7_flash_json_object_no_thinking/"
+            "request_envelope.schema.json",
+            "config/model_call_profiles/contracts/"
+            "qianwen_qwen3_7_flash_json_object_no_thinking/"
+            "response_envelope.schema.json",
+            "config/model_call_profiles/contracts/"
+            "qianwen_qwen3_7_flash_json_object_no_thinking/"
+            "normalization.json",
+            "config/prompts/wave2_synthetic_json_probe_v1/prompt.md",
+            "config/prompts/wave2_synthetic_json_probe_v1/manifest.json",
+        }
+        self.assertTrue(
+            expanded_exact_files
+            <= set(wave2_spec["candidate_write_paths"])
+        )
+        self.assertNotIn(
+            "config/model_call_profiles/contracts/"
+            "qianwen_qwen3_7_flash_json_object_no_thinking",
+            wave2_spec["candidate_write_paths"],
+        )
+        self.assertNotIn(
+            "config/prompts/wave2_synthetic_json_probe_v1",
+            wave2_spec["candidate_write_paths"],
+        )
+        for existing_candidate in (
+            "tools/model_call_profiles.py",
+            "tests/test_model_call_profiles.py",
+            "tools/README.md",
+            "tests/README.md",
+        ):
+            self.assertIn(
+                existing_candidate,
+                wave2_spec["required_inputs"],
+            )
+        self.assertFalse(
+            any(
+                "api_rule_bundles" in path
+                for path in wave2_spec["candidate_write_paths"]
+            )
+        )
+        for exact_file in (
+            "config/README.md",
+            "config/model_call_profiles/contracts/"
+            "contract_bundle.schema.json",
+            "config/model_call_profiles/contracts/"
+            "qianwen_qwen3_7_flash_json_object_no_thinking/bundle.json",
+            "config/prompts/wave2_synthetic_json_probe_v1/prompt.md",
+            "tools/model_call_profiles.py",
+        ):
+            self.assertFalse(
+                governance_index._wave_candidate_write_path_is_allowed(
+                    governance_index.WAVE2_RULE_BUNDLES,
+                    f"{exact_file}/evil",
+                    exact_file,
+                )
+            )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            plan, now = _wave_fixture(root)
+            plan["responsibility_window"]["read_allowlist"].append("config")
+            with self.assertRaisesRegex(
+                governance_index.ArtifactError,
+                "读取范围完全相等",
+            ):
+                governance_index._evaluate_restructure_wave_snapshot(
+                    root,
+                    plan,
+                    dirty_paths=[],
+                    head_sha="a" * 40,
+                    governance_mismatch_paths=[],
+                    evaluated_at=now,
+                )
+            plan["responsibility_window"]["read_allowlist"].remove("config")
+            probe_path = root / "foundation/probe.json"
+            _write_json(probe_path, {"must_not_be_read": True})
+            plan["bound_inputs"].append(
+                {
+                    "path": "foundation/probe.json",
+                    "sha256": governance_index.sha256_file(probe_path),
+                    "role": "forbidden_probe",
+                }
+            )
+            with (
+                patch.object(
+                    governance_index,
+                    "_read_repo_bytes_once",
+                    wraps=governance_index._read_repo_bytes_once,
+                ) as reader,
+                self.assertRaisesRegex(
+                    governance_index.ArtifactError,
+                    "超出许可范围",
+                ),
+            ):
+                governance_index._evaluate_restructure_wave_snapshot(
+                    root,
+                    plan,
+                    dirty_paths=[],
+                    head_sha="a" * 40,
+                    governance_mismatch_paths=[],
+                    evaluated_at=now,
+                )
+            reader.assert_not_called()
+            plan["bound_inputs"].pop()
+            plan["capability_limits"]["unknown_future_power"] = False
+            with self.assertRaisesRegex(
+                governance_index.ArtifactError,
+                "字段必须与当前 Wave 完全相等",
+            ):
+                governance_index._wave_plan(plan)
+
+            wave2_plan = copy.deepcopy(plan)
+            wave2_plan["route"] = "A_PLUS"
+            wave2_plan["wave_id"] = governance_index.WAVE2_RULE_BUNDLES
+            wave2_plan["responsibility_window"]["wave_id"] = (
+                governance_index.WAVE2_RULE_BUNDLES
+            )
+            wave2_plan["responsibility_window"]["read_allowlist"] = list(
+                wave2_spec["required_read_scopes"]
+            )
+            wave2_plan["responsibility_window"]["candidate_write_paths"] = list(
+                wave2_spec["candidate_write_paths"]
+            )
+            wave2_plan["capability_limits"] = copy.deepcopy(
+                wave2_spec["capability_limits"]
+            )
+            required_references = wave2_spec["required_reference_paths"]
+            for reference_name in (
+                "baseline_plan",
+                "baseline_receipt",
+                "decision_ticket",
+                "conflict_lock",
+                "test_impact",
+            ):
+                wave2_plan[reference_name] = {
+                    "path": required_references[reference_name],
+                    "sha256": "2" * 64,
+                }
+            wave2_plan["dependencies"] = [
+                {
+                    "path": required_references["dependency"]["path"],
+                    "sha256": "1" * 64,
+                    "wave_id": required_references["dependency"]["wave_id"],
+                }
+            ]
+            required_binding_paths = (
+                set(wave2_spec["required_inputs"])
+                | {
+                    wave2_plan[reference_name]["path"]
+                    for reference_name in (
+                        "baseline_plan",
+                        "baseline_receipt",
+                        "decision_ticket",
+                        "conflict_lock",
+                        "test_impact",
+                    )
+                }
+                | {
+                    dependency["path"]
+                    for dependency in wave2_plan["dependencies"]
+                }
+            )
+            wave2_plan["bound_inputs"] = [
+                {
+                    "path": path,
+                    "sha256": "0" * 64,
+                    "role": f"wave2_exact_input_{index:02d}",
+                }
+                for index, path in enumerate(
+                    sorted(required_binding_paths),
+                    start=1,
+                )
+            ]
+            forbidden_reads = (
+                ".git/config",
+                "config/private/secret.json",
+                "config/README.md/evil.json",
+            )
+            for index, relative in enumerate(forbidden_reads):
+                with self.subTest(forbidden_read=relative):
+                    forbidden_path = root / relative
+                    _write_json(
+                        forbidden_path,
+                        {"secret": "must-not-be-read"},
+                    )
+                    rejected_plan = copy.deepcopy(wave2_plan)
+                    rejected_plan["bound_inputs"].append(
+                        {
+                            "path": relative,
+                            "sha256": governance_index.sha256_file(
+                                forbidden_path
+                            ),
+                            "role": f"forbidden_wave2_read_{index}",
+                        }
+                    )
+                    with (
+                        patch.object(
+                            governance_index,
+                            "_read_repo_bytes_once",
+                            wraps=governance_index._read_repo_bytes_once,
+                        ) as private_reader,
+                        self.assertRaisesRegex(
+                            governance_index.ArtifactError,
+                            "bound_inputs 必须",
+                        ),
+                    ):
+                        governance_index._evaluate_restructure_wave_snapshot(
+                            root,
+                            rejected_plan,
+                            dirty_paths=[],
+                            head_sha="a" * 40,
+                            governance_mismatch_paths=[],
+                            evaluated_at=now,
+                        )
+                    private_reader.assert_not_called()
+
+            missing_binding_plan = copy.deepcopy(wave2_plan)
+            missing_binding_plan["bound_inputs"].pop()
+            with (
+                patch.object(
+                    governance_index,
+                    "_read_repo_bytes_once",
+                    wraps=governance_index._read_repo_bytes_once,
+                ) as missing_reader,
+                self.assertRaisesRegex(
+                    governance_index.ArtifactError,
+                    "bound_inputs 必须",
+                ),
+            ):
+                governance_index._evaluate_restructure_wave_snapshot(
+                    root,
+                    missing_binding_plan,
+                    dirty_paths=[],
+                    head_sha="a" * 40,
+                    governance_mismatch_paths=[],
+                    evaluated_at=now,
+                )
+            missing_reader.assert_not_called()
+
+            dynamic_reference_names = (
+                "baseline_plan",
+                "baseline_receipt",
+                "decision_ticket",
+                "conflict_lock",
+                "test_impact",
+                "dependency",
+            )
+            for reference_index, reference_name in enumerate(
+                dynamic_reference_names
+            ):
+                with self.subTest(dynamic_reference=reference_name):
+                    private_reference_path = (
+                        root
+                        / "TEMP/restructure_wave_preflight/test/"
+                        f"PRIVATE_{reference_name.upper()}.json"
+                    )
+                    _write_json(private_reference_path, {"private": True})
+                    dynamic_plan = copy.deepcopy(wave2_plan)
+                    private_reference = {
+                        "path": private_reference_path.relative_to(
+                            root
+                        ).as_posix(),
+                        "sha256": governance_index.sha256_file(
+                            private_reference_path
+                        ),
+                    }
+                    if reference_name == "dependency":
+                        dynamic_plan["dependencies"] = [
+                            {
+                                **private_reference,
+                                "wave_id": (
+                                    governance_index.S0_MATERIALIZE_ONLY
+                                ),
+                            }
+                        ]
+                    else:
+                        dynamic_plan[reference_name] = private_reference
+                    dynamic_binding_paths = (
+                        set(wave2_spec["required_inputs"])
+                        | {
+                            dynamic_plan[ticket_name]["path"]
+                            for ticket_name in (
+                                "baseline_plan",
+                                "baseline_receipt",
+                                "decision_ticket",
+                                "conflict_lock",
+                                "test_impact",
+                            )
+                        }
+                        | {
+                            dependency["path"]
+                            for dependency in dynamic_plan["dependencies"]
+                        }
+                    )
+                    dynamic_plan["bound_inputs"] = [
+                        {
+                            "path": path,
+                            "sha256": "0" * 64,
+                            "role": (
+                                f"dynamic_reference_{reference_index:02d}_"
+                                f"{index:02d}"
+                            ),
+                        }
+                        for index, path in enumerate(
+                            sorted(dynamic_binding_paths),
+                            start=1,
+                        )
+                    ]
+                    with (
+                        patch.object(
+                            governance_index,
+                            "_read_repo_bytes_once",
+                            wraps=governance_index._read_repo_bytes_once,
+                        ) as dynamic_reader,
+                        self.assertRaisesRegex(
+                            governance_index.ArtifactError,
+                            "固定引用路径",
+                        ),
+                    ):
+                        governance_index._evaluate_restructure_wave_snapshot(
+                            root,
+                            dynamic_plan,
+                            dirty_paths=[],
+                            head_sha="a" * 40,
+                            governance_mismatch_paths=[],
+                            evaluated_at=now,
+                        )
+                    dynamic_reader.assert_not_called()
+
+            wrong_dependency_path = (
+                root
+                / "TEMP/restructure_wave_preflight/test/"
+                "PRIVATE_WRONG_TYPE.json"
+            )
+            extra_dependency_path = (
+                root
+                / "TEMP/restructure_wave_preflight/test/"
+                "PRIVATE_EXTRA_DEPENDENCY.json"
+            )
+            _write_json(wrong_dependency_path, {"private": True})
+            _write_json(extra_dependency_path, {"private": True})
+            invalid_dependency_sets = (
+                [
+                    {
+                        "path": wrong_dependency_path.relative_to(
+                            root
+                        ).as_posix(),
+                        "sha256": governance_index.sha256_file(
+                            wrong_dependency_path
+                        ),
+                        "wave_id": (
+                            governance_index.WAVE1_DIRECTORY_REGISTRY
+                        ),
+                    }
+                ],
+                [
+                    *wave2_plan["dependencies"],
+                    {
+                        "path": extra_dependency_path.relative_to(
+                            root
+                        ).as_posix(),
+                        "sha256": governance_index.sha256_file(
+                            extra_dependency_path
+                        ),
+                        "wave_id": governance_index.S0_MATERIALIZE_ONLY,
+                    },
+                ],
+            )
+            for case_index, dependencies in enumerate(
+                invalid_dependency_sets
+            ):
+                with self.subTest(invalid_dependencies=case_index):
+                    invalid_dependency_plan = copy.deepcopy(wave2_plan)
+                    invalid_dependency_plan["dependencies"] = dependencies
+                    invalid_binding_paths = (
+                        set(wave2_spec["required_inputs"])
+                        | {
+                            invalid_dependency_plan[reference_name]["path"]
+                            for reference_name in (
+                                "baseline_plan",
+                                "baseline_receipt",
+                                "decision_ticket",
+                                "conflict_lock",
+                                "test_impact",
+                            )
+                        }
+                        | {
+                            dependency["path"]
+                            for dependency in dependencies
+                        }
+                    )
+                    invalid_dependency_plan["bound_inputs"] = [
+                        {
+                            "path": path,
+                            "sha256": "0" * 64,
+                            "role": f"invalid_dependency_{index:02d}",
+                        }
+                        for index, path in enumerate(
+                            sorted(invalid_binding_paths),
+                            start=1,
+                        )
+                    ]
+                    with (
+                        patch.object(
+                            governance_index,
+                            "_read_repo_bytes_once",
+                            wraps=governance_index._read_repo_bytes_once,
+                        ) as dependency_reader,
+                        self.assertRaisesRegex(
+                            governance_index.ArtifactError,
+                            "固定引用路径",
+                        ),
+                    ):
+                        governance_index._evaluate_restructure_wave_snapshot(
+                            root,
+                            invalid_dependency_plan,
+                            dirty_paths=[],
+                            head_sha="a" * 40,
+                            governance_mismatch_paths=[],
+                            evaluated_at=now,
+                        )
+                    dependency_reader.assert_not_called()
+
+            hardlink_source = root / "config/private/hardlink_secret.json"
+            _write_json(hardlink_source, {"secret": "must-not-be-read"})
+            hardlink_alias = (
+                root
+                / "config/context_recipes/"
+                "wave2_synthetic_json_probe_v1.json"
+            )
+            hardlink_alias.parent.mkdir(parents=True, exist_ok=True)
+            governance_index.os.link(hardlink_source, hardlink_alias)
+            with (
+                patch.object(
+                    governance_index.os,
+                    "read",
+                    wraps=governance_index.os.read,
+                ) as byte_reader,
+                self.assertRaisesRegex(
+                    governance_index.ArtifactError,
+                    "硬链接",
+                ),
+            ):
+                governance_index._read_repo_bytes_once(
+                    root,
+                    hardlink_alias.relative_to(root).as_posix(),
+                )
+            byte_reader.assert_not_called()
 
     def test_restructure_wave_lock_is_fixed_path_and_exclusive(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1892,12 +3487,63 @@ class GovernanceIndexTests(unittest.TestCase):
         for function in (
             governance_index.evaluate_restructure_baseline,
             governance_index.evaluate_restructure_wave,
+            governance_index.evaluate_restructure_wave_completion_v2,
             governance_index.acquire_restructure_wave_lock,
         ):
             parameters = inspect.signature(function).parameters
             self.assertNotIn("dirty_paths", parameters)
             self.assertNotIn("head_sha", parameters)
             self.assertNotIn("governance_mismatch_paths", parameters)
+
+    def test_completion_v2_cli_arguments_are_a_paired_mode(self) -> None:
+        parser = governance_index.build_parser()
+        args = parser.parse_args(
+            [
+                "--wave-completion-request",
+                "TEMP/request.json",
+                "--wave-completion-output",
+                "TEMP/receipt.json",
+            ]
+        )
+        self.assertEqual(args.wave_completion_request, Path("TEMP/request.json"))
+        self.assertEqual(args.wave_completion_output, Path("TEMP/receipt.json"))
+
+    def test_completion_v2_cli_removes_new_receipt_when_replay_raises(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            request_path = root / "TEMP/request.json"
+            _write_json(request_path, {"fixture": True})
+            output = Path(
+                "TEMP/restructure_wave_preflight/test/COMPLETION.json"
+            )
+            receipt = {"status": "GIT_SCOPE_PASS", "blockers": []}
+            with (
+                patch.object(governance_index, "ROOT", root),
+                patch.object(
+                    governance_index,
+                    "evaluate_restructure_wave_completion_v2",
+                    side_effect=[
+                        receipt,
+                        governance_index.ArtifactError("replay drift"),
+                    ],
+                ),
+                self.assertRaisesRegex(
+                    governance_index.ArtifactError,
+                    "已撤销新票",
+                ),
+            ):
+                governance_index.main(
+                    [
+                        "--wave-completion-request",
+                        str(request_path),
+                        "--wave-completion-output",
+                        output.as_posix(),
+                    ]
+                )
+
+            self.assertFalse((root / output).exists())
 
 
 if __name__ == "__main__":

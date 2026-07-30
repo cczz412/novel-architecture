@@ -632,15 +632,15 @@
       "primary_identity_label": "可复用组件",
       "status": "active_component",
       "status_label": "现役",
-      "purpose": "从机器真源生成或检查治理索引，并为仓库重构生成两级机器闸和独占 Wave 锁。",
-      "human_command": "python3 tools/governance_index.py <--check|--baseline-plan|--wave-lock-request|--wave-plan> ...",
+      "purpose": "从机器真源生成或检查治理索引，并为仓库重构生成两级机器闸、独占 Wave 锁和可从 Git 历史重放的完成票 v2。",
+      "human_command": "python3 tools/governance_index.py <--check|--baseline-plan|--wave-lock-request|--wave-plan|--wave-completion-request> ...",
       "inputs": [
         "governance/CURRENT_STATE.json、模块／路线／控制登记件",
-        "重构基线计划及一级票、同任务人工回读的 S0 决策票、精确 Wave 计划、测试影响单与冲突锁请求"
+        "重构基线计划及一级票、同任务人工回读决策／准备票、精确 Wave 计划、测试影响单、冲突锁请求与完成票 v2 请求"
       ],
       "outputs": [
         "只查模式输出漂移结果；刷新模式生成治理索引文件",
-        "TEMP 下不可覆盖且写后复核现场与全部证据 SHA 的一级基线票、二级 Wave 票和固定路径冲突锁"
+        "TEMP 下不可覆盖且写后复核证据的一级基线票、二级 Wave 票、固定路径冲突锁和 Git 历史完成票 v2"
       ],
       "network_or_model": {
         "network": "none",
@@ -660,7 +660,7 @@
         "tools/novel_pipeline.py"
       ],
       "next_confirmed_consumer": null,
-      "retirement_condition_and_compatibility_boundary": "由 novel_pipeline 治理子命令调用；重构票只验证写盘后仍稳定的本地现场、完整一级计划和精确 Wave，受绑定 JSON 用同一次读取的字节完成 SHA 与解析，写后重验全部证据 SHA，写盘父路径逐级拒绝软链替换；S0 还要用实际二级计划、二级票、逐文件 SHA 与完全等于写集的 Git 起止提交证明 Wave1 完成。二级 PASS 只代表机械条件满足，authorizes_wave 永远为 false；真正施工必须在原任务回读 CZ 的明确选择。不得把生成索引反写成 Notion 拍板真源，也不得授权 Notion／模型 API／外置清退。",
+      "retirement_condition_and_compatibility_boundary": "由 novel_pipeline 治理子命令调用；重构票只验证写盘后仍稳定的本地现场、完整一级计划和精确 Wave，受绑定 JSON 用同一次读取的字节完成 SHA 与解析，写后重验全部证据 SHA，写盘父路径逐级拒绝软链替换，受绑定硬链接在读内容前拒绝；旧 S0 仍用完成票 v1 核验 Wave1，Wave2 只接受规格钉住的真实 S0 计划／开工票 SHA、起止提交、可从 Git 对象重放且状态为 GIT_SCOPE_PASS 的完成票 v2，以及只记录当前 S-02-A 资格的新建 Wave2 准备票。完成票 v2 不信任请求自报输出，也不拿当前工作树代替历史 blob，只证明 Git 历史变更范围，不接收、不证明也不评价测试报告；删除、改名、范围外文件会阻断。进入 Wave2 时，S0 历史输出须与当前 HEAD 一一对应，仅 governance/tool_registry.json 可因扩闸发生内容漂移，其余输出内容或 Git 模式变化、替换、删除都会阻断。Wave2 读取范围按文件登记，禁止整段读取 config、governance、tests、tools 或 .git；外层 bound_inputs 必须与必绑输入和当前票据引用完全相等，固定一级计划内部的 bound_inputs 也必须与 6 个一级基线必绑输入完全相等，两层都会在重放和读取前拒绝多余或缺失输入；六类票据各自使用固定槽位，并且只能有一条 S0_MATERIALIZE_ONLY 完成票依赖。22 个候选写项全是精确文件，清单外子文件一律拒绝。准备票和二级 PASS 都不授权写 Wave2 文件，authorizes_wave 永远为 false；开始写候选文件前必须在原任务回读 CZ 后续另给的明确正向确认。不得把生成索引反写成 Notion 拍板真源，也不得授权预检、联网、读密钥、发请求、Notion／模型 API／外置清退。",
       "review_needed": false
     },
     {
