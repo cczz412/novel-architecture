@@ -46,6 +46,11 @@ Wave；CZ 选定路线并补齐配套口径后，二级票还要绑定精确写�
 哪个 Wave 的机械条件满足；真正动手还要在同一个任务里回读 CZ 的明确选择。这个边界
 是故意保留的，因为本机 JSON 无法给自己制造可信数字签名。
 
+Wave 1 修改治理生成器或它的测试时，精确写集必须包含会记录这些文件 SHA 的
+`module_registry.json`。本波不准在主仓运行全量 `governance refresh`；只允许把生成
+结果写到临时目录做逐字比对，再把实际发生字节变化的白名单文件落回主仓，避免无变化
+的旧生成件也被整批重写。
+
 ```bash
 python3 tools/governance_index.py \
   --baseline-plan <一级计划.json> \

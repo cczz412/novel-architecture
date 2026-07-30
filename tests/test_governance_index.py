@@ -1172,6 +1172,15 @@ class GovernanceIndexTests(unittest.TestCase):
                 governance_index.WAVE1_DIRECTORY_REGISTRY
             ]["candidate_write_paths"],
         )
+        self.assertIn(
+            "governance/module_registry.json",
+            boundary["eligible_write_paths"],
+        )
+        self.assertFalse(
+            governance_index.RESTRUCTURE_WAVE_SPECS[
+                governance_index.WAVE1_DIRECTORY_REGISTRY
+            ]["capability_limits"]["root_refresh"]
+        )
         for key in (
             "authorizes_physical_move",
             "authorizes_delete",
