@@ -1,7 +1,7 @@
 [project]
 name = "novel-architecture-pipeline"
 version = "0.0.0"
-requires-python = ">=3.12,<3.13"
+requires-python = "==3.12.12"
 dependencies = []
 
 [dependency-groups]

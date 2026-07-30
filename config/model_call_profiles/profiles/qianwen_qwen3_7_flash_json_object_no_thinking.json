@@ -1,0 +1,57 @@
+{
+  "schema_version": "model-call-profile-v1",
+  "profile_id": "qianwen_qwen3_7_flash_json_object_no_thinking",
+  "display_name": "千问平台 Qwen3.7 Flash｜关闭思考｜JSON Object",
+  "provider": "qianwen_platform",
+  "provider_config": "config/providers/qianwen_platform_multi_model.json",
+  "transport": "openai_chat_completions",
+  "model_binding": {
+    "request_model_id": "qwen3.7-flash",
+    "expected_response_model": "qwen3.7-flash"
+  },
+  "sampling": {
+    "temperature": 0.2,
+    "automatic_retries": 0,
+    "thinking": {
+      "enabled": false,
+      "effort": null,
+      "budget_tokens": null
+    },
+    "output_token_limit": {
+      "send_parameter": false,
+      "reason": "千问官方建议 JSON Object 模式不要设置 max_tokens，避免截断后得到无效 JSON。"
+    }
+  },
+  "json_output": {
+    "mode": "json_object_local_schema",
+    "provider_parameters": {
+      "enable_thinking": false,
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "prompt_must_contain_json": true,
+    "runtime_schema_validation_required": true,
+    "forbidden_request_fields": [
+      "max_tokens",
+      "max_completion_tokens",
+      "thinking_budget",
+      "reasoning_effort"
+    ]
+  },
+  "streaming": {
+    "enabled": false,
+    "response_assembly": "single_json_response"
+  },
+  "status": "docs_verified_live_quality_call_pending",
+  "official_docs": [
+    "https://platform.qianwenai.com/docs/developer-guides/text-generation/structured-output",
+    "https://platform.qianwenai.com/docs/api-reference/preparation/error-messages",
+    "https://platform.qianwenai.com/docs/resources/faq-text-generation"
+  ],
+  "notes": [
+    "这是格式优先对照档，不是质量优先默认档。",
+    "JSON Object 只保证正文是合法 JSON，不保证字段完全符合业务 Schema，因此本地 Schema 验收仍不可省。",
+    "Prompt 必须出现 JSON 一词，并明确要求只返回 JSON 对象。"
+  ]
+}

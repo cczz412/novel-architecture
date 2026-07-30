@@ -1,0 +1,58 @@
+{
+  "schema_version": "model-call-profile-v1",
+  "profile_id": "qianwen_qwen3_7_flash_thinking_prompt_json",
+  "display_name": "千问平台 Qwen3.7 Flash｜思考开启｜Prompt 约束 JSON",
+  "provider": "qianwen_platform",
+  "provider_config": "config/providers/qianwen_platform_multi_model.json",
+  "transport": "openai_chat_completions",
+  "model_binding": {
+    "request_model_id": "qwen3.7-flash",
+    "expected_response_model": "qwen3.7-flash"
+  },
+  "sampling": {
+    "temperature": 0.2,
+    "automatic_retries": 0,
+    "thinking": {
+      "enabled": true,
+      "effort": null,
+      "budget_tokens": 32768
+    },
+    "output_token_limit": {
+      "send_parameter": false,
+      "reason": "不发送 max_tokens 或 max_completion_tokens，避免长 JSON 被客户端硬截断；32K 只限制思考过程，不限制最终正文。"
+    }
+  },
+  "json_output": {
+    "mode": "prompt_json_local_schema",
+    "provider_parameters": {
+      "enable_thinking": true,
+      "thinking_budget": 32768,
+      "stream_options": {
+        "include_usage": true
+      }
+    },
+    "prompt_must_contain_json": true,
+    "runtime_schema_validation_required": true,
+    "forbidden_request_fields": [
+      "response_format",
+      "max_tokens",
+      "max_completion_tokens",
+      "reasoning_effort"
+    ]
+  },
+  "streaming": {
+    "enabled": true,
+    "response_assembly": "openai_sse_content_and_reasoning"
+  },
+  "status": "docs_verified_live_quality_call_pending",
+  "official_docs": [
+    "https://platform.qianwenai.com/docs/developer-guides/text-generation/thinking",
+    "https://platform.qianwenai.com/docs/developer-guides/text-generation/structured-output",
+    "https://platform.qianwenai.com/docs/resources/faq-text-generation"
+  ],
+  "notes": [
+    "这是质量优先档：保留思考能力，最终正文靠 Prompt 要求 JSON，再由本地 JSON 解析和当次冻结 Schema 验收。",
+    "千问官方明确说明思考模式不能与 response_format=json_object 同时使用，因此这里禁止发送 response_format。",
+    "流式响应要分别拼接 reasoning_content 与 content；只有 content 进入 JSON 验收。"
+  ]
+}

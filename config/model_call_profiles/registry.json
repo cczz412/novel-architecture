@@ -1,0 +1,40 @@
+{
+  "schema_version": "model-call-profile-registry-v1",
+  "status": "candidate_only_not_wired_to_default_chain",
+  "default_temperature": 0.2,
+  "automatic_retries": 0,
+  "default_output_token_policy": "do_not_send_client_cap",
+  "profiles": [
+    {
+      "profile_id": "qianwen_qwen3_7_flash_thinking_prompt_json",
+      "path": "config/model_call_profiles/profiles/qianwen_qwen3_7_flash_thinking_prompt_json.json",
+      "role": "qwen3.7-flash质量优先档"
+    },
+    {
+      "profile_id": "qianwen_qwen3_7_flash_json_object_no_thinking",
+      "path": "config/model_call_profiles/profiles/qianwen_qwen3_7_flash_json_object_no_thinking.json",
+      "role": "qwen3.7-flash格式优先对照档"
+    },
+    {
+      "profile_id": "agent_plan_deepseek_v4_flash_high_json_object",
+      "path": "config/model_call_profiles/profiles/agent_plan_deepseek_v4_flash_high_json_object.json",
+      "role": "DeepSeek V4 Flash主力候选档"
+    },
+    {
+      "profile_id": "agent_plan_deepseek_v4_pro_high_json_object",
+      "path": "config/model_call_profiles/profiles/agent_plan_deepseek_v4_pro_high_json_object.json",
+      "role": "DeepSeek V4 Pro强模型候选档"
+    },
+    {
+      "profile_id": "agent_plan_minimax_m3_thinking_json_object",
+      "path": "config/model_call_profiles/profiles/agent_plan_minimax_m3_thinking_json_object.json",
+      "role": "MiniMax M3异源对照档"
+    }
+  ],
+  "preferred_profiles": {
+    "qwen3.7-flash": "qianwen_qwen3_7_flash_thinking_prompt_json",
+    "deepseek-v4-flash": "agent_plan_deepseek_v4_flash_high_json_object",
+    "deepseek-v4-pro": "agent_plan_deepseek_v4_pro_high_json_object",
+    "minimax-m3": "agent_plan_minimax_m3_thinking_json_object"
+  }
+}

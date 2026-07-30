@@ -343,6 +343,7 @@ def test_list_only_exposes_verified_runnable_pairs() -> None:
         {"model": "qwen3.7-plus", "profile": "thinking_32k_prompt_json"},
     ]
     assert qwen["registered_models_without_validated_profile"] == [
+        "qwen3.7-flash",
         "qwen3.7-max",
         "qwen3.7-max-2026-05-20",
         "deepseek-v4-flash",

@@ -477,9 +477,20 @@ def test_default_and_official_python_build_identical(tmp_path: Path) -> None:
         Path("/opt/homebrew/opt/python@3.12/bin/python3.12"),
     ]
     if not all(path.is_file() for path in interpreters):
-        pytest.skip("默认或官方 Python 3.12 不可用")
+        pytest.skip("默认或官方 Python 3.12.12 不可用")
     outputs: list[dict[str, bytes]] = []
     for index, interpreter in enumerate(interpreters):
+        version = subprocess.run(
+            [
+                str(interpreter),
+                "-c",
+                "import platform; print(platform.python_version())",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        assert version == "3.12.12", interpreter
         output = tmp_path / f"python-{index}"
         subprocess.run(
             [

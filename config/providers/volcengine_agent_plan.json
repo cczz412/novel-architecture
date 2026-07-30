@@ -4,18 +4,29 @@
   "display_name": "火山方舟 Agent Plan（个人版 Small）",
   "base_url": "https://ark.cn-beijing.volces.com/api/plan/v3",
   "transport": "arkcli_responses",
-  "api_key_env": "VOLCENGINE_AGENT_PLAN_API_KEY",
   "arkcli_profile": "agent-plan_cn-beijing_personal",
+  "credential_source": {
+    "mode": "arkcli_profile_managed",
+    "profile": "agent-plan_cn-beijing_personal",
+    "unset_environment_before_call": [
+      "ARK_API_KEY",
+      "ARK_BASE_URL",
+      "ARK_REGION",
+      "ARK_PROFILE",
+      "VOLCENGINE_AGENT_PLAN_API_KEY"
+    ]
+  },
   "enabled_by_default": false,
   "default_model": null,
   "auto_model_allowed": false,
   "exact_model_id_required": true,
   "live_model_catalog_check_required_before_run": true,
   "request_response_model_binding_required": true,
-  "preferred_usage": "用于 DeepSeek V4 Pro、豆包、GLM、Kimi、MiniMax 等显式对照测试；DeepSeek V4 Flash 默认继续走 SenseNova 免费次数通道。",
+  "preferred_usage": "用于 DeepSeek V4 Flash、DeepSeek V4 Pro、MiniMax M3 及其他明确点名模型的隔离对照测试；不替换 SenseNova 现役默认链。",
   "model_selection_rule": "每次调用必须显式传入下列 model_id；缺省、auto、别名或名单外 ID 一律在发网前拒绝。响应中的实际模型须符合该行 expected_response_model，不能静默换模。",
   "catalog_source": "arkcli plans model-list --plan agent-plan --format json",
-  "catalog_checked_on": "2026-07-27",
+  "catalog_checked_on": "2026-07-29",
+  "catalog_checked_with_arkcli_version": "1.0.8",
   "models": [
     {
       "requested_name": "Doubao-Seed-Evolving",
@@ -79,15 +90,14 @@
     },
     {
       "requested_name": "DeepSeek-V4-Flash",
-      "model_id": "deepseek-v4-flash-260425",
+      "model_id": "deepseek-v4-flash-modelhub",
       "expected_response_model": "deepseek-v4-flash-260425",
-      "call_ready": false,
-      "status": "blocked_prefer_sensenova_free_quota",
-      "override_rule": "只有 CZ 在当前任务里明确要求使用 Agent Plan 的 Flash，才可为该次调用临时放行。"
+      "call_ready": true,
+      "status": "catalog_verified_candidate_only"
     },
     {
       "requested_name": "DeepSeek-V4-Pro",
-      "model_id": "deepseek-v4-pro-260425",
+      "model_id": "deepseek-v4-pro-modelhub",
       "expected_response_model": "deepseek-v4-pro-260425",
       "call_ready": true
     },

@@ -11,12 +11,23 @@
   "default_model": null,
   "status": "configured_key_validated_benchmark_only_not_wired_to_default",
   "recommended_benchmark_profile": "thinking_32k_prompt_json",
+  "recommended_model_call_profile": "qianwen_qwen3_7_flash_thinking_prompt_json",
   "deepseek_v4_pro_benchmark_profile": "deepseek_v4_pro_medium_prompt_json",
   "recommended_temperature": 0.2,
   "benchmark_history_note": "既有 r05 是非思考＋temperature=0.0 历史条件成绩，保留原账；后续默认用思考模式＋temperature=0.2 新开轮次。",
   "token_plan_key_supported_by_this_config": false,
   "model_selection_rule": "只允许显式选择下列 model_id；不得自动降级或换近似模型。",
   "models": [
+    {
+      "requested_name": "qwen3.7-flash",
+      "model_id": "qwen3.7-flash",
+      "expected_response_model": "qwen3.7-flash",
+      "call_ready": true,
+      "thinking_mode": "hybrid_default_enabled",
+      "thinking_budget_max_tokens": 262144,
+      "structured_output_requires_thinking_disabled": true,
+      "configuration_status": "official_docs_verified_live_quality_call_pending"
+    },
     {
       "requested_name": "qwen3.7-plus",
       "model_id": "qwen3.7-plus",
@@ -81,6 +92,7 @@
     "https://platform.qianwenai.com/docs/developer-guides/text-generation/structured-output",
     "https://platform.qianwenai.com/docs/developer-guides/text-generation/batch",
     "https://platform.qianwenai.com/docs/api-reference/chat/openai-chat",
+    "https://platform.qianwenai.com/docs/api-reference/chat/openai-responses",
     "https://platform.qianwenai.com/docs/api-reference/preparation/api-key"
   ]
 }

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 import tomllib
 from pathlib import Path
 
@@ -12,8 +13,10 @@ def test_default_environment_is_pinned_without_retired_model_dependencies() -> N
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     lock = tomllib.loads((ROOT / "uv.lock").read_text(encoding="utf-8"))
 
+    assert sys.version_info[:3] == (3, 12, 12)
     assert (ROOT / ".python-version").read_text(encoding="utf-8").strip() == "3.12.12"
-    assert project["project"]["requires-python"] == ">=3.12,<3.13"
+    assert project["project"]["requires-python"] == "==3.12.12"
+    assert lock["requires-python"] == "==3.12.12"
     assert project["project"]["dependencies"] == []
     assert project["dependency-groups"]["dev"] == [
         "jsonschema==4.26.0",

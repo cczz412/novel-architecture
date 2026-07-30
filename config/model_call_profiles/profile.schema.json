@@ -1,0 +1,299 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "model-call-profile-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "display_name",
+    "provider",
+    "provider_config",
+    "transport",
+    "model_binding",
+    "sampling",
+    "json_output",
+    "streaming",
+    "status",
+    "official_docs",
+    "notes"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "model-call-profile-v1"
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider": {
+      "enum": [
+        "qianwen_platform",
+        "volcengine_agent_plan"
+      ]
+    },
+    "provider_config": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transport": {
+      "enum": [
+        "openai_chat_completions",
+        "arkcli_responses"
+      ]
+    },
+    "model_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "request_model_id",
+        "expected_response_model"
+      ],
+      "properties": {
+        "request_model_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expected_response_model": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "sampling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "temperature",
+        "automatic_retries",
+        "thinking",
+        "output_token_limit"
+      ],
+      "properties": {
+        "temperature": {
+          "const": 0.2
+        },
+        "automatic_retries": {
+          "const": 0
+        },
+        "thinking": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "effort",
+            "budget_tokens"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "effort": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "budget_tokens": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            }
+          }
+        },
+        "output_token_limit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "send_parameter",
+            "reason"
+          ],
+          "properties": {
+            "send_parameter": {
+              "const": false
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "json_output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "provider_parameters",
+        "prompt_must_contain_json",
+        "runtime_schema_validation_required",
+        "forbidden_request_fields"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "prompt_json_local_schema",
+            "json_object_local_schema",
+            "provider_json_object_hint_exact_fence_normalization_local_schema"
+          ]
+        },
+        "provider_parameters": {
+          "type": "object"
+        },
+        "prompt_must_contain_json": {
+          "type": "boolean"
+        },
+        "runtime_schema_validation_required": {
+          "const": true
+        },
+        "forbidden_request_fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "normalization_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "provider_guarantees_raw_json",
+            "accepted_raw_shapes",
+            "allow_prefix_or_suffix_prose",
+            "raw_receipt_may_be_reclassified",
+            "normalized_status_name"
+          ],
+          "properties": {
+            "provider_guarantees_raw_json": {
+              "type": "boolean"
+            },
+            "accepted_raw_shapes": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "raw_json_object",
+                  "exact_single_lowercase_json_fence"
+                ]
+              }
+            },
+            "allow_prefix_or_suffix_prose": {
+              "type": "boolean"
+            },
+            "raw_receipt_may_be_reclassified": {
+              "type": "boolean"
+            },
+            "normalized_status_name": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "streaming": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "response_assembly"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "response_assembly": {
+          "enum": [
+            "openai_sse_content_and_reasoning",
+            "single_json_response"
+          ]
+        }
+      }
+    },
+    "arkcli": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "credential_source",
+        "unset_environment",
+        "thinking",
+        "reasoning_effort",
+        "text_format",
+        "text_strict"
+      ],
+      "properties": {
+        "profile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "credential_source": {
+          "const": "arkcli_profile_managed"
+        },
+        "unset_environment": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "thinking": {
+          "enum": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        "reasoning_effort": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "text_format": {
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "text_strict": {
+          "type": "boolean"
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "docs_verified_live_quality_call_pending",
+        "catalog_verified_prior_alias_call_succeeded",
+        "catalog_verified_live_quality_call_pending",
+        "catalog_verified_live_quality_call_completed_normalization_candidate"
+      ]
+    },
+    "official_docs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

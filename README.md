@@ -60,7 +60,7 @@ cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bi
 python3 tools/chatgpt_review_pack.py --dry-run
 ```
 
-环境可用 `uv sync --locked` 重建，但整仓验收仍只认上面的固定 Python 3.12 命令。
+环境可用 `uv sync --locked` 重建，但整仓验收仍只认上面的固定 Python 3.12.12 命令。
 
 ## 新文件放哪里
 

@@ -4,6 +4,7 @@ import copy
 import json
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 from tools import governance_index
@@ -11,6 +12,9 @@ from tools.pipeline_common.artifacts import read_json, verify_manifest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+V2_LEDGER = "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6"
+LEGACY_LEDGER = "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c"
+QUEUE = "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc"
 
 
 def _as_v2(state: dict) -> dict:
@@ -21,6 +25,86 @@ def _as_v2(state: dict) -> dict:
         "authority": copy.deepcopy(state["authority"]),
         "current_execution": current,
         "historical_context": history,
+    }
+
+
+def _write_json(path: Path, value: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+
+
+def _baseline_fixture(root: Path) -> dict:
+    (root / "governance").mkdir(parents=True, exist_ok=True)
+    (root / "tools").mkdir(parents=True, exist_ok=True)
+    (root / "AGENTS.md").write_text(
+        "\n".join(
+            [
+                f"2. **账序真源 v2（测试）**：{V2_LEDGER}",
+                f"3. **LEGACY 在跑队列（测试）**：{QUEUE}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    _write_json(
+        root / governance_index.CURRENT_STATE_PATH,
+        {
+            "authority": {
+                "external_truth": {
+                    "ledger_url": V2_LEDGER,
+                    "queue_url": QUEUE,
+                    "legacy_frozen_ledger_url": LEGACY_LEDGER,
+                }
+            }
+        },
+    )
+    _write_json(
+        root / governance_index.CONTROL_PATH,
+        {
+            "source_authority": {"ledger_url": V2_LEDGER, "queue_url": QUEUE},
+            "run_report_pairs": [
+                {
+                    "name": "HISTORICAL",
+                    "acceptance_authority_url": LEGACY_LEDGER,
+                }
+            ],
+        },
+    )
+    _write_json(root / "governance/module_registry.json", {"schema_version": "test"})
+    _write_json(root / "governance/index_manifest.json", {"schema_version": "test"})
+    (root / "tools/governance_index.py").write_text("test fixture\n", encoding="utf-8")
+    bindings = [
+        {
+            "path": relative,
+            "sha256": governance_index.sha256_file(root / relative),
+        }
+        for relative in sorted(governance_index.RESTRUCTURE_BASELINE_REQUIRED_INPUTS)
+    ]
+    return {
+        "contract_version": governance_index.RESTRUCTURE_BASELINE_PLAN_V1,
+        "plan_id": "ROUTE-A-PLUS-BASELINE-TEST",
+        "expected_head_sha": "a" * 40,
+        "responsibility_window": {
+            "source_system": "codex",
+            "authorization_context_id": "test-context",
+            "owner": "test-owner",
+            "task_id": "TEST-WAVE0",
+            "wave_id": "BASELINE",
+            "starts_at": "2026-07-30T00:00:00+08:00",
+            "expires_at": "2026-07-31T00:00:00+08:00",
+            "read_allowlist": sorted(
+                governance_index.RESTRUCTURE_BASELINE_FIXED_READ_SCOPES
+            ),
+            "write_allowlist": ["tools/governance_index.py"],
+            "candidate_write_paths": ["governance/directory_registry.json"],
+        },
+        "historical_authority_expectations": [
+            {
+                "name": "HISTORICAL",
+                "path": "run_report_pairs[0].acceptance_authority_url",
+                "url": LEGACY_LEDGER,
+            }
+        ],
+        "bound_inputs": bindings,
     }
 
 
@@ -483,6 +567,164 @@ class GovernanceIndexTests(unittest.TestCase):
         self.assertEqual(policy["full_chain_command"], expected)
         self.assertIn(expected, (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(expected, (ROOT / "governance/README.md").read_text(encoding="utf-8"))
+
+    def test_restructure_baseline_passes_without_authorizing_a_wave(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            plan = _baseline_fixture(root)
+            receipt = governance_index.evaluate_restructure_baseline(
+                root,
+                plan,
+                dirty_paths=["tools/governance_index.py"],
+                head_sha="a" * 40,
+                governance_mismatch_paths=[],
+                evaluated_at=datetime(2026, 7, 30, 5, 0, tzinfo=timezone.utc),
+            )
+
+        self.assertEqual(receipt["status"], "PASS")
+        self.assertEqual(receipt["blockers"], [])
+        self.assertFalse(receipt["authorization_boundary"]["authorizes_wave"])
+        self.assertEqual(
+            receipt["authorization_boundary"]["next_human_decision_if_pass"],
+            "D-08",
+        )
+        historical = next(
+            row
+            for row in receipt["checks"]
+            if row["check_id"] == "historical_authority_exact_match"
+        )
+        self.assertEqual(
+            historical["evidence"]["actual_fields"],
+            [
+                {
+                    "name": "HISTORICAL",
+                    "path": "run_report_pairs[0].acceptance_authority_url",
+                    "url": LEGACY_LEDGER,
+                }
+            ],
+        )
+
+    def test_restructure_baseline_blocks_foreign_dirty_candidate_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            plan = _baseline_fixture(root)
+            plan["expected_head_sha"] = "b" * 40
+            plan["responsibility_window"]["candidate_write_paths"] = [
+                "governance/README.md"
+            ]
+            receipt = governance_index.evaluate_restructure_baseline(
+                root,
+                plan,
+                dirty_paths=["governance/README.md"],
+                head_sha="b" * 40,
+                governance_mismatch_paths=[],
+                evaluated_at=datetime(2026, 7, 30, 5, 0, tzinfo=timezone.utc),
+            )
+
+        self.assertEqual(receipt["status"], "BLOCKED")
+        self.assertIn(
+            "candidate_write_paths_disjoint_from_foreign_dirty",
+            receipt["blockers"],
+        )
+
+    def test_restructure_baseline_blocks_missing_read_allowlist(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            plan = _baseline_fixture(root)
+            plan["responsibility_window"]["read_allowlist"] = []
+            receipt = governance_index.evaluate_restructure_baseline(
+                root,
+                plan,
+                dirty_paths=[],
+                head_sha="a" * 40,
+                governance_mismatch_paths=[],
+                evaluated_at=datetime(2026, 7, 30, 5, 0, tzinfo=timezone.utc),
+            )
+
+        self.assertEqual(receipt["status"], "BLOCKED")
+        self.assertIn("read_allowlist_complete", receipt["blockers"])
+
+    def test_restructure_baseline_blocks_historical_authority_rewrite(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            plan = _baseline_fixture(root)
+            control_path = root / governance_index.CONTROL_PATH
+            control = read_json(control_path)
+            control["run_report_pairs"][0]["acceptance_authority_url"] = V2_LEDGER
+            _write_json(control_path, control)
+            for row in plan["bound_inputs"]:
+                if row["path"] == governance_index.CONTROL_PATH:
+                    row["sha256"] = governance_index.sha256_file(control_path)
+            receipt = governance_index.evaluate_restructure_baseline(
+                root,
+                plan,
+                dirty_paths=[],
+                head_sha="a" * 40,
+                governance_mismatch_paths=[],
+                evaluated_at=datetime(2026, 7, 30, 5, 0, tzinfo=timezone.utc),
+            )
+
+        self.assertEqual(receipt["status"], "BLOCKED")
+        self.assertIn("historical_authority_exact_match", receipt["blockers"])
+
+    def test_restructure_baseline_blocks_authority_and_sha_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            plan = _baseline_fixture(root)
+            plan["expected_head_sha"] = "c" * 40
+            control_path = root / governance_index.CONTROL_PATH
+            control = read_json(control_path)
+            control["source_authority"]["ledger_url"] = LEGACY_LEDGER
+            _write_json(control_path, control)
+            receipt = governance_index.evaluate_restructure_baseline(
+                root,
+                plan,
+                dirty_paths=[],
+                head_sha="c" * 40,
+                governance_mismatch_paths=["governance/index_manifest.json"],
+                evaluated_at=datetime(2026, 7, 30, 5, 0, tzinfo=timezone.utc),
+            )
+
+        self.assertEqual(receipt["status"], "BLOCKED")
+        self.assertEqual(
+            set(receipt["blockers"]),
+            {
+                "governance_generated_green",
+                "current_authority_three_way",
+                "bound_input_sha",
+            },
+        )
+
+    def test_restructure_baseline_receipt_stays_under_temp_and_is_immutable(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            allowed = governance_index._receipt_output_path(
+                root,
+                Path("TEMP/restructure_wave_preflight/example/receipt.json"),
+            )
+            self.assertTrue(
+                str(allowed).endswith(
+                    "TEMP/restructure_wave_preflight/example/receipt.json"
+                )
+            )
+            allowed.parent.mkdir(parents=True)
+            allowed.write_text("sealed", encoding="utf-8")
+            with self.assertRaisesRegex(
+                governance_index.ArtifactError,
+                "拒绝覆盖",
+            ):
+                governance_index._receipt_output_path(
+                    root,
+                    Path("TEMP/restructure_wave_preflight/example/receipt.json"),
+                )
+            with self.assertRaisesRegex(
+                governance_index.ArtifactError,
+                "只能写入",
+            ):
+                governance_index._receipt_output_path(
+                    root,
+                    Path("reports/receipt.json"),
+                )
 
 
 if __name__ == "__main__":

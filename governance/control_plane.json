@@ -1,7 +1,7 @@
 {
   "schema_version": "governance-control-plane-v1",
   "source_authority": {
-    "ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
+    "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
     "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
     "rule": "Notion 账序与队列是最终真源；当前任务／运行状态回读到 governance/CURRENT_STATE.json，本文件只保留稳定入口与保护指针。"
   },

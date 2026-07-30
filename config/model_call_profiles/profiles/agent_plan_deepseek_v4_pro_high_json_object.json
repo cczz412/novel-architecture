@@ -1,0 +1,64 @@
+{
+  "schema_version": "model-call-profile-v1",
+  "profile_id": "agent_plan_deepseek_v4_pro_high_json_object",
+  "display_name": "Agent Plan DeepSeek V4 Pro｜High｜JSON Object",
+  "provider": "volcengine_agent_plan",
+  "provider_config": "config/providers/volcengine_agent_plan.json",
+  "transport": "arkcli_responses",
+  "model_binding": {
+    "request_model_id": "deepseek-v4-pro-modelhub",
+    "expected_response_model": "deepseek-v4-pro-260425"
+  },
+  "sampling": {
+    "temperature": 0.2,
+    "automatic_retries": 0,
+    "thinking": {
+      "enabled": true,
+      "effort": "high",
+      "budget_tokens": null
+    },
+    "output_token_limit": {
+      "send_parameter": false,
+      "reason": "不发送 --max-output-tokens，让模型按供应商自身上限完成正文；完成状态和 JSON 完整性由本地闸验收。"
+    }
+  },
+  "json_output": {
+    "mode": "json_object_local_schema",
+    "provider_parameters": {},
+    "prompt_must_contain_json": true,
+    "runtime_schema_validation_required": true,
+    "forbidden_request_fields": [
+      "max_output_tokens"
+    ]
+  },
+  "streaming": {
+    "enabled": false,
+    "response_assembly": "single_json_response"
+  },
+  "arkcli": {
+    "profile": "agent-plan_cn-beijing_personal",
+    "credential_source": "arkcli_profile_managed",
+    "unset_environment": [
+      "ARK_API_KEY",
+      "ARK_BASE_URL",
+      "ARK_REGION",
+      "ARK_PROFILE",
+      "VOLCENGINE_AGENT_PLAN_API_KEY"
+    ],
+    "thinking": "enabled",
+    "reasoning_effort": "high",
+    "text_format": "json_object",
+    "text_strict": false
+  },
+  "status": "catalog_verified_live_quality_call_pending",
+  "official_docs": [
+    "https://www.volcengine.com/docs/82379/1528783?lang=zh",
+    "https://www.volcengine.com/docs/82379/1795150?lang=zh"
+  ],
+  "notes": [
+    "2026-07-29 Agent Plan 实时目录给出的请求 ID 是 deepseek-v4-pro-modelhub，返回名是 deepseek-v4-pro-260425。",
+    "High 是当前首轮冻结档；不再写成 medium，也不发送客户端输出 token 上限。",
+    "Agent Plan 凭证只认 arkcli profile；发网前清掉 ARK_API_KEY 等环境覆盖，避免旧钥匙压过套餐钥匙。",
+    "首次质量调用前仍要重新读取实时模型目录，禁止自动换模。"
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "schema_version": "model-call-profile-v1",
+  "profile_id": "agent_plan_minimax_m3_thinking_json_object",
+  "display_name": "Agent Plan MiniMax M3｜思考开启｜JSON 提示＋精确围栏标准化",
+  "provider": "volcengine_agent_plan",
+  "provider_config": "config/providers/volcengine_agent_plan.json",
+  "transport": "arkcli_responses",
+  "model_binding": {
+    "request_model_id": "minimax-m3-modelhub",
+    "expected_response_model": "minimax-m3"
+  },
+  "sampling": {
+    "temperature": 0.2,
+    "automatic_retries": 0,
+    "thinking": {
+      "enabled": true,
+      "effort": null,
+      "budget_tokens": null
+    },
+    "output_token_limit": {
+      "send_parameter": false,
+      "reason": "不发送 --max-output-tokens，避免把未知的模型有效输出上限误写成项目硬上限。"
+    }
+  },
+  "json_output": {
+    "mode": "provider_json_object_hint_exact_fence_normalization_local_schema",
+    "provider_parameters": {},
+    "prompt_must_contain_json": true,
+    "runtime_schema_validation_required": true,
+    "forbidden_request_fields": [
+      "max_output_tokens",
+      "reasoning_effort"
+    ],
+    "normalization_policy": {
+      "provider_guarantees_raw_json": false,
+      "accepted_raw_shapes": [
+        "raw_json_object",
+        "exact_single_lowercase_json_fence"
+      ],
+      "allow_prefix_or_suffix_prose": false,
+      "raw_receipt_may_be_reclassified": false,
+      "normalized_status_name": "normalized_quality_pass"
+    }
+  },
+  "streaming": {
+    "enabled": false,
+    "response_assembly": "single_json_response"
+  },
+  "arkcli": {
+    "profile": "agent-plan_cn-beijing_personal",
+    "credential_source": "arkcli_profile_managed",
+    "unset_environment": [
+      "ARK_API_KEY",
+      "ARK_BASE_URL",
+      "ARK_REGION",
+      "ARK_PROFILE",
+      "VOLCENGINE_AGENT_PLAN_API_KEY"
+    ],
+    "thinking": "enabled",
+    "reasoning_effort": null,
+    "text_format": "json_object",
+    "text_strict": false
+  },
+  "status": "catalog_verified_live_quality_call_completed_normalization_candidate",
+  "official_docs": [
+    "https://platform.minimaxi.com/docs/api-reference/api-overview",
+    "https://platform.minimaxi.com/docs/api-reference/text-post",
+    "https://platform.minimaxi.com/docs/api-reference/text/api/openapi-responses.json",
+    "https://www.volcengine.com/docs/82379/1528783?lang=zh",
+    "https://www.volcengine.com/docs/82379/1795150?lang=zh"
+  ],
+  "notes": [
+    "实时目录确认 MiniMax M3 支持思考，但没有给出与 DeepSeek 相同的 High 档合同，因此不强塞 reasoning_effort。",
+    "请求 ID 使用 minimax-m3-modelhub，响应必须回报 minimax-m3。",
+    "Agent Plan 凭证只认 arkcli profile；发网前清掉 ARK_API_KEY 等环境覆盖，避免旧钥匙压过套餐钥匙。",
+    "MiniMax M3 用来做异源模型对照，不冒充 DeepSeek 的同平台换皮。",
+    "MiniMax 官方当前只给 MiniMax-Text-01 声明 json_schema 强制结构化输出；M3 的 JSON Object 只能视为渠道提示，不能写成供应商硬保证。",
+    "r03 两次返回都只有一层完整 lowercase json 代码围栏；r04 零调用复验仅剥这一层后通过同一 Schema 与证据锚校验，原始 FAIL 保留不改判。"
+  ]
+}

@@ -68,7 +68,7 @@ Notion 账序与队列仍是最终真源。本区只解决本地寻路和机械�
 
 ## 环境锁与历史回放
 
-- 默认复现环境由根目录 `.python-version`、`pyproject.toml`、`uv.lock` 三件共同锁定。基础环境只含现役测试与代码检查；停用的 MiniCPM／微调依赖不进入默认锁。
+- 默认复现环境由根目录 `.python-version`、`pyproject.toml`、`uv.lock` 三件共同锁定为 Python 3.12.12。基础环境只含现役测试与代码检查；停用的 MiniCPM／微调依赖不进入默认锁。
 - 日常仍保留现役 Homebrew Python 全链命令作等价对照；新环境可用 `uv sync --locked` 后复验。
 - 40 项历史测试恢复只走便携夹具小包：保留仓库相对路径，带逐文件 SHA，在干净 checkout 中证明 40 项全部真跑通过。不得为省事把大型旧运行目录塞回主仓。
 - review／replay 双包与外发工程证据清单见 [`config/review_pack/README.md`](../config/review_pack/README.md)。外发调查包必须带 commit、环境锁、manifest、原始响应索引和 SHA 清单。

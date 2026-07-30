@@ -4,9 +4,14 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
+import re
+import subprocess
 import sys
-from pathlib import Path
+import tempfile
+from datetime import datetime, timezone
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 TOOLS_DIR = Path(__file__).resolve().parent
@@ -56,6 +61,37 @@ LEGACY_TOP_LEVEL_STATE_KEYS = {
     "open_issues",
     "closure_policy",
 }
+RESTRUCTURE_BASELINE_PLAN_V1 = "repository-restructure-baseline-plan-v1"
+RESTRUCTURE_BASELINE_RECEIPT_V1 = "repository-restructure-baseline-receipt-v1"
+RESTRUCTURE_BASELINE_REQUIRED_INPUTS = {
+    "AGENTS.md",
+    CURRENT_STATE_PATH,
+    CONTROL_PATH,
+    "governance/module_registry.json",
+    "governance/index_manifest.json",
+    "tools/governance_index.py",
+}
+RESTRUCTURE_BASELINE_FIXED_READ_SCOPES = {
+    ".git",
+    "AGENTS.md",
+    "README.md",
+    "TEMP/restructure_wave_preflight",
+    "config",
+    "experiments",
+    "foundation",
+    "governance",
+    "history",
+    "intake",
+    "outbox",
+    "references",
+    "reports",
+    "runs",
+    "seed",
+    "side-tracks",
+    "tests",
+    "tools",
+    "work",
+}
 
 
 def _must_dict(value: Any, name: str) -> dict[str, Any]:
@@ -83,6 +119,80 @@ def _validate_relative_identity(value: Any, name: str) -> None:
     path = Path(text)
     if path.is_absolute() or ".." in path.parts:
         raise ArtifactError(f"{name} 必须是仓库相对路径")
+
+
+def _repo_relative_path(value: Any, name: str) -> str:
+    text = _must_nonempty_string(value, name).replace("\\", "/")
+    path = PurePosixPath(text)
+    if path.is_absolute() or ".." in path.parts or path.as_posix() in {"", "."}:
+        raise ArtifactError(f"{name} 必须是仓库内相对路径")
+    return path.as_posix()
+
+
+def _aware_datetime(value: Any, name: str) -> datetime:
+    text = _must_nonempty_string(value, name)
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ArtifactError(f"{name} 不是 ISO 8601 时间") from exc
+    if parsed.tzinfo is None:
+        raise ArtifactError(f"{name} 必须带时区")
+    return parsed
+
+
+def _markdown_authority_url(text: str, label: str) -> str:
+    match = re.search(rf"{re.escape(label)}[^\n]*：(?P<url>https://[^\s*]+)", text)
+    if match is None:
+        raise ArtifactError(f"AGENTS.md 找不到现役入口：{label}")
+    return match.group("url")
+
+
+def _path_overlap(left: str, right: str) -> bool:
+    left_parts = PurePosixPath(left).parts
+    right_parts = PurePosixPath(right).parts
+    shorter = min(len(left_parts), len(right_parts))
+    return left_parts[:shorter] == right_parts[:shorter]
+
+
+def _path_is_allowed(path: str, allowed: str) -> bool:
+    path_parts = PurePosixPath(path).parts
+    allowed_parts = PurePosixPath(allowed).parts
+    return path_parts[: len(allowed_parts)] == allowed_parts
+
+
+def _git_path_set(root: Path, args: list[str]) -> set[str]:
+    completed = subprocess.run(
+        ["git", *args],
+        cwd=root,
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    return {
+        item.decode("utf-8")
+        for item in completed.stdout.split(b"\0")
+        if item
+    }
+
+
+def git_dirty_paths(root: Path = ROOT) -> list[str]:
+    paths = set()
+    paths.update(_git_path_set(root, ["diff", "--name-only", "-z"]))
+    paths.update(_git_path_set(root, ["diff", "--cached", "--name-only", "-z"]))
+    paths.update(_git_path_set(root, ["ls-files", "--others", "--exclude-standard", "-z"]))
+    return sorted(paths)
+
+
+def git_head(root: Path = ROOT) -> str:
+    completed = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=root,
+        check=True,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    return completed.stdout.strip()
 
 
 def state_layers(state: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -887,30 +997,355 @@ def refresh(root: Path = ROOT, output_root: Path | None = None) -> dict[str, Any
     return manifest
 
 
+def generated_mismatches(root: Path = ROOT) -> list[str]:
+    with tempfile.TemporaryDirectory(prefix="governance-index-check-") as temporary:
+        output_root = Path(temporary)
+        refresh(root=root, output_root=output_root)
+        return [
+            relative
+            for relative in GENERATED_PATHS + ["governance/index_manifest.json"]
+            if not (root / relative).is_file()
+            or (root / relative).read_bytes() != (output_root / relative).read_bytes()
+        ]
+
+
+def _baseline_plan(value: Any) -> dict[str, Any]:
+    plan = _must_dict(value, "基线校准计划")
+    if plan.get("contract_version") != RESTRUCTURE_BASELINE_PLAN_V1:
+        raise ArtifactError(
+            f"基线校准计划 contract_version 必须是 {RESTRUCTURE_BASELINE_PLAN_V1}"
+        )
+    _must_nonempty_string(plan.get("plan_id"), "plan_id")
+    expected_head = _must_nonempty_string(plan.get("expected_head_sha"), "expected_head_sha")
+    if not re.fullmatch(r"[0-9a-f]{40}", expected_head):
+        raise ArtifactError("expected_head_sha 必须是小写 40 位 Git SHA")
+    window = _must_dict(plan.get("responsibility_window"), "responsibility_window")
+    for key in (
+        "source_system",
+        "authorization_context_id",
+        "owner",
+        "task_id",
+        "wave_id",
+        "starts_at",
+        "expires_at",
+    ):
+        _must_nonempty_string(window.get(key), f"responsibility_window.{key}")
+    if window["wave_id"] != "BASELINE":
+        raise ArtifactError("第一级校准计划的 wave_id 必须是 BASELINE")
+    starts_at = _aware_datetime(window["starts_at"], "responsibility_window.starts_at")
+    expires_at = _aware_datetime(window["expires_at"], "responsibility_window.expires_at")
+    if expires_at <= starts_at:
+        raise ArtifactError("责任窗口 expires_at 必须晚于 starts_at")
+
+    for key in ("write_allowlist", "candidate_write_paths"):
+        values = _must_list(window.get(key), f"responsibility_window.{key}")
+        normalized = [_repo_relative_path(item, key) for item in values]
+        if len(normalized) != len(set(normalized)):
+            raise ArtifactError(f"responsibility_window.{key} 不能重复")
+        window[key] = normalized
+    read_values = window.get("read_allowlist", [])
+    if not isinstance(read_values, list):
+        raise ArtifactError("responsibility_window.read_allowlist 必须是数组")
+    normalized_reads = [_repo_relative_path(item, "read_allowlist") for item in read_values]
+    if len(normalized_reads) != len(set(normalized_reads)):
+        raise ArtifactError("responsibility_window.read_allowlist 不能重复")
+    window["read_allowlist"] = normalized_reads
+
+    historical_values = plan.get("historical_authority_expectations", [])
+    if not isinstance(historical_values, list):
+        raise ArtifactError("historical_authority_expectations 必须是数组")
+    historical_expectations: list[dict[str, str]] = []
+    for index, value in enumerate(historical_values):
+        row = _must_dict(value, f"historical_authority_expectations[{index}]")
+        historical_expectations.append(
+            {
+                "name": _must_nonempty_string(
+                    row.get("name"),
+                    f"historical_authority_expectations[{index}].name",
+                ),
+                "path": _must_nonempty_string(
+                    row.get("path"),
+                    f"historical_authority_expectations[{index}].path",
+                ),
+                "url": _must_nonempty_string(
+                    row.get("url"),
+                    f"historical_authority_expectations[{index}].url",
+                ),
+            }
+        )
+    plan["historical_authority_expectations"] = historical_expectations
+
+    bindings = _must_list(plan.get("bound_inputs"), "bound_inputs")
+    seen: set[str] = set()
+    normalized_bindings: list[dict[str, str]] = []
+    for index, value in enumerate(bindings):
+        row = _must_dict(value, f"bound_inputs[{index}]")
+        path = _repo_relative_path(row.get("path"), f"bound_inputs[{index}].path")
+        digest = _must_nonempty_string(row.get("sha256"), f"bound_inputs[{index}].sha256")
+        if not re.fullmatch(r"[0-9a-f]{64}", digest):
+            raise ArtifactError(f"bound_inputs[{index}].sha256 必须是小写 SHA-256")
+        if path in seen:
+            raise ArtifactError(f"bound_inputs 路径重复：{path}")
+        seen.add(path)
+        normalized_bindings.append({"path": path, "sha256": digest})
+    missing = sorted(RESTRUCTURE_BASELINE_REQUIRED_INPUTS - seen)
+    if missing:
+        raise ArtifactError(f"bound_inputs 缺少必绑输入：{', '.join(missing)}")
+    plan["bound_inputs"] = normalized_bindings
+    return plan
+
+
+def evaluate_restructure_baseline(
+    root: Path,
+    plan_raw: Any,
+    *,
+    dirty_paths: list[str],
+    head_sha: str,
+    governance_mismatch_paths: list[str],
+    evaluated_at: datetime | None = None,
+) -> dict[str, Any]:
+    root = root.resolve()
+    plan = _baseline_plan(copy.deepcopy(plan_raw))
+    window = plan["responsibility_window"]
+    plan_content_sha256 = hashlib.sha256(
+        json.dumps(
+            plan,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    now = evaluated_at or datetime.now(timezone.utc)
+    if now.tzinfo is None:
+        raise ArtifactError("evaluated_at 必须带时区")
+
+    checks: list[dict[str, Any]] = []
+
+    def add(check_id: str, passed: bool, evidence: Any) -> None:
+        checks.append({"check_id": check_id, "passed": passed, "evidence": evidence})
+
+    add(
+        "responsibility_window_time",
+        _aware_datetime(window["starts_at"], "starts_at") <= now
+        <= _aware_datetime(window["expires_at"], "expires_at"),
+        {
+            "starts_at": window["starts_at"],
+            "evaluated_at": now.isoformat(),
+            "expires_at": window["expires_at"],
+        },
+    )
+    add(
+        "governance_generated_green",
+        not governance_mismatch_paths,
+        {"mismatches": sorted(governance_mismatch_paths)},
+    )
+    read_allowlist = window["read_allowlist"]
+    missing_fixed_reads = sorted(
+        path
+        for path in RESTRUCTURE_BASELINE_FIXED_READ_SCOPES
+        if not any(_path_is_allowed(path, allowed) for allowed in read_allowlist)
+    )
+    bound_reads_outside_allowlist = sorted(
+        binding["path"]
+        for binding in plan["bound_inputs"]
+        if not any(
+            _path_is_allowed(binding["path"], allowed)
+            for allowed in read_allowlist
+        )
+    )
+    add(
+        "read_allowlist_complete",
+        bool(read_allowlist)
+        and not missing_fixed_reads
+        and not bound_reads_outside_allowlist,
+        {
+            "read_allowlist": read_allowlist,
+            "missing_fixed_reads": missing_fixed_reads,
+            "bound_inputs_outside_allowlist": bound_reads_outside_allowlist,
+        },
+    )
+
+    agents_text = (root / "AGENTS.md").read_text(encoding="utf-8")
+    current_state = _must_dict(read_json(root / CURRENT_STATE_PATH), "CURRENT_STATE")
+    control = _must_dict(read_json(root / CONTROL_PATH), "control_plane")
+    authority = _must_dict(current_state.get("authority"), "CURRENT_STATE.authority")
+    external = _must_dict(authority.get("external_truth"), "CURRENT_STATE.authority.external_truth")
+    control_source = _must_dict(control.get("source_authority"), "control_plane.source_authority")
+    current_ledger = _must_nonempty_string(external.get("ledger_url"), "CURRENT_STATE ledger")
+    current_queue = _must_nonempty_string(external.get("queue_url"), "CURRENT_STATE queue")
+    agents_ledger = _markdown_authority_url(agents_text, "账序真源 v2")
+    agents_queue = _markdown_authority_url(agents_text, "LEGACY 在跑队列")
+    add(
+        "current_authority_three_way",
+        agents_ledger == current_ledger == control_source.get("ledger_url")
+        and agents_queue == current_queue == control_source.get("queue_url"),
+        {
+            "agents": {"ledger_url": agents_ledger, "queue_url": agents_queue},
+            "current_state": {"ledger_url": current_ledger, "queue_url": current_queue},
+            "control_plane": {
+                "ledger_url": control_source.get("ledger_url"),
+                "queue_url": control_source.get("queue_url"),
+            },
+        },
+    )
+    legacy_ledger = _must_nonempty_string(
+        external.get("legacy_frozen_ledger_url"),
+        "CURRENT_STATE legacy_frozen_ledger_url",
+    )
+    historical_authorities = [
+        {
+            "name": str(row.get("name") or ""),
+            "path": f"run_report_pairs[{index}].acceptance_authority_url",
+            "url": row["acceptance_authority_url"],
+        }
+        for index, value in enumerate(_must_list(control.get("run_report_pairs"), "run_report_pairs"))
+        if isinstance(value, dict)
+        and (row := value).get("acceptance_authority_url")
+    ]
+    expected_historical = plan["historical_authority_expectations"]
+    history_matches = historical_authorities == expected_historical
+    current_url_reused = any(
+        row["url"] == current_ledger for row in historical_authorities
+    )
+    add(
+        "historical_authority_exact_match",
+        history_matches
+        and bool(expected_historical)
+        and not current_url_reused,
+        {
+            "legacy_frozen_ledger_url": legacy_ledger,
+            "expected_fields": expected_historical,
+            "actual_fields": historical_authorities,
+            "matches_expected": history_matches,
+            "current_ledger_reused_in_historical_fields": current_url_reused,
+            "rewritten": not history_matches,
+        },
+    )
+
+    binding_results: list[dict[str, Any]] = []
+    binding_passed = True
+    for binding in plan["bound_inputs"]:
+        path = root / binding["path"]
+        exists = path.is_file() and not path.is_symlink()
+        actual = sha256_file(path) if exists else None
+        matched = exists and actual == binding["sha256"]
+        binding_passed = binding_passed and matched
+        binding_results.append(
+            {
+                "path": binding["path"],
+                "expected_sha256": binding["sha256"],
+                "actual_sha256": actual,
+                "matched": matched,
+            }
+        )
+    add("bound_input_sha", binding_passed, binding_results)
+
+    normalized_dirty = sorted(
+        {_repo_relative_path(path, "dirty_path") for path in dirty_paths}
+    )
+    owned = set(window["write_allowlist"])
+    foreign_dirty = [path for path in normalized_dirty if path not in owned]
+    conflicts = sorted(
+        {
+            dirty
+            for dirty in foreign_dirty
+            for candidate in window["candidate_write_paths"]
+            if _path_overlap(dirty, candidate)
+        }
+    )
+    add(
+        "candidate_write_paths_disjoint_from_foreign_dirty",
+        not conflicts,
+        {
+            "dirty_path_count": len(normalized_dirty),
+            "dirty_paths_sha256": hashlib.sha256(
+                "\0".join(normalized_dirty).encode("utf-8")
+            ).hexdigest(),
+            "owned_dirty_paths": sorted(path for path in normalized_dirty if path in owned),
+            "foreign_dirty_path_count": len(foreign_dirty),
+            "candidate_write_paths": window["candidate_write_paths"],
+            "conflicts": conflicts,
+        },
+    )
+    add(
+        "head_frozen",
+        head_sha == plan["expected_head_sha"],
+        {
+            "expected_head_sha": plan["expected_head_sha"],
+            "actual_head_sha": head_sha,
+        },
+    )
+
+    passed = all(row["passed"] for row in checks)
+    return {
+        "contract_version": RESTRUCTURE_BASELINE_RECEIPT_V1,
+        "plan_id": plan["plan_id"],
+        "plan_content_sha256": plan_content_sha256,
+        "status": "PASS" if passed else "BLOCKED",
+        "evaluated_at": now.isoformat(),
+        "head_sha": head_sha,
+        "responsibility_window": window,
+        "authorization_boundary": {
+            "authorizes_wave": False,
+            "authorizes_notion_write": False,
+            "authorizes_model_api": False,
+            "authorization_context_claim_is_cryptographic_proof": False,
+            "next_human_decision_if_pass": "D-08",
+        },
+        "runtime_effects": {
+            "network_attempts": 0,
+            "model_api_calls": 0,
+            "tracked_repository_writes": 0,
+            "receipt_writes": 1,
+        },
+        "checks": checks,
+        "blockers": [row["check_id"] for row in checks if not row["passed"]],
+    }
+
+
+def _receipt_output_path(root: Path, value: Path) -> Path:
+    path = value if value.is_absolute() else root / value
+    resolved = path.resolve()
+    allowed_root = (root / "TEMP/restructure_wave_preflight").resolve()
+    if allowed_root != resolved and allowed_root not in resolved.parents:
+        raise ArtifactError("第一级校准票只能写入 TEMP/restructure_wave_preflight/")
+    if resolved.exists():
+        raise ArtifactError(f"拒绝覆盖既有校准票：{resolved}")
+    return resolved
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="生成小说流水线治理索引")
     parser.add_argument("--check", action="store_true", help="在临时目录生成并与当前索引逐字比较")
+    parser.add_argument("--baseline-plan", type=Path, help="读取第一级仓库重构基线校准计划")
+    parser.add_argument("--baseline-output", type=Path, help="把机器校准票写入 TEMP 的新路径")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if bool(args.baseline_plan) != bool(args.baseline_output):
+        raise ArtifactError("--baseline-plan 与 --baseline-output 必须同时提供")
+    if args.check and args.baseline_plan:
+        raise ArtifactError("--check 与 --baseline-plan 不能同时使用")
+    if args.baseline_plan:
+        receipt = evaluate_restructure_baseline(
+            ROOT,
+            read_json(args.baseline_plan),
+            dirty_paths=git_dirty_paths(ROOT),
+            head_sha=git_head(ROOT),
+            governance_mismatch_paths=generated_mismatches(ROOT),
+        )
+        output = _receipt_output_path(ROOT, args.baseline_output)
+        write_json_atomic(output, receipt)
+        print(json.dumps(receipt, ensure_ascii=False, indent=2))
+        return 0 if receipt["status"] == "PASS" else 2
     if not args.check:
         manifest = refresh()
         print(json.dumps(manifest, ensure_ascii=False, indent=2))
         return 0
 
-    import tempfile
-
-    with tempfile.TemporaryDirectory(prefix="governance-index-check-") as temporary:
-        output_root = Path(temporary)
-        refresh(output_root=output_root)
-        mismatches = [
-            relative
-            for relative in GENERATED_PATHS + ["governance/index_manifest.json"]
-            if not (ROOT / relative).is_file()
-            or (ROOT / relative).read_bytes() != (output_root / relative).read_bytes()
-        ]
+    mismatches = generated_mismatches(ROOT)
     result = {"passed": not mismatches, "mismatches": mismatches}
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["passed"] else 2

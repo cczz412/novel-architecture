@@ -262,6 +262,842 @@
           "description": "需要追 C14 原始证据时再显式供入，不默认把旧大包塞进每次外审。"
         }
       ]
+    },
+    "m3-09-terminal-chain": {
+      "label": "M3-09｜R7～R41 终验装配全链穷举",
+      "purpose": "接续 R35 外审，审 R7～R41 全部失败家族、R41 完整公开胶囊及 P0→P3 尚未执行路径，一次列全 R42 挡跑问题与单次补丁账单；不接触终验题、金标、正文、密钥或正式控制状态。",
+      "snapshot_at": "2026-07-29T05:30:00+08:00",
+      "truth_source": {
+        "authority": "CZ 当前对话明确要求外发 ChatGPT Pro 根因审查",
+        "local_current_state_status": "stale_at_a8_does_not_override_m3_09_public_truth_snapshot",
+        "note": "R35 外审已回收并落地精确文件加载；R40 因 Key 选择错误在首请求 401 硬停；两把 Key 轮换后 R41 连续 3 次 HTTP 200，第 3 次因返回 22 个编号超过合同上限 12 硬停。用户要求把此前全部问题一次发给 ChatGPT Pro 做全链穷举。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews"
+      ],
+      "forbidden_source_globs": [
+        "**/runtime_seal/**",
+        "**/formal_control*/**",
+        "**/arkcli_state_prep_control*/**",
+        "**/p2_freeze_control*/**",
+        "**/scoring_lockbox/**",
+        "**/*.lockbox.json",
+        "**/question_gold*.json",
+        "**/*gold_binding*.json",
+        "**/*DIRECT_TRANSPORT_SECRET*",
+        "config/gold/**",
+        "**/chapters_cache/**"
+      ],
+      "redact_local_absolute_paths": true,
+      "layers": {
+        "current_truth": {
+          "label": "当前公开真源与外审任务",
+          "roots": [
+            {
+              "root_id": "m3_09_external_review_truth",
+              "required": true,
+              "authority": "cz_current_chat_authorization",
+              "status": "active_public_truth_snapshot",
+              "description": "R7～R41 补丁循环的当前事实、前后两段时间线、最新硬停脱敏票和全链穷举 Prompt。",
+              "globs": [
+                "reports/M3_09_external_review_root_cause_20260729/**",
+                "reports/M3_09_external_review_full_chain_20260729/**",
+                "config/review_pack/prompts/m3_09_terminal_chain_root_cause_review.md",
+                "config/review_pack/prompts/m3_09_terminal_chain_exhaustive_r42_review.md"
+              ]
+            },
+            {
+              "root_id": "m3_09_environment_locks",
+              "required": true,
+              "authority": "local_environment_contract",
+              "status": "read_only_environment_evidence",
+              "description": "解释正式 Python 环境所需的公开环境锁。",
+              "globs": [
+                ".python-version",
+                "pyproject.toml",
+                "uv.lock"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "R35 导入根因与 R41 当前完整公开链",
+          "roots": [
+            {
+              "root_id": "r35_public_terminal_chain",
+              "required": true,
+              "authority": "r35_final_public_capsule",
+              "status": "retired_after_preauthorization_import_hard_stop",
+              "description": "只取判断导入、沙箱、零重试、审查与正式合同所需的 R35 公开文件；不取绝对路径总清单和私有控制根。",
+              "globs": [
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/START_HERE.md",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/FINAL_PUBLIC_HANDOFF.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/FORMAL_TERMINAL_RUNNER.py",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/launch_FR_formal_terminal.py",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/ARKCLI_STATE_PREP_RUNNER.py",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/FORMAL_EXECUTION_CONTRACT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/AS_STATE_PREP_CONTRACT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/SANDBOX_PERMISSION_INTERSECTION_CHECK.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/RETRY_DISABLE_POINTS.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/FR_FORMAL_RUN.sb",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/SEAL_TICKET.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r35/SOL_PUBLIC_PATCH_REVIEW_RECEIPT.json"
+              ]
+            },
+            {
+              "root_id": "r35_exact_route_program_files",
+              "required": true,
+              "authority": "sha_bound_route_programs",
+              "status": "read_only_program_evidence",
+              "description": "正式 runner 试图导入的六个公开程序文件。",
+              "globs": [
+                "experiments/V02_R2_question_driven_retrieval_p0_20260726/v02_r2_p0.py",
+                "experiments/V02_R2_development_hardening_r01_20260727/__init__.py",
+                "experiments/V02_R2_development_hardening_r01_20260727/route_runner.py",
+                "experiments/V02_R2_development_hardening_r01_20260727/qec_activate.py",
+                "experiments/V02_R2_development_hardening_r01_20260727/event_graph_planner.py",
+                "experiments/V02_R2_development_hardening_r01_20260727/r2_dev_hardening.py"
+              ]
+            },
+            {
+              "root_id": "r41_public_terminal_chain",
+              "required": true,
+              "authority": "r41_final_public_capsule",
+              "status": "retired_after_consumed_formal_hard_stop",
+              "description": "R41 完整公开胶囊，覆盖 P0／PR／P1／AS／C0／FR／Terra／PF／P2／P3；本地绝对路径由打包器在外发副本中统一脱敏。",
+              "globs": [
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r41/**"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "代表性事故票、R35 外审后落地证据与 R40／R41 正式硬停",
+          "roots": [
+            {
+              "root_id": "m3_09_representative_incidents",
+              "required": true,
+              "authority": "local_machine_incident_receipts",
+              "status": "read_only_representative_failure_evidence",
+              "description": "按失败家族各取代表票，不把 35 轮重复回执全部塞进包。",
+              "globs": [
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R7_NESTED_SANDBOX_PERMISSION_HARD_STOP.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R8_CROSSCHECK_PROFILE_PARSER_HARD_STOP.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R8_PF_SELFTEST_HARD_STOP.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R9_P0_ALLOWLIST_OUTPUT_HARD_STOP.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R12_UNSEALED_PUBLIC_CAPSULE_DIRECTORY_RESIDUE_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R13_CROSSCHECK_SANDBOX_DIRECTORY_ENUMERATION_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R14_FINAL_RESEAL_DYNAMIC_TERRA_EVIDENCE_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R16_P0_PUBLIC_ROOT_ALLOWLIST_FALSE_POSITIVE_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R17_P0_PUBLIC_DIRECTORY_DENIAL_CONTRADICTION_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R19_CROSSCHECK_INCIDENT_READ_NOT_ALLOWLISTED.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R20_CROSSCHECK_PENDING_REVIEW_ROUND_STALE_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R21_CROSSCHECK_RETIRED_SEAL_CHAIN_STALE_CONSUMER_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R22_PR_PUBLIC_REHEARSAL_OUTPUT_FIELDS_CONTRACT_DRIFT_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R23_PF_FORMAL_ADMISSION_DIRECT_BLOCK_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R24_PF_PUBLIC_PATH_BINDING_MISMATCH_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R25_FINAL_RESEAL_REVIEW_ROUTE_MISMATCH_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R26_FINAL_PREWRITE_CHANGE_SET_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R27_AS_PUBLIC_REVIEW_GATE_READ_ALLOWLIST_INCIDENT.json"
+              ]
+            },
+            {
+              "root_id": "m3_09_r35_fresh_evidence",
+              "required": true,
+              "authority": "r35_machine_receipts",
+              "status": "public_chain_pass_before_fr_import_hard_stop",
+              "description": "证明 R35 在正式导入前已经通过哪些闸，以及调用数仍为 0。",
+              "globs": [
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R35_PUBLIC_CONTRACT_REGRESSION_RECEIPT_R35.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R35_FRESH_GATE_RECEIPT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R35_P0_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R35_PR_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R35_PF_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R35_P1_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R35_TERRA_FRESH_P1_EXECUTION_RECEIPT.json"
+              ]
+            },
+            {
+              "root_id": "m3_09_r36_r41_execution_evidence",
+              "required": true,
+              "authority": "local_machine_receipts_and_sanitized_incidents",
+              "status": "r41_consumed_hard_stop_no_rerun",
+              "description": "上次外审方案的真实装配落地、R40 401、R41 Key 轮换、正式无网装配与第 3 个 HTTP 200 回包超量硬停；不含正式请求、原始回包、终验题或控制目录。",
+              "globs": [
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R36_PUBLIC_CONTRACT_REGRESSION_RECEIPT_R36.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R37_EXACT_BOUND_MODULE_PREFLIGHT_RECEIPT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R37_PUBLIC_CONTRACT_REGRESSION_RECEIPT_R37.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R38_PUBLIC_CONTRACT_REGRESSION_RECEIPT_R38.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R39_FRESH_GATE_RECEIPT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R39_P0_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R39_PR_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R39_PF_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R39_P1_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R39_TERRA_FRESH_P1_EXECUTION_RECEIPT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R39_PUBLIC_CONTRACT_REGRESSION_RECEIPT_R39.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R40_FORMAL_401_HARD_STOP.md",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R40_FORMAL_401_INCIDENT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R40_FULL_FORMAL_PREFLIGHT_RECEIPT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_CREDENTIAL_ROTATION_RECEIPT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_FRESH_GATE_RECEIPT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_P0_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_PR_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_PF_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_P1_STDOUT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_TERRA_FRESH_P1_EXECUTION_RECEIPT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_FULL_FORMAL_PREFLIGHT_RECEIPT.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_FORMAL_HARD_STOP.md",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_MODEL_MAX_SELECTION_HARD_STOP.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_HARD_STOP_RECEIPT_CORRECTION.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_PUBLIC_CONTRACT_REGRESSION_RECEIPT_R41.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_PUBLIC_CONTRACT_REGRESSION_RECEIPT_R41_A2.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_PUBLIC_CONTRACT_REGRESSION_RECEIPT_R41_A3.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_PUBLIC_CONTRACT_REGRESSION_RECEIPT_R41_A4.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_PUBLIC_CONTRACT_REGRESSION_RECEIPT_R41_A5.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_SOL_REVIEW_ATTEMPT1_FAIL.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_SOL_REVIEW_ATTEMPT2_FAIL.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_SOL_REVIEW_ATTEMPT3_FAIL.json",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R41_SOL_REVIEW_ATTEMPT4_FAIL.json"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "外部顾问回包",
+          "roots": []
+        }
+      },
+      "external_slots": [
+        {
+          "slot_id": "prior_m3_09_r35_review",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "candidate_advisory_already_locally_applied",
+          "description": "上一轮 R35 独立根因审查原文；本轮必须核对其建议如何落地、还漏了哪些后续阶段。"
+        }
+      ]
+    },
+    "m3-09-r21-r43-exhaustive": {
+      "label": "M3-09｜R21～R43 全历史共同根因审查",
+      "purpose": "把 R21～R43 每轮完整公开胶囊、全部现存公开事故与回归证据、两次 ChatGPT Pro 原始回包和 R43 C0 当前挡停放入同一包，审清反复修补的共同根因并给一张 R44 收口账单；不接触终验题、金标、正文、密钥或正式控制目录。",
+      "snapshot_at": "2026-07-29T13:40:00+08:00",
+      "truth_source": {
+        "authority": "CZ 当前对话明确要求外发 R21～R43 全历史给 ChatGPT Pro 审查",
+        "notion_ledger_readback": "2026-07-29T05:38:46.739Z",
+        "local_current_state_status": "stale_at_a8_does_not_override_m3_09_truth_snapshot",
+        "note": "Notion 账序记到 R42 AS 沙箱挡停与新公开修订授权；R43 是更新本地事实：AS PASS，C0 因 seal 缺三个布尔字段 CURRENT_FINAL_SEAL_GATE_NOT_READY，formal root 不存在，FR 与模型调用均为 0。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews"
+      ],
+      "forbidden_source_globs": [
+        "**/runtime_seal/**",
+        "**/formal_control*/**",
+        "**/arkcli_state_prep_control*/**",
+        "**/p2_freeze_control*/**",
+        "**/scoring_lockbox/**",
+        "**/*.lockbox.json",
+        "**/question_gold*.json",
+        "**/*gold_binding*.json",
+        "**/*DIRECT_TRANSPORT_SECRET*",
+        "**/*_private.json",
+        "**/*.private.json",
+        "**/audit_isolation_vault/**",
+        "config/gold/**",
+        "**/chapters_cache/**"
+      ],
+      "redact_local_absolute_paths": true,
+      "layers": {
+        "current_truth": {
+          "label": "当前公开真源与外审任务",
+          "roots": [
+            {
+              "root_id": "m3_09_r21_r43_review_truth",
+              "required": true,
+              "authority": "cz_current_chat_authorization_and_notion_readback",
+              "status": "active_public_truth_snapshot",
+              "description": "R21～R43 的当前事实、失败家族导航、R43 C0 机械归因和本轮穷举 Prompt。",
+              "globs": [
+                "reports/M3_09_external_review_r21_r43_20260729/**",
+                "config/review_pack/prompts/m3_09_r21_r43_exhaustive_root_cause_review.md"
+              ]
+            },
+            {
+              "root_id": "m3_09_r21_r43_environment_locks",
+              "required": true,
+              "authority": "local_environment_contract",
+              "status": "read_only_environment_evidence",
+              "description": "现役 Python 3.12.12 与依赖锁。",
+              "globs": [
+                ".python-version",
+                "pyproject.toml",
+                "uv.lock"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "R21～R43 每轮完整公开胶囊与六个绑定程序",
+          "roots": [
+            {
+              "root_id": "m3_09_r21_r43_all_public_capsules",
+              "required": true,
+              "authority": "local_public_revision_capsules",
+              "status": "historical_and_current_public_chain",
+              "description": "R21～R43 每轮完整公开胶囊；包内绝对路径只在外发副本脱敏。",
+              "globs": [
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r2[1-9]/**",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r3[0-9]/**",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/public_verification_capsule_r4[0-3]/**"
+              ]
+            },
+            {
+              "root_id": "m3_09_r21_r43_bound_route_programs",
+              "required": true,
+              "authority": "sha_bound_route_programs",
+              "status": "read_only_program_evidence",
+              "description": "正式 runner 装载的六个公开程序文件。",
+              "globs": [
+                "experiments/V02_R2_question_driven_retrieval_p0_20260726/v02_r2_p0.py",
+                "experiments/V02_R2_development_hardening_r01_20260727/__init__.py",
+                "experiments/V02_R2_development_hardening_r01_20260727/route_runner.py",
+                "experiments/V02_R2_development_hardening_r01_20260727/qec_activate.py",
+                "experiments/V02_R2_development_hardening_r01_20260727/event_graph_planner.py",
+                "experiments/V02_R2_development_hardening_r01_20260727/r2_dev_hardening.py"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "R21～R43 全部公开事故、回归、施工与现场证据",
+          "roots": [
+            {
+              "root_id": "m3_09_r21_r43_top_level_evidence",
+              "required": true,
+              "authority": "local_machine_incident_and_regression_receipts",
+              "status": "read_only_full_revision_evidence",
+              "description": "取 R21～R43 所有现存顶层公开票据、回执与报告，不取任何正式控制根。",
+              "globs": [
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R2[1-9]*",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R3[0-9]*",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/M3-09_R4[0-3]*",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/R42_SEAL_BUILDER.py",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/R43_SEAL_BUILDER.py",
+                "reports/单管线多工位_统一收件箱_20260727/主线三_M3-09_R2终验第四卷零探索重出_20260728_0255/R43_MAINLINE1_HANDOFF.md",
+                "reports/M3_09_external_review_root_cause_20260729/**",
+                "reports/M3_09_external_review_full_chain_20260729/**"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "两次 ChatGPT Pro 原始回包",
+          "roots": []
+        }
+      },
+      "external_slots": [
+        {
+          "slot_id": "prior_r35_root_cause",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "candidate_advisory_already_locally_applied",
+          "description": "R35 独立根因审查主报告。"
+        },
+        {
+          "slot_id": "prior_r36_patch_plan",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "candidate_advisory_already_locally_applied",
+          "description": "R36 最小补丁计划。"
+        },
+        {
+          "slot_id": "prior_r35_t3_debt",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "candidate_advisory",
+          "description": "R35 外审提出的 T3 架构债。"
+        },
+        {
+          "slot_id": "prior_r41_exhaustive",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "candidate_advisory_already_locally_applied",
+          "description": "R7～R41 全链穷举主报告。"
+        },
+        {
+          "slot_id": "prior_r42_patch_bill",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "candidate_advisory_already_locally_applied",
+          "description": "R42 单补丁账单。"
+        },
+        {
+          "slot_id": "prior_r42_blocker_register",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "candidate_advisory_already_locally_applied",
+          "description": "R42 剩余挡跑登记册。"
+        }
+      ]
+    },
+    "m3-09-r44-r18-final-closeout": {
+      "label": "M3-09｜R44 R16～R18 一次性终局审查",
+      "purpose": "把三轮 ChatGPT Pro 历史审查、R16 的安全执行证据、R17 评分硬停和 R18 当前完整候选放进同一包，一次审完 P2 到 P3 的全部确定性挡点；不外发终验题、真金标内容、正文、密钥或模型原始回答。",
+      "snapshot_at": "2026-07-29T19:20:00+08:00",
+      "truth_source": {
+        "authority": "CZ 当前对话明确要求停止逐点试错并生成综合 ChatGPT Pro 外审包",
+        "local_current_state_status": "stale_at_a8_does_not_override_m3_09_r44_r18_truth_snapshot",
+        "note": "R16 已完成 60 次真实调用并冻结；R17 P2 在写成绩前因 gold 自声明 payload 规则不兼容硬停；R18 仅修该读取兼容，当前未授权未封签未评分。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews"
+      ],
+      "forbidden_source_globs": [
+        "**/runtime_seal/**",
+        "**/formal_control/**",
+        "**/FORMAL_OUTPUT.json",
+        "**/FROZEN_OUTPUT.json",
+        "**/raw_response*",
+        "**/raw_responses/**",
+        "**/request_bodies/**",
+        "**/*DIRECT_TRANSPORT_SECRET*",
+        "**/*gold_binding*.json",
+        "**/*_private.json",
+        "**/*.private.json",
+        "**/scoring_lockbox/**",
+        "**/audit_isolation_vault/**",
+        "**/chapters_cache/**",
+        "config/gold/**"
+      ],
+      "redact_local_absolute_paths": true,
+      "layers": {
+        "current_truth": {
+          "label": "R16～R18 当前公开真源与终局 Prompt",
+          "roots": [
+            {
+              "root_id": "m3_09_r44_r18_truth",
+              "required": true,
+              "authority": "cz_current_chat_authorization",
+              "status": "active_public_truth_snapshot",
+              "description": "当前停点、公开证据边界和终局审查任务。",
+              "globs": [
+                "reports/M3_09_external_review_r44_r18_20260729/**",
+                "config/review_pack/prompts/m3_09_r44_r18_final_closeout_review.md"
+              ]
+            },
+            {
+              "root_id": "m3_09_r44_r18_environment",
+              "required": true,
+              "authority": "local_environment_contract",
+              "status": "read_only_environment_evidence",
+              "description": "现役 Python 3.12.12 与依赖锁。",
+              "globs": [
+                ".python-version",
+                "pyproject.toml",
+                "uv.lock"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "R16、R17、R18 完整公开候选",
+          "roots": [
+            {
+              "root_id": "r16_public_capsule",
+              "required": false,
+              "authority": "sealed_r16_public_candidate",
+              "status": "read_only_completed_formal_public_program",
+              "description": "R16 完整公开程序、合同、封签和命令；不含 formal runtime。",
+              "globs": [
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r16/public/**"
+              ]
+            },
+            {
+              "root_id": "r17_public_capsule_and_incident",
+              "required": false,
+              "authority": "sealed_r17_public_candidate_and_hard_stop",
+              "status": "read_only_consumed_failed_score_recovery",
+              "description": "R17 公开程序、封签和一次 P2 硬停票。",
+              "globs": [
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r17_score_recovery/public/**",
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r17_score_recovery/incidents/R17_P2_HARD_STOP.json"
+              ]
+            },
+            {
+              "root_id": "r18_current_candidate",
+              "required": false,
+              "authority": "current_unsealed_r18_public_candidate",
+              "status": "candidate_hold_for_external_review",
+              "description": "R18 当前评分恢复程序、合同、自测、命令和沙箱；未授权未封签。",
+              "globs": [
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r18_score_recovery/public/**"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "R16 安全执行、Terra 与 PF 公开证据",
+          "roots": [
+            {
+              "root_id": "r16_safe_execution_receipts",
+              "required": false,
+              "authority": "r16_formal_machine_receipts",
+              "status": "read_only_safe_aggregate_evidence",
+              "description": "只取调用统计、Terra 与 PF 票据，不取正式输出和原始回答。",
+              "globs": [
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r16/formal_runtime/run_r44_r16/artifacts/fr/EXECUTION_RECEIPT.json",
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r16/formal_runtime/run_r44_r16/artifacts/fr/ATTEMPT_SUMMARY.json",
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r16/formal_runtime/run_r44_r16/artifacts/ta/TERRA_ATTESTATION.json",
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r16/formal_runtime/run_r44_r16/artifacts/ta/TA_COMMIT.json",
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r16/formal_runtime/run_r44_r16/artifacts/pf/PF_MANIFEST.json",
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r16/formal_runtime/run_r44_r16/artifacts/pf/PF_CREDENTIAL.json",
+                "TEMP/m3_09_r44_public_closeout_20260729/candidate_r44_r16/formal_runtime/run_r44_r16/artifacts/pf/PF_COMMIT.json"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "三轮 ChatGPT Pro 历史原始回包",
+          "roots": []
+        }
+      },
+      "external_slots": [
+        {
+          "slot_id": "prior_r35_review",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "historical_advisory",
+          "description": "R35 根因、R36 补丁与 T3 债务原始回收目录。"
+        },
+        {
+          "slot_id": "prior_r41_review",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "historical_advisory",
+          "description": "R7～R41 穷举审查与 R42 账单原始解压目录。"
+        },
+        {
+          "slot_id": "prior_r21_r43_review",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "latest_historical_advisory",
+          "description": "R21～R43 六根因家族与 R44 收口账单原始 ZIP。"
+        },
+        {
+          "slot_id": "r16_public_candidate",
+          "required": true,
+          "provider": "local sealed evidence",
+          "model": "none",
+          "status": "sealed_public_program",
+          "description": "R16 完整公开程序、合同、封签和命令目录。"
+        },
+        {
+          "slot_id": "r17_public_candidate",
+          "required": true,
+          "provider": "local sealed evidence",
+          "model": "none",
+          "status": "consumed_failed_score_recovery",
+          "description": "R17 公开程序、封签与硬停事故目录。"
+        },
+        {
+          "slot_id": "r18_public_candidate",
+          "required": true,
+          "provider": "local candidate evidence",
+          "model": "none",
+          "status": "unsealed_hold_for_review",
+          "description": "R18 当前未授权候选目录。"
+        },
+        {
+          "slot_id": "r16_execution_receipt",
+          "required": true,
+          "provider": "local machine evidence",
+          "model": "none",
+          "status": "formal_aggregate_receipt",
+          "description": "R16 正式执行汇总回执。"
+        },
+        {
+          "slot_id": "r16_attempt_summary",
+          "required": true,
+          "provider": "local machine evidence",
+          "model": "none",
+          "status": "formal_aggregate_receipt",
+          "description": "R16 60 次尝试汇总，不含原始回答。"
+        },
+        {
+          "slot_id": "r16_terra_attestation",
+          "required": true,
+          "provider": "local machine evidence",
+          "model": "none",
+          "status": "formal_independent_attestation",
+          "description": "R16 Terra 正式核验票。"
+        },
+        {
+          "slot_id": "r16_terra_commit",
+          "required": true,
+          "provider": "local machine evidence",
+          "model": "none",
+          "status": "formal_independent_commit",
+          "description": "R16 Terra 提交票。"
+        },
+        {
+          "slot_id": "r16_pf_manifest",
+          "required": true,
+          "provider": "local machine evidence",
+          "model": "none",
+          "status": "formal_freeze_manifest",
+          "description": "R16 PF 清单，不含冻结输出内容。"
+        },
+        {
+          "slot_id": "r16_pf_credential",
+          "required": true,
+          "provider": "local machine evidence",
+          "model": "none",
+          "status": "formal_freeze_credential",
+          "description": "R16 PF 凭据。"
+        },
+        {
+          "slot_id": "r16_pf_commit",
+          "required": true,
+          "provider": "local machine evidence",
+          "model": "none",
+          "status": "formal_freeze_commit",
+          "description": "R16 PF 最终提交票。"
+        }
+      ]
+    },
+    "fact-extract-hidden-error-next-round": {
+      "label": "小说事实抽取｜隐蔽漏错、模型判别与两档路线",
+      "purpose": "审查三题材下的程序疑点选择、盲关键事实清单、思考预算和五个模型渠道实测，给出下一轮冻结实验与低成本／高准确两档方案；不接触金标、答案锁箱、密钥、现役管线或正式默认。",
+      "snapshot_at": "2026-07-29T23:29:57+08:00",
+      "reviewer_prompt_path": "config/review_pack/prompts/fact_extract_hidden_error_next_round.md",
+      "truth_source": {
+        "authority": "CZ 当前对话明确要求完成本地测试并打包给 ChatGPT，自行上传",
+        "local_current_state_status": "candidate_sandbox_only_does_not_override_active_pipeline",
+        "note": "三本跨题材冻结样本已完成程序疑点、Qwen 盲清单、Qwen 思考预算、MiniMax M3、DeepSeek V4 Pro、DeepSeek V4 Flash 与豆包 Lite 测试；没有候选达到全绿门槛，所以没有继续批处理对逐条调用。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews"
+      ],
+      "forbidden_source_globs": [
+        "**/scoring_lockbox/**",
+        "**/score_lockbox.json",
+        "**/*.lockbox.json",
+        "**/question_gold*.json",
+        "**/*gold_binding*.json",
+        "config/gold/**",
+        "**/__pycache__/**",
+        "**/*.pyc",
+        "**/*API_KEY*",
+        "**/*SECRET*"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "当前问题、读数与顾问任务",
+          "roots": [
+            {
+              "root_id": "hidden_error_review_truth",
+              "required": true,
+              "authority": "cz_current_chat_authorization_and_local_receipts",
+              "status": "active_candidate_truth_snapshot",
+              "description": "本轮授权、当前读数、实验索引、路线配置和专用 Prompt。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/fact_extract_hidden_error_next_round_20260729_r01/AUTHORIZATION_SOURCE.md",
+                "TEMP/chatgpt_review_cycles/fact_extract_hidden_error_next_round_20260729_r01/AUTHORIZATION_TICKET.json",
+                "TEMP/chatgpt_review_cycles/fact_extract_hidden_error_next_round_20260729_r01/TRUTH_SNAPSHOT.md",
+                "TEMP/chatgpt_review_cycles/fact_extract_hidden_error_next_round_20260729_r01/RESULT_MATRIX.json",
+                "TEMP/chatgpt_review_cycles/fact_extract_hidden_error_next_round_20260729_r01/TEST_CATALOG.md",
+                "config/review_pack/routes.json",
+                "config/review_pack/prompts/fact_extract_hidden_error_next_round.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "三题材完整输入、输出与运行票",
+          "roots": [
+            {
+              "root_id": "qwen_e01_final_batch4_t0",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "single_book_bridge_failed",
+              "description": "上一轮外审指定的 E01 最终四项小批合同；B03 单书实跑 2/4，完整输入、输出和离线评分。",
+              "globs": [
+                "TEMP/hidden_error_batch_judgment_20260729_r01/**"
+              ],
+              "exclude_globs": [
+                "TEMP/hidden_error_batch_judgment_20260729_r01/__pycache__/**"
+              ]
+            },
+            {
+              "root_id": "program_suspect_selector",
+              "required": true,
+              "authority": "local_zero_api_candidate_test",
+              "status": "negative_recall_evidence",
+              "description": "程序从正文和旧事件账选择疑点的完整脚本、输入、候选和覆盖评分。",
+              "globs": [
+                "TEMP/program_suspect_selector_cross_genre_20260729_r01/**"
+              ],
+              "exclude_globs": [
+                "TEMP/program_suspect_selector_cross_genre_20260729_r01/__pycache__/**"
+              ]
+            },
+            {
+              "root_id": "qwen_blind_inventory",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "mechanical_pass_semantic_fail",
+              "description": "Qwen T0 三题材盲关键事实清单完整输入、输出、人工审查与票据。",
+              "globs": [
+                "TEMP/blind_critical_inventory_cross_genre_20260729_r02/**"
+              ],
+              "exclude_globs": [
+                "TEMP/blind_critical_inventory_cross_genre_20260729_r02/__pycache__/**"
+              ]
+            },
+            {
+              "root_id": "qwen_thinking_budget",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "t512_cut_no_t1024",
+              "description": "Qwen T0 与 T512 六格完整输入输出、推理内容、严格评分与产品闸评分。",
+              "globs": [
+                "TEMP/qwen_thinking_budget_cross_genre_20260729_r02/**"
+              ],
+              "exclude_globs": [
+                "TEMP/qwen_thinking_budget_cross_genre_20260729_r02/__pycache__/**",
+                "TEMP/qwen_thinking_budget_cross_genre_20260729_r02/score_lockbox.json"
+              ]
+            },
+            {
+              "root_id": "sensenova_v4_flash",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "quality_challenger_failed",
+              "description": "SenseNova DeepSeek V4 Flash High 三格完整输入、输出、推理内容和评分。",
+              "globs": [
+                "TEMP/semantic_batch_model_challengers_cross_genre_20260729_r02/**"
+              ],
+              "exclude_globs": [
+                "TEMP/semantic_batch_model_challengers_cross_genre_20260729_r02/__pycache__/**"
+              ]
+            },
+            {
+              "root_id": "agent_plan_minimax_m3",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "best_score_but_not_all_green",
+              "description": "正确请求路由下的 MiniMax M3 三格完整输入、输出、推理内容、规范化和评分。",
+              "globs": [
+                "TEMP/semantic_batch_minimax_m3_cross_genre_20260729_r02/**"
+              ],
+              "exclude_globs": [
+                "TEMP/semantic_batch_minimax_m3_cross_genre_20260729_r02/__pycache__/**"
+              ]
+            },
+            {
+              "root_id": "agent_plan_v4_pro_and_doubao_lite",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "v4_pro_not_all_green_doubao_format_unstable",
+              "description": "DeepSeek V4 Pro High 和豆包 2.0 Lite 六格完整输入、输出、推理内容和评分。",
+              "globs": [
+                "TEMP/semantic_batch_strong_and_lite_cross_genre_20260729_r01/**"
+              ],
+              "exclude_globs": [
+                "TEMP/semantic_batch_strong_and_lite_cross_genre_20260729_r01/__pycache__/**"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "零调用停点、配置事故与旧修补路线",
+          "roots": [
+            {
+              "root_id": "prior_short_judgment_full_evidence",
+              "required": true,
+              "authority": "local_candidate_historical_test",
+              "status": "twelve_single_judgments_failed",
+              "description": "早期 12 个程序疑点逐条短判的候选选择、完整输入输出与离线评分，供外审判断为何不能继续一疑点一调用。",
+              "globs": [
+                "TEMP/hidden_error_short_judgment_20260729_r01/**",
+                "TEMP/hidden_error_short_judgment_20260729_r02/**"
+              ],
+              "exclude_globs": [
+                "TEMP/hidden_error_short_judgment_20260729_r01/__pycache__/**",
+                "TEMP/hidden_error_short_judgment_20260729_r02/__pycache__/**"
+              ]
+            },
+            {
+              "root_id": "zero_call_and_transport_stops",
+              "required": true,
+              "authority": "local_machine_receipts",
+              "status": "engineering_failures_not_model_quality",
+              "description": "保留 0 API 停点和 MiniMax 首轮配置事故，防止外审把工程失败算成模型能力。",
+              "globs": [
+                "TEMP/blind_critical_inventory_cross_genre_20260729_r01/FROZEN_RUN_CONTRACT.json",
+                "TEMP/blind_critical_inventory_cross_genre_20260729_r01/LOCAL_PREFLIGHT_STOP.json",
+                "TEMP/blind_critical_inventory_cross_genre_20260729_r01/STOP_REPORT.md",
+                "TEMP/qwen_thinking_budget_cross_genre_20260729_r01/FROZEN_RUN_CONTRACT.json",
+                "TEMP/qwen_thinking_budget_cross_genre_20260729_r01/PREFLIGHT_SEMANTIC_HOLD.md",
+                "TEMP/semantic_batch_model_challengers_cross_genre_20260729_r01/FROZEN_RUN_CONTRACT.json",
+                "TEMP/semantic_batch_model_challengers_cross_genre_20260729_r01/TRANSPORT_STOP_RECEIPT.json",
+                "TEMP/semantic_batch_model_challengers_cross_genre_20260729_r01/STOP_REPORT.md"
+              ]
+            },
+            {
+              "root_id": "prior_chunk_repair_summary",
+              "required": true,
+              "authority": "local_candidate_historical_test",
+              "status": "eight_wave_route_cut",
+              "description": "早期八窗口分波修补的合同、窗口、完整输入输出、结果和人工语义复核。",
+              "globs": [
+                "TEMP/qwen_chunk_repair_B03_20260729_r01/**"
+              ],
+              "exclude_globs": [
+                "TEMP/qwen_chunk_repair_B03_20260729_r01/__pycache__/**"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "上一轮 ChatGPT Pro 方案",
+          "roots": []
+        }
+      },
+      "external_slots": [
+        {
+          "slot_id": "prior_next_round_review",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "candidate_advisory_tested_in_current_round",
+          "description": "上一轮《下一轮实验与两档方案》完整审查 ZIP；本轮数据用于检验其建议。"
+        }
+      ]
     }
   }
 }

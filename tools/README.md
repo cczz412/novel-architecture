@@ -27,16 +27,33 @@
 
 工具身份只认 [`governance/tool_registry.json`](../governance/tool_registry.json)。测试存在、零引用、名字带旧道次，都不能单独作为删除／移动依据。
 
-本次盘点后，根层 90 个 Python 实体已经逐件登记；另有一个 `z60` 相对兼容软链，不重复算实体。后续若新增根层 Python 却没同步登记，`tests/test_tool_registry.py` 会直接失败。
+本次盘点后，根层 93 个 Python 实体已经逐件登记；另有一个 `z60` 相对兼容软链，不重复算实体。后续若新增根层 Python 却没同步登记，`tests/test_tool_registry.py` 会直接失败。
 
 ## 两个打包入口
 
 | 工具 | 用途 | 保护线 |
 |---|---|---|
-| `simple_pack.py` | 小型 Prompt＋材料外发包 | `--dry-run` 真零写入；同名成员拒收；包内带 manifest／SHA，写后做 CRC 与逐文件回读 |
+| `simple_pack.py` | 小型 Prompt＋材料外发包；`--controlled-review` 是轻量摘要外审卫生门 | 普通模式保留旧行为；受控模式拒收符号链接、嵌套 ZIP、锁箱／金标／正文式材料名、密钥、绝对路径、非法 JSON 和超长行，并生成模型与发送核对单 |
 | `chatgpt_review_pack.py` | 仓库结构与路线证据审查包 | 全仓用 profile；高频产品线用四层 route 取材地图；包内 manifest／SHA／来源票；包外验收票；所有回读通过后才落目标目录 |
 
 打包成功只说明归档字节完整，不等于材料的语义结论已经审收。
+
+小型摘要材料要发给 ChatGPT Pro 时，可以先把材料整理成一个平铺目录，再跑：
+
+```bash
+python3 tools/simple_pack.py \
+  --prompt <Prompt.md> \
+  --source-dir <平铺摘要材料目录> \
+  --out-dir <全新输出目录> \
+  --zip-name <名称.zip> \
+  --controlled-review \
+  --expected-model-family "GPT-5.6 Sol" \
+  --expected-model-variant "Pro"
+```
+
+输出目录里会有 Prompt 副本、一个 ZIP、机械验收票和
+`SEND_CHECKLIST.json`。这张清单只负责让浏览器发送前后核对模型、附件、Prompt
+和对话状态；它不会自动发送，也不替代 `chatgpt_review_pack.py` 的全仓路线取材。
 
 ## 开跑前的保护线
 

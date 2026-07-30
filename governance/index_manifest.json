@@ -1,7 +1,7 @@
 {
   "generator": {
     "path": "tools/governance_index.py",
-    "sha256": "90534021588aa52cc64446c8411ed73c74a28c031f2e5a70aa363e7487ae989f"
+    "sha256": "d8a8af84292f1d69e16fb1aad9c6213d4ac98769eac7f5cb6188e947007e52f0"
   },
   "inputs": [
     {
@@ -12,7 +12,7 @@
     {
       "bytes": 12660,
       "path": "governance/control_plane.json",
-      "sha256": "5e41c1ce241d1054ed994b94140d0dd6488fdb43f24e14f71b5f404bcfe73157"
+      "sha256": "e2e11cce842a1539b834632b7f2095265bdf2fe312c2fd1132db3c54db98d779"
     },
     {
       "bytes": 14298,
@@ -74,7 +74,7 @@
     {
       "bytes": 24367,
       "path": "governance/module_registry.json",
-      "sha256": "0b11d7ceee2025e7ab4097678c4127ab075dc605c8a49fe7efacbb828b9d9e7a"
+      "sha256": "243cf8428a6ad9d0d10ef65b859a0e0e62e9d564348b55115d7899d62dccd4a3"
     }
   ],
   "schema_version": "governance-index-manifest-v1",

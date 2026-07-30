@@ -443,11 +443,19 @@ def collect_route_payloads(
                             f"ABORT route 命中疑似密钥路径：{rel}"
                         )
                     if _excluded(rel, exclude):
+                        allow_explicit_temp = bool(
+                            route.get("allow_explicit_temp_sources")
+                        ) and rel.startswith("TEMP/")
+                        if not allow_explicit_temp:
+                            notes.append(
+                                "ROUTE_FILE_EXCLUDED:"
+                                f"{route_name}/{layer}/{root_id}:{rel}"
+                            )
+                            continue
                         notes.append(
-                            "ROUTE_FILE_EXCLUDED:"
+                            "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:"
                             f"{route_name}/{layer}/{root_id}:{rel}"
                         )
-                        continue
                     root_files[rel] = path
             if root_cfg.get("required") and not root_files:
                 raise SystemExit(
@@ -556,6 +564,7 @@ def collect_route_payloads(
         "sources": source_records,
         "external_slots": route.get("external_slots") or [],
         "forbidden_source_globs": forbidden_source_globs,
+        "reviewer_prompt_path": route.get("reviewer_prompt_path"),
         "local_path_redaction_enabled": bool(
             route.get("redact_local_absolute_paths")
         ),
@@ -778,6 +787,10 @@ def render_route_map(
         for layer in selection.get("selected_layers") or []
     ]
     notes = selection.get("notes") or []
+    reviewer_prompt_path = (
+        selection.get("reviewer_prompt_path")
+        or "请以 current_truth 层登记的专用 Prompt 为准"
+    )
     text = f"""# 路线取材地图｜{selection.get("label")}
 
 生成时间：{generated_at.isoformat(timespec="seconds")}
@@ -816,9 +829,9 @@ route：`{selection.get("route_id")}`
 
 ## 顾问入口
 
-R2 通用顾问 Prompt：
+本路线专用顾问 Prompt：
 
-`01_current_truth/config/review_pack/prompts/r2_question_retrieval.md`
+`01_current_truth/{reviewer_prompt_path}`
 
 ## 打包告警
 
