@@ -155,21 +155,20 @@ commit 不能代替逐文件 SHA。工作区有未提交改动时，更不能只
 
 ## 40 项历史测试怎么做 replay
 
-40 项条件挂账保持原合同和 `2026-07-30` 到期日不变。以后恢复时只做一个
-便携夹具小包，不把大型旧运行目录搬回主仓。
+S-05-B 已把这 40 项改成非默认历史回放，不再延长旧挂账，也不拿 `xfail` 冒充
+日常回归。精确节点和 24 个保守取件单元只认
+`config/test_replay/historical_replays.json`。
 
-小包至少包含：
+当前外置包有 2,055 个文件、31,700,875 字节；`MANIFEST.json` SHA 是
+`f2f2b3b612ac4b18f98abbabdd0bf500337fde9cfe62be8dacf1ab03f6a5503a`。
+它保留了完整历史目录单元，因为旧登记里的 12 个缺失哨兵并不是真实读取闭包。
+包内材料落点固定为 `payload/<仓库相对路径>`；物化与测试都只写同级工作副本，
+不回写当前主仓。
 
-- `REPLAY_README.md`
-- `fixture_overlay/<仓库相对路径>`
-- `MANIFEST.json`
-- `SHA256SUMS`
-- `expected_result.json`
-
-⚠️ `tests/test_debt_registry.json` 里的缺失哨兵不是完整读取清单。要先记录
-40 项测试实际读取的闭集，再从外置原件复制。验收必须在干净 checkout 中：
-只解开这个夹具包，执行 `uv sync --locked`，40 项全部真跑通过，不能仍是
-xfail。夹具只进临时 checkout，不回写当前主仓。
+复验只能用 `tools/historical_test_replay.py run`：程序来自固定 Git 提交，材料来自
+已验 SHA 的外置包，两者复制到仓库同级的新工作区后，一次只跑 40 个精确节点。
+测试不能直接引用主仓工作树。第一次真实回放跑完，再看
+`HISTORICAL_REPLAY_FILE_ACCESS.json` 收窄材料；没有读取证据前不凭猜测删取件单元。
 
 ## 经验账（外审回骂 → 制度补丁）
 

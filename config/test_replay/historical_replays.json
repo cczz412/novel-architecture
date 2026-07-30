@@ -1,0 +1,340 @@
+{
+  "schema_version": "historical-test-replay-registry-v1",
+  "registry_id": "S05B-HISTORICAL-REPLAY-20260731-01",
+  "decision": {
+    "authority": "CZ",
+    "choice": "S-05-B",
+    "source_text": "S-05-B",
+    "source_text_sha256": "21d6fbd145e723a7256b98b76595344431315b2b2d86afeed2897f9d7b12a268"
+  },
+  "default_collection": {
+    "mode": "deselect_exact",
+    "marker": "historical_replay",
+    "node_count": 40
+  },
+  "program_snapshot": {
+    "source": "git_archive_resolved_commit",
+    "dirty_worktree_included": false,
+    "internal_symlink_mode": "copy_tracked_target_bytes_as_regular_file",
+    "allowed_omitted_symlinks": [
+      "corpus-downloads"
+    ]
+  },
+  "source_package": {
+    "package_id": "historical_test_replay_s05b_20260731_v1",
+    "status": "sealed",
+    "external_root_id": "repository_sibling_external_archive_v1",
+    "relative_path": "historical_test_replay_s05b_20260731_v1",
+    "manifest_sha256": "f2f2b3b612ac4b18f98abbabdd0bf500337fde9cfe62be8dacf1ab03f6a5503a"
+  },
+  "source_roots": [
+    {
+      "root_id": "archive_batch_20260723",
+      "kind": "fixed_sibling_archive_batch",
+      "relative_path": "archive_batch_20260723",
+      "manifest_sha256": "a7560f2fc95503f3c9ce35c250437f19f9cb75fd53b5c78c02fcd68df74320a0"
+    },
+    {
+      "root_id": "repository_local_ignored",
+      "kind": "repository_local_ignored"
+    }
+  ],
+  "source_units": [
+    {
+      "unit_id": "external_z00d_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z00d_X01_20章全链冒烟_v1.2_20260717",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z00f_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z00f_X01_20章语义闸续测_v1.3_20260717",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z00q_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z00q_X01_合同下限6字增量续跑_20章_v1.0_20260718",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z00s_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z00s_X01_20章分类正门兼容_20章_v1.0_20260718",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z00u_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z00u_X01_extract_v1.3同范围对照_20章_v1.0_20260718",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z00w2_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z00w2_X01_分类规则v1.2审查修订重放_20章_v1.1_20260718",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z00x4_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z00x4_X01_提取覆盖诊断_20章_v2.0_20260718",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z57_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z57_X01_稳定语义身份解耦与全链后半_20章_v1.0_20260719",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z68_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z68_X01_修正版请求体裸考_五靶章_v1.0_20260720",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z70_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z70_X01_事件句压缩合同_五靶章_v1.0_20260721",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "external_z71_run",
+      "root_id": "archive_batch_20260723",
+      "repo_relative_path": "runs/Z71_X01_z70语义补全旁路_五靶章_v1.0_20260721",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z00p_run",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "runs/Z00p_X01_第1至20章正式扩大_20章_v1.0_20260718",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z00r_run",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "runs/Z00r_X01_第14章单次重采样续跑_20章_v1.0_20260718",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z36_run",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "runs/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z68c_run",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "runs/Z68C_X01_修正版请求体32k兼容续跑_五靶章_v1.1_20260720",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z00s_reports",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "reports/Z00s_X01_20章分类正门兼容_20260718",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z00u_reports",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "reports/Z00u_extract_v1.3同范围对照_20260718",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z56_reports",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "reports/Z56_金标双轨分层与全链体检_20260719",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z57_reports",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "reports/Z57_稳定语义身份解耦与全链后半_20260719",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z68c_reports",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "reports/Z68续令_32k参数兼容修复与裸考成绩_20260720",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z70_reports",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "reports/Z70_压缩病灶合同条款单变量_20260721",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_z71_reports",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "reports/Z71_z70语义补全旁路_20260721",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_x01_book",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "TEMP/X批材料包_20260716/books/X01_诡秘之主",
+      "kind": "directory"
+    },
+    {
+      "unit_id": "local_outbox",
+      "root_id": "repository_local_ignored",
+      "repo_relative_path": "outbox",
+      "kind": "directory"
+    }
+  ],
+  "groups": [
+    {
+      "group_id": "extraction_method_ab_archived_runs",
+      "reason": "AB 提取旧运行与五章材料只在历史副本中复验。",
+      "nodeids": [
+        "tests/test_extraction_method_ab.py::ExtractionMethodABTests::test_named_candidates_come_from_machine_json_without_target_only_filter",
+        "tests/test_extraction_method_ab.py::ExtractionMethodABTests::test_outer_failure_writes_recovered_accounting_even_with_bad_usage_row",
+        "tests/test_extraction_method_ab.py::ExtractionMethodABTests::test_transport_and_three_layer_layout_are_exact",
+        "tests/test_extraction_method_ab.py::ExtractionMethodABTests::test_z01d_preflight_is_zero_call_and_full_segment_coverage"
+      ],
+      "source_unit_ids": [
+        "external_z00x4_run",
+        "local_z00r_run",
+        "local_x01_book"
+      ]
+    },
+    {
+      "group_id": "net_benefit_archived_baseline",
+      "reason": "净收益重算依赖多个旧运行、旧报告和冻结审计输入。",
+      "nodeids": [
+        "tests/test_net_benefit_recompute.py::NetBenefitRecomputeTests::test_all_old_candidate_records_are_semantically_preserved",
+        "tests/test_net_benefit_recompute.py::NetBenefitRecomputeTests::test_anchor_fragments_are_checked_in_quotes",
+        "tests/test_net_benefit_recompute.py::NetBenefitRecomputeTests::test_differential_audit_covers_exactly_four_new_records",
+        "tests/test_net_benefit_recompute.py::NetBenefitRecomputeTests::test_formal_recompute",
+        "tests/test_net_benefit_recompute.py::NetBenefitRecomputeTests::test_new_d_uses_e0130_but_keeps_record_anchor_limitation_open",
+        "tests/test_net_benefit_recompute.py::NetBenefitRecomputeTests::test_recoveries_do_not_double_count_delayed_recurrence",
+        "tests/test_net_benefit_recompute.py::NetBenefitRecomputeTests::test_remaining_absent_spans_are_still_absent",
+        "tests/test_net_benefit_recompute.py::NetBenefitRecomputeTests::test_strict_note_does_not_keep_stale_plus_two"
+      ],
+      "source_unit_ids": [
+        "external_z00s_run",
+        "external_z00u_run",
+        "external_z00w2_run",
+        "local_z00s_reports",
+        "local_z00u_reports"
+      ]
+    },
+    {
+      "group_id": "nonthinking_archived_usage",
+      "reason": "非思考基线复验依赖三轮旧用量、五章旧事件、冻结程序和五章正文。",
+      "nodeids": [
+        "tests/test_nonthinking_pilot.py::NonThinkingPilotTests::test_baseline_snapshot_uses_real_usage_rows",
+        "tests/test_nonthinking_pilot.py::NonThinkingPilotTests::test_permit_refuses_when_key_is_absent",
+        "tests/test_nonthinking_pilot.py::NonThinkingPilotTests::test_preflight_is_zero_call_and_pins_five_chapters"
+      ],
+      "source_unit_ids": [
+        "external_z00q_run",
+        "local_z00p_run",
+        "local_z00r_run",
+        "local_z36_run",
+        "local_x01_book"
+      ]
+    },
+    {
+      "group_id": "z68_prepared_requests_unittest_subtests",
+      "reason": "Z68 前轮整树指纹和准备请求必须在固定历史副本中复验。",
+      "nodeids": [
+        "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_called_chapters_change_only_max_tokens"
+      ],
+      "source_unit_ids": [
+        "external_z68_run",
+        "local_z36_run",
+        "local_x01_book",
+        "local_outbox",
+        "local_z56_reports"
+      ]
+    },
+    {
+      "group_id": "z68_archived_prior_run",
+      "reason": "Z68 前轮运行整树、保护件和本地材料只在历史副本中复验。",
+      "nodeids": [
+        "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_chapter5_failure_hard_stops_before_13_and_19",
+        "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_prepare_is_zero_call_and_refuses_repeat",
+        "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_prior_hard_stop_and_tool_are_pinned",
+        "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_prohibited_material_is_absent",
+        "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_reused_artifacts_equal_prior_bytes",
+        "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_run_local_contract_projects_exact_32k_body",
+        "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_successful_fake_run_is_strictly_5_13_19",
+        "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_transport_budget_rejects_sixth_attempt"
+      ],
+      "source_unit_ids": [
+        "external_z68_run",
+        "local_z36_run",
+        "local_x01_book",
+        "local_outbox",
+        "local_z56_reports"
+      ]
+    },
+    {
+      "group_id": "z70_archived_run",
+      "reason": "Z70 报告回放依赖五章运行整树、旧 Z68C 报告和保护件。",
+      "nodeids": [
+        "tests/test_z70_compression_contract_report.py::Z70CompressionContractReportTests::test_build_uses_manual_verdicts_and_derives_all_gate_counts",
+        "tests/test_z70_compression_contract_report.py::Z70CompressionContractReportTests::test_check_rebuilds_and_compares_all_generated_file_hashes",
+        "tests/test_z70_compression_contract_report.py::Z70CompressionContractReportTests::test_rejects_candidate_event_from_another_chapter",
+        "tests/test_z70_compression_contract_report.py::Z70CompressionContractReportTests::test_rejects_semantic_id_set_drift"
+      ],
+      "source_unit_ids": [
+        "external_z68_run",
+        "external_z70_run",
+        "local_z36_run",
+        "local_z68c_run",
+        "local_x01_book",
+        "local_outbox",
+        "local_z56_reports",
+        "local_z68c_reports"
+      ]
+    },
+    {
+      "group_id": "z72_archived_samples",
+      "reason": "Z72 零调用重判依赖四路旧样张、旧成绩、运行闸、正文和 outbox 整树。",
+      "nodeids": [
+        "tests/test_z72_gold_granularity_candidate.py::Z72GoldGranularityCandidateTests::test_candidate_keeps_formal_v11_untouched_and_declares_pending_semantics",
+        "tests/test_z72_gold_granularity_candidate.py::Z72GoldGranularityCandidateTests::test_four_round_rejudge_is_manual_zero_call_and_scores_are_locked",
+        "tests/test_z72_gold_granularity_candidate.py::Z72GoldGranularityCandidateTests::test_g13_causal_alias_and_food_wording_remain_pending",
+        "tests/test_z72_gold_granularity_candidate.py::Z72GoldGranularityCandidateTests::test_gold05_is_one_continuous_adjustment_atom",
+        "tests/test_z72_gold_granularity_candidate.py::Z72GoldGranularityCandidateTests::test_invalid_anchor_coverage_never_enters_effective_recall",
+        "tests/test_z72_gold_granularity_candidate.py::Z72GoldGranularityCandidateTests::test_mapping_has_no_orphans_and_all_anchors_read_back",
+        "tests/test_z72_gold_granularity_candidate.py::Z72GoldGranularityCandidateTests::test_repeat_validation_receipt_is_explicit",
+        "tests/test_z72_gold_granularity_candidate.py::Z72GoldGranularityCandidateTests::test_review_flags_do_not_delete_candidate_atoms",
+        "tests/test_z72_gold_granularity_candidate.py::Z72GoldGranularityCandidateTests::test_two_builds_are_byte_identical",
+        "tests/test_z72_gold_granularity_candidate.py::Z72GoldGranularityCandidateTests::test_z70_z71_fail_hard_stop_manifests_are_live_verified"
+      ],
+      "source_unit_ids": [
+        "external_z57_run",
+        "external_z70_run",
+        "external_z71_run",
+        "local_z36_run",
+        "local_z68c_run",
+        "local_x01_book",
+        "local_outbox",
+        "local_z56_reports",
+        "local_z57_reports",
+        "local_z68c_reports",
+        "local_z70_reports",
+        "local_z71_reports"
+      ]
+    },
+    {
+      "group_id": "zbatch_archived_import_samples",
+      "reason": "ZBatch 失败运行导入会按清单和 glob 读取完整旧运行与书目录。",
+      "nodeids": [
+        "tests/test_zbatch.py::ZBatchTests::test_actual_failed_fold_run_can_export_completed_thin_stage",
+        "tests/test_zbatch.py::ZBatchTests::test_actual_failed_run_can_export_completed_verified_stage"
+      ],
+      "source_unit_ids": [
+        "external_z00d_run",
+        "external_z00f_run",
+        "local_x01_book"
+      ]
+    }
+  ]
+}

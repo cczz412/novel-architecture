@@ -44,7 +44,7 @@ def test_package_standard_distinguishes_review_from_replay() -> None:
 
     assert "review" in standard
     assert "replay" in standard
-    assert "fixture_overlay/<仓库相对路径>" in standard
+    assert "payload/<仓库相对路径>" in standard
     assert "原始响应索引" in standard
     assert "不回写当前主仓" in standard
     assert "PACKAGE_RECEIPT.json" in standard

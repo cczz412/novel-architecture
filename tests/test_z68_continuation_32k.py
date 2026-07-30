@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from archived_fixture_debt import xfail_if_registered_fixture_missing
+from archived_fixture_debt import require_materialized_historical_replay
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -98,7 +98,7 @@ class Z68Continuation32KTests(unittest.TestCase):
         self.assertEqual(receipt["tool_sha256"], z68c.PRIOR_TOOL_SHA256)
 
     def test_called_chapters_change_only_max_tokens(self) -> None:
-        xfail_if_registered_fixture_missing(
+        require_materialized_historical_replay(
             "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::"
             "test_called_chapters_change_only_max_tokens"
         )

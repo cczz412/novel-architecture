@@ -145,4 +145,40 @@ python3 tools/experiment_workspace.py materialize \
 
 程序会拒绝缺字段、多字段、乱序、重复来源、重复目标和能力扩张。计划通过只代表格式与绑定关系成立，不代替 CZ 的施工授权。
 
+## S-05-B 历史测试回放
+
+`historical_test_replay.py` 只管已经退出日常验收的 40 个旧批次测试。你可以直接理解
+成：先把历史现场封成只读零件包，再把固定 Git 提交的程序和零件包都复制到新的同级
+工作区，测试只碰副本。
+
+```bash
+# 只核登记册、来源和已封包
+.venv/bin/python tools/historical_test_replay.py validate
+
+# 只复制，不运行
+.venv/bin/python tools/historical_test_replay.py materialize \
+  --commit <完整40位提交号> \
+  --run-id <新运行号>
+
+# 复制后只跑登记的 40 项
+.venv/bin/python tools/historical_test_replay.py run \
+  --commit <完整40位提交号> \
+  --run-id <新运行号>
+```
+
+这条链有几条硬限制：
+
+- 程序只来自解析后的 Git 提交，不带主仓未提交字节，也不带 `.git`。
+- Git 内部软链会转成目标文件的普通副本；`corpus-downloads` 正文指针只登记省略，
+  不把正文库拖进工作区。
+- 外置材料逐文件核大小和 SHA；软链、硬链接、缺件、漂移和目标重名都会拒绝。
+- 每个运行号只能建立一次，不覆盖旧工作区。
+- 测试子进程清掉密钥环境；Python 审计钩子按真实落点拦常规文件越界读取，也拒绝
+  运行期新建软链／硬链接，并拦网络和子进程。这不是操作系统级沙箱，票据不会把它
+  写成“绝对断网”。
+- 本工具不删除、不移动、不发网、不调用模型，也不写 Notion。
+
+默认 `pytest` 只会把这 40 项报告成 `deselected`。不能把这个数字写成历史回放通过；
+真结果看同级工作区里的 `HISTORICAL_REPLAY_RUN_RECEIPT.json`。
+
 来源：Codex

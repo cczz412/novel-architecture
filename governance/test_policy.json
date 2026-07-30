@@ -4,11 +4,15 @@
   "lint_command": "ruff check",
   "default_collection_root": "tests",
   "retired_collection_roots": ["TEMP", "runs", "reports", "outbox"],
-  "archived_fixture_debt_registry": "tests/test_debt_registry.json",
+  "historical_replay_registry": "config/test_replay/historical_replays.json",
+  "historical_replay_tool": "tools/historical_test_replay.py",
+  "historical_replay_default_rule": "登记的40个精确节点默认deselected，不计入日常验收；只能从固定Git提交与已验SHA外置包复制出的同级工作副本一次回放全部40项。",
+  "historical_replay_command": ".venv/bin/python tools/historical_test_replay.py run --commit <完整40位提交号> --run-id <新运行号>",
+  "legacy_debt_migration_pointer": "tests/test_debt_registry.json",
   "old_failure_disposition": "tests/old_failure_disposition.json",
-  "archived_fixture_rule": "只有登记的必需夹具确实缺失时才strict xfail；夹具恢复后必须恢复真跑，挂账到期即阻断收集。",
   "documentation_commands": [
-    "python3 tools/governance_index.py --check"
+    "python3 tools/governance_index.py --check",
+    ".venv/bin/python tools/historical_test_replay.py validate"
   ],
   "unknown_path_full_chain": true,
   "full_chain_flags": [
@@ -25,6 +29,8 @@
     "score_denominator_changed",
     "file_routing_changed",
     "repository_layout_changed",
+    "test_collection_changed",
+    "historical_replay_changed",
     "multi_module_unknown_impact"
   ],
   "module_tests": {
@@ -45,7 +51,9 @@
       "tests/test_novel_pipeline.py",
       "tests/test_pipeline_artifacts.py",
       "tests/test_pipeline_inspector.py",
-      "tests/test_test_impact.py"
+      "tests/test_test_impact.py",
+      "tests/test_test_debt_policy.py",
+      "tests/test_historical_test_replay.py"
     ]
   },
   "path_rules": [
@@ -182,8 +190,42 @@
       "name": "测试纪律测试",
       "pattern": "tests/test_test_*.py",
       "modules": ["M11"],
-      "tests": ["tests/test_test_impact.py", "tests/test_test_debt_policy.py"],
+      "tests": [
+        "tests/test_test_impact.py",
+        "tests/test_test_debt_policy.py",
+        "tests/test_historical_test_replay.py"
+      ],
       "full_chain": false
+    },
+    {
+      "name": "历史测试回放工具",
+      "pattern": "tools/historical_test_replay.py",
+      "modules": ["M11"],
+      "tests": [
+        "tests/test_historical_test_replay.py",
+        "tests/test_test_debt_policy.py"
+      ],
+      "full_chain": true
+    },
+    {
+      "name": "历史测试回放合同",
+      "pattern": "config/test_replay/*.json",
+      "modules": ["M11"],
+      "tests": [
+        "tests/test_historical_test_replay.py",
+        "tests/test_test_debt_policy.py"
+      ],
+      "full_chain": true
+    },
+    {
+      "name": "测试收集入口",
+      "pattern": "tests/conftest.py",
+      "modules": ["M11"],
+      "tests": [
+        "tests/test_historical_test_replay.py",
+        "tests/test_test_debt_policy.py"
+      ],
+      "full_chain": true
     },
     {
       "name": "局部评分器",

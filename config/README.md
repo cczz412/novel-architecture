@@ -9,6 +9,7 @@
 - `context_recipes/`：只记录上下文怎么拼，不保存某次已经拼好的完整上下文。
 - `contracts/`：任务输入输出等可复用 JSON 结构约束。
 - `batches/`：某一批测哪本书、多少章、用哪版提示词、最多允许多少次调用。
+- `test_replay/`：退出日常验收的历史测试节点、取件范围和外置回放包封签。
 
 ⚠️ 不要把 API Key 写进 JSON。现役默认链只认进程环境里的 `SENSENOVA_API_KEY`；普通火山按量、千问与腾讯候选通道分别使用 `ARK_API_KEY`、`DASHSCOPE_API_KEY` 与 `TENCENT_TOKENHUB_API_KEY`，只从本仓钥匙串加载器临时注入。Agent Plan 只认 ArkCLI 的 `agent-plan_cn-beijing_personal` profile，不再从项目钥匙串重复注入另一把 Key。LongCat 继续由同级公共 API 池临时加载，不复制密钥进本仓。
 

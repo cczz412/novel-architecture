@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-07-30T16:16:42+08:00",
+  "updated_at": "2026-07-31T00:52:37+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 94,
-    "root_visible_python_entry_count": 95,
+    "root_entity_count": 95,
+    "root_visible_python_entry_count": 96,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -522,7 +522,7 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 9,
+    "reusable_component": 10,
     "batch_reproducer": 80,
     "active_entry": 2,
     "retired_compat": 3,
@@ -632,15 +632,15 @@
       "primary_identity_label": "可复用组件",
       "status": "active_component",
       "status_label": "现役",
-      "purpose": "从机器真源生成或检查治理索引，并为仓库重构生成两级机器闸、独占 Wave 锁和可从 Git 历史重放的完成票 v2。",
+      "purpose": "从机器真源生成或检查治理索引，并为仓库重构生成两级机器闸、独占 Wave 锁、固定外置清单只读证据和可从 Git 历史重放的完成票 v2。",
       "human_command": "python3 tools/governance_index.py <--check|--baseline-plan|--wave-lock-request|--wave-plan|--wave-completion-request> ...",
       "inputs": [
         "governance/CURRENT_STATE.json、模块／路线／控制登记件",
-        "重构基线计划及一级票、同任务人工回读决策／准备票、精确 Wave 计划、测试影响单、冲突锁请求与完成票 v2 请求"
+        "重构基线计划及一级票、同任务人工回读决策／准备票、精确 Wave 计划、测试影响单、冲突锁请求、三份固定旧外置清单与完成票 v2 请求"
       ],
       "outputs": [
         "只查模式输出漂移结果；刷新模式生成治理索引文件",
-        "TEMP 下不可覆盖且写后复核证据的一级基线票、二级 Wave 票、固定路径冲突锁和 Git 历史完成票 v2"
+        "TEMP 下不可覆盖且写后复核仓内与固定外置证据的一级基线票、二级 Wave 票、固定路径冲突锁和 Git 历史完成票 v2"
       ],
       "network_or_model": {
         "network": "none",
@@ -660,7 +660,7 @@
         "tools/novel_pipeline.py"
       ],
       "next_confirmed_consumer": null,
-      "retirement_condition_and_compatibility_boundary": "由 novel_pipeline 治理子命令调用；重构票只验证写盘后仍稳定的本地现场、完整一级计划和精确 Wave，受绑定 JSON 用同一次读取的字节完成 SHA 与解析，写后重验全部证据 SHA，写盘父路径逐级拒绝软链替换，受绑定硬链接在读内容前拒绝；旧 S0 仍用完成票 v1 核验 Wave1，Wave2 只接受规格钉住的真实 S0 计划／开工票 SHA、起止提交、可从 Git 对象重放且状态为 GIT_SCOPE_PASS 的完成票 v2，以及只记录当前 S-02-A 资格的新建 Wave2 准备票。完成票 v2 不信任请求自报输出，也不拿当前工作树代替历史 blob，只证明 Git 历史变更范围，不接收、不证明也不评价测试报告；删除、改名、范围外文件会阻断。进入 Wave2 时，S0 历史输出须与当前 HEAD 一一对应，仅 governance/tool_registry.json 可因扩闸发生内容漂移，其余输出内容或 Git 模式变化、替换、删除都会阻断。Wave2 读取范围按文件登记，禁止整段读取 config、governance、tests、tools 或 .git；外层 bound_inputs 必须与必绑输入和当前票据引用完全相等，固定一级计划内部的 bound_inputs 也必须与 6 个一级基线必绑输入完全相等，两层都会在重放和读取前拒绝多余或缺失输入；六类票据各自使用固定槽位，并且只能有一条 S0_MATERIALIZE_ONLY 完成票依赖。22 个候选写项全是精确文件，清单外子文件一律拒绝。准备票和二级 PASS 都不授权写 Wave2 文件，authorizes_wave 永远为 false；开始写候选文件前必须在原任务回读 CZ 后续另给的明确正向确认。不得把生成索引反写成 Notion 拍板真源，也不得授权预检、联网、读密钥、发请求、Notion／模型 API／外置清退。",
+      "retirement_condition_and_compatibility_boundary": "由 novel_pipeline 治理子命令调用；重构票只验证写盘后仍稳定的本地现场、完整一级计划和精确 Wave，受绑定 JSON 用同一次读取的字节完成 SHA 与解析，写后重验全部证据 SHA，写盘父路径逐级拒绝软链替换，受绑定硬链接在读内容前拒绝；旧 S0 仍用完成票 v1 核验 Wave1，Wave2 只接受规格钉住的真实 S0 计划／开工票 SHA、起止提交、可从 Git 对象重放且状态为 GIT_SCOPE_PASS 的完成票 v2，以及只记录当前 S-02-A 资格的新建 Wave2 准备票。完成票 v2 不信任请求自报输出，也不拿当前工作树代替历史 blob，只证明 Git 历史变更范围，不接收、不证明也不评价测试报告；删除、改名、范围外文件会阻断。进入 Wave2 时，S0 历史输出须与当前 HEAD 一一对应，仅 governance/tool_registry.json 可因扩闸发生内容漂移，其余输出内容或 Git 模式变化、替换、删除都会阻断。Wave2 读取范围按文件登记，禁止整段读取 config、governance、tests、tools 或 .git；外层 bound_inputs 必须与必绑输入和当前票据引用完全相等，固定一级计划内部的 bound_inputs 也必须与 6 个一级基线必绑输入完全相等，两层都会在重放和读取前拒绝多余或缺失输入；六类票据各自使用固定槽位，并且只能有一条 S0_MATERIALIZE_ONLY 完成票依赖。22 个候选写项全是精确文件，清单外子文件一律拒绝。准备票和二级 PASS 都不授权写 Wave2 文件，authorizes_wave 永远为 false；开始写候选文件前必须在原任务回读 CZ 后续另给的明确正向确认。Wave5 只认同级外置仓内三份固定旧 MANIFEST；外置根、批次目录与清单均拒绝软链，清单拒绝硬链接、超限、读取竞态、SHA 与条目数漂移，出票后还会再次回读。Wave5 授权票只允许离线字段扫描、create-only 新收据与新登记册；不能遍历外置真身、改旧清单、搬删来源、写存根或签发恢复通过。不得把生成索引反写成 Notion 拍板真源，也不得授权预检、联网、读密钥、发请求、Notion／模型 API／外置清退。",
       "review_needed": false
     },
     {
@@ -3833,6 +3833,51 @@
       ],
       "next_confirmed_consumer": "后续获批的隔离模型试验先按计划复制零件，再单独申请预检与运行能力。",
       "retirement_condition_and_compatibility_boundary": "候选公共零件；只允许从白名单来源复制到固定 runs 工作区，拒绝软链、硬链、敏感内容、来源漂移和重复运行号。S0 不证明断网隔离，也不授权执行程序。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-095",
+      "path": "tools/historical_test_replay.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·只供非默认历史回放",
+      "purpose": "封签 S-05-B 历史测试材料，把固定 Git 提交与已验 SHA 外置包复制到仓库同级工作区，并只在副本中回放 40 个精确节点。",
+      "human_command": "python3 tools/historical_test_replay.py <validate|seal|materialize|run> ...",
+      "inputs": [
+        "config/test_replay/ 下的历史回放登记册与结构约束",
+        "登记的本仓忽略目录和同级外置归档批次",
+        "已封外置回放包",
+        "完整 40 位 Git 提交号与全新运行号"
+      ],
+      "outputs": [
+        "同级外置仓里的逐文件 SHA 历史回放包",
+        "同级测试工作区里的固定程序副本与历史材料副本",
+        "物化票、文件读取票和真实 pytest 运行票"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "封包与复制不发网；运行子进程清掉密钥环境，并用 Python 审计钩子拦网络和子进程。该护栏不冒充操作系统级沙箱。"
+      },
+      "current_consumers": [
+        "tests/conftest.py",
+        "tests/archived_fixture_debt.py",
+        "tests/test_historical_test_replay.py",
+        "tests/test_test_debt_policy.py"
+      ],
+      "consumer_evidence_rule": "只登记 S-05-B 的 40 个精确历史节点、固定外置包和复制式回放；默认测试只报告 deselected，不把未运行写成通过。",
+      "test_references": [
+        "tests/test_historical_test_replay.py",
+        "tests/test_test_debt_policy.py"
+      ],
+      "last_use_clues": [
+        "config/test_replay/README.md",
+        "config/test_replay/historical_replays.json",
+        "tests/README.md"
+      ],
+      "next_confirmed_consumer": "第一次真实 40 项回放在本工具和封签登记进入同一 Git 提交后执行，再按读取票评估能否缩小材料包。",
+      "retirement_condition_and_compatibility_boundary": "候选历史复验组件；不删除或移动原件，不覆盖旧包和旧工作区，不读取主仓未提交字节，不接默认业务链，不写 Notion，不发网或调用模型。",
       "review_needed": false
     }
   ]

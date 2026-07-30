@@ -1,7 +1,7 @@
 {
   "generator": {
     "path": "tools/governance_index.py",
-    "sha256": "5b1f71e980f0d0954ba46c2f84c76ee7f1327af9d5e9514315fb8fad988fce4c"
+    "sha256": "6cc1be2ff6c8ccb6b3f916fbcceb635cdb698f99bd70b7f4ff2eb2a89f2b69e6"
   },
   "inputs": [
     {
@@ -94,7 +94,7 @@
     {
       "bytes": 24367,
       "path": "governance/module_registry.json",
-      "sha256": "053db30be4d59c9aa8b0f29e7f2b40bfb6e27557142c7d53768df157656d1588"
+      "sha256": "8365f98415249c646c5d1bfad5fd8afe8c0ded6e540a5d6d4a757b7b3f75b330"
     }
   ],
   "schema_version": "governance-index-manifest-v1",

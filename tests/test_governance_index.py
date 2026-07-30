@@ -520,6 +520,314 @@ def _wave_fixture(
     return plan, now
 
 
+def _wave5_fixture(
+    parent: Path,
+) -> tuple[Path, dict, datetime, Path]:
+    parent = parent.resolve()
+    root = parent / "novel-repository"
+    root.mkdir()
+    now = datetime(2026, 7, 30, 15, 30, tzinfo=timezone.utc)
+    context_id = "019fa2e0-08a5-7110-b263-a183b0230f3c"
+    baseline_plan = _baseline_fixture(root)
+    baseline_plan["responsibility_window"]["candidate_write_paths"] = list(
+        governance_index.WAVE5_CANDIDATE_WRITE_PATHS
+    )
+    baseline_plan["responsibility_window"][
+        "authorization_context_id"
+    ] = context_id
+
+    (root / ".gitignore").write_text("TEMP/\n", encoding="utf-8")
+    for relative in (
+        "config/README.md",
+        "governance/README.md",
+        "tests/README.md",
+        "tools/README.md",
+        "tests/test_governance_index.py",
+    ):
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"{relative} fixture\n", encoding="utf-8")
+    for relative in (
+        "governance/directory_registry.json",
+        "governance/test_policy.json",
+        "governance/tool_registry.json",
+    ):
+        payload = {"schema_version": "test"}
+        if relative == "governance/test_policy.json":
+            payload.update(
+                {
+                    "full_chain_command": "python -m pytest -q",
+                    "lint_command": "ruff check",
+                }
+            )
+        _write_json(root / relative, payload)
+
+    s0_ticket = {
+        "contract_version": governance_index.RESTRUCTURE_DECISION_TICKET_V1,
+        "ticket_id": "S0-DECISIONS-CZ-20260730-01",
+        "authority": "CZ",
+        "authorization_context_id": context_id,
+        "evidence_class": "same_task_human_readback",
+        "human_readback": {
+            "required": True,
+            "confirmed": True,
+            "cryptographic_proof": False,
+        },
+        "selected_route": "S0",
+        "selected_scope": [
+            governance_index.WAVE1_DIRECTORY_REGISTRY,
+            governance_index.S0_MATERIALIZE_ONLY,
+        ],
+        "source_messages": [
+            {
+                "text": "按s0",
+                "sha256": governance_index._sha256_text("按s0"),
+            },
+            {
+                "text": "S-01-A",
+                "sha256": governance_index._sha256_text("S-01-A"),
+            },
+        ],
+        "decisions": {
+            decision_id: {"status": status, "value": value}
+            for decision_id, (status, value) in (
+                governance_index.S0_DECISION_VALUES.items()
+            )
+        },
+        "authorization_boundary": {
+            "authorizes_wave_without_second_level_pass": False,
+            "authorizes_notion_write": False,
+            "authorizes_model_api": False,
+            "authorizes_preflight": False,
+            "authorizes_external_removal": False,
+        },
+    }
+    s0_path = (
+        root
+        / "TEMP/restructure_wave_preflight/"
+        "route-a-plus-s0-20260730/"
+        "S0_DECISION_TICKET_20260730.json"
+    )
+    s0_path.parent.mkdir(parents=True, exist_ok=True)
+    s0_path.write_text(
+        json.dumps(s0_ticket, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    external_root = parent / f"{root.name}_外置仓"
+    external_sources = []
+    for manifest_spec in governance_index.WAVE5_EXTERNAL_MANIFESTS:
+        batch_root = external_root / manifest_spec["batch_relative_path"]
+        batch_root.mkdir(parents=True)
+        entries = [
+            {"path": f"item-{index:03d}"}
+            for index in range(manifest_spec["expected_entries"])
+        ]
+        payload = {
+            "entries": entries,
+            "entry_count": manifest_spec["expected_entries"],
+        }
+        manifest_path = batch_root / "MANIFEST.json"
+        _write_json(manifest_path, payload)
+        external_sources.append(
+            {
+                **copy.deepcopy(manifest_spec),
+                "expected_sha256": governance_index.sha256_file(
+                    manifest_path
+                ),
+            }
+        )
+
+    reference_paths = governance_index.WAVE5_REQUIRED_REFERENCE_PATHS
+    baseline_plan_path = root / reference_paths["baseline_plan"]
+    _write_json(baseline_plan_path, baseline_plan)
+    baseline_receipt = governance_index._evaluate_restructure_baseline_snapshot(
+        root,
+        baseline_plan,
+        dirty_paths=[],
+        head_sha="a" * 40,
+        governance_mismatch_paths=[],
+        evaluated_at=now,
+    )
+    baseline_receipt["checks"].append(
+        {
+            "check_id": "live_snapshot_stable",
+            "passed": True,
+            "evidence": {"fixture": True},
+        }
+    )
+    baseline_path = root / reference_paths["baseline_receipt"]
+    _write_json(baseline_path, baseline_receipt)
+
+    decision_ticket = {
+        "contract_version": (
+            governance_index.RESTRUCTURE_WAVE5_AUTHORIZATION_V1
+        ),
+        "ticket_id": "WAVE5-AUTHORIZATION-TEST",
+        "ticket_kind": "wave5_gate_and_scanner_authorization",
+        "authority": "CZ",
+        "authorization_context_id": context_id,
+        "evidence_class": "same_task_human_readback",
+        "human_readback": {
+            "required": True,
+            "confirmed": True,
+            "cryptographic_proof": False,
+        },
+        "selected_route": "A_PLUS_EXTERNAL_READONLY",
+        "selected_scope": [
+            governance_index.WAVE5_EXTERNAL_ARCHIVE_READONLY
+        ],
+        "source_messages": [
+            {
+                "text": governance_index.WAVE5_AUTHORIZATION_SOURCE_TEXT,
+                "sha256": governance_index._sha256_text(
+                    governance_index.WAVE5_AUTHORIZATION_SOURCE_TEXT
+                ),
+            }
+        ],
+        "decisions": {
+            decision_id: {"status": status, "value": value}
+            for decision_id, (status, value) in (
+                governance_index.WAVE5_AUTHORIZATION_DECISION_VALUES.items()
+            )
+        },
+        "external_root_identity": governance_index.WAVE5_EXTERNAL_ROOT_ID,
+        "external_sources": external_sources,
+        "upstream_decision": {
+            "path": s0_path.relative_to(root).as_posix(),
+            "sha256": governance_index.sha256_file(s0_path),
+        },
+        "eligibility_capability_ceiling": copy.deepcopy(
+            governance_index.RESTRUCTURE_WAVE_SPECS[
+                governance_index.WAVE5_EXTERNAL_ARCHIVE_READONLY
+            ]["capability_limits"]
+        ),
+        "authorization_boundary": {
+            "authorizes_gate_extension": True,
+            "authorizes_read_only_scanner_construction_after_mechanical_pass": True,
+            "requires_additional_construction_confirmation": False,
+            "authorizes_manifest_rewrite": False,
+            "authorizes_external_content_traversal": False,
+            "authorizes_physical_move": False,
+            "authorizes_delete": False,
+            "authorizes_write_stub": False,
+            "authorizes_restore_pass": False,
+            "authorizes_network": False,
+            "authorizes_credential_read": False,
+            "authorizes_request_send": False,
+            "authorizes_model_api": False,
+            "authorizes_notion_write": False,
+            "authorizes_external_removal": False,
+        },
+    }
+    decision_path = root / reference_paths["decision_ticket"]
+    _write_json(decision_path, decision_ticket)
+
+    candidate_paths = list(governance_index.WAVE5_CANDIDATE_WRITE_PATHS)
+    lock_request = {
+        "contract_version": governance_index.RESTRUCTURE_WAVE_LOCK_REQUEST_V1,
+        "lock_id": "WAVE5-LOCK-TEST",
+        "scope": governance_index.WAVE5_EXTERNAL_ARCHIVE_READONLY,
+        "holder": "test-owner",
+        "authorization_context_id": context_id,
+        "expected_head_sha": "a" * 40,
+        "starts_at": "2026-07-30T00:00:00+08:00",
+        "expires_at": "2026-07-31T00:00:00+08:00",
+        "candidate_write_paths": candidate_paths,
+    }
+    lock_path = root / reference_paths["conflict_lock"]
+    governance_index._acquire_restructure_wave_lock_snapshot(
+        root,
+        lock_request,
+        output_path=lock_path.relative_to(root),
+        head_sha="a" * 40,
+        acquired_at=now,
+    )
+
+    impact = {
+        "contract_version": governance_index.RESTRUCTURE_TEST_IMPACT_V1,
+        "wave_id": governance_index.WAVE5_EXTERNAL_ARCHIVE_READONLY,
+        "route": "A_PLUS_EXTERNAL_READONLY",
+        "head_sha": "a" * 40,
+        "authorization_context_id": context_id,
+        "classification": "full_chain_required",
+        "planned_changed_paths": candidate_paths,
+        "pre_start_evidence": {
+            "governance_check": "PASS",
+            "ruff_check": "PASS",
+            "full_suite": {
+                "status": "KNOWN_FAILURE_SET_UNCHANGED",
+                "passed": 100,
+                "failed": 1,
+                "xfailed": 0,
+                "subtests_passed": 0,
+                "new_failure_count": 0,
+                "known_failure_nodeids": ["tests/test_known.py::test_known"],
+            },
+        },
+        "required_after_change_commands": [
+            "python -m pytest -q",
+            "ruff check",
+            "python3 tools/governance_index.py --check",
+        ],
+    }
+    impact_path = root / reference_paths["test_impact"]
+    _write_json(impact_path, impact)
+
+    references = {
+        name: {
+            "path": path,
+            "sha256": governance_index.sha256_file(root / path),
+        }
+        for name, path in reference_paths.items()
+    }
+    required_paths = set(
+        governance_index.WAVE5_REQUIRED_INPUTS
+    ) | {
+        row["path"] for row in references.values()
+    }
+    bindings = [
+        {
+            "path": path,
+            "sha256": governance_index.sha256_file(root / path),
+            "role": f"wave5_input_{index:02d}",
+        }
+        for index, path in enumerate(sorted(required_paths), start=1)
+    ]
+    plan = {
+        "contract_version": governance_index.RESTRUCTURE_WAVE_PLAN_V1,
+        "plan_id": "WAVE5-READONLY-TEST",
+        "route": "A_PLUS_EXTERNAL_READONLY",
+        "wave_id": governance_index.WAVE5_EXTERNAL_ARCHIVE_READONLY,
+        "expected_head_sha": "a" * 40,
+        "expected_baseline_plan_id": baseline_receipt["plan_id"],
+        "expected_decision_ticket_id": decision_ticket["ticket_id"],
+        "expected_lock_id": lock_request["lock_id"],
+        **references,
+        "responsibility_window": {
+            "source_system": "codex",
+            "authorization_context_id": context_id,
+            "owner": "test-owner",
+            "task_id": "TEST-WAVE5",
+            "wave_id": governance_index.WAVE5_EXTERNAL_ARCHIVE_READONLY,
+            "starts_at": "2026-07-30T00:00:00+08:00",
+            "expires_at": "2026-07-31T00:00:00+08:00",
+            "read_allowlist": list(
+                governance_index.WAVE5_REQUIRED_READ_SCOPES
+            ),
+            "candidate_write_paths": candidate_paths,
+        },
+        "capability_limits": copy.deepcopy(
+            governance_index.RESTRUCTURE_WAVE_SPECS[
+                governance_index.WAVE5_EXTERNAL_ARCHIVE_READONLY
+            ]["capability_limits"]
+        ),
+        "bound_inputs": bindings,
+        "dependencies": [],
+    }
+    return root, plan, now, external_root
+
+
 def _evaluate_s0_fixture(
     root: Path,
     plan: dict,
@@ -3494,6 +3802,393 @@ class GovernanceIndexTests(unittest.TestCase):
             self.assertNotIn("dirty_paths", parameters)
             self.assertNotIn("head_sha", parameters)
             self.assertNotIn("governance_mismatch_paths", parameters)
+
+    def test_wave5_gate_passes_only_for_three_fixed_external_manifests(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root, plan, now, _ = _wave5_fixture(Path(temporary))
+            prior_reference = governance_index.RESTRUCTURE_WAVE_SPECS[
+                governance_index.WAVE5_EXTERNAL_ARCHIVE_READONLY
+            ]["required_prior_decision_ticket"]
+
+            receipt = governance_index._evaluate_restructure_wave_snapshot(
+                root,
+                plan,
+                dirty_paths=[],
+                head_sha="a" * 40,
+                governance_mismatch_paths=[],
+                evaluated_at=now,
+            )
+
+            self.assertEqual(receipt["status"], "PASS")
+            self.assertEqual(receipt["blockers"], [])
+            self.assertEqual(
+                governance_index.sha256_file(root / prior_reference["path"]),
+                prior_reference["sha256"],
+            )
+            self.assertEqual(
+                len(receipt["external_evidence_snapshot"]),
+                3,
+            )
+            self.assertEqual(
+                sum(
+                    row["entries"]
+                    for row in receipt["external_evidence_snapshot"]
+                ),
+                148,
+            )
+            self.assertTrue(
+                receipt["authorization_boundary"][
+                    "same_task_construction_authorization_recorded"
+                ]
+            )
+            self.assertFalse(
+                receipt["authorization_boundary"][
+                    "authorizes_external_manifest_rewrite"
+                ]
+            )
+
+    def test_wave5_gate_rejects_upstream_s0_self_reported_sha_drift(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root, plan, now, _ = _wave5_fixture(Path(temporary))
+            prior_reference = governance_index.RESTRUCTURE_WAVE_SPECS[
+                governance_index.WAVE5_EXTERNAL_ARCHIVE_READONLY
+            ]["required_prior_decision_ticket"]
+            prior_path = root / prior_reference["path"]
+            prior_payload = read_json(prior_path)
+            _write_json(prior_path, prior_payload)
+            changed_prior_sha = governance_index.sha256_file(prior_path)
+            self.assertNotEqual(
+                changed_prior_sha,
+                prior_reference["sha256"],
+            )
+
+            decision_path = root / plan["decision_ticket"]["path"]
+            decision = read_json(decision_path)
+            decision["upstream_decision"]["sha256"] = changed_prior_sha
+            _write_json(decision_path, decision)
+            _refresh_plan_reference(plan, "decision_ticket", decision_path)
+            next(
+                row
+                for row in plan["bound_inputs"]
+                if row["path"] == prior_reference["path"]
+            )["sha256"] = changed_prior_sha
+
+            receipt = governance_index._evaluate_restructure_wave_snapshot(
+                root,
+                plan,
+                dirty_paths=[],
+                head_sha="a" * 40,
+                governance_mismatch_paths=[],
+                evaluated_at=now,
+            )
+
+            self.assertEqual(receipt["status"], "BLOCKED")
+            self.assertIn("decision_ticket_exact", receipt["blockers"])
+            decision_check = next(
+                row
+                for row in receipt["checks"]
+                if row["check_id"] == "decision_ticket_exact"
+            )
+            self.assertIn(
+                "固定路径和 SHA",
+                json.dumps(decision_check, ensure_ascii=False),
+            )
+
+    def test_wave5_gate_blocks_manifest_sha_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root, plan, now, external_root = _wave5_fixture(
+                Path(temporary)
+            )
+            manifest = (
+                external_root
+                / "archive_batch_slim_20260723/MANIFEST.json"
+            )
+            payload = json.loads(manifest.read_text(encoding="utf-8"))
+            payload["entries"].append({"path": "late-entry"})
+            _write_json(manifest, payload)
+
+            receipt = governance_index._evaluate_restructure_wave_snapshot(
+                root,
+                plan,
+                dirty_paths=[],
+                head_sha="a" * 40,
+                governance_mismatch_paths=[],
+                evaluated_at=now,
+            )
+
+            self.assertEqual(receipt["status"], "BLOCKED")
+            self.assertIn("decision_ticket_exact", receipt["blockers"])
+            self.assertIn(
+                "external_manifest_snapshot_stable",
+                receipt["blockers"],
+            )
+
+    def test_wave5_gate_rejects_external_parent_symlink(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root, plan, now, external_root = _wave5_fixture(
+                Path(temporary)
+            )
+            batch = external_root / "archive_batch_20260723"
+            real_batch = external_root / "archive_batch_real"
+            batch.rename(real_batch)
+            batch.symlink_to(real_batch, target_is_directory=True)
+
+            receipt = governance_index._evaluate_restructure_wave_snapshot(
+                root,
+                plan,
+                dirty_paths=[],
+                head_sha="a" * 40,
+                governance_mismatch_paths=[],
+                evaluated_at=now,
+            )
+
+            self.assertEqual(receipt["status"], "BLOCKED")
+            decision_check = next(
+                row
+                for row in receipt["checks"]
+                if row["check_id"] == "decision_ticket_exact"
+            )
+            self.assertIn(
+                "旧批次目录不得是软链",
+                json.dumps(decision_check, ensure_ascii=False),
+            )
+
+    def test_wave5_gate_rejects_external_manifest_hardlink(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root, plan, now, external_root = _wave5_fixture(
+                Path(temporary)
+            )
+            manifest = (
+                external_root
+                / "archive_batch_slim_overlay_z94_20260723/MANIFEST.json"
+            )
+            alias = manifest.with_name("MANIFEST.alias.json")
+            alias.hardlink_to(manifest)
+
+            receipt = governance_index._evaluate_restructure_wave_snapshot(
+                root,
+                plan,
+                dirty_paths=[],
+                head_sha="a" * 40,
+                governance_mismatch_paths=[],
+                evaluated_at=now,
+            )
+
+            self.assertEqual(receipt["status"], "BLOCKED")
+            decision_check = next(
+                row
+                for row in receipt["checks"]
+                if row["check_id"] == "decision_ticket_exact"
+            )
+            self.assertIn(
+                "不得是硬链接",
+                json.dumps(decision_check, ensure_ascii=False),
+            )
+
+    def test_wave5_plan_rejects_dependency_and_path_prefix_expansion(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            _, plan, _, _ = _wave5_fixture(Path(temporary))
+            plan["dependencies"] = [
+                {
+                    "path": plan["decision_ticket"]["path"],
+                    "sha256": plan["decision_ticket"]["sha256"],
+                    "wave_id": governance_index.WAVE2_RULE_BUNDLES,
+                }
+            ]
+            with self.assertRaisesRegex(
+                governance_index.ArtifactError,
+                "依赖类型",
+            ):
+                governance_index._wave_plan(copy.deepcopy(plan))
+
+            plan["dependencies"] = []
+            plan["responsibility_window"]["read_allowlist"][
+                plan["responsibility_window"]["read_allowlist"].index(
+                    "config/README.md"
+                )
+            ] = "config"
+            with self.assertRaisesRegex(
+                governance_index.ArtifactError,
+                "读取范围完全相等",
+            ):
+                governance_index._wave_plan(copy.deepcopy(plan))
+
+    def test_wave5_post_write_verifier_rechecks_external_sha(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root, plan, now, external_root = _wave5_fixture(
+                Path(temporary)
+            )
+            receipt = governance_index._evaluate_restructure_wave_snapshot(
+                root,
+                plan,
+                dirty_paths=[],
+                head_sha="a" * 40,
+                governance_mismatch_paths=[],
+                evaluated_at=now,
+            )
+            snapshot = {
+                "head_sha": "a" * 40,
+                "dirty_paths": [],
+                "governance_mismatch_paths": [],
+            }
+            receipt["checks"].append(
+                {
+                    "check_id": "live_snapshot_stable",
+                    "passed": True,
+                    "evidence": {"before": snapshot, "after": snapshot},
+                }
+            )
+            output = (
+                root
+                / "TEMP/restructure_wave_preflight/test/WAVE5_RECEIPT.json"
+            )
+            _write_json(output, receipt)
+            manifest = (
+                external_root
+                / "archive_batch_20260723/MANIFEST.json"
+            )
+            payload = json.loads(manifest.read_text(encoding="utf-8"))
+            payload["changed_after_receipt"] = True
+            _write_json(manifest, payload)
+
+            with (
+                patch.object(
+                    governance_index,
+                    "_live_restructure_snapshot",
+                    return_value=snapshot,
+                ),
+                self.assertRaisesRegex(
+                    governance_index.ArtifactError,
+                    "受绑定证据发生变化",
+                ),
+            ):
+                governance_index._verify_snapshot_after_receipt_write(
+                    root,
+                    receipt,
+                    output,
+                )
+
+            self.assertFalse(output.exists())
+
+    def test_wave5_completion_replays_external_evidence_not_passed_flags(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root, plan, now, _ = _wave5_fixture(Path(temporary))
+            source_receipt = (
+                governance_index._evaluate_restructure_wave_snapshot(
+                    root,
+                    plan,
+                    dirty_paths=[],
+                    head_sha="a" * 40,
+                    governance_mismatch_paths=[],
+                    evaluated_at=now,
+                )
+            )
+            source_receipt["checks"].append(
+                {
+                    "check_id": "live_snapshot_stable",
+                    "passed": True,
+                    "evidence": {"fixture": True},
+                }
+            )
+            plan_path = (
+                root
+                / "TEMP/restructure_wave_preflight/test/"
+                "WAVE5_COMPLETION_SOURCE_PLAN.json"
+            )
+            receipt_path = (
+                root
+                / "TEMP/restructure_wave_preflight/test/"
+                "WAVE5_COMPLETION_SOURCE_RECEIPT.json"
+            )
+            _write_json(plan_path, plan)
+            _write_json(receipt_path, source_receipt)
+            request = {
+                "contract_version": (
+                    governance_index.RESTRUCTURE_WAVE_COMPLETION_REQUEST_V2
+                ),
+                "completion_id": "WAVE5-COMPLETION-REPLAY-TEST",
+                "wave_id": (
+                    governance_index.WAVE5_EXTERNAL_ARCHIVE_READONLY
+                ),
+                "authorization_context_id": (
+                    "019fa2e0-08a5-7110-b263-a183b0230f3c"
+                ),
+                "pre_commit_sha": "a" * 40,
+                "post_commit_sha": "b" * 40,
+                "wave_plan": {
+                    "path": plan_path.relative_to(root).as_posix(),
+                    "sha256": governance_index.sha256_file(plan_path),
+                },
+                "wave_receipt": {
+                    "path": receipt_path.relative_to(root).as_posix(),
+                    "sha256": governance_index.sha256_file(receipt_path),
+                },
+            }
+            git_changes = [
+                {"status": "M", "path": "governance/README.md"}
+            ]
+            blob_evidence = {
+                "path": "governance/README.md",
+                "git_mode": "100644",
+                "git_blob_sha": "c" * 40,
+                "bytes": 1,
+                "sha256": "d" * 64,
+            }
+            with (
+                patch.object(
+                    governance_index,
+                    "git_commit_exists",
+                    return_value=True,
+                ),
+                patch.object(
+                    governance_index,
+                    "git_is_ancestor",
+                    return_value=True,
+                ),
+                patch.object(
+                    governance_index,
+                    "git_name_status_between_exact",
+                    return_value=git_changes,
+                ),
+                patch.object(
+                    governance_index,
+                    "git_blob_evidence",
+                    return_value=blob_evidence,
+                ),
+            ):
+                valid = (
+                    governance_index.evaluate_restructure_wave_completion_v2(
+                        root,
+                        request,
+                    )
+                )
+                forged_receipt = copy.deepcopy(source_receipt)
+                forged_receipt.pop("external_evidence_snapshot")
+                _write_json(receipt_path, forged_receipt)
+                request["wave_receipt"]["sha256"] = (
+                    governance_index.sha256_file(receipt_path)
+                )
+                forged = (
+                    governance_index.evaluate_restructure_wave_completion_v2(
+                        root,
+                        request,
+                    )
+                )
+
+            self.assertEqual(valid["status"], "GIT_SCOPE_PASS")
+            self.assertEqual(forged["status"], "BLOCKED")
+            self.assertIn(
+                "source_wave5_external_evidence_replayed",
+                forged["blockers"],
+            )
 
     def test_completion_v2_cli_arguments_are_a_paired_mode(self) -> None:
         parser = governance_index.build_parser()

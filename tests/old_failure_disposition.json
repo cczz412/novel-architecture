@@ -24,10 +24,9 @@
     {
       "nodeid": "tests/test_z68_continuation_32k.py::Z68Continuation32KTests::test_successful_fake_run_is_strictly_5_13_19",
       "original_issue": "成功假样张events为空且前轮运行实物已外置",
-      "disposition": "empty_event_fixed_and_strict_xfail_only_if_archived_fixture_missing",
-      "owner": "Codex主线（Z68便携夹具）",
-      "due_date": "2026-07-30",
-      "current_expectation": "xfail_when_fixture_missing"
+      "disposition": "migrated_to_non_default_historical_replay_s05b",
+      "replay_group_id": "z68_archived_prior_run",
+      "current_expectation": "deselected_by_default_replay_only"
     },
     {
       "nodeid": "tests/test_zbatch.py::ZBatchTests::test_current_source_smoke_preflight_is_zero_call_and_passes",

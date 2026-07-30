@@ -21,7 +21,11 @@
 cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q
 ```
 
-默认只收集 `tests/`，不会进入 `TEMP/`、`runs/`、`reports/`、`outbox/`。依赖已外置历史实物的测试只在必需夹具确实缺失时严格挂账；逐项负责人、到期日和精确测试名见 `tests/test_debt_registry.json`。夹具恢复后会自动恢复真跑，不能继续拿挂账遮住回归。
+默认只收集 `tests/`，不会进入 `TEMP/`、`runs/`、`reports/`、`outbox/`。S-05-B
+登记的 40 个历史节点会明确显示为 `deselected`，不计入日常验收，也不再用到期
+`xfail` 拖住整仓测试。精确节点、24 个取件单元和外置包封签只认
+`config/test_replay/historical_replays.json`；真回放必须由
+`tools/historical_test_replay.py` 复制固定 Git 提交和已验 SHA 的材料包。
 
 刷新命令：
 
@@ -188,6 +192,39 @@ Wave2 规格还钉住本次真实 S0 的计划／开工票路径、文件 SHA �
 会硬停。S0 历史输出必须与当前 HEAD 一一对应。只有
 `governance/tool_registry.json` 可因扩建机器闸发生内容变化，但仍须是普通文件；
 其余 S0 输出只要内容或 Git 模式变化、被替换或删除，Wave2 依赖检查就会阻断。
+
+## Wave 5 外置旧账只读闸
+
+Wave 5 只解决一件事：把三份旧 `MANIFEST.json` 读成结构化库存账。它不搬外置内容，
+不跟随清单里的路径，也不把缺少逐项 SHA 的旧账说成“已经可以恢复”。
+
+当前固定输入只有：
+
+```text
+同级外置仓/archive_batch_20260723/MANIFEST.json
+同级外置仓/archive_batch_slim_20260723/MANIFEST.json
+同级外置仓/archive_batch_slim_overlay_z94_20260723/MANIFEST.json
+```
+
+路径身份写成“同级外置仓＋批次相对路径”，不把某台机器的 `/Users/...` 地址写进正式
+登记。机器闸会按仓库名称找到同级外置仓，只打开这三个固定文件；外置根、批次目录或
+清单是软链接，清单是硬链接，文件超过 5 MiB，读取期间被替换，SHA 或 51／91／6
+条目数变化，都会直接停。
+
+Wave 5 使用独立的五个票据槽位：
+
+```text
+一级计划：TEMP/restructure_wave_preflight/route-a-plus-wave5-20260730/BASELINE_PLAN_WAVE5_20260730.json
+一级票：TEMP/restructure_wave_preflight/route-a-plus-wave5-20260730/BASELINE_RECEIPT_WAVE5_20260730.json
+授权票：TEMP/restructure_wave_preflight/route-a-plus-wave5-20260730/WAVE5_CONSTRUCTION_AUTHORIZATION_20260730.json
+冲突锁：TEMP/restructure_wave_preflight/locks/WAVE5_EXTERNAL_ARCHIVE_READONLY.lock.json
+测试影响单：TEMP/restructure_wave_preflight/route-a-plus-wave5-20260730/WAVE5_TEST_IMPACT_20260730.json
+```
+
+授权票必须原样记录 CZ 的 `B｜机器闸和实际扫描器连续施工`，绑定原 S0 决策票、三份
+清单当前 SHA 和 148 条总数。二级票 PASS 后只允许施工精确写集里的离线扫描器、合同、
+说明、新收据和新登记册。以下能力始终关闭：遍历外置真身、改旧清单、搬动或删除来源、
+写存根、签发恢复通过、联网、读密钥、调用模型、写 Notion 和清退外置内容。
 
 语义检查只分流：
 

@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -83,6 +84,9 @@ RESTRUCTURE_WAVE_COMPLETION_V2 = "repository-restructure-wave-completion-v2"
 RESTRUCTURE_DECISION_TICKET_V1 = "repository-restructure-decision-ticket-v1"
 RESTRUCTURE_WAVE2_PREPARATION_TICKET_V1 = (
     "repository-restructure-wave2-preparation-ticket-v1"
+)
+RESTRUCTURE_WAVE5_AUTHORIZATION_V1 = (
+    "repository-restructure-wave5-authorization-v1"
 )
 RESTRUCTURE_WAVE_LOCK_REQUEST_V1 = "repository-restructure-wave-lock-request-v1"
 RESTRUCTURE_WAVE_LOCK_RECEIPT_V1 = "repository-restructure-wave-lock-receipt-v1"
@@ -163,9 +167,51 @@ WAVE2_PREPARATION_VALUES = {
     ),
 }
 WAVE2_PREPARATION_SOURCE_TEXT = "a"
+WAVE5_AUTHORIZATION_SOURCE_TEXT = "B｜机器闸和实际扫描器连续施工"
+WAVE5_AUTHORIZATION_DECISION_VALUES = {
+    "W5-01": (
+        "approved",
+        "machine_gate_then_read_only_scanner_in_same_task",
+    ),
+    "W5-02": (
+        "approved",
+        "three_fixed_legacy_manifests_only",
+    ),
+    "W5-03": (
+        "approved",
+        "all_148_entries_inventory_only",
+    ),
+    "W5-04": (
+        "approved",
+        "no_move_delete_stub_restore_pass_or_external_cleanup",
+    ),
+}
 WAVE1_DIRECTORY_REGISTRY = "WAVE1_DIRECTORY_REGISTRY"
 S0_MATERIALIZE_ONLY = "S0_MATERIALIZE_ONLY"
 WAVE2_RULE_BUNDLES = "WAVE2_RULE_BUNDLES"
+WAVE5_EXTERNAL_ARCHIVE_READONLY = "WAVE5_EXTERNAL_ARCHIVE_READONLY"
+WAVE5_EXTERNAL_ROOT_ID = "repository_sibling_external_archive_v1"
+WAVE5_EXTERNAL_MANIFESTS = (
+    {
+        "source_id": "legacy_archive_batch_20260723",
+        "batch_relative_path": "archive_batch_20260723",
+        "manifest_relative_path": "MANIFEST.json",
+        "expected_entries": 51,
+    },
+    {
+        "source_id": "legacy_archive_batch_slim_20260723",
+        "batch_relative_path": "archive_batch_slim_20260723",
+        "manifest_relative_path": "MANIFEST.json",
+        "expected_entries": 91,
+    },
+    {
+        "source_id": "legacy_archive_batch_slim_overlay_z94_20260723",
+        "batch_relative_path": "archive_batch_slim_overlay_z94_20260723",
+        "manifest_relative_path": "MANIFEST.json",
+        "expected_entries": 6,
+    },
+)
+WAVE5_MAX_MANIFEST_BYTES = 5 * 1024 * 1024
 WAVE2_PILOT_PROFILE_ID = (
     "qianwen_qwen3_7_flash_json_object_no_thinking"
 )
@@ -271,6 +317,83 @@ WAVE2_REQUIRED_REFERENCE_PATHS = {
         ),
         "wave_id": S0_MATERIALIZE_ONLY,
     },
+}
+WAVE5_CANDIDATE_WRITE_PATHS = [
+    "config/external_storage/README.md",
+    "config/external_storage/legacy_manifests.json",
+    "config/external_storage/legacy_manifest_scan_receipt_v1.schema.json",
+    "governance/contracts/external_archive_registry_v1.schema.json",
+    "governance/external_archive_registry.json",
+    "tools/external_archive.py",
+    "tests/test_external_archive.py",
+    "config/README.md",
+    "tools/README.md",
+    "tests/README.md",
+    "governance/README.md",
+    "governance/directory_registry.json",
+    "governance/indexes/directory_map.md",
+    "governance/indexes/new_file_routing.md",
+    "governance/tool_registry.json",
+    "governance/test_policy.json",
+    "governance/index_manifest.json",
+]
+WAVE5_REQUIRED_INPUTS = {
+    ".gitignore",
+    "AGENTS.md",
+    CURRENT_STATE_PATH,
+    CONTROL_PATH,
+    "config/README.md",
+    "governance/README.md",
+    "governance/directory_registry.json",
+    "governance/index_manifest.json",
+    "governance/module_registry.json",
+    "governance/test_policy.json",
+    "governance/tool_registry.json",
+    "tests/test_governance_index.py",
+    "tests/README.md",
+    "tools/governance_index.py",
+    "tools/README.md",
+    (
+        "TEMP/restructure_wave_preflight/"
+        "route-a-plus-s0-20260730/"
+        "S0_DECISION_TICKET_20260730.json"
+    ),
+}
+WAVE5_REQUIRED_READ_SCOPES = sorted(
+    {
+        "TEMP/restructure_wave_preflight",
+        *WAVE5_REQUIRED_INPUTS,
+        *WAVE5_CANDIDATE_WRITE_PATHS,
+    }
+)
+WAVE5_READ_DIRECTORY_SCOPES = {
+    "TEMP/restructure_wave_preflight",
+}
+WAVE5_REQUIRED_REFERENCE_PATHS = {
+    "baseline_plan": (
+        "TEMP/restructure_wave_preflight/"
+        "route-a-plus-wave5-20260730/"
+        "BASELINE_PLAN_WAVE5_20260730.json"
+    ),
+    "baseline_receipt": (
+        "TEMP/restructure_wave_preflight/"
+        "route-a-plus-wave5-20260730/"
+        "BASELINE_RECEIPT_WAVE5_20260730.json"
+    ),
+    "decision_ticket": (
+        "TEMP/restructure_wave_preflight/"
+        "route-a-plus-wave5-20260730/"
+        "WAVE5_CONSTRUCTION_AUTHORIZATION_20260730.json"
+    ),
+    "conflict_lock": (
+        "TEMP/restructure_wave_preflight/locks/"
+        "WAVE5_EXTERNAL_ARCHIVE_READONLY.lock.json"
+    ),
+    "test_impact": (
+        "TEMP/restructure_wave_preflight/"
+        "route-a-plus-wave5-20260730/"
+        "WAVE5_TEST_IMPACT_20260730.json"
+    ),
 }
 RESTRUCTURE_WAVE_SPECS = {
     WAVE1_DIRECTORY_REGISTRY: {
@@ -400,6 +523,46 @@ RESTRUCTURE_WAVE_SPECS = {
             "pre_commit_sha": "c7ad18e734a9c6c2a5cbf03508903ec3f9db7c47",
             "post_commit_sha": "22746e67541cfcdbc7874720c127c91c4b6ab150",
         },
+        "required_prior_decision_ticket": {
+            "path": (
+                "TEMP/restructure_wave_preflight/"
+                "route-a-plus-s0-20260730/"
+                "S0_DECISION_TICKET_20260730.json"
+            ),
+            "sha256": (
+                "cc594657d6603a9280678b30ea377cf85"
+                "a46b6b89b8fc2ac23df65fdf1fa2bf0"
+            ),
+        },
+    },
+    WAVE5_EXTERNAL_ARCHIVE_READONLY: {
+        "route": "A_PLUS_EXTERNAL_READONLY",
+        "candidate_write_paths": WAVE5_CANDIDATE_WRITE_PATHS,
+        "required_inputs": WAVE5_REQUIRED_INPUTS,
+        "capability_limits": {
+            "legacy_manifest_read_only": True,
+            "offline_scan_only": True,
+            "receipt_create_only": True,
+            "registry_create_only": True,
+            "manifest_rewrite": False,
+            "external_content_traversal": False,
+            "physical_move": False,
+            "delete_source": False,
+            "write_stub": False,
+            "restore_verification": False,
+            "cryptographic_restorability_claim": False,
+            "preflight": False,
+            "network": False,
+            "credential_read": False,
+            "request_send": False,
+            "model_api": False,
+            "notion_write": False,
+            "external_removal": False,
+            "root_refresh": False,
+        },
+        "required_read_scopes": WAVE5_REQUIRED_READ_SCOPES,
+        "required_completion_wave_ids": [],
+        "required_reference_paths": WAVE5_REQUIRED_REFERENCE_PATHS,
         "required_prior_decision_ticket": {
             "path": (
                 "TEMP/restructure_wave_preflight/"
@@ -593,8 +756,16 @@ def _wave_read_path_is_allowed(
     allowed: str,
 ) -> bool:
     if (
-        wave_id == WAVE2_RULE_BUNDLES
-        and allowed not in WAVE2_READ_DIRECTORY_SCOPES
+        wave_id in {
+            WAVE2_RULE_BUNDLES,
+            WAVE5_EXTERNAL_ARCHIVE_READONLY,
+        }
+        and allowed
+        not in (
+            WAVE2_READ_DIRECTORY_SCOPES
+            if wave_id == WAVE2_RULE_BUNDLES
+            else WAVE5_READ_DIRECTORY_SCOPES
+        )
     ):
         return path == allowed
     return _path_is_allowed(path, allowed)
@@ -605,7 +776,10 @@ def _wave_candidate_write_path_is_allowed(
     path: str,
     allowed: str,
 ) -> bool:
-    if wave_id == WAVE2_RULE_BUNDLES:
+    if wave_id in {
+        WAVE2_RULE_BUNDLES,
+        WAVE5_EXTERNAL_ARCHIVE_READONLY,
+    }:
         return path == allowed
     return _path_is_allowed(path, allowed)
 
@@ -719,6 +893,211 @@ def _read_repo_bytes_once(root: Path, relative_path: str) -> bytes:
         if descriptor is not None:
             os.close(descriptor)
         os.close(directory_descriptor)
+
+
+def _wave5_external_root(root: Path) -> Path:
+    root = root.resolve()
+    return root.parent / f"{root.name}_外置仓"
+
+
+def _wave5_external_identity(batch_relative_path: str) -> str:
+    return (
+        f"external://{WAVE5_EXTERNAL_ROOT_ID}/"
+        f"{batch_relative_path}/MANIFEST.json"
+    )
+
+
+def _read_wave5_external_manifest_once(
+    root: Path,
+    batch_relative_path: str,
+) -> bytes:
+    allowed_batches = {
+        row["batch_relative_path"] for row in WAVE5_EXTERNAL_MANIFESTS
+    }
+    if batch_relative_path not in allowed_batches:
+        raise ArtifactError("Wave5 只能读取登记过的三份旧 MANIFEST")
+
+    root = root.resolve()
+    external_root = _wave5_external_root(root)
+    if external_root.is_symlink():
+        raise ArtifactError("Wave5 外置仓根不得是软链")
+    try:
+        root_stat = os.stat(external_root, follow_symlinks=False)
+    except OSError as exc:
+        raise ArtifactError(f"Wave5 外置仓根不可读：{exc}") from exc
+    if not stat.S_ISDIR(root_stat.st_mode):
+        raise ArtifactError("Wave5 外置仓根不是目录")
+    visible_batch = external_root / batch_relative_path
+    if visible_batch.is_symlink():
+        raise ArtifactError("Wave5 旧批次目录不得是软链")
+    try:
+        visible_batch_before = os.stat(
+            visible_batch,
+            follow_symlinks=False,
+        )
+    except OSError as exc:
+        raise ArtifactError(f"Wave5 旧批次目录不可读：{exc}") from exc
+    if not stat.S_ISDIR(visible_batch_before.st_mode):
+        raise ArtifactError("Wave5 旧批次路径不是目录")
+
+    directory_flags = os.O_RDONLY
+    if hasattr(os, "O_DIRECTORY"):
+        directory_flags |= os.O_DIRECTORY
+    if hasattr(os, "O_NOFOLLOW"):
+        directory_flags |= os.O_NOFOLLOW
+    file_flags = os.O_RDONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        file_flags |= os.O_NOFOLLOW
+
+    root_descriptor: int | None = None
+    batch_descriptor: int | None = None
+    file_descriptor: int | None = None
+    try:
+        root_descriptor = os.open(external_root, directory_flags)
+        batch_descriptor = os.open(
+            batch_relative_path,
+            directory_flags,
+            dir_fd=root_descriptor,
+        )
+        file_descriptor = os.open(
+            "MANIFEST.json",
+            file_flags,
+            dir_fd=batch_descriptor,
+        )
+        opened = os.fstat(file_descriptor)
+        if not stat.S_ISREG(opened.st_mode):
+            raise ArtifactError("Wave5 旧 MANIFEST 必须是普通文件")
+        if opened.st_nlink != 1:
+            raise ArtifactError("Wave5 旧 MANIFEST 不得是硬链接")
+        if opened.st_size > WAVE5_MAX_MANIFEST_BYTES:
+            raise ArtifactError("Wave5 旧 MANIFEST 超过安全大小上限")
+
+        chunks: list[bytes] = []
+        total = 0
+        while True:
+            chunk = os.read(file_descriptor, 1024 * 1024)
+            if not chunk:
+                break
+            total += len(chunk)
+            if total > WAVE5_MAX_MANIFEST_BYTES:
+                raise ArtifactError("Wave5 旧 MANIFEST 读取时超过安全大小上限")
+            chunks.append(chunk)
+
+        closed_view = os.fstat(file_descriptor)
+        signature = (
+            opened.st_dev,
+            opened.st_ino,
+            opened.st_mode,
+            opened.st_nlink,
+            opened.st_size,
+            opened.st_mtime_ns,
+            opened.st_ctime_ns,
+        )
+        closed_signature = (
+            closed_view.st_dev,
+            closed_view.st_ino,
+            closed_view.st_mode,
+            closed_view.st_nlink,
+            closed_view.st_size,
+            closed_view.st_mtime_ns,
+            closed_view.st_ctime_ns,
+        )
+        if signature != closed_signature:
+            raise ArtifactError("Wave5 旧 MANIFEST 在读取期间发生变化")
+
+        if visible_batch.is_symlink():
+            raise ArtifactError("Wave5 旧批次目录不得是软链")
+        visible_batch_stat = os.stat(
+            visible_batch,
+            follow_symlinks=False,
+        )
+        opened_batch_stat = os.fstat(batch_descriptor)
+        if (
+            visible_batch_stat.st_dev,
+            visible_batch_stat.st_ino,
+        ) != (
+            opened_batch_stat.st_dev,
+            opened_batch_stat.st_ino,
+        ):
+            raise ArtifactError("Wave5 旧批次目录在读取期间被替换")
+
+        visible_manifest = visible_batch / "MANIFEST.json"
+        if visible_manifest.is_symlink():
+            raise ArtifactError("Wave5 旧 MANIFEST 不得是软链")
+        visible = os.stat(visible_manifest, follow_symlinks=False)
+        if (
+            visible.st_dev,
+            visible.st_ino,
+            visible.st_mode,
+            visible.st_nlink,
+            visible.st_size,
+            visible.st_mtime_ns,
+            visible.st_ctime_ns,
+        ) != closed_signature:
+            raise ArtifactError("Wave5 旧 MANIFEST 在读取期间被替换")
+        return b"".join(chunks)
+    except OSError as exc:
+        raise ArtifactError(f"Wave5 旧 MANIFEST 安全读取失败：{exc}") from exc
+    finally:
+        for descriptor in (
+            file_descriptor,
+            batch_descriptor,
+            root_descriptor,
+        ):
+            if descriptor is not None:
+                os.close(descriptor)
+
+
+def _wave5_external_snapshot(
+    root: Path,
+    sources: list[dict[str, Any]],
+) -> tuple[bool, list[dict[str, Any]], list[str]]:
+    rows: list[dict[str, Any]] = []
+    errors: list[str] = []
+    for source in sources:
+        batch = source["batch_relative_path"]
+        identity = _wave5_external_identity(batch)
+        try:
+            raw = _read_wave5_external_manifest_once(root, batch)
+            actual_sha = hashlib.sha256(raw).hexdigest()
+            payload = _must_dict(
+                json.loads(raw.decode("utf-8")),
+                identity,
+            )
+            entries = _must_list(payload.get("entries"), f"{identity}.entries")
+            actual_entries = len(entries)
+            matched = (
+                actual_sha == source["expected_sha256"]
+                and actual_entries == source["expected_entries"]
+            )
+            error = None
+            if not matched:
+                errors.append(f"{identity} 的 SHA 或条目数不匹配")
+        except (
+            ArtifactError,
+            OSError,
+            UnicodeDecodeError,
+            ValueError,
+        ) as exc:
+            actual_sha = None
+            actual_entries = None
+            matched = False
+            error = str(exc)
+            errors.append(f"{identity}: {exc}")
+        rows.append(
+            {
+                "kind": "wave5_fixed_sibling_manifest",
+                "path": identity,
+                "batch_relative_path": batch,
+                "expected_sha256": source["expected_sha256"],
+                "actual_sha256": actual_sha,
+                "expected_entries": source["expected_entries"],
+                "actual_entries": actual_entries,
+                "matched": matched,
+                "error": error,
+            }
+        )
+    return not errors, rows, errors
 
 
 def _git_path_set(root: Path, args: list[str]) -> set[str]:
@@ -2422,7 +2801,10 @@ def _wave_plan(value: Any) -> dict[str, Any]:
         normalized_dependencies.append(reference)
     plan["dependencies"] = normalized_dependencies
 
-    if wave_id == WAVE2_RULE_BUNDLES:
+    if wave_id in {
+        WAVE2_RULE_BUNDLES,
+        WAVE5_EXTERNAL_ARCHIVE_READONLY,
+    }:
         required_references = RESTRUCTURE_WAVE_SPECS[wave_id][
             "required_reference_paths"
         ]
@@ -2441,21 +2823,27 @@ def _wave_plan(value: Any) -> dict[str, Any]:
             if plan[reference_name]["path"]
             != required_references[reference_name]
         }
-        expected_dependency = required_references["dependency"]
-        if (
-            len(normalized_dependencies) != 1
-            or normalized_dependencies[0]["path"]
-            != expected_dependency["path"]
-            or normalized_dependencies[0]["wave_id"]
-            != expected_dependency["wave_id"]
-        ):
+        if wave_id == WAVE2_RULE_BUNDLES:
+            expected_dependency = required_references["dependency"]
+            if (
+                len(normalized_dependencies) != 1
+                or normalized_dependencies[0]["path"]
+                != expected_dependency["path"]
+                or normalized_dependencies[0]["wave_id"]
+                != expected_dependency["wave_id"]
+            ):
+                reference_errors["dependency"] = {
+                    "expected": expected_dependency,
+                    "actual": normalized_dependencies,
+                }
+        elif normalized_dependencies:
             reference_errors["dependency"] = {
-                "expected": expected_dependency,
+                "expected": [],
                 "actual": normalized_dependencies,
             }
         if reference_errors:
             raise ArtifactError(
-                "Wave2 六类票据必须使用固定引用路径和依赖类型；"
+                f"{wave_id} 票据必须使用固定引用路径和依赖类型；"
                 f"不匹配={reference_errors}"
             )
         expected_binding_paths = (
@@ -2477,7 +2865,7 @@ def _wave_plan(value: Any) -> dict[str, Any]:
         }
         if actual_binding_paths != expected_binding_paths:
             raise ArtifactError(
-                "Wave2 bound_inputs 必须与必绑输入和当前票据引用完全相等；"
+                f"{wave_id} bound_inputs 必须与必绑输入和当前票据引用完全相等；"
                 f"多余={sorted(actual_binding_paths - expected_binding_paths)}，"
                 f"缺少={sorted(expected_binding_paths - actual_binding_paths)}"
             )
@@ -2793,6 +3181,254 @@ def _wave2_preparation_ticket_evidence(
     }
 
 
+def _wave5_authorization_ticket_evidence(
+    root: Path,
+    ticket: dict[str, Any] | None,
+    *,
+    ticket_path: str,
+    expected_ticket_id: str,
+    expected_context_id: str,
+    evidence_reads: dict[str, str] | None = None,
+) -> tuple[bool, dict[str, Any], list[dict[str, Any]]]:
+    if ticket is None:
+        return (
+            False,
+            {
+                "valid": False,
+                "errors": ["Wave5 专用授权票不存在或 SHA 不匹配"],
+            },
+            [],
+        )
+    errors: list[str] = []
+    expected_keys = {
+        "contract_version",
+        "ticket_id",
+        "ticket_kind",
+        "authority",
+        "authorization_context_id",
+        "evidence_class",
+        "human_readback",
+        "selected_route",
+        "selected_scope",
+        "source_messages",
+        "decisions",
+        "external_root_identity",
+        "external_sources",
+        "upstream_decision",
+        "eligibility_capability_ceiling",
+        "authorization_boundary",
+    }
+    if set(ticket) != expected_keys:
+        errors.append("Wave5 专用授权票字段不完整或含未知字段")
+    if ticket.get("contract_version") != RESTRUCTURE_WAVE5_AUTHORIZATION_V1:
+        errors.append("必须使用 Wave5 专用授权票合同")
+    if ticket.get("ticket_id") != expected_ticket_id:
+        errors.append("ticket_id 不匹配")
+    if ticket.get("ticket_kind") != "wave5_gate_and_scanner_authorization":
+        errors.append("ticket_kind 不匹配")
+    if ticket.get("authority") != "CZ":
+        errors.append("authority 必须是 CZ")
+    if ticket.get("authorization_context_id") != expected_context_id:
+        errors.append("authorization_context_id 不匹配")
+    if ticket.get("evidence_class") != "same_task_human_readback":
+        errors.append("evidence_class 必须是 same_task_human_readback")
+    if ticket.get("human_readback") != {
+        "required": True,
+        "confirmed": True,
+        "cryptographic_proof": False,
+    }:
+        errors.append("human_readback 不匹配")
+    if ticket.get("selected_route") != "A_PLUS_EXTERNAL_READONLY":
+        errors.append("selected_route 必须是 A_PLUS_EXTERNAL_READONLY")
+    if ticket.get("selected_scope") != [WAVE5_EXTERNAL_ARCHIVE_READONLY]:
+        errors.append("selected_scope 必须只含 Wave5 外置仓只读适配")
+
+    messages = ticket.get("source_messages")
+    if not isinstance(messages, list) or len(messages) != 1:
+        errors.append("source_messages 必须恰好记录本任务的一条人工选择")
+    else:
+        row = messages[0]
+        if (
+            not isinstance(row, dict)
+            or set(row) != {"text", "sha256"}
+            or row.get("text") != WAVE5_AUTHORIZATION_SOURCE_TEXT
+            or row.get("sha256") != _sha256_text(WAVE5_AUTHORIZATION_SOURCE_TEXT)
+        ):
+            errors.append("source_messages 必须精确记录 CZ 的 S-04-B 选择")
+
+    decisions = ticket.get("decisions")
+    if not isinstance(decisions, dict):
+        errors.append("decisions 必须是对象")
+    else:
+        actual_decisions = {
+            decision_id: (
+                (row.get("status"), row.get("value"))
+                if isinstance(row, dict)
+                else None
+            )
+            for decision_id, row in decisions.items()
+        }
+        if actual_decisions != WAVE5_AUTHORIZATION_DECISION_VALUES:
+            errors.append("decisions 必须精确匹配 Wave5 只读施工边界")
+
+    if ticket.get("external_root_identity") != WAVE5_EXTERNAL_ROOT_ID:
+        errors.append("external_root_identity 不匹配")
+    sources = ticket.get("external_sources")
+    normalized_sources: list[dict[str, Any]] = []
+    if not isinstance(sources, list) or len(sources) != len(
+        WAVE5_EXTERNAL_MANIFESTS
+    ):
+        errors.append("external_sources 必须恰好登记三份旧 MANIFEST")
+    else:
+        for index, (raw, expected) in enumerate(
+            zip(sources, WAVE5_EXTERNAL_MANIFESTS, strict=True)
+        ):
+            if not isinstance(raw, dict) or set(raw) != {
+                "source_id",
+                "batch_relative_path",
+                "manifest_relative_path",
+                "expected_sha256",
+                "expected_entries",
+            }:
+                errors.append(f"external_sources[{index}] 字段不完整")
+                continue
+            digest = raw.get("expected_sha256")
+            expected_static = {
+                "source_id": expected["source_id"],
+                "batch_relative_path": expected["batch_relative_path"],
+                "manifest_relative_path": expected["manifest_relative_path"],
+                "expected_entries": expected["expected_entries"],
+            }
+            actual_static = {
+                key: raw.get(key) for key in expected_static
+            }
+            if actual_static != expected_static:
+                errors.append(f"external_sources[{index}] 身份或条目数不匹配")
+            if (
+                not isinstance(digest, str)
+                or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+            ):
+                errors.append(f"external_sources[{index}] SHA-256 无效")
+                continue
+            normalized_sources.append(copy.deepcopy(raw))
+    if (
+        len(normalized_sources) == len(WAVE5_EXTERNAL_MANIFESTS)
+        and sum(row["expected_entries"] for row in normalized_sources) != 148
+    ):
+        errors.append("Wave5 三份旧账必须精确合计 148 条")
+
+    expected_prior_reference = _sha256_reference(
+        copy.deepcopy(
+            RESTRUCTURE_WAVE_SPECS[WAVE5_EXTERNAL_ARCHIVE_READONLY][
+                "required_prior_decision_ticket"
+            ]
+        ),
+        "固定旧 S0 决策票",
+    )
+    try:
+        reported_prior_reference = _sha256_reference(
+            ticket.get("upstream_decision"),
+            "Wave5 授权票.upstream_decision",
+        )
+    except ArtifactError as exc:
+        errors.append(str(exc))
+        reported_prior_reference = None
+    if reported_prior_reference != expected_prior_reference:
+        errors.append("Wave5 授权票没有绑定固定路径和 SHA 的原 S0 决策票")
+    prior_reference = copy.deepcopy(expected_prior_reference)
+    prior_payload = None
+    prior_evidence = None
+    prior_payload, prior_evidence = _reference_payload(
+        root,
+        prior_reference,
+        evidence_reads=evidence_reads,
+    )
+    if prior_payload is None:
+        errors.append("固定旧 S0 决策票已缺失或被改写")
+    else:
+        prior_passed, prior_validation = _decision_ticket_evidence(
+            prior_payload,
+            expected_ticket_id="S0-DECISIONS-CZ-20260730-01",
+            wave_id=S0_MATERIALIZE_ONLY,
+            expected_context_id=expected_context_id,
+        )
+        if not prior_passed:
+            errors.append("原 S0 决策票身份、内容或授权上下文不匹配")
+            if prior_evidence is not None:
+                prior_evidence["ticket_validation"] = prior_validation
+    try:
+        new_path = _repo_path_without_symlinks(
+            root,
+            Path(ticket_path),
+            name="Wave5 专用授权票",
+        )
+        old_path = _repo_path_without_symlinks(
+            root,
+            Path(prior_reference["path"]),
+            name="旧 S0 决策票",
+        )
+        if new_path.is_file() and old_path.is_file():
+            new_stat = os.stat(new_path, follow_symlinks=False)
+            old_stat = os.stat(old_path, follow_symlinks=False)
+            if (new_stat.st_dev, new_stat.st_ino) == (
+                old_stat.st_dev,
+                old_stat.st_ino,
+            ):
+                errors.append("Wave5 授权票不得与旧 S0 票共用硬链接")
+    except (ArtifactError, OSError, KeyError) as exc:
+        errors.append(f"无法核对新旧决策票分离：{exc}")
+
+    if (
+        ticket.get("eligibility_capability_ceiling")
+        != RESTRUCTURE_WAVE_SPECS[WAVE5_EXTERNAL_ARCHIVE_READONLY][
+            "capability_limits"
+        ]
+    ):
+        errors.append("Wave5 准备能力上限不匹配")
+    expected_boundary = {
+        "authorizes_gate_extension": True,
+        "authorizes_read_only_scanner_construction_after_mechanical_pass": True,
+        "requires_additional_construction_confirmation": False,
+        "authorizes_manifest_rewrite": False,
+        "authorizes_external_content_traversal": False,
+        "authorizes_physical_move": False,
+        "authorizes_delete": False,
+        "authorizes_write_stub": False,
+        "authorizes_restore_pass": False,
+        "authorizes_network": False,
+        "authorizes_credential_read": False,
+        "authorizes_request_send": False,
+        "authorizes_model_api": False,
+        "authorizes_notion_write": False,
+        "authorizes_external_removal": False,
+    }
+    if ticket.get("authorization_boundary") != expected_boundary:
+        errors.append("Wave5 授权边界不匹配")
+
+    external_rows: list[dict[str, Any]] = []
+    if (
+        len(normalized_sources) == len(WAVE5_EXTERNAL_MANIFESTS)
+        and not errors
+    ):
+        _, external_rows, external_errors = _wave5_external_snapshot(
+            root,
+            normalized_sources,
+        )
+        errors.extend(external_errors)
+    return (
+        not errors,
+        {
+            "valid": not errors,
+            "errors": errors,
+            "external_sources": normalized_sources,
+            "external_snapshot": external_rows,
+            "source_s0_decision_ticket": prior_reference,
+            "source_s0_decision_ticket_evidence": prior_evidence,
+        },
+        external_rows,
+    )
+
+
 def _baseline_receipt_evidence(
     root: Path,
     plan: dict[str, Any] | None,
@@ -2851,7 +3487,10 @@ def _baseline_receipt_evidence(
     }
     nested_binding_extra: list[str] = []
     nested_binding_missing: list[str] = []
-    if outer_wave_id == WAVE2_RULE_BUNDLES:
+    if outer_wave_id in {
+        WAVE2_RULE_BUNDLES,
+        WAVE5_EXTERNAL_ARCHIVE_READONLY,
+    }:
         nested_binding_extra = sorted(
             nested_binding_paths - RESTRUCTURE_BASELINE_REQUIRED_INPUTS
         )
@@ -2859,8 +3498,14 @@ def _baseline_receipt_evidence(
             RESTRUCTURE_BASELINE_REQUIRED_INPUTS - nested_binding_paths
         )
         if nested_binding_extra or nested_binding_missing:
+            wave_label = (
+                "Wave2"
+                if outer_wave_id == WAVE2_RULE_BUNDLES
+                else "Wave5"
+            )
             errors.append(
-                "Wave2 的一级计划 bound_inputs 必须与一级基线必绑输入完全相等；"
+                f"{wave_label} 的一级计划 bound_inputs "
+                "必须与一级基线必绑输入完全相等；"
                 f"多余={nested_binding_extra}，缺少={nested_binding_missing}"
             )
     if normalized_plan.get("plan_id") != expected_plan_id:
@@ -3143,6 +3788,94 @@ def _completion_request_v2(value: Any) -> dict[str, Any]:
     return request
 
 
+def _wave5_completion_external_evidence(
+    root: Path,
+    plan: dict[str, Any] | None,
+    receipt: dict[str, Any] | None,
+    *,
+    expected_context_id: str,
+    evidence_reads: dict[str, str] | None,
+) -> tuple[bool, dict[str, Any]]:
+    """把 Wave5 开工票的外置快照与固定授权票和当前现场重新对齐。"""
+
+    errors: list[str] = []
+    ticket_reference: dict[str, str] | None = None
+    ticket_reference_evidence: dict[str, Any] | None = None
+    ticket_validation: dict[str, Any] | None = None
+    sources: list[dict[str, Any]] = []
+    live_rows: list[dict[str, Any]] = []
+
+    if plan is None:
+        errors.append("原 Wave5 计划无效，无法回放外置证据")
+    else:
+        ticket_reference = plan["decision_ticket"]
+        ticket, ticket_reference_evidence = _reference_payload(
+            root,
+            ticket_reference,
+            evidence_reads=evidence_reads,
+        )
+        ticket_passed, ticket_validation, live_rows = (
+            _wave5_authorization_ticket_evidence(
+                root,
+                ticket,
+                ticket_path=ticket_reference["path"],
+                expected_ticket_id=plan["expected_decision_ticket_id"],
+                expected_context_id=expected_context_id,
+                evidence_reads=evidence_reads,
+            )
+        )
+        if not ticket_passed:
+            errors.append("Wave5 固定授权票或其外置来源无法通过重放")
+        raw_sources = ticket_validation.get("external_sources")
+        if isinstance(raw_sources, list):
+            sources = copy.deepcopy(raw_sources)
+
+    expected_snapshot = [
+        {
+            "kind": "wave5_fixed_sibling_manifest",
+            "path": _wave5_external_identity(source["batch_relative_path"]),
+            "batch_relative_path": source["batch_relative_path"],
+            "sha256": source["expected_sha256"],
+            "entries": source["expected_entries"],
+        }
+        for source in sources
+    ]
+    if len(expected_snapshot) != len(WAVE5_EXTERNAL_MANIFESTS):
+        errors.append("Wave5 授权票没有给出恰好三份固定外置来源")
+
+    receipt_snapshot = (
+        receipt.get("external_evidence_snapshot")
+        if isinstance(receipt, dict)
+        else None
+    )
+    if receipt_snapshot != expected_snapshot:
+        errors.append("原 Wave5 开工票的外置证据快照缺失、伪造或字段漂移")
+
+    live_snapshot = [
+        {
+            "kind": row.get("kind"),
+            "path": row.get("path"),
+            "batch_relative_path": row.get("batch_relative_path"),
+            "sha256": row.get("actual_sha256"),
+            "entries": row.get("actual_entries"),
+        }
+        for row in live_rows
+    ]
+    if live_snapshot != expected_snapshot:
+        errors.append("三份固定外置 MANIFEST 的当前 SHA 或条目数已漂移")
+
+    return not errors, {
+        "valid": not errors,
+        "errors": errors,
+        "authorization_ticket": ticket_reference,
+        "authorization_ticket_reference_evidence": ticket_reference_evidence,
+        "authorization_ticket_validation": ticket_validation,
+        "expected_snapshot": expected_snapshot,
+        "receipt_snapshot": receipt_snapshot,
+        "live_snapshot": live_snapshot,
+    }
+
+
 def evaluate_restructure_wave_completion_v2(
     root: Path,
     request_raw: Any,
@@ -3224,6 +3957,8 @@ def evaluate_restructure_wave_completion_v2(
         "wave_dependencies_satisfied",
         "live_snapshot_stable",
     }
+    if wave_id == WAVE5_EXTERNAL_ARCHIVE_READONLY:
+        expected_check_ids.add("external_manifest_snapshot_stable")
     if receipt_raw is None:
         receipt_errors.append("原 Wave 开工票不存在或 SHA 不匹配")
     else:
@@ -3279,6 +4014,21 @@ def evaluate_restructure_wave_completion_v2(
         not receipt_errors,
         {"errors": receipt_errors, "reference": receipt_reference},
     )
+    if wave_id == WAVE5_EXTERNAL_ARCHIVE_READONLY:
+        external_passed, external_evidence = (
+            _wave5_completion_external_evidence(
+                root,
+                normalized_plan,
+                receipt_raw,
+                expected_context_id=context_id,
+                evidence_reads=evidence_reads,
+            )
+        )
+        add(
+            "source_wave5_external_evidence_replayed",
+            external_passed,
+            external_evidence,
+        )
 
     commits_exist = False
     try:
@@ -4052,6 +4802,7 @@ def _evaluate_restructure_wave_snapshot(
         evidence_reads=evidence_reads,
         captured_bytes=bound_bytes,
     )
+    wave5_external_rows: list[dict[str, Any]] = []
     if wave_id == WAVE2_RULE_BUNDLES:
         decision_passed, decision_evidence = (
             _wave2_preparation_ticket_evidence(
@@ -4067,6 +4818,19 @@ def _evaluate_restructure_wave_snapshot(
                 expected_context_id=window["authorization_context_id"],
                 evidence_reads=evidence_reads,
             )
+        )
+    elif wave_id == WAVE5_EXTERNAL_ARCHIVE_READONLY:
+        (
+            decision_passed,
+            decision_evidence,
+            wave5_external_rows,
+        ) = _wave5_authorization_ticket_evidence(
+            root,
+            decision,
+            ticket_path=plan["decision_ticket"]["path"],
+            expected_ticket_id=plan["expected_decision_ticket_id"],
+            expected_context_id=window["authorization_context_id"],
+            evidence_reads=evidence_reads,
         )
     else:
         decision_passed, decision_evidence = _decision_ticket_evidence(
@@ -4200,6 +4964,35 @@ def _evaluate_restructure_wave_snapshot(
     )
     add("wave_dependencies_satisfied", dependency_passed, dependency_evidence)
 
+    if wave_id == WAVE5_EXTERNAL_ARCHIVE_READONLY:
+        sources = decision_evidence.get("external_sources")
+        if (
+            decision_passed
+            and isinstance(sources, list)
+            and len(sources) == len(WAVE5_EXTERNAL_MANIFESTS)
+        ):
+            second_passed, second_rows, second_errors = (
+                _wave5_external_snapshot(root, sources)
+            )
+        else:
+            second_passed = False
+            second_rows = []
+            second_errors = ["Wave5 授权票无效，未重复读取外置证据"]
+        stable = (
+            decision_passed
+            and second_passed
+            and wave5_external_rows == second_rows
+        )
+        add(
+            "external_manifest_snapshot_stable",
+            stable,
+            {
+                "first": wave5_external_rows,
+                "second": second_rows,
+                "errors": second_errors,
+            },
+        )
+
     passed = all(row["passed"] for row in checks)
     authorization_boundary = {
         "authorizes_wave": False,
@@ -4225,7 +5018,18 @@ def _evaluate_restructure_wave_snapshot(
                 "requires_later_same_task_positive_construction_confirmation": True,
             }
         )
-    return {
+    elif wave_id == WAVE5_EXTERNAL_ARCHIVE_READONLY:
+        authorization_boundary.update(
+            {
+                "same_task_construction_authorization_recorded": decision_passed,
+                "requires_additional_construction_confirmation": False,
+                "external_manifest_read_only": True,
+                "authorizes_external_manifest_rewrite": False,
+                "authorizes_external_content_traversal": False,
+                "authorizes_restore_pass": False,
+            }
+        )
+    receipt = {
         "contract_version": RESTRUCTURE_WAVE_RECEIPT_V1,
         "plan_id": plan["plan_id"],
         "plan_content_sha256": _canonical_json_sha256(plan),
@@ -4249,6 +5053,19 @@ def _evaluate_restructure_wave_snapshot(
         "checks": checks,
         "blockers": [row["check_id"] for row in checks if not row["passed"]],
     }
+    if wave_id == WAVE5_EXTERNAL_ARCHIVE_READONLY:
+        receipt["external_evidence_snapshot"] = [
+            {
+                "kind": row["kind"],
+                "path": row["path"],
+                "batch_relative_path": row["batch_relative_path"],
+                "sha256": row["actual_sha256"],
+                "entries": row["actual_entries"],
+            }
+            for row in wave5_external_rows
+            if row.get("matched")
+        ]
+    return receipt
 
 
 def _wave_lock_request(value: Any) -> dict[str, Any]:
@@ -4551,6 +5368,55 @@ def _verify_snapshot_after_receipt_write(
                 continue
             if actual_sha != expected_sha:
                 evidence_errors.append(f"{path}: SHA 已变化")
+    if receipt.get("wave_id") == WAVE5_EXTERNAL_ARCHIVE_READONLY:
+        external_snapshot = receipt.get("external_evidence_snapshot")
+        if (
+            not isinstance(external_snapshot, list)
+            or len(external_snapshot) != len(WAVE5_EXTERNAL_MANIFESTS)
+        ):
+            evidence_errors.append("Wave5 缺少三份固定外置证据快照")
+        else:
+            for index, (row, expected_source) in enumerate(
+                zip(
+                    external_snapshot,
+                    WAVE5_EXTERNAL_MANIFESTS,
+                    strict=True,
+                )
+            ):
+                if not isinstance(row, dict):
+                    evidence_errors.append(
+                        f"external_evidence_snapshot[{index}] 格式无效"
+                    )
+                    continue
+                batch = row.get("batch_relative_path")
+                expected_identity = _wave5_external_identity(
+                    expected_source["batch_relative_path"]
+                )
+                if (
+                    row.get("kind") != "wave5_fixed_sibling_manifest"
+                    or batch != expected_source["batch_relative_path"]
+                    or row.get("path") != expected_identity
+                    or row.get("entries")
+                    != expected_source["expected_entries"]
+                    or not isinstance(row.get("sha256"), str)
+                ):
+                    evidence_errors.append(
+                        f"external_evidence_snapshot[{index}] 字段无效"
+                    )
+                    continue
+                try:
+                    actual_raw = _read_wave5_external_manifest_once(
+                        root,
+                        batch,
+                    )
+                    actual_sha = hashlib.sha256(actual_raw).hexdigest()
+                except (ArtifactError, OSError) as exc:
+                    evidence_errors.append(f"{expected_identity}: {exc}")
+                    continue
+                if actual_sha != row["sha256"]:
+                    evidence_errors.append(
+                        f"{expected_identity}: SHA 已变化"
+                    )
     if expected != actual or evidence_errors:
         removed = _safe_unlink_repo_file(root, output)
         result = "已撤销新票" if removed else "无法安全撤销新票"
