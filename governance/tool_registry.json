@@ -3761,34 +3761,38 @@
       "primary_identity_label": "可复用组件",
       "status": "candidate_not_default",
       "status_label": "候选组件·未接默认链",
-      "purpose": "离线校验模型调用配置，并按已登记规则生成请求或命令预览。",
-      "human_command": "python3 tools/model_call_profiles.py <validate|list|show|render>",
+      "purpose": "离线校验模型调用配置与规则包，生成请求预览或带 SHA 的 S0 复制清单。",
+      "human_command": "python3 tools/model_call_profiles.py <validate|list|show|render|list-bundles|show-bundle|resolve-bundle>",
       "inputs": [
         "config/model_call_profiles/ 下的登记册、结构约束与调用档",
         "config/providers/ 下的供应商目录",
+        "config/prompts/ 下的提示词与清单",
+        "config/context_recipes/ 下的上下文组装配方",
+        "config/contracts/ 下的任务 JSON 结构约束",
         "render 子命令使用的本地 JSON 输入"
       ],
       "outputs": [
-        "配置校验结果、调用档清单、单档内容或请求预览"
+        "配置校验结果、调用档或规则包清单、单项内容、请求预览或确定性的 S0 六字段复制清单"
       ],
       "network_or_model": {
         "network": "none",
         "model": "none",
-        "note": "本工具只读取本地配置并生成预览；没有发送请求的子命令。"
+        "note": "本工具只读取本地配置并生成预览或复制清单；没有发送、运行、密钥读取或复制子命令。"
       },
       "current_consumers": [
         "tests/test_model_call_profiles.py"
       ],
-      "consumer_evidence_rule": "只登记当前测试消费者和配置目录；不把未来模型试验当成已接入默认链。",
+      "consumer_evidence_rule": "只登记当前测试消费者、配置目录和离线规则解析；不把未来模型试验当成已接入默认链。",
       "test_references": [
         "tests/test_model_call_profiles.py"
       ],
       "last_use_clues": [
         "config/model_call_profiles/README.md",
+        "config/model_call_profiles/contracts/README.md",
         "tests/test_model_call_profiles.py"
       ],
-      "next_confirmed_consumer": "后续隔离模型试验按 profile_id 自取调用规则。",
-      "retirement_condition_and_compatibility_boundary": "候选公共零件；只负责离线校验和预览，不持有密钥、不发网、不授权模型调用，也不自动接入现役流水线。",
+      "next_confirmed_consumer": "后续隔离模型试验按 bundle_id 领取带 SHA 的规则零件，再交给 S0 复制器。",
+      "retirement_condition_and_compatibility_boundary": "候选公共零件；只负责离线校验、预览和开复制清单，不持有密钥、不复制、不发网、不授权模型调用，也不自动接入现役流水线。",
       "review_needed": false
     },
     {

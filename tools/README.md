@@ -63,6 +63,47 @@ python3 tools/simple_pack.py \
 - 批次专用脚本优先放在对应 `experiments/<实验>/`，不要继续堆到根层再靠事后补说明。
 - 不知道一个工具是什么时，先查登记册；登记缺口只挂账，不自动删、不自动定性。
 
+## 模型规则包离线解析器
+
+`model_call_profiles.py` 除了校验和预览单个模型调用档，还能把一个已登记规则包
+解析成 S0 复制器可用的清单：
+
+```bash
+python3 tools/model_call_profiles.py validate
+python3 tools/model_call_profiles.py list-bundles
+python3 tools/model_call_profiles.py show-bundle wave2_synthetic_json_probe_v1
+python3 tools/model_call_profiles.py resolve-bundle wave2_synthetic_json_probe_v1
+```
+
+`resolve-bundle` 只向标准输出写确定性 JSON，不创建目录，也不复制文件。清单中每
+一项都带来源、目标、角色、大小和 SHA，并按目标路径排序。路径越界、未知字段、
+软链接、硬链接、重复目标、乱序或 SHA 漂移都会拒绝。
+
+你可以直接理解成：这个工具负责“从零件库开出领料单”，下面的 S0 复制器负责
+“照领料单复制到新工作区”。两者都没有 `send` 或 `run` 子命令，不读密钥、不
+联网，也不代表模型已经获准开跑。
+
+⚠️ 领料单和物化计划不是同一种 JSON，不能这样直接传：
+
+```bash
+# 错误示例：复制器会拒绝缺少现场证据的领料单
+python3 tools/model_call_profiles.py resolve-bundle <规则包> \
+  | python3 tools/experiment_workspace.py materialize --plan -
+```
+
+正确交接分两步：
+
+1. 从领料单取出 `items`，原样放进新试验的 `materialize_plan.json`。
+2. 由新试验的责任窗口补齐计划身份、当前 Git SHA、同一 Git 提交的 S0 机械票、
+   复制器整包 SHA、白名单 SHA 和“只复制”能力边界。
+
+如果还要加入试验程序或合成输入，先和规则包项目合并，再按 `destination` 对整张
+清单重新排序。只能取领料单里的 `items`，不能把整份 resolved 外壳塞进计划。
+
+完整字段骨架和这些 SHA 的读取命令放在
+`config/model_call_profiles/README.md` 的“怎么自取一整套离线零件”。没有当前
+S0 机械票时，只能保存领料单，不能复用旧提交的票，也不能启动复制。
+
 ## S0 试验工作区复制器
 
 `experiment_workspace.py` 现在只负责一件事：读取仓库里的冻结计划，把登记过的零件复制到全新的 `runs/<运行号>/`。

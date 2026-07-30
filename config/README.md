@@ -5,6 +5,9 @@
 - `providers/`：API 地址、模型白名单、密钥环境变量名。
 - `model_call_profiles/`：每个模型固定怎样调用，包括温度、思考档、JSON
   方式、流式方式与输出上限策略。
+- `prompts/`：可复用提示词正文及它的 SHA 清单。
+- `context_recipes/`：只记录上下文怎么拼，不保存某次已经拼好的完整上下文。
+- `contracts/`：任务输入输出等可复用 JSON 结构约束。
 - `batches/`：某一批测哪本书、多少章、用哪版提示词、最多允许多少次调用。
 
 ⚠️ 不要把 API Key 写进 JSON。现役默认链只认进程环境里的 `SENSENOVA_API_KEY`；普通火山按量、千问与腾讯候选通道分别使用 `ARK_API_KEY`、`DASHSCOPE_API_KEY` 与 `TENCENT_TOKENHUB_API_KEY`，只从本仓钥匙串加载器临时注入。Agent Plan 只认 ArkCLI 的 `agent-plan_cn-beijing_personal` profile，不再从项目钥匙串重复注入另一把 Key。LongCat 继续由同级公共 API 池临时加载，不复制密钥进本仓。
@@ -79,6 +82,11 @@ LongCat 不重复存进本仓钥匙串，加载入口固定为 `/Users/a1234/挣
 新模型横评统一从 `model_call_profiles/` 选择固定调用档。Qwen3.7 Flash
 走千问 AI 平台；DeepSeek V4 Flash、DeepSeek V4 Pro 与 MiniMax M3
 已经备好 Agent Plan 候选档。它们都没有替换 SenseNova 现役默认链，仍须由当前任务明确下达开跑口令。
+
+一套新测试不要从运行目录反向拼配置。先用
+`tools/model_call_profiles.py resolve-bundle <规则包编号>` 取得带 SHA 的零件清单，
+再把清单和当次程序、输入一起写进 S0 物化计划。复制完成后，后续环节只读工作区
+副本；主仓继续作为零件真源，但不会被测试过程回写。
 
 Agent Plan 目录里的请求模型名和响应模型名可能不同。例如
 DeepSeek V4 Flash 请求写 `deepseek-v4-flash-modelhub`，返回应核对

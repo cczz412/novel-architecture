@@ -1,0 +1,41 @@
+{
+  "schema_version": "model-call-normalization-policy-v1",
+  "normalization_id": "qianwen_qwen3_7_flash_json_object_no_thinking_strict_json_once",
+  "source_json_pointer": "/choices/0/message/content",
+  "input_type": "string",
+  "envelope_gates": {
+    "expected_model": "qwen3.7-flash",
+    "choice_count": 1,
+    "finish_reason": "stop",
+    "assistant_role": "assistant"
+  },
+  "raw_receipt": {
+    "immutable": true,
+    "sha256_required": true
+  },
+  "parse": {
+    "mode": "strict_json_decode_once",
+    "attempts": 1,
+    "required_top_level_type": "object",
+    "allow_trailing_non_whitespace": false,
+    "whitespace_handling": "json_decoder_native_only",
+    "reject_duplicate_keys": true,
+    "reject_non_finite_numbers": true
+  },
+  "pre_parse_transformations": {
+    "strip_markdown_fences": false,
+    "extract_json_substring": false,
+    "remove_prefix_or_suffix_prose": false,
+    "trim_outer_whitespace_before_decode": false,
+    "repair_json": false
+  },
+  "recovery": {
+    "parse_retry_count": 0,
+    "request_retry_count": 0,
+    "automatic_retry_count": 0,
+    "switch_model": false
+  },
+  "bound_task_schema_required": true,
+  "post_parse_mutation": false,
+  "failure_action": "reject_response_and_stop"
+}

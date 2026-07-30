@@ -1,0 +1,382 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:novel-architecture:model-call-contract-bundle:v1",
+  "title": "模型调用合同包 v1",
+  "description": "通用离线模型调用合同。这里只约束传输、安全和引用结构，不写死供应商、模型或任务。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "bundle_id",
+    "profile_id",
+    "provider",
+    "transport",
+    "request_model_id",
+    "expected_response_model",
+    "api_address",
+    "auth",
+    "profile",
+    "provider_config",
+    "provider_access_policy",
+    "request_envelope_schema",
+    "response_envelope_schema",
+    "normalization_policy"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "model-call-contract-bundle-v1"
+    },
+    "bundle_id": {
+      "$ref": "#/$defs/safe_id"
+    },
+    "profile_id": {
+      "$ref": "#/$defs/safe_id"
+    },
+    "provider": {
+      "$ref": "#/$defs/safe_id"
+    },
+    "transport": {
+      "$ref": "#/$defs/safe_id"
+    },
+    "request_model_id": {
+      "$ref": "#/$defs/nonempty_string"
+    },
+    "expected_response_model": {
+      "$ref": "#/$defs/nonempty_string"
+    },
+    "api_address": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base_url",
+        "endpoint"
+      ],
+      "properties": {
+        "base_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://[^@\\s]+$",
+          "maxLength": 500
+        },
+        "endpoint": {
+          "type": "string",
+          "pattern": "^/[^\\s]*$",
+          "maxLength": 300
+        }
+      }
+    },
+    "auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "credential_reference",
+        "api_key_env",
+        "credential_value_forbidden"
+      ],
+      "properties": {
+        "mode": {
+          "$ref": "#/$defs/safe_id"
+        },
+        "credential_reference": {
+          "const": "environment_variable_name_only"
+        },
+        "api_key_env": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{1,127}$"
+        },
+        "credential_value_forbidden": {
+          "const": true
+        }
+      }
+    },
+    "profile": {
+      "$ref": "#/$defs/profile_reference"
+    },
+    "provider_config": {
+      "$ref": "#/$defs/provider_reference"
+    },
+    "provider_access_policy": {
+      "$ref": "#/$defs/policy_reference"
+    },
+    "request_envelope_schema": {
+      "$ref": "#/$defs/request_schema_reference"
+    },
+    "response_envelope_schema": {
+      "$ref": "#/$defs/response_schema_reference"
+    },
+    "normalization_policy": {
+      "$ref": "#/$defs/normalization_reference"
+    }
+  },
+  "$defs": {
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,119}$"
+    },
+    "nonempty_string": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "repo_relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^(?!/)(?!.*//)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "profile_reference": {
+      "$ref": "#/$defs/file_reference",
+      "properties": {
+        "path": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/repo_relative_path"
+            },
+            {
+              "pattern": "^config/model_call_profiles/profiles/[A-Za-z0-9._/-]+\\.json$"
+            }
+          ]
+        }
+      }
+    },
+    "provider_reference": {
+      "$ref": "#/$defs/file_reference",
+      "properties": {
+        "path": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/repo_relative_path"
+            },
+            {
+              "pattern": "^config/providers/[A-Za-z0-9._/-]+\\.json$"
+            }
+          ]
+        }
+      }
+    },
+    "policy_reference": {
+      "$ref": "#/$defs/provider_reference"
+    },
+    "request_schema_reference": {
+      "$ref": "#/$defs/contract_directory_reference"
+    },
+    "response_schema_reference": {
+      "$ref": "#/$defs/contract_directory_reference"
+    },
+    "normalization_reference": {
+      "$ref": "#/$defs/contract_directory_reference"
+    },
+    "contract_directory_reference": {
+      "$ref": "#/$defs/file_reference",
+      "properties": {
+        "path": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/repo_relative_path"
+            },
+            {
+              "pattern": "^config/model_call_profiles/contracts/[A-Za-z0-9._/-]+$"
+            }
+          ]
+        }
+      }
+    },
+    "file_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/repo_relative_path"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "normalization_document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "normalization_id",
+        "source_json_pointer",
+        "input_type",
+        "bound_task_schema_required",
+        "envelope_gates",
+        "raw_receipt",
+        "parse",
+        "pre_parse_transformations",
+        "post_parse_mutation",
+        "recovery",
+        "failure_action"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "model-call-normalization-policy-v1"
+        },
+        "normalization_id": {
+          "$ref": "#/$defs/safe_id"
+        },
+        "source_json_pointer": {
+          "type": "string",
+          "pattern": "^/",
+          "maxLength": 300
+        },
+        "input_type": {
+          "const": "string"
+        },
+        "bound_task_schema_required": {
+          "const": true
+        },
+        "envelope_gates": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "expected_model",
+            "choice_count",
+            "finish_reason",
+            "assistant_role"
+          ],
+          "properties": {
+            "expected_model": {
+              "$ref": "#/$defs/nonempty_string"
+            },
+            "choice_count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 128
+            },
+            "finish_reason": {
+              "$ref": "#/$defs/nonempty_string"
+            },
+            "assistant_role": {
+              "$ref": "#/$defs/safe_id"
+            }
+          }
+        },
+        "raw_receipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "immutable",
+            "sha256_required"
+          ],
+          "properties": {
+            "immutable": {
+              "const": true
+            },
+            "sha256_required": {
+              "const": true
+            }
+          }
+        },
+        "parse": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "attempts",
+            "required_top_level_type",
+            "allow_trailing_non_whitespace",
+            "whitespace_handling",
+            "reject_duplicate_keys",
+            "reject_non_finite_numbers"
+          ],
+          "properties": {
+            "mode": {
+              "const": "strict_json_decode_once"
+            },
+            "attempts": {
+              "const": 1
+            },
+            "required_top_level_type": {
+              "enum": [
+                "object",
+                "array"
+              ]
+            },
+            "allow_trailing_non_whitespace": {
+              "const": false
+            },
+            "whitespace_handling": {
+              "const": "json_decoder_native_only"
+            },
+            "reject_duplicate_keys": {
+              "const": true
+            },
+            "reject_non_finite_numbers": {
+              "const": true
+            }
+          }
+        },
+        "pre_parse_transformations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "strip_markdown_fences",
+            "extract_json_substring",
+            "remove_prefix_or_suffix_prose",
+            "trim_outer_whitespace_before_decode",
+            "repair_json"
+          ],
+          "properties": {
+            "strip_markdown_fences": {
+              "const": false
+            },
+            "extract_json_substring": {
+              "const": false
+            },
+            "remove_prefix_or_suffix_prose": {
+              "const": false
+            },
+            "trim_outer_whitespace_before_decode": {
+              "const": false
+            },
+            "repair_json": {
+              "const": false
+            }
+          }
+        },
+        "post_parse_mutation": {
+          "const": false
+        },
+        "recovery": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "parse_retry_count",
+            "request_retry_count",
+            "automatic_retry_count",
+            "switch_model"
+          ],
+          "properties": {
+            "parse_retry_count": {
+              "const": 0
+            },
+            "request_retry_count": {
+              "const": 0
+            },
+            "automatic_retry_count": {
+              "const": 0
+            },
+            "switch_model": {
+              "const": false
+            }
+          }
+        },
+        "failure_action": {
+          "const": "reject_response_and_stop"
+        }
+      }
+    }
+  }
+}

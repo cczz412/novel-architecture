@@ -1,0 +1,43 @@
+{
+  "contract_version": "model-call-contract-bundle-v1",
+  "bundle_id": "qianwen_qwen3_7_flash_json_object_no_thinking_contract_v1",
+  "profile_id": "qianwen_qwen3_7_flash_json_object_no_thinking",
+  "provider": "qianwen_platform",
+  "transport": "openai_chat_completions",
+  "request_model_id": "qwen3.7-flash",
+  "expected_response_model": "qwen3.7-flash",
+  "api_address": {
+    "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "endpoint": "/chat/completions"
+  },
+  "auth": {
+    "mode": "bearer_api_key",
+    "credential_reference": "environment_variable_name_only",
+    "api_key_env": "DASHSCOPE_API_KEY",
+    "credential_value_forbidden": true
+  },
+  "profile": {
+    "path": "config/model_call_profiles/profiles/qianwen_qwen3_7_flash_json_object_no_thinking.json",
+    "sha256": "2b2197f89497dde034df53f7961913a93f617718151b692788942990aed045e7"
+  },
+  "provider_config": {
+    "path": "config/providers/qianwen_platform_multi_model.json",
+    "sha256": "0f673dd581a779386b8853c3291ee3eb92d202674e60f021ca06c2cd5b5dbf1d"
+  },
+  "provider_access_policy": {
+    "path": "config/providers/provider_access_policy.json",
+    "sha256": "e5d08296e56a746711b53528d137e283617e887ff438dbdd6dcad0764bba14ee"
+  },
+  "request_envelope_schema": {
+    "path": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/request_envelope.schema.json",
+    "sha256": "a35bb542923f86a4fc5c0365cfde8c52ce09c4cda604b7f99cf8f4549947138e"
+  },
+  "response_envelope_schema": {
+    "path": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/response_envelope.schema.json",
+    "sha256": "759b80a0cd1a3e5dc759f990426b79e5489e971a4aafbfbc9fd270caaebf67bb"
+  },
+  "normalization_policy": {
+    "path": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/normalization.json",
+    "sha256": "f708694509f805f39df951fdb9e61aa674021e538680ad194c40524ffb2ad770"
+  }
+}

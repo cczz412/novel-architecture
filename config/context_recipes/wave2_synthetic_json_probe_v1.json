@@ -1,0 +1,64 @@
+{
+  "schema_version": "context-recipe-v1",
+  "recipe_id": "wave2_synthetic_json_probe_v1",
+  "revision": 1,
+  "status": "candidate_only_not_wired_to_default_chain",
+  "profile_id": "qianwen_qwen3_7_flash_json_object_no_thinking",
+  "api_contract_bundle": {
+    "path": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/bundle.json",
+    "sha256": "ee1e9fb6f1e922d143150f95a6eae191ddcd789b395eb7b7ca46fb43ec4718ca"
+  },
+  "prompt_manifest": {
+    "path": "config/prompts/wave2_synthetic_json_probe_v1/manifest.json",
+    "sha256": "6caf692289f23fc363474f49d3b347e627d13f6f6c07665aaf7b760ebfa479d3"
+  },
+  "task_output_schema": {
+    "path": "config/contracts/wave2_synthetic_json_probe_v1.schema.json",
+    "sha256": "9784db4ce48f1eb8cacd6d3470e483c72312a117959a5dfa60d6a54dc5332487"
+  },
+  "input_slots": {
+    "synthetic_case": {
+      "required": true,
+      "content_type": "application/json",
+      "serialization": "compact_json_utf8",
+      "max_bytes": 4096,
+      "top_level_type": "object",
+      "required_keys": [
+        "probe_id",
+        "payload"
+      ],
+      "payload_required_keys": [
+        "label",
+        "values"
+      ],
+      "values_max_items": 16
+    }
+  },
+  "message_plan": [
+    {
+      "role": "system",
+      "content_from": "prompt_manifest.prompt_file"
+    },
+    {
+      "role": "user",
+      "content_from": "input_slots.synthetic_case"
+    }
+  ],
+  "assembly_policy": {
+    "mode": "strict_exact_two_messages",
+    "system_content": "prompt_file_utf8_exact",
+    "user_content": "synthetic_case_compact_json_utf8",
+    "allow_extra_messages": false,
+    "allow_content_prefix": false,
+    "allow_content_suffix": false,
+    "allow_template_substitution": false
+  },
+  "capability_limits": {
+    "offline_resolve_only": true,
+    "network": false,
+    "credential_read": false,
+    "request_send": false,
+    "model_api": false,
+    "notion_write": false
+  }
+}

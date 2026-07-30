@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "prompt-manifest-v1",
+  "title": "提示词清单 v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "prompt_id",
+    "revision",
+    "status",
+    "prompt_file",
+    "message_role",
+    "rendering",
+    "content_contract",
+    "task_output_schema"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "prompt-manifest-v1"
+    },
+    "prompt_id": {
+      "$ref": "#/$defs/safe_id"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "const": "candidate_only_not_wired_to_default_chain"
+    },
+    "prompt_file": {
+      "$ref": "#/$defs/file_reference"
+    },
+    "message_role": {
+      "const": "system"
+    },
+    "rendering": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "encoding",
+        "template_slots"
+      ],
+      "properties": {
+        "mode": {
+          "const": "literal_no_slots"
+        },
+        "encoding": {
+          "const": "utf-8"
+        },
+        "template_slots": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    },
+    "content_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "top_level",
+        "single_object_only",
+        "markdown_fence_allowed",
+        "explanatory_text_allowed",
+        "extra_fields_allowed",
+        "runtime_schema_validation_required"
+      ],
+      "properties": {
+        "top_level": {
+          "const": "json_object"
+        },
+        "single_object_only": {
+          "const": true
+        },
+        "markdown_fence_allowed": {
+          "const": false
+        },
+        "explanatory_text_allowed": {
+          "const": false
+        },
+        "extra_fields_allowed": {
+          "const": false
+        },
+        "runtime_schema_validation_required": {
+          "const": true
+        }
+      }
+    },
+    "task_output_schema": {
+      "$ref": "#/$defs/file_reference"
+    }
+  },
+  "$defs": {
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,79}$"
+    },
+    "repo_relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^(?!/)(?!.*//)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "file_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/repo_relative_path"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

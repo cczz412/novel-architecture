@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:novel-architecture:qianwen-qwen3-7-flash-json-object-no-thinking:response-envelope:v1",
+  "title": "千问 Qwen3.7 Flash 非流式成功响应外壳",
+  "description": "校验 HTTP 200 后解码出的单个 Chat Completions JSON 对象；不接受 SSE 分片，choices 必须恰好一项。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "object",
+    "created",
+    "model",
+    "choices",
+    "usage"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object": {
+      "const": "chat.completion"
+    },
+    "created": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "model": {
+      "const": "qwen3.7-flash"
+    },
+    "choices": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "$ref": "#/$defs/choice"
+      }
+    },
+    "usage": {
+      "$ref": "#/$defs/usage"
+    },
+    "system_fingerprint": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "service_tier": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "message",
+        "finish_reason"
+      ],
+      "properties": {
+        "index": {
+          "const": 0
+        },
+        "message": {
+          "$ref": "#/$defs/assistant_message"
+        },
+        "finish_reason": {
+          "const": "stop"
+        },
+        "logprobs": {
+          "type": "null"
+        }
+      }
+    },
+    "assistant_message": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "content"
+      ],
+      "properties": {
+        "role": {
+          "const": "assistant"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        },
+        "refusal": {
+          "type": "null"
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prompt_tokens",
+        "completion_tokens",
+        "total_tokens"
+      ],
+      "properties": {
+        "prompt_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completion_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "prompt_tokens_details": {
+          "$ref": "#/$defs/prompt_token_details"
+        },
+        "completion_tokens_details": {
+          "$ref": "#/$defs/completion_token_details"
+        }
+      }
+    },
+    "prompt_token_details": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cached_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "audio_tokens": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "completion_token_details": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reasoning_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "audio_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "accepted_prediction_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rejected_prediction_tokens": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

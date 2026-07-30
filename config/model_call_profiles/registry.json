@@ -31,6 +31,121 @@
       "role": "MiniMax M3异源对照档"
     }
   ],
+  "rule_bundles": [
+    {
+      "bundle_id": "wave2_synthetic_json_probe_v1",
+      "profile_id": "qianwen_qwen3_7_flash_json_object_no_thinking",
+      "status": "candidate_only_not_wired_to_default_chain",
+      "api_contract_bundle": {
+        "path": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/bundle.json",
+        "sha256": "ee1e9fb6f1e922d143150f95a6eae191ddcd789b395eb7b7ca46fb43ec4718ca"
+      },
+      "prompt_manifest": {
+        "path": "config/prompts/wave2_synthetic_json_probe_v1/manifest.json",
+        "sha256": "6caf692289f23fc363474f49d3b347e627d13f6f6c07665aaf7b760ebfa479d3"
+      },
+      "context_recipe": {
+        "path": "config/context_recipes/wave2_synthetic_json_probe_v1.json",
+        "sha256": "03b403c5031e521519494004cb19484074c97d65d7866acb2e47ec50e28bedea"
+      },
+      "task_output_schema": {
+        "path": "config/contracts/wave2_synthetic_json_probe_v1.schema.json",
+        "sha256": "9784db4ce48f1eb8cacd6d3470e483c72312a117959a5dfa60d6a54dc5332487"
+      },
+      "materialize_items": [
+        {
+          "source": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/bundle.json",
+          "destination": "workspace/api/contract_bundle.json",
+          "role": "api",
+          "sha256": "ee1e9fb6f1e922d143150f95a6eae191ddcd789b395eb7b7ca46fb43ec4718ca"
+        },
+        {
+          "source": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/normalization.json",
+          "destination": "workspace/api/normalization.json",
+          "role": "api",
+          "sha256": "f708694509f805f39df951fdb9e61aa674021e538680ad194c40524ffb2ad770"
+        },
+        {
+          "source": "config/model_call_profiles/profiles/qianwen_qwen3_7_flash_json_object_no_thinking.json",
+          "destination": "workspace/api/profile.json",
+          "role": "api",
+          "sha256": "2b2197f89497dde034df53f7961913a93f617718151b692788942990aed045e7"
+        },
+        {
+          "source": "config/providers/provider_access_policy.json",
+          "destination": "workspace/api/provider_access_policy.json",
+          "role": "api",
+          "sha256": "e5d08296e56a746711b53528d137e283617e887ff438dbdd6dcad0764bba14ee"
+        },
+        {
+          "source": "config/providers/qianwen_platform_multi_model.json",
+          "destination": "workspace/api/provider_config.json",
+          "role": "api",
+          "sha256": "0f673dd581a779386b8853c3291ee3eb92d202674e60f021ca06c2cd5b5dbf1d"
+        },
+        {
+          "source": "config/context_recipes/wave2_synthetic_json_probe_v1.json",
+          "destination": "workspace/context/recipe.json",
+          "role": "context",
+          "sha256": "03b403c5031e521519494004cb19484074c97d65d7866acb2e47ec50e28bedea"
+        },
+        {
+          "source": "config/prompts/wave2_synthetic_json_probe_v1/manifest.json",
+          "destination": "workspace/prompts/manifest.json",
+          "role": "prompt",
+          "sha256": "6caf692289f23fc363474f49d3b347e627d13f6f6c07665aaf7b760ebfa479d3"
+        },
+        {
+          "source": "config/prompts/wave2_synthetic_json_probe_v1/prompt.md",
+          "destination": "workspace/prompts/prompt.md",
+          "role": "prompt",
+          "sha256": "145bbf8e9dfd2c3546206f900ac038ab0e83ef6f4dc900455f8996ecf38b307a"
+        },
+        {
+          "source": "config/context_recipes/context_recipe.schema.json",
+          "destination": "workspace/schemas/context_recipe.schema.json",
+          "role": "schema",
+          "sha256": "5ec995e0da484a37246abd3a30024447db920e7ccb33f1ef827d65294826ff7a"
+        },
+        {
+          "source": "config/model_call_profiles/contracts/contract_bundle.schema.json",
+          "destination": "workspace/schemas/contract_bundle.schema.json",
+          "role": "schema",
+          "sha256": "9b087327929b8cba5aa5169556c1183a1c9703620be72d495268ac0416e7b9c7"
+        },
+        {
+          "source": "config/model_call_profiles/profile.schema.json",
+          "destination": "workspace/schemas/model_call_profile.schema.json",
+          "role": "schema",
+          "sha256": "7c6360752b8c157ba00ee9d23cd8a2b23afd147133f26f96d950b0477d3c9978"
+        },
+        {
+          "source": "config/prompts/prompt_manifest.schema.json",
+          "destination": "workspace/schemas/prompt_manifest.schema.json",
+          "role": "schema",
+          "sha256": "a344ab412905133bfabea176d885df00216f16b0458d5e1da7c7993124dbb376"
+        },
+        {
+          "source": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/request_envelope.schema.json",
+          "destination": "workspace/schemas/request_envelope.schema.json",
+          "role": "schema",
+          "sha256": "a35bb542923f86a4fc5c0365cfde8c52ce09c4cda604b7f99cf8f4549947138e"
+        },
+        {
+          "source": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/response_envelope.schema.json",
+          "destination": "workspace/schemas/response_envelope.schema.json",
+          "role": "schema",
+          "sha256": "759b80a0cd1a3e5dc759f990426b79e5489e971a4aafbfbc9fd270caaebf67bb"
+        },
+        {
+          "source": "config/contracts/wave2_synthetic_json_probe_v1.schema.json",
+          "destination": "workspace/schemas/task_output.schema.json",
+          "role": "schema",
+          "sha256": "9784db4ce48f1eb8cacd6d3470e483c72312a117959a5dfa60d6a54dc5332487"
+        }
+      ]
+    }
+  ],
   "preferred_profiles": {
     "qwen3.7-flash": "qianwen_qwen3_7_flash_thinking_prompt_json",
     "deepseek-v4-flash": "agent_plan_deepseek_v4_flash_high_json_object",

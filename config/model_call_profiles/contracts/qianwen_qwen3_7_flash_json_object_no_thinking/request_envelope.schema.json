@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:novel-architecture:qianwen-qwen3-7-flash-json-object-no-thinking:request-envelope:v1",
+  "title": "千问 Qwen3.7 Flash 非思考 JSON Object 请求体",
+  "description": "只校验发送给 Chat Completions 的 JSON 请求体。additionalProperties=false 同时排除 n、max_tokens、max_completion_tokens、thinking_budget、reasoning_effort、headers、auth、tools 以及其他未列字段。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model",
+    "messages",
+    "temperature",
+    "stream",
+    "enable_thinking",
+    "response_format"
+  ],
+  "properties": {
+    "model": {
+      "const": "qwen3.7-flash"
+    },
+    "messages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/message"
+      },
+      "contains": {
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "properties": {
+          "content": {
+            "type": "string",
+            "pattern": "[Jj][Ss][Oo][Nn]"
+          }
+        }
+      },
+      "minContains": 1
+    },
+    "temperature": {
+      "const": 0.2
+    },
+    "stream": {
+      "const": false
+    },
+    "enable_thinking": {
+      "const": false
+    },
+    "response_format": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "json_object"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "message": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "content"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant"
+          ]
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wave2-synthetic-json-probe-output-v1",
+  "title": "Wave2 合成 JSON 探针输出",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "probe_id",
+    "result"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "wave2-synthetic-json-probe-output-v1"
+    },
+    "probe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "value_count"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "value_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16
+        }
+      }
+    }
+  }
+}

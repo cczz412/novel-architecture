@@ -1,0 +1,28 @@
+{
+  "schema_version": "prompt-manifest-v1",
+  "prompt_id": "wave2_synthetic_json_probe_v1",
+  "revision": 1,
+  "status": "candidate_only_not_wired_to_default_chain",
+  "prompt_file": {
+    "path": "config/prompts/wave2_synthetic_json_probe_v1/prompt.md",
+    "sha256": "145bbf8e9dfd2c3546206f900ac038ab0e83ef6f4dc900455f8996ecf38b307a"
+  },
+  "message_role": "system",
+  "rendering": {
+    "mode": "literal_no_slots",
+    "encoding": "utf-8",
+    "template_slots": []
+  },
+  "content_contract": {
+    "top_level": "json_object",
+    "single_object_only": true,
+    "markdown_fence_allowed": false,
+    "explanatory_text_allowed": false,
+    "extra_fields_allowed": false,
+    "runtime_schema_validation_required": true
+  },
+  "task_output_schema": {
+    "path": "config/contracts/wave2_synthetic_json_probe_v1.schema.json",
+    "sha256": "9784db4ce48f1eb8cacd6d3470e483c72312a117959a5dfa60d6a54dc5332487"
+  }
+}
