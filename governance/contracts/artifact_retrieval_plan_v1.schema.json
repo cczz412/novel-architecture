@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/governance/contracts/artifact_retrieval_plan_v1.schema.json",
+  "title": "Artifact retrieval plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "plan_id",
+    "card_id",
+    "experiment_id",
+    "pointer_id",
+    "artifact_id",
+    "selection_id",
+    "operation",
+    "source",
+    "destination",
+    "items",
+    "summary",
+    "bindings",
+    "claims",
+    "boundary"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "artifact-retrieval-plan-v1"
+    },
+    "plan_id": {
+      "$ref": "#/$defs/id"
+    },
+    "card_id": {
+      "$ref": "#/$defs/id"
+    },
+    "experiment_id": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "pointer_id": {
+      "$ref": "#/$defs/id"
+    },
+    "artifact_id": {
+      "$ref": "#/$defs/id"
+    },
+    "selection_id": {
+      "$ref": "#/$defs/id"
+    },
+    "operation": {
+      "const": "copy"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_id",
+        "root_id",
+        "artifact_relative_path",
+        "payload_root_relative_path",
+        "manifest_sha256"
+      ],
+      "properties": {
+        "registry_id": {
+          "$ref": "#/$defs/id"
+        },
+        "root_id": {
+          "const": "repository_sibling_external_archive_v1"
+        },
+        "artifact_relative_path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "payload_root_relative_path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root_id",
+        "fresh_workspace_required",
+        "no_overwrite"
+      ],
+      "properties": {
+        "root_id": {
+          "const": "repository_sibling_test_workspace_v1"
+        },
+        "fresh_workspace_required": {
+          "const": true
+        },
+        "no_overwrite": {
+          "const": true
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file_count",
+        "total_bytes",
+        "items_sha256"
+      ],
+      "properties": {
+        "file_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "items_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_sha256",
+        "validation_policy_sha256",
+        "retrieval_policy_sha256",
+        "result_card_sha256",
+        "pointer_sha256",
+        "retrieval_profile_sha256",
+        "resolver_sha256"
+      ],
+      "properties": {
+        "registry_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "validation_policy_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "retrieval_policy_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "result_card_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "pointer_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "retrieval_profile_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "resolver_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_resolved",
+        "payload_bytes_revalidated",
+        "copy_performed",
+        "move_performed",
+        "delete_performed",
+        "migration_complete",
+        "hard_limit_activated"
+      ],
+      "properties": {
+        "manifest_resolved": {
+          "const": true
+        },
+        "payload_bytes_revalidated": {
+          "const": false
+        },
+        "copy_performed": {
+          "const": false
+        },
+        "move_performed": {
+          "const": false
+        },
+        "delete_performed": {
+          "const": false
+        },
+        "migration_complete": {
+          "const": false
+        },
+        "hard_limit_activated": {
+          "const": false
+        }
+      }
+    },
+    "boundary": {
+      "$ref": "#/$defs/nonEmptyString"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]+$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[^\\u0000]+$"
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_manifest_path",
+        "destination",
+        "bytes",
+        "sha256"
+      ],
+      "properties": {
+        "source_manifest_path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "destination": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

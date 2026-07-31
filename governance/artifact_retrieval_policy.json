@@ -1,0 +1,60 @@
+{
+  "contract_version": "artifact-retrieval-policy-v1",
+  "policy_id": "artifact-retrieval-s06c",
+  "registry_id": "repository-artifact-storage-s06a",
+  "validation_policy_id": "external-payload-validation-s06b",
+  "authority": {
+    "scope": "registered_manifest_to_copy_plan_only",
+    "may_discover_targets": false,
+    "may_read_payload": false,
+    "may_copy": false,
+    "may_move": false,
+    "may_delete": false,
+    "may_restore": false,
+    "may_issue_migration_receipt": false,
+    "may_activate_hard_limit": false
+  },
+  "capability_limits": {
+    "one_card_per_command": true,
+    "registered_manifest_read": true,
+    "deterministic_plan_output": true,
+    "write": false,
+    "network": false,
+    "credential_read": false,
+    "model_call": false,
+    "notion_write": false
+  },
+  "allowed_root_ids": [
+    "repository_sibling_external_archive_v1"
+  ],
+  "cards": [
+    {
+      "card_id": "s05b-historical-replay-v1",
+      "result_card_ref": {
+        "path": "config/test_replay/result_cards/s05b-historical-replay-v1/result_card.json",
+        "sha256": "91cc9b8f9131a4fe7a22883739f8c66d946885072c4ef9e0ef9a015aedbc72d8"
+      },
+      "allowed_selection_ids": [
+        "full-replay-payload"
+      ]
+    },
+    {
+      "card_id": "s05b-historical-replay-v2",
+      "result_card_ref": {
+        "path": "config/test_replay/result_cards/s05b-historical-replay-v2/result_card.json",
+        "sha256": "d51f2eeb98f67d6f7a975f86e77a72fd76e2fe2631c23a4d0939b516807dd375"
+      },
+      "allowed_selection_ids": [
+        "full-replay-payload"
+      ]
+    }
+  ],
+  "protected_non_targets": [
+    {
+      "subject_id": "cmin-b-refreeze-20260730-r02",
+      "reason": "R02 正在运行且不是获准外置对象；本政策禁止发现或枚举它，只保留明确排除事实。",
+      "discovery_prohibited": true
+    }
+  ],
+  "boundary": "S-06-C 只允许从两张显式卡解析固定仓外清单并生成未来复制计划。它不进入 payload、不创建工作区，不接任意 root/path/glob，也不授权移动、删除、恢复、迁移或启用 10MB 硬门。"
+}

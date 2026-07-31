@@ -57,6 +57,21 @@ S-06-B 新增两份逐文件验证合同：
 政策实例只认 `../external_payload_validation_policy.json`。旧三批缺逐文件 SHA、旧 TEMP
 外置根缺清单，都必须保持排除；不能用抽样、绝对路径或目录存在冒充完整验证。
 
+S-06-C 新增五份轻量结论与取件合同：
+
+- `experiment_result_card_v1.schema.json`：只约束实验目的、组装摘要、短结论、质量裁决、
+  证据边界、消费者收口和仓外指针引用；
+- `external_artifact_pointer_v1.schema.json`：只钉对象编号、登记册身份和清单 SHA，
+  禁止保存本机绝对路径；
+- `artifact_retrieval_profile_v1.schema.json`：约束命名取件组合和未来复制的安全规则；
+- `artifact_retrieval_policy_v1.schema.json`：独立约束允许卡片、能力上限和 R02 排除，
+  不扩大 S-06-A 登记册或 S-06-B 验证器的权限；
+- `artifact_retrieval_plan_v1.schema.json`：约束确定性复制计划，并固定声明当前没有读取
+  payload、复制、移动、删除、迁移或启用 10MB 硬门。
+
+政策实例只认 `../artifact_retrieval_policy.json`。结论、位置和取件范围分权保存：
+结论只认卡片，位置只认外置对象登记册，指针不复制路径，取件组合不直接执行复制。
+
 纯规则检查点登记在 `../rule_check_registry.json`。它把材料、锚、格式、参数、调用账、密钥、保护件、金标、泄题、重放、交付和受影响测试 18 类检查逐项钉到程序入口，检查员 API 不重复裁这些机械事实。
 
 来源：Codex

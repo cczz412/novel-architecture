@@ -22,13 +22,18 @@ find experiments -mindepth 1 -maxdepth 1 -type d ! -name '_*' -print
 ```text
 experiments/<experiment_id>/
   experiment.json   # 身份、替换模块、基线、状态与红线
+  result_card.json  # 终态后的轻量结论真源
+  external_pointer.json  # 仓外对象编号和固定清单 SHA
+  retrieval_profile.json # 已登记的命名取件组合
   inputs/            # 只放正式工件的内容地址引用
   candidate/         # 候选模块输出
   scorecard/         # 对照成绩
-  receipt.md         # 停点回执
+  README.md          # 由机器卡生成的人看结论页
 ```
 
 历史目录不为追新格式而批量回写。要继续历史实验时，另开新运行编号并按当轮施工令补齐身份。
+只有终态、消费者已收口且真实外置的对象才能补后三份 JSON；正在运行的实验不能预生成
+仓外指针或取件组合。
 
 ## 四条机械规则
 
@@ -59,5 +64,9 @@ experiments/<experiment_id>/
 
 当前更适合先做留卡外置的是 Z76 和 Z99；`V02_R2_terminal_once_20260727` 要先补身份，
 `extraction_redesign_v02_overnight_20260725` 要先拆开家族容器。
+
+统一卡片合同和首批真实样例见
+[`config/test_replay/result_cards/`](../config/test_replay/result_cards/)。普通实验的卡仍
+放在自己的目录里；共用历史测试回放不伪装成模型实验，所以样例留在测试回放配置旁。
 
 来源：Codex

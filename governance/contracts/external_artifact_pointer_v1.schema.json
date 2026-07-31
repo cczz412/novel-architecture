@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/governance/contracts/external_artifact_pointer_v1.schema.json",
+  "title": "External artifact pointer v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "pointer_id",
+    "card_id",
+    "artifact_id",
+    "registry_id",
+    "expected_manifest_sha256",
+    "validation_policy_id",
+    "retrieval_profile_ref",
+    "root_resolution",
+    "claims",
+    "boundary"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "external-artifact-pointer-v1"
+    },
+    "pointer_id": {
+      "$ref": "#/$defs/id"
+    },
+    "card_id": {
+      "$ref": "#/$defs/id"
+    },
+    "artifact_id": {
+      "$ref": "#/$defs/id"
+    },
+    "registry_id": {
+      "$ref": "#/$defs/id"
+    },
+    "expected_manifest_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "validation_policy_id": {
+      "$ref": "#/$defs/id"
+    },
+    "retrieval_profile_ref": {
+      "$ref": "#/$defs/profileRef"
+    },
+    "root_resolution": {
+      "const": "registry_only_no_absolute_path"
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "same_failure_domain",
+        "independent_backup_proven",
+        "retrieval_copy_performed",
+        "migration_complete"
+      ],
+      "properties": {
+        "same_failure_domain": {
+          "const": true
+        },
+        "independent_backup_proven": {
+          "const": false
+        },
+        "retrieval_copy_performed": {
+          "const": false
+        },
+        "migration_complete": {
+          "const": false
+        }
+      }
+    },
+    "boundary": {
+      "$ref": "#/$defs/nonEmptyString"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]+$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "repoPath": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[^\\u0000]+$"
+    },
+    "profileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^(?:config/test_replay/result_cards/[a-z0-9][a-z0-9._-]+|experiments/[A-Za-z0-9][A-Za-z0-9._-]+)/retrieval_profile\\.json$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

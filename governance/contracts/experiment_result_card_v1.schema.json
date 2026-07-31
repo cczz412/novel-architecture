@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/governance/contracts/experiment_result_card_v1.schema.json",
+  "title": "Experiment result card v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "card_id",
+    "experiment_id",
+    "record_kind",
+    "title",
+    "terminal_status",
+    "quality_verdict",
+    "purpose",
+    "assembly_summary",
+    "short_conclusion",
+    "evidence_boundary",
+    "consumer_closure",
+    "source_git_commit",
+    "pointer_ref",
+    "relations",
+    "boundary"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "experiment-result-card-v1"
+    },
+    "card_id": {
+      "$ref": "#/$defs/id"
+    },
+    "experiment_id": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "record_kind": {
+      "enum": [
+        "model_experiment",
+        "component_experiment",
+        "repository_maintenance_experiment",
+        "historical_replay"
+      ]
+    },
+    "title": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "terminal_status": {
+      "enum": [
+        "completed",
+        "negative_result",
+        "hard_stopped",
+        "superseded",
+        "retired"
+      ]
+    },
+    "quality_verdict": {
+      "enum": [
+        "passed",
+        "failed",
+        "negative_result",
+        "mixed",
+        "not_evaluated"
+      ]
+    },
+    "purpose": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "assembly_summary": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "short_conclusion": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "evidence_boundary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "consumer_closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "consumers",
+        "evidence_refs"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "verified",
+            "open",
+            "not_applicable"
+          ]
+        },
+        "consumers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidenceRef"
+          }
+        }
+      }
+    },
+    "source_git_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "pointer_ref": {
+      "$ref": "#/$defs/pointerRef"
+    },
+    "relations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supersedes_card_ids",
+        "superseded_by_card_ids"
+      ],
+      "properties": {
+        "supersedes_card_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "superseded_by_card_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        }
+      }
+    },
+    "boundary": {
+      "$ref": "#/$defs/nonEmptyString"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]+$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "repoPath": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[^\\u0000]+$"
+    },
+    "pointerRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^(?:config/test_replay/result_cards/[a-z0-9][a-z0-9._-]+|experiments/[A-Za-z0-9][A-Za-z0-9._-]+)/external_pointer\\.json$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^(?:config|experiments|governance|references|schemas|tests|tools)/(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[^\\u0000]+$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

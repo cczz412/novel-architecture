@@ -1,0 +1,31 @@
+{
+  "contract_version": "artifact-retrieval-profile-v1",
+  "profile_id": "s05b-historical-replay-v2-retrieval",
+  "artifact_id": "historical-test-replay-s05b-v2",
+  "operation": "copy",
+  "source_scope": "registered_external_payload_manifest",
+  "destination": {
+    "root_id": "repository_sibling_test_workspace_v1",
+    "relative_root": "payload",
+    "fresh_workspace_required": true,
+    "no_overwrite": true
+  },
+  "selections": [
+    {
+      "selection_id": "full-replay-payload",
+      "mode": "all_manifest_entries",
+      "manifest_paths": [],
+      "purpose": "在全新测试工作区复现 v2 的 40 项通过、3 个子测试通过现场，不引用主仓可变工作树。"
+    }
+  ],
+  "safety": {
+    "reject_symlink": true,
+    "reject_hardlink": true,
+    "reject_special_file": true,
+    "verify_source_before_copy": true,
+    "verify_target_after_copy": true,
+    "no_source_write": true,
+    "no_runtime_source_reference": true
+  },
+  "boundary": "本方案只登记未来复制范围；S-06-C 只生成计划，不读取 payload 字节、不创建工作区，也不授权恢复、移动或删除。"
+}

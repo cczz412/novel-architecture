@@ -84,6 +84,25 @@ V02／Z98／Z99 有些测试必须读取封存运行件，或读取能还原小�
 .venv/bin/python -m pytest -q tests/test_external_payload_validator.py
 ```
 
+## 实验结论卡与取件计划测什么
+
+`test_experiment_artifact_retrieval.py` 只在临时主仓和临时同级外置仓里构造小清单，不读取
+真实实验 payload。它主要守这些边界：
+
+- 结论卡、仓外指针、取件组合和人看页分工固定，README 漂移会拒绝；
+- 只接受政策显式列出的卡片和命名组合，不接受任意根、路径、glob、目标目录或复制命令；
+- 仓外对象必须已外置、消费者已收口，并同时进入 S-06-B 逐文件验证白名单；
+- 清单路径、大小写、文件数、总字节和 SHA 绑定漂移会拒绝；
+- 输出计划只列固定来源、未来相对目标、字节数和 SHA，能力声明固定为未读取 payload、
+  未复制、未移动、未删除、未迁移、未启用硬门；
+- R02 必须保持禁止发现，测试不会创建、进入或枚举它。
+
+定向命令：
+
+```bash
+.venv/bin/python -m pytest -q tests/test_experiment_artifact_retrieval.py
+```
+
 ## 三条底线
 
 - 不能拿伪造夹具替代缺失的历史实物。

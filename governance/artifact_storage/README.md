@@ -66,6 +66,11 @@
 清单 SHA 和取件命令。逐文件清单、完整请求响应和中间产物留在仓外；要复现时再按对象
 编号调取，不把整轮现场搬回日常上下文。
 
+机器卡、仓外指针和命名取件组合的统一示例在
+[`config/test_replay/result_cards/`](../../config/test_replay/result_cards/)。结论只认
+`result_card.json`，位置只认本登记册，指针只钉对象编号和清单 SHA。人看的 `README.md`
+由机器卡确定性生成，不能单独修改。
+
 ## 一键检查
 
 ```bash
@@ -75,10 +80,15 @@
   --artifact-id historical-test-replay-s05b-v2
 .venv/bin/python tools/external_payload_validator.py report \
   --artifact-id historical-test-replay-s05b-v2
+.venv/bin/python tools/experiment_artifact_retrieval.py check \
+  --card-id s05b-historical-replay-v2
+.venv/bin/python tools/experiment_artifact_retrieval.py resolve \
+  --card-id s05b-historical-replay-v2 \
+  --selection-id full-replay-payload
 ```
 
-两个工具的 `check` 都给人看一行结论，`report` 给程序读确定性 JSON。四条命令都只读。
-库存工具不进入 payload；逐文件工具一次只验政策白名单里的一个对象，不接受任意根路径。
+三个工具都只读。库存工具不进入 payload；逐文件工具一次只验政策白名单里的一个对象；
+取件工具只读固定 `MANIFEST` 并生成未来复制计划。它们都不接受任意生产根路径。
 
 当前 `PASS` 只说明：
 
@@ -92,6 +102,7 @@
 - 外置大文件已经逐件复验；
 - 已经证明可恢复；
 - 已经完成移动；
+- 已经执行取件计划或创建测试工作区；
 - 8 个旧账矛盾已经解决。
 
 ## 10MB 体积尺子

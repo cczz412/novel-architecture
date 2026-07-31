@@ -1,0 +1,45 @@
+{
+  "contract_version": "experiment-result-card-v1",
+  "card_id": "s05b-historical-replay-v2",
+  "experiment_id": "S-05-B-HISTORICAL-REPLAY-V2",
+  "record_kind": "historical_replay",
+  "title": "S-05-B 历史测试回放 v2",
+  "terminal_status": "completed",
+  "quality_verdict": "passed",
+  "purpose": "在 v1 失败原因已经定位后，只补齐登记过的 Z01d 固定夹具，再验证 40 个历史测试能否在独立副本中完整回放。",
+  "assembly_summary": [
+    "程序固定在 Git 提交 d8371ea36ca2fc9b98300df6699f2e4bdb0468dc。",
+    "材料使用仓外对象 historical-test-replay-s05b-v2。",
+    "材料复制到新测试工作区后再运行，主仓和仓外原件都不回写。"
+  ],
+  "short_conclusion": [
+    "真实回放得到 40 项通过、3 个子测试通过，pytest 退出码为 0。",
+    "v2 只补了登记过的 Z01d 旧运行取件单位，没有改写 v1。",
+    "这证明 40 个历史节点目前可按固定提交和冻结材料复验，不代表它们应重新进入日常测试。"
+  ],
+  "evidence_boundary": "S-06-B 已证明 v2 当前 payload 与固定清单逐文件一致；通过只覆盖已登记的 40 个历史节点，不代表语义质量、独立灾备、源材料永久可恢复或 10MB 目标已经达成。",
+  "consumer_closure": {
+    "status": "verified",
+    "consumers": [
+      "tools/historical_test_replay.py"
+    ],
+    "evidence_refs": [
+      {
+        "path": "config/test_replay/historical_replays.json",
+        "sha256": "0654443f9438290ba9a00c077157a009d5f11b493dd892be01a26c233bf5d43f"
+      }
+    ]
+  },
+  "source_git_commit": "d8371ea36ca2fc9b98300df6699f2e4bdb0468dc",
+  "pointer_ref": {
+    "path": "config/test_replay/result_cards/s05b-historical-replay-v2/external_pointer.json",
+    "sha256": "828592057b554812dfcda7077cef288da15858e3c64542e35ca0230fab0ee297"
+  },
+  "relations": {
+    "supersedes_card_ids": [
+      "s05b-historical-replay-v1"
+    ],
+    "superseded_by_card_ids": []
+  },
+  "boundary": "本卡只记录 v2 的历史结论和取件入口；不授权重新加入日常测试、移动、删除、恢复、迁移或启用 10MB 硬门。"
+}

@@ -278,6 +278,38 @@ PASS 只说明一个获准对象的 payload 文件集合、大小和内容 SHA �
 不把几千条逐文件清单复制回主仓。它不证明包级元数据、消费者收口、指针可取回、可恢复
 或独立备份，也不签迁移票、不移动或删除文件、不启用 10MB 硬门。
 
+## S-06-C 轻量结论卡、仓外指针与按需取件计划
+
+S-06-C 把“平时看结论”和“需要时取原件”分开。结论、位置和取件范围各认一份真源：
+
+- `result_card.json` 只管实验目的、组装方式、短结论、质量裁决和证据边界；
+- `external_pointer.json` 只钉外置对象编号和固定清单 SHA，不保存本机绝对路径；
+- `external_archive_registry.json` 仍是对象实际位置真源；
+- `retrieval_profile.json` 只登记命名取件组合；
+- `artifact_retrieval_policy.json` 只决定哪些卡允许解析，不继承 S-06-A 或 S-06-B 的权限。
+
+首批两张卡放在 `config/test_replay/result_cards/`，分别保留 S-05-B v1 的 38 过 2 败
+和 v2 的 40 项通过。Markdown 是从同目录三份 JSON 生成的人看页，不能和机器卡分开手改。
+
+```bash
+.venv/bin/python tools/experiment_artifact_retrieval.py check \
+  --card-id s05b-historical-replay-v2
+.venv/bin/python tools/experiment_artifact_retrieval.py resolve \
+  --card-id s05b-historical-replay-v2 \
+  --selection-id full-replay-payload
+```
+
+`check` 只核卡片、指针、登记关系和固定 `MANIFEST`。`resolve` 只把已登记组合翻成确定性
+复制计划并写到标准输出。当前工具没有复制、移动、删除、恢复、任意根、任意路径、glob
+或目标目录参数；计划中的所有能力声明也固定写明“尚未复制、尚未迁移、尚未启用硬门”。
+
+R02 仍是非终态活实验。它只作为禁止发现的对象编号写进政策，不进入卡片白名单，不扫描
+`TEMP/`，也不读取它下面的任何文件。以后即使 R02 跑完，也必须另行审收后才能建立卡片。
+
+真复制必须另开授权，不能让现有工作区复制器直接吃这份计划。后续复制执行器至少还要
+绑定计划编号和全新运行号，逐项复核来源路径与目标路径都不重复，并在复制后核目标 SHA。
+卡片继续扩容前，也要给替代关系补上“禁止自指、禁止成环”的全图检查。
+
 旧 Wave 5 写集里的 `tools/external_archive.py` 没有被静默冒名施工。S-06-A 用新规格
 明确承接只读库存与体积检查，正式入口是 `tools/repo_slim_inventory.py`；旧 Wave 5
 票据仍只解释当时的候选写集，不倒签本轮结果。

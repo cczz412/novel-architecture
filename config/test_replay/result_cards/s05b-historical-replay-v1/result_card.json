@@ -1,0 +1,45 @@
+{
+  "contract_version": "experiment-result-card-v1",
+  "card_id": "s05b-historical-replay-v1",
+  "experiment_id": "S-05-B-HISTORICAL-REPLAY-V1",
+  "record_kind": "historical_replay",
+  "title": "S-05-B 历史测试回放 v1",
+  "terminal_status": "superseded",
+  "quality_verdict": "failed",
+  "purpose": "验证退出日常验收的 40 个历史测试，能否从固定 Git 提交和仓外冻结材料复制到独立工作区后真实回放。",
+  "assembly_summary": [
+    "程序固定在 Git 提交 ed0dddcd2428fae8daf726ca2985571843df263d。",
+    "材料使用仓外对象 historical-test-replay-s05b-v1。",
+    "运行只读复制后的新测试工作区，不引用主仓可变工作树。"
+  ],
+  "short_conclusion": [
+    "真实回放得到 38 项通过、2 项失败。",
+    "两项失败都因为 v1 少收 Z01d 覆盖诊断文件，不是业务断言失败。",
+    "v1 原字节继续保留为失败证据，不能被 v2 的通过结果覆盖。"
+  ],
+  "evidence_boundary": "S-06-B 已证明 v1 当前 payload 与固定清单逐文件一致；这只保住失败现场的字节身份，不把 38 过 2 败改写成通过，也不证明独立备份或永久可恢复。",
+  "consumer_closure": {
+    "status": "verified",
+    "consumers": [
+      "tools/historical_test_replay.py"
+    ],
+    "evidence_refs": [
+      {
+        "path": "config/test_replay/historical_replays.json",
+        "sha256": "0654443f9438290ba9a00c077157a009d5f11b493dd892be01a26c233bf5d43f"
+      }
+    ]
+  },
+  "source_git_commit": "ed0dddcd2428fae8daf726ca2985571843df263d",
+  "pointer_ref": {
+    "path": "config/test_replay/result_cards/s05b-historical-replay-v1/external_pointer.json",
+    "sha256": "3d2de909757275cb770878cd08150b00629072610e918e74a5dc3942ff03e8d4"
+  },
+  "relations": {
+    "supersedes_card_ids": [],
+    "superseded_by_card_ids": [
+      "s05b-historical-replay-v2"
+    ]
+  },
+  "boundary": "本卡只记录 v1 的历史结论和取件入口；不授权续跑、补包、移动、删除、恢复、迁移或启用 10MB 硬门。"
+}

@@ -5,7 +5,7 @@
 | 目录 | 主要身份 | 类别 | 权限 | 读取规则 | 生命周期 | Git 规则 | 新内容规则 |
 |---|---|---|---|---|---|---|---|
 | `governance` | `governance_control_plane` | `governance` | `current` | `always_read` | `mutable` | `tracked` | 只收治理真源、对象登记、合同和由生成器维护的索引；不得另写当前任务副本。 |
-| `config` | `configuration_contracts` | `configuration` | `current` | `task_scoped` | `mutable` | `tracked` | 只收可复用配置、供应商规则、调用档案、提示词和上下文配方，不收单次运行结果。 |
+| `config` | `configuration_contracts` | `configuration` | `current` | `task_scoped` | `mutable` | `tracked` | 只收可复用配置、供应商规则、调用档案、提示词、上下文配方和已登记的轻量历史回放卡；不收完整单次运行现场。 |
 | `schemas` | `product_data_schemas` | `schema` | `current` | `task_scoped` | `mutable` | `tracked` | 只收产品数据或长期公共对象的 schema；治理合同留在 governance/contracts。 |
 | `tools` | `reusable_programs` | `code` | `current` | `task_scoped` | `mutable` | `tracked` | 只收已满足出生门槛的可复用程序；单批脚本留在试验或交件目录。 |
 | `tests` | `mechanical_verification` | `code` | `current` | `task_scoped` | `mutable` | `tracked` | 只收可复现的机械测试和最小夹具；真实正文与大型运行工件不得进入。 |

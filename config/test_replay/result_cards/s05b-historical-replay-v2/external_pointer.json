@@ -1,0 +1,21 @@
+{
+  "contract_version": "external-artifact-pointer-v1",
+  "pointer_id": "s05b-historical-replay-v2-pointer",
+  "card_id": "s05b-historical-replay-v2",
+  "artifact_id": "historical-test-replay-s05b-v2",
+  "registry_id": "repository-artifact-storage-s06a",
+  "expected_manifest_sha256": "1e1c003ec5fe1adb9c045584d7dc33415623607baef63c3e6e1060166ec4cca4",
+  "validation_policy_id": "external-payload-validation-s06b",
+  "retrieval_profile_ref": {
+    "path": "config/test_replay/result_cards/s05b-historical-replay-v2/retrieval_profile.json",
+    "sha256": "f8d1f2cbe813db4e48ca6d4e6a6895d32ef7e8ab04d15af66c2530151300b881"
+  },
+  "root_resolution": "registry_only_no_absolute_path",
+  "claims": {
+    "same_failure_domain": true,
+    "independent_backup_proven": false,
+    "retrieval_copy_performed": false,
+    "migration_complete": false
+  },
+  "boundary": "指针只钉对象编号、登记册身份和清单 SHA；真实位置每次从登记册解析，不保存本机绝对路径，也不把同盘完整性写成独立备份。"
+}

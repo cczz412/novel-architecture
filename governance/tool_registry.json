@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-07-31T09:00:31+08:00",
+  "updated_at": "2026-07-31T10:30:00+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 97,
-    "root_visible_python_entry_count": 98,
+    "root_entity_count": 98,
+    "root_visible_python_entry_count": 99,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -522,7 +522,7 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 12,
+    "reusable_component": 13,
     "batch_reproducer": 80,
     "active_entry": 2,
     "retired_compat": 3,
@@ -3966,6 +3966,51 @@
       ],
       "next_confirmed_consumer": "以后每个外置实验包用相同登记字段生成轻量结论卡；需要复现时按对象编号单件取验。",
       "retirement_condition_and_compatibility_boundary": "候选只读公共零件；不自动发现目标，不接受任意 root/path/glob，不写报告文件，不移动、删除、恢复、改登记、签迁移票或启用 10MB 硬门。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-098",
+      "path": "tools/experiment_artifact_retrieval.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·实验结论卡与按需取件计划",
+      "purpose": "核对一张获准轻量结论卡、仓外对象指针和固定 MANIFEST，并把命名取件组合解析成确定性复制计划。",
+      "human_command": "python3 tools/experiment_artifact_retrieval.py <check|resolve|render> --card-id <结论卡编号>",
+      "inputs": [
+        "governance/artifact_retrieval_policy.json",
+        "governance/external_archive_registry.json",
+        "governance/external_payload_validation_policy.json",
+        "获准卡片的 result_card.json、external_pointer.json、retrieval_profile.json",
+        "获准外置对象的固定 MANIFEST"
+      ],
+      "outputs": [
+        "一行人看核对结果",
+        "确定性的 artifact-retrieval-plan-v1 JSON",
+        "由机器卡确定性生成的 Markdown 人看页"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "只读显式白名单中的仓内卡片和仓外 MANIFEST；不读取 payload 字节，不接受任意根、路径或 glob，不写文件、不复制、不移动、不删除。"
+      },
+      "current_consumers": [
+        "S-06-C 实验轻量结论卡与按需取件合同",
+        "config/test_replay/result_cards/s05b-historical-replay-v1",
+        "config/test_replay/result_cards/s05b-historical-replay-v2",
+        "tests/test_experiment_artifact_retrieval.py"
+      ],
+      "consumer_evidence_rule": "只有同时进入独立取件政策、外置对象登记和 S-06-B 验证白名单的终态对象才能解析；输出计划明确记录 payload 未复验、复制未发生、迁移未完成和硬门未启用。",
+      "test_references": [
+        "tests/test_experiment_artifact_retrieval.py"
+      ],
+      "last_use_clues": [
+        "governance/artifact_retrieval_policy.json",
+        "governance/artifact_storage/README.md",
+        "config/test_replay/result_cards/README.md"
+      ],
+      "next_confirmed_consumer": "后续每个已终态、消费者已收口且真实外置的实验，沿用同一张短结论卡和命名取件组合；真正复制另开只接计划编号与新运行号的物化波次。",
+      "retirement_condition_and_compatibility_boundary": "候选只读公共零件；R02 等非终态对象整根不发现。当前没有 copy、move、delete、restore 或任意 destination 参数，不签迁移票、不启用 10MB 硬门。",
       "review_needed": false
     }
   ]

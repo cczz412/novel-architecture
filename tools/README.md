@@ -27,7 +27,7 @@
 
 工具身份只认 [`governance/tool_registry.json`](../governance/tool_registry.json)。测试存在、零引用、名字带旧道次，都不能单独作为删除／移动依据。
 
-本次盘点后，根层 94 个 Python 实体已经逐件登记；另有一个 `z60` 相对兼容软链，不重复算实体。后续若新增根层 Python 却没同步登记，`tests/test_tool_registry.py` 会直接失败。
+本次盘点后，根层 98 个 Python 实体已经逐件登记；另有一个 `z60` 相对兼容软链，不重复算实体。后续若新增根层 Python 却没同步登记，`tests/test_tool_registry.py` 会直接失败。
 
 ## 两个打包入口
 
@@ -103,6 +103,26 @@ python3 tools/model_call_profiles.py resolve-bundle <规则包> \
 完整字段骨架和这些 SHA 的读取命令放在
 `config/model_call_profiles/README.md` 的“怎么自取一整套离线零件”。没有当前
 S0 机械票时，只能保存领料单，不能复用旧提交的票，也不能启动复制。
+
+## 实验仓外材料按需取件
+
+`experiment_artifact_retrieval.py` 负责把一张轻量结论卡解析成未来复制计划：
+
+```bash
+python3 tools/experiment_artifact_retrieval.py check \
+  --card-id s05b-historical-replay-v2
+python3 tools/experiment_artifact_retrieval.py resolve \
+  --card-id s05b-historical-replay-v2 \
+  --selection-id full-replay-payload
+```
+
+它只认 `governance/artifact_retrieval_policy.json` 明列的卡片。真实位置从外置对象登记册
+解析，内容身份由固定 `MANIFEST` 和指针 SHA 共同钉住。`resolve` 输出的每一项都有来源
+清单路径、未来目标相对路径、字节数和 SHA，并明确写着复制尚未发生。
+
+这个工具没有 `copy`、`move`、`delete`、任意根、任意路径、glob 或目标目录参数，也不
+读取 payload 文件。你可以直接理解成它只开“领料单”，不去仓库拿货。R02 等在跑实验
+不在允许卡片里，工具也不会扫描 `TEMP/` 去找它。
 
 ## S0 试验工作区复制器
 

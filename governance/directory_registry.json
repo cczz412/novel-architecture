@@ -39,6 +39,7 @@
         "Codex",
         "tools/governance_index.py",
         "tools/novel_pipeline.py",
+        "tools/experiment_artifact_retrieval.py",
         "tools/external_payload_validator.py",
         "tools/repo_slim_inventory.py"
       ],
@@ -67,12 +68,19 @@
           "label": "外置 payload 逐文件读取白名单",
           "target_pattern": "governance/external_payload_validation_policy.json",
           "rule": "只列获准单件逐文件核验的外置对象和旧对象排除原因；不发现搬迁候选，不授权移动、删除或启用硬门。"
+        },
+        {
+          "object_id": "artifact_retrieval_policy",
+          "label": "实验仓外材料取件计划白名单",
+          "target_pattern": "governance/artifact_retrieval_policy.json",
+          "rule": "只列允许解析的终态轻量卡和命名组合；只读固定 MANIFEST 并生成计划，不读取 payload 或执行复制。"
         }
       ],
       "externalization": "prohibited",
       "evidence_refs": [
         "AGENTS.md",
         "governance/README.md",
+        "governance/artifact_retrieval_policy.json",
         "governance/external_payload_validation_policy.json"
       ],
       "open_decisions": [],
@@ -93,7 +101,7 @@
         "tests",
         "experiment_materializer"
       ],
-      "new_content_rule": "只收可复用配置、供应商规则、调用档案、提示词和上下文配方，不收单次运行结果。",
+      "new_content_rule": "只收可复用配置、供应商规则、调用档案、提示词、上下文配方和已登记的轻量历史回放卡；不收完整单次运行现场。",
       "accepted_content": [
         {
           "object_id": "provider_config",
@@ -130,6 +138,12 @@
           "label": "可复用任务 JSON 合同",
           "target_pattern": "config/contracts/<contract_id>",
           "rule": "跨试验复用的任务合同进入这里；单试验合同留在试验目录。"
+        },
+        {
+          "object_id": "historical_replay_result_card",
+          "label": "历史回放轻量结论卡",
+          "target_pattern": "config/test_replay/result_cards/<card_id>",
+          "rule": "只留结论真源、仓外对象指针、命名取件组合和生成的人看页；完整回放现场继续留仓外。"
         }
       ],
       "externalization": "prohibited",
@@ -292,9 +306,27 @@
         },
         {
           "object_id": "experiment_result_card",
-          "label": "实验身份与结论卡",
+          "label": "实验结论卡的人看页",
           "target_pattern": "experiments/<experiment_id>/README.md",
-          "rule": "只留目的、组装规则、关键结论、消费者和外置指针；大型运行现场按对象另行外置。"
+          "rule": "只由同目录机器卡确定性生成；大型运行现场按对象另行外置。"
+        },
+        {
+          "object_id": "experiment_result_card_contract",
+          "label": "实验轻量结论真源",
+          "target_pattern": "experiments/<experiment_id>/result_card.json",
+          "rule": "只留目的、组装规则、短结论、质量裁决、证据边界、消费者和指针引用。"
+        },
+        {
+          "object_id": "experiment_external_pointer",
+          "label": "实验仓外对象指针",
+          "target_pattern": "experiments/<experiment_id>/external_pointer.json",
+          "rule": "只钉外置对象编号和清单 SHA；真实位置只从外置对象登记册解析，不保存绝对路径。"
+        },
+        {
+          "object_id": "experiment_retrieval_profile",
+          "label": "实验命名取件组合",
+          "target_pattern": "experiments/<experiment_id>/retrieval_profile.json",
+          "rule": "只登记精确文件或整份固定清单的复制组合；不提供任意路径、glob 或直接复制能力。"
         }
       ],
       "externalization": "per_object_candidate",
