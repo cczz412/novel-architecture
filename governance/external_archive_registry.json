@@ -30,12 +30,12 @@
     "metric": "git_index_per_tracked_path_blob_bytes",
     "mode": "s06a_bootstrap_no_growth",
     "pre_s06a_baseline_bytes": 18841846,
-    "active_limit_bytes": 17103344,
+    "active_limit_bytes": 16574273,
     "target_bytes": 10000000,
     "hard_limit_bytes": null,
     "activation_receipt": null,
     "hard_limit_activation": "blocked_in_s06a_until_separate_payload_validator",
-    "boundary": "当前施工余量覆盖 S-06-A 至 S-06-D-A 的只读治理件、S-07-B-A 的同盘完整副本、S-07-B-B 删除 5 轮零调用旧包的 71 个主仓重件、S-07-C-A 的一张 QEC 四模型轻量卡和仓外 7 件原始证据登记、S-07-D-A 的 LongCat r03 硬停轮同盘完整副本登记，以及 S-07-D-B 删除 r03 的 24 个主仓重件并保留 5 件轻量入口。10MB 目标仍未达成；同盘外置不等于独立备份，历史成绩不等于当前默认，也没有启用 10MB 硬门。"
+    "boundary": "当前施工余量覆盖 S-06-A 至 S-06-D-A 的只读治理件、S-07-B-A 的同盘完整副本、S-07-B-B 删除 5 轮零调用旧包的 71 个主仓重件、S-07-C-A 的一张 QEC 四模型轻量卡和仓外 7 件原始证据登记、S-07-D-A 的 LongCat r03 硬停轮同盘完整副本登记、S-07-D-B 删除 r03 的 24 个主仓重件并保留 5 件轻量入口、S-07-E-A 的 LongCat r01 硬停轮同盘完整副本登记、S-07-E-B-A 的 r01 旧程序测试夹具迁移，以及 S-07-E-B-B 删除 r01 的 24 个主仓重件并保留 5 件轻量入口。10MB 目标仍未达成；同盘外置不等于独立备份，历史成绩不等于当前默认，也没有启用 10MB 硬门。"
   },
   "storage_roots": [
     {
@@ -410,6 +410,37 @@
         "后续组件化调配和质量修订"
       ],
       "boundary": "机器回执记录 3 次真实调用，根 README 仍写 0 次；冲突未裁决前以回执作更强运行证据，但不改写旧说明。"
+    },
+    {
+      "artifact_id": "model-benchmark-longcat-r01-interrupted-s07ea-v1",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "model_benchmark_longcat_r01_interrupted_s07ea_20260731_v1",
+      "category": "external_archive_batch",
+      "status": "sealed",
+      "record_kind": "archive_batch",
+      "lifecycle": "frozen",
+      "consumer_closure": "verified",
+      "verification_level": "cryptographically_sealed",
+      "recoverability": "package_integrity_proven_same_failure_domain",
+      "externalization": "already_external",
+      "purpose_summary": "S-07-E-A 保存 LongCat r01 中断硬停轮在固定 Git 提交中的完整现场，共 28 个文件、550603 字节。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "f20195d1684447eac8361af86d7b420c1333c35aa9bada7548e28957436b5a10",
+        "expected_entry_count": 28,
+        "entries_field": "files",
+        "entry_path_field": "path",
+        "entry_sha256_field": "sha256"
+      },
+      "keep_in_repository": [
+        "r01 的 benchmark.json、state.json、transport/hard_stop.json、transport/interruption_forensics.json、summary.md、总索引和本登记册指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "tools/external_payload_validator.py"
+      ],
+      "boundary": "完整副本来自固定提交 0550e45c9c4cafbda905e8d436f883d04c5e818b、目录 tree 130d9cda5b73041ab83453ca639d3eb8c1ae2a1b；28 个普通文件、550603 字节逐项验 SHA，并完成一次全量取回逐字节比对。原运行在尝试占用票后中止，回答数为 0，网络未知、用量未知且无质量分。S-07-E-B-A 把测试依赖的 8465 字节 neutral_extract.py 原字节复制到专用夹具并保持 SHA f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7；tests、tools、config 对 r01 目录的运行时消费者归零，夹具 README 只保留来源指针。S-07-E-B-B 从主仓移除 24 个已封存重件、547439 字节，保留 5 件轻量入口；同盘完整性不等于独立备份。"
     },
     {
       "artifact_id": "model-benchmark-longcat-r03-interrupted-s07da-v1",

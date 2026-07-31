@@ -80,6 +80,25 @@ S-07-D-A 已从固定提交 `62d942e6cf05c7722826c1648436a2eb15708563` 把 r03 �
 取回和消费者复核通过后，从主仓移除 24 个重件、552,370 字节。当前目录只留
 `benchmark.json`、`state.json`、两份硬停证据和 `summary.md`，不能在原地执行。
 
+## LongCat r01 中断硬停轮怎么找
+
+S-07-E-A 从固定提交 `0550e45c9c4cafbda905e8d436f883d04c5e818b` 复制 r01 的完整
+现场到外置对象 `model-benchmark-longcat-r01-interrupted-s07ea-v1`。包内有 28 个
+普通文件、550,603 字节，清单 SHA-256 是
+`f20195d1684447eac8361af86d7b420c1333c35aa9bada7548e28957436b5a10`：
+
+```bash
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id model-benchmark-longcat-r01-interrupted-s07ea-v1
+```
+
+r01 也在首次尝试占用票后异常终止：本地回答数是 0，网络和用量未知，没有质量分，也不
+允许重跑。S-07-E-A 只复制，不删除主仓文件。S-07-E-B-A 又把旧合同测试需要的
+`neutral_extract.py` 原字节复制到 `tests/fixtures/z57_frozen_neutral_extract_20260723/`，
+测试不再借用 r01 目录。S-07-E-B-B 在验包、完整取回和消费者复核通过后，从主仓移除
+24 个重件、547,439 字节。当前目录只留 `benchmark.json`、`state.json`、两份硬停证据
+和 `summary.md`，不能在原地执行。
+
 ## QEC 30题四模型历史终局对照
 
 这张表只比较 2026-07-29 同一套 QEC 30 题。机器真源是

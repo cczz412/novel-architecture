@@ -23,6 +23,16 @@ cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bi
 - 哪些回放测试依赖本机证据、干净副本为何跳过：`tests/local_evidence_registry.json`
 - 模块是否可免重验：`governance/module_registry.json`
 
+## 固定历史程序夹具怎么用
+
+`tests/fixtures/z57_frozen_neutral_extract_20260723/` 只保存 Z57 旧合同回放需要的一份
+`neutral_extract.py`。测试先核对固定 SHA，再把它复制到临时工作区；现役程序仍从
+`tools/zbatch_modules/` 读取。
+
+这份夹具从 LongCat r01 历史实验原字节复制出来，主要解决“现役测试不能长期借住历史
+实验目录”的问题。夹具不是默认程序，不要原地升级；来源、SHA 和复验命令看同目录
+`README.md`。
+
 ## 两类非默认测试怎么分
 
 V02／Z98／Z99 有些测试必须读取封存运行件，或读取能还原小说正文的锚目录和请求。
