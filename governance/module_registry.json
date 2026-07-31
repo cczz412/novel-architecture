@@ -505,7 +505,7 @@
           "exists": true,
           "kind": "file",
           "path": "tools/novel_pipeline.py",
-          "sha256": "a214bef21e511d874de244ca037644e6ebc41b61ca7b9c65c551c44201246597"
+          "sha256": "d2fbe26485f823588badb2e1f0f56c3b59c83c52f4670b94d611f455947cb57d"
         },
         {
           "exists": true,
@@ -529,7 +529,7 @@
           "exists": true,
           "kind": "file",
           "path": "tests/test_novel_pipeline.py",
-          "sha256": "eb82c7d0e63d51cf15d77099a4acc59be0c71580c9b48801c566a95e414a5ebf"
+          "sha256": "5e6ab55a65e7b45be1b7b347ad4ceced44c2eefea8a003f27e561d2db241d03e"
         },
         {
           "exists": true,

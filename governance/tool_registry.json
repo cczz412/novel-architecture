@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-07-31T10:30:00+08:00",
+  "updated_at": "2026-07-31T11:26:04+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -471,15 +471,17 @@
       "primary_identity": "reusable_component",
       "primary_identity_label": "可复用组件",
       "status": "active_component_layer",
-      "python_file_count": 3,
-      "human_command": "不直接作为总入口；由治理索引、检查员、测试计划、模型横向试验与统一入口导入。",
+      "python_file_count": 4,
+      "human_command": "不直接作为总入口；由治理索引、检查员、测试计划、模型横向试验、只读仓库目录与统一入口导入。",
       "inputs": [
         "本地 JSON、路径与工件清单",
-        "模型横向试验阶段规格、供应商配置与冻结请求包"
+        "模型横向试验阶段规格、供应商配置与冻结请求包",
+        "当前状态、模型调用档、实验路线、仓外对象、取件卡、工具身份与 Git 索引"
       ],
       "outputs": [
         "统一读写、清单与工件校验结果",
-        "隔离的模型候选样张、运输账、机械闸与横向成绩单"
+        "隔离的模型候选样张、运输账、机械闸与横向成绩单",
+        "不落盘的仓库用途导航、候选模型零件表、实验／仓外对象摘要与体积分布"
       ],
       "network_or_model": {
         "network": "conditional",
@@ -499,17 +501,19 @@
         "tests/test_pipeline_artifacts.py",
         "tests/test_model_benchmark.py",
         "tests/test_novel_pipeline.py",
+        "tests/test_repository_catalog.py",
         "tests/test_chatgpt_review_pack.py",
         "tests/test_simple_pack.py"
       ],
       "last_use_clues": [
         "governance/module_registry.source.json",
         "tests/test_pipeline_artifacts.py",
+        "tests/test_repository_catalog.py",
         "config/model_benchmarks/stages/neutral_extract_x01_ch0003_v3.json",
         "experiments/model_benchmarks/README.md"
       ],
-      "next_confirmed_consumer": "CZ 已明确后续会持续切换多个供应商与模型做同阶段横向试验。",
-      "retirement_condition_and_compatibility_boundary": "现役公共工件层；批次路径只能进入阶段规格单，核心逻辑不得写死道次或模型。"
+      "next_confirmed_consumer": "CZ 已明确后续会持续切换多个供应商与模型做同阶段横向试验，并要求整个仓库按用途好找路、好调取。",
+      "retirement_condition_and_compatibility_boundary": "现役公共工件层；批次路径只能进入阶段规格单；仓库目录只从现有真源即时派生，不得保存第二份总账、接受任意路径或探测受保护对象。"
     }
   ],
   "compatibility_aliases": [
@@ -703,13 +707,13 @@
       "primary_identity_label": "现役总入口",
       "status": "active_entry",
       "status_label": "现役",
-      "purpose": "小说流水线统一薄入口，分流治理、检查、测试计划与旧 zbatch 命令。",
-      "human_command": "python3 tools/novel_pipeline.py <governance|inspect|test-plan|zbatch子命令> ...",
+      "purpose": "小说流水线统一薄入口，分流治理、检查、测试计划、模型横评、只读仓库目录与旧 zbatch 命令。",
+      "human_command": "python3 tools/novel_pipeline.py <governance|inspect|test-plan|model-benchmark|catalog|zbatch子命令> ...",
       "inputs": [
         "子命令及对应配置／规格单"
       ],
       "outputs": [
-        "对应治理、检查、测试计划或流水线工件"
+        "对应治理、检查、测试计划、模型横评、只读目录或流水线工件"
       ],
       "network_or_model": {
         "network": "conditional",
@@ -720,15 +724,17 @@
       "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
       "test_references": [
         "tests/test_novel_pipeline.py",
+        "tests/test_repository_catalog.py",
         "tests/test_test_impact.py"
       ],
       "last_use_clues": [
         "governance/README.md",
         "tests/test_novel_pipeline.py",
+        "tests/test_repository_catalog.py",
         "tests/test_test_impact.py"
       ],
-      "next_confirmed_consumer": null,
-      "retirement_condition_and_compatibility_boundary": "只做薄分流；第87道不扩建命令，也不改 zbatch 现役行为。",
+      "next_confirmed_consumer": "CZ 要求所有环节都能从同一个用途入口知道配置、实验结论、仓外取件和瘦身状态怎么找。",
+      "retirement_condition_and_compatibility_boundary": "只做薄分流与完整顶层帮助；catalog 只读且不接任意路径，其他旧命令参数仍原样交给各自实现。",
       "review_needed": false
     },
     {

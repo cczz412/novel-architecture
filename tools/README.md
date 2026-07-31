@@ -1,8 +1,18 @@
 # 工具入口怎么认
 
-✅ 日常先从统一薄入口 `novel_pipeline.py` 进入。它不重写底层逻辑，只把现役批次、治理、检查、测试计划和模型横向试验放到同一个命令入口。
+✅ 日常先从统一薄入口 `novel_pipeline.py` 进入。它不重写底层逻辑，只把现役批次、治理、只读目录、检查、测试计划和模型横向试验放到同一个命令入口。
 
-顶层 `--help` 目前只显示由 `zbatch.py` 接管的批次兼容命令；治理、检查、测试计划和横向试验命名空间以本页下表为准。具体参数只使用本页或治理说明里已经验证过的命令，不要假设每个命名空间的顶层 `--help` 都可用。
+总入口 `--help` 负责列出统一命名空间和批次兼容命令；具体参数仍看对应命令自己的
+`--help`，不要凭相似命令名猜参数。
+
+这一轮有意改了一个旧表现：单独运行总入口 `-h`／`--help` 时，不再只显示
+`zbatch.py` 的五个兼容命令，而是显示完整统一菜单。空参数和所有实际业务子命令仍按
+原参数交给旧入口或对应 sidecar。
+
+```bash
+python3 tools/novel_pipeline.py --help
+python3 tools/novel_pipeline.py catalog --help
+```
 
 ## 入口层
 
@@ -11,6 +21,7 @@
 | `novel_pipeline.py preflight` | 把现役批次命令原样转给 `zbatch.py` 做零调用预演 | 不会 |
 | `novel_pipeline.py run` | 把获批批次原样转给 `zbatch.py` 执行 | 视当轮阶段而定 |
 | `novel_pipeline.py governance` | 只读治理状态或重建生成索引 | 不会 |
+| `novel_pipeline.py catalog` | 从现有真源和扫描器即时组装只读导航 | 不会 |
 | `novel_pipeline.py inspect` | 规则检查与语义分流 | 规则位不会；语义分流须看子命令和施工令 |
 | `novel_pipeline.py test-plan` | 按变更范围给出该跑哪些测试 | 不会 |
 | `novel_pipeline.py model-benchmark` | 隔离的模型横向试验入口 | 只有获批运行子命令会 |
@@ -27,7 +38,38 @@
 
 工具身份只认 [`governance/tool_registry.json`](../governance/tool_registry.json)。测试存在、零引用、名字带旧道次，都不能单独作为删除／移动依据。
 
-本次盘点后，根层 98 个 Python 实体已经逐件登记；另有一个 `z60` 相对兼容软链，不重复算实体。后续若新增根层 Python 却没同步登记，`tests/test_tool_registry.py` 会直接失败。
+本次盘点后，根层 98 个 Python 实体已经逐件登记；另有一个 `z60` 相对兼容软链，不重复算实体。统一目录实现放在 `pipeline_common/`，不另造根层入口。后续若新增根层 Python 却没同步登记，`tests/test_tool_registry.py` 会直接失败。
+
+## 统一只读目录
+
+```bash
+python3 tools/novel_pipeline.py catalog \
+  [menu|status|models|experiments|artifacts|slim|all] [--json]
+```
+
+你可以直接理解成：这条命令是“每次打开都重新看登记册的导航页”，不是把几份登记册
+抄成一份新真源。默认输出给人看；加 `--json` 只改变输出格式，不提高它的拍板权限。
+JSON 顶层依次写目录版本（`catalog_version`）、栏目（`view`）、只读权限边界
+（`authority`）、来源（`sources`）和数据（`data`）。
+
+| 栏目 | 它会告诉你什么 | 不能把它理解成什么 |
+|---|---|---|
+| `menu` | 有哪些只读栏目、该回哪份原真源 | 当前任务或实验结论 |
+| `status` | 当前状态真源已经明确登记的内容 | 靠 TEMP、目录名或旧票猜 CMIN-B 现在跑到哪 |
+| `models` | 已登记的候选模型调用档和规则组装包 | 模型在线、已获准调用、已升默认 |
+| `experiments` | 已登记实验对象、路线和显式结论卡 | 扫完整棵实验目录后自动猜出的成败和去留 |
+| `artifacts` | 已登记仓外对象，以及其中有显式卡才可取的范围 | 任意登记对象都可取，或本机绝对外置路径清单 |
+| `slim` | 即时调用 `repo_slim_inventory.py` 得到的当前只读体积结果 | 已完成迁移，或 10MB 硬门已经启用 |
+| `all` | 按上面同一口径汇总所有栏目 | 一份新的总账 |
+
+🔥 `slim` 里有两把不同的尺子：10MB 是瘦身目标；当前生效的是施工期间“不继续增长”
+的闸。扫描通过可以和“还没达到 10MB”同时成立，不能把两句话并成“已经瘦身完成”。
+原扫描器失败时，这一栏只会说明当前不可用和错误，不拿旧缓存补答案。
+
+`artifacts` 只读对象登记和取件政策里的显式卡片；对象可以列出来，但没有显式卡就没有
+取件资格。它不进入仓外 payload。整组 `catalog` 都没有写入、复制、移动或删除能力，
+也不读取密钥、不联网、不调用模型。它不会扫描受保护的 R02，不会进入 R02 的目录或
+payload；`status` 若没有 CMIN-B 的正式当前状态，就保持“不替机器真源猜”的边界。
 
 ## 两个打包入口
 

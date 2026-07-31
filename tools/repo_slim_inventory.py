@@ -658,7 +658,9 @@ def _verify_objects(
     return summaries
 
 
-def measure_git_index(repo_root: Path) -> tuple[int, int]:
+def measure_git_index_details(repo_root: Path) -> dict[str, Any]:
+    """Measure tracked blobs once and retain the path-to-size mapping."""
+
     try:
         listed = subprocess.run(
             ["git", "-C", str(repo_root), "ls-files", "--stage", "-z"],
@@ -671,13 +673,14 @@ def measure_git_index(repo_root: Path) -> tuple[int, int]:
             "无法读取 Git 索引",
         ) from exc
 
-    object_ids: list[str] = []
+    indexed_rows: list[tuple[str, str]] = []
     for record in listed.split(b"\0"):
         if not record:
             continue
         try:
-            header, _path = record.split(b"\t", 1)
+            header, path_bytes = record.split(b"\t", 1)
             mode, object_id, stage = header.decode("ascii").split(" ")
+            path = path_bytes.decode("utf-8")
         except (ValueError, UnicodeDecodeError) as exc:
             raise InventoryError(
                 "GIT_INDEX_MEASUREMENT_INVALID",
@@ -688,11 +691,15 @@ def measure_git_index(repo_root: Path) -> tuple[int, int]:
                 "GIT_INDEX_MEASUREMENT_INVALID",
                 "索引含未合并条目或子模块",
             )
-        object_ids.append(object_id)
+        indexed_rows.append((path, object_id))
 
-    unique_ids = sorted(set(object_ids))
+    unique_ids = sorted({object_id for _path, object_id in indexed_rows})
     if not unique_ids:
-        return 0, 0
+        return {
+            "tracked_path_count": 0,
+            "tracked_bytes": 0,
+            "entries": [],
+        }
     query = ("\n".join(unique_ids) + "\n").encode("ascii")
     try:
         inspected = subprocess.run(
@@ -734,7 +741,23 @@ def measure_git_index(repo_root: Path) -> tuple[int, int]:
             "GIT_INDEX_MEASUREMENT_INVALID",
             "Git 对象集合不完整",
         )
-    return len(object_ids), sum(sizes[object_id] for object_id in object_ids)
+    entries = [
+        {
+            "path": path,
+            "bytes": sizes[object_id],
+        }
+        for path, object_id in indexed_rows
+    ]
+    return {
+        "tracked_path_count": len(entries),
+        "tracked_bytes": sum(row["bytes"] for row in entries),
+        "entries": entries,
+    }
+
+
+def measure_git_index(repo_root: Path) -> tuple[int, int]:
+    details = measure_git_index_details(repo_root)
+    return details["tracked_path_count"], details["tracked_bytes"]
 
 
 def _read_git_index_path_bytes(
@@ -855,12 +878,16 @@ def _validate_report_relations(report: dict[str, Any]) -> None:
         )
 
 
-def scan(repo_root: Path = ROOT) -> dict[str, Any]:
+def scan_with_git_index_details(
+    repo_root: Path = ROOT,
+) -> tuple[dict[str, Any], dict[str, Any]]:
     registry = load_registry(repo_root)
     roots = _resolve_roots(repo_root, registry)
     activation_receipt = _verify_activation_receipt(repo_root, registry)
     object_summaries = _verify_objects(roots, registry)
-    tracked_path_count, tracked_bytes = measure_git_index(repo_root)
+    git_details = measure_git_index_details(repo_root)
+    tracked_path_count = git_details["tracked_path_count"]
+    tracked_bytes = git_details["tracked_bytes"]
     if (
         activation_receipt is not None
         and activation_receipt["tracked_bytes"] != tracked_bytes
@@ -925,6 +952,11 @@ def scan(repo_root: Path = ROOT) -> dict[str, Any]:
         "checks": checks,
     }
     _validate_report(repo_root, report)
+    return report, git_details
+
+
+def scan(repo_root: Path = ROOT) -> dict[str, Any]:
+    report, _git_details = scan_with_git_index_details(repo_root)
     return report
 
 

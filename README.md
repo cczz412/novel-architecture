@@ -8,9 +8,10 @@
 
 1. 想知道现在做到哪：打开 [治理索引](governance/INDEX.md)。
 2. 程序要读当前状态：只读 [当前状态真源](governance/CURRENT_STATE.json)。
-3. 想找某条实验：先看 [试验专区说明](experiments/README.md)，再看该实验自己的 README／manifest；不要按“最新文件夹”猜。
-4. 想找正式金标、候选、运行或材料：从治理索引里的固定入口进入。
-5. 本地路牌和 Notion 尾条冲突：以 Notion 为准，先停下回读，不手工改生成页凑一致。
+3. 想一次看清有哪些入口：运行 `python3 tools/novel_pipeline.py catalog menu`。它是即时导航，不是第二份状态真源。
+4. 想找某条实验：先看 [试验专区说明](experiments/README.md)，再看该实验自己的 README／manifest；不要按“最新文件夹”猜。
+5. 想找正式金标、候选、运行或材料：从治理索引里的固定入口进入。
+6. 本地路牌和 Notion 尾条冲突：以 Notion 为准，先停下回读，不手工改生成页凑一致。
 
 ## 目录怎么认
 
@@ -44,8 +45,12 @@
 ## 常用命令
 
 ```bash
-# 看批次兼容命令；治理与试验命名空间见 tools/README.md
+# 看统一入口帮助
 python3 tools/novel_pipeline.py --help
+
+# 看人能读的动态导航；换成 all 可汇总全部栏目
+python3 tools/novel_pipeline.py catalog menu
+python3 tools/novel_pipeline.py catalog all
 
 # 只读当前治理状态
 python3 tools/novel_pipeline.py governance status
@@ -59,6 +64,10 @@ cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bi
 # 预览外审包会收哪些文件（不发网）
 python3 tools/chatgpt_review_pack.py --dry-run
 ```
+
+`catalog` 还支持 `status`、`models`、`experiments`、`artifacts` 和 `slim`，末尾加
+`--json` 可取机器可读输出。整组命令都只读：不复制、不移动、不删除，也不进入受保护
+的 R02。它每次从原登记册、当前状态和已有扫描器重新组装导航；任何冲突仍回原真源裁定。
 
 环境可用 `uv sync --locked` 重建，但整仓验收仍只认上面的固定 Python 3.12.12 命令。
 

@@ -94,7 +94,7 @@
     {
       "bytes": 24367,
       "path": "governance/module_registry.json",
-      "sha256": "8365f98415249c646c5d1bfad5fd8afe8c0ded6e540a5d6d4a757b7b3f75b330"
+      "sha256": "e86ca31028f315392d27fea69abaf1afc82c29544efe49006bd10276de93b34c"
     }
   ],
   "schema_version": "governance-index-manifest-v1",

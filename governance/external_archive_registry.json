@@ -30,12 +30,12 @@
     "metric": "git_index_per_tracked_path_blob_bytes",
     "mode": "s06a_bootstrap_no_growth",
     "pre_s06a_baseline_bytes": 18841846,
-    "active_limit_bytes": 19203357,
+    "active_limit_bytes": 19283380,
     "target_bytes": 10000000,
     "hard_limit_bytes": null,
     "activation_receipt": null,
     "hard_limit_activation": "blocked_in_s06a_until_separate_payload_validator",
-    "boundary": "当前只允许 S-06-A 登记闸、S-06-B 单件逐文件验证和 S-06-C 轻量结论卡、仓外指针、只读取件计划器、合同、定向测试与说明进入施工余量；10MB 目标尚未达成。S-06-C 只解析固定 MANIFEST 并生成计划，没有读取 payload、复制、移动或删除；消费者收口、真实迁移、故障域和 10MB 硬门仍须后续另行授权。"
+    "boundary": "当前施工余量只覆盖 S-06-A 登记闸、S-06-B 逐文件验证、S-06-C 轻量结论卡与只读取件计划，以及 S-06-D-A 统一只读目录、Git 索引体积分布、合同、定向测试和说明。10MB 目标仍未达成；目录只从现有真源即时派生，没有读取 payload、复制、移动、删除或迁移。消费者收口、真实迁移、故障域和 10MB 硬门仍须后续另行授权。"
   },
   "storage_roots": [
     {

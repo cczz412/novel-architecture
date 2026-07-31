@@ -353,6 +353,29 @@ def test_git_metric_counts_same_blob_once_per_tracked_path(
     assert size == 2 * len(b"same\n")
 
 
+def test_git_metric_details_keep_each_tracked_path_and_size(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "metric"
+    repo.mkdir()
+    (repo / "a.txt").write_text("a\n", encoding="utf-8")
+    (repo / "nested").mkdir()
+    (repo / "nested/b.txt").write_text("bbb\n", encoding="utf-8")
+    _git(repo, "init", "-q")
+    _git(repo, "add", "a.txt", "nested/b.txt")
+
+    details = inventory.measure_git_index_details(repo)
+
+    assert details == {
+        "tracked_path_count": 2,
+        "tracked_bytes": len(b"a\n") + len(b"bbb\n"),
+        "entries": [
+            {"path": "a.txt", "bytes": len(b"a\n")},
+            {"path": "nested/b.txt", "bytes": len(b"bbb\n")},
+        ],
+    }
+
+
 def test_git_metric_ignores_untracked_and_worktree_only_changes(
     tmp_path: Path,
 ) -> None:
@@ -377,8 +400,12 @@ def test_target_can_remain_false_while_active_gate_passes(
     _save_registry(repo, registry)
     monkeypatch.setattr(
         inventory,
-        "measure_git_index",
-        lambda _root: (100, 12_000_000),
+        "measure_git_index_details",
+        lambda _root: {
+            "tracked_path_count": 100,
+            "tracked_bytes": 12_000_000,
+            "entries": [],
+        },
     )
 
     report = inventory.scan(repo)

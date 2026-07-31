@@ -1,4 +1,4 @@
-"""统一薄入口：现役命令原样交给 zbatch，只新增治理索引命令。"""
+"""统一薄入口：只分流命名空间，旧 zbatch 参数保持原样。"""
 
 from __future__ import annotations
 
@@ -19,10 +19,36 @@ from governance_index import (  # noqa: E402
     refresh,
 )
 from pipeline_common.model_benchmark import main as model_benchmark_main  # noqa: E402
+from pipeline_common.repository_catalog import main as repository_catalog_main  # noqa: E402
 from pipeline_inspector import main as inspector_main  # noqa: E402
 from pipeline_common.artifacts import read_json  # noqa: E402
 from test_impact import main as test_impact_main  # noqa: E402
 from zbatch import main as zbatch_main  # noqa: E402
+
+
+TOP_LEVEL_HELP = """\
+小说架构统一入口
+
+用法：
+  python3 tools/novel_pipeline.py <命令> [参数]
+
+统一命名空间：
+  governance       刷新或查看治理索引
+  inspect          运行隔离检查员
+  test-plan        生成按改动选测试的计划
+  model-benchmark  运行隔离模型横向试验
+  catalog          查看只读仓库统一目录
+
+兼容的旧流水线命令（参数原样交给 zbatch）：
+  preflight        运行前预检
+  run              执行已获批流水线
+  register         登记材料或批次
+  status           查看旧流水线运行状态
+  attest           写入旧流水线审查票
+
+查看具体参数：
+  python3 tools/novel_pipeline.py <命令> --help
+"""
 
 
 def governance_main(argv: list[str]) -> int:
@@ -45,8 +71,15 @@ def governance_main(argv: list[str]) -> int:
     return 0
 
 
+def print_top_level_help() -> None:
+    print(TOP_LEVEL_HELP)
+
+
 def main(argv: list[str] | None = None) -> int:
     arguments = list(sys.argv[1:] if argv is None else argv)
+    if arguments in (["-h"], ["--help"]):
+        print_top_level_help()
+        return 0
     if arguments and arguments[0] == "governance":
         return governance_main(arguments[1:])
     if arguments and arguments[0] == "inspect":
@@ -55,6 +88,8 @@ def main(argv: list[str] | None = None) -> int:
         return test_impact_main(arguments[1:])
     if arguments and arguments[0] == "model-benchmark":
         return model_benchmark_main(arguments[1:])
+    if arguments and arguments[0] == "catalog":
+        return repository_catalog_main(arguments[1:])
     return zbatch_main(arguments)
 
 

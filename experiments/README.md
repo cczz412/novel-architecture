@@ -15,6 +15,16 @@ find experiments -mindepth 1 -maxdepth 1 -type d ! -name '_*' -print
 
 这条命令只说明目录存在，不代表垃圾、可删除、可续跑或质量失败。
 
+日常想看已经有明确身份或结论入口的实验，优先运行：
+
+```bash
+python3 tools/novel_pipeline.py catalog experiments
+```
+
+它只从现有对象登记、路线登记和显式结论卡组装导航，不靠扫描整棵 `experiments/` 猜结论。
+目录不在结果里，也不能反推它不存在或可以删除；上面的 `find` 仍只用于确认未登记目录
+是否存在。受保护的 R02 不会被读取或枚举，CMIN-B 当前状态也不会从目录痕迹反推。
+
 ## 新登记试验的标准结构
 
 新试验推荐使用：
@@ -68,5 +78,9 @@ experiments/<experiment_id>/
 统一卡片合同和首批真实样例见
 [`config/test_replay/result_cards/`](../config/test_replay/result_cards/)。普通实验的卡仍
 放在自己的目录里；共用历史测试回放不伪装成模型实验，所以样例留在测试回放配置旁。
+
+要看当前哪些原件允许按卡取回，用 `catalog artifacts`。它会同时显示登记对象和取件卡，
+但只有政策明确开放的卡片与命名组合才有取件资格。输出不显示某台机器的仓外绝对路径，
+也不读取仓外 payload；这不代表已经复制、恢复或迁移。
 
 来源：Codex

@@ -91,10 +91,11 @@ def test_archived_stub_rules_are_visible_before_side_track_instructions() -> Non
     assert "进 ST-002 returns" not in ingest
 
 
-def test_tool_readme_does_not_promise_every_namespace_help_works() -> None:
+def test_tool_readme_routes_to_unified_top_level_and_catalog_help() -> None:
     text = _read("tools/README.md")
-    assert "不要假设每个命名空间的顶层 `--help` 都可用" in text
-    assert "直接运行对应子命令的 `--help`" not in text
+    assert "python3 tools/novel_pipeline.py --help" in text
+    assert "python3 tools/novel_pipeline.py catalog --help" in text
+    assert "不要假设每个命名空间的顶层 `--help` 都可用" not in text
 
 
 def test_navigation_markdown_local_links_resolve() -> None:

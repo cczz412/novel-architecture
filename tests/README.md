@@ -103,6 +103,31 @@ V02／Z98／Z99 有些测试必须读取封存运行件，或读取能还原小�
 .venv/bin/python -m pytest -q tests/test_experiment_artifact_retrieval.py
 ```
 
+## 仓库目录入口测什么
+
+`test_repository_catalog.py` 只用临时仓里的小登记和假结论卡，不进入真实 `TEMP/`，
+也不会创建或枚举 C-min-B R02。它主要守这些边界：
+
+- `menu`、`status`、`models`、`experiments`、`artifacts`、`slim`、`all`
+  七个视图同输入同输出，只是读取既有真源，不另造一份总账；
+- 当前状态只回读 `governance/CURRENT_STATE.json`，候选模型不能因为进入推荐档就冒充
+  默认链；
+- 试验目录里的 `experiment.json` 只证明试验登记，不能冒充正式结论；可取件对象只认
+  `artifact_retrieval_policy.json` 明示的结论卡；
+- 输出不泄露外置仓绝对路径、密钥或 payload 内容，也不接受任意根、路径、glob、
+  复制、移动或删除参数；
+- R02 在任何读取、`stat`、`exists` 或 glob 之前就被排除；
+- 目录命令不写文件、不联网；瘦身扫描失败时诚实显示不可用，不读旧缓存补答案。
+
+定向命令：
+
+```bash
+.venv/bin/python -m pytest -q \
+  tests/test_repository_catalog.py \
+  tests/test_novel_pipeline.py \
+  tests/test_repository_navigation.py
+```
+
 ## 三条底线
 
 - 不能拿伪造夹具替代缺失的历史实物。
