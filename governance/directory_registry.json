@@ -1,7 +1,7 @@
 {
   "schema_version": "directory-registry-v1",
   "registry_id": "REPOSITORY-DIRECTORIES-20260730",
-  "updated_at": "2026-07-30",
+  "updated_at": "2026-07-31",
   "authority": {
     "scope": "container_identity_only",
     "may_define_current_task": false,
@@ -38,7 +38,8 @@
       "consumers": [
         "Codex",
         "tools/governance_index.py",
-        "tools/novel_pipeline.py"
+        "tools/novel_pipeline.py",
+        "tools/repo_slim_inventory.py"
       ],
       "new_content_rule": "只收治理真源、对象登记、合同和由生成器维护的索引；不得另写当前任务副本。",
       "accepted_content": [
@@ -53,6 +54,12 @@
           "label": "目录身份与落点规则",
           "target_pattern": "governance/directory_registry.json",
           "rule": "只登记容器身份，不登记当前任务或业务结论。"
+        },
+        {
+          "object_id": "artifact_storage_identity",
+          "label": "外置对象身份、位置与库存边界",
+          "target_pattern": "governance/external_archive_registry.json",
+          "rule": "只登记对象身份、位置、消费者、生命周期、固定清单和已知冲突；不授权移动、删除或恢复。"
         }
       ],
       "externalization": "prohibited",
@@ -274,6 +281,12 @@
           "label": "单试验程序",
           "target_pattern": "experiments/<experiment_id>/program",
           "rule": "未证明跨场景复用前不得进入 tools 根层。"
+        },
+        {
+          "object_id": "experiment_result_card",
+          "label": "实验身份与结论卡",
+          "target_pattern": "experiments/<experiment_id>/README.md",
+          "rule": "只留目的、组装规则、关键结论、消费者和外置指针；大型运行现场按对象另行外置。"
         }
       ],
       "externalization": "per_object_candidate",

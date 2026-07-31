@@ -6,6 +6,7 @@
 |---|---|---|---|
 | 当前任务与运行的机器镜像 | `governance/CURRENT_STATE.json` | 只有 Notion 现役账序回读后的当前状态进入这里。 | `governance_control_plane` |
 | 目录身份与落点规则 | `governance/directory_registry.json` | 只登记容器身份，不登记当前任务或业务结论。 | `governance_control_plane` |
+| 外置对象身份、位置与库存边界 | `governance/external_archive_registry.json` | 只登记对象身份、位置、消费者、生命周期、固定清单和已知冲突；不授权移动、删除或恢复。 | `governance_control_plane` |
 | API 地址与供应商访问规则 | `config/providers/<provider_id>` | 地址、授权边界和运输规则按供应商分开保存。 | `configuration_contracts` |
 | 模型调用档案 | `config/model_call_profiles/<profile_id>.json` | 每个调用档案有独立身份，可被测试工作区按白名单复制。 | `configuration_contracts` |
 | API 请求响应 JSON 合同 | `config/model_call_profiles/contracts/<profile_id>` | 各 API 的 JSON 形状与档案同名归档，不混成通用猜测。 | `configuration_contracts` |
@@ -17,6 +18,7 @@
 | 机械测试 | `tests/test_<contract>.py` | 测试要说明保护的合同，夹具只保留最小可复现材料。 | `mechanical_verification` |
 | 未定型施工草稿 | `work/<work_id>` | 必须带归位条件，不能长期冒充正式落点。 | `undecided_construction` |
 | 单试验程序 | `experiments/<experiment_id>/program` | 未证明跨场景复用前不得进入 tools 根层。 | `registered_experiment_workspaces` |
+| 实验身份与结论卡 | `experiments/<experiment_id>/README.md` | 只留目的、组装规则、关键结论、消费者和外置指针；大型运行现场按对象另行外置。 | `registered_experiment_workspaces` |
 | 外部原始材料 | `intake/<source_id>` | 保留来源、原始字节和收件边界。 | `external_source_intake` |
 | 非真源参考 | `references/<reference_id>` | 必须写明来源与真值边界。 | `non_authoritative_references` |
 | 隔离运行工作区 | `runs/<run_id>/workspace` | 只复制白名单零件，运行过程不得回写正式源目录。 | `runtime_workspaces` |

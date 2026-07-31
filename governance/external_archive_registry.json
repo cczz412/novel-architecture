@@ -1,0 +1,934 @@
+{
+  "schema_version": "artifact-storage-v1",
+  "registry_id": "repository-artifact-storage-s06a",
+  "updated_at": "2026-07-31",
+  "authority": {
+    "scope": "artifact_identity_location_and_inventory_only",
+    "may_define_current_task": false,
+    "may_authorize_migration": false,
+    "may_authorize_deletion": false,
+    "may_claim_independent_backup": false,
+    "conflict_rule": "registered_open_conflict_stays_visible_until_separate_adjudication"
+  },
+  "capability_limits": {
+    "inventory_only": true,
+    "registered_anchor_read": true,
+    "registered_manifest_read": true,
+    "external_payload_traversal": false,
+    "external_object_content_read": false,
+    "write": false,
+    "move": false,
+    "delete": false,
+    "restore": false,
+    "recoverability_claim": false,
+    "network": false,
+    "credential_read": false,
+    "model_call": false,
+    "notion_write": false
+  },
+  "size_policy": {
+    "metric": "git_index_per_tracked_path_blob_bytes",
+    "mode": "s06a_bootstrap_no_growth",
+    "pre_s06a_baseline_bytes": 18841846,
+    "active_limit_bytes": 18978438,
+    "target_bytes": 10000000,
+    "hard_limit_bytes": null,
+    "activation_receipt": null,
+    "hard_limit_activation": "blocked_in_s06a_until_separate_payload_validator",
+    "boundary": "当前只允许 S-06-A 自身的登记册、结构约束、只读扫描器、定向测试和说明进入临时施工余量；10MB 目标尚未达成。即使迁移票格式与 SHA 齐全，S-06-A 也不启用 hard_limit；必须等另行获批的外置 payload 逐文件验证器。"
+  },
+  "storage_roots": [
+    {
+      "root_id": "repository_main_v1",
+      "locator": {
+        "kind": "repository",
+        "suffix": null
+      },
+      "role": "authoritative_repository",
+      "required": true,
+      "failure_domain": "primary_volume",
+      "boundary": "长期配置、上下文配方、API 规则、可复用程序、现役测试、治理账、实验结论卡和外置指针留在这里。"
+    },
+    {
+      "root_id": "repository_sibling_external_archive_v1",
+      "locator": {
+        "kind": "repository_sibling_suffix",
+        "suffix": "_外置仓"
+      },
+      "role": "external_archive",
+      "required": true,
+      "failure_domain": "same_volume_as_repository",
+      "boundary": "保存不可变历史现场和大工件；当前与主仓处于同一磁盘故障域，不能冒充独立备份。"
+    },
+    {
+      "root_id": "repository_sibling_isolated_experiments_v1",
+      "locator": {
+        "kind": "repository_sibling_suffix",
+        "suffix": "_隔离实验"
+      },
+      "role": "isolated_experiment_workspace",
+      "required": true,
+      "failure_domain": "same_volume_as_repository",
+      "boundary": "只放正在组装或核验的实验副本；完成后应留下结论卡和外置指针，不能长期递归复制上一轮完整快照。"
+    },
+    {
+      "root_id": "repository_sibling_test_workspace_v1",
+      "locator": {
+        "kind": "repository_sibling_suffix",
+        "suffix": "_测试工作区"
+      },
+      "role": "copied_test_workspace",
+      "required": true,
+      "failure_domain": "same_volume_as_repository",
+      "boundary": "测试只消费固定 Git 提交与已验材料的副本；不引用主仓可变工作树，也不回写正式零件。"
+    }
+  ],
+  "objects": [
+    {
+      "artifact_id": "external-archive-batch-20260723",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "archive_batch_20260723",
+      "category": "external_archive_batch",
+      "status": "frozen",
+      "record_kind": "archive_batch",
+      "lifecycle": "historical",
+      "consumer_closure": "not_applicable",
+      "verification_level": "manifest_only",
+      "recoverability": "not_proven",
+      "externalization": "already_external",
+      "purpose_summary": "第一批外置历史目录库存，共登记 51 条。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "a7560f2fc95503f3c9ce35c250437f19f9cb75fd53b5c78c02fcd68df74320a0",
+        "expected_entry_count": 51,
+        "entries_field": "entries",
+        "entry_path_field": "source",
+        "entry_sha256_field": null
+      },
+      "keep_in_repository": [
+        "批次身份、清单 SHA、条目数、结论卡和指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "tools/repo_slim_inventory.py",
+        "tools/historical_test_replay.py"
+      ],
+      "boundary": "只有清单整体 SHA，没有逐条内容 SHA；当前只能证明登记清单未漂移，不能证明每项可恢复。"
+    },
+    {
+      "artifact_id": "external-archive-batch-slim-20260723",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "archive_batch_slim_20260723",
+      "category": "external_archive_batch",
+      "status": "frozen",
+      "record_kind": "archive_batch",
+      "lifecycle": "historical",
+      "consumer_closure": "not_applicable",
+      "verification_level": "manifest_only",
+      "recoverability": "not_proven",
+      "externalization": "already_external",
+      "purpose_summary": "第二批瘦身外置库存，共登记 91 条。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "05be286ea178a0f30f30ab80ea32e8525ec2d450a3d431fc70e8e23c93fd7339",
+        "expected_entry_count": 91,
+        "entries_field": "entries",
+        "entry_path_field": "source",
+        "entry_sha256_field": null
+      },
+      "keep_in_repository": [
+        "批次身份、清单 SHA、条目数、结论卡和指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "tools/repo_slim_inventory.py"
+      ],
+      "boundary": "缺少逐条 SHA，且与第一批的字段形状不同；只能作为库存旧账。"
+    },
+    {
+      "artifact_id": "external-archive-overlay-z94-20260723",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "archive_batch_slim_overlay_z94_20260723",
+      "category": "external_archive_batch",
+      "status": "frozen",
+      "record_kind": "archive_batch",
+      "lifecycle": "historical",
+      "consumer_closure": "not_applicable",
+      "verification_level": "manifest_only",
+      "recoverability": "not_proven",
+      "externalization": "already_external",
+      "purpose_summary": "Z94 覆盖层外置库存，共登记 6 条。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "7b72a4393a9710390f094cad51aeeae2d4f730783e9e7acf02fd11916e0a7cea",
+        "expected_entry_count": 6,
+        "entries_field": "entries",
+        "entry_path_field": "path",
+        "entry_sha256_field": null
+      },
+      "keep_in_repository": [
+        "批次身份、清单 SHA、条目数、结论卡和指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "tools/repo_slim_inventory.py"
+      ],
+      "boundary": "只认清单身份，不把覆盖层说明里的软链接句子解释为真实可恢复路径。"
+    },
+    {
+      "artifact_id": "external-legacy-temp-20260720",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "TEMP外置_20260720",
+      "category": "legacy_external_container",
+      "status": "unknown",
+      "record_kind": "workspace_container",
+      "lifecycle": "unknown",
+      "consumer_closure": "open",
+      "verification_level": "directory_presence_only",
+      "recoverability": "not_proven",
+      "externalization": "already_external",
+      "purpose_summary": "约 41GB 的旧模型、虚拟环境和缓存混合容器，根层还没有稳定清单。",
+      "identity_anchors": [],
+      "manifest": null,
+      "keep_in_repository": [
+        "容器身份、用途边界和未来分批清点指针"
+      ],
+      "externalize_later": [],
+      "consumers": [],
+      "boundary": "S-06-A 只登记目录存在；不递归扫描、不清理、不把缓存与不可再生材料混为一类。"
+    },
+    {
+      "artifact_id": "historical-test-replay-s05b-v1",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "historical_test_replay_s05b_20260731_v1",
+      "category": "historical_test_replay_package",
+      "status": "superseded",
+      "record_kind": "replay_package",
+      "lifecycle": "superseded",
+      "consumer_closure": "verified",
+      "verification_level": "cryptographically_sealed",
+      "recoverability": "package_integrity_proven_same_failure_domain",
+      "externalization": "already_external",
+      "purpose_summary": "S-05-B 第一版历史回放包；封签有效，但真实回放因少收 Z01d 固定夹具得到 38 过、2 败。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "f2f2b3b612ac4b18f98abbabdd0bf500337fde9cfe62be8dacf1ab03f6a5503a",
+        "expected_entry_count": 2055,
+        "entries_field": "files",
+        "entry_path_field": "path",
+        "entry_sha256_field": "sha256"
+      },
+      "keep_in_repository": [
+        "失败结论、清单 SHA、固定提交和回放票指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "tools/historical_test_replay.py"
+      ],
+      "boundary": "保持不可变失败证据；不得用 v2 的通过覆盖 v1，也不把同盘完整性写成独立备份。"
+    },
+    {
+      "artifact_id": "historical-test-replay-s05b-v2",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "historical_test_replay_s05b_20260731_v2",
+      "category": "historical_test_replay_package",
+      "status": "sealed",
+      "record_kind": "replay_package",
+      "lifecycle": "frozen",
+      "consumer_closure": "verified",
+      "verification_level": "cryptographically_sealed",
+      "recoverability": "package_integrity_proven_same_failure_domain",
+      "externalization": "already_external",
+      "purpose_summary": "S-05-B 第二版历史回放包；补齐 Z01d 固定夹具后，真实副本回放 40 项和 3 个子测试全部通过。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "1e1c003ec5fe1adb9c045584d7dc33415623607baef63c3e6e1060166ec4cca4",
+        "expected_entry_count": 2057,
+        "entries_field": "files",
+        "entry_path_field": "path",
+        "entry_sha256_field": "sha256"
+      },
+      "keep_in_repository": [
+        "通过结论、清单 SHA、固定提交和回放票指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "tools/historical_test_replay.py"
+      ],
+      "boundary": "逐文件 SHA 和真实回放已验；包仍与主仓同盘，不签发独立灾备或源材料永久可恢复结论。"
+    },
+    {
+      "artifact_id": "isolation-chatgpt-component-r01",
+      "root_id": "repository_sibling_isolated_experiments_v1",
+      "relative_path": "CHATGPT_组件标准化与循环编排外询_r01_20260730",
+      "category": "isolated_experiment",
+      "status": "candidate",
+      "record_kind": "single_experiment",
+      "lifecycle": "candidate",
+      "consumer_closure": "open",
+      "verification_level": "directory_presence_only",
+      "recoverability": "not_applicable",
+      "externalization": "stay_isolation_workspace",
+      "purpose_summary": "组件标准化与循环编排的外部咨询工作区。",
+      "identity_anchors": [],
+      "manifest": null,
+      "keep_in_repository": [
+        "以后补一张结论卡和本登记册指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "human_review"
+      ],
+      "boundary": "当前缺根层身份说明，只登记目录存在；不能据目录名推断结论或清理。"
+    },
+    {
+      "artifact_id": "isolation-qwen-v4-r01",
+      "root_id": "repository_sibling_isolated_experiments_v1",
+      "relative_path": "QWEN37_V4FLASH_双路线三书_r01_20260730",
+      "category": "isolated_experiment",
+      "status": "superseded",
+      "record_kind": "single_experiment",
+      "lifecycle": "superseded",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "stay_isolation_workspace",
+      "purpose_summary": "千问 3.7 Flash 与 DeepSeek V4 Flash 双路线三书的第一轮隔离工作区。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "ad90d5192f73ee14c55b63e847c7efba4f50083061dccf298a898248a11d7b47"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "模型调用档、上下文配方、结论卡和本登记册指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "后续 r02-r04 对照"
+      ],
+      "boundary": "工作区不是配置真源；通用规则应回到 config，运行现场留隔离区。"
+    },
+    {
+      "artifact_id": "isolation-qwen-v4-r02",
+      "root_id": "repository_sibling_isolated_experiments_v1",
+      "relative_path": "QWEN37_V4FLASH_双路线三书_r02_零调用回放_20260730",
+      "category": "isolated_experiment",
+      "status": "superseded",
+      "record_kind": "single_experiment",
+      "lifecycle": "superseded",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "stay_isolation_workspace",
+      "purpose_summary": "第二轮零调用回放工作区。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "35f48f0b01a37b543f9c9a12b6e766f519781210f9d00b90a873037738c854b2"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "复用规则、结论卡和本登记册指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "后续 r03-r04 对照"
+      ],
+      "boundary": "零调用回放不能替代真实运输结论；历史快照不应在下一轮递归整树复制。"
+    },
+    {
+      "artifact_id": "isolation-qwen-v4-r03",
+      "root_id": "repository_sibling_isolated_experiments_v1",
+      "relative_path": "QWEN37_V4FLASH_双路线三书_r03_所有权窗口请求预览_20260730",
+      "category": "isolated_experiment",
+      "status": "superseded",
+      "record_kind": "single_experiment",
+      "lifecycle": "superseded",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "stay_isolation_workspace",
+      "purpose_summary": "第三轮所有权窗口请求预览工作区。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "1ec1fb7a94d6afb4e0bb2f5355af549391a5db0c551d804884a6187a0f869a4b"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "请求组装规则、结论卡和本登记册指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "后续 r04 对照"
+      ],
+      "boundary": "请求预览不代表已经发网；历史快照不应继续层层复制。"
+    },
+    {
+      "artifact_id": "isolation-qwen-v4-r04",
+      "root_id": "repository_sibling_isolated_experiments_v1",
+      "relative_path": "QWEN37_V4FLASH_双路线三书_r04_GateA真实烟雾_20260730",
+      "category": "isolated_experiment",
+      "status": "working",
+      "record_kind": "single_experiment",
+      "lifecycle": "active_working_copy",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "stay_isolation_workspace",
+      "purpose_summary": "第四轮 Gate A 真实烟雾工作区；运输成功，但提示词与上下文质量仍处于 HOLD。",
+      "identity_anchors": [
+        {
+          "kind": "delivery_receipt",
+          "relative_path": "08_交付/R04_GATE_A_REAL_RUN_REVIEW_RECEIPT.json",
+          "sha256": "06ffb4b3ee2bc02c356a622dc607f4fe72e17c24c4a951f86b6dc5f4be455800"
+        },
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "8908a4c31850460beb8b6147b2c7119ea62b903fab89c6b7b200d19ca428a62f"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "千问与 V4 的调用档、JSON 合同、上下文配方、质量结论卡和本登记册指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "后续组件化调配和质量修订"
+      ],
+      "boundary": "机器回执记录 3 次真实调用，根 README 仍写 0 次；冲突未裁决前以回执作更强运行证据，但不改写旧说明。"
+    },
+    {
+      "artifact_id": "repo-experiment-model-benchmarks",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/model_benchmarks",
+      "category": "repository_experiment",
+      "status": "frozen",
+      "record_kind": "family_container",
+      "lifecycle": "historical",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "历史模型横向评测家族；成绩只作候选证据，不是默认模型结论。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "INDEX.md",
+          "sha256": "7b1768923589c8de7a5b0837aff7fd7bb6f6ce41bdca82bf1f27e1502353f91f"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "README、INDEX、通用模型配置和被测试消费的通用程序"
+      ],
+      "externalize_later": [
+        "各轮 inputs、prepared、transport、candidate 和 scorecard 完整现场"
+      ],
+      "consumers": [
+        "模型横评工具与测试",
+        "审仓打包路线"
+      ],
+      "boundary": "这是实验家族容器，不得把其中一轮成绩继承给全部子目录；消费者迁完前不搬通用程序。"
+    },
+    {
+      "artifact_id": "repo-experiment-v02-r2-development-hardening-r01",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/V02_R2_development_hardening_r01_20260727",
+      "category": "repository_experiment",
+      "status": "negative",
+      "record_kind": "single_experiment",
+      "lifecycle": "historical",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "R2 开发硬化负结果；A7 完整题从 16 降到 13，触发回退砍线。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "80df4005e71d44535d115a535172f30c55b425382f3ae16962f757ed5f7e6de8"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "README 和仍被测试引用的评分器、运行器、隔离程序"
+      ],
+      "externalize_later": [
+        "历史运行现场"
+      ],
+      "consumers": [
+        "terminal_controller.py",
+        "5 组 R2 测试",
+        "审仓打包路线"
+      ],
+      "boundary": "负结果仍有诊断价值；消费者收口前不能只留指针。__pycache__ 可直接再生，不进外置仓。"
+    },
+    {
+      "artifact_id": "repo-experiment-v02-r2-question-driven-p0",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/V02_R2_question_driven_retrieval_p0_20260726",
+      "category": "repository_experiment",
+      "status": "frozen",
+      "record_kind": "single_experiment",
+      "lifecycle": "frozen",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "R2 的零 API 地基规范，拆分召回、回答与承托责任。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "00_外部评审采纳与边界.md",
+          "sha256": "4869e4604b6642062e699ff2d7b89c3e079a0a9f4fa4fb27536f78b4d412f646"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "边界说明和消费者迁完前的 v02_r2_p0.py"
+      ],
+      "externalize_later": [
+        "历史 P0 生成现场"
+      ],
+      "consumers": [
+        "tests/test_v02_r2_question_driven_p0.py",
+        "审仓打包路线"
+      ],
+      "boundary": "旧 R1 计分器已退出主计分位；直接消费者未迁完前不得外置程序。"
+    },
+    {
+      "artifact_id": "repo-experiment-v02-r2-terminal-once",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/V02_R2_terminal_once_20260727",
+      "category": "repository_experiment",
+      "status": "unknown",
+      "record_kind": "single_experiment",
+      "lifecycle": "unknown",
+      "consumer_closure": "open",
+      "verification_level": "directory_presence_only",
+      "recoverability": "not_applicable",
+      "externalization": "blocked_until_identity",
+      "purpose_summary": "一次性终验控制候选；目前没有 README、实验合同或结论票。",
+      "identity_anchors": [],
+      "manifest": null,
+      "keep_in_repository": [
+        "三个仍被测试引用的程序，并先补一张身份卡"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "3 个 terminal 测试",
+        "R2 开发硬化路线"
+      ],
+      "boundary": "身份不足，不能据文件名判断该续用、外置或清理。"
+    },
+    {
+      "artifact_id": "repo-experiment-v02-redesign-overnight",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/extraction_redesign_v02_overnight_20260725",
+      "category": "repository_experiment",
+      "status": "unknown",
+      "record_kind": "family_container",
+      "lifecycle": "unknown",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "blocked_until_identity",
+      "purpose_summary": "C1 到 R2 的混合实验家族，不是单一实验。",
+      "identity_anchors": [
+        {
+          "kind": "nested_contract_manifest",
+          "relative_path": "V02_C15_pipeline_v1_20260726/manifest.json",
+          "sha256": "f07008000b66a15a040cdeeb5921e2e2a8ce9fabdbdd893787501ccc7459d15c"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "仍被测试消费的程序、合同和全合成夹具"
+      ],
+      "externalize_later": [
+        "请求、投票、映射、真实材料、评分现场、回执树和非合成夹具"
+      ],
+      "consumers": [
+        "至少 20 组测试",
+        "多份 v02 工具",
+        "审仓打包路线"
+      ],
+      "boundary": "C15 锚只证明一个子目录身份，不能代表整个家族；必须先拆子实验卡再外置。"
+    },
+    {
+      "artifact_id": "repo-experiment-z76-semantic-inspector",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/Z76_phase2_semantic_inspector_pilot_20260721",
+      "category": "repository_experiment",
+      "status": "frozen",
+      "record_kind": "single_experiment",
+      "lifecycle": "frozen",
+      "consumer_closure": "verified",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "已完成的语义检查分流试点；规则先验和模型只分流，不产正式真值。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "experiment.json",
+          "sha256": "5e010380e2a08eca228feba7a91b5456cc03d5b838dd71785e1bd9f0db3aa392"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "experiment.json 和一页结论卡"
+      ],
+      "externalize_later": [
+        "review batch、routing result、usage、调用账、审计票和回执"
+      ],
+      "consumers": [
+        "experiments/INDEX.md",
+        "governance/module_registry.json"
+      ],
+      "boundary": "可作为最早的留卡外置候选；仍需单独迁移票，S-06-A 不移动。"
+    },
+    {
+      "artifact_id": "repo-experiment-z91-crossbook-v2",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/Z91_crossbook_v2_20260723",
+      "category": "repository_experiment",
+      "status": "candidate",
+      "record_kind": "single_experiment",
+      "lifecycle": "candidate",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "双臂跨书候选银标试验。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "6851d3c7ad0f4fdbfe411b0823918eca280848ddcf6eeb56edc5b0f928075563"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "README、rubric、短摘要例外合同和两份仍受测程序"
+      ],
+      "externalize_later": [
+        "匿名盲审、API 回包、usage 和候选银标现场"
+      ],
+      "consumers": [
+        "2 个 Z91 测试",
+        "ChatGPT 打包测试"
+      ],
+      "boundary": "候选未升默认；受测程序的消费者迁完前不能只留指针。"
+    },
+    {
+      "artifact_id": "repo-experiment-z96-anchor-r01",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/Z96_anchor_layer_evidence_closure_20260724",
+      "category": "repository_experiment",
+      "status": "frozen",
+      "record_kind": "single_experiment",
+      "lifecycle": "frozen",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "首轮证据闭包候选；后续 r02 已证明首轮暴露硬停。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "ed6fa80d1e8709147233666a2dc3546a94212d3684de6a567d9c87d856999c07"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "README、anchor_evidence_candidate.py 和 generate_replay.py"
+      ],
+      "externalize_later": [
+        "生成回放现场"
+      ],
+      "consumers": [
+        "r02 pipeline",
+        "tests/test_z96_anchor_evidence_candidate.py"
+      ],
+      "boundary": "被后续管线和测试消费的程序暂留；缓存直接再生，不归档。"
+    },
+    {
+      "artifact_id": "repo-experiment-z96-anchor-r02",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/Z96_anchor_layer_evidence_closure_r02_20260724",
+      "category": "repository_experiment",
+      "status": "candidate",
+      "record_kind": "single_experiment",
+      "lifecycle": "candidate",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "独立冻结召回、人工答案和渲染期望的零 API 候选。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "4a83b0a284e02bd5deebd986a51b28d3d2ed7d424116ef390a6b51306ee6a158"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "README、core.py、stage_runtime.py 和 pipeline.py"
+      ],
+      "externalize_later": [
+        "完整运行现场"
+      ],
+      "consumers": [
+        "tests/test_z96_r02_anchor_evidence_candidate.py"
+      ],
+      "boundary": "未接现役；测试消费者收口前不移动程序。"
+    },
+    {
+      "artifact_id": "repo-experiment-z97-rfu-ucr",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/Z97_rfu_ucr_ledger_20260724",
+      "category": "repository_experiment",
+      "status": "candidate",
+      "record_kind": "single_experiment",
+      "lifecycle": "candidate",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "把人工语义判定与程序算分拆开的五层读数候选。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "62e5e5c58c7587d13eda041a6aed07871d93e891805c6327298fc5961f013add"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "合同 Schema、core.py、pipeline.py 和测试夹具"
+      ],
+      "externalize_later": [
+        "演示运行、候选账和评分现场"
+      ],
+      "consumers": [
+        "Z98 刀A",
+        "C12 适配器",
+        "3 组测试",
+        "tools/v02_c8_gap_inventory.py"
+      ],
+      "boundary": "人工扩标未完成，不能把演示读数写成正式成绩。"
+    },
+    {
+      "artifact_id": "repo-experiment-z98-independent-verifier",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/Z98_independent_verifier_freeze_20260724",
+      "category": "repository_experiment",
+      "status": "candidate",
+      "record_kind": "single_experiment",
+      "lifecycle": "candidate",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "34 次修复与 34 次独立核验的零调用冻结准备。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "f879009189eb7d06250aedcb87e28f6d64a2c2f68ef15d1af1ae27f63a8f3241"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "README、裁判合同、设计合同、核心程序和可行性检查"
+      ],
+      "externalize_later": [
+        "未来动态请求、响应、usage 和裁判结果"
+      ],
+      "consumers": [
+        "2 组测试",
+        "tools/z98_knife_a_step2_runner.py"
+      ],
+      "boundary": "外部信任根与供应商实时目录仍待验；候选未升默认。"
+    },
+    {
+      "artifact_id": "repo-experiment-z98-knife-a-step1",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/Z98_knife_a_patch_step1_20260724",
+      "category": "repository_experiment",
+      "status": "frozen",
+      "record_kind": "single_experiment",
+      "lifecycle": "frozen",
+      "consumer_closure": "open",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "三章 14 个选择位与两种合同的未发送冻结件。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "fbc8a4e2bf212c401f834ee31f6b861e65640a4cebeeb9762acf1c193e135b8c"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "README、合同、授权设计、核心与管线程序"
+      ],
+      "externalize_later": [
+        "生成备料包、预演票和未来运行现场"
+      ],
+      "consumers": [
+        "独立核验候选",
+        "step2 runner",
+        "2 组测试"
+      ],
+      "boundary": "step2_release_allowed=false；不得因外置盘点继承发送授权。"
+    },
+    {
+      "artifact_id": "repo-experiment-z99-finalization-supply",
+      "root_id": "repository_main_v1",
+      "relative_path": "experiments/Z99_external_finalization_supply_20260724",
+      "category": "repository_experiment",
+      "status": "candidate",
+      "record_kind": "single_experiment",
+      "lifecycle": "candidate",
+      "consumer_closure": "verified",
+      "verification_level": "identity_anchor",
+      "recoverability": "not_applicable",
+      "externalization": "per_object_candidate",
+      "purpose_summary": "件 1 至 3 已准备、件 0 等外部信任根的外部定稿供料候选。",
+      "identity_anchors": [
+        {
+          "kind": "root_identity_document",
+          "relative_path": "README.md",
+          "sha256": "76da92c6c5e3dddd689c5f3f7ec89bd31a8e2f6093dc8e5fc3052940068a9595"
+        }
+      ],
+      "manifest": null,
+      "keep_in_repository": [
+        "README、一页结论卡和外置指针"
+      ],
+      "externalize_later": [
+        "约 5.2MB 的盲产池、四视图、供料表、Manifest 和验收票"
+      ],
+      "consumers": [
+        "5 个 Z99 或 v02 工具",
+        "本地证据登记",
+        "目录登记"
+      ],
+      "boundary": "777 条只代表词面未命中，不代表语义漏项；可优先留卡外置，但仍需单独迁移票。"
+    }
+  ],
+  "known_conflicts": [
+    {
+      "conflict_id": "ARCHIVE-ABSOLUTE-PATH-005",
+      "severity": "medium",
+      "status": "open",
+      "summary": "三份旧清单含本机绝对路径，不能直接当跨机器身份。",
+      "artifact_ids": [
+        "external-archive-batch-20260723",
+        "external-archive-batch-slim-20260723",
+        "external-archive-overlay-z94-20260723"
+      ],
+      "boundary": "新登记只认同级根加相对路径；旧清单不回写。"
+    },
+    {
+      "conflict_id": "ARCHIVE-HASH-COVERAGE-004",
+      "severity": "high",
+      "status": "open",
+      "summary": "三份旧清单只有整体 SHA，没有每项完整内容 SHA。",
+      "artifact_ids": [
+        "external-archive-batch-20260723",
+        "external-archive-batch-slim-20260723",
+        "external-archive-overlay-z94-20260723"
+      ],
+      "boundary": "证据等级固定为 manifest_only，恢复能力固定为 not_proven。"
+    },
+    {
+      "conflict_id": "ARCHIVE-MARKER-PATH-002",
+      "severity": "high",
+      "status": "open",
+      "summary": "第一批有 6 个来源路径没有同路径 marker，marker 实际落在 TEMP 的 Z94 恢复存根目录。",
+      "artifact_ids": [
+        "external-archive-batch-20260723"
+      ],
+      "boundary": "S-06-A 不补存根、不改路径；后续逐对象裁决。"
+    },
+    {
+      "conflict_id": "ARCHIVE-POLICY-README-003",
+      "severity": "medium",
+      "status": "open",
+      "summary": "旧 README 写绝对路径软链接，清单策略与实际备注却写存根或软链接失败。",
+      "artifact_ids": [
+        "external-archive-batch-20260723"
+      ],
+      "boundary": "不按 README 单句签发可恢复结论，也不回写历史说明。"
+    },
+    {
+      "conflict_id": "ARCHIVE-SCHEMA-DRIFT-008",
+      "severity": "medium",
+      "status": "open",
+      "summary": "三份旧清单字段形状不一致，没有统一对象编号与逐项 SHA。",
+      "artifact_ids": [
+        "external-archive-batch-20260723",
+        "external-archive-batch-slim-20260723",
+        "external-archive-overlay-z94-20260723"
+      ],
+      "boundary": "扫描器按每批明确字段读取，不猜通用 schema。"
+    },
+    {
+      "conflict_id": "ARCHIVE-STUB-COUNT-001",
+      "severity": "high",
+      "status": "open",
+      "summary": "三份清单合计 148 条，主仓 ARCHIVED 旧说明写 149 条。",
+      "artifact_ids": [
+        "external-archive-batch-20260723",
+        "external-archive-batch-slim-20260723",
+        "external-archive-overlay-z94-20260723"
+      ],
+      "boundary": "当前机器库存认 51+91+6=148；旧说明不洗成一致，差异保持可见。"
+    },
+    {
+      "conflict_id": "EXPERIMENT-R04-CALL-006",
+      "severity": "high",
+      "status": "open",
+      "summary": "r04 根 README 写真实调用仍为 0 次，交付机器回执记录 3 次请求且均为 HTTP 200。",
+      "artifact_ids": [
+        "isolation-qwen-v4-r04"
+      ],
+      "boundary": "运行事实暂以已钉 SHA 的机器回执为强证据；旧 README 不回写，质量仍为 HOLD。"
+    },
+    {
+      "conflict_id": "EXPERIMENT-SNAPSHOT-007",
+      "severity": "medium",
+      "status": "open",
+      "summary": "r01 到 r04 递归复制前轮完整快照，历史快照体积从约 1.8MB 增到约 28MB。",
+      "artifact_ids": [
+        "isolation-qwen-v4-r01",
+        "isolation-qwen-v4-r02",
+        "isolation-qwen-v4-r03",
+        "isolation-qwen-v4-r04"
+      ],
+      "boundary": "后续工作区只复制声明零件与所需证据，不再整树套娃；S-06-A 不改现有目录。"
+    }
+  ]
+}

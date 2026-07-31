@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-07-31T00:52:37+08:00",
+  "updated_at": "2026-07-31T08:08:40+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 95,
-    "root_visible_python_entry_count": 96,
+    "root_entity_count": 96,
+    "root_visible_python_entry_count": 97,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -522,7 +522,7 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 10,
+    "reusable_component": 11,
     "batch_reproducer": 80,
     "active_entry": 2,
     "retired_compat": 3,
@@ -3878,6 +3878,50 @@
       ],
       "next_confirmed_consumer": "v1 在提交 ed0dddcd2428fae8daf726ca2985571843df263d 上真实得到 38 项通过、2 项因少收 Z01d 覆盖诊断文件而失败；v2 在提交 d8371ea36ca2fc9b98300df6699f2e4bdb0468dc 上用新运行号得到 40 项通过、3 个子测试通过，后续只按 v2 文件读取票评估能否缩小材料包。",
       "retirement_condition_and_compatibility_boundary": "候选历史复验组件；不删除或移动原件，不覆盖旧包和旧工作区，不读取主仓未提交字节，不接默认业务链，不写 Notion，不发网或调用模型。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-096",
+      "path": "tools/repo_slim_inventory.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·只读库存与体积闸",
+      "purpose": "核对 S-06-A 对象登记、固定外置清单和 Git 跟踪体积，明确区分库存可信、可恢复、已迁移和 10MB 目标。",
+      "human_command": "python3 tools/repo_slim_inventory.py <check|report>",
+      "inputs": [
+        "governance/external_archive_registry.json",
+        "governance/contracts/external_archive_registry_v1.schema.json",
+        "governance/contracts/repo_slim_inventory_report_v1.schema.json",
+        "governance/contracts/repository_size_migration_receipt_v1.schema.json",
+        "登记的同级外置仓清单与小型身份锚",
+        "当前 Git 索引"
+      ],
+      "outputs": [
+        "一行人看检查结果",
+        "确定性的 repo-slim-inventory-report-v1 JSON"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "只读取登记册、固定清单、小型身份锚和 Git 索引；不遍历外置 payload，不写文件，不移动、不删除、不恢复、不发网。"
+      },
+      "current_consumers": [
+        "S-06-A 仓库瘦身登记",
+        "tests/test_repo_slim_inventory.py"
+      ],
+      "consumer_evidence_rule": "只证明登记对象、身份锚、固定清单和当前生效体积闸未漂移；target_met=false 不能改写成已达到 10MB，已登记旧冲突不能改写成已解决。",
+      "test_references": [
+        "tests/test_repo_slim_inventory.py"
+      ],
+      "last_use_clues": [
+        "governance/external_archive_registry.json",
+        "governance/artifact_storage/README.md",
+        "governance/contracts/repository_size_migration_receipt_v1.schema.json",
+        "tests/test_repo_slim_inventory.py"
+      ],
+      "next_confirmed_consumer": "S-06 后续逐对象迁移计划先读取本登记和消费者收口状态，再另开移动授权。",
+      "retirement_condition_and_compatibility_boundary": "候选只读公共零件；不提供 move、delete、restore、fix 或任意生产根参数。S-06-A 即使存在合法迁移票也拒绝启用 10MB 硬上限；必须等另行获批的外置 payload 逐文件验证器。",
       "review_needed": false
     }
   ]

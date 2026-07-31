@@ -43,4 +43,21 @@ experiments/<experiment_id>/
 
 当前能不能继续某条路线，只认 [治理索引](../governance/INDEX.md)、路线登记册和当轮施工令；不要按目录名或修改时间猜。
 
+## 瘦身时怎么判断一个实验能不能只留指针
+
+[外置对象登记册](../governance/external_archive_registry.json) 另记当前 13 个顶层实验目录的
+身份、消费者收口和建议去向。它不替代 `experiment.json`，也不会把未登记实验写进本页
+的生成索引。
+
+判断顺序很简单：
+
+1. 有身份卡或结论锚，才能说明这组实验做了什么。
+2. `consumer_closure` 仍是 `open`，说明测试或工具还直接用里面的程序，不能只留指针。
+3. 运行回包、usage、大候选池可以成为逐对象外置候选；合同、通用程序、最小夹具和结论卡
+   继续留主仓。
+4. `per_object_candidate` 只允许调查，不是移动授权。真实移动要另开施工票。
+
+当前更适合先做留卡外置的是 Z76 和 Z99；`V02_R2_terminal_once_20260727` 要先补身份，
+`extraction_redesign_v02_overnight_20260725` 要先拆开家族容器。
+
 来源：Codex

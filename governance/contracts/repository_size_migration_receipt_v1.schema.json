@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/governance/contracts/repository_size_migration_receipt_v1.schema.json",
+  "title": "Repository size migration completion receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "receipt_id",
+    "registry_id",
+    "status",
+    "metric",
+    "target_bytes",
+    "tracked_bytes",
+    "migration_performed",
+    "consumer_closure_verified",
+    "pointer_resolution_verified",
+    "external_snapshot_verified",
+    "moved_artifact_ids",
+    "repository_pointers",
+    "boundary"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "repository-size-migration-receipt-v1"
+    },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]+$"
+    },
+    "registry_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]+$"
+    },
+    "status": {
+      "const": "PASS"
+    },
+    "metric": {
+      "const": "git_index_per_tracked_path_blob_bytes"
+    },
+    "target_bytes": {
+      "const": 10000000
+    },
+    "tracked_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000
+    },
+    "migration_performed": {
+      "const": true
+    },
+    "consumer_closure_verified": {
+      "const": true
+    },
+    "pointer_resolution_verified": {
+      "const": true
+    },
+    "external_snapshot_verified": {
+      "const": true
+    },
+    "moved_artifact_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9._-]+$"
+      }
+    },
+    "repository_pointers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]+$"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^experiments/[^/]+/(?:README\\.md|experiment\\.json)$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "boundary": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

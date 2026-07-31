@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/governance/contracts/repo_slim_inventory_report_v1.schema.json",
+  "title": "Repository slim inventory report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "status",
+    "registry_id",
+    "claim",
+    "roots",
+    "git_inventory",
+    "objects",
+    "conflicts",
+    "blockers",
+    "checks"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "repo-slim-inventory-report-v1"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "BLOCKED"
+      ]
+    },
+    "registry_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inventory_complete_for_registered_objects",
+        "external_payload_verified",
+        "recoverability_proven",
+        "migration_performed"
+      ],
+      "properties": {
+        "inventory_complete_for_registered_objects": {
+          "type": "boolean"
+        },
+        "external_payload_verified": {
+          "const": false
+        },
+        "recoverability_proven": {
+          "const": false
+        },
+        "migration_performed": {
+          "const": false
+        }
+      }
+    },
+    "roots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "root_id",
+          "role",
+          "resolved"
+        ],
+        "properties": {
+          "root_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resolved": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "git_inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric",
+        "tracked_path_count",
+        "tracked_bytes",
+        "pre_s06a_baseline_bytes",
+        "active_limit_bytes",
+        "target_bytes",
+        "target_met",
+        "active_gate",
+        "active_gate_passed",
+        "hard_limit_active"
+      ],
+      "properties": {
+        "metric": {
+          "const": "git_index_per_tracked_path_blob_bytes"
+        },
+        "tracked_path_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tracked_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pre_s06a_baseline_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active_limit_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "target_bytes": {
+          "const": 10000000
+        },
+        "target_met": {
+          "type": "boolean"
+        },
+        "active_gate": {
+          "enum": [
+            "s06a_bootstrap_no_growth",
+            "hard_limit"
+          ]
+        },
+        "active_gate_passed": {
+          "type": "boolean"
+        },
+        "hard_limit_active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "root_id",
+          "status",
+          "verification_level",
+          "recoverability",
+          "manifest_checked",
+          "anchor_count"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "root_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "verification_level": {
+            "type": "string",
+            "minLength": 1
+          },
+          "recoverability": {
+            "type": "string",
+            "minLength": 1
+          },
+          "manifest_checked": {
+            "type": "boolean"
+          },
+          "anchor_count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "known_open_ids",
+        "blocking_ids"
+      ],
+      "properties": {
+        "known_open_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "blocking_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "check_id",
+          "passed"
+        ],
+        "properties": {
+          "check_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "passed": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "blockers": {
+            "maxItems": 0
+          },
+          "git_inventory": {
+            "properties": {
+              "active_gate_passed": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "blockers": {
+            "minItems": 1
+          },
+          "git_inventory": {
+            "properties": {
+              "active_gate_passed": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "git_inventory": {
+            "properties": {
+              "hard_limit_active": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "git_inventory": {
+            "properties": {
+              "active_gate": {
+                "const": "hard_limit"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

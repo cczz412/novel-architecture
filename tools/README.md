@@ -188,4 +188,29 @@ v1 包在提交 `ed0dddcd2428fae8daf726ca2985571843df263d` 上实际得到 38 �
 `s05b-historical-replay-r02-20260731` 实际得到 40 项通过、3 个子测试通过；
 两轮结果各看自己的工作区票据，不能相互覆盖。
 
+## S-06-A 仓库瘦身只读检查
+
+`repo_slim_inventory.py` 只核三类东西：对象登记、小型身份锚或固定清单、Git 跟踪体积。
+它没有搬运、删除、修复、恢复或写报告文件的命令。
+
+```bash
+.venv/bin/python tools/repo_slim_inventory.py check
+.venv/bin/python tools/repo_slim_inventory.py report
+```
+
+- `check` 输出一行人看结果。
+- `report` 向标准输出写确定性 JSON，方便后续机器闸消费。
+- 正式运行固定读取 `governance/external_archive_registry.json`，不接受任意生产根路径。
+- 扫描器只打开登记的小型锚与清单，不跟随清单进入外置 payload。
+- 外置根、对象目录或清单经过软链接会拒绝；清单是硬链接、超过 5 MiB、读取时被替换、
+  SHA 或条目数漂移也会拒绝。
+- Git 体积读索引 blob；不统计未跟踪或忽略内容，也不拿工作树体积替代。
+- 当前 PASS 可以与 `target_met=false` 同时成立，意思是“没有越过当前施工上限，但还没瘦到
+  10MB”。
+
+机器报告不会签发可恢复或已迁移结论。S-06-A 明确不能把政策切成 10MB 硬上限，
+即使有人放入格式正确的迁移票也会拒绝。以后验票不只核文件 SHA，还要按
+`repository_size_migration_receipt_v1.schema.json` 核迁移事实、消费者收口、指针解析、
+外置快照和迁移对象身份，并由另行获批的验证器逐文件核外置 payload 的存在性与内容 SHA。
+
 来源：Codex
