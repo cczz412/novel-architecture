@@ -64,6 +64,26 @@ V02／Z98／Z99 有些测试必须读取封存运行件，或读取能还原小�
 .venv/bin/python -m pytest -q tests/test_repo_slim_inventory.py
 ```
 
+## 外置 payload 验证测什么
+
+`test_external_payload_validator.py` 只用临时主仓和临时同级外置仓，不读取真实外置仓。
+它守住这些合同：
+
+- 一次只验一个登记且进入白名单的对象，不接受任意生产根路径；
+- 文件集合、字节数和逐文件 SHA 全部一致才出轻量 PASS 报告；
+- 缺文件、多文件、大小或内容漂移会硬停；
+- 路径越界、大小写重复、软链接、硬链接和特殊文件会硬停；
+- 大文件按块读取，扫描前后文件集合或身份漂移会硬停；
+- 验证器或安全读取助手在扫描中漂移会硬停，缺少 no-follow 能力也不会降级运行；
+- 报告不复制逐文件列表，不出现绝对路径、用户名或 payload 内容；
+- S-06-B PASS 不能冒充迁移完成票，也不能改写 S-06-A 的 10MB 激活锁。
+
+定向命令：
+
+```bash
+.venv/bin/python -m pytest -q tests/test_external_payload_validator.py
+```
+
 ## 三条底线
 
 - 不能拿伪造夹具替代缺失的历史实物。

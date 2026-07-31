@@ -30,12 +30,12 @@
     "metric": "git_index_per_tracked_path_blob_bytes",
     "mode": "s06a_bootstrap_no_growth",
     "pre_s06a_baseline_bytes": 18841846,
-    "active_limit_bytes": 18978438,
+    "active_limit_bytes": 19056871,
     "target_bytes": 10000000,
     "hard_limit_bytes": null,
     "activation_receipt": null,
     "hard_limit_activation": "blocked_in_s06a_until_separate_payload_validator",
-    "boundary": "当前只允许 S-06-A 自身的登记册、结构约束、只读扫描器、定向测试和说明进入临时施工余量；10MB 目标尚未达成。即使迁移票格式与 SHA 齐全，S-06-A 也不启用 hard_limit；必须等另行获批的外置 payload 逐文件验证器。"
+    "boundary": "当前只允许 S-06-A 登记闸与 S-06-B 单件逐文件验证器、合同、定向测试和说明进入施工余量；10MB 目标尚未达成。S-06-B 即使逐文件 PASS 也没有 hard_limit 激活权；消费者收口、仓内指针、迁移事实、故障域和硬门仍须后续另行授权。"
   },
   "storage_roots": [
     {

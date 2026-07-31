@@ -39,6 +39,7 @@
         "Codex",
         "tools/governance_index.py",
         "tools/novel_pipeline.py",
+        "tools/external_payload_validator.py",
         "tools/repo_slim_inventory.py"
       ],
       "new_content_rule": "只收治理真源、对象登记、合同和由生成器维护的索引；不得另写当前任务副本。",
@@ -60,12 +61,19 @@
           "label": "外置对象身份、位置与库存边界",
           "target_pattern": "governance/external_archive_registry.json",
           "rule": "只登记对象身份、位置、消费者、生命周期、固定清单和已知冲突；不授权移动、删除或恢复。"
+        },
+        {
+          "object_id": "external_payload_validation_policy",
+          "label": "外置 payload 逐文件读取白名单",
+          "target_pattern": "governance/external_payload_validation_policy.json",
+          "rule": "只列获准单件逐文件核验的外置对象和旧对象排除原因；不发现搬迁候选，不授权移动、删除或启用硬门。"
         }
       ],
       "externalization": "prohibited",
       "evidence_refs": [
         "AGENTS.md",
-        "governance/README.md"
+        "governance/README.md",
+        "governance/external_payload_validation_policy.json"
       ],
       "open_decisions": [],
       "inherit_to_children": false

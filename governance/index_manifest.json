@@ -20,9 +20,9 @@
       "sha256": "e2e11cce842a1539b834632b7f2095265bdf2fe312c2fd1132db3c54db98d779"
     },
     {
-      "bytes": 25037,
+      "bytes": 25534,
       "path": "governance/directory_registry.json",
-      "sha256": "67efa0f1bc1af8dbd0510d246602bf15f1bc1869c71fcbc365cad06ce9206606"
+      "sha256": "4d6e424f9cc38daff9366bb217aa51aa7f2d19f113e81f84775a147c1de71b9a"
     },
     {
       "bytes": 14298,
@@ -67,9 +67,9 @@
       "sha256": "fd131e9b28e40358c890222a0ac6c8f89d3dcd18a67fa86960d35f5af7ea88c3"
     },
     {
-      "bytes": 3778,
+      "bytes": 4050,
       "path": "governance/indexes/new_file_routing.md",
-      "sha256": "8468aad3da3e0784ae14ec68d5c3d5e891be7e2783eb0f58d9ef743e62ad7946"
+      "sha256": "0698db03eed4a2430dd2b5aa7a127d4ab4b5239bd902eab63900b4c7a1c214c7"
     },
     {
       "bytes": 503,

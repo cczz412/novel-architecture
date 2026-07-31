@@ -47,6 +47,16 @@ S-06-A 新增三份仓库瘦身合同：
 联网、读密钥、调用模型或写 Notion。迁移完成票只是必要条件，不是充分条件；S-06-A
 明确拒绝启用硬上限，必须等另行获批的外置 payload 逐文件验证器。
 
+S-06-B 新增两份逐文件验证合同：
+
+- `external_payload_validation_policy_v1.schema.json`：约束单件读取白名单、旧对象排除原因、
+  payload 相对根和清单大小字段；不能自动发现对象，也不授权迁移或硬门。
+- `external_payload_verification_report_v1.schema.json`：约束不含逐文件列表的轻量 PASS
+  报告。报告只证明 payload 文件集合、大小和 SHA 与清单一致，其余能力一律固定为否。
+
+政策实例只认 `../external_payload_validation_policy.json`。旧三批缺逐文件 SHA、旧 TEMP
+外置根缺清单，都必须保持排除；不能用抽样、绝对路径或目录存在冒充完整验证。
+
 纯规则检查点登记在 `../rule_check_registry.json`。它把材料、锚、格式、参数、调用账、密钥、保护件、金标、泄题、重放、交付和受影响测试 18 类检查逐项钉到程序入口，检查员 API 不重复裁这些机械事实。
 
 来源：Codex

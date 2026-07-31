@@ -60,14 +60,25 @@
 用登记册里的 `root_id + relative_path` 定位，再核对应的清单或身份锚 SHA。不要把旧清单
 内的本机绝对路径当成跨机器身份。
 
+**只读一份实验结论**
+
+主仓以后优先留轻量结论卡：实验编号、目的、规则包、短结论、质量裁决、外置对象编号、
+清单 SHA 和取件命令。逐文件清单、完整请求响应和中间产物留在仓外；要复现时再按对象
+编号调取，不把整轮现场搬回日常上下文。
+
 ## 一键检查
 
 ```bash
 .venv/bin/python tools/repo_slim_inventory.py check
 .venv/bin/python tools/repo_slim_inventory.py report
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id historical-test-replay-s05b-v2
+.venv/bin/python tools/external_payload_validator.py report \
+  --artifact-id historical-test-replay-s05b-v2
 ```
 
-`check` 给人看一行结论，`report` 给程序读确定性 JSON。两条命令都只读。
+两个工具的 `check` 都给人看一行结论，`report` 给程序读确定性 JSON。四条命令都只读。
+库存工具不进入 payload；逐文件工具一次只验政策白名单里的一个对象，不接受任意根路径。
 
 当前 `PASS` 只说明：
 
@@ -91,6 +102,8 @@ blob 大小，同一份内容若被两个路径引用就计两次。不统计 `.
 
 S-06-A 前基线是 18,841,846 字节，目标是 10,000,000 字节。当前只启用施工期不增长闸。
 即使有人准备出格式正确的迁移票，本工具也不会切成 10MB 硬上限；要等下一波另行获批的
-外置 payload 逐文件验证器，真实核完存在性和内容 SHA 后再谈激活。
+外置 payload 逐文件验证器，真实核完存在性和内容 SHA 后再谈激活。S-06-B 的验证器已经
+独立落位，但它的 PASS 仍不授权硬门；消费者收口、仓内指针、迁移事实和故障域还要在
+后续波次另行验收。
 
 来源：Codex

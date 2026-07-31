@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-07-31T08:08:40+08:00",
+  "updated_at": "2026-07-31T09:00:31+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 96,
-    "root_visible_python_entry_count": 97,
+    "root_entity_count": 97,
+    "root_visible_python_entry_count": 98,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -522,7 +522,7 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 11,
+    "reusable_component": 12,
     "batch_reproducer": 80,
     "active_entry": 2,
     "retired_compat": 3,
@@ -3920,8 +3920,52 @@
         "governance/contracts/repository_size_migration_receipt_v1.schema.json",
         "tests/test_repo_slim_inventory.py"
       ],
-      "next_confirmed_consumer": "S-06 后续逐对象迁移计划先读取本登记和消费者收口状态，再另开移动授权。",
-      "retirement_condition_and_compatibility_boundary": "候选只读公共零件；不提供 move、delete、restore、fix 或任意生产根参数。S-06-A 即使存在合法迁移票也拒绝启用 10MB 硬上限；必须等另行获批的外置 payload 逐文件验证器。",
+      "next_confirmed_consumer": "S-06 后续逐对象迁移计划先读取本登记和消费者收口状态；逐文件 payload 校验由 TOOL-097 单件执行，再另开移动授权。",
+      "retirement_condition_and_compatibility_boundary": "候选只读公共零件；不提供 move、delete、restore、fix 或任意生产根参数。S-06-A 即使存在合法迁移票也拒绝启用 10MB 硬上限；TOOL-097 的逐文件 PASS 也不会改变这条锁。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-097",
+      "path": "tools/external_payload_validator.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·外置 payload 单件验证",
+      "purpose": "一次只核一个获准外置对象的 payload 文件集合、大小和逐文件 SHA-256，输出不复制逐项清单的轻量报告。",
+      "human_command": "python3 tools/external_payload_validator.py <check|report> --artifact-id <登记对象编号>",
+      "inputs": [
+        "governance/external_archive_registry.json",
+        "governance/external_payload_validation_policy.json",
+        "governance/contracts/external_payload_validation_policy_v1.schema.json",
+        "governance/contracts/external_payload_verification_report_v1.schema.json",
+        "tools/repo_slim_inventory.py 的安全路径读取助手",
+        "获准对象的固定 MANIFEST 与 payload 目录"
+      ],
+      "outputs": [
+        "一行人看检查结果",
+        "不含逐文件列表的 external-payload-verification-report-v1 JSON"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "只读获准对象；逐层拒绝软链接、硬链接、特殊文件、跨设备、路径越界和扫描竞态。按块计算 SHA，不写文件、不发网。"
+      },
+      "current_consumers": [
+        "S-06-B 外置 payload 逐文件验证",
+        "tests/test_external_payload_validator.py"
+      ],
+      "consumer_evidence_rule": "一次命令只接一个同时存在于登记册和验证政策白名单的 artifact_id；PASS 同时绑定验证器与安全读取助手 SHA，只证明该 payload 当下字节与清单一致，不证明包级元数据、消费者收口、指针、可恢复性、独立备份或迁移完成。",
+      "test_references": [
+        "tests/test_external_payload_validator.py"
+      ],
+      "last_use_clues": [
+        "governance/external_payload_validation_policy.json",
+        "governance/artifact_storage/README.md",
+        "historical-test-replay-s05b-v1",
+        "historical-test-replay-s05b-v2"
+      ],
+      "next_confirmed_consumer": "以后每个外置实验包用相同登记字段生成轻量结论卡；需要复现时按对象编号单件取验。",
+      "retirement_condition_and_compatibility_boundary": "候选只读公共零件；不自动发现目标，不接受任意 root/path/glob，不写报告文件，不移动、删除、恢复、改登记、签迁移票或启用 10MB 硬门。",
       "review_needed": false
     }
   ]

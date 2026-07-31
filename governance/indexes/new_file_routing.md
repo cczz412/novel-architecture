@@ -7,6 +7,7 @@
 | 当前任务与运行的机器镜像 | `governance/CURRENT_STATE.json` | 只有 Notion 现役账序回读后的当前状态进入这里。 | `governance_control_plane` |
 | 目录身份与落点规则 | `governance/directory_registry.json` | 只登记容器身份，不登记当前任务或业务结论。 | `governance_control_plane` |
 | 外置对象身份、位置与库存边界 | `governance/external_archive_registry.json` | 只登记对象身份、位置、消费者、生命周期、固定清单和已知冲突；不授权移动、删除或恢复。 | `governance_control_plane` |
+| 外置 payload 逐文件读取白名单 | `governance/external_payload_validation_policy.json` | 只列获准单件逐文件核验的外置对象和旧对象排除原因；不发现搬迁候选，不授权移动、删除或启用硬门。 | `governance_control_plane` |
 | API 地址与供应商访问规则 | `config/providers/<provider_id>` | 地址、授权边界和运输规则按供应商分开保存。 | `configuration_contracts` |
 | 模型调用档案 | `config/model_call_profiles/<profile_id>.json` | 每个调用档案有独立身份，可被测试工作区按白名单复制。 | `configuration_contracts` |
 | API 请求响应 JSON 合同 | `config/model_call_profiles/contracts/<profile_id>` | 各 API 的 JSON 形状与档案同名归档，不混成通用猜测。 | `configuration_contracts` |

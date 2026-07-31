@@ -257,6 +257,27 @@ S-06-A 把 Wave 5 的三份旧清单盘点扩成全仓瘦身范围内的对象�
 S-06-A 不提供硬上限激活能力。迁移票即使格式和 SHA 都合法，也必须等另行获批的外置
 payload 逐文件验证器真正核过路径存在性与内容 SHA；当前只读扫描器不会越权代验。
 
+## S-06-B 外置 payload 单件验证
+
+S-06-B 用独立工具读取外置 payload，不扩张 S-06-A 扫描器的能力。白名单真源是
+`external_payload_validation_policy.json`，一次命令只接一个 `artifact_id`：
+
+```bash
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id historical-test-replay-s05b-v2
+.venv/bin/python tools/external_payload_validator.py report \
+  --artifact-id historical-test-replay-s05b-v2
+```
+
+当前只有 S-05-B 回放包 v1／v2 具备逐文件路径、字节数和 SHA-256，允许完整核 payload。
+三份 7 月 23 日旧清单缺逐项 SHA，旧 TEMP 外置根没有清单，政策会明确排除，工具不会
+顺着旧绝对路径猜位置。
+
+PASS 只说明一个获准对象的 payload 文件集合、大小和内容 SHA 与固定清单一致。轻量报告
+只保留对象编号、登记／政策／清单／验证器／安全读取助手 SHA、文件数、总字节和整组摘要，
+不把几千条逐文件清单复制回主仓。它不证明包级元数据、消费者收口、指针可取回、可恢复
+或独立备份，也不签迁移票、不移动或删除文件、不启用 10MB 硬门。
+
 旧 Wave 5 写集里的 `tools/external_archive.py` 没有被静默冒名施工。S-06-A 用新规格
 明确承接只读库存与体积检查，正式入口是 `tools/repo_slim_inventory.py`；旧 Wave 5
 票据仍只解释当时的候选写集，不倒签本轮结果。

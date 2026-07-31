@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/governance/contracts/external_payload_validation_policy_v1.schema.json",
+  "title": "External payload validation policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "policy_id",
+    "registry_id",
+    "authority",
+    "capability_limits",
+    "targets",
+    "exclusions",
+    "boundary"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "external-payload-validation-policy-v1"
+    },
+    "policy_id": {
+      "$ref": "#/$defs/id"
+    },
+    "registry_id": {
+      "$ref": "#/$defs/id"
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "may_discover_targets",
+        "may_move",
+        "may_delete",
+        "may_restore",
+        "may_rewrite_registry",
+        "may_issue_migration_receipt",
+        "may_activate_hard_limit"
+      ],
+      "properties": {
+        "scope": {
+          "const": "registered_external_payload_bytes_only"
+        },
+        "may_discover_targets": {
+          "const": false
+        },
+        "may_move": {
+          "const": false
+        },
+        "may_delete": {
+          "const": false
+        },
+        "may_restore": {
+          "const": false
+        },
+        "may_rewrite_registry": {
+          "const": false
+        },
+        "may_issue_migration_receipt": {
+          "const": false
+        },
+        "may_activate_hard_limit": {
+          "const": false
+        }
+      }
+    },
+    "capability_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "one_artifact_per_command",
+        "registered_payload_read",
+        "exact_file_set_check",
+        "streaming_sha256",
+        "write",
+        "network",
+        "credential_read",
+        "model_call",
+        "notion_write"
+      ],
+      "properties": {
+        "one_artifact_per_command": {
+          "const": true
+        },
+        "registered_payload_read": {
+          "const": true
+        },
+        "exact_file_set_check": {
+          "const": true
+        },
+        "streaming_sha256": {
+          "const": true
+        },
+        "write": {
+          "const": false
+        },
+        "network": {
+          "const": false
+        },
+        "credential_read": {
+          "const": false
+        },
+        "model_call": {
+          "const": false
+        },
+        "notion_write": {
+          "const": false
+        }
+      }
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/target"
+      }
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/exclusion"
+      }
+    },
+    "boundary": {
+      "$ref": "#/$defs/nonEmptyString"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]+$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "manifest_sha256",
+        "payload_root_relative_path",
+        "entry_size_field",
+        "manifest_total_files_field",
+        "manifest_total_bytes_field",
+        "exact_file_set",
+        "boundary"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/id"
+        },
+        "manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "payload_root_relative_path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "entry_size_field": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "manifest_total_files_field": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "manifest_total_bytes_field": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "exact_file_set": {
+          "const": true
+        },
+        "boundary": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "exclusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "reason",
+        "boundary"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/id"
+        },
+        "reason": {
+          "enum": [
+            "manifest_missing",
+            "manifest_lacks_per_file_sha256",
+            "not_external_payload"
+          ]
+        },
+        "boundary": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    }
+  }
+}

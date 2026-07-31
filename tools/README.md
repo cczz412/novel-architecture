@@ -213,4 +213,30 @@ v1 包在提交 `ed0dddcd2428fae8daf726ca2985571843df263d` 上实际得到 38 �
 `repository_size_migration_receipt_v1.schema.json` 核迁移事实、消费者收口、指针解析、
 外置快照和迁移对象身份，并由另行获批的验证器逐文件核外置 payload 的存在性与内容 SHA。
 
+## S-06-B 外置 payload 单件验证
+
+`external_payload_validator.py` 是独立的重型只读检查器。它不会改变
+`repo_slim_inventory.py` 的“不遍历 payload”合同。
+
+```bash
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id historical-test-replay-s05b-v1
+.venv/bin/python tools/external_payload_validator.py report \
+  --artifact-id historical-test-replay-s05b-v1
+```
+
+- 一次只接受一个同时登记且进入政策白名单的对象编号。
+- 不接受任意 `root`、路径、glob、自动发现、写盘、修复、移动、删除或激活参数。
+- 逐层拒绝软链接、硬链接、特殊文件、跨设备跳转、路径越界、大小写重复和扫描竞态。
+- 文件按 1 MiB 分块计算 SHA-256，不把完整 payload 装进内存或输出。
+- 实际文件集合必须与清单完全一致；缺文件、多文件、大小或 SHA 漂移都会硬停。
+- JSON 报告只放汇总，并绑定验证器和安全读取助手 SHA；不复制逐文件列表，也不泄漏
+  绝对路径或内容。
+
+当前白名单只含 S-05-B 回放包 v1／v2。旧三批没有逐文件 SHA，旧 TEMP 外置根没有清单，
+所以只能保持排除，不能靠旧绝对路径或抽样结果冒充完整。
+
+PASS 只证明“这个 payload 当下与清单一致”。它不证明包级元数据、消费者收口、指针、
+可恢复性、独立备份或迁移完成，也不能打开 10MB 硬门。
+
 来源：Codex

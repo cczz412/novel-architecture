@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/governance/contracts/external_payload_verification_report_v1.schema.json",
+  "title": "External payload verification report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "status",
+    "policy_id",
+    "registry_id",
+    "artifact_id",
+    "root_id",
+    "bindings",
+    "verification",
+    "claims",
+    "checks"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "external-payload-verification-report-v1"
+    },
+    "status": {
+      "const": "PASS"
+    },
+    "policy_id": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "registry_id": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "artifact_id": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "root_id": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_sha256",
+        "policy_sha256",
+        "manifest_sha256",
+        "validator_sha256",
+        "inventory_helper_sha256"
+      ],
+      "properties": {
+        "registry_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "policy_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "validator_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "inventory_helper_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file_count",
+        "total_bytes",
+        "entry_set_sha256",
+        "exact_file_set",
+        "content_sha256_verified",
+        "snapshot_stable"
+      ],
+      "properties": {
+        "file_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "entry_set_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "exact_file_set": {
+          "const": true
+        },
+        "content_sha256_verified": {
+          "const": true
+        },
+        "snapshot_stable": {
+          "const": true
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "payload_bytes_match_manifest",
+        "package_metadata_verified",
+        "consumer_closure_verified",
+        "pointer_resolution_verified",
+        "recoverability_proven",
+        "independent_backup_proven",
+        "migration_performed",
+        "hard_limit_activation_authorized",
+        "deletion_authorized"
+      ],
+      "properties": {
+        "payload_bytes_match_manifest": {
+          "const": true
+        },
+        "package_metadata_verified": {
+          "const": false
+        },
+        "consumer_closure_verified": {
+          "const": false
+        },
+        "pointer_resolution_verified": {
+          "const": false
+        },
+        "recoverability_proven": {
+          "const": false
+        },
+        "independent_backup_proven": {
+          "const": false
+        },
+        "migration_performed": {
+          "const": false
+        },
+        "hard_limit_activation_authorized": {
+          "const": false
+        },
+        "deletion_authorized": {
+          "const": false
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "policy_contract_valid",
+          "artifact_allowlisted",
+          "manifest_binding_valid",
+          "payload_path_set_exact",
+          "payload_sizes_exact",
+          "payload_sha256_exact",
+          "payload_snapshot_stable",
+          "readonly_capability_respected"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
