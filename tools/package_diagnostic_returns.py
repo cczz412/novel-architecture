@@ -13,12 +13,6 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
-
-ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_TARGET = (
-    ROOT
-    / "references/diagnostic-returns/Z66_中性原子事件请求诊断_三问法_20260720"
-)
 DEFAULT_SOURCES = (
     Path("/Users/a1234/Downloads/小说逐章证据_API高精度方案包"),
     Path("/Users/a1234/Downloads/LLM中性原子事件诊断包"),
@@ -336,7 +330,12 @@ def verify(sources: tuple[Path, ...], target: Path) -> dict[str, object]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--target", type=Path, default=DEFAULT_TARGET)
+    parser.add_argument(
+        "--target",
+        type=Path,
+        required=True,
+        help="历史重建的新空目录，或 --check 时完整取回的复现目录；不能用主仓轻量入口代替完整包",
+    )
     parser.add_argument("--source", action="append", type=Path)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()

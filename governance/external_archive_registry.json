@@ -30,12 +30,12 @@
     "metric": "git_index_per_tracked_path_blob_bytes",
     "mode": "s06a_bootstrap_no_growth",
     "pre_s06a_baseline_bytes": 18841846,
-    "active_limit_bytes": 15332698,
+    "active_limit_bytes": 14135125,
     "target_bytes": 10000000,
     "hard_limit_bytes": null,
     "activation_receipt": null,
     "hard_limit_activation": "blocked_in_s06a_until_separate_payload_validator",
-    "boundary": "当前施工余量覆盖 S-06-A 至 S-06-D-A 的只读治理件、S-07-B-A 的同盘完整副本、S-07-B-B 删除 5 轮零调用旧包的 71 个主仓重件、S-07-C-A 的一张 QEC 四模型轻量卡和仓外 7 件原始证据登记、S-07-D-A 的 LongCat r03 硬停轮同盘完整副本登记、S-07-D-B 删除 r03 的 24 个主仓重件并保留 5 件轻量入口、S-07-E-A 的 LongCat r01 硬停轮同盘完整副本登记、S-07-E-B-A 的 r01 旧程序测试夹具迁移、S-07-E-B-B 删除 r01 的 24 个主仓重件并保留 5 件轻量入口、S-07-F-A 的千问 r05／r06 有分轮同盘完整副本登记、S-07-F-B-A 删除两轮共 60 个无现役消费者的主仓重件并保留 21 件轻量入口，以及 S-07-G-A 的 Z66 三问法诊断回包同盘完整副本登记。10MB 目标仍未达成；Z66 与两轮千问现役消费者仍未收口；同盘外置不等于独立备份，历史候选不等于当前默认，也没有启用 10MB 硬门。"
+    "boundary": "当前施工余量覆盖 S-06-A 至 S-06-D-A 的只读治理件、S-07-B-A 的同盘完整副本、S-07-B-B 删除 5 轮零调用旧包的 71 个主仓重件、S-07-C-A 的一张 QEC 四模型轻量卡和仓外 7 件原始证据登记、S-07-D-A 的 LongCat r03 硬停轮同盘完整副本登记、S-07-D-B 删除 r03 的 24 个主仓重件并保留 5 件轻量入口、S-07-E-A 的 LongCat r01 硬停轮同盘完整副本登记、S-07-E-B-A 的 r01 旧程序测试夹具迁移、S-07-E-B-B 删除 r01 的 24 个主仓重件并保留 5 件轻量入口、S-07-F-A 的千问 r05／r06 有分轮同盘完整副本登记、S-07-F-B-A 删除两轮共 60 个无现役消费者的主仓重件并保留 21 件轻量入口、S-07-G-A 的 Z66 三问法诊断回包同盘完整副本登记，以及 S-07-G-B-A 删除 Z66 的 88 个主仓重件并保留 6 件轻量入口。10MB 目标仍未达成；Z66 与两轮千问现役消费者仍未收口；同盘外置不等于独立备份，历史候选不等于当前默认，也没有启用 10MB 硬门。"
   },
   "storage_roots": [
     {
@@ -107,16 +107,16 @@
         "entry_sha256_field": "sha256"
       },
       "keep_in_repository": [
-        "S-07-G-A 暂时完整保留主仓 93 个源文件；后续精简至少保留轻量 README、四张根部身份票和 Z68 固定读取的第 3 章修正版请求 JSON"
+        "轻量 README、Notion登记正文、Notion回传回读回执、归档与打包回执、notion_file_block_request.json，以及 Z68 固定读取的第 3 章修正版请求 JSON；共 6 件、42310 字节"
       ],
       "externalize_later": [
-        "S-07-G-B-A 若另行获批，可在完整取回与消费者复验后移除保留集之外的 88 个主仓重件"
+        "Z68 请求 JSON 已含于外置完整包，但在 13 个后续工具的路径消费者迁走前继续留主仓原位"
       ],
       "consumers": [
         "tools/external_payload_validator.py",
         "tools/z68_revised_request_pilot.py"
       ],
-      "boundary": "完整副本来自固定提交 18281795703497760bf3fc090a771db1e1782574、目录 tree 20a1a3d7290b86a24756a79eec84ac5885722241；93 个普通文件、1240575 字节逐项验 SHA。原始回包、全 Markdown 副本和 ZIP 有意原样共存；它们是历史候选，不是现役默认。Z68 仍读取主仓一份固定请求 JSON，因此消费者保持 open。S-07-G-A 没有移动或删除主仓文件；同盘完整性不等于独立备份。"
+      "boundary": "完整副本来自固定提交 18281795703497760bf3fc090a771db1e1782574、目录 tree 20a1a3d7290b86a24756a79eec84ac5885722241；93 个普通文件、1240575 字节逐项验 SHA。原始回包、全 Markdown 副本和 ZIP 有意原样共存；它们是历史候选，不是现役默认。S-07-G-B-A 在完整取回和消费者复验通过后，从主仓移除 88 个重件、1200070 字节，保留 6 件、42310 字节。Z68 仍读取主仓一份固定请求 JSON，因此消费者保持 open；同盘完整性不等于独立备份。"
     },
     {
       "artifact_id": "external-archive-batch-20260723",

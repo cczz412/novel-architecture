@@ -298,7 +298,7 @@ v1 包在提交 `ed0dddcd2428fae8daf726ca2985571843df263d` 上实际得到 38 �
 当前白名单含 S-05-B 回放包 v1／v2、S-07-B-A 的模型横评零调用作废包、
 S-07-C-A 的 QEC 四模型终局证据包、S-07-D-A 的 LongCat r03 中断硬停包，以及
 S-07-E-A 的 LongCat r01 中断硬停包、S-07-F-A／F-B-A 的千问 r05 结构化候选包和 r06
-32K 思考候选包、S-07-G-A 的 Z66 三问法历史候选包。常用的人看命令是：
+32K 思考候选包、S-07-G-A／G-B-A 的 Z66 三问法历史候选包。常用的人看命令是：
 
 ```bash
 .venv/bin/python tools/external_payload_validator.py check \
@@ -316,6 +316,11 @@ S-07-E-A 的 LongCat r01 中断硬停包、S-07-F-A／F-B-A 的千问 r05 结构
 .venv/bin/python tools/external_payload_validator.py check \
   --artifact-id diagnostic-return-z66-three-question-candidate-s07ga-v1
 ```
+
+S-07-G-B-A 后，Z66 主仓目录只留轻量入口、四张身份票和 Z68 固定请求 JSON，共 6 件。
+`package_diagnostic_returns.py` 是历史重建器，`--target` 现在必填；它只能写入新空目录，
+或在 `--check` 时读取显式指定的完整复现目录。不要把主仓轻量目录传给它，也不要用它代替
+上面的外置 payload 验证器。
 
 旧三批没有逐文件 SHA，旧 TEMP 外置根没有清单，所以只能保持排除，不能靠旧绝对路径或
 抽样结果冒充完整。

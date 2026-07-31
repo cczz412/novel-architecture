@@ -745,7 +745,7 @@
       "status": "historical_replay_only",
       "status_label": "历史复现",
       "purpose": "把第66道外部诊断回包归档成全 Markdown 可审计 ZIP。",
-      "human_command": "python3 tools/package_diagnostic_returns.py --check --target <第66道目标目录>",
+      "human_command": "python3 tools/package_diagnostic_returns.py --target <新空历史复现目录> [--source <来源目录> ...]；核完整复现目录时追加 --check",
       "inputs": [
         "第66道三组外部诊断来源目录"
       ],
@@ -761,10 +761,11 @@
       "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
       "test_references": [],
       "last_use_clues": [
-        "脚本内固定 Z66 目标与三个 Downloads 来源；未发现外部代码／测试引用"
+        "S-07-G-B-A 后主仓 Z66 目录只留 6 件轻量入口和锚；现存完整封包由 external_payload_validator.py 按对象编号核验",
+        "未发现外部代码／测试引用"
       ],
       "next_confirmed_consumer": null,
-      "retirement_condition_and_compatibility_boundary": "默认来源和包名写死第66道，只作该批复现，不是通用打包入口。",
+      "retirement_condition_and_compatibility_boundary": "默认来源和包名仍只服务第66道，但 --target 必须显式提供；只能写新空复现目录或核完整复现目录，不得对主仓轻量目录执行 --check，也不代替外置 payload 验证器。",
       "review_needed": false
     },
     {
@@ -1433,12 +1434,17 @@
         "tools/z77_fact_sheet_v2_pilot.py",
         "tools/z79_fact_sheet_v3_pilot.py",
         "tools/z80_fact_sheet_v4_crossbook_pilot.py",
-        "tools/z83_program_side_repair_pilot.py"
+        "tools/z83_program_side_repair_pilot.py",
+        "tools/z89_deepseek_v4_pro_benchmark.py",
+        "tools/z91_crossbook_exam_prep.py",
+        "tools/z94_local_semantic_live.py",
+        "tools/z94_local_semantic_supply.py"
       ],
       "consumer_evidence_rule": "仅列 tools/ 根层实体 Python 的静态导入；不把文档提及冒充运行调用。",
       "test_references": [
         "tests/test_z68_revised_request_pilot.py",
-        "tests/test_z70_compression_contract_pilot.py"
+        "tests/test_z70_compression_contract_pilot.py",
+        "tests/test_z94_local_semantic_live.py"
       ],
       "last_use_clues": [
         "tests/test_z68_revised_request_pilot.py",
@@ -1452,10 +1458,15 @@
         "tools/z79_fact_sheet_v3_pilot.py",
         "tools/z80_fact_sheet_v4_crossbook_pilot.py",
         "tools/z83_program_side_repair_pilot.py",
-        "tests/test_z70_compression_contract_pilot.py"
+        "tools/z89_deepseek_v4_pro_benchmark.py",
+        "tools/z91_crossbook_exam_prep.py",
+        "tools/z94_local_semantic_live.py",
+        "tools/z94_local_semantic_supply.py",
+        "tests/test_z70_compression_contract_pilot.py",
+        "tests/test_z94_local_semantic_live.py"
       ],
       "next_confirmed_consumer": null,
-      "retirement_condition_and_compatibility_boundary": "已被多个后续道次当作辅助库；主身份仍是批次复现器，必须保留原位兼容。",
+      "retirement_condition_and_compatibility_boundary": "已被 13 个后续工具当作辅助库；主身份仍是批次复现器，必须保留原位兼容。它固定读取的 Z66 第 3 章修正版请求 JSON 也必须保留原路径和 SHA。",
       "review_needed": false
     },
     {
