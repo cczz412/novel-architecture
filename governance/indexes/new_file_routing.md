@@ -31,6 +31,10 @@
 | 人看交件 | `reports/<handoff_id>` | 写清证据来源和权限边界，不把报告句子冒充机器状态。 | `human_handoff_evidence` |
 | 上传包 | `outbox/<package_id>` | 包内清单指向原真源，上传包本身不替代原件。 | `transport_packages` |
 | 临时拼装目录 | `TEMP/experiment_assembly/<assembly_id>.staging` | 只在 staging 中拼装，成功后按目标合同另行落位。 | `temporary_assembly` |
+| 语义分析用途说明 | `analysis_library/**/README.md` | 只说明本层用途、快速阅读顺序和按对象编号取原件的方法，不复制完整分析现场。 | `lightweight_semantic_analysis_index` |
+| 语义分析轻量结论 | `analysis_library/pilot_batch_01/summaries/**` | 只留便于快速阅读的候选摘要；需要原始输入、映射或重算证据时按同批仓外指针取件。 | `lightweight_semantic_analysis_index` |
+| 语义分析轻量验收摘要 | `analysis_library/pilot_batch_01/acceptance/<approved-lightweight-summary>` | 只保留读结论所需的验收报告、书级汇总和缺口清单；逐文件票据与复算材料留在仓外。 | `lightweight_semantic_analysis_index` |
+| 语义分析仓外指针 | `analysis_library/pilot_batch_01/EXTERNAL_POINTER.json` | 必须钉住外置对象、清单 SHA 和包内相对路径，不得把同盘完整包写成独立备份。 | `lightweight_semantic_analysis_index` |
 
 本表不授权移动旧文件，也不授权创建 `active/`、`staging/`、`frozen/`、`runtime/` 顶层目录。
 

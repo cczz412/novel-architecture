@@ -1,0 +1,713 @@
+[
+  {
+    "book_id": "bi_wo_chongsheng_shi_ba",
+    "title": "逼我重生是吧",
+    "top_level_zip_count": 9,
+    "archive_layer_count": 9,
+    "archive_integrity_pass_count": 9,
+    "contract_package_count": 8,
+    "tasks_present": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "raw_task_ids_present": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "missing_required_tasks": [],
+    "p6_present": true,
+    "facts": {
+      "row_count": 2316,
+      "unique_fact_id_count": 1639,
+      "conflicting_fact_id_count": 18,
+      "conflicting_fact_id_examples": [
+        "F-143-01",
+        "F-246-01",
+        "F-265-01",
+        "F-283-01",
+        "F-283-02",
+        "F-381-01",
+        "F-388-01",
+        "F-410-01",
+        "F-455-01",
+        "F-469-01",
+        "F-490-01",
+        "F-514-01",
+        "F-559-07",
+        "F-565-01",
+        "F-565-02",
+        "F-583-01",
+        "F-610-01",
+        "F-610-02"
+      ],
+      "type_counts": {
+        "规则或资源": 310,
+        "状态变化": 325,
+        "事件": 388,
+        "章末钩子": 110,
+        "知情变化": 421,
+        "关系变化": 312,
+        "承诺开启": 343,
+        "承诺偿还": 107
+      },
+      "over_40_chars": 0
+    },
+    "claims": {
+      "count": 956,
+      "unique_claim_id_count": 956,
+      "duplicate_claim_id_count": 0,
+      "conflicting_claim_id_count": 0,
+      "conflicting_claim_id_examples": [],
+      "type_counts": {
+        "OBS": 814,
+        "INF": 28,
+        "EVAL": 62,
+        "TRANSFER": 39,
+        "EXP": 13
+      },
+      "confidence_counts": {
+        "high": 857,
+        "medium": 81,
+        "low": 18
+      },
+      "review_status_counts": {
+        "candidate": 956
+      },
+      "evidence_refs_total": 3390,
+      "evidence_refs_resolved_to_book_fact_id": 3243,
+      "evidence_refs_unambiguous_fact_id": 3135,
+      "evidence_refs_ambiguous_fact_id": 108,
+      "evidence_refs_direct_anchor": 147,
+      "evidence_refs_factlike_unresolved_count": 0
+    },
+    "six_state_words": {
+      "report_literal_counts": {
+        "candidate": 33,
+        "confirmed_in_scope": 115,
+        "disputed": 9,
+        "not_found_in_scope": 4,
+        "insufficient_material": 62,
+        "not_applicable": 7
+      },
+      "json_nonreview_literal_counts": {
+        "candidate": 42,
+        "confirmed_in_scope": 1232,
+        "disputed": 12,
+        "not_found_in_scope": 10,
+        "insufficient_material": 33,
+        "not_applicable": 10
+      },
+      "dedicated_structured_field_count": 0
+    },
+    "component_cards": {
+      "count": 8,
+      "titles": [
+        "A｜有限先知降级器",
+        "B｜低成本验证阶梯",
+        "C｜项目接力账",
+        "D｜承诺—验证—加码—新责任",
+        "E｜事件化冷启动",
+        "F｜多方反应结算器",
+        "G｜公开身份分层掉马",
+        "H｜选择场景三账"
+      ]
+    },
+    "longlines": {
+      "count": 12,
+      "titles": [
+        "创业规模化主线",
+        "坚持访问",
+        "柚来玩",
+        "羊了个羊",
+        "柚茶",
+        "柚趣",
+        "外卖／资本攻防",
+        "家庭修复",
+        "林鹿公开恋爱",
+        "沈卿宁未结责任",
+        "陈婕妤安全与独立",
+        "公开身份与隐私代价"
+      ]
+    },
+    "package_status_counts": {
+      "WARN": 8
+    }
+  },
+  {
+    "book_id": "guishe",
+    "title": "诡舍",
+    "top_level_zip_count": 9,
+    "archive_layer_count": 9,
+    "archive_integrity_pass_count": 9,
+    "contract_package_count": 8,
+    "tasks_present": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "raw_task_ids_present": [
+      "P1",
+      "P2_b001",
+      "P2_b002",
+      "P2_b003",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "missing_required_tasks": [],
+    "p6_present": true,
+    "facts": {
+      "row_count": 5820,
+      "unique_fact_id_count": 5072,
+      "conflicting_fact_id_count": 111,
+      "conflicting_fact_id_examples": [
+        "F-001-01",
+        "F-001-02",
+        "F-001-03",
+        "F-001-04",
+        "F-001-05",
+        "F-001-06",
+        "F-001-07",
+        "F-001-08",
+        "F-002-01",
+        "F-002-02",
+        "F-002-03",
+        "F-002-04",
+        "F-002-05",
+        "F-002-06",
+        "F-002-07",
+        "F-003-01",
+        "F-003-02",
+        "F-003-03",
+        "F-003-04",
+        "F-003-05"
+      ],
+      "type_counts": {
+        "事件": 900,
+        "状态变化": 764,
+        "规则或资源": 967,
+        "承诺开启": 406,
+        "章末钩子": 520,
+        "知情变化": 1857,
+        "关系变化": 273,
+        "承诺偿还": 133
+      },
+      "over_40_chars": 0
+    },
+    "claims": {
+      "count": 1397,
+      "unique_claim_id_count": 1397,
+      "duplicate_claim_id_count": 0,
+      "conflicting_claim_id_count": 0,
+      "conflicting_claim_id_examples": [],
+      "type_counts": {
+        "INF": 59,
+        "OBS": 1186,
+        "EVAL": 90,
+        "TRANSFER": 58,
+        "EXP": 4
+      },
+      "confidence_counts": {
+        "high": 908,
+        "medium": 487,
+        "low": 2
+      },
+      "review_status_counts": {
+        "candidate": 1397
+      },
+      "evidence_refs_total": 7243,
+      "evidence_refs_resolved_to_book_fact_id": 7132,
+      "evidence_refs_unambiguous_fact_id": 6689,
+      "evidence_refs_ambiguous_fact_id": 443,
+      "evidence_refs_direct_anchor": 111,
+      "evidence_refs_factlike_unresolved_count": 0
+    },
+    "six_state_words": {
+      "report_literal_counts": {
+        "candidate": 31,
+        "confirmed_in_scope": 76,
+        "disputed": 13,
+        "not_found_in_scope": 47,
+        "insufficient_material": 15,
+        "not_applicable": 3
+      },
+      "json_nonreview_literal_counts": {
+        "candidate": 56,
+        "confirmed_in_scope": 955,
+        "disputed": 6,
+        "not_found_in_scope": 26,
+        "insufficient_material": 10,
+        "not_applicable": 1
+      },
+      "dedicated_structured_field_count": 0
+    },
+    "component_cards": {
+      "count": 8,
+      "titles": [
+        "A01｜规则试验循环",
+        "A02｜单元结算—门外清点—长线接力",
+        "A03｜信息资源反噬",
+        "A04｜收集物阶段换职能",
+        "A05｜回报后附带代价与责任",
+        "A06｜后期不确定性重置",
+        "A07｜伙伴责任分流",
+        "A08｜身份揭示后的再选择"
+      ]
+    },
+    "longlines": {
+      "count": 5,
+      "titles": [
+        "十二片拼图如何抵达终点",
+        "信是谁寄、为何能改变门内生路",
+        "罗生门／第九局／愚公／盘古如何争夺两界",
+        "宁秋水是谁，换命后应承担什么",
+        "诡舍伙伴如何从同行变为分工承担"
+      ]
+    },
+    "package_status_counts": {
+      "WARN": 8
+    }
+  },
+  {
+    "book_id": "doupochangqiong",
+    "title": "斗破苍穹",
+    "top_level_zip_count": 9,
+    "archive_layer_count": 9,
+    "archive_integrity_pass_count": 9,
+    "contract_package_count": 8,
+    "tasks_present": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "raw_task_ids_present": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "missing_required_tasks": [],
+    "p6_present": true,
+    "facts": {
+      "row_count": 3790,
+      "unique_fact_id_count": 3412,
+      "conflicting_fact_id_count": 94,
+      "conflicting_fact_id_examples": [
+        "F-0001-01",
+        "F-0001-02",
+        "F-0001-03",
+        "F-0001-04",
+        "F-0002-01",
+        "F-0002-02",
+        "F-0002-03",
+        "F-0002-04",
+        "F-0002-05",
+        "F-0002-06",
+        "F-0002-07",
+        "F-0003-01",
+        "F-0003-02",
+        "F-0003-03",
+        "F-0003-04",
+        "F-0003-05",
+        "F-0003-06",
+        "F-0004-01",
+        "F-0004-02",
+        "F-0004-03"
+      ],
+      "type_counts": {
+        "状态变化": 539,
+        "关系变化": 255,
+        "章末钩子": 668,
+        "知情变化": 570,
+        "规则或资源": 579,
+        "承诺开启": 270,
+        "事件": 874,
+        "承诺偿还": 35
+      },
+      "over_40_chars": 0
+    },
+    "claims": {
+      "count": 1945,
+      "unique_claim_id_count": 1940,
+      "duplicate_claim_id_count": 5,
+      "conflicting_claim_id_count": 5,
+      "conflicting_claim_id_examples": [
+        "P2-B001",
+        "P2-B002",
+        "P2-B003",
+        "P2-B004",
+        "P2-B005"
+      ],
+      "type_counts": {
+        "INF": 1740,
+        "OBS": 98,
+        "TRANSFER": 46,
+        "EVAL": 58,
+        "EXP": 3
+      },
+      "confidence_counts": {
+        "medium": 1756,
+        "high": 181,
+        "low": 8
+      },
+      "review_status_counts": {
+        "candidate": 1945
+      },
+      "evidence_refs_total": 6435,
+      "evidence_refs_resolved_to_book_fact_id": 4805,
+      "evidence_refs_unambiguous_fact_id": 4310,
+      "evidence_refs_ambiguous_fact_id": 495,
+      "evidence_refs_direct_anchor": 1630,
+      "evidence_refs_factlike_unresolved_count": 0
+    },
+    "six_state_words": {
+      "report_literal_counts": {
+        "candidate": 52,
+        "confirmed_in_scope": 30,
+        "disputed": 12,
+        "not_found_in_scope": 23,
+        "insufficient_material": 36,
+        "not_applicable": 23
+      },
+      "json_nonreview_literal_counts": {
+        "candidate": 36,
+        "confirmed_in_scope": 780,
+        "disputed": 19,
+        "not_found_in_scope": 18,
+        "insufficient_material": 13,
+        "not_applicable": 17
+      },
+      "dedicated_structured_field_count": 0
+    },
+    "component_cards": {
+      "count": 8,
+      "titles": [
+        "K01｜公开受辱→限时反击合同",
+        "K02｜安全下限 vs 高危上限的真实双选",
+        "K03｜职业技能→商品→组织资源循环",
+        "K04｜大回报后立刻生成更大责任",
+        "K05｜高威力动作留下身体账与关系账",
+        "K06｜未结责任＋交通/资格门槛推动换地图",
+        "K07｜同一稀缺资源跨系统复用",
+        "K08｜联盟先写治理边界，再写领袖声望"
+      ]
+    },
+    "longlines": {
+      "count": 8,
+      "titles": [
+        "L1｜焚决—异火—成长上限",
+        "L2｜三年之约—云岚宗后果",
+        "L3｜药老师徒—魂殿—复生",
+        "L4｜萧家—萧战—古帝玉—魂族",
+        "L5｜薰儿关系—古族门槛",
+        "L6｜小医仙—厄难毒体",
+        "L7｜紫研—太虚古龙",
+        "L8｜势力建设"
+      ]
+    },
+    "package_status_counts": {
+      "WARN": 8
+    }
+  },
+  {
+    "book_id": "fengzong_lihun",
+    "title": "封总，太太想跟你离婚很久了",
+    "top_level_zip_count": 8,
+    "archive_layer_count": 13,
+    "archive_integrity_pass_count": 13,
+    "contract_package_count": 12,
+    "tasks_present": [
+      "P0",
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "raw_task_ids_present": [
+      "P0",
+      "P1",
+      "P2",
+      "P2_b002",
+      "P2_b003",
+      "P2_b004",
+      "P2_b005",
+      "P2_b006",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "missing_required_tasks": [],
+    "p6_present": true,
+    "facts": {
+      "row_count": 1300,
+      "unique_fact_id_count": 858,
+      "conflicting_fact_id_count": 47,
+      "conflicting_fact_id_examples": [
+        "F-14-01",
+        "F-186-01",
+        "F-19-01",
+        "F-20-03",
+        "F-21-01",
+        "F-21-03",
+        "F-246-01",
+        "F-247-01",
+        "F-25-01",
+        "F-26-01",
+        "F-26-02",
+        "F-26-03",
+        "F-261-01",
+        "F-262-01",
+        "F-27-01",
+        "F-27-02",
+        "F-27-03",
+        "F-27-04",
+        "F-30-04",
+        "F-31-04"
+      ],
+      "type_counts": {
+        "事件": 219,
+        "关系变化": 258,
+        "知情变化": 324,
+        "承诺开启": 136,
+        "状态变化": 128,
+        "承诺偿还": 54,
+        "规则或资源": 156,
+        "章末钩子": 25
+      },
+      "over_40_chars": 0
+    },
+    "claims": {
+      "count": 895,
+      "unique_claim_id_count": 895,
+      "duplicate_claim_id_count": 0,
+      "conflicting_claim_id_count": 0,
+      "conflicting_claim_id_examples": [],
+      "type_counts": {
+        "OBS": 657,
+        "INF": 67,
+        "EVAL": 115,
+        "TRANSFER": 48,
+        "EXP": 8
+      },
+      "confidence_counts": {
+        "high": 829,
+        "medium": 66
+      },
+      "review_status_counts": {
+        "candidate": 895
+      },
+      "evidence_refs_total": 3006,
+      "evidence_refs_resolved_to_book_fact_id": 2935,
+      "evidence_refs_unambiguous_fact_id": 2472,
+      "evidence_refs_ambiguous_fact_id": 463,
+      "evidence_refs_direct_anchor": 71,
+      "evidence_refs_factlike_unresolved_count": 0
+    },
+    "six_state_words": {
+      "report_literal_counts": {
+        "candidate": 35,
+        "confirmed_in_scope": 74,
+        "disputed": 21,
+        "not_found_in_scope": 41,
+        "insufficient_material": 47,
+        "not_applicable": 5
+      },
+      "json_nonreview_literal_counts": {
+        "candidate": 106,
+        "confirmed_in_scope": 678,
+        "disputed": 23,
+        "not_found_in_scope": 13,
+        "insufficient_material": 11,
+        "not_applicable": 2
+      },
+      "dedicated_structured_field_count": 0
+    },
+    "component_cards": {
+      "count": 8,
+      "titles": [
+        "Z01｜撤回投入链",
+        "Z02｜分层能力验真",
+        "Z03｜公开身份错位场",
+        "Z04｜私人冲突制度化",
+        "Z05｜孩子作为双向压力计",
+        "Z06｜缺席触发关系重估",
+        "Z07｜程序性终点发动机",
+        "Z08｜双账本回报"
+      ]
+    },
+    "longlines": {
+      "count": 7,
+      "titles": [
+        "M",
+        "B",
+        "R",
+        "C",
+        "L",
+        "F",
+        "H"
+      ]
+    },
+    "package_status_counts": {
+      "WARN": 12
+    }
+  },
+  {
+    "book_id": "sanguoyanyi",
+    "title": "三国演义",
+    "top_level_zip_count": 8,
+    "archive_layer_count": 8,
+    "archive_integrity_pass_count": 8,
+    "contract_package_count": 7,
+    "tasks_present": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "raw_task_ids_present": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6"
+    ],
+    "missing_required_tasks": [],
+    "p6_present": true,
+    "facts": {
+      "row_count": 2275,
+      "unique_fact_id_count": 939,
+      "conflicting_fact_id_count": 59,
+      "conflicting_fact_id_examples": [
+        "F-002-05",
+        "F-002-06",
+        "F-002-07",
+        "F-002-08",
+        "F-003-02",
+        "F-003-03",
+        "F-003-04",
+        "F-003-05",
+        "F-003-06",
+        "F-003-07",
+        "F-003-08",
+        "F-004-08",
+        "F-006-01",
+        "F-006-02",
+        "F-006-03",
+        "F-006-04",
+        "F-006-05",
+        "F-006-06",
+        "F-006-07",
+        "F-006-08"
+      ],
+      "type_counts": {
+        "承诺开启": 224,
+        "关系变化": 294,
+        "规则或资源": 168,
+        "事件": 349,
+        "状态变化": 611,
+        "章末钩子": 284,
+        "知情变化": 314,
+        "承诺偿还": 31
+      },
+      "over_40_chars": 0
+    },
+    "claims": {
+      "count": 459,
+      "unique_claim_id_count": 459,
+      "duplicate_claim_id_count": 0,
+      "conflicting_claim_id_count": 0,
+      "conflicting_claim_id_examples": [],
+      "type_counts": {
+        "INF": 260,
+        "EVAL": 70,
+        "OBS": 76,
+        "EXP": 6,
+        "TRANSFER": 47
+      },
+      "confidence_counts": {
+        "high": 204,
+        "medium": 253,
+        "low": 2
+      },
+      "review_status_counts": {
+        "candidate": 459
+      },
+      "evidence_refs_total": 4028,
+      "evidence_refs_resolved_to_book_fact_id": 3963,
+      "evidence_refs_unambiguous_fact_id": 3578,
+      "evidence_refs_ambiguous_fact_id": 385,
+      "evidence_refs_direct_anchor": 65,
+      "evidence_refs_factlike_unresolved_count": 0
+    },
+    "six_state_words": {
+      "report_literal_counts": {
+        "candidate": 30,
+        "confirmed_in_scope": 49,
+        "disputed": 2,
+        "not_found_in_scope": 15,
+        "insufficient_material": 35,
+        "not_applicable": 10
+      },
+      "json_nonreview_literal_counts": {
+        "candidate": 32,
+        "confirmed_in_scope": 917,
+        "disputed": 4,
+        "not_found_in_scope": 2,
+        "insufficient_material": 6,
+        "not_applicable": 1
+      },
+      "dedicated_structured_field_count": 0
+    },
+    "component_cards": {
+      "count": 8,
+      "titles": [
+        "Z01｜弱资源共同体启动器",
+        "Z02｜回报生成新债务",
+        "Z03｜多证据骗局",
+        "Z04｜资源节点战",
+        "Z05｜双重责任悲剧",
+        "Z06｜继承期并发压力测试",
+        "Z07｜名分仪式权力场景",
+        "Z08｜预警被组织过滤后的灾难"
+      ]
+    },
+    "longlines": {
+      "count": 7,
+      "titles": [
+        "L01｜汉廷权威与合法性转移",
+        "L02｜刘备共同体到蜀汉存续",
+        "L03｜曹操集团到曹魏政权",
+        "L04｜江东自治与继承",
+        "L05｜荆州归属与孙刘联盟债务",
+        "L06｜诸葛亮战略工程与责任继承",
+        "L07｜司马氏夺权与晋统一"
+      ]
+    },
+    "package_status_counts": {
+      "WARN": 7
+    }
+  }
+]

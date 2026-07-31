@@ -25,6 +25,7 @@
 | `tools/` | 统一入口、可复用组件、批次复现器 | [工具说明](tools/README.md)＋`governance/tool_registry.json` | 长期程序精确挑件 |
 | `tests/` | 不调用模型的机械回归 | [测试说明](tests/README.md) | 长期件 |
 | `references/` | 书目、调查和外部诊断材料 | [参考区说明](references/README.md) | 候选材料，不作真值 |
+| `analysis_library/` | 小说分析的轻量摘要、验收摘要和仓外指针 | [分析库说明](analysis_library/README.md) | 只跟踪轻量入口；完整原件在外置仓 |
 | `work/` | 设计稿、合同、提示词和执行配套 | [施工区说明](work/README.md) | 精确挑件 |
 | `side-tracks/` | 历史旁路／调查台账 | [支线说明](side-tracks/README.md) | 不是主线路牌 |
 | `schemas/` | 稳定结构合同 | Schema 文件自身 | 长期件 |

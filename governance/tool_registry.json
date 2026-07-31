@@ -3975,6 +3975,7 @@
         "S-07-E-A／E-B-A／E-B-B LongCat r01 中断硬停包回读",
         "S-07-F-A／F-B-A 千问 r05／r06 有分候选完整包回读",
         "S-07-G-A Z66 三问法历史候选完整包回读",
+        "analysis_library 首批分析材料完整包回读",
         "tests/test_external_payload_validator.py"
       ],
       "consumer_evidence_rule": "一次命令只接一个同时存在于登记册和验证政策白名单的 artifact_id；PASS 同时绑定验证器与安全读取助手 SHA，只证明该 payload 当下字节与清单一致，不证明包级元数据、消费者收口、指针、可恢复性、独立备份或迁移完成。",
@@ -3992,7 +3993,8 @@
         "model-benchmark-longcat-r01-interrupted-s07ea-v1",
         "model-benchmark-qwen-r05-structured-scored-candidate-s07fa-v1",
         "model-benchmark-qwen-r06-thinking32k-scored-candidate-s07fa-v1",
-        "diagnostic-return-z66-three-question-candidate-s07ga-v1"
+        "diagnostic-return-z66-three-question-candidate-s07ga-v1",
+        "analysis-library-pilot-batch-01-cz-move-20260731-v1"
       ],
       "next_confirmed_consumer": "以后每个外置实验包用相同登记字段生成轻量结论卡；需要复现时按对象编号单件取验。",
       "retirement_condition_and_compatibility_boundary": "候选只读公共零件；不自动发现目标，不接受任意 root/path/glob，不写报告文件，不移动、删除、恢复、改登记、签迁移票或启用 10MB 硬门。",

@@ -469,6 +469,26 @@ S-07-G-A 只建同盘完整副本和轻量入口，没有移动或删除 93 个�
 显式传入目标目录。完整外置现物统一用对象编号逐文件验证。Z68 及 13 个后续工具仍会经它
 读取保留的请求 JSON，所以消费者继续为 `open`，不得顺手再删。
 
+## analysis_library 首批分析材料外置
+
+这批主要解决一个问题：日常只看简短结论，不让原始 ZIP、解包文件和映射材料继续挤在
+主仓里。主仓入口是 `analysis_library/pilot_batch_01/`，保留 7 份分析摘要、3 份验收
+摘要、说明和仓外指针；平时从这里判断材料用途与结论。
+
+需要追到原件时，按对象编号
+`analysis-library-pilot-batch-01-cz-move-20260731-v1` 找到同级外置仓的
+`analysis_library_pilot_batch_01_cz_move_20260731_v1/`，再运行：
+
+```bash
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id analysis-library-pilot-batch-01-cz-move-20260731-v1
+```
+
+外置现物共 242 个文件、23,895,907 字节；`MANIFEST.json` 的 SHA-256 是
+`2e8ecee5a580a4926597093b41d0d9f70321bc7f67326f5790feacbd415fd5f0`。这份来源是
+本地未跟踪目录快照，不是 Git 可重建包；内容还是候选分析，不代表人工审定。它和主仓处在
+同一磁盘，也不是独立备份。
+
 ## 常检尺子（支线瘦身批件③写入）
 
 - **主刀＝磁盘观感**；常检读三行＝除 TEMP 磁盘体量／Git tracked 体量／外置旁仓另算。

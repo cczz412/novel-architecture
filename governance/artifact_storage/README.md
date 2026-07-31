@@ -31,12 +31,13 @@ S-07-B-A 已经沿用现有逐文件验证器做完，不返工降级；它只�
 
 ## 当前登记怎么理解
 
-登记册现有 31 个对象：
+登记册现有 32 个对象：
 
-- 13 个外置对象：3 份旧库存清单、S-05-B 回放包 v1／v2、S-07-B-A 模型横评零调用
+- 14 个外置对象：3 份旧库存清单、S-05-B 回放包 v1／v2、S-07-B-A 模型横评零调用
   作废包、S-07-C-A QEC 四模型终局证据包、S-07-D-A LongCat r03 中断硬停包、
   S-07-E-A LongCat r01 中断硬停包、S-07-F-A 千问 r05／r06 有分候选包、
-  S-07-G-A Z66 三问法历史候选包、1 个未清点的旧 TEMP 容器。
+  S-07-G-A Z66 三问法历史候选包、analysis_library 首批分析材料完整包、1 个未清点的
+  旧 TEMP 容器。
 - 5 个隔离实验工作区：1 个 ChatGPT 组件咨询区、4 轮千问／V4 对照工作区。
 - 13 个主仓实验目录：5 个候选、5 个冻结历史、1 个负结果、2 个身份不足。
 
@@ -105,6 +106,8 @@ S-07-B-A 已经沿用现有逐文件验证器做完，不返工降级；它只�
   --artifact-id model-benchmark-qwen-r06-thinking32k-scored-candidate-s07fa-v1
 .venv/bin/python tools/external_payload_validator.py check \
   --artifact-id diagnostic-return-z66-three-question-candidate-s07ga-v1
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id analysis-library-pilot-batch-01-cz-move-20260731-v1
 .venv/bin/python tools/experiment_artifact_retrieval.py check \
   --card-id s05b-historical-replay-v2
 .venv/bin/python tools/experiment_artifact_retrieval.py resolve \
@@ -157,6 +160,16 @@ S-07-G-A 从固定提交 `18281795703497760bf3fc090a771db1e1782574` 复制 Z66 �
 S-07-G-B-A 随后移除 88 个无精确消费者的主仓重件、1,200,070 字节，留下 6 件、
 42,310 字节。Z68 仍读取其中一份固定请求 JSON，所以消费者继续为 `open`。旧打包器只对
 显式指定的完整复现目录工作；主仓轻量目录不能冒充完整包。
+
+analysis_library 首批分析材料已经按“平时读结论，需要时才取原件”拆开。主仓从
+`analysis_library/pilot_batch_01/` 进入，只留 7 份分析摘要、3 份验收摘要、入口说明和
+仓外指针；日常判断不需要打开完整材料。需要复核原始 ZIP、解包文件或映射表时，用对象编号
+`analysis-library-pilot-batch-01-cz-move-20260731-v1` 定位外置包，再运行上面的逐文件检查。
+
+外置包有 242 个文件、23,895,907 字节，固定 `MANIFEST.json` 的 SHA-256 是
+`2e8ecee5a580a4926597093b41d0d9f70321bc7f67326f5790feacbd415fd5f0`。来源是搬运前的
+本地未跟踪目录快照，不是从 Git 提交重建的包；其中分析结果仍是候选材料，不能冒充已经
+人工审定。外置包和主仓还在同一磁盘，只能证明当前可按清单找到，不能当独立备份。
 
 当前 `PASS` 只说明：
 

@@ -25,6 +25,16 @@
   },
   "targets": [
     {
+      "artifact_id": "analysis-library-pilot-batch-01-cz-move-20260731-v1",
+      "manifest_sha256": "2e8ecee5a580a4926597093b41d0d9f70321bc7f67326f5790feacbd415fd5f0",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "只核 analysis_library 本地未跟踪快照外置后的 242 个普通文件、23895907 字节；不把它冒充 Git 可重建包、人工审定知识库、独立备份或 10MB 硬门已达成。"
+    },
+    {
       "artifact_id": "diagnostic-return-z66-three-question-candidate-s07ga-v1",
       "manifest_sha256": "9426343733b2451bc133d1364da05be4ff83bdacd2cfdd718853f2a5f60b808c",
       "payload_root_relative_path": "payload",

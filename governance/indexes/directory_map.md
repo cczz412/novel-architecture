@@ -21,7 +21,7 @@
 | `reports` | `human_handoff_evidence` | `report` | `derived` | `task_scoped` | `historical` | `ignored` | 只收人看交件、停点回包和证据镜像；不得作为唯一机器闸或当前任务真源。 |
 | `outbox` | `transport_packages` | `transport` | `transport` | `default_excluded` | `mutable` | `ignored` | 只收准备交付或上传的包；不能反向成为仓内真源。 |
 | `TEMP` | `temporary_assembly` | `temporary` | `derived` | `default_excluded` | `mutable` | `ignored` | 只收可重建的临时拼装、预演和机器票；不能提升成长期真源。 |
-| `analysis_library` | `local_semantic_analysis_library` | `source` | `candidate` | `source_only` | `candidate` | `local_untracked` | 现状是未跟踪且未写入忽略规则；补齐本地边界前暂停新增，禁止 git add 和外发。 |
+| `analysis_library` | `lightweight_semantic_analysis_index` | `source` | `candidate` | `source_only` | `candidate` | `mixed` | 仓内只收能快速判断用途和结论的轻量摘要、验收摘要与仓外指针；原始 ZIP、解包内容、映射和重算证据必须进入已登记外置对象，不能重新塞回 Git。 |
 | `corpus-downloads` | `active_corpus_pointer` | `source` | `current` | `source_only` | `local_active` | `tracked_pointer` | 只保留指向 .local/corpus-downloads 的仓库内指针，不把正文复制进仓。 |
 | `.cursor` | `cursor_compatibility_configuration` | `configuration` | `current` | `default_excluded` | `mutable` | `tracked` | 只收 Cursor 窗口兼容规则；Codex 团队不读取这里决定角色或模型。 |
 | `.local` | `local_machine_bindings` | `local_dependency` | `local_only` | `default_excluded` | `local_active` | `ignored` | 只收本机路径绑定和不进 Git 的本地依赖，不存可移植真源。 |

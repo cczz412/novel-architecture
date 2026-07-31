@@ -620,24 +620,53 @@
       "directory_id": "DIR-ANALYSIS-LIBRARY",
       "path": "analysis_library",
       "path_kind": "directory",
-      "identity": "local_semantic_analysis_library",
+      "identity": "lightweight_semantic_analysis_index",
       "category": "source",
       "container_authority": "candidate",
       "load_policy": "source_only",
       "lifecycle": "candidate",
-      "git_policy": "local_untracked",
+      "git_policy": "mixed",
+      "ignored_probe": "analysis_library/pilot_batch_01/raw_zips/payload-probe.zip",
       "consumers": [
-        "semantic_analysis_tasks"
+        "semantic_analysis_tasks",
+        "external_artifact_retrieval"
       ],
-      "new_content_rule": "现状是未跟踪且未写入忽略规则；补齐本地边界前暂停新增，禁止 git add 和外发。",
-      "accepted_content": [],
-      "externalization": "prohibited",
+      "new_content_rule": "仓内只收能快速判断用途和结论的轻量摘要、验收摘要与仓外指针；原始 ZIP、解包内容、映射和重算证据必须进入已登记外置对象，不能重新塞回 Git。",
+      "accepted_content": [
+        {
+          "object_id": "analysis_library_navigation",
+          "label": "语义分析用途说明",
+          "target_pattern": "analysis_library/**/README.md",
+          "rule": "只说明本层用途、快速阅读顺序和按对象编号取原件的方法，不复制完整分析现场。"
+        },
+        {
+          "object_id": "analysis_library_pilot_summaries",
+          "label": "语义分析轻量结论",
+          "target_pattern": "analysis_library/pilot_batch_01/summaries/**",
+          "rule": "只留便于快速阅读的候选摘要；需要原始输入、映射或重算证据时按同批仓外指针取件。"
+        },
+        {
+          "object_id": "analysis_library_acceptance_summaries",
+          "label": "语义分析轻量验收摘要",
+          "target_pattern": "analysis_library/pilot_batch_01/acceptance/<approved-lightweight-summary>",
+          "rule": "只保留读结论所需的验收报告、书级汇总和缺口清单；逐文件票据与复算材料留在仓外。"
+        },
+        {
+          "object_id": "analysis_library_external_pointer",
+          "label": "语义分析仓外指针",
+          "target_pattern": "analysis_library/pilot_batch_01/EXTERNAL_POINTER.json",
+          "rule": "必须钉住外置对象、清单 SHA 和包内相对路径，不得把同盘完整包写成独立备份。"
+        }
+      ],
+      "externalization": "per_object_candidate",
       "evidence_refs": [
         ".gitignore",
-        "AGENTS.md"
+        "analysis_library/README.md",
+        "analysis_library/pilot_batch_01/EXTERNAL_POINTER.json",
+        "governance/external_archive_registry.json"
       ],
       "open_decisions": [
-        "D-04 已定为本机候选且不进 Git；忽略规则与本地初始化方式另波施工。"
+        "完整包与主仓仍在同一磁盘故障域，独立备份尚未建立。"
       ],
       "inherit_to_children": false
     },

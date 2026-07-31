@@ -5,6 +5,20 @@
 .vscode/
 /.local/
 
+# Analysis library: Git keeps only lightweight summaries and the external pointer.
+# Full ZIPs, unpacked payloads, mappings, and recomputation evidence stay external.
+/analysis_library/**
+!/analysis_library/README.md
+!/analysis_library/pilot_batch_01/
+!/analysis_library/pilot_batch_01/README.md
+!/analysis_library/pilot_batch_01/EXTERNAL_POINTER.json
+!/analysis_library/pilot_batch_01/summaries/
+!/analysis_library/pilot_batch_01/summaries/**
+!/analysis_library/pilot_batch_01/acceptance/
+!/analysis_library/pilot_batch_01/acceptance/VALIDATION_REPORT.md
+!/analysis_library/pilot_batch_01/acceptance/book_summary.json
+!/analysis_library/pilot_batch_01/acceptance/缺包缺文件缺字段清单.md
+
 # Python caches and local environments
 __pycache__/
 *.py[cod]

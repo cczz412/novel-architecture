@@ -1,0 +1,9 @@
+{
+  "artifact_id": "analysis-library-pilot-batch-01-cz-move-20260731-v1",
+  "boundary": "仓内只保留候选摘要和验收摘要；完整 payload 与主仓同盘，不是独立备份，也不是人工审定后的正式知识库。",
+  "contract_version": "external-analysis-library-pointer-v1",
+  "manifest_sha256": "2e8ecee5a580a4926597093b41d0d9f70321bc7f67326f5790feacbd415fd5f0",
+  "payload_relative_path": "analysis_library/pilot_batch_01",
+  "root_id": "repository_sibling_external_archive_v1",
+  "status": "candidate"
+}

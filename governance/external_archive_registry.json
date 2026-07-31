@@ -30,12 +30,12 @@
     "metric": "git_index_per_tracked_path_blob_bytes",
     "mode": "s06a_bootstrap_no_growth",
     "pre_s06a_baseline_bytes": 18841846,
-    "active_limit_bytes": 14135125,
+    "active_limit_bytes": 14221965,
     "target_bytes": 10000000,
     "hard_limit_bytes": null,
     "activation_receipt": null,
     "hard_limit_activation": "blocked_in_s06a_until_separate_payload_validator",
-    "boundary": "当前施工余量覆盖 S-06-A 至 S-06-D-A 的只读治理件、S-07-B-A 的同盘完整副本、S-07-B-B 删除 5 轮零调用旧包的 71 个主仓重件、S-07-C-A 的一张 QEC 四模型轻量卡和仓外 7 件原始证据登记、S-07-D-A 的 LongCat r03 硬停轮同盘完整副本登记、S-07-D-B 删除 r03 的 24 个主仓重件并保留 5 件轻量入口、S-07-E-A 的 LongCat r01 硬停轮同盘完整副本登记、S-07-E-B-A 的 r01 旧程序测试夹具迁移、S-07-E-B-B 删除 r01 的 24 个主仓重件并保留 5 件轻量入口、S-07-F-A 的千问 r05／r06 有分轮同盘完整副本登记、S-07-F-B-A 删除两轮共 60 个无现役消费者的主仓重件并保留 21 件轻量入口、S-07-G-A 的 Z66 三问法诊断回包同盘完整副本登记，以及 S-07-G-B-A 删除 Z66 的 88 个主仓重件并保留 6 件轻量入口。10MB 目标仍未达成；Z66 与两轮千问现役消费者仍未收口；同盘外置不等于独立备份，历史候选不等于当前默认，也没有启用 10MB 硬门。"
+    "boundary": "当前施工余量覆盖 S-06-A 至 S-07-G-B-A 已登记治理件与瘦身结果，以及 CZ 明确同意将 analysis_library 的 242 个本地未跟踪文件外置、仓内仅留轻量摘要和指针。10MB 目标仍未达成；Z66 与两轮千问现役消费者仍未收口；同盘外置不等于独立备份，历史候选不等于当前默认，也没有启用 10MB 硬门。"
   },
   "storage_roots": [
     {
@@ -84,6 +84,41 @@
     }
   ],
   "objects": [
+    {
+      "artifact_id": "analysis-library-pilot-batch-01-cz-move-20260731-v1",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "analysis_library_pilot_batch_01_cz_move_20260731_v1",
+      "category": "external_archive_batch",
+      "status": "sealed",
+      "record_kind": "archive_batch",
+      "lifecycle": "frozen",
+      "consumer_closure": "verified",
+      "verification_level": "cryptographically_sealed",
+      "recoverability": "package_integrity_proven_same_failure_domain",
+      "externalization": "already_external",
+      "purpose_summary": "CZ 明确同意把 analysis_library/pilot_batch_01 的本地未跟踪快照移出主仓；完整包共 242 个文件、23895907 字节，仓内只保留轻量摘要、验收摘要和指针。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "2e8ecee5a580a4926597093b41d0d9f70321bc7f67326f5790feacbd415fd5f0",
+        "expected_entry_count": 242,
+        "entries_field": "files",
+        "entry_path_field": "path",
+        "entry_sha256_field": "sha256"
+      },
+      "keep_in_repository": [
+        "analysis_library 与 pilot_batch_01 两层用途说明",
+        "7 份 summaries 轻量结论",
+        "3 份 acceptance 验收摘要",
+        "EXTERNAL_POINTER.json 仓外指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "semantic_analysis_tasks",
+        "tools/external_payload_validator.py"
+      ],
+      "boundary": "来源是移动前的本地未跟踪目录快照，不是 Git 固定提交可重建包。原始 ZIP、解包内容、映射和重算证据按原目录结构保留；242 个普通文件、23895907 字节逐项验 SHA。仓内摘要仍是候选，不等于人工审定知识库；外置包与主仓同盘，只证明包完整，不构成独立备份。"
+    },
     {
       "artifact_id": "diagnostic-return-z66-three-question-candidate-s07ga-v1",
       "root_id": "repository_sibling_external_archive_v1",

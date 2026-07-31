@@ -182,19 +182,57 @@ def test_git_policy_matches_repository_facts_with_nul_safe_listing() -> None:
             pytest.fail(f"未知 Git 规则：{path}={policy}")
 
 
-def test_analysis_library_is_not_misreported_as_ignored() -> None:
+def test_analysis_library_keeps_lightweight_index_and_ignores_heavy_payload() -> None:
     registry = _read_json(REGISTRY_PATH)
     row = next(
         item for item in registry["directories"] if item["path"] == "analysis_library"
     )
-    assert row["git_policy"] == "local_untracked"
-    assert _git(
-        "check-ignore",
-        "--quiet",
-        "--",
-        "analysis_library",
-        check=False,
-    ).returncode != 0
+    assert row["git_policy"] == "mixed"
+    assert row["ignored_probe"] == (
+        "analysis_library/pilot_batch_01/raw_zips/payload-probe.zip"
+    )
+
+    lightweight_paths = {
+        "analysis_library/README.md",
+        "analysis_library/pilot_batch_01/README.md",
+        "analysis_library/pilot_batch_01/EXTERNAL_POINTER.json",
+        "analysis_library/pilot_batch_01/summaries/00_五本总览.md",
+        "analysis_library/pilot_batch_01/summaries/01_书卡_逼我重生是吧.md",
+        "analysis_library/pilot_batch_01/summaries/02_书卡_诡舍.md",
+        "analysis_library/pilot_batch_01/summaries/03_书卡_斗破苍穹.md",
+        "analysis_library/pilot_batch_01/summaries/04_书卡_封总太太想跟你离婚很久了.md",
+        "analysis_library/pilot_batch_01/summaries/05_书卡_三国演义.md",
+        "analysis_library/pilot_batch_01/summaries/06_字段合同摩擦汇总.md",
+        "analysis_library/pilot_batch_01/acceptance/VALIDATION_REPORT.md",
+        "analysis_library/pilot_batch_01/acceptance/book_summary.json",
+        "analysis_library/pilot_batch_01/acceptance/缺包缺文件缺字段清单.md",
+    }
+    tracked = _tracked_paths()
+    for path in lightweight_paths:
+        assert (ROOT / path).is_file(), path
+        assert path in tracked, path
+        assert _git(
+            "check-ignore",
+            "--quiet",
+            "--no-index",
+            "--",
+            path,
+            check=False,
+        ).returncode != 0, path
+
+    for heavy_path in (
+        row["ignored_probe"],
+        "analysis_library/pilot_batch_01/unpacked/payload-probe.json",
+        "analysis_library/pilot_batch_01/mappings/payload-probe.jsonl",
+    ):
+        assert _git(
+            "check-ignore",
+            "--quiet",
+            "--no-index",
+            "--",
+            heavy_path,
+            check=False,
+        ).returncode == 0, heavy_path
 
 
 def test_directory_views_are_generated_only_from_registry() -> None:
