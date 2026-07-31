@@ -25,6 +25,16 @@
   },
   "targets": [
     {
+      "artifact_id": "diagnostic-return-z66-three-question-candidate-s07ga-v1",
+      "manifest_sha256": "9426343733b2451bc133d1364da05be4ff83bdacd2cfdd718853f2a5f60b808c",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "只核 Z66 三问法历史候选完整副本的 93 个普通文件；消费者仍未收口，不把外部诊断写成已采纳方案，也不授权主仓移动、删除、独立备份声明或 10MB 硬门。"
+    },
+    {
       "artifact_id": "historical-test-replay-s05b-v1",
       "manifest_sha256": "f2f2b3b612ac4b18f98abbabdd0bf500337fde9cfe62be8dacf1ab03f6a5503a",
       "payload_root_relative_path": "payload",
