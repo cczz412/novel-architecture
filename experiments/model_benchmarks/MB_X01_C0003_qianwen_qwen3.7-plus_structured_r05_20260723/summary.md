@@ -17,10 +17,25 @@
 
 ## 横向读法
 
-本轮是“structured_nonthinking＋temperature=0.0”条件成绩。供应商兼容差异见 `prepared/compatibility_diff.json`，不能把它冒充成所有参数完全相同的纯模型单变量。
+本轮是“structured_nonthinking＋temperature=0.0”条件成绩。完整兼容差异只在外置原件
+包中保留，不能把它冒充成所有参数完全相同的纯模型单变量。
 
 基线：retry03 DeepSeek V4 Flash 严格 6/23、有效 20/23；Z89 DeepSeek V4 Pro 严格 10/23、有效 20/23。
 
 本轮仍是候选银标，不改默认链，不自动升模型。
+
+## 当前怎么取原件
+
+S-07-F-B-A 后，主仓只留身份、请求体、正式成绩、用量和最小调用审计票，共 10 件。
+完整输入、模型原始回答、判分过程和随包程序在外置对象
+`model-benchmark-qwen-r05-structured-scored-candidate-s07fa-v1`。先回主仓运行：
+
+```bash
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id model-benchmark-qwen-r05-structured-scored-candidate-s07fa-v1
+```
+
+当前轻量目录不能原地复跑。`receipt.md` 中的结果目录描述记录的是 2026-07-23 当时的完整
+现场，当前存放位置以本节和外置对象登记册为准。
 
 来源：Codex

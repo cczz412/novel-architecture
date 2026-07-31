@@ -30,12 +30,12 @@
     "metric": "git_index_per_tracked_path_blob_bytes",
     "mode": "s06a_bootstrap_no_growth",
     "pre_s06a_baseline_bytes": 18841846,
-    "active_limit_bytes": 16583578,
+    "active_limit_bytes": 15326734,
     "target_bytes": 10000000,
     "hard_limit_bytes": null,
     "activation_receipt": null,
     "hard_limit_activation": "blocked_in_s06a_until_separate_payload_validator",
-    "boundary": "当前施工余量覆盖 S-06-A 至 S-06-D-A 的只读治理件、S-07-B-A 的同盘完整副本、S-07-B-B 删除 5 轮零调用旧包的 71 个主仓重件、S-07-C-A 的一张 QEC 四模型轻量卡和仓外 7 件原始证据登记、S-07-D-A 的 LongCat r03 硬停轮同盘完整副本登记、S-07-D-B 删除 r03 的 24 个主仓重件并保留 5 件轻量入口、S-07-E-A 的 LongCat r01 硬停轮同盘完整副本登记、S-07-E-B-A 的 r01 旧程序测试夹具迁移、S-07-E-B-B 删除 r01 的 24 个主仓重件并保留 5 件轻量入口，以及 S-07-F-A 的千问 r05／r06 有分轮同盘完整副本登记。10MB 目标仍未达成；两轮现役消费者仍未收口，主仓原件没有移动或删除；同盘外置不等于独立备份，历史成绩不等于当前默认，也没有启用 10MB 硬门。"
+    "boundary": "当前施工余量覆盖 S-06-A 至 S-06-D-A 的只读治理件、S-07-B-A 的同盘完整副本、S-07-B-B 删除 5 轮零调用旧包的 71 个主仓重件、S-07-C-A 的一张 QEC 四模型轻量卡和仓外 7 件原始证据登记、S-07-D-A 的 LongCat r03 硬停轮同盘完整副本登记、S-07-D-B 删除 r03 的 24 个主仓重件并保留 5 件轻量入口、S-07-E-A 的 LongCat r01 硬停轮同盘完整副本登记、S-07-E-B-A 的 r01 旧程序测试夹具迁移、S-07-E-B-B 删除 r01 的 24 个主仓重件并保留 5 件轻量入口、S-07-F-A 的千问 r05／r06 有分轮同盘完整副本登记，以及 S-07-F-B-A 删除两轮共 60 个无现役消费者的主仓重件并保留 21 件轻量入口。10MB 目标仍未达成；两轮现役消费者仍未收口；同盘外置不等于独立备份，历史成绩不等于当前默认，也没有启用 10MB 硬门。"
   },
   "storage_roots": [
     {
@@ -496,17 +496,17 @@
         "entry_sha256_field": "sha256"
       },
       "keep_in_repository": [
-        "消费者收口前保留 r05 完整目录；Z98 逐字读取 prepared/request_body.json 与 transport/usage.jsonl，千问平台配置保留本轮历史验证身份"
+        "benchmark.json、prepared/request_body.json、receipt.md、scorecard/final.json、scorecard/mechanical.json、state.json、summary.md、transport/call_attempts.jsonl、transport/completion_audit.json、transport/usage.jsonl"
       ],
       "externalize_later": [
-        "只在另批消费者迁移、完整取回和删除授权均通过后讨论主仓重件"
+        "剩余 10 件继续承接 Z98、模型索引和最小调用审计；若再减必须另批迁移消费者"
       ],
       "consumers": [
         "tools/external_payload_validator.py",
         "experiments/Z98_independent_verifier_freeze_20260724/feasibility.py",
         "config/providers/qianwen_platform_multi_model.json"
       ],
-      "boundary": "完整副本来自固定提交 1d919759f11b481a69eab1bdb1b7bfac5f4e0851、目录 tree fb520d24546e28686efebd9cb24f6e4af3dd227f；40 个普通文件、702031 字节逐项验 SHA。历史条件是结构化不思考、温度 0.0；23 个评分位中严格命中 4、语义影子 7、有效召回 11。它是银标候选，不是当前默认。消费者仍为 open；S-07-F-A 只复制，没有移动或删除主仓文件。"
+      "boundary": "完整副本来自固定提交 1d919759f11b481a69eab1bdb1b7bfac5f4e0851、目录 tree fb520d24546e28686efebd9cb24f6e4af3dd227f；40 个普通文件、702031 字节逐项验 SHA。历史条件是结构化不思考、温度 0.0；23 个评分位中严格命中 4、语义影子 7、有效召回 11。它是银标候选，不是当前默认。S-07-F-B-A 从主仓移除 30 个无现役消费者的重件、647493 字节，保留 10 件轻量入口；消费者仍为 open，同盘完整性不等于独立备份。"
     },
     {
       "artifact_id": "model-benchmark-qwen-r06-thinking32k-scored-candidate-s07fa-v1",
@@ -531,10 +531,10 @@
         "entry_sha256_field": "sha256"
       },
       "keep_in_repository": [
-        "消费者收口前保留 r06 完整目录；Z98 逐字读取 request_body 与 usage，千问平台配置钉 final 成绩，V02 下游档仍指向 transport/request.json"
+        "benchmark.json、prepared/request_body.json、receipt.md、scorecard/final.json、scorecard/mechanical.json、state.json、summary.md、transport/call_attempts.jsonl、transport/completion_audit.json、transport/request.json、transport/usage.jsonl"
       ],
       "externalize_later": [
-        "只在另批消费者迁移、完整取回和删除授权均通过后讨论主仓重件"
+        "剩余 11 件继续承接 Z98、平台配置、模型索引、V02 指针和最小调用审计；若再减必须另批迁移消费者"
       ],
       "consumers": [
         "tools/external_payload_validator.py",
@@ -542,7 +542,7 @@
         "config/providers/qianwen_platform_multi_model.json",
         "experiments/extraction_redesign_v02_overnight_20260725/V02_C13_downstream_consumer_wire_r03_20260726/profiles/qianwen_platform.json"
       ],
-      "boundary": "完整副本来自固定提交 1d919759f11b481a69eab1bdb1b7bfac5f4e0851、目录 tree 9eefd905d3579866c088e0b47d4d93cadc38f652；41 个普通文件、714081 字节逐项验 SHA。历史条件是 32K 思考、温度 0.2、思考预算 32768；23 个评分位中严格命中 3、语义影子 9、有效召回 12。它是银标候选，不是当前默认。消费者仍为 open；S-07-F-A 只复制，没有移动或删除主仓文件。"
+      "boundary": "完整副本来自固定提交 1d919759f11b481a69eab1bdb1b7bfac5f4e0851、目录 tree 9eefd905d3579866c088e0b47d4d93cadc38f652；41 个普通文件、714081 字节逐项验 SHA。历史条件是 32K 思考、温度 0.2、思考预算 32768；23 个评分位中严格命中 3、语义影子 9、有效召回 12。它是银标候选，不是当前默认。S-07-F-B-A 从主仓移除 30 个无现役消费者的重件、611715 字节，保留 11 件轻量入口；消费者仍为 open，同盘完整性不等于独立备份。"
     },
     {
       "artifact_id": "model-benchmark-superseded-zero-call-s07ba-v1",

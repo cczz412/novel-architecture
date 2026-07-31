@@ -3962,7 +3962,7 @@
         "S-07-C-A QEC 四模型终局证据包回读",
         "S-07-D-A／D-B LongCat r03 中断硬停包回读",
         "S-07-E-A／E-B-A／E-B-B LongCat r01 中断硬停包回读",
-        "S-07-F-A 千问 r05／r06 有分候选完整包回读",
+        "S-07-F-A／F-B-A 千问 r05／r06 有分候选完整包回读",
         "tests/test_external_payload_validator.py"
       ],
       "consumer_evidence_rule": "一次命令只接一个同时存在于登记册和验证政策白名单的 artifact_id；PASS 同时绑定验证器与安全读取助手 SHA，只证明该 payload 当下字节与清单一致，不证明包级元数据、消费者收口、指针、可恢复性、独立备份或迁移完成。",
