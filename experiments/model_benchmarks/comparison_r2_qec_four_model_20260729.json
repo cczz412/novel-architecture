@@ -1,0 +1,148 @@
+{
+  "schema_version": "model-benchmark-comparison-card-v1",
+  "card_id": "r2-qec-four-model-20260729",
+  "status": "historical_closed_no_promotion",
+  "task": {
+    "title": "R2 QEC 30题四模型历史终局对照",
+    "route_id": "QEC",
+    "question_total": 30,
+    "comparison_date": "2026-07-29",
+    "source_run_id": "R2-FINAL-BAKEOFF-S01A-QEC-r13-20260729",
+    "source_cycle_id": "R2-FINAL-BAKEOFF-S01A-CYCLE-r13-20260729",
+    "comparison_unit": "provider_route_plus_model_display_name_plus_terminal_closeout_record",
+    "display_order_rule": "full_supported_count_desc_only",
+    "display_order_is_quality_ranking": false,
+    "run_conditions_self_contained": false,
+    "exact_api_model_id_verified": false
+  },
+  "gate": {
+    "full_supported_minimum": 15,
+    "critical_error_maximum": 10,
+    "requires_both": true
+  },
+  "models": [
+    {
+      "display_order": 1,
+      "model_key": "minimax_m3",
+      "display_name": "MiniMax M3",
+      "provider_route": "volcengine_agent_plan",
+      "exact_api_model_id": null,
+      "full_supported_count": 13,
+      "critical_error_count": 27,
+      "passed": false,
+      "observed_total_tokens": 87792,
+      "usage_complete_response_count": 30,
+      "new_model_calls": 0,
+      "reused_historical_result": true,
+      "price_table_value_per_million_tokens": 10.5,
+      "comparison_estimated_cost_cny": 0.921816,
+      "new_estimated_cost_cny": 0.0,
+      "source_scorecard_sha256": "ed84ca501db8d90b7062838dc1e9e0d7cf75c52b4b345db77b44782970710c1f",
+      "source_output_sha256": "32b95cc158f83fad2448b5908d088afe1039c1383bdc5740ad9f7af271a91287"
+    },
+    {
+      "display_order": 2,
+      "model_key": "deepseek_v4_flash",
+      "display_name": "DeepSeek V4 Flash",
+      "provider_route": "sensenova",
+      "exact_api_model_id": null,
+      "full_supported_count": 9,
+      "critical_error_count": 24,
+      "passed": false,
+      "observed_total_tokens": 108828,
+      "usage_complete_response_count": 30,
+      "new_model_calls": 30,
+      "reused_historical_result": false,
+      "price_table_value_per_million_tokens": 3.0,
+      "comparison_estimated_cost_cny": 0.326484,
+      "new_estimated_cost_cny": 0.326484,
+      "source_scorecard_sha256": "afe1a036d7f6ef82252143f14accdfee99094dc241e1c22c5857d503c7ea750a",
+      "source_output_sha256": "f3e703c41ffe14e3f2ec2ca9c0dd1b364eeae289033ffddb2852fdc025361d04"
+    },
+    {
+      "display_order": 3,
+      "model_key": "deepseek_v4_pro",
+      "display_name": "DeepSeek V4 Pro",
+      "provider_route": "volcengine_agent_plan",
+      "exact_api_model_id": null,
+      "full_supported_count": 6,
+      "critical_error_count": 23,
+      "passed": false,
+      "observed_total_tokens": 122318,
+      "usage_complete_response_count": 30,
+      "new_model_calls": 30,
+      "reused_historical_result": false,
+      "price_table_value_per_million_tokens": 9.0,
+      "comparison_estimated_cost_cny": 1.100862,
+      "new_estimated_cost_cny": 1.100862,
+      "source_scorecard_sha256": "07f9693fbc506122cc0e6a075663c39067fe25cc019c38e8c6fb8c3d04826d4d",
+      "source_output_sha256": "9347af32db7764559e889cb89a0f422fe76eac0918b57e547b2e15eea8d6ef49"
+    },
+    {
+      "display_order": 4,
+      "model_key": "qwen_3_7_flash",
+      "display_name": "Qwen 3.7 Flash",
+      "provider_route": "qianwen_platform",
+      "exact_api_model_id": null,
+      "full_supported_count": 3,
+      "critical_error_count": 19,
+      "passed": false,
+      "observed_total_tokens": 174309,
+      "usage_complete_response_count": 30,
+      "new_model_calls": 30,
+      "reused_historical_result": false,
+      "price_table_value_per_million_tokens": 3.0,
+      "comparison_estimated_cost_cny": 0.522927,
+      "new_estimated_cost_cny": 0.522927,
+      "source_scorecard_sha256": "f48a51043f5024b11c455ad5239d1e4b0dcfc94ae34b7559c005630e799f44b5",
+      "source_output_sha256": "a9b258845166a33491351795008d27824d496ac8dff598cbd3b0952261444e99"
+    }
+  ],
+  "cost_scopes": {
+    "final_effective_comparison": {
+      "new_model_calls": 90,
+      "automatic_retries": 0,
+      "new_three_model_estimated_cost_cny": 1.950273,
+      "including_reused_minimax_m3_estimated_cost_cny": 2.872089,
+      "calculation": "price_table_value_per_million_tokens * observed_total_tokens / 1000000",
+      "platform_invoice_reconciled": false
+    },
+    "whole_bakeoff_longline": {
+      "request_count_claimed_by_cost_ledger": 169,
+      "usage_known_count": 162,
+      "usage_unknown_count": 7,
+      "cost_ledger_reported_minimum_cny": 2.813388,
+      "cost_ledger_reported_actual_total_relation": "greater_than_or_equal_to_reported_minimum",
+      "actual_total_cost_upper_bound_cny": null,
+      "including_reused_minimax_m3_cost_ledger_reported_minimum_cny": 3.735204,
+      "independently_recalculable_from_external_package": false,
+      "cost_ledger_bound_by_closeout_receipt": false,
+      "r01_r11_source_receipts_in_external_package": false
+    }
+  },
+  "decision": {
+    "passed_model_keys": [],
+    "default_promotion": false,
+    "default_chain_changed": false,
+    "conclusion": "四条平台路线全部未过同一双门；表内顺序只按完整回答数从高到低展示，不是综合排名，也不给当前默认模型排序。"
+  },
+  "source_artifact": {
+    "artifact_id": "r2-qec-four-model-score-sources-s07ca-v1",
+    "manifest_sha256": "fbd4ce59b96f14b635235d194ff1f921b98d6f57d41f6493d16676261c0a5834",
+    "manifest_entry_set_sha256": "f9dd0c01402868fcf53e6357d37c72a88b9309bdb693846d1dae874091aca050",
+    "final_scorecard_sha256": "2fa632313c934dadb58414de0b7a5e6e0f065d31360f802c16b6bc73e7c9614a",
+    "actual_cost_ledger_sha256": "2bb8b36daadd01151d0d33258dccdd27db848c1b046e79ef1c7ad2ced3cac994",
+    "closeout_receipt_sha256": "335e0205bba34ee299fa5ca9dfd49400b66dca2bfa2d1a81a16e3ccd0e39773f",
+    "formal_score_report_sha256": "c86e71fb781317b8a2934834d139ade1a28de9310743291b9c5f7dc985d9f3c1"
+  },
+  "evidence_boundary": [
+    "所有得分只和同一套 QEC 30题比较，不与 23、28 或 41 分母的旧实验混排。",
+    "比较对象是当时的平台路线、模型展示名和终局收口记录；源成绩卡没有精确 API model_id，本包也没有自包含 Prompt、配置、金标和判分器绑定。",
+    "Token 与表内费用来自已观测用量乘历史价格表，不是平台账单对账值。",
+    "2.813388 元是成本补充账登记的最低值；本包不能独立复算 r01至r11，接受该账面记录时真实总额不低于此值，未知用量不填 0。",
+    "成本补充账没有被收口票钉 SHA，r01至r11 的成本来源票也不在本外置包。",
+    "7 件原件只能核对终局收口文件怎样声明执行、恢复、判分、成绩和成本，不能独立重判四模型原始结果。",
+    "MiniMax M3 的原成绩卡、原输出，以及四条路线共享题集、金标和判分器的完整绑定件不在本外置包。",
+    "这是历史结案证据，不证明当前渠道可用、当前价格或模型家族总能力。"
+  ]
+}

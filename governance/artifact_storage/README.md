@@ -17,11 +17,24 @@
 
 同级位置由“主仓名字加固定后缀”定位，不把某台机器的 `/Users/...` 写进机器身份。
 
+## 外置也分轻重
+
+- **只复制、主仓原件还在**：固定来源提交、对象编号、文件数、总字节和一个整包摘要就够；
+  不为每个历史包新造专用测试，也不先做消费者收口。
+- **准备从主仓移除原件**：再补仓外可读核验、轻量结论卡、指针和一次取回验证。验不过就
+  不移除。
+- **准备升成现役默认**：才进入完整合同、逐项证据、独立审查和严格封签。
+
+S-07-B-A 已经沿用现有逐文件验证器做完，不返工降级；它只是一份同盘副本。S-07-B-B
+又做了一次整包取回比对，随后才删除对应主仓重件。后续单纯复制历史现场时按第一档走，
+避免把“多放一份”做成正式晋级验收。
+
 ## 当前登记怎么理解
 
-登记册现有 24 个对象：
+登记册现有 26 个对象：
 
-- 6 个外置对象：3 份旧库存清单、S-05-B 回放包 v1／v2、1 个未清点的旧 TEMP 容器。
+- 8 个外置对象：3 份旧库存清单、S-05-B 回放包 v1／v2、S-07-B-A 模型横评零调用
+  作废包、S-07-C-A QEC 四模型终局证据包、1 个未清点的旧 TEMP 容器。
 - 5 个隔离实验工作区：1 个 ChatGPT 组件咨询区、4 轮千问／V4 对照工作区。
 - 13 个主仓实验目录：5 个候选、5 个冻结历史、1 个负结果、2 个身份不足。
 
@@ -80,6 +93,10 @@
   --artifact-id historical-test-replay-s05b-v2
 .venv/bin/python tools/external_payload_validator.py report \
   --artifact-id historical-test-replay-s05b-v2
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id model-benchmark-superseded-zero-call-s07ba-v1
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id r2-qec-four-model-score-sources-s07ca-v1
 .venv/bin/python tools/experiment_artifact_retrieval.py check \
   --card-id s05b-historical-replay-v2
 .venv/bin/python tools/experiment_artifact_retrieval.py resolve \
@@ -89,6 +106,20 @@
 
 三个工具都只读。库存工具不进入 payload；逐文件工具一次只验政策白名单里的一个对象；
 取件工具只读固定 `MANIFEST` 并生成未来复制计划。它们都不接受任意生产根路径。
+
+S-07-B-A 已把 5 个零调用作废模型横评包从固定 Git 提交复制到同盘外置仓，并逐文件核对
+86 个文件、1,664,821 字节。S-07-B-B 又把整包复制到全新临时目录并逐字节比对，随后从
+主仓删除 71 个重件、1,657,195 字节；每轮仍留身份、状态和作废原因，共 15 个小文件。
+完整现场按对象编号 `model-benchmark-superseded-zero-call-s07ba-v1` 寻址。这份外置包
+仍在同一磁盘，也没有进入通用结论卡取件白名单。
+
+S-07-C-A 另把 QEC 30 题四模型终局对照压成一张主仓轻量卡，仓外保留 7 份终局记录原件、
+11,424 字节。日常比较只读 `experiments/model_benchmarks/` 下的对比卡；要核执行、
+网络恢复、判分、成本和收口原文时，按对象编号
+`r2-qec-four-model-score-sources-s07ca-v1` 验包。四条路线都未过共同门槛，这张历史卡
+不是当前默认模型榜；表格顺序也只按完整回答数展示，不是综合排名。2.813388 元是成本账
+登记的最低值，本包不能独立复算。7 件包不含原始四模型输出、共享金标和完整判分绑定，
+不能单独拿来重判。
 
 当前 `PASS` 只说明：
 

@@ -30,12 +30,12 @@
     "metric": "git_index_per_tracked_path_blob_bytes",
     "mode": "s06a_bootstrap_no_growth",
     "pre_s06a_baseline_bytes": 18841846,
-    "active_limit_bytes": 19283380,
+    "active_limit_bytes": 17648443,
     "target_bytes": 10000000,
     "hard_limit_bytes": null,
     "activation_receipt": null,
     "hard_limit_activation": "blocked_in_s06a_until_separate_payload_validator",
-    "boundary": "当前施工余量只覆盖 S-06-A 登记闸、S-06-B 逐文件验证、S-06-C 轻量结论卡与只读取件计划，以及 S-06-D-A 统一只读目录、Git 索引体积分布、合同、定向测试和说明。10MB 目标仍未达成；目录只从现有真源即时派生，没有读取 payload、复制、移动、删除或迁移。消费者收口、真实迁移、故障域和 10MB 硬门仍须后续另行授权。"
+    "boundary": "当前施工余量覆盖 S-06-A 至 S-06-D-A 的只读治理件、S-07-B-A 的同盘完整副本、S-07-B-B 删除 5 轮零调用旧包的 71 个主仓重件，以及 S-07-C-A 的一张 QEC 四模型轻量卡和仓外 7 件原始证据登记。10MB 目标仍未达成；同盘外置不等于独立备份，历史成绩不等于当前默认，也没有启用 10MB 硬门。"
   },
   "storage_roots": [
     {
@@ -412,6 +412,68 @@
       "boundary": "机器回执记录 3 次真实调用，根 README 仍写 0 次；冲突未裁决前以回执作更强运行证据，但不改写旧说明。"
     },
     {
+      "artifact_id": "model-benchmark-superseded-zero-call-s07ba-v1",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "model_benchmark_superseded_zero_call_s07ba_20260731_v1",
+      "category": "external_archive_batch",
+      "status": "sealed",
+      "record_kind": "archive_batch",
+      "lifecycle": "frozen",
+      "consumer_closure": "verified",
+      "verification_level": "cryptographically_sealed",
+      "recoverability": "package_integrity_proven_same_failure_domain",
+      "externalization": "already_external",
+      "purpose_summary": "S-07-B-A 保存 5 轮零调用作废模型横评的完整 Git 快照，共 86 个文件、1664821 字节。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "71b75da89c8f45c2296ff316c6638ce5ef3c2ba1299c86516666d958516c65ad",
+        "expected_entry_count": 86,
+        "entries_field": "files",
+        "entry_path_field": "path",
+        "entry_sha256_field": "sha256"
+      },
+      "keep_in_repository": [
+        "每轮 benchmark.json、state.json、作废原因票、总索引和本登记册指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "tools/external_payload_validator.py"
+      ],
+      "boundary": "完整副本来自固定提交 e3bcec6634a8fe1794793b13831205f78d766a41；同盘 86 个文件已逐项验 SHA，并做过一次全量取回逐字节比对。S-07-B-B 只删主仓 71 个重件、保留 15 个身份与作废锚；目录外精确消费者为 0，索引可只靠轻量锚重建。它仍不证明独立备份。"
+    },
+    {
+      "artifact_id": "r2-qec-four-model-score-sources-s07ca-v1",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "r2_qec_four_model_score_sources_s07ca_20260731_v1",
+      "category": "external_archive_batch",
+      "status": "sealed",
+      "record_kind": "archive_batch",
+      "lifecycle": "frozen",
+      "consumer_closure": "verified",
+      "verification_level": "cryptographically_sealed",
+      "recoverability": "package_integrity_proven_same_failure_domain",
+      "externalization": "already_external",
+      "purpose_summary": "S-07-C-A 保存 R2 QEC 30题四模型终局收口记录的 7 份原件，共 11424 字节。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "fbd4ce59b96f14b635235d194ff1f921b98d6f57d41f6493d16676261c0a5834",
+        "expected_entry_count": 7,
+        "entries_field": "files",
+        "entry_path_field": "path",
+        "entry_sha256_field": "sha256"
+      },
+      "keep_in_repository": [
+        "轻量对比卡、模型通道 README 表格和本登记册指针"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "tools/external_payload_validator.py"
+      ],
+      "boundary": "7 件原件只能核对终局收口文件怎样声明执行、授权网络恢复、判分、成绩与成本，不能独立重判四模型原始结果。MiniMax M3 原成绩卡与原输出、共享题集、金标和判分器完整绑定件均不在包内；成本补充账未被收口票钉 SHA，r01至r11 的直接成本来源票也不在包内。2.813388 元只是账面登记最低值，本包不能独立复算；同盘完整性不等于独立备份。"
+    },
+    {
       "artifact_id": "repo-experiment-model-benchmarks",
       "root_id": "repository_main_v1",
       "relative_path": "experiments/model_benchmarks",
@@ -436,13 +498,13 @@
         "README、INDEX、通用模型配置和被测试消费的通用程序"
       ],
       "externalize_later": [
-        "各轮 inputs、prepared、transport、candidate 和 scorecard 完整现场"
+        "除 S-07-B-B 已瘦成轻量历史的 5 个零调用作废包外，其余各轮 inputs、prepared、transport、candidate 和 scorecard 完整现场"
       ],
       "consumers": [
         "模型横评工具与测试",
         "审仓打包路线"
       ],
-      "boundary": "这是实验家族容器，不得把其中一轮成绩继承给全部子目录；消费者迁完前不搬通用程序。"
+      "boundary": "这是实验家族容器，不得把其中一轮成绩继承给全部子目录。S-07-B-B 只把 5 个零调用作废包改成仓内轻量锚、仓外完整现场；真实得分轮和通用程序仍留主仓，家族级消费者继续为 open。"
     },
     {
       "artifact_id": "repo-experiment-v02-r2-development-hardening-r01",

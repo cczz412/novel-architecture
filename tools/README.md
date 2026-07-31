@@ -295,8 +295,18 @@ v1 包在提交 `ed0dddcd2428fae8daf726ca2985571843df263d` 上实际得到 38 �
 - JSON 报告只放汇总，并绑定验证器和安全读取助手 SHA；不复制逐文件列表，也不泄漏
   绝对路径或内容。
 
-当前白名单只含 S-05-B 回放包 v1／v2。旧三批没有逐文件 SHA，旧 TEMP 外置根没有清单，
-所以只能保持排除，不能靠旧绝对路径或抽样结果冒充完整。
+当前白名单含 S-05-B 回放包 v1／v2、S-07-B-A 的模型横评零调用作废包，以及
+S-07-C-A 的 QEC 四模型终局证据包。两份模型证据包的人看命令是：
+
+```bash
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id model-benchmark-superseded-zero-call-s07ba-v1
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id r2-qec-four-model-score-sources-s07ca-v1
+```
+
+旧三批没有逐文件 SHA，旧 TEMP 外置根没有清单，所以只能保持排除，不能靠旧绝对路径或
+抽样结果冒充完整。
 
 PASS 只证明“这个 payload 当下与清单一致”。它不证明包级元数据、消费者收口、指针、
 可恢复性、独立备份或迁移完成，也不能打开 10MB 硬门。

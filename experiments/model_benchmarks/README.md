@@ -31,6 +31,85 @@ experiments/model_benchmarks/<benchmark_id>/
   receipt.md                  # 本轮调用、红线与回退说明
 ```
 
+## 零调用作废轮怎么找
+
+S-07-B-B 已把 5 轮从未发网的旧准备现场改成轻量历史。每轮在主仓只留三件：
+
+- `benchmark.json`：这轮测谁、用什么条件；
+- `state.json`：一句作废原因、调用次数、联网次数和替代轮编号；
+- `prepared/superseded_by_*.json`：当时为什么换新编号的详细说明。
+
+完整输入、准备件和随包程序在外置对象
+`model-benchmark-superseded-zero-call-s07ba-v1`。它的清单 SHA-256 是
+`71b75da89c8f45c2296ff316c6638ce5ef3c2ba1299c86516666d958516c65ad`，实际位置只从
+[`governance/external_archive_registry.json`](../../governance/external_archive_registry.json)
+读取。先用下面的命令核对外置原件，再按对象编号取到新的临时目录：
+
+```bash
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id model-benchmark-superseded-zero-call-s07ba-v1
+
+retrieval_dir=$(mktemp -d /tmp/model-benchmark-history.XXXXXX)
+cp -R \
+  ../小说架构_外置仓/model_benchmark_superseded_zero_call_s07ba_20260731_v1/payload \
+  "$retrieval_dir/payload"
+diff -qr \
+  ../小说架构_外置仓/model_benchmark_superseded_zero_call_s07ba_20260731_v1/payload \
+  "$retrieval_dir/payload"
+```
+
+这 5 轮没有模型质量分：共同结论只是“模型调用 0、联网 0、旧准备件失效”。不要拿它们和
+真正跑过的成绩比较，也不要在轻量目录里直接执行 `verify`、`run`、`audit` 或 `score`；
+需要历史审计时，先从外置对象复制完整现场。作废票里“旧目录原样留档”的句子记录的是
+2026-07-23 开票时的动作；S-07-B-B 之后的当前存放事实，以本页和外置对象登记册为准。
+
+## QEC 30题四模型历史终局对照
+
+这张表只比较 2026-07-29 同一套 QEC 30 题。机器真源是
+[`comparison_r2_qec_four_model_20260729.json`](comparison_r2_qec_four_model_20260729.json)。
+
+| 当时的平台路线／模型展示名 | 完整回答 | 关键错误 | 已观测 Token | 本轮新调用 | 表内估算费用 |
+|---|---:|---:|---:|---:|---:|
+| 火山 Agent Plan／MiniMax M3 | 13/30 | 27 | 87,792 | 0，复用旧 30 次 | 0.921816 元 |
+| SenseNova／DeepSeek V4 Flash | 9/30 | 24 | 108,828 | 30 | 0.326484 元 |
+| 火山 Agent Plan／DeepSeek V4 Pro | 6/30 | 23 | 122,318 | 30 | 1.100862 元 |
+| 千问平台／Qwen 3.7 Flash | 3/30 | 19 | 174,309 | 30 | 0.522927 元 |
+
+共同门槛是完整回答至少 15/30，且关键错误不多于 10；四条路线全部未过，所以没有升默认，
+也没有改默认链。表格只按“完整回答数”从高到低展示，不是综合排名，也不是推荐顺序；
+Qwen 的关键错误更少，也不能据此单独过双门。这里记录的是“当时的平台路线＋模型展示名＋
+终局收口记录”，不是模型家族总榜。原成绩卡没有供应商接受的精确 API `model_id`，7 件包
+也没有自包含 Prompt、配置、金标和判分器绑定，本页不会猜完整运行条件。
+
+成本分三层看：
+
+- 最终有效比较中新跑三条路线，表内估算合计 1.950273 元；
+- 加上复用的 MiniMax M3 历史比较账，合计 2.872089 元；
+- 整段比选长线登记 169 次请求，其中 162 次有用量、7 次用量未知；成本补充账登记的最低值
+  是 **2.813388 元**。本包不能独立复算 r01～r11；接受这份账面记录时，真实总额不低于
+  2.813388 元，上限未知。再计入复用的 M3 历史账，账面最低值是 3.735204 元。
+
+90 和 169 不是两套互相打架的调用账：90 是进入最终有效三模型比较的逻辑结果；整段长线
+还含前面作废的 78 次请求，以及 r12／r13 的 91 次网络请求，其中 1 次是获准恢复请求。
+
+这些费用由历史价格表乘已观测 Token 算出，不是平台账单对账。成本补充账本身没有被收口
+票钉 SHA，r01～r11 的直接成本来源票也不在本次外置包，所以不能把下限写成精确总费用。
+
+7 份原件在外置对象 `r2-qec-four-model-score-sources-s07ca-v1`，清单 SHA-256 是
+`fbd4ce59b96f14b635235d194ff1f921b98d6f57d41f6493d16676261c0a5834`：
+
+```bash
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id r2-qec-four-model-score-sources-s07ca-v1
+```
+
+这 7 份原件用来核对终局收口文件怎样声明执行、授权恢复、判分、成绩和成本，不是四模型
+原始输出包，也不能独立重判。MiniMax M3 的原成绩卡和原输出、四条路线共享题集、金标与
+判分器的完整绑定件都不在包内；需要重新评分时，不能只拿这份轻量包开工。
+
+23 项单章抽取、28 项开发集、41 项退役渠道审计都不能并入这张表。TokenRhythm 已退役，
+本页不把它列成可选渠道，也不继承它的历史成绩。
+
 ## 换模型时只填四项
 
 ```bash

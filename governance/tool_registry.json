@@ -3958,6 +3958,8 @@
       },
       "current_consumers": [
         "S-06-B 外置 payload 逐文件验证",
+        "S-07-B-A 模型横评零调用作废包回读",
+        "S-07-C-A QEC 四模型终局证据包回读",
         "tests/test_external_payload_validator.py"
       ],
       "consumer_evidence_rule": "一次命令只接一个同时存在于登记册和验证政策白名单的 artifact_id；PASS 同时绑定验证器与安全读取助手 SHA，只证明该 payload 当下字节与清单一致，不证明包级元数据、消费者收口、指针、可恢复性、独立备份或迁移完成。",
@@ -3968,7 +3970,9 @@
         "governance/external_payload_validation_policy.json",
         "governance/artifact_storage/README.md",
         "historical-test-replay-s05b-v1",
-        "historical-test-replay-s05b-v2"
+        "historical-test-replay-s05b-v2",
+        "model-benchmark-superseded-zero-call-s07ba-v1",
+        "r2-qec-four-model-score-sources-s07ca-v1"
       ],
       "next_confirmed_consumer": "以后每个外置实验包用相同登记字段生成轻量结论卡；需要复现时按对象编号单件取验。",
       "retirement_condition_and_compatibility_boundary": "候选只读公共零件；不自动发现目标，不接受任意 root/path/glob，不写报告文件，不移动、删除、恢复、改登记、签迁移票或启用 10MB 硬门。",
