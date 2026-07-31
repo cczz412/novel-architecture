@@ -99,6 +99,29 @@ r01 也在首次尝试占用票后异常终止：本地回答数是 0，网络�
 24 个重件、547,439 字节。当前目录只留 `benchmark.json`、`state.json`、两份硬停证据
 和 `summary.md`，不能在原地执行。
 
+## 千问 r05／r06 有分候选怎么找
+
+S-07-F-A 从固定提交 `1d919759f11b481a69eab1bdb1b7bfac5f4e0851` 分别复制两轮
+完整现场。两轮都是真实跑过并完成评分的银标候选，不是现役默认：
+
+| 轮次 | 条件 | 严格命中 | 语义影子 | 有效召回 | 已记录 Token |
+|---|---|---:|---:|---:|---:|
+| r05 | 结构化不思考；温度 0.0 | 4/23 | 7/23 | 11/23 | 16,157 |
+| r06 | 32K 思考；温度 0.2；思考预算 32,768 | 3/23 | 9/23 | 12/23 | 18,862 |
+
+外置对象分开登记，方便以后只取其中一轮：
+
+```bash
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id model-benchmark-qwen-r05-structured-scored-candidate-s07fa-v1
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id model-benchmark-qwen-r06-thinking32k-scored-candidate-s07fa-v1
+```
+
+r05 有 40 个文件、702,031 字节；r06 有 41 个文件、714,081 字节。Z98 核验程序仍逐字
+读取两轮的请求体和用量账，r06 还有平台成绩指针与 V02 请求指针，所以消费者状态仍为
+`open`。S-07-F-A 只建同盘完整副本，不移动或删除主仓文件；下一刀必须先迁消费者。
+
 ## QEC 30题四模型历史终局对照
 
 这张表只比较 2026-07-29 同一套 QEC 30 题。机器真源是

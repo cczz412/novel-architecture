@@ -31,11 +31,11 @@ S-07-B-A 已经沿用现有逐文件验证器做完，不返工降级；它只�
 
 ## 当前登记怎么理解
 
-登记册现有 28 个对象：
+登记册现有 30 个对象：
 
-- 10 个外置对象：3 份旧库存清单、S-05-B 回放包 v1／v2、S-07-B-A 模型横评零调用
+- 12 个外置对象：3 份旧库存清单、S-05-B 回放包 v1／v2、S-07-B-A 模型横评零调用
   作废包、S-07-C-A QEC 四模型终局证据包、S-07-D-A LongCat r03 中断硬停包、
-  S-07-E-A LongCat r01 中断硬停包、
+  S-07-E-A LongCat r01 中断硬停包、S-07-F-A 千问 r05／r06 有分候选包、
   1 个未清点的旧 TEMP 容器。
 - 5 个隔离实验工作区：1 个 ChatGPT 组件咨询区、4 轮千问／V4 对照工作区。
 - 13 个主仓实验目录：5 个候选、5 个冻结历史、1 个负结果、2 个身份不足。
@@ -99,6 +99,10 @@ S-07-B-A 已经沿用现有逐文件验证器做完，不返工降级；它只�
   --artifact-id model-benchmark-superseded-zero-call-s07ba-v1
 .venv/bin/python tools/external_payload_validator.py check \
   --artifact-id r2-qec-four-model-score-sources-s07ca-v1
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id model-benchmark-qwen-r05-structured-scored-candidate-s07fa-v1
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id model-benchmark-qwen-r06-thinking32k-scored-candidate-s07fa-v1
 .venv/bin/python tools/experiment_artifact_retrieval.py check \
   --card-id s05b-historical-replay-v2
 .venv/bin/python tools/experiment_artifact_retrieval.py resolve \
@@ -138,6 +142,11 @@ S-07-E-A 从固定提交 `0550e45c9c4cafbda905e8d436f883d04c5e818b` 复制 LongC
 原字节复制到 `tests/fixtures/z57_frozen_neutral_extract_20260723/`，测试改从专用夹具取件；
 S-07-E-B-B 再核对完整取回结果与消费者，从主仓移除 24 个重件、547,439 字节，只留
 身份、状态、两份硬停证据和一张结论卡。
+
+S-07-F-A 从固定提交 `1d919759f11b481a69eab1bdb1b7bfac5f4e0851` 分别复制千问 r05
+结构化不思考和 r06 32K 思考的完整有分现场。r05 外置对象有 40 个文件、702,031 字节，
+r06 有 41 个文件、714,081 字节。两轮都是银标候选，不是当前默认；Z98 等消费者仍直接
+读取主仓原件，所以这一波只建同盘副本，主仓文件一件未动。
 
 当前 `PASS` 只说明：
 
