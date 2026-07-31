@@ -63,6 +63,23 @@ diff -qr \
 需要历史审计时，先从外置对象复制完整现场。作废票里“旧目录原样留档”的句子记录的是
 2026-07-23 开票时的动作；S-07-B-B 之后的当前存放事实，以本页和外置对象登记册为准。
 
+## LongCat r03 中断硬停轮怎么找
+
+S-07-D-A 已从固定提交 `62d942e6cf05c7722826c1648436a2eb15708563` 把 r03 的完整
+现场复制到外置对象 `model-benchmark-longcat-r03-interrupted-s07da-v1`。包内有 28 个
+普通文件、555,559 字节，清单 SHA-256 是
+`6921fd3c28b3719846592cd076198685221ea48f279494d2b9026c86e945e68e`：
+
+```bash
+.venv/bin/python tools/external_payload_validator.py check \
+  --artifact-id model-benchmark-longcat-r03-interrupted-s07da-v1
+```
+
+这轮不是“零调用作废轮”。正式采样在写入首次尝试占用票后异常终止；本地模型回答是 0，
+但网络结果未知，也没有 usage 或质量分。S-07-D-A 只建立副本；S-07-D-B 在验包、完整
+取回和消费者复核通过后，从主仓移除 24 个重件、552,370 字节。当前目录只留
+`benchmark.json`、`state.json`、两份硬停证据和 `summary.md`，不能在原地执行。
+
 ## QEC 30题四模型历史终局对照
 
 这张表只比较 2026-07-29 同一套 QEC 30 题。机器真源是

@@ -1,7 +1,0 @@
-{
-  "schema_version": "model-benchmark-run-claim-v1",
-  "benchmark_id": "MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r03_20260723",
-  "logical_request_id": "MB_X01_C0003_longcat_LongCat-2.0_thinking_t02_r03_20260723-C0003",
-  "single_sample_no_rerun": true,
-  "claimed_at": "2026-07-23T07:14:27.875539+08:00"
-}
