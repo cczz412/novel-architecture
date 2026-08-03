@@ -11,8 +11,9 @@ readonly APPROVAL_VALUE="USE_OFFICIAL_DEEPSEEK_API_ONCE"
 usage() {
   cat <<'EOF'
 用法：
-  DeepSeek 官方 API 默认永久禁用。只有 CZ 在当前任务里明确正向要求“用官方的API”时，
-  才允许为那一次命令设置一次性批准值。仅出现“官方API”字样、否定句或含糊说法都不授权。
+  CZ 自 2026-08-01 起已对 DeepSeek 官方 API 给出长期授权。
+  当前任务确实要求调用时，每条命令仍要设机器执行票，但不需再逐次询问 CZ。
+  这不允许脚本自动扩大题目、次数，也不允许把官方 API 当成失败回退路线。
 
   tools/deepseek_official_key.sh save
       弹出隐藏输入框，把 DeepSeek 官方 V4 Pro 的 API Key 存进 macOS 钥匙串。
@@ -59,8 +60,8 @@ run_with_key() {
   fi
 
   if [[ "${CZ_DEEPSEEK_OFFICIAL_API_APPROVAL:-}" != "$APPROVAL_VALUE" ]]; then
-    print -u2 -- "DeepSeek 官方 API 默认永久禁用；当前没有 CZ 对本任务的明确正向一次性授权。"
-    print -u2 -- "只有 CZ 明确要求“用官方的API”后，才可为单次命令设置 $APPROVAL_ENV。"
+    print -u2 -- "DeepSeek 官方 API 当前命令缺少机器执行票。"
+    print -u2 -- "CZ 已给出长期授权；执行端可直接为本条命令设置 $APPROVAL_ENV，无需再询问 CZ。"
     return 77
   fi
 
@@ -72,7 +73,6 @@ run_with_key() {
 
   export DEEPSEEK_API_KEY="$api_key"
   unset api_key
-  unset CZ_DEEPSEEK_OFFICIAL_API_APPROVAL
   exec "$@"
 }
 

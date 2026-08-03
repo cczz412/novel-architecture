@@ -1,0 +1,392 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/story-truth-candidate.v1.schema.json",
+  "title": "30章干净故事真值候选",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "metadata",
+    "story",
+    "characters",
+    "entities",
+    "storylines",
+    "chapters",
+    "world_facts",
+    "states",
+    "predictions",
+    "beliefs",
+    "hooks",
+    "obligations",
+    "world_rules",
+    "causal_edges",
+    "chapter_exits",
+    "experience_notes",
+    "open_decisions"
+  ],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "task_id", "candidate_id", "status", "model_api_calls"],
+      "properties": {
+        "schema_version": {"const": "story-truth-candidate.v1"},
+        "task_id": {"const": "GEN-CONSUMER-STAGE0-FIXTURE-20260802"},
+        "candidate_id": {"type": "string", "minLength": 1},
+        "status": {"const": "candidate_waiting_cz_review"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "model_api_calls": {"const": 0},
+        "source_documents": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
+    },
+    "story": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "premise", "chapter_count", "core_character_ids", "auxiliary_character_ids", "storyline_ids", "series_open_hook_id"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "premise": {"type": "string", "minLength": 1},
+        "chapter_count": {"const": 30},
+        "core_character_ids": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "items": {"$ref": "#/$defs/characterId"},
+          "uniqueItems": true
+        },
+        "auxiliary_character_ids": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {"$ref": "#/$defs/characterId"},
+          "uniqueItems": true
+        },
+        "storyline_ids": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {"$ref": "#/$defs/storylineId"},
+          "uniqueItems": true
+        },
+        "series_open_hook_id": {"$ref": "#/$defs/hookId"}
+      }
+    },
+    "characters": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 10,
+      "items": {"$ref": "#/$defs/character"}
+    },
+    "entities": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/entity"}
+    },
+    "storylines": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {"$ref": "#/$defs/storyline"}
+    },
+    "chapters": {
+      "type": "array",
+      "minItems": 30,
+      "maxItems": 30,
+      "items": {"$ref": "#/$defs/chapter"}
+    },
+    "world_facts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/worldFact"}
+    },
+    "states": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/state"}
+    },
+    "predictions": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 6,
+      "items": {"$ref": "#/$defs/prediction"}
+    },
+    "beliefs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/belief"}
+    },
+    "hooks": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/hook"}
+    },
+    "obligations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/obligation"}
+    },
+    "world_rules": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/worldRule"}
+    },
+    "causal_edges": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/causalEdge"}
+    },
+    "chapter_exits": {
+      "type": "array",
+      "minItems": 30,
+      "maxItems": 30,
+      "items": {"$ref": "#/$defs/chapterExit"}
+    },
+    "experience_notes": {
+      "type": "array",
+      "minItems": 30,
+      "maxItems": 30,
+      "items": {"$ref": "#/$defs/experienceNote"}
+    },
+    "open_decisions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/openDecision"}
+    }
+  },
+  "$defs": {
+    "chapterNumber": {"type": "integer", "minimum": 1, "maximum": 30},
+    "nullableChapterNumber": {"type": ["integer", "null"], "minimum": 1, "maximum": 30},
+    "characterId": {"type": "string", "pattern": "^CHR-[A-Z0-9_-]+$"},
+    "entityId": {"type": "string", "pattern": "^(CHR|ENT)-[A-Z0-9_-]+$"},
+    "storylineId": {"type": "string", "pattern": "^SL-[A-Z0-9_-]+$"},
+    "factId": {"type": "string", "pattern": "^WF-[A-Z0-9_-]+$"},
+    "stateId": {"type": "string", "pattern": "^ST-[A-Z0-9_-]+$"},
+    "predictionId": {"type": "string", "pattern": "^PRED-[A-Z0-9_-]+$"},
+    "beliefId": {"type": "string", "pattern": "^BL-[A-Z0-9_-]+$"},
+    "hookId": {"type": "string", "pattern": "^HK-[A-Z0-9_-]+$"},
+    "obligationId": {"type": "string", "pattern": "^OB-[A-Z0-9_-]+$"},
+    "ruleId": {"type": "string", "pattern": "^RULE-[A-Z0-9_-]+$"},
+    "causalEdgeId": {"type": "string", "pattern": "^CE-[A-Z0-9_-]+$"},
+    "recordRef": {"type": "string", "pattern": "^(WF|ST|PRED|BL|HK|OB|RULE|CE|EXIT)-[A-Z0-9_-]+$"},
+    "stringArray": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "character": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["character_id", "canonical_name", "aliases", "tier", "goal", "fear", "false_belief", "red_line", "first_chapter"],
+      "properties": {
+        "character_id": {"$ref": "#/$defs/characterId"},
+        "canonical_name": {"type": "string", "minLength": 1},
+        "aliases": {"$ref": "#/$defs/stringArray"},
+        "tier": {"enum": ["core", "auxiliary"]},
+        "goal": {"type": "string", "minLength": 1},
+        "fear": {"type": "string", "minLength": 1},
+        "false_belief": {"type": "string", "minLength": 1},
+        "red_line": {"type": "string", "minLength": 1},
+        "first_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "last_chapter": {"$ref": "#/$defs/nullableChapterNumber"}
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_id", "entity_type", "canonical_name", "aliases", "first_available_chapter"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/entityId"},
+        "entity_type": {"enum": ["character", "location", "object", "institution", "group"]},
+        "canonical_name": {"type": "string", "minLength": 1},
+        "aliases": {"$ref": "#/$defs/stringArray"},
+        "first_available_chapter": {"$ref": "#/$defs/chapterNumber"}
+      }
+    },
+    "storyline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["storyline_id", "name", "goal", "start_chapter", "end_chapter", "status"],
+      "properties": {
+        "storyline_id": {"$ref": "#/$defs/storylineId"},
+        "name": {"type": "string", "minLength": 1},
+        "goal": {"type": "string", "minLength": 1},
+        "start_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "end_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "status": {"enum": ["planned", "active", "resolved", "open_after_book"]}
+      }
+    },
+    "chapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chapter_number", "title", "storyline_ids", "event_summary", "record_refs", "exit_id"],
+      "properties": {
+        "chapter_number": {"$ref": "#/$defs/chapterNumber"},
+        "title": {"type": "string", "minLength": 1},
+        "storyline_ids": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/storylineId"}, "uniqueItems": true},
+        "event_summary": {"type": "string", "minLength": 1},
+        "record_refs": {"type": "array", "items": {"$ref": "#/$defs/recordRef"}, "uniqueItems": true},
+        "exit_id": {"type": "string", "pattern": "^EXIT-[A-Z0-9_-]+$"},
+        "decision_refs": {"type": "array", "items": {"type": "string", "pattern": "^DEC-[A-Z0-9_-]+$"}, "uniqueItems": true}
+      }
+    },
+    "worldFact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fact_id", "fact_type", "statement", "entity_ids", "storyline_ids", "happened_chapter", "available_from_chapter", "source_chapter"],
+      "properties": {
+        "fact_id": {"$ref": "#/$defs/factId"},
+        "fact_type": {"enum": ["event", "relationship", "possession", "location", "identity", "evidence", "other"]},
+        "statement": {"type": "string", "minLength": 1},
+        "entity_ids": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/entityId"}, "uniqueItems": true},
+        "storyline_ids": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/storylineId"}, "uniqueItems": true},
+        "happened_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "available_from_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "source_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "source_record_refs": {"type": "array", "items": {"$ref": "#/$defs/recordRef"}, "uniqueItems": true}
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state_id", "entity_id", "slot", "value", "valid_from_chapter", "source_chapter", "storyline_ids"],
+      "properties": {
+        "state_id": {"$ref": "#/$defs/stateId"},
+        "entity_id": {"$ref": "#/$defs/entityId"},
+        "slot": {"type": "string", "minLength": 1},
+        "value": {"type": ["string", "number", "integer", "boolean"]},
+        "unit": {"type": ["string", "null"]},
+        "valid_from_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "valid_to_chapter": {"$ref": "#/$defs/nullableChapterNumber"},
+        "source_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "superseded_by": {"type": ["string", "null"], "pattern": "^ST-[A-Z0-9_-]+$"},
+        "storyline_ids": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/storylineId"}, "uniqueItems": true}
+      }
+    },
+    "prediction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prediction_id", "trigger_entity_id", "trigger_chapter", "observed_by", "condition", "predicted_result", "horizon_days", "status", "chain_id"],
+      "properties": {
+        "prediction_id": {"$ref": "#/$defs/predictionId"},
+        "trigger_entity_id": {"$ref": "#/$defs/entityId"},
+        "trigger_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "observed_by": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/characterId"}, "uniqueItems": true},
+        "condition": {"type": "string", "minLength": 1},
+        "predicted_result": {"type": "string", "minLength": 1},
+        "horizon_days": {"const": 7},
+        "status": {"enum": ["active", "realized", "invalidated_by_choice", "expired_unresolved", "partially_realized"]},
+        "status_changed_chapter": {"$ref": "#/$defs/nullableChapterNumber"},
+        "invalidated_by_record_ref": {"type": ["string", "null"], "pattern": "^(WF|CE)-[A-Z0-9_-]+$"},
+        "chain_id": {"type": "string", "pattern": "^CHAIN-[A-Z0-9_-]+$"}
+      }
+    },
+    "belief": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["belief_id", "holder_character_id", "proposition", "epistemic_status", "truth_alignment", "valid_from_chapter", "source_chapter"],
+      "properties": {
+        "belief_id": {"$ref": "#/$defs/beliefId"},
+        "holder_character_id": {"$ref": "#/$defs/characterId"},
+        "proposition": {"type": "string", "minLength": 1},
+        "proposition_ref": {"type": ["string", "null"], "pattern": "^(WF|PRED|HK|RULE)-[A-Z0-9_-]+$"},
+        "epistemic_status": {"enum": ["knows", "believes", "suspects", "disbelieves", "unaware"]},
+        "truth_alignment": {"enum": ["true", "false", "unknown", "not_applicable"]},
+        "valid_from_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "valid_to_chapter": {"$ref": "#/$defs/nullableChapterNumber"},
+        "source_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "superseded_by": {"type": ["string", "null"], "pattern": "^BL-[A-Z0-9_-]+$"}
+      }
+    },
+    "hook": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hook_id", "name", "hook_type", "setup_chapter", "trigger_condition", "payoff_window_start", "payoff_window_end", "status", "resolved_in_this_book", "answer_known_in_truth"],
+      "properties": {
+        "hook_id": {"$ref": "#/$defs/hookId"},
+        "name": {"type": "string", "minLength": 1},
+        "hook_type": {"enum": ["mystery", "promise", "threat", "open_thread", "rule_setup", "relationship"]},
+        "setup_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "trigger_condition": {"type": "string", "minLength": 1},
+        "payoff_window_start": {"$ref": "#/$defs/chapterNumber"},
+        "payoff_window_end": {"$ref": "#/$defs/chapterNumber"},
+        "status": {"enum": ["open", "triggered", "resolved", "expired", "deferred_after_book"]},
+        "closed_chapter": {"$ref": "#/$defs/nullableChapterNumber"},
+        "resolved_in_this_book": {"type": "boolean"},
+        "answer_known_in_truth": {"type": "boolean"},
+        "resolution_fact_ids": {"type": "array", "items": {"$ref": "#/$defs/factId"}, "uniqueItems": true}
+      }
+    },
+    "obligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligation_id", "obligation_type", "obligor_entity_id", "beneficiary_entity_ids", "description", "created_chapter", "status", "source_record_ref"],
+      "properties": {
+        "obligation_id": {"$ref": "#/$defs/obligationId"},
+        "obligation_type": {"enum": ["debt", "promise", "duty", "threat", "contract", "deadline"]},
+        "obligor_entity_id": {"$ref": "#/$defs/entityId"},
+        "beneficiary_entity_ids": {"type": "array", "items": {"$ref": "#/$defs/entityId"}, "uniqueItems": true},
+        "description": {"type": "string", "minLength": 1},
+        "created_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "due_chapter": {"$ref": "#/$defs/nullableChapterNumber"},
+        "status": {"enum": ["open", "fulfilled", "broken", "waived", "expired"]},
+        "closed_chapter": {"$ref": "#/$defs/nullableChapterNumber"},
+        "source_record_ref": {"$ref": "#/$defs/recordRef"}
+      }
+    },
+    "worldRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_id", "statement", "confirmation_status", "available_from_chapter", "source_chapter"],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/ruleId"},
+        "statement": {"type": "string", "minLength": 1},
+        "confirmation_status": {"enum": ["confirmed", "hypothesized"]},
+        "available_from_chapter": {"$ref": "#/$defs/chapterNumber"},
+        "source_chapter": {"$ref": "#/$defs/chapterNumber"}
+      }
+    },
+    "causalEdge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["causal_edge_id", "chain_id", "hop_index", "from_record_ref", "relation", "to_record_ref", "source_chapter"],
+      "properties": {
+        "causal_edge_id": {"$ref": "#/$defs/causalEdgeId"},
+        "chain_id": {"type": "string", "pattern": "^CHAIN-[A-Z0-9_-]+$"},
+        "hop_index": {"type": "integer", "minimum": 1},
+        "from_record_ref": {"$ref": "#/$defs/recordRef"},
+        "relation": {"enum": ["causes", "motivates", "enables", "blocks", "reveals", "invalidates", "supersedes"]},
+        "to_record_ref": {"$ref": "#/$defs/recordRef"},
+        "source_chapter": {"$ref": "#/$defs/chapterNumber"}
+      }
+    },
+    "chapterExit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exit_id", "chapter_number", "active_state_ids", "known_fact_or_belief_refs", "open_hook_ids", "open_obligation_ids", "next_chapter_needs"],
+      "properties": {
+        "exit_id": {"type": "string", "pattern": "^EXIT-[A-Z0-9_-]+$"},
+        "chapter_number": {"$ref": "#/$defs/chapterNumber"},
+        "active_state_ids": {"type": "array", "items": {"$ref": "#/$defs/stateId"}, "uniqueItems": true},
+        "known_fact_or_belief_refs": {"type": "array", "items": {"type": "string", "pattern": "^(WF|BL|PRED)-[A-Z0-9_-]+$"}, "uniqueItems": true},
+        "open_hook_ids": {"type": "array", "items": {"$ref": "#/$defs/hookId"}, "uniqueItems": true},
+        "open_obligation_ids": {"type": "array", "items": {"$ref": "#/$defs/obligationId"}, "uniqueItems": true},
+        "next_chapter_needs": {"$ref": "#/$defs/stringArray"}
+      }
+    },
+    "experienceNote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chapter_number", "payoff_level", "relationship_or_status_progress", "public_power_shift", "visual_candidates", "must_not_be_used_as_world_truth"],
+      "properties": {
+        "chapter_number": {"$ref": "#/$defs/chapterNumber"},
+        "payoff_level": {"enum": ["none", "small", "medium", "large", "low_point"]},
+        "relationship_or_status_progress": {"type": "string", "minLength": 1},
+        "public_power_shift": {"type": ["string", "null"]},
+        "visual_candidates": {"$ref": "#/$defs/stringArray"},
+        "must_not_be_used_as_world_truth": {"const": true}
+      }
+    },
+    "openDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_id", "question", "options", "status", "blocks_truth_freeze"],
+      "properties": {
+        "decision_id": {"type": "string", "pattern": "^DEC-[A-Z0-9_-]+$"},
+        "question": {"type": "string", "minLength": 1},
+        "options": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "status": {"const": "pending_cz"},
+        "blocks_truth_freeze": {"type": "boolean"},
+        "affected_chapters": {"type": "array", "items": {"$ref": "#/$defs/chapterNumber"}, "uniqueItems": true}
+      }
+    }
+  }
+}

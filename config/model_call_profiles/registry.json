@@ -38,7 +38,7 @@
       "status": "candidate_only_not_wired_to_default_chain",
       "api_contract_bundle": {
         "path": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/bundle.json",
-        "sha256": "ee1e9fb6f1e922d143150f95a6eae191ddcd789b395eb7b7ca46fb43ec4718ca"
+        "sha256": "7fc7dc3a78ad7e15df1425750a9ae49995f72ef4b3f31d4ea058eae21da6ab48"
       },
       "prompt_manifest": {
         "path": "config/prompts/wave2_synthetic_json_probe_v1/manifest.json",
@@ -46,7 +46,7 @@
       },
       "context_recipe": {
         "path": "config/context_recipes/wave2_synthetic_json_probe_v1.json",
-        "sha256": "03b403c5031e521519494004cb19484074c97d65d7866acb2e47ec50e28bedea"
+        "sha256": "281db19148b054e68f791de78204a7bc584cea25480301560f9b72b560bda8d7"
       },
       "task_output_schema": {
         "path": "config/contracts/wave2_synthetic_json_probe_v1.schema.json",
@@ -57,7 +57,7 @@
           "source": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/bundle.json",
           "destination": "workspace/api/contract_bundle.json",
           "role": "api",
-          "sha256": "ee1e9fb6f1e922d143150f95a6eae191ddcd789b395eb7b7ca46fb43ec4718ca"
+          "sha256": "7fc7dc3a78ad7e15df1425750a9ae49995f72ef4b3f31d4ea058eae21da6ab48"
         },
         {
           "source": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/normalization.json",
@@ -75,7 +75,7 @@
           "source": "config/providers/provider_access_policy.json",
           "destination": "workspace/api/provider_access_policy.json",
           "role": "api",
-          "sha256": "e5d08296e56a746711b53528d137e283617e887ff438dbdd6dcad0764bba14ee"
+          "sha256": "3d2d133cb3feef275f4dd21846579138160592c9edef71491064306288f90984"
         },
         {
           "source": "config/providers/qianwen_platform_multi_model.json",
@@ -87,7 +87,7 @@
           "source": "config/context_recipes/wave2_synthetic_json_probe_v1.json",
           "destination": "workspace/context/recipe.json",
           "role": "context",
-          "sha256": "03b403c5031e521519494004cb19484074c97d65d7866acb2e47ec50e28bedea"
+          "sha256": "281db19148b054e68f791de78204a7bc584cea25480301560f9b72b560bda8d7"
         },
         {
           "source": "config/prompts/wave2_synthetic_json_probe_v1/manifest.json",

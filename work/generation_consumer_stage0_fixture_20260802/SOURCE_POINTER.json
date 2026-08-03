@@ -1,0 +1,67 @@
+{
+  "schema_version": "local-task-source-pointer.v1",
+  "task_id": "GEN-CONSUMER-STAGE0-FIXTURE-20260802",
+  "authority": {
+    "source": "CZ current conversation",
+    "approved_at": "2026-08-02T01:50:00+08:00",
+    "scope": "prepare_and_authorize_next_story_agent_truth_candidate_contract_only"
+  },
+  "external_advisory": {
+    "provider": "ChatGPT Deep Research",
+    "zip_path": "/Users/a1234/Downloads/generation_consumer_five_deep_research_20260801.zip",
+    "zip_sha256": "de11710290cf7ab5d379caf47e159e2c272102cc1591bf0af4f888f64a5af8e7",
+    "member": "06_RECOMMENDED_ARCHITECTURE_AND_EXPERIMENTS.md",
+    "member_sha256": "4719f192ae4bc2ddb89cd6f2cbce325694a90de2eb867a0fcb685badf5056a01",
+    "status": "external_advisory_basis_not_project_truth"
+  },
+  "story_concept": {
+    "path": "work/generation_consumer_stage0_fixture_20260802/STORY_CONCEPT_CANDIDATE_v0.1.md",
+    "sha256": "76ae2b2cf528352db0a1483d1e8aeab771c9f64b988b8fc05032bf57a2afa30c",
+    "source": "CZ current conversation",
+    "status": "selected_concept_waiting_for_structured_story_agent"
+  },
+  "approved_revision_plan": {
+    "path": "work/generation_consumer_stage0_fixture_20260802/REVISION_PLAN.md",
+    "sha256": "ce5f2b9f6c96492733c98e2a08f1357e75f1bc1d18c8ed87289a6d59377c0806",
+    "approved_by": "CZ",
+    "status": "approved_for_next_story_agent"
+  },
+  "approved_story_agent_brief": {
+    "path": "work/generation_consumer_stage0_fixture_20260802/STORY_AGENT_BRIEF.md",
+    "sha256": "352247a425dfad15b25576c11132617a9ffc1df04104706801d7822e425f071c",
+    "approved_by": "CZ delegated decision to Codex",
+    "status": "approved_brief_not_story_truth"
+  },
+  "story_truth_output_contract": {
+    "path": "work/generation_consumer_stage0_fixture_20260802/STORY_TRUTH_CONTRACT.md",
+    "sha256": "bb503c6c8534781b9e46d851c05477ce66f3a3b2e6bc8ec2d230cd5297295443",
+    "status": "active_next_story_agent_delivery_contract"
+  },
+  "story_truth_candidate_schema": {
+    "path": "work/generation_consumer_stage0_fixture_20260802/story_truth_candidate.schema.json",
+    "sha256": "deba4f7cd1b257b0801058efd33085f4b1b205fb04f56c7bf4b905d8f8e31f3b",
+    "schema_version": "story-truth-candidate.v1",
+    "status": "active_candidate_schema"
+  },
+  "cz_decisions_20260802": {
+    "path": "work/generation_consumer_stage0_fixture_20260802/truth_candidate/CZ_DECISION_RECEIPT_20260802.md",
+    "sha256": "70d67f5ce744578cb299a62efd4586da0c64cf82374a26590cfc04be5aefa9a2",
+    "source": "CZ current conversation",
+    "status": "approved_three_recommended_options"
+  },
+  "story_truth_candidate_r02": {
+    "path": "work/generation_consumer_stage0_fixture_20260802/truth_candidate/story_truth_candidate.json",
+    "sha256": "6b41b6cedb358fda44d17bc3d9879738203252c2160d9e41e2cc84ef45c838b7",
+    "candidate_id": "STC-COUNTY-MALL-30CH-20260802-R02",
+    "status": "cz_approved_test_truth_candidate_local_validated",
+    "open_decision_count": 0,
+    "validation_path": "work/generation_consumer_stage0_fixture_20260802/truth_candidate/CZ_DECISIONS_VALIDATION_R02.md",
+    "validation_sha256": "fcbb399f5b9efcbc661f5e1d26110f3a77ffdb2cb910e7c01af69ff250a2b74c"
+  },
+  "execution": {
+    "story_data_created": true,
+    "compiler_created": false,
+    "tests_run": true,
+    "model_or_api_calls": 0
+  }
+}

@@ -24,12 +24,20 @@ def test_deepseek_official_v4_pro_provider_is_isolated_and_secret_free() -> None
     assert provider["thinking"] == {"type": "enabled"}
     assert provider["reasoning_effort"] == "high"
     assert "temperature" not in provider
-    assert provider["status"] == "permanently_disabled_unless_current_explicit_positive_user_authorization"
-    policy = provider["activation_policy"]
+    assert provider["activation_policy_ref"] == (
+        "config/providers/provider_access_policy.json#deepseek_official"
+    )
+    policy = json.loads(
+        (ROOT / "config/providers/provider_access_policy.json").read_text(
+            encoding="utf-8"
+        )
+    )["providers"]["deepseek_official"]
     assert policy["default_action"] == "deny"
-    assert policy["required_user_wording"] == "用官方的API"
-    assert policy["negative_or_ambiguous_wording_authorizes"] is False
-    assert policy["approval_scope"] == "current_task_one_command_only"
+    assert policy["standing_authorized"] is True
+    assert policy["approval_scope"] == "standing_until_explicit_revocation"
+    assert policy["per_run_user_confirmation_required"] is False
+    assert policy["automatic_fallback_allowed"] is False
+    assert policy["may_replace_default_chain"] is False
     assert "sk-" not in raw.lower()
 
 
@@ -43,6 +51,7 @@ def test_deepseek_official_keychain_tools_share_one_identity() -> None:
     assert account in shell and account in swift
     assert "SENSENOVA_API_KEY" not in shell
     assert "SENSENOVA_API_KEY" not in swift
+    assert "unset CZ_DEEPSEEK_OFFICIAL_API_APPROVAL" not in shell
 
 
 def test_deepseek_official_key_loader_help_is_zero_call() -> None:
@@ -55,10 +64,10 @@ def test_deepseek_official_key_loader_help_is_zero_call() -> None:
     )
     assert "DeepSeek 官方 V4 Pro" in result.stdout
     assert "DEEPSEEK_API_KEY" in result.stdout
-    assert "默认永久禁用" in result.stdout
+    assert "长期授权" in result.stdout
 
 
-def test_deepseek_official_loader_denies_run_without_current_explicit_approval() -> None:
+def test_deepseek_official_loader_denies_run_without_machine_execution_ack() -> None:
     environment = os.environ.copy()
     environment.pop("CZ_DEEPSEEK_OFFICIAL_API_APPROVAL", None)
     result = subprocess.run(
@@ -70,4 +79,5 @@ def test_deepseek_official_loader_denies_run_without_current_explicit_approval()
         text=True,
     )
     assert result.returncode == 77
-    assert "默认永久禁用" in result.stderr
+    assert "缺少机器执行票" in result.stderr
+    assert "长期授权" in result.stderr

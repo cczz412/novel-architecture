@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "novel-fact-p3-source-index-v1",
+  "title": "小说事实抽取 P3 背景卡来源索引 v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_id",
+    "scope",
+    "path",
+    "sha256"
+  ],
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$"
+    },
+    "scope": {
+      "enum": [
+        "verified_book_metadata",
+        "verified_prechapter_material",
+        "locally_curated_profile",
+        "approved_existing_card"
+      ]
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

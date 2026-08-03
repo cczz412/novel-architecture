@@ -48,7 +48,7 @@ CURRENT_RESOLVED_GOLDEN = {
             "destination": "workspace/api/contract_bundle.json",
             "bytes": 1952,
             "sha256": (
-                "ee1e9fb6f1e922d143150f95a6eae191ddcd789b395eb7b7ca46fb43ec4718ca"
+                "7fc7dc3a78ad7e15df1425750a9ae49995f72ef4b3f31d4ea058eae21da6ab48"
             ),
             "source_type": "file",
         },
@@ -83,9 +83,9 @@ CURRENT_RESOLVED_GOLDEN = {
             "role": "api",
             "source": "config/providers/provider_access_policy.json",
             "destination": "workspace/api/provider_access_policy.json",
-            "bytes": 2201,
+            "bytes": 2578,
             "sha256": (
-                "e5d08296e56a746711b53528d137e283617e887ff438dbdd6dcad0764bba14ee"
+                "3d2d133cb3feef275f4dd21846579138160592c9edef71491064306288f90984"
             ),
             "source_type": "file",
         },
@@ -105,7 +105,7 @@ CURRENT_RESOLVED_GOLDEN = {
             "destination": "workspace/context/recipe.json",
             "bytes": 1934,
             "sha256": (
-                "03b403c5031e521519494004cb19484074c97d65d7866acb2e47ec50e28bedea"
+                "281db19148b054e68f791de78204a7bc584cea25480301560f9b72b560bda8d7"
             ),
             "source_type": "file",
         },

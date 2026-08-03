@@ -1098,6 +1098,796 @@
           "description": "上一轮《下一轮实验与两档方案》完整审查 ZIP；本轮数据用于检验其建议。"
         }
       ]
+    },
+    "cmin-b-contract-refreeze": {
+      "label": "小说事实抽取｜C-min-B 重新冻结合同",
+      "purpose": "依据 2026-07-30 21:00 已拍板的 C-min-B，用既有程序、Qwen、V4 Flash、V4 Pro、MiniMax 实测输出和成绩重冻一份可机械执行的预注册合同；不重新选路线，不执行模型，不接触金标、答案锁箱、现役默认链或正式配置。",
+      "snapshot_at": "2026-07-30T21:00:00+08:00",
+      "reviewer_prompt_path": "config/review_pack/prompts/cmin_b_contract_refreeze.md",
+      "truth_source": {
+        "authority": "Notion 账序真源 v2｜2026-07-30 21:00 CZ 亲拍 C-min 路线 B",
+        "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
+        "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
+        "local_current_state_status": "stale_mirror_only_does_not_override_notion_20260730_2100",
+        "note": "唯一现行语义真源是 current_truth 层内 C-min-B 的 TRUTH_SNAPSHOT、B_WORK_ORDER 与 EVIDENCE_BOUNDARIES。旧路线、其他同名快照、MiniMax V2.3/V2.4 和旧 ChatGPT 回包全部是历史证据；MiniMax M3 已从默认判别岗降为未来升级兜底位。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews"
+      ],
+      "forbidden_source_globs": [
+        "**/scoring_lockbox/**",
+        "**/score_lockbox.json",
+        "**/*.lockbox.json",
+        "**/question_gold*.json",
+        "**/*gold_binding*.json",
+        "config/gold/**",
+        "**/__pycache__/**",
+        "**/*.pyc",
+        "**/reasoning_content.txt",
+        "**/stream_events.jsonl",
+        "**/raw_response.json",
+        "**/transport/**",
+        "**/*API_KEY*",
+        "**/*SECRET*"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "C-min-B 现行真源｜先读且不得被历史材料覆盖",
+          "roots": [
+            {
+              "root_id": "cmin_b_notion_truth_snapshot",
+              "required": true,
+              "authority": "notion_ledger_v2_20260730_2100_cz_approved",
+              "status": "active_current_truth_highest_priority",
+              "description": "本轮唯一现行语义真源：路线 B、调用总帽、五条晋级线、模块化总方针、证据分母和禁止边界。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/cmin_b_contract_refreeze_20260730_r01/TRUTH_SNAPSHOT.md",
+                "TEMP/chatgpt_review_cycles/cmin_b_contract_refreeze_20260730_r01/B_WORK_ORDER.md",
+                "TEMP/chatgpt_review_cycles/cmin_b_contract_refreeze_20260730_r01/EVIDENCE_BOUNDARIES.md",
+                "TEMP/chatgpt_review_cycles/cmin_b_contract_refreeze_20260730_r01/TRUTH_CALIBRATION_EVIDENCE.json",
+                "TEMP/chatgpt_review_cycles/cmin_b_contract_refreeze_20260730_r01/REVIEW_GATE_EVIDENCE.json"
+              ]
+            },
+            {
+              "root_id": "cmin_b_route_contract",
+              "required": true,
+              "authority": "review_pack_route_contract",
+              "status": "active_current_packaging_contract",
+              "description": "C-min-B 专用取材路线与顾问提示词；提示词列出唯一现行真源的精确包内路径。",
+              "globs": [
+                "config/review_pack/routes.json",
+                "config/review_pack/CHATGPT_REVIEW_SOP.md",
+                "config/review_pack/prompts/cmin_b_contract_refreeze.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "便宜岗位候选｜程序、Qwen 与 V4 Flash 完整实测",
+          "roots": [
+            {
+              "root_id": "cmin_program_suspect_selector",
+              "required": true,
+              "authority": "local_zero_api_candidate_test",
+              "status": "candidate_only_negative_recall_evidence",
+              "description": "跨三题材程序疑点选择器的脚本、输入、候选、完整输出和覆盖评分；只能支持机械硬检查和路由边界。",
+              "globs": [
+                "TEMP/program_suspect_selector_cross_genre_20260729_r01/**",
+                "TEMP/program_suspect_selector_cross_genre_20260730_r02/**",
+                "TEMP/program_suspect_selector_cross_genre_20260730_r03/**"
+              ],
+              "exclude_globs": [
+                "TEMP/program_suspect_selector_cross_genre_20260729_r01/__pycache__/**",
+                "TEMP/program_suspect_selector_cross_genre_20260730_r02/__pycache__/**",
+                "TEMP/program_suspect_selector_cross_genre_20260730_r03/__pycache__/**"
+              ]
+            },
+            {
+              "root_id": "cmin_qwen_batch_judgment",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "candidate_only_single_book_combination_failed",
+              "description": "Qwen E01 最终四项小批合同的 B03 完整输入、输出和离线评分；只能说明整套组合失败。",
+              "globs": [
+                "TEMP/hidden_error_batch_judgment_20260729_r01/**"
+              ],
+              "exclude_globs": [
+                "TEMP/hidden_error_batch_judgment_20260729_r01/__pycache__/**",
+                "**/reasoning_content.txt",
+                "**/stream_events.jsonl",
+                "**/raw_response.json",
+                "**/transport/**"
+              ]
+            },
+            {
+              "root_id": "cmin_qwen_blind_inventory",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "candidate_only_mechanical_pass_semantic_fail",
+              "description": "Qwen T0 三题材盲关键事实清单的完整输入、输出、人工审查与票据。",
+              "globs": [
+                "TEMP/blind_critical_inventory_cross_genre_20260729_r02/**"
+              ],
+              "exclude_globs": [
+                "TEMP/blind_critical_inventory_cross_genre_20260729_r02/__pycache__/**",
+                "**/reasoning_content.txt",
+                "**/stream_events.jsonl",
+                "**/raw_response.json",
+                "**/transport/**"
+              ]
+            },
+            {
+              "root_id": "cmin_qwen_thinking_budget",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "candidate_only_t512_cut_no_t1024",
+              "description": "Qwen T0 与 T512 六格的输入、最终可见输出、严格评分与产品闸评分；私有思考文本和运输日志不外发。",
+              "globs": [
+                "TEMP/qwen_thinking_budget_cross_genre_20260729_r02/**"
+              ],
+              "exclude_globs": [
+                "TEMP/qwen_thinking_budget_cross_genre_20260729_r02/__pycache__/**",
+                "TEMP/qwen_thinking_budget_cross_genre_20260729_r02/score_lockbox.json",
+                "**/reasoning_content.txt",
+                "**/stream_events.jsonl",
+                "**/raw_response.json",
+                "**/transport/**"
+              ]
+            },
+            {
+              "root_id": "cmin_v4_flash_judgment",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "candidate_only_quality_challenger_failed",
+              "description": "SenseNova V4 Flash High 三题材候选判别的输入、最终可见输出和评分；私有思考文本和运输日志不外发。",
+              "globs": [
+                "TEMP/semantic_batch_model_challengers_cross_genre_20260729_r02/**"
+              ],
+              "exclude_globs": [
+                "TEMP/semantic_batch_model_challengers_cross_genre_20260729_r02/__pycache__/**",
+                "**/reasoning_content.txt",
+                "**/stream_events.jsonl",
+                "**/raw_response.json",
+                "**/transport/**"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "历史能力、旧方案、失败诊断与分母边界",
+          "roots": [
+            {
+              "root_id": "cmin_historical_strong_model_comparison",
+              "required": true,
+              "authority": "local_candidate_model_run",
+              "status": "historical_candidate_only_not_current_route",
+              "description": "MiniMax M3、V4 Pro 与豆包 Lite 的三题材候选判别完整输入、输出和成绩；只供岗位能力对照。",
+              "globs": [
+                "TEMP/semantic_batch_minimax_m3_cross_genre_20260729_r02/**",
+                "TEMP/semantic_batch_strong_and_lite_cross_genre_20260729_r01/**"
+              ],
+              "exclude_globs": [
+                "TEMP/semantic_batch_minimax_m3_cross_genre_20260729_r02/__pycache__/**",
+                "TEMP/semantic_batch_strong_and_lite_cross_genre_20260729_r01/__pycache__/**",
+                "**/reasoning_content.txt",
+                "**/stream_events.jsonl",
+                "**/raw_response.json",
+                "**/transport/**"
+              ]
+            },
+            {
+              "root_id": "cmin_minimax_v23_three_book_diagnostic",
+              "required": true,
+              "authority": "local_hard_stopped_model_run",
+              "status": "historical_diagnostic_only_not_current_route",
+              "description": "MiniMax V2.3 三书挑战的冻结合同、输入、三次原始回包、规范化、失败票与离线诊断；只能解释升级兜底风险。",
+              "globs": [
+                "TEMP/hidden_error_low_cost_r04_minimax_thinking_20260730_r11_v23_three_book_challenge/**"
+              ],
+              "exclude_globs": [
+                "TEMP/hidden_error_low_cost_r04_minimax_thinking_20260730_r11_v23_three_book_challenge/__pycache__/**",
+                "**/reasoning_content.txt",
+                "**/stream_events.jsonl",
+                "**/raw_response.json",
+                "**/transport/**"
+              ]
+            },
+            {
+              "root_id": "cmin_minimax_v24_zero_call_guards",
+              "required": true,
+              "authority": "local_zero_api_engineering_evidence",
+              "status": "historical_zero_call_only_not_quality_evidence",
+              "description": "V2.4 原子化、收件门、运行与评测隔离的零调用护栏；不证明 MiniMax 质量，也不授权本轮调用。",
+              "globs": [
+                "TEMP/hidden_error_low_cost_r04_minimax_thinking_20260730_r12_v24_atom_zero_call_preflight/**",
+                "TEMP/hidden_error_low_cost_r04_minimax_thinking_20260730_r13_response_gate_overlay/**",
+                "TEMP/hidden_error_low_cost_r04_minimax_thinking_20260730_r14_runtime_evaluation_isolation/**",
+                "TEMP/hidden_error_low_cost_r04_minimax_thinking_20260730_r15_source_only_runtime_gate/**"
+              ],
+              "exclude_globs": [
+                "TEMP/hidden_error_low_cost_r04_minimax_thinking_20260730_r12_v24_atom_zero_call_preflight/__pycache__/**",
+                "TEMP/hidden_error_low_cost_r04_minimax_thinking_20260730_r13_response_gate_overlay/__pycache__/**",
+                "TEMP/hidden_error_low_cost_r04_minimax_thinking_20260730_r14_runtime_evaluation_isolation/__pycache__/**",
+                "TEMP/hidden_error_low_cost_r04_minimax_thinking_20260730_r15_source_only_runtime_gate/__pycache__/**"
+              ]
+            },
+            {
+              "root_id": "cmin_prior_short_and_chunk_routes",
+              "required": true,
+              "authority": "local_candidate_historical_test",
+              "status": "historical_negative_routes",
+              "description": "早期逐条短判、零调用/运输停点和 Qwen 八窗口修补，说明调用粒度、思考成本和工程失败边界。",
+              "globs": [
+                "TEMP/hidden_error_short_judgment_20260729_r01/**",
+                "TEMP/hidden_error_short_judgment_20260729_r02/**",
+                "TEMP/blind_critical_inventory_cross_genre_20260729_r01/FROZEN_RUN_CONTRACT.json",
+                "TEMP/blind_critical_inventory_cross_genre_20260729_r01/LOCAL_PREFLIGHT_STOP.json",
+                "TEMP/blind_critical_inventory_cross_genre_20260729_r01/STOP_REPORT.md",
+                "TEMP/qwen_thinking_budget_cross_genre_20260729_r01/FROZEN_RUN_CONTRACT.json",
+                "TEMP/qwen_thinking_budget_cross_genre_20260729_r01/PREFLIGHT_SEMANTIC_HOLD.md",
+                "TEMP/semantic_batch_model_challengers_cross_genre_20260729_r01/FROZEN_RUN_CONTRACT.json",
+                "TEMP/semantic_batch_model_challengers_cross_genre_20260729_r01/TRANSPORT_STOP_RECEIPT.json",
+                "TEMP/semantic_batch_model_challengers_cross_genre_20260729_r01/STOP_REPORT.md",
+                "TEMP/qwen_chunk_repair_B03_20260729_r01/**"
+              ],
+              "exclude_globs": [
+                "TEMP/hidden_error_short_judgment_20260729_r01/__pycache__/**",
+                "TEMP/hidden_error_short_judgment_20260729_r02/__pycache__/**",
+                "TEMP/qwen_chunk_repair_B03_20260729_r01/__pycache__/**",
+                "TEMP/qwen_chunk_repair_B03_20260729_r01/cells/*/prepared/exact_messages.json",
+                "TEMP/qwen_chunk_repair_B03_20260729_r01/cells/*/prepared/request_preview.json",
+                "TEMP/qwen_chunk_repair_B03_20260729_r01/cells/*/prepared/window_prompt.txt",
+                "**/reasoning_content.txt",
+                "**/stream_events.jsonl",
+                "**/raw_response.json",
+                "**/transport/**"
+              ]
+            },
+            {
+              "root_id": "cmin_four_model_answer_bakeoff",
+              "required": true,
+              "authority": "formal_historical_answer_bakeoff",
+              "status": "historical_answer_task_not_six_window_quality",
+              "description": "四模型 30 题正式成绩与成本账；只证明整题包办能力，不直接决定 C-min 六窗口岗位。",
+              "globs": [
+                "TEMP/r2_final_model_bakeoff_run_r13_20260729/formal_runtime/scores/FINAL_SCORECARD.json",
+                "TEMP/r2_final_model_bakeoff_closeout_r14_20260729/deliverable/ACTUAL_COST_LEDGER.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "旧 ChatGPT 原始回包｜候选建议，已被 B 拍板降为历史",
+          "roots": []
+        }
+      },
+      "external_slots": [
+        {
+          "slot_id": "prior_hidden_error_review",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "historical_candidate_advisory_superseded_by_cmin_b",
+          "description": "上一轮隐蔽漏错与低成本路线完整原始回包；其中含 MiniMax 默认判别岗，已被 B 拍板替换。"
+        },
+        {
+          "slot_id": "prior_minimax_v23_review",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "historical_candidate_advisory_minimax_upgrade_evidence_only",
+          "description": "MiniMax V2.3 失败诊断的完整原始回包；只供未来升级兜底和失败归因参考。"
+        }
+      ]
+    },
+    "scene-t6-contract-first-review": {
+      "label": "B 链场景情绪卡＋T6 结构链｜第一轮合同审",
+      "purpose": "依据 2026-08-01 17:06 已拍的一主链＋三辅链设计，只审 B 场景情绪卡与 C/T6 结构点评两份候选合同、T02 继承关系、同源输入和三章试跑闸；不读取或外发小说正文，不执行模型，不扩大样本，不改现役事实链。",
+      "snapshot_at": "2026-08-01T17:06:00+08:00",
+      "reviewer_prompt_path": "config/review_pack/prompts/scene_t6_contract_first_review.md",
+      "truth_source": {
+        "authority": "Notion 账序真源 v2｜2026-08-01 17:06 CZ 亲拍四项全拍＋当前对话同意第一轮打包",
+        "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
+        "queue_url": "https://app.notion.com/p/67a7f766d7654795bd2b20933441d5e0",
+        "local_current_state_status": "stale_mirror_only_does_not_override_notion_20260801_1706",
+        "note": "总设计与 T02 是现役依据；CZ 转发的两份工单是施工细节副本。第一轮只审合同，不含真实三章、P3 实例、模型输出或外部顾问旧回包。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence"
+      ],
+      "forbidden_source_globs": [
+        "**/chapters/**",
+        "**/*chapter_body*",
+        "**/*小说正文*",
+        "**/scoring_lockbox/**",
+        "**/score_lockbox.json",
+        "**/*.lockbox.json",
+        "**/question_gold*.json",
+        "**/*gold_binding*.json",
+        "config/gold/**",
+        "runs/**",
+        "reports/**",
+        "**/raw_response.json",
+        "**/stream_events.jsonl",
+        "**/reasoning_content.txt",
+        "**/transport/**",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "现役授权、Notion 设计与外审入口",
+          "roots": [
+            {
+              "root_id": "scene_t6_authority_and_notion_truth",
+              "required": true,
+              "authority": "notion_v2_and_current_cz_pack_authorization",
+              "status": "active_current_truth",
+              "description": "本轮授权、已拍管线设计、T02、任务登记和蓝图边界；先读且不得被候选合同覆盖。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/AUTHORITY_AND_SCOPE.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/CZ_WORK_ORDERS.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/NOTION_PIPELINE_DESIGN.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/NOTION_T02_GOLDEN_THREE.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/NOTION_TASK_AND_BLUEPRINT_EXCERPTS.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/REVIEW_GATE_EVIDENCE.json"
+              ]
+            },
+            {
+              "root_id": "scene_t6_review_prompt_and_sop",
+              "required": true,
+              "authority": "local_review_contract",
+              "status": "active_packaging_contract",
+              "description": "本路线顾问问题单与回包 ZIP 纪律。",
+              "globs": [
+                "config/review_pack/prompts/scene_t6_contract_first_review.md",
+                "config/review_pack/CHATGPT_REVIEW_SOP.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "B/C 候选合同、边界与三章试跑准备",
+          "roots": [
+            {
+              "root_id": "scene_t6_candidate_contracts",
+              "required": true,
+              "authority": "cz_work_order_derived_candidate_only",
+              "status": "candidate_for_external_review_not_approved_contract",
+              "description": "两份 v0.1 候选合同、三对象边界、合成正反例、第二轮输入锁和外发排除。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/CHAIN_BOUNDARY_MAP.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/B_SCENE_EMOTION_CARD_DRAFT_v0.1.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/C_T6_STRUCTURE_REVIEW_DRAFT_v0.1.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/THREE_CHAPTER_LOCK_REQUIREMENTS.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/SYNTHETIC_EXAMPLES.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/OUTBOUND_RIGHTS_AND_EXCLUSIONS.md"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "P3 背景卡通用边界｜不含真实卡实例",
+          "roots": [
+            {
+              "root_id": "scene_t6_p3_context_contract",
+              "required": true,
+              "authority": "local_context_recipe_contract",
+              "status": "active_schema_and_assembly_boundary_no_real_instance",
+              "description": "P3 字段、来源索引和装配顺序；只帮助消歧，不是 B/C 证据。",
+              "globs": [
+                "config/context_recipes/README.md",
+                "config/context_recipes/novel_fact_p3_context_card_v1.schema.json",
+                "config/context_recipes/novel_fact_p3_source_index_v1.schema.json",
+                "config/context_recipes/novel_fact_v2_user_message_template.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "首次合同审｜没有上一轮顾问回包",
+          "roots": []
+        }
+      },
+      "external_slots": []
+    },
+    "scene-t6-prompt-pilot-design": {
+      "label": "B/C/T6 v0.3｜提示词与轻量试跑配套",
+      "purpose": "依据 Notion 已审收的 B/C/T6 v0.3 候选，请 ChatGPT 只起草 B/C 实际提示词、三章轻量试跑工单、输入清单规则、合成边界题和人工语义审查量表；不含真实正文，不调用模型，不改合同，不自动晋级现役。",
+      "snapshot_at": "2026-08-01T19:09:00+08:00",
+      "reviewer_prompt_path": "config/review_pack/prompts/scene_t6_prompt_pilot_design.md",
+      "truth_source": {
+        "authority": "Notion 已审·候选接收页｜2026-08-01 19:09 APPROVED_AS_CANDIDATE，加当前对话同意按第一包打包",
+        "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
+        "approval_page_url": "https://app.notion.com/p/3af5cadc4d0f81068d00e79961815468",
+        "local_current_state_status": "separate_candidate_side_task_does_not_modify_current_state",
+        "note": "NOTION_APPROVAL_SNAPSHOT 是本轮最高优先级真源。v0.3 是已审候选而非现役；旧 CANDIDATE_RECEIPT 保留当时机械证据，其待审状态已被 Notion 后续审收回读超越。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews"
+      ],
+      "forbidden_source_globs": [
+        "**/chapters/**",
+        "**/*chapter_body*",
+        "**/*小说正文*",
+        "**/scoring_lockbox/**",
+        "**/score_lockbox.json",
+        "**/*.lockbox.json",
+        "**/question_gold*.json",
+        "**/*gold_binding*.json",
+        "config/gold/**",
+        "runs/**",
+        "reports/**",
+        "**/raw_response.json",
+        "**/stream_events.jsonl",
+        "**/reasoning_content.txt",
+        "**/transport/**",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "已审授权、本包任务与原管线边界",
+          "roots": [
+            {
+              "root_id": "scene_t6_v03_approval_and_package_task",
+              "required": true,
+              "authority": "notion_approved_candidate_plus_current_cz_pack_authorization",
+              "status": "active_current_truth_highest_priority",
+              "description": "Notion 已审候选回读、本包可做/不可做和授权票。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/scene_t6_prompt_pilot_design_20260801_r01/NOTION_APPROVAL_SNAPSHOT.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_prompt_pilot_design_20260801_r01/PACKAGE_TASK.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_prompt_pilot_design_20260801_r01/AUTHORIZATION_TICKET.json"
+              ]
+            },
+            {
+              "root_id": "scene_t6_original_pipeline_boundaries",
+              "required": true,
+              "authority": "notion_pipeline_design_and_t02",
+              "status": "active_upstream_design_boundary",
+              "description": "已拍管线设计、T02 和原两份轻工单的本地快照。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/NOTION_PIPELINE_DESIGN.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/NOTION_T02_GOLDEN_THREE.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/CZ_WORK_ORDERS.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/CHAIN_BOUNDARY_MAP.md"
+              ]
+            },
+            {
+              "root_id": "scene_t6_prompt_pilot_review_contract",
+              "required": true,
+              "authority": "local_review_contract",
+              "status": "active_packaging_contract",
+              "description": "本路线的 ChatGPT 任务单和回包纪律。",
+              "globs": [
+                "config/review_pack/prompts/scene_t6_prompt_pilot_design.md",
+                "config/review_pack/CHATGPT_REVIEW_SOP.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "B/C/T6 v0.3 已审候选实物",
+          "roots": [
+            {
+              "root_id": "scene_t6_v03_candidate_bundle",
+              "required": true,
+              "authority": "notion_approved_candidate_20260801_1909",
+              "status": "approved_as_candidate_not_active",
+              "description": "v0.3 合同、Schema、机械门、T02 映射、跨字段验证器和合成测试。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/return/local_v0.3_candidate/**"
+              ],
+              "exclude_globs": [
+                "**/__pycache__/**",
+                "**/*.pyc"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "上轮回件的本地审查与取舍",
+          "roots": [
+            {
+              "root_id": "scene_t6_v02_local_review_and_triage",
+              "required": true,
+              "authority": "local_independent_review",
+              "status": "accepted_triage_and_mechanical_evidence",
+              "description": "说明 v0.2 缺口、v0.3 修复来路和仍需真实三章验证的单变量。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/return/ADVICE_TRIAGE.json",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/return/LOCAL_REVIEW_FINDINGS.md",
+                "TEMP/chatgpt_review_cycles/scene_t6_contract_first_review_20260801_r01/return/LOCAL_SCHEMA_NEGATIVE_CHECK.json"
+              ]
+            },
+            {
+              "root_id": "scene_t6_p3_context_contract",
+              "required": true,
+              "authority": "local_context_recipe_contract",
+              "status": "active_schema_and_assembly_boundary_no_real_instance",
+              "description": "P3 字段、来源索引和装配边界；不含真实 P3 实例。",
+              "globs": [
+                "config/context_recipes/README.md",
+                "config/context_recipes/novel_fact_p3_context_card_v1.schema.json",
+                "config/context_recipes/novel_fact_p3_source_index_v1.schema.json",
+                "config/context_recipes/novel_fact_v2_user_message_template.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "上轮 ChatGPT v0.2 原始回件｜只供理解来路",
+          "roots": []
+        }
+      },
+      "external_slots": [
+        {
+          "slot_id": "prior_scene_t6_v02_return",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "historical_external_advisory_superseded_by_v03_candidate",
+          "description": "上轮完整 v0.2 原始解压回件；只用于理解设计来路，不得覆盖 Notion 已审 v0.3。"
+        }
+      ]
+    },
+    "generation-consumer-five-deep-research": {
+      "label": "生成侧（消费端）｜五项 Deep Research",
+      "purpose": "让 ChatGPT Deep Research 在看懂现役事实库、分层大纲与长程账边界后，调查长篇一致性、事实检索接口、冲突检测、剧情控制与规模上限；只做公开研究，不接触小说正文，不授权 API 调用或本地施工。",
+      "snapshot_at": "2026-08-01T22:31:04+08:00",
+      "reviewer_prompt": "config/review_pack/prompts/generation_consumer_five_deep_research.md",
+      "truth_source": {
+        "authority": "CZ 当前对话授权＋2026-08-01 Notion 现役合同与草案回读",
+        "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
+        "local_current_state_status": "unrelated_side_research_pack_does_not_advance_pipeline_state",
+        "note": "本包只为外部深研补齐系统背景。已拍事实抽取合同与管线设计优先；大纲中枢、长程一致性页按当前草案处理；历史盲设计只作候选线索，不得写成已落地能力。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence"
+      ],
+      "forbidden_source_globs": [
+        "**/corpus-downloads/**",
+        "**/chapters/**",
+        "**/novels/**",
+        "**/scoring_lockbox/**",
+        "**/*.lockbox.json",
+        "config/gold/**",
+        "runs/**",
+        "reports/**",
+        "**/raw_response*",
+        "**/stream_events*",
+        "**/reasoning*",
+        "**/transport*",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "现役边界、授权与 Notion 来源身份",
+          "roots": [
+            {
+              "root_id": "generation_consumer_notion_truth",
+              "required": true,
+              "authority": "current_cz_authorization_plus_live_notion_readback",
+              "status": "active_packaging_truth",
+              "description": "本包授权、来源身份和当前系统边界；不把草案或历史候选冒充现役能力。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/generation_consumer_deep_research_20260801_r01/NOTION_TRUTH_SNAPSHOT.md",
+                "TEMP/chatgpt_review_cycles/generation_consumer_deep_research_20260801_r01/01_CURRENT_SYSTEM_BRIEF.md",
+                "TEMP/chatgpt_review_cycles/generation_consumer_deep_research_20260801_r01/06_NOTION_SOURCE_INDEX.md",
+                "TEMP/chatgpt_review_cycles/generation_consumer_deep_research_20260801_r01/AUTHORIZATION_TICKET.json"
+              ]
+            },
+            {
+              "root_id": "generation_consumer_prompt_sop",
+              "required": true,
+              "authority": "local_review_contract",
+              "status": "active_packaging_contract",
+              "description": "Deep Research 的任务、证据口径和回包格式。",
+              "globs": [
+                "config/review_pack/prompts/generation_consumer_five_deep_research.md",
+                "config/review_pack/CHATGPT_REVIEW_SOP.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "生成消费端当前系统接口",
+          "roots": [
+            {
+              "root_id": "generation_consumer_current_interface",
+              "required": true,
+              "authority": "curated_from_current_notion_contracts_and_drafts",
+              "status": "approved_and_draft_boundaries_explicit",
+              "description": "事实合同、大纲执行包、长期记忆与 QC，以及五项真正缺口。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/generation_consumer_deep_research_20260801_r01/02_FACT_STORE_AND_EXTRACTION_CONTRACT.md",
+                "TEMP/chatgpt_review_cycles/generation_consumer_deep_research_20260801_r01/03_OUTLINE_EXECUTION_AND_RETRIEVAL.md",
+                "TEMP/chatgpt_review_cycles/generation_consumer_deep_research_20260801_r01/04_LONG_TERM_MEMORY_CONFLICT_QC.md",
+                "TEMP/chatgpt_review_cycles/generation_consumer_deep_research_20260801_r01/05_RESEARCH_GAPS_AND_DECISIONS.md",
+                "TEMP/chatgpt_review_cycles/generation_consumer_deep_research_20260801_r01/DEEP_RESEARCH_REQUEST.md"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "历史候选｜只供找公开研究线索",
+          "roots": [
+            {
+              "root_id": "generation_consumer_historical_candidate",
+              "required": true,
+              "authority": "archived_external_candidate_not_project_truth",
+              "status": "historical_candidate_only",
+              "description": "旧候选的滚动规划、事件状态和知识门想法；只能当搜索词，不代表已实现。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/generation_consumer_deep_research_20260801_r01/HISTORICAL_CANDIDATE_NOT_TRUTH.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "外部回包",
+          "roots": []
+        }
+      },
+      "external_slots": []
+    },
+    "generation-consumer-stage0-story-truth": {
+      "label": "生成侧阶段0｜ChatGPT 生成30章干净故事真值候选",
+      "purpose": "把已拍故事原案、修改单、故事 Agent 交底、机器 Schema 和交件合同交给 ChatGPT Pro，生成30章干净故事真值候选；不含小说正文，不授权污染库、编包器、API调用或本地施工。",
+      "snapshot_at": "2026-08-02T05:30:40+08:00",
+      "reviewer_prompt_path": "config/review_pack/prompts/generation_consumer_stage0_story_truth.md",
+      "truth_source": {
+        "authority": "CZ 当前对话明确授权打包 ZIP 和 Prompt",
+        "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
+        "local_current_state_status": "side_task_does_not_advance_existing_pipeline_state",
+        "note": "本包只让 ChatGPT 生成机器可读候选。REVISION_PLAN、交件合同和 Schema 高于故事原案；未拍问题只能留在 OPEN_DECISIONS，不得写进世界事实。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence"
+      ],
+      "forbidden_source_globs": [
+        "**/corpus-downloads/**",
+        "**/chapters/**",
+        "**/novels/**",
+        "**/scoring_lockbox/**",
+        "**/*.lockbox.json",
+        "config/gold/**",
+        "runs/**",
+        "reports/**",
+        "**/truth_candidate/**",
+        "**/raw_response*",
+        "**/stream_events*",
+        "**/reasoning*",
+        "**/transport*",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "当前授权、已拍修改单与机器交件合同",
+          "roots": [
+            {
+              "root_id": "stage0_story_truth_authorization",
+              "required": true,
+              "authority": "current_cz_pack_authorization",
+              "status": "active_packaging_truth",
+              "description": "本轮可做与不可做、任务真源顺序和授权票。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/generation_consumer_stage0_story_truth_20260802_r01/TRUTH_SNAPSHOT.md",
+                "TEMP/chatgpt_review_cycles/generation_consumer_stage0_story_truth_20260802_r01/AUTHORIZATION_TICKET.json"
+              ]
+            },
+            {
+              "root_id": "stage0_story_truth_approved_contracts",
+              "required": true,
+              "authority": "cz_approved_revision_and_local_machine_contract",
+              "status": "active_story_candidate_contract",
+              "description": "已拍修改方向、三个交件文件、机器字段合同和来源指针。",
+              "globs": [
+                "work/generation_consumer_stage0_fixture_20260802/REVISION_PLAN.md",
+                "work/generation_consumer_stage0_fixture_20260802/STORY_TRUTH_CONTRACT.md",
+                "work/generation_consumer_stage0_fixture_20260802/story_truth_candidate.schema.json",
+                "work/generation_consumer_stage0_fixture_20260802/SOURCE_POINTER.json"
+              ]
+            },
+            {
+              "root_id": "stage0_story_truth_prompt",
+              "required": true,
+              "authority": "local_chatgpt_generation_contract",
+              "status": "active_packaging_prompt",
+              "description": "ChatGPT 的唯一任务、回件 ZIP 和自查要求。",
+              "globs": [
+                "config/review_pack/prompts/generation_consumer_stage0_story_truth.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "故事 Agent 施工输入",
+          "roots": [
+            {
+              "root_id": "stage0_story_truth_story_inputs",
+              "required": true,
+              "authority": "approved_story_agent_brief_plus_preserved_cz_concept",
+              "status": "brief_active_concept_preserved",
+              "description": "30章建议骨架、真值身份、角色模板和CZ原始故事材料。",
+              "globs": [
+                "work/generation_consumer_stage0_fixture_20260802/STORY_AGENT_BRIEF.md",
+                "work/generation_consumer_stage0_fixture_20260802/STORY_CONCEPT_CANDIDATE_v0.1.md"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "任务目的与边界说明",
+          "roots": [
+            {
+              "root_id": "stage0_story_truth_task_context",
+              "required": true,
+              "authority": "local_task_context",
+              "status": "supporting_context_only",
+              "description": "解释阶段0测试目标、故事形态、施工顺序和当前边界。",
+              "globs": [
+                "work/generation_consumer_stage0_fixture_20260802/WORK_ORDER.md",
+                "work/generation_consumer_stage0_fixture_20260802/README.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "外部回包",
+          "roots": []
+        }
+      },
+      "external_slots": []
     }
   }
 }

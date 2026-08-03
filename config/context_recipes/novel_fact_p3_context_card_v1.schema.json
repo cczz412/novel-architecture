@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "novel-fact-p3-context-card-v1",
+  "title": "小说事实抽取 P3 背景卡 v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "sample_id",
+    "source_file",
+    "story_type",
+    "story_subtypes",
+    "protagonist",
+    "cheat_mechanic",
+    "source_refs",
+    "boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "novel-fact-p3-context-card-v1"
+    },
+    "sample_id": {
+      "$ref": "#/$defs/safe_id"
+    },
+    "source_file": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "story_type": {
+      "$ref": "#/$defs/single_value_field"
+    },
+    "story_subtypes": {
+      "$ref": "#/$defs/multi_value_field"
+    },
+    "protagonist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "canonical_name",
+        "aliases",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/knowledge_status"
+        },
+        "canonical_name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "aliases": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "basis": {
+          "$ref": "#/$defs/basis"
+        }
+      }
+    },
+    "cheat_mechanic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "name",
+        "summary",
+        "rules",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "confirmed",
+            "none_confirmed",
+            "unknown"
+          ]
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "summary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "rules": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "basis": {
+          "$ref": "#/$defs/basis"
+        }
+      }
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_id",
+          "scope",
+          "sha256"
+        ],
+        "properties": {
+          "source_id": {
+            "$ref": "#/$defs/safe_id"
+          },
+          "scope": {
+            "enum": [
+              "verified_book_metadata",
+              "verified_prechapter_material",
+              "locally_curated_profile",
+              "approved_existing_card"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "only_alias_and_rule_resolution",
+        "may_replace_chapter_evidence",
+        "may_add_unstated_fact",
+        "target_chapter_as_sole_source_allowed"
+      ],
+      "properties": {
+        "only_alias_and_rule_resolution": {
+          "const": true
+        },
+        "may_replace_chapter_evidence": {
+          "const": false
+        },
+        "may_add_unstated_fact": {
+          "const": false
+        },
+        "target_chapter_as_sole_source_allowed": {
+          "const": false
+        }
+      }
+    }
+  },
+  "$defs": {
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$"
+    },
+    "knowledge_status": {
+      "enum": [
+        "confirmed",
+        "unknown"
+      ]
+    },
+    "basis": {
+      "enum": [
+        "verified_book_metadata",
+        "verified_prechapter_material",
+        "locally_curated_profile",
+        "approved_existing_card",
+        "none_available"
+      ]
+    },
+    "single_value_field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "value",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/knowledge_status"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "basis": {
+          "$ref": "#/$defs/basis"
+        }
+      }
+    },
+    "multi_value_field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "values",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/knowledge_status"
+        },
+        "values": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "basis": {
+          "$ref": "#/$defs/basis"
+        }
+      }
+    }
+  }
+}

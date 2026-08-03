@@ -26,7 +26,7 @@
   },
   "provider_access_policy": {
     "path": "config/providers/provider_access_policy.json",
-    "sha256": "e5d08296e56a746711b53528d137e283617e887ff438dbdd6dcad0764bba14ee"
+    "sha256": "3d2d133cb3feef275f4dd21846579138160592c9edef71491064306288f90984"
   },
   "request_envelope_schema": {
     "path": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/request_envelope.schema.json",

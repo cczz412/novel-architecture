@@ -1,0 +1,38 @@
+{
+  "batch_id": "dense_screen_batch08_cnweb_sparse",
+  "fetch_time": "2026-08-03T17:30:00+08:00",
+  "source_strategy": "local_corpus_primary",
+  "local_corpus_root": "/Users/a1234/挣钱/小说101-downloads/",
+  "corpus_symlink_in_repo": "corpus-downloads",
+  "web_fetch_attempted": false,
+  "web_fetch_notes": "本地库 8 大类共 6700+ 本，类型足够摊开（都市年代/科幻游戏/悬疑/历史/玄幻/古言/西幻/都市奇幻/现言），无需网页抓取。番茄/起点等若需网页抓取见 REJECTS 备用思路。",
+  "platforms_inferred": {
+    "起点中文网": ["1977：开局相亲女儿国王", "7号基地", "1987我的年代", "伊塔之柱", "光明壁垒", "帝国吃相", "2002谁说北电无大导", "你们修仙，我种田", "一世之尊"],
+    "晋江文学城": ["为什么它永无止境"],
+    "潇湘书院": ["一品特工祸妃"]
+  },
+  "rights_state": "RIGHTS_PENDING_FOR_TRAINING",
+  "rights_notes": "本批全部为较新网文（2010s-2020s），非公版/古典名著，故一律标 RIGHTS_PENDING_FOR_TRAINING。本地库虽为小说101下载，但无明确训练授权，保守起见不标 APPROVED_EXISTING_LOCAL_CORPUS。",
+  "books_used": [
+    {"title": "1977：开局相亲女儿国王", "author": "天不负01", "genre": "都市年代", "chapters_used": ["第4章", "第11章"]},
+    {"title": "7号基地", "author": "净无痕", "genre": "科幻游戏", "chapters_used": ["第13章", "第30章"]},
+    {"title": "1987我的年代", "author": "树下和尚", "genre": "都市年代", "chapters_used": ["第8章"]},
+    {"title": "一品特工祸妃", "author": "MS陌陌", "genre": "女频古言", "chapters_used": ["第21章"]},
+    {"title": "伊塔之柱", "author": "寂静之翔", "genre": "奇幻西幻", "chapters_used": ["第8章"]},
+    {"title": "光明壁垒", "author": "会说话的肘子", "genre": "都市奇幻", "chapters_used": ["第15章"]},
+    {"title": "为什么它永无止境", "author": "柯遥42", "genre": "悬疑科幻", "chapters_used": ["第15章", "第27章"]},
+    {"title": "帝国吃相", "author": "牧尘客", "genre": "历史穿越", "chapters_used": ["第7章", "第11章"]},
+    {"title": "2002谁说北电无大导", "author": "睡觉会变白", "genre": "都市现言", "chapters_used": ["第14章"]},
+    {"title": "你们修仙，我种田", "author": "停电 shields", "genre": "玄幻种田", "chapters_used": ["第26章", "第28章"]}
+  ],
+  "books_rejected": [
+    "444号医院（悬疑，第9/19章太密）",
+    "一世之尊（玄幻，第36/65章战斗/消息太密）",
+    "一品特工祸妃第35章（身份揭示）",
+    "光明壁垒第25章（韩当登场）",
+    "伊塔之柱第6章（设定堆砌）"
+  ],
+  "token_estimator": "not_found_in_repo",
+  "token_estimation_method": "manual: chars(去空白) × 1.2",
+  "target_window": "700-900 字 ≈ 850-1000 tokens"
+}

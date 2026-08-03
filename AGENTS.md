@@ -96,7 +96,7 @@ python3 tools/chatgpt_review_pack.py --route r2-question-retrieval --dry-run
 ## 硬边界
 
 - 不改 NVM、不改小说101 冻结金标／跑批。
-- DeepSeek 官方 API 默认永久禁用。只有 CZ 在当前任务里明确、正向要求“用官方的API”时，才能按 `config/providers/provider_access_policy.json` 给那一次命令临时解锁；否定句、转述、模型名或只出现“官方API”字样都不授权。火山方舟／千问平台里的 DeepSeek 模型不等于 DeepSeek 官方 API。
+- CZ 自 2026-08-01 起已对 DeepSeek 官方 API 给出长期授权，撤销前不再逐次询问。只有当前任务确实要求模型调用时才能执行，每条命令仍必须通过 `config/providers/provider_access_policy.json` 的机器执行票；不得自动增加题目或次数，不得作为失败回退路线，也不得改掉默认链。火山方舟／千问平台里的 DeepSeek 模型不等于 DeepSeek 官方 API。
 - 不把正文库拷进本仓；禁止整库扫读进对话。
 - `foundation/` 是全文真身，不要用摘要顶替它。
 - 决策冲突：日常跟 `decisions.md`；与证据打架先问 CZ。

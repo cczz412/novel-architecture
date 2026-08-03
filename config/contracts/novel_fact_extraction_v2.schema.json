@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "novel-fact-extraction-v2.1",
+  "title": "中文小说事实抽取输出合同 v2.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "facts"
+  ],
+  "properties": {
+    "facts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/fact"
+      }
+    }
+  },
+  "$defs": {
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fact",
+        "status",
+        "evidence"
+      ],
+      "properties": {
+        "fact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "已发生",
+            "正在发生",
+            "计划",
+            "承诺",
+            "条件",
+            "推测",
+            "误信",
+            "否定"
+          ]
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "speaker": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

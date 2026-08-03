@@ -1,0 +1,73 @@
+{
+  "bundle_version": "novel-fact-extraction-v2.1-bundle-2",
+  "supersedes": "novel-fact-extraction-v2.1-bundle-1",
+  "status": "approved_contract_not_wired_to_default_chain",
+  "authority": {
+    "decided_at": "2026-08-01T20:05:00+08:00",
+    "decision_note": "CZ/Notion approved v1.2 speech-act case A, assignee-owned pending actions, directive-versus-condition rule, and canonical narrative speaker 旁白",
+    "notion_url": "https://app.notion.com/p/45907fe2a022403f9b31a6ea36eac6b5"
+  },
+  "versioning": {
+    "contract_version": "novel-fact-extraction-v2.1",
+    "gate_version": "novel-fact-extraction-gate-v1.2",
+    "effective_scope": "T5 R04 40 repaired chapter candidates and all later returns",
+    "historical_scores_recalculated": false,
+    "frozen_14_item_exam_changed": false,
+    "legacy_v2_tickets_inherit_pass": false,
+    "prior_gate_tickets_inherit_pass": false
+  },
+  "assets": [
+    {
+      "role": "semantic_contract",
+      "path": "references/novel_fact_extraction_contract_v2.md",
+      "sha256": "6c5dedf81b9b165257e3927060d40cdc89162945c2c7244a40dce15580668bec"
+    },
+    {
+      "role": "output_schema",
+      "path": "config/contracts/novel_fact_extraction_v2.schema.json",
+      "sha256": "aa73696981b3b75717202db117ffac4df7584aad1dd3a086084f1c33a1f08352"
+    },
+    {
+      "role": "context_card_schema",
+      "path": "config/context_recipes/novel_fact_p3_context_card_v1.schema.json",
+      "sha256": "6fc59fccf7030cf04f4cf5252070046f46faa7238cd30b858181e12a8e47d5e6"
+    },
+    {
+      "role": "context_source_index_schema",
+      "path": "config/context_recipes/novel_fact_p3_source_index_v1.schema.json",
+      "sha256": "a6ee5e8a17d15b96581cc0ca21b3c538b2b3463508a0860e8546e010d2de166c"
+    },
+    {
+      "role": "user_message_template",
+      "path": "config/context_recipes/novel_fact_v2_user_message_template.md",
+      "sha256": "f80d8967b6ad75770d746d5ce307dafaf23bd76383c627e53813a386420e257b"
+    },
+    {
+      "role": "system_prompt",
+      "path": "config/prompts/novel_fact_extraction_v2/prompt.md",
+      "sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b"
+    },
+    {
+      "role": "batch_self_review_prompt",
+      "path": "references/prompts/t5_v2_batch_self_review.md",
+      "sha256": "c1ef773ad22058968a26d7ebda98ae42acd105119ce209ec70a4f8b49eaa7e0d"
+    },
+    {
+      "role": "t5_r04_batch_self_review_prompt",
+      "path": "references/prompts/t5_r04_v2_batch_self_review.md",
+      "sha256": "d3e9be51601890a57d6e629f2762ed468721f31da174ed59eb08d79da2e59b8e"
+    },
+    {
+      "role": "offline_validator_and_assembler",
+      "path": "tools/validate_novel_fact_v2.py",
+      "sha256": "0b0f9e0b3eb2a8b6b072c4b4ac5213db9c82487003d461c4494e2ad1ef942521"
+    }
+  ],
+  "boundaries": {
+    "may_call_model": false,
+    "may_start_training": false,
+    "may_change_active_default": false,
+    "may_rescore_v1_history": false,
+    "may_reopen_closed_r1_r2": false
+  }
+}

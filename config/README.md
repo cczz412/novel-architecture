@@ -33,15 +33,15 @@ tools/sensenova_deepseek_key.sh run python3 tools/你的运行器.py
 
 现役默认链的密钥入口只有 `tools/sensenova_deepseek_key.sh`。共享环境加载脚本和外部项目加载器不得给现役默认链开跑；LongCat 独立横评是隔离例外，只读取同级公共 API 池的专用加载器，不接现役链。
 
-DeepSeek 官方 API 已按 CZ 口径改成**默认永久禁用**。只有 CZ 在当前任务里明确、正向要求“用官方的API”时，才允许给那一次命令临时解锁；否定句、转述、模型名或只出现“官方API”字样都不授权。机器规则在 `providers/provider_access_policy.json`，加载器也会执行同一道拒绝闸。
+CZ 自 2026-08-01 起已对 DeepSeek 官方 API 给出**长期授权**。今后当前任务明确要求运行 DeepSeek 官方模型时，不再逐次询问 CZ；但每条命令仍要带机器执行票，防止脚本误调。官方通道不得自动调用、不得扩大题目或次数、不得作为失败回退路线，也不得改掉默认链。机器规则在 `providers/provider_access_policy.json`。
 
 ```bash
-# 只保存或检查历史钥匙，不代表允许调用
+# 保存或检查官方 API 钥匙，不显示钥匙内容
 tools/deepseek_official_key.sh save
 tools/deepseek_official_key.sh check
 ```
 
-没有当轮明确授权时，`run` 会在读取钥匙前直接以退出码 77 拒绝。火山方舟／千问平台里的 DeepSeek 模型属于各自平台通道，不等于 DeepSeek 官方 API。
+`run` 没有本条命令的机器执行票时，会在读取钥匙前以退出码 77 拒绝；执行端可直接设票，不需再询问 CZ。火山方舟／千问平台里的 DeepSeek 模型属于各自平台通道，不等于 DeepSeek 官方 API。
 
 现有隔离候选通道如下：
 

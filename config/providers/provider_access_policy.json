@@ -5,11 +5,17 @@
   "providers": {
     "deepseek_official": {
       "default_action": "deny",
-      "status": "permanently_disabled_unless_current_explicit_positive_user_authorization",
-      "user_rule": "CZ 未在当前任务里明确正向要求‘用官方的API’时，一律不得使用 DeepSeek 官方 API。否定句、转述、模型名或仅出现‘官方API’字样均不授权。",
-      "approval_scope": "current_task_one_command_only",
+      "status": "permanently_disabled_for_automatic_or_fallback_routes__standing_authorized_for_explicit_runs",
+      "user_rule": "CZ 已从 2026-08-01 起长期授权 DeepSeek 官方 API。当前任务明确要求模型调用时可直接执行，不得再要求 CZ 逐次重申；不得自动调用、扩大次数或当作其他通道失败时的回退路线。",
+      "approval_scope": "standing_until_explicit_revocation",
+      "standing_authorized": true,
+      "standing_authorized_at": "2026-08-01",
+      "per_run_user_confirmation_required": false,
+      "automatic_fallback_allowed": false,
+      "may_replace_default_chain": false,
       "loader_ack_env": "CZ_DEEPSEEK_OFFICIAL_API_APPROVAL",
-      "loader_ack_exact_value": "USE_OFFICIAL_DEEPSEEK_API_ONCE"
+      "loader_ack_exact_value": "USE_OFFICIAL_DEEPSEEK_API_ONCE",
+      "loader_ack_semantics": "per_command_machine_execution_ack_not_user_reauthorization"
     },
     "volcengine_ark": {
       "default_action": "deny_until_explicit_model_run_order",

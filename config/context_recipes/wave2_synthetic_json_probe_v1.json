@@ -6,7 +6,7 @@
   "profile_id": "qianwen_qwen3_7_flash_json_object_no_thinking",
   "api_contract_bundle": {
     "path": "config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/bundle.json",
-    "sha256": "ee1e9fb6f1e922d143150f95a6eae191ddcd789b395eb7b7ca46fb43ec4718ca"
+    "sha256": "7fc7dc3a78ad7e15df1425750a9ae49995f72ef4b3f31d4ea058eae21da6ab48"
   },
   "prompt_manifest": {
     "path": "config/prompts/wave2_synthetic_json_probe_v1/manifest.json",

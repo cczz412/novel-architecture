@@ -12,14 +12,21 @@ def load_provider(name: str) -> dict:
     return json.loads((ROOT / "config/providers" / name).read_text(encoding="utf-8"))
 
 
-def test_provider_policy_keeps_official_deepseek_default_denied() -> None:
+def test_provider_policy_keeps_official_deepseek_standing_auth_scoped() -> None:
     policy = load_provider("provider_access_policy.json")
     official = policy["providers"]["deepseek_official"]
     assert policy["default_chain_provider"] == "sensenova"
     assert policy["default_chain_changed"] is False
     assert official["default_action"] == "deny"
-    assert official["approval_scope"] == "current_task_one_command_only"
+    assert official["approval_scope"] == "standing_until_explicit_revocation"
+    assert official["standing_authorized"] is True
+    assert official["per_run_user_confirmation_required"] is False
+    assert official["automatic_fallback_allowed"] is False
+    assert official["may_replace_default_chain"] is False
     assert official["loader_ack_exact_value"] == "USE_OFFICIAL_DEEPSEEK_API_ONCE"
+    assert official["loader_ack_semantics"] == (
+        "per_command_machine_execution_ack_not_user_reauthorization"
+    )
 
 
 def test_volcengine_ark_channel_and_requested_models_are_exact() -> None:
