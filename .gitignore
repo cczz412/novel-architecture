@@ -126,3 +126,5 @@ venv/
 *.pt
 *.pth
 *.onnx
+# Local-only WorkBuddy memory; not repository truth.
+/.workbuddy/

@@ -1,40 +1,45 @@
 {
-  "schema_version": "directory-registry-v1",
-  "registry_id": "REPOSITORY-DIRECTORIES-20260730",
-  "updated_at": "2026-07-31",
   "authority": {
-    "scope": "container_identity_only",
+    "conflict_rule": "higher_precedence_registry_wins",
     "may_define_current_task": false,
     "may_override_object_registries": false,
-    "conflict_rule": "higher_precedence_registry_wins"
-  },
-  "inherit_to_children_default": false,
-  "identity_precedence": [
-    "governance/CURRENT_STATE.json",
-    "governance/module_registry.json",
-    "governance/tool_registry.json",
-    "governance/route_registry.json",
-    "governance/external_archive_registry.json",
-    "governance/directory_registry.json"
-  ],
-  "git_policy_semantics": {
-    "tracked": "长期内容进 Git；缓存、系统噪声等通用忽略项不改变主规则",
-    "ignored": "整个容器按仓库规则不进 Git",
-    "mixed": "长期内容里同时存在明确进 Git 与明确不进 Git 的分区",
-    "local_untracked": "当前未跟踪且未被忽略；必须显式防止误暂存",
-    "tracked_pointer": "Git 只跟踪指针本身，不跟踪它指向的本机内容"
+    "scope": "container_identity_only"
   },
   "directories": [
     {
-      "directory_id": "DIR-GOVERNANCE",
-      "path": "governance",
-      "path_kind": "directory",
-      "identity": "governance_control_plane",
+      "accepted_content": [
+        {
+          "label": "当前任务与运行的机器镜像",
+          "object_id": "current_machine_state",
+          "rule": "只有 Notion 现役账序回读后的当前状态进入这里。",
+          "target_pattern": "governance/CURRENT_STATE.json"
+        },
+        {
+          "label": "目录身份与落点规则",
+          "object_id": "directory_identity",
+          "rule": "只登记容器身份，不登记当前任务或业务结论。",
+          "target_pattern": "governance/directory_registry.json"
+        },
+        {
+          "label": "外置对象身份、位置与库存边界",
+          "object_id": "artifact_storage_identity",
+          "rule": "只登记对象身份、位置、消费者、生命周期、固定清单和已知冲突；不授权移动、删除或恢复。",
+          "target_pattern": "governance/external_archive_registry.json"
+        },
+        {
+          "label": "外置 payload 逐文件读取白名单",
+          "object_id": "external_payload_validation_policy",
+          "rule": "只列获准单件逐文件核验的外置对象和旧对象排除原因；不发现搬迁候选，不授权移动、删除或启用硬门。",
+          "target_pattern": "governance/external_payload_validation_policy.json"
+        },
+        {
+          "label": "实验仓外材料取件计划白名单",
+          "object_id": "artifact_retrieval_policy",
+          "rule": "只列允许解析的终态轻量卡和命名组合；只读固定 MANIFEST 并生成计划，不读取 payload 或执行复制。",
+          "target_pattern": "governance/artifact_retrieval_policy.json"
+        }
+      ],
       "category": "governance",
-      "container_authority": "current",
-      "load_policy": "always_read",
-      "lifecycle": "mutable",
-      "git_policy": "tracked",
       "consumers": [
         "Codex",
         "tools/governance_index.py",
@@ -43,775 +48,898 @@
         "tools/external_payload_validator.py",
         "tools/repo_slim_inventory.py"
       ],
-      "new_content_rule": "只收治理真源、对象登记、合同和由生成器维护的索引；不得另写当前任务副本。",
-      "accepted_content": [
-        {
-          "object_id": "current_machine_state",
-          "label": "当前任务与运行的机器镜像",
-          "target_pattern": "governance/CURRENT_STATE.json",
-          "rule": "只有 Notion 现役账序回读后的当前状态进入这里。"
-        },
-        {
-          "object_id": "directory_identity",
-          "label": "目录身份与落点规则",
-          "target_pattern": "governance/directory_registry.json",
-          "rule": "只登记容器身份，不登记当前任务或业务结论。"
-        },
-        {
-          "object_id": "artifact_storage_identity",
-          "label": "外置对象身份、位置与库存边界",
-          "target_pattern": "governance/external_archive_registry.json",
-          "rule": "只登记对象身份、位置、消费者、生命周期、固定清单和已知冲突；不授权移动、删除或恢复。"
-        },
-        {
-          "object_id": "external_payload_validation_policy",
-          "label": "外置 payload 逐文件读取白名单",
-          "target_pattern": "governance/external_payload_validation_policy.json",
-          "rule": "只列获准单件逐文件核验的外置对象和旧对象排除原因；不发现搬迁候选，不授权移动、删除或启用硬门。"
-        },
-        {
-          "object_id": "artifact_retrieval_policy",
-          "label": "实验仓外材料取件计划白名单",
-          "target_pattern": "governance/artifact_retrieval_policy.json",
-          "rule": "只列允许解析的终态轻量卡和命名组合；只读固定 MANIFEST 并生成计划，不读取 payload 或执行复制。"
-        }
-      ],
-      "externalization": "prohibited",
+      "container_authority": "current",
+      "directory_id": "DIR-GOVERNANCE",
       "evidence_refs": [
         "AGENTS.md",
         "governance/README.md",
         "governance/artifact_retrieval_policy.json",
         "governance/external_payload_validation_policy.json"
       ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "governance_control_plane",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "always_read",
+      "new_content_rule": "只收治理真源、对象登记、合同和由生成器维护的索引；不得另写当前任务副本。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "governance",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-CONFIG",
-      "path": "config",
-      "path_kind": "directory",
-      "identity": "configuration_contracts",
+      "accepted_content": [
+        {
+          "label": "API 地址与供应商访问规则",
+          "object_id": "provider_config",
+          "rule": "地址、授权边界和运输规则按供应商分开保存。",
+          "target_pattern": "config/providers/<provider_id>"
+        },
+        {
+          "label": "模型调用档案",
+          "object_id": "model_call_profile",
+          "rule": "每个调用档案有独立身份，可被测试工作区按白名单复制。",
+          "target_pattern": "config/model_call_profiles/<profile_id>.json"
+        },
+        {
+          "label": "API 请求响应 JSON 合同",
+          "object_id": "api_payload_contract",
+          "rule": "各 API 的 JSON 形状与档案同名归档，不混成通用猜测。",
+          "target_pattern": "config/model_call_profiles/contracts/<profile_id>"
+        },
+        {
+          "label": "正式提示词",
+          "object_id": "formal_prompt",
+          "rule": "提示词独立编号，调用时按清单复制，不从运行目录反向取真。",
+          "target_pattern": "config/prompts/<prompt_id>"
+        },
+        {
+          "label": "上下文组装配方",
+          "object_id": "context_recipe",
+          "rule": "只描述怎么拼装零件，不保存单次拼装出的完整上下文。",
+          "target_pattern": "config/context_recipes/<recipe_id>"
+        },
+        {
+          "label": "可复用任务 JSON 合同",
+          "object_id": "task_contract",
+          "rule": "跨试验复用的任务合同进入这里；单试验合同留在试验目录。",
+          "target_pattern": "config/contracts/<contract_id>"
+        },
+        {
+          "label": "历史回放轻量结论卡",
+          "object_id": "historical_replay_result_card",
+          "rule": "只留结论真源、仓外对象指针、命名取件组合和生成的人看页；完整回放现场继续留仓外。",
+          "target_pattern": "config/test_replay/result_cards/<card_id>"
+        }
+      ],
       "category": "configuration",
-      "container_authority": "current",
-      "load_policy": "task_scoped",
-      "lifecycle": "mutable",
-      "git_policy": "tracked",
       "consumers": [
         "tools",
         "tests",
         "experiment_materializer"
       ],
-      "new_content_rule": "只收可复用配置、供应商规则、调用档案、提示词、上下文配方和已登记的轻量历史回放卡；不收完整单次运行现场。",
-      "accepted_content": [
-        {
-          "object_id": "provider_config",
-          "label": "API 地址与供应商访问规则",
-          "target_pattern": "config/providers/<provider_id>",
-          "rule": "地址、授权边界和运输规则按供应商分开保存。"
-        },
-        {
-          "object_id": "model_call_profile",
-          "label": "模型调用档案",
-          "target_pattern": "config/model_call_profiles/<profile_id>.json",
-          "rule": "每个调用档案有独立身份，可被测试工作区按白名单复制。"
-        },
-        {
-          "object_id": "api_payload_contract",
-          "label": "API 请求响应 JSON 合同",
-          "target_pattern": "config/model_call_profiles/contracts/<profile_id>",
-          "rule": "各 API 的 JSON 形状与档案同名归档，不混成通用猜测。"
-        },
-        {
-          "object_id": "formal_prompt",
-          "label": "正式提示词",
-          "target_pattern": "config/prompts/<prompt_id>",
-          "rule": "提示词独立编号，调用时按清单复制，不从运行目录反向取真。"
-        },
-        {
-          "object_id": "context_recipe",
-          "label": "上下文组装配方",
-          "target_pattern": "config/context_recipes/<recipe_id>",
-          "rule": "只描述怎么拼装零件，不保存单次拼装出的完整上下文。"
-        },
-        {
-          "object_id": "task_contract",
-          "label": "可复用任务 JSON 合同",
-          "target_pattern": "config/contracts/<contract_id>",
-          "rule": "跨试验复用的任务合同进入这里；单试验合同留在试验目录。"
-        },
-        {
-          "object_id": "historical_replay_result_card",
-          "label": "历史回放轻量结论卡",
-          "target_pattern": "config/test_replay/result_cards/<card_id>",
-          "rule": "只留结论真源、仓外对象指针、命名取件组合和生成的人看页；完整回放现场继续留仓外。"
-        }
-      ],
-      "externalization": "prohibited",
+      "container_authority": "current",
+      "directory_id": "DIR-CONFIG",
       "evidence_refs": [
         "AGENTS.md",
         "config/providers/provider_access_policy.json",
         "config/model_call_profiles/README.md"
       ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "configuration_contracts",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "task_scoped",
+      "new_content_rule": "只收可复用配置、供应商规则、调用档案、提示词、上下文配方和已登记的轻量历史回放卡；不收完整单次运行现场。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "config",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-SCHEMAS",
-      "path": "schemas",
-      "path_kind": "directory",
-      "identity": "product_data_schemas",
+      "accepted_content": [
+        {
+          "label": "产品数据 schema",
+          "object_id": "product_schema",
+          "rule": "需要跨模块长期复用时才进入这里。",
+          "target_pattern": "schemas/<schema_id>.schema.json"
+        }
+      ],
       "category": "schema",
-      "container_authority": "current",
-      "load_policy": "task_scoped",
-      "lifecycle": "mutable",
-      "git_policy": "tracked",
       "consumers": [
         "tools",
         "tests"
       ],
-      "new_content_rule": "只收产品数据或长期公共对象的 schema；治理合同留在 governance/contracts。",
-      "accepted_content": [
-        {
-          "object_id": "product_schema",
-          "label": "产品数据 schema",
-          "target_pattern": "schemas/<schema_id>.schema.json",
-          "rule": "需要跨模块长期复用时才进入这里。"
-        }
-      ],
-      "externalization": "prohibited",
+      "container_authority": "current",
+      "directory_id": "DIR-SCHEMAS",
       "evidence_refs": [
         "schemas/z_candidate_v1.schema.json"
       ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "product_data_schemas",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "task_scoped",
+      "new_content_rule": "只收产品数据或长期公共对象的 schema；治理合同留在 governance/contracts。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "schemas",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-TOOLS",
-      "path": "tools",
-      "path_kind": "directory",
-      "identity": "reusable_programs",
+      "accepted_content": [
+        {
+          "label": "跨场景可复用程序",
+          "object_id": "reusable_program",
+          "rule": "必须有稳定输入、失败方式、定向测试和工具登记。",
+          "target_pattern": "tools/<tool_id>.py"
+        }
+      ],
       "category": "code",
-      "container_authority": "current",
-      "load_policy": "task_scoped",
-      "lifecycle": "mutable",
-      "git_policy": "tracked",
       "consumers": [
         "operators",
         "tests",
         "automation"
       ],
-      "new_content_rule": "只收已满足出生门槛的可复用程序；单批脚本留在试验或交件目录。",
-      "accepted_content": [
-        {
-          "object_id": "reusable_program",
-          "label": "跨场景可复用程序",
-          "target_pattern": "tools/<tool_id>.py",
-          "rule": "必须有稳定输入、失败方式、定向测试和工具登记。"
-        }
-      ],
-      "externalization": "prohibited",
+      "container_authority": "current",
+      "directory_id": "DIR-TOOLS",
       "evidence_refs": [
         "governance/README.md",
         "governance/tool_registry.json"
       ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "reusable_programs",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "task_scoped",
+      "new_content_rule": "只收已满足出生门槛的可复用程序；单批脚本留在试验或交件目录。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "tools",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-TESTS",
-      "path": "tests",
-      "path_kind": "directory",
-      "identity": "mechanical_verification",
+      "accepted_content": [
+        {
+          "label": "机械测试",
+          "object_id": "mechanical_test",
+          "rule": "测试要说明保护的合同，夹具只保留最小可复现材料。",
+          "target_pattern": "tests/test_<contract>.py"
+        }
+      ],
       "category": "code",
-      "container_authority": "current",
-      "load_policy": "task_scoped",
-      "lifecycle": "mutable",
-      "git_policy": "tracked",
       "consumers": [
         "pytest",
         "Codex"
       ],
-      "new_content_rule": "只收可复现的机械测试和最小夹具；真实正文与大型运行工件不得进入。",
-      "accepted_content": [
-        {
-          "object_id": "mechanical_test",
-          "label": "机械测试",
-          "target_pattern": "tests/test_<contract>.py",
-          "rule": "测试要说明保护的合同，夹具只保留最小可复现材料。"
-        }
-      ],
-      "externalization": "prohibited",
+      "container_authority": "current",
+      "directory_id": "DIR-TESTS",
       "evidence_refs": [
         "pytest.ini",
         "governance/test_policy.json"
       ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "mechanical_verification",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "task_scoped",
+      "new_content_rule": "只收可复现的机械测试和最小夹具；真实正文与大型运行工件不得进入。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "tests",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-WORK",
-      "path": "work",
-      "path_kind": "directory",
-      "identity": "undecided_construction",
+      "accepted_content": [
+        {
+          "label": "未定型施工草稿",
+          "object_id": "undecided_draft",
+          "rule": "必须带归位条件，不能长期冒充正式落点。",
+          "target_pattern": "work/<work_id>"
+        }
+      ],
       "category": "construction",
-      "container_authority": "candidate",
-      "load_policy": "task_scoped",
-      "lifecycle": "mutable",
-      "git_policy": "mixed",
-      "ignored_probe": "work/zbatch_decisions/__git_policy_probe__",
       "consumers": [
         "Codex",
         "human_review"
       ],
-      "new_content_rule": "只收身份尚未定型的施工草稿；定型后回到 config、tools、schemas 或 experiments。",
-      "accepted_content": [
-        {
-          "object_id": "undecided_draft",
-          "label": "未定型施工草稿",
-          "target_pattern": "work/<work_id>",
-          "rule": "必须带归位条件，不能长期冒充正式落点。"
-        }
-      ],
-      "externalization": "per_object_candidate",
+      "container_authority": "candidate",
+      "directory_id": "DIR-WORK",
       "evidence_refs": [
         ".gitignore",
         "AGENTS.md"
       ],
+      "externalization": "per_object_candidate",
+      "git_policy": "mixed",
+      "identity": "undecided_construction",
+      "ignored_probe": "work/zbatch_decisions/__git_policy_probe__",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "task_scoped",
+      "new_content_rule": "只收身份尚未定型的施工草稿；定型后回到 config、tools、schemas 或 experiments。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "work",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-EXPERIMENTS",
-      "path": "experiments",
-      "path_kind": "directory",
-      "identity": "registered_experiment_workspaces",
+      "accepted_content": [
+        {
+          "label": "单试验程序",
+          "object_id": "experiment_program",
+          "rule": "未证明跨场景复用前不得进入 tools 根层。",
+          "target_pattern": "experiments/<experiment_id>/program"
+        },
+        {
+          "label": "实验结论卡的人看页",
+          "object_id": "experiment_result_card",
+          "rule": "只由同目录机器卡确定性生成；大型运行现场按对象另行外置。",
+          "target_pattern": "experiments/<experiment_id>/README.md"
+        },
+        {
+          "label": "实验轻量结论真源",
+          "object_id": "experiment_result_card_contract",
+          "rule": "只留目的、组装规则、短结论、质量裁决、证据边界、消费者和指针引用。",
+          "target_pattern": "experiments/<experiment_id>/result_card.json"
+        },
+        {
+          "label": "实验仓外对象指针",
+          "object_id": "experiment_external_pointer",
+          "rule": "只钉外置对象编号和清单 SHA；真实位置只从外置对象登记册解析，不保存绝对路径。",
+          "target_pattern": "experiments/<experiment_id>/external_pointer.json"
+        },
+        {
+          "label": "实验命名取件组合",
+          "object_id": "experiment_retrieval_profile",
+          "rule": "只登记精确文件或整份固定清单的复制组合；不提供任意路径、glob 或直接复制能力。",
+          "target_pattern": "experiments/<experiment_id>/retrieval_profile.json"
+        }
+      ],
       "category": "experiment",
-      "container_authority": "candidate",
-      "load_policy": "task_scoped",
-      "lifecycle": "candidate",
-      "git_policy": "mixed",
-      "ignored_probe": "experiments/Z99_external_finalization_supply_20260724/__git_policy_probe__",
       "consumers": [
         "experiment_runner",
         "reviewers",
         "tests"
       ],
-      "new_content_rule": "每个新试验自带身份；试验程序只放 experiments/<id>/program，证据是否进 Git 逐对象决定。",
-      "accepted_content": [
-        {
-          "object_id": "experiment_program",
-          "label": "单试验程序",
-          "target_pattern": "experiments/<experiment_id>/program",
-          "rule": "未证明跨场景复用前不得进入 tools 根层。"
-        },
-        {
-          "object_id": "experiment_result_card",
-          "label": "实验结论卡的人看页",
-          "target_pattern": "experiments/<experiment_id>/README.md",
-          "rule": "只由同目录机器卡确定性生成；大型运行现场按对象另行外置。"
-        },
-        {
-          "object_id": "experiment_result_card_contract",
-          "label": "实验轻量结论真源",
-          "target_pattern": "experiments/<experiment_id>/result_card.json",
-          "rule": "只留目的、组装规则、短结论、质量裁决、证据边界、消费者和指针引用。"
-        },
-        {
-          "object_id": "experiment_external_pointer",
-          "label": "实验仓外对象指针",
-          "target_pattern": "experiments/<experiment_id>/external_pointer.json",
-          "rule": "只钉外置对象编号和清单 SHA；真实位置只从外置对象登记册解析，不保存绝对路径。"
-        },
-        {
-          "object_id": "experiment_retrieval_profile",
-          "label": "实验命名取件组合",
-          "target_pattern": "experiments/<experiment_id>/retrieval_profile.json",
-          "rule": "只登记精确文件或整份固定清单的复制组合；不提供任意路径、glob 或直接复制能力。"
-        }
-      ],
-      "externalization": "per_object_candidate",
+      "container_authority": "candidate",
+      "directory_id": "DIR-EXPERIMENTS",
       "evidence_refs": [
         ".gitignore",
         "experiments/README.md"
       ],
+      "externalization": "per_object_candidate",
+      "git_policy": "mixed",
+      "identity": "registered_experiment_workspaces",
+      "ignored_probe": "experiments/Z99_external_finalization_supply_20260724/__git_policy_probe__",
+      "inherit_to_children": false,
+      "lifecycle": "candidate",
+      "load_policy": "task_scoped",
+      "new_content_rule": "每个新试验自带身份；试验程序只放 experiments/<id>/program，证据是否进 Git 逐对象决定。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "experiments",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-FOUNDATION",
-      "path": "foundation",
-      "path_kind": "directory",
-      "identity": "foundation_full_source",
+      "accepted_content": [],
       "category": "source",
-      "container_authority": "current",
-      "load_policy": "source_only",
-      "lifecycle": "frozen",
-      "git_policy": "tracked",
       "consumers": [
         "research_tasks",
         "human_review"
       ],
-      "new_content_rule": "只按独立来源授权接收完整根基材料；摘要不得替代全文。",
-      "accepted_content": [],
-      "externalization": "prohibited",
+      "container_authority": "current",
+      "directory_id": "DIR-FOUNDATION",
       "evidence_refs": [
         "AGENTS.md",
         "foundation/04批交接单｜03批收官基线＋待拍改判题_20260716 4a46597cd80242f385f15209ebe9170c.md"
       ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "foundation_full_source",
+      "inherit_to_children": false,
+      "lifecycle": "frozen",
+      "load_policy": "source_only",
+      "new_content_rule": "只按独立来源授权接收完整根基材料；摘要不得替代全文。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "foundation",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-INTAKE",
-      "path": "intake",
-      "path_kind": "directory",
-      "identity": "external_source_intake",
+      "accepted_content": [
+        {
+          "label": "外部原始材料",
+          "object_id": "external_original",
+          "rule": "保留来源、原始字节和收件边界。",
+          "target_pattern": "intake/<source_id>"
+        }
+      ],
       "category": "source",
-      "container_authority": "current",
-      "load_policy": "source_only",
-      "lifecycle": "mutable",
-      "git_policy": "tracked",
       "consumers": [
         "importers",
         "reviewers"
       ],
-      "new_content_rule": "只收外部原始材料和可核对的收件记录；加工结果不得回写覆盖原件。",
-      "accepted_content": [
-        {
-          "object_id": "external_original",
-          "label": "外部原始材料",
-          "target_pattern": "intake/<source_id>",
-          "rule": "保留来源、原始字节和收件边界。"
-        }
-      ],
-      "externalization": "per_object_candidate",
+      "container_authority": "current",
+      "directory_id": "DIR-INTAKE",
       "evidence_refs": [
         "AGENTS.md",
         "intake/README.md"
       ],
+      "externalization": "per_object_candidate",
+      "git_policy": "tracked",
+      "identity": "external_source_intake",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "source_only",
+      "new_content_rule": "只收外部原始材料和可核对的收件记录；加工结果不得回写覆盖原件。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "intake",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-REFERENCES",
-      "path": "references",
-      "path_kind": "directory",
-      "identity": "non_authoritative_references",
+      "accepted_content": [
+        {
+          "label": "非真源参考",
+          "object_id": "nontruth_reference",
+          "rule": "必须写明来源与真值边界。",
+          "target_pattern": "references/<reference_id>"
+        }
+      ],
       "category": "reference",
-      "container_authority": "current",
-      "load_policy": "task_scoped",
-      "lifecycle": "mutable",
-      "git_policy": "mixed",
-      "ignored_probe": "references/diagnostic-returns/六本金标UCR核准回包_20260724/原始回包/__git_policy_probe__",
       "consumers": [
         "research_tasks",
         "packaging"
       ],
-      "new_content_rule": "只收非真源参考、指针、书目和调查角度；不得提升成当前状态或金标。",
-      "accepted_content": [
-        {
-          "object_id": "nontruth_reference",
-          "label": "非真源参考",
-          "target_pattern": "references/<reference_id>",
-          "rule": "必须写明来源与真值边界。"
-        }
-      ],
-      "externalization": "per_object_candidate",
+      "container_authority": "current",
+      "directory_id": "DIR-REFERENCES",
       "evidence_refs": [
         "AGENTS.md",
         "references/README.md"
       ],
+      "externalization": "per_object_candidate",
+      "git_policy": "mixed",
+      "identity": "non_authoritative_references",
+      "ignored_probe": "references/diagnostic-returns/六本金标UCR核准回包_20260724/原始回包/__git_policy_probe__",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "task_scoped",
+      "new_content_rule": "只收非真源参考、指针、书目和调查角度；不得提升成当前状态或金标。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "references",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-SEED",
-      "path": "seed",
-      "path_kind": "directory",
-      "identity": "seed_material",
+      "accepted_content": [],
       "category": "seed",
-      "container_authority": "current",
-      "load_policy": "source_only",
-      "lifecycle": "frozen",
-      "git_policy": "tracked",
       "consumers": [
         "bootstrap_tasks"
       ],
-      "new_content_rule": "只收明确获批的最小起始材料，不接收运行回包。",
-      "accepted_content": [],
-      "externalization": "prohibited",
+      "container_authority": "current",
+      "directory_id": "DIR-SEED",
       "evidence_refs": [
         "seed/00_先读.md"
       ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "seed_material",
+      "inherit_to_children": false,
+      "lifecycle": "frozen",
+      "load_policy": "source_only",
+      "new_content_rule": "只收明确获批的最小起始材料，不接收运行回包。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "seed",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-SIDE-TRACKS",
-      "path": "side-tracks",
-      "path_kind": "directory",
-      "identity": "historical_side_track_ledger",
+      "accepted_content": [],
       "category": "history",
-      "container_authority": "historical",
-      "load_policy": "default_excluded",
-      "lifecycle": "historical",
-      "git_policy": "tracked",
       "consumers": [
         "historical_review"
       ],
-      "new_content_rule": "停止接收新支线；新候选先进入 work，历史记录原位保留。",
-      "accepted_content": [],
-      "externalization": "prohibited",
+      "container_authority": "historical",
+      "directory_id": "DIR-SIDE-TRACKS",
       "evidence_refs": [
         "AGENTS.md",
         "side-tracks/README.md"
       ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "historical_side_track_ledger",
+      "inherit_to_children": false,
+      "lifecycle": "historical",
+      "load_policy": "default_excluded",
+      "new_content_rule": "停止接收新支线；新候选先进入 work，历史记录原位保留。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "side-tracks",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-HISTORY",
-      "path": "history",
-      "path_kind": "directory",
-      "identity": "historical_context",
+      "accepted_content": [],
       "category": "history",
-      "container_authority": "historical",
-      "load_policy": "source_only",
-      "lifecycle": "historical",
-      "git_policy": "tracked",
       "consumers": [
         "historical_review"
       ],
-      "new_content_rule": "只保留历史上下文和指针，不替代 foundation 全文或当前治理真源。",
-      "accepted_content": [],
-      "externalization": "prohibited",
+      "container_authority": "historical",
+      "directory_id": "DIR-HISTORY",
       "evidence_refs": [
         "AGENTS.md",
         "history/上一轮做到哪.md"
       ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "historical_context",
+      "inherit_to_children": false,
+      "lifecycle": "historical",
+      "load_policy": "source_only",
+      "new_content_rule": "只保留历史上下文和指针，不替代 foundation 全文或当前治理真源。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "history",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-RUNS",
-      "path": "runs",
-      "path_kind": "directory",
-      "identity": "runtime_workspaces",
+      "accepted_content": [
+        {
+          "label": "隔离运行工作区",
+          "object_id": "run_workspace",
+          "rule": "只复制白名单零件，运行过程不得回写正式源目录。",
+          "target_pattern": "runs/<run_id>/workspace"
+        }
+      ],
       "category": "run",
-      "container_authority": "derived",
-      "load_policy": "task_scoped",
-      "lifecycle": "sealed",
-      "git_policy": "ignored",
       "consumers": [
         "experiment_runner",
         "replay_tools"
       ],
-      "new_content_rule": "每次运行使用独立目录；测试工作区从正式零件复制后再拼装，不引用可变源文件。",
-      "accepted_content": [
-        {
-          "object_id": "run_workspace",
-          "label": "隔离运行工作区",
-          "target_pattern": "runs/<run_id>/workspace",
-          "rule": "只复制白名单零件，运行过程不得回写正式源目录。"
-        }
-      ],
-      "externalization": "per_object_candidate",
+      "container_authority": "derived",
+      "directory_id": "DIR-RUNS",
       "evidence_refs": [
         ".gitignore",
         "AGENTS.md"
       ],
+      "externalization": "per_object_candidate",
+      "git_policy": "ignored",
+      "identity": "runtime_workspaces",
+      "inherit_to_children": false,
+      "lifecycle": "sealed",
+      "load_policy": "task_scoped",
+      "new_content_rule": "每次运行使用独立目录；测试工作区从正式零件复制后再拼装，不引用可变源文件。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "runs",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-REPORTS",
-      "path": "reports",
-      "path_kind": "directory",
-      "identity": "human_handoff_evidence",
+      "accepted_content": [
+        {
+          "label": "人看交件",
+          "object_id": "human_handoff",
+          "rule": "写清证据来源和权限边界，不把报告句子冒充机器状态。",
+          "target_pattern": "reports/<handoff_id>"
+        }
+      ],
       "category": "report",
-      "container_authority": "derived",
-      "load_policy": "task_scoped",
-      "lifecycle": "historical",
-      "git_policy": "ignored",
       "consumers": [
         "human_review",
         "review_packager"
       ],
-      "new_content_rule": "只收人看交件、停点回包和证据镜像；不得作为唯一机器闸或当前任务真源。",
-      "accepted_content": [
-        {
-          "object_id": "human_handoff",
-          "label": "人看交件",
-          "target_pattern": "reports/<handoff_id>",
-          "rule": "写清证据来源和权限边界，不把报告句子冒充机器状态。"
-        }
-      ],
-      "externalization": "per_object_candidate",
+      "container_authority": "derived",
+      "directory_id": "DIR-REPORTS",
       "evidence_refs": [
         ".gitignore",
         "AGENTS.md"
       ],
+      "externalization": "per_object_candidate",
+      "git_policy": "ignored",
+      "identity": "human_handoff_evidence",
+      "inherit_to_children": false,
+      "lifecycle": "historical",
+      "load_policy": "task_scoped",
+      "new_content_rule": "只收人看交件、停点回包和证据镜像；不得作为唯一机器闸或当前任务真源。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "reports",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-OUTBOX",
-      "path": "outbox",
-      "path_kind": "directory",
-      "identity": "transport_packages",
+      "accepted_content": [
+        {
+          "label": "上传包",
+          "object_id": "upload_package",
+          "rule": "包内清单指向原真源，上传包本身不替代原件。",
+          "target_pattern": "outbox/<package_id>"
+        }
+      ],
       "category": "transport",
-      "container_authority": "transport",
-      "load_policy": "default_excluded",
-      "lifecycle": "mutable",
-      "git_policy": "ignored",
       "consumers": [
         "human_uploader",
         "packaging_tools"
       ],
-      "new_content_rule": "只收准备交付或上传的包；不能反向成为仓内真源。",
-      "accepted_content": [
-        {
-          "object_id": "upload_package",
-          "label": "上传包",
-          "target_pattern": "outbox/<package_id>",
-          "rule": "包内清单指向原真源，上传包本身不替代原件。"
-        }
-      ],
-      "externalization": "per_object_candidate",
+      "container_authority": "transport",
+      "directory_id": "DIR-OUTBOX",
       "evidence_refs": [
         ".gitignore",
         "AGENTS.md"
       ],
+      "externalization": "per_object_candidate",
+      "git_policy": "ignored",
+      "identity": "transport_packages",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "default_excluded",
+      "new_content_rule": "只收准备交付或上传的包；不能反向成为仓内真源。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "outbox",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-TEMP",
-      "path": "TEMP",
-      "path_kind": "directory",
-      "identity": "temporary_assembly",
+      "accepted_content": [
+        {
+          "label": "临时拼装目录",
+          "object_id": "temporary_assembly",
+          "rule": "只在 staging 中拼装，成功后按目标合同另行落位。",
+          "target_pattern": "TEMP/experiment_assembly/<assembly_id>.staging"
+        }
+      ],
       "category": "temporary",
-      "container_authority": "derived",
-      "load_policy": "default_excluded",
-      "lifecycle": "mutable",
-      "git_policy": "ignored",
       "consumers": [
         "packaging_tools",
         "governance_preflight"
       ],
-      "new_content_rule": "只收可重建的临时拼装、预演和机器票；不能提升成长期真源。",
-      "accepted_content": [
-        {
-          "object_id": "temporary_assembly",
-          "label": "临时拼装目录",
-          "target_pattern": "TEMP/experiment_assembly/<assembly_id>.staging",
-          "rule": "只在 staging 中拼装，成功后按目标合同另行落位。"
-        }
-      ],
-      "externalization": "not_applicable",
+      "container_authority": "derived",
+      "directory_id": "DIR-TEMP",
       "evidence_refs": [
         ".gitignore",
         "governance/README.md"
       ],
+      "externalization": "not_applicable",
+      "git_policy": "ignored",
+      "identity": "temporary_assembly",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "default_excluded",
+      "new_content_rule": "只收可重建的临时拼装、预演和机器票；不能提升成长期真源。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "TEMP",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-ANALYSIS-LIBRARY",
-      "path": "analysis_library",
-      "path_kind": "directory",
-      "identity": "lightweight_semantic_analysis_index",
+      "accepted_content": [
+        {
+          "label": "语义分析用途说明",
+          "object_id": "analysis_library_navigation",
+          "rule": "只说明本层用途、快速阅读顺序和按对象编号取原件的方法，不复制完整分析现场。",
+          "target_pattern": "analysis_library/**/README.md"
+        },
+        {
+          "label": "语义分析轻量结论",
+          "object_id": "analysis_library_pilot_summaries",
+          "rule": "只留便于快速阅读的候选摘要；需要原始输入、映射或重算证据时按同批仓外指针取件。",
+          "target_pattern": "analysis_library/pilot_batch_01/summaries/**"
+        },
+        {
+          "label": "语义分析轻量验收摘要",
+          "object_id": "analysis_library_acceptance_summaries",
+          "rule": "只保留读结论所需的验收报告、书级汇总和缺口清单；逐文件票据与复算材料留在仓外。",
+          "target_pattern": "analysis_library/pilot_batch_01/acceptance/<approved-lightweight-summary>"
+        },
+        {
+          "label": "语义分析仓外指针",
+          "object_id": "analysis_library_external_pointer",
+          "rule": "必须钉住外置对象、清单 SHA 和包内相对路径，不得把同盘完整包写成独立备份。",
+          "target_pattern": "analysis_library/pilot_batch_01/EXTERNAL_POINTER.json"
+        }
+      ],
       "category": "source",
-      "container_authority": "candidate",
-      "load_policy": "source_only",
-      "lifecycle": "candidate",
-      "git_policy": "mixed",
-      "ignored_probe": "analysis_library/pilot_batch_01/raw_zips/payload-probe.zip",
       "consumers": [
         "semantic_analysis_tasks",
         "external_artifact_retrieval"
       ],
-      "new_content_rule": "仓内只收能快速判断用途和结论的轻量摘要、验收摘要与仓外指针；原始 ZIP、解包内容、映射和重算证据必须进入已登记外置对象，不能重新塞回 Git。",
-      "accepted_content": [
-        {
-          "object_id": "analysis_library_navigation",
-          "label": "语义分析用途说明",
-          "target_pattern": "analysis_library/**/README.md",
-          "rule": "只说明本层用途、快速阅读顺序和按对象编号取原件的方法，不复制完整分析现场。"
-        },
-        {
-          "object_id": "analysis_library_pilot_summaries",
-          "label": "语义分析轻量结论",
-          "target_pattern": "analysis_library/pilot_batch_01/summaries/**",
-          "rule": "只留便于快速阅读的候选摘要；需要原始输入、映射或重算证据时按同批仓外指针取件。"
-        },
-        {
-          "object_id": "analysis_library_acceptance_summaries",
-          "label": "语义分析轻量验收摘要",
-          "target_pattern": "analysis_library/pilot_batch_01/acceptance/<approved-lightweight-summary>",
-          "rule": "只保留读结论所需的验收报告、书级汇总和缺口清单；逐文件票据与复算材料留在仓外。"
-        },
-        {
-          "object_id": "analysis_library_external_pointer",
-          "label": "语义分析仓外指针",
-          "target_pattern": "analysis_library/pilot_batch_01/EXTERNAL_POINTER.json",
-          "rule": "必须钉住外置对象、清单 SHA 和包内相对路径，不得把同盘完整包写成独立备份。"
-        }
-      ],
-      "externalization": "per_object_candidate",
+      "container_authority": "candidate",
+      "directory_id": "DIR-ANALYSIS-LIBRARY",
       "evidence_refs": [
         ".gitignore",
         "analysis_library/README.md",
         "analysis_library/pilot_batch_01/EXTERNAL_POINTER.json",
         "governance/external_archive_registry.json"
       ],
+      "externalization": "per_object_candidate",
+      "git_policy": "mixed",
+      "identity": "lightweight_semantic_analysis_index",
+      "ignored_probe": "analysis_library/pilot_batch_01/raw_zips/payload-probe.zip",
+      "inherit_to_children": false,
+      "lifecycle": "candidate",
+      "load_policy": "source_only",
+      "new_content_rule": "仓内只收能快速判断用途和结论的轻量摘要、验收摘要与仓外指针；原始 ZIP、解包内容、映射和重算证据必须进入已登记外置对象，不能重新塞回 Git。",
       "open_decisions": [
         "完整包与主仓仍在同一磁盘故障域，独立备份尚未建立。"
       ],
-      "inherit_to_children": false
+      "path": "analysis_library",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-CORPUS-POINTER",
-      "path": "corpus-downloads",
-      "path_kind": "symlink",
-      "identity": "active_corpus_pointer",
+      "accepted_content": [],
       "category": "source",
-      "container_authority": "current",
-      "load_policy": "source_only",
-      "lifecycle": "local_active",
-      "git_policy": "tracked_pointer",
       "consumers": [
         "corpus_readers"
       ],
-      "new_content_rule": "只保留指向 .local/corpus-downloads 的仓库内指针，不把正文复制进仓。",
-      "accepted_content": [],
-      "externalization": "active_local_link_only",
+      "container_authority": "current",
+      "directory_id": "DIR-CORPUS-POINTER",
       "evidence_refs": [
         "AGENTS.md",
         "references/corpus-pointers.md"
       ],
+      "externalization": "active_local_link_only",
+      "git_policy": "tracked_pointer",
+      "identity": "active_corpus_pointer",
+      "inherit_to_children": false,
+      "lifecycle": "local_active",
+      "load_policy": "source_only",
+      "new_content_rule": "只保留指向 .local/corpus-downloads 的仓库内指针，不把正文复制进仓。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": "corpus-downloads",
+      "path_kind": "symlink"
     },
     {
-      "directory_id": "DIR-CURSOR",
-      "path": ".cursor",
-      "path_kind": "directory",
-      "identity": "cursor_compatibility_configuration",
+      "accepted_content": [],
       "category": "configuration",
-      "container_authority": "current",
-      "load_policy": "default_excluded",
-      "lifecycle": "mutable",
-      "git_policy": "tracked",
       "consumers": [
         "Cursor"
       ],
-      "new_content_rule": "只收 Cursor 窗口兼容规则；Codex 团队不读取这里决定角色或模型。",
-      "accepted_content": [],
-      "externalization": "prohibited",
+      "container_authority": "current",
+      "directory_id": "DIR-CURSOR",
       "evidence_refs": [
         "AGENTS.md",
         ".cursor/rules/chinese-voice.mdc"
       ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "cursor_compatibility_configuration",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "default_excluded",
+      "new_content_rule": "只收 Cursor 窗口兼容规则；Codex 团队不读取这里决定角色或模型。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": ".cursor",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-LOCAL",
-      "path": ".local",
-      "path_kind": "directory",
-      "identity": "local_machine_bindings",
+      "accepted_content": [],
       "category": "local_dependency",
-      "container_authority": "local_only",
-      "load_policy": "default_excluded",
-      "lifecycle": "local_active",
-      "git_policy": "ignored",
       "consumers": [
         "corpus_pointer",
         "local_tools"
       ],
-      "new_content_rule": "只收本机路径绑定和不进 Git 的本地依赖，不存可移植真源。",
-      "accepted_content": [],
-      "externalization": "active_local_link_only",
+      "container_authority": "local_only",
+      "directory_id": "DIR-LOCAL",
       "evidence_refs": [
         ".gitignore",
         "references/corpus-pointers.md"
       ],
+      "externalization": "active_local_link_only",
+      "git_policy": "ignored",
+      "identity": "local_machine_bindings",
+      "inherit_to_children": false,
+      "lifecycle": "local_active",
+      "load_policy": "default_excluded",
+      "new_content_rule": "只收本机路径绑定和不进 Git 的本地依赖，不存可移植真源。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": ".local",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-PYTEST-CACHE",
-      "path": ".pytest_cache",
-      "path_kind": "directory",
-      "identity": "local_pytest_cache",
+      "accepted_content": [],
       "category": "local_dependency",
-      "container_authority": "local_only",
-      "load_policy": "default_excluded",
-      "lifecycle": "local_active",
-      "git_policy": "ignored",
       "consumers": [
         "pytest"
       ],
-      "new_content_rule": "只由 pytest 自动生成，不存项目材料。",
-      "accepted_content": [],
-      "externalization": "not_applicable",
+      "container_authority": "local_only",
+      "directory_id": "DIR-PYTEST-CACHE",
       "evidence_refs": [
         ".gitignore",
         "pytest.ini"
       ],
+      "externalization": "not_applicable",
+      "git_policy": "ignored",
+      "identity": "local_pytest_cache",
+      "inherit_to_children": false,
+      "lifecycle": "local_active",
+      "load_policy": "default_excluded",
+      "new_content_rule": "只由 pytest 自动生成，不存项目材料。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": ".pytest_cache",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-RUFF-CACHE",
-      "path": ".ruff_cache",
-      "path_kind": "directory",
-      "identity": "local_ruff_cache",
+      "accepted_content": [],
       "category": "local_dependency",
-      "container_authority": "local_only",
-      "load_policy": "default_excluded",
-      "lifecycle": "local_active",
-      "git_policy": "ignored",
       "consumers": [
         "ruff"
       ],
-      "new_content_rule": "只由 Ruff 自动生成，不存项目材料。",
-      "accepted_content": [],
-      "externalization": "not_applicable",
+      "container_authority": "local_only",
+      "directory_id": "DIR-RUFF-CACHE",
       "evidence_refs": [
         ".gitignore",
         "pyproject.toml"
       ],
+      "externalization": "not_applicable",
+      "git_policy": "ignored",
+      "identity": "local_ruff_cache",
+      "inherit_to_children": false,
+      "lifecycle": "local_active",
+      "load_policy": "default_excluded",
+      "new_content_rule": "只由 Ruff 自动生成，不存项目材料。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": ".ruff_cache",
+      "path_kind": "directory"
     },
     {
-      "directory_id": "DIR-VENV",
-      "path": ".venv",
-      "path_kind": "directory",
-      "identity": "local_python_environment",
+      "accepted_content": [],
       "category": "local_dependency",
-      "container_authority": "local_only",
-      "load_policy": "default_excluded",
-      "lifecycle": "local_active",
-      "git_policy": "ignored",
       "consumers": [
         "python",
         "pytest",
         "ruff"
       ],
-      "new_content_rule": "只由环境管理器生成，不手工存项目材料。",
-      "accepted_content": [],
-      "externalization": "not_applicable",
+      "container_authority": "local_only",
+      "directory_id": "DIR-VENV",
       "evidence_refs": [
         ".gitignore",
         ".python-version",
         "pyproject.toml",
         "uv.lock"
       ],
+      "externalization": "not_applicable",
+      "git_policy": "ignored",
+      "identity": "local_python_environment",
+      "inherit_to_children": false,
+      "lifecycle": "local_active",
+      "load_policy": "default_excluded",
+      "new_content_rule": "只由环境管理器生成，不手工存项目材料。",
       "open_decisions": [],
-      "inherit_to_children": false
+      "path": ".venv",
+      "path_kind": "directory"
+    },
+    {
+      "accepted_content": [
+        {
+          "label": "仓库专用 Agent Skill",
+          "object_id": "repository_agent_skill",
+          "rule": "仅在任务语义命中时读取；Skill 不能扩大业务授权。",
+          "target_pattern": ".agents/skills/<skill_id>/SKILL.md"
+        }
+      ],
+      "category": "configuration",
+      "consumers": [
+        "Codex",
+        "repository_agents"
+      ],
+      "container_authority": "current",
+      "directory_id": "DIR-AGENTS",
+      "evidence_refs": [
+        "AGENTS.md",
+        ".agents/skills/novel-segment-screening/SKILL.md"
+      ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "repository_agent_skills",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "task_scoped",
+      "new_content_rule": "只收仓库专用 Agent Skill；不得保存当前任务、模型拍板或业务真值。",
+      "open_decisions": [],
+      "path": ".agents",
+      "path_kind": "directory"
+    },
+    {
+      "accepted_content": [],
+      "category": "history",
+      "consumers": [
+        "WorkBuddy"
+      ],
+      "container_authority": "historical",
+      "directory_id": "DIR-WORKBUDDY",
+      "evidence_refs": [
+        ".workbuddy/memory/2026-08-03.md"
+      ],
+      "externalization": "per_object_candidate",
+      "git_policy": "ignored",
+      "identity": "legacy_workbuddy_memory",
+      "inherit_to_children": false,
+      "lifecycle": "historical",
+      "load_policy": "default_excluded",
+      "new_content_rule": "停止接收新内容；旧 WorkBuddy 记忆只留本机，不进入 Git，也不能作为 Codex 当前状态或决定真源。",
+      "open_decisions": [
+        "正式执行前必须确认本机原文件仍存在且 SHA 不变；本轮只做候选测算。"
+      ],
+      "path": ".workbuddy",
+      "path_kind": "directory"
+    },
+    {
+      "accepted_content": [
+        {
+          "label": "微调域当前实验指针",
+          "object_id": "finetuning_current_pointer",
+          "rule": "只保存当前实验身份和必要机器引用，不保存训练进度或结论。",
+          "target_pattern": "finetuning/CURRENT.json"
+        },
+        {
+          "label": "单次微调实验控制记录",
+          "object_id": "finetuning_experiment_control_record",
+          "rule": "只保存机器清单、合同、摘要和回执；重资产仍由逻辑仓位与本机绑定解析。",
+          "target_pattern": "finetuning/experiments/<experiment_id>"
+        }
+      ],
+      "category": "experiment",
+      "consumers": [
+        "Codex",
+        "tools/finetuning_control.py",
+        "tools/finetuning_domain.py",
+        "tests/test_finetuning_control.py",
+        "tests/test_finetuning_domain.py"
+      ],
+      "container_authority": "current",
+      "directory_id": "DIR-FINETUNING",
+      "evidence_refs": [
+        "finetuning/README.md",
+        "finetuning/CURRENT.json"
+      ],
+      "externalization": "prohibited",
+      "git_policy": "local_untracked",
+      "identity": "finetuning_control_plane",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "task_scoped",
+      "new_content_rule": "只收微调身份、机器清单、派生摘要、合同和指针；正文、私有金标、权重、训练日志和原始答卷不得进入。",
+      "open_decisions": [
+        "当前目录由微调窗口施工且尚未进入 Git；归属窗口收口后应另行复核 git_policy 是否改为 tracked。"
+      ],
+      "path": "finetuning",
+      "path_kind": "directory"
+    },
+    {
+      "accepted_content": [
+        {
+          "label": "历史纠错切窗批次状态页",
+          "object_id": "historical_correction_segment_scan_status",
+          "rule": "只说明该批历史状态，不能替代当前微调域或全仓当前状态。",
+          "target_pattern": "T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md"
+        }
+      ],
+      "category": "history",
+      "consumers": [
+        "human_review"
+      ],
+      "container_authority": "historical",
+      "directory_id": "DIR-T5-R04-V2-CORRECTION-SEGMENT-SCAN",
+      "evidence_refs": [
+        "T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md"
+      ],
+      "externalization": "per_object_candidate",
+      "git_policy": "tracked",
+      "identity": "historical_correction_segment_scan_workspace",
+      "inherit_to_children": false,
+      "lifecycle": "historical",
+      "load_policy": "default_excluded",
+      "new_content_rule": "停止接收新内容；本轮只冻结身份，不继续在仓库顶层追加批次。",
+      "open_decisions": [
+        "消费者和权利边界核清前不移动、不删除；后续若迁移须另开对象级工单。"
+      ],
+      "path": "T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01",
+      "path_kind": "directory"
     }
-  ]
+  ],
+  "git_policy_semantics": {
+    "ignored": "整个容器按仓库规则不进 Git",
+    "local_untracked": "当前未跟踪且未被忽略；必须显式防止误暂存",
+    "mixed": "长期内容里同时存在明确进 Git 与明确不进 Git 的分区",
+    "tracked": "长期内容进 Git；缓存、系统噪声等通用忽略项不改变主规则",
+    "tracked_pointer": "Git 只跟踪指针本身，不跟踪它指向的本机内容"
+  },
+  "identity_precedence": [
+    "governance/CURRENT_STATE.json",
+    "governance/module_registry.json",
+    "governance/tool_registry.json",
+    "governance/route_registry.json",
+    "governance/external_archive_registry.json",
+    "governance/directory_registry.json"
+  ],
+  "inherit_to_children_default": false,
+  "registry_id": "REPOSITORY-DIRECTORIES-20260730",
+  "schema_version": "directory-registry-v1",
+  "updated_at": "2026-08-07"
 }
