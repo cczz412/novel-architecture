@@ -42,3 +42,11 @@
 - token 估计器不存在（仓内无 segment_token_estimator_v1.py），按中文 700-900 字 ≈ 850-1000 tokens 手估
 - 4 条 PASS 字数略超 1050（1097-1311），原因：切窗需保段落完整，未在句中截断
 - 建议下批补女频现言/古言、纯科幻
+
+## 历史原件取件
+
+- 外置对象：`t5-r04-v2-correction-segment-scan-batch08-20260803-v1`
+- 存储身份：`repository_sibling_external_archive_v1 / t5_r04_v2_correction_segment_scan_batch08_20260803_v1`
+- 清单：`MANIFEST.json`，SHA-256 `6beba120495ae12ae2cbf3960f667a9d79dd0357f350a0d9c2e7d7eb4a49165b`
+- 成员：36 个文件，215248 字节
+- 恢复：按清单成员相对路径从外置对象的 `payload/` 恢复；同盘外置不是独立备份

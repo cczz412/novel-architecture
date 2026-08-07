@@ -1,0 +1,20 @@
+{
+  "schema_version": "external-archive-pointer-v1",
+  "archive_object_id": "z76-phase2-semantic-inspector-pilot-runtime-20260721-v1",
+  "store_id": "repository_sibling_external_archive_v1",
+  "relative_path": "z76_phase2_semantic_inspector_pilot_runtime_20260721_v1",
+  "manifest": {
+    "relative_path": "MANIFEST.json",
+    "sha256": "4b783c14759ff81f1178f1d5fb6d06724ea17b334db640f8e4dcd39ca53cc9fb",
+    "file_count": 16,
+    "total_bytes": 46041
+  },
+  "identity_anchors": {
+    "experiment.json": "5e010380e2a08eca228feba7a91b5456cc03d5b838dd71785e1bd9f0db3aa392",
+    "run_receipt.json": "0a46f90cac79100a5a7dd790109bb94896bb558bee0b4a888f59accc67690829",
+    "feedback_receipt.json": "98dc8a4ec18fc670154f0d2486426fd9284f3506ab687e187086e303f0c1660e"
+  },
+  "restore_profile": "manifest-path-restore-to-original-repo-relative-paths-v1",
+  "independent_backup": false,
+  "source_git_exit_authorized": false
+}
