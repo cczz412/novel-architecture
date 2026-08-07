@@ -1,7 +1,7 @@
 {
   "schema_version": "artifact-storage-v1",
   "registry_id": "repository-artifact-storage-s06a",
-  "updated_at": "2026-07-31",
+  "updated_at": "2026-08-08",
   "authority": {
     "scope": "artifact_identity_location_and_inventory_only",
     "may_define_current_task": false,
@@ -1100,6 +1100,100 @@
         "目录登记"
       ],
       "boundary": "777 条只代表词面未命中，不代表语义漏项；可优先留卡外置，但仍需单独迁移票。"
+    },
+    {
+      "artifact_id": "survey-three-panel-delivery-20260721-v1",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "survey_three_panel_delivery_20260721_v1",
+      "category": "external_archive_batch",
+      "status": "sealed",
+      "record_kind": "archive_batch",
+      "lifecycle": "frozen",
+      "consumer_closure": "verified",
+      "verification_level": "cryptographically_sealed",
+      "recoverability": "package_integrity_proven_same_failure_domain",
+      "externalization": "already_external",
+      "purpose_summary": "保存 2026-07-21 三板块事实句流水线历史调查交付 ZIP 的逐字节外置副本，共 1 个文件、138429 字节。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "4eb608c6d6a8ebd9d4a3803f6c2c7e4d6800cd6bd067cf7b76b5d263671a3059",
+        "expected_entry_count": 1,
+        "entries_field": "files",
+        "entry_path_field": "path",
+        "entry_sha256_field": "sha256"
+      },
+      "keep_in_repository": [
+        "本轮主仓原 ZIP 仍在原位并继续由 Git 携带，等待 CZ 另批退出"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "manual_historical_survey_retrieval"
+      ],
+      "boundary": "复制与从外置副本恢复均已逐字节验证；主仓原件未移动、未删除、未停止跟踪。同级外置仓与主仓同盘，只是存储分层，不构成独立备份，也不授权删除。"
+    },
+    {
+      "artifact_id": "survey-three-panel-notion-md-20260721-v1",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "survey_three_panel_notion_md_20260721_v1",
+      "category": "external_archive_batch",
+      "status": "sealed",
+      "record_kind": "archive_batch",
+      "lifecycle": "frozen",
+      "consumer_closure": "verified",
+      "verification_level": "cryptographically_sealed",
+      "recoverability": "package_integrity_proven_same_failure_domain",
+      "externalization": "already_external",
+      "purpose_summary": "保存 2026-07-21 面向 Notion 阅读的三板块历史调查 Markdown ZIP 逐字节外置副本，共 1 个文件、74433 字节。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "35816e15ca42cbeb005eb0ed40197774f9501df9d7b9a3e210ee05c4018a8f78",
+        "expected_entry_count": 1,
+        "entries_field": "files",
+        "entry_path_field": "path",
+        "entry_sha256_field": "sha256"
+      },
+      "keep_in_repository": [
+        "本轮主仓原 ZIP 与 SHA 伴随文件仍在原位，等待 CZ 另批退出"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "manual_historical_survey_retrieval"
+      ],
+      "boundary": "复制与从外置副本恢复均已逐字节验证；SHA 伴随文件只辅助识别，不能替代外置副本。主仓原件未移动、未删除、未停止跟踪；同盘外置不构成独立备份，也不授权删除。"
+    },
+    {
+      "artifact_id": "survey-outline-to-ordered-facts-docx-20260721-v1",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "survey_outline_to_ordered_facts_docx_20260721_v1",
+      "category": "external_archive_batch",
+      "status": "sealed",
+      "record_kind": "archive_batch",
+      "lifecycle": "frozen",
+      "consumer_closure": "verified",
+      "verification_level": "cryptographically_sealed",
+      "recoverability": "package_integrity_proven_same_failure_domain",
+      "externalization": "already_external",
+      "purpose_summary": "保存 2026-07-21 大纲到有序事实句历史调查候选 DOCX 的逐字节外置副本，共 1 个文件、65292 字节。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "51740d8ba70eb4ec684127cdd574b0334cc4fc192b80db17428bad8b14d1128c",
+        "expected_entry_count": 1,
+        "entries_field": "files",
+        "entry_path_field": "path",
+        "entry_sha256_field": "sha256"
+      },
+      "keep_in_repository": [
+        "本轮主仓原 DOCX、同目录 Markdown 与 README 仍在原位，等待 CZ 另批退出和入口调整"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "references/survey-inbox/packages/CZ_大纲到有序事实句_调查交付包_20260721/README_交付说明.md",
+        "manual_historical_survey_retrieval"
+      ],
+      "boundary": "DOCX 内含 Markdown 无法逐字节替代的批注、脚注与版式。复制与从外置副本恢复已验证；主仓原件未移动、未删除、未停止跟踪。未来退出 Git 前仍需单独修改现有 README 取件入口；同盘外置不构成独立备份，也不授权删除。"
     }
   ],
   "known_conflicts": [

@@ -128,3 +128,8 @@ venv/
 *.onnx
 # Local-only WorkBuddy memory; not repository truth.
 /.workbuddy/
+
+# W02 Batch 1: three sealed historical survey binaries live in the sibling archive.
+/references/survey-inbox/packages/CZ_事实句流水线三板块框架_调查交付包_20260721.zip
+/references/survey-inbox/packages/CZ_3panel_survey_notion_md_20260721.zip
+/references/survey-inbox/packages/CZ_大纲到有序事实句_调查交付包_20260721/01_主报告_大纲到有序事实句_调查候选.docx
