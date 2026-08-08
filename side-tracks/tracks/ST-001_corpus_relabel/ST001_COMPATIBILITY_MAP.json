@@ -1,0 +1,213 @@
+{
+  "aggregate_identity_rule": {
+    "member_set_sha256": "sha256(UTF8(newline_join(sorted(repo_relative_paths)))) with no trailing newline",
+    "member_sha256": "SHA-256 of exact file bytes",
+    "sha_map_sha256": "sha256(UTF8(compact_canonical_json({path:member_sha256}, sorted_keys=true, ensure_ascii=false))) with no trailing newline"
+  },
+  "archive_binding": {
+    "manifest_relative_path": "MANIFEST.json",
+    "manifest_sha256": "9b509147f70752cd7e90b0d5fd80a8a16fb3bce5cd26b807ede73328e5308a9a",
+    "member_count": 1,
+    "member_set_sha256": "9a610e61049e3add6a7dcdef002682620c84d07003c69d9d0885f4db1332cb34",
+    "relative_path": "side_track_st001_corpus_relabel_table_archive_20260808_v1",
+    "restore_profile": "copy_payload_members_to_recorded_repo_relative_paths_and_verify_sha256",
+    "root_id": "repository_sibling_external_archive_v1",
+    "sha_map_sha256": "c9286879fba2179e8869701991a9def71503cf760aceb25d634455ff744b1785",
+    "storage_boundary": "external_storage_copy_verified_same_failure_domain_not_backup",
+    "total_bytes": 349703
+  },
+  "authority_scope": "Legacy reference resolution only; not table truth, archive backup status or execution authority.",
+  "boundary": "Frozen mirrors remain byte-identical. This file does not itself authorize Git exit, registry write or consumer rewrite.",
+  "counts": {
+    "legacy_reference_count": 6,
+    "stable_record_count": 4
+  },
+  "formal_path_candidate": "side-tracks/tracks/ST-001_corpus_relabel/ST001_COMPATIBILITY_MAP.json",
+  "frozen_consumers": [
+    {
+      "authority": "frozen_original_bytes",
+      "direct_rewrite_allowed": false,
+      "path": "references/golden-three-chapters/v0.2/rights/02_registry_candidate.json",
+      "sha256": "cc00c26c24538b6f6e5637e7d6311480020d39b2614f951a429fcecf1b95aba7"
+    },
+    {
+      "authority": "frozen_original_bytes",
+      "direct_rewrite_allowed": false,
+      "path": "references/golden-three-chapters/v0.2/template_route_source.json",
+      "sha256": "f6a0d00ba7b4c12ead8fa17f8340c3d26ee43e00b6d20d05a76271a79e8650c5"
+    }
+  ],
+  "identity_binding": {
+    "archive_object_id": "side-track-st001-corpus-relabel-table-archive-20260808-v1",
+    "column_names": [
+      "window",
+      "track",
+      "title",
+      "platform",
+      "author",
+      "confidence",
+      "evidence",
+      "coarse_genre",
+      "trope_tags_raw",
+      "one_liner",
+      "name_conflict",
+      "not_found",
+      "source_report",
+      "ingested_at",
+      "reader_synopsis",
+      "official_blurb"
+    ],
+    "column_order_sha256": "8066e3f3bd2a30c7d16292ed96e213a297f0dbff773d207783faa408611bf32d",
+    "root_object_id": "side-track-st001-corpus-relabel-root-20260718-v1",
+    "table_object_id": "side-track-st001-corpus-relabel-table-20260718-v1",
+    "table_path": "side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv",
+    "whole_table_sha256": "fd01231c3f265280d05721f7b3227deabdc58ac431fc230600ea4fe766b4cd5a"
+  },
+  "legacy_mappings": [
+    {
+      "legacy_consumer_id": "BOOK-011",
+      "legacy_consumer_locator": "/entries/10/source_objects/1",
+      "legacy_consumer_path": "references/golden-three-chapters/v0.2/rights/02_registry_candidate.json",
+      "legacy_consumer_sha256": "cc00c26c24538b6f6e5637e7d6311480020d39b2614f951a429fcecf1b95aba7",
+      "legacy_line_reference": 19,
+      "legacy_source_path": "side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv",
+      "stable_anchor": {
+        "archive_object_id": "side-track-st001-corpus-relabel-table-archive-20260808-v1",
+        "record_identity": "st001-record-v1:8f92d48974751a3defe03a17073f23667dbbd326ab5d2048937d60c3588469db",
+        "record_sha256": "599e18c4f6ff9507bf0fec565c57c236d2e0810f48d06568398bc0eff1cfa5a5",
+        "table_object_id": "side-track-st001-corpus-relabel-table-20260718-v1",
+        "whole_table_sha256": "fd01231c3f265280d05721f7b3227deabdc58ac431fc230600ea4fe766b4cd5a"
+      }
+    },
+    {
+      "legacy_consumer_id": "BOOK-012",
+      "legacy_consumer_locator": "/entries/11/source_objects/1",
+      "legacy_consumer_path": "references/golden-three-chapters/v0.2/rights/02_registry_candidate.json",
+      "legacy_consumer_sha256": "cc00c26c24538b6f6e5637e7d6311480020d39b2614f951a429fcecf1b95aba7",
+      "legacy_line_reference": 347,
+      "legacy_source_path": "side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv",
+      "stable_anchor": {
+        "archive_object_id": "side-track-st001-corpus-relabel-table-archive-20260808-v1",
+        "record_identity": "st001-record-v1:c95ecdce21b4c1dc8dd57cb37927dce07b1893e89f1bb9117f269583dac9bdd0",
+        "record_sha256": "ca18bc069a8724942675d57383aaea2ce3fbc466bc35252e571127f4eeb38355",
+        "table_object_id": "side-track-st001-corpus-relabel-table-20260718-v1",
+        "whole_table_sha256": "fd01231c3f265280d05721f7b3227deabdc58ac431fc230600ea4fe766b4cd5a"
+      }
+    },
+    {
+      "legacy_consumer_id": "G3-03",
+      "legacy_consumer_locator": "/books/2/source_refs/1",
+      "legacy_consumer_path": "references/golden-three-chapters/v0.2/template_route_source.json",
+      "legacy_consumer_sha256": "f6a0d00ba7b4c12ead8fa17f8340c3d26ee43e00b6d20d05a76271a79e8650c5",
+      "legacy_line_reference": 19,
+      "legacy_source_path": "side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv",
+      "stable_anchor": {
+        "archive_object_id": "side-track-st001-corpus-relabel-table-archive-20260808-v1",
+        "record_identity": "st001-record-v1:8f92d48974751a3defe03a17073f23667dbbd326ab5d2048937d60c3588469db",
+        "record_sha256": "599e18c4f6ff9507bf0fec565c57c236d2e0810f48d06568398bc0eff1cfa5a5",
+        "table_object_id": "side-track-st001-corpus-relabel-table-20260718-v1",
+        "whole_table_sha256": "fd01231c3f265280d05721f7b3227deabdc58ac431fc230600ea4fe766b4cd5a"
+      }
+    },
+    {
+      "legacy_consumer_id": "G3-05",
+      "legacy_consumer_locator": "/books/4/source_refs/1",
+      "legacy_consumer_path": "references/golden-three-chapters/v0.2/template_route_source.json",
+      "legacy_consumer_sha256": "f6a0d00ba7b4c12ead8fa17f8340c3d26ee43e00b6d20d05a76271a79e8650c5",
+      "legacy_line_reference": 302,
+      "legacy_source_path": "side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv",
+      "stable_anchor": {
+        "archive_object_id": "side-track-st001-corpus-relabel-table-archive-20260808-v1",
+        "record_identity": "st001-record-v1:c82d904a2742e26520e8891879cdee483db25ccbd336a11811d3c65d156f460d",
+        "record_sha256": "8b934ea0fd36c2c4fc4ba1f9c943f40de71abe11f547e9f5a629717b64692eb1",
+        "table_object_id": "side-track-st001-corpus-relabel-table-20260718-v1",
+        "whole_table_sha256": "fd01231c3f265280d05721f7b3227deabdc58ac431fc230600ea4fe766b4cd5a"
+      }
+    },
+    {
+      "legacy_consumer_id": "G3-06",
+      "legacy_consumer_locator": "/books/5/source_refs/1",
+      "legacy_consumer_path": "references/golden-three-chapters/v0.2/template_route_source.json",
+      "legacy_consumer_sha256": "f6a0d00ba7b4c12ead8fa17f8340c3d26ee43e00b6d20d05a76271a79e8650c5",
+      "legacy_line_reference": 347,
+      "legacy_source_path": "side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv",
+      "stable_anchor": {
+        "archive_object_id": "side-track-st001-corpus-relabel-table-archive-20260808-v1",
+        "record_identity": "st001-record-v1:c95ecdce21b4c1dc8dd57cb37927dce07b1893e89f1bb9117f269583dac9bdd0",
+        "record_sha256": "ca18bc069a8724942675d57383aaea2ce3fbc466bc35252e571127f4eeb38355",
+        "table_object_id": "side-track-st001-corpus-relabel-table-20260718-v1",
+        "whole_table_sha256": "fd01231c3f265280d05721f7b3227deabdc58ac431fc230600ea4fe766b4cd5a"
+      }
+    },
+    {
+      "legacy_consumer_id": "G3-08",
+      "legacy_consumer_locator": "/books/7/source_refs/1",
+      "legacy_consumer_path": "references/golden-three-chapters/v0.2/template_route_source.json",
+      "legacy_consumer_sha256": "f6a0d00ba7b4c12ead8fa17f8340c3d26ee43e00b6d20d05a76271a79e8650c5",
+      "legacy_line_reference": 359,
+      "legacy_source_path": "side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv",
+      "stable_anchor": {
+        "archive_object_id": "side-track-st001-corpus-relabel-table-archive-20260808-v1",
+        "record_identity": "st001-record-v1:be1778c1cada3243feb65cc4f8fe816630227366197f02385305045ce368f73c",
+        "record_sha256": "5b9129641d051884c48ee2284d0eb82f0331447dd8edb1c2516124f7c660340a",
+        "table_object_id": "side-track-st001-corpus-relabel-table-20260718-v1",
+        "whole_table_sha256": "fd01231c3f265280d05721f7b3227deabdc58ac431fc230600ea4fe766b4cd5a"
+      }
+    }
+  ],
+  "lookup_contract": {
+    "duplicate_legacy_query_policy": "allowed only when every matching entry resolves to the same record_identity and record_sha256",
+    "legacy_query_fields": [
+      "legacy_source_path",
+      "legacy_line_reference"
+    ],
+    "silent_fallback_allowed": false,
+    "stable_resolution": "verify archive manifest aggregate; verify table and column SHA; require exactly one record_identity match; require record_sha256 match"
+  },
+  "formal_write_authorized_by_this_file": false,
+  "purpose": "Resolve six frozen physical-line references to four stable ST-001 record anchors without rewriting frozen mirrors.",
+  "schema_version": "st001-compatibility-map-v1",
+  "stable_records": [
+    {
+      "identity_fields": {
+        "author": "老鹰吃小鸡",
+        "platform": "起点中文网",
+        "title": "万族之劫"
+      },
+      "record_identity": "st001-record-v1:8f92d48974751a3defe03a17073f23667dbbd326ab5d2048937d60c3588469db",
+      "record_ordinal_excluding_header": 18,
+      "record_sha256": "599e18c4f6ff9507bf0fec565c57c236d2e0810f48d06568398bc0eff1cfa5a5"
+    },
+    {
+      "identity_fields": {
+        "author": "会说话的肘子",
+        "platform": "起点中文网",
+        "title": "大王饶命"
+      },
+      "record_identity": "st001-record-v1:be1778c1cada3243feb65cc4f8fe816630227366197f02385305045ce368f73c",
+      "record_ordinal_excluding_header": 259,
+      "record_sha256": "5b9129641d051884c48ee2284d0eb82f0331447dd8edb1c2516124f7c660340a"
+    },
+    {
+      "identity_fields": {
+        "author": "佛前献花",
+        "platform": "起点中文网",
+        "title": "神秘复苏"
+      },
+      "record_identity": "st001-record-v1:c82d904a2742e26520e8891879cdee483db25ccbd336a11811d3c65d156f460d",
+      "record_ordinal_excluding_header": 202,
+      "record_sha256": "8b934ea0fd36c2c4fc4ba1f9c943f40de71abe11f547e9f5a629717b64692eb1"
+    },
+    {
+      "identity_fields": {
+        "author": "狐尾的笔",
+        "platform": "起点中文网",
+        "title": "道诡异仙"
+      },
+      "record_identity": "st001-record-v1:c95ecdce21b4c1dc8dd57cb37927dce07b1893e89f1bb9117f269583dac9bdd0",
+      "record_ordinal_excluding_header": 247,
+      "record_sha256": "ca18bc069a8724942675d57383aaea2ce3fbc466bc35252e571127f4eeb38355"
+    }
+  ],
+  "status": "sealed_compatibility_contract"
+}

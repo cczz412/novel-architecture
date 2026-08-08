@@ -155,3 +155,6 @@ venv/
 /side-tracks/tracks/ST-002_prototype_borrow/tables/prototype_deep.csv
 /side-tracks/tracks/ST-002_prototype_borrow/tables/borrow_downstream.csv
 /side-tracks/tracks/ST-002_prototype_borrow/tables/exclude_fingerprints_batch01.txt
+
+# ST-001 frozen legacy table lives in the sibling archive.
+/side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv

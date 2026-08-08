@@ -24,7 +24,8 @@
 | 收口状态 | [CLOSING_STATUS.md](../../../TEMP/dr_closing_windows_20260719/CLOSING_STATUS.md) |
 | 认亲回包 | [identity_r01.md](../../../TEMP/dr_corpus_relabel_20260718/returns/identity_r01.md) |
 | w06／w07 回包 | [w06_shallow50.md](../../../TEMP/dr_corpus_relabel_20260718/returns/w06_shallow50.md) · [w07_shallow50.md](../../../TEMP/dr_corpus_relabel_20260718/returns/w07_shallow50.md) |
-| 大表 | [corpus_relabel.csv](tables/corpus_relabel.csv) · [product_shallow.csv](tables/product_shallow.csv) |
+| 历史大表追源 | [稳定兼容映射](ST001_COMPATIBILITY_MAP.json)（外置对象＋恢复身份） |
+| 现役浅表 | [product_shallow.csv](tables/product_shallow.csv) |
 | 认亲结果 | [identity_resolve.csv](tables/identity_resolve.csv) |
 | 认亲队列 | [pending_identity_queue.csv](tables/pending_identity_queue.csv) |
 

@@ -1300,6 +1300,44 @@
         "side-tracks/tracks/ST-002_prototype_borrow/tables/ingest_meta.json"
       ],
       "boundary": "主仓 Git 已停止携带 3 份旧调查表，本机原件仍按原路径保留且 SHA 不变。外置副本已逐字节验证，但与主仓同盘，不是独立备份，也不授权物理删除。"
+    },
+    {
+      "artifact_id": "side-track-st001-corpus-relabel-table-archive-20260808-v1",
+      "root_id": "repository_sibling_external_archive_v1",
+      "relative_path": "side_track_st001_corpus_relabel_table_archive_20260808_v1",
+      "category": "external_archive_batch",
+      "status": "sealed",
+      "record_kind": "archive_batch",
+      "lifecycle": "frozen",
+      "consumer_closure": "verified",
+      "verification_level": "cryptographically_sealed",
+      "recoverability": "package_integrity_proven_same_failure_domain",
+      "externalization": "already_external",
+      "purpose_summary": "ST-001 corpus_relabel.csv 历史调查表；6 个冻结行号引用通过一张稳定兼容映射定位 4 条唯一记录。",
+      "identity_anchors": [],
+      "manifest": {
+        "relative_path": "MANIFEST.json",
+        "sha256": "9b509147f70752cd7e90b0d5fd80a8a16fb3bce5cd26b807ede73328e5308a9a",
+        "expected_entry_count": 1,
+        "entries_field": "files",
+        "entry_path_field": "path",
+        "entry_sha256_field": "sha256"
+      },
+      "keep_in_repository": [
+        "side-tracks/tracks/ST-001_corpus_relabel/ST001_COMPATIBILITY_MAP.json",
+        "side-tracks/tracks/ST-001_corpus_relabel/TRACK.md",
+        "side-tracks/tracks/ST-001_corpus_relabel/LOG.md",
+        "side-tracks/tracks/ST-001_corpus_relabel/tables/README.md",
+        "product_shallow.csv、identity_resolve.csv、pending_identity_queue.csv 和 ingest_meta_w01.json"
+      ],
+      "externalize_later": [],
+      "consumers": [
+        "side-tracks/tracks/ST-001_corpus_relabel/ST001_COMPATIBILITY_MAP.json",
+        "references/golden-three-chapters/v0.2/rights/02_registry_candidate.json（冻结原字节）",
+        "references/golden-three-chapters/v0.2/template_route_source.json（冻结原字节）",
+        "side-tracks/tracks/ST-001_corpus_relabel/TRACK.md"
+      ],
+      "boundary": "外置副本、MANIFEST 和 TEMP 独立恢复已逐字节验证。两份历史镜像保持原字节，不修改冻结 SHA。同盘外置仅是存储分层，不是独立备份，也不授权物理删除。"
     }
   ],
   "known_conflicts": [
