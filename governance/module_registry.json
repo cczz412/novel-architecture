@@ -613,7 +613,7 @@
           "exists": true,
           "kind": "file",
           "path": "governance/test_policy.json",
-          "sha256": "bf02dcc14121b5390180afc87b3a9651bbc23694a14d960c5d2c29a1612acc9b"
+          "sha256": "1832809b45337e99d4138e8bfab46c83f688c9dd8c090210aae2f62acb80d769"
         },
         {
           "exists": true,

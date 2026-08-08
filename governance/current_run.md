@@ -1,17 +1,17 @@
 # 当前运行与停点
 
-- 当前任务：R2 问题驱动按需回取｜A8 事件图规划器同卷对照
-- 任务编号：`R2-A8-EVENT-GRAPH-PLANNER-AB-20260727`
-- 状态：ChatGPT Pro 外审已回收并筛选；A8 唯一正式离线计分完成，2,500字档由A5的16/28、78/115回退到15/28、75/115，B01仍0/10且事实头17→15，照预注册止损线砍掉。
-- 授权：notion_ledger_v2_autonomous_r2_authorization，时间 `2026-07-27T12:05:00+08:00`
-- 当前运行：`V02-R2-A8-event-graph-planner-ab-r01-20260727`（`runs/V02_R2_A8_event_graph_planner_ab_r01_20260727`）
-- 质量边界：A8只测冻结开发集候选窗口的机械覆盖，不等于答案正确率或R2正式终验；正式终验门槛仍为新30题可回答不少于15且关键错误不多于10。
-- 当前停点：不再写旧04页；A8已砍，不得重跑、调阈值、挑预算或自动进入A10；不得改现役、升默认、推送或发未经新授权的模型请求。
-- 下一动作：A8停点已回传R2 Notion页并回读；若继续R2，须另立单变量路线，优先验证少量可控关系槽或逐题回取合同，并继续先走ChatGPT Pro外审。
-- 当前阻断：0 项
+- 当前任务：仓库卫生已收口，根入口已瘦身，现役命令仍有两处并发延期
+- 任务编号：`REPOSITORY-OPERATIONS-W05-W06-20260808`
+- 状态：W05 已关闭且 tracked size gate 已通过；W06 根 AGENTS 已正式收敛，8 份命令说明完成 6 份，Repo Bridge 与 finetuning 两份继续延期。
+- 授权：cz_explicit_w06d_current_state_freshness_refresh，时间 `2026-08-08T20:21:22+08:00`
+- 当前运行：无独立模型运行
+- 质量边界：本状态只证明仓库治理与寻路现场已按列明 SHA 刷新，不替代任何领域质量结论。
+- 当前停点：Production Canonical 候选仍不存在，finetuning/CURRENT.json 明确不得授权训练或晋升；没有独立训练执行锁就不能训练。
+- 下一动作：仓库路由线等待 Repo Bridge 与 finetuning 两个并发写集释放后补齐 12 处命令；微调工作从 finetuning/CURRENT.json 和 governance/progress/t5-r04-production-canonical-p2.md 继续。
+- 当前阻断：2 项：Production Canonical 候选尚不存在，当前没有训练执行锁。；Repo Bridge 与 finetuning 两份现役说明仍属于并发写集，12 处命令替换延期。
 - 模型调用账：逻辑样本 0／网络尝试 0／token 0
 - 报告目录：尚未登记
-- 本地停点回执：`runs/V02_R2_A8_event_graph_planner_ab_r01_20260727/STOP_RECEIPT.md`
+- 本地停点回执：尚未登记
 - 默认链：`config/defaults/zbatch_v1.2_full_chain.json`（v1.2）
 - 当前金标：`config/gold/X01_ch0003_structure_gold_current.json` → `reports/Z73_第3章金标v1.2定稿转正_20260721/第3章结构层金标v1.2.json`
 - 正式金标登记：`config/gold/formal_gold_registry.json`，共 6 个独立 current 入口。
