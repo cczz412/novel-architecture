@@ -12,7 +12,7 @@
 | 打包工具 | `tools/chatgpt_review_pack.py --route r2-question-retrieval` | 已验收 |
 | 外审 SOP | `config/review_pack/CHATGPT_REVIEW_SOP.md` | 已验收 |
 | 路线演示包 | `TEMP/chatgpt_review_packs/route_r2-question-retrieval_20260727_080718/` | CRC／密钥／锁箱／本机路径四闸 PASS |
-| 上一次外发包 | `TEMP/R2_ChatGPT开发路线评审包_20260727/` | 已生成并验包 PASS；旧包只读 |
+| 上一次外发包 | archive object `w05-r2-chatgpt-development-route-review-pack-20260727-v1` → `governance/external_archive_registry.json` | 已外置并完成恢复验证；长期入口已切换 |
 | 新回包原件 | `R2_开发路线敌对审查交付包_20260727.zip` | 安全入站 PASS，原件只读 |
 | 入站票 | `TEMP/R2_开发路线敌对审查回包入站_20260727/INTAKE_RECEIPT.json` | ZIP／内部 SHA／可移植复算全过 |
 | 吸收对照 | `TEMP/R2_开发路线敌对审查回包入站_20260727/R2_外部回包吸收对照.md` | 可复算／要实验／不采纳三栏已落 |
