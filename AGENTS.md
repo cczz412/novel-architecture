@@ -1,106 +1,52 @@
-# 04批 Z批流水线｜现役入口（不在本文件复制当前道次）
+# 小说架构仓库 · Agent 极薄入口（候选）
 
-0. **人看当前状态**：[governance/INDEX.md](governance/INDEX.md)（由 `python3 tools/novel_pipeline.py governance refresh` 生成）
-1. **机器读取当前任务／运行状态只认这一份**：[governance/CURRENT_STATE.json](governance/CURRENT_STATE.json)
-2. **账序真源 v2（2026-07-27 起，新条只进这里）**：https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6
-3. **LEGACY 在跑队列（R2 跑完即冻结留指针）**：https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc
-4. **真源边界**：拍板以 Notion 账序真源 v2／队列为准；旧 04 页 `4a46597c…` 已冻结，禁止再写一字。本地 `CURRENT_STATE.json` 是回读后的唯一当前任务／运行状态机器镜像；模块与实验路线各看自己的登记册；`current.md` 已停更，`reports/` 只放镜像与交件。
+## 1. Repository entry / authority
 
-> 本段故意不写“当前是第几道”，避免本文件再次变成竞争路牌。下方旧第68道路由只作考古。
+- 人看全仓治理状态：[治理索引](governance/INDEX.md)；机器读取当前执行状态只认 [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)。CZ 拍板仍以当前明确指令和 Notion 账序／队列为准。
+- 新窗口接力先看 [`governance/progress/current-progress.md`](governance/progress/current-progress.md)，再读它点名的专题页。它只负责接力，不能覆盖 `CURRENT_STATE.json`、正式结果票或 CZ 指令；两者时间或结论冲突时停下校准。
+- 产品共同理解从 [共同背景板 R03 入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260808_R03/00_READ_ME_FIRST.md) 开始。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
+- 路径职责与新文件落点只认 [`governance/directory_registry.json`](governance/directory_registry.json) 和生成的 [`governance/indexes/new_file_routing.md`](governance/indexes/new_file_routing.md)。
 
-# 历史路由存档｜04批 Z批流水线（2026-07-20）
+## 2. Task routing
 
-1. **活批母页（04批交接／账序真源）**：https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c  
-2. **Z批队列页**：https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc  
-3. **当时停点（第68道）**：Notion https://app.notion.com/p/3a35cadc4d0f8197967bd99a4e070729 ｜ 本地 [reports/Z68_修正版请求体裸考_20260720/](reports/Z68_修正版请求体裸考_20260720/)  
-4. **当时工作法**：进度以账序／队列为准；本地 `current.md`／`reports/` 是历史镜像与交件。本段不再提供现役寻路。
+| 你要做什么 | 第一站 | 需要时的第二站 |
+|---|---|---|
+| 理解产品目标 | `references/shared-context/.../01_PRODUCT_NORTH_STAR.md` | `02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md` |
+| 理解创作／记忆流程 | `references/shared-context/.../03_CREATION_AND_MEMORY_PIPELINES.md` | 无 |
+| 看当前微调实验 | `finetuning/CURRENT.json` | 它指向实验的 `MANIFEST.json`／结果票 |
+| 判断能否训练 | `finetuning/CURRENT.json` 的授权字段 | 当前实验的路线图／执行锁；没有明确许可就是不能训练 |
+| 查抽取研究 | `governance/route_registry.json` | 对应实验结果票；产品解释再看 R03 第 04 页 |
+| 接仓库重构任务 | 当前 CZ 工单／本任务回执 | `governance/progress/current-progress.md`；没登记该线就停下，不靠搜索猜 |
+| 找历史外置对象 | `governance/external_archive_registry.json` | 对象登记的 manifest／恢复方式 |
+| 跑本机证据或历史测试 | `governance/test_policy.json` | `tests/local_evidence_registry.json`／`config/test_replay/historical_replays.json` |
+| 做 Repo Bridge 交接／外审 | `experiments/repo_bridge_v1_prototype_20260807/README.md` | 当前任务的 handoff／review 包 |
+| 做 ChatGPT 外发包 | `config/review_pack/README.md` | `config/review_pack/routes.json` |
+| 看当前执行状态 | `governance/CURRENT_STATE.json#current_execution` | 对应正式结果票 |
+| 决定新文件放哪 | `governance/indexes/new_file_routing.md` | `governance/directory_registry.json` |
 
----
+## 3. Universal safety rules
 
-# 小说架构 · Agent 入口
+- 开工前先看目标路径的 Git 状态和其他窗口写集；已有改动属于别人，不能覆盖、回退或顺手收进自己的提交。
+- 当前任务没有明确授权的 Git、Notion、模型调用、训练、上传、删除、移动和生产晋升，一律不做。背景板、建议、候选、PASS 字样都不能代替授权。
+- 冻结合同、金标、历史票和本机 evidence 按各自登记册处理；目录名里的 `current`、`gold`、`official` 不能自动升级身份。
+- `runs/`、`reports/`、`outbox/`、`TEMP/` 是本机运行／运输区，默认不进 Git；正文库只通过 `references/corpus-pointers.md` 的本机指针访问，不复制进仓，也不整库扫读。
+- 来源互相冲突、消费者闭包不清或需要扩大正式写集时，先停下交 CZ，不靠补件或降级检查追绿。
 
-（历史定位，2026-07-20 起以上方路由为准）
+## 4. Environment / commands
 
-这个项目只干一件事：**想清楚「大纲中枢」怎么成型**，并持续改本地草案。
-
-根目录：`/Users/a1234/挣钱/小说架构`
-
-## 🔥 材料怎么认（别再搞反）
-
-| 材料 | 怎么放 |
-|---|---|
-| **`foundation/`**＝私人与共享 76 整包 | **全文进仓**（V01～V07、路线图、R10、对撞表…一律完整） |
-| `history/`、指针、决策账等 | **可以简化**；只帮你知道上一轮大概到哪 |
-
-进来先看：`foundation/` 里的 04 批交接单 → 需要哪份就打开哪份全文。  
-`history/` 只是旁注，不能替代 `foundation/`。
-
-## 本仓气质
-
-- **自由施工**：文件夹不够就自己新建。
-- **本地是工作镜像**：改本地；回 Notion **新建页**交接。
-- **日常不读 Notion**：页面已全文下载进 `foundation/`，本地上下文足够；只有 CZ 说"打包"时才汇总产出、打包给他上传。
-- **子 Agent 按运行环境分流**：Cursor 窗里的机械子任务才用
-  `cursor-grok-4.5-high`。Codex 窗一旦启用 `$codex-longline-teams`，只认
-  Codex 固定的 Luna／Terra／Sol 角色与该 Skill 的档位配置；不得套用 Cursor
-  模型，也不得因 Cursor 模型不可用而输出“模型不一致”说明。
-- **正文不进仓**：仓内 `corpus-downloads` 只指向被 Git 忽略的
-  `.local/corpus-downloads`；每台机器再把后者连到自己的小说101正文库。
-  初始化与断链检查见 `references/corpus-pointers.md`。
-- **打包清版**：`tools/simple_pack.py`（不搬小说101 重 OPS）。
-
-## Git 边界（2026-07-23）
-
-| 进 Git／上 GitHub（活面） | 本机有、默认不进 Git |
-|---|---|
-| `AGENTS.md`、`governance/`、`config/`、`tools/`、`tests/`、`foundation/`、`references/` … | `runs/`、`reports/`、`outbox/`、`TEMP/` |
-
-说白了：Git 盯的是长期带着走的代码／配置／治理；跑批大件留本地回放。外审要看效果时，用下面「审仓打包」，**不要**把 ignore 目录重新 `git add` 回去。
-
-## ChatGPT／外审 · 审仓打包（可复用）
-
-做到一定程度拿去审结构／流程／近停差距：
+本仓普通 Python、测试和 Ruff 固定走锁定环境，Python 为 3.12.12：
 
 ```bash
-python3 tools/chatgpt_review_pack.py              # 默认 standard
-python3 tools/chatgpt_review_pack.py --profile deep
-python3 tools/chatgpt_review_pack.py --dry-run
-python3 tools/chatgpt_review_pack.py --list-routes
-python3 tools/chatgpt_review_pack.py --route r2-question-retrieval --dry-run
+uv run --locked python ...
+uv run --locked pytest ...
+uv run --locked ruff check ...
 ```
 
-- 制度说明：[config/review_pack/README.md](config/review_pack/README.md)（复验三角、旧包不改、经验账）
-- 配置：[config/review_pack/profiles.json](config/review_pack/profiles.json)
-- 产出：`TEMP/chatgpt_review_packs/`（zip＋读包说明；TEMP 本身不进 Git）
-- 包内必有 `00_READ_ME_FOR_REVIEWER.md`；含 `experiments/Z*`＋近停 runs／reports 与 Z83 票据摘要；**不等于**它们应进 Git
-- 做到一定程度就**现打**；外审指出缺口 → 改 profiles／脚本再打新包，勿回头改已上传 zip
-- 同一路线反复外发时优先用 `--route`：四层取材地图在
-  `config/review_pack/routes.json`，required 根缺件直接停，外部回包用
-  `--external 槽名=/真实路径` 显式供入；不要再临时手写一长串来源路径
+不要把裸 `python3`、`pytest`、`ruff` 当默认入口，也不要向系统 Python 临时补依赖。
 
-## 目录
+## 5. Nested AGENTS precedence
 
-| 路径 | 干什么 |
-|---|---|
-| `foundation/` | 私人与共享 76 **全文**（本轮根基） |
-| `history/` | 上一轮（小说101／G100 前）轻记 |
-| `references/` | Notion／样本指针；书目元数据；**调查角度收件箱**（GitHub／短视频讲法，见 `references/survey-inbox/`） |
-| `side-tracks/` | **旁路／支线台账**（调查进度；不是主线路牌；主线看 `governance/INDEX.md`） |
-| `tools/` | 清版打包；Z 批工具；**审仓打包** `chatgpt_review_pack.py` |
-| `TEMP/` | 外发临时；含 `chatgpt_review_packs/` |
-| `runs/` | 本地跑批工件（不进 Git） |
-| `reports/` | 本地交件／停点回包（不进 Git） |
-| `decisions.md` | 本地决策流水 |
-| `current.md` | 历史三行路牌，已停更；当前状态不从这里读 |
+- 进入子目录时，离目标文件最近的 `AGENTS.md` 优先；根规则只补它没说的部分。
+- 当前正式 Git 只发现根 `AGENTS.md`，没有 tracked nested AGENTS。复杂领域已有 README／CURRENT 就先复用，不因规则多自动新建下级 AGENTS。
 
-## 硬边界
-
-- 不改 NVM、不改小说101 冻结金标／跑批。
-- CZ 自 2026-08-01 起已对 DeepSeek 官方 API 给出长期授权，撤销前不再逐次询问。只有当前任务确实要求模型调用时才能执行，每条命令仍必须通过 `config/providers/provider_access_policy.json` 的机器执行票；不得自动增加题目或次数，不得作为失败回退路线，也不得改掉默认链。火山方舟／千问平台里的 DeepSeek 模型不等于 DeepSeek 官方 API。
-- 不把正文库拷进本仓；禁止整库扫读进对话。
-- `foundation/` 是全文真身，不要用摘要顶替它。
-- 决策冲突：日常跟 `decisions.md`；与证据打架先问 CZ。
-
-来源：Cursor 纠偏 2026-07-16
-
-来源：Cursor（仓库治理窗）
+来源：Codex
