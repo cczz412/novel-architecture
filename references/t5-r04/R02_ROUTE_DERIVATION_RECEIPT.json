@@ -1,0 +1,11 @@
+{
+  "current_pointer_sha256": "5abaa79b952532881dfc5e147e7da190471baba386aac263474b51edd414f8dd",
+  "historical_route_count": 21,
+  "isolated_delete_and_rebuild_equivalent": true,
+  "manifest_sha256": "7f5818391b9988be2ddeb0d5ac89fe49363c0d0e245a7d02660cf649cab08216",
+  "readme_sha256": "93d30bd1ea2c5070c5275ca94199ce49007314eddbcc8ce761135bd4548dfd02",
+  "route_catalog_sha256": "da688d61aa46e07308040a3b7f5f8f7e68e2ee2494c62b8a074b75eb88123533",
+  "route_registry_sha256": "9722adbcf6c1dfad4dd124c7f8b18faa8680c7af3509182611ccaf05dfce374a",
+  "schema_version": "finetuning-r02-route-derivation-v1",
+  "status": "PASS_DERIVED_VIEWS_REBUILDABLE"
+}

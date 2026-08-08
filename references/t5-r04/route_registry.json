@@ -1,0 +1,319 @@
+{
+  "authority": {
+    "may_authorize_deletion_or_merge": false,
+    "may_authorize_training": false,
+    "may_authorize_upload": false,
+    "may_define_current_truth": false,
+    "scope": "compatibility_derived_view"
+  },
+  "current_experiment": {
+    "derived_facts": {
+      "current_exam_rows_arm_c": 41,
+      "current_exam_rows_each_arm": 41,
+      "current_gold_facts_arm_c": 355,
+      "current_gold_facts_each_arm": 355,
+      "evaluator_sha256": "8a390af537919943ff477ccb98e99deb16ea614af18fa617ab2760c76a029603",
+      "full_rows_arm_c": 398,
+      "full_rows_each_arm": 398,
+      "old_frozen_exam_rows_arm_c": 48,
+      "old_frozen_exam_rows_each_arm": 48,
+      "raw_answer_records_total": 82,
+      "training_rows_each_arm": 350,
+      "upstream_manifest_sha256": "a1729b5492170da493be51e5e745f7607c1f60b11bd16acef8ce36934569b80d"
+    },
+    "experiment_id": "T5_R04_CPLUS_20260807_R01",
+    "manifest_revision": "r01",
+    "manifest_sha256": "7f5818391b9988be2ddeb0d5ac89fe49363c0d0e245a7d02660cf649cab08216"
+  },
+  "generated_from": {
+    "current_pointer_sha256": "5abaa79b952532881dfc5e147e7da190471baba386aac263474b51edd414f8dd",
+    "manifest_sha256": "7f5818391b9988be2ddeb0d5ac89fe49363c0d0e245a7d02660cf649cab08216",
+    "route_catalog_sha256": "da688d61aa46e07308040a3b7f5f8f7e68e2ee2494c62b8a074b75eb88123533"
+  },
+  "historical_routes": [
+    {
+      "fact_count": 3059,
+      "label": "第一批最终 226 行",
+      "lifecycle": "SOURCE_BATCH_COMPLETE",
+      "next_route_ids": [
+        "merged_a_historical"
+      ],
+      "path_kind": "file",
+      "relative_path": "T5_R04_FIRST226_REPAIR_20260804_R04/deliverables/train_a_v4_repaired_r04.jsonl",
+      "role": "第一批完整来源；历史合并时另按规则排除了 T5R04-021 的 7 行",
+      "route_id": "first_batch_final",
+      "row_count": 226,
+      "sha256": "45ecdbe999bab1d78e609a07dceba02fb36dcd25d34a4dcc7cdda333161435eb",
+      "stage_group": "first_batch",
+      "store_id": "LAB"
+    },
+    {
+      "label": "第一轮方舟 LoRA 与手工上传材料",
+      "lifecycle": "HISTORICAL_EXPERIMENT",
+      "path_kind": "directory",
+      "relative_path": "T5_R04_FIRST_LORA_TRAIN_20260802_R01",
+      "role": "回放第一批训练过程和旧成绩；不代表当前 A",
+      "route_id": "first_lora_training_root",
+      "stage_group": "training_evaluation",
+      "store_id": "LAB"
+    },
+    {
+      "label": "第二批五窗口重抽原线",
+      "lifecycle": "PROVENANCE_HISTORY",
+      "next_route_ids": [
+        "second_batch_local_repair_root"
+      ],
+      "path_kind": "directory",
+      "relative_path": "T5_R04_WAVE01_R02_FIVE_WINDOW_REEXTRACT_20260803_R01",
+      "role": "第二批外部重抽的原始来路",
+      "route_id": "second_batch_reextract_root",
+      "stage_group": "second_batch",
+      "store_id": "LAB"
+    },
+    {
+      "label": "第二批本地 R03 修订线",
+      "lifecycle": "PROVENANCE_HISTORY",
+      "next_route_ids": [
+        "second_batch_training_candidate_root"
+      ],
+      "path_kind": "directory",
+      "relative_path": "T5_R04_WAVE01_R02_LOCAL_REPAIR_20260803_R03",
+      "role": "24 处定点修复与复审材料",
+      "route_id": "second_batch_local_repair_root",
+      "stage_group": "second_batch",
+      "store_id": "LAB"
+    },
+    {
+      "label": "第二批训练对生成根目录",
+      "lifecycle": "PROVENANCE_HISTORY",
+      "next_route_ids": [
+        "second_batch_merge_input"
+      ],
+      "path_kind": "directory",
+      "relative_path": "T5_R04_WAVE01_SECOND_TRAINING_CANDIDATE_20260803_R01",
+      "role": "367 段原始训练对与后续解挂来路",
+      "route_id": "second_batch_training_candidate_root",
+      "stage_group": "second_batch",
+      "store_id": "LAB"
+    },
+    {
+      "fact_count": 2232,
+      "label": "第二批进入历史合并 A 的 366 行",
+      "lifecycle": "SOURCE_BATCH_COMPLETE",
+      "next_route_ids": [
+        "merged_a_historical"
+      ],
+      "path_kind": "file",
+      "relative_path": "T5_R04_V2_MERGE_PREFLIGHT_20260804_R01/deliverables/train_v2_input_b_second_batch_366_candidate_r01.jsonl",
+      "role": "历史 585 行 A 的第二批输入",
+      "route_id": "second_batch_merge_input",
+      "row_count": 366,
+      "sha256": "f7f1f041701b0ff6e30a689f87770448863c4167ac74df8bc65467b12ed15cbb",
+      "stage_group": "second_batch",
+      "store_id": "LAB"
+    },
+    {
+      "fact_count": 5265,
+      "label": "第一批加第二批的历史合并 A",
+      "lifecycle": "HISTORICAL_SEALED_SUPERSEDED",
+      "next_route_ids": [
+        "latest_a_candidate"
+      ],
+      "parent_route_ids": [
+        "first_batch_final",
+        "second_batch_merge_input"
+      ],
+      "path_kind": "file",
+      "relative_path": "T5_R04_V2_MERGE_20260804_R01/deliverables/train_v2_merged_585_r01.jsonl",
+      "role": "219 行第一批加 366 行第二批；已被最新语义修订候选取代",
+      "route_id": "merged_a_historical",
+      "row_count": 585,
+      "sha256": "705c470d857c8432f1e7d03c5f51ecc40ab259a6c576cc9f97245febfeb9c898",
+      "stage_group": "merged_a",
+      "store_id": "LAB"
+    },
+    {
+      "fact_count": 5278,
+      "label": "最新 A 语义修订候选",
+      "lifecycle": "LOCAL_VALIDATED_CANDIDATE_COMPLETE_NOT_TRAIN_READY",
+      "next_route_ids": [
+        "a_pruning_active_truth",
+        "single_a_artifact_registry"
+      ],
+      "parent_route_ids": [
+        "merged_a_historical"
+      ],
+      "path_kind": "file",
+      "relative_path": "TEMP/chatgpt_review_cycles/T5_R04_A_CURRICULUM_SEMANTIC_REPAIR_20260806_R01/return_user_supplied_20260806_r01/derived_r02/train_v2_2_a_semantic_repaired_candidate.jsonl",
+      "role": "当前课程裁剪和重新派生 A/B 的内容候选；不得直接开训",
+      "route_id": "latest_a_candidate",
+      "row_count": 585,
+      "sha256": "aeb710896b8a1bd43b0b321cb5ffd54d1b8e5813036509845f49a2e4fb842a4f",
+      "stage_group": "merged_a",
+      "store_id": "MAIN_REPO"
+    },
+    {
+      "label": "第三批选段与密筛根目录",
+      "lifecycle": "PROVENANCE_HISTORY",
+      "next_route_ids": [
+        "third_batch_supplement_intake_root",
+        "third_batch_sealed"
+      ],
+      "path_kind": "directory",
+      "relative_path": "T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01",
+      "role": "第三批 180 草案、密度与特殊类型找窗来路",
+      "route_id": "third_batch_segment_scan_root",
+      "stage_group": "third_batch",
+      "store_id": "LAB"
+    },
+    {
+      "label": "第三批 ChatGPT 补充回包本地接收",
+      "lifecycle": "PROVENANCE_HISTORY",
+      "next_route_ids": [
+        "third_batch_sealed"
+      ],
+      "path_kind": "directory",
+      "relative_path": "T5_R04_THIRD_BATCH_SUPPLEMENT_RETURN_INTAKE_20260805_R01",
+      "role": "补充 23 段的原包、修订与验收来路",
+      "route_id": "third_batch_supplement_intake_root",
+      "stage_group": "third_batch",
+      "store_id": "LAB"
+    },
+    {
+      "fact_count": 655,
+      "label": "第三批 69 段独立封存件",
+      "lifecycle": "SEALED_STANDALONE_NOT_MERGED",
+      "parent_route_ids": [
+        "third_batch_segment_scan_root",
+        "third_batch_supplement_intake_root"
+      ],
+      "path_kind": "file",
+      "relative_path": "T5_R04_THIRD_BATCH_69_PREMERGE_AUDIT_20260805_R01/merge_r03_sealed/TRAIN_PAIRS_THIRD_BATCH_69_SEALED.jsonl",
+      "role": "46 段旧池加 23 段补充；未并入 585 行 A，是否进入后续教材另拍",
+      "route_id": "third_batch_sealed",
+      "row_count": 69,
+      "sha256": "f7f09f804a4b86d6468c9dfcba9ee603b9721f51a0fdafab20388de57a77ade6",
+      "stage_group": "third_batch",
+      "store_id": "LAB"
+    },
+    {
+      "label": "第三批后续缺型的 169 本／2600 章外发包",
+      "lifecycle": "EXTERNAL_BUILD_INPUT_NOT_DATASET",
+      "path_kind": "file",
+      "relative_path": "T5_R04_MISSING_TYPES_CHATGPT_20260806_R01/deliverables/ONE_WINDOW_FULL_CORPUS_R02/T5_R04_MISSING_TYPES_FULL_CORPUS_INPUT_R02.zip",
+      "role": "供一个 ChatGPT 窗口选材和制作；不是已审教材",
+      "route_id": "third_batch_full_corpus_outbound",
+      "sha256": "43f3005e53481277c21f0d3eaabe60368d451adc2323a460b942ca28a8bc19c8",
+      "stage_group": "third_batch",
+      "store_id": "LAB"
+    },
+    {
+      "label": "第三批缺型全库 ChatGPT 原始回包",
+      "lifecycle": "ORIGINAL_EXTERNAL_RETURN_SEMANTIC_REVIEWED_REPAIR_REQUIRED",
+      "next_route_ids": [
+        "third_batch_missing_types_local_review"
+      ],
+      "parent_route_ids": [
+        "third_batch_full_corpus_outbound"
+      ],
+      "path_kind": "file",
+      "relative_path": "T5_R04_MISSING_TYPES_RETURN_INTAKE_20260806_R01/original/T5_R04_MISSING_TYPES_FULL_CORPUS_SEMANTIC_REVIEW_PENDING_RETURN_R02.zip",
+      "role": "原件永久保留，不覆盖；结构通过但语义需定点返修",
+      "route_id": "third_batch_missing_types_return_original",
+      "sha256": "3c22ff8cd21e52eba0e709cb620e204d987735617cf9d0965d7ff1fcc29eb3e3",
+      "stage_group": "third_batch",
+      "store_id": "LAB"
+    },
+    {
+      "label": "第三批缺型回包本地语义审收 R01",
+      "lifecycle": "LOCAL_REVIEW_COMPLETE_19_PASS_6_EDIT_NOT_TRAIN_READY",
+      "parent_route_ids": [
+        "third_batch_missing_types_return_original"
+      ],
+      "path_kind": "file",
+      "relative_path": "T5_R04_MISSING_TYPES_RETURN_INTAKE_20260806_R01/local_review/LOCAL_SEMANTIC_REVIEW_R01.md",
+      "role": "25 段逐段判词、六段返修清单与类型台账归一要求",
+      "route_id": "third_batch_missing_types_local_review",
+      "stage_group": "third_batch",
+      "store_id": "LAB"
+    },
+    {
+      "label": "单一 A 真源与 A/B/C 工件登记",
+      "lifecycle": "CURRENT_DESIGN_EVIDENCE",
+      "path_kind": "file",
+      "relative_path": "TEMP/chatgpt_review_cycles/T5_R04_SINGLE_A_SOURCE_DERIVATION_DESIGN_20260806_R01/stage/06_CURRENT_ARTIFACT_REGISTRY.json",
+      "role": "登记最新 A、旧 A/B 派生件过期状态与 C 未生成状态",
+      "route_id": "single_a_artifact_registry",
+      "stage_group": "derivation",
+      "store_id": "MAIN_REPO"
+    },
+    {
+      "label": "单一 A 语义真源架构建议",
+      "lifecycle": "EXTERNAL_REVIEW_RETURN",
+      "path_kind": "file",
+      "relative_path": "TEMP/chatgpt_review_cycles/T5_R04_SINGLE_A_SOURCE_DERIVATION_DESIGN_20260806_R01/return_user_supplied_20260806_r01/extracted_raw/ARCHITECTURE_DECISION.md",
+      "role": "说明 A_train/A_eval 隔离、B 机械派生合同与 C 未定义边界",
+      "route_id": "single_a_architecture_decision",
+      "stage_group": "derivation",
+      "store_id": "MAIN_REPO"
+    },
+    {
+      "label": "A 课程裁剪设计当前任务真值快照",
+      "lifecycle": "ACTIVE_DESIGN_PREP_ONLY",
+      "parent_route_ids": [
+        "latest_a_candidate"
+      ],
+      "path_kind": "file",
+      "relative_path": "TEMP/chatgpt_review_cycles/T5_R04_A_CURRICULUM_PRUNING_DESIGN_20260806_R01/TRUTH_SNAPSHOT.md",
+      "role": "只设计剔除规则和元数据，不直接删除或改写 A",
+      "route_id": "a_pruning_active_truth",
+      "stage_group": "derivation",
+      "store_id": "MAIN_REPO",
+      "task_thread_id": "019fc6b0-1e4f-7510-8727-cf4b9af88c84"
+    },
+    {
+      "label": "Qwen3-4B 本地彩排最终回执",
+      "lifecycle": "HISTORICAL_FAILED_DIAGNOSTIC",
+      "path_kind": "file",
+      "relative_path": "T5_R04_LOCAL_4B_REHEARSAL_20260804_R01/receipts/LOCAL_REHEARSAL_FINAL_RECEIPT.json",
+      "role": "记录严重复读和格式失败；不能据此解锁现役",
+      "route_id": "local_4b_rehearsal_receipt",
+      "stage_group": "training_evaluation",
+      "store_id": "LAB"
+    },
+    {
+      "label": "逐字证据与证据编号 A/B 小探针",
+      "lifecycle": "HISTORICAL_PROBE",
+      "path_kind": "directory",
+      "relative_path": "T5_R04_EVIDENCE_POINTER_AB_20260804_R01",
+      "role": "证明编号更短、更好验，但未证明更准",
+      "route_id": "evidence_pointer_probe_root",
+      "stage_group": "training_evaluation",
+      "store_id": "LAB"
+    },
+    {
+      "label": "证据编号双 LoRA A/B 实验根目录",
+      "lifecycle": "HISTORICAL_DERIVATION_STALE_REBUILD_REQUIRED",
+      "path_kind": "directory",
+      "relative_path": "T5_R04_EVIDENCE_ID_DUAL_LORA_20260804_R01",
+      "role": "旧 A/B 训练与 43 段测试回放；相对最新 A 必须重新派生",
+      "route_id": "dual_lora_experiment_root",
+      "stage_group": "training_evaluation",
+      "store_id": "LAB"
+    },
+    {
+      "label": "旧 B v2.1 的 43 段机器成绩",
+      "lifecycle": "HISTORICAL_TEST_FAILED_NOT_PROMOTED",
+      "parent_route_ids": [
+        "dual_lora_experiment_root"
+      ],
+      "path_kind": "file",
+      "relative_path": "T5_R04_EVIDENCE_ID_DUAL_LORA_20260804_R01/p12_r03_b21/metrics/P12_B21_R03_MACHINE_METRICS.json",
+      "role": "格式与复读门失败；只供诊断，不能代表重建后的 B",
+      "route_id": "dual_lora_b21_metrics",
+      "stage_group": "training_evaluation",
+      "store_id": "LAB"
+    }
+  ],
+  "schema_version": "t5-r04-route-registry-derived.v2"
+}

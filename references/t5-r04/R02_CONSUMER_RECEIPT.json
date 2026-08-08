@@ -1,0 +1,20 @@
+{
+  "consumer_count": 3,
+  "consumers": [
+    {
+      "path": "finetuning/README.md",
+      "role": "reference"
+    },
+    {
+      "path": "tests/test_t5_r04_route_registry.py",
+      "role": "compatibility_test"
+    },
+    {
+      "path": "tools/finetuning_control.py",
+      "role": "reference"
+    }
+  ],
+  "note": "route registry 仅供兼容导航与回归测试；当前实验只认 finetuning/CURRENT.json。",
+  "schema_version": "finetuning-r02-route-consumers-v1",
+  "status": "PASS_NO_PRODUCTION_UNIQUE_TRUTH_CONSUMER"
+}
