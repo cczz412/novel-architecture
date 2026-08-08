@@ -18,7 +18,7 @@
 唯一全仓测试命令：
 
 ```bash
-cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q
+cd /Users/a1234/挣钱/小说架构 && uv run --locked pytest -q
 ```
 
 默认只收集 `tests/`，不会进入 `TEMP/`、`runs/`、`reports/`、`outbox/`。S-05-B
@@ -30,13 +30,13 @@ cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bi
 刷新命令：
 
 ```bash
-python3 tools/novel_pipeline.py governance refresh
+uv run --locked python tools/novel_pipeline.py governance refresh
 ```
 
 只检查生成结果有没有漂移：
 
 ```bash
-python3 tools/governance_index.py --check
+uv run --locked python tools/governance_index.py --check
 ```
 
 仓库重构只认两级机器票。一级票只校准 HEAD、治理索引、账序和脏路径，不能放行
@@ -63,19 +63,19 @@ Wave 1 修改治理生成器或它的测试时，精确写集必须包含会记�
 `active/`、`staging/`、`frozen/`、`runtime/` 顶层目录。
 
 ```bash
-python3 tools/governance_index.py \
+uv run --locked python tools/governance_index.py \
   --baseline-plan <一级计划.json> \
   --baseline-output <TEMP下全新一级票.json>
 
-python3 tools/governance_index.py \
+uv run --locked python tools/governance_index.py \
   --wave-lock-request <冲突锁请求.json> \
   --wave-lock-output <TEMP下该Wave固定锁路径>
 
-python3 tools/governance_index.py \
+uv run --locked python tools/governance_index.py \
   --wave-plan <二级计划.json> \
   --wave-output <TEMP下全新二级票.json>
 
-python3 tools/governance_index.py \
+uv run --locked python tools/governance_index.py \
   --wave-completion-request <完成请求.json> \
   --wave-completion-output <TEMP下全新完成票v2.json>
 ```
@@ -246,8 +246,8 @@ S-06-A 把 Wave 5 的三份旧清单盘点扩成全仓瘦身范围内的对象�
 只读检查：
 
 ```bash
-.venv/bin/python tools/repo_slim_inventory.py check
-.venv/bin/python tools/repo_slim_inventory.py report
+uv run --locked python tools/repo_slim_inventory.py check
+uv run --locked python tools/repo_slim_inventory.py report
 ```
 
 体积只认 Git 索引按路径累计的 blob 字节。S-06-A 前精确基线是 18,841,846 字节，
@@ -263,9 +263,9 @@ S-06-B 用独立工具读取外置 payload，不扩张 S-06-A 扫描器的能力
 `external_payload_validation_policy.json`，一次命令只接一个 `artifact_id`：
 
 ```bash
-.venv/bin/python tools/external_payload_validator.py check \
+uv run --locked python tools/external_payload_validator.py check \
   --artifact-id historical-test-replay-s05b-v2
-.venv/bin/python tools/external_payload_validator.py report \
+uv run --locked python tools/external_payload_validator.py report \
   --artifact-id historical-test-replay-s05b-v2
 ```
 
@@ -297,9 +297,9 @@ S-06-C 把“平时看结论”和“需要时取原件”分开。结论、位�
 和 v2 的 40 项通过。Markdown 是从同目录三份 JSON 生成的人看页，不能和机器卡分开手改。
 
 ```bash
-.venv/bin/python tools/experiment_artifact_retrieval.py check \
+uv run --locked python tools/experiment_artifact_retrieval.py check \
   --card-id s05b-historical-replay-v2
-.venv/bin/python tools/experiment_artifact_retrieval.py resolve \
+uv run --locked python tools/experiment_artifact_retrieval.py resolve \
   --card-id s05b-historical-replay-v2 \
   --selection-id full-replay-payload
 ```
@@ -324,7 +324,7 @@ R02 仍是非终态活实验。它只作为禁止发现的对象编号写进政�
 统一入口现在可以把分散的寻路信息即时排成一张人看目录：
 
 ```bash
-python3 tools/novel_pipeline.py catalog \
+uv run --locked python tools/novel_pipeline.py catalog \
   [menu|status|models|experiments|artifacts|slim|all] [--json]
 ```
 
@@ -351,14 +351,14 @@ python3 tools/novel_pipeline.py catalog \
 语义检查只分流：
 
 ```bash
-python3 tools/novel_pipeline.py inspect preflight --input <检查批.json> --run-dir <试验目录>
-python3 tools/novel_pipeline.py inspect run --input <检查批.json> --run-dir <试验目录>
+uv run --locked python tools/novel_pipeline.py inspect preflight --input <检查批.json> --run-dir <试验目录>
+uv run --locked python tools/novel_pipeline.py inspect run --input <检查批.json> --run-dir <试验目录>
 ```
 
 计算本次该跑哪些测试：
 
 ```bash
-python3 tools/novel_pipeline.py test-plan --spec <变更说明.json>
+uv run --locked python tools/novel_pipeline.py test-plan --spec <变更说明.json>
 ```
 
 Notion 账序与队列仍是最终真源。本区只解决本地寻路和机械复现，不自行拍板状态。
@@ -369,7 +369,7 @@ S-07-B-A 只复制 5 轮状态为“零调用作废”的模型横评完整现�
 `e3bcec6634a8fe1794793b13831205f78d766a41`，不是从正在变化的工作树临时抓取。
 
 ```bash
-.venv/bin/python tools/external_payload_validator.py check \
+uv run --locked python tools/external_payload_validator.py check \
   --artifact-id model-benchmark-superseded-zero-call-s07ba-v1
 ```
 
@@ -480,7 +480,7 @@ S-07-G-A 只建同盘完整副本和轻量入口，没有移动或删除 93 个�
 `analysis_library_pilot_batch_01_cz_move_20260731_v1/`，再运行：
 
 ```bash
-.venv/bin/python tools/external_payload_validator.py check \
+uv run --locked python tools/external_payload_validator.py check \
   --artifact-id analysis-library-pilot-batch-01-cz-move-20260731-v1
 ```
 
@@ -497,7 +497,7 @@ S-07-G-A 只建同盘完整副本和轻量入口，没有移动或删除 93 个�
 
 ## 收口纪律（第84道写入）
 
-- **每收口一道，重跑 INDEX**：`python3 tools/novel_pipeline.py governance refresh`，再用 `python3 tools/governance_index.py --check` 验漂移。
+- **每收口一道，重跑 INDEX**：`uv run --locked python tools/novel_pipeline.py governance refresh`，再用 `uv run --locked python tools/governance_index.py --check` 验漂移。
 - 本纪律写在本 README（不会被 refresh 覆盖）；不要手改 `INDEX.md`。
 
 ## 当前状态分层与新工件身份（九项第二道写入）

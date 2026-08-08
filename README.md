@@ -8,7 +8,7 @@
 
 1. 想知道现在做到哪：打开 [治理索引](governance/INDEX.md)。
 2. 程序要读当前状态：只读 [当前状态真源](governance/CURRENT_STATE.json)。
-3. 想一次看清有哪些入口：运行 `python3 tools/novel_pipeline.py catalog menu`。它是即时导航，不是第二份状态真源。
+3. 想一次看清有哪些入口：运行 `uv run --locked python tools/novel_pipeline.py catalog menu`。它是即时导航，不是第二份状态真源。
 4. 想找某条实验：先看 [试验专区说明](experiments/README.md)，再看该实验自己的 README／manifest；不要按“最新文件夹”猜。
 5. 想找正式金标、候选、运行或材料：从治理索引里的固定入口进入。
 6. 本地路牌和 Notion 尾条冲突：以 Notion 为准，先停下回读，不手工改生成页凑一致。
@@ -47,23 +47,23 @@
 
 ```bash
 # 看统一入口帮助
-python3 tools/novel_pipeline.py --help
+uv run --locked python tools/novel_pipeline.py --help
 
 # 看人能读的动态导航；换成 all 可汇总全部栏目
-python3 tools/novel_pipeline.py catalog menu
-python3 tools/novel_pipeline.py catalog all
+uv run --locked python tools/novel_pipeline.py catalog menu
+uv run --locked python tools/novel_pipeline.py catalog all
 
 # 只读当前治理状态
-python3 tools/novel_pipeline.py governance status
+uv run --locked python tools/novel_pipeline.py governance status
 
 # 检查生成路牌有没有漂移（不写仓库）
-python3 tools/governance_index.py --check
+uv run --locked python tools/governance_index.py --check
 
 # 全仓唯一测试命令（固定工作路径、固定 Python，只收集 tests/）
-cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q
+cd /Users/a1234/挣钱/小说架构 && uv run --locked pytest -q
 
 # 预览外审包会收哪些文件（不发网）
-python3 tools/chatgpt_review_pack.py --dry-run
+uv run --locked python tools/chatgpt_review_pack.py --dry-run
 ```
 
 `catalog` 还支持 `status`、`models`、`experiments`、`artifacts` 和 `slim`，末尾加

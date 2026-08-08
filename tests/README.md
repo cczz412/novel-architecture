@@ -5,7 +5,7 @@
 ## 怎么跑
 
 ```bash
-cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q
+cd /Users/a1234/挣钱/小说架构 && uv run --locked pytest -q
 ```
 
 这是日常全仓验收命令：固定工作路径、固定 Python 3.12.12。`uv sync --locked`
@@ -47,8 +47,8 @@ V02／Z98／Z99 有些测试必须读取封存运行件，或读取能还原小�
 的 31.7 MB 材料包复制到仓库同级的新工作区，一次只跑这 40 项。
 
 ```bash
-.venv/bin/python tools/historical_test_replay.py validate
-.venv/bin/python tools/historical_test_replay.py run \
+uv run --locked python tools/historical_test_replay.py validate
+uv run --locked python tools/historical_test_replay.py run \
   --commit <完整40位提交号> \
   --run-id <新运行号>
 ```
@@ -71,7 +71,7 @@ V02／Z98／Z99 有些测试必须读取封存运行件，或读取能还原小�
 定向命令：
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_repo_slim_inventory.py
+uv run --locked pytest -q tests/test_repo_slim_inventory.py
 ```
 
 ## 外置 payload 验证测什么
@@ -91,7 +91,7 @@ V02／Z98／Z99 有些测试必须读取封存运行件，或读取能还原小�
 定向命令：
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_external_payload_validator.py
+uv run --locked pytest -q tests/test_external_payload_validator.py
 ```
 
 ## 实验结论卡与取件计划测什么
@@ -110,7 +110,7 @@ V02／Z98／Z99 有些测试必须读取封存运行件，或读取能还原小�
 定向命令：
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_experiment_artifact_retrieval.py
+uv run --locked pytest -q tests/test_experiment_artifact_retrieval.py
 ```
 
 ## 仓库目录入口测什么
@@ -132,7 +132,7 @@ V02／Z98／Z99 有些测试必须读取封存运行件，或读取能还原小�
 定向命令：
 
 ```bash
-.venv/bin/python -m pytest -q \
+uv run --locked pytest -q \
   tests/test_repository_catalog.py \
   tests/test_novel_pipeline.py \
   tests/test_repository_navigation.py
@@ -158,7 +158,7 @@ V02／Z98／Z99 有些测试必须读取封存运行件，或读取能还原小�
 
 ```bash
 cd /Users/a1234/挣钱/小说架构 && \
-  .venv/bin/python -m pytest -q tests/test_model_call_profiles.py
+  uv run --locked pytest -q tests/test_model_call_profiles.py
 ```
 
 这组测试只使用仓库配置和临时目录，不调用模型，也不会读取 API Key。
@@ -174,7 +174,7 @@ cd /Users/a1234/挣钱/小说架构 && \
 
 ```bash
 cd /Users/a1234/挣钱/小说架构 && \
-  .venv/bin/python -m pytest -q \
+  uv run --locked pytest -q \
   tests/test_experiment_workspace.py \
   tests/test_experiment_workspace_security.py
 ```

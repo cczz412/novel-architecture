@@ -1,18 +1,18 @@
 {
   "schema_version": "pipeline-test-policy-v1",
-  "full_chain_command": "cd /Users/a1234/挣钱/小说架构 && /Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q",
-  "lint_command": "ruff check",
+  "full_chain_command": "cd /Users/a1234/挣钱/小说架构 && uv run --locked pytest -q",
+  "lint_command": "uv run --locked ruff check",
   "default_collection_root": "tests",
   "retired_collection_roots": ["TEMP", "runs", "reports", "outbox"],
   "historical_replay_registry": "config/test_replay/historical_replays.json",
   "historical_replay_tool": "tools/historical_test_replay.py",
   "historical_replay_default_rule": "登记的40个精确节点默认deselected，不计入日常验收；只能从固定Git提交与已验SHA外置包复制出的同级工作副本一次回放全部40项。",
-  "historical_replay_command": ".venv/bin/python tools/historical_test_replay.py run --commit <完整40位提交号> --run-id <新运行号>",
+  "historical_replay_command": "uv run --locked python tools/historical_test_replay.py run --commit <完整40位提交号> --run-id <新运行号>",
   "legacy_debt_migration_pointer": "tests/test_debt_registry.json",
   "old_failure_disposition": "tests/old_failure_disposition.json",
   "documentation_commands": [
-    "python3 tools/governance_index.py --check",
-    ".venv/bin/python tools/historical_test_replay.py validate"
+    "uv run --locked python tools/governance_index.py --check",
+    "uv run --locked python tools/historical_test_replay.py validate"
   ],
   "unknown_path_full_chain": true,
   "full_chain_flags": [

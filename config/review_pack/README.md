@@ -19,11 +19,11 @@
 
 ```bash
 cd /Users/a1234/挣钱/小说架构
-python3 tools/chatgpt_review_pack.py              # 默认 standard ≈ 常审
-python3 tools/chatgpt_review_pack.py --profile deep
-python3 tools/chatgpt_review_pack.py --dry-run
-python3 tools/chatgpt_review_pack.py --list-routes
-python3 tools/chatgpt_review_pack.py \
+uv run --locked python tools/chatgpt_review_pack.py              # 默认 standard ≈ 常审
+uv run --locked python tools/chatgpt_review_pack.py --profile deep
+uv run --locked python tools/chatgpt_review_pack.py --dry-run
+uv run --locked python tools/chatgpt_review_pack.py --list-routes
+uv run --locked python tools/chatgpt_review_pack.py \
   --route r2-question-retrieval \
   --external prior_r2_chatgpt_report=/绝对路径/顾问回包.md
 ```
@@ -56,16 +56,16 @@ python3 tools/chatgpt_review_pack.py \
 
 ```bash
 # 只看有哪些路线，零写入
-python3 tools/chatgpt_review_pack.py --list-routes
+uv run --locked python tools/chatgpt_review_pack.py --list-routes
 
 # 先看三层本地材料会取什么，零写入
-python3 tools/chatgpt_review_pack.py \
+uv run --locked python tools/chatgpt_review_pack.py \
   --route r2-question-retrieval \
   --layers current_truth,current_route,upstream_evidence \
   --dry-run
 
 # 带上上一轮 ChatGPT 回包正式打包
-python3 tools/chatgpt_review_pack.py \
+uv run --locked python tools/chatgpt_review_pack.py \
   --route r2-question-retrieval \
   --external prior_r2_chatgpt_report=/Users/.../R2报告.md
 ```

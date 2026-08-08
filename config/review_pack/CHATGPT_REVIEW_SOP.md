@@ -32,7 +32,7 @@
 第一次没有旧顾问回包时，显式只取前三层：
 
 ```bash
-python3 tools/chatgpt_review_pack.py \
+uv run --locked python tools/chatgpt_review_pack.py \
   --route <route-id> \
   --layers current_truth,current_route,upstream_evidence \
   --dry-run
