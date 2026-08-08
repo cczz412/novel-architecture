@@ -1,0 +1,92 @@
+{
+  "schema_version": "novel_arch_shared_context_core_materials_build_receipt_v4",
+  "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260808_R04",
+  "completed_at": "2026-08-08T21:14:43+08:00",
+  "result": "PASS_MINIMAL_R03_TO_R04_DELTA_HARD_STOPS_PRESERVED",
+  "status_meaning": "R04 is the complete self-contained successor to immutable R03. It closes P0-07 in shared context, records the formal M2 and W05 lifecycle changes, and refreshes the minimal AGENTS route without granting execution authority.",
+  "delta": {
+    "changed_markdown_members": [
+      "00_READ_ME_FIRST.md",
+      "05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
+      "06_SYNC_AND_CHANGE_PROTOCOL.md",
+      "REFERENCE_PROJECT_INTEGRATION.md"
+    ],
+    "unchanged_core_members": [
+      "01_PRODUCT_NORTH_STAR.md",
+      "02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+      "03_CREATION_AND_MEMORY_PIPELINES.md",
+      "04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
+      "07_GLOSSARY.md"
+    ],
+    "p0_07": "CLOSED_IN_SHARED_CONTEXT",
+    "m2": "FORMALLY_CLOSED_SUPERSEDED; NOT_FAILED; NO_TRAINING_AUTHORITY",
+    "w05": "CAMPAIGN_PASS_AND_CLOSED",
+    "agents": "52_LINE_MINIMAL_ENTRY; TWO_VERSION_ROUTE_REPLACEMENTS_ONLY"
+  },
+  "hashes": {
+    "core_materials_sha256": "9b3dc9bb36481e1d6cd6bc4bd5421c48a8e193eb67f476af48e1a9eb63347d83",
+    "manifest_sha256": "e67ec98c0339a328d71de7d288e95facb023677eadb2077a543e49583d08553e",
+    "package_sha256": "f943202cf7f487873d51cd508bc0dd30ec2f3afcc7b593860f90715acbcda207",
+    "package_sha256_scope": "Eight core Markdown members, REFERENCE_PROJECT_INTEGRATION.md, and CORE_MATERIALS_MANIFEST.json; this receipt is excluded to avoid a circular hash.",
+    "upstream_r03_core_materials_sha256": "7dedc9e4c70ce03cf02a158f9a540ab1d555c90bb38ac3b11d56e5c158d733d6",
+    "upstream_r03_package_sha256": "3863381f69be0c36051245161f4595a4f2270140464055bceb1155951e8592f5"
+  },
+  "counts": {
+    "numbered_markdown_members": 8,
+    "folder_markdown_members": 9,
+    "package_machine_json_members": 2,
+    "package_hash_members": 10,
+    "local_markdown_links": 12,
+    "external_markdown_links": 19,
+    "broken_local_markdown_links": 0,
+    "declared_primary_sources": 26,
+    "source_identity_errors": 0,
+    "new_folder_files": 11,
+    "existing_repository_files_modified": 1
+  },
+  "mechanical_validation": {
+    "eleven_expected_folder_files_present": true,
+    "unchanged_core_byte_identity": "PASS_5_OF_5",
+    "all_markdown_source_footers": true,
+    "all_local_links_resolve": true,
+    "all_json_parse": true,
+    "all_declared_local_sources_match": true,
+    "manifest_member_hashes_match": true,
+    "core_hash_reproduced": true,
+    "package_hash_reproduced": true,
+    "agents_route_candidate_targets_r04": true,
+    "no_shared_context_current_created": true,
+    "r03_unchanged": true
+  },
+  "semantic_review": {
+    "status": "PASS",
+    "checks": {
+      "p0_07_removed_from_open_table": true,
+      "p0_07_resolved_record_present": true,
+      "mini_lite_still_open": true,
+      "rights_74_still_hard_stop": true,
+      "production_canonical_still_absent": true,
+      "training_not_authorized": true,
+      "m2_closure_not_promotion": true,
+      "w05_not_in_north_star": true,
+      "repo_bridge_not_promoted": true
+    }
+  },
+  "external_actions": {
+    "notion_reads": 0,
+    "notion_writes": 0,
+    "model_api_calls": 0,
+    "training_jobs_started": 0,
+    "current_state_modified": 0,
+    "datasets_or_models_modified": 0,
+    "git_stage": 0,
+    "git_commit": 0,
+    "git_push": 0
+  },
+  "hard_stops_preserved": [
+    "Create auditable per-source rights evidence for the 74 A v2.7 source groups and issue a new execution lock for the current route.",
+    "Create and independently reproduce a Production Canonical candidate before formal training or final evaluation.",
+    "Resolve the Doubao Mini versus Lite role divergence.",
+    "Resolve the Notion page-identity divergence between the Reality Packet record and the current ledger ancestor chain."
+  ]
+}
