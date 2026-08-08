@@ -19,9 +19,9 @@
 
 | 文件 | 内容 |
 |---|---|
-| [prototype_deep.csv](prototype_deep.csv) | 旧模具深潜 w01（A～F）；勿与新人读零件表硬并 |
-| [borrow_downstream.csv](borrow_downstream.csv) | 下游借用谱系（早期窗） |
-| [exclude_fingerprints_batch01.txt](exclude_fingerprints_batch01.txt) | 清单排除区素材 |
+| `prototype_deep.csv` | 旧模具深潜 w01（A～F）；完整原件见外置对象 `side-track-st002-prototype-borrow-legacy-tables-20260718-v1` |
+| `borrow_downstream.csv` | 下游借用谱系（早期窗）；完整原件见同一外置对象 |
+| `exclude_fingerprints_batch01.txt` | 清单排除区素材；完整原件见同一外置对象 |
 | [ingest_meta.json](ingest_meta.json) | 入站机器摘要 |
 
 弱兼容：`survey_not_ledger`；零件槽＝候选，不是真账。

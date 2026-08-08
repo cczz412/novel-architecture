@@ -150,3 +150,8 @@ venv/
 /experiments/Z76_phase2_semantic_inspector_pilot_20260721/strong_review_feedback.json
 /experiments/Z76_phase2_semantic_inspector_pilot_20260721/strong_review_queue.json
 /experiments/Z76_phase2_semantic_inspector_pilot_20260721/usage.jsonl
+
+# W03 ST-002: three sealed legacy survey tables live in the sibling archive.
+/side-tracks/tracks/ST-002_prototype_borrow/tables/prototype_deep.csv
+/side-tracks/tracks/ST-002_prototype_borrow/tables/borrow_downstream.csv
+/side-tracks/tracks/ST-002_prototype_borrow/tables/exclude_fingerprints_batch01.txt
