@@ -25,29 +25,18 @@
   不移除。
 - **准备升成现役默认**：才进入完整合同、逐项证据、独立审查和严格封签。
 
-S-07-B-A 已经沿用现有逐文件验证器做完，不返工降级；它只是一份同盘副本。S-07-B-B
-又做了一次整包取回比对，随后才删除对应主仓重件。后续单纯复制历史现场时按第一档走，
-避免把“多放一份”做成正式晋级验收。
+已经登记的外置对象不因本说明更新而返工。某对象做过哪些复制、恢复或 Git 退出，只认
+登记册条目点名的 manifest 和正式 receipt；本页不保存批次过程或对象数量快照。
 
 ## 当前登记怎么理解
 
-登记册现有 32 个对象：
+要看当前有哪些对象、各自处于什么阶段、能否恢复或退出 Git，直接读
+[外置对象登记册](../external_archive_registry.json) 以及条目点名的 manifest／receipt。
+对象数、体积、历史批次、当前门槛和候选结论都不在这份长期说明里缓存。
 
-- 14 个外置对象：3 份旧库存清单、S-05-B 回放包 v1／v2、S-07-B-A 模型横评零调用
-  作废包、S-07-C-A QEC 四模型终局证据包、S-07-D-A LongCat r03 中断硬停包、
-  S-07-E-A LongCat r01 中断硬停包、S-07-F-A 千问 r05／r06 有分候选包、
-  S-07-G-A Z66 三问法历史候选包、analysis_library 首批分析材料完整包、1 个未清点的
-  旧 TEMP 容器。
-- 5 个隔离实验工作区：1 个 ChatGPT 组件咨询区、4 轮千问／V4 对照工作区。
-- 13 个主仓实验目录：5 个候选、5 个冻结历史、1 个负结果、2 个身份不足。
-
-主仓实验目前没有任何一个能按现有证据写成 `active`。这不等于全是垃圾：
-
-- 仍被测试或工具直接引用的程序要继续留在主仓，直到消费者改完。
-- Z76 和 Z99 最适合以后先做“主仓留卡、完整现场外置”。
-- `V02_R2_terminal_once_20260727` 身份不足，必须先补身份卡。
-- `extraction_redesign_v02_overnight_20260725` 是实验家族，必须先拆子实验身份。
-- `__pycache__` 是可再生缓存，直接清缓存即可，不应占外置仓。
+登记字段只按现役合同解释：`lifecycle`／`status` 说明对象阶段，`consumer_closure`
+说明消费者是否收口，`restore_profile` 说明怎么取回。`external_storage_copy_verified`
+只表示同级存储副本已核，不等于独立备份，也不自动授权移动或删除。
 
 ## 各环节怎么用
 
@@ -87,115 +76,26 @@ S-07-B-A 已经沿用现有逐文件验证器做完，不返工降级；它只�
 `result_card.json`，位置只认本登记册，指针只钉对象编号和清单 SHA。人看的 `README.md`
 由机器卡确定性生成，不能单独修改。
 
-## 一键检查
+## 机械检查
 
 ```bash
-.venv/bin/python tools/repo_slim_inventory.py check
-.venv/bin/python tools/repo_slim_inventory.py report
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id historical-test-replay-s05b-v2
-.venv/bin/python tools/external_payload_validator.py report \
-  --artifact-id historical-test-replay-s05b-v2
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id model-benchmark-superseded-zero-call-s07ba-v1
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id r2-qec-four-model-score-sources-s07ca-v1
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id model-benchmark-qwen-r05-structured-scored-candidate-s07fa-v1
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id model-benchmark-qwen-r06-thinking32k-scored-candidate-s07fa-v1
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id diagnostic-return-z66-three-question-candidate-s07ga-v1
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id analysis-library-pilot-batch-01-cz-move-20260731-v1
-.venv/bin/python tools/experiment_artifact_retrieval.py check \
-  --card-id s05b-historical-replay-v2
-.venv/bin/python tools/experiment_artifact_retrieval.py resolve \
-  --card-id s05b-historical-replay-v2 \
-  --selection-id full-replay-payload
+uv run --locked python tools/repo_slim_inventory.py check
+uv run --locked python tools/repo_slim_inventory.py report
+uv run --locked python tools/external_payload_validator.py check \
+  --artifact-id OBJECT_ID
+uv run --locked python tools/external_payload_validator.py report \
+  --artifact-id OBJECT_ID
+uv run --locked python tools/experiment_artifact_retrieval.py check \
+  --card-id CARD_ID
+uv run --locked python tools/experiment_artifact_retrieval.py resolve \
+  --card-id CARD_ID \
+  --selection-id SELECTION_ID
 ```
 
 三个工具都只读。库存工具不进入 payload；逐文件工具一次只验政策白名单里的一个对象；
 取件工具只读固定 `MANIFEST` 并生成未来复制计划。它们都不接受任意生产根路径。
 
-S-07-B-A 已把 5 个零调用作废模型横评包从固定 Git 提交复制到同盘外置仓，并逐文件核对
-86 个文件、1,664,821 字节。S-07-B-B 又把整包复制到全新临时目录并逐字节比对，随后从
-主仓删除 71 个重件、1,657,195 字节；每轮仍留身份、状态和作废原因，共 15 个小文件。
-完整现场按对象编号 `model-benchmark-superseded-zero-call-s07ba-v1` 寻址。这份外置包
-仍在同一磁盘，也没有进入通用结论卡取件白名单。
-
-S-07-C-A 另把 QEC 30 题四模型终局对照压成一张主仓轻量卡，仓外保留 7 份终局记录原件、
-11,424 字节。日常比较只读 `experiments/model_benchmarks/` 下的对比卡；要核执行、
-网络恢复、判分、成本和收口原文时，按对象编号
-`r2-qec-four-model-score-sources-s07ca-v1` 验包。四条路线都未过共同门槛，这张历史卡
-不是当前默认模型榜；表格顺序也只按完整回答数展示，不是综合排名。2.813388 元是成本账
-登记的最低值，本包不能独立复算。7 件包不含原始四模型输出、共享金标和完整判分绑定，
-不能单独拿来重判。
-
-S-07-D-A 从固定提交 `62d942e6cf05c7722826c1648436a2eb15708563` 复制 LongCat r03
-中断硬停轮的完整现场，外置对象是
-`model-benchmark-longcat-r03-interrupted-s07da-v1`，共 28 个文件、555,559 字节。
-这轮在尝试占用票后中止：本地模型回答是 0，但网络结果未知，也没有 usage 或质量分。
-S-07-D-B 又核对完整取回结果与消费者，从主仓移除 24 个重件、552,370 字节，只留身份、
-状态、两份硬停证据和一张结论卡。轻量目录不能原地运行；外置包仍不是独立备份。
-
-S-07-E-A 从固定提交 `0550e45c9c4cafbda905e8d436f883d04c5e818b` 复制 LongCat r01
-中断硬停轮的完整现场，外置对象是
-`model-benchmark-longcat-r01-interrupted-s07ea-v1`，共 28 个文件、550,603 字节。
-这轮同样没有模型回答或质量分，但网络结果和用量未知。S-07-E-A 当时，旧合同测试仍读取
-其中一份历史程序副本，所以只建完整副本。S-07-E-B-A 随后把这份 8,465 字节的旧程序
-原字节复制到 `tests/fixtures/z57_frozen_neutral_extract_20260723/`，测试改从专用夹具取件；
-S-07-E-B-B 再核对完整取回结果与消费者，从主仓移除 24 个重件、547,439 字节，只留
-身份、状态、两份硬停证据和一张结论卡。
-
-S-07-F-A 从固定提交 `1d919759f11b481a69eab1bdb1b7bfac5f4e0851` 分别复制千问 r05
-结构化不思考和 r06 32K 思考的完整有分现场。r05 外置对象有 40 个文件、702,031 字节，
-r06 有 41 个文件、714,081 字节。S-07-F-B-A 又移除两轮共 60 个无现役消费者的主仓
-重件、1,259,208 字节；r05 留 10 件，r06 留 11 件。两轮都是银标候选，不是当前默认；
-Z98、平台配置、模型索引和 V02 仍读取保留件，所以消费者继续为 `open`。
-
-S-07-G-A 从固定提交 `18281795703497760bf3fc090a771db1e1782574` 复制 Z66 三问法
-历史候选完整现场，外置对象有 93 个文件、1,240,575 字节。日常从
-`references/diagnostic-returns/` 的轻量入口看用途；要核原件时按对象编号逐文件验证。
-S-07-G-B-A 随后移除 88 个无精确消费者的主仓重件、1,200,070 字节，留下 6 件、
-42,310 字节。Z68 仍读取其中一份固定请求 JSON，所以消费者继续为 `open`。旧打包器只对
-显式指定的完整复现目录工作；主仓轻量目录不能冒充完整包。
-
-analysis_library 首批分析材料已经按“平时读结论，需要时才取原件”拆开。主仓从
-`analysis_library/pilot_batch_01/` 进入，只留 7 份分析摘要、3 份验收摘要、入口说明和
-仓外指针；日常判断不需要打开完整材料。需要复核原始 ZIP、解包文件或映射表时，用对象编号
-`analysis-library-pilot-batch-01-cz-move-20260731-v1` 定位外置包，再运行上面的逐文件检查。
-
-外置包有 242 个文件、23,895,907 字节，固定 `MANIFEST.json` 的 SHA-256 是
-`2e8ecee5a580a4926597093b41d0d9f70321bc7f67326f5790feacbd415fd5f0`。来源是搬运前的
-本地未跟踪目录快照，不是从 Git 提交重建的包；其中分析结果仍是候选材料，不能冒充已经
-人工审定。外置包和主仓还在同一磁盘，只能证明当前可按清单找到，不能当独立备份。
-
-当前 `PASS` 只说明：
-
-- 登记册符合合同；
-- 固定清单和小型身份锚没有漂移；
-- 当前 Git 跟踪体积没有越过 S-06-A 的生效上限。
-
-它**不说明**：
-
-- 已经达到 10MB；
-- 外置大文件已经逐件复验；
-- 已经证明可恢复；
-- 已经完成移动；
-- 已经执行取件计划或创建测试工作区；
-- 8 个旧账矛盾已经解决。
-
-## 10MB 体积尺子
-
-正式口径是 `git_index_per_tracked_path_blob_bytes`：读取 Git 索引里每个受跟踪路径对应的
-blob 大小，同一份内容若被两个路径引用就计两次。不统计 `.git`、未跟踪文件、忽略目录，
-也不拿工作树当前文件大小或 Git 对象去重大小代替。
-
-S-06-A 前基线是 18,841,846 字节，目标是 10,000,000 字节。当前只启用施工期不增长闸。
-即使有人准备出格式正确的迁移票，本工具也不会切成 10MB 硬上限；要等下一波另行获批的
-外置 payload 逐文件验证器，真实核完存在性和内容 SHA 后再谈激活。S-06-B 的验证器已经
-独立落位，但它的 PASS 仍不授权硬门；消费者收口、仓内指针、迁移事实和故障域还要在
-后续波次另行验收。
+当前对象数量、对象状态、体积门槛和最近一次检查结论分别回登记册和对应正式 receipt
+读取；历史批次过程回对象自己的 manifest／receipt 追源。这份 README 不复制当前状态。
 
 来源：Codex

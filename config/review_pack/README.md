@@ -15,7 +15,7 @@ Validation: V2 package identity，包括 manifest、成员、SHA、CRC 和敏感
 Expand only if: TARGET_NOT_UNIQUE、GENERATED_VIEW_DEPENDENCY、EVIDENCE_MISMATCH、USER_REQUESTED_REPO_WIDE_SCOPE。
 Hard stop: required root/slot 缺失，密钥/金标命中，CRC/SHA/成员失败。
 
-外发从 2026-07-23 起分成两包，不能再拿一份“大而全”压缩包同时冒充：
+外发按用途分成两包，不能拿一份“大而全”压缩包同时冒充：
 
 | 包 | 主要用途 | 允许什么 | 必须做到什么 |
 |---|---|---|---|
@@ -164,6 +164,6 @@ MiniCPM／微调重依赖塞回来。
 
 commit 不能代替逐文件 SHA。工作区有未提交改动时，更不能只报 commit。
 
-## 40 项历史测试怎么做 replay
+## 历史测试怎么做 replay
 
 历史回放的精确节点、取件身份、`payload/<仓库相对路径>` 和“不回写当前主仓”合同只认 [`config/test_replay/README.md`](../test_replay/README.md)。
