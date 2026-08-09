@@ -1,5 +1,20 @@
 # 外审双包标准：review 看问题，replay 做复验
 
+Entry condition: 用户明确要求准备本项目 review/replay 包且已选择现役 route/profile，或 full-cycle PRIMARY 明确把本页作为 packaging dependency。
+DO_NOT_START_IF: 只是发送已有包、只读旧回包、清理旧 ZIP/tree、普通仓库修改，或完整外审循环尚未选定本页。
+Primary task family: external_review_packaging。
+Exit condition: PACKAGE_RECEIPT、ZIP SHA/CRC、成员集合和敏感信息检查通过；到此停止，不发送。
+Required inputs: route/profile、当前 truth identity、明确外部槽。
+Allowed reads: route 声明的最小取材闭包。
+Allowed writes: TEMP/chatgpt_review_packs 或 TEMP/replay_packs 的新包。
+SIDE EFFECTS: 本机包体写入；REQUIRES_EXPLICIT_AUTHORIZATION。
+May call: Repo Bridge only when the selected route explicitly requires an existing snapshot identity; never start a new FULL Bridge scan.
+Must not call: send-chatgpt-review、generic repo packaging、Notion、local施工或 full-cycle PRIMARY。
+Default scope: COUPLED；profile 明确是整仓时才 REPO_WIDE。
+Validation: V2 package identity，包括 manifest、成员、SHA、CRC 和敏感信息检查。
+Expand only if: TARGET_NOT_UNIQUE、GENERATED_VIEW_DEPENDENCY、EVIDENCE_MISMATCH、USER_REQUESTED_REPO_WIDE_SCOPE。
+Hard stop: required root/slot 缺失，密钥/金标命中，CRC/SHA/成员失败。
+
 外发从 2026-07-23 起分成两包，不能再拿一份“大而全”压缩包同时冒充：
 
 | 包 | 主要用途 | 允许什么 | 必须做到什么 |
@@ -10,7 +25,7 @@
 本轮只冻结标准；下一次实际外发时再同时生成两包。review 继续写
 `TEMP/chatgpt_review_packs/`，replay 写 `TEMP/replay_packs/`，两处都不进 Git。
 
-定期把「结构 + 能复验的代码 + 近停证据」打成 zip，上传 ChatGPT（或同类）审：仓库乱不乱、测试流程、近几轮效果差在哪、下一刀怎么改。
+按选定 route/profile 把「结构 + 能复验的代码 + 近停证据」生成外审包；包体身份通过即停止，不打开浏览器、不上传、不等待回包。
 
 完整接力不要只跑打包命令。唯一总控是 `$chatgpt-review-cycle`；本仓只在
 [`CHATGPT_REVIEW_SOP.md`](CHATGPT_REVIEW_SOP.md) 保留项目适配，不复制总流程。
@@ -92,8 +107,7 @@ route 模式会把包内目录固定成 `01_current_truth/` 到
 若本地 `CURRENT_STATE.json` 仍是旧镜像，必须登记
 `stale_mirror_only`；打包器不会拿它自动替路线挑 runs。
 
-🔥 **旧 zip 一旦已上传／已在审，就别再改那一包。**
-外审吐槽缺东西 → **改 `profiles.json`／打包脚本**，下次重新打；不要回头补丁旧包。
+旧包不改；新包按 route/profile 现打。
 
 ## 复验三角（包里缺一角，外审就会说「跑不起来」）
 
@@ -104,9 +118,6 @@ route 模式会把包内目录固定成 `01_current_truth/` 到
 | **活面** | `AGENTS`／`governance`／`config`／`tools`／`tests`／`foundation` | `TEMP/`、密钥、整库正文 |
 | **能复跑的实验脚本** | `experiments/Z*`（测试 `import` 到的目录必进） | `experiments/model_benchmarks/` 大件运行树 |
 | **近停证据** | 当前道 `runs/`＋`reports/`；多轮林用摘要 | 把 ignore 目录重新 `git add` |
-
-💡 2026-07-23 实锤：只带了 `reports/Z91*`＋测试，**没带** `experiments/Z91_…` 脚本 → 外审「全仓测试缺 Z91 实验脚本，无法完整复验」。
-以后打包器会：扫 `tests/` 引用的 `experiments/…`，缺了就 **ABORT**，逼你补进配置。
 
 三份环境锁 `pyproject.toml`、`uv.lock`、`.python-version` 必须随 review 与
 replay 两包同行。默认环境只锁仓库现役测试和代码检查，不把已经停用的
@@ -155,28 +166,4 @@ commit 不能代替逐文件 SHA。工作区有未提交改动时，更不能只
 
 ## 40 项历史测试怎么做 replay
 
-S-05-B 已把这 40 项改成非默认历史回放，不再延长旧挂账，也不拿 `xfail` 冒充
-日常回归。精确节点和 25 个保守取件单元只认
-`config/test_replay/historical_replays.json`。
-
-当前外置包 v2 有 2,057 个文件、32,346,449 字节；`MANIFEST.json` SHA 是
-`1e1c003ec5fe1adb9c045584d7dc33415623607baef63c3e6e1060166ec4cca4`。v1 的
-第一次真实回放是 38 项通过、2 项因少收 Z01d 覆盖诊断文件而失败；旧包和失败
-票据保持封存，不能把它写成测试通过。
-v2 后续绑定提交 `d8371ea36ca2fc9b98300df6699f2e4bdb0468dc` 和新运行号实际
-回放，结果是 40 项通过、3 个子测试通过、退出码 0；两次结果分账保留。
-它保留了完整历史目录单元，因为旧登记里的 12 个缺失哨兵并不是真实读取闭包。
-包内材料落点固定为 `payload/<仓库相对路径>`；物化与测试都只写同级工作副本，
-不回写当前主仓。
-
-复验只能用 `tools/historical_test_replay.py run`：程序来自固定 Git 提交，材料来自
-已验 SHA 的外置包，两者复制到仓库同级的新工作区后，一次只跑 40 个精确节点。
-测试不能直接引用主仓工作树。第一次真实回放跑完，再看
-`HISTORICAL_REPLAY_FILE_ACCESS.json` 收窄材料；没有读取证据前不凭猜测删取件单元。
-
-## 经验账（外审回骂 → 制度补丁）
-
-| 日期 | 外审指出 | 制度怎么改 |
-|---|---|---|
-| 2026-07-23 | 缺 Z91 实验脚本，无法完整复验 | standard 必带 `experiments/Z*`；打包器扫 tests 引用，缺则 ABORT；旧包不改、下次现打 |
-| 2026-07-27 | R2 顾问包仍需手写约 30 个路径并直接引用 Downloads | 增加四层 route 取材地图、required/optional 根、外部回包槽和逐成员来源票；保留旧 profile 命令 |
+历史回放的精确节点、取件身份、`payload/<仓库相对路径>` 和“不回写当前主仓”合同只认 [`config/test_replay/README.md`](../test_replay/README.md)。
