@@ -1,12 +1,31 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 import tomllib
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _markdown_section(text: str, heading: str) -> str:
+    match = re.search(
+        rf"(?ms)^## {re.escape(heading)}\n+(.*?)(?=^## |\Z)",
+        text,
+    )
+    assert match is not None, heading
+    section = match.group(1).strip()
+    assert section, heading
+    return section
+
+
+def _single_markdown_target(section: str, suffix: str) -> str:
+    targets = re.findall(r"\[[^\]]+\]\(([^)#]+)(?:#[^)]+)?\)", section)
+    matches = [target for target in targets if target.endswith(suffix)]
+    assert len(matches) == 1, matches
+    return matches[0]
 
 
 def test_default_environment_is_pinned_without_retired_model_dependencies() -> None:
@@ -108,13 +127,34 @@ def test_route_review_pack_has_four_layers_and_progress_pointer() -> None:
     sop = (ROOT / "config/review_pack/CHATGPT_REVIEW_SOP.md").read_text(
         encoding="utf-8"
     )
-    progress = (ROOT / "governance/progress/current-progress.md").read_text(
-        encoding="utf-8"
-    )
+    progress_root = ROOT / "governance/progress"
+    progress = (progress_root / "current-progress.md").read_text(encoding="utf-8")
     assert "$chatgpt-review-cycle" in sop
     assert "$codex-longline-teams" in sop
     assert "第一次没有旧顾问回包" in sop
     assert "本页不复制总 SOP" in sop
-    assert "resume_from:" in progress
-    assert "must_not_repeat:" in progress
-    assert "must_not_skip:" in progress
+
+    mainline_route = _single_markdown_target(
+        _markdown_section(progress, "当前主线"), "/STATUS.md"
+    )
+    focus_route = _single_markdown_target(
+        _markdown_section(progress, "当前焦点支线"), "/STATUS.md"
+    )
+    closed_route = _single_markdown_target(
+        _markdown_section(progress, "已关闭历史"), "/INDEX.md"
+    )
+
+    for status_route in (mainline_route, focus_route):
+        status_path = (progress_root / status_route).resolve()
+        assert status_path.is_file(), status_path
+        status = status_path.read_text(encoding="utf-8")
+        assert _markdown_section(status, "Last reliable checkpoint")
+        assert _markdown_section(status, "Next action")
+        guardrails = _markdown_section(status, "Recovery guardrails")
+        assert re.search(r"(?m)^- Must not repeat:\s*\S", guardrails)
+        assert re.search(r"(?m)^- Must not skip:\s*\S", guardrails)
+
+    assert (progress_root / closed_route).resolve().is_file()
+    assert "resume_from:" not in progress
+    assert "must_not_repeat:" not in progress
+    assert "must_not_skip:" not in progress
