@@ -1,129 +1,68 @@
 ---
 name: novel-segment-screening
-description: 网文素材初筛与二次密筛精炼 Skill（小说片段切窗、7大中文语义筛选、单书防过拟合与高品质精筛）
+description: 对当前任务明确点名且权利边界已声明的小说正文批次做机械切窗、语义初筛和二次密筛。Use when 用户或上层微调任务明确要求这项筛选能力，并提供当前批次、来源身份、输出根和筛选口径。Do not use for普通微调问答、训练授权、权利判定、整库审计、未点名语料，或仅因任务提到“片段/筛选”。
 ---
 
-# 网文素材初筛与密筛精炼 Skill (novel-segment-screening)
+# 网文素材批次筛选
 
-本 Skill 用于对小说正文语料进行**机械切窗、语义初筛（召回优先）与二次密筛（精炼去冗余、单书防过拟合）**的标准化流程。适用于批量淘选短段素材、训练集纠错样本筛选及小样本提取备料。
+只对当前任务明确点名、来源身份和权利边界已经声明的小说正文批次做机械切窗、初筛、密筛和候选输出。本 Skill 不负责发现语料、裁定权利、批准训练、构建 Production Canonical 或审计整库。
 
----
+## 执行合同
 
-## 核心流程概述
+- Required inputs: current batch manifest; source identities; rights boundary; output root; filter contract.
+- Allowed reads: only the named batch and direct estimator or config dependencies.
+- Allowed writes: candidate outputs and receipt under the authorized output root.
+- SIDE EFFECTS: local candidate writes. No API, training, Git, Notion, or source modification.
+- May call: the current task's estimator only when its identity is supplied.
+- Must not call: training, model APIs, Notion, Git, another team SOP, external review, or unrelated corpus discovery.
+- Default scope: `COUPLED`.
+- Validation: `V2` member and source SHA, counts, rights labels, output schema, and named-batch closure.
+- Expand only if: `TARGET_NOT_UNIQUE`, `GENERATED_VIEW_DEPENDENCY`, or `IDENTITY_MISMATCH`.
+- Hard stop: rights missing, source identity drift, output collision, undeclared batch, or any required input missing.
 
-全流程分为 **五大步骤**：
+缺少批次、来源身份、权利边界、输出根或筛选口径时，返回 `SCREENING_INPUT_INCOMPLETE` 并停止。不得从旧票据猜当前批次，也不得搜索整库补输入。
 
-```
-[步骤 1: 路径与波次领锁] ──> [步骤 2: 零安装机械切窗] ──> [步骤 3: 一阶段粗筛召回] ──> [步骤 4: 二阶段密筛与防过拟合] ──> [步骤 5: 工件写盘与回执生成]
-```
+## 触发边界
 
----
+以下条件同时成立才启用：
 
-## 1. 输入路径与领锁规范
+1. 用户或上层微调任务明确要求使用这项筛选能力；
+2. 当前批次已点名；
+3. 五项输入合同齐全。
 
-### 默认真源路径配置
-- **波次与书单清单**：`.../work/OUTSOURCE_WAVES.json`
-- **书单摘要**：`.../work/OUTSOURCE_BOOK_LIST_SUMMARY.md`
-- **输出根目录**：`.../outsource_initial_screen_R01/`
-- **工程零安装估算器**：`.../tools/segment_token_estimator_v1.py`
-  - 必须核验 SHA-256：`617ad615d87d47aa6674886c79703baa222133adaf63320224d2c69673f5fef5`
+“按这份批次清单切窗并密筛”可以启用；普通微调问答、训练资格判断、权利审计、模型表现分析、整库素材发现，或只说“从几本书找点好片段”都不启用。
 
-### 波次领取与状态锁
-开工前在 `claims/` 目录下创建 `OSW-xxx.claim.json`，并在 `POOL_MERGE_NOTE.md` 追加领取登记行：
+批次很大不会自动启动团队；用户明确启用团队且当前主任务也满足本 Skill 输入合同时，两者才可由上层组合。团队模式本身也不会自动启用本 Skill。
 
-```markdown
-| 2026-08-03 13:30 | Agent-Name | OSW-001～OSW-113 (全94书564章) | 完成 |
-```
+## 工作流程
 
----
+1. **锁定输入**：读取当前批次清单，核对来源路径、成员身份、权利标签、输出根和筛选合同；输出根已有未知内容时硬停。
+2. **机械切窗**：只按当前筛选合同和已给定身份的估算器／配置切窗；记录合同要求的位置、来源和片段身份，不临时安装依赖。
+3. **初筛与密筛**：初筛类别、密筛阈值、去重规则和作品上限全部来自当前 `filter contract`，不得沿用历史批次数字。
+4. **候选写盘**：只在授权输出根写当前合同规定的候选工件和回执；不修改来源正文或权利记录。
+5. **定向验收**：按 `V2` 核对成员集合、来源／输出 SHA、数量、权利标签、输出 Schema 和批次闭合；合同没有要求时，不跑全仓测试或整库 QA。
 
-## 2. 机械切窗参数 (Window Slicing Rules)
+## 回执最小字段
 
-使用 `segment_token_estimator_v1.py` 估算器进行物理切窗：
+回执至少记录：
 
-- **目标窗口 token**：`800 ～ 1200` 估算 token（约 `550 ～ 850` 汉字）
-- **左侧重叠 token**：`150 ～ 250` 估算 token（约 `100 ～ 180` 汉字）
-- **切分避让**：优先在段落换行 `\n\n` 或句号 `。` 处对齐，避免截断关键句子。
-- **指纹计算**：必须记录 `char_start`、`char_end`、`core_char_start`、`core_char_end`、`segment_sha256` 及 `source_chapter_sha256`。
+- 当前批次身份与 manifest SHA；
+- 来源对象和成员 SHA；
+- 权利边界原值；
+- 输出根和筛选合同身份；
+- 使用的估算器／配置身份；
+- 输入、初筛、保留、丢弃的机械计数；
+- 输出成员和 SHA；
+- API、训练、Git、Notion、来源修改均为 false；
+- 验证结果与任何硬停原因。
 
----
+字段和值从当前任务输入和实际输出取得，不保留历史波次、书数、章节数、日期、固定 SHA 或旧回执统计。
 
-## 3. 7 大中文语义筛选分类与识别特征
+## 权利与身份边界
 
-每个提取片段标注唯一 **主类型 (`primary_type`)**，可附 ≤2 个 **兼顾标签 (`secondary_tags`)**：
+- Skill 只消费已声明的权利边界，不自行推断权利。
+- 权利缺失是硬停，不是扩大搜索范围的理由。
+- `screened candidate != training authorized`：筛中只表示进入候选输出，不代表可训练、可晋升 Production Canonical 或权利已放行。
+- 来源、批次或输出身份漂移时停止，不刷新旧 SHA 追绿。
 
-| 语义分类 | 语义识别特征与抓取依据 |
-|---|---|
-| **误信** | 角色存在明显的认知偏差、误判、受骗、假消息引导或错觉，对后续决策产生影响。 |
-| **言语行为＋待执行动作分层** | 说话表态／命令／誓言与未执行的后续计划／承诺高度缠绕，适合教模型分层。 |
-| **段尾密集事实／反转／身份揭示** | 核心反转、真实身份破局或重要局势改变落在切窗后部（段尾 350 字内）。 |
-| **复合事实拆分＋短证据** | 单段内密集罗列了多个独立的可拆分硬事实（如属性突破、身份揭晓、多项变动）。 |
-| **重要事实与琐碎动作取舍＋责任区** | 包含明确的局势／角色状态改变，需要从过程性琐碎动作中筛选核心事实。 |
-| **转述来源与说话人** | 包含传闻、多跳消息来源、密报或语气不确定，说话人权责需要仔细甄别。 |
-| **空样本** | 责任区内主要为环境描写、氛围衬托或重复过渡，无必须记住的持久新状态。 |
-
----
-
-## 4. 二次密筛与防过拟合规则 (Precision Filtering & Anti-Overfitting)
-
-初筛完成（粗筛召回）后，必须执行**二次密筛**：
-
-1. **章内冗余剔除 (Pruning Chapter Redundancy)**：
-   - 每章（8～12 个切窗）按语义得分只保留 **Top 1 ～ 2** 优质片段。
-   - 淘汰约 **60%** 的平淡、庸常或弱特征切窗，解决“大海捞针”问题。
-2. **作品均衡封顶 (Anti-Overfitting Book Cap)**：
-   - 每本小说在精选池中 **最多保留 6 条候选**。
-   - 确保全量 94 本（或多本）作品均匀分布，杜绝单书比例过大导致的模型过拟合。
-3. **高价值类型优先**：
-   - 优先保留 `误信`、`言语分层`、`反转揭示` 与 `空样本` 等训练紧缺类型。
-
----
-
-## 5. 输出工件格式
-
-精筛完成后，写盘交付以下工件：
-
-- `REFINED_CANDIDATE_POOL.jsonl`：精筛保留的高质量候选清单
-- `refined_segments/<book_id>__c<candidate_id>.txt`：截取的文本片段
-- `REFINED_POOL_SUMMARY.md`：精筛总结与统计报告
-- `AGENT_RECEIPT.json`：Agent 执行回执
-
-### `AGENT_RECEIPT.json` 必备字段
-
-```json
-{
-  "agent_role": "initial_screen_outsource",
-  "waves_claimed": ["OSW-001", "OSW-002", "..."],
-  "unique_books_covered": 94,
-  "chapters_read": 564,
-  "raw_candidates_written": 1462,
-  "refined_candidates_count": 561,
-  "dropped_candidates_count": 901,
-  "refined_candidates_by_type": {
-    "误信": 288,
-    "言语行为＋待执行动作分层": 124,
-    "段尾密集事实／反转／身份揭示": 72,
-    "复合事实拆分＋短证据": 35,
-    "重要事实与琐碎动作取舍＋责任区": 25,
-    "转述来源与说话人": 11,
-    "空样本": 6
-  },
-  "model_api_calls": 0,
-  "training_started": false,
-  "old_226_read": false,
-  "source_modified": false,
-  "notion_write": false,
-  "git_write": false,
-  "dependency_install_attempted": false,
-  "rights_claim": "RIGHTS_PENDING_FOR_TRAINING_only"
-}
-```
-
----
-
-## 硬红线与安全边界
-
-- ❌ **0 模型 API 调用**
-- ❌ **0 第三方依赖安装**（仅使用标准库 + `segment_token_estimator_v1.py`）
-- ❌ **0 训练启动 / 0 Notion 写入 / 0 Git 写入 / 0 R03 源文件改动**
-- 🔒 **训练权利全量标注**为 `RIGHTS_PENDING_FOR_TRAINING`
+来源：Codex
