@@ -32,7 +32,18 @@
 - `runs/`、`reports/`、`outbox/`、`TEMP/` 是本机运行／运输区，默认不进 Git；正文库只通过 `references/corpus-pointers.md` 的本机指针访问，不复制进仓，也不整库扫读。
 - 来源互相冲突、消费者闭包不清或需要扩大正式写集时，先停下交 CZ，不靠补件或降级检查追绿。
 
-## 4. Environment / commands
+## 4. Minimum-sufficient execution
+
+- 广泛读取前，先估计能安全完成任务的最小文件范围、依赖范围和验证范围。
+- 初始范围只分三档：`LOCAL` 只碰明确目标；`COUPLED` 纳入直接机械依赖；`REPO_WIDE` 只用于用户明确要求、公共架构／协议迁移或局部证据证明必须扩大。拿不准时先做廉价探针，不直接选全仓。
+- 明确的局部任务从局部开始；默认不做全仓扫描，也不跑全套测试。
+- 相关时先廉价检查直接耦合：登记身份、派生视图、manifest 和已知直接消费者。
+- 按最小可靠路径执行；验证依次为 `V0` 精确／语法／解析、`V1` 定向测试、`V2` 依赖／身份闭包、`V3` 全套检查，前一级足够就不升级，合同明确要求除外。
+- 只有出现具体触发才扩大：目标不唯一、缺依赖、发现直接消费者、登记身份或派生视图耦合、定向验证失败、身份不匹配、Schema／协议受影响，或用户明确要求全仓范围。
+- 改动行数不决定复杂度；一行修改发现机械身份闭包时，也要一次纳入那组最小派生文件。
+- 不因材料可用就读取无关历史或共同背景，也不以“更放心”为由追加更广测试。
+
+## 5. Environment / commands
 
 本仓普通 Python、测试和 Ruff 固定走锁定环境，Python 为 3.12.12：
 
@@ -44,7 +55,7 @@ uv run --locked ruff check ...
 
 不要把裸 `python3`、`pytest`、`ruff` 当默认入口，也不要向系统 Python 临时补依赖。
 
-## 5. Nested AGENTS precedence
+## 6. Nested AGENTS precedence
 
 - 进入子目录时，离目标文件最近的 `AGENTS.md` 优先；根规则只补它没说的部分。
 - 当前正式 Git 只发现根 `AGENTS.md`，没有 tracked nested AGENTS。复杂领域已有 README／CURRENT 就先复用，不因规则多自动新建下级 AGENTS。
