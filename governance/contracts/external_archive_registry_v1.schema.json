@@ -272,52 +272,119 @@
       ]
     },
     "rootLocator": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "kind",
-        "suffix"
-      ],
-      "properties": {
-        "kind": {
-          "enum": [
-            "repository",
-            "repository_sibling_suffix"
-          ]
-        },
-        "suffix": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "pattern": "^_[^/\\\\]+$"
-        }
-      },
-      "allOf": [
+      "oneOf": [
         {
-          "if": {
-            "properties": {
-              "kind": {
-                "const": "repository"
-              }
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "suffix"
+          ],
+          "properties": {
+            "kind": {
+              "const": "repository"
+            },
+            "suffix": {
+              "type": "null"
             }
-          },
-          "then": {
-            "properties": {
-              "suffix": {
-                "type": "null"
-              }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "suffix"
+          ],
+          "properties": {
+            "kind": {
+              "const": "repository_sibling_suffix"
+            },
+            "suffix": {
+              "type": "string",
+              "pattern": "^_[^/\\\\]+$"
             }
-          },
-          "else": {
-            "properties": {
-              "suffix": {
-                "type": "string"
-              }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "volume_uuid",
+            "expected_volume_name",
+            "relative_root"
+          ],
+          "properties": {
+            "kind": {
+              "const": "external_volume_uuid"
+            },
+            "volume_uuid": {
+              "type": "string",
+              "pattern": "^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$"
+            },
+            "expected_volume_name": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "relative_root": {
+              "$ref": "#/$defs/safeRelativePath"
             }
           }
         }
       ]
+    },
+    "archiveRepresentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "original_tree_manifest_sha256",
+        "original_aggregate_sha256",
+        "container_relative_path",
+        "container_sha256",
+        "container_bytes",
+        "restore_contract"
+      ],
+      "properties": {
+        "kind": {
+          "const": "tar_posix_tree_v1"
+        },
+        "original_tree_manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "original_aggregate_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "container_relative_path": {
+          "type": "string",
+          "pattern": "^[^/\\\\]+\\.tar$"
+        },
+        "container_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "container_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "restore_contract": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "extract_to_posix_filesystem",
+            "verify_regular_file_sha",
+            "verify_symlink_target",
+            "verify_member_set",
+            "verify_total_logical_bytes"
+          ],
+          "properties": {
+            "extract_to_posix_filesystem": {"const": true},
+            "verify_regular_file_sha": {"const": true},
+            "verify_symlink_target": {"const": true},
+            "verify_member_set": {"const": true},
+            "verify_total_logical_bytes": {"const": true}
+          }
+        }
+      }
     },
     "storageRoot": {
       "type": "object",
@@ -353,6 +420,7 @@
           "enum": [
             "primary_volume",
             "same_volume_as_repository",
+            "different_physical_device",
             "not_assessed"
           ]
         },
@@ -574,6 +642,7 @@
           "enum": [
             "not_proven",
             "package_integrity_proven_same_failure_domain",
+            "package_integrity_proven_different_physical_device",
             "not_applicable"
           ]
         },
@@ -599,6 +668,16 @@
           "oneOf": [
             {
               "$ref": "#/$defs/manifest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "representation": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/archiveRepresentation"
             },
             {
               "type": "null"

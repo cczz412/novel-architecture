@@ -94,6 +94,19 @@
         },
         "snapshot_stable": {
           "const": true
+        },
+        "archive_representation": {
+          "enum": [
+            "directory_tree_v1",
+            "tar_posix_tree_v1"
+          ]
+        },
+        "symlink_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "container_sha256_verified": {
+          "type": "boolean"
         }
       }
     },

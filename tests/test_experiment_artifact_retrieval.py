@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import shutil
+import tarfile
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -648,12 +649,16 @@ def test_cli_has_no_arbitrary_path_or_mutating_surface() -> None:
         if isinstance(action, argparse._SubParsersAction)
     )
 
-    assert set(subparser_action.choices) == {"check", "resolve", "render"}
+    assert set(subparser_action.choices) == {
+        "check",
+        "resolve",
+        "render",
+        "restore-archive",
+    }
     assert {
         "--root",
         "--path",
         "--glob",
-        "--destination",
         "--copy",
         "--move",
         "--delete",
@@ -1203,3 +1208,83 @@ def test_input_identity_drift_during_resolution_is_rejected(
         )
 
     assert exc_info.value.code == "INPUT_DRIFT_DURING_RESOLUTION"
+
+
+def test_registered_tar_restore_preserves_file_and_symlink(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fixture = _make_fixture(tmp_path)
+    artifact_id = ARTIFACT_IDS[0]
+    object_root = fixture.external / artifact_id
+    payload = tmp_path / "payload"
+    payload.mkdir()
+    (payload / "a.txt").write_bytes(b"a")
+    (payload / "link.txt").symlink_to("a.txt")
+    manifest = {
+        "aggregate_sha256": "b" * 64,
+        "source_total_bytes": 6,
+        "files": [
+            {"path": "a.txt", "bytes": 1, "sha256": _sha256_bytes(b"a")}
+        ],
+        "symlinks": [
+            {
+                "path": "link.txt",
+                "bytes": 5,
+                "sha256": _sha256_bytes(b"a.txt"),
+                "archive_link_target": "a.txt",
+                "archive_target_exists": True,
+                "resolved_sha256": _sha256_bytes(b"a"),
+            }
+        ],
+    }
+    _write_json(object_root / "MANIFEST.json", manifest)
+    container = object_root / "payload.tar"
+    with tarfile.open(container, "w", format=tarfile.PAX_FORMAT) as archive:
+        archive.add(payload / "a.txt", arcname="a.txt", recursive=False)
+        archive.add(payload / "link.txt", arcname="link.txt", recursive=False)
+    registry = _read_json(fixture.registry_path)
+    object_row = next(
+        row for row in registry["objects"] if row["artifact_id"] == artifact_id
+    )
+    manifest_sha = _sha256(object_root / "MANIFEST.json")
+    object_row["manifest"]["sha256"] = manifest_sha
+    object_row["manifest"]["expected_entry_count"] = 1
+    object_row["representation"] = {
+        "kind": "tar_posix_tree_v1",
+        "original_tree_manifest_sha256": manifest_sha,
+        "original_aggregate_sha256": "b" * 64,
+        "container_relative_path": "payload.tar",
+        "container_sha256": _sha256(container),
+        "container_bytes": container.stat().st_size,
+        "restore_contract": {
+            "extract_to_posix_filesystem": True,
+            "verify_regular_file_sha": True,
+            "verify_symlink_target": True,
+            "verify_member_set": True,
+            "verify_total_logical_bytes": True,
+        },
+    }
+    _write_json(fixture.registry_path, registry)
+    monkeypatch.setattr(
+        retrieval,
+        "_resolve_external_root",
+        lambda _repo, _registry, _root_id=retrieval.EXTERNAL_ROOT_ID: (
+            fixture.external,
+            {},
+        ),
+    )
+    destination = fixture.repo / "TEMP/restore/fixture"
+
+    receipt = retrieval.restore_registered_archive(
+        fixture.repo,
+        artifact_id,
+        destination,
+    )
+
+    assert receipt["status"] == "RESTORE_VERIFIED"
+    assert receipt["member_count"] == 2
+    assert receipt["symlink_count"] == 1
+    assert (destination / "a.txt").read_bytes() == b"a"
+    assert (destination / "link.txt").is_symlink()
+    assert os.readlink(destination / "link.txt") == "a.txt"

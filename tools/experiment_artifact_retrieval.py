@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Resolve registered experiment artifacts into deterministic copy plans.
+"""Resolve registered artifacts and restore approved POSIX tar archives.
 
-S-06-C deliberately stops before copying.  The command can read approved
-repository metadata and an approved external MANIFEST, but it never reads
-payload bytes and has no write, move, delete, restore, network, or model path.
+Legacy S-06-C cards still resolve to deterministic copy plans.  The separate
+``restore-archive`` command only accepts a registered tar representation, a
+fresh repository TEMP destination, and a mounted volume resolved by UUID.
 """
 
 from __future__ import annotations
@@ -13,11 +13,19 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import stat
 import sys
+import tarfile
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any, Sequence
+
+if __package__:
+    from tools import repo_slim_inventory as inventory
+else:
+    import repo_slim_inventory as inventory
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -156,6 +164,76 @@ def _require_text(value: object, *, code: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise RetrievalError(code, str(value))
     return value
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(8 * 1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _safe_tar_member_name(value: str) -> PurePosixPath:
+    while value.startswith("./"):
+        value = value[2:]
+    return _safe_relative_path(value, code="TAR_MEMBER_PATH_INVALID")
+
+
+def _symlink_target_stays_within_tree(
+    member: PurePosixPath,
+    target: str,
+) -> bool:
+    if not target or "\\" in target or "\x00" in target:
+        return False
+    candidate = member.parent.joinpath(PurePosixPath(target))
+    depth = 0
+    for part in candidate.parts:
+        if part in {"", "."}:
+            continue
+        if part == "..":
+            depth -= 1
+            if depth < 0:
+                return False
+        else:
+            depth += 1
+    return True
+
+
+def _verify_restored_tree(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
+    expected_files = {row["path"]: row for row in manifest.get("files", [])}
+    expected_links = {row["path"]: row for row in manifest.get("symlinks", [])}
+    actual_files: set[str] = set()
+    actual_links: set[str] = set()
+    for path in root.rglob("*"):
+        relative = path.relative_to(root).as_posix()
+        if path.is_symlink():
+            actual_links.add(relative)
+        elif path.is_file():
+            actual_files.add(relative)
+    if actual_files != set(expected_files) or actual_links != set(expected_links):
+        raise RetrievalError("RESTORE_MEMBER_SET_MISMATCH")
+    for relative, row in expected_files.items():
+        path = root.joinpath(*PurePosixPath(relative).parts)
+        if path.stat().st_size != row["bytes"] or _sha256_file(path) != row["sha256"]:
+            raise RetrievalError("RESTORE_FILE_IDENTITY_MISMATCH", relative)
+    for relative, row in expected_links.items():
+        path = root.joinpath(*PurePosixPath(relative).parts)
+        expected_target = row.get("archive_link_target")
+        if not path.is_symlink() or os.readlink(path) != expected_target:
+            raise RetrievalError("RESTORE_SYMLINK_IDENTITY_MISMATCH", relative)
+        if path.exists() != row.get("archive_target_exists"):
+            raise RetrievalError("RESTORE_SYMLINK_TARGET_STATE_MISMATCH", relative)
+        if path.exists() and isinstance(row.get("resolved_sha256"), str):
+            if _sha256_file(path.resolve(strict=True)) != row["resolved_sha256"]:
+                raise RetrievalError("RESTORE_SYMLINK_RESOLVED_DIGEST_MISMATCH")
+    return {
+        "member_count": len(expected_files) + len(expected_links),
+        "regular_file_count": len(expected_files),
+        "symlink_count": len(expected_links),
+        "total_logical_bytes": manifest.get("source_total_bytes"),
+        "aggregate_sha256": manifest.get("aggregate_sha256"),
+    }
 
 
 def _require_exact_keys(
@@ -1017,6 +1095,7 @@ def _validate_validation_policy(
 def _resolve_external_root(
     repo_root: Path,
     registry: dict[str, Any],
+    root_id: str = EXTERNAL_ROOT_ID,
 ) -> tuple[Path, dict[str, Any]]:
     roots = registry.get("storage_roots")
     if not isinstance(roots, list):
@@ -1026,20 +1105,15 @@ def _resolve_external_root(
         for row in roots
         if isinstance(row, dict) and isinstance(row.get("root_id"), str)
     }
-    row = by_id.get(EXTERNAL_ROOT_ID)
+    row = by_id.get(root_id)
     if row is None:
         raise RetrievalError("EXTERNAL_ROOT_NOT_REGISTERED")
-    locator = row.get("locator")
-    if (
-        not isinstance(locator, dict)
-        or locator.get("kind") != "repository_sibling_suffix"
-        or locator.get("suffix") != EXTERNAL_ROOT_SUFFIX
-        or row.get("role") != "external_archive"
-        or row.get("required") is not True
-        or row.get("failure_domain") != "same_volume_as_repository"
-    ):
+    if row.get("role") != "external_archive" or row.get("required") is not True:
         raise RetrievalError("EXTERNAL_ROOT_LOCATOR_INVALID")
-    root = repo_root.parent / f"{repo_root.name}{EXTERNAL_ROOT_SUFFIX}"
+    try:
+        root = inventory.resolve_storage_root(repo_root, row)
+    except inventory.InventoryError as exc:
+        raise RetrievalError("EXTERNAL_ROOT_LOCATOR_INVALID", exc.detail) from exc
     return root, row
 
 
@@ -1145,9 +1219,16 @@ def resolve_context(repo_root: Path, card_id: str) -> ResolvedContext:
     object_row = object_by_id.get(artifact_id)
     if object_row is None:
         raise RetrievalError("ARTIFACT_NOT_REGISTERED", artifact_id)
+    root_by_id = {
+        row.get("root_id"): row
+        for row in registry.get("storage_roots", [])
+        if isinstance(row, dict)
+    }
     if (
-        object_row.get("root_id") != EXTERNAL_ROOT_ID
-        or object_row.get("externalization") != "already_external"
+        object_row.get("root_id") not in root_by_id
+        or root_by_id[object_row["root_id"]].get("role") != "external_archive"
+        or
+        object_row.get("externalization") != "already_external"
         or object_row.get("consumer_closure") != "verified"
     ):
         raise RetrievalError("ARTIFACT_NOT_RETRIEVAL_ELIGIBLE", artifact_id)
@@ -1171,7 +1252,11 @@ def resolve_context(repo_root: Path, card_id: str) -> ResolvedContext:
     ):
         raise RetrievalError("ARTIFACT_MANIFEST_BINDING_MISMATCH")
 
-    external_root, _ = _resolve_external_root(repo_root, registry)
+    external_root, _ = _resolve_external_root(
+        repo_root,
+        registry,
+        object_row["root_id"],
+    )
     artifact_relative = _safe_relative_path(
         object_row.get("relative_path"),
         code="ARTIFACT_RELATIVE_PATH_INVALID",
@@ -1405,7 +1490,8 @@ def render_card_markdown(repo_root: Path, card_id: str) -> str:
             "日常只读本页。确实要复现时，先核卡片和仓外清单：",
             "",
             "```bash",
-            f".venv/bin/python tools/experiment_artifact_retrieval.py check --card-id {card_id}",
+            "uv run --locked python tools/experiment_artifact_retrieval.py "
+            f"check --card-id {card_id}",
             "```",
             "",
             "再按已登记组合生成复制计划。这个命令只输出 JSON，不会创建目录或复制文件：",
@@ -1417,7 +1503,7 @@ def render_card_markdown(repo_root: Path, card_id: str) -> str:
             [
                 "```bash",
                 (
-                    ".venv/bin/python tools/experiment_artifact_retrieval.py "
+                    "uv run --locked python tools/experiment_artifact_retrieval.py "
                     f"resolve --card-id {card_id} "
                     f"--selection-id {selection['selection_id']}"
                 ),
@@ -1465,6 +1551,139 @@ def check_card(repo_root: Path, card_id: str) -> ResolvedContext:
     return context
 
 
+def restore_registered_archive(
+    repo_root: Path,
+    artifact_id: str,
+    destination: Path,
+) -> dict[str, Any]:
+    """Restore one registered tar archive into one fresh TEMP destination."""
+
+    if destination.exists():
+        raise RetrievalError("RESTORE_DESTINATION_EXISTS", str(destination))
+    temp_root = repo_root / "TEMP"
+    temp_root.mkdir(exist_ok=True)
+    try:
+        relative_destination = destination.resolve(strict=False).relative_to(
+            temp_root.resolve(strict=True)
+        )
+    except ValueError as exc:
+        raise RetrievalError(
+            "RESTORE_DESTINATION_OUTSIDE_TEMP",
+            str(destination),
+        ) from exc
+    if not relative_destination.parts:
+        raise RetrievalError("RESTORE_DESTINATION_OUTSIDE_TEMP")
+
+    registry, registry_snapshot, _ = _load_repo_json(
+        repo_root,
+        REGISTRY_RELATIVE,
+        code="EXTERNAL_REGISTRY",
+    )
+    _validate_registry(registry, expected_registry_id=registry["registry_id"])
+    objects = {
+        row.get("artifact_id"): row
+        for row in registry.get("objects", [])
+        if isinstance(row, dict)
+    }
+    object_row = objects.get(artifact_id)
+    if object_row is None:
+        raise RetrievalError("ARTIFACT_NOT_REGISTERED", artifact_id)
+    representation = object_row.get("representation")
+    manifest_info = object_row.get("manifest")
+    if (
+        not isinstance(representation, dict)
+        or representation.get("kind") != "tar_posix_tree_v1"
+        or not isinstance(manifest_info, dict)
+    ):
+        raise RetrievalError("ARTIFACT_NOT_TAR_RESTORABLE", artifact_id)
+    root, _ = _resolve_external_root(repo_root, registry, object_row["root_id"])
+    object_relative = _safe_relative_path(
+        object_row["relative_path"], code="ARTIFACT_RELATIVE_PATH_INVALID"
+    )
+    manifest_relative = _safe_relative_path(
+        manifest_info["relative_path"], code="ARTIFACT_MANIFEST_PATH_INVALID"
+    )
+    manifest_bytes, manifest_snapshot, _ = _read_beneath_root(
+        root,
+        (object_relative / manifest_relative).as_posix(),
+        max_bytes=MANIFEST_MAX_BYTES,
+        code="ARTIFACT_MANIFEST",
+    )
+    if _sha256_bytes(manifest_bytes) != manifest_info["sha256"]:
+        raise RetrievalError("ARTIFACT_MANIFEST_SHA_MISMATCH")
+    manifest = _load_json_bytes(manifest_bytes, code="ARTIFACT_MANIFEST")
+    if (
+        representation["original_tree_manifest_sha256"] != manifest_info["sha256"]
+        or representation["original_aggregate_sha256"]
+        != manifest.get("aggregate_sha256")
+    ):
+        raise RetrievalError("ARTIFACT_REPRESENTATION_BINDING_MISMATCH")
+    container_relative = _safe_relative_path(
+        representation["container_relative_path"],
+        code="ARTIFACT_CONTAINER_PATH_INVALID",
+    )
+    container = root.joinpath(
+        *object_relative.parts,
+        *container_relative.parts,
+    )
+    try:
+        container_info = container.lstat()
+    except FileNotFoundError as exc:
+        raise RetrievalError("ARTIFACT_CONTAINER_MISSING") from exc
+    if not stat.S_ISREG(container_info.st_mode) or container_info.st_nlink != 1:
+        raise RetrievalError("ARTIFACT_CONTAINER_INVALID")
+    if container_info.st_size != representation["container_bytes"]:
+        raise RetrievalError("ARTIFACT_CONTAINER_SIZE_MISMATCH")
+    if _sha256_file(container) != representation["container_sha256"]:
+        raise RetrievalError("ARTIFACT_CONTAINER_SHA_MISMATCH")
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    staging = Path(tempfile.mkdtemp(prefix=f".{destination.name}.", dir=destination.parent))
+    try:
+        with tarfile.open(container, mode="r:") as archive:
+            seen: set[str] = set()
+            for member in archive:
+                relative = _safe_tar_member_name(member.name)
+                name = relative.as_posix()
+                if member.isdir():
+                    continue
+                if name.casefold() in seen:
+                    raise RetrievalError("TAR_MEMBER_PATH_COLLISION", name)
+                seen.add(name.casefold())
+                target = staging.joinpath(*relative.parts)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                if member.isfile():
+                    source = archive.extractfile(member)
+                    if source is None:
+                        raise RetrievalError("TAR_MEMBER_READ_FAILED", name)
+                    with target.open("xb") as handle:
+                        shutil.copyfileobj(source, handle, length=8 * 1024 * 1024)
+                elif member.issym():
+                    if not _symlink_target_stays_within_tree(relative, member.linkname):
+                        raise RetrievalError("TAR_SYMLINK_TARGET_UNSAFE", name)
+                    target.symlink_to(member.linkname)
+                else:
+                    raise RetrievalError("TAR_MEMBER_TYPE_INVALID", name)
+        summary = _verify_restored_tree(staging, manifest)
+        if destination.exists():
+            raise RetrievalError("RESTORE_DESTINATION_EXISTS", str(destination))
+        staging.rename(destination)
+        _verify_snapshots_unchanged((registry_snapshot, manifest_snapshot))
+        return {
+            "artifact_id": artifact_id,
+            "root_id": object_row["root_id"],
+            "representation": "tar_posix_tree_v1",
+            "container_sha256": representation["container_sha256"],
+            "manifest_sha256": manifest_info["sha256"],
+            **summary,
+            "restore_target": destination.relative_to(repo_root).as_posix(),
+            "status": "RESTORE_VERIFIED",
+        }
+    except Exception:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="只读核对实验轻量结论卡，并生成按需复制计划。",
@@ -1489,6 +1708,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="只从仓内机器真源渲染结论卡 Markdown；不读取仓外根。",
     )
     render_parser.add_argument("--card-id", required=True)
+    restore_parser = subparsers.add_parser(
+        "restore-archive",
+        help="按登记的 UUID 与 tar 表示恢复一个对象到新的 TEMP 目录。",
+    )
+    restore_parser.add_argument("--artifact-id", required=True)
+    restore_parser.add_argument("--destination", required=True)
     return parser
 
 
@@ -1511,6 +1736,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         if args.command == "render":
             sys.stdout.write(render_card_markdown(ROOT, args.card_id))
+            return 0
+        if args.command == "restore-archive":
+            destination = Path(args.destination)
+            if not destination.is_absolute():
+                destination = ROOT / destination
+            result = restore_registered_archive(ROOT, args.artifact_id, destination)
+            print(_canonical_json_bytes(result).decode("utf-8"))
             return 0
         parser.error("unknown command")
     except RetrievalError as exc:

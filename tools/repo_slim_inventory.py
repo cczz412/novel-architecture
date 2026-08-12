@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import plistlib
 import stat
 import subprocess
 import sys
@@ -27,6 +28,7 @@ MIGRATION_RECEIPT_SCHEMA_RELATIVE = Path(
     "governance/contracts/repository_size_migration_receipt_v1.schema.json"
 )
 MAX_REGISTERED_FILE_BYTES = 5 * 1024 * 1024
+DISKUTIL = Path("/usr/sbin/diskutil")
 
 
 class InventoryError(RuntimeError):
@@ -121,6 +123,141 @@ def _require_plain_path_chain(
         if is_final and final_kind == "file" and not stat.S_ISREG(info.st_mode):
             raise InventoryError(code, "登记锚不是普通文件")
     return current
+
+
+def _external_volume_records() -> list[dict[str, Any]]:
+    try:
+        completed = subprocess.run(
+            [str(DISKUTIL), "list", "-plist", "external", "physical"],
+            check=True,
+            capture_output=True,
+        )
+        value = plistlib.loads(completed.stdout)
+    except (OSError, subprocess.CalledProcessError, plistlib.InvalidFileException) as exc:
+        raise InventoryError(
+            "EXTERNAL_VOLUME_DISCOVERY_FAILED",
+            "无法读取已挂载外置物理卷身份",
+        ) from exc
+    rows: list[dict[str, Any]] = []
+    for disk in value.get("AllDisksAndPartitions", []):
+        if not isinstance(disk, dict):
+            continue
+        for partition in disk.get("Partitions", []):
+            if not isinstance(partition, dict):
+                continue
+            rows.append(
+                {
+                    **partition,
+                    "ParentWholeDisk": disk.get("DeviceIdentifier"),
+                }
+            )
+    return rows
+
+
+def _repository_parent_whole_disk(repo_root: Path) -> str:
+    try:
+        completed = subprocess.run(
+            ["/bin/df", "-kP", str(repo_root)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        lines = [line for line in completed.stdout.splitlines() if line.strip()]
+        device = lines[-1].split()[0]
+        info = subprocess.run(
+            [str(DISKUTIL), "info", "-plist", device],
+            check=True,
+            capture_output=True,
+        )
+        value = plistlib.loads(info.stdout)
+    except (
+        IndexError,
+        OSError,
+        subprocess.CalledProcessError,
+        plistlib.InvalidFileException,
+    ) as exc:
+        raise InventoryError(
+            "REPOSITORY_DEVICE_IDENTITY_FAILED",
+            "无法确认 repository 所在物理设备",
+        ) from exc
+    parent = value.get("ParentWholeDisk")
+    if not isinstance(parent, str) or not parent:
+        raise InventoryError(
+            "REPOSITORY_DEVICE_IDENTITY_FAILED",
+            "repository 缺少物理设备身份",
+        )
+    return parent
+
+
+def _resolve_external_volume_uuid(
+    repo_root: Path,
+    locator: dict[str, Any],
+) -> Path:
+    volume_uuid = locator.get("volume_uuid")
+    matches = [
+        row
+        for row in _external_volume_records()
+        if row.get("VolumeUUID") == volume_uuid
+        and isinstance(row.get("MountPoint"), str)
+    ]
+    if len(matches) != 1:
+        raise InventoryError(
+            "EXTERNAL_VOLUME_UUID_NOT_UNIQUE",
+            "指定 UUID 必须唯一对应一个已挂载外置物理卷",
+        )
+    mount = Path(matches[0]["MountPoint"])
+    if not mount.is_absolute():
+        raise InventoryError(
+            "EXTERNAL_VOLUME_MOUNT_INVALID",
+            "外置卷挂载点不是绝对路径",
+        )
+    _require_plain_directory(mount, code="EXTERNAL_VOLUME_MOUNT_INVALID")
+    parent_disk = matches[0].get("ParentWholeDisk")
+    if (
+        not isinstance(parent_disk, str)
+        or parent_disk == _repository_parent_whole_disk(repo_root)
+    ):
+        raise InventoryError(
+            "EXTERNAL_VOLUME_FAILURE_DOMAIN_INVALID",
+            "外置卷与 repository 仍处于同一物理设备",
+        )
+    relative_root = _safe_relative_path(
+        locator.get("relative_root"),
+        code="EXTERNAL_VOLUME_RELATIVE_ROOT_INVALID",
+    )
+    return _require_plain_path_chain(
+        mount,
+        relative_root,
+        final_kind="directory",
+        code="EXTERNAL_VOLUME_ROOT_INVALID",
+    )
+
+
+def resolve_storage_root(
+    repo_root: Path,
+    row: dict[str, Any],
+) -> Path:
+    locator = row["locator"]
+    kind = locator["kind"]
+    if kind == "repository":
+        path = repo_root
+    elif kind == "repository_sibling_suffix":
+        suffix = locator["suffix"]
+        if (
+            not isinstance(suffix, str)
+            or not suffix.startswith("_")
+            or "/" in suffix
+            or "\\" in suffix
+        ):
+            raise InventoryError("ROOT_LOCATOR_UNSAFE", row["root_id"])
+        path = repo_root.parent / f"{repo_root.name}{suffix}"
+    elif kind == "external_volume_uuid":
+        path = _resolve_external_volume_uuid(repo_root, locator)
+    else:
+        raise InventoryError("ROOT_LOCATOR_UNSUPPORTED", str(kind))
+    if row["required"]:
+        _require_plain_directory(path, code="STORAGE_ROOT_INVALID")
+    return path
 
 
 def _read_registered_file(
@@ -303,6 +440,7 @@ def _validate_registry_relations(registry: dict[str, Any]) -> None:
             raise InventoryError("REGISTRY_ID_CONFLICT", f"{label} 重复")
 
     root_set = set(root_ids)
+    roots_by_id = {row["root_id"]: row for row in roots}
     artifact_set = set(artifact_ids)
     seen_paths: set[tuple[str, str]] = set()
     seen_manifests: set[tuple[str, str]] = set()
@@ -329,6 +467,24 @@ def _validate_registry_relations(registry: dict[str, Any]) -> None:
                 code="REGISTRY_ANCHOR_PATH_UNSAFE",
             )
         manifest = row["manifest"]
+        representation = row.get("representation")
+        root_row = roots_by_id[row["root_id"]]
+        if representation is not None:
+            if (
+                root_row["locator"]["kind"] != "external_volume_uuid"
+                or root_row["failure_domain"] != "different_physical_device"
+                or row["recoverability"]
+                != "package_integrity_proven_different_physical_device"
+            ):
+                raise InventoryError(
+                    "ARCHIVE_REPRESENTATION_ROOT_INVALID",
+                    f"{row['artifact_id']} 的 tar 表示必须位于已登记的不同物理设备",
+                )
+        elif root_row["locator"]["kind"] == "external_volume_uuid":
+            raise InventoryError(
+                "ARCHIVE_REPRESENTATION_MISSING",
+                f"{row['artifact_id']} 的外置卷对象缺少物理表示合同",
+            )
         if manifest is not None:
             manifest_relative = _safe_relative_path(
                 manifest["relative_path"],
@@ -376,22 +532,7 @@ def _resolve_roots(
     _require_plain_directory(repo_root, code="REPOSITORY_ROOT_INVALID")
     resolved: dict[str, Path] = {}
     for row in registry["storage_roots"]:
-        locator = row["locator"]
-        if locator["kind"] == "repository":
-            path = repo_root
-        else:
-            suffix = locator["suffix"]
-            if (
-                not isinstance(suffix, str)
-                or not suffix.startswith("_")
-                or "/" in suffix
-                or "\\" in suffix
-            ):
-                raise InventoryError("ROOT_LOCATOR_UNSAFE", row["root_id"])
-            path = repo_root.parent / f"{repo_root.name}{suffix}"
-        if row["required"]:
-            _require_plain_directory(path, code="STORAGE_ROOT_INVALID")
-        resolved[row["root_id"]] = path
+        resolved[row["root_id"]] = resolve_storage_root(repo_root, row)
     return resolved
 
 
@@ -549,6 +690,31 @@ def _verify_objects(
             code="OBJECT_PATH_INVALID",
         )
 
+        representation = row.get("representation")
+        if representation is not None:
+            if representation["original_tree_manifest_sha256"] != row["manifest"][
+                "sha256"
+            ]:
+                raise InventoryError(
+                    "ARCHIVE_REPRESENTATION_MANIFEST_MISMATCH",
+                    row["artifact_id"],
+                )
+            container_relative = _safe_relative_path(
+                representation["container_relative_path"],
+                code="ARCHIVE_CONTAINER_PATH_UNSAFE",
+            )
+            container = _require_plain_path_chain(
+                root,
+                PurePosixPath(*(object_relative.parts + container_relative.parts)),
+                final_kind="file",
+                code="ARCHIVE_CONTAINER_INVALID",
+            )
+            if container.stat().st_size != representation["container_bytes"]:
+                raise InventoryError(
+                    "ARCHIVE_CONTAINER_SIZE_MISMATCH",
+                    row["artifact_id"],
+                )
+
         for anchor in row["identity_anchors"]:
             anchor_relative = _safe_relative_path(
                 anchor["relative_path"],
@@ -596,6 +762,15 @@ def _verify_objects(
                     "MANIFEST_JSON_INVALID",
                     f"{row['artifact_id']} 顶层不是对象",
                 )
+            if representation is not None:
+                if (
+                    value.get("aggregate_sha256")
+                    != representation["original_aggregate_sha256"]
+                ):
+                    raise InventoryError(
+                        "ARCHIVE_REPRESENTATION_AGGREGATE_MISMATCH",
+                        row["artifact_id"],
+                    )
             entries = value.get(manifest["entries_field"])
             if not isinstance(entries, list):
                 raise InventoryError(

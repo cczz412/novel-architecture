@@ -766,3 +766,53 @@ def test_report_relation_validator_rejects_false_active_gate(
     report["git_inventory"]["target_met"] = False
     with pytest.raises(inventory.InventoryError, match="REPORT_RELATION_INVALID"):
         inventory._validate_report_relations(report)
+
+
+def test_external_volume_uuid_resolves_one_different_physical_device(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo = tmp_path / "repo"
+    mount = tmp_path / "external"
+    target = mount / "archive/v1"
+    repo.mkdir()
+    target.mkdir(parents=True)
+    monkeypatch.setattr(
+        inventory,
+        "_external_volume_records",
+        lambda: [
+            {
+                "VolumeUUID": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",
+                "MountPoint": str(mount),
+                "ParentWholeDisk": "disk9",
+            }
+        ],
+    )
+    monkeypatch.setattr(
+        inventory,
+        "_repository_parent_whole_disk",
+        lambda _repo: "disk1",
+    )
+    row = {
+        "root_id": "physical-archive-v1",
+        "locator": {
+            "kind": "external_volume_uuid",
+            "volume_uuid": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",
+            "expected_volume_name": "fixture",
+            "relative_root": "archive/v1",
+        },
+        "required": True,
+    }
+
+    assert inventory.resolve_storage_root(repo, row) == target
+
+    monkeypatch.setattr(
+        inventory,
+        "_repository_parent_whole_disk",
+        lambda _repo: "disk9",
+    )
+    with pytest.raises(
+        inventory.InventoryError,
+        match="EXTERNAL_VOLUME_FAILURE_DOMAIN_INVALID",
+    ):
+        inventory.resolve_storage_root(repo, row)

@@ -3904,14 +3904,14 @@
       "primary_identity_label": "可复用组件",
       "status": "candidate_not_default",
       "status_label": "候选组件·只读库存与体积闸",
-      "purpose": "核对 S-06-A 对象登记、固定外置清单和 Git 跟踪体积，明确区分库存可信、可恢复、已迁移和 10MB 目标。",
-      "human_command": "python3 tools/repo_slim_inventory.py <check|report>",
+      "purpose": "核对 S-06 对象登记、固定外置清单、卷 UUID 定位和 Git 跟踪体积，明确区分库存可信、可恢复、已迁移和 10MB 目标。",
+      "human_command": "uv run --locked python tools/repo_slim_inventory.py <check|report>",
       "inputs": [
         "governance/external_archive_registry.json",
         "governance/contracts/external_archive_registry_v1.schema.json",
         "governance/contracts/repo_slim_inventory_report_v1.schema.json",
         "governance/contracts/repository_size_migration_receipt_v1.schema.json",
-        "登记的同级外置仓清单与小型身份锚",
+        "登记的同级外置仓或按卷 UUID 定位的物理外置仓",
         "当前 Git 索引"
       ],
       "outputs": [
@@ -3948,15 +3948,15 @@
       "primary_identity_label": "可复用组件",
       "status": "candidate_not_default",
       "status_label": "候选组件·外置 payload 单件验证",
-      "purpose": "一次只核一个获准外置对象的 payload 文件集合、大小和逐文件 SHA-256，输出不复制逐项清单的轻量报告。",
-      "human_command": "python3 tools/external_payload_validator.py <check|report> --artifact-id <登记对象编号>",
+      "purpose": "一次只核一个获准外置对象的目录树或 tar_posix_tree_v1 容器，核对成员集合、大小、文件 SHA-256 和软链接目标。",
+      "human_command": "uv run --locked python tools/external_payload_validator.py <check|report> --artifact-id <登记对象编号>",
       "inputs": [
         "governance/external_archive_registry.json",
         "governance/external_payload_validation_policy.json",
         "governance/contracts/external_payload_validation_policy_v1.schema.json",
         "governance/contracts/external_payload_verification_report_v1.schema.json",
         "tools/repo_slim_inventory.py 的安全路径读取助手",
-        "获准对象的固定 MANIFEST 与 payload 目录"
+        "获准对象的固定 MANIFEST 与 payload 目录或 tar_posix_tree_v1 容器"
       ],
       "outputs": [
         "一行人看检查结果",
@@ -3965,7 +3965,7 @@
       "network_or_model": {
         "network": "none",
         "model": "none",
-        "note": "只读获准对象；逐层拒绝软链接、硬链接、特殊文件、跨设备、路径越界和扫描竞态。按块计算 SHA，不写文件、不发网。"
+        "note": "只读获准对象；目录表示仍拒绝 payload 内链接，tar 表示只允许 manifest 登记的普通文件和软链接。按块计算 SHA，不写文件、不发网。"
       },
       "current_consumers": [
         "S-06-B 外置 payload 逐文件验证",
@@ -4007,24 +4007,26 @@
       "primary_identity_label": "可复用组件",
       "status": "candidate_not_default",
       "status_label": "候选组件·实验结论卡与按需取件计划",
-      "purpose": "核对一张获准轻量结论卡、仓外对象指针和固定 MANIFEST，并把命名取件组合解析成确定性复制计划。",
-      "human_command": "python3 tools/experiment_artifact_retrieval.py <check|resolve|render> --card-id <结论卡编号>",
+      "purpose": "核对获准轻量结论卡与固定 MANIFEST，解析确定性取件计划；另可按 registry 中的卷 UUID 和 tar 表示恢复单个登记历史对象。",
+      "human_command": "uv run --locked python tools/experiment_artifact_retrieval.py <check|resolve|render|restore-archive> ...",
       "inputs": [
         "governance/artifact_retrieval_policy.json",
         "governance/external_archive_registry.json",
         "governance/external_payload_validation_policy.json",
         "获准卡片的 result_card.json、external_pointer.json、retrieval_profile.json",
-        "获准外置对象的固定 MANIFEST"
+        "获准外置对象的固定 MANIFEST",
+        "restore-archive 模式下 registry 登记的外置卷 UUID 和 tar_posix_tree_v1 容器"
       ],
       "outputs": [
         "一行人看核对结果",
         "确定性的 artifact-retrieval-plan-v1 JSON",
-        "由机器卡确定性生成的 Markdown 人看页"
+        "由机器卡确定性生成的 Markdown 人看页",
+        "恢复后原树成员、SHA、软链接和总逻辑字节验证票"
       ],
       "network_or_model": {
         "network": "none",
         "model": "none",
-        "note": "只读显式白名单中的仓内卡片和仓外 MANIFEST；不读取 payload 字节，不接受任意根、路径或 glob，不写文件、不复制、不移动、不删除。"
+        "note": "默认卡片模式仍只读显式白名单。restore-archive 只接 registry 登记的对象，按卷 UUID 定位，只解包到新建的仓内 TEMP 目标，完整验证后不修改源容器。"
       },
       "current_consumers": [
         "S-06-C 实验轻量结论卡与按需取件合同",
@@ -4042,7 +4044,7 @@
         "config/test_replay/result_cards/README.md"
       ],
       "next_confirmed_consumer": "后续每个已终态、消费者已收口且真实外置的实验，沿用同一张短结论卡和命名取件组合；真正复制另开只接计划编号与新运行号的物化波次。",
-      "retirement_condition_and_compatibility_boundary": "候选只读公共零件；R02 等非终态对象整根不发现。当前没有 copy、move、delete、restore 或任意 destination 参数，不签迁移票、不启用 10MB 硬门。",
+      "retirement_condition_and_compatibility_boundary": "候选公共零件；R02 等非终态卡片整根不发现。restore-archive 不接任意 root/path/glob，不移动、不删除源容器，不签迁移票、不启用 10MB 硬门。",
       "review_needed": false
     }
   ]

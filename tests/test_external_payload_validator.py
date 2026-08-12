@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import shutil
+import tarfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -774,3 +775,66 @@ def test_s06a_hard_limit_activation_remains_locked(tmp_path: Path) -> None:
     assert fixture.policy["authority"]["may_issue_migration_receipt"] is False
     assert fixture.policy["authority"]["may_activate_hard_limit"] is False
     assert report["claims"]["hard_limit_activation_authorized"] is False
+
+
+def test_tar_representation_verifies_files_and_symlink_target(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path, {"target.bin": b"payload\n"})
+    link_target = "target.bin"
+    manifest = {
+        "aggregate_sha256": "a" * 64,
+        "source_total_bytes": len(b"payload\n") + len(link_target.encode()),
+        "files": [
+            {
+                "path": "target.bin",
+                "bytes": len(b"payload\n"),
+                "sha256": _sha256_bytes(b"payload\n"),
+            }
+        ],
+        "symlinks": [
+            {
+                "path": "view.bin",
+                "archive_link_target": link_target,
+            }
+        ],
+    }
+    container = fixture.object_root / "payload.tar"
+    source_tree = tmp_path / "source-tree"
+    source_tree.mkdir()
+    (source_tree / "target.bin").write_bytes(b"payload\n")
+    (source_tree / "view.bin").symlink_to(link_target)
+    with tarfile.open(container, "w", format=tarfile.PAX_FORMAT) as archive:
+        archive.add(source_tree / "target.bin", arcname="target.bin", recursive=False)
+        archive.add(source_tree / "view.bin", arcname="view.bin", recursive=False)
+    row = fixture.registry["objects"][1]
+    row["representation"] = {
+        "kind": "tar_posix_tree_v1",
+        "original_tree_manifest_sha256": "b" * 64,
+        "original_aggregate_sha256": "a" * 64,
+        "container_relative_path": "payload.tar",
+        "container_sha256": _sha256(container),
+        "container_bytes": container.stat().st_size,
+        "restore_contract": {
+            "extract_to_posix_filesystem": True,
+            "verify_regular_file_sha": True,
+            "verify_symlink_target": True,
+            "verify_member_set": True,
+            "verify_total_logical_bytes": True,
+        },
+    }
+
+    summary = validator._verify_tar_representation(
+        fixture.external,
+        row,
+        manifest,
+    )
+    assert summary == {
+        "symlink_count": 1,
+        "total_bytes": manifest["source_total_bytes"],
+    }
+
+    row["representation"]["container_sha256"] = "0" * 64
+    with pytest.raises(
+        validator.PayloadValidationError,
+        match="ARCHIVE_CONTAINER_DIGEST_MISMATCH",
+    ):
+        validator._verify_tar_representation(fixture.external, row, manifest)

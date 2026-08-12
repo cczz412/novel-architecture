@@ -7,6 +7,7 @@ import json
 import os
 import stat
 import sys
+import tarfile
 from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterator, Sequence
@@ -519,34 +520,116 @@ def _resolve_target_root(
     root_id: str,
 ) -> Path:
     roots = {row["root_id"]: row for row in registry["storage_roots"]}
-    row = roots[root_id]
-    locator = row["locator"]
-    if locator["kind"] == "repository":
-        path = repo_root
-    else:
-        suffix = locator["suffix"]
-        if (
-            not isinstance(suffix, str)
-            or not suffix.startswith("_")
-            or "/" in suffix
-            or "\\" in suffix
-        ):
-            raise PayloadValidationError(
-                "PAYLOAD_ROOT_LOCATOR_INVALID",
-                "目标存储根定位规则不安全",
-            )
-        path = repo_root.parent / f"{repo_root.name}{suffix}"
     try:
-        inventory._require_plain_directory(
-            path,
-            code="PAYLOAD_TARGET_ROOT_INVALID",
-        )
+        path = inventory.resolve_storage_root(repo_root, roots[root_id])
     except inventory.InventoryError as exc:
         raise PayloadValidationError(
             "PAYLOAD_TARGET_ROOT_INVALID",
             exc.detail,
         ) from exc
     return path
+
+
+def _hash_plain_file(path: Path, *, expected_size: int, code: str) -> str:
+    try:
+        before = path.lstat()
+    except FileNotFoundError as exc:
+        raise PayloadValidationError(code, "容器不存在") from exc
+    if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+        raise PayloadValidationError(code, "容器必须是单链接普通文件")
+    if before.st_size != expected_size:
+        raise PayloadValidationError(code, "容器大小与登记不一致")
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(8 * 1024 * 1024), b""):
+            digest.update(block)
+    if _identity(path.lstat()) != _identity(before):
+        raise PayloadValidationError(code, "容器在读取中发生漂移")
+    return digest.hexdigest()
+
+
+def _tar_member_name(value: str) -> str:
+    while value.startswith("./"):
+        value = value[2:]
+    return _safe_relative_path(value, code="TAR_MEMBER_PATH_INVALID").as_posix()
+
+
+def _verify_tar_representation(
+    root: Path,
+    object_row: dict[str, Any],
+    manifest: dict[str, Any],
+) -> dict[str, Any]:
+    representation = object_row.get("representation")
+    if not isinstance(representation, dict) or representation.get("kind") != (
+        "tar_posix_tree_v1"
+    ):
+        raise PayloadValidationError("ARCHIVE_REPRESENTATION_INVALID")
+    if representation.get("original_aggregate_sha256") != manifest.get(
+        "aggregate_sha256"
+    ):
+        raise PayloadValidationError("ARCHIVE_AGGREGATE_IDENTITY_MISMATCH")
+    object_relative = _safe_relative_path(
+        object_row["relative_path"], code="PAYLOAD_OBJECT_PATH_INVALID"
+    )
+    container_relative = _safe_relative_path(
+        representation["container_relative_path"],
+        code="ARCHIVE_CONTAINER_PATH_INVALID",
+    )
+    container = root.joinpath(*object_relative.parts, *container_relative.parts)
+    actual_container_sha = _hash_plain_file(
+        container,
+        expected_size=representation["container_bytes"],
+        code="ARCHIVE_CONTAINER_INVALID",
+    )
+    if actual_container_sha != representation["container_sha256"]:
+        raise PayloadValidationError("ARCHIVE_CONTAINER_DIGEST_MISMATCH")
+
+    expected_files = {row["path"]: row for row in manifest.get("files", [])}
+    expected_links = {row["path"]: row for row in manifest.get("symlinks", [])}
+    actual_files: dict[str, tarfile.TarInfo] = {}
+    actual_links: dict[str, tarfile.TarInfo] = {}
+    try:
+        archive = tarfile.open(container, mode="r:")
+    except (OSError, tarfile.TarError) as exc:
+        raise PayloadValidationError("ARCHIVE_CONTAINER_TAR_INVALID") from exc
+    with archive:
+        seen_folded: set[str] = set()
+        for member in archive:
+            name = _tar_member_name(member.name)
+            if member.isdir():
+                continue
+            if name.casefold() in seen_folded:
+                raise PayloadValidationError("TAR_MEMBER_PATH_COLLISION", name)
+            seen_folded.add(name.casefold())
+            if member.isfile():
+                actual_files[name] = member
+            elif member.issym():
+                actual_links[name] = member
+            else:
+                raise PayloadValidationError("TAR_MEMBER_TYPE_INVALID", name)
+        if set(actual_files) != set(expected_files) or set(actual_links) != set(
+            expected_links
+        ):
+            raise PayloadValidationError("TAR_MEMBER_SET_MISMATCH")
+        for name, expected in expected_files.items():
+            member = actual_files[name]
+            if member.size != expected["bytes"]:
+                raise PayloadValidationError("TAR_MEMBER_SIZE_MISMATCH", name)
+            extracted = archive.extractfile(member)
+            if extracted is None:
+                raise PayloadValidationError("TAR_MEMBER_READ_FAILED", name)
+            digest = hashlib.sha256()
+            for block in iter(lambda: extracted.read(8 * 1024 * 1024), b""):
+                digest.update(block)
+            if digest.hexdigest() != expected["sha256"]:
+                raise PayloadValidationError("TAR_MEMBER_DIGEST_MISMATCH", name)
+        for name, expected in expected_links.items():
+            if actual_links[name].linkname != expected.get("archive_link_target"):
+                raise PayloadValidationError("TAR_SYMLINK_TARGET_MISMATCH", name)
+    return {
+        "symlink_count": len(expected_links),
+        "total_bytes": manifest.get("source_total_bytes"),
+    }
 
 
 def _load_manifest_expectations(
@@ -742,6 +825,19 @@ def validate_payload(
         object_row,
         target,
     )
+    try:
+        manifest_document = json.loads(manifest_raw)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise PayloadValidationError("PAYLOAD_MANIFEST_INVALID") from exc
+
+    representation = object_row.get("representation")
+    tar_summary: dict[str, Any] | None = None
+    if representation is not None:
+        tar_summary = _verify_tar_representation(
+            root,
+            object_row,
+            manifest_document,
+        )
 
     object_relative = _safe_relative_path(
         object_row["relative_path"],
@@ -753,54 +849,55 @@ def validate_payload(
     )
     combined_payload = PurePosixPath(*(object_relative.parts + payload_relative.parts))
 
-    with _open_directory_chain(root, combined_payload) as (
-        payload_descriptor,
-        root_device,
-        chain_identities,
-    ):
-        before = _snapshot_payload_tree(
+    if representation is None:
+        with _open_directory_chain(root, combined_payload) as (
             payload_descriptor,
-            root_device=root_device,
-        )
-        if set(before) != set(expected):
-            raise PayloadValidationError(
-                "PAYLOAD_FILE_SET_MISMATCH",
-                "payload 实际文件集合与清单不一致",
-            )
-
-        for path in sorted(expected):
-            expected_size, expected_digest = expected[path]
-            if before[path][4] != expected_size:
-                raise PayloadValidationError(
-                    "PAYLOAD_SIZE_MISMATCH",
-                    "payload 文件大小与清单不一致",
-                )
-            actual_digest = _hash_registered_payload_file(
+            root_device,
+            chain_identities,
+        ):
+            before = _snapshot_payload_tree(
                 payload_descriptor,
-                _safe_relative_path(
-                    path,
-                    code="PAYLOAD_MANIFEST_ENTRY_PATH_INVALID",
-                ),
-                expected_identity=before[path],
-                expected_size=expected_size,
                 root_device=root_device,
             )
-            if actual_digest != expected_digest:
+            if set(before) != set(expected):
                 raise PayloadValidationError(
-                    "PAYLOAD_DIGEST_MISMATCH",
-                    "payload 文件 SHA-256 与清单不一致",
+                    "PAYLOAD_FILE_SET_MISMATCH",
+                    "payload 实际文件集合与清单不一致",
                 )
 
-        after = _snapshot_payload_tree(
-            payload_descriptor,
-            root_device=root_device,
-        )
-        if after != before:
-            raise PayloadValidationError(
-                "PAYLOAD_SNAPSHOT_DRIFT",
-                "payload 文件集合或身份在核验中发生变化",
+            for path in sorted(expected):
+                expected_size, expected_digest = expected[path]
+                if before[path][4] != expected_size:
+                    raise PayloadValidationError(
+                        "PAYLOAD_SIZE_MISMATCH",
+                        "payload 文件大小与清单不一致",
+                    )
+                actual_digest = _hash_registered_payload_file(
+                    payload_descriptor,
+                    _safe_relative_path(
+                        path,
+                        code="PAYLOAD_MANIFEST_ENTRY_PATH_INVALID",
+                    ),
+                    expected_identity=before[path],
+                    expected_size=expected_size,
+                    root_device=root_device,
+                )
+                if actual_digest != expected_digest:
+                    raise PayloadValidationError(
+                        "PAYLOAD_DIGEST_MISMATCH",
+                        "payload 文件 SHA-256 与清单不一致",
+                    )
+
+            after = _snapshot_payload_tree(
+                payload_descriptor,
+                root_device=root_device,
             )
-        _verify_directory_chain(root, combined_payload, chain_identities)
+            if after != before:
+                raise PayloadValidationError(
+                    "PAYLOAD_SNAPSHOT_DRIFT",
+                    "payload 文件集合或身份在核验中发生变化",
+                )
+            _verify_directory_chain(root, combined_payload, chain_identities)
 
     current_registry_raw = inventory._read_registered_file(
         repo_root,
@@ -839,6 +936,24 @@ def validate_payload(
             "验证器、安全读取助手、登记册、验证政策或清单在核验中发生变化",
         )
 
+    verification: dict[str, Any] = {
+        "file_count": len(expected),
+        "total_bytes": total_bytes,
+        "entry_set_sha256": entry_set_sha256,
+        "exact_file_set": True,
+        "content_sha256_verified": True,
+        "snapshot_stable": True,
+    }
+    if tar_summary is not None:
+        verification.update(
+            {
+                "total_bytes": tar_summary["total_bytes"],
+                "archive_representation": "tar_posix_tree_v1",
+                "symlink_count": tar_summary["symlink_count"],
+                "container_sha256_verified": True,
+            }
+        )
+
     report: dict[str, Any] = {
         "contract_version": "external-payload-verification-report-v1",
         "status": "PASS",
@@ -853,14 +968,7 @@ def validate_payload(
             "validator_sha256": _sha256_bytes(validator_raw),
             "inventory_helper_sha256": _sha256_bytes(inventory_helper_raw),
         },
-        "verification": {
-            "file_count": len(expected),
-            "total_bytes": total_bytes,
-            "entry_set_sha256": entry_set_sha256,
-            "exact_file_set": True,
-            "content_sha256_verified": True,
-            "snapshot_stable": True,
-        },
+        "verification": verification,
         "claims": {
             "payload_bytes_match_manifest": True,
             "package_metadata_verified": False,
