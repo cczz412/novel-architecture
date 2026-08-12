@@ -4,11 +4,11 @@
 
 ## 当前主线
 
-- 仓库基础设施、寻路和日常执行提速：[`mainline/STATUS.md`](mainline/STATUS.md)
+- 仓库基础设施没有持续施工线，已转为“发现真实问题再开窄票”的维护模式：[`mainline/STATUS.md`](mainline/STATUS.md)
 
 ## 当前焦点支线
 
-- T5 R04 CPLUS／Production Canonical：[`branches/finetuning/STATUS.md`](branches/finetuning/STATUS.md)
+- 当前唯一焦点是 T5 R04 CPLUS／Production Canonical；它仍是微调支线，不是仓库基础设施主线：[`branches/finetuning/STATUS.md`](branches/finetuning/STATUS.md)
 
 ## 其他活跃支线
 
@@ -28,6 +28,6 @@
 - 微调身份只认 [`../../finetuning/CURRENT.json`](../../finetuning/CURRENT.json)。
 - 本页与 STATUS 只做接力；冲突时停下校准，不覆盖 CZ 指令、CURRENT 或正式结果票。
 
-updated_at: 2026-08-09
+updated_at: 2026-08-12T20:14:13+08:00
 
 来源：Codex
