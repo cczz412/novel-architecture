@@ -1,0 +1,36 @@
+{
+  "schema_version": "train72-supplement24-model-neutral-gold-manifest/1.0",
+  "dataset_status": "CANDIDATE_NOT_YET_APPROVED",
+  "scope": "MODEL_NEUTRAL_GOLD_CANDIDATE_ONLY",
+  "source_bindings": {
+    "old8_candidates_sha256": "13d98fa578f61ce099b255c04e9ed13ea0dba20e3a3f565c9132e51ee3c813aa",
+    "new16_candidate_pool_sha256": "f7db1f4e2f73d77b47c61353a43cf6e4a115ba5b6e1382cc58e5b1567c6c703b"
+  },
+  "member_count": 4,
+  "members": [
+    {
+      "path": "SOURCE_INDEX_24.jsonl",
+      "bytes": 124040,
+      "sha256": "21c8c29ba1551129219b0f7ca46fc35093e1f0f66592553012d171a94e71dae6"
+    },
+    {
+      "path": "MODEL_NEUTRAL_GOLD_24.jsonl",
+      "bytes": 50073,
+      "sha256": "681e012b8f23aae4b30da9a7275f82ae85cd8a9df831cbfb9150791c08f5bc1b"
+    },
+    {
+      "path": "REVIEW_SUMMARY.md",
+      "bytes": 3022,
+      "sha256": "951774177bace457d95dda7904623a7166ca15664aa0ee17033d4ad9dc3fbebc"
+    },
+    {
+      "path": "check_gold24.py",
+      "bytes": 12361,
+      "sha256": "54d5887fb7f3b3dc6069176adb1a00c6a03f478a3523c535bdf8ea24d6767f52"
+    }
+  ],
+  "exclusions": [
+    "OUTPUT_MANIFEST.json",
+    "FINAL_VALIDATION_RECEIPT.json"
+  ]
+}

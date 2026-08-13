@@ -1,0 +1,104 @@
+{
+  "derived": {
+    "candidate": {
+      "bytes": 148696,
+      "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/RIGHTS_EXCLUSION_DERIVED_CANDIDATE.jsonl",
+      "rows": 74,
+      "sha256": "6baa0ace33d96505d04e046a80ca087bd9011b635410b986a1b706c55d1dce5b"
+    },
+    "decision_input": {
+      "bytes": 48999,
+      "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/RIGHTS_DECISIONS_REJECT_74.jsonl",
+      "rows": 74,
+      "sha256": "761c74ad71bab07e38951998130283da0bc3238b8c5add54e9440c5a8346006a"
+    },
+    "import_receipt": {
+      "authority": "P4_REALTIME_CANDIDATE_IMPORT",
+      "bytes": 5114,
+      "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/RIGHTS_EXCLUSION_IMPORT_RECEIPT.json",
+      "sha256": "5a013eaa4a96aa00cad1dc04688d509e3f79a7860220d5178b5198a867ace796"
+    }
+  },
+  "frozen_denominator": {
+    "facts": 2783,
+    "groups": 74,
+    "rows": 314
+  },
+  "rights_boundary": {
+    "cz_confirmation_required": true,
+    "legal_rights_determination": false,
+    "original_source_status": "RIGHTS_UNKNOWN",
+    "production_promoted": false,
+    "project_use_decision": "REJECT_FOR_TRAINING",
+    "training_eligible": false
+  },
+  "schema_version": "t5-r04-a-v2-7-rights-exclusion-source-binding-v1",
+  "scope": "PROJECT_USE_DECISION_NOT_LEGAL_RIGHTS_DETERMINATION",
+  "sources": {
+    "cz_decision_capture": {
+      "authority": "CZ_DIRECT_PROJECT_USE_DECISION",
+      "bytes": 936,
+      "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/CZ_DECISION_CAPTURE.md",
+      "sha256": "123dd8182805f98e137121ebfe14a0a3b3c06a28e113693fa8db189296550e67"
+    },
+    "p3_decision_template": {
+      "authority": "P3_SEALED_INPUT",
+      "bytes": 25985,
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/sealed_inputs_r01/track_a/RIGHTS_DECISION_TEMPLATE.jsonl",
+      "sha256": "e8b870daedf4161f670f5dd73ee67814343115af2966353cfc50cfc0fc15b945"
+    },
+    "p3_source_groups": {
+      "authority": "P3_SEALED_INPUT",
+      "bytes": 190136,
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/sealed_inputs_r01/track_a/RIGHTS_SOURCE_GROUPS_314.jsonl",
+      "sha256": "08c576787d1d3153d95ed52dd4c5a0462ee7d08f66bca2be21df9fa66171db95"
+    },
+    "p4_dry_run_receipt": {
+      "authority": "P4_PREFLIGHT",
+      "bytes": 5138,
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/RIGHTS_IMPORT_DRY_RUN_RECEIPT.json",
+      "sha256": "96978caf30ff31020d93f18f6142eb4c7275791cde45d59845cb79687022be72"
+    },
+    "p4_final_receipt": {
+      "authority": "P4_FINAL",
+      "bytes": 2766,
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_FINAL_VALIDATION_RECEIPT.json",
+      "sha256": "d472ab0dd3b7ab1346621ed5850dd1832647f296dd90a367a9654f503bcc592e"
+    },
+    "p4_import_schema": {
+      "authority": "P4_FROZEN_IMPORT_CONTRACT",
+      "bytes": 12797,
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/RIGHTS_DECISION_IMPORT_SCHEMA.json",
+      "sha256": "25b8434b8ae1e396a8b679bb60b2e91abd03c9dfd13745543a804705aafc8b6d"
+    },
+    "p4_importer": {
+      "authority": "P4_FROZEN_IMPORTER",
+      "bytes": 38348,
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/tools/rights_decision_import.py",
+      "sha256": "b8048e7e6b052580d202cbd444fd762d3aa8c7f3e6aacad2acd50b61d666241f"
+    },
+    "p4_output_manifest": {
+      "authority": "P4_FINAL",
+      "bytes": 5424,
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_OUTPUT_MANIFEST.json",
+      "sha256": "b58cccfad6cda6a957ca42324068c874f71722d4d170cac616ddd5988bdbe53e"
+    },
+    "p4_preflight_ticket": {
+      "authority": "P4_PREFLIGHT",
+      "bytes": 5888,
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/RIGHTS_IMPORT_PREFLIGHT_TICKET.md",
+      "sha256": "3d70ab8a026a92ae60525ef691e5e34a300db8cfc3c71f1eb2baebebedd50eda"
+    }
+  },
+  "status": "CANDIDATE_PENDING_CZ_CONFIRMATION",
+  "two_run_stability": {
+    "candidate_bytes_identical": true,
+    "candidate_sha256": "6baa0ace33d96505d04e046a80ca087bd9011b635410b986a1b706c55d1dce5b",
+    "decision_builds": 2,
+    "decision_bytes_identical": true,
+    "realtime_import_runs": 2,
+    "runtime_timestamp_is_receipt_sidecar_only": true,
+    "validation_date_run_1": "2026-08-08",
+    "validation_date_run_2": "2026-08-08"
+  }
+}

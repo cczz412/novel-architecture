@@ -1,0 +1,162 @@
+{
+  "member_count": 31,
+  "members": [
+    {
+      "bytes": 321692,
+      "path": "CHAPTER_DIAG12_ELIGIBILITY_AUDIT.json",
+      "sha256": "669ef46e69b1dfcae470b4a4fa570a2a34e971988e2fa3c6608fc18a54a01a52"
+    },
+    {
+      "bytes": 4664,
+      "path": "CHAPTER_DIAG12_ELIGIBILITY_AUDIT.md",
+      "sha256": "98411e27d005897b3df1fa1c080e90a623ff73c45a7c27e6e2f50ee5bf36306f"
+    },
+    {
+      "bytes": 3083,
+      "path": "P4_C0_SOURCE_BINDING.json",
+      "sha256": "284577f96b3b285a48b6502d320ca5ee54c439def37e04c5fd1a10b4a6146c7f"
+    },
+    {
+      "bytes": 3193,
+      "path": "P4_PREFLIGHT_GAP_LIST.jsonl",
+      "sha256": "1bae06bedf2215618e874ea2c3d565569161d0e3a25dea640d640901b0a2e320"
+    },
+    {
+      "bytes": 3668,
+      "path": "P4_PREFLIGHT_RESULT_TICKET.md",
+      "sha256": "c8cc626e6dc0fd004ad4011f1d94a2a7fd69d3084c65e61e617e47a960525032"
+    },
+    {
+      "bytes": 3058,
+      "path": "P4_RESEARCH_ABSORPTION_MATRIX.md",
+      "sha256": "cd34bec56bbeb6f49e317506cede64d1dfc0bfe5aa15db2dfff58d90b416ba66"
+    },
+    {
+      "bytes": 10272,
+      "path": "P4_SOURCE_MANIFEST.json",
+      "sha256": "ea151f4f1a68b592ec7af3816c3bcc6f8fd5972e9cf56fa7e6b0955e9ca4c2b5"
+    },
+    {
+      "bytes": 3994,
+      "path": "P4_SPLITTER_SPEC.md",
+      "sha256": "8af8c744f7b07e8de18b7b023c95dca876ad9f73739d9d8e6c3d1332e8afd3e0"
+    },
+    {
+      "bytes": 1670,
+      "path": "P4_SYNTHETIC_FULL_CHAPTER_CONTRACT.md",
+      "sha256": "df9afc3d2e6f5b9274a77782cc0078dbcb8acad8f65526bef62a2acb610bbaf2"
+    },
+    {
+      "bytes": 5535,
+      "path": "P4_WRNW_CONTRACT.md",
+      "sha256": "5e16bb11c190feec7ca0df997687199bd3e30d6f5c0738b03255f54e61622757"
+    },
+    {
+      "bytes": 5359,
+      "path": "P4_ZERO_TRAINING_PREREG.md",
+      "sha256": "1ed7e76df9df987815aa925ff19552f3c83054a3b4d96466518f1c1acd5200e0"
+    },
+    {
+      "bytes": 12797,
+      "path": "RIGHTS_DECISION_IMPORT_SCHEMA.json",
+      "sha256": "25b8434b8ae1e396a8b679bb60b2e91abd03c9dfd13745543a804705aafc8b6d"
+    },
+    {
+      "bytes": 5138,
+      "path": "RIGHTS_IMPORT_DRY_RUN_RECEIPT.json",
+      "sha256": "96978caf30ff31020d93f18f6142eb4c7275791cde45d59845cb79687022be72"
+    },
+    {
+      "bytes": 5888,
+      "path": "RIGHTS_IMPORT_PREFLIGHT_TICKET.md",
+      "sha256": "3d70ab8a026a92ae60525ef691e5e34a300db8cfc3c71f1eb2baebebedd50eda"
+    },
+    {
+      "bytes": 2573,
+      "path": "construction_history/P4_SPLITTER_R01_INVALIDATION_TICKET.md",
+      "sha256": "480ec54b931588128ecce7e79aacfb2bd937a5eaa8d0626f80d3763927aeb1e8"
+    },
+    {
+      "bytes": 146772,
+      "path": "dry_run/RIGHTS_DECISION_DERIVED_CANDIDATE.jsonl",
+      "sha256": "32d0e8c65e107dc448509db79a2a2379e56fee579febbb54c9354c7f4e904560"
+    },
+    {
+      "bytes": 387,
+      "path": "tests/fixtures/toy_chapter.txt",
+      "sha256": "9521f93d95f1a9e8bd0da30891b59b333bd29d87aeaee4f1dbc8c593d7be4360"
+    },
+    {
+      "bytes": 1174,
+      "path": "tests/fixtures/toy_gold.json",
+      "sha256": "dbad8091ed708432f5ab927d5fda87375880334dc26d61ed9e0bf13026dd7587"
+    },
+    {
+      "bytes": 9946,
+      "path": "tests/test_p4_splitter.py",
+      "sha256": "e1f51b969f780deb0bdc7d960dac30c36559c530615f80be1cec1a62f2498dcb"
+    },
+    {
+      "bytes": 27077,
+      "path": "tests/test_rights_decision_import.py",
+      "sha256": "62b8dda37d1776b556a6ddef521640b5711802ae1f27097b5d0fc18497f5be06"
+    },
+    {
+      "bytes": 707,
+      "path": "tests/test_verify_p4_two_runs.py",
+      "sha256": "e5152ffe5d59910b01a36d73a306a3c234442d13115effea00ccde0c4eb0b533"
+    },
+    {
+      "bytes": 19320,
+      "path": "tools/build_chapter_diag12_audit.py",
+      "sha256": "14c79482f4a96d2801d990c38225af3b4b8f0b75b590053662037d23b00f629a"
+    },
+    {
+      "bytes": 16299,
+      "path": "tools/p4_splitter.py",
+      "sha256": "10038d32cb0a0549069f8bca7603823c9f0f96d0de1e18547f81ce67e1a73fdf"
+    },
+    {
+      "bytes": 38348,
+      "path": "tools/rights_decision_import.py",
+      "sha256": "b8048e7e6b052580d202cbd444fd762d3aa8c7f3e6aacad2acd50b61d666241f"
+    },
+    {
+      "bytes": 13852,
+      "path": "tools/verify_p4_preflight.py",
+      "sha256": "68d195f8c18dffb869acf51b28463ce30bdcc3eb601bd76c5dc9d608f160f044"
+    },
+    {
+      "bytes": 2506,
+      "path": "tools/verify_p4_two_runs.py",
+      "sha256": "df3d91a6f48cfa19fdf391c5a2aea94e65b1902214f755eb62cfea42f1e690dc"
+    },
+    {
+      "bytes": 21763,
+      "path": "toy_validation/INVALIDATED_R01/run_1/TOY_SPLITTER_BUILD.json",
+      "sha256": "f6e29a328fe4b1dc7cb3c01c9c2d751b90da01c36faa6234a66381e818aff06d"
+    },
+    {
+      "bytes": 21763,
+      "path": "toy_validation/INVALIDATED_R01/run_2/TOY_SPLITTER_BUILD.json",
+      "sha256": "f6e29a328fe4b1dc7cb3c01c9c2d751b90da01c36faa6234a66381e818aff06d"
+    },
+    {
+      "bytes": 668,
+      "path": "toy_validation/r02/P4_TWO_RUN_COMPARISON.json",
+      "sha256": "43f5d325cd85dced3c984e8c84dbafea8044453d9d8d2b2e65616a57d4b1c5e7"
+    },
+    {
+      "bytes": 23895,
+      "path": "toy_validation/r02/run_1/TOY_SPLITTER_BUILD.json",
+      "sha256": "7f938fa0b79a476991251b15f4fa77fd8b12a70ca3088147639c7d5d8982dda2"
+    },
+    {
+      "bytes": 23895,
+      "path": "toy_validation/r02/run_2/TOY_SPLITTER_BUILD.json",
+      "sha256": "7f938fa0b79a476991251b15f4fa77fd8b12a70ca3088147639c7d5d8982dda2"
+    }
+  ],
+  "schema_version": "t5-r04-p4-output-manifest-v1",
+  "status": "P4_REAL_DIAG_NOT_READY_SYNTHETIC_CONTRACT_ONLY"
+}

@@ -1,0 +1,70 @@
+{
+  "boundaries": {
+    "git_committed_or_pushed": false,
+    "historical_evidence_rewritten": false,
+    "history_migrated": false,
+    "notion_written": false,
+    "training_started": false
+  },
+  "checks": {
+    "all_manifest_artifacts_sha_verified": true,
+    "current_pointer_binds_manifest_sha": true,
+    "current_pointer_is_navigation_only": true,
+    "derived_readme_rebuildable": true,
+    "derived_route_registry_rebuildable": true,
+    "legacy_current_summary_removed": true,
+    "new_switch_requires_v2_manifest_and_green_receipts": true,
+    "no_production_unique_truth_consumer": true,
+    "old_review_package_member_set_and_sha_equivalent": true,
+    "register_build_switch_are_separate_commands": true
+  },
+  "current": {
+    "derived_facts": {
+      "current_exam_rows_each_arm": 41,
+      "current_gold_facts_each_arm": 355,
+      "full_facts_each_arm": 3537,
+      "full_rows_each_arm": 398,
+      "machine_metrics": {
+        "arm_a": {
+          "format_valid_segments": 14,
+          "max_output_reached_segments": 22,
+          "predicted_facts": 164,
+          "repeated_fact_loop_segments": 1
+        },
+        "arm_c": {
+          "format_valid_segments": 35,
+          "max_output_reached_segments": 3,
+          "pointer_valid_facts": 1,
+          "predicted_facts": 212,
+          "repeated_fact_loop_segments": 23
+        }
+      },
+      "old_frozen_exam_rows_each_arm": 48,
+      "raw_answer_records_total": 82,
+      "review_sets": {
+        "ac_root_cause_current_experiment": 78
+      },
+      "runtime_matches_sealed": {
+        "a_stage1": "BYTE_IDENTICAL",
+        "a_stage2": "BYTE_IDENTICAL",
+        "c_stage1": "BYTE_IDENTICAL",
+        "c_stage2": "BYTE_IDENTICAL"
+      },
+      "stage_1_positive_facts_each_arm": 2431,
+      "stage_1_positive_rows_each_arm": 278,
+      "stage_2_special_facts_each_arm": 646,
+      "stage_2_special_rows_each_arm": 72,
+      "training_rows_each_arm": 350
+    },
+    "experiment_id": "T5_R04_AC_FORMAT_COMPARE_20260807_R01",
+    "manifest_revision": "r01",
+    "manifest_sha256": "a1729b5492170da493be51e5e745f7607c1f60b11bd16acef8ce36934569b80d"
+  },
+  "evidence": {
+    "consumer_receipt": "references/t5-r04/R02_CONSUMER_RECEIPT.json",
+    "package_equivalence_receipt": "TEMP/finetuning_r01/PACKAGE_EQUIVALENCE_RECEIPT.json",
+    "route_derivation_receipt": "references/t5-r04/R02_ROUTE_DERIVATION_RECEIPT.json"
+  },
+  "schema_version": "finetuning-r02-acceptance-v1",
+  "status": "PASS_R02_DAILY_ROUTING_CONSOLIDATED"
+}

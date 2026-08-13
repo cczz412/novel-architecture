@@ -1,0 +1,19 @@
+# T5 R04 A/C 证据格式对照｜外审真源快照
+
+CZ 于 2026-08-07 明确要求：把本轮全部训练集、考卷、必要合同、训练成绩、逐题答卷和机器成绩打包，交给 ChatGPT Pro 独立查找 A/C 两版失败原因。
+
+当前已核验事实：
+
+- 基座：Qwen3-4B，本地普通 LoRA。
+- 固定训练顺序：A 正向 → A 特殊 → C 正向 → C 特殊。
+- A/C 训练内容语义对齐，主要变量是证据表达：A 输出逐字证据；C 输出编号加不超过 5 字锚字。
+- 两臂各用自己的等义卷考试，均为 {{CURRENT_EXAM_ROWS_EACH_ARM}} 段、{{CURRENT_GOLD_FACTS_EACH_ARM}} 条金标；A 先跑，C 后跑。
+- A：格式有效 {{A_FORMAT_VALID}}/{{CURRENT_EXAM_ROWS_EACH_ARM}}，触顶截断 {{A_MAX_OUTPUT_REACHED}}/{{CURRENT_EXAM_ROWS_EACH_ARM}}，复读段 {{A_REPEAT_SEGMENTS}}/{{CURRENT_EXAM_ROWS_EACH_ARM}}。
+- C：格式有效 {{C_FORMAT_VALID}}/{{CURRENT_EXAM_ROWS_EACH_ARM}}，触顶截断 {{C_MAX_OUTPUT_REACHED}}/{{CURRENT_EXAM_ROWS_EACH_ARM}}，复读段 {{C_REPEAT_SEGMENTS}}/{{CURRENT_EXAM_ROWS_EACH_ARM}}；可解析的 {{C_PREDICTED_FACTS}} 条事实中，编号加锚字合法 {{C_POINTER_VALID_FACTS}} 条。
+- 严格文本三元组 F1 两臂均为 {{STRICT_F1_SHARED}}；尚未做人工语义盲审，因此不能据此判定语义能力胜负。
+
+本轮外审目标不是让 ChatGPT 直接改教材，而是独立区分：教材问题、训练顺序或强度问题、提示与输出合同问题、解码问题、评分器错杀、以及模型能力上限。
+
+权利边界：材料仅供 CZ 的内部模型训练诊断与评测，不得对外发布或再分发。
+
+来源：Codex

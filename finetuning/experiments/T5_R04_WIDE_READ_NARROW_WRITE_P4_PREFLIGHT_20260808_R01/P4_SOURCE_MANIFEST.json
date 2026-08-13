@@ -1,0 +1,247 @@
+{
+  "schema_version": "t5-r04-p4-source-manifest-v1",
+  "status": "P4_SOURCE_INPUTS_VERIFIED_READ_ONLY",
+  "evidence_priority": [
+    "same_task_local_p3_measurement",
+    "research_conclusion_with_citable_sources",
+    "raw_deep_research_text",
+    "old_discussion_proposal"
+  ],
+  "research_pairing_contract": {
+    "pair_count": 6,
+    "pairing_basis": "topic_match_only",
+    "cryptographic_parent_child_lineage_claimed": false,
+    "external_citations_independently_reverified_in_p4": false
+  },
+  "sources": [
+    {
+      "source_id": "P4-LOCAL-AGENTS",
+      "role": "repository_instruction",
+      "evidence_tier": "governance_context",
+      "path": "AGENTS.md",
+      "bytes": 8455,
+      "sha256": "8d9d45562c1556d584266f1685cf02063c0582f745f2c66fd05c4807519d14de"
+    },
+    {
+      "source_id": "P4-LOCAL-CURRENT-STATE",
+      "role": "machine_current_state",
+      "evidence_tier": "governance_context",
+      "path": "governance/CURRENT_STATE.json",
+      "bytes": 69323,
+      "sha256": "1d1fca5302cc1fea62e12a8a5362ab7fb9f6a6b9a0b945f886f27e173ec569bc"
+    },
+    {
+      "source_id": "P4-LOCAL-P3-RESULT",
+      "role": "p3_local_result",
+      "evidence_tier": "same_task_local_p3_measurement",
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/P3_RESULT_TICKET.md",
+      "bytes": 1897,
+      "sha256": "4da2d9550fc558cdaaf0afd475e3419838de4f45b0b990efabca676308ffc423"
+    },
+    {
+      "source_id": "P4-LOCAL-P3-GAPS",
+      "role": "p3_gap_list",
+      "evidence_tier": "same_task_local_p3_measurement",
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/P3_GAP_LIST.jsonl",
+      "bytes": 2258,
+      "sha256": "191db2360d13d810bfe4afc145d9262541ee195c0d041e6b5aacc3c56e35cf73"
+    },
+    {
+      "source_id": "P4-LOCAL-P3-VALIDATION",
+      "role": "p3_validation_receipt",
+      "evidence_tier": "same_task_local_p3_measurement",
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/P3_FINAL_VALIDATION_RECEIPT.json",
+      "bytes": 1227,
+      "sha256": "193270900494da47a9e23b386ad2c0f9113905196028a6e06ae689452cbb1e93"
+    },
+    {
+      "source_id": "P4-LOCAL-P3-METRICS",
+      "role": "p3_context_metrics",
+      "evidence_tier": "same_task_local_p3_measurement",
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/results_r01/scoring_r02/CONTEXT_CONTRACT_METRICS.json",
+      "bytes": 12152,
+      "sha256": "a3dcd2268a2aaa990f6c829ae7fb1069737cca94363c4157c9c40ac8a41726cb"
+    },
+    {
+      "source_id": "P4-LOCAL-P3-RIGHTS-REQUEST",
+      "role": "rights_request",
+      "evidence_tier": "same_task_local_p3_measurement",
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/sealed_inputs_r01/track_a/RIGHTS_DECISION_REQUEST_TO_CZ.md",
+      "bytes": 5606,
+      "sha256": "1eef4a865f3ca628c9f74fe73358428af7e243647be4e32fde3c6ccda19d1dcf"
+    },
+    {
+      "source_id": "P4-LOCAL-P3-RIGHTS-TEMPLATE",
+      "role": "rights_decision_template",
+      "evidence_tier": "same_task_local_p3_measurement",
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/sealed_inputs_r01/track_a/RIGHTS_DECISION_TEMPLATE.jsonl",
+      "bytes": 25985,
+      "sha256": "e8b870daedf4161f670f5dd73ee67814343115af2966353cfc50cfc0fc15b945"
+    },
+    {
+      "source_id": "P4-LOCAL-P2-RIGHTS-RECEIPT",
+      "role": "p2_rights_gap_receipt",
+      "evidence_tier": "same_task_local_p3_measurement",
+      "path": "finetuning/experiments/T5_R04_PRODUCTION_CANONICAL_PREREQUISITE_REPAIR_P2_20260808_R01/sealed_r01/RIGHTS_REPAIR_RECEIPT_314.json",
+      "bytes": 793,
+      "sha256": "565e101f6618813ef3735b24520bc893ae902b5355c2113e62d2fcecddf5bee4"
+    },
+    {
+      "source_id": "P4-LOCAL-Z00-Z01-RESULT",
+      "role": "marker_burden_result",
+      "evidence_tier": "same_task_local_p3_measurement",
+      "path": "finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/dev_core/zero_training_r01/Z00_Z01_RESULT_TICKET_R01.md",
+      "bytes": 4579,
+      "sha256": "3bc5e65c24391297d04b58c62e7424d590aefb978f95f0773e6eff05efae11b9"
+    },
+    {
+      "source_id": "P4-LOCAL-C2-FINAL-GATE",
+      "role": "c2_unit_final_gate",
+      "evidence_tier": "same_task_local_p3_measurement",
+      "path": "finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/c2_unit_final_gate/C2_UNIT_FINAL_GATE_RECEIPT.json",
+      "bytes": 2603,
+      "sha256": "250e0250a70ce2c372fb90c205d343e73fe4ba5233e45555af27ddaa6cbd42f4"
+    },
+    {
+      "source_id": "P4-RESEARCH-RULES-RAW",
+      "pair_id": "P4-RESEARCH-RULES",
+      "role": "raw_deep_research",
+      "evidence_tier": "raw_deep_research_text",
+      "path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T161748.262.md",
+      "bytes": 40864,
+      "sha256": "66a743504e56ca1abe198f05d355d3bb7866d0942bc792b9db5f2e77f0cb4b79"
+    },
+    {
+      "source_id": "P4-RESEARCH-RULES-CONCLUSION",
+      "pair_id": "P4-RESEARCH-RULES",
+      "role": "research_conclusion",
+      "evidence_tier": "research_conclusion_with_citable_sources",
+      "path": "/Users/a1234/Downloads/调研结论1.md",
+      "bytes": 19855,
+      "sha256": "314466c05c3ca001bbcc2e00c610325e5ede9cd07d94b5b4a1b4d8d36c3d4946"
+    },
+    {
+      "source_id": "P4-RESEARCH-EXAMPLES-RAW",
+      "pair_id": "P4-RESEARCH-EXAMPLES",
+      "role": "raw_deep_research",
+      "evidence_tier": "raw_deep_research_text",
+      "path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T161745.797.md",
+      "bytes": 49839,
+      "sha256": "b9723cf691e8dcdc129919a2d1f3f062f8f9bde92c8c446f639fb3d00d6af3e6"
+    },
+    {
+      "source_id": "P4-RESEARCH-EXAMPLES-CONCLUSION",
+      "pair_id": "P4-RESEARCH-EXAMPLES",
+      "role": "research_conclusion",
+      "evidence_tier": "research_conclusion_with_citable_sources",
+      "path": "/Users/a1234/Downloads/3结论.md",
+      "bytes": 31948,
+      "sha256": "7f7a996149a6ed552fe78e82c0ceb12b6f847b18244425937bcef579baa3b3a4"
+    },
+    {
+      "source_id": "P4-RESEARCH-POSITION-RAW",
+      "pair_id": "P4-RESEARCH-POSITION",
+      "role": "raw_deep_research",
+      "evidence_tier": "raw_deep_research_text",
+      "path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T161743.438.md",
+      "bytes": 44490,
+      "sha256": "103ed4275776a7e25659286d8aeb877b7a231adbfcab573e0f19f08e3f4f327c"
+    },
+    {
+      "source_id": "P4-RESEARCH-POSITION-CONCLUSION",
+      "pair_id": "P4-RESEARCH-POSITION",
+      "role": "research_conclusion",
+      "evidence_tier": "research_conclusion_with_citable_sources",
+      "path": "/Users/a1234/Downloads/Deep Research 3-3｜章节与块位置 metadata 会提高事实抽取吗？.md",
+      "bytes": 17763,
+      "sha256": "9b16e6dc089af8b9558670f0b6c22dc14d0a037361fd25bdfad6b16df3c629d5"
+    },
+    {
+      "source_id": "P4-RESEARCH-BACKGROUND-RAW",
+      "pair_id": "P4-RESEARCH-BACKGROUND",
+      "role": "raw_deep_research",
+      "evidence_tier": "raw_deep_research_text",
+      "path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T161740.664.md",
+      "bytes": 46042,
+      "sha256": "5397aab117bb28da22324bd819fb0bcdc0aaaf14cc0e776b29cab0ea88d8ab65"
+    },
+    {
+      "source_id": "P4-RESEARCH-BACKGROUND-CONCLUSION",
+      "pair_id": "P4-RESEARCH-BACKGROUND",
+      "role": "research_conclusion",
+      "evidence_tier": "research_conclusion_with_citable_sources",
+      "path": "/Users/a1234/Downloads/4三层结论.md",
+      "bytes": 24120,
+      "sha256": "4f3c677ae2799093f71145999626a7f982e1c550a128c4d1c088c07f7ca7fadd"
+    },
+    {
+      "source_id": "P4-RESEARCH-CONTEXT-RAW",
+      "pair_id": "P4-RESEARCH-CONTEXT",
+      "role": "raw_deep_research",
+      "evidence_tier": "raw_deep_research_text",
+      "path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T160558.295.md",
+      "bytes": 8676,
+      "sha256": "d1accd5fd58a582ff6e18023dbf8e67ed07985600f540025a269cd16f6f4008f"
+    },
+    {
+      "source_id": "P4-RESEARCH-CONTEXT-CONCLUSION",
+      "pair_id": "P4-RESEARCH-CONTEXT",
+      "role": "research_conclusion",
+      "evidence_tier": "research_conclusion_with_citable_sources",
+      "path": "/Users/a1234/Downloads/5A｜相关度最高的研究与工业实现.md",
+      "bytes": 20594,
+      "sha256": "d17c4f3864e7281bfabae99aea02fd8095a4880b5a88fe7f12536472472561a9"
+    },
+    {
+      "source_id": "P4-RESEARCH-PURPOSE-RAW",
+      "pair_id": "P4-RESEARCH-PURPOSE",
+      "role": "raw_deep_research",
+      "evidence_tier": "raw_deep_research_text",
+      "path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T161737.947.md",
+      "bytes": 10023,
+      "sha256": "c0a7a54f6259b39a06d814fbcb48118f391e158beafbbbf44a6e999245e8c008"
+    },
+    {
+      "source_id": "P4-RESEARCH-PURPOSE-CONCLUSION",
+      "pair_id": "P4-RESEARCH-PURPOSE",
+      "role": "research_conclusion",
+      "evidence_tier": "research_conclusion_with_citable_sources",
+      "path": "/Users/a1234/Downloads/6研究判定.md",
+      "bytes": 24117,
+      "sha256": "3aead64601686268b6d395502d2f94f54f27efcfb70dd83b261dd65e1239c047"
+    },
+    {
+      "source_id": "P4-OLD-DISCUSSION",
+      "role": "old_discussion_proposal",
+      "evidence_tier": "old_discussion_proposal",
+      "path": "/Users/a1234/.codex/attachments/9c4fec79-f1c2-4eba-ac82-00d98d202487/pasted-text.txt",
+      "bytes": 41675,
+      "sha256": "7be8688c7e1fc955aee191ab5684f3f28c8489f670037cb522a96271976c759a"
+    }
+  ],
+  "disposition": {
+    "adopted_for_p4_preflight": [
+      "complete_chapter_eligibility_gate",
+      "deterministic_sentence_and_dialogue_split",
+      "wide_read_narrow_write",
+      "cross_zone_gold_diagnostics",
+      "fixed_denominator_chapter_level_scoring",
+      "independent_holdout_before_production"
+    ],
+    "frozen_out_of_p4": [
+      "rulebook_variants",
+      "examples",
+      "task_purpose",
+      "confirmed_previous_state",
+      "background_card",
+      "model_visible_position_metadata",
+      "cache_cost_claim"
+    ],
+    "prohibited_claims": [
+      "external_research_overrides_p3_local_measurement",
+      "local_qwen_result_is_doubao_production_result",
+      "p4_preflight_ran_a_model",
+      "p4_preflight_generated_synthetic_chapters"
+    ]
+  }
+}

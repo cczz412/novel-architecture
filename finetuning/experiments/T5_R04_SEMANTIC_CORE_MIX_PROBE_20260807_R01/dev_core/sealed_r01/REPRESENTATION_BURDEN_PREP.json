@@ -1,0 +1,445 @@
+{
+  "schema_version": "t5-r04-dev-core-representation-burden-v1",
+  "status": "PASS_TOKEN_MEASUREMENT_ONLY_NO_INFERENCE",
+  "model_identity": {
+    "model_dir_name": "Qwen3-4B-Instruct-2507_cdbee75f",
+    "tokenizer_class": "Qwen2Tokenizer",
+    "tokenizer_json_sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+  },
+  "arm_input_tokens": {
+    "Z00_A_CORE_FACT_ONLY": {
+      "count": 48,
+      "min": 605,
+      "median": 765.5,
+      "mean": 753.375,
+      "p90": 807.0,
+      "max": 848,
+      "total": 36162
+    },
+    "Z01_C2_CORE_FACT_ONLY": {
+      "count": 48,
+      "min": 746,
+      "median": 894.5,
+      "mean": 883.6875,
+      "p90": 933.8,
+      "max": 978,
+      "total": 42417
+    },
+    "Z02_C2_CORE_WITH_CITATION": {
+      "count": 48,
+      "min": 758,
+      "median": 906.5,
+      "mean": 895.6875,
+      "p90": 945.8,
+      "max": 990,
+      "total": 42993
+    }
+  },
+  "paired_deltas": {
+    "marker_burden_z01_minus_z00": {
+      "count": 48,
+      "min": 113,
+      "median": 129.5,
+      "mean": 130.3125,
+      "p90": 143.0,
+      "max": 147,
+      "total": 6255
+    },
+    "citation_instruction_z02_minus_z01": {
+      "count": 48,
+      "min": 12,
+      "median": 12.0,
+      "mean": 12.0,
+      "p90": 12.0,
+      "max": 12,
+      "total": 576
+    }
+  },
+  "method": "Qwen chat template tokenization with add_generation_prompt; no model inference",
+  "per_case": [
+    {
+      "case_id": "DEVCORE2-DCB001-W01",
+      "z00_tokens": 774,
+      "z01_tokens": 910,
+      "z02_tokens": 922,
+      "marker_delta_z01_minus_z00": 136,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB002-W01",
+      "z00_tokens": 807,
+      "z01_tokens": 932,
+      "z02_tokens": 944,
+      "marker_delta_z01_minus_z00": 125,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB002-W02",
+      "z00_tokens": 765,
+      "z01_tokens": 891,
+      "z02_tokens": 903,
+      "marker_delta_z01_minus_z00": 126,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB003-W01",
+      "z00_tokens": 779,
+      "z01_tokens": 908,
+      "z02_tokens": 920,
+      "marker_delta_z01_minus_z00": 129,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB004-W01",
+      "z00_tokens": 789,
+      "z01_tokens": 923,
+      "z02_tokens": 935,
+      "marker_delta_z01_minus_z00": 134,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB004-W02",
+      "z00_tokens": 778,
+      "z01_tokens": 915,
+      "z02_tokens": 927,
+      "marker_delta_z01_minus_z00": 137,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB005-W01",
+      "z00_tokens": 793,
+      "z01_tokens": 916,
+      "z02_tokens": 928,
+      "marker_delta_z01_minus_z00": 123,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB005-W02",
+      "z00_tokens": 793,
+      "z01_tokens": 914,
+      "z02_tokens": 926,
+      "marker_delta_z01_minus_z00": 121,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB006-W01",
+      "z00_tokens": 703,
+      "z01_tokens": 850,
+      "z02_tokens": 862,
+      "marker_delta_z01_minus_z00": 147,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB006-W02",
+      "z00_tokens": 700,
+      "z01_tokens": 839,
+      "z02_tokens": 851,
+      "marker_delta_z01_minus_z00": 139,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB007-W01",
+      "z00_tokens": 751,
+      "z01_tokens": 883,
+      "z02_tokens": 895,
+      "marker_delta_z01_minus_z00": 132,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB008-W01",
+      "z00_tokens": 789,
+      "z01_tokens": 921,
+      "z02_tokens": 933,
+      "marker_delta_z01_minus_z00": 132,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB009-W01",
+      "z00_tokens": 692,
+      "z01_tokens": 819,
+      "z02_tokens": 831,
+      "marker_delta_z01_minus_z00": 127,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB009-W02",
+      "z00_tokens": 750,
+      "z01_tokens": 893,
+      "z02_tokens": 905,
+      "marker_delta_z01_minus_z00": 143,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB010-W01",
+      "z00_tokens": 701,
+      "z01_tokens": 833,
+      "z02_tokens": 845,
+      "marker_delta_z01_minus_z00": 132,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB011-W01",
+      "z00_tokens": 783,
+      "z01_tokens": 912,
+      "z02_tokens": 924,
+      "marker_delta_z01_minus_z00": 129,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB012-W01",
+      "z00_tokens": 819,
+      "z01_tokens": 938,
+      "z02_tokens": 950,
+      "marker_delta_z01_minus_z00": 119,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB012-W02",
+      "z00_tokens": 848,
+      "z01_tokens": 978,
+      "z02_tokens": 990,
+      "marker_delta_z01_minus_z00": 130,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB013-W01",
+      "z00_tokens": 697,
+      "z01_tokens": 833,
+      "z02_tokens": 845,
+      "marker_delta_z01_minus_z00": 136,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB013-W02",
+      "z00_tokens": 683,
+      "z01_tokens": 809,
+      "z02_tokens": 821,
+      "marker_delta_z01_minus_z00": 126,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB014-W01",
+      "z00_tokens": 754,
+      "z01_tokens": 875,
+      "z02_tokens": 887,
+      "marker_delta_z01_minus_z00": 121,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB015-W01",
+      "z00_tokens": 781,
+      "z01_tokens": 896,
+      "z02_tokens": 908,
+      "marker_delta_z01_minus_z00": 115,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB015-W02",
+      "z00_tokens": 694,
+      "z01_tokens": 807,
+      "z02_tokens": 819,
+      "marker_delta_z01_minus_z00": 113,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB016-W01",
+      "z00_tokens": 712,
+      "z01_tokens": 855,
+      "z02_tokens": 867,
+      "marker_delta_z01_minus_z00": 143,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB017-W01",
+      "z00_tokens": 698,
+      "z01_tokens": 822,
+      "z02_tokens": 834,
+      "marker_delta_z01_minus_z00": 124,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB017-W02",
+      "z00_tokens": 766,
+      "z01_tokens": 881,
+      "z02_tokens": 893,
+      "marker_delta_z01_minus_z00": 115,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB018-W01",
+      "z00_tokens": 686,
+      "z01_tokens": 819,
+      "z02_tokens": 831,
+      "marker_delta_z01_minus_z00": 133,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB018-W02",
+      "z00_tokens": 774,
+      "z01_tokens": 911,
+      "z02_tokens": 923,
+      "marker_delta_z01_minus_z00": 137,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB019-W01",
+      "z00_tokens": 800,
+      "z01_tokens": 939,
+      "z02_tokens": 951,
+      "marker_delta_z01_minus_z00": 139,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB019-W02",
+      "z00_tokens": 754,
+      "z01_tokens": 900,
+      "z02_tokens": 912,
+      "marker_delta_z01_minus_z00": 146,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB020-W01",
+      "z00_tokens": 776,
+      "z01_tokens": 900,
+      "z02_tokens": 912,
+      "marker_delta_z01_minus_z00": 124,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB020-W02",
+      "z00_tokens": 750,
+      "z01_tokens": 877,
+      "z02_tokens": 889,
+      "marker_delta_z01_minus_z00": 127,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB021-W01",
+      "z00_tokens": 780,
+      "z01_tokens": 916,
+      "z02_tokens": 928,
+      "marker_delta_z01_minus_z00": 136,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB021-W02",
+      "z00_tokens": 761,
+      "z01_tokens": 893,
+      "z02_tokens": 905,
+      "marker_delta_z01_minus_z00": 132,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB022-W01",
+      "z00_tokens": 794,
+      "z01_tokens": 931,
+      "z02_tokens": 943,
+      "marker_delta_z01_minus_z00": 137,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB023-W01",
+      "z00_tokens": 837,
+      "z01_tokens": 958,
+      "z02_tokens": 970,
+      "marker_delta_z01_minus_z00": 121,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB024-W01",
+      "z00_tokens": 843,
+      "z01_tokens": 963,
+      "z02_tokens": 975,
+      "marker_delta_z01_minus_z00": 120,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB025-W01",
+      "z00_tokens": 667,
+      "z01_tokens": 807,
+      "z02_tokens": 819,
+      "marker_delta_z01_minus_z00": 140,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB026-W01",
+      "z00_tokens": 700,
+      "z01_tokens": 844,
+      "z02_tokens": 856,
+      "marker_delta_z01_minus_z00": 144,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB026-W02",
+      "z00_tokens": 790,
+      "z01_tokens": 916,
+      "z02_tokens": 928,
+      "marker_delta_z01_minus_z00": 126,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB027-W01",
+      "z00_tokens": 605,
+      "z01_tokens": 746,
+      "z02_tokens": 758,
+      "marker_delta_z01_minus_z00": 141,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB027-W02",
+      "z00_tokens": 677,
+      "z01_tokens": 821,
+      "z02_tokens": 833,
+      "marker_delta_z01_minus_z00": 144,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB028-W01",
+      "z00_tokens": 665,
+      "z01_tokens": 793,
+      "z02_tokens": 805,
+      "marker_delta_z01_minus_z00": 128,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB028-W02",
+      "z00_tokens": 757,
+      "z01_tokens": 890,
+      "z02_tokens": 902,
+      "marker_delta_z01_minus_z00": 133,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB029-W01",
+      "z00_tokens": 807,
+      "z01_tokens": 929,
+      "z02_tokens": 941,
+      "marker_delta_z01_minus_z00": 122,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB029-W02",
+      "z00_tokens": 792,
+      "z01_tokens": 914,
+      "z02_tokens": 926,
+      "marker_delta_z01_minus_z00": 122,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB030-W01",
+      "z00_tokens": 800,
+      "z01_tokens": 922,
+      "z02_tokens": 934,
+      "marker_delta_z01_minus_z00": 122,
+      "citation_instruction_delta_z02_minus_z01": 12
+    },
+    {
+      "case_id": "DEVCORE2-DCB031-W01",
+      "z00_tokens": 748,
+      "z01_tokens": 875,
+      "z02_tokens": 887,
+      "marker_delta_z01_minus_z00": 127,
+      "citation_instruction_delta_z02_minus_z01": 12
+    }
+  ]
+}

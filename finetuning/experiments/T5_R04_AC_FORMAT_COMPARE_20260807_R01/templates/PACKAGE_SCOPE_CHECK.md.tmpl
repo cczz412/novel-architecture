@@ -1,0 +1,9 @@
+# 包体范围检查结论
+
+Luna 只读检查确认：当前 {{PACKAGE_SOURCE_COUNT}} 个证据源覆盖本轮静态病因审查所需材料。每臂母集 {{FULL_ROWS_EACH_ARM}} 行，实际训练 {{TRAINING_ROWS_EACH_ARM}} 行＝正向 {{STAGE1_ROWS_EACH_ARM}}＋特殊 {{STAGE2_ROWS_EACH_ARM}}；旧冻结 {{OLD_EXAM_ROWS_EACH_ARM}} 题与训练集严格分离，R03 的 {{CURRENT_EXAM_ROWS_EACH_ARM}} 题才是当前考试分母。
+
+{{CURRENT_EXPERIMENT_SOURCE_COUNT}} 个当前实验副本与隔离实验源文件 SHA 全部一致；本地绝对路径脱敏后无残留，密钥扫描 {{SECRET_HIT_COUNT}} 命中。
+
+已知边界：包内不含第三方训练器完整源码、基座和 LoRA 权重，所以只能审静态数据、合同、日志、答卷和评分程序，不能审权重数值。包内含完整训练文本和私有金标，只能交给 CZ 指定的 ChatGPT Pro，不得公开或再分发。
+
+来源：Codex

@@ -1,0 +1,846 @@
+{
+  "actions": {
+    "api_calls": 0,
+    "current_or_production_actions": 0,
+    "git_actions": 0,
+    "inference": 0,
+    "model_loads": 0,
+    "notion_actions": 0,
+    "training": 0
+  },
+  "boundary_selection_stage": {
+    "gold_read": false,
+    "input_cases": 24,
+    "short_fragment_core_chars_max": 8,
+    "short_fragment_merge_events_by_case": {
+      "C01": 8,
+      "C02": 5,
+      "C03": 12,
+      "C04": 2,
+      "C05": 2,
+      "C06": 9,
+      "C07": 8,
+      "C08": 13,
+      "C09": 10,
+      "C10": 5,
+      "C11": 8,
+      "C12": 4,
+      "C13": 3,
+      "C14": 8,
+      "C15": 6,
+      "C16": 0,
+      "C17": 0,
+      "C18": 3,
+      "C19": 1,
+      "C20": 32,
+      "C21": 5,
+      "C22": 5,
+      "C23": 10,
+      "C24": 13
+    },
+    "short_fragment_merge_events_total": 172,
+    "standalone_short_fragment_atoms_after_merge": 0,
+    "target_unicode_codepoints_max": 923,
+    "target_unicode_codepoints_min": 620
+  },
+  "future_call_summary": {
+    "full24_block600_new_calls": 0,
+    "full24_block600_reused_calls": 24,
+    "full24_new_calls_block60_plus_block300": 360,
+    "stage1_block600_new_calls": 0,
+    "stage1_block600_reused_calls": 8,
+    "stage1_cases": [
+      "C01",
+      "C02",
+      "C05",
+      "C09",
+      "C10",
+      "C14",
+      "C23",
+      "C24"
+    ],
+    "stage1_new_calls_block60_plus_block300": 125
+  },
+  "meaning": {
+    "candidate_only_not_request_or_gold": true,
+    "fixed_halo_unicode_chars_each_side_max": 180,
+    "not_three_by_three": true,
+    "same_original_target_covered_by_every_band": true,
+    "small_block_outputs_aggregate_before_original_gold_scoring": true
+  },
+  "post_freeze_gold_audit_stage": {
+    "bands": {
+      "BLOCK300": {
+        "blocks_full24": 63,
+        "blocks_stage1_8": 22,
+        "case_stats": {
+          "C01": {
+            "blocks": 3,
+            "contained_gold_facts": 7,
+            "crossing_gold_facts": 3,
+            "gold_empty_blocks": 0
+          },
+          "C02": {
+            "blocks": 3,
+            "contained_gold_facts": 8,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C03": {
+            "blocks": 2,
+            "contained_gold_facts": 10,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C04": {
+            "blocks": 3,
+            "contained_gold_facts": 8,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C05": {
+            "blocks": 3,
+            "contained_gold_facts": 13,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C06": {
+            "blocks": 3,
+            "contained_gold_facts": 17,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C07": {
+            "blocks": 2,
+            "contained_gold_facts": 7,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C08": {
+            "blocks": 3,
+            "contained_gold_facts": 10,
+            "crossing_gold_facts": 2,
+            "gold_empty_blocks": 0
+          },
+          "C09": {
+            "blocks": 2,
+            "contained_gold_facts": 9,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C10": {
+            "blocks": 3,
+            "contained_gold_facts": 8,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C11": {
+            "blocks": 3,
+            "contained_gold_facts": 5,
+            "crossing_gold_facts": 3,
+            "gold_empty_blocks": 1
+          },
+          "C12": {
+            "blocks": 3,
+            "contained_gold_facts": 13,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C13": {
+            "blocks": 2,
+            "contained_gold_facts": 7,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C14": {
+            "blocks": 2,
+            "contained_gold_facts": 11,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C15": {
+            "blocks": 3,
+            "contained_gold_facts": 11,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C16": {
+            "blocks": 2,
+            "contained_gold_facts": 16,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C17": {
+            "blocks": 2,
+            "contained_gold_facts": 12,
+            "crossing_gold_facts": 2,
+            "gold_empty_blocks": 0
+          },
+          "C18": {
+            "blocks": 2,
+            "contained_gold_facts": 11,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C19": {
+            "blocks": 3,
+            "contained_gold_facts": 16,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C20": {
+            "blocks": 3,
+            "contained_gold_facts": 11,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C21": {
+            "blocks": 2,
+            "contained_gold_facts": 11,
+            "crossing_gold_facts": 1,
+            "gold_empty_blocks": 0
+          },
+          "C22": {
+            "blocks": 3,
+            "contained_gold_facts": 11,
+            "crossing_gold_facts": 2,
+            "gold_empty_blocks": 0
+          },
+          "C23": {
+            "blocks": 3,
+            "contained_gold_facts": 12,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C24": {
+            "blocks": 3,
+            "contained_gold_facts": 9,
+            "crossing_gold_facts": 2,
+            "gold_empty_blocks": 0
+          }
+        },
+        "conceptual_calls_full24": 63,
+        "conceptual_calls_stage1_8": 22,
+        "crossing_fact_ids_by_case": {
+          "C01": [
+            "C01-F003",
+            "C01-F006",
+            "C01-F007"
+          ],
+          "C02": [
+            "C02-F005"
+          ],
+          "C03": [
+            "C03-F007"
+          ],
+          "C04": [
+            "C04-F008"
+          ],
+          "C06": [
+            "C06-F008"
+          ],
+          "C07": [
+            "C07-F005"
+          ],
+          "C08": [
+            "C08-F007",
+            "C08-F008"
+          ],
+          "C09": [
+            "C09-F007"
+          ],
+          "C10": [
+            "C10-F004"
+          ],
+          "C11": [
+            "C11-F004",
+            "C11-F005",
+            "C11-F006"
+          ],
+          "C12": [
+            "C12-F010"
+          ],
+          "C13": [
+            "C13-F002"
+          ],
+          "C15": [
+            "C15-F009"
+          ],
+          "C17": [
+            "C17-F006",
+            "C17-F007"
+          ],
+          "C19": [
+            "C19-F007"
+          ],
+          "C20": [
+            "C20-F003"
+          ],
+          "C21": [
+            "C21-F007"
+          ],
+          "C22": [
+            "C22-F005",
+            "C22-F008"
+          ],
+          "C24": [
+            "C24-F003",
+            "C24-F008"
+          ]
+        },
+        "gold_empty_blocks": 1,
+        "gold_fact_crossing_ratio": 0.096429,
+        "gold_facts_contained_within_one_block": 253,
+        "gold_facts_crossing_blocks": 27,
+        "gold_facts_total": 280,
+        "new_calls_full24": 63,
+        "new_calls_stage1_8": 22,
+        "over_preferred_max_blocks": 0,
+        "text_empty_blocks": 0,
+        "under_preferred_min_blocks": 0,
+        "unicode_codepoints_max": 379,
+        "unicode_codepoints_median": 292.0,
+        "unicode_codepoints_min": 227
+      },
+      "BLOCK60": {
+        "blocks_full24": 297,
+        "blocks_stage1_8": 103,
+        "case_stats": {
+          "C01": {
+            "blocks": 13,
+            "contained_gold_facts": 6,
+            "crossing_gold_facts": 4,
+            "gold_empty_blocks": 8
+          },
+          "C02": {
+            "blocks": 14,
+            "contained_gold_facts": 5,
+            "crossing_gold_facts": 4,
+            "gold_empty_blocks": 9
+          },
+          "C03": {
+            "blocks": 11,
+            "contained_gold_facts": 6,
+            "crossing_gold_facts": 5,
+            "gold_empty_blocks": 6
+          },
+          "C04": {
+            "blocks": 12,
+            "contained_gold_facts": 7,
+            "crossing_gold_facts": 2,
+            "gold_empty_blocks": 5
+          },
+          "C05": {
+            "blocks": 14,
+            "contained_gold_facts": 7,
+            "crossing_gold_facts": 6,
+            "gold_empty_blocks": 8
+          },
+          "C06": {
+            "blocks": 14,
+            "contained_gold_facts": 9,
+            "crossing_gold_facts": 9,
+            "gold_empty_blocks": 6
+          },
+          "C07": {
+            "blocks": 10,
+            "contained_gold_facts": 4,
+            "crossing_gold_facts": 4,
+            "gold_empty_blocks": 6
+          },
+          "C08": {
+            "blocks": 14,
+            "contained_gold_facts": 5,
+            "crossing_gold_facts": 7,
+            "gold_empty_blocks": 9
+          },
+          "C09": {
+            "blocks": 12,
+            "contained_gold_facts": 3,
+            "crossing_gold_facts": 7,
+            "gold_empty_blocks": 9
+          },
+          "C10": {
+            "blocks": 13,
+            "contained_gold_facts": 2,
+            "crossing_gold_facts": 7,
+            "gold_empty_blocks": 11
+          },
+          "C11": {
+            "blocks": 13,
+            "contained_gold_facts": 2,
+            "crossing_gold_facts": 6,
+            "gold_empty_blocks": 11
+          },
+          "C12": {
+            "blocks": 13,
+            "contained_gold_facts": 7,
+            "crossing_gold_facts": 7,
+            "gold_empty_blocks": 6
+          },
+          "C13": {
+            "blocks": 12,
+            "contained_gold_facts": 3,
+            "crossing_gold_facts": 5,
+            "gold_empty_blocks": 10
+          },
+          "C14": {
+            "blocks": 12,
+            "contained_gold_facts": 5,
+            "crossing_gold_facts": 6,
+            "gold_empty_blocks": 7
+          },
+          "C15": {
+            "blocks": 12,
+            "contained_gold_facts": 7,
+            "crossing_gold_facts": 5,
+            "gold_empty_blocks": 6
+          },
+          "C16": {
+            "blocks": 10,
+            "contained_gold_facts": 9,
+            "crossing_gold_facts": 7,
+            "gold_empty_blocks": 3
+          },
+          "C17": {
+            "blocks": 10,
+            "contained_gold_facts": 6,
+            "crossing_gold_facts": 8,
+            "gold_empty_blocks": 5
+          },
+          "C18": {
+            "blocks": 12,
+            "contained_gold_facts": 3,
+            "crossing_gold_facts": 8,
+            "gold_empty_blocks": 9
+          },
+          "C19": {
+            "blocks": 12,
+            "contained_gold_facts": 10,
+            "crossing_gold_facts": 7,
+            "gold_empty_blocks": 3
+          },
+          "C20": {
+            "blocks": 13,
+            "contained_gold_facts": 3,
+            "crossing_gold_facts": 9,
+            "gold_empty_blocks": 10
+          },
+          "C21": {
+            "blocks": 12,
+            "contained_gold_facts": 7,
+            "crossing_gold_facts": 5,
+            "gold_empty_blocks": 6
+          },
+          "C22": {
+            "blocks": 14,
+            "contained_gold_facts": 4,
+            "crossing_gold_facts": 9,
+            "gold_empty_blocks": 11
+          },
+          "C23": {
+            "blocks": 12,
+            "contained_gold_facts": 6,
+            "crossing_gold_facts": 6,
+            "gold_empty_blocks": 6
+          },
+          "C24": {
+            "blocks": 13,
+            "contained_gold_facts": 2,
+            "crossing_gold_facts": 9,
+            "gold_empty_blocks": 11
+          }
+        },
+        "conceptual_calls_full24": 297,
+        "conceptual_calls_stage1_8": 103,
+        "crossing_fact_ids_by_case": {
+          "C01": [
+            "C01-F001",
+            "C01-F003",
+            "C01-F004",
+            "C01-F007"
+          ],
+          "C02": [
+            "C02-F003",
+            "C02-F005",
+            "C02-F007",
+            "C02-F009"
+          ],
+          "C03": [
+            "C03-F002",
+            "C03-F003",
+            "C03-F007",
+            "C03-F008",
+            "C03-F009"
+          ],
+          "C04": [
+            "C04-F008",
+            "C04-F009"
+          ],
+          "C05": [
+            "C05-F002",
+            "C05-F004",
+            "C05-F007",
+            "C05-F010",
+            "C05-F011",
+            "C05-F012"
+          ],
+          "C06": [
+            "C06-F003",
+            "C06-F004",
+            "C06-F007",
+            "C06-F009",
+            "C06-F011",
+            "C06-F013",
+            "C06-F014",
+            "C06-F015",
+            "C06-F016"
+          ],
+          "C07": [
+            "C07-F002",
+            "C07-F004",
+            "C07-F005",
+            "C07-F007"
+          ],
+          "C08": [
+            "C08-F002",
+            "C08-F003",
+            "C08-F004",
+            "C08-F007",
+            "C08-F008",
+            "C08-F011",
+            "C08-F012"
+          ],
+          "C09": [
+            "C09-F001",
+            "C09-F003",
+            "C09-F004",
+            "C09-F005",
+            "C09-F007",
+            "C09-F008",
+            "C09-F009"
+          ],
+          "C10": [
+            "C10-F001",
+            "C10-F002",
+            "C10-F004",
+            "C10-F005",
+            "C10-F006",
+            "C10-F007",
+            "C10-F008"
+          ],
+          "C11": [
+            "C11-F003",
+            "C11-F004",
+            "C11-F005",
+            "C11-F006",
+            "C11-F007",
+            "C11-F008"
+          ],
+          "C12": [
+            "C12-F001",
+            "C12-F006",
+            "C12-F008",
+            "C12-F009",
+            "C12-F010",
+            "C12-F013",
+            "C12-F014"
+          ],
+          "C13": [
+            "C13-F001",
+            "C13-F002",
+            "C13-F005",
+            "C13-F006",
+            "C13-F007"
+          ],
+          "C14": [
+            "C14-F002",
+            "C14-F003",
+            "C14-F007",
+            "C14-F008",
+            "C14-F010",
+            "C14-F011"
+          ],
+          "C15": [
+            "C15-F002",
+            "C15-F003",
+            "C15-F005",
+            "C15-F007",
+            "C15-F009"
+          ],
+          "C16": [
+            "C16-F001",
+            "C16-F002",
+            "C16-F004",
+            "C16-F005",
+            "C16-F006",
+            "C16-F007",
+            "C16-F008"
+          ],
+          "C17": [
+            "C17-F004",
+            "C17-F005",
+            "C17-F006",
+            "C17-F008",
+            "C17-F009",
+            "C17-F010",
+            "C17-F012",
+            "C17-F013"
+          ],
+          "C18": [
+            "C18-F002",
+            "C18-F003",
+            "C18-F004",
+            "C18-F005",
+            "C18-F006",
+            "C18-F007",
+            "C18-F009",
+            "C18-F010"
+          ],
+          "C19": [
+            "C19-F002",
+            "C19-F005",
+            "C19-F006",
+            "C19-F007",
+            "C19-F011",
+            "C19-F014",
+            "C19-F015"
+          ],
+          "C20": [
+            "C20-F001",
+            "C20-F002",
+            "C20-F003",
+            "C20-F005",
+            "C20-F007",
+            "C20-F008",
+            "C20-F009",
+            "C20-F010",
+            "C20-F011"
+          ],
+          "C21": [
+            "C21-F001",
+            "C21-F002",
+            "C21-F006",
+            "C21-F007",
+            "C21-F011"
+          ],
+          "C22": [
+            "C22-F002",
+            "C22-F003",
+            "C22-F004",
+            "C22-F005",
+            "C22-F006",
+            "C22-F007",
+            "C22-F008",
+            "C22-F010",
+            "C22-F011"
+          ],
+          "C23": [
+            "C23-F001",
+            "C23-F002",
+            "C23-F006",
+            "C23-F008",
+            "C23-F009",
+            "C23-F010"
+          ],
+          "C24": [
+            "C24-F001",
+            "C24-F002",
+            "C24-F003",
+            "C24-F005",
+            "C24-F006",
+            "C24-F007",
+            "C24-F008",
+            "C24-F009",
+            "C24-F010"
+          ]
+        },
+        "gold_empty_blocks": 181,
+        "gold_fact_crossing_ratio": 0.542857,
+        "gold_facts_contained_within_one_block": 128,
+        "gold_facts_crossing_blocks": 152,
+        "gold_facts_total": 280,
+        "new_calls_full24": 297,
+        "new_calls_stage1_8": 103,
+        "over_preferred_max_blocks": 2,
+        "text_empty_blocks": 0,
+        "under_preferred_min_blocks": 4,
+        "unicode_codepoints_max": 99,
+        "unicode_codepoints_median": 61.0,
+        "unicode_codepoints_min": 35
+      },
+      "BLOCK600": {
+        "blocks_full24": 24,
+        "blocks_stage1_8": 8,
+        "case_stats": {
+          "C01": {
+            "blocks": 1,
+            "contained_gold_facts": 10,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C02": {
+            "blocks": 1,
+            "contained_gold_facts": 9,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C03": {
+            "blocks": 1,
+            "contained_gold_facts": 11,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C04": {
+            "blocks": 1,
+            "contained_gold_facts": 9,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C05": {
+            "blocks": 1,
+            "contained_gold_facts": 13,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C06": {
+            "blocks": 1,
+            "contained_gold_facts": 18,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C07": {
+            "blocks": 1,
+            "contained_gold_facts": 8,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C08": {
+            "blocks": 1,
+            "contained_gold_facts": 12,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C09": {
+            "blocks": 1,
+            "contained_gold_facts": 10,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C10": {
+            "blocks": 1,
+            "contained_gold_facts": 9,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C11": {
+            "blocks": 1,
+            "contained_gold_facts": 8,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C12": {
+            "blocks": 1,
+            "contained_gold_facts": 14,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C13": {
+            "blocks": 1,
+            "contained_gold_facts": 8,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C14": {
+            "blocks": 1,
+            "contained_gold_facts": 11,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C15": {
+            "blocks": 1,
+            "contained_gold_facts": 12,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C16": {
+            "blocks": 1,
+            "contained_gold_facts": 16,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C17": {
+            "blocks": 1,
+            "contained_gold_facts": 14,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C18": {
+            "blocks": 1,
+            "contained_gold_facts": 11,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C19": {
+            "blocks": 1,
+            "contained_gold_facts": 17,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C20": {
+            "blocks": 1,
+            "contained_gold_facts": 12,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C21": {
+            "blocks": 1,
+            "contained_gold_facts": 12,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C22": {
+            "blocks": 1,
+            "contained_gold_facts": 13,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C23": {
+            "blocks": 1,
+            "contained_gold_facts": 12,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          },
+          "C24": {
+            "blocks": 1,
+            "contained_gold_facts": 11,
+            "crossing_gold_facts": 0,
+            "gold_empty_blocks": 0
+          }
+        },
+        "conceptual_calls_full24": 24,
+        "conceptual_calls_stage1_8": 8,
+        "crossing_fact_ids_by_case": {},
+        "gold_empty_blocks": 0,
+        "gold_fact_crossing_ratio": 0.0,
+        "gold_facts_contained_within_one_block": 280,
+        "gold_facts_crossing_blocks": 0,
+        "gold_facts_total": 280,
+        "new_calls_full24": 0,
+        "new_calls_stage1_8": 0,
+        "over_preferred_max_blocks": 0,
+        "text_empty_blocks": 0,
+        "under_preferred_min_blocks": 0,
+        "unicode_codepoints_max": 923,
+        "unicode_codepoints_median": 760.0,
+        "unicode_codepoints_min": 620
+      }
+    },
+    "gold_facts_total": 280,
+    "gold_moved_boundaries": false,
+    "gold_read_only_after_boundaries_frozen": true,
+    "residual_crossings_are_reported_not_repaired": true
+  },
+  "schema_version": "base-out2-target-block-coarse-screen-stats/1.0",
+  "status": "CANDIDATE_PREFLIGHT_NOT_AUTHORIZED_NOT_RUN"
+}

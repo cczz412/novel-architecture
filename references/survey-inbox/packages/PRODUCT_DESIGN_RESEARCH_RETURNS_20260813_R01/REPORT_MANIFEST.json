@@ -1,0 +1,55 @@
+{
+  "package_id": "PRODUCT_DESIGN_RESEARCH_RETURNS_20260813_R01",
+  "restored_on": "2026-08-14",
+  "restore_note": "rehashed from TEMP copy after workspace-switch git checkout wiped untracked package",
+  "files": [
+    {
+      "path": "returns/111.md",
+      "bytes": 27220,
+      "lines": 229,
+      "sha256": "23888f017d1487575d3dafbe282d4dca7747fc84bc18736d98715a84e60519a5"
+    },
+    {
+      "path": "returns/222.md",
+      "bytes": 28288,
+      "lines": 265,
+      "sha256": "d15e1c035d04f6d16a81df0ca0487b80e7130b63bae0db6cac9b27adee3a1fe7"
+    },
+    {
+      "path": "returns/333.md",
+      "bytes": 34241,
+      "lines": 380,
+      "sha256": "de11e480913825ec33ff08922208f3f4f852d26bef6e3fe538f4ab13a263737b"
+    },
+    {
+      "path": "returns/666.md",
+      "bytes": 27312,
+      "lines": 334,
+      "sha256": "dd661372e4b566c9bb22403d1eea74000311fa34651782f4b5d4b0f812260890"
+    },
+    {
+      "path": "returns/777.md",
+      "bytes": 23010,
+      "lines": 194,
+      "sha256": "96dbb6ca27e0928c01c403574fe5486decd4720103829d24f9842c4def484298"
+    },
+    {
+      "path": "returns/创作类产品新用户激活深度调查_20260813.md",
+      "bytes": 33788,
+      "lines": 279,
+      "sha256": "6fed1c6c5619c85d45d9cb8a4efbf60f14ccde36e66dd129680b313609f1e179"
+    },
+    {
+      "path": "returns/故事引擎护城河、插件生态与私密创作市场调查.md",
+      "bytes": 28958,
+      "lines": 463,
+      "sha256": "34ce749caf15611f665064a32c27ecacfe2c6dd96aa40beb621b2a7e6a19efa7"
+    },
+    {
+      "path": "returns/深度调查：创作工具日常轨迹与渐进授权.md",
+      "bytes": 26104,
+      "lines": 304,
+      "sha256": "50c5ea5f8fac3cc197e75d4aaae234702ae549ac91b4fd1f02f194fe2db92e82"
+    }
+  ]
+}

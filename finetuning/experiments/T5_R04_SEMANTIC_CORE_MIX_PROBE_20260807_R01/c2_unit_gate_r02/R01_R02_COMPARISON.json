@@ -1,0 +1,58 @@
+{
+  "schema_version": "t5-r04-c2-unit-r01-r02-comparison-v1",
+  "same_prototype_windows": true,
+  "thresholds_changed": false,
+  "single_global_atomizer_change": "unit_max_chars 80 -> 40",
+  "r01": {
+    "total_units": 480,
+    "average_unit_chars": 58.975,
+    "average_visible_ids_per_window": 11.65,
+    "mean_evidence_ids_per_uniquely_mapped_fact": 1.2601010101010102,
+    "extra_context_chars": {
+      "p50": 42.0,
+      "p90": 72.0,
+      "p95": 94.25,
+      "max": 130
+    },
+    "cross_unit_facts": 96,
+    "cross_unit_rate": 0.24242424242424243,
+    "duplicate_text_ambiguities": 1
+  },
+  "r02": {
+    "total_units": 969,
+    "average_unit_chars": 29.21362229102167,
+    "average_visible_ids_per_window": 21.875,
+    "mean_evidence_ids_per_uniquely_mapped_fact": 1.7323232323232323,
+    "extra_context_chars": {
+      "p50": 10.0,
+      "p90": 32.0,
+      "p95": 35.0,
+      "max": 55
+    },
+    "cross_unit_facts": 207,
+    "cross_unit_rate": 0.5227272727272727,
+    "duplicate_text_ambiguities": 1
+  },
+  "growth": {
+    "total_units": {
+      "absolute": 489,
+      "relative_rate": 1.01875
+    },
+    "average_unit_chars": {
+      "absolute": -29.76137770897833,
+      "relative_rate": -0.5046439628482973
+    },
+    "average_visible_ids_per_window": {
+      "absolute": 10.225,
+      "relative_rate": 0.8776824034334764
+    },
+    "mean_evidence_ids_per_fact": {
+      "absolute": 0.4722222222222221,
+      "relative_rate": 0.37474949899799587
+    },
+    "cross_unit_rate": {
+      "absolute": 0.2803030303030303,
+      "relative_rate": 1.1562499999999998
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "repo-bridge-handoff-input-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "handoff_id",
+    "purpose",
+    "requested_by",
+    "review_scope",
+    "questions",
+    "execution_authorization"
+  ],
+  "properties": {
+    "schema_version": {"const": "repo-bridge-handoff-input-v1"},
+    "handoff_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]+$"},
+    "purpose": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "requested_by": {"enum": ["CZ", "Codex"]},
+    "review_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domains", "paths", "evidence_ids"],
+      "properties": {
+        "domains": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "paths": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+          "uniqueItems": true
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1, "maxLength": 2000}
+    },
+    "execution_authorization": {"const": false}
+  }
+}

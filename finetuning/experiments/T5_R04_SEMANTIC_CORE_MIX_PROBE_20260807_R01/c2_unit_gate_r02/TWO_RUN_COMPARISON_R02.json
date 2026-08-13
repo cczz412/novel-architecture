@@ -1,0 +1,76 @@
+{
+  "schema_version": "t5-r04-c2-unit-r02-two-run-comparison-v1",
+  "status": "PASS_REPRODUCIBLE_R02_HARD_STOP_RETAINED",
+  "all_outputs_byte_identical": true,
+  "gate_outcome": "HARD_STOP_C2_UNIT_R02_GATE_FAILED",
+  "comparisons": [
+    {
+      "path": "SOURCE_UNITS.jsonl",
+      "run_1_sha256": "32b601227b2bd3529ee6562c75a95c1516e483c28106ca9a33dad9a1ade65449",
+      "run_2_sha256": "32b601227b2bd3529ee6562c75a95c1516e483c28106ca9a33dad9a1ade65449",
+      "byte_identical": true
+    },
+    {
+      "path": "C2_QUESTIONS.jsonl",
+      "run_1_sha256": "426ae03335496a3ab6cc866533110fb60f96bb5c8fa8807d5b165ae0b0bdd65b",
+      "run_2_sha256": "426ae03335496a3ab6cc866533110fb60f96bb5c8fa8807d5b165ae0b0bdd65b",
+      "byte_identical": true
+    },
+    {
+      "path": "ATOMIZER_RECEIPT.json",
+      "run_1_sha256": "e6e68b7dc8472e94b62a2ee929c3a5a96962fa432115bf89c0d93291eccee549",
+      "run_2_sha256": "e6e68b7dc8472e94b62a2ee929c3a5a96962fa432115bf89c0d93291eccee549",
+      "byte_identical": true
+    },
+    {
+      "path": "FACT_MAPPING_AUDIT_R02.jsonl",
+      "run_1_sha256": "607600c15e66fa93708e3b2bc111452bbe0a102d1453bc2bc086f76620aa87dc",
+      "run_2_sha256": "607600c15e66fa93708e3b2bc111452bbe0a102d1453bc2bc086f76620aa87dc",
+      "byte_identical": true
+    },
+    {
+      "path": "DUPLICATE_EQUIVALENCE_SETS.jsonl",
+      "run_1_sha256": "8e1cba80a777806e84e276fda7459434770da32c29be351fc8dd67913d093c07",
+      "run_2_sha256": "8e1cba80a777806e84e276fda7459434770da32c29be351fc8dd67913d093c07",
+      "byte_identical": true
+    },
+    {
+      "path": "AMBIGUITY_CASES_R02.jsonl",
+      "run_1_sha256": "2962de0819b9577a14ffa7d0635ab189e880f6cce1a83f944647d91da68470a5",
+      "run_2_sha256": "2962de0819b9577a14ffa7d0635ab189e880f6cce1a83f944647d91da68470a5",
+      "byte_identical": true
+    },
+    {
+      "path": "INCOMPLETE_MAPPING_CASES_R02.jsonl",
+      "run_1_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_2_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "C2_DERIVED_EXISTING_SCHEMA.jsonl",
+      "run_1_sha256": "5c57bfa7d18ed963239843d8e2018cb4d63ec932a52e0ee9193d836075ecebae",
+      "run_2_sha256": "5c57bfa7d18ed963239843d8e2018cb4d63ec932a52e0ee9193d836075ecebae",
+      "byte_identical": true
+    },
+    {
+      "path": "MECHANICAL_AUDIT_R02.json",
+      "run_1_sha256": "8aa61b428984e137d15fa5b53f46e20986bdb8c9abfcbf9443b84dacd8e2812b",
+      "run_2_sha256": "8aa61b428984e137d15fa5b53f46e20986bdb8c9abfcbf9443b84dacd8e2812b",
+      "byte_identical": true
+    },
+    {
+      "path": "GOLD_AUDIT_RECEIPT_R02.json",
+      "run_1_sha256": "caaa5de563b77bf9fab6b8cd7a93a6b17a8e398842a04cd125eaeea09d296e75",
+      "run_2_sha256": "caaa5de563b77bf9fab6b8cd7a93a6b17a8e398842a04cd125eaeea09d296e75",
+      "byte_identical": true
+    }
+  ],
+  "frozen_r01": {
+    "file_count": 33,
+    "aggregate_sha256": "d7140a3751955841dd1b6dc1b4fce6ef43c2008114b1f1b24bad3aeec47ae30f"
+  },
+  "frozen_evaluator_r02": {
+    "file_count": 22,
+    "aggregate_sha256": "7c8b9a4f1c88e22895a111d2f84107d766774fd2f71ad39a0202a7ab7b47d1df"
+  }
+}

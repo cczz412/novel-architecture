@@ -1,0 +1,21 @@
+{
+  "decision_rule": "The local artifact authorization permits candidate construction only and forbids direct training. It does not establish per-source training rights, so all A rows remain RIGHTS_UNKNOWN.",
+  "evidence": {
+    "path": "/Users/a1234/挣钱/小说架构/TEMP/chatgpt_review_cycles/T5_R04_A_V27_PRUNED_CANDIDATE_20260807_R01/AUTHORIZATION.md",
+    "sha256": "cdaf692837c9c9df98b8290d5665542311908887f6247059047be39406bf5145"
+  },
+  "input_facts": 2783,
+  "input_rows": 314,
+  "status": "HARD_STOP_A_RIGHTS_UNRESOLVED",
+  "status_counts": {
+    "ELIGIBLE_FOR_TRAINING": 0,
+    "NOT_ELIGIBLE_FOR_TRAINING": 0,
+    "RIGHTS_UNKNOWN": 314
+  },
+  "training_inference_prohibited": [
+    "file existence",
+    "historical training",
+    "other chapters",
+    "network knowledge"
+  ]
+}

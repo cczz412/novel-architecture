@@ -1,0 +1,124 @@
+{
+  "schema_version": "read1-train96-sample-mean-qualification-spec/1.0",
+  "preparation_status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "中文说明": "这是一张真正单变量的TRAIN96 READ1资格跑准备包：教材、行序、base、配方、L6和评分全部冻结，唯一变化是global-token mean换成per-sample mean。",
+  "scope": "READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_SINGLE_RUN",
+  "run_id": "T5_R04_READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_R01",
+  "run_root": "/Users/a1234/挣钱/小说架构/runs/T5_R04_READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_R01",
+  "run_root_exists_at_prepare": false,
+  "training_authorized_now": false,
+  "single_variable_contract": {
+    "changed": "default_loss: global assistant-token mean -> per-sample assistant-token mean followed by batch sample mean",
+    "claim_boundary": "只对 actual local single-process path 成立；world_size 必须为 1，非单进程在模型加载前硬停",
+    "unchanged": [
+      "TRAIN96 payload and row order",
+      "original Qwen base",
+      "Adam, LR, batch, GA, iterations and seed",
+      "LoRA layers, rank, dropout and scale",
+      "READ1 TARGET+FOCUS prompt and Gold",
+      "L6 requests, decoding, scorer and gates"
+    ],
+    "previous_global_token_mean_fail_ticket_sha256": "b09f3d952c3ca7668236d1fa21dc4957d0225cf152f5849b5362986e5b527a77"
+  },
+  "training_input": {
+    "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_READ1_TRAIN96_TOKEN_WEIGHTED_QUALIFICATION_20260810_R01/READ_1_TARGET_TRAIN96.jsonl",
+    "sha256": "e059529d9ce39e7f9044f3d966dba00d0e19b2206098a827415473c38c46e4ad",
+    "rows": 96,
+    "facts": 879,
+    "empty_answers": 15,
+    "row_order_changed": false,
+    "payload_changed": false
+  },
+  "token_accounting": {
+    "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_READ1_TRAIN96_TOKEN_WEIGHTED_QUALIFICATION_20260810_R01/TRAIN96_TOKEN_STATS.json",
+    "sha256": "d888c3e6e7c77df6c903c98798eb8a18cf666230f88a351f9e13ae5b30782c25",
+    "real_tokenizer": true,
+    "used_to_change_order_or_weight": false,
+    "generic_validation_loss_role": "diagnostic_only_token_mean_not_experiment_winner_metric"
+  },
+  "sample_mean_preflight": {
+    "trainer_sha256": "fd77af48343557171598bd449ec6c10c5fcd514efa503f6007aba78bc0c5da4d",
+    "vendor_tree_sha256": "3d69ffe180a504e7a4aab14e7bbd6d802009bb9f494b2d717832b99d1d254d00",
+    "receipt_sha256": "7fdba146b0d3665dee472dd30d86d362819bf26dcc61b4e4d20afccb1083070c",
+    "result_sha256": "5aa63604d080f1a16cf3cc283cf6f2ac8b18ae2eff76b3042fcb872c86286701",
+    "status": "PASS_PREFLIGHT_NOT_RUN_AUTHORITY"
+  },
+  "base_model_receipt": {
+    "path": "/Users/a1234/挣钱/小说架构_隔离实验/models/Qwen3-4B-Instruct-2507_cdbee75f/MODEL_RECEIPT.json",
+    "sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6",
+    "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "member_count": 13,
+    "total_bytes": 8060917568,
+    "gate": "train 与 infer 都在模型加载前逐件核 path、bytes、sha256、总数、总bytes与revision"
+  },
+  "r04_bindings": {
+    "ledger_sha256": "a6b9de1a473e83d7e9099175f8674c901118e8b4d3e3f41d6afd0f3ad5110540",
+    "registry_sha256": "08f4ac83f8d9c22b7b1efe4b2c79ddc5a1e56973f601e4afcc6d59792c092bf0",
+    "stop_if_l6_fails": "stop current 4B recipe; no third loss, new curriculum, row-order or hyperparameter search"
+  },
+  "training_recipe": {
+    "base": "Qwen3-4B-Instruct-2507_cdbee75f original base",
+    "resume_adapter": null,
+    "read_view": "READ1 TARGET+FOCUS",
+    "optimizer": "Adam",
+    "batch_size": 2,
+    "grad_accumulation_steps": 4,
+    "micro_iterations": 48,
+    "optimizer_updates": 12,
+    "learning_rate": 3e-05,
+    "seed": 20260802,
+    "num_layers": 16,
+    "rank": 32,
+    "dropout": 0,
+    "scale": 0.125,
+    "mask_prompt": true,
+    "max_seq_length": 4608,
+    "grad_checkpoint": true,
+    "valid_jsonl_created": false,
+    "val_batches": 0,
+    "save_every": 48,
+    "retained_checkpoint": "final_only_after_step48_byte_identity_check",
+    "retry": 0,
+    "fallback": false,
+    "checkpoint_sweep": false
+  },
+  "l6_evaluation": {
+    "base_rows": "reuse frozen same-contract BASE_L6 projection; no new base inference",
+    "greedy": true,
+    "temperature": 0,
+    "max_output_tokens": 2048,
+    "mechanical_gate": {
+      "json_and_schema": "6/6",
+      "LC-L01_and_L02": 0,
+      "LC-L03_to_L06_each_at_least": 1,
+      "illegal_evidence_repetition_token_limit_duplicates": 0
+    },
+    "on_mechanical_fail": "write fail ticket and hard stop; no blind review and no REAL24",
+    "on_mechanical_pass": "create blind queue and hard stop for independent review",
+    "semantic_gate": "LoRA L6 F1 not below frozen same-contract Base",
+    "real24_prepared_or_authorized": false
+  },
+  "ticket_contract": {
+    "ticket_required_before_run_root_or_model_load": true,
+    "schema_version": "read1-train96-sample-mean-qualification-ticket/1.0",
+    "authorized_commands_exact": [
+      "train",
+      "infer-l6"
+    ],
+    "ticket_created_by_this_preparation": false,
+    "ticket_must_bind_sample_mean_preflight_and_previous_fail": true,
+    "ticket_must_bind_model_receipt_sha256": true
+  },
+  "components": {
+    "runner_sha256": "12b40326776a57cec723d7747467abd9b437595a6ff0ceb14a7001e6644d6cbc",
+    "scorer_sha256": "197b43383314cd06b5d93d0fe6b3457057135267e43d229cc74d739c101b09a6"
+  },
+  "forbidden": [
+    "当前准备轮创建执行票或run root",
+    "加载Qwen、训练或推理",
+    "改教材、行序、Prompt、Gold、LR、步数、seed或LoRA",
+    "第三种loss、retry、fallback或checkpoint sweep",
+    "REAL24、READ2、READ4、OUT",
+    "API、Notion、Git、CURRENT、生产晋级"
+  ]
+}

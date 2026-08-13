@@ -1,0 +1,62 @@
+{
+  "schema_version": "t5-r04-dev-core-zero-training-final-receipt-v1",
+  "status": "Z00_Z01_COMPLETE_HARD_STOP_AWAITING_ROUTE_DECISION",
+  "completed_at": "2026-08-07T23:29:52+08:00",
+  "scope": {
+    "cases_per_arm": 48,
+    "core_gold_facts": 95,
+    "model": "Qwen/Qwen3-4B-Instruct-2507",
+    "model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "adapter_loaded": false,
+    "training_performed": false,
+    "api_calls": 0
+  },
+  "frozen_inputs": {
+    "Z00_BASE_A_CORE_QUESTIONS.jsonl": "8414eda33f94a84bfa1f8ecffc3d878dd2816a2fa7754705606b49332cb173d2",
+    "Z01_BASE_C2_CORE_QUESTIONS.jsonl": "3c94ccdc6d41efe5305e5105e062793fd3b3bb142938bd82183790da9f2ec665",
+    "CORE_GOLD.jsonl": "90f68035708aa8dbfba609799a49f655a45c0cfb56e9af4e4c3085257a0e8494"
+  },
+  "raw_outputs": {
+    "Z00": {
+      "rows": 48,
+      "sha256": "621dd009aba3c9498153cefc79d4988946550802db509cfd6469c0bc580bb777"
+    },
+    "Z01": {
+      "rows": 48,
+      "sha256": "d431f682955ec2860440a2cb2dac2e8ef4d40290233f60a1471dd738d56c3bf7"
+    }
+  },
+  "machine_metrics": {
+    "sha256": "066f23c69123822fb55c8211c4b6bcd6c471bec78d047962fa2f879508976ef2",
+    "schema_valid_cases_each_arm": 48,
+    "strict_repetition_cases_each_arm": 0,
+    "truncated_cases_each_arm": 0
+  },
+  "blind_semantic_review": {
+    "review_rows": 48,
+    "review_sha256": "6c86d22879bee078a0731ffef2ad441ad240c1ea9e153af9a52fd1a1308bac7e",
+    "metrics_sha256": "ba4434bdfc60493f0fda373bcd83a7afbdf418bfc2e214f934dfbced2daa79f2",
+    "receipt_sha256": "953cd3c5168d98bc3fc85fdbc7a741cd2f2f2213356b2f3213ef78eb917be656",
+    "independent_review_count": 1,
+    "formal_winner_allowed": false
+  },
+  "determinism": {
+    "machine_scorer_two_runs_identical": true,
+    "blind_semantic_scorer_two_runs_identical": true
+  },
+  "unmeasured": [
+    "citation_output_burden",
+    "single_unit_vs_cross_unit_burden",
+    "formal_A_vs_C2_winner"
+  ],
+  "prohibited_next_actions": [
+    "training",
+    "C0_J5_S5",
+    "modify_C2",
+    "modify_atomizer_or_renderer",
+    "modify_sealed_r01_or_CORE_gold",
+    "API",
+    "Git",
+    "Notion"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "schema_version": "base-read2-out-format-screen-prepare-receipt/1.0",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "prepared_at": "2026-08-10T12:40:39+08:00",
+  "experiment_id": "T5_R04_BASE_READ2_OUT_FORMAT_SCREEN_20260810_R01",
+  "exact_file_set": [
+    "README.md",
+    "SPEC.json",
+    "run_base_read2_out_format_screen.py",
+    "score_base_read2_out_format_screen.py",
+    "PREPARE_RECEIPT.json"
+  ],
+  "bound_members": {
+    "README.md": "e3372de8a4a0018ce2893f9c3a5e42006d68c921d2dbbaf7ea554ae5e327a0f7",
+    "SPEC.json": "7a269604eefc414084c658454e3b5af33f881e754bae2096d38132245121d7ba",
+    "run_base_read2_out_format_screen.py": "727854b243e7545636a600321932211553d3aa437a5f8ce7e86069424ada14d8",
+    "score_base_read2_out_format_screen.py": "25bef372ddaaa13d5e4b1912bae60dac16d5df28f188e21fd6286ed3c1979736"
+  },
+  "input_bindings": {
+    "parent_full24_raw_sha256": "f9bd1fc02f93cfb7c51193f1dc319753472949bc2bbde4360a6779c415cdb28e",
+    "out2_base_read2_projection_sha256": "c7f738181148acc4c06644e47058606b35f07b9a0603521ffdb98502267b1b97",
+    "read2_actual_request_sha256": "126b0f0843fdd244f007a46361397f24f97ce8d71c73d760ae9ad5a6bf5b3088",
+    "read2_user_message_bundle_sha256": "c26e79b0ef6a946def3e5f3feb3bbba6b3ec96bf62309ec953e44b80075f0a4b",
+    "gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "txx_map_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "base_context_final_metrics_sha256": "f625c10ecf0e1d4be8eade2032dc2fdbe6d398ac55a6ad89f47abffa117825c7",
+    "base_context_formal_decisions_sha256": "ddc75e55cb441c6dd90f354f2a7ee7ffb28dd32f08e82a91df2052d1ae5ccf4d",
+    "base_context_adjudication_receipt_sha256": "9170e59a8219efc5fff4e13291842f8a114fcdee00c95e9ffe85c063c345b6f3",
+    "semantic_policy_sha256": "73083a1d91edcc8fadabd2342fc59b89e10ef770aeaa6ffe926867f4f4c39a93",
+    "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6"
+  },
+  "deterministic_request_build": {
+    "builder_location": "run_base_read2_out_format_screen.py",
+    "OUT3-IDRANGE": {
+      "rows": 24,
+      "case_order": "C01_TO_C24",
+      "request_sha256": "664726e8847a0513de36d9eb3852eaa5c98a2cda2e8f7a82e27ff5570a2e08ed",
+      "system_sha256": "19a84be4199fa0ce58af8eee50d29152a561421454a347861379a326b0d3e775"
+    },
+    "OUT4-IDQUOTE": {
+      "rows": 24,
+      "case_order": "C01_TO_C24",
+      "request_sha256": "aba03bca27429245795c1c274436d3b44a57c047ab0038e7c08167c091ddab26",
+      "system_sha256": "2b28b3468d48eb52f67f20d8020d11d7cd8f23ba7e0c8c21b101b001fc231765"
+    },
+    "total_new_requests": 48,
+    "read2_user_messages_equal_source": "48/48",
+    "same_numbered_focus_and_allowlist": "48/48",
+    "old_evidence_ids_contract_leaks": 0,
+    "only_full_system_output_contract_differs": true
+  },
+  "out2_frozen_baseline": {
+    "rerun": false,
+    "rows": 24,
+    "strict_json_cases": 24,
+    "readable_facts_cases": 24,
+    "schema_cases": 22,
+    "illegal_evidence_predictions": 0,
+    "recoverable_f1": 0.352941
+  },
+  "checks": {
+    "runner_static_check": "PASS",
+    "scorer_static_check": "PASS",
+    "out3_exactly_one_range_string": "PASS",
+    "out3_multi_range_negative_examples": "PASS_3_OF_3_REJECTED",
+    "range_expand_and_reverse_reject": "PASS",
+    "quote_true_substring_and_false_quote_reject": "PASS",
+    "blind_queue_variant_input_order_byte_invariant": "PASS",
+    "anonymous_queue_identity_leak": 0,
+    "pre_metrics_records_exact_queue_sha": "PASS",
+    "pre_queue_tamper_hard_stop_before_final_output": "PASS",
+    "adjudications_tamper_hard_stop_before_final_output": "PASS",
+    "final_receipt_binds_raw_pre_queue_adjudications_and_final": "PASS_SYNTHETIC_NO_MODEL",
+    "ruff_locked_environment": "PASS",
+    "missing_ticket_exit_code": 1,
+    "missing_ticket_error": "EXECUTION_TICKET_REQUIRED_BEFORE_RUN_ROOT_OR_MODEL_LOAD",
+    "run_root_exists": false,
+    "execution_ticket_created": false,
+    "model_loaded": false
+  },
+  "known_gaps": [
+    "OUT3和OUT4尚未推理，新格式是否能达到24题资格门仍未知",
+    "OUT4只预注册quote原文真实性检查，没有制作280条唯一标准quote",
+    "新预测的事实语义需后续匿名盲审，本轮没有裁决或分数",
+    "若两个新格不合格或不优于现任OUT2，就保留OUT2；这个相对选择不代表4B绝对可用、Mini或生产合格"
+  ],
+  "actions": {
+    "model_loads": 0,
+    "training": 0,
+    "inference": 0,
+    "blind_adjudication": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0,
+    "out_runs": 0
+  }
+}

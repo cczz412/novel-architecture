@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "finetuning-experiment-manifest-v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "manifest_revision",
+    "spec_sha256",
+    "state",
+    "source_root",
+    "artifacts",
+    "derived_facts",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {"const": "finetuning-experiment-manifest-v1"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "manifest_revision": {"type": "string", "minLength": 1},
+    "spec_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "state": {
+      "type": "object",
+      "required": ["lifecycle", "storage_state", "promotion_state"]
+    },
+    "source_root": {
+      "type": "object",
+      "required": ["store_id", "relative_path"]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "role",
+          "store_id",
+          "relative_path",
+          "bytes",
+          "sha256",
+          "visibility"
+        ]
+      }
+    },
+    "derived_facts": {"type": "object"},
+    "boundaries": {"type": "object"}
+  },
+  "additionalProperties": false
+}

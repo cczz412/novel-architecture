@@ -1,0 +1,68 @@
+{
+  "schema_version": "read1-train72-zero-low-paired-prepare-receipt/1.0",
+  "status": "PASS_PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "prepared_at": "2026-08-10T01:43:48+08:00",
+  "experiment_root": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_READ1_TRAIN72_ZERO_LOW_PAIRED_20260810_R01",
+  "output_file_count": 6,
+  "prepared_files_excluding_this_receipt": {
+    "ZERO_LOW_PAIRED_SPEC.json": "be0631a8bc014833794aef8f04d3eabf32ffe6472d0adc62ed834413cf6f7e16",
+    "READ_1_TARGET_TRAIN72_ZERO_LOW_PAIRED.jsonl": "d0448165b740a35f2a0460a32e3c07eea4d8459dbb66df7d473b1a6ea5613ed6",
+    "ZERO_LOW_PAIR_MAP.json": "73d6d327cd14aff1fdedaeb87a2a79f419606bc6c28efec04092c4e15f3ab986",
+    "run_zero_low_paired.py": "c66165e226f0b831e46b0b480a46a6730fe7bfab00e76f6718a1415a74326116",
+    "score_zero_low_paired_l6.py": "754f07b92270ac201ee4660e30eb0cd0fbc6987d86332809fd3a407bd77b3609"
+  },
+  "source_bindings": {
+    "source_train72_sha256": "21213ae287d002351136b92c9caeb7388d2e71432574f9c8dcdf5ec1c3797f76",
+    "line_payload_multiset_sha256": "682b2cea7050f54a4b86667565993fa3aca736d37aea3eeaebef0fde9c989f74",
+    "original_pairing_l6_fail_ticket_sha256": "d4bde13591bff46613f43a50d948b990bba20e5162889ae4e5deb0bb0c587b53",
+    "density_paired_l6_fail_ticket_sha256": "b0674dcf87a355798659f893f650f397c6c329c60d34898c58778ce5f6ca7146",
+    "parent_l6_raw_sha256": "e3c662cb87aaf8ba6862ce37c562de3752f554e2877079833da49e97dcf7646d",
+    "l6_v2_request_sha256": "1aa942e9910fd3525f7c2fb7f3f23f9d706a2564870f3526319104dcfa42b3ec",
+    "l6_gold_sha256": "79ab2bf95aef439d3183d6cb1df3a59f6a3f706275714974fd4ed256469ba579",
+    "base_l6_projection_sha256": "db5d40432a0849b78f3d5a09824251af4574002205b5221892bc9b32b3649476",
+    "runtime_runner_sha256": "db9ae2a2c33dbbe3539f86fa9e45645e8dda6267ac42b5484b6b042290d80245",
+    "recoverable_core_scorer_sha256": "476daaf478274ffb82a25e593b19523a43996047c495a1fee377da965a195fbf",
+    "structural_schema_sha256": "7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14"
+  },
+  "mechanical_checks": {
+    "json_parse": "PASS",
+    "ruff_runner_and_scorer": "PASS",
+    "runner_static_check": "PASS",
+    "scorer_static_check": "PASS",
+    "train_rows": 72,
+    "train_fact_total": 830,
+    "empty_answers": 7,
+    "all_line_payloads_byte_identical_to_source_multiset": true,
+    "first_36_rows_byte_equal_to_source": true,
+    "only_row_order_changed": true,
+    "batch_count": 36,
+    "zero_with_one_or_two_batches": 7,
+    "zero_with_zero_batches": 0,
+    "zero_with_three_or_more_batches": 0,
+    "empty_supervision_percent_in_target_batches": 6.9652,
+    "ratio_between_original_and_density_paired_references": true,
+    "parent_base_l6_projection_rows": 6,
+    "missing_ticket_hard_stop_before_run_directory": "PASS",
+    "run_root_exists": false,
+    "execution_ticket_created": false,
+    "formal_package_pycache_or_pyc_count": 0,
+    "model_weights_loaded": false,
+    "tokenizer_loaded_in_this_preparation": false
+  },
+  "row_order_boundary": {
+    "current_recipe_final_row_order_arm": true,
+    "fourth_sorting_forbidden_regardless_of_result": true
+  },
+  "execution_boundary": {
+    "training_authorized": false,
+    "training_runs": 0,
+    "inference_runs": 0,
+    "blind_reviews": 0,
+    "real24_prepared_or_run": false,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_pointer_changes": 0,
+    "production_actions": 0
+  }
+}

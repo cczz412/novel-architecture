@@ -1,0 +1,51 @@
+{
+  "member_count": 9,
+  "members": [
+    {
+      "bytes": 451,
+      "path": "00_READ_ME_FIRST.md",
+      "sha256": "da4db97808fb979f18083dc75339a4363905175ab1e6cdd7782279f9bef4cc2b"
+    },
+    {
+      "bytes": 1084,
+      "path": "DEMO_CONTRACT.md",
+      "sha256": "8ca9be2d2bf6daa777813d2b8afc1bd1047a2728e1528795314b063a9da4bac8"
+    },
+    {
+      "bytes": 529,
+      "path": "FINAL_VALIDATION_RECEIPT.json",
+      "sha256": "4bdc42d29b1d41f8cc0580849c1aad33ba25b7523f51229730c8e9b4cdd1863c"
+    },
+    {
+      "bytes": 952,
+      "path": "RESULT_TICKET.md",
+      "sha256": "216b0027ca2b0b322caa7516e96390d05f27b0c71ebd163f8bee0e638d5c0145"
+    },
+    {
+      "bytes": 849,
+      "path": "SOURCE_BINDING.json",
+      "sha256": "92905eb59d524655d862ef8fd0004477394bd9146fd69688c799fd740dcae6d1"
+    },
+    {
+      "bytes": 490,
+      "path": "STATIC_VALIDATION_RECEIPT.json",
+      "sha256": "b0a8fe3b2acec0f35a331f21617f87bdf80e06c200e13cda50c0413f712e01d2"
+    },
+    {
+      "bytes": 3791,
+      "path": "tests/test_demo.py",
+      "sha256": "2e2a90c8722b345f84ab5f164613808ce4a7e05ed2f439717fb410c592e2f6d2"
+    },
+    {
+      "bytes": 8389,
+      "path": "tools/run_demo.py",
+      "sha256": "0060de38f973fa7dfc5cb5498fb3cbc65e74075add47fae155e7e76fed1836a8"
+    },
+    {
+      "bytes": 11005,
+      "path": "tools/score_demo.py",
+      "sha256": "eed88ee3c02eb9963cc10f67c06f343415d3a3aed27dd6a71f79e420ccea9d1c"
+    }
+  ],
+  "status": "HARD_STOP_OUTPUT_SET_BOUND"
+}

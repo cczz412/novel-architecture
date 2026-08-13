@@ -1,0 +1,337 @@
+{
+  "schema_version": "t5-r04-fact-extraction-roadmap-source-map-v1",
+  "status": "SOURCE_BINDINGS_VERIFIED_READ_ONLY",
+  "evidence_priority": [
+    "local_result_and_receipt",
+    "local_frozen_material",
+    "research_conclusion_with_citations",
+    "raw_deep_research",
+    "historical_discussion"
+  ],
+  "rules": {
+    "research_is_execution_authority": false,
+    "historical_discussion_overrides_local_result": false,
+    "local_qwen_result_is_production_result": false,
+    "missing_or_changed_sha_action": "CONFLICT_HARD_STOP"
+  },
+  "drift_dispositions": [
+    {
+      "drift_id": "P4-UPSTREAM-AGENTS-DRIFT",
+      "upstream_artifact": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_SOURCE_MANIFEST.json",
+      "locked_source_id": "P4-LOCAL-AGENTS",
+      "locked_sha256": "8d9d45562c1556d584266f1685cf02063c0582f745f2c66fd05c4807519d14de",
+      "observed_current_sha256": "c66848166159a44c21a548137393e0f08ab03e6f536661ba22c610f62f8f089e",
+      "current_recursive_reverification": "FAIL_UPSTREAM_CONTEXT_DRIFT",
+      "disposition": "P4 当时封票的 0/12 与 0 次模型推理仍可作历史证据；当前现场不再宣称可递归复验闭合，不再运行旧 verifier，不修改或重封旧 P4。误调用及硬停事实单独登记在结果票和最终回执。"
+    }
+  ],
+  "concurrent_state_observations": [
+    {
+      "path": "governance/CURRENT_STATE.json",
+      "roadmap_opening_sha256": "1d1fca5302cc1fea62e12a8a5362ab7fb9f6a6b9a0b945f886f27e173ec569bc",
+      "seal_observed_sha256": "44dfe9670b47fb05958400cd6300b3c0aa01f7932e4df655708c2a13873516f0",
+      "seal_observed_mtime_asia_shanghai": "2026-08-08T20:34:53+08:00",
+      "changed_by_this_roadmap": false,
+      "disposition": "EXTERNAL_CONCURRENT_DRIFT_NOT_ROADMAP_FAILURE_DO_NOT_REVERT"
+    },
+    {
+      "path": "finetuning/CURRENT.json",
+      "roadmap_opening_sha256": "5abaa79b952532881dfc5e147e7da190471baba386aac263474b51edd414f8dd",
+      "seal_observed_sha256": "5abaa79b952532881dfc5e147e7da190471baba386aac263474b51edd414f8dd",
+      "changed_by_this_roadmap": false,
+      "disposition": "UNCHANGED_READ_ONLY"
+    }
+  ],
+  "research_pairs": [
+    {
+      "pair_id": "RESEARCH-RULES",
+      "topic": "规则数量、详细度和放置",
+      "raw": {"path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T161748.262.md", "sha256": "66a743504e56ca1abe198f05d355d3bb7866d0942bc792b9db5f2e77f0cb4b79"},
+      "conclusion": {"path": "/Users/a1234/Downloads/调研结论1.md", "sha256": "314466c05c3ca001bbcc2e00c610325e5ede9cd07d94b5b4a1b4d8d36c3d4946"},
+      "use": "只提供原子规则与 placement 的待验证候选；P3 八规则负结果优先。",
+      "disposition": "ADVISORY_ONLY_NO_R0_R5_R10_R15_RERUN"
+    },
+    {
+      "pair_id": "RESEARCH-EXAMPLES",
+      "topic": "正例、反例和 minimal pair",
+      "raw": {"path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T161745.797.md", "sha256": "b9723cf691e8dcdc129919a2d1f3f062f8f9bde92c8c446f639fb3d00d6af3e6"},
+      "conclusion": {"path": "/Users/a1234/Downloads/3结论.md", "sha256": "7f7a996149a6ed552fe78e82c0ceb12b6f847b18244425937bcef579baa3b3a4"},
+      "use": "支持 EX0 对一个安全 contrastive minimal pair；不支持默认常驻 examples。",
+      "disposition": "ADVISORY_ONLY_ONE_PAIR_CANDIDATE"
+    },
+    {
+      "pair_id": "RESEARCH-POSITION-METADATA",
+      "topic": "章节与块位置 metadata",
+      "raw": {"path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T161743.438.md", "sha256": "103ed4275776a7e25659286d8aeb877b7a231adbfcab573e0f19f08e3f4f327c"},
+      "conclusion": {"path": "/Users/a1234/Downloads/Deep Research 3-3｜章节与块位置 metadata 会提高事实抽取吗？.md", "sha256": "9b16e6dc089af8b9558670f0b6c22dc14d0a037361fd25bdfad6b16df3c629d5"},
+      "use": "只供应完整章 M0／M1／C-Nonce 预注册；真实坐标缺失时不运行。",
+      "disposition": "ADVISORY_ONLY_FULL_CHAPTER_SPECIALTY"
+    },
+    {
+      "pair_id": "RESEARCH-BACKGROUND",
+      "topic": "确认背景、别名和 previous state",
+      "raw": {"path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T161740.664.md", "sha256": "5397aab117bb28da22324bd819fb0bcdc0aaaf14cc0e776b29cab0ea88d8ab65"},
+      "conclusion": {"path": "/Users/a1234/Downloads/4三层结论.md", "sha256": "4f3c677ae2799093f71145999626a7f982e1c550a128c4d1c088c07f7ca7fadd"},
+      "use": "提供无背景／确认相关／等 token 中性／冲突安全臂候选；P3 previous state 负结果优先。",
+      "disposition": "ADVISORY_ONLY_BACKGROUND_SAFETY"
+    },
+    {
+      "pair_id": "RESEARCH-CONTEXT-LENGTH",
+      "topic": "上下文长度、相关度和放置",
+      "raw": {"path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T160558.295.md", "sha256": "d1accd5fd58a582ff6e18023dbf8e67ed07985600f540025a269cd16f6f4008f"},
+      "conclusion": {"path": "/Users/a1234/Downloads/5A｜相关度最高的研究与工业实现.md", "sha256": "d17c4f3864e7281bfabae99aea02fd8095a4880b5a88fe7f12536472472561a9"},
+      "use": "提供片段缩放、纯长度、目标位置和完整章专项候选；不能把更多上下文写成默认更好。",
+      "disposition": "ADVISORY_ONLY_MINIMUM_SUFFICIENT_CONTEXT"
+    },
+    {
+      "pair_id": "RESEARCH-PURPOSE",
+      "topic": "告诉模型下游用途",
+      "raw": {"path": "/Users/a1234/Downloads/deep-research-report - 2026-08-08T161737.947.md", "sha256": "c0a7a54f6259b39a06d814fbcb48118f391e158beafbbbf44a6e999245e8c008"},
+      "conclusion": {"path": "/Users/a1234/Downloads/6研究判定.md", "sha256": "3aead64601686268b6d395502d2f94f54f27efcfb70dd83b261dd65e1239c047"},
+      "use": "只解释 P3 purpose 候选；本地打平结果决定当前暂停。",
+      "disposition": "ADVISORY_ONLY_PAUSED_BY_LOCAL_RESULT"
+    }
+  ],
+  "historical_sources": [
+    {
+      "source_id": "HISTORICAL-DISCUSSION-P4",
+      "path": "/Users/a1234/.codex/attachments/9c4fec79-f1c2-4eba-ac82-00d98d202487/pasted-text.txt",
+      "sha256": "7be8688c7e1fc955aee191ab5684f3f28c8489f670037cb522a96271976c759a",
+      "use": "保留旧 WRNW、两阶段和长章讨论的来源；与本路牌冲突时以本路牌工单和本地结果为准。",
+      "disposition": "HISTORICAL_PROPOSAL_PARTIALLY_SUPERSEDED"
+    }
+  ],
+  "local_sources": [
+    {
+      "source_id": "TRAIN24-CANONICAL",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/inspection/T5_R04_SYNTHETIC_MICRO24_R01/canonical/CANONICAL_MICRO24.jsonl",
+      "sha256": "a2619894d09f285411481598fa4093af3a5f5027709020b10256b5c9efd99676",
+      "use": "微型训练和接口教学；24 cases、43 facts、2 个自然空答案。",
+      "disposition": "TRAINING_MICRO_PROBE_ONLY"
+    },
+    {
+      "source_id": "TRAIN24-PACKAGE-MANIFEST",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/inspection/T5_R04_SYNTHETIC_MICRO24_R01/PACKAGE_MANIFEST.json",
+      "sha256": "0f145fd27402d283d10e8c9f0ab29e113cd85aa507ab2b42c36db81aa7dea125",
+      "use": "TRAIN24 包成员和 renderer 身份。",
+      "disposition": "FROZEN_INPUT_IDENTITY"
+    },
+    {
+      "source_id": "DEV24-SET-B-R03-CANONICAL",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/set_b_r03_work/sealed/T5_R04_SYNTHETIC_MICRO24_SET_B_R03_20260808/canonical/CANONICAL_MICRO24_SET_B_R03.jsonl",
+      "sha256": "fa04ce5e5f819f4f87aec248ef8c306541b04128d67f0b79cc7e61f2d401d7d9",
+      "use": "开发筛选；24 cases、48 facts、2 个自然空答案；不训练，不再称最终盲考。",
+      "disposition": "DEV_ONLY_DO_NOT_TRAIN"
+    },
+    {
+      "source_id": "DEV24-SET-B-R03-MANIFEST",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/set_b_r03_work/sealed/T5_R04_SYNTHETIC_MICRO24_SET_B_R03_20260808/PACKAGE_MANIFEST.json",
+      "sha256": "d7f62e27095b6c0f1d3ac704305fecf9be3563a279a196b19955aeeed17473e7",
+      "use": "DEV24 包成员和 renderer 身份。",
+      "disposition": "FROZEN_DEV_IDENTITY"
+    },
+    {
+      "source_id": "DEV24-SET-B-R03-RECEIPT",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/set_b_r03_work/sealed/T5_R04_SYNTHETIC_MICRO24_SET_B_R03_20260808/PACKAGE_RECEIPT.json",
+      "sha256": "bb5a0b93c2b09252b76438022a629413aac08054655aec7493d0d3849bc84981",
+      "use": "DEV24 R03 建包与本地验收状态。",
+      "disposition": "PASS_R03_BUILT_AND_LOCALLY_VALIDATED"
+    },
+    {
+      "source_id": "M1-MASTER-LOCK",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/M1_MASTER_EXECUTION_LOCK.json",
+      "sha256": "ffdd4002cf891c338c8b08ce4ad47afac4c9661cb8c3566a31e406b7e402e08f",
+      "use": "四格式同 base、同配方、独立训练的总锁。",
+      "disposition": "FROZEN_M1_EXECUTION_IDENTITY"
+    },
+    {
+      "source_id": "M1-RESULT",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/closeout_r01/M1_RESULT_TICKET.json",
+      "sha256": "b5099603e10153087e47ec66570603ac9c59583d605d4f2c1c597efa028d02b2",
+      "use": "A／C2／D／E 已跑状态、候选解释和 M2 硬停。",
+      "disposition": "LOCAL_PROXY_RESULT_NOT_PRODUCTION"
+    },
+    {
+      "source_id": "M1-DEV24-COMPARISON",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/closeout_r01/DEV24_COMPARISON_UPDATE72.json",
+      "sha256": "6f8d6001ebb73c9dea9601eb82e59d01c4b311c8322956cc661be340b0f10a9f",
+      "use": "四格式 DEV24 semantic F1 与结构、证据、token 明细。",
+      "disposition": "LOCAL_MEASUREMENT"
+    },
+    {
+      "source_id": "MICRO24-EXPERIMENT-MATRIX",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/inspection/T5_R04_SYNTHETIC_MICRO24_R01/EXPERIMENT_MATRIX.md",
+      "sha256": "cd1f6fef9cddde0cdf191cc45c3eb7bd8579e06617985a2dbe118ba1a9640656",
+      "use": "绑定本地 MICRO24 facts-first F_STAGE1_FACTS／F_STAGE2_CITATION；不得与后续 evidence-first 路线混称。",
+      "disposition": "FROZEN_SYNTHETIC_EXPERIMENT_DEFINITION_NOT_RUN"
+    },
+    {
+      "source_id": "M1-A-RECEIPT",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/receipts/a_full_TRAINING_RECEIPT.json",
+      "sha256": "635f3f78e91e64434f87dbcc1ae4d08da5f8f224679cf8c5ec3e31947997072e",
+      "use": "A_FULL checkpoint 与训练工件身份。",
+      "disposition": "FROZEN_TRAINING_RECEIPT"
+    },
+    {
+      "source_id": "M1-C2-RECEIPT",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/receipts/c2_full_TRAINING_RECEIPT.json",
+      "sha256": "cec20883e872e21d505efa0336506040eb25fa17ea05d14cdbd850eab5ed2f1c",
+      "use": "C2_FULL checkpoint 与训练工件身份。",
+      "disposition": "FROZEN_TRAINING_RECEIPT"
+    },
+    {
+      "source_id": "M1-D-RECEIPT",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/receipts/d_range_TRAINING_RECEIPT.json",
+      "sha256": "43c3ccf4c99232da915d22e137e363af7e7b4c43c785f6456ff007a5767a76b1",
+      "use": "D_RANGE checkpoint 与训练工件身份。",
+      "disposition": "FROZEN_TRAINING_RECEIPT"
+    },
+    {
+      "source_id": "M1-E-RECEIPT",
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/receipts/e_unit_quote_TRAINING_RECEIPT.json",
+      "sha256": "4eece1b2220136827904c2b5ac422ebf9a6dd0886d8492272f33a138a1f1d09a",
+      "use": "E_UNIT_QUOTE checkpoint 与训练工件身份。",
+      "disposition": "FROZEN_TRAINING_RECEIPT"
+    },
+    {
+      "source_id": "SEMANTIC-C2-FINAL-GATE",
+      "path": "finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/c2_unit_final_gate/C2_UNIT_FINAL_GATE_RECEIPT.json",
+      "sha256": "250e0250a70ce2c372fb90c205d343e73fe4ba5233e45555af27ddaa6cbd42f4",
+      "use": "C2_UNIT R02、position provenance 和 legacy 隔离的机械门。",
+      "disposition": "FROZEN_C2_MECHANICAL_GATE"
+    },
+    {
+      "source_id": "SEMANTIC-DEV-CORE-SEAL",
+      "path": "finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/dev_core/sealed_r01/DEV_CORE_SEAL_RECEIPT.json",
+      "sha256": "d9140332229274f6be0a3c40c0d00915e13eec79a4bcbcc5563bfafd483979df",
+      "use": "48 cases／95 facts 的 CORE 诊断集身份。",
+      "disposition": "DIAGNOSTIC_GOLD_ONE_REVIEW_ONLY"
+    },
+    {
+      "source_id": "SEMANTIC-CORE-GOLD",
+      "path": "finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/dev_core/sealed_r01/CORE_GOLD.jsonl",
+      "sha256": "90f68035708aa8dbfba609799a49f655a45c0cfb56e9af4e4c3085257a0e8494",
+      "use": "Z00／Z01 的 95 条诊断 gold；不是生产金标。",
+      "disposition": "DIAGNOSTIC_ONLY"
+    },
+    {
+      "source_id": "SEMANTIC-Z00-Z01-RECEIPT",
+      "path": "finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/dev_core/zero_training_r01/ZERO_TRAINING_FINAL_RECEIPT.json",
+      "sha256": "85156f59c4baecc52abfe6b435dc94bb8445e2c437fe5e27a4ef5f33b33345fd",
+      "use": "两臂零训练、无 adapter、无 API 的执行身份。",
+      "disposition": "ZERO_TRAINING_DIAGNOSTIC"
+    },
+    {
+      "source_id": "SEMANTIC-Z00-Z01-RESULT",
+      "path": "finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/dev_core/zero_training_r01/Z00_Z01_RESULT_TICKET_R01.md",
+      "sha256": "3bc5e65c24391297d04b58c62e7424d590aefb978f95f0773e6eff05efae11b9",
+      "use": "marker 臂多报 46、只多覆盖 1、F1 精确低 4.121763 点，按原票约写 4.12 点的本地结果。",
+      "disposition": "MARKER_BURDEN_ONLY_NOT_C2_VERDICT"
+    },
+    {
+      "source_id": "SEMANTIC-Z00-Z01-METRICS",
+      "path": "finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/dev_core/zero_training_r01/results/BLIND_SEMANTIC_METRICS.json",
+      "sha256": "ba4434bdfc60493f0fda373bcd83a7afbdf418bfc2e214f934dfbced2daa79f2",
+      "use": "机械读取 Z00／Z01 的 predicted facts、covered gold 与 semantic F1 精确值。",
+      "disposition": "LOCAL_DIAGNOSTIC_METRICS_ONE_REVIEW_ONLY"
+    },
+    {
+      "source_id": "P3-RESULT",
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/P3_RESULT_TICKET.md",
+      "sha256": "4da2d9550fc558cdaaf0afd475e3419838de4f45b0b990efabca676308ffc423",
+      "use": "C0/C1/C2/C4 结果与 C3/C5 缺口。",
+      "disposition": "LOCAL_INPUT_CONTRACT_RESULT"
+    },
+    {
+      "source_id": "P3-METRICS",
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/results_r01/scoring_r02/CONTEXT_CONTRACT_METRICS.json",
+      "sha256": "a3dcd2268a2aaa990f6c829ae7fb1069737cca94363c4157c9c40ac8a41726cb",
+      "use": "P3 五臂机器和语义分层明细。",
+      "disposition": "LOCAL_MEASUREMENT"
+    },
+    {
+      "source_id": "P3-OUTPUT-MANIFEST",
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/P3_OUTPUT_MANIFEST.json",
+      "sha256": "d61161cbb731e1156771530b711b403fca0072c9f44e62b8ac3a5ce7b4a5e47d",
+      "use": "P3 交付成员身份。",
+      "disposition": "FROZEN_P3_MANIFEST"
+    },
+    {
+      "source_id": "P3-FINAL-RECEIPT",
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/P3_FINAL_VALIDATION_RECEIPT.json",
+      "sha256": "193270900494da47a9e23b386ad2c0f9113905196028a6e06ae689452cbb1e93",
+      "use": "P3 最终机械验收。",
+      "disposition": "FROZEN_P3_VALIDATION"
+    },
+    {
+      "source_id": "P4-RESULT",
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_PREFLIGHT_RESULT_TICKET.md",
+      "sha256": "c8cc626e6dc0fd004ad4011f1d94a2a7fd69d3084c65e61e617e47a960525032",
+      "use": "0/12 真实章合格、六臂未运行、toy splitter 通过。",
+      "disposition": "HISTORICAL_PREFLIGHT_RESULT_CURRENT_RECURSIVE_REVERIFY_FAILS_ON_P4_LOCAL_AGENTS_DRIFT"
+    },
+    {
+      "source_id": "P4-SOURCE-MANIFEST",
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_SOURCE_MANIFEST.json",
+      "sha256": "ea151f4f1a68b592ec7af3816c3bcc6f8fd5972e9cf56fa7e6b0955e9ca4c2b5",
+      "use": "P4 本地真源与 6×2 研究材料的既有绑定。",
+      "disposition": "HISTORICAL_SOURCE_AUDIT_WITH_UPSTREAM_AGENTS_DRIFT"
+    },
+    {
+      "source_id": "P4-FINAL-RECEIPT",
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_FINAL_VALIDATION_RECEIPT.json",
+      "sha256": "d472ab0dd3b7ab1346621ed5850dd1832647f296dd90a367a9654f503bcc592e",
+      "use": "P4 交件后复验刷新后的当前 receipt。",
+      "disposition": "FROZEN_HISTORICAL_P4_RECEIPT_NOT_CURRENT_RECURSIVE_CLOSURE"
+    },
+    {
+      "source_id": "P4.1-RESULT",
+      "path": "finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/P4_1_RESULT_TICKET.md",
+      "sha256": "a35a932edf7918747de5c01b30ea00cd50c12a8ea3c90cb2d994ca494494a418",
+      "use": "P3 C0 standalone 结构 Schema 物化结果；无运行权。",
+      "disposition": "NO_RUN_AUTHORITY"
+    },
+    {
+      "source_id": "P4.1-MANIFEST",
+      "path": "finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/P4_1_OUTPUT_MANIFEST.json",
+      "sha256": "91347c7bc64fd170e2b98d8a10aea9269f9e20d556ab254e431f3ddbc197936b",
+      "use": "P4.1 交付成员身份。",
+      "disposition": "FROZEN_P4_1_MANIFEST"
+    },
+    {
+      "source_id": "P4.1-FINAL-RECEIPT",
+      "path": "finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/P4_1_FINAL_VALIDATION_RECEIPT.json",
+      "sha256": "465c20ffef298b3edbb982236cb03ec4dc443c4e2cd13dc8d9a4c388b41bd107",
+      "use": "P4.1 accepted-language 等价验收。",
+      "disposition": "PASS_SCHEMA_MATERIALIZED_NO_RUN_AUTHORITY"
+    },
+    {
+      "source_id": "S02-EXCLUSION-CANDIDATE",
+      "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/RIGHTS_EXCLUSION_DERIVED_CANDIDATE.jsonl",
+      "sha256": "6baa0ace33d96505d04e046a80ca087bd9011b635410b986a1b706c55d1dce5b",
+      "use": "74 组、314 行、2783 facts 当前训练排除候选；待 CZ 按 SHA 确认。",
+      "disposition": "CANDIDATE_PENDING_CZ_CONFIRMATION_DO_NOT_TRAIN"
+    },
+    {
+      "source_id": "S02-SOURCE-BINDING",
+      "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/SOURCE_BINDING.json",
+      "sha256": "1ff76ab8d8956155eaacbbb0b0ffb08aac1ccbec885ad0d9d582043e0f88aad5",
+      "use": "S-02 与 P3/P4 冻结模板的来源绑定。",
+      "disposition": "SOURCE_IDENTITY_ONLY"
+    },
+    {
+      "source_id": "S02-OUTPUT-MANIFEST",
+      "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/OUTPUT_MANIFEST.json",
+      "sha256": "a6ea83bba0ed488b1d1c7c1c9828cb87634c0b9b4e50bcd874ff7bbdf57f9c70",
+      "use": "S-02 交付成员身份。",
+      "disposition": "CANDIDATE_MANIFEST"
+    },
+    {
+      "source_id": "S02-FINAL-RECEIPT",
+      "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/FINAL_VALIDATION_RECEIPT.json",
+      "sha256": "1fc19f75e994aa21920e7715c769af8d4a976433e08e0177df5c1b67a2a2f1fb",
+      "use": "S-02 机械验收；不改变原 RIGHTS_UNKNOWN 证据账。",
+      "disposition": "CANDIDATE_PENDING_CZ_CONFIRMATION"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "actions_performed": {
+    "candidate_promotion": false,
+    "current_state_change": false,
+    "finetuning_current_change": false,
+    "git_operation": false,
+    "legal_rights_determination": false,
+    "model_or_api_call": false,
+    "notion_write": false,
+    "p3_or_p4_existing_file_change": false,
+    "production_canonical_generation": false,
+    "synthetic_generation": false,
+    "training": false
+  },
+  "candidate": {
+    "allow_candidates": 0,
+    "cz_confirmation_required": true,
+    "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/RIGHTS_EXCLUSION_DERIVED_CANDIDATE.jsonl",
+    "production_promoted": 0,
+    "reject_candidates": 74,
+    "rows": 74,
+    "sha256": "6baa0ace33d96505d04e046a80ca087bd9011b635410b986a1b706c55d1dce5b",
+    "training_eligible": 0
+  },
+  "denominator": {
+    "facts": 2783,
+    "groups": 74,
+    "rows": 314
+  },
+  "manifest": {
+    "bytes": 1946,
+    "listed_member_count": 9,
+    "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/OUTPUT_MANIFEST.json",
+    "sha256": "a6ea83bba0ed488b1d1c7c1c9828cb87634c0b9b4e50bcd874ff7bbdf57f9c70"
+  },
+  "next_gate": "WAIT_CZ_CONFIRM_GENERATED_CANDIDATE_SHA",
+  "schema_version": "t5-r04-a-v2-7-rights-exclusion-final-validation-v1",
+  "status": "CANDIDATE_PENDING_CZ_CONFIRMATION",
+  "validated_at_asia_shanghai": "2026-08-08T19:07:03.712407+08:00",
+  "validated_at_utc": "2026-08-08T11:07:03.712407+00:00",
+  "validation": {
+    "builder_check": "{\"status\": \"CANDIDATE_PENDING_CZ_CONFIRMATION\", \"groups\": 74, \"rows\": 314, \"facts\": 2783, \"decision_sha256\": \"761c74ad71bab07e38951998130283da0bc3238b8c5add54e9440c5a8346006a\", \"candidate_sha256\": \"6baa0ace33d96505d04e046a80ca087bd9011b635410b986a1b706c55d1dce5b\", \"candidate_two_run_byte_identical\": true}",
+    "candidate_two_realtime_import_byte_identical": true,
+    "decision_two_build_byte_identical": true,
+    "derived_tests": "..                                                                       [100%]\n2 passed in 0.05s",
+    "manifest_member_sha_mismatches": 0,
+    "p4_rights_tests": ".....................                                                    [100%]\n21 passed in 0.56s",
+    "ruff": "All checks passed!"
+  }
+}

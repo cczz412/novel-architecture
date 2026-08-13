@@ -1,0 +1,163 @@
+{
+  "schema_version": "read1-train72-v2-qualification-run-spec/1.0",
+  "preparation_status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "scope": "READ1_TRAIN72_V2_QUALIFICATION_SINGLE_RUN",
+  "run_id": "T5_R04_READ1_TRAIN72_V2_QUALIFICATION_R01",
+  "run_root": "/Users/a1234/挣钱/小说架构/runs/T5_R04_READ1_TRAIN72_V2_QUALIFICATION_R01",
+  "current_execution_ticket_present": false,
+  "training_authorized_now": false,
+  "standing_authorization_boundary": {
+    "local_4b_fact_extraction_comparison": "控制窗可在数据、参数、硬停门和runner/scorer SHA验收后直接下发精确执行票，不再逐次询问CZ",
+    "still_requires_exact_execution_ticket_for_this_run": true,
+    "excluded": [
+      "商用API费用",
+      "Mini或Lite云训练",
+      "Notion",
+      "Git",
+      "CURRENT或生产晋级"
+    ]
+  },
+  "training_input": {
+    "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_READ_CONTEXT_TRAIN72_RENDER_CONTRACT_V2_20260809_R01/READ_1_TARGET_TRAIN72.jsonl",
+    "sha256": "21213ae287d002351136b92c9caeb7388d2e71432574f9c8dcdf5ec1c3797f76",
+    "rows": 72,
+    "facts": 830,
+    "empty_answers": 7,
+    "read_arm": "READ-1-TARGET",
+    "system_contract_sha256": "4cb88acee94eadb1946789a8443993bd7029706e0e7e8039c1f8f3934c1827e6"
+  },
+  "evaluation_inputs": {
+    "l6": {
+      "frozen_request_path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_TRAIN48_LENGTH_CALIBRATION_20260809_R01/READ_1_TARGET_L6_EVAL.jsonl",
+      "frozen_request_sha256": "e96b8b5abb565f63e9bd3c2354c3a2a7366a4a646fb262379844c3fc32fb2503",
+      "derived_v2_request_sha256": "1aa942e9910fd3525f7c2fb7f3f23f9d706a2564870f3526319104dcfa42b3ec",
+      "gold_sha256": "79ab2bf95aef439d3183d6cb1df3a59f6a3f706275714974fd4ed256469ba579",
+      "rows": 6,
+      "gold_facts": 18,
+      "zero_cases": ["LC-L01", "LC-L02"],
+      "forbidden_from_training": true
+    },
+    "real24": {
+      "frozen_request_path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_LOCAL_REAL_SCREEN24_READ_EVAL_20260809_R01/READ_1_TARGET_EVAL24.jsonl",
+      "frozen_request_sha256": "73423ace73ce60e497db6f0acf25d39bba3bfdccfc6d7a82abf9d8510d6157c0",
+      "derived_v2_request_sha256": "dd8dcda9bf3e14fcb603043f2fc1c3e2505fbc65df5e6b9e94454d3b3492fe60",
+      "gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+      "rows": 24,
+      "gold_facts": 280,
+      "local_eval_only_rights_pending": true,
+      "forbidden_from_training": true
+    },
+    "v2_derivation_rule": "只把system替换成TRAIN72精确system；user、case顺序、负责区和Gold不改"
+  },
+  "model_and_runtime": {
+    "model": "Qwen3-4B-Instruct-2507_cdbee75f",
+    "model_path": "/Users/a1234/挣钱/小说架构_隔离实验/models/Qwen3-4B-Instruct-2507_cdbee75f",
+    "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6",
+    "python": "/opt/homebrew/opt/python@3.12/bin/python3.12",
+    "vendor": "/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/pipeline_r02/vendor_r02",
+    "trainer_sha256": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909"
+  },
+  "training_recipe": {
+    "fine_tune_type": "lora",
+    "optimizer": "adam",
+    "mask_prompt": true,
+    "num_layers": 16,
+    "batch_size": 2,
+    "iters": 36,
+    "optimizer_updates": 9,
+    "learning_rate": 0.00003,
+    "learning_rate_schedule": null,
+    "grad_accumulation_steps": 4,
+    "save_every": 36,
+    "retained_checkpoint": "final_only",
+    "max_seq_length": 4608,
+    "grad_checkpoint": true,
+    "seed": 20260802,
+    "lora_parameters": {
+      "rank": 32,
+      "dropout": 0.0,
+      "scale": 0.125
+    },
+    "retry": 0,
+    "fallback": false
+  },
+  "inference_recipe": {
+    "order": [
+      "BASE_L6",
+      "LORA_L6",
+      "L6_FINAL_SCORING_AND_GATE",
+      "BASE_REAL24_IF_L6_PASS",
+      "LORA_REAL24_IF_L6_PASS",
+      "REAL24_FINAL_SCORING"
+    ],
+    "greedy": true,
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "retry": 0,
+    "semantic_review": "同case加同预测事实SHA去重盲审，最终semantic_pending必须为0"
+  },
+  "qualification_gates": {
+    "l6": {
+      "lora_json_cases": "6/6",
+      "lora_schema_cases": "6/6",
+      "lora_illegal_evidence": 0,
+      "lora_repetition_cases": 0,
+      "lora_token_limit_cases": 0,
+      "lora_duplicate_facts": 0,
+      "lora_zero_cases_empty": "2/2",
+      "lora_nonempty_cases_not_all_empty": true,
+      "lora_f1": ">= same-contract base F1",
+      "on_fail": "STOP_BEFORE_REAL24"
+    },
+    "real24": {
+      "lora_schema_cases": "24/24",
+      "lora_illegal_evidence": 0,
+      "lora_repetition_cases": 0,
+      "lora_token_limit_cases": 0,
+      "lora_duplicate_facts": 0,
+      "lora_f1": "> same-contract base F1",
+      "lora_recall": ">= same-contract base recall",
+      "lora_status_accuracy_on_semantic_tp": ">= 0.50",
+      "historical_dense_train36_iter24_f1_report_only": 0.428
+    }
+  },
+  "interpretation_boundary": "本格同时更新教材组成、行序、V2合同和训练剂量，只能叫整包候选配方资格跑；PASS后才允许进入READ1/2/4单变量对照，不得写成单变量因果结论",
+  "authorization_ticket_contract": {
+    "schema_version": "read1-train72-v2-cz-execution-ticket/1.0",
+    "approved_must_be_boolean_true": true,
+    "authorized_by_must_equal": "CZ",
+    "scope": "READ1_TRAIN72_V2_QUALIFICATION_SINGLE_RUN",
+    "authorized_commands_exact": ["train", "infer-l6", "infer-real24"],
+    "must_bind": [
+      "run_spec_sha256",
+      "train_input_sha256",
+      "l6_v2_request_sha256",
+      "real24_v2_request_sha256",
+      "runner_sha256",
+      "scorer_sha256",
+      "run_id",
+      "run_root",
+      "decision_id",
+      "decision_text_sha256",
+      "source_thread_id"
+    ],
+    "ticket_created_by_this_preparation": false
+  },
+  "components": {
+    "runner_sha256": "9e0993729379d94a812f50befce8e1dc62df5890e4cc424490e82b5ccc8fa823",
+    "scorer_sha256": "aa5563a18892ffd64ab361dab005fd93b85da15f801b5d805ce49240aeff7032",
+    "runtime_runner_sha256": "db9ae2a2c33dbbe3539f86fa9e45645e8dda6267ac42b5484b6b042290d80245",
+    "recoverable_core_scorer_sha256": "476daaf478274ffb82a25e593b19523a43996047c495a1fee377da965a195fbf",
+    "structural_schema_sha256": "7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14"
+  },
+  "forbidden": [
+    "READ2或READ4训练与推理",
+    "多检查点或参数扫描",
+    "自动重试或fallback",
+    "API",
+    "Notion",
+    "Git",
+    "CURRENT",
+    "生产晋级"
+  ]
+}

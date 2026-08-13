@@ -1,0 +1,92 @@
+{
+  "schema_version": "finetuning-experiment-spec-v1",
+  "experiment_id": "T5_R04_AC_FORMAT_COMPARE_20260807_R01",
+  "manifest_revision": "r01",
+  "source_root": {
+    "store_id": "LAB",
+    "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01"
+  },
+  "state": {
+    "lifecycle": "sealed",
+    "storage_state": "lab",
+    "promotion_state": "completed_not_promoted"
+  },
+  "artifact_groups": [
+    {
+      "group_id": "root_cause_review",
+      "store_id": "LAB",
+      "base_relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01",
+      "required": true,
+      "review_set": "ac_root_cause_current_experiment",
+      "patterns": [
+        "config/*.yaml",
+        "exam_rebalance_r03/EXAM_SEAL_RECEIPT.json",
+        "exam_rebalance_r03/OLD_FROZEN_EXAM_INTEGRITY_RECEIPT.json",
+        "exam_rebalance_r03/RIGHTS_AND_USAGE_BOUNDARY.json",
+        "exam_rebalance_r03/results/AC_CASE_METRICS.jsonl",
+        "exam_rebalance_r03/results/AC_MACHINE_ANOMALY_RECEIPT.json",
+        "exam_rebalance_r03/results/AC_MACHINE_METRICS.json",
+        "exam_rebalance_r03/results/EXAM_COMPLETE_RECEIPT.json",
+        "exam_rebalance_r03/results/EXAM_RUN_LOCK.json",
+        "exam_rebalance_r03/results/arm_a/*",
+        "exam_rebalance_r03/results/arm_c/*",
+        "exam_rebalance_r03/run_1/**/*",
+        "exam_rebalance_r03/run_2/**/*",
+        "exam_rebalance_r03/sealed/**/*",
+        "logs/*.log",
+        "receipts/*.json",
+        "runtime/*.json",
+        "runtime_data/*/train.jsonl",
+        "sealed/**/*",
+        "tools/ac_exam_r03_runner.py",
+        "tools/ac_two_stage_guarded_runner.py",
+        "tools/build_ac_datasets_and_exams.py",
+        "tools/seal_ac_build.py"
+      ]
+    },
+    {
+      "group_id": "final_and_stage_adapters",
+      "store_id": "LAB",
+      "base_relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01",
+      "required": true,
+      "patterns": [
+        "runs/arm_a/stage_1_positive/adapters.safetensors",
+        "runs/arm_a/final/adapters.safetensors",
+        "runs/arm_c/stage_1_positive/adapters.safetensors",
+        "runs/arm_c/final/adapters.safetensors"
+      ]
+    },
+    {
+      "group_id": "base_model_identity",
+      "store_id": "LAB",
+      "base_relative_path": "models/Qwen3-4B-Instruct-2507_cdbee75f",
+      "required": true,
+      "patterns": ["MODEL_RECEIPT.json"]
+    }
+  ],
+  "review_profiles": [
+    {
+      "profile_id": "ac_root_cause_r02_equivalence",
+      "route_id": "t5-r04-ac-format-root-cause",
+      "review_set": "ac_root_cause_current_experiment",
+      "legacy_member_prefix": "02_current_route/TEMP/chatgpt_review_cycles/T5_R04_AC_FORMAT_ROOT_CAUSE_20260807_R01/package_source/current_experiment",
+      "baseline_zip": {
+        "store_id": "MAIN_REPO",
+        "relative_path": "TEMP/chatgpt_review_packs/route_t5-r04-ac-format-root-cause_20260807_125754/chatgpt_review_route_t5-r04-ac-format-root-cause_20260807_125754.zip"
+      },
+      "generated_truth_templates": {
+        "TRUTH_SNAPSHOT.md": "templates/TRUTH_SNAPSHOT.md.tmpl",
+        "SOURCE_SCOPE.md": "templates/SOURCE_SCOPE.md.tmpl",
+        "PACKAGE_SCOPE_CHECK.md": "templates/PACKAGE_SCOPE_CHECK.md.tmpl",
+        "PROMPT_TO_CHATGPT.md": "templates/PROMPT_TO_CHATGPT.md.tmpl"
+      }
+    }
+  ],
+  "boundaries": {
+    "rights": "INTERNAL_TRAINING_AND_EVALUATION_ONLY",
+    "may_authorize_training": false,
+    "may_authorize_promotion": false,
+    "may_modify_frozen_evidence": false,
+    "may_move_or_delete_assets": false
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "finetuning-experiment-spec-v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "manifest_revision",
+    "source_root",
+    "state",
+    "artifact_groups",
+    "review_profiles",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {"const": "finetuning-experiment-spec-v1"},
+    "experiment_id": {"type": "string"},
+    "manifest_revision": {"type": "string"},
+    "source_root": {"type": "object"},
+    "state": {"type": "object"},
+    "artifact_groups": {"type": "array"},
+    "review_profiles": {"type": "array"},
+    "boundaries": {"type": "object"}
+  },
+  "additionalProperties": false
+}

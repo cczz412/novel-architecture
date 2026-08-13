@@ -1,0 +1,16 @@
+{
+  "status": "HARD_STOP_SMOKE_RUNTIME_MLX_UNAVAILABLE",
+  "static_tests_passed": 8,
+  "static_tests_failed": 0,
+  "smoke_requests_planned": 2,
+  "smoke_outputs_completed": 0,
+  "full_requests_planned": 72,
+  "full_run_started": false,
+  "model_loaded": false,
+  "model_inference_outputs": 0,
+  "api_calls": 0,
+  "training_started": false,
+  "retry_count": 0,
+  "smoke_abort_receipt_sha256": "74bcee93270d3a1e8630a894e2a8bee031fb366d89f001660a74edf111f843e5",
+  "next_action": "HARD_STOP_WAIT_FOR_RUNTIME_ENVIRONMENT_DECISION"
+}

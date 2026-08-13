@@ -1,0 +1,47 @@
+{
+  "schema_version": "train96-source6-recut24-output-manifest/3.0",
+  "dataset_status": "PASS_CANDIDATE_MODEL_NEUTRAL_GOLD_PENDING_CONTROL_REVIEW",
+  "parent_r02": {
+    "path": "finetuning/experiments/T5_R04_TRAIN96_SOURCE6_RECUT24_MODEL_NEUTRAL_GOLD_20260810_R02",
+    "core_sha256": {
+      "RECUT24_R02_CONTROL_REVIEW.md": "39acf841d8a72751114e9b93a981d1ff3517dbe3a806ec3a60a87712dd37f761",
+      "SOURCE_INDEX_24.jsonl": "8b600c194c4da832c33b292e3deda0266d6dccef0f6d885fd48a5d87f562a168",
+      "MODEL_NEUTRAL_GOLD_24.jsonl": "1bec7dbfc26878e0553e8f34319c072c46da0f6b80e4a3ae19842629451bec6d",
+      "SEMANTIC_REVIEW_SIDECAR.jsonl": "a93e7ec1137e7c7614d3a4b228610fd148dfcc8b28f6a985813fd821e06a6389",
+      "OUTPUT_MANIFEST.json": "a03e5578917214eb37714249fe69e00dc7d621fe3e1d28709b349d4abc2eb80d",
+      "FINAL_VALIDATION_RECEIPT.json": "8fc6353a3fdafe3807d9724d93cd7d9013e3aa549aabe8340d012b279dadc38c"
+    },
+    "tree_digest": "931eb806fcdf0deacf8de27c0d4bc8cbb4dd4d5ed1a8bb2881a13aa525e81d43"
+  },
+  "control_review": {
+    "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R04/RECUT24_R02_CONTROL_REVIEW.md",
+    "sha256": "39acf841d8a72751114e9b93a981d1ff3517dbe3a806ec3a60a87712dd37f761"
+  },
+  "members": {
+    "SOURCE_INDEX_24.jsonl": {
+      "bytes": 44996,
+      "sha256": "1067ec9ac4808523f543412cd419f133f3c352811467c032641ec1ba0ece350a"
+    },
+    "MODEL_NEUTRAL_GOLD_24.jsonl": {
+      "bytes": 15493,
+      "sha256": "1bec7dbfc26878e0553e8f34319c072c46da0f6b80e4a3ae19842629451bec6d"
+    },
+    "SEMANTIC_REVIEW_SIDECAR.jsonl": {
+      "bytes": 19666,
+      "sha256": "239427e1780304be28eff3301132a5cf9304682798d37adc60fe6d5fed40d9df"
+    },
+    "REVIEW_SUMMARY.md": {
+      "bytes": 2209,
+      "sha256": "06e8fb005736a3dfef1f53c07dacab2a681ebc151cfefb2b44cbdcc820509667"
+    },
+    "FIXED_FEATURE_REPORT.json": {
+      "bytes": 21562,
+      "sha256": "a673c470d45fa774d375dc17689e0a37cc18bfbad2f25e428719d84e1dc84fdb"
+    },
+    "build_and_check_recut24_r03.py": {
+      "bytes": 34363,
+      "sha256": "cbbd48a715723b9e06c708abc4d84cc480fbc659a73dfe2f1b0ee21d962f90f4"
+    }
+  },
+  "training_authorized": false
+}

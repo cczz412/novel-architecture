@@ -1,0 +1,218 @@
+{
+  "schema_version": "fact-extraction-experiment-decision-registry/1.0",
+  "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R04",
+  "status": "ACTIVE_DECISION_OVERLAY_NO_STANDALONE_RUN_AUTHORITY",
+  "created_at": "2026-08-10T03:45:46+08:00",
+  "updated_at": "2026-08-10T06:48:41+08:00",
+  "parents": [
+    {
+      "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260809_R02",
+      "role": "EXTRACTION_FAMILY_CATALOG_AND_SEQUENCE"
+    },
+    {
+      "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260809_R03",
+      "role": "DOWNSTREAM_CONSUME_AND_EDGE_DESIGN_OVERLAY",
+      "mechanical_receipt_sha256": "5bbb17aeb6c8bb6eca135cfd829f8837ae344e15a8341b5aeffb0dcdd72bb06c"
+    }
+  ],
+  "objective": {
+    "format": "稳定输出约定JSON合同",
+    "semantics": "按负责区准确抽取事实，事实多则多写、少则少写、没有则空",
+    "four_b_role": [
+      "低成本方案淘汰器",
+      "调到可用后可作为免费档候选"
+    ],
+    "commercial_model_boundary": "4B上的配方排名需要在Mini等商用候选上做小规模复验"
+  },
+  "stable_decisions": [
+    {"id":"R04-D01","decision":"保留TRAIN72高密教材，发现缺课时增补而不删旧教材"},
+    {"id":"R04-D02","decision":"单次失败不能直接改变教材比例，须先排除Gold、格式、截断、评分和训练器权重问题"},
+    {"id":"R04-D03","decision":"TRAIN96 token-weighted资格已失败；不再增加空题或改教材比例"},
+    {"id":"R04-D04","decision":"高密、低密、空题分别教学和评分，任何一类不得替代其余两类"},
+    {"id":"R04-D05","decision":"禁止第四种TRAIN72行序或相邻pair调参"},
+    {"id":"R04-D06","decision":"全assistant-token窗口归一化与按样本平均loss均完成数学预检和单次实跑，但都未通过L6；当前TRAIN96/损失归一化4B配方停止"},
+    {"id":"R04-D07","decision":"READ先选赢家，OUT后比较，不默认跑3x3"},
+    {"id":"R04-D08","decision":"READ三格固定为TARGET+FOCUS、HALO180+FOCUS、FULL+FOCUS；共同Gold只评目标段"},
+    {"id":"R04-D09","decision":"L6和REAL24只评测，不进入训练或答案回流"},
+    {"id":"R04-D10","decision":"本地代码和回执是真源；外部报告只提供候选解释"}
+  ],
+  "active_hypotheses": [
+    {
+      "id": "H01",
+      "hypothesis": "全assistant-token窗口归一化可消除同一optimizer窗口内固定pair的权重偏差",
+      "required_test": "同8样本两种pair分组加一个8样本参考batch，核对梯度、SGD更新、Adam参数和状态",
+      "status": "MATH_INVARIANCE_PASS_EXECUTION_FAILS_TRAIN72_AND_TRAIN96",
+      "train72_diagnostic_l6_prediction_counts": [20,7,7,6,22,7],
+      "train72_diagnostic_result": "EXECUTION_PASS_EXPERIMENT_FAIL_ZERO_CASES",
+      "train96_l6_prediction_counts": [42,16,6,6,44,7],
+      "train96_result": "EXECUTION_PASS_EXPERIMENT_FAIL_L6_MECHANICAL_GATE",
+      "train96_json_valid_cases": 3,
+      "train96_schema_valid_cases": 3,
+      "train96_repetition_cases": 2,
+      "train96_token_limit_cases": 2,
+      "train96_duplicate_predictions": 60,
+      "new24_assistant_loss_token_share": 0.06289806580376273,
+      "new24_empty_cases_assistant_loss_tokens": 48,
+      "token_share_is_explanatory_not_complete_gradient_attribution": true
+    },
+    {
+      "id": "H02",
+      "hypothesis": "旧72原样保留并新增24个0至6事实长上下文样本，可补停止边界和稀疏判断",
+      "intended_candidate_distribution": {"0":8,"1":4,"2":4,"3":4,"5":2,"6":2},
+      "r01_claimed_total_facts": 46,
+      "r01_independent_review": "FULL_24_CASES_18_PASS_6_FAIL_EXPECTED_CORRECTED_TOTAL_49",
+      "r03_actual_total_facts": 49,
+      "r03_actual_distribution": {"0":8,"1":4,"2":3,"3":3,"4":2,"5":2,"6":2},
+      "r03_fixed_visible_feature_best_correct": {
+        "non_whitespace_characters": 17,
+        "paragraph_density": 17,
+        "chinese_comma_count": 17
+      },
+      "status": "R03_CONTROL_REVIEW_PASS_USED_IN_FAILED_TOKEN_WEIGHTED_TRAIN96"
+    },
+    {
+      "id": "H03",
+      "hypothesis": "batch内先按每道题自己的assistant有效token求平均loss，再对样本求平均，可令完整GA窗口中每道题严格各占一票",
+      "required_test": "8个不同长度样本两种pair和完整参考的NumPy与真实MLX梯度、SGD、Adam状态不变性；TRAIN96须为96题48完整batch12完整窗口",
+      "status": "EXECUTION_PASS_EXPERIMENT_FAIL_L6_MECHANICAL_GATE_ALL_NONEMPTY_COLLAPSED_TO_EMPTY",
+      "each_sample_contribution_per_optimizer_window": 0.125,
+      "old_microbatch_token_mean_pair_dependent": true,
+      "global_token_mean_pair_invariant_but_differs_from_sample_mean": true,
+      "train96_micro_iterations": 48,
+      "train96_optimizer_updates": 12,
+      "l6_gold_fact_counts": [0,0,2,3,5,8],
+      "l6_prediction_counts": [0,0,0,0,0,0],
+      "json_valid_cases": 6,
+      "schema_valid_cases": 6,
+      "illegal_evidence_predictions": 0,
+      "repetition_cases": 0,
+      "token_limit_cases": 0,
+      "duplicate_predictions": 0,
+      "execution_chain": "PASS",
+      "experiment": "FAIL",
+      "hard_stop": "PASS",
+      "stop_rule": "当前TRAIN96/损失归一化4B recipe已停止；禁止第三种loss、新增教材、挪序、调超参、扫checkpoint或retry"
+    }
+  ],
+  "retired_routes": [
+    {"id":"X01","route":"在失败adapter上续训LONG_SM12","reason":"零题仍过抽取且出现触顶复读"},
+    {"id":"X02","route":"通过JSONL相邻pair排序控制答案密度","reason":"三种排序在同教材下产生方向相反且不稳定的结果"},
+    {"id":"X03","route":"直接使用带明显长度捷径的RECUT24 R01训练","reason":"长度可高准确率猜空题，且独立语义审收未完成"},
+    {"id":"X04","route":"当前TRAIN96上继续搜索loss、教材、行序或超参数","reason":"token-weighted与sample-mean两条已预注册loss路线均实跑失败；sample-mean使四道非空L6题全部塌空"}
+  ],
+  "current_stop": {
+    "recut24_gold": "R03_MECHANICAL_AND_SEMANTIC_PASS_49_FACTS_PRESERVED_MODEL_NEUTRAL_ASSET",
+    "reducer": "TOKEN_WEIGHTED_MATH_PASS_BUT_TRAIN72_AND_TRAIN96_EXPERIMENT_FAIL",
+    "train96": "TOKEN_WEIGHTED_AND_SAMPLE_MEAN_BUNDLES_RETIRED_L6_MECHANICAL_FAIL",
+    "sample_mean_loss": "FORMAL_L6_FAIL_EXECUTION_PASS_HARD_STOP_PASS",
+    "current_four_b_recipe": "CURRENT_TRAIN96_LOSS_DATA_ORDER_HPARAM_RECIPE_STOPPED",
+    "read_comparison": "WAIT_CONTROL_WINDOW_DECISION_ON_EXISTING_LOW_DOSE_FORMAT_RECIPE",
+    "out_comparison": "WAIT_READ_WINNER"
+  },
+  "next_steps": [
+    "当前TRAIN96/损失归一化4B recipe已经停止，不再新增loss、教材、行序或超参格",
+    "禁止从本失败格进入REAL24、READ2、READ4或OUT",
+    "模型中立Gold、TRAIN96、L6和全部旧结果继续原字节保留",
+    "已跑的低剂量/格式配方是否能承接READ对照，只能由控制窗另行核定；本登记不产生运行权",
+    "停止当前配方不等于永久淘汰4B，也不决定Mini"
+  ],
+  "evidence_bindings": {
+    "frozen_trainer": {
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/pipeline_r02/vendor_r02/mlx_lm/tuner/trainer.py",
+      "sha256": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909"
+    },
+    "train72_original_fail": {
+      "path": "runs/T5_R04_READ1_TRAIN72_V2_QUALIFICATION_R01/L6_MECHANICAL_FAIL_TICKET.json",
+      "sha256": "d4bde13591bff46613f43a50d948b990bba20e5162889ae4e5deb0bb0c587b53"
+    },
+    "stage2_fail": {
+      "path": "runs/T5_R04_READ1_TRAIN72_LONG_SM12_STAGE2_R01/L6_MECHANICAL_FAIL_TICKET.json",
+      "sha256": "c2ccee02959307e291f3b38a3ba7882dfd6434d54c9539625e4d983aeb9d1c1a"
+    },
+    "density_paired_fail": {
+      "path": "runs/T5_R04_READ1_TRAIN72_DENSITY_PAIRED_R01/L6_MECHANICAL_FAIL_TICKET.json",
+      "sha256": "b0674dcf87a355798659f893f650f397c6c329c60d34898c58778ce5f6ca7146"
+    },
+    "zero_low_paired_fail": {
+      "path": "runs/T5_R04_READ1_TRAIN72_ZERO_LOW_PAIRED_R01/L6_MECHANICAL_FAIL_TICKET.json",
+      "sha256": "cb3ac0ea13438b15c9182347c1fa74eac1b23109df9f5b613dbc1dd180e057ec"
+    },
+    "recut24_r01_receipt": {
+      "path": "finetuning/experiments/T5_R04_TRAIN96_SOURCE6_RECUT24_MODEL_NEUTRAL_GOLD_20260810_R01/FINAL_VALIDATION_RECEIPT.json",
+      "sha256": "28592f011487b8847f974c91c3cf4011390d8da5ad9a37b8b126393f161c8d49"
+    },
+    "recut24_r01_gold": {
+      "path": "finetuning/experiments/T5_R04_TRAIN96_SOURCE6_RECUT24_MODEL_NEUTRAL_GOLD_20260810_R01/MODEL_NEUTRAL_GOLD_24.jsonl",
+      "sha256": "4876bb88818aa63ad4835d990f050436946a0319bd9b8a174a4244ef015e80e6"
+    },
+    "recut24_r01_independent_semantic_audit": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R04/RECUT24_R01_INDEPENDENT_SEMANTIC_AUDIT.md",
+      "sha256": "6ad8955aec442d4f5d92f258be7c0db358c5fafb4f08ea52bb0958e672e1370d"
+    },
+    "recut24_r02_control_review": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R04/RECUT24_R02_CONTROL_REVIEW.md",
+      "sha256": "39acf841d8a72751114e9b93a981d1ff3517dbe3a806ec3a60a87712dd37f761"
+    },
+    "token_weighted_reducer_preflight": {
+      "path": "finetuning/experiments/T5_R04_TOKEN_WEIGHTED_GRAD_ACCUM_PREFLIGHT_20260810_R01/PREPARE_RECEIPT.json",
+      "sha256": "4e46a23ca6da1741c1027884a2a4e9c35cd3fb21576c1f8e58fc97166a08d31c"
+    },
+    "token_weighted_train72_diagnostic_fail": {
+      "path": "runs/T5_R04_READ1_TRAIN72_TOKEN_WEIGHTED_REDUCER_DIAGNOSTIC_R01/L6_MECHANICAL_FAIL_TICKET.json",
+      "sha256": "399c7eab1bf4f99cdf5012bf9ee027e15c798567d99a4082d5f15efdae57f62c"
+    },
+    "train96_token_weighted_fail": {
+      "path": "runs/T5_R04_READ1_TRAIN96_TOKEN_WEIGHTED_QUALIFICATION_R01/L6_MECHANICAL_FAIL_TICKET.json",
+      "sha256": "b09f3d952c3ca7668236d1fa21dc4957d0225cf152f5849b5362986e5b527a77"
+    },
+    "train96_token_stats": {
+      "path": "finetuning/experiments/T5_R04_READ1_TRAIN96_TOKEN_WEIGHTED_QUALIFICATION_20260810_R01/TRAIN96_TOKEN_STATS.json",
+      "sha256": "d888c3e6e7c77df6c903c98798eb8a18cf666230f88a351f9e13ae5b30782c25"
+    },
+    "sample_mean_loss_preflight_result": {
+      "path": "finetuning/experiments/T5_R04_SAMPLE_MEAN_LOSS_PREFLIGHT_20260810_R01/INVARIANCE_RESULT.json",
+      "sha256": "5aa63604d080f1a16cf3cc283cf6f2ac8b18ae2eff76b3042fcb872c86286701"
+    },
+    "train96_sample_mean_fail": {
+      "run_root": "runs/T5_R04_READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_R01",
+      "authorization_ticket_sha256": "90c6ac23dec23be5b2554f5c362a6ad03a327668c9c5f5886f8d32db49f65c4c",
+      "run_identity_sha256": "5c2ce05a3cd27be016e5d8255e639179fa93f2b2096ca2bf87f6c9b7692dc7ed",
+      "training_result_sha256": "8a2c8ef74b99a943962b2e9fa889229f4e745fa9c043714556bb5e634583f7b2",
+      "adapter_sha256": "2481aea0eefe5042f97e3541d93383f34ebe68ab0ad0943abd8eac98c0e82c8a",
+      "l6_raw_sha256": "579e2b009764ee9ae78f8164b6d017441136a28bdc75ac81acf335bd6e6a046b",
+      "l6_result_sha256": "236011454ab10088209a0b3626eee54c6504ab3a8c58529271078bdc7f400eb0",
+      "mechanical_gate_sha256": "848f9db04bc4aa96ea16402e76080f0aff74d87396605371950ac75dd0238a0f",
+      "fail_ticket_path": "runs/T5_R04_READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_R01/L6_MECHANICAL_FAIL_TICKET.json",
+      "fail_ticket_sha256": "90e461e52735193e75a56c59ed7544cf6ab187aa1941ffcf69c5473990061066"
+    },
+    "recut24_r03_source_index": {
+      "path": "finetuning/experiments/T5_R04_TRAIN96_SOURCE6_RECUT24_MODEL_NEUTRAL_GOLD_20260810_R03/SOURCE_INDEX_24.jsonl",
+      "sha256": "1067ec9ac4808523f543412cd419f133f3c352811467c032641ec1ba0ece350a"
+    },
+    "recut24_r03_gold": {
+      "path": "finetuning/experiments/T5_R04_TRAIN96_SOURCE6_RECUT24_MODEL_NEUTRAL_GOLD_20260810_R03/MODEL_NEUTRAL_GOLD_24.jsonl",
+      "sha256": "1bec7dbfc26878e0553e8f34319c072c46da0f6b80e4a3ae19842629451bec6d"
+    },
+    "recut24_r03_receipt": {
+      "path": "finetuning/experiments/T5_R04_TRAIN96_SOURCE6_RECUT24_MODEL_NEUTRAL_GOLD_20260810_R03/FINAL_VALIDATION_RECEIPT.json",
+      "sha256": "f79306c8d7eeaafdba7b465437bf455ea64ee8f6dfb479fd3c378d3f5096338c"
+    }
+  },
+  "external_report_bindings": [
+    {"topic":"LoRA/SFT batch pairing investigation","path":"/Users/a1234/Downloads/lora_sft_batch_pairing_investigation_20260810.md","sha256":"9a606eb04e75f16a926f3e8c4f01290179ec7bd1b348b4f7fc7fd34cf5f76f1f"},
+    {"topic":"batch pairing mechanism review A","path":"/Users/a1234/.codex/attachments/2e6cc261-d34f-4035-b8ae-54a037d35df2/pasted-text.txt","sha256":"9ad1f64104c86c3f0aa860b37b404f3f7c1cb2513939ad2280e814b09db0d1ea"},
+    {"topic":"batch pairing mechanism review B","path":"/Users/a1234/.codex/attachments/69476ae4-964b-4d1c-97a9-0214daf3d36a/pasted-text.txt","sha256":"e09c373c8abe44b35a7126cb64490fbdd1be4122db2c49aeff89df21bfb1d2f8"},
+    {"topic":"new24 curriculum distribution","path":"/Users/a1234/.codex/attachments/a9643eef-7236-49cf-b1e9-5a008c278205/pasted-text.txt","sha256":"0a2c57a3776f9a88214d7d18aece0eab5c92bee9f95c86f260a75588beca03e1"},
+    {"topic":"READ context comparison design","path":"/Users/a1234/.codex/attachments/55ada017-2588-42e6-947a-d5bdb74d5183/pasted-text.txt","sha256":"f6ab0bab9e5f2682b01f793cd1ac5368e754ff29d183cd08966b8d38e2f9e95d"},
+    {"topic":"TRAIN96 and base restart recommendation","path":"/Users/a1234/.codex/attachments/cbc8c5ef-0469-498c-bc3c-240f2f662415/pasted-text.txt","sha256":"4e8963d127ebddecf61ed9908adf357ab23b47d3ee49564d4710571b07fc414c"}
+  ],
+  "authorization_boundary": {
+    "registry_itself_authorizes_training": false,
+    "registry_itself_authorizes_api": false,
+    "notion_write_authorized": false,
+    "git_operation_authorized": false,
+    "production_promotion_authorized": false,
+    "local_four_b_runs_require_exact_execution_ticket": true
+  },
+  "revision_rule": "稳定规则若被新成组证据推翻，另开下一版sibling并保留本版原字节；不得静默删除历史规则或失败证据。"
+}

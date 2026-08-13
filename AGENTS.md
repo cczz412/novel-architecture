@@ -4,7 +4,7 @@
 
 - 人看全仓治理状态：[治理索引](governance/INDEX.md)；机器读取当前执行状态只认 [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)。CZ 拍板仍以当前明确指令和 Notion 账序／队列为准。
 - 新窗口接力先看 [`governance/progress/current-progress.md`](governance/progress/current-progress.md)，再读它点名的专题页。它只负责接力，不能覆盖 `CURRENT_STATE.json`、正式结果票或 CZ 指令；两者时间或结论冲突时停下校准。
-- 产品共同理解从 [共同背景板 R04 入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260808_R04/00_READ_ME_FIRST.md) 开始。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
+- 产品共同理解从 [共同背景板 R06 入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260809_R06/00_READ_ME_FIRST.md) 开始。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
 - 路径职责与新文件落点只认 [`governance/directory_registry.json`](governance/directory_registry.json) 和生成的 [`governance/indexes/new_file_routing.md`](governance/indexes/new_file_routing.md)。
 
 ## 2. Task routing
@@ -16,6 +16,8 @@
 | 看当前微调实验 | `finetuning/CURRENT.json` | 它指向实验的 `MANIFEST.json`／结果票 |
 | 判断能否训练 | `finetuning/CURRENT.json` 的授权字段 | 当前实验的路线图／执行锁；没有明确许可就是不能训练 |
 | 查抽取研究 | `governance/route_registry.json` | 对应实验结果票；产品解释再看 R04 第 04 页 |
+| 查已验证的工程结论、技术选型或管线骨架 | `references/engineering-ledger/00_READ_ME_FIRST.md` | 按账内指针回正式结果票／冻结合同核对；当前执行状态仍看 `governance/CURRENT_STATE.json` |
+| 查历史外部调查，避免同类问题重做 | `references/survey-inbox/INDEX.md` | 对应 `SI-*` 卡和 `packages/.../00_READ_ME_FIRST.md`；历史报告只作证据与候选先验，不产生执行权 |
 | 接仓库重构任务 | 当前 CZ 工单／本任务回执 | `governance/progress/current-progress.md`；没登记该线就停下，不靠搜索猜 |
 | 找历史外置对象 | `governance/external_archive_registry.json` | 对象登记的 manifest／恢复方式 |
 | 跑本机证据或历史测试 | `governance/test_policy.json` | `tests/local_evidence_registry.json`／`config/test_replay/historical_replays.json` |
@@ -42,6 +44,24 @@
 - 只有出现具体触发才扩大：目标不唯一、缺依赖、发现直接消费者、登记身份或派生视图耦合、定向验证失败、身份不匹配、Schema／协议受影响，或用户明确要求全仓范围。
 - 改动行数不决定复杂度；一行修改发现机械身份闭包时，也要一次纳入那组最小派生文件。
 - 不因材料可用就读取无关历史或共同背景，也不以“更放心”为由追加更广测试。
+
+## 4b. 治理强度三档（错误代价决定流程重量）
+
+流程重量跟着**错误的代价**走，不跟着任务名字走。开工先定档；拿不准问 CZ，不默认升重档。
+
+| 档 | 什么任务 | 允许的流程 |
+|---|---|---|
+| 轻 | 个人 Skill、工具脚本、草稿、TEMP／work 内可逆施工（文件可回退、不碰真实数据、不花额度） | 做完自测一遍就交付启用。**禁止**：独立复审、冻结 SHA、退修票、staging 隔离、多轮新鲜复审 |
+| 中 | 仓库正式件、登记册、progress、合同文本、索引 | 一轮机械自查＋一轮复核，过了就落盘；不开第二路复审 |
+| 重 | API 调用、训练、金标／Gold、盲审与密封数据、权限系统、生产晋升、删除外置对象 | 维持全套：执行票、独立复审、冻结 SHA、失败留档，一分不减 |
+
+- 轻档任务要的是**结果**，不是可复用制度；测试完就会扔的东西不配基础设施。
+- 停损规则：同一对象连续两轮复审仍在发现新问题时，先停下问「它值得第三轮吗」，默认答案是否；要开第三轮必须先向 CZ 说明代价。
+- 反例锚点（校准用）：给个人窗口板 Skill 加防篡改哈希链＝轻档活干成重档，错；试选器三轮独立复审＝碰真实密封数据的重档应得，对。
+- 测试文件只有三种合法身份：①登记在 `governance/test_policy.json`／`tests/` 注册表的长期件；②实验包内被该实验 MANIFEST 收录的冻结证据件；③其余全是过渡脚本，只能放 TEMP／work，任务收线时随手删掉。给一次性验证写的 `test_*.py` 用完即弃，不留"以后可能有用"的尸体。
+- 新建或修改 Skill 时，描述里必须同时写清「什么时候用」和「什么时候不用」；触发含糊的 Skill 按坏件处理，谁发现谁修描述。
+
+来源：CZ 2026-08-13 拍板，根治过度治理
 
 ## 5. Environment / commands
 

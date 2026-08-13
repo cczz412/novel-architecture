@@ -1,0 +1,142 @@
+{
+  "schema_version": "base-h180-out2-full-target-ex-result-ticket/1.0",
+  "status": "FINAL_EX_SCREEN_CLOSED_EX0_RETAINED",
+  "issued_at": "2026-08-11T02:09:00+08:00",
+  "scope_name_zh": "未微调本地4B加H180加OUT2加完整责任段的固定对比例本机DEV实验",
+  "parent_r10": {
+    "directory": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R10",
+    "members": {
+      "00_READ_ME_FIRST.md": "039c67d025da3aecd4cea69b87fdf7c64dc32ced6b6325b3e539af83a7b8464e",
+      "DECISION_REGISTRY.json": "410c2489d6d031a2c82f05842b28f53fe5bc414a686cdefdbc0cdbe274de122a",
+      "RULE_RESULT_TICKET.json": "187a53f863bccb2456c4f42e507b1749faf14350187075bbdc8d6b0bd356744e"
+    },
+    "modified": false
+  },
+  "evidence": {
+    "execution_ticket": {
+      "path": "runs/T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_R01/AUTHORIZATION_TICKET.json",
+      "sha256": "74ab0839f75694ad229f5210647ed66da1da32b92da2a9b9933893f9c3f03ea1"
+    },
+    "run_identity": {
+      "path": "runs/T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_R01/RUN_IDENTITY.json",
+      "sha256": "bbb3df8f3a861dc2770da6f6ba3f65e6962cab1227ea582caab4adacdf26616f"
+    },
+    "request": {
+      "path": "runs/T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_R01/requests/EX_1_CONTRASTIVE_PAIR_REQUESTS_24.jsonl",
+      "sha256": "298854c2567e6842f2de774ffdc0e8a7d3cc0b6bcc1a6e187675c05648b77238",
+      "rows": 24
+    },
+    "raw": {
+      "path": "runs/T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_R01/inference/EX1_RAW_24.jsonl",
+      "sha256": "cf75088a25128045895dc45e6db4d3d3bea0a8022831e12b7e32e3da8145d64f",
+      "rows": 24
+    },
+    "inference_result": {
+      "path": "runs/T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_R01/inference/EX1_RESULT.json",
+      "sha256": "fcfa2cb46ee8034b8bf064465b91696f050bc73c64a78ec327e6bd98d50e850c"
+    },
+    "pre_metrics": {
+      "path": "runs/T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_R01/scoring/pre/METRICS.json",
+      "sha256": "fed8134024237aaeed5d8efaf128b9e5157f4a0ea1ebf6f270ed6fdf39aa1183"
+    },
+    "pre_queue": {
+      "path": "runs/T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_R01/scoring/pre/BLIND_QUEUE.jsonl",
+      "sha256": "ccea4dba4f889f2ff93d4f26f7a3960dfda84ed98de87e9534332754972a4c30",
+      "rows": 274
+    },
+    "adjudications_r02": {
+      "path": "TEMP/ex_contrastive_adjudication_20260811/SEMANTIC_ADJUDICATIONS_274_R02.jsonl",
+      "sha256": "cbda2b2c1bdd29c0d93c09eed6935698f531f829d72f04b78688df00c1404ca8",
+      "rows": 274
+    },
+    "adjudication_r02_receipt": {
+      "path": "TEMP/ex_contrastive_adjudication_20260811/ADJUDICATION_R02_RECEIPT.json",
+      "sha256": "467b697e34f88a9b5d5f0ceae8374b994a93ee311f3a4e6c6d25e307b8f82cd5"
+    },
+    "final_metrics": {
+      "path": "runs/T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_R01/scoring/final/METRICS.json",
+      "sha256": "870ac76cb323af48fc82cd2b13ef38cdb2f8bce04cf4cfd8c21bbbdb5b514c34"
+    },
+    "final_receipt": {
+      "path": "runs/T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_R01/scoring/final/FINAL_RECEIPT.json",
+      "sha256": "c194130b5e65dfc47690194e3cb3f99c351546f663a711b7b568b42883c47c0c"
+    },
+    "final_empty_queue": {
+      "path": "runs/T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_R01/scoring/final/BLIND_QUEUE.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rows": 0
+    }
+  },
+  "mechanical_result": {
+    "strict_json_cases": 24,
+    "schema_cases": 23,
+    "predictions": 314,
+    "empty_answer_cases": 0,
+    "illegal_evidence_predictions": 0,
+    "duplicate_predictions": 0,
+    "repetition_cases": 0,
+    "token_limit_cases": 0,
+    "copy_leak_cases": 0,
+    "mechanically_eligible": true
+  },
+  "semantic_result": {
+    "EX0": {
+      "tp": 93,
+      "fp": 154,
+      "fn": 187,
+      "precision": 0.376518,
+      "recall": 0.332143,
+      "f1": 0.352941,
+      "predictions": 247,
+      "selected": true,
+      "baseline_rerun": false
+    },
+    "EX1": {
+      "tp": 69,
+      "fp": 245,
+      "fn": 211,
+      "precision": 0.219745,
+      "recall": 0.246429,
+      "f1": 0.232323,
+      "predictions": 314,
+      "selected": false
+    }
+  },
+  "selection": {
+    "selected_example_mode": "EX0_NONE",
+    "branch": "EX1_NOT_QUALIFIED_EX0_RETAINED",
+    "f1_advancement_threshold": 0.372941,
+    "recall_floor": 0.332143,
+    "additional_example_arms_allowed": false,
+    "next_family_registered": "BG_SOURCE_AND_PROVENANCE_PREFLIGHT_ONLY",
+    "next_family_execution_authorized": false
+  },
+  "run_actions": {
+    "model_loads": 1,
+    "inference_rows": 24,
+    "training": 0,
+    "retries": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  },
+  "result_registration_actions": {
+    "model_loads": 0,
+    "inference": 0,
+    "training": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  },
+  "scope_boundary": {
+    "dev24_only": true,
+    "unseen_confirmation_completed": false,
+    "training_authorized": false,
+    "inference_authorized": false,
+    "api_authorized": false,
+    "notion_or_git_actions_authorized": false,
+    "production_authorized": false
+  }
+}

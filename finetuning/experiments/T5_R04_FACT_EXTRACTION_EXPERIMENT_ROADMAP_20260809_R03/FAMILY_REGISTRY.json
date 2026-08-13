@@ -1,0 +1,145 @@
+{
+  "schema_version": "fact-extraction-family-registry/3.0",
+  "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260809_R03",
+  "status": "DESIGN_REGISTRATION_ONLY_NO_RUN_AUTHORITY",
+  "parent_binding_path": "PARENT_BINDING.json",
+  "parent_registry": {
+    "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260809_R02/FAMILY_REGISTRY.json",
+    "sha256": "1032f11162508f5b1747c606d932671d157eaadfdd02bf7f154e65ba78799134",
+    "inherited_extraction_family_count": 19,
+    "definitions_status_and_results_authority": "PARENT_R02"
+  },
+  "summary": {
+    "inherited_extraction_family_count": 19,
+    "new_downstream_family_group_count": 1,
+    "new_downstream_subfamily_count": 5,
+    "new_post_extraction_family_count": 1,
+    "consume_is_twentieth_extraction_family": false,
+    "current_extraction_queue_unchanged": true,
+    "currently_queued_extraction_family_ids": ["READ"],
+    "current_train72_read_qualification_route_interrupted": false,
+    "new_run_authority": false
+  },
+  "inherited_extraction_families": [
+    {"family_id":"READ","status":"正在准备","phase":"Round 1；当前唯一实际排队家族","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"OUT","status":"等待 READ-WINNER","phase":"Round 2","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"RULE","status":"等待 OUT","phase":"后续短片段家族","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"EX","status":"等待 RULE","phase":"后续短片段家族","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"BG","status":"等待 EX","phase":"后续短片段家族","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"PURPOSE","status":"暂停","phase":"已有打平结果","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"STATE","status":"暂停","phase":"已有负结果","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"NAME","status":"条件式暂停","phase":"等待身份消歧分母","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"MARK","status":"已有诊断，后续条件式","phase":"后续单变量","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"CITE","status":"后续","phase":"后续单变量","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"XUNIT","status":"后续","phase":"后续诊断","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"PLACE","status":"后续","phase":"后续单变量","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"LENGTH","status":"后续","phase":"后续控制实验","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"TPOS","status":"后续","phase":"后续位置诊断","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"MIX","status":"条件式训练","phase":"新训练支线","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"PIPE","status":"条件式，门未过","phase":"新架构支线","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"CUT","status":"完整章专项未跑","phase":"P4 专项","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"META","status":"完整章专项未跑","phase":"P4 后续专项","inheritance":"UNCHANGED_FROM_R02"},
+    {"family_id":"COREF","status":"新登记，未排队","phase":"独立两阶段后处理家族","inheritance":"UNCHANGED_FROM_R02"}
+  ],
+  "inherited_result_bindings": {
+    "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260809_R02/RESULT_BINDINGS.json",
+    "sha256": "ab39c25f17051ca8b77a514f1790e9ffa780d0da1515bd377acd2121f4fd3c95",
+    "binding_count": 5,
+    "disposition": "REFERENCE_ONLY_NO_RESULT_REWRITE"
+  },
+  "read_queue_preservation": {
+    "source": "PARENT_R02_STAGED_SCREENING_CONTRACT",
+    "round_1_family": "READ",
+    "fixed_output_arm": "OUT-2-IDLIST",
+    "compared_arms": ["READ-1-TARGET","READ-2-HALO","READ-4-FULL-CHAPTER"],
+    "maximum_unique_trained_recipe_cells_across_read_then_out": 5,
+    "train_materials": "PROJECT_ORIGINAL_TRAIN_MATERIALS_ONLY",
+    "evaluation_materials": "LOCAL_REAL_SCREEN24_ONLY",
+    "status": "UNCHANGED_NOT_INTERRUPTED_BY_R03"
+  },
+  "downstream_family_groups": [
+    {
+      "group_id": "CONSUME",
+      "group_name_zh": "下游承接",
+      "family_layer": "DOWNSTREAM_FAMILY_GROUP_NOT_EXTRACTION_FAMILY",
+      "status": "DESIGN_REGISTERED_NOT_RUN",
+      "status_zh": "已登记待前置",
+      "purpose": "测试上游事实包能否被下游大纲或剧情方案生成安全、高效地承接",
+      "does_not_modify_fact_truth": true,
+      "subfamily_order": [
+        "CONSUME-DOSE",
+        "CONSUME-SELECT",
+        "CONSUME-ROUTE",
+        "CONSUME-CRAFT",
+        "CONSUME-MODEL"
+      ],
+      "subfamilies": [
+        {"family_id":"CONSUME-DOSE","only_variable":"事实条数 K","fixed":"同一模型、同一选取规则、同一路由协议、不提技巧","status":"DESIGN_REGISTERED_NOT_RUN","status_zh":"已登记待前置"},
+        {"family_id":"CONSUME-SELECT","only_variable":"事实选取策略","fixed":"K 固定为 DOSE 赢家；模型、路由和技巧合同固定","status":"DESIGN_REGISTERED_NOT_RUN","status_zh":"已登记待前置"},
+        {"family_id":"CONSUME-ROUTE","only_variable":"信息不足路由协议","fixed":"DOSE／SELECT 赢家与同一现场最小配对固定","status":"DESIGN_REGISTERED_NOT_RUN","status_zh":"已登记待前置"},
+        {"family_id":"CONSUME-CRAFT","only_variable":"技巧提示方式","fixed":"DOSE／SELECT／ROUTE 赢家配置固定","status":"DESIGN_REGISTERED_NOT_RUN","status_zh":"已登记待前置"},
+        {"family_id":"CONSUME-MODEL","only_variable":"模型品牌与精确版本","fixed":"前四个子家族锁定的完整配置","status":"DESIGN_REGISTERED_NOT_RUN","status_zh":"已登记待前置"}
+      ],
+      "p0_p1_prerequisites": {
+        "p0": "只验证生成、原子主张拆分、标注、裁判和统计能否跑通，不出结论",
+        "p1": "开发集和未见保留集使用同一冻结裁判合同；自动裁判身份、双人独立标注和分歧裁决在看保留集前冻结",
+        "search_contract": "FOUND 返回事实 ID；FOUND 后只允许重跑 Gate 一次；NOT_FOUND 按金标转 ASK 或 DECLINE；禁止人工回填被删事实",
+        "api_budget": "任何 API 次数与金额另报 CZ"
+      },
+      "source_design": {
+        "path": "TEMP/bgboard-audit-20260809-r01/05_WORKORDER_CONSUME_DRAFT.md",
+        "sha256": "9c212fb2e45a148600dbf056c8241b08e2e2200c499a1a7054d42c3cadcef20b",
+        "review_status": "TARGETED_SHORT_REVIEW_PASS"
+      }
+    }
+  ],
+  "post_extraction_families": [
+    {
+      "family_id": "EDGE",
+      "family_name_zh": "因果边两阶段后处理",
+      "family_layer": "POST_EXTRACTION_DERIVED_VIEW",
+      "status": "DESIGN_REGISTERED_NOT_RUN",
+      "status_zh": "已登记待前置",
+      "first_stage_facts_frozen": true,
+      "writes_fact_truth_layer": false,
+      "may_add_new_facts": false,
+      "only_variable": "已抽事实之间是否存在直接因果类边及边类型",
+      "existence_states": ["EDGE","NO_EDGE","NEEDS_REVIEW"],
+      "candidate_generation": "程序多路生成候选事实对",
+      "adjudication": "模型逐对受约束判定；机制无但反事实有时保持待复核",
+      "overdetermination": "机制存在且反事实不必要时仍记贡献原因，并设 necessary_in_context=false；不得标成弱因果",
+      "chain_policy": "长链降低结论强度，具体实验阈值另定",
+      "cycle_policy": "同一事件实例图成环时拒绝写入并进人工队列；复核方向、故事时间和节点粒度；真实反馈环拆成不同故事时间事件实例",
+      "p0_p1_prerequisites": {
+        "p0": "验证派生表示、候选对和逐对判定最小链路，不改事实真值",
+        "p1": "独立双盲 Gold、分歧裁决、标注一致性和候选生成召回率",
+        "runtime_semantic_verifier_required": false,
+        "api_budget": "若使用商用 API，次数与金额另报 CZ"
+      },
+      "source_design": {
+        "path": "TEMP/bgboard-audit-20260809-r01/06_WORKORDER_CAUSAL_EDGE_DRAFT.md",
+        "sha256": "9501c206f04274c8a6e663035a5767b7302a48cdeb4b678773ce229feec9f43b",
+        "review_status": "TARGETED_SHORT_REVIEW_PASS"
+      }
+    }
+  ],
+  "dependency_schedule": {
+    "meaning": "DEPENDENCY_ONLY_NOT_EXECUTION_ORDER_OR_AUTHORIZATION",
+    "steps": [
+      "先稳定当前抽取教材、输出合同和 READ 等赢家候选",
+      "再允许 EDGE 和 CONSUME 各自准备 P0／P1",
+      "任何模型、素材、调用次数、金额和运行合同由 CZ 另批"
+    ],
+    "consume_and_edge_relative_priority": "NOT_FIXED",
+    "uses_current_four_b_training_cells": false,
+    "interrupts_train72_to_read_route": false
+  },
+  "authorization_boundary": {
+    "model_run_authorized": false,
+    "api_authorized": false,
+    "training_authorized": false,
+    "notion_write_authorized": false,
+    "production_promotion_authorized": false,
+    "registration_is_execution_authority": false
+  }
+}

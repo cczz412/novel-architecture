@@ -1,0 +1,42 @@
+{
+  "schema_version": "t5-r04-evaluator-r02-receipt-v1",
+  "status": "PASS_MACHINE_RESCORE_COMPLETE_HUMAN_SEMANTIC_REVIEW_PENDING",
+  "completed_at": "2026-08-07T21:11:49+08:00",
+  "implementation_sha256": "46901db2a9a2ad594ec1bd7dc7558b4cb21b9bd3b09c7f535b482f9ec560abe7",
+  "diff_builder_sha256": "0347300f226c398512dab67c6b20d317bcb132cee7d1b05020e82f81b21ce9e5",
+  "verification_tool_sha256": "d0ae16da36a05a3985c094b3208eb1703445353d3a9f2153fdd3dba022b8b410",
+  "test_sha256": "1bf6b1568fbac0dd551f4f0ea5b8baceca54f7ea26bb6cd5b04e045fc4774c8a",
+  "groups_sha256": "adb7102d0354cae03e6d84e3ff71c1b890922a5d08318020fc37fb479cbe8fb6",
+  "metrics_sha256": "57c85d3691b0ee078c164bfb41aefd6f9b2c5516e1f8bfd3245a9dae880e8356",
+  "case_metrics_sha256": "ab0241e9c6a9147b5e6d45f0cb8d1db18fcf6bdd988bba194dc6deed93d2b52a",
+  "blind_queue_sha256": "a3ea84d428f2d3804e484ba2135b9813fb157224758ffca9443552797dc11781",
+  "blind_key_sha256": "3ee60005c98e5559485a1a4e0cc7c2160b1710bc8b68ff5cd49171ccf69f77f5",
+  "input_bindings_sha256": "c6f8a03724d675b11d00aa2fdd41a220229d6b6ff72dad2bfc863a45e9e535dc",
+  "old_to_r02_diff_sha256": "1f557dac79d7e434631e3958d49ef66e784734041294ea2632e65c9ccde0fc5f",
+  "two_run_comparison_sha256": "023eab0c371a9b91f4fdb3e93e8b1f6ff9de8170bf661b096df2492072ad7ce6",
+  "two_run_byte_identical": true,
+  "deterministic_output_files": 6,
+  "tests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "rescore": {
+    "groups": 4,
+    "cases": 164,
+    "gold_facts": 1420,
+    "invalid_json_cases": 67,
+    "row_schema_abnormal_cases": 7,
+    "recovered_fact_repeat_cases": 107,
+    "invalid_json_with_recovered_exact_fact_cases": 2,
+    "invalid_json_recovered_exact_fact_tp": 2
+  },
+  "stage_1_core_conclusions_changed": false,
+  "new_material_diagnostic": "A_FINAL_REPEAT_UNDERCOUNT_IN_ORIGINAL_MACHINE_SCORE",
+  "historical_scores_overwritten": false,
+  "human_semantic_review_complete": false,
+  "model_inference_called": false,
+  "training_started": false,
+  "api_called": false,
+  "git_changed": false,
+  "notion_changed": false
+}

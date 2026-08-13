@@ -1,0 +1,92 @@
+{
+  "package_id": "AGENT_TOOLS_PIPELINE_RESEARCH_RETURNS_20260814_R01",
+  "created_on": "2026-08-14",
+  "source_batch_date": "2026-08-14",
+  "status": "historical_external_research_candidate_prior_only",
+  "source_provider": "ChatGPT",
+  "prompt_source": "../../../../novel-mvp/design/17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md",
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false
+  },
+  "decision_boundary": "Product adoption still requires CZ current instruction, formal Notion ledger decisions, and the current shared-context package.",
+  "files": [
+    {
+      "return_id": "RETURN_01",
+      "prompt_topic": "P1 工具面：产品该暴露哪些工具",
+      "path": "returns/公开产品怎样处理“管线各站”.md",
+      "source_download": "/Users/a1234/Downloads/公开产品怎样处理“管线各站”.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 23636,
+      "lines": 340,
+      "sha256": "eccbe4d0871fdced01205f1226a4aa84603ab8dcf29ada4b810da585a2479092"
+    },
+    {
+      "return_id": "RETURN_02",
+      "prompt_topic": "P2 管线进度：防止跳跃和误关工作",
+      "path": "returns/2222调查结论.md",
+      "source_download": "/Users/a1234/Downloads/2222调查结论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 23339,
+      "lines": 390,
+      "sha256": "cf9f88f7a2690a6a790e723be34980984783c565a87745cee86623ce44174fb0"
+    },
+    {
+      "return_id": "RETURN_03",
+      "prompt_topic": "P3 双通道：聊天自动调工具 vs 一步一步点选",
+      "path": "returns/1. 成熟产品怎样收住双通道.md",
+      "source_download": "/Users/a1234/Downloads/1. 成熟产品怎样收住双通道.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 16228,
+      "lines": 153,
+      "sha256": "e251ac73be4f5f842fc0986f7120aed62f118c87923438fb5c0f41b45a9b8fc7"
+    },
+    {
+      "return_id": "RETURN_04",
+      "prompt_topic": "P4 编大纲时怎样挑上下文、压缩、缺料再读",
+      "path": "returns/1. 编译、RAG、Agent 各管什么.md",
+      "source_download": "/Users/a1234/Downloads/1. 编译、RAG、Agent 各管什么.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 16088,
+      "lines": 241,
+      "sha256": "f370699721a9eabe113bfd13882f971b519022754088b0994d2c8111ae8c519c"
+    },
+    {
+      "return_id": "RETURN_05",
+      "prompt_topic": "P5 生成前检查；规则 vs 子 Agent 只回 OK",
+      "path": "returns/1. 四类系统怎么做生成前守卫.md",
+      "source_download": "/Users/a1234/Downloads/1. 四类系统怎么做生成前守卫.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 19925,
+      "lines": 263,
+      "sha256": "d94162a9e3156a3da502b10525bfd58115c3c9b30a517b9082ecc25cd2dc4b99"
+    },
+    {
+      "return_id": "RETURN_06",
+      "prompt_topic": "P6 世界规则／Hook／义务／规划的触发器",
+      "path": "returns/1. 各类系统的触发器通常有什么.md",
+      "source_download": "/Users/a1234/Downloads/1. 各类系统的触发器通常有什么.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 24399,
+      "lines": 433,
+      "sha256": "d2e6ea02a9e9385d7d54db92ebdc164dca0b04a29aaec3d2a6d1d637e2e39498"
+    },
+    {
+      "return_id": "RETURN_07",
+      "prompt_topic": "P7 画布指示器、节奏、理论插件选用",
+      "path": "returns/✅ 核心结论.md",
+      "source_download": "/Users/a1234/Downloads/✅ 核心结论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 20518,
+      "lines": 225,
+      "sha256": "bb500d908c909dc8e9011e5aedd537af1bfc293b405ecf3cec8df3644dad1311"
+    }
+  ]
+}

@@ -1,0 +1,417 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/results/EXAM_RUN_LOCK.json",
+      "bytes": 3500,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/results/EXAM_RUN_LOCK.json",
+      "role": "experiment_evidence",
+      "sha256": "50f5f0fbc7404519de5fb554edc354cc031e6a69235206a31d5384929ca6e990",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/results/arm_a/RAW_OUTPUTS.jsonl",
+      "bytes": 312582,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/results/arm_a/RAW_OUTPUTS.jsonl",
+      "role": "evaluation_outputs",
+      "sha256": "2949743ab490293f93b56e46b8f5f01f8269434acfe09899337d1edc07cd1c83",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/results/arm_c/RAW_OUTPUTS.jsonl",
+      "bytes": 154425,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/results/arm_c/RAW_OUTPUTS.jsonl",
+      "role": "evaluation_outputs",
+      "sha256": "4cf94b61a5277c11f9fdf9203b2ce984a0336ab1b33075b1719ea5959eaf2901",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/a/QUESTIONS.jsonl",
+      "bytes": 225350,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/a/QUESTIONS.jsonl",
+      "role": "evaluation_questions",
+      "sha256": "d307b52ca1809b1776cba38a8f2ede85d1ba3226ac770b7ebbab96977b3fc8fa",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/c/QUESTIONS.jsonl",
+      "bytes": 283037,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/c/QUESTIONS.jsonl",
+      "role": "evaluation_questions",
+      "sha256": "5d0b5c60593183ba31dc8c6f91e2668db055ca3f1f5905086d892b3e98950a34",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/private_gold/a/GOLD.jsonl",
+      "bytes": 102456,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/private_gold/a/GOLD.jsonl",
+      "role": "private_evaluation_gold",
+      "sha256": "343e5bb2d90a9c37a9820d089ceb8874f9f0515eec287ed580cb00b0d4bf340a",
+      "store_id": "LAB",
+      "visibility": "private_identity_only"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/private_gold/c/GOLD.jsonl",
+      "bytes": 82621,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/private_gold/c/GOLD.jsonl",
+      "role": "private_evaluation_gold",
+      "sha256": "8624d06353abbf333baae9c9446a70cbd7438c065321dbf783aee5e6ef9ea543",
+      "store_id": "LAB",
+      "visibility": "private_identity_only"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_a/final/adapters.safetensors",
+      "bytes": 117465067,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_a/final/adapters.safetensors",
+      "role": "model_adapter",
+      "sha256": "e1217ec79657cd12cce2d273154db2da1c118a034dceca7a23975cddb27d9b74",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_a/stage_1_positive/adapters.safetensors",
+      "bytes": 117465067,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_a/stage_1_positive/adapters.safetensors",
+      "role": "model_adapter",
+      "sha256": "1e2f5e736f9d913819b835b21533626915a0e569f23242a7a15b8c1655fb3cdf",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_c/final/adapters.safetensors",
+      "bytes": 117465067,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_c/final/adapters.safetensors",
+      "role": "model_adapter",
+      "sha256": "35595e49156cbe8c39ca5f90729f06deea16ca6bd12456cca7edabed43cd7175",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_c/stage_1_positive/adapters.safetensors",
+      "bytes": 117465067,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_c/stage_1_positive/adapters.safetensors",
+      "role": "model_adapter",
+      "sha256": "206886963a2de9553a6c7a8824db2bb12cbb0509834d695d6a8a54807fc28f3e",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/BUILD_RECEIPT.json",
+      "bytes": 4518,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/BUILD_RECEIPT.json",
+      "role": "experiment_evidence",
+      "sha256": "7f19baf9c7262e7b34a0c271826cebd23faba5dd4ba82182231a4e1c582d1fc7",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/SPLIT_LOCK.json",
+      "bytes": 3107,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/SPLIT_LOCK.json",
+      "role": "experiment_evidence",
+      "sha256": "3ccad8cd2c4e1dcb33aa4dcfc99e9ac90f6f52918707860f6a095e5ef741d7b9",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/a/full_a.jsonl",
+      "bytes": 2977590,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/a/full_a.jsonl",
+      "role": "training_dataset",
+      "sha256": "73b1fcea929894a4b9c92dd3b53bf84b5e93a34e05cc3a61afc41c3cf727aa42",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/a/stage_1_positive_a.jsonl",
+      "bytes": 2101297,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/a/stage_1_positive_a.jsonl",
+      "role": "training_dataset",
+      "sha256": "59e3c96fa12b9c56165ca99e13dad4cb2a73dc580ee83da236b4641e87723eb4",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/a/stage_2_special_a.jsonl",
+      "bytes": 509907,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/a/stage_2_special_a.jsonl",
+      "role": "training_dataset",
+      "sha256": "81a84c6128f4e956bfaaf7be11d1bc5ebbc1ab1d1910761a96fe691a22e5dbae",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/c/full_c.jsonl",
+      "bytes": 3346425,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/c/full_c.jsonl",
+      "role": "training_dataset",
+      "sha256": "b84d0bc964ecc87fbd55d740aea483522f0e9dfbefaaeb820bf5d31d2f6e0945",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/c/stage_1_positive_c.jsonl",
+      "bytes": 2321796,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/c/stage_1_positive_c.jsonl",
+      "role": "training_dataset",
+      "sha256": "9a9144a4ae12eeb9d157395727674e45b562e271eabf3aaff94ca405cfc94967",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/c/stage_2_special_c.jsonl",
+      "bytes": 615945,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/c/stage_2_special_c.jsonl",
+      "role": "training_dataset",
+      "sha256": "ef6e7303e862e53cf0e92984bab34a85bab8ca62dd0be708d013588453966cac",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/exams/a/QUESTIONS.jsonl",
+      "bytes": 249877,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/exams/a/QUESTIONS.jsonl",
+      "role": "evaluation_questions",
+      "sha256": "3c42924b1f245c8f967d497f38b6dbe5a883ef352f4287d77a7b336e77dafe6e",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/exams/c/QUESTIONS.jsonl",
+      "bytes": 316541,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/exams/c/QUESTIONS.jsonl",
+      "role": "evaluation_questions",
+      "sha256": "ac961ccfaa8311433dd741273859ee38841372d9472377349e6a99309646bdbf",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/private_gold/a/GOLD.jsonl",
+      "bytes": 129083,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/private_gold/a/GOLD.jsonl",
+      "role": "private_evaluation_gold",
+      "sha256": "6d5643eb45e0bdf60172902a9b472da1f71c538741f1faa3bd6d15b789972364",
+      "store_id": "LAB",
+      "visibility": "private_identity_only"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/private_gold/c/GOLD.jsonl",
+      "bytes": 104717,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/private_gold/c/GOLD.jsonl",
+      "role": "private_evaluation_gold",
+      "sha256": "7830e65cad7ec5751808899737793838bc53f1980b0599e4366d062687bf6f77",
+      "store_id": "LAB",
+      "visibility": "private_identity_only"
+    },
+    {
+      "artifact_id": "upstream_ac_read_only::T5_R04_A_C_FORMAT_COMPARE_20260807_R01/tools/ac_exam_r03_runner.py",
+      "bytes": 47064,
+      "group_id": "upstream_ac_read_only",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/tools/ac_exam_r03_runner.py",
+      "role": "execution_code",
+      "sha256": "8a390af537919943ff477ccb98e99deb16ea614af18fa617ab2760c76a029603",
+      "store_id": "LAB",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/00_ROUTE_MAP.md",
+      "bytes": 1359,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/00_ROUTE_MAP.md",
+      "role": "experiment_evidence",
+      "sha256": "93402f451497a933f4a9548770cbfd26408c2966dd429d9bbf8c7968c97cd7b9",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/contracts/01_CPLUS_ROUTE_APPROVAL_AND_STAGE_GATES.md",
+      "bytes": 18851,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/contracts/01_CPLUS_ROUTE_APPROVAL_AND_STAGE_GATES.md",
+      "role": "experiment_evidence",
+      "sha256": "d9c3f3dfce61ea3ed4a839f088ca9dd9d46e12cd511b1e4b0c09bb7eee07898d",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/contracts/02_NEW_DATASET_LONG_RUNNING_WORK_CONTRACT.md",
+      "bytes": 27595,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/contracts/02_NEW_DATASET_LONG_RUNNING_WORK_CONTRACT.md",
+      "role": "experiment_evidence",
+      "sha256": "96662d334241c1dd8eae726ffc07a74611bb796a14bc2b342c0c69e9260e2bae",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/decisions/DECISION_THRESHOLDS.md",
+      "bytes": 15433,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/decisions/DECISION_THRESHOLDS.md",
+      "role": "experiment_evidence",
+      "sha256": "fc428b8c8c299a166fc3d90a0be4c33ab9e1169ee33fdf8890a036d06425e580",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/decisions/P0_DECISION.md",
+      "bytes": 12143,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/decisions/P0_DECISION.md",
+      "role": "experiment_evidence",
+      "sha256": "8ebc866dcbc83ef0ebc06ff5662f975dae133803963a66c245e12cd8793f60a0",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/receipts/P0_IMPORT_RECEIPT.json",
+      "bytes": 818,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/receipts/P0_IMPORT_RECEIPT.json",
+      "role": "experiment_evidence",
+      "sha256": "311d3021f0c5800ab2a859c519088bf41174ca10e13f43cecb71fcacfa65fa45",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/receipts/PREFLIGHT_RECEIPT.md",
+      "bytes": 8185,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/receipts/PREFLIGHT_RECEIPT.md",
+      "role": "experiment_evidence",
+      "sha256": "5a2529258dfe4b6244880c21b007f8accef6831b925e021e88f85e0ac09dddcd",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/AC_ROOT_CAUSE_REPORT.md",
+      "bytes": 13168,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/AC_ROOT_CAUSE_REPORT.md",
+      "role": "experiment_evidence",
+      "sha256": "055f89600451eff2303d5df4131d6bcded8c48a8ab0db0fb3bda458803443e86",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/CASE_DIAGNOSIS_82.jsonl",
+      "bytes": 200966,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/CASE_DIAGNOSIS_82.jsonl",
+      "role": "experiment_evidence",
+      "sha256": "330ba5daeccbe047b7f395c13f69c2523ecc4a0fae40705da151406a254dcb3a",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/EVALUATOR_AUDIT.md",
+      "bytes": 10992,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/EVALUATOR_AUDIT.md",
+      "role": "experiment_evidence",
+      "sha256": "f8ff9ce53e8ba0696193a47f7c2a00d21c7aa28b13b5edd3c102f34e038f1a91",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/HYPOTHESIS_RANKING.json",
+      "bytes": 9278,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/HYPOTHESIS_RANKING.json",
+      "role": "experiment_evidence",
+      "sha256": "f6865171273eb3ac99446460f39f9a4a083db3c8e7bbf0f2186d602186baa84b",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/MINIMAL_FALSIFICATION_PLAN.md",
+      "bytes": 2738,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/MINIMAL_FALSIFICATION_PLAN.md",
+      "role": "experiment_evidence",
+      "sha256": "b4ab3c7eb5de5890a46557974e9e1a350ba18269d1adf9d2fb3d7183f743d1e6",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/RETURN_MANIFEST.json",
+      "bytes": 2893,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/RETURN_MANIFEST.json",
+      "role": "experiment_evidence",
+      "sha256": "750b5c874e10cef7f09a6da115fadde7f8ce7a61edcc3e8445a23302e6cac52f",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    },
+    {
+      "artifact_id": "cplus_control_plane::finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/SELF_CHECK.md",
+      "bytes": 1920,
+      "group_id": "cplus_control_plane",
+      "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/advisory_input/SELF_CHECK.md",
+      "role": "experiment_evidence",
+      "sha256": "d15d3f6b9692e89143963c79c8c5c86065e9f2cfc3ca3f18917a149e72d41de6",
+      "store_id": "MAIN_REPO",
+      "visibility": "internal"
+    }
+  ],
+  "boundaries": {
+    "may_authorize_promotion": false,
+    "may_authorize_training": false,
+    "may_modify_frozen_evidence": false,
+    "may_move_or_delete_assets": false
+  },
+  "derived_facts": {
+    "current_exam_rows_arm_c": 41,
+    "current_exam_rows_each_arm": 41,
+    "current_gold_facts_arm_c": 355,
+    "current_gold_facts_each_arm": 355,
+    "evaluator_sha256": "8a390af537919943ff477ccb98e99deb16ea614af18fa617ab2760c76a029603",
+    "full_rows_arm_c": 398,
+    "full_rows_each_arm": 398,
+    "old_frozen_exam_rows_arm_c": 48,
+    "old_frozen_exam_rows_each_arm": 48,
+    "raw_answer_records_total": 82,
+    "training_rows_each_arm": 350,
+    "upstream_manifest_sha256": "a1729b5492170da493be51e5e745f7607c1f60b11bd16acef8ce36934569b80d"
+  },
+  "experiment_id": "T5_R04_CPLUS_20260807_R01",
+  "manifest_revision": "r01",
+  "schema_version": "finetuning-experiment-manifest-v1",
+  "source_root": {
+    "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01",
+    "store_id": "MAIN_REPO"
+  },
+  "spec_sha256": "5ffa868aee6bee7d5ab8a12e6779d6edc8537462777a7aa3d8ce66d4d0437001",
+  "state": {
+    "lifecycle": "active_stage_1_authorized",
+    "promotion_state": "not_promoted",
+    "storage_state": "main_repo_control_lab_upstream"
+  }
+}

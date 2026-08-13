@@ -1,0 +1,65 @@
+{
+  "schema_version": "fact-extraction-experiment-decision-registry/1.4",
+  "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R08",
+  "status": "TARGET_BLOCK_COARSE_SCREEN_REGISTERED_NOT_AUTHORIZED_NOT_RUN",
+  "created_at": "2026-08-10T14:24:00+08:00",
+  "parent": {
+    "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R07",
+    "members": {
+      "00_READ_ME_FIRST.md": "46dc1bbc99076517fa813d26d5d0f3967785e18457a3fe5ba9bc979813b59247",
+      "DECISION_REGISTRY.json": "96431fbb1c90a64cbd06b6117b4aada564b38b6e3256f81327312486cf904782",
+      "BASE_READ2_OUT_FORMAT_RESULT_TICKET.json": "c38121cece96ac7dd5dda49e2976bab4c38bb17c30de38bdbaccb10e4ad1f376"
+    },
+    "modified": false
+  },
+  "context_halo_demo": {
+    "scope_name_zh": "未微调本地4B+OUT2的本机CONTEXT_HALO Demo",
+    "status": "FINAL_COMPLETE_H180_SELECTED",
+    "target_responsibility_segment_unicode_chars": {
+      "min": 620,
+      "max": 923,
+      "unchanged_across_halos": true
+    },
+    "halo_definition": "MAX_UNICODE_CODEPOINTS_ON_EACH_SIDE_OF_TARGET",
+    "fixed_output_format": "OUT2-IDLIST",
+    "candidates": {
+      "H180": {"f1": 0.352941, "selected": true, "source": "FROZEN_REUSE"},
+      "H120": {"f1": 0.224299, "selected": false, "source": "NEW_INFERENCE"},
+      "H60": {"f1": 0.218868, "selected": false, "source": "NEW_INFERENCE"}
+    },
+    "selection_rule_branch": "HIGHEST_RECOVERABLE_SEMANTIC_F1",
+    "temporary_combination": "UNFINETUNED_LOCAL_4B_PLUS_OUT2_IDLIST_PLUS_HALO180_EACH_SIDE"
+  },
+  "next_family": {
+    "family_id": "TARGET_RESPONSIBILITY_BLOCK_COARSE_SCREEN",
+    "status": "CANDIDATE_PREFLIGHT_ONLY_NOT_AUTHORIZED_NOT_RUN",
+    "fixed_halo_unicode_chars_each_side_max": 180,
+    "coarse_block_targets_unicode_chars": [60, 300, 600],
+    "new_candidate_cells": [60, 300],
+    "reuse_existing_600_cell": true,
+    "not_three_by_three": true,
+    "future_outputs_aggregate_to_original_600_segment_gold": true
+  },
+  "scope_boundary": {
+    "r08_grants_run_authority": false,
+    "training_authorized": false,
+    "inference_authorized": false,
+    "api_authorized": false,
+    "out_authorized": false,
+    "notion_authorized": false,
+    "git_authorized": false,
+    "current_or_production_promotion_authorized": false,
+    "not_a_trained_4b_conclusion": true,
+    "not_a_mini_or_general_conclusion": true
+  },
+  "actions": {
+    "model_loads": 0,
+    "training": 0,
+    "inference": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  },
+  "revision_rule": "保留R07、R06、R05、R04及更早版本原字节；Halo最终证据和下一候选只进R08。"
+}

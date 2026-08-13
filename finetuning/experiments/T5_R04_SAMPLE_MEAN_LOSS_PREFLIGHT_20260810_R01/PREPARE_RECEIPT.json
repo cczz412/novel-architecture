@@ -1,0 +1,128 @@
+{
+  "schema_version": "sample-mean-loss-preflight-receipt/1.0",
+  "status": "PASS_PREFLIGHT_NOT_RUN_AUTHORITY",
+  "created_at": "2026-08-10T05:48:14+08:00",
+  "package_path": "finetuning/experiments/T5_R04_SAMPLE_MEAN_LOSS_PREFLIGHT_20260810_R01",
+  "source_proof": {
+    "source_vendor_path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/pipeline_r02/vendor_r02",
+    "source_vendor_tree_sha256": "20d6530b8181b0490c3094d89504e5b9a983f44109076950ce2a7f0e07265628",
+    "source_trainer_sha256_before": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909",
+    "source_trainer_sha256_after": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909",
+    "source_vendor_modified": false,
+    "derived_from_token_weighted_vendor": false
+  },
+  "derived_proof": {
+    "derived_vendor_path": "finetuning/experiments/T5_R04_SAMPLE_MEAN_LOSS_PREFLIGHT_20260810_R01/vendor_sample_mean",
+    "derived_vendor_tree_sha256": "3d69ffe180a504e7a4aab14e7bbd6d802009bb9f494b2d717832b99d1d254d00",
+    "derived_trainer_sha256": "fd77af48343557171598bd449ec6c10c5fcd514efa503f6007aba78bc0c5da4d",
+    "source_and_derived_non_cache_file_count": 163,
+    "changed_files": [
+      "mlx_lm/tuner/trainer.py"
+    ],
+    "only_default_loss_changed": true,
+    "cache_files_present": false
+  },
+  "validation_runs": [
+    {
+      "name": "locked_source_tree_ast_and_train96_static_test",
+      "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked pytest -q finetuning/experiments/T5_R04_SAMPLE_MEAN_LOSS_PREFLIGHT_20260810_R01/test_sample_mean_loss.py",
+      "python_version": "3.12.12",
+      "numpy_loaded": false,
+      "mlx_loaded": false,
+      "exit_code": 0,
+      "result": "1 passed"
+    },
+    {
+      "name": "homebrew_numpy_and_real_mlx_sample_mean_wiring_smoke",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /opt/homebrew/opt/python@3.12/bin/python3.12 finetuning/experiments/T5_R04_SAMPLE_MEAN_LOSS_PREFLIGHT_20260810_R01/test_sample_mean_loss.py --mlx-smoke --write-result finetuning/experiments/T5_R04_SAMPLE_MEAN_LOSS_PREFLIGHT_20260810_R01/INVARIANCE_RESULT.json",
+      "python_executable": "/opt/homebrew/opt/python@3.12/bin/python3.12",
+      "python_version": "3.12.12",
+      "numpy_version": "2.4.2",
+      "mlx_version": "0.30.6",
+      "qwen_loaded": false,
+      "exit_code": 0,
+      "actual_path": [
+        "sample_mean default_loss",
+        "nn.value_and_grad",
+        "mx.compile",
+        "GA4 accumulation",
+        "optim.Adam.update"
+      ]
+    },
+    {
+      "name": "single_file_ruff",
+      "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked ruff check finetuning/experiments/T5_R04_SAMPLE_MEAN_LOSS_PREFLIGHT_20260810_R01/test_sample_mean_loss.py",
+      "exit_code": 0,
+      "result": "All checks passed"
+    }
+  ],
+  "invariance_summary": {
+    "sample_supervised_token_counts": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "each_sample_contribution": 0.125,
+    "sample_mean_a_b_reference_equal_within_tolerance": true,
+    "sgd_parameter_delta_equal_within_tolerance": true,
+    "adam_parameter_m_v_step_equal_within_tolerance": true,
+    "old_microbatch_token_mean_a_b_unequal": true,
+    "old_microbatch_token_mean_a_b_max_abs": 10.0,
+    "global_token_mean_a_b_equal": true,
+    "global_token_mean_differs_from_sample_mean_max_abs": 10.5,
+    "real_mlx_a_b_parameter_max_abs": 2.3283064365386963e-10,
+    "real_mlx_a_reference_parameter_max_abs": 0.0,
+    "ga1_two_sample_mean_max_abs": 2.2351741790771484e-08,
+    "two_consecutive_windows_reset": true,
+    "real_mlx_wiring_smoke_passed": true
+  },
+  "train96_static": {
+    "train96_sha256": "e059529d9ce39e7f9044f3d966dba00d0e19b2206098a827415473c38c46e4ad",
+    "rows": 96,
+    "batch_size": 2,
+    "complete_batches": 48,
+    "grad_accumulation_steps": 4,
+    "complete_optimizer_windows": 12,
+    "partial_batches": 0,
+    "partial_optimizer_windows": 0,
+    "assistant_supervised_tokens_min": 6,
+    "assistant_supervised_tokens_max": 1029,
+    "assistant_supervised_tokens_total": 34071,
+    "max_sequence_tokens": 2850,
+    "samples_over_4608": 0,
+    "model_weights_loaded": false
+  },
+  "r04_updates": {
+    "decision_ledger_sha256": "a6b9de1a473e83d7e9099175f8674c901118e8b4d3e3f41d6afd0f3ad5110540",
+    "decision_registry_sha256": "08f4ac83f8d9c22b7b1efe4b2c79ddc5a1e56973f601e4afcc6d59792c092bf0",
+    "train96_token_weighted_fail_ticket_sha256": "b09f3d952c3ca7668236d1fa21dc4957d0225cf152f5849b5362986e5b527a77",
+    "new24_assistant_loss_token_share": 0.06289806580376273,
+    "new24_empty_cases_assistant_loss_tokens": 48,
+    "next_unique_candidate": "PAIR_INDEPENDENT_SAMPLE_MEAN_LOSS",
+    "stop_if_formal_train96_l6_fails": true
+  },
+  "artifact_sha256": {
+    "README.md": "a38d0c53530565f7362970f9c5b597869246d1a11b2df40ec724e82ea8a2cee9",
+    "test_sample_mean_loss.py": "4dc49dfd4fb3dbe0a73dd6ba0cd129a521c88cbd8dec989525479bc3a231df96",
+    "INVARIANCE_RESULT.json": "5aa63604d080f1a16cf3cc283cf6f2ac8b18ae2eff76b3042fcb872c86286701",
+    "SOURCE_AND_DIFF_MANIFEST.json": "fd31fbd5a8c4ae967fa13cb0098fd49e25a608d4216b4dda86cd62eb8747a8db",
+    "vendor_sample_mean/mlx_lm/tuner/trainer.py": "fd77af48343557171598bd449ec6c10c5fcd514efa503f6007aba78bc0c5da4d"
+  },
+  "external_actions": {
+    "qwen_loads": 0,
+    "training_runs": 0,
+    "inference_runs": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_pointer_changes": 0,
+    "run_roots_created": 0,
+    "execution_tickets_created": 0,
+    "production_actions": 0
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "current_experiment_id": "T5_R04_CPLUS_20260807_R01",
+  "manifest_revision": "r01",
+  "manifest_sha256": "7f5818391b9988be2ddeb0d5ac89fe49363c0d0e245a7d02660cf649cab08216",
+  "may_authorize_promotion": false,
+  "may_authorize_training": false,
+  "schema_version": "finetuning-current-pointer-v2",
+  "scope": "navigation_only"
+}

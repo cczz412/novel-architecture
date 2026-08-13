@@ -1,0 +1,18 @@
+{
+  "schema_version": "finetuning-logical-stores-v1",
+  "local_binding_file": ".local/finetuning/stores.local.json",
+  "stores": {
+    "MAIN_REPO": {
+      "kind": "main_repository",
+      "role": "索引、规则、工具和轻量证据"
+    },
+    "LAB": {
+      "kind": "sibling_experiment_lab",
+      "role": "正在训练、考试或诊断的重资产"
+    },
+    "ARCHIVE": {
+      "kind": "sibling_external_archive",
+      "role": "已冷却并按既有 S-06 规则登记的历史重资产"
+    }
+  }
+}

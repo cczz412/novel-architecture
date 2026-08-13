@@ -1,0 +1,68 @@
+{
+  "manifest_policy": {
+    "final_receipt_listed": false,
+    "listed_members": "all deliverables except this self-referential manifest and the later final receipt",
+    "self_listed": false
+  },
+  "member_count": 11,
+  "members": [
+    {
+      "bytes": 1352,
+      "path": "P3_C0_OUTPUT_STRUCTURAL_SCHEMA.json",
+      "sha256": "7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14"
+    },
+    {
+      "bytes": 3256,
+      "path": "P3_C0_RUNTIME_VALIDATION_LAYERS.md",
+      "sha256": "97a03acff51aeb7957dcf3d9b687f2c7bf4b696fdbb19767088616c13f465de2"
+    },
+    {
+      "bytes": 22640,
+      "path": "P3_C0_SCHEMA_MUTATION_CORPUS.jsonl",
+      "sha256": "ededafeab91ebca3e3e7b98f4908b1f83352d7dd77a8de35081986449ce39e05"
+    },
+    {
+      "bytes": 8380,
+      "path": "P3_C0_SCHEMA_SOURCE_BINDING.json",
+      "sha256": "901b6e1de11daa9abf10d16e4ab0efa51421da28f0eea59878ff11dfdb55cf51"
+    },
+    {
+      "bytes": 2453,
+      "path": "P4_1_GAP_005_RESOLUTION_TICKET.md",
+      "sha256": "88d798e3dd35ff76defaf45e210c9ae6d93e83a12f92355a9f7a41b1cb00264c"
+    },
+    {
+      "bytes": 2355,
+      "path": "P4_1_GAP_LIST.jsonl",
+      "sha256": "c2422fcbbdc06c337d14329710f6cf2df9bc23312ddfe3f17c7b5634a90fa5ff"
+    },
+    {
+      "bytes": 2281,
+      "path": "P4_1_RESULT_TICKET.md",
+      "sha256": "a35a932edf7918747de5c01b30ea00cd50c12a8ea3c90cb2d994ca494494a418"
+    },
+    {
+      "bytes": 6491,
+      "path": "P4_1_SCHEMA_EQUIVALENCE_RECEIPT.json",
+      "sha256": "954fcd95ea1722f57a4f00f953725f8202d09cb3bfd01adbcceb74e8c58acccd"
+    },
+    {
+      "bytes": 6571,
+      "path": "tests/test_p3_c0_schema_equivalence.py",
+      "sha256": "80f1a47a37c9e244ac5e32082fd4a566d8c49344a9c3a47695ade46fc62261a2"
+    },
+    {
+      "bytes": 31529,
+      "path": "tools/verify_p3_c0_schema_equivalence.py",
+      "sha256": "88369a0bba96fd562658fd03b2d436139e23b871a0eee07862538d70ec2f38f7"
+    },
+    {
+      "bytes": 9653,
+      "path": "tools/verify_p4_1_final.py",
+      "sha256": "db297b3c7cb6de8331ad9e88b6f81d2efd223cb5145e0cb60e9acb18775531d9"
+    }
+  ],
+  "schema_version": "t5-r04-p4-1-output-manifest-v1",
+  "scope": "STRUCTURAL_SCHEMA_MATERIALIZATION_ONLY_NO_RUN_AUTHORITY",
+  "status": "PASS_P3_C0_STRUCTURAL_SCHEMA_MATERIALIZED_NO_RUN_AUTHORITY"
+}

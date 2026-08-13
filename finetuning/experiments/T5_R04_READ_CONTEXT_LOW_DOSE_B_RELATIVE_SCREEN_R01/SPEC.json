@@ -1,0 +1,183 @@
+{
+  "schema_version": "read-context-low-dose-b-relative-screen-spec/1.0",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "objective_zh": "只在本机 REAL24、单 seed、TRAIN36 低剂量 24 步和统一 B 输出合同条件下，相对比较 READ1、READ2、READ4；不判断配方绝对合格。",
+  "run": {
+    "run_id": "T5_R04_READ_CONTEXT_LOW_DOSE_B_RELATIVE_SCREEN_R01",
+    "run_root": "/Users/a1234/挣钱/小说架构/runs/T5_R04_READ_CONTEXT_LOW_DOSE_B_RELATIVE_SCREEN_R01",
+    "run_root_must_not_exist_before_authorized_train": true,
+    "future_ticket_schema": "read-context-low-dose-b-relative-screen-ticket/1.0",
+    "future_authorized_commands_exact": [
+      "train-new-arms",
+      "infer-stage1",
+      "infer-full24"
+    ],
+    "ticket_required_before_run_root_creation_or_model_load": true,
+    "model_13_member_gate_before_each_read2_read4_child_and_immediately_before_each_actual_inference_load": true,
+    "inference_result_records_one_gate_entry_per_actual_load_with_variant_or_arm": true,
+    "retry": 0,
+    "checkpoint_sweep": false
+  },
+  "common_training_recipe": {
+    "base_model_path": "/Users/a1234/挣钱/小说架构_隔离实验/models/Qwen3-4B-Instruct-2507_cdbee75f",
+    "base_model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6",
+    "vendor_path": "/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/pipeline_r02/vendor_r02",
+    "trainer_sha256": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909",
+    "loss": "original_default_loss",
+    "fine_tune_type": "lora",
+    "optimizer": "adam",
+    "mask_prompt": true,
+    "num_layers": 16,
+    "batch_size": 2,
+    "iters": 24,
+    "optimizer_updates": 6,
+    "grad_accumulation_steps": 4,
+    "learning_rate": 0.00003,
+    "max_seq_length": 4608,
+    "grad_checkpoint": true,
+    "seed": 20260802,
+    "lora_parameters": {
+      "rank": 32,
+      "dropout": 0.0,
+      "scale": 0.125
+    },
+    "save_every": 24,
+    "final_only": true,
+    "validation_batches": 0
+  },
+  "arms": {
+    "READ1": {
+      "training_action": "reuse_existing_iter24_no_retrain",
+      "train_input_path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_READ_CONTEXT_TRAIN36_RENDER_20260809_R01/READ_1_TARGET_TRAIN36.jsonl",
+      "train_input_sha256": "84ad6f7886b372334b008d49cc2f3343afdd6b98d83a24a00d604ae49b8f09e0",
+      "adapter_view_path": "/Users/a1234/挣钱/小说架构/runs/T5_R04_READ1_LOW_DOSE_SENTINEL_20260809_R01/adapter_views/iter24",
+      "adapter_sha256": "7b01e203e45beb9562e55dff902bc0ecfd56c312f5a0a679c69813014ed14b1f",
+      "adapter_config_sha256": "f18f85d70333202c43294bc057e4565773e3b360fd880f710031ebcce27c23b8",
+      "full_training_sequence_tokens": {
+        "min": 1647,
+        "max": 2772,
+        "mean": 2233.444
+      }
+    },
+    "READ2": {
+      "training_action": "future_independent_24_step_from_original_base",
+      "train_input_path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_READ_CONTEXT_TRAIN36_RENDER_20260809_R01/READ_2_HALO180_TRAIN36.jsonl",
+      "train_input_sha256": "09fdbc52f7131f1a2a60552740ce28430e418ed84c858f0f997abda16e4a7c5e",
+      "full_training_sequence_tokens": {
+        "min": 1784,
+        "max": 2962,
+        "mean": 2420.111
+      },
+      "estimated_training_minutes": "6-8",
+      "estimate_basis_zh": "同机旧 288 步 READ2 用时 4343.929 秒，按 24/288 线性折算约 6.0 分钟，并给首次编译留余量。"
+    },
+    "READ4": {
+      "training_action": "future_independent_24_step_from_original_base",
+      "train_input_path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_READ_CONTEXT_TRAIN36_RENDER_20260809_R01/READ_4_FULL_CHAPTER_TRAIN36.jsonl",
+      "train_input_sha256": "93b3ab7e9beed9a6f54df751400ba2ac65cfd5a18f1865da01c7c0c81540ed4a",
+      "full_training_sequence_tokens": {
+        "min": 2705,
+        "max": 4161,
+        "mean": 3400.972
+      },
+      "estimated_training_minutes": "9-11",
+      "estimate_basis_zh": "同机旧 288 步 READ4 用时 6546.708 秒，按 24/288 线性折算约 9.1 分钟，并给首次编译留余量。"
+    }
+  },
+  "cross_arm_training_identity": {
+    "rows_per_arm": 36,
+    "facts_per_arm": 714,
+    "case_order_equal": true,
+    "system_equal_row_by_row": true,
+    "assistant_equal_row_by_row": true,
+    "user_only_read_text_differs": true,
+    "all_samples_within_max_seq_length": true
+  },
+  "evaluation_contract": {
+    "format_b_suffix": "【输出合同】输出必须是且只能是一个顶层键为 facts 的 JSON 对象；facts 为数组且允许为空，每个元素只能且必须包含 fact、status、speaker、evidence_ids，fact 为非空字符串，speaker 为字符串或 null，evidence_ids 为字符串数组，status 只能取“已发生”“正在发生”“计划”“承诺”“条件”“推测”“误信”“否定”之一；不得输出其他字段、Markdown 或解释。",
+    "suffix_is_evaluation_only": true,
+    "must_not_be_added_to_read2_or_read4_training_system": true,
+    "decoding": {
+      "temperature": 0.0,
+      "greedy": true,
+      "max_output_tokens": 2048,
+      "retry": 0
+    },
+    "real24_gold_path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_LOCAL_REAL_SCREEN24_READ_EVAL_20260809_R01/REAL24_GOLD_24.jsonl",
+    "real24_gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "real24_txx_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "schema_sha256": "7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14",
+    "eval_request_sha256": {
+      "READ1": "73423ace73ce60e497db6f0acf25d39bba3bfdccfc6d7a82abf9d8510d6157c0",
+      "READ2": "a12f1f5cb1adfed4958418bfa8373af52b6305fdef64122c9bf02e3338c77e85",
+      "READ4": "350799084dbc15791bc3b46a669552aec2da7920bfa39c8a3a110e1cbe431d4f"
+    }
+  },
+  "stage1": {
+    "cases": [
+      "C01",
+      "C02",
+      "C05",
+      "C09",
+      "C10",
+      "C14",
+      "C23",
+      "C24"
+    ],
+    "read1_reuse": {
+      "requests_sha256": "10969ace5317a7edd05a0ed89a79bac2e32cb9bb55a4a02a09c69a08ba45a663",
+      "raw_sha256": "d79e768c1163085016472591e47e92a203421d73266f78daf51e952b71690351",
+      "adjudications_sha256": "810fa1a4427b743854fc70def399a5635efe06c71daaf9feb0babd514aa1150f",
+      "final_metrics_sha256": "58087ff31edbf80315fe05b76341c2437e5722634970fffed7a8a6f3235bea43",
+      "old_result_ticket_sha256": "8ac276c9648657d4c488d3973092858e645afb2c600c78c6a0f7de18a0e72e61",
+      "old_result_is_preserved_as_fail_stop_at_8": true,
+      "old_semantic_gate_is_not_used_here": true
+    },
+    "mechanical_gate_per_arm": {
+      "strict_json_cases": 8,
+      "schema_cases": 8,
+      "illegal_evidence_predictions": 0,
+      "repetition_cases": 0,
+      "token_limit_cases": 0,
+      "duplicate_predictions": 0
+    },
+    "minimum_passing_arms_for_full24": 2,
+    "if_only_one_passes_zh": "只记稳定性淘汰，不宣称正文范围赢家。",
+    "no_semantic_threshold": true
+  },
+  "full24": {
+    "only_stage1_passing_arms_run": true,
+    "matched_unfinetuned_base_with_same_b_contract_per_passing_arm": true,
+    "lora_hard_format_gate_per_passing_arm": {
+      "strict_json_cases": 24,
+      "schema_cases": 24,
+      "illegal_evidence_predictions": 0,
+      "repetition_cases": 0,
+      "token_limit_cases": 0,
+      "duplicate_predictions": 0
+    },
+    "matched_base_format_is_diagnostic_not_gate": true,
+    "lora_format_fail_action": "write_mechanical_fail_metrics_with_empty_blind_queue_and_forbid_full_final",
+    "semantic_metric": "recoverable_fact_precision_recall_f1_after_same_case_blind_review",
+    "winner_rule": "highest_lora_semantic_f1",
+    "approximate_tie_if_absolute_f1_gap_below": 0.02,
+    "tie_recommendation": "choose_shorter_read_context",
+    "matched_base_delta_is_diagnostic_not_gate": true,
+    "conclusion_scope_zh": "仅限当前本机 REAL24、单 seed、低剂量 24 步和 B 合同的条件式 Demo 排名；不是合格配方、生产候选或通用赢家。"
+  },
+  "no_go": [
+    "TRAIN96",
+    "第三种 loss",
+    "新增教材",
+    "挪动教材行序",
+    "调参",
+    "OUT",
+    "API",
+    "Notion",
+    "Git",
+    "CURRENT 或生产指针",
+    "重写旧 FAIL_STOP_AT_8",
+    "retry 或 checkpoint sweep"
+  ]
+}

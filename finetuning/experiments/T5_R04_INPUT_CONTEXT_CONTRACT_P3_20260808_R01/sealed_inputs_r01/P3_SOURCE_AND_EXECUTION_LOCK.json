@@ -1,0 +1,224 @@
+{
+  "api_called": false,
+  "authority": {
+    "authorized_actions": [
+      "rights_grouping",
+      "zero_training_context_probe_after_baseline_reproduction"
+    ],
+    "package_status": "CANDIDATE_PENDING_LOCAL_VERIFICATION",
+    "prohibited_actions": [
+      "training",
+      "modify_p2_sealed",
+      "modify_dev24_gold",
+      "modify_c2_renderer",
+      "switch_finetuning_current",
+      "api",
+      "notion",
+      "git_commit_or_push"
+    ],
+    "source": "CZ current task: 给你的任务在这个zip里面"
+  },
+  "context": {
+    "arms": [
+      {
+        "arm": "c0_current_minimal",
+        "case_count": 24,
+        "kind": "NO_CHANGE",
+        "only_allowed_change": "none",
+        "questions_path": "track_b/prompts/c0_current_minimal_QUESTIONS_24.jsonl",
+        "questions_sha256": "94492f050aa18169b47a3d799be903d37462984c0ace352c135b850dd1725258",
+        "status": "RUNNABLE_AFTER_BASELINE_GATE"
+      },
+      {
+        "arm": "c1_rulebook_8",
+        "case_count": 24,
+        "fixed_block": "【新增输入块：精简规则】\n1. 计划不等于已发生。\n2. 承诺不等于已兑现。\n3. 推测不等于确定。\n4. 误信不等于世界事实。\n5. 否认行为与被否认内容分开。\n6. 背景／只读区不能单独贡献 evidence。\n7. 一条 fact 只写一个核心断言。\n8. 没有应抽事实时允许输出空数组。",
+        "kind": "FIXED_SYSTEM_SUFFIX",
+        "only_allowed_change": "system_suffix_input_block",
+        "questions_path": "track_b/prompts/c1_rulebook_8_QUESTIONS_24.jsonl",
+        "questions_sha256": "d4e8d5856d7a990bb8c643321f516767eb8dcdc8a3a348b015fb41a9c2ce0f48",
+        "status": "RUNNABLE_AFTER_BASELINE_GATE"
+      },
+      {
+        "arm": "c2_purpose_short",
+        "case_count": 24,
+        "fixed_block": "【新增输入块：任务目的】\n这些事实将进入小说长期状态库，用于连续性检索。\n请抽取当前负责区明确支持的事实，不要总结剧情；背景只能辅助理解，不能代替正文证据。",
+        "kind": "FIXED_SYSTEM_SUFFIX",
+        "only_allowed_change": "system_suffix_input_block",
+        "questions_path": "track_b/prompts/c2_purpose_short_QUESTIONS_24.jsonl",
+        "questions_sha256": "a0e5120478296a4c2d8553506d9b5416d053cde56985287fe4d82516c4914386",
+        "status": "RUNNABLE_AFTER_BASELINE_GATE"
+      },
+      {
+        "arm": "c3_background_min_confirmed",
+        "case_count": 0,
+        "only_allowed_change": "none",
+        "questions_path": null,
+        "questions_sha256": null,
+        "required_cases": 16,
+        "safe_cases": [
+          "MICRO24B-S03"
+        ],
+        "status": "NOT_RUN_INSUFFICIENT_SAFE_CASES"
+      },
+      {
+        "arm": "c4_previous_state_confirmed",
+        "as_of_position": "relative_before_target",
+        "case_count": 24,
+        "kind": "CASE_SYSTEM_SUFFIX_FROM_CANONICAL_BEFORE",
+        "only_allowed_change": "system_suffix_input_block",
+        "questions_path": "track_b/prompts/c4_previous_state_confirmed_QUESTIONS_24.jsonl",
+        "questions_sha256": "34dbbbea27c1cfb9ab29081bbdc96fa97677e23c3d0b37d9e0cc39bda2439e56",
+        "safe_cases": [
+          "MICRO24B-S01",
+          "MICRO24B-S02",
+          "MICRO24B-S03",
+          "MICRO24B-S04",
+          "MICRO24B-S05",
+          "MICRO24B-S06",
+          "MICRO24B-S07",
+          "MICRO24B-S08",
+          "MICRO24B-S09",
+          "MICRO24B-S10",
+          "MICRO24B-S11",
+          "MICRO24B-S12",
+          "MICRO24B-S13",
+          "MICRO24B-S14",
+          "MICRO24B-S15",
+          "MICRO24B-S16",
+          "MICRO24B-S17",
+          "MICRO24B-S18",
+          "MICRO24B-S19",
+          "MICRO24B-S20",
+          "MICRO24B-S21",
+          "MICRO24B-S22",
+          "MICRO24B-S23",
+          "MICRO24B-S24"
+        ],
+        "status": "RUNNABLE_AFTER_BASELINE_GATE"
+      },
+      {
+        "arm": "c5_structure_metadata",
+        "case_count": 0,
+        "only_allowed_change": "none",
+        "questions_path": null,
+        "questions_sha256": null,
+        "required_fields": [
+          "chapter_index",
+          "chunk_index",
+          "chunk_count",
+          "responsibility_zone"
+        ],
+        "status": "NOT_RUN_MISSING_REAL_METADATA"
+      }
+    ],
+    "not_run": [
+      "c3_background_min_confirmed",
+      "c5_structure_metadata"
+    ],
+    "runnable": [
+      "c0_current_minimal",
+      "c1_rulebook_8",
+      "c2_purpose_short",
+      "c4_previous_state_confirmed"
+    ]
+  },
+  "current_pointer_modified": false,
+  "decode": {
+    "max_output_tokens": 1024,
+    "retry": 0,
+    "sampler": "greedy",
+    "temperature": 0.0
+  },
+  "model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "rights": {
+    "authors": 74,
+    "books": 74,
+    "candidate_approved_groups": 0,
+    "group_facts_max": 82,
+    "group_facts_min": 15,
+    "group_rows_max": 9,
+    "group_rows_min": 2,
+    "input_facts": 2783,
+    "input_rows": 314,
+    "origin_batch_field_available": false,
+    "origin_batch_handling": "不猜；只保留 row_id_families 作为可见机械字段。",
+    "p2_sealed_modified": false,
+    "rights_unknown_groups": 74,
+    "rows_per_group_distribution": {
+      "2": 1,
+      "3": 1,
+      "4": 61,
+      "5": 6,
+      "6": 2,
+      "7": 2,
+      "9": 1
+    },
+    "source_groups": 74,
+    "status": "PASS_314_ROWS_GROUPED_RIGHTS_STILL_UNKNOWN"
+  },
+  "schema_version": "t5-r04-p3-source-lock-v1",
+  "source_bindings": {
+    "a_candidate_authorization": {
+      "bytes": 546,
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/chatgpt_review_cycles/T5_R04_A_V27_PRUNED_CANDIDATE_20260807_R01/AUTHORIZATION.md",
+      "sha256": "cdaf692837c9c9df98b8290d5665542311908887f6247059047be39406bf5145"
+    },
+    "adapter": {
+      "bytes": 117465067,
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/eval_adapters/c2_full/update_72/adapters.safetensors",
+      "sha256": "321d96c10f00389e557efbeb2d8e3dc1344071cc3cd663b51b8a8c2bd38ea5f9"
+    },
+    "adapter_config": {
+      "bytes": 1333,
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/eval_adapters/c2_full/update_72/adapter_config.json",
+      "sha256": "72df68a7d01b8feae8f92cc0e4f69c832d9ad71886b4f8ea2896a7436d73031e"
+    },
+    "current": {
+      "bytes": 332,
+      "path": "/Users/a1234/挣钱/小说架构/finetuning/CURRENT.json",
+      "sha256": "5abaa79b952532881dfc5e147e7da190471baba386aac263474b51edd414f8dd"
+    },
+    "dev_canonical": {
+      "bytes": 63388,
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/set_b_r03_work/sealed/T5_R04_SYNTHETIC_MICRO24_SET_B_R03_20260808/canonical/CANONICAL_MICRO24_SET_B_R03.jsonl",
+      "sha256": "fa04ce5e5f819f4f87aec248ef8c306541b04128d67f0b79cc7e61f2d401d7d9"
+    },
+    "dev_rendered": {
+      "bytes": 32678,
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/set_b_r03_work/sealed/T5_R04_SYNTHETIC_MICRO24_SET_B_R03_20260808/rendered/C2_FULL_ID_LIST_SET_B_24.jsonl",
+      "sha256": "b9f819d29434b43fae2974ff2de4dca333614c50cda9821d14fa37a5036d44c4"
+    },
+    "m1_runner": {
+      "bytes": 31601,
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/tools/m1_runner.py",
+      "sha256": "f2199b8f911894d8347878a97244ca3b41e8e19fc5297408fd6e8d18a2f81be7"
+    },
+    "model_receipt": {
+      "bytes": 2900,
+      "path": "/Users/a1234/挣钱/小说架构_隔离实验/models/Qwen3-4B-Instruct-2507_cdbee75f/MODEL_RECEIPT.json",
+      "sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6"
+    },
+    "old_raw": {
+      "bytes": 51058,
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/results/c2_full/update_72/DEV24_RAW_OUTPUTS.jsonl",
+      "sha256": "b32460077523b054f772fa5a70d39e8f51bec902f81b04f0261040cfff1b13c6"
+    },
+    "p3_package": {
+      "bytes": 47137,
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/chatgpt_review_cycles/T5_R04_CONTEXT_CONTRACT_P3_INTAKE_20260808_R01/raw/T5_R04_CONTEXT_CONTRACT_RESEARCH_AND_P3_20260808_R01.zip",
+      "sha256": "2eeb6d1f8fce3509cb665be802c9912adfe1db0bf0ec3605a1ab575b5ab85b87"
+    },
+    "p3_package_receipt": {
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/chatgpt_review_cycles/T5_R04_CONTEXT_CONTRACT_P3_INTAKE_20260808_R01/raw/T5_R04_CONTEXT_CONTRACT_RESEARCH_AND_P3_20260808_R01_RECEIPT.json",
+      "sha256": "caf0fbea9819f64597ca10d76ebe9c5af762ef147a8808501d325445294f6a12"
+    },
+    "trainer": {
+      "bytes": 13794,
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/pipeline_r02/vendor_r02/mlx_lm/tuner/trainer.py",
+      "sha256": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909"
+    }
+  },
+  "status": "P3_INPUTS_FROZEN_NO_TRAINING",
+  "training_started": false
+}

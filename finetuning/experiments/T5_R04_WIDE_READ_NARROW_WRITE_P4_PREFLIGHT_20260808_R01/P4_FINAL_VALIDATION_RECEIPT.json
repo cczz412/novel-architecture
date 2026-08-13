@@ -1,0 +1,68 @@
+{
+  "actions_performed": {
+    "current_pointer_change": false,
+    "git_action": false,
+    "model_or_api_call": false,
+    "notion_write": false,
+    "p2_or_p3_sealed_change": false,
+    "production_canonical_generation": false,
+    "real_novel_text_read": false,
+    "real_six_arm_run": false,
+    "synthetic_chapter_generation": false,
+    "training": false
+  },
+  "construction_failures_preserved": {
+    "final_validator_model_name_separator_mismatch": "1 failed before final receipt",
+    "rights_corrections_in_receipt": 9,
+    "rights_replay_assertion_lag": "2 failed / 17 passed",
+    "rights_test_only_assertion_lag": "3 failed / 17 passed",
+    "rights_test_only_replay_status_lag": "1 failed / 19 passed",
+    "rights_wrong_test_scope": "1 failed / 18 passed",
+    "splitter_initial_api_mismatch": "5 failed",
+    "splitter_r01_invalidation_ticket": "construction_history/P4_SPLITTER_R01_INVALIDATION_TICKET.md"
+  },
+  "hard_stop": {
+    "next_run_authorized": false,
+    "reason": "REAL_CHAPTER_DIAG12_ELIGIBLE_COUNT_BELOW_12"
+  },
+  "output_manifest": {
+    "member_count": 31,
+    "path": "P4_OUTPUT_MANIFEST.json",
+    "sha256": "b58cccfad6cda6a957ca42324068c874f71722d4d170cac616ddd5988bdbe53e"
+  },
+  "preregistered": {
+    "all_gold_fixed_denominator": true,
+    "chapter_level_merge": true,
+    "common_contained_fixed_denominator": true,
+    "cross_zone_diagnostics": true,
+    "independent_holdout": true,
+    "multiple_comparison_rules": true,
+    "six_arms": true
+  },
+  "results": {
+    "eligible_real_chapters": 0,
+    "p3_c0_source_bound": "PASS_P3_C0_SOURCE_ARTIFACTS_LOCATED_P4_RUN_NOT_AUTHORIZED",
+    "research_sources_verified": 24,
+    "rights_allow_candidates": 0,
+    "rights_groups": 74,
+    "rights_training_eligible": 0,
+    "splitter_two_run_byte_identical": true,
+    "target_real_chapters": 12
+  },
+  "schema_version": "t5-r04-p4-final-validation-receipt-v1",
+  "status": "P4_REAL_DIAG_NOT_READY_SYNTHETIC_CONTRACT_ONLY",
+  "tests": [
+    {
+      "command": "uv run --locked pytest -q /Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/tests",
+      "exit_code": 0,
+      "output": ".................................                                        [100%]\n33 passed in 0.61s"
+    },
+    {
+      "command": "uv run --locked ruff check /Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/tools /Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/tests",
+      "exit_code": 0,
+      "output": "All checks passed!"
+    }
+  ],
+  "validated_at_asia_shanghai": "2026-08-08T17:52:22+08:00",
+  "validated_at_utc": "2026-08-08T09:52:22+00:00"
+}

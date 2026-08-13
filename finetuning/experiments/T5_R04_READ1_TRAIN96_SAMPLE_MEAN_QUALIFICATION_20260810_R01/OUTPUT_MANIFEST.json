@@ -1,0 +1,67 @@
+{
+  "schema_version": "read1-train96-sample-mean-qualification-manifest/1.0",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "package_path": "finetuning/experiments/T5_R04_READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_20260810_R01",
+  "members": {
+    "SPEC.json": {
+      "sha256": "ec798212cbe04ded6c722c3a53fdb48b61f0eb23d1add0e73771d7a1eec65b16"
+    },
+    "run_train96_sample_mean.py": {
+      "sha256": "12b40326776a57cec723d7747467abd9b437595a6ff0ceb14a7001e6644d6cbc"
+    },
+    "score_train96_sample_mean_l6.py": {
+      "sha256": "197b43383314cd06b5d93d0fe6b3457057135267e43d229cc74d739c101b09a6"
+    }
+  },
+  "frozen_bindings": {
+    "train96_sha256": "e059529d9ce39e7f9044f3d966dba00d0e19b2206098a827415473c38c46e4ad",
+    "token_stats_sha256": "d888c3e6e7c77df6c903c98798eb8a18cf666230f88a351f9e13ae5b30782c25",
+    "sample_mean_trainer_sha256": "fd77af48343557171598bd449ec6c10c5fcd514efa503f6007aba78bc0c5da4d",
+    "sample_mean_vendor_tree_sha256": "3d69ffe180a504e7a4aab14e7bbd6d802009bb9f494b2d717832b99d1d254d00",
+    "sample_mean_preflight_receipt_sha256": "7fdba146b0d3665dee472dd30d86d362819bf26dcc61b4e4d20afccb1083070c",
+    "sample_mean_preflight_result_sha256": "5aa63604d080f1a16cf3cc283cf6f2ac8b18ae2eff76b3042fcb872c86286701",
+    "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6",
+    "previous_train96_fail_ticket_sha256": "b09f3d952c3ca7668236d1fa21dc4957d0225cf152f5849b5362986e5b527a77",
+    "r04_ledger_sha256": "a6b9de1a473e83d7e9099175f8674c901118e8b4d3e3f41d6afd0f3ad5110540",
+    "r04_registry_sha256": "08f4ac83f8d9c22b7b1efe4b2c79ddc5a1e56973f601e4afcc6d59792c092bf0",
+    "l6_request_sha256": "1aa942e9910fd3525f7c2fb7f3f23f9d706a2564870f3526319104dcfa42b3ec",
+    "base_l6_projection_sha256": "db5d40432a0849b78f3d5a09824251af4574002205b5221892bc9b32b3649476"
+  },
+  "single_variable_proof": {
+    "old_and_new_runtime_recipe_equal_after_excluding_output_paths": true,
+    "excluded_output_path_fields": [
+      "data",
+      "adapter_path"
+    ],
+    "same_train_path_and_bytes": true,
+    "same_l6_request_path_and_bytes": true,
+    "same_base_l6_projection_bytes": true,
+    "old_global_token_trainer_sha256": "2ff621480fb043220f8dff29d01f85f6e8f8ffe9b04fb2eebc415a837b0be1c6",
+    "new_sample_mean_trainer_sha256": "fd77af48343557171598bd449ec6c10c5fcd514efa503f6007aba78bc0c5da4d",
+    "only_experiment_variable": "default_loss normalization semantics",
+    "claim_boundary": "actual local single-process path only; world_size must equal 1",
+    "new_valid_jsonl": false,
+    "generic_validation_loss_is_winner_metric": false
+  },
+  "future_run_identity": {
+    "run_id": "T5_R04_READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_R01",
+    "run_root": "/Users/a1234/挣钱/小说架构/runs/T5_R04_READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_R01",
+    "run_root_exists": false,
+    "execution_ticket_created": false,
+    "authorized_commands_if_future_ticket_valid": [
+      "train",
+      "infer-l6"
+    ],
+    "real24_command_or_path": false
+  },
+  "execution_boundary_repairs": {
+    "semantic_scoring_uses_current_sample_mean_raw": true,
+    "l6_final_rechecks_combined_and_lora_raw_sha_from_pre": true,
+    "model_receipt_members_verified_before_model_load": {
+      "member_count": 13,
+      "total_bytes": 8060917568,
+      "revision": "cdbee75f17c01a7cc42f958dc650907174af0554"
+    },
+    "world_size_one_gate_before_model_load": true
+  }
+}

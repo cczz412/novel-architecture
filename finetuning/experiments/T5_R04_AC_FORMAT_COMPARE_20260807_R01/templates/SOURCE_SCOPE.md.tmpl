@@ -1,0 +1,21 @@
+# 包内材料说明
+
+## 当前实验真源
+
+- `sealed/`：A/C 封版母集、旧冻结 {{OLD_EXAM_ROWS_EACH_ARM}} 题隔离卷及其私有金标、分层顺序锁和派生账。母集每臂 {{FULL_ROWS_EACH_ARM}} 行，训练子集每臂 {{TRAINING_ROWS_EACH_ARM}} 行。
+- `runtime_data/`：四个阶段真正交给训练器的输入，每臂为正向 {{STAGE1_ROWS_EACH_ARM}} 行＋特殊 {{STAGE2_ROWS_EACH_ARM}} 行；它们应与 `sealed/datasets/*/stage_*` 逐字一致。
+- `config/`、`receipts/`、`runtime/`、`logs/`：四阶段参数、顺序、训练日志、完成票和运行状态。
+- `exam_rebalance_r03/`：本轮真正计分的 A/C {{CURRENT_EXAM_ROWS_EACH_ARM}} 题等义卷、{{CURRENT_GOLD_FACTS_EACH_ARM}} 条私有金标、两次构建、密封票、{{RAW_ANSWER_RECORDS_TOTAL}} 份原始答卷、机器成绩和异常票。不要把它与 `sealed/exams/` 的旧 {{OLD_EXAM_ROWS_EACH_ARM}} 题混算。
+- `tools/`：数据派生、训练接力、考试和评分实现。
+
+## 旧诊断
+
+- `prior_advisory/`：旧 B v2.1 退化诊断，只作待对质线索。当前审查必须独立得出结论。
+
+## 明确不入包
+
+- 4 份 LoRA 权重和 8GB 基座模型：它们对静态病因审查不是必需输入，且会让包体失控。
+- 缓存、虚拟环境、第三方库副本、整本小说库。
+- API 密钥、认证信息、Git 和 Notion 写入材料。
+
+来源：Codex

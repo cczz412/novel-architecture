@@ -1,0 +1,75 @@
+{
+  "api_called": false,
+  "created_at": "2026-08-07T15:42:51.406080+08:00",
+  "decode": {
+    "automatic_retries": 0,
+    "sampler": "greedy",
+    "temperature": 0.0
+  },
+  "experiment_id": "T5_R04_CPLUS_20260807_R01",
+  "frozen_inputs": {
+    "/Users/a1234/挣钱/小说架构/runs/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/inputs/1c_header_change_log.jsonl": "81d14eb24949805c61ae7ce518e8367312d7f2517cee09c30aaade88d2a7b94e",
+    "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/results/arm_a/RAW_OUTPUTS.jsonl": "2949743ab490293f93b56e46b8f5f01f8269434acfe09899337d1edc07cd1c83",
+    "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/results/arm_c/RAW_OUTPUTS.jsonl": "4cf94b61a5277c11f9fdf9203b2ce984a0336ab1b33075b1719ea5959eaf2901",
+    "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/a/QUESTIONS.jsonl": "d307b52ca1809b1776cba38a8f2ede85d1ba3226ac770b7ebbab96977b3fc8fa",
+    "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/c/QUESTIONS.jsonl": "5d0b5c60593183ba31dc8c6f91e2668db055ca3f1f5905086d892b3e98950a34",
+    "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/private_gold/a/GOLD.jsonl": "343e5bb2d90a9c37a9820d089ceb8874f9f0515eec287ed580cb00b0d4bf340a",
+    "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/private_gold/c/GOLD.jsonl": "8624d06353abbf333baae9c9446a70cbd7438c065321dbf783aee5e6ef9ea543",
+    "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/tools/ac_exam_r03_runner.py": "8a390af537919943ff477ccb98e99deb16ea614af18fa617ab2760c76a029603",
+    "/Users/a1234/挣钱/小说架构_隔离实验/models/Qwen3-4B-Instruct-2507_cdbee75f/MODEL_RECEIPT.json": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6"
+  },
+  "large_scale_collection_started": false,
+  "schema_version": "t5-r04-cplus-stage1-execution-lock-v1",
+  "single_variable_contract": {
+    "1a": "adapter checkpoint only",
+    "1b": "max_output_tokens 2048 to 4096 only",
+    "1c": "C question header range notation only"
+  },
+  "status": "RUNNING",
+  "task_order": [
+    "1a_a_stage1",
+    "1a_c_stage1",
+    "1b_a_4096",
+    "1c_c_natural_header"
+  ],
+  "tasks": {
+    "1a_a_stage1": {
+      "adapter": "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_a/stage_1_positive/adapters.safetensors",
+      "adapter_sha256": "1e2f5e736f9d913819b835b21533626915a0e569f23242a7a15b8c1655fb3cdf",
+      "arm": "a",
+      "expected_rows": 41,
+      "max_tokens": 2048,
+      "questions": "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/a/QUESTIONS.jsonl",
+      "questions_sha256": "d307b52ca1809b1776cba38a8f2ede85d1ba3226ac770b7ebbab96977b3fc8fa"
+    },
+    "1a_c_stage1": {
+      "adapter": "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_c/stage_1_positive/adapters.safetensors",
+      "adapter_sha256": "206886963a2de9553a6c7a8824db2bb12cbb0509834d695d6a8a54807fc28f3e",
+      "arm": "c",
+      "expected_rows": 41,
+      "max_tokens": 2048,
+      "questions": "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/c/QUESTIONS.jsonl",
+      "questions_sha256": "5d0b5c60593183ba31dc8c6f91e2668db055ca3f1f5905086d892b3e98950a34"
+    },
+    "1b_a_4096": {
+      "adapter": "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_a/final/adapters.safetensors",
+      "adapter_sha256": "e1217ec79657cd12cce2d273154db2da1c118a034dceca7a23975cddb27d9b74",
+      "arm": "a",
+      "expected_rows": 22,
+      "max_tokens": 4096,
+      "questions": "/Users/a1234/挣钱/小说架构/runs/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/inputs/1b_a_capped22_questions.jsonl",
+      "questions_sha256": "0fc2b43ff9fb1b8cd6e49b35cc63759b941e93f271327f93fce009ddad56c687"
+    },
+    "1c_c_natural_header": {
+      "adapter": "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_c/final/adapters.safetensors",
+      "adapter_sha256": "35595e49156cbe8c39ca5f90729f06deea16ca6bd12456cca7edabed43cd7175",
+      "arm": "c",
+      "expected_rows": 41,
+      "max_tokens": 2048,
+      "questions": "/Users/a1234/挣钱/小说架构/runs/T5_R04_CPLUS_20260807_R01/stage_1_root_cause/inputs/1c_c_natural_header_questions.jsonl",
+      "questions_sha256": "3bc0b1bea5e494fa752226d5eec135ef48d13d2ce1cac954090b5a004f3edfe7"
+    }
+  },
+  "token_sha256": "c17e70873f1065273989651d1457cf89616176b2fe92527eba8afb0005092ecd",
+  "training_started": false
+}

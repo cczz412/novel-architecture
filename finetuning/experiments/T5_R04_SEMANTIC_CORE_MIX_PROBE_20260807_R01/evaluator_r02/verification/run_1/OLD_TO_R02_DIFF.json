@@ -1,0 +1,102 @@
+{
+  "core_conclusion_impact": [
+    {
+      "conclusion": "STAGE2_FORMAT_POLLUTION_SUPPORTED",
+      "reason": "A 的完整 Schema 仍为 4→14；R02 不把字符串近似当语义，也不支持特殊教材整体致害",
+      "result": "NOT_OVERTURNED_INTERPRETATION_REMAINS_NARROW"
+    },
+    {
+      "conclusion": "MIXED_STAGE_EFFECT",
+      "reason": "C 的完整 Schema 37→35，恢复后事实复读 17→26",
+      "result": "NOT_OVERTURNED"
+    },
+    {
+      "conclusion": "OUTPUT_LIMIT_IS_TERMINATOR_SUPPORTED",
+      "reason": "本轮评分器没有改 4096 实验的逐 token 证据",
+      "result": "NOT_REEVALUATED_NO_CONFLICT"
+    },
+    {
+      "conclusion": "NO_MATERIAL_HEADER_EFFECT",
+      "reason": "本轮没有重跑 1C；外部复核已确认只测了 @start:end 的记法外观",
+      "result": "HISTORICAL_MACHINE_LABEL_UNCHANGED_WORDING_STILL_NEEDS_NARROWING"
+    }
+  ],
+  "historical_files_modified": false,
+  "human_semantic_review_complete": false,
+  "new_diagnostic_findings": [
+    {
+      "finding": "A_FINAL_REPEAT_UNDERCOUNT_IN_ORIGINAL_MACHINE_SCORE",
+      "impact": "原机器分漏掉非法 JSON 中的复读；阶段 1 后续诊断已捕获 23 案，因此不推翻阶段 1 总判",
+      "old_valid_json_only_cases": 1,
+      "r02_recovered_fact_repeat_cases": 28,
+      "r02_recovered_object_repeat_cases": 23
+    },
+    {
+      "exact_fact_tp": 1,
+      "exact_triple_tp": 0,
+      "finding": "ONE_A_FINAL_NORMALIZED_EXACT_FACT_WITH_TRIPLE_MISMATCH",
+      "impact": "证明旧三元组地板分会掩盖极少量 fact 命中，但远不足以改判模型合格"
+    }
+  ],
+  "rows": [
+    {
+      "format_valid_delta": 0,
+      "group_id": "H00_A_STAGE1_OLD41",
+      "old_exact_triple_f1_misnamed_semantic": 0.0,
+      "old_format_valid": 4,
+      "old_machine_repeat_valid_json_only": null,
+      "old_recovered_diagnostic_repeat": 36,
+      "r02_normalized_exact_fact_f1": 0.0,
+      "r02_normalized_exact_triple_f1": 0.0,
+      "r02_recovered_fact_repeat": 36,
+      "r02_recovered_object_repeat": 36,
+      "r02_schema_valid": 4
+    },
+    {
+      "format_valid_delta": 0,
+      "group_id": "H01_A_FINAL_OLD41",
+      "old_exact_triple_f1_misnamed_semantic": 0.0,
+      "old_format_valid": 14,
+      "old_machine_repeat_valid_json_only": 1,
+      "old_recovered_diagnostic_repeat": 23,
+      "r02_normalized_exact_fact_f1": 0.003854,
+      "r02_normalized_exact_triple_f1": 0.0,
+      "r02_recovered_fact_repeat": 28,
+      "r02_recovered_object_repeat": 23,
+      "r02_schema_valid": 14
+    },
+    {
+      "format_valid_delta": 0,
+      "group_id": "H02_C_STAGE1_OLD41",
+      "old_exact_triple_f1_misnamed_semantic": 0.0,
+      "old_format_valid": 37,
+      "old_machine_repeat_valid_json_only": null,
+      "old_recovered_diagnostic_repeat": 17,
+      "r02_normalized_exact_fact_f1": 0.0,
+      "r02_normalized_exact_triple_f1": 0.0,
+      "r02_recovered_fact_repeat": 17,
+      "r02_recovered_object_repeat": 14,
+      "r02_schema_valid": 37
+    },
+    {
+      "format_valid_delta": 0,
+      "group_id": "H03_C_FINAL_OLD41",
+      "old_exact_triple_f1_misnamed_semantic": 0.0,
+      "old_format_valid": 35,
+      "old_machine_repeat_valid_json_only": 23,
+      "old_recovered_diagnostic_repeat": 26,
+      "r02_normalized_exact_fact_f1": 0.0,
+      "r02_normalized_exact_triple_f1": 0.0,
+      "r02_recovered_fact_repeat": 26,
+      "r02_recovered_object_repeat": 23,
+      "r02_schema_valid": 35
+    }
+  ],
+  "schema_version": "t5-r04-evaluator-r02-old-diff-v1",
+  "source_bindings": {
+    "old_final_metrics_sha256": "3f93ff9e140d8bce840b527913ccb9d01973b53fbe2306d3ef2766469e4871ff",
+    "old_stage1_metrics_sha256": "282d26fe46a11c149a7d41fd73bff0db514a6bd4bfb55af3fb2aa0e41f7ff837",
+    "r02_metrics_sha256": "57c85d3691b0ee078c164bfb41aefd6f9b2c5516e1f8bfd3245a9dae880e8356"
+  },
+  "status": "PASS_OLD_PRESERVED_R02_SEPARATE"
+}

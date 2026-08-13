@@ -1,0 +1,76 @@
+{
+  "schema_version": "base-out2-target-block-coarse-screen-preflight-spec/1.0",
+  "experiment_id": "T5_R04_BASE_OUT2_TARGET_BLOCK_COARSE_SCREEN_PREFLIGHT_20260810_R01",
+  "status": "CANDIDATE_PREFLIGHT_NOT_AUTHORIZED_NOT_RUN",
+  "created_at": "2026-08-10T14:24:00+08:00",
+  "question_zh": "固定H180与OUT2时，把同一原目标段按约60、300或完整600字责任块覆盖后聚合，哪种粒度更适合后续粗筛",
+  "input_bindings": {
+    "real24_source_index_sha256": "0fe7ecb1649b93e4faab3d253d8904bee7f1a7a3e6f7f0fbb8b8e722c405de97",
+    "real24_txx_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "real24_gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "r08_readme_sha256": "c2104f10061e8310eee0772fb977def284a1fa54674c2f4b10dd3616eda9c751",
+    "r08_registry_sha256": "b2afc3eb7ed4efd0ff43b50d87ecbbaff13eb406b0d5810a1308589873c139f8",
+    "r08_halo_result_ticket_sha256": "43d74a4198dd9ba5bdd0e03883447200f88e1a3c7bc4336fda76a6dd29af1662",
+    "halo_final_metrics_sha256": "068c1341f0f4e48446dc175e0f2dee46078962f3f611e7505907e3cb886bafac",
+    "halo_final_receipt_sha256": "d874fca864278bd9002c1b6e2a9cee8d6abaada57e3522c36c34d30e5de49cfa",
+    "halo_adjudications_r02_sha256": "8ef1c8ffd961455de1bf3b8a0914be1a4f1cfeae22003c88378c985cee0a37db"
+  },
+  "fixed_conditions": {
+    "dataset": "REAL24_LOCAL_EVAL_ONLY_RIGHTS_PENDING",
+    "cases": 24,
+    "source_target_unicode_codepoints_min": 620,
+    "source_target_unicode_codepoints_max": 923,
+    "halo_unicode_codepoints_each_side_max": 180,
+    "output_format": "OUT2-IDLIST",
+    "unfinetuned_base": true,
+    "same_original_600_segment_gold_for_aggregated_scoring": true,
+    "not_three_by_three": true
+  },
+  "coarse_cells": {
+    "BLOCK60": {
+      "target_unicode_codepoints": 60,
+      "preferred_min": 40,
+      "preferred_max": 90,
+      "new_future_inference": true
+    },
+    "BLOCK300": {
+      "target_unicode_codepoints": 300,
+      "preferred_min": 220,
+      "preferred_max": 380,
+      "new_future_inference": true
+    },
+    "BLOCK600": {
+      "definition": "WHOLE_EXISTING_TARGET_SEGMENT",
+      "new_future_inference": false,
+      "reuse_existing_result": true
+    }
+  },
+  "boundary_contract": {
+    "coordinate_unit": "UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+    "full_sentence_or_paragraph_boundaries_only": true,
+    "hard_cut_inside_sentence": false,
+    "short_fragment_core_chars_max": 8,
+    "short_fragments_and_onomatopoeia_merge_with_adjacent_event_text": true,
+    "gold_read_during_boundary_selection": false,
+    "gold_read_only_after_all_boundaries_frozen": true,
+    "gold_never_moves_a_boundary": true,
+    "residual_multi_sentence_fact_crossings_are_reported_not_repaired": true
+  },
+  "future_scoring_meaning": {
+    "all_cells_cover_same_original_target": true,
+    "small_block_outputs_aggregate_by_case": true,
+    "score_against_original_600_segment_gold": true,
+    "gold_or_halo_facts_never_enter_model_input": true
+  },
+  "stage1_subset": ["C01", "C02", "C05", "C09", "C10", "C14", "C23", "C24"],
+  "no_go": [
+    "MODEL_REQUEST_RENDERING",
+    "NEW_GOLD",
+    "MODEL_LOAD_OR_INFERENCE",
+    "TRAINING",
+    "API_OR_MINI",
+    "NOTION_OR_GIT_OR_CURRENT_OR_PRODUCTION",
+    "THREE_BY_THREE",
+    "GOLD_GUIDED_BOUNDARY_MOVEMENT"
+  ]
+}

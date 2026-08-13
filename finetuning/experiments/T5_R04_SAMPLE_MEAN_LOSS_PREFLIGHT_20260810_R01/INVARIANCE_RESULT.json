@@ -1,0 +1,191 @@
+{
+  "external_actions": {
+    "api_calls": 0,
+    "current_pointer_changes": 0,
+    "execution_tickets_created": 0,
+    "git_actions": 0,
+    "inference_runs": 0,
+    "notion_actions": 0,
+    "qwen_loads": 0,
+    "run_roots_created": 0,
+    "training_runs": 0
+  },
+  "mlx_runtime_smoke": {
+    "a_vs_b_max_abs": {
+      "m": 1.6298145055770874e-09,
+      "parameter": 2.3283064365386963e-10,
+      "v": 6.536993168992922e-13
+    },
+    "a_vs_reference_max_abs": {
+      "m": 2.561137080192566e-09,
+      "parameter": 0.0,
+      "v": 1.0231815394945443e-12
+    },
+    "actual_path": [
+      "sample_mean default_loss",
+      "nn.value_and_grad",
+      "mx.compile",
+      "GA4 accumulation",
+      "optim.Adam.update"
+    ],
+    "derived_trainer_imported": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SAMPLE_MEAN_LOSS_PREFLIGHT_20260810_R01/vendor_sample_mean/mlx_lm/tuner/trainer.py",
+    "ga1_two_sample_mean_max_abs": 2.2351741790771484e-08,
+    "mlx_version": "0.30.6",
+    "optimizer_steps": [
+      1,
+      1,
+      1
+    ],
+    "performed": true,
+    "python_executable": "/opt/homebrew/opt/python@3.12/bin/python3.12",
+    "qwen_loaded": false,
+    "two_consecutive_windows": {
+      "optimizer_step": 2,
+      "reset_after_windows": [
+        true,
+        true
+      ],
+      "supervised_tokens": [
+        36,
+        36
+      ]
+    }
+  },
+  "numeric_invariance": {
+    "adam_max_abs": {
+      "m": 0.0,
+      "parameter": 0.0,
+      "v": 0.0
+    },
+    "adam_step": 1,
+    "atol": 1e-06,
+    "dtype": "float32",
+    "global_token_mean_control": {
+      "a_vs_b_max_abs": 0.0,
+      "global_vs_sample_mean_max_abs": 10.5,
+      "pair_invariant_but_not_sample_mean": true
+    },
+    "old_microbatch_token_mean_negative_control": {
+      "a_vs_b_equal": false,
+      "a_vs_b_max_abs": 10.0
+    },
+    "pairing_a": [
+      [
+        1,
+        8
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "pairing_b": [
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        7,
+        8
+      ]
+    ],
+    "rtol": 1e-05,
+    "sample_mean": {
+      "a_vs_b_max_abs": 0.0,
+      "a_vs_reference_max_abs": 0.0,
+      "b_vs_reference_max_abs": 0.0,
+      "each_sample_contribution": 0.125,
+      "per_sample_contribution_a": [
+        0.125,
+        0.125,
+        0.125,
+        0.125,
+        0.125,
+        0.125,
+        0.125,
+        0.125
+      ],
+      "per_sample_contribution_b": [
+        0.125,
+        0.125,
+        0.125,
+        0.125,
+        0.125,
+        0.125,
+        0.125,
+        0.125
+      ]
+    },
+    "sample_supervised_tokens": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "sgd_max_abs": {
+      "delta_a_vs_reference": 0.0,
+      "parameter_a_vs_b": 0.0
+    }
+  },
+  "source_binding": {
+    "cache_files_present": false,
+    "changed_files": [
+      "mlx_lm/tuner/trainer.py"
+    ],
+    "derived_non_cache_file_count": 163,
+    "derived_trainer_sha256": "fd77af48343557171598bd449ec6c10c5fcd514efa503f6007aba78bc0c5da4d",
+    "derived_vendor_tree_sha256": "3d69ffe180a504e7a4aab14e7bbd6d802009bb9f494b2d717832b99d1d254d00",
+    "only_default_loss_changed": true,
+    "source_non_cache_file_count": 163,
+    "source_trainer_sha256": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909",
+    "source_vendor_tree_sha256": "20d6530b8181b0490c3094d89504e5b9a983f44109076950ce2a7f0e07265628",
+    "unchanged_function_asts": [
+      "build_causal_lm_training_views",
+      "iterate_batches",
+      "evaluate",
+      "train"
+    ]
+  },
+  "status": "PASS_PREFLIGHT_NOT_RUN_AUTHORITY",
+  "train96_static": {
+    "all_samples_have_supervised_tokens": true,
+    "assistant_supervised_tokens_max": 1029,
+    "assistant_supervised_tokens_min": 6,
+    "assistant_supervised_tokens_total": 34071,
+    "batch_size": 2,
+    "complete_batches": 48,
+    "complete_optimizer_windows": 12,
+    "grad_accumulation_steps": 4,
+    "max_sequence_tokens": 2850,
+    "model_weights_loaded": false,
+    "partial_batches": 0,
+    "partial_optimizer_windows": 0,
+    "rows": 96,
+    "samples_over_4608": 0,
+    "samples_per_optimizer_window": 8,
+    "tokenizer_check_performed": true,
+    "tokenizer_class": "Qwen2Tokenizer",
+    "train96_path": "finetuning/experiments/T5_R04_READ1_TRAIN96_TOKEN_WEIGHTED_QUALIFICATION_20260810_R01/READ_1_TARGET_TRAIN96.jsonl",
+    "train96_sha256": "e059529d9ce39e7f9044f3d966dba00d0e19b2206098a827415473c38c46e4ad"
+  }
+}

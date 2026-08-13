@@ -1,0 +1,141 @@
+{
+  "schema_version": "bg-source-provenance-material-sufficiency-ticket/2.0",
+  "artifact_status": "FINAL_BG_MATERIAL_INSUFFICIENT_NOT_RUN",
+  "scope": "DEV24_REAL24_BG_MATERIAL_SUFFICIENCY_HARD_STOP_CLOSEOUT",
+  "created_at": "2026-08-11T02:56:32+08:00",
+  "correction_basis": {
+    "source_thread_id": "019fe07c-a382-7d91-a463-5e8f6fe7d246",
+    "corrected_r11_readme_sha256": "274efcf9f1e5207ea49a4232e3d03645d1fcb66522dcb6da5feca8e13f99581e",
+    "supersedes_prior_63_character_work_order_value": true,
+    "inventory_rebuilt": false,
+    "candidate_repair_attempted": false
+  },
+  "preserved_parent_evidence": {
+    "preliminary_inventory": {
+      "path": "finetuning/experiments/T5_R04_BG_SOURCE_PROVENANCE_PREFLIGHT_20260811_R01/BG1_SOURCE_INVENTORY_24.jsonl",
+      "sha256": "ef2e2377a4ef80210c8a1def0d5bec49ab2374ea1ff2b045c65e6040338e4e06",
+      "modified": false,
+      "disposition": "PRELIMINARY_PHYSICAL_SOURCE_CANDIDATES_NOT_FORMAL_BG_MATERIAL"
+    },
+    "r01_identity_failure_ticket": {
+      "path": "finetuning/experiments/T5_R04_BG_SOURCE_PROVENANCE_PREFLIGHT_20260811_R01/MATERIAL_SUFFICIENCY_RESULT_TICKET.json",
+      "sha256": "68d3b27ef76935a2560e4846ea8b04b1507a8c0ee225fe7973a4987bce176374",
+      "modified": false,
+      "preserved_as": "WORK_ORDER_SHA_ERROR_FAILURE_EVIDENCE"
+    }
+  },
+  "input_bindings": {
+    "r11_readme": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R11/00_READ_ME_FIRST.md",
+      "sha256": "274efcf9f1e5207ea49a4232e3d03645d1fcb66522dcb6da5feca8e13f99581e"
+    },
+    "r11_registry": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R11/DECISION_REGISTRY.json",
+      "sha256": "147d6eea3d13d675b529293fafc2e845262eb947159867122c999651aff2b49f"
+    },
+    "r11_ex_result_ticket": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R11/EX_RESULT_TICKET.json",
+      "sha256": "721814540968c8154d21cba4dbf8149ea86f887233d37afcbedcb14a63df9938"
+    },
+    "r02_family_registry": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260809_R02/FAMILY_REGISTRY.json",
+      "sha256": "1032f11162508f5b1747c606d932671d157eaadfdd02bf7f154e65ba78799134"
+    },
+    "real24_source_index": {
+      "path": "finetuning/experiments/T5_R04_LOCAL_REAL_SCREEN24_READ_EVAL_20260809_R01/REAL24_SOURCE_INDEX.jsonl",
+      "sha256": "0fe7ecb1649b93e4faab3d253d8904bee7f1a7a3e6f7f0fbb8b8e722c405de97"
+    },
+    "h180_out2_request_without_gold": {
+      "path": "runs/T5_R04_READ_CONTEXT_LOW_DOSE_B_RELATIVE_SCREEN_R01/requests/full24/READ2.jsonl",
+      "sha256": "126b0f0843fdd244f007a46361397f24f97ce8d71c73d760ae9ad5a6bf5b3088",
+      "rows": 24
+    },
+    "efficiency_guardrail_receipt": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_EFFICIENCY_GUARDRAILS_20260811_R01/PROTOCOL_RECEIPT.json",
+      "sha256": "92719dfacc5543c7fb18baaa1663ec2ea197af72f39f986db6d13fe1ee91afd5"
+    }
+  },
+  "mechanical_inventory_result": {
+    "case_count": 24,
+    "physically_reproducible_pre_cutoff_outside_h180_pointer_cases": 22,
+    "hard_no_cases": [
+      "C01",
+      "C02"
+    ],
+    "hard_no_case_count": 2,
+    "physical_pointer_layer_passed_for_candidate_count": 22,
+    "mechanical_result_is_not_semantic_acceptance": true
+  },
+  "independent_semantic_review_result": {
+    "review_rounds": 2,
+    "authority": "CONTROL_WINDOW_INDEPENDENT_READ_ONLY_REVIEW_SUMMARY",
+    "formal_bg1_material_accepted": false,
+    "substantial_disagreement_on_relevance_or_overstatement": true,
+    "jointly_rejected_cases": [
+      "C05",
+      "C11",
+      "C24"
+    ],
+    "disagreement_union_cases": [
+      "C03",
+      "C04",
+      "C05",
+      "C09",
+      "C10",
+      "C11",
+      "C13",
+      "C18",
+      "C20",
+      "C24"
+    ],
+    "unresolved_semantic_disagreement_count": 10,
+    "additional_candidate_repair_forbidden_by_closeout": true,
+    "inventory_semantic_disposition": "PRELIMINARY_PHYSICAL_SOURCE_CANDIDATES_ONLY_NOT_CONFIRMED_BACKGROUND"
+  },
+  "material_and_calibration_gates": {
+    "BG-1-CONFIRMED": "MATERIAL_NOT_ACCEPTED_NOT_RUN",
+    "BG-2-NEUTRAL": "NOT_ESTABLISHED_WITHIN_AUTHORIZED_SCOPE_NOT_RUN",
+    "gold_calibration_ticket": "NOT_SATISFIED",
+    "scorer_calibration_ticket": "NOT_SATISFIED",
+    "bg1_bg2_model_comparison_conclusion_formed": false
+  },
+  "family_disposition": {
+    "BG-1": "FINAL_MATERIAL_INSUFFICIENT_NOT_RUN",
+    "BG-2": "FINAL_MATERIAL_NOT_ESTABLISHED_NOT_RUN",
+    "BG-3": "BLOCKED_DIAGNOSTIC",
+    "BG-4": "BLOCKED_CONDITIONAL",
+    "BG-5": "BLOCKED_CONDITIONAL",
+    "BG-6": "BLOCKED_CONDITIONAL",
+    "BG-7": "BLOCKED_CONDITIONAL",
+    "background_family_model_comparison_conclusion": "NOT_FORMED",
+    "next_model_work_order": null
+  },
+  "rights_and_use_boundary": {
+    "inventory_promoted_to_formal_bg_material": false,
+    "background_text_materialized": false,
+    "training_use_authorized": false,
+    "inference_authorized": false,
+    "production_use_authorized": false
+  },
+  "actions": {
+    "files_modified_outside_authorized_closeout": 0,
+    "bg_request_generated": 0,
+    "prompt_generated": 0,
+    "runner_or_scorer_generated": 0,
+    "execution_ticket_or_runroot_generated": 0,
+    "model_loads": 0,
+    "inference_calls": 0,
+    "training_runs": 0,
+    "api_calls": 0,
+    "notion_writes": 0,
+    "git_actions": 0,
+    "current_or_production_pointer_changes": 0
+  },
+  "hard_stop": {
+    "triggered": true,
+    "reason": "机械层虽有22个可回验的物理指针，但两次独立语义审查对相关性和描述强度存在实质分歧，无法形成可冻结的BG-1材料；BG-2与Gold/Scorer校准门也未建立。",
+    "candidate_repair_continues": false,
+    "final_status": "FINAL_BG_MATERIAL_INSUFFICIENT_NOT_RUN"
+  },
+  "next_state": "WAIT_CONTROL_WINDOW_NO_NEXT_MODEL_WORK_ORDER"
+}

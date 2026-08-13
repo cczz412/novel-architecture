@@ -1,0 +1,29 @@
+{
+  "input": {
+    "facts": 2783,
+    "path": "/Users/a1234/挣钱/小说架构/TEMP/chatgpt_review_cycles/T5_R04_A_V27_PRUNED_CANDIDATE_20260807_R01/candidate/train_v2_7_a_pruned_candidate.jsonl",
+    "rows": 314,
+    "sha256": "3c7cfddbb7971a9a5e6739b17ed00b9a546bad21ca7946f38b5de95557b45f67"
+  },
+  "provenance": {
+    "ambiguous_facts": 0,
+    "not_found_facts": 0,
+    "resolved_facts": 2783,
+    "resolved_rows": 314
+  },
+  "rights": {
+    "eligible_rows": 0,
+    "not_eligible_rows": 0,
+    "rule": "candidate-only authorization is not promoted to a per-source training-rights grant",
+    "unknown_rows": 314
+  },
+  "rights_authorization": {
+    "path": "/Users/a1234/挣钱/小说架构/TEMP/chatgpt_review_cycles/T5_R04_A_V27_PRUNED_CANDIDATE_20260807_R01/AUTHORIZATION.md",
+    "sha256": "cdaf692837c9c9df98b8290d5665542311908887f6247059047be39406bf5145"
+  },
+  "source_map": {
+    "path": "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_EVIDENCE_ID_DUAL_LORA_20260804_R01/mapping/TRAIN_585_SOURCE_MAP.jsonl",
+    "sha256": "0d3f5cea121f8d6c38f4956741b7e8703a5de6ad7ffdaa6c3fba41a42306c052"
+  },
+  "status": "PASS_PROVENANCE_REPAIRED_RIGHTS_UNRESOLVED"
+}

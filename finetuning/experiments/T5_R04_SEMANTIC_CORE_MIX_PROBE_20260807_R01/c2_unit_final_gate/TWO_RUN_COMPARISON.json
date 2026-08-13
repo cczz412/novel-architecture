@@ -1,0 +1,61 @@
+{
+  "schema_version": "t5-r04-c2-unit-final-gate-two-run-v1",
+  "status": "PASS_FINAL_GATE_TWO_RUN_IDENTICAL",
+  "all_outputs_byte_identical": true,
+  "comparisons": [
+    {
+      "path": "A_POSITION_PROVENANCE_SIDECAR.jsonl",
+      "run_1_sha256": "ef87470cb8447ff697413698f4806276eaf54a969bafafea62dc1ccd9d813f5b",
+      "run_2_sha256": "ef87470cb8447ff697413698f4806276eaf54a969bafafea62dc1ccd9d813f5b",
+      "byte_identical": true
+    },
+    {
+      "path": "LEGACY_POSITION_QUARANTINE.jsonl",
+      "run_1_sha256": "8c4161d38c432fcd085e3e6b78745027fa080274a827c788f8fe5f76a11dd166",
+      "run_2_sha256": "8c4161d38c432fcd085e3e6b78745027fa080274a827c788f8fe5f76a11dd166",
+      "byte_identical": true
+    },
+    {
+      "path": "POSITION_MIGRATION_RECEIPT.json",
+      "run_1_sha256": "c73384f1281846dd5aacc066086c8319d4c26b7bf31d8ab74e8b12c0977e89d8",
+      "run_2_sha256": "c73384f1281846dd5aacc066086c8319d4c26b7bf31d8ab74e8b12c0977e89d8",
+      "byte_identical": true
+    },
+    {
+      "path": "C2_POSITION_DERIVED_ELIGIBLE_FACTS.jsonl",
+      "run_1_sha256": "44c7bf15786f4e1827bdae61afefe3695c1ea02db8320bc79850fbd2dafe87f9",
+      "run_2_sha256": "44c7bf15786f4e1827bdae61afefe3695c1ea02db8320bc79850fbd2dafe87f9",
+      "byte_identical": true
+    },
+    {
+      "path": "C2_TRAINABLE_COMPLETE_ROWS_PROTOTYPE.jsonl",
+      "run_1_sha256": "b78ea6eaba839572bde87b441621df3a07ad3a1ed819ab082eead77c21e7ec53",
+      "run_2_sha256": "b78ea6eaba839572bde87b441621df3a07ad3a1ed819ab082eead77c21e7ec53",
+      "byte_identical": true
+    },
+    {
+      "path": "C2_ROW_QUARANTINE.jsonl",
+      "run_1_sha256": "f2fc7d3507def5d1fdb1c3c6a47078c990ebad46888145f3c7778cbe5d83bb31",
+      "run_2_sha256": "f2fc7d3507def5d1fdb1c3c6a47078c990ebad46888145f3c7778cbe5d83bb31",
+      "byte_identical": true
+    },
+    {
+      "path": "C2_FACT_QUARANTINE.jsonl",
+      "run_1_sha256": "95113a5dffcafed668730cc0c2ad72f6e4619ab588898ae469c5b617b0fb6f41",
+      "run_2_sha256": "95113a5dffcafed668730cc0c2ad72f6e4619ab588898ae469c5b617b0fb6f41",
+      "byte_identical": true
+    },
+    {
+      "path": "FINAL_GATE_METRICS.json",
+      "run_1_sha256": "514bfcebe95fee073ad66234164bbc0cc6370b43f795287dce4542644753c798",
+      "run_2_sha256": "514bfcebe95fee073ad66234164bbc0cc6370b43f795287dce4542644753c798",
+      "byte_identical": true
+    },
+    {
+      "path": "POSITION_RENDERER_RECEIPT.json",
+      "run_1_sha256": "1fddd480acbd98ff8f70fb87d264225b23ae835cd31338e039f9674434e93e1d",
+      "run_2_sha256": "1fddd480acbd98ff8f70fb87d264225b23ae835cd31338e039f9674434e93e1d",
+      "byte_identical": true
+    }
+  ]
+}

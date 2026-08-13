@@ -1,0 +1,105 @@
+{
+  "schema_version": "token-weighted-grad-accum-preflight-receipt/1.0",
+  "status": "PASS_PREFLIGHT_NOT_RUN_AUTHORITY",
+  "created_at": "2026-08-10T04:02:15+0800",
+  "package_path": "finetuning/experiments/T5_R04_TOKEN_WEIGHTED_GRAD_ACCUM_PREFLIGHT_20260810_R01",
+  "source_proof": {
+    "source_vendor_path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/pipeline_r02/vendor_r02",
+    "source_vendor_tree_sha256": "20d6530b8181b0490c3094d89504e5b9a983f44109076950ce2a7f0e07265628",
+    "source_trainer_sha256_before": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909",
+    "source_trainer_sha256_after": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909",
+    "source_vendor_modified": false
+  },
+  "derived_proof": {
+    "derived_vendor_path": "finetuning/experiments/T5_R04_TOKEN_WEIGHTED_GRAD_ACCUM_PREFLIGHT_20260810_R01/vendor_token_weighted",
+    "derived_vendor_tree_sha256": "2e77413bec6141f2a71b1fac032f5967bdfb9e2b65ba43a1b484d78d4e1f8059",
+    "derived_trainer_sha256": "2ff621480fb043220f8dff29d01f85f6e8f8ffe9b04fb2eebc415a837b0be1c6",
+    "source_and_derived_non_cache_file_count": 163,
+    "changed_files": [
+      "mlx_lm/tuner/trainer.py"
+    ],
+    "cache_files_present": false
+  },
+  "validation_runs": [
+    {
+      "name": "locked_standard_library_fp32_ast_and_diff_test",
+      "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked pytest -q finetuning/experiments/T5_R04_TOKEN_WEIGHTED_GRAD_ACCUM_PREFLIGHT_20260810_R01/test_token_weighted_grad_accum.py",
+      "python_version": "3.12.12",
+      "mlx_loaded": false,
+      "started_at": "2026-08-10T04:01:11+0800",
+      "finished_at": "2026-08-10T04:01:11+0800",
+      "exit_code": 0,
+      "result": "1 passed"
+    },
+    {
+      "name": "homebrew_real_mlx_loss_to_adam_wiring_smoke",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /opt/homebrew/opt/python@3.12/bin/python3.12 finetuning/experiments/T5_R04_TOKEN_WEIGHTED_GRAD_ACCUM_PREFLIGHT_20260810_R01/test_token_weighted_grad_accum.py --mlx-smoke --write-result finetuning/experiments/T5_R04_TOKEN_WEIGHTED_GRAD_ACCUM_PREFLIGHT_20260810_R01/INVARIANCE_RESULT.json",
+      "python_executable": "/opt/homebrew/opt/python@3.12/bin/python3.12",
+      "python_version": "3.12.12",
+      "mlx_version": "0.30.6",
+      "qwen_loaded": false,
+      "started_at": "2026-08-10T04:01:11+0800",
+      "finished_at": "2026-08-10T04:01:13+0800",
+      "exit_code": 0,
+      "actual_path": [
+        "default_loss",
+        "nn.value_and_grad",
+        "mx.compile",
+        "token_weighted_optimizer_step",
+        "optim.Adam.update"
+      ]
+    }
+  ],
+  "static_check": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked ruff check finetuning/experiments/T5_R04_TOKEN_WEIGHTED_GRAD_ACCUM_PREFLIGHT_20260810_R01/test_token_weighted_grad_accum.py",
+    "exit_code": 0,
+    "result": "All checks passed"
+  },
+  "invariance_summary": {
+    "sample_supervised_token_counts": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "window_token_total": 36,
+    "optimizer_steps": 1,
+    "new_a_b_reference_equal_within_tolerance": true,
+    "sgd_parameter_delta_equal_within_tolerance": true,
+    "adam_parameter_m_v_step_equal_within_tolerance": true,
+    "old_a_b_unequal": true,
+    "old_a_b_max_abs": 10.0,
+    "two_consecutive_windows_reset": true,
+    "ga1_matches_old_single_microbatch_path": true,
+    "world_size_2_hard_stops": true,
+    "real_mlx_wiring_smoke_passed": true
+  },
+  "artifact_sha256": {
+    "README.md": "f8e5aa7c45d99c878c3aa7bc0904cc8b1f36aa9e2811f2f0335df22981ba1364",
+    "test_token_weighted_grad_accum.py": "3e0b1277f55376b013fbcf92249b23ec803c07ea67454a577efe5e824f8d88db",
+    "INVARIANCE_RESULT.json": "394e5c69004a2fa078a5c1194ea976a6a8abd042fd38303a6ee3f41956b61dae",
+    "SOURCE_AND_DIFF_MANIFEST.json": "07fe43298c080fd96a459afbd3fd60daea4d904794fc1ffcdb06919c98b961b2",
+    "vendor_token_weighted/mlx_lm/tuner/trainer.py": "2ff621480fb043220f8dff29d01f85f6e8f8ffe9b04fb2eebc415a837b0be1c6"
+  },
+  "intermediate_artifacts": {
+    "stale_pre_wiring_result_overwritten": true,
+    "stale_pre_wiring_manifest_overwritten": true,
+    "final_shas_recomputed_after_real_mlx_wiring_smoke": true
+  },
+  "external_actions": {
+    "qwen_loads": 0,
+    "training_runs": 0,
+    "inference_runs": 0,
+    "api_calls": 0,
+    "notion_reads": 0,
+    "notion_writes": 0,
+    "git_actions": 0,
+    "current_pointer_changes": 0,
+    "density_runners_created": 0,
+    "execution_tickets_created": 0
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "t5-r04-wo01-independent-review-receipt-v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "reviewer", "reviewer_role", "review_target_manifest_sha256", "reviewed_member_count", "member_mismatch_count", "checks", "command_evidence"],
+  "properties": {
+    "schema_version": {"const": "t5-r04-wo01-independent-review-receipt-v2"},
+    "status": {"enum": ["PASS", "HARD_STOP"]},
+    "reviewer": {"const": "wo01_source_capability_audit"},
+    "reviewer_role": {"const": "INDEPENDENT_READONLY_REVIEWER"},
+    "review_target_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reviewed_member_count": {"type": "integer", "minimum": 1},
+    "member_mismatch_count": {"const": 0},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["two_message_serialization", "formal_run_provenance", "runtime_path_symlink_guards", "vendor_and_model_identity", "blind_semantic_review", "immutable_scoring", "bootstrap_contract", "strict_json", "no_model_api_training"],
+      "properties": {
+        "two_message_serialization": {"const": true},
+        "formal_run_provenance": {"const": true},
+        "runtime_path_symlink_guards": {"const": true},
+        "vendor_and_model_identity": {"const": true},
+        "blind_semantic_review": {"const": true},
+        "immutable_scoring": {"const": true},
+        "bootstrap_contract": {"const": true},
+        "strict_json": {"const": true},
+        "no_model_api_training": {"const": true}
+      }
+    },
+    "command_evidence": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "command", "returncode", "stdout_sha256", "stderr_sha256"],
+        "properties": {
+          "kind": {"enum": ["pytest", "ruff", "readonly_validator"]},
+          "command": {"type": "array", "minItems": 3, "items": {"type": "string", "minLength": 1}},
+          "returncode": {"const": 0},
+          "stdout_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "stderr_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    }
+  }
+}

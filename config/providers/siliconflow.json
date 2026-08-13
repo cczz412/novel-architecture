@@ -1,0 +1,25 @@
+{
+  "provider_id": "siliconflow",
+  "display_name": "硅基流动（标准在线推理接口）",
+  "base_url": "https://api.siliconflow.cn/v1",
+  "chat_completions_endpoint": "https://api.siliconflow.cn/v1/chat/completions",
+  "models_endpoint": "https://api.siliconflow.cn/v1/models",
+  "api_key_env": "SILICONFLOW_API_KEY",
+  "credential_storage": "macOS Keychain via tools/provider_keychain.sh",
+  "protocol": "OpenAI-compatible Chat Completions",
+  "structured_output": {
+    "request": {
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "warning": "JSON can still be incomplete when max_tokens is exhausted; validate the final body mechanically."
+  },
+  "reasoning": {
+    "minimum_thinking_budget": 128,
+    "enable_thinking_is_model_specific": true,
+    "policy_for_this_screen": "Use the lowest supported thinking setting; do not silently replace an unsupported parameter."
+  },
+  "registered_for": "T5 R04 isolated candidate model screen only",
+  "default_chain_changed": false
+}

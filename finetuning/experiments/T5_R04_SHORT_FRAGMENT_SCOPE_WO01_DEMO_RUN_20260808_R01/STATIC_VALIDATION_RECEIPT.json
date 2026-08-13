@@ -1,0 +1,21 @@
+{
+  "status": "PASS_STATIC_DEMO_PREFLIGHT_ONLY",
+  "pytest": {
+    "command": "uv run --locked pytest -q -p no:cacheprovider .../tests/test_demo.py",
+    "passed": 8,
+    "failed": 0
+  },
+  "ruff": {
+    "command": "uv run --locked ruff check .../tools .../tests",
+    "status": "PASS"
+  },
+  "input_validation": {
+    "request_count": 72,
+    "arms": 3,
+    "cases_per_arm": 24,
+    "messages_per_request": 2,
+    "model_loaded": false
+  },
+  "api_calls": 0,
+  "training_started": false
+}

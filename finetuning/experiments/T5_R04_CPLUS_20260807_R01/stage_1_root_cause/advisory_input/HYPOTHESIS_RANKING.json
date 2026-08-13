@@ -1,0 +1,143 @@
+{
+  "schema_version": "t5-r04-ac-hypothesis-ranking.v1",
+  "status": "CANDIDATE_PENDING_LOCAL_VERIFICATION",
+  "generated_at": "2026-08-07T14:25:29+09:00",
+  "ranking_basis": "只使用路由包内当前真值、当前实验与允许的上游证据；置信度是本次静态审查判断，不是统计显著性。",
+  "direct_observed_mechanism": {
+    "name": "自回归完整对象/模板复读，随后早停或被 2048 截断",
+    "confidence": 0.98,
+    "evidence": [
+      "A 22/22 个触顶案例在截断前已有完整对象复读。",
+      "A 触顶原始输出/正确金标字符比中位数 5.03。",
+      "恢复后 A/C 完整对象复读≥3 均为 23/41；原评分器因只看有效 JSON 漏掉 A。"
+    ],
+    "boundary": "这描述直接发生了什么；其上游成因可能来自教材序列化、训练配方与 greedy 解码的共同作用。"
+  },
+  "hypotheses": [
+    {
+      "rank": 1,
+      "hypothesis": "C 编号／锚字生成任务本身过难或定义不稳",
+      "judgment": "STRONGLY_SUPPORTED",
+      "confidence": 0.95,
+      "direct_evidence": [
+        "C 需要同时完成编号选择、精确 Unicode 起止、连续链、责任终点和锚字绑定，明显比逐字复制多出多个离散约束。",
+        "恢复的 367 个指针元素中 237 个复制题面归属范围，220 个覆盖整个编号单元，只有 7 个锚字严格匹配切片。",
+        "题面标题和输出指针共用 @start:end 外观，但标题范围只表示允许终点，不表示事实证据范围。",
+        "金标中标题范围恰好正确的比例训练仅 28.5%、当前卷 38.8%，形成不稳定捷径。"
+      ],
+      "counterevidence": [
+        "金标 C 指针 3,537/3,537 通过现行合同校验，说明数据并非机械不可解。",
+        "模型已学会合法可见 base ID 和大部分责任终点，任务不是完全超出能力。"
+      ],
+      "cheapest_falsification": "保持最终 C adapter、解码、41 题和输出合同不变，只把题面标题的“@start:end”改成不与输出同形的自然语言责任区间；若复制标题范围显著下降且严格指针上升，支持输入冲突；若不变，主要瓶颈更偏精确坐标能力。",
+      "falsifier": "改写标题后，header-range copy 率和指针合法率都无可重复变化。"
+    },
+    {
+      "rank": 2,
+      "hypothesis": "评分器过严或实现错误",
+      "judgment": "STRONGLY_SUPPORTED_AS_SCORE_DISTORTION_NOT_AS_MODEL_EXONERATION",
+      "confidence": 0.98,
+      "direct_evidence": [
+        "semantic_key 实际是 fact/status/speaker 原字符串精确交集。",
+        "非法 JSON 时整案 predicted=[]，A 922 个可恢复完整对象只计入 164 个。",
+        "A 有 2 条 fact/status 逐字命中，均因 speaker 差异而三元组为 0。",
+        "锚字提示允许 1～5 字，代码实际要求等于贪婪取得的最多 5 字；放宽后恢复对象合法数从 6 增至 51。",
+        "复读检测只看有效 JSON，使 A 原票 1 案与恢复后 23 案严重背离。"
+      ],
+      "counterevidence": [
+        "C 没有任何逐字 fact 命中；大量指针、复读和少答是真失败。",
+        "放宽锚字后合法事实仍只占 51/290，且集中于少数重复案例。"
+      ],
+      "cheapest_falsification": "不重新推理，直接对现有 82 份原始输出跑“严格合同层＋归一化三元组层＋原始流复读层”三层评分，并冻结人工复核样本。",
+      "falsifier": "分层评分后，所有读数仍与当前严格 0 和复读统计完全一致。"
+    },
+    {
+      "rank": 3,
+      "hypothesis": "教材语义或格式矛盾",
+      "judgment": "SEMANTIC_CONTRADICTION_REJECTED_FORMAT_INCONSISTENCY_SUPPORTED",
+      "confidence": 0.9,
+      "direct_evidence": [
+        "A/C 3,537 条 fact/status/speaker 逐条一致，排除两套语义标签。",
+        "第二阶段 646 条中 142 条使用 evidence-first 序列化，第一阶段没有该顺序。",
+        "A 第二阶段还更换了用户容器和 system 说明；最终输出中大量出现 evidence-first，104 个对象漏 fact。",
+        "161/398 行存在多条事实共享同一 evidence，最大 10 条；这为连续重复相同证据模板提供吸引子。"
+      ],
+      "counterevidence": [
+        "A 逐字证据和 C 金标指针均通过各自校验。",
+        "没有行内重复 fact，status 枚举也都合法。",
+        "格式不一致不能单独解释所有语义少答和 C 精确坐标错误。"
+      ],
+      "cheapest_falsification": "不重标语义，只把现有 350 行的 JSON 键顺序统一为 fact→status→evidence→speaker，保持字符内容和顺序不变，做小规模同配方单变量训练或至少 teacher-forcing 对照。",
+      "falsifier": "统一序列化后，漏 fact/evidence-first/复读率无稳定改善。"
+    },
+    {
+      "rank": 4,
+      "hypothesis": "输出上限或解码设置造成表面失败",
+      "judgment": "AMPLIFIER_CONFIRMED_PRIMARY_CAUSE_REJECTED",
+      "confidence": 0.96,
+      "direct_evidence": [
+        "解码是 greedy、temperature 0、2048、零重试。",
+        "A 22 个触顶案例全部在触顶前复读，2048 直接导致 JSON 不闭合。",
+        "A 触顶输出长度通常远超对应金标；扩大上限不会让已开始的循环自动恢复。"
+      ],
+      "counterevidence": [
+        "A 有多个未触顶字段遗漏或严格 0；C 的绝大多数指针失败发生在有效且未触顶输出中。",
+        "C 只有 3 个触顶案，却有 211/212 个严格指针失败。"
+      ],
+      "cheapest_falsification": "只对 A 的 22 个触顶案例把 max_output_tokens 从 2048 改为 4096，其余完全不变；观察首个重复位置、有效 JSON 率和新增独立事实数。",
+      "falsifier": "4096 后多数案例在不增加重复的情况下自然补全为合法 JSON，并显著新增正确独立事实。"
+    },
+    {
+      "rank": 5,
+      "hypothesis": "LoRA 参数或训练步数不合适",
+      "judgment": "PLAUSIBLE_BUT_UNISOLATED",
+      "confidence": 0.58,
+      "direct_evidence": [
+        "仅 0.730% 参数可训练，16 层、rank 32、dropout 0；复杂 C 坐标任务的泛化可能不足。",
+        "四阶段都没有验证集，无法判断过拟合、欠拟合或最优 checkpoint。",
+        "训练 loss 下降但当前卷严格表现差，说明 teacher-forcing 拟合不能代表生成稳定。"
+      ],
+      "counterevidence": [
+        "A/C 使用完全相同配方，却出现不同失败外观，输入/输出合同差异解释力更直接。",
+        "没有 rank、层数、步数或学习率消融，不能把失败归给某一参数。"
+      ],
+      "cheapest_falsification": "优先比较现有第一阶段 checkpoint 与最终 checkpoint，不先改 rank/lr；只有确认阶段差后再做一次最小步数对照。",
+      "falsifier": "不同 checkpoint 在同一卷上的复读、字段遗漏和指针错误没有可重复差异。"
+    },
+    {
+      "rank": 6,
+      "hypothesis": "两阶段顺序导致遗忘",
+      "judgment": "LOCAL_SERIALIZATION_RECENCY_SUPPORTED_BROAD_SEMANTIC_FORGETTING_UNPROVEN",
+      "confidence": 0.72,
+      "direct_evidence": [
+        "第二阶段位于训练末尾，且新增 evidence-first 键顺序；最终 A 输出出现对应字段顺序与漏 fact。",
+        "A 特殊题 5/6 触顶，说明第二阶段并未把特殊格式训练到稳定。"
+      ],
+      "counterevidence": [
+        "A/C 第二阶段分别续接本臂第一阶段，没有串错 adapter。",
+        "特殊、正向、新未见三类都发生复读和格式错，没有简单“只忘正向”的模式。",
+        "缺少 stage1 checkpoint 对同一 41 题的直接成绩。"
+      ],
+      "cheapest_falsification": "同一基座、同一 41 题、同一解码，仅把 adapter 从最终 stage2 换为现有 stage1 checkpoint。",
+      "falsifier": "stage1 与 final 在正向/特殊/新未见三类上的格式、复读、语义和取证指标没有稳定差异。"
+    },
+    {
+      "rank": 7,
+      "hypothesis": "基座容量不足",
+      "judgment": "POSSIBLE_FOR_EXACT_COORDINATES_NOT_ESTABLISHED_FOR_EXTRACTION",
+      "confidence": 0.35,
+      "direct_evidence": [
+        "4B 模型在 C 的精确字符坐标、长链和锚字绑定上几乎全败。",
+        "C 输入更长、输出目标也更长，多约束生成对容量和执行稳定性要求更高。"
+      ],
+      "counterevidence": [
+        "模型已能稳定生成合法编号格式和多数合法责任终点，表现出部分任务能力。",
+        "A 的主要病理是复读和格式污染，不需要用容量不足才能解释。",
+        "没有同数据、同配方、更大基座单变量对照。"
+      ],
+      "cheapest_falsification": "在完成输入冲突和评分器修正后，再用一个更大基座对同一小型固定子集做零训练或同量微调对照；不要直接大规模换模型。",
+      "falsifier": "更大基座在同一合同下仍复制标题范围、锚字错位和复读，且幅度无改善。"
+    }
+  ],
+  "decision_boundary": "不得据此直接宣布 A 或 C 胜出，也不得启动大规模重标或多轮训练。"
+}

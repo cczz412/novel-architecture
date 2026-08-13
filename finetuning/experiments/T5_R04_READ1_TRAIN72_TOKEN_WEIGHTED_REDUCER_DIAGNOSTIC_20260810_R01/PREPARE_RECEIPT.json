@@ -1,0 +1,98 @@
+{
+  "schema_version": "read1-train72-token-weighted-reducer-diagnostic-prepare-receipt/1.0",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "prepared_at": "2026-08-10T04:23:36+0800",
+  "experiment_root": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_READ1_TRAIN72_TOKEN_WEIGHTED_REDUCER_DIAGNOSTIC_20260810_R01",
+  "future_run_root": "/Users/a1234/挣钱/小说架构/runs/T5_R04_READ1_TRAIN72_TOKEN_WEIGHTED_REDUCER_DIAGNOSTIC_R01",
+  "artifacts_excluding_this_receipt": {
+    "SPEC.json": "0613349c1e74bfc7c8dd277b137e5858975b9bae9d7a7bc4f45ca06614cfdeef",
+    "run_token_weighted_diagnostic.py": "ce345a9e1075df583ffd2f8338de601255f3a6504ca8a081028796a87df77f9e",
+    "score_token_weighted_diagnostic.py": "facdaafa689726104f0d408b235fe551190266a4a9f9641014460879f0e3293e",
+    "test_token_weighted_diagnostic_prep.py": "e427172d8eb0e835ba58a8e7280ed3f4969ea7973c61c929014612baaea51af8",
+    "README.md": "dc47a701b8b8b9aae312edb9dd9ebed46bd7f47d50308f602b83b1286c3a891c"
+  },
+  "current_decision_basis": {
+    "r04_read_me_path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R04/00_READ_ME_FIRST.md",
+    "r04_read_me_sha256": "5a287d2e46099c744287e40577cdb48e6be83032ecfb531ca63e36d711e17339",
+    "r04_ledger_path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R04/EXPERIMENT_DECISION_LEDGER.md",
+    "r04_ledger_sha256": "f873c11d2b345f408ea80ed5036798528ba8665ae37e4e32901ab1c0e770465f",
+    "decision_ids": [
+      "R04-D05",
+      "R04-D06",
+      "H01"
+    ]
+  },
+  "frozen_inputs": {
+    "train_input_sha256": "9c1a2202380f5c589d590a34354309643b1bb8fc0a12732184e11a282c924797",
+    "pair_map_sha256": "5150d835085a92af6df6e9fe140fe82f0afab2e649d6b986a5ed3f146953bcdc",
+    "old_density_fail_ticket_sha256": "b0674dcf87a355798659f893f650f397c6c329c60d34898c58778ce5f6ca7146",
+    "l6_request_sha256": "1aa942e9910fd3525f7c2fb7f3f23f9d706a2564870f3526319104dcfa42b3ec",
+    "base_l6_projection_sha256": "db5d40432a0849b78f3d5a09824251af4574002205b5221892bc9b32b3649476",
+    "reducer_preflight_receipt_sha256": "4e46a23ca6da1741c1027884a2a4e9c35cd3fb21576c1f8e58fc97166a08d31c",
+    "derived_trainer_sha256": "2ff621480fb043220f8dff29d01f85f6e8f8ffe9b04fb2eebc415a837b0be1c6",
+    "derived_vendor_tree_sha256": "2e77413bec6141f2a71b1fac032f5967bdfb9e2b65ba43a1b484d78d4e1f8059",
+    "old_density_spec_sha256": "c3561fe1796f54acede8a93aeb5d58a991db802862e56f91309a65e662c45901",
+    "old_density_runner_sha256": "2f64f997decc6ea1bb00e76eefa452a393974d5de825fc7b7bd1096e16615851",
+    "old_density_scorer_sha256": "ee3567fc04be88bc618c71080b67305b274c7c27ccfe6cabaf2ac6667ad035b4"
+  },
+  "single_variable_proof": {
+    "only_changed_experimental_variable": "optimizer_window_gradient_reducer_normalization",
+    "train_payload_and_order_equal_to_old_density": true,
+    "training_recipe_exact_object_equal": true,
+    "runtime_config_equal_except_new_run_output_paths": true,
+    "l6_request_decode_gate_equal": true,
+    "scoring_core_function_ast_equal_after_identity_renaming": true,
+    "pythonpath_points_to_derived_vendor": true,
+    "derived_vendor_tree_and_trainer_sha_verified": true
+  },
+  "mechanical_checks": {
+    "rows": 72,
+    "facts": 830,
+    "empty_answers": 7,
+    "payload_multiset_sha256": "682b2cea7050f54a4b86667565993fa3aca736d37aea3eeaebef0fde9c989f74",
+    "run_root_exists": false,
+    "execution_ticket_present": false,
+    "missing_ticket_train_hard_stop_before_run_root": true,
+    "missing_ticket_infer_l6_hard_stop_before_run_root": true,
+    "authorized_commands_exact": [
+      "train",
+      "infer-l6"
+    ],
+    "real24_code_path_present": false,
+    "formal_package_pycache_or_pyc_count": 0
+  },
+  "validation_runs": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked pytest -q finetuning/experiments/T5_R04_READ1_TRAIN72_TOKEN_WEIGHTED_REDUCER_DIAGNOSTIC_20260810_R01/test_token_weighted_diagnostic_prep.py",
+      "exit_code": 0,
+      "result": "1 passed"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked ruff check <runner> <scorer> <focused-test>",
+      "exit_code": 0,
+      "result": "All checks passed"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked python <runner> static-check",
+      "exit_code": 0,
+      "result": "PASS_STATIC_PREPARED_NOT_RUN"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked python <scorer> static-check",
+      "exit_code": 0,
+      "result": "PASS_STATIC_PREPARED_NOT_RUN"
+    }
+  ],
+  "execution_boundary": {
+    "model_weights_loaded": false,
+    "training_runs": 0,
+    "inference_runs": 0,
+    "run_root_created": false,
+    "execution_tickets_created": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_pointer_changes": 0,
+    "production_actions": 0
+  }
+}

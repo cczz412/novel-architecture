@@ -1,0 +1,106 @@
+{
+  "api_calls": 0,
+  "executed_at_utc": "2026-08-08T14:24:36.415792+00:00",
+  "model_inference_calls": 0,
+  "model_loaded": false,
+  "results": [
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_RUNNER_SCORER_PREFLIGHT_20260808_R01/tests/test_wo01_runner_scorer.py"
+      ],
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "pass": true,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ".....................                                                    [100%]\n21 passed in 3.16s\n"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "ruff",
+        "check",
+        "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_RUNNER_SCORER_PREFLIGHT_20260808_R01/tools",
+        "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_RUNNER_SCORER_PREFLIGHT_20260808_R01/tests"
+      ],
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "pass": true,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_RUNNER_SCORER_PREFLIGHT_20260808_R01/tools/run_wo01_scope_probe.py",
+        "validate"
+      ],
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "pass": true,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"identities\": {\n    \"adapter_config\": {\n      \"bytes\": 1333,\n      \"path\": \"/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/eval_adapters/c2_full/update_72/adapter_config.json\",\n      \"sha256\": \"72df68a7d01b8feae8f92cc0e4f69c832d9ad71886b4f8ea2896a7436d73031e\"\n    },\n    \"chat_template\": {\n      \"sha256\": \"64f85b198065d0fba2a81f37e10ed68161ce2c19a754c7100e67e0ca2ee9c326\",\n      \"source\": \"/Users/a1234/挣钱/小说架构_隔离实验/models/Qwen3-4B-Instruct-2507_cdbee75f/tokenizer_config.json\"\n    },\n    \"checkpoint\": {\n      \"bytes\": 117465067,\n      \"path\": \"/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/eval_adapters/c2_full/update_72/adapters.safetensors\",\n      \"sha256\": \"321d96c10f00389e557efbeb2d8e3dc1344071cc3cd663b51b8a8c2bd38ea5f9\"\n    },\n    \"current_requests\": {\n      \"bytes\": 17406,\n      \"path\": \"/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_PREFLIGHT_20260808_R01/sealed_inputs_candidate/CURRENT_WINDOW_REQUESTS_24.jsonl\",\n      \"sha256\": \"c8c994b756698f652abe7c7be85260bff5142144117ea71f78311e3b22f6f29c\"\n    },\n    \"model_receipt\": {\n      \"bytes\": 2900,\n      \"path\": \"/Users/a1234/挣钱/小说架构_隔离实验/models/Qwen3-4B-Instruct-2507_cdbee75f/MODEL_RECEIPT.json\",\n      \"sha256\": \"431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6\"\n    },\n    \"r01_manifest\": {\n      \"bytes\": 3603,\n      \"path\": \"/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_PREFLIGHT_20260808_R01/OUTPUT_MANIFEST.json\",\n      \"sha256\": \"e4efced726b066002cb91630b77d21ef7a22cf2eb05ef7e4aca59a2482ae694f\"\n    },\n    \"schema\": {\n      \"bytes\": 1352,\n      \"path\": \"/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/P3_C0_OUTPUT_STRUCTURAL_SCHEMA.json\",\n      \"sha256\": \"7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14\"\n    },\n    \"sidecar\": {\n      \"bytes\": 53362,\n      \"path\": \"/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_PREFLIGHT_20260808_R01/sealed_inputs_candidate/HIDDEN_REQUEST_SIDECAR_72.jsonl\",\n      \"sha256\": \"d07111c9ba117576b4ccce7f1a45adb987e18f406c96b5992ef0cd679762cf1c\"\n    },\n    \"small_requests\": {\n      \"bytes\": 16017,\n      \"path\": \"/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_PREFLIGHT_20260808_R01/sealed_inputs_candidate/SMALL_HALO_REQUESTS_24.jsonl\",\n      \"sha256\": \"123c057aa8d6b72f6523d04a944814d1577245c2f421850640afe71e837275a3\"\n    },\n    \"target_requests\": {\n      \"bytes\": 15177,\n      \"path\": \"/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_PREFLIGHT_20260808_R01/sealed_inputs_candidate/TARGET_ONLY_REQUESTS_24.jsonl\",\n      \"sha256\": \"05973a07f5edccc034f6bedeb5dd805baf8541f846df4a792a40e652f8e3aca0\"\n    },\n    \"tokenizer_config\": {\n      \"bytes\": 9377,\n      \"path\": \"/Users/a1234/挣钱/小说架构_隔离实验/models/Qwen3-4B-Instruct-2507_cdbee75f/tokenizer_config.json\",\n      \"sha256\": \"a62ff0a2472a0fa1b8eaabcb57c59b58afa42a22831dc141400b6e0cf2b65ce3\"\n    },\n    \"tokenizer_json\": {\n      \"bytes\": 11422654,\n      \"path\": \"/Users/a1234/挣钱/小说架构_隔离实验/models/Qwen3-4B-Instruct-2507_cdbee75f/tokenizer.json\",\n      \"sha256\": \"aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4\"\n    }\n  },\n  \"messages_per_request\": 2,\n  \"model_loaded\": false,\n  \"plan_rows\": 72,\n  \"status\": \"PASS_INPUTS_BOUND_RUN_NOT_AUTHORIZED\"\n}\n"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_RUNNER_SCORER_PREFLIGHT_20260808_R01/tools/score_wo01_scope_probe.py",
+        "validate"
+      ],
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "pass": true,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"arms\": [\n    \"TARGET_ONLY\",\n    \"SMALL_HALO\",\n    \"CURRENT_WINDOW\"\n  ],\n  \"bootstrap_samples\": 10000,\n  \"bootstrap_seed\": 2026080801,\n  \"cases_per_arm\": 24,\n  \"gold_facts\": 48,\n  \"sources\": {\n    \"canonical\": \"fa04ce5e5f819f4f87aec248ef8c306541b04128d67f0b79cc7e61f2d401d7d9\",\n    \"m1_deterministic\": \"cced79b678fe563665a7b007077eccf9dae7e6696916f9235293b80a5c9a4e43\",\n    \"m1_semantic\": \"5e2751ea56e009d0139acc68c90bd64d356584ef0e7cd862413530222779dc09\",\n    \"p3_scorer\": \"c7df1d96d785122d7af818c39c168be646298aa158cfa698102f24e4094e6674\",\n    \"schema\": \"7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14\"\n  },\n  \"status\": \"PASS_WO01_SCORER_SOURCES_BOUND\"\n}\n"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_RUNNER_SCORER_PREFLIGHT_20260808_R01/tools/validate_preflight.py",
+        "--stage",
+        "pre"
+      ],
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "pass": true,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"bootstrap_resamples\": 10000,\n  \"bootstrap_seed\": 2026080801,\n  \"cross_arm_blind_shared_adjudication\": true,\n  \"messages_per_request\": 2,\n  \"model_loaded\": false,\n  \"model_run_authorized\": false,\n  \"r01_manifest_sha256\": \"e4efced726b066002cb91630b77d21ef7a22cf2eb05ef7e4aca59a2482ae694f\",\n  \"runner_plan_rows\": 72,\n  \"scorer_fixture_branches\": 8,\n  \"scorer_source_count\": 5,\n  \"serialization_evidence_rows\": 72,\n  \"status\": \"PASS_WO01_RUNNER_SCORER_PREFLIGHT_CORE\"\n}\n"
+    }
+  ],
+  "schema_version": "t5-r04-wo01-runner-scorer-mechanical-checks-v1",
+  "source_bindings": {
+    "runner_sha256": "3611843b7f9f9ff2020e4657cedc435bd21cb4cbd9ad0de4a6e6722c8b3e39ce",
+    "scorer_sha256": "c9a6c591cd2f7426aebd86f7b2e1134a621c133948c4d45b920603f2893a0007",
+    "tests_sha256": "e50ee0118d312a6e89682218968337d9cda5788abbde3004ebc2ad5bd035540a",
+    "validator_sha256": "095a2b98d3dcb649546b7cbc2acb3b156b84fc4b6ade57f8e36dac1f1fa03b91"
+  },
+  "status": "PASS",
+  "training_started": false
+}

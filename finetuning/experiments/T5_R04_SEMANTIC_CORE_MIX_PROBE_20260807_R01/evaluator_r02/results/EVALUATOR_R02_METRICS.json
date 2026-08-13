@@ -1,0 +1,337 @@
+{
+  "groups": [
+    {
+      "arm": "A",
+      "cases": 41,
+      "conditional_on_normalized_exact_fact": {
+        "paired_exact_fact": 0,
+        "speaker_accuracy": 0.0,
+        "speaker_correct": 0,
+        "status_accuracy": 0.0,
+        "status_correct": 0
+      },
+      "format": {
+        "cases": 41,
+        "duplicate_facts": 1190,
+        "duplicate_objects": 1180,
+        "invalid_json": 37,
+        "invalid_json_recovered_exact_fact_tp": 1,
+        "invalid_json_with_recovered_exact_fact_cases": 1,
+        "json_valid": 4,
+        "reached_max_output_tokens": 36,
+        "recovered_complete_objects": 1340,
+        "recovered_fact_repeat": 36,
+        "recovered_object_repeat": 36,
+        "row_schema_abnormal": 0,
+        "schema_valid": 4,
+        "top_level_abnormal": 0,
+        "top_schema_valid": 4
+      },
+      "gold_facts": 355,
+      "group_id": "H00_A_STAGE1_OLD41",
+      "human_semantic_review": {
+        "format_failure_can_never_be_promoted_by_human_semantic_judgment": true,
+        "machine_scores_must_not_be_called_semantic": true,
+        "queue_file": "BLIND_PAIRING_QUEUE.jsonl",
+        "status": "PENDING"
+      },
+      "input_bindings": {
+        "gold_sha256": "343e5bb2d90a9c37a9820d089ceb8874f9f0515eec287ed580cb00b0d4bf340a",
+        "raw_sha256": "c46668e192134d2531a9a2fbd97a901465f63b13402d17bb1b599472aebc6ebc"
+      },
+      "raw_recovery_diagnostics": {
+        "diagnostic_only_never_promotes_format_failure": true,
+        "duplicate_facts": 1190,
+        "duplicate_objects": 1180,
+        "invalid_json_recovered_exact_fact_tp": 1,
+        "invalid_json_with_recovered_exact_fact_cases": 1,
+        "recovered_complete_objects": 1340
+      },
+      "scores": {
+        "evidence_representation": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 67,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "exact_record": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 67,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "normalized_exact_fact": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 67,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "normalized_exact_triple": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 67,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        }
+      }
+    },
+    {
+      "arm": "A",
+      "cases": 41,
+      "conditional_on_normalized_exact_fact": {
+        "paired_exact_fact": 1,
+        "speaker_accuracy": 0.0,
+        "speaker_correct": 0,
+        "status_accuracy": 1.0,
+        "status_correct": 1
+      },
+      "format": {
+        "cases": 41,
+        "duplicate_facts": 708,
+        "duplicate_objects": 654,
+        "invalid_json": 22,
+        "invalid_json_recovered_exact_fact_tp": 1,
+        "invalid_json_with_recovered_exact_fact_cases": 1,
+        "json_valid": 19,
+        "reached_max_output_tokens": 22,
+        "recovered_complete_objects": 922,
+        "recovered_fact_repeat": 28,
+        "recovered_object_repeat": 23,
+        "row_schema_abnormal": 5,
+        "schema_valid": 14,
+        "top_level_abnormal": 0,
+        "top_schema_valid": 19
+      },
+      "gold_facts": 355,
+      "group_id": "H01_A_FINAL_OLD41",
+      "human_semantic_review": {
+        "format_failure_can_never_be_promoted_by_human_semantic_judgment": true,
+        "machine_scores_must_not_be_called_semantic": true,
+        "queue_file": "BLIND_PAIRING_QUEUE.jsonl",
+        "status": "PENDING"
+      },
+      "input_bindings": {
+        "gold_sha256": "343e5bb2d90a9c37a9820d089ceb8874f9f0515eec287ed580cb00b0d4bf340a",
+        "raw_sha256": "2949743ab490293f93b56e46b8f5f01f8269434acfe09899337d1edc07cd1c83"
+      },
+      "raw_recovery_diagnostics": {
+        "diagnostic_only_never_promotes_format_failure": true,
+        "duplicate_facts": 708,
+        "duplicate_objects": 654,
+        "invalid_json_recovered_exact_fact_tp": 1,
+        "invalid_json_with_recovered_exact_fact_cases": 1,
+        "recovered_complete_objects": 922
+      },
+      "scores": {
+        "evidence_representation": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 164,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "exact_record": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 164,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "normalized_exact_fact": {
+          "f1": 0.003854,
+          "fn": 354,
+          "fp": 163,
+          "precision": 0.006098,
+          "recall": 0.002817,
+          "tp": 1
+        },
+        "normalized_exact_triple": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 164,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        }
+      }
+    },
+    {
+      "arm": "C",
+      "cases": 41,
+      "conditional_on_normalized_exact_fact": {
+        "paired_exact_fact": 0,
+        "speaker_accuracy": 0.0,
+        "speaker_correct": 0,
+        "status_accuracy": 0.0,
+        "status_correct": 0
+      },
+      "format": {
+        "cases": 41,
+        "duplicate_facts": 163,
+        "duplicate_objects": 150,
+        "invalid_json": 3,
+        "invalid_json_recovered_exact_fact_tp": 0,
+        "invalid_json_with_recovered_exact_fact_cases": 0,
+        "json_valid": 38,
+        "reached_max_output_tokens": 3,
+        "recovered_complete_objects": 274,
+        "recovered_fact_repeat": 17,
+        "recovered_object_repeat": 14,
+        "row_schema_abnormal": 1,
+        "schema_valid": 37,
+        "top_level_abnormal": 0,
+        "top_schema_valid": 38
+      },
+      "gold_facts": 355,
+      "group_id": "H02_C_STAGE1_OLD41",
+      "human_semantic_review": {
+        "format_failure_can_never_be_promoted_by_human_semantic_judgment": true,
+        "machine_scores_must_not_be_called_semantic": true,
+        "queue_file": "BLIND_PAIRING_QUEUE.jsonl",
+        "status": "PENDING"
+      },
+      "input_bindings": {
+        "gold_sha256": "8624d06353abbf333baae9c9446a70cbd7438c065321dbf783aee5e6ef9ea543",
+        "raw_sha256": "60ecd61cdde24c29f4d242e995aca069f9bf91e095c599aa84e343103292d395"
+      },
+      "raw_recovery_diagnostics": {
+        "diagnostic_only_never_promotes_format_failure": true,
+        "duplicate_facts": 163,
+        "duplicate_objects": 150,
+        "invalid_json_recovered_exact_fact_tp": 0,
+        "invalid_json_with_recovered_exact_fact_cases": 0,
+        "recovered_complete_objects": 274
+      },
+      "scores": {
+        "evidence_representation": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 178,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "exact_record": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 178,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "normalized_exact_fact": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 178,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "normalized_exact_triple": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 178,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        }
+      }
+    },
+    {
+      "arm": "C",
+      "cases": 41,
+      "conditional_on_normalized_exact_fact": {
+        "paired_exact_fact": 0,
+        "speaker_accuracy": 0.0,
+        "speaker_correct": 0,
+        "status_accuracy": 0.0,
+        "status_correct": 0
+      },
+      "format": {
+        "cases": 41,
+        "duplicate_facts": 178,
+        "duplicate_objects": 151,
+        "invalid_json": 5,
+        "invalid_json_recovered_exact_fact_tp": 0,
+        "invalid_json_with_recovered_exact_fact_cases": 0,
+        "json_valid": 36,
+        "reached_max_output_tokens": 3,
+        "recovered_complete_objects": 290,
+        "recovered_fact_repeat": 26,
+        "recovered_object_repeat": 23,
+        "row_schema_abnormal": 1,
+        "schema_valid": 35,
+        "top_level_abnormal": 0,
+        "top_schema_valid": 36
+      },
+      "gold_facts": 355,
+      "group_id": "H03_C_FINAL_OLD41",
+      "human_semantic_review": {
+        "format_failure_can_never_be_promoted_by_human_semantic_judgment": true,
+        "machine_scores_must_not_be_called_semantic": true,
+        "queue_file": "BLIND_PAIRING_QUEUE.jsonl",
+        "status": "PENDING"
+      },
+      "input_bindings": {
+        "gold_sha256": "8624d06353abbf333baae9c9446a70cbd7438c065321dbf783aee5e6ef9ea543",
+        "raw_sha256": "4cf94b61a5277c11f9fdf9203b2ce984a0336ab1b33075b1719ea5959eaf2901"
+      },
+      "raw_recovery_diagnostics": {
+        "diagnostic_only_never_promotes_format_failure": true,
+        "duplicate_facts": 178,
+        "duplicate_objects": 151,
+        "invalid_json_recovered_exact_fact_tp": 0,
+        "invalid_json_with_recovered_exact_fact_cases": 0,
+        "recovered_complete_objects": 290
+      },
+      "scores": {
+        "evidence_representation": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 212,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "exact_record": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 212,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "normalized_exact_fact": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 212,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "normalized_exact_triple": {
+          "f1": 0.0,
+          "fn": 355,
+          "fp": 212,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        }
+      }
+    }
+  ],
+  "historical_scores_overwritten": false,
+  "matching_scope": "within_case_only",
+  "normalization": "unicode_nfkc_and_remove_whitespace_only",
+  "schema_version": "t5-r04-evaluator-r02-metrics-v1",
+  "status": "MACHINE_RESCORE_COMPLETE_HUMAN_SEMANTIC_REVIEW_PENDING"
+}

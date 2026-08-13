@@ -1,0 +1,23 @@
+{
+  "schema_version": "t5-r04-wo01-bootstrap-contract-v1",
+  "status": "FROZEN_BEFORE_MODEL_RUN",
+  "metric": "semantic_recoverable_f1",
+  "comparisons": [
+    "TARGET_ONLY_TO_SMALL_HALO",
+    "SMALL_HALO_TO_CURRENT_WINDOW"
+  ],
+  "delta_direction": "right_f1_minus_left_f1",
+  "sampling_unit": "paired_case_with_replacement",
+  "case_count_per_draw": 24,
+  "gold_fact_count": 48,
+  "resamples": 10000,
+  "seed": 2026080801,
+  "confidence_level": 0.95,
+  "interval_method": "two_sided_percentile_type7",
+  "lower_probability": 0.025,
+  "upper_probability": 0.975,
+  "multiple_comparison_policy": "only_two_preregistered_adjacent_comparisons_no_posthoc_family_expansion",
+  "case_deletion_allowed": false,
+  "halo_change_after_results_allowed": false,
+  "tokenizer_loaded_for_length": false
+}

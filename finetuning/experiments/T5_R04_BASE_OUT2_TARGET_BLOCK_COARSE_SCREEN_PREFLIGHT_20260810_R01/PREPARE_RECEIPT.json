@@ -1,0 +1,82 @@
+{
+  "schema_version": "base-out2-target-block-coarse-screen-prepare-receipt/1.0",
+  "status": "PASS_CANDIDATE_PREFLIGHT_NOT_AUTHORIZED_NOT_RUN",
+  "issued_at": "2026-08-10T16:25:39+08:00",
+  "experiment_id": "T5_R04_BASE_OUT2_TARGET_BLOCK_COARSE_SCREEN_PREFLIGHT_20260810_R01",
+  "rights_and_use_boundary": {
+    "dataset_status": "LOCAL_EVAL_ONLY_RIGHTS_PENDING",
+    "training_allowed": false,
+    "model_request_rendered": false,
+    "new_gold_created": false,
+    "model_loaded": false,
+    "inference_run": false,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  },
+  "input_bindings": {
+    "real24_source_index_sha256": "0fe7ecb1649b93e4faab3d253d8904bee7f1a7a3e6f7f0fbb8b8e722c405de97",
+    "real24_txx_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "real24_gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "r08_readme_sha256": "c2104f10061e8310eee0772fb977def284a1fa54674c2f4b10dd3616eda9c751",
+    "r08_registry_sha256": "b2afc3eb7ed4efd0ff43b50d87ecbbaff13eb406b0d5810a1308589873c139f8",
+    "r08_halo_result_ticket_sha256": "43d74a4198dd9ba5bdd0e03883447200f88e1a3c7bc4336fda76a6dd29af1662",
+    "halo_final_metrics_sha256": "068c1341f0f4e48446dc175e0f2dee46078962f3f611e7505907e3cb886bafac",
+    "halo_final_receipt_sha256": "d874fca864278bd9002c1b6e2a9cee8d6abaada57e3522c36c34d30e5de49cfa",
+    "halo_adjudications_r02_sha256": "8ef1c8ffd961455de1bf3b8a0914be1a4f1cfeae22003c88378c985cee0a37db"
+  },
+  "package_members": {
+    "README.md": "916be6750f33ce0ecb7212f168b63f924bb1c95c5f70afbaf447a80b3ca03877",
+    "SPEC.json": "6cf29d8db2c512d34e154106e901a9a86d3f78302127d8c259602692961d3cf3",
+    "build_target_block_candidates.py": "c57eea7991a31d95441efb3be3c94da6f51369ce410bca310e6784bad5624dba",
+    "TARGET_BLOCK_CANDIDATES.jsonl": "0e83c0bce36887aca94fb1211e60d9678e951bbcb762ea716b35359da9d36684",
+    "BLOCK_STATS.json": "84e2e1282a74379f04cf16bc249e67b954e3489de09ad748c898f4203f65b62f"
+  },
+  "receipt_self_sha256_in_package_members": false,
+  "mechanical_results": {
+    "input_cases": 24,
+    "original_gold_facts_for_post_freeze_audit": 280,
+    "candidate_rows_total": 384,
+    "full24": {
+      "block60_blocks_and_new_calls": 297,
+      "block300_blocks_and_new_calls": 63,
+      "block600_reused_segments": 24,
+      "block600_new_calls": 0,
+      "new_calls_if_block60_and_block300_both_run": 360
+    },
+    "stage1_8": {
+      "case_ids": ["C01", "C02", "C05", "C09", "C10", "C14", "C23", "C24"],
+      "block60_blocks_and_new_calls": 103,
+      "block300_blocks_and_new_calls": 22,
+      "block600_reused_segments": 8,
+      "block600_new_calls": 0,
+      "new_calls_if_block60_and_block300_both_run": 125
+    },
+    "lengths_unicode_codepoints": {
+      "block60": {"min": 35, "median": 61.0, "max": 99, "under_40": 4, "over_90": 2},
+      "block300": {"min": 227, "median": 292.0, "max": 379, "under_220": 0, "over_380": 0},
+      "block600": {"min": 620, "median": 760.0, "max": 923}
+    },
+    "gold_audit_after_boundaries_frozen": {
+      "block60": {"contained": 128, "crossing": 152, "crossing_ratio": 0.542857, "gold_empty_blocks": 181},
+      "block300": {"contained": 253, "crossing": 27, "crossing_ratio": 0.096429, "gold_empty_blocks": 1},
+      "block600": {"contained": 280, "crossing": 0, "crossing_ratio": 0.0, "gold_empty_blocks": 0},
+      "gold_moved_boundaries": false
+    },
+    "short_fragment_merge_events": 172,
+    "standalone_short_fragment_atoms_after_merge": 0,
+    "every_band_covers_each_original_target_without_gap_or_overlap": true,
+    "model_visible_density_metadata": false,
+    "halo_unicode_codepoints_each_side_max": 180,
+    "three_by_three": false
+  },
+  "checks": {
+    "ruff": "PASS",
+    "deterministic_rebuild": "PASS",
+    "json_and_jsonl_parse": "PASS",
+    "input_sha_gate": "PASS",
+    "boundary_selection_function_accepts_no_gold_argument": "PASS",
+    "gold_read_only_in_post_freeze_audit": "PASS"
+  }
+}

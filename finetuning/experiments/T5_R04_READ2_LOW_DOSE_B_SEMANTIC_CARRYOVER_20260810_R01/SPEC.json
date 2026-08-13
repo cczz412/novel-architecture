@@ -1,0 +1,115 @@
+{
+  "schema_version": "read2-low-dose-b-semantic-carryover-spec/1.0",
+  "status": "PREPARED_BLIND_QUEUE_NOT_ADJUDICATED_NOT_FINAL",
+  "objective_zh": "只用冻结的 BASE_READ2 与 LORA_READ2 各24题答卷，判断 READ2 LoRA 的可恢复事实语义 F1 是否不低于同题 matched Base；不改变旧实验的全局格式失败。",
+  "legacy_result_boundary": {
+    "status_must_remain": "FAIL_FULL24_LORA_FORMAT_GATE",
+    "read1_schema_failure_is_not_repaired": true,
+    "read4_is_eliminated": true,
+    "this_package_does_not_change_old_run": true
+  },
+  "frozen_inputs": {
+    "full24_raw_path": "/Users/a1234/挣钱/小说架构/runs/T5_R04_READ_CONTEXT_LOW_DOSE_B_RELATIVE_SCREEN_R01/inference/FULL24_MATCHED_RAW.jsonl",
+    "full24_raw_sha256": "f9bd1fc02f93cfb7c51193f1dc319753472949bc2bbde4360a6779c415cdb28e",
+    "full24_result_sha256": "a8b3276179551aaa3b7e42c274c0a7c5327846171be58c02ff0d38de778340b9",
+    "full24_metrics_sha256": "583d89053ed5662b516206579782338994afeca3580a25e39cc98c1781692d57",
+    "parent_scorer_sha256": "196304b03a9e0bf194bd929b5a00b9e436ace64bfa8a7bd530c12308e32b8b23",
+    "structural_schema_sha256": "7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14",
+    "real24_gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "real24_txx_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "wo01_semantic_scorer_sha256": "eed88ee3c02eb9963cc10f67c06f343415d3a3aed27dd6a71f79e420ccea9d1c"
+  },
+  "frozen_projection": {
+    "variants": [
+      "BASE_READ2",
+      "LORA_READ2"
+    ],
+    "rows_per_variant": 24,
+    "case_order": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C05",
+      "C06",
+      "C07",
+      "C08",
+      "C09",
+      "C10",
+      "C11",
+      "C12",
+      "C13",
+      "C14",
+      "C15",
+      "C16",
+      "C17",
+      "C18",
+      "C19",
+      "C20",
+      "C21",
+      "C22",
+      "C23",
+      "C24"
+    ],
+    "exact_line_projection_sha256": {
+      "BASE_READ2": "c7f738181148acc4c06644e47058606b35f07b9a0603521ffdb98502267b1b97",
+      "LORA_READ2": "e1951be12acb7df0feda81bcf16f8d30be35f95b57e85d15013a08d55b404333",
+      "combined_base_then_lora": "c3f62fe5b596f1a66778c088bcb9081febbaae46bfbfde305c8f4d4ae77647a7"
+    }
+  },
+  "blind_review_contract": {
+    "queue_key": "case_id + prediction_fact_sha256",
+    "same_case_and_fact_sha_is_merged": true,
+    "reviewer_visible_fields": [
+      "case_id",
+      "prediction_fact",
+      "prediction_fact_sha256",
+      "raw_sha256",
+      "gold_sha256",
+      "candidate_gold_facts",
+      "category",
+      "matched_gold_fact_id"
+    ],
+    "forbidden_identity_fields_or_values": [
+      "variant",
+      "arm",
+      "BASE_READ2",
+      "LORA_READ2"
+    ],
+    "allowed_categories": [
+      "SEMANTIC_EQUIVALENT",
+      "NOT_MATCH",
+      "OUT_OF_SCOPE"
+    ]
+  },
+  "preregistered_carryover_rule": {
+    "metric": "recoverable semantic fact precision/recall/F1 after same-case blind adjudication",
+    "pass_condition": "LORA_READ2_F1 >= BASE_READ2_F1",
+    "pass_meaning_zh": "只记 READ2 获准承接下一组 OUT 对照。",
+    "fail_action_zh": "READ2 承接线自动停止。",
+    "not_a_read_winner": true,
+    "does_not_change_old_global_fail": true,
+    "does_not_authorize_out_execution": true
+  },
+  "scoring_contract": {
+    "exact_normalized_one_to_one_match_first": true,
+    "remaining_predictions_require_blind_adjudication": true,
+    "status_speaker_evidence_are_diagnostics_after_semantic_match": true,
+    "raw_gold_parent_scorer_and_schema_sha_gates": true,
+    "reject_duplicate_adjudication_keys": true,
+    "reject_unknown_prediction_facts": true,
+    "reject_incomplete_adjudications": true
+  },
+  "no_go": [
+    "不填写本轮裁决",
+    "不输出 final 分数",
+    "不修改旧实验或旧 run",
+    "不训练或推理",
+    "不加载模型",
+    "不运行 OUT",
+    "不调用 API",
+    "不读写 Notion",
+    "不操作 Git",
+    "不修改 CURRENT 或生产指针"
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "repo-bridge-review-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "reply_to_snapshot_id",
+    "reply_to_snapshot_digest_sha256",
+    "reply_to_package_id",
+    "reply_to_handoff_id",
+    "review_scope",
+    "summary",
+    "findings",
+    "open_questions",
+    "execution_authorization"
+  ],
+  "properties": {
+    "schema_version": {"const": "repo-bridge-review-v1"},
+    "review_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]+$"},
+    "reply_to_snapshot_id": {"type": "string", "pattern": "^rb1-[0-9a-f]{20}$"},
+    "reply_to_snapshot_digest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reply_to_package_id": {"type": "string", "pattern": "^pkg1-[0-9a-f]{20}$"},
+    "reply_to_handoff_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]+$"},
+    "review_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domains", "paths", "decision_ids", "evidence_ids"],
+      "properties": {
+        "domains": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "paths": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+          "uniqueItems": true
+        },
+        "decision_ids": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      },
+      "anyOf": [
+        {"properties": {"domains": {"minItems": 1}}},
+        {"properties": {"paths": {"minItems": 1}}},
+        {"properties": {"decision_ids": {"minItems": 1}}},
+        {"properties": {"evidence_ids": {"minItems": 1}}}
+      ]
+    },
+    "summary": {"type": "string", "minLength": 1, "maxLength": 10000},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "finding_id",
+          "kind",
+          "severity",
+          "claim",
+          "evidence_ids",
+          "suggested_action",
+          "requires_cz_decision"
+        ],
+        "properties": {
+          "finding_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]+$"},
+          "kind": {"const": "proposal"},
+          "severity": {"enum": ["low", "medium", "high", "critical"]},
+          "claim": {"type": "string", "minLength": 1, "maxLength": 10000},
+          "evidence_ids": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "uniqueItems": true
+          },
+          "suggested_action": {"type": "string", "minLength": 1, "maxLength": 10000},
+          "requires_cz_decision": {"type": "boolean"}
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1, "maxLength": 5000}
+    },
+    "execution_authorization": {"const": false}
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "$id": "urn:t5-r04:p3-c0:output-structural-schema:p4-1-r01",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "只物化冻结 M1 runner 对 c2_full 的结构接受边界；不包含来源、最小证据或语义约束。",
+  "properties": {
+    "facts": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "fact": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "speaker": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "已发生",
+              "正在发生",
+              "计划",
+              "承诺",
+              "条件",
+              "推测",
+              "误信",
+              "否定"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "fact",
+          "status",
+          "speaker",
+          "evidence_ids"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "facts"
+  ],
+  "title": "P3 C0 / C2_FULL output structural schema",
+  "type": "object"
+}

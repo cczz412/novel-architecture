@@ -1,0 +1,30 @@
+{
+  "boundary": "R01 adds a mechanical index only; it does not reinterpret history or authorize promotion.",
+  "checks": {
+    "current_pointer_locates_experiment_without_search": "PASS",
+    "experiment_facts_derived_and_verified": {
+      "current_exam_rows_each_arm": 41,
+      "current_gold_facts_each_arm": 355,
+      "full_rows_each_arm": 398,
+      "raw_answer_records_total": 82,
+      "stage_1_positive_rows_each_arm": 278,
+      "stage_2_special_rows_each_arm": 72,
+      "training_rows_each_arm": 350
+    },
+    "generated_business_counts_not_hardcoded_in_builder_or_templates": "PASS",
+    "no_asset_move_delete_route_rewrite_notion_or_training": "PASS_SCOPE_OBSERVED",
+    "review_package_member_set_and_member_sha_equivalent": "PASS",
+    "two_consecutive_manifest_builds_byte_identical": "PASS"
+  },
+  "experiment_id": "T5_R04_AC_FORMAT_COMPARE_20260807_R01",
+  "manifest_sha256": "a1729b5492170da493be51e5e745f7607c1f60b11bd16acef8ce36934569b80d",
+  "package_equivalence": {
+    "baseline_zip_sha256": "ae59798d6b5743f3395fa71c3920af35c51cc88a615503ab53405c77d512e779",
+    "member_count": 100,
+    "rebuilt_zip_sha256": "f0dcb906408971bb8f0ebb78f1cc12c86757d55bfa0ad09428db3f4004b64eef",
+    "receipt": "TEMP/finetuning_r01/PACKAGE_EQUIVALENCE_RECEIPT.json",
+    "source_count": 93
+  },
+  "schema_version": "finetuning-r01-acceptance-v1",
+  "status": "PASS_R01_INDEX_LAYER_PROVEN"
+}

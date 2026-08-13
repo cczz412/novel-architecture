@@ -1,0 +1,13 @@
+{
+  "case_order_identical": true,
+  "different_cases": [],
+  "new_raw_path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/results_r01/raw/c0_current_minimal/RAW_OUTPUTS.jsonl",
+  "new_raw_sha256": "091c6a51701e1bb8cd136690a765eb5d86d995167db60f30de70947130e26f3a",
+  "new_stable_projection_sha256": "9cf69ac4be2b78e2b87b6bd239dbd9aa90a9777d7303c9b4cdbf579ee86f9948",
+  "old_raw_path": "/Users/a1234/挣钱/小说架构/TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/results/c2_full/update_72/DEV24_RAW_OUTPUTS.jsonl",
+  "old_raw_sha256": "b32460077523b054f772fa5a70d39e8f51bec902f81b04f0261040cfff1b13c6",
+  "old_stable_projection_sha256": "9cf69ac4be2b78e2b87b6bd239dbd9aa90a9777d7303c9b4cdbf579ee86f9948",
+  "raw_payload_byte_identity_not_expected": "原始 JSONL 含 elapsed_seconds，本票比较稳定投影而不是把运行耗时伪装成可复现业务字段。",
+  "stable_projection_definition": "原始逐案输出与所有稳定推理字段；排除 elapsed_seconds、context_arm、prompt SHA 等本次运行元数据。",
+  "status": "PASS_C0_BASELINE_STABLE_PROJECTION_BYTE_IDENTICAL"
+}

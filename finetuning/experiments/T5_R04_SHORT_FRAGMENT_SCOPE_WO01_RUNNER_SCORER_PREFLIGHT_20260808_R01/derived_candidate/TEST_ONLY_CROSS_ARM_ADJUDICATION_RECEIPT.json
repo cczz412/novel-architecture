@@ -1,0 +1,18 @@
+{
+  "arm_exposed_in_blind_queue": false,
+  "arms": [
+    "TARGET_ONLY",
+    "SMALL_HALO",
+    "CURRENT_WINDOW"
+  ],
+  "blind_queue_candidates_for_three_occurrences": 1,
+  "fixture_role": "TEST_ONLY_NOT_MODEL_OUTPUT_NOT_EXPERIMENT_RESULT",
+  "hidden_occurrence_sidecar_rows": 3,
+  "one_decision_reused_by_all_arms": true,
+  "shared_key": [
+    "MICRO24B-S01",
+    "c48c318fa4622c4a8859ad65c96786a7fd9dab79ced4c4197f77017c4cd8aebf"
+  ],
+  "source_raw_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "status": "PASS_TEST_ONLY_CROSS_ARM_BLIND_ADJUDICATION"
+}

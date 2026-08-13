@@ -1,0 +1,18 @@
+{
+  "schema_version": "t5-r04-wo01-runner-scorer-pre-final-validation-v1",
+  "status": "PASS_READY_FOR_INDEPENDENT_READONLY_REVIEW_NO_RUN_AUTHORITY",
+  "r01_input_disposition": "PASS_INPUT_PREFLIGHT_ONLY",
+  "runner_plan_rows": 72,
+  "messages_per_request": 2,
+  "test_count": 21,
+  "builds": 2,
+  "build_mismatches": 0,
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 2026080801,
+  "model_loaded": false,
+  "model_inference_calls": 0,
+  "api_calls": 0,
+  "training_started": false,
+  "runtime_claims_written_to_preflight": false,
+  "independent_review_status": "PENDING"
+}

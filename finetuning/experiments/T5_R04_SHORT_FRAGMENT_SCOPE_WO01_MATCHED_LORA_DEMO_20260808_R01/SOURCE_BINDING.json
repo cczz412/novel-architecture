@@ -1,0 +1,32 @@
+{
+  "base_model": {
+    "path": "/Users/a1234/挣钱/小说架构_隔离实验/models/Qwen3-4B-Instruct-2507_cdbee75f",
+    "receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6",
+    "revision": "cdbee75f17c01a7cc42f958dc650907174af0554"
+  },
+  "canonical": {
+    "dev24_sha256": "fa04ce5e5f819f4f87aec248ef8c306541b04128d67f0b79cc7e61f2d401d7d9",
+    "train24_sha256": "a2619894d09f285411481598fa4093af3a5f5027709020b10256b5c9efd99676"
+  },
+  "input_build_receipt_sha256": "a931ecf4b26815db2ea29594591a505d0ac3c38f7393acccf53cd8d834f84c02",
+  "m1_runner_sha256": "f2199b8f911894d8347878a97244ca3b41e8e19fc5297408fd6e8d18a2f81be7",
+  "master_execution_lock_sha256": "9e339a456aa1a014f5590c4a2d57edad8c8e34cea928bfdce479da122f7a3ff2",
+  "renderer_sha256": "c56e6769786e6fb7ca2d69defee4f74bbdb867ddbf713f40efbcb88069d706d8",
+  "runtime": {
+    "mlx_lm_version": "0.30.7",
+    "python": "/opt/homebrew/opt/python@3.12/bin/python3.12",
+    "python_version": "3.12.12"
+  },
+  "scoring": {
+    "adjudications_sha256": "27a77666c8563628fb766afaaf5b9cf6b0358dc3fec296c510d77eea9f60e946",
+    "combined_raw_sha256": "ed891071ca21a274c4a6a5a1a76598846121b15fd4a5a8c7fbfd9106ad09ed67",
+    "final_metrics_sha256": "b902828c16b9cb2fb5b15d8bd15d8f038283cc95f8d94e0cdde23a8a13f0de63",
+    "scoring_receipt_sha256": "0340ff7d09ab36d6642284b3c8f55c34eb84248ed4fc059b9f241fc948354b84"
+  },
+  "trainer_sha256": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909",
+  "update72_adapters": {
+    "CURRENT_WINDOW": "b46d9e9dc374ad878f7337fcead59ad3c16b527123d42e22308a08484911c5e8",
+    "SMALL_HALO": "703b7f0d41fe4129c51add2b3eb23c0d7c94c7e1a61b4bbffe94cce862a98d79",
+    "TARGET_ONLY": "d93fd328fa8387c131e9f11d3a6fb35d51fcf2cdbd1d4dfe43f9bd005e00de75"
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "schema_version": "train96-source6-recut24-final-validation-receipt/3.0",
+  "dataset_status": "PASS_CANDIDATE_MODEL_NEUTRAL_GOLD_PENDING_CONTROL_REVIEW",
+  "conclusion_zh": "24题、49条模型中立Gold候选通过R03三项固定表面门，等待控制窗复核，不是训练授权",
+  "output_manifest": {
+    "path": "OUTPUT_MANIFEST.json",
+    "bytes": 2172,
+    "sha256": "7eff5f3f591e6b79a69e005c1d654e9b68cf0e4597c8cdd061fb17fb39703ee4"
+  },
+  "r01_byte_identity": {
+    "tree_digest_before": "223f63215de9190e55928e8c4049c9afce356b846fee129c160ab7a6cf6d073d",
+    "tree_digest_after": "223f63215de9190e55928e8c4049c9afce356b846fee129c160ab7a6cf6d073d",
+    "unchanged": true
+  },
+  "r02_byte_identity": {
+    "tree_digest_before": "931eb806fcdf0deacf8de27c0d4bc8cbb4dd4d5ed1a8bb2881a13aa525e81d43",
+    "tree_digest_after": "931eb806fcdf0deacf8de27c0d4bc8cbb4dd4d5ed1a8bb2881a13aa525e81d43",
+    "unchanged": true
+  },
+  "coordinate_changes": [
+    {
+      "case_id": "RC96-CH02-01",
+      "old_range": [
+        701,
+        854
+      ],
+      "new_range": [
+        816,
+        956
+      ],
+      "old_non_whitespace_characters": 151,
+      "new_non_whitespace_characters": 134,
+      "new_target_sha256": "8097648552952aff01f352fac9ed295b0b6934e887e1c7cd04775fc3943c57d6"
+    },
+    {
+      "case_id": "RC96-CH01-01",
+      "old_range": [
+        1503,
+        1654
+      ],
+      "new_range": [
+        1615,
+        1718
+      ],
+      "old_non_whitespace_characters": 149,
+      "new_non_whitespace_characters": 101,
+      "new_target_sha256": "dac839b90e7e3682d96c8e53110a129d7ca51a5c2253ae2978f677aa83f60bd9"
+    },
+    {
+      "case_id": "RC96-CH04-02",
+      "old_range": [
+        1217,
+        1360
+      ],
+      "new_range": [
+        1217,
+        1270
+      ],
+      "old_non_whitespace_characters": 140,
+      "new_non_whitespace_characters": 53,
+      "new_target_sha256": "cfbf7ef77d29ffd998b4cdd5cf9fd46c206e74c430cd655e1897b2f556e246a6"
+    }
+  ],
+  "semantic_fix_status": {
+    "RC96-CH01-02": "PASS",
+    "RC96-CH02-02": "PASS",
+    "RC96-CH03-03": "PASS",
+    "RC96-CH04-04": "PASS",
+    "RC96-CH06-01": "PASS",
+    "RC96-CH08-04": "PASS"
+  },
+  "validation": {
+    "cases": 24,
+    "facts": 49,
+    "fact_count_distribution": {
+      "0": 8,
+      "1": 4,
+      "2": 3,
+      "3": 3,
+      "4": 2,
+      "5": 2,
+      "6": 2
+    },
+    "zero_cases": 8,
+    "nonempty_cases": 16,
+    "coordinate_changes_from_r02": 3,
+    "unique_source_chapters": 6,
+    "targets_per_chapter": 4,
+    "within_recut24_overlaps": 0,
+    "prior_train72_l6_real24_overlaps": 0,
+    "unique_target_sha256": 24,
+    "all_evidence_in_target_and_contiguous": "49/49",
+    "zero_case_exclusions_complete": "8/8",
+    "unchanged_rows_byte_equivalent_to_r02": "21/21 source and sidecar; 24/24 Gold",
+    "semantic_fix_cases_passed": "6/6",
+    "unresolved_semantic_issues": 0,
+    "fixed_visible_feature_gates": {
+      "non_whitespace_characters": 17,
+      "paragraphs_per_non_whitespace_character": 17,
+      "chinese_comma_count": 17
+    },
+    "deterministic_rerender_verified": true,
+    "double_build_claimed": false,
+    "json_parse": "PASS",
+    "ruff_single_checker": "PASS"
+  },
+  "rights_and_actions": {
+    "project_original_sources_only": true,
+    "model_visible_density_metadata": false,
+    "read_views_or_train96_generated": false,
+    "training_authorized": false,
+    "model_calls": 0,
+    "api_calls": 0,
+    "training_runs": 0,
+    "notion_reads": 0,
+    "notion_writes": 0,
+    "git_actions": 0,
+    "current_pointer_changes": 0,
+    "production_actions": 0
+  }
+}

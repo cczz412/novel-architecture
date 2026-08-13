@@ -1,0 +1,136 @@
+{
+  "schema_version": "base-out2-context-halo-screen-spec/1.0",
+  "experiment_id": "T5_R04_BASE_OUT2_CONTEXT_HALO_SCREEN_20260810_R01",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "created_at": "2026-08-10T13:35:56+08:00",
+  "scope_name_zh": "未微调本地4B+OUT2的本机CONTEXT_HALO Demo",
+  "question_zh": "固定OUT2-IDLIST时，目标左右各最多180、120或60个Unicode字符哪种只读上下文范围更合适当前Demo",
+  "parent_r07": {
+    "README_sha256": "46dc1bbc99076517fa813d26d5d0f3967785e18457a3fe5ba9bc979813b59247",
+    "registry_sha256": "96431fbb1c90a64cbd06b6117b4aada564b38b6e3256f81327312486cf904782",
+    "result_ticket_sha256": "c38121cece96ac7dd5dda49e2976bab4c38bb17c30de38bdbaccb10e4ad1f376"
+  },
+  "frozen_inputs": {
+    "source_index_sha256": "0fe7ecb1649b93e4faab3d253d8904bee7f1a7a3e6f7f0fbb8b8e722c405de97",
+    "txx_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "h180_eval_view_sha256": "a12f1f5cb1adfed4958418bfa8373af52b6305fdef64122c9bf02e3338c77e85",
+    "h180_actual_out2_request_sha256": "126b0f0843fdd244f007a46361397f24f97ce8d71c73d760ae9ad5a6bf5b3088",
+    "h180_base_projection_sha256": "c7f738181148acc4c06644e47058606b35f07b9a0603521ffdb98502267b1b97",
+    "parent_full_raw_sha256": "f9bd1fc02f93cfb7c51193f1dc319753472949bc2bbde4360a6779c415cdb28e",
+    "base_context_final_sha256": "f625c10ecf0e1d4be8eade2032dc2fdbe6d398ac55a6ad89f47abffa117825c7",
+    "base_context_adjudications_sha256": "ddc75e55cb441c6dd90f354f2a7ee7ffb28dd32f08e82a91df2052d1ae5ccf4d",
+    "base_context_adjudication_receipt_sha256": "9170e59a8219efc5fff4e13291842f8a114fcdee00c95e9ffe85c063c345b6f3",
+    "read2_carryover_r02_adjudications_sha256": "03eb97a774ac41599d6f897e64486cec37d0a237b073f0ab621039733d599636",
+    "read2_carryover_r02_receipt_sha256": "89922af0093da4f34da59e5f661703502fc7b4b3507f46a387831e155ee354b3",
+    "read2_carryover_final_sha256": "524f8bcceb37aea95a6cf1ac7445580353360fdfd6de525982a216efa49ec96f",
+    "semantic_policy_sha256": "73083a1d91edcc8fadabd2342fc59b89e10ef770aeaa6ffe926867f4f4c39a93",
+    "output_schema_sha256": "7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14",
+    "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6"
+  },
+  "fixed_design": {
+    "base": "Qwen3-4B-Instruct-2507_cdbee75f",
+    "adapter_loaded": false,
+    "output_format": "OUT2-IDLIST",
+    "cases": 24,
+    "case_order": "C01_TO_C24",
+    "gold_and_txx": "REAL24_FROZEN",
+    "system_prompt_fact_contract": "UNCHANGED_FROM_ACTUAL_H180_OUT2_REQUEST",
+    "focus_target_and_allowlist": "UNCHANGED",
+    "temperature": 0,
+    "greedy": true,
+    "max_output_tokens": 2048,
+    "retry": 0
+  },
+  "request_derivation": {
+    "source": "ACTUAL_EXECUTED_H180_OUT2_REQUEST",
+    "target_rebuilt_from": "CONCAT_TXX_TARGET_UNITS_TEXT",
+    "coordinate_unit": "UNICODE_CODEPOINT",
+    "h120_request_sha256": "d31e907a4e897a59ce9503da70f746c8db42f010a8169a5bd001d6841abed655",
+    "h60_request_sha256": "4b9e7aa3ec19e4f594a2ebc3ce1ed2e4ec7892067aff5a9ba99482434476fe6e",
+    "h60_nested_in_h120_nested_in_h180": true,
+    "sentence_or_newline_snapping": false,
+    "paragraph_padding": false,
+    "cross_chapter_text": false,
+    "hard_stop_boundary_risks": [
+      "CRLF",
+      "COMBINING_CHARACTER",
+      "VARIATION_SELECTOR_OR_EMOJI_MODIFIER",
+      "ZWJ"
+    ],
+    "actual_side_chars_by_case_left_then_right": {
+      "H120": {
+        "C01": [46, 120], "C02": [0, 120], "C03": [120, 120],
+        "C04": [120, 120], "C05": [120, 120], "C06": [120, 5],
+        "C07": [120, 71], "C08": [0, 120], "C09": [120, 120],
+        "C10": [0, 120], "C11": [120, 120], "C12": [120, 120],
+        "C13": [120, 0], "C14": [120, 120], "C15": [120, 120],
+        "C16": [120, 120], "C17": [120, 120], "C18": [120, 120],
+        "C19": [120, 120], "C20": [120, 120], "C21": [120, 120],
+        "C22": [120, 120], "C23": [120, 120], "C24": [120, 120]
+      },
+      "H60": {
+        "C01": [46, 60], "C02": [0, 60], "C03": [60, 60],
+        "C04": [60, 60], "C05": [60, 60], "C06": [60, 5],
+        "C07": [60, 60], "C08": [0, 60], "C09": [60, 60],
+        "C10": [0, 60], "C11": [60, 60], "C12": [60, 60],
+        "C13": [60, 0], "C14": [60, 60], "C15": [60, 60],
+        "C16": [60, 60], "C17": [60, 60], "C18": [60, 60],
+        "C19": [60, 60], "C20": [60, 60], "C21": [60, 60],
+        "C22": [60, 60], "C23": [60, 60], "C24": [60, 60]
+      }
+    }
+  },
+  "inference": {
+    "run_id": "T5_R04_BASE_OUT2_CONTEXT_HALO_SCREEN_R01",
+    "run_root": "/Users/a1234/挣钱/小说架构/runs/T5_R04_BASE_OUT2_CONTEXT_HALO_SCREEN_R01",
+    "authorized_command_if_future_ticket_exists": "infer-new-halos",
+    "new_calls": 48,
+    "rows_by_halo": {"H120": 24, "H60": 24},
+    "h180_rerun": false,
+    "model_loads": 1,
+    "adapter_loaded": false,
+    "retry": 0,
+    "api_calls": 0
+  },
+  "mechanical_gate_per_new_halo": {
+    "strict_json_cases": "24/24",
+    "illegal_txx_predictions": 0,
+    "repetition_cases": 0,
+    "token_limit_cases": 0,
+    "duplicate_predictions": 0,
+    "schema_cases": "REPORT_ONLY_AND_TIEBREAK"
+  },
+  "semantic_and_selection": {
+    "mechanically_failed_new_halo_excluded_from_blind_review": true,
+    "same_case_and_fact_sha_reuses_two_frozen_decision_batches": true,
+    "new_facts_only_anonymous_queue": true,
+    "queue_order": "CASE_ID_THEN_PREDICTION_FACT_SHA256",
+    "queue_identity_leaks_halo_or_variant": false,
+    "baseline": "H180_FROZEN",
+    "primary_selection": "HIGHEST_RECOVERABLE_SEMANTIC_F1_AMONG_MECHANICALLY_ELIGIBLE_HALOS",
+    "near_tie_if_absolute_f1_gap_strictly_below": 0.02,
+    "near_tie_order": [
+      "MORE_SCHEMA_VALID_CASES",
+      "SHORTER_HALO_H60_THEN_H120_THEN_H180"
+    ],
+    "if_no_new_halo_qualifies": "H180_RETAINED",
+    "pre_final_binds_raw_bundle_metrics_queue_and_adjudications_sha": true
+  },
+  "execution_gate": {
+    "future_exact_ticket_required_before_run_root_or_model_load": true,
+    "model_receipt_members_checked_before_load": true,
+    "ticket_created_in_this_prep": false,
+    "run_root_created_in_this_prep": false
+  },
+  "no_go": [
+    "THREE_BY_THREE",
+    "OUT_FORMAT_CHANGE",
+    "TRAINING",
+    "H180_RERUN",
+    "MODEL_OR_INFERENCE_IN_PREP",
+    "BLIND_ADJUDICATION_IN_PREP",
+    "API_OR_MINI",
+    "NOTION_OR_GIT_OR_CURRENT_OR_PRODUCTION"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "artifacts": {
+    "BLIND_KEY.json": {
+      "bytes": 5475,
+      "sha256": "a76b63ace30e69b7a8ea0c3127b427673c0e0af75c97db617af16647fb462180"
+    },
+    "BLIND_REVIEW_QUEUE.jsonl": {
+      "bytes": 73358,
+      "sha256": "8bfe8dc72956f87dbf0076e009f27b1475b13088671eeda79a6657f54cf5e4b2"
+    },
+    "CASE_METRICS.jsonl": {
+      "bytes": 67493,
+      "sha256": "dcadd7b85cc2d5b3a918d667dfafefb7f9ebb95a40fe436bcad6d60579a21543"
+    },
+    "PAIRED_CASE_METRICS.jsonl": {
+      "bytes": 85927,
+      "sha256": "5296827ae1ca5bdf8b0b90ec6c0e440f73775c010fd31f09b9d180eb2c13a2c4"
+    },
+    "ZERO_TRAINING_METRICS.json": {
+      "bytes": 10943,
+      "sha256": "066f23c69123822fb55c8211c4b6bcd6c471bec78d047962fa2f879508976ef2"
+    }
+  },
+  "raw_inputs": {
+    "CORE_GOLD": "90f68035708aa8dbfba609799a49f655a45c0cfb56e9af4e4c3085257a0e8494",
+    "Z00": "621dd009aba3c9498153cefc79d4988946550802db509cfd6469c0bc580bb777",
+    "Z01": "d431f682955ec2860440a2cb2dac2e8ef4d40290233f60a1471dd738d56c3bf7"
+  },
+  "scorer_sha256": "3788f8fd6f169c301be6c96f76ba26f2ffbf387359df6597a6fbbd66fc7b51a2",
+  "status": "PASS_DETERMINISTIC_SCORING_OUTPUT"
+}

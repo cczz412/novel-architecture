@@ -1,0 +1,732 @@
+{
+  "arms": [
+    "TARGET_ONLY",
+    "SMALL_HALO",
+    "CURRENT_WINDOW"
+  ],
+  "cases": 24,
+  "measurement_contract": {
+    "chinese_characters_rough": "count U+3400-U+4DBF, U+4E00-U+9FFF, and U+F900-U+FAFF in message contents",
+    "token_count_claimed": false,
+    "tokenizer_loaded": false,
+    "unicode_characters": "sum(len(message.content)) across system and user messages; message-boundary serialization bytes are excluded",
+    "utf8_bytes": "sum(len(message.content.encode('utf-8'))) across system and user messages",
+    "visible_characters_rough": "count non-whitespace, non-control Unicode characters in message contents"
+  },
+  "paired_deltas": {
+    "current_window_minus_small_halo": {
+      "chinese_characters_rough": {
+        "max": 33,
+        "mean": 17.416667,
+        "median": 17.5,
+        "min": 8
+      },
+      "unicode_characters": {
+        "max": 36,
+        "mean": 19.291667,
+        "median": 19.5,
+        "min": 9
+      },
+      "utf8_bytes": {
+        "max": 108,
+        "mean": 57.875,
+        "median": 58.5,
+        "min": 27
+      },
+      "visible_characters_rough": {
+        "max": 36,
+        "mean": 19.291667,
+        "median": 19.5,
+        "min": 9
+      }
+    },
+    "current_window_minus_target_only": {
+      "chinese_characters_rough": {
+        "max": 46,
+        "mean": 30.208333,
+        "median": 30.5,
+        "min": 21
+      },
+      "unicode_characters": {
+        "max": 51,
+        "mean": 34.291667,
+        "median": 34.5,
+        "min": 24
+      },
+      "utf8_bytes": {
+        "max": 143,
+        "mean": 92.875,
+        "median": 93.5,
+        "min": 62
+      },
+      "visible_characters_rough": {
+        "max": 51,
+        "mean": 34.291667,
+        "median": 34.5,
+        "min": 24
+      }
+    },
+    "small_halo_minus_target_only": {
+      "chinese_characters_rough": {
+        "max": 13,
+        "mean": 12.791667,
+        "median": 13.0,
+        "min": 12
+      },
+      "unicode_characters": {
+        "max": 15,
+        "mean": 15.0,
+        "median": 15.0,
+        "min": 15
+      },
+      "utf8_bytes": {
+        "max": 35,
+        "mean": 35.0,
+        "median": 35.0,
+        "min": 35
+      },
+      "visible_characters_rough": {
+        "max": 15,
+        "mean": 15.0,
+        "median": 15.0,
+        "min": 15
+      }
+    }
+  },
+  "per_case": [
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 148,
+          "unicode_characters": 246,
+          "utf8_bytes": 592,
+          "visible_characters_rough": 232
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 126,
+          "unicode_characters": 222,
+          "utf8_bytes": 520,
+          "visible_characters_rough": 208
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 114,
+          "unicode_characters": 207,
+          "utf8_bytes": 485,
+          "visible_characters_rough": 193
+        }
+      },
+      "case_id": "MICRO24B-S01"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 149,
+          "unicode_characters": 246,
+          "utf8_bytes": 592,
+          "visible_characters_rough": 232
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 129,
+          "unicode_characters": 224,
+          "utf8_bytes": 526,
+          "visible_characters_rough": 210
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 116,
+          "unicode_characters": 209,
+          "utf8_bytes": 491,
+          "visible_characters_rough": 195
+        }
+      },
+      "case_id": "MICRO24B-S02"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 146,
+          "unicode_characters": 245,
+          "utf8_bytes": 589,
+          "visible_characters_rough": 231
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 126,
+          "unicode_characters": 221,
+          "utf8_bytes": 517,
+          "visible_characters_rough": 207
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 113,
+          "unicode_characters": 206,
+          "utf8_bytes": 482,
+          "visible_characters_rough": 192
+        }
+      },
+      "case_id": "MICRO24B-S03"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 151,
+          "unicode_characters": 250,
+          "utf8_bytes": 604,
+          "visible_characters_rough": 236
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 133,
+          "unicode_characters": 230,
+          "utf8_bytes": 544,
+          "visible_characters_rough": 216
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 120,
+          "unicode_characters": 215,
+          "utf8_bytes": 509,
+          "visible_characters_rough": 201
+        }
+      },
+      "case_id": "MICRO24B-S04"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 150,
+          "unicode_characters": 248,
+          "utf8_bytes": 598,
+          "visible_characters_rough": 234
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 132,
+          "unicode_characters": 228,
+          "utf8_bytes": 538,
+          "visible_characters_rough": 214
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 119,
+          "unicode_characters": 213,
+          "utf8_bytes": 503,
+          "visible_characters_rough": 199
+        }
+      },
+      "case_id": "MICRO24B-S05"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 148,
+          "unicode_characters": 245,
+          "utf8_bytes": 589,
+          "visible_characters_rough": 231
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 134,
+          "unicode_characters": 229,
+          "utf8_bytes": 541,
+          "visible_characters_rough": 215
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 121,
+          "unicode_characters": 214,
+          "utf8_bytes": 506,
+          "visible_characters_rough": 200
+        }
+      },
+      "case_id": "MICRO24B-S06"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 147,
+          "unicode_characters": 244,
+          "utf8_bytes": 586,
+          "visible_characters_rough": 230
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 125,
+          "unicode_characters": 220,
+          "utf8_bytes": 514,
+          "visible_characters_rough": 206
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 113,
+          "unicode_characters": 205,
+          "utf8_bytes": 479,
+          "visible_characters_rough": 191
+        }
+      },
+      "case_id": "MICRO24B-S07"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 139,
+          "unicode_characters": 235,
+          "utf8_bytes": 559,
+          "visible_characters_rough": 221
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 124,
+          "unicode_characters": 218,
+          "utf8_bytes": 508,
+          "visible_characters_rough": 204
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 111,
+          "unicode_characters": 203,
+          "utf8_bytes": 473,
+          "visible_characters_rough": 189
+        }
+      },
+      "case_id": "MICRO24B-S08"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 144,
+          "unicode_characters": 240,
+          "utf8_bytes": 574,
+          "visible_characters_rough": 226
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 131,
+          "unicode_characters": 226,
+          "utf8_bytes": 532,
+          "visible_characters_rough": 212
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 118,
+          "unicode_characters": 211,
+          "utf8_bytes": 497,
+          "visible_characters_rough": 197
+        }
+      },
+      "case_id": "MICRO24B-S09"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 159,
+          "unicode_characters": 256,
+          "utf8_bytes": 622,
+          "visible_characters_rough": 242
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 138,
+          "unicode_characters": 233,
+          "utf8_bytes": 553,
+          "visible_characters_rough": 219
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 125,
+          "unicode_characters": 218,
+          "utf8_bytes": 518,
+          "visible_characters_rough": 204
+        }
+      },
+      "case_id": "MICRO24B-S10"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 164,
+          "unicode_characters": 269,
+          "utf8_bytes": 649,
+          "visible_characters_rough": 254
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 149,
+          "unicode_characters": 253,
+          "utf8_bytes": 601,
+          "visible_characters_rough": 238
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 136,
+          "unicode_characters": 238,
+          "utf8_bytes": 566,
+          "visible_characters_rough": 223
+        }
+      },
+      "case_id": "MICRO24B-S11"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 158,
+          "unicode_characters": 256,
+          "utf8_bytes": 622,
+          "visible_characters_rough": 242
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 142,
+          "unicode_characters": 238,
+          "utf8_bytes": 568,
+          "visible_characters_rough": 224
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 130,
+          "unicode_characters": 223,
+          "utf8_bytes": 533,
+          "visible_characters_rough": 209
+        }
+      },
+      "case_id": "MICRO24B-S12"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 151,
+          "unicode_characters": 247,
+          "utf8_bytes": 595,
+          "visible_characters_rough": 233
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 140,
+          "unicode_characters": 235,
+          "utf8_bytes": 559,
+          "visible_characters_rough": 221
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 127,
+          "unicode_characters": 220,
+          "utf8_bytes": 524,
+          "visible_characters_rough": 206
+        }
+      },
+      "case_id": "MICRO24B-S13"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 154,
+          "unicode_characters": 252,
+          "utf8_bytes": 610,
+          "visible_characters_rough": 238
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 140,
+          "unicode_characters": 237,
+          "utf8_bytes": 565,
+          "visible_characters_rough": 223
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 127,
+          "unicode_characters": 222,
+          "utf8_bytes": 530,
+          "visible_characters_rough": 208
+        }
+      },
+      "case_id": "MICRO24B-S14"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 192,
+          "unicode_characters": 297,
+          "utf8_bytes": 733,
+          "visible_characters_rough": 282
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 159,
+          "unicode_characters": 261,
+          "utf8_bytes": 625,
+          "visible_characters_rough": 246
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 146,
+          "unicode_characters": 246,
+          "utf8_bytes": 590,
+          "visible_characters_rough": 231
+        }
+      },
+      "case_id": "MICRO24B-S15"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 158,
+          "unicode_characters": 261,
+          "utf8_bytes": 625,
+          "visible_characters_rough": 246
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 150,
+          "unicode_characters": 252,
+          "utf8_bytes": 598,
+          "visible_characters_rough": 237
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 137,
+          "unicode_characters": 237,
+          "utf8_bytes": 563,
+          "visible_characters_rough": 222
+        }
+      },
+      "case_id": "MICRO24B-S16"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 174,
+          "unicode_characters": 280,
+          "utf8_bytes": 682,
+          "visible_characters_rough": 265
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 157,
+          "unicode_characters": 261,
+          "utf8_bytes": 625,
+          "visible_characters_rough": 246
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 144,
+          "unicode_characters": 246,
+          "utf8_bytes": 590,
+          "visible_characters_rough": 231
+        }
+      },
+      "case_id": "MICRO24B-S17"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 188,
+          "unicode_characters": 292,
+          "utf8_bytes": 718,
+          "visible_characters_rough": 277
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 161,
+          "unicode_characters": 263,
+          "utf8_bytes": 631,
+          "visible_characters_rough": 248
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 148,
+          "unicode_characters": 248,
+          "utf8_bytes": 596,
+          "visible_characters_rough": 233
+        }
+      },
+      "case_id": "MICRO24B-S18"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 184,
+          "unicode_characters": 288,
+          "utf8_bytes": 706,
+          "visible_characters_rough": 273
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 175,
+          "unicode_characters": 278,
+          "utf8_bytes": 676,
+          "visible_characters_rough": 263
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 162,
+          "unicode_characters": 263,
+          "utf8_bytes": 641,
+          "visible_characters_rough": 248
+        }
+      },
+      "case_id": "MICRO24B-S19"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 204,
+          "unicode_characters": 317,
+          "utf8_bytes": 781,
+          "visible_characters_rough": 301
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 183,
+          "unicode_characters": 295,
+          "utf8_bytes": 715,
+          "visible_characters_rough": 279
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 171,
+          "unicode_characters": 280,
+          "utf8_bytes": 680,
+          "visible_characters_rough": 264
+        }
+      },
+      "case_id": "MICRO24B-S20"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 201,
+          "unicode_characters": 315,
+          "utf8_bytes": 775,
+          "visible_characters_rough": 299
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 182,
+          "unicode_characters": 293,
+          "utf8_bytes": 709,
+          "visible_characters_rough": 277
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 169,
+          "unicode_characters": 278,
+          "utf8_bytes": 674,
+          "visible_characters_rough": 262
+        }
+      },
+      "case_id": "MICRO24B-S21"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 194,
+          "unicode_characters": 300,
+          "utf8_bytes": 742,
+          "visible_characters_rough": 285
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 172,
+          "unicode_characters": 276,
+          "utf8_bytes": 670,
+          "visible_characters_rough": 261
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 160,
+          "unicode_characters": 261,
+          "utf8_bytes": 635,
+          "visible_characters_rough": 246
+        }
+      },
+      "case_id": "MICRO24B-S22"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 163,
+          "unicode_characters": 268,
+          "utf8_bytes": 646,
+          "visible_characters_rough": 253
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 152,
+          "unicode_characters": 255,
+          "utf8_bytes": 607,
+          "visible_characters_rough": 240
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 139,
+          "unicode_characters": 240,
+          "utf8_bytes": 572,
+          "visible_characters_rough": 225
+        }
+      },
+      "case_id": "MICRO24B-S23"
+    },
+    {
+      "arms": {
+        "CURRENT_WINDOW": {
+          "chinese_characters_rough": 154,
+          "unicode_characters": 253,
+          "utf8_bytes": 613,
+          "visible_characters_rough": 239
+        },
+        "SMALL_HALO": {
+          "chinese_characters_rough": 142,
+          "unicode_characters": 239,
+          "utf8_bytes": 571,
+          "visible_characters_rough": 225
+        },
+        "TARGET_ONLY": {
+          "chinese_characters_rough": 129,
+          "unicode_characters": 224,
+          "utf8_bytes": 536,
+          "visible_characters_rough": 210
+        }
+      },
+      "case_id": "MICRO24B-S24"
+    }
+  ],
+  "schema_version": "t5-r04-wo01-length-report-v1",
+  "status": "PASS_CHARACTER_LENGTH_GUARD_NO_TOKENIZER",
+  "summary": {
+    "CURRENT_WINDOW": {
+      "chinese_characters_rough": {
+        "max": 204,
+        "mean": 163.333333,
+        "median": 156.0,
+        "min": 139
+      },
+      "unicode_characters": {
+        "max": 317,
+        "mean": 264.583333,
+        "median": 254.5,
+        "min": 235
+      },
+      "utf8_bytes": {
+        "max": 781,
+        "mean": 641.75,
+        "median": 617.5,
+        "min": 559
+      },
+      "visible_characters_rough": {
+        "max": 301,
+        "mean": 250.083333,
+        "median": 240.5,
+        "min": 221
+      }
+    },
+    "SMALL_HALO": {
+      "chinese_characters_rough": {
+        "max": 183,
+        "mean": 145.916667,
+        "median": 141.0,
+        "min": 124
+      },
+      "unicode_characters": {
+        "max": 295,
+        "mean": 245.291667,
+        "median": 237.5,
+        "min": 218
+      },
+      "utf8_bytes": {
+        "max": 715,
+        "mean": 583.875,
+        "median": 566.5,
+        "min": 508
+      },
+      "visible_characters_rough": {
+        "max": 279,
+        "mean": 230.791667,
+        "median": 223.5,
+        "min": 204
+      }
+    },
+    "TARGET_ONLY": {
+      "chinese_characters_rough": {
+        "max": 171,
+        "mean": 133.125,
+        "median": 128.0,
+        "min": 111
+      },
+      "unicode_characters": {
+        "max": 280,
+        "mean": 230.291667,
+        "median": 222.5,
+        "min": 203
+      },
+      "utf8_bytes": {
+        "max": 680,
+        "mean": 548.875,
+        "median": 531.5,
+        "min": 473
+      },
+      "visible_characters_rough": {
+        "max": 264,
+        "mean": 215.791667,
+        "median": 208.5,
+        "min": 189
+      }
+    }
+  }
+}

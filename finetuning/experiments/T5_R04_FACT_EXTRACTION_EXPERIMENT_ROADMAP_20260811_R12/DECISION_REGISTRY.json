@@ -1,0 +1,65 @@
+{
+  "schema_version": "fact-extraction-experiment-decision-registry/1.8",
+  "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R12",
+  "status": "FINAL_BG_MATERIAL_INSUFFICIENT_NOT_RUN_WAIT_CONTROL_WINDOW",
+  "created_at": "2026-08-11T02:56:32+08:00",
+  "parent": {
+    "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R11",
+    "members": {
+      "00_READ_ME_FIRST.md": "274efcf9f1e5207ea49a4232e3d03645d1fcb66522dcb6da5feca8e13f99581e",
+      "DECISION_REGISTRY.json": "147d6eea3d13d675b529293fafc2e845262eb947159867122c999651aff2b49f",
+      "EX_RESULT_TICKET.json": "721814540968c8154d21cba4dbf8149ea86f887233d37afcbedcb14a63df9938"
+    },
+    "modified": false
+  },
+  "r12_members": {
+    "00_READ_ME_FIRST.md": "f51b255bf01fcbaefca22ef2c55e17c39356287ba9692294cbfacdac96746fa3",
+    "BG_RESULT_TICKET.json": "2fa9e32e164ed4e2709d2b807f49dc0a0eea0c599d739c0b8ee43c0b312f3b0d"
+  },
+  "bg_family": {
+    "status": "FINAL_MATERIAL_INSUFFICIENT_NOT_RUN",
+    "result_ticket": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R12/BG_RESULT_TICKET.json",
+      "sha256": "2fa9e32e164ed4e2709d2b807f49dc0a0eea0c599d739c0b8ee43c0b312f3b0d"
+    },
+    "material_ticket_r02": {
+      "path": "finetuning/experiments/T5_R04_BG_SOURCE_PROVENANCE_PREFLIGHT_20260811_R01/MATERIAL_SUFFICIENCY_RESULT_TICKET_R02.json",
+      "sha256": "ba744b128220e4e1459866da7ed4bb289506bbbb0cc99db503966532f3d2d361"
+    },
+    "inventory_disposition": "PRELIMINARY_PHYSICAL_SOURCE_CANDIDATES_NOT_FORMAL_BG_MATERIAL",
+    "BG-1": "FINAL_MATERIAL_INSUFFICIENT_NOT_RUN",
+    "BG-2": "FINAL_MATERIAL_NOT_ESTABLISHED_NOT_RUN",
+    "BG-3": "BLOCKED_DIAGNOSTIC",
+    "BG-4_TO_BG-7": "BLOCKED_CONDITIONAL",
+    "model_comparison_conclusion": "NOT_FORMED"
+  },
+  "sequential_family_state": {
+    "active_family_at_stop": "BG",
+    "stop_reason": "MATERIAL_INSUFFICIENT_BEFORE_MODEL_RUN",
+    "PURPOSE": "PAUSED",
+    "STATE": "PAUSED",
+    "conditional_families_auto_released": false,
+    "next_model_work_order": null,
+    "next_state": "WAIT_CONTROL_WINDOW_NEXT_FAMILY_DECISION"
+  },
+  "authorization": {
+    "bg_request_rendering_authorized": false,
+    "model_execution_authorized": false,
+    "training_authorized": false,
+    "inference_authorized": false,
+    "api_authorized": false,
+    "notion_authorized": false,
+    "git_authorized": false,
+    "current_or_production_promotion_authorized": false
+  },
+  "r12_actions": {
+    "model_loads": 0,
+    "inference_rows": 0,
+    "training_runs": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  },
+  "revision_rule": "保留R11、BG初步盘点和R01失败票原字节；R12只登记材料不足、未运行停线和无下一模型工单。"
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": "base-out2-target-block-coarse-screen-preflight-spec/2.0",
+  "experiment_id": "T5_R04_BASE_OUT2_TARGET_BLOCK_COARSE_SCREEN_PREFLIGHT_20260810_R02",
+  "status": "CANDIDATE_PREFLIGHT_R02_NOT_AUTHORIZED_NOT_RUN",
+  "created_at": "2026-08-10T16:40:00+08:00",
+  "parent_r01": {
+    "path": "finetuning/experiments/T5_R04_BASE_OUT2_TARGET_BLOCK_COARSE_SCREEN_PREFLIGHT_20260810_R01",
+    "preserve_all_bytes": true
+  },
+  "boundary_then_gold_order": [
+    "VERIFY_SOURCE_INDEX_AND_TXX_ONLY",
+    "BUILD_BOUNDARIES_WITHOUT_GOLD",
+    "SERIALIZE_AND_SHA_FREEZE_CANDIDATES",
+    "READ_AND_VERIFY_GOLD",
+    "AUDIT_CROSS_BLOCK_FACTS_WITHOUT_MOVING_BOUNDARIES"
+  ],
+  "screen_disposition": {
+    "BLOCK60": "MECHANICAL_EXIT_TOO_FRAGMENTED_ZERO_MODEL_CALLS",
+    "BLOCK300": "ONLY_STAGE1_CANDIDATE",
+    "FULL_TARGET": "FROZEN_REUSE"
+  },
+  "full_target_definition": {
+    "human_name_zh": "完整段档",
+    "unicode_codepoints_min": 620,
+    "unicode_codepoints_median": 760.0,
+    "unicode_codepoints_max": 923,
+    "not_a_fixed_600_character_block": true,
+    "halo_unicode_codepoints_each_side_max": 180,
+    "output_format": "OUT2-IDLIST"
+  },
+  "stage1": {
+    "candidate_band": "BLOCK300",
+    "case_ids": ["C01", "C02", "C05", "C09", "C10", "C14", "C23", "C24"],
+    "blocks": 22,
+    "gold_facts": 85,
+    "contained_gold_facts": 77,
+    "crossing_gold_facts": 8
+  },
+  "no_go": [
+    "RUN_BLOCK60",
+    "MODEL_OR_INFERENCE_IN_PREFLIGHT",
+    "FULL24_BLOCK300",
+    "GOLD_GUIDED_BOUNDARY_MOVEMENT",
+    "TRAINING_OR_API",
+    "NOTION_OR_GIT_OR_CURRENT_OR_PRODUCTION"
+  ]
+}

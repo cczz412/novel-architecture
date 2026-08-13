@@ -1,0 +1,65 @@
+{
+  "schema_version": "notion-product-scope-local-mirror.v1",
+  "created_date": "2026-08-06",
+  "status": "LOCAL_COMPLETE_MIRROR_REFERENCE_ONLY",
+  "purpose": "future_a_semantic_review_exam_design_and_chatgpt_context",
+  "files": [
+    {
+      "local_file": "01_大纲中枢合同_v0.1_草案.md",
+      "notion_page_id": "3aa5cadc-4d0f-8178-9461-dd64b51c9cc9",
+      "notion_url": "https://app.notion.com/p/3aa5cadc4d0f81789461dd64b51c9cc9",
+      "notion_view_as_of": "2026-07-27T00:09:50.921Z",
+      "bytes": 3459,
+      "sha256": "a9708b5e9ed07bac6ffe378ce71d5802e1915babb15fd5f839dba88b0b910b31"
+    },
+    {
+      "local_file": "02_通用大纲中枢与剧情卡结构.md",
+      "notion_page_id": "3a85cadc-4d0f-814e-8661-ea445f9d950d",
+      "notion_url": "https://app.notion.com/p/3a85cadc4d0f814e8661ea445f9d950d",
+      "notion_view_as_of": "2026-07-25T10:07:52.398Z",
+      "bytes": 15520,
+      "sha256": "819ca4523ece9a93db0695b54330ea20e76e4b689a091b11a4366b61e72ee89d"
+    },
+    {
+      "local_file": "03_事实句与大纲谁是主中心_最终裁决.md",
+      "notion_page_id": "3a85cadc-4d0f-81a1-ad46-ebfe5bbdeba3",
+      "notion_url": "https://app.notion.com/p/3a85cadc4d0f81a1ad46ebfe5bbdeba3",
+      "notion_view_as_of": "2026-07-25T10:08:00.969Z",
+      "bytes": 12885,
+      "sha256": "4d52308e8362c9bd08d40f525653c25176b55017bc91be239746a47b44d20e1f"
+    },
+    {
+      "local_file": "04_收手线拍板包_热事实合同v0.md",
+      "notion_page_id": "4707069a-4ef2-451c-ad5c-db4eab61b513",
+      "notion_url": "https://app.notion.com/p/4707069a4ef2451cad5cdb4eab61b513",
+      "notion_view_as_of": "2026-07-26T11:18:41.854Z",
+      "bytes": 6965,
+      "sha256": "3776465b175f4795ed68941fa0fdcd2430a5cd2082acba9471d9d13f76b1f3cd"
+    },
+    {
+      "local_file": "05_产品北极星_作者体验合同v0_口述原件.md",
+      "notion_page_id": "c7a87775-78a8-4cb0-af83-6d77c5bb38d9",
+      "notion_url": "https://app.notion.com/p/c7a8777578a84cb0af836d77c5bb38d9",
+      "notion_view_as_of": "2026-07-25T12:32:34.170Z",
+      "bytes": 59666,
+      "sha256": "38748465ac0cc19cbbaa9c71c841d83522e0e5706ac7ecc8b6615c5b99eeeb9f"
+    },
+    {
+      "local_file": "06_产品总图_v1_草案.md",
+      "notion_page_id": "3aa5cadc-4d0f-8156-94b3-d99f5a615b66",
+      "notion_url": "https://app.notion.com/p/3aa5cadc4d0f815694b3d99f5a615b66",
+      "notion_view_as_of": "2026-07-27T00:34:30.922Z",
+      "bytes": 3446,
+      "sha256": "b2d6cd38212c0dd1b0e0fa1b00dc7fa24ac34a9c3c670206e0437594dc7267bd"
+    }
+  ],
+  "boundaries": {
+    "r03_changed": false,
+    "gold_changed": false,
+    "exam_changed": false,
+    "contract_changed": false,
+    "notion_written": false,
+    "api_calls": 0,
+    "git_changed": false
+  }
+}

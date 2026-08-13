@@ -1,0 +1,130 @@
+{
+  "schema_version": "novel_arch_shared_context_build_receipt_v10_local_official_notion_separate",
+  "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260813_R10",
+  "completed_at": "2026-08-13T23:49:00+08:00",
+  "result": "PASS_R10_LOCAL_OFFICIAL_BUILD_AND_MECHANICAL_SELF_CHECK",
+  "status": "R10_LOCAL_OFFICIAL__NOTION_MIRROR_R09",
+  "status_meaning": "R10 is the local official shared product context. ADD-021..035 are accepted under CZ's current promotion instruction; ADD-036/037 retain CZ-confirmed status. Question 16 remains open at field level but is nonblocking. Notion was not authorized and still mirrors R09. This package grants no construction, training, model-API, external-send, production, or launch authority.",
+  "assembler": {
+    "agent": "Codex primary window with three bounded semantic-edit workers",
+    "commissioned_by": "CZ explicit R10 promotion instruction on 2026-08-13",
+    "process_tier": "MEDIUM__ONE_MECHANICAL_SELF_CHECK__ONE_INDEPENDENT_REVIEW"
+  },
+  "repository": {
+    "observed_head": "8d32beea7af3f1384ef4055bf39e08006065b6ae",
+    "worktree_at_start": "PRE_EXISTING_DIRTY_STATE_FROM_OTHER_WINDOWS__PRESERVED",
+    "new_directory": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260813_R10",
+    "draft_snapshot_preserved": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260813_R10_DRAFT",
+    "git_operations": 0
+  },
+  "source_materials": {
+    "base_package": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260813_R09 (immutable parent)",
+    "draft_snapshot": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260813_R10_DRAFT (preserved as construction snapshot)",
+    "addendum_ledger_vol3": "TEMP/bgboard-audit-20260809-r01/26_R09_ADDENDUM_LEDGER_VOL3_20260813_R01.md",
+    "external_review": "TEMP/t03_external_returns_intake_20260813_r01/R10/R10共同背景板转正独立审查报告_20260813.md",
+    "local_adoption_note": "TEMP/t03_external_returns_intake_20260813_r01/R10/R10_PROMOTION_ADOPTION_NOTE_R01.md",
+    "design_docs": "novel-mvp/design/*.md are pointers and design/construction evidence only; PLUGIN_CONTENT_WORKORDER_R01.md exists at the final check"
+  },
+  "parent_package": {
+    "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260813_R09",
+    "core_materials_sha256": "2799a19bf453499999c8e1acdacbf11e9bcecbac2893ac5126e500310480d255",
+    "package_sha256": "3fc9b7ca23980e82d6d9450863c51cf2eecb4920869912c2271768501139ba05",
+    "manifest_sha256": "ce8570b23b4dd6d8e8bcf4f972290a7ae62cba9b4a5ec7304a7e019dcfc685b4",
+    "receipt_sha256": "f37ac50efedbc1984e62000e50eaf6c2ea8839e4854ee8f55762fe88e37db963",
+    "mutation_policy": "R09_AND_R10_DRAFT_REMAIN_UNMODIFIED"
+  },
+  "decision_handling": {
+    "adds_absorbed": 15,
+    "accepted_original": [
+      "ADD-021",
+      "ADD-029",
+      "ADD-030",
+      "ADD-035"
+    ],
+    "accepted_revised": [
+      "ADD-022",
+      "ADD-023",
+      "ADD-025",
+      "ADD-026",
+      "ADD-027",
+      "ADD-028",
+      "ADD-031",
+      "ADD-032",
+      "ADD-033",
+      "ADD-034"
+    ],
+    "accepted_as_construction_appendix": [
+      "ADD-024"
+    ],
+    "cz_confirmed_unchanged": [
+      "ADD-036",
+      "ADD-037"
+    ],
+    "question_16_field_contract_open_nonblocking": true,
+    "question_15_closed_by_add_037": true,
+    "ledger_status_backfilled_to_local_official_r10": true,
+    "notion_ledger_backfill": "NOT_AUTHORIZED"
+  },
+  "notion_release": {
+    "status": "NOT_AUTHORIZED__R09_REMAINS_CURRENT_NOTION_MIRROR",
+    "note": "Local R10 promotion and Notion publication are separate actions. No Notion write occurred in this closeout."
+  },
+  "hashes": {
+    "core_materials_sha256": "5b0dcbb6682bb7cfd57bcde5490c61e83f0eb81a6fb95a146fc69471bdf3668e",
+    "manifest_sha256": "75992ecaf57be292fd2781041e78837e6629be15d2974234e31fdc004793da3f",
+    "package_sha256": "2d2ee6ff9c4d1fbb68657bc635c494d02943a3e3eb29445fa1e23a0f4e85d663",
+    "package_sha256_scope": "All twelve Markdown members plus CORE_MATERIALS_MANIFEST.json, indexed as path<TAB>member_sha256<LF> in lexicographic path order. BUILD_RECEIPT.json is excluded to avoid a circular hash."
+  },
+  "counts": {
+    "folder_files": 14,
+    "markdown_members": 12,
+    "core_markdown_members": 8,
+    "auxiliary_or_reference_markdown_members": 4,
+    "machine_json_members": 2,
+    "adds_absorbed": 15,
+    "local_relative_links_checked": 124,
+    "broken_local_relative_links": 0
+  },
+  "mechanical_validation": {
+    "fourteen_expected_files_present": true,
+    "all_markdown_last_lines_have_source": true,
+    "all_local_links_resolve": "124/124",
+    "all_twelve_member_sha_and_bytes_match_manifest": true,
+    "core_hash_recomputed": true,
+    "manifest_hash_recomputed": true,
+    "package_hash_recomputed": true,
+    "manifest_json_parses": true,
+    "receipt_json_parses": true,
+    "plugin_content_workorder_present": true,
+    "draft_snapshot_preserved": true,
+    "notion_write_count": 0,
+    "independent_review": "PASS_AFTER_SINGLE_API_AUTHORITY_WORDING_FIX__NO_SECOND_REVIEW_ROUND"
+  },
+  "problems": [],
+  "open_nonblocking_items": [
+    "Question 16 field, enum, and combination-priority details remain open for a later revision.",
+    "ADD-029 detailed market-number registration remains deferred; the formal R10 keeps only the registration boundary and does not promote unverified numbers."
+  ],
+  "external_actions": {
+    "model_api_calls": 0,
+    "training_jobs_started": 0,
+    "external_sends": 0,
+    "notion_writes": 0,
+    "git_operations": 0,
+    "spending": 0,
+    "files_modified_outside_r10_directory_by_this_closeout": [
+      "TEMP/bgboard-audit-20260809-r01/26_R09_ADDENDUM_LEDGER_VOL3_20260813_R01.md",
+      "AGENTS.md (shared-context entry only)",
+      "governance/progress/current-progress.md (R10 status line only)",
+      "governance/progress/task-queue.md (T-14 status line only)"
+    ]
+  },
+  "hard_stops_preserved": [
+    "NOTION_SYNC_REQUIRES_SEPARATE_AUTHORIZATION",
+    "NO_CONSTRUCTION_TRAINING_EXTERNAL_SEND_MODEL_API_PRODUCTION_OR_LAUNCH_AUTHORITY",
+    "QUESTION_16_REMAINS_FIELD_LEVEL_OPEN_NONBLOCKING",
+    "R06_THROUGH_R09_AND_R10_DRAFT_REMAIN_IMMUTABLE",
+    "MONETIZATION_REMAINS_FROZEN",
+    "J1_PROMPT_FACTORY_RED_LINE_UNCHANGED"
+  ]
+}

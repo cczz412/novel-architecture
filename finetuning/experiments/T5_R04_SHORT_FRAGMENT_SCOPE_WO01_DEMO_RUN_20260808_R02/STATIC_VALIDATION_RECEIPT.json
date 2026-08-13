@@ -1,0 +1,30 @@
+{
+  "status": "PASS_R02_STATIC_AND_INPUT_VALIDATION",
+  "pytest": {
+    "command": "uv run --locked pytest -q -p no:cacheprovider finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_RUN_20260808_R02/tests/test_r02.py",
+    "passed": 8,
+    "failed": 0
+  },
+  "ruff": {
+    "command": "uv run --locked ruff check finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_RUN_20260808_R02/tools finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_RUN_20260808_R02/tests",
+    "status": "PASS"
+  },
+  "input_validation": {
+    "command": "/opt/homebrew/opt/python@3.12/bin/python3.12 finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_RUN_20260808_R02/tools/run_demo_r02.py validate",
+    "request_count": 72,
+    "smoke_request_count": 6,
+    "arms": 3,
+    "cases_per_arm": 24,
+    "messages_per_request": 2,
+    "model_loaded": false
+  },
+  "api_calls": 0,
+  "training_started": false,
+  "scoring_correction": {
+    "status": "PASS_RECOVERABLE_FACT_LAYER_SEPARATED_FROM_SCHEMA",
+    "raw_outputs_reused": 72,
+    "model_rerun": false,
+    "new_blind_candidates": 20,
+    "semantic_pending": 0
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "fixture_role": "TEST_ONLY_CROSS_ARM_BLIND_ADJUDICATION",
+  "case_id": "MICRO24B-S01",
+  "prediction_fact": "黎舟替换了浮标上已经断裂的系缆。",
+  "arms": ["TARGET_ONLY", "SMALL_HALO", "CURRENT_WINDOW"],
+  "decision": {
+    "case_id": "MICRO24B-S01",
+    "prediction_fact": "黎舟替换了浮标上已经断裂的系缆。",
+    "prediction_fact_sha256": "c48c318fa4622c4a8859ad65c96786a7fd9dab79ced4c4197f77017c4cd8aebf",
+    "source_raw_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "category": "SEMANTIC_EQUIVALENT",
+    "matched_gold_fact_id": "MICRO24B-S01-F01",
+    "counts_as_tp": true,
+    "reason": "TEST_ONLY：同题同文本跨臂共用一条盲化裁决。",
+    "reviewer": "TEST_ONLY",
+    "reviewed_at": "2026-08-08T00:00:00+08:00"
+  }
+}

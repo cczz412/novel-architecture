@@ -1,0 +1,123 @@
+{
+  "package_id": "OUTLINE_LOADBEARING_RESEARCH_RETURNS_20260814_R01",
+  "created_on": "2026-08-14",
+  "source_batch_date": "2026-08-14",
+  "status": "historical_external_research_candidate_prior_only",
+  "source_provider": "ChatGPT",
+  "prompt_source": "../../../../../novel-mvp/design/18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md",
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false
+  },
+  "decision_boundary": "Product adoption still requires CZ current instruction, formal Notion ledger decisions, and the current shared-context package.",
+  "digest_status": "not_written_this_round_by_instruction_register_only_avoid_chaotic_full_read",
+  "files": [
+    {
+      "return_id": "RETURN_01",
+      "prompt_topic": "P1 户口：大纲 vs 实体家",
+      "path": "returns/11111结论.md",
+      "source_download": "/Users/a1234/Downloads/11111结论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 17340,
+      "lines": 186,
+      "sha256": "a30ece4461ff023f76b74f3d3a2f077d79f65547efd0c2b4c5d8ea1b16cf8b0e"
+    },
+    {
+      "return_id": "RETURN_02",
+      "prompt_topic": "P2 纵向承接：上游下传章纲与指导／分镜",
+      "path": "returns/1｜上游怎样下传，才不会把全书设定糊进每章.md",
+      "source_download": "/Users/a1234/Downloads/1｜上游怎样下传，才不会把全书设定糊进每章.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 19123,
+      "lines": 241,
+      "sha256": "fdab51b14cf3a59c26e67df8cb34bb779cc6e45f5b5022296ed4d3055b3aeef6"
+    },
+    {
+      "return_id": "RETURN_03",
+      "prompt_topic": "P3 写法承重：技法进结构还是插件卡",
+      "path": "returns/1. 逐项判定.md",
+      "source_download": "/Users/a1234/Downloads/1. 逐项判定.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 19412,
+      "lines": 209,
+      "sha256": "cfa20f8259b74d0d365a0f170925558416576ae8411acdcf68525a46e05eaa57"
+    },
+    {
+      "return_id": "RETURN_04",
+      "prompt_topic": "P4 未来件分家：命运／灵感／伏笔／计划／触发",
+      "path": "returns/1. 公开系统怎么拆，“未来表”为什么会翻车.md",
+      "source_download": "/Users/a1234/Downloads/1. 公开系统怎么拆，“未来表”为什么会翻车.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 16880,
+      "lines": 188,
+      "sha256": "8c6ac76340bdb052f12790c9c5a6fc096d4ed3cedf645aa71a73ddda63183d7c"
+    },
+    {
+      "return_id": "RETURN_05",
+      "prompt_topic": "P5 篮子歧义：放入树与单源指针",
+      "path": "returns/1. 可执行的放入树.md",
+      "source_download": "/Users/a1234/Downloads/1. 可执行的放入树.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 14970,
+      "lines": 196,
+      "sha256": "2f9b35e640877ccf0c0d2cc184ec8013879d6455b1ff5818276d8c4884a34e50"
+    },
+    {
+      "return_id": "RETURN_06",
+      "prompt_topic": "P6 大纲粒度：轻30 vs 重130",
+      "path": "returns/21321论.md",
+      "source_download": "/Users/a1234/Downloads/21321论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 14644,
+      "lines": 167,
+      "sha256": "c1ff0bd56040b32d6494d457507cec28efeae7244062fc11e5c4d2e1031a2c23"
+    },
+    {
+      "return_id": "RETURN_07",
+      "prompt_topic": "P7 建表：几层几张表谁引用谁",
+      "path": "returns/1. 常见是几层.md",
+      "source_download": "/Users/a1234/Downloads/1. 常见是几层.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 19016,
+      "lines": 205,
+      "sha256": "2510aa6a7ecb2f2cec743dec7c64250f93182297b6a4fc8e12d019b27ac74616"
+    },
+    {
+      "return_id": "RETURN_08",
+      "prompt_topic": "P8 真值切换：发表正文 vs 产品内大纲",
+      "path": "returns/1. 行业有没有“两套权威”.md",
+      "source_download": "/Users/a1234/Downloads/1. 行业有没有“两套权威”.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 14361,
+      "lines": 186,
+      "sha256": "aa95a2d95283c4c0912fb9ede325ca662709d1b1d50cc8d7d94227bc5e3574e7"
+    },
+    {
+      "return_id": "RETURN_09",
+      "prompt_topic": "P9 拆书复用：写法结构单位",
+      "path": "returns/1. 可以拆成哪些“写法结构”单位.md",
+      "source_download": "/Users/a1234/Downloads/1. 可以拆成哪些“写法结构”单位.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 19566,
+      "lines": 225,
+      "sha256": "f086f6fbe0843a0301ecd3bd93e82c379180fb1b8246872b0071351688b7d9d6"
+    },
+    {
+      "return_id": "RETURN_10",
+      "prompt_topic": "P10 遗漏普查：够不够资格开表",
+      "path": "returns/先定一条“够不够资格开表”的尺子.md",
+      "source_download": "/Users/a1234/Downloads/先定一条“够不够资格开表”的尺子.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 26166,
+      "lines": 239,
+      "sha256": "0bb86aa80af696e3a54f0052ad30bdd070b57f8fbb741b37dc785a7299fac2a3"
+    }
+  ]
+}

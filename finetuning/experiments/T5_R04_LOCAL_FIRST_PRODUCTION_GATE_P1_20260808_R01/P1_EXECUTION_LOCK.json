@@ -1,0 +1,37 @@
+{
+  "schema_version": "t5-r04-local-first-production-gate-p1-lock-v1",
+  "status": "HARD_STOP_BEFORE_PRODUCTION_CANONICAL_BUILD",
+  "cloud_fine_tuning_budget_mode": "MINIMIZE",
+  "authorized_actions": [
+    "inventory",
+    "design",
+    "local_data_preparation_after_gates",
+    "local_training_after_gates",
+    "local_inference_after_gates",
+    "local_evaluator_after_gates"
+  ],
+  "forbidden_actions": [
+    "doubao_mini_fine_tuning",
+    "doubao_lite_fine_tuning",
+    "unapproved_paid_api",
+    "new_ordinary_synthetic_expansion",
+    "restart_d_or_e",
+    "modify_historical_m1",
+    "select_or_consume_frozen_five_books",
+    "switch_finetuning_current",
+    "modify_production_pointer"
+  ],
+  "hard_stop_reasons": [
+    "positive_314_missing_explicit_per-row_training-rights ledger",
+    "canonical_evidence_positions_not_frozen",
+    "special_84_missing_author_identity",
+    "special_69_of_84_missing_stable_book_id",
+    "author-isolated production split_not_available"
+  ],
+  "next_allowed_action": "COMPLETE_RIGHTS_POSITION_AND_AUTHOR_IDENTITY_LEDGER_THEN_BUILD_PRODUCTION_CANONICAL_V1_CANDIDATE_R01",
+  "training_started": false,
+  "model_api_called": false,
+  "cost_incurred_yuan": 0,
+  "git_commit_created": false,
+  "notion_written": false
+}

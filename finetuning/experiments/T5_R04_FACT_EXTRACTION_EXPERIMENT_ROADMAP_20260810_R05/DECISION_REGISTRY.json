@@ -1,0 +1,88 @@
+{
+  "schema_version": "fact-extraction-experiment-decision-registry/1.1",
+  "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R05",
+  "status": "ACTIVE_DECISION_OVERLAY_TRAINED_READ_NO_CARRYOVER_ARM",
+  "created_at": "2026-08-10T10:23:47+08:00",
+  "parent": {
+    "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R04",
+    "members": {
+      "00_READ_ME_FIRST.md": "bcc044123833594476d49ea095de52e56402d059da225a0088cdfc6cf6879e77",
+      "DECISION_REGISTRY.json": "932f9094bd79136ae09859abc8f882243ab596b130cce81d9feb472e6cda50ce",
+      "EXPERIMENT_DECISION_LEDGER.md": "ba90d09bf7f5ca04e7f66d11a6cbc2599291ba0b08485405e5c228e12e86a7d1",
+      "RECUT24_R01_INDEPENDENT_SEMANTIC_AUDIT.md": "6ad8955aec442d4f5d92f258be7c0db358c5fafb4f08ea52bb0958e672e1370d",
+      "RECUT24_R02_CONTROL_REVIEW.md": "39acf841d8a72751114e9b93a981d1ff3517dbe3a806ec3a60a87712dd37f761",
+      "STOP_RESULT_TICKET.json": "5d52b78e2f705553db2590f69ba5827f27cdf5030e53ac3e9f399ad40c082940"
+    },
+    "modified": false
+  },
+  "trained_read_screen": {
+    "condition": "TRAIN36_LOW_DOSE_24_MICROSTEPS_PLUS_FORMAT_B_REAL24_SINGLE_SEED",
+    "conclusion": "NO_TRAINED_READ_ARM_QUALIFIED_FOR_CARRYOVER",
+    "arms": {
+      "READ1": {
+        "result": "FAIL_FULL24_SCHEMA_23_OF_24",
+        "strict_json_cases": 24,
+        "schema_cases": 23
+      },
+      "READ2": {
+        "result": "FAIL_SEMANTIC_CARRYOVER_GATE",
+        "strict_json_cases": 24,
+        "schema_cases": 24,
+        "lora_f1": 0.342967,
+        "matched_base_f1": 0.352941,
+        "preregistered_gate": "LORA_F1_GTE_MATCHED_BASE_F1",
+        "gate_pass": false
+      },
+      "READ4": {
+        "result": "FAIL_STAGE1_EVIDENCE_OUT_OF_SCOPE",
+        "case_id": "C10",
+        "observed_out_of_allowlist_ids": [
+          "T27",
+          "T28",
+          "T29",
+          "T30",
+          "T31"
+        ]
+      }
+    }
+  },
+  "current_stop": {
+    "trained_read_to_out_dependency": "STOPPED_NO_CARRYOVER_ARM",
+    "old_global_status_remains": "FAIL_FULL24_LORA_FORMAT_GATE",
+    "forbidden_repairs": [
+      "补旧格",
+      "调整训练剂量",
+      "新增或更换loss",
+      "挪动教材行序",
+      "新增教材",
+      "重跑或retry",
+      "绕过READ硬开OUT"
+    ]
+  },
+  "next_allowed_preparation": {
+    "id": "T5_R04_BASE_CONTEXT_B_RELATIVE_SCREEN_20260810_R01",
+    "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+    "purpose": "比较未微调本地4B加B合同时READ1、READ2、READ4的正文范围表现",
+    "not_a_trained_read_winner": true,
+    "does_not_authorize_out": true
+  },
+  "scope_boundary": {
+    "four_b_permanently_rejected": false,
+    "mini_decision_changed": false,
+    "training_authorized": false,
+    "inference_authorized": false,
+    "out_authorized": false,
+    "api_authorized": false,
+    "notion_or_git_authorized": false,
+    "current_or_production_promotion_authorized": false
+  },
+  "evidence_bindings": {
+    "stage1_gate_sha256": "6757b257485c65c8dba53139b85e4ad5129165dc96bf5519cd79478bd4742005",
+    "full24_raw_sha256": "f9bd1fc02f93cfb7c51193f1dc319753472949bc2bbde4360a6779c415cdb28e",
+    "full24_result_sha256": "a8b3276179551aaa3b7e42c274c0a7c5327846171be58c02ff0d38de778340b9",
+    "full24_metrics_sha256": "583d89053ed5662b516206579782338994afeca3580a25e39cc98c1781692d57",
+    "read2_carryover_r02_adjudications_sha256": "03eb97a774ac41599d6f897e64486cec37d0a237b073f0ab621039733d599636",
+    "read2_carryover_final_sha256": "524f8bcceb37aea95a6cf1ac7445580353360fdfd6de525982a216efa49ec96f"
+  },
+  "revision_rule": "保留R04及更早版本原字节；后续新证据另开revision，不静默覆盖。"
+}

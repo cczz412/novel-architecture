@@ -1,0 +1,94 @@
+{
+  "schema_version": "base-h180-out2-full-target-rule-screen-prepare-receipt/1.0",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "prepared_at": "2026-08-10T21:21:55+08:00",
+  "experiment_id": "T5_R04_BASE_H180_OUT2_FULL_TARGET_RULE_SCREEN_20260810_R01",
+  "exact_file_set": {
+    "README.md": "70c99ac346044704fde2372c0a8c736725f29cc0fbdf44363a1e00179d372ac5",
+    "SPEC.json": "b3345f8e2fd845a8b7031fd1747bc067e655442dc2fcb6cb21ec1e57072857ea",
+    "run_rule_prompt_screen.py": "e4bee2a100a4962a28bcadd6b3efde5c24ae2b87f8c980c2057caafd28292867",
+    "score_rule_prompt_screen.py": "8f9bf1fff5718875316886f13937073753daab4532610602e34b69a96e84df84"
+  },
+  "exact_file_count_including_this_receipt": 5,
+  "upstream_bindings": {
+    "r09_readme_sha256": "733848fb54e231e4ef7ce58ed3bcf72706098a201ce53c7516b4fccb889ab4b8",
+    "r09_registry_sha256": "24cc1d970e728323a14549db9455f4d23e765706b4041f7b2bf9af45d60a683f",
+    "r09_result_ticket_sha256": "c2b5fde501d4e14c36eaa70868823775520d41d60111c084dd6569565803bab4",
+    "base_request_sha256": "126b0f0843fdd244f007a46361397f24f97ce8d71c73d760ae9ad5a6bf5b3088",
+    "parent_raw_sha256": "f9bd1fc02f93cfb7c51193f1dc319753472949bc2bbde4360a6779c415cdb28e",
+    "base_projection_sha256": "c7f738181148acc4c06644e47058606b35f07b9a0603521ffdb98502267b1b97",
+    "base_context_final_sha256": "f625c10ecf0e1d4be8eade2032dc2fdbe6d398ac55a6ad89f47abffa117825c7",
+    "base_context_decisions_sha256": "ddc75e55cb441c6dd90f354f2a7ee7ffb28dd32f08e82a91df2052d1ae5ccf4d",
+    "read2_r02_sha256": "03eb97a774ac41599d6f897e64486cec37d0a237b073f0ab621039733d599636",
+    "gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "txx_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6"
+  },
+  "request_derivation": {
+    "rule1_request_sha256": "9ea695da2c65a1862d7eaab20ab1569d25e96d6b690271111845a4d608e41cd8",
+    "rule2_request_sha256": "ef2e859b1200cad0308ddf3342598521b1dc2d6d5117e07cfe79073c8db4403a",
+    "rows_per_new_variant": 24,
+    "total_new_requests": 48,
+    "case_order": "C01_TO_C24",
+    "user_bytes_identical_across_three_variants": true,
+    "rule2_system_strictly_extends_rule1_system": true
+  },
+  "frozen_baseline": {
+    "precision": 0.376518,
+    "recall": 0.332143,
+    "f1": 0.352941,
+    "schema_cases": 22,
+    "empty_answer_cases": 0,
+    "evidence_order_accuracy_recomputed": 0.983806,
+    "evidence_continuity_accuracy_recomputed": 0.955466
+  },
+  "checks": {
+    "runner_static_check": "PASS",
+    "scorer_static_check": "PASS",
+    "targeted_self_test": "PASS",
+    "ruff": "PASS",
+    "json_parse": "PASS",
+    "request_sha_and_48_row_closure": "PASS",
+    "out_of_allowlist_hard_gate": "PASS",
+    "order_and_gap_diagnostic_only": "PASS",
+    "blind_queue_order_invariant_and_identity_free": "PASS",
+    "final_fresh_queue_byte_rebuild_from_current_raw": "PASS",
+    "prediction_fact_sha256_recomputed_for_every_queue_and_adjudication_row": "PASS",
+    "queue_text_tamper_with_synchronized_pre_sha_still_blocked": "PASS",
+    "pre_mechanical_summary_and_key_diagnostics_recomputed_in_final": "PASS",
+    "scorer_reuses_runner_complete_ticket_validation": "PASS",
+    "normal_ticket_path": "PASS",
+    "empty_authority_field_ticket_rejected": "PASS",
+    "decimal_boundary_0_513369_minus_0_493369_selects_rule2": "PASS",
+    "selection_rule_branches": "PASS_DECIMAL_FIXED_POINT",
+    "identity_boundary": "内部身份完整且需控制窗独立run audit；不声称密码学防手写",
+    "model_member_gate_13_files_8060917568_bytes": "PASS",
+    "missing_ticket_exit_nonzero_before_run_root_or_model_load": "PASS",
+    "run_root_absent": true,
+    "pycache_or_pyc_in_exact_file_set": 0
+  },
+  "commands": [
+    "PYTHONDONTWRITEBYTECODE=1 uv run --locked ruff check run_rule_prompt_screen.py score_rule_prompt_screen.py",
+    "PYTHONDONTWRITEBYTECODE=1 uv run --locked python run_rule_prompt_screen.py static-check",
+    "PYTHONDONTWRITEBYTECODE=1 uv run --locked python score_rule_prompt_screen.py static-check",
+    "PYTHONDONTWRITEBYTECODE=1 uv run --locked python score_rule_prompt_screen.py self-test",
+    "PYTHONDONTWRITEBYTECODE=1 uv run --locked python run_rule_prompt_screen.py infer-new-rules"
+  ],
+  "execution_boundary": {
+    "ticket_created": false,
+    "run_root_created": false,
+    "model_loaded": false,
+    "inference_executed": false,
+    "training_executed": false,
+    "scoring_executed": false
+  },
+  "actions": {
+    "model_loads": 0,
+    "training": 0,
+    "inference": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  }
+}

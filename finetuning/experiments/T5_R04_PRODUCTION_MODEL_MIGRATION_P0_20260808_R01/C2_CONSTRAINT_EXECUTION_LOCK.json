@@ -1,0 +1,69 @@
+{
+  "schema_version": "t5-r04-c2-constraint-execution-lock-v1",
+  "created_at": "2026-08-08T13:21:18+08:00",
+  "authorization_scope": "ZERO_TRAINING_RUNTIME_CONSTRAINT_PREFLIGHT_ONLY",
+  "status": "HARD_STOP_CURRENT_MLX_CONSTRAINT_BACKEND_UNAVAILABLE",
+  "training_authorized": false,
+  "model_api_authorized": false,
+  "experiment_inference_started": false,
+  "executed_arms": [],
+  "planned_arms": [
+    "C2_FREE",
+    "C2_JSON_GRAMMAR",
+    "C2_MINIMAL_STRUCTURAL_SCHEMA"
+  ],
+  "frozen_identity": {
+    "model_role": "offline_proxy_model",
+    "base_model": "Qwen3-4B-Instruct-2507",
+    "base_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "base_model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6",
+    "adapter_role": "C2_FULL_UPDATE72",
+    "adapter_sha256": "321d96c10f00389e557efbeb2d8e3dc1344071cc3cd663b51b8a8c2bd38ea5f9",
+    "adapter_bytes": 117465067,
+    "dev_identity": "DEV24_SET_B_R03_DO_NOT_TRAIN",
+    "dev_rows": 24,
+    "dev_facts": 48,
+    "dev_renderer_sha256": "b9f819d29434b43fae2974ff2de4dca333614c50cda9821d14fa37a5036d44c4",
+    "canonical_dev_sha256": "fa04ce5e5f819f4f87aec248ef8c306541b04128d67f0b79cc7e61f2d401d7d9",
+    "existing_free_raw_sha256": "b32460077523b054f772fa5a70d39e8f51bec902f81b04f0261040cfff1b13c6"
+  },
+  "frozen_runtime": {
+    "engine": "mlx-lm",
+    "engine_version": "0.30.7",
+    "python": "/opt/homebrew/opt/python@3.12/bin/python3.12",
+    "transformers_version": "5.2.0",
+    "model_loading": "mlx_lm.load(base_model_path, adapter_path=adapter_path)",
+    "prompt_construction": "tokenizer.apply_chat_template(messages_without_assistant, tokenize=false, add_generation_prompt=true)",
+    "inference_runner_sha256": "f2199b8f911894d8347878a97244ca3b41e8e19fc5297408fd6e8d18a2f81be7",
+    "sampler": "greedy",
+    "temperature": 0.0,
+    "max_output_tokens": 1024,
+    "retry": 0,
+    "post_hoc_repair": 0
+  },
+  "constraint_capability_probe": {
+    "generic_logits_processor_hook": "PRESENT",
+    "builtin_json_grammar_or_schema_compiler": "NOT_FOUND",
+    "builtin_processors": [
+      "logit_bias",
+      "repetition_penalty"
+    ],
+    "outlines": "MISSING",
+    "xgrammar": "MISSING",
+    "llguidance": "MISSING",
+    "lmformatenforcer": "MISSING",
+    "guidance": "MISSING",
+    "same_backend_for_grammar_and_schema": "NOT_AVAILABLE"
+  },
+  "hard_stop_reason": "The current MLX inference path has no installed and frozen grammar/schema backend. Adding one or changing inference engines would introduce an unapproved runtime variable.",
+  "forbidden_actions_observed": {
+    "switch_to_hf": false,
+    "switch_to_vllm": false,
+    "switch_to_llama_cpp": false,
+    "install_new_constraint_backend": false,
+    "run_free_only_as_fake_experiment": false,
+    "modify_trainer": false,
+    "retrain_c2": false
+  },
+  "next_gate": "CZ_DECIDES_MOVE_CONSTRAINT_RETEST_TO_DOUBAO_MINI_OR_AUTHORIZES_SMALL_MLX_BACKEND_PROTOTYPE"
+}

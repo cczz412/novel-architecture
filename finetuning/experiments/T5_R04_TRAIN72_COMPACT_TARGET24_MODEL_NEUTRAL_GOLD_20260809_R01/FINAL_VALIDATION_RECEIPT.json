@@ -1,0 +1,91 @@
+{
+  "schema_version": "train72-compact-target24-model-neutral-gold-final-receipt/1.0",
+  "dataset_status": "CANDIDATE_NOT_YET_APPROVED",
+  "conclusion_zh": "24个紧凑负责区的模型中立Gold候选已二读通过，低档均自然为0–3条、中档均自然为4–6条，但不是训练授权",
+  "output_manifest": {
+    "path": "OUTPUT_MANIFEST.json",
+    "bytes": 1476,
+    "sha256": "cbfadad67111dabd9e586d8c528233d2d9e4e30f9c8d53fc233a5d87fbfa41f4"
+  },
+  "parent_r02_bindings": {
+    "source_index_sha256": "21c8c29ba1551129219b0f7ca46fc35093e1f0f66592553012d171a94e71dae6",
+    "gold_sha256": "35f028ee1c198ec5a0651a158ee7312dfb6e5eb072c806f4055bb2d91d759353",
+    "bindings_match_expected": true
+  },
+  "upstream_byte_identity": {
+    "r01_directory_tree_digest_before_and_after": "f58151f7c6f20aae26279a4013edbba1d4440ba092a3581bf5187ae2e0a81fc9",
+    "r02_directory_tree_digest_before_and_after": "64183ac5b8990268340a6529e95b35c95b617406a516746db2b485d8734d5e95",
+    "r01_bytes_unchanged": true,
+    "r02_bytes_unchanged": true
+  },
+  "content_counts": {
+    "cases": 24,
+    "low_cases": 12,
+    "medium_cases": 12,
+    "unique_case_ids": 24,
+    "unique_target_sha256": 24,
+    "unique_source_chapters": 14,
+    "target_units": 117,
+    "facts": 66,
+    "empty_fact_cases": 5,
+    "second_read_cases": 24,
+    "second_read_unresolved_disputes": 0,
+    "replacement_ranges_used": 0
+  },
+  "density_review": {
+    "low_fact_counts": [0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 3],
+    "medium_fact_counts": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 6],
+    "low_all_within_0_to_3": true,
+    "medium_all_within_4_to_6": true,
+    "facts_added_or_removed_to_force_band": false,
+    "parent_gold_used_as_wording_reference_not_mechanical_filter_only": true
+  },
+  "target_length_unicode_characters": {
+    "min": 119,
+    "median": 150,
+    "max": 200,
+    "mean": 153.583,
+    "token_count_claimed": false
+  },
+  "mechanical_validation": {
+    "strict_utf8_source_chapters": "24/24",
+    "source_sha_coordinate_target_sha": "24/24",
+    "new_absolute_coordinates_derived_from_parent_txx": "24/24",
+    "target_units_built_before_gold_and_fact_independent": true,
+    "target_units_reconstruct_target": "24/24",
+    "within_compact24_overlaps": 0,
+    "overlaps_with_train36_s6_m6_l6_real24": 0,
+    "gold_case_order_matches_source_index": true,
+    "expected_fact_count_equals_len_facts": "24/24",
+    "fact_fields_complete": "66/66",
+    "fact_ids_sequential_and_unique_within_case": "66/66",
+    "statuses_legal": "66/66",
+    "speaker_types_legal": "66/66",
+    "evidence_in_compact_target_and_contiguous": "66/66",
+    "common_answer_entity_policy": "TARGET_VISIBLE_SURFACE_ONLY",
+    "exhaustive_candidate_flag": "24/24",
+    "strict_json_duplicate_keys": "PASS",
+    "source_index_double_build_byte_identical": true,
+    "checker_two_runs": "PASS",
+    "ruff_single_checker": "PASS",
+    "manifest_members": "4/4 bytes_and_sha_match"
+  },
+  "rights_and_data_boundaries": {
+    "project_original_targets_only": true,
+    "real24_third_party_text_copied_into_training_asset": false,
+    "l6_use_changed": false,
+    "messages_or_prompt_views_generated": false,
+    "train72_dataset_built": false,
+    "training_authorized": false
+  },
+  "external_actions": {
+    "model_calls": 0,
+    "api_calls": 0,
+    "training_runs": 0,
+    "notion_reads": 0,
+    "notion_writes": 0,
+    "git_stage_commit_push": 0,
+    "current_pointer_changes": 0,
+    "production_promotions": 0
+  }
+}

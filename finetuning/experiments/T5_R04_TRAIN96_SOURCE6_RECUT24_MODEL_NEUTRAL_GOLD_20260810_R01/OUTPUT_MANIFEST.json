@@ -1,0 +1,47 @@
+{
+  "schema_version": "train96-source6-recut24-output-manifest/1.0",
+  "dataset_status": "CANDIDATE_MODEL_NEUTRAL_GOLD_PENDING_INDEPENDENT_REVIEW",
+  "scope": "MODEL_NEUTRAL_GOLD_CANDIDATE_ONLY",
+  "training_authorized": false,
+  "upstream": {
+    "directory": "finetuning/experiments/T5_R04_TRAIN96_LONG_CURRICULUM_SOURCE6_20260810_R01",
+    "source6_manifest_sha256": "55c210090a8296b3d59698cb93e5eac3e30d73d1804c2857f4f80bf987f0839a",
+    "target18_candidates_sha256": "9a57fdde00501ff0598b07531e7983292bdc8a42c7b3b3c61bf75827af0f0afa"
+  },
+  "members": [
+    {
+      "path": "OLD_TARGET18_DISPOSITION.md",
+      "bytes": 751,
+      "sha256": "42cff2d96ed9c4b699655bcf88656f9b6cd8933d9ca869f722e8e2a277c69a8a"
+    },
+    {
+      "path": "SOURCE_INDEX_24.jsonl",
+      "bytes": 48878,
+      "sha256": "33b14b2a751ffd5e4c34ce6d214502f6acc6c1793dd78ae2d70a7d9f313ea929"
+    },
+    {
+      "path": "MODEL_NEUTRAL_GOLD_24.jsonl",
+      "bytes": 14925,
+      "sha256": "4876bb88818aa63ad4835d990f050436946a0319bd9b8a174a4244ef015e80e6"
+    },
+    {
+      "path": "SEMANTIC_REVIEW_SIDECAR.jsonl",
+      "bytes": 9140,
+      "sha256": "4b0d940a000aff0b88a3bfe0e588fb36d7dde4ff13549f02987f954bbd9637bd"
+    },
+    {
+      "path": "REVIEW_SUMMARY.md",
+      "bytes": 2522,
+      "sha256": "edcdc5b01f7915a538eae8942273cabd86384c18fed86879a0e4001fa8093cfc"
+    },
+    {
+      "path": "build_and_check_recut24.py",
+      "bytes": 40629,
+      "sha256": "ad52bb518b4fda78fc95ee9582f10295ea378581b6c211d08aa12da420c7e065"
+    }
+  ],
+  "exclusions": [
+    "OUTPUT_MANIFEST.json",
+    "FINAL_VALIDATION_RECEIPT.json"
+  ]
+}

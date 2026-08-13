@@ -1,0 +1,63 @@
+{
+  "schema_version": "finetuning-experiment-spec-v2",
+  "experiment_id": "EXAMPLE_EXPERIMENT_R01",
+  "manifest_revision": "r01",
+  "source_root": {
+    "store_id": "LAB",
+    "relative_path": "EXAMPLE_EXPERIMENT_R01"
+  },
+  "state": {
+    "lifecycle": "sealed",
+    "storage_state": "lab",
+    "promotion_state": "not_promoted"
+  },
+  "artifact_groups": [
+    {
+      "group_id": "training_inputs",
+      "store_id": "LAB",
+      "base_relative_path": "EXAMPLE_EXPERIMENT_R01",
+      "required": true,
+      "patterns": [
+        "sealed/train.jsonl",
+        "receipts/*.json"
+      ]
+    }
+  ],
+  "measurements": {
+    "training_rows": {
+      "operation": "jsonl_rows",
+      "relative_path": "sealed/train.jsonl"
+    },
+    "training_facts": {
+      "operation": "jsonl_facts",
+      "relative_path": "sealed/train.jsonl"
+    }
+  },
+  "assertions": [
+    {
+      "type": "equal",
+      "measurements": [
+        "training_rows",
+        "training_rows"
+      ]
+    }
+  ],
+  "current_gate": {
+    "required_receipts": [
+      {
+        "store_id": "MAIN_REPO",
+        "relative_path": "finetuning/experiments/EXAMPLE_EXPERIMENT_R01/ACCEPTANCE_RECEIPT.json",
+        "status_pointer": "/status",
+        "allowed_values": [
+          "PASS"
+        ]
+      }
+    ]
+  },
+  "boundaries": {
+    "may_authorize_training": false,
+    "may_authorize_promotion": false,
+    "may_modify_frozen_evidence": false,
+    "may_move_or_delete_assets": false
+  }
+}

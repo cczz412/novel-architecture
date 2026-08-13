@@ -1,0 +1,14 @@
+{"gap_id":"WO01-RS-GAP-001","status":"RESOLVED_BY_DEDICATED_RUNNER","summary":"P3旧runner使用messages[:-1]，对WO-01两消息请求会删除user；新runner共享serialize_messages函数并完整传入system+user，静态72行证据和测试锁定该行为。"}
+{"gap_id":"WO01-RS-GAP-002","status":"RESOLVED_BY_DEDICATED_SCORER","summary":"M1/P3 scorer写死历史arm、checkpoint、split和输出目录；新scorer只接受WO-01三臂、24题/臂和共同48 gold，并把语义、结构与端到端可用性分层。"}
+{"gap_id":"WO01-RS-GAP-003","status":"RESOLVED_BOOTSTRAP_CONTRACT_FROZEN","summary":"配对bootstrap已在模型运行前冻结为按case有放回抽样、每次24题、10000次、seed=2026080801、双侧percentile Type-7 95% CI，只比较两组相邻臂。"}
+{"gap_id":"WO01-RS-GAP-004","status":"AUTHORIZATION_HARD_STOP","summary":"当前无CZ模型运行票，model/API/training均未授权；runner的run入口缺票或任一绑定不符都会硬停。"}
+{"gap_id":"WO01-RS-GAP-005","status":"SEMANTIC_REVIEW_REQUIRED_AFTER_FUTURE_RUN","summary":"未来真实输出中未能同题机械匹配的fact必须先完成独立same-case语义裁决；裁决未齐时禁止生成最终semantic F1。"}
+{"gap_id":"WO01-RS-GAP-006","status":"R01_WORDING_NARROWED_WITHOUT_REWRITE","summary":"R01输入与其SHA不改；本revision明确把R01解释收窄为PASS_INPUT_PREFLIGHT_ONLY，旧RUN_READY式表述不再提供运行权。"}
+{"gap_id":"WO01-RS-GAP-007","status":"RESOLVED_CROSS_ARM_BLIND_ADJUDICATION","summary":"fact语义裁决键已冻结为case_id+prediction_fact_sha256，不含arm；盲队列跨臂去重，arm映射只进隐藏sidecar，三臂相同预测强制复用同一结论。"}
+{"gap_id":"WO01-RS-GAP-008","status":"RESOLVED_FORMAL_RUN_SIGNATURE_AND_MEMORY_GUARD","summary":"stream_generate只传model、tokenizer两个位置参数，prompt只作为关键字参数；静态AST测试锁定签名，正式运行前和每题前保留内存硬停及MLX资源回执。"}
+{"gap_id":"WO01-RS-GAP-009","status":"RESOLVED_BASE_MODEL_FULL_MEMBER_GATE","summary":"基础模型MODEL_RECEIPT SHA/revision已绑定；未来formal run在load前逐件复算13个模型成员的bytes/SHA，不只信receipt自报。"}
+{"gap_id":"WO01-RS-GAP-010","status":"RESOLVED_SINGLE_USE_FIXED_RUN_ROOT","summary":"授权票锁定唯run_id、唯一runs子目录、三臂顺序和72请求身份；claim/start/abort/success都在固定runs根，同票换目录、二次使用、路径穿越和符号链接逃逸全部硬停。"}
+{"gap_id":"WO01-RS-GAP-011","status":"RESOLVED_RAW_AND_RECEIPT_IDENTITY_GATE","summary":"scorer正式入口同时核RAW与RUN_RECEIPT，并按固定顺序逐行校验row index、case、request SHA和gold binding SHA；手写72行不能直接计分。"}
+{"gap_id":"WO01-RS-GAP-012","status":"RESOLVED_IMMUTABLE_TWO_STAGE_SCORING","summary":"评分分为pre-adjudication与final两个不可覆盖目录；pre保留盲队列与隐藏映射，final必须绑定pre/raw/adjudication SHA且pending=0才能声称最终语义分和bootstrap。"}
+{"gap_id":"WO01-RS-GAP-013","status":"RESOLVED_AFTER_INDEPENDENT_HARD_STOP","summary":"第一轮独立审查硬停：claim已写入后若输出目录或start receipt失败，原代码不保证abort证据。修订后claim registry保留独立ABORTED票，已创建的run目录也保留RUN_ABORTED_RECEIPT，不自动重试。"}
+{"gap_id":"WO01-RS-GAP-014","status":"RESOLVED_AFTER_INDEPENDENT_HARD_STOP","summary":"第一轮独立审查硬停：final原只复核pre queue SHA，未复核pre metrics与hidden occurrence sidecar。修订后final同时复核三件SHA，任一漂移硬停。"}

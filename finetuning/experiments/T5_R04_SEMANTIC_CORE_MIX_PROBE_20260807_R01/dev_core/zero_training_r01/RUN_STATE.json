@@ -1,0 +1,17 @@
+{
+  "completed": {
+    "Z00": 48,
+    "Z01": 48
+  },
+  "completed_at": "2026-08-07T23:16:47.748386+08:00",
+  "current_arm": null,
+  "last_case": "DEVCORE2-DCB031-W01",
+  "last_free_percent": 15,
+  "last_output_tokens": 157,
+  "last_schema_valid": true,
+  "peak_memory_bytes": 8661617228,
+  "pid": 14081,
+  "started_at": "2026-08-07T23:03:35.988709+08:00",
+  "status": "INFERENCE_COMPLETE",
+  "updated_at": "2026-08-07T23:16:47.748393+08:00"
+}

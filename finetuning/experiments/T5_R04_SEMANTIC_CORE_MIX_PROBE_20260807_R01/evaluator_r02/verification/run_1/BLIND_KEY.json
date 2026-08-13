@@ -1,0 +1,825 @@
+{
+  "rows": [
+    {
+      "blind_case_id": "0155ae2f4d573478",
+      "case_id": "AC-021",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "01cd38ac77702003",
+      "case_id": "AC-023",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "0205436aaf13c88a",
+      "case_id": "AC-036",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "0348dbb8ad6ba215",
+      "case_id": "NB-015",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "045201ff1dd002ce",
+      "case_id": "AC-017",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "045286861b24e2ba",
+      "case_id": "NB-014",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "0551736e3881df27",
+      "case_id": "AC-008",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "059d6d99ba9e6e95",
+      "case_id": "AC-002",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "05b6e5acedb2cb59",
+      "case_id": "NB-009",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "0b0ff58f8b069db0",
+      "case_id": "AC-002",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "0b633cbbd16d9d82",
+      "case_id": "NB-008",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "0cfa891097850718",
+      "case_id": "AC-007",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "0d8d35eb2410cb4c",
+      "case_id": "AC-002",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "0e8b6c70b26387f8",
+      "case_id": "AC-021",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "10b4dfdb47820851",
+      "case_id": "NB-010",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "10dc5012dab46bbc",
+      "case_id": "NB-013",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "1150cfcc3b548d05",
+      "case_id": "AC-018",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "11985e9f0b68ce8c",
+      "case_id": "AC-018",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "124eaf5d0e199e02",
+      "case_id": "AC-026",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "12b8f2073756dc93",
+      "case_id": "AC-047",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "136c1dddde7ec84c",
+      "case_id": "NB-005",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "15781bac7ddaa4a7",
+      "case_id": "AC-011",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "1c884a3f02c36945",
+      "case_id": "AC-032",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "1d828206532c5354",
+      "case_id": "AC-011",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "1da74aeaaf506b16",
+      "case_id": "NB-012",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "1fa5c899768e4512",
+      "case_id": "NB-007",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "1fed824cd0439332",
+      "case_id": "AC-047",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "207d39ba6ad3f5a7",
+      "case_id": "NB-002",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "21587569dc9367b8",
+      "case_id": "NB-005",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "21c13d2f15a43824",
+      "case_id": "AC-036",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "2376523ca0003f44",
+      "case_id": "NB-006",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "25b5b535e8ee7984",
+      "case_id": "AC-003",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "26b91c5dd8a57619",
+      "case_id": "AC-015",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "26f4ab9e83a49453",
+      "case_id": "NB-011",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "29d2704ba3c7b947",
+      "case_id": "AC-042",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "2a550010a0514d7a",
+      "case_id": "AC-017",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "2b655112449733cc",
+      "case_id": "AC-042",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "2bce981872d6d5d7",
+      "case_id": "AC-015",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "2d3f5f90e1c78281",
+      "case_id": "AC-012",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "306281924815a5a5",
+      "case_id": "AC-007",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "30df39f650aaa0e6",
+      "case_id": "NB-007",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "313dacf00b043667",
+      "case_id": "AC-025",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "33d82de3a0af5869",
+      "case_id": "AC-008",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "35339e4bfed58d9e",
+      "case_id": "AC-004",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "36a2e84fd1e0f3a9",
+      "case_id": "AC-014",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "3866bd49d8c1557a",
+      "case_id": "NB-002",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "3c3fadd1934e3b6c",
+      "case_id": "AC-048",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "3fd909b779942bb6",
+      "case_id": "AC-014",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "410bc9c2734f1de9",
+      "case_id": "AC-004",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "4127c7e179b93843",
+      "case_id": "AC-003",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "444c0fc843837786",
+      "case_id": "AC-015",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "4462e9c8396da57a",
+      "case_id": "NB-015",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "4510ce699f7deaf7",
+      "case_id": "NB-008",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "462d9a3f541f706b",
+      "case_id": "NB-009",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "4d41a5ff3b9dc804",
+      "case_id": "NB-003",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "4d90b0d620ee26d1",
+      "case_id": "NB-013",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "51d4026434d07899",
+      "case_id": "AC-016",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "52fafa593f08f98d",
+      "case_id": "NB-001",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "55395a9987cc3283",
+      "case_id": "NB-001",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "5634598ed860ca36",
+      "case_id": "AC-018",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "5bf7ee8dae170268",
+      "case_id": "AC-010",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "5dc090f9eb372b63",
+      "case_id": "NB-007",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "5e207d729bcb684f",
+      "case_id": "NB-003",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "5e743f2ba961b99b",
+      "case_id": "AC-014",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "5f00050cbba5c223",
+      "case_id": "AC-026",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "60db00e1ed13668e",
+      "case_id": "AC-004",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "628dd0dc8fe41999",
+      "case_id": "AC-045",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "634ee3b7a60b2401",
+      "case_id": "AC-010",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "671dae1ad6b58074",
+      "case_id": "NB-010",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "69ea9a4834f037f3",
+      "case_id": "NB-001",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "6e3a4efe0b2b6924",
+      "case_id": "AC-004",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "6f8e534a275d8c71",
+      "case_id": "NB-010",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "706344e7307aefa1",
+      "case_id": "AC-035",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "72d9971c0855050f",
+      "case_id": "AC-025",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "7312146dd9981e34",
+      "case_id": "NB-014",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "750929a2468d47e0",
+      "case_id": "AC-018",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "75b5b409ff21aabb",
+      "case_id": "NB-015",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "7690a5d8e03a6cc7",
+      "case_id": "NB-006",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "7899035d620c221f",
+      "case_id": "NB-004",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "7bc2855575a26a62",
+      "case_id": "NB-003",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "7e000d5ad7b1e460",
+      "case_id": "AC-012",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "80285ddf72c8157e",
+      "case_id": "AC-010",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "815024f34a56dc8c",
+      "case_id": "AC-036",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "82345cb1afe9f8ba",
+      "case_id": "AC-021",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "835f1d8c83894a16",
+      "case_id": "AC-047",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "837665c4c344975a",
+      "case_id": "AC-025",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "8400930a406dbd1c",
+      "case_id": "AC-043",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "8412ae79eac3c335",
+      "case_id": "AC-021",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "8472832696032849",
+      "case_id": "AC-035",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "84b0d5589153d721",
+      "case_id": "AC-016",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "864857ffe47d1f2f",
+      "case_id": "NB-008",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "8666ef6bdf10359e",
+      "case_id": "AC-012",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "87c79971da415580",
+      "case_id": "AC-023",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "89f694735e6d4e54",
+      "case_id": "NB-005",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "8a2ffa6072e21c5f",
+      "case_id": "AC-014",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "8bc967b1eaa45bcc",
+      "case_id": "AC-015",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "8cb834d2c9487427",
+      "case_id": "AC-048",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "916dd77af7331bd1",
+      "case_id": "AC-047",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "9d5a81166b258535",
+      "case_id": "AC-016",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "9eefb2202f909a87",
+      "case_id": "AC-011",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "9f4e17b3a5313042",
+      "case_id": "AC-007",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "9ff070191872e997",
+      "case_id": "AC-043",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "a09d55d9f2da9825",
+      "case_id": "NB-012",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "a0bfa7e4cbfe6ac5",
+      "case_id": "AC-008",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "a14d28f8113e7a5b",
+      "case_id": "AC-010",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "a1c05612eb91f61c",
+      "case_id": "NB-015",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "a2206a30d13581fd",
+      "case_id": "AC-044",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "a2af0baa51db864a",
+      "case_id": "NB-005",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "a307c8036f7471ab",
+      "case_id": "AC-007",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "a468392aa48a6e17",
+      "case_id": "AC-044",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "a707d02721d9d19f",
+      "case_id": "AC-003",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "a9bc02fb12763397",
+      "case_id": "NB-002",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "abf300f36b67afa3",
+      "case_id": "AC-032",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "ac82dcb737637439",
+      "case_id": "AC-032",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "ad253f4ace5695cb",
+      "case_id": "AC-048",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "b0845ced4aa8a153",
+      "case_id": "AC-002",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "b1d92238c8c6cd98",
+      "case_id": "AC-017",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "b389c69fc87de7dd",
+      "case_id": "AC-017",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "b48d36be81f6af04",
+      "case_id": "NB-009",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "b5d4a2965239bc4c",
+      "case_id": "AC-045",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "b76104a9b12b23bd",
+      "case_id": "NB-012",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "b7d32dca25c9beda",
+      "case_id": "NB-004",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "b8de29ac5760253e",
+      "case_id": "AC-016",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "bae3f03009f27feb",
+      "case_id": "AC-026",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "be15f2477bb48e1d",
+      "case_id": "AC-032",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "befdb960aab60144",
+      "case_id": "AC-023",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "bfee6d20001221aa",
+      "case_id": "AC-044",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "c143b873d385a3cc",
+      "case_id": "NB-009",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "c1f2c8b64c15cfb3",
+      "case_id": "AC-045",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "c2124ae7f154b9c2",
+      "case_id": "AC-043",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "c2a161ee7dd05844",
+      "case_id": "AC-011",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "c3b8c1bd83a5bd5b",
+      "case_id": "AC-042",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "c535aa247cfc367f",
+      "case_id": "NB-006",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "c552bc3f0254bf04",
+      "case_id": "NB-014",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "ca80319fd362dcd3",
+      "case_id": "AC-025",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "cdec6227d31a49f2",
+      "case_id": "NB-001",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "d26d7e59222c0c65",
+      "case_id": "NB-004",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "d3b70fe7da4f2f17",
+      "case_id": "NB-013",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "d4187fb89346333a",
+      "case_id": "NB-011",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "daaad9562f2b7c20",
+      "case_id": "NB-013",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "dd13cc0c5a5f4c6f",
+      "case_id": "NB-006",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "dd3e17cd48372bb8",
+      "case_id": "NB-002",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "ddd29a7a11d7c3b5",
+      "case_id": "NB-004",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "de74361149119a87",
+      "case_id": "NB-014",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "df2dc0da634c9387",
+      "case_id": "NB-003",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "df71a39058a6179f",
+      "case_id": "AC-035",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "dfe393b50c0b5509",
+      "case_id": "NB-010",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "e1dbbc40f77612d6",
+      "case_id": "AC-048",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "e43520335964b9bc",
+      "case_id": "AC-012",
+      "group_id": "H03_C_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "e56b86f1cf00ea84",
+      "case_id": "AC-003",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "e8c17eb890aff882",
+      "case_id": "AC-026",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "e9afa1a82ebb621c",
+      "case_id": "AC-008",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "eaf1a81a231e07b2",
+      "case_id": "AC-023",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "eb979ba05fcb0f91",
+      "case_id": "AC-044",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "f2c7d6af6ebe40f2",
+      "case_id": "AC-042",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "f59012c0c5162fc1",
+      "case_id": "AC-043",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "f6f4231816406963",
+      "case_id": "AC-036",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "f909367cd6d69743",
+      "case_id": "NB-011",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "f910d9c3ce8991e1",
+      "case_id": "NB-011",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "f932df55f7dff818",
+      "case_id": "NB-008",
+      "group_id": "H02_C_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "f959fd6e2528b300",
+      "case_id": "AC-045",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "fa92a4363a4cf6db",
+      "case_id": "NB-007",
+      "group_id": "H01_A_FINAL_OLD41"
+    },
+    {
+      "blind_case_id": "fba82e5ad4ce3eb4",
+      "case_id": "AC-035",
+      "group_id": "H00_A_STAGE1_OLD41"
+    },
+    {
+      "blind_case_id": "fea956387bc3d2aa",
+      "case_id": "NB-012",
+      "group_id": "H02_C_STAGE1_OLD41"
+    }
+  ],
+  "schema_version": "t5-r04-evaluator-r02-blind-key-v1"
+}

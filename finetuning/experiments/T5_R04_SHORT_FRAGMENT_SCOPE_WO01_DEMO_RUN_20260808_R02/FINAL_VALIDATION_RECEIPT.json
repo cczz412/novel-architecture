@@ -1,0 +1,67 @@
+{
+  "status": "PASS_ZERO_TRAINING_PRESCREEN_COMPLETE_NOT_LORA_RESULT",
+  "static_tests": {
+    "passed": 8,
+    "failed": 0,
+    "ruff": "PASS"
+  },
+  "runtime": {
+    "python_path": "/opt/homebrew/opt/python@3.12/bin/python3.12",
+    "python_version": "3.12.12",
+    "mlx_lm_version": "0.30.7"
+  },
+  "smoke": {
+    "requests": 6,
+    "arms": 3,
+    "cases_per_arm": 2,
+    "outputs_completed": 6,
+    "clean_stop": 6,
+    "raw_sha256": "0e023be44065508009d8bc9c0972e214cb62fa58fa07624331f4cb999a8c2155"
+  },
+  "full_run": {
+    "requests": 72,
+    "outputs_completed": 72,
+    "arms": 3,
+    "cases_per_arm": 24,
+    "gold_facts_per_arm": 48,
+    "clean_stop": 72,
+    "token_limit_hits": 0,
+    "duplicate_facts": 0,
+    "retry_count": 0,
+    "elapsed_seconds": 175.354,
+    "raw_sha256": "63cbc42db5852e7ccae5625dc4981927f10d17bcb0559f62661e1e3fa699905b"
+  },
+  "semantic_adjudication": {
+    "blind_candidates": 57,
+    "reused_candidates": 37,
+    "new_recoverable_candidates": 20,
+    "semantic_equivalent": 48,
+    "not_match": 9,
+    "pending": 0,
+    "arm_exposed_in_adjudications": false,
+    "model_or_api_used": false,
+    "original_sha256": "49610d11d89ed3581c2b455bf6ed45f9de2409a987778f73ca6de2bb495b7b22",
+    "new20_sha256": "f575807b897e5d2d89fe4e951a11cf418c7cf649573a67253e99d56ea31667ea"
+  },
+  "semantic_recoverable_f1": {
+    "TARGET_ONLY": 0.613333,
+    "SMALL_HALO": 0.708861,
+    "CURRENT_WINDOW": 0.705882
+  },
+  "semantic_structured_f1": {
+    "TARGET_ONLY": 0.375,
+    "SMALL_HALO": 0.380952,
+    "CURRENT_WINDOW": 0.513514
+  },
+  "diagnostic_disposition": "TARGET_ONLY_WEAKER_SMALL_HALO_AND_CURRENT_WINDOW_NOT_SEPARATED",
+  "api_calls": 0,
+  "training_started": false,
+  "new_lora_trained": false,
+  "notion_written": false,
+  "git_modified_by_task": false,
+  "defaults_or_current_pointers_modified": false,
+  "r01_failure_artifacts_modified": false,
+  "production_conclusion_authorized": false,
+  "this_receipt_is_lora_result": false,
+  "next_action": "SEPARATE_MATCHED_LORA_DEMO_AUTHORIZED_BY_CZ"
+}

@@ -1,0 +1,102 @@
+{
+  "schema_version": "novel_arch_shared_context_core_materials_manifest_v4_local_verified",
+  "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260809_R06",
+  "status": "LOCAL_TRANSCRIPTION_COMPLETE_SHARED_PRODUCT_CONTEXT_PENDING_NOTION_SHA_BACKFILL",
+  "notion_authored_at": "2026-08-09T22:00:00+08:00",
+  "local_transcribed_at": "2026-08-09T23:04:16+08:00",
+  "notion_decision_cutoff": "2026-08-09T21:35:00+08:00",
+  "local_evidence_cutoff": "2026-08-09T20:00:00+08:00",
+  "entry_point": "00_READ_ME_FIRST.md",
+  "distribution_mode": "NOTION_MASTER_WITH_VERIFIED_LOCAL_COPY",
+  "notion_source": {
+    "package_page_id": "ba538696-754f-4730-9ed5-fdb5229a3007",
+    "package_url": "https://app.notion.com/p/ba538696754f47309ed5fdb5229a3007",
+    "member_pages": 11,
+    "content_authority": "NOTION_R06_AS_CONFIRMED_BY_CZ_2026_08_09"
+  },
+  "parent_package": {
+    "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260809_R05",
+    "core_materials_sha256": "9e364cef857e671312ac0419c155450cecf0ba873adc1aa9dc7b1d3a45a8c050",
+    "package_sha256": "0a2925da6267d69a2f66f56e0889b0fa6efc4c89dee9b600e5e92a98a4673a18",
+    "manifest_sha256": "41a4aa2f519882a607a16a6cbbeb8b9f2c5f8951a781ec003530721201e085ea",
+    "receipt_sha256": "ad363b78a81792869c77497197376596bb4c9534a9969136dccf3483872439cd",
+    "mutation_policy": "R05_REMAINS_BYTE_IDENTICAL__R06_IS_A_DERIVED_PACKAGE"
+  },
+  "hash_contract": {
+    "algorithm": "sha256",
+    "core_materials_sha256_definition": "Sort the eight core Markdown member paths lexicographically, then hash UTF-8 lines formatted as path<TAB>member_sha256<LF>.",
+    "package_sha256_definition": "Use the same index algorithm over the eight core Markdown members, REFERENCE_PROJECT_INTEGRATION.md, and CORE_MATERIALS_MANIFEST.json.",
+    "manifest_sha256_location": "BUILD_RECEIPT.json only, so the manifest never hashes itself.",
+    "receipt_excluded": true
+  },
+  "core_materials_sha256": "fd267b0a45e96a413ddf125120339f0be68b0c6b3bec5f318e28166a458ea827",
+  "members": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "sha256": "f06a1eeacc5478cdb4f261ff2a19fe2fe20f83994c68443b03e3c688120eb336",
+      "bytes": 18690
+    },
+    {
+      "path": "01_PRODUCT_NORTH_STAR.md",
+      "sha256": "02912cac9f2a5c53c63962f8a9f17e3d6c3b0e5b5dacd7d5439dd231c25001f8",
+      "bytes": 14335
+    },
+    {
+      "path": "02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+      "sha256": "24d88ba55780b6c9877f138e642ebc2dc409ba2ab4a74fc594f53a5ed7980190",
+      "bytes": 13829
+    },
+    {
+      "path": "03_CREATION_AND_MEMORY_PIPELINES.md",
+      "sha256": "bce2a1845e9fd08a1eb4331340035c50fe6ed0d9a3e302e9ce7e32ecd0522471",
+      "bytes": 9475
+    },
+    {
+      "path": "04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
+      "sha256": "a4f15f21c68f87070adac7136fd495165a5b7985f014cf02fc1af167b9b548be",
+      "bytes": 14552
+    },
+    {
+      "path": "05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
+      "sha256": "8c808df2058b370aea17ffdabce2ed2cef44648a421c90bb4ecd558f9a78b625",
+      "bytes": 15496
+    },
+    {
+      "path": "06_SYNC_AND_CHANGE_PROTOCOL.md",
+      "sha256": "99c93c45fe9d0265c5f1e34bd2516cc5faec683e9b492dcb5388fe89e319c5dd",
+      "bytes": 7106
+    },
+    {
+      "path": "07_GLOSSARY.md",
+      "sha256": "8a28068c650899e185f82ab3eff256d423c8bf2392751210f03b49e6352044f0",
+      "bytes": 13592
+    }
+  ],
+  "auxiliary_members": [
+    {
+      "path": "REFERENCE_PROJECT_INTEGRATION.md",
+      "role": "OPTIONAL_REFERENCE_AGENT_ENTRY_ACTIVE_OTHER_LAYERS_INACTIVE",
+      "sha256": "b5c2c706ed5095d6361eb4aaa47508cce8af0899a244e074e49590bb9cb8c037",
+      "bytes": 2002
+    }
+  ],
+  "localization_transformations": [
+    "NOTION_PAGE_MENTIONS_IN_00_CONVERTED_TO_SAME_FOLDER_RELATIVE_LINKS",
+    "NOTION_HTTP_AGENTS_PLACEHOLDERS_CONVERTED_TO_REPOSITORY_RELATIVE_LINKS",
+    "PENDING_MANIFEST_SELF_HASH_REMOVED_TO_AVOID_A_CIRCULAR_HASH",
+    "NO_PRODUCT_SEMANTICS_CHANGED"
+  ],
+  "semantic_delta_from_parent": [
+    "BATCH1_MIDDLE_LAYER_11_JUDGMENTS_PLUS_HOUSE_RULE_PLUS_3_PATCHES (ledger 2026-08-09 21:05)",
+    "BATCH2_7_DECIDED_12_13_14_17_18_19_20 (ledger 2026-08-09 21:35)",
+    "OPEN_15_READER_KNOWLEDGE_16_TRIGGER_CRITERIA_WITH_CANDIDATES (pending, see 05 page)",
+    "TERMINOLOGY_PLOT_ATOM_BOOK_DRAFT_OUTLINE_RETIRED (product layer only; experiment family protected by patch 1 mapping sentences)",
+    "R04_RESIDUE_FIXED (00 page: unified-manual sentence now says R06)"
+  ],
+  "authority_boundaries": [
+    "SHARED_CONTEXT_DOES_NOT_AUTHORIZE_CONSTRUCTION_OR_TRAINING",
+    "DECISION_SOURCE_IS_NOTION_LEDGER_ONLY",
+    "LOCAL_TECHNICAL_REALITY_SOURCE_IS_LOCAL_FORMAL_CONTRACTS",
+    "R06_PRODUCT_CONTENT_SOURCE_IS_NOTION_MASTER__LOCAL_COPY_ONLY_ADAPTS_LINKS_AND_HASH_METADATA"
+  ]
+}

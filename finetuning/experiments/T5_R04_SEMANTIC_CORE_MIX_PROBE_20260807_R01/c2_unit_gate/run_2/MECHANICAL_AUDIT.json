@@ -1,0 +1,56 @@
+{
+  "schema_version": "t5-r04-c2-unit-mechanical-audit-v1",
+  "status": "HARD_STOP_C2_UNIT_GATE_FAILED",
+  "prototype_windows": 40,
+  "facts_total": 397,
+  "facts_mapped_pass": 396,
+  "non_unique_evidence_cases": 1,
+  "source_boundary_parse_ambiguities": 0,
+  "mapping_incomplete_cases": 0,
+  "cross_unit_evidence_facts": 96,
+  "readonly_context_numbering_failures": 0,
+  "derived_complete_rows": 39,
+  "mapped_fact_status_speaker_equal": {
+    "equal": 396,
+    "mapped_facts": 396,
+    "rate": 1.0
+  },
+  "id_count": {
+    "le3": 396,
+    "le3_rate": 1.0,
+    "le5": 396,
+    "le5_rate": 1.0,
+    "max": 3
+  },
+  "extra_context_chars": {
+    "p50": 42.0,
+    "p90": 72.0,
+    "p95": 94.25,
+    "max": 130
+  },
+  "window_context_chars": {
+    "numbered_bridge_p50": 124.5,
+    "numbered_bridge_p90": 170.20000000000002,
+    "numbered_bridge_max": 201,
+    "unnumbered_readonly_before_p50": 0.0,
+    "unnumbered_readonly_before_p90": 71.4,
+    "unnumbered_readonly_before_max": 103
+  },
+  "visible_id_structure_failure_cases": [],
+  "threshold_failures": {
+    "deterministic_reconstruction_100pct": false,
+    "sample_local_id_unique_100pct": false,
+    "a_evidence_coverage_100pct": true,
+    "fact_status_speaker_equal_100pct": false,
+    "program_generated_c2_100pct": true,
+    "visible_id_order_and_target_end_100pct": false,
+    "readonly_context_unnumbered_100pct": false,
+    "facts_le3_ids_95pct": false,
+    "facts_le5_ids_100pct": false,
+    "extra_p50_le20": true,
+    "extra_p90_le60": true,
+    "extra_p95_le80": true,
+    "any_extra_gt100": true
+  },
+  "gold_access_phase": "POST_ATOMIZER_READ_ONLY_AUDIT"
+}

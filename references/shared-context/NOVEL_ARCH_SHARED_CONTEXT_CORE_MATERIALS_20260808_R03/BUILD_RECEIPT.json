@@ -1,0 +1,109 @@
+{
+  "schema_version": "novel_arch_shared_context_core_materials_build_receipt_v3",
+  "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260808_R03",
+  "completed_at": "2026-08-08T19:03:41+08:00",
+  "result": "PASS_SELF_CONTAINED_SHARED_PRODUCT_CONTEXT_FOLDER_AGENT_ENTRY_ACTIVE_HARD_STOPS_PRESERVED",
+  "status_meaning": "The complete eleven-file folder is the current shared product explanation for ChatGPT, Notion collaborators, Codex, and other project windows. Repository agents reach the same entry through AGENTS.md. Neither the folder nor the AGENTS entry is a decision ledger, current-run pointer, execution ticket, training permission, or production default.",
+  "notion_feedback_adjudication": {
+    "old_a_c_training_permission": "RETAINED_AS_SCOPED_HISTORICAL_DECISION; NOT_AUTO_MIGRATED_TO_PRODUCTION_CANONICAL_OR_C2_UNIT",
+    "special_84_sha_and_rights": "ACCEPTED_WITH_CORRECTION: 84_OF_84_HAVE_INTERNAL_TRAINING_EVALUATION_RIGHTS_EVIDENCE; FINAL_P2_ELIGIBILITY_PROJECTION_IS_73_AFTER_OTHER_EXCLUSIONS; NO_81_OF_84 CLAIM",
+    "old_two_file_and_ten_mb_rule": "NOT_PROMOTED; NOT_PART_OF_CURRENT_PRODUCTION_CANONICAL_CONTRACT",
+    "future_new_material_selection": "ACCEPTED_ONLY_IN_ITS_AUTHORIZED_NARROW_SCOPE: FUTURE_NEW_MATERIAL, NON_RETROACTIVE, NOT_TRAINING_PERMISSION",
+    "old_c_name": "DISAMBIGUATED_AS_OLD_NUMBER_AND_SHORT_ANCHOR_FORMAT; NOT_C2_UNIT_OR_OTHER_C2_VARIABLES",
+    "empty_machine_links_claim": "REJECTED_AS_NOT_REPRODUCED; MANIFEST_AND_RECEIPT_LINKS_ARE_PRESENT_AND_RESOLVE",
+    "mini_lite_closeout": "NOT_ACCEPTED; ROLE_AND_EXACT_MODEL_CAPABILITY_DECISION_REMAINS_OPEN"
+  },
+  "hashes": {
+    "core_materials_sha256": "7dedc9e4c70ce03cf02a158f9a540ab1d555c90bb38ac3b11d56e5c158d733d6",
+    "manifest_sha256": "fa32bc173cb51b27a979ac5fffad336c83d2ac2028454c3d483f94adbb0c7b47",
+    "package_sha256": "3863381f69be0c36051245161f4595a4f2270140464055bceb1155951e8592f5",
+    "package_sha256_scope": "Eight core Markdown members, REFERENCE_PROJECT_INTEGRATION.md, and CORE_MATERIALS_MANIFEST.json; this receipt is excluded to avoid a circular hash.",
+    "upstream_r02_core_materials_sha256": "53afe6e9f61ab9d72f027692fc4801091aee09af961564b53f8bf642c532f421",
+    "upstream_r02_package_sha256": "5ce2f639a4dea2e748b7df149bc2236b7da11df5d3f98d4e2266cea131e0204c",
+    "upstream_reality_packet_sha256": "360e62416dcbb69729a1f85a2be0199d1241203c7deb37d4cb52d8501f97b72a"
+  },
+  "counts": {
+    "numbered_markdown_members": 8,
+    "numbered_markdown_lines": 975,
+    "auxiliary_reference_markdown_members": 1,
+    "auxiliary_reference_markdown_lines": 41,
+    "folder_markdown_members": 9,
+    "folder_markdown_lines": 1016,
+    "package_machine_json_members": 2,
+    "package_hash_members": 10,
+    "folder_entry_files": 1,
+    "local_markdown_links": 12,
+    "external_markdown_links": 19,
+    "local_markdown_links_outside_folder": 0,
+    "broken_local_markdown_links": 0,
+    "declared_local_primary_sources": 17,
+    "missing_or_hash_mismatched_local_primary_sources": 0,
+    "new_files_created_by_this_build": 11,
+    "existing_repository_files_modified_by_this_build": 1,
+    "files_moved_or_deleted": 0
+  },
+  "mechanical_validation": {
+    "status": "PASS",
+    "eleven_expected_folder_files_present": true,
+    "eight_expected_core_markdown_files_present": true,
+    "all_markdown_files_end_with_codex_source_footer": true,
+    "all_local_markdown_links_resolve": true,
+    "all_local_markdown_links_stay_inside_folder": true,
+    "all_json_files_parse": true,
+    "all_declared_local_primary_sources_exist_and_match": true,
+    "manifest_member_hashes_match": true,
+    "manifest_declared_core_hash_matches": true,
+    "core_hash_reproduced_by_shell_shasum": true,
+    "package_hash_reproduced_by_shell_shasum": true,
+    "folder_entry_exists": true,
+    "auxiliary_reference_hash_matches_manifest": true,
+    "agents_shared_context_entry_added": true,
+    "agents_entry_does_not_replace_current_state_routes": true,
+    "outer_shared_context_readme_or_current_pointer_created": false,
+    "upstream_r02_unchanged": true,
+    "repository_test_suite_run": false,
+    "repository_test_suite_reason": "Documentation and one AGENTS read-only entry only; targeted link, JSON, SHA, source-boundary, authority, and cross-file checks are proportionate."
+  },
+  "semantic_review": {
+    "status": "PASS_AFTER_SCOPE_CORRECTIONS",
+    "authority_and_evidence_review": {
+      "reviewer": "Terra",
+      "result": "PASS",
+      "finding": "The old A/C decision is retained without being auto-migrated, the 84-versus-73 distinction is correct, the future-selection rule is limited to its explicit CZ-approved scope, the 10MB rule is not promoted, Mini/Lite remains open, and Notion remains a live adjudication channel."
+    },
+    "mechanical_and_cross_trace_review": {
+      "reviewer": "Luna",
+      "result": "PASS",
+      "finding": "The eleven-file shape, internal links, JSON, source footers, manifest members, core hash, package hash, source hashes, AGENTS boundary, no-81-of-84 wording, and rebuilt receipt fields all passed final recheck."
+    },
+    "project_entry_architecture_review": {
+      "reviewer": "Sol",
+      "result": "PASS",
+      "finding": "All repository agents can find R03 without creating a second current-run pointer; R02 remains immutable and R03 remains a self-contained eleven-file handoff folder."
+    },
+    "document_quality_finding_scope": "No P0/P1 document defects remain after scope corrections. This statement does not clear the project-level P0/P1 decisions and hard stops listed in 05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md."
+  },
+  "external_actions": {
+    "notion_feedback_supplied_by_user": true,
+    "notion_live_reads_for_this_reconciliation": 0,
+    "notion_writes": 0,
+    "external_model_api_calls": 0,
+    "training_jobs_started": 0,
+    "datasets_or_model_assets_modified": 0,
+    "production_defaults_modified": 0,
+    "governance_current_pointers_modified": 0,
+    "shared_context_machine_pointer_created": 0,
+    "agent_read_entry_added": 1,
+    "git_stage": 0,
+    "git_commit": 0,
+    "git_push": 0,
+    "recorded_external_cost_cny": 0
+  },
+  "hard_stops_preserved": [
+    "The 74 A v2.7 source groups still lack auditable per-source training-rights evidence.",
+    "No Production Canonical dataset exists and no current-route training execution lock exists.",
+    "The Doubao Mini and Lite roles, exact versions, and account capabilities remain unresolved.",
+    "The Reality Packet Notion page identities remain unmatched to the current accessible ledger ancestor chain.",
+    "The repository-wide CURRENT_STATE and 2026-08-08 fine-tuning worksite remain formally unscoped against each other."
+  ]
+}

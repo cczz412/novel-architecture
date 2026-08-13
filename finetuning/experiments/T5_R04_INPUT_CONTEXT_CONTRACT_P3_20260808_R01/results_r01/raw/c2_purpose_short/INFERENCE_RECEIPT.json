@@ -1,0 +1,20 @@
+{
+  "adapter_sha256": "321d96c10f00389e557efbeb2d8e3dc1344071cc3cd663b51b8a8c2bd38ea5f9",
+  "api_called": false,
+  "arm": "c2_purpose_short",
+  "cases": 24,
+  "completed_at": "2026-08-08T15:59:33+08:00",
+  "decode": {
+    "max_output_tokens": 1024,
+    "retry": 0,
+    "sampler": "greedy",
+    "temperature": 0.0
+  },
+  "elapsed_seconds": 89.503,
+  "peak_mlx_bytes": 8774205684,
+  "questions_sha256": "a0e5120478296a4c2d8553506d9b5416d053cde56985287fe4d82516c4914386",
+  "raw_sha256": "28ce663a20d769df5b5aeb8860a4fd4927741a7300389ccb310ceff4f877b65a",
+  "stable_projection_sha256": "47fb211e6cc85e881435cd221f6ad5e193682a3a9f45397508b6610ee3db1b89",
+  "status": "PASS_CONTEXT_ARM_INFERENCE_COMPLETE",
+  "training": false
+}

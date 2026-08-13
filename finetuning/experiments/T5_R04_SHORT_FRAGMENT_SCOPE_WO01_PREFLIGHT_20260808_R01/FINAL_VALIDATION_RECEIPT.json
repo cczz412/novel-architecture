@@ -1,0 +1,52 @@
+{
+  "actions": {
+    "current_pointer_modified": false,
+    "dev24_gold_modified": false,
+    "git_operated": false,
+    "notion_written": false,
+    "old_sealed_or_result_modified": false,
+    "production_default_modified": false,
+    "synthetic_source_generated": false,
+    "training_started": false
+  },
+  "construction_history": {
+    "api_calls": 0,
+    "corrected_tokenizer_only_result_also_invalidated_by_cz_scope_override": true,
+    "initial_batchencoding_field_count_misread_as_token_count": true,
+    "model_inference_calls": 0,
+    "model_loaded": false,
+    "pre_override_tokenizer_only_diagnostic_occurred": true,
+    "token_budget_report_present_in_final_package": false,
+    "token_counter_present_in_final_package": false,
+    "tokenizer_loaded_after_latest_cz_override": false
+  },
+  "denominators": {
+    "eligible_cases": 24,
+    "gold_facts": 48,
+    "request_candidates": 72,
+    "small_vs_current_distinct_cases": 24,
+    "target_only_vs_small_distinct_cases": 24
+  },
+  "experiment_id": "T5_R04_SHORT_FRAGMENT_SCOPE_WO01_PREFLIGHT_20260808_R01",
+  "independent_readonly_review": {
+    "review_agent": "/root/wo01_source_capability_audit",
+    "status": "PASS"
+  },
+  "manifest_member_count": 20,
+  "mechanical_validation": {
+    "json_duplicate_key_check": "PASS",
+    "pre_validator": "PASS",
+    "ruff": "PASS",
+    "targeted_tests": "7 passed",
+    "two_build_file_count": 9,
+    "two_build_mismatches": 0,
+    "two_build_tree_digest": "b7a6050114f65b94aa9c4fc5804e5b0eaa34162e6d4f014c1d613db5dce987b2"
+  },
+  "model_run_authorized": false,
+  "next_action": "HARD_STOP_WAIT_FOR_CZ_SEPARATE_RUN_AUTHORIZATION",
+  "output_manifest_sha256": "e4efced726b066002cb91630b77d21ef7a22cf2eb05ef7e4aca59a2482ae694f",
+  "schema_version": "t5-r04-wo01-final-validation-receipt-v1",
+  "status": "PASS_WO01_PREFLIGHT_24_OF_24_READY_NO_RUN_AUTHORITY",
+  "training_authorized": false,
+  "validated_at_utc": "2026-08-08T13:41:08.756715+00:00"
+}

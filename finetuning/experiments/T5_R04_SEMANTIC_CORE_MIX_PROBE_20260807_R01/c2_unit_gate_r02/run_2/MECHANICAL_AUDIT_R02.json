@@ -1,0 +1,61 @@
+{
+  "schema_version": "t5-r04-c2-unit-r02-mechanical-audit-v1",
+  "status": "HARD_STOP_C2_UNIT_R02_GATE_FAILED",
+  "prototype_windows": 40,
+  "facts_total": 397,
+  "contract_a": {
+    "facts_with_at_least_one_valid_equivalent_sequence": 397,
+    "coverage_rate": 1.0,
+    "ambiguous_facts_with_multiple_sequences": 1,
+    "compatible_with_existing_single_evidence_ids_training_schema": false
+  },
+  "contract_b": {
+    "facts_with_unique_source_determined_sequence": 396,
+    "coverage_rate": 0.9974811083123426,
+    "unresolved_duplicate_text_facts": 1
+  },
+  "source_boundary_parse_ambiguities": 0,
+  "mapping_incomplete_cases": 0,
+  "cross_unit_evidence_facts": 207,
+  "cross_unit_evidence_rate": 0.5227272727272727,
+  "derived_complete_rows_existing_schema": 39,
+  "id_count": {
+    "mean": 1.7323232323232323,
+    "le3": 377,
+    "le3_rate": 0.952020202020202,
+    "le5": 396,
+    "le5_rate": 1.0,
+    "max": 5
+  },
+  "extra_context_chars": {
+    "p50": 10.0,
+    "p90": 32.0,
+    "p95": 35.0,
+    "max": 55
+  },
+  "unit_map": {
+    "total_units": 969,
+    "visible_units": 875,
+    "total_source_chars": 28308,
+    "average_unit_chars": 29.21362229102167,
+    "average_visible_ids_per_window": 21.875,
+    "max_unit_chars": 40
+  },
+  "threshold_failures": {
+    "deterministic_reconstruction_100pct": false,
+    "sample_local_id_unique_100pct": false,
+    "existing_contract_unique_mapping_100pct": true,
+    "contract_a_equivalence_coverage_100pct": false,
+    "fact_status_speaker_equal_100pct": false,
+    "program_generated_existing_c2_100pct": true,
+    "visible_id_order_target_end_100pct": false,
+    "readonly_context_unnumbered_100pct": false,
+    "facts_le3_ids_95pct": false,
+    "facts_le5_ids_100pct": false,
+    "extra_p50_le20": false,
+    "extra_p90_le60": false,
+    "extra_p95_le80": false,
+    "any_extra_gt100": false
+  },
+  "gold_access_phase": "POST_ATOMIZER_READ_ONLY_AUDIT"
+}

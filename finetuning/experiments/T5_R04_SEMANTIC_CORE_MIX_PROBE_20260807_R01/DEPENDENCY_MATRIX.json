@@ -1,0 +1,75 @@
+{
+  "schema_version": "t5-r04-semantic-core-dependency-matrix-v1",
+  "status": "BLOCKED_BEFORE_ZERO_TRAINING_PROBE",
+  "checked_at": "2026-08-07T21:11:49+08:00",
+  "dependencies": [
+    {
+      "dependency": "QWEN3_4B_BASE",
+      "exists": true,
+      "ready": true,
+      "note": "官方 13 文件已完整核验"
+    },
+    {
+      "dependency": "EVALUATOR_R02",
+      "exists": true,
+      "ready": true,
+      "note": "案例内匹配、精确指标改名、异常容器可达、非法 JSON 复读诊断均已验收；人工语义盲审仍待执行"
+    },
+    {
+      "dependency": "C2_UNIT_ATOMIZER_AND_RENDERER",
+      "exists": false,
+      "ready": false,
+      "note": "必须先过 P0 阶段 2 的机械映射和额外带入量闸门"
+    },
+    {
+      "dependency": "DEV_CORE_AUTHOR_SPLIT_LOCK",
+      "exists": false,
+      "ready": false,
+      "note": "需排除旧 350 训练、当前 41 题、旧 48 题及其作者"
+    },
+    {
+      "dependency": "SEMANTIC_CORE_GOLD",
+      "exists": false,
+      "ready": false,
+      "note": "不能把旧 fact 字段盲抄成金标，需独立语义复核"
+    },
+    {
+      "dependency": "A_CORE_RENDERER",
+      "exists": false,
+      "ready": false,
+      "note": "尚未冻结任务模式、容器、字段顺序和 EOS"
+    },
+    {
+      "dependency": "C2_CORE_RENDERER",
+      "exists": false,
+      "ready": false,
+      "note": "依赖先完成 C2_UNIT atomizer 和局部 B/T 映射"
+    },
+    {
+      "dependency": "A_STAGE1_RAW_OUTPUTS_OLD41",
+      "exists": true,
+      "ready": true,
+      "note": "已在主仓 runs/T5_R04_CPLUS... 找回并绑定 SHA；只允许作历史重评分锚点，不是新 C2 训练材料"
+    },
+    {
+      "dependency": "C_STAGE1_RAW_OUTPUTS_OLD41",
+      "exists": true,
+      "ready": true,
+      "note": "已在主仓 runs/T5_R04_CPLUS... 找回并绑定 SHA；只允许作历史重评分锚点，不是新 C2 训练材料"
+    },
+    {
+      "dependency": "A_CLEAN_PARENT",
+      "exists": false,
+      "ready": false,
+      "note": "需以后从同一基座和 canonical pilot 建立"
+    },
+    {
+      "dependency": "C2_CLEAN_PARENT",
+      "exists": false,
+      "ready": false,
+      "note": "旧坐标 C 不可代替 C2_UNIT parent"
+    }
+  ],
+  "zero_training_probe_authorized_to_run_now": false,
+  "training_authorized": false
+}

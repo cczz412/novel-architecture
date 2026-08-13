@@ -1,0 +1,104 @@
+{
+  "schema_version": "novel_arch_shared_context_build_receipt_v8_local_build_notion_pending",
+  "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260813_R08",
+  "completed_at": "2026-08-13T07:55:35+08:00",
+  "result": "PASS_R08_LOCAL_BUILD_AND_MECHANICAL_SELF_CHECK",
+  "status_meaning": "R08 was assembled locally from immutable R07 by absorbing addendum ledger ADD-001..017 (CZ decisions of 2026-08-13). It is the current shared product context locally; Notion sync and ledger backfill on Notion side remain pending. It grants no construction, training, external-send, model-API, production, or launch authority.",
+  "assembler": {
+    "agent": "Cursor (Fable 5 Max)",
+    "commissioned_by": "CZ explicit instruction, 2026-08-13",
+    "process_tier": "MEDIUM__ASSEMBLER_MECHANICAL_SELF_CHECK__MAIN_WINDOW_REVIEW_SEPARATE"
+  },
+  "repository": {
+    "observed_head": "8d32beea7af3f1384ef4055bf39e08006065b6ae",
+    "worktree_at_start": "PRE_EXISTING_DIRTY_STATE_FROM_OTHER_WINDOWS__NOT_TOUCHED_BY_THIS_TASK",
+    "new_directory": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260813_R08",
+    "tracked_repository_files_modified_by_this_task": 0,
+    "git_operations": 0
+  },
+  "source_materials": {
+    "base_package": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260812_R07 (14 files, read in full)",
+    "addendum_ledger": "TEMP/bgboard-audit-20260809-r01/18_R07_ADDENDUM_LEDGER_20260813_R01.md (ADD-001..017, read in full)",
+    "glossary": "TEMP/bgboard-audit-20260809-r01/21_PRODUCT_GLOSSARY_V0_20260813.md (v0.1, read in full)",
+    "design_docs": "novel-mvp/design/*.md referenced as pointers only; full texts not absorbed"
+  },
+  "parent_package": {
+    "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260812_R07",
+    "core_materials_sha256": "b3f445b3fbf4c144fdb31081b508708018a1f56ed2b8b1e7c77b997185f9e97b",
+    "package_sha256": "6aab888762134e1db1dd7eb65c0f09c71b40f50772b40f30568da74978608444",
+    "manifest_sha256": "b17d4673b194d9a2958fded419d0e0af31587bfc4b3e21fe4e50b137f57ebfde",
+    "receipt_sha256": "9cd53ad3cf02339489de591553408ad5e049f99883c784dff9ae0cd08f951388",
+    "member_hashes_rechecked": 12,
+    "member_hashes_match_parent_manifest": true,
+    "byte_identity_policy": "R07_REMAINS_UNMODIFIED"
+  },
+  "decision_handling": {
+    "adds_absorbed": 17,
+    "adds_rejected": 0,
+    "hard_overrides": [
+      "MONETIZATION_ALL_PROVISIONAL__PAYWALL_TOPIC_FROZEN (ADD-008, ADD-017 J2)",
+      "CONSISTENCY_CHECK_IMPORT_SIDE_ONLY (ADD-013 G7)",
+      "PROMPT_FACTORY_FINAL_RED_LINE (ADD-017 J1)"
+    ],
+    "questions_15_and_16_remain_pending": true,
+    "question_16_directional_progress_noted": "ADD-013 G2 (bind-to-event/story-time, not chapter number); field-level criteria still open; whether G2 substantively closes Q16 is on the doubt list for the main window / CZ",
+    "ledger_status_column_updated_to_absorbed_r08": true,
+    "notion_ledger_backfill": "PENDING"
+  },
+  "notion_release": {
+    "status": "PENDING",
+    "package_pages_created": 0,
+    "member_pages_created": 0
+  },
+  "hashes": {
+    "core_materials_sha256": "3fb8f4ee52dbadfaf4549c817007e180eb226bc8eb9473ef443d2c520e6292ca",
+    "manifest_sha256": "a02b99baa7ca6f771453051feda68f94a90f1a6e5fbe14ab80e109825774d94d",
+    "package_sha256": "5bfc856ccd40542b9849fd40282555c81f2589add378b951d2729f4be57eaded",
+    "package_sha256_scope": "All twelve Markdown members plus CORE_MATERIALS_MANIFEST.json, indexed as path<TAB>member_sha256<LF> in lexicographic path order. BUILD_RECEIPT.json is excluded to avoid a circular hash."
+  },
+  "counts": {
+    "folder_files": 14,
+    "markdown_members": 12,
+    "core_markdown_members": 8,
+    "auxiliary_or_reference_markdown_members": 4,
+    "machine_json_members": 2,
+    "adds_absorbed": 17,
+    "local_relative_links_checked": 81
+  },
+  "mechanical_validation": {
+    "r07_member_hashes_match_r07_manifest": true,
+    "r07_manifest_sha_unchanged": true,
+    "fourteen_expected_files_present": true,
+    "all_markdown_last_lines_have_source": true,
+    "all_local_links_resolve": true,
+    "all_17_adds_in_00_table": true,
+    "all_17_adds_referenced_in_content_pages": true,
+    "absorption_map_pages_verified_literally": true,
+    "ledger_status_backfilled_17": true,
+    "r07_carried_anchors_present": true,
+    "manifest_json_parses": true
+  },
+  "problems": [],
+  "external_actions": {
+    "model_api_calls": 0,
+    "training_jobs_started": 0,
+    "external_sends": 0,
+    "notion_writes": 0,
+    "git_operations": 0,
+    "current_state_modified": 0,
+    "finetuning_files_modified": 0,
+    "t5_r04_files_modified": 0,
+    "spending": 0,
+    "files_modified_outside_r08_dir": [
+      "TEMP/bgboard-audit-20260809-r01/18_R07_ADDENDUM_LEDGER_20260813_R01.md (status column backfill, explicitly authorized)"
+    ]
+  },
+  "hard_stops_preserved": [
+    "NO_CONSTRUCTION_TRAINING_EXTERNAL_SEND_MODEL_API_PRODUCTION_OR_LAUNCH_AUTHORITY",
+    "QUESTIONS_15_AND_16_REMAIN_PENDING",
+    "FINETUNING_AND_T5_R04_FILES_OUT_OF_SCOPE",
+    "R06_AND_R07_REMAIN_IMMUTABLE",
+    "ROOT_AGENTS_AND_LOCAL_CURRENT_POINTERS_NOT_CHANGED",
+    "MONETIZATION_FROZEN__NO_PRICING_EXPERIMENTS_SCHEDULED"
+  ]
+}

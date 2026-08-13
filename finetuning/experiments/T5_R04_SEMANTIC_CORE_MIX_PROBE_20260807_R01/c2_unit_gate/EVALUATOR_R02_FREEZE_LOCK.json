@@ -1,0 +1,14 @@
+{
+  "schema_version": "t5-r04-evaluator-r02-freeze-lock-v1",
+  "status": "FROZEN_READ_ONLY_DURING_C2_UNIT_GATE",
+  "evaluator_root": "finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/evaluator_r02",
+  "evaluator_file_count": 22,
+  "evaluator_tree_aggregate_sha256": "7c8b9a4f1c88e22895a111d2f84107d766774fd2f71ad39a0202a7ab7b47d1df",
+  "evaluator_receipt_sha256": "2a04a5b8e596522d3701833b4101d7b81c74e2a64a162512d88b39ef60760b0d",
+  "evaluator_result_ticket_sha256": "2cd2fffb548e2ead2ee358840e06d42c9497856e38f7de0613931790a997c6e4",
+  "inventory_embedded_in": "TWO_RUN_COMPARISON.json",
+  "blind_review_cases_deferred": 164,
+  "blind_review_must_finish_before_semantic_winner_decision": true,
+  "scoring_logic_modified": false,
+  "old_scores_modified": false
+}

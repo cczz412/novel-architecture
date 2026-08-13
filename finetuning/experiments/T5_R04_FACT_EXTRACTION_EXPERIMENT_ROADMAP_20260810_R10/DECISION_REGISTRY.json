@@ -1,0 +1,88 @@
+{
+  "schema_version": "fact-extraction-experiment-decision-registry/1.6",
+  "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R10",
+  "status": "RULE_SCREEN_CLOSED_RULE0_RETAINED_EX_REGISTERED_NOT_PREPARED_NOT_RUN",
+  "created_at": "2026-08-10T23:31:44+08:00",
+  "parent": {
+    "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260810_R09",
+    "members": {
+      "00_READ_ME_FIRST.md": "733848fb54e231e4ef7ce58ed3bcf72706098a201ce53c7516b4fccb889ab4b8",
+      "DECISION_REGISTRY.json": "24cc1d970e728323a14549db9455f4d23e765706b4041f7b2bf9af45d60a683f",
+      "TARGET_BLOCK_RESULT_TICKET.json": "c2b5fde501d4e14c36eaa70868823775520d41d60111c084dd6569565803bab4"
+    },
+    "modified": false
+  },
+  "rule_screen": {
+    "status": "FINAL_COMPLETE_RULE0_RETAINED_CLOSE_RULE_ARMS",
+    "results": {
+      "RULE0": {
+        "tp": 93,
+        "fp": 154,
+        "fn": 187,
+        "precision": 0.376518,
+        "recall": 0.332143,
+        "f1": 0.352941,
+        "disposition": "RETAIN_BASELINE_NO_RERUN"
+      },
+      "RULE1": {
+        "f1": 0.182119,
+        "disposition": "ELIMINATED"
+      },
+      "RULE2": {
+        "f1": 0.198319,
+        "disposition": "ELIMINATED"
+      }
+    },
+    "additional_rule_arms_allowed": false
+  },
+  "temporary_demo_structure": {
+    "model": "UNFINETUNED_LOCAL_4B_BASE",
+    "read_only_halo_unicode_codepoints_each_side_max": 180,
+    "output_format": "OUT2-IDLIST",
+    "responsibility_target": "FULL_NATURAL_TARGET_620_TO_923_UNICODE_CODEPOINTS",
+    "rule": "RULE0_MINIMAL",
+    "scope": "LOCAL_REAL24_DEMO_ONLY"
+  },
+  "next_family": {
+    "family_id": "EX",
+    "status": "REGISTERED_NOT_PREPARED_NOT_RUN",
+    "arms": {
+      "EX-0-NONE": "REUSE_RULE0_BASELINE_NO_RERUN",
+      "EX-1-CONTRASTIVE-PAIR": "ONE_FIXED_SAFE_MINIMAL_CONTRASTIVE_PAIR_MAX_24_FUTURE_LOCAL_BASE_CALLS"
+    },
+    "fixed": [
+      "H180_EACH_SIDE",
+      "OUT2_IDLIST",
+      "FULL_NATURAL_TARGET_620_TO_923",
+      "RULE0",
+      "REAL24_GOLD_AND_CASES",
+      "DECODING"
+    ],
+    "example_source": "OUTSIDE_REAL24_AND_FROZEN_BEFORE_PREP",
+    "dynamic_example_retrieval": false,
+    "background_family_bg_mixed": false,
+    "future_inference_calls_max": 24,
+    "preparation_authorized": false,
+    "execution_authorized": false
+  },
+  "scope_boundary": {
+    "r10_grants_run_authority": false,
+    "training_authorized": false,
+    "inference_authorized": false,
+    "api_authorized": false,
+    "notion_authorized": false,
+    "git_authorized": false,
+    "current_or_production_promotion_authorized": false,
+    "demo_only_not_general_or_production_result": true
+  },
+  "actions": {
+    "model_loads": 0,
+    "training": 0,
+    "inference": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  },
+  "revision_rule": "保留R09及所有旧件原字节；RULE结果与EX登记只进R10。"
+}

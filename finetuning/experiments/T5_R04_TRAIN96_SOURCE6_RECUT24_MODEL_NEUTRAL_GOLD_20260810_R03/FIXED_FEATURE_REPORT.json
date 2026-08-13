@@ -1,0 +1,813 @@
+{
+  "schema_version": "recut24-r03-fixed-visible-feature-report/1.0",
+  "dataset_status": "PASS_CANDIDATE_MODEL_NEUTRAL_GOLD_PENDING_CONTROL_REVIEW",
+  "conclusion_zh": "三个预先固定的模型可见单特征门均不超过17/24",
+  "label_definition": "facts为空记作empty，否则记作nonempty",
+  "threshold_search": "逐一取本批全部观测值为阈值，同时遍历大于等于判空和小于判空",
+  "maximum_allowed_correct": 17,
+  "calculator_path": "finetuning/experiments/T5_R04_TRAIN96_SOURCE6_RECUT24_MODEL_NEUTRAL_GOLD_20260810_R03/build_and_check_recut24_r03.py",
+  "calculator_sha256": "cbbd48a715723b9e06c708abc4d84cc480fbc659a73dfe2f1b0ee21d962f90f4",
+  "features": {
+    "non_whitespace_characters": {
+      "best_single_threshold": {
+        "direction": "EMPTY_IF_VALUE_LT",
+        "threshold": 64,
+        "correct": 17,
+        "total": 24,
+        "confusion": {
+          "true_empty_predicted_empty": 1,
+          "true_nonempty_predicted_nonempty": 16,
+          "true_nonempty_predicted_empty": 0,
+          "true_empty_predicted_nonempty": 7
+        },
+        "predictions": [
+          {
+            "case_id": "RC96-CH01-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH03-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-01",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-01",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH03-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-02",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH01-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH03-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH01-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-02",
+            "actual_empty": true,
+            "predicted_empty": true
+          },
+          {
+            "case_id": "RC96-CH03-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-03",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-03",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH01-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          }
+        ]
+      },
+      "per_case": [
+        {
+          "case_id": "RC96-CH01-02",
+          "actual_empty": false,
+          "value": 151
+        },
+        {
+          "case_id": "RC96-CH02-01",
+          "actual_empty": true,
+          "value": 134
+        },
+        {
+          "case_id": "RC96-CH03-03",
+          "actual_empty": false,
+          "value": 113
+        },
+        {
+          "case_id": "RC96-CH04-03",
+          "actual_empty": false,
+          "value": 103
+        },
+        {
+          "case_id": "RC96-CH06-01",
+          "actual_empty": false,
+          "value": 114
+        },
+        {
+          "case_id": "RC96-CH08-01",
+          "actual_empty": false,
+          "value": 171
+        },
+        {
+          "case_id": "RC96-CH02-02",
+          "actual_empty": false,
+          "value": 164
+        },
+        {
+          "case_id": "RC96-CH03-01",
+          "actual_empty": true,
+          "value": 105
+        },
+        {
+          "case_id": "RC96-CH04-04",
+          "actual_empty": false,
+          "value": 115
+        },
+        {
+          "case_id": "RC96-CH06-02",
+          "actual_empty": false,
+          "value": 224
+        },
+        {
+          "case_id": "RC96-CH08-02",
+          "actual_empty": true,
+          "value": 224
+        },
+        {
+          "case_id": "RC96-CH01-03",
+          "actual_empty": false,
+          "value": 123
+        },
+        {
+          "case_id": "RC96-CH03-04",
+          "actual_empty": false,
+          "value": 124
+        },
+        {
+          "case_id": "RC96-CH04-01",
+          "actual_empty": true,
+          "value": 115
+        },
+        {
+          "case_id": "RC96-CH06-04",
+          "actual_empty": false,
+          "value": 174
+        },
+        {
+          "case_id": "RC96-CH08-04",
+          "actual_empty": false,
+          "value": 102
+        },
+        {
+          "case_id": "RC96-CH01-01",
+          "actual_empty": true,
+          "value": 101
+        },
+        {
+          "case_id": "RC96-CH02-03",
+          "actual_empty": false,
+          "value": 87
+        },
+        {
+          "case_id": "RC96-CH04-02",
+          "actual_empty": true,
+          "value": 53
+        },
+        {
+          "case_id": "RC96-CH03-02",
+          "actual_empty": false,
+          "value": 64
+        },
+        {
+          "case_id": "RC96-CH06-03",
+          "actual_empty": true,
+          "value": 140
+        },
+        {
+          "case_id": "RC96-CH02-04",
+          "actual_empty": false,
+          "value": 105
+        },
+        {
+          "case_id": "RC96-CH08-03",
+          "actual_empty": true,
+          "value": 216
+        },
+        {
+          "case_id": "RC96-CH01-04",
+          "actual_empty": false,
+          "value": 188
+        }
+      ]
+    },
+    "paragraphs_per_non_whitespace_character": {
+      "best_single_threshold": {
+        "direction": "EMPTY_IF_VALUE_LT",
+        "correct": 17,
+        "total": 24,
+        "confusion": {
+          "true_empty_predicted_empty": 1,
+          "true_nonempty_predicted_nonempty": 16,
+          "true_nonempty_predicted_empty": 0,
+          "true_empty_predicted_nonempty": 7
+        },
+        "predictions": [
+          {
+            "case_id": "RC96-CH01-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH03-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-01",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-01",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH03-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-02",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH01-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH03-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH01-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-02",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH03-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-03",
+            "actual_empty": true,
+            "predicted_empty": true
+          },
+          {
+            "case_id": "RC96-CH02-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-03",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH01-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          }
+        ],
+        "threshold_exact": "1/64",
+        "threshold_decimal": 0.015625
+      },
+      "per_case": [
+        {
+          "case_id": "RC96-CH01-02",
+          "actual_empty": false,
+          "value_exact": "3/151",
+          "value_decimal": 0.019867549668874173
+        },
+        {
+          "case_id": "RC96-CH02-01",
+          "actual_empty": true,
+          "value_exact": "2/67",
+          "value_decimal": 0.029850746268656716
+        },
+        {
+          "case_id": "RC96-CH03-03",
+          "actual_empty": false,
+          "value_exact": "2/113",
+          "value_decimal": 0.017699115044247787
+        },
+        {
+          "case_id": "RC96-CH04-03",
+          "actual_empty": false,
+          "value_exact": "3/103",
+          "value_decimal": 0.02912621359223301
+        },
+        {
+          "case_id": "RC96-CH06-01",
+          "actual_empty": false,
+          "value_exact": "1/57",
+          "value_decimal": 0.017543859649122806
+        },
+        {
+          "case_id": "RC96-CH08-01",
+          "actual_empty": false,
+          "value_exact": "1/57",
+          "value_decimal": 0.017543859649122806
+        },
+        {
+          "case_id": "RC96-CH02-02",
+          "actual_empty": false,
+          "value_exact": "1/41",
+          "value_decimal": 0.024390243902439025
+        },
+        {
+          "case_id": "RC96-CH03-01",
+          "actual_empty": true,
+          "value_exact": "2/105",
+          "value_decimal": 0.01904761904761905
+        },
+        {
+          "case_id": "RC96-CH04-04",
+          "actual_empty": false,
+          "value_exact": "2/115",
+          "value_decimal": 0.017391304347826087
+        },
+        {
+          "case_id": "RC96-CH06-02",
+          "actual_empty": false,
+          "value_exact": "1/56",
+          "value_decimal": 0.017857142857142856
+        },
+        {
+          "case_id": "RC96-CH08-02",
+          "actual_empty": true,
+          "value_exact": "1/56",
+          "value_decimal": 0.017857142857142856
+        },
+        {
+          "case_id": "RC96-CH01-03",
+          "actual_empty": false,
+          "value_exact": "1/41",
+          "value_decimal": 0.024390243902439025
+        },
+        {
+          "case_id": "RC96-CH03-04",
+          "actual_empty": false,
+          "value_exact": "1/62",
+          "value_decimal": 0.016129032258064516
+        },
+        {
+          "case_id": "RC96-CH04-01",
+          "actual_empty": true,
+          "value_exact": "2/115",
+          "value_decimal": 0.017391304347826087
+        },
+        {
+          "case_id": "RC96-CH06-04",
+          "actual_empty": false,
+          "value_exact": "1/58",
+          "value_decimal": 0.017241379310344827
+        },
+        {
+          "case_id": "RC96-CH08-04",
+          "actual_empty": false,
+          "value_exact": "1/34",
+          "value_decimal": 0.029411764705882353
+        },
+        {
+          "case_id": "RC96-CH01-01",
+          "actual_empty": true,
+          "value_exact": "2/101",
+          "value_decimal": 0.019801980198019802
+        },
+        {
+          "case_id": "RC96-CH02-03",
+          "actual_empty": false,
+          "value_exact": "1/29",
+          "value_decimal": 0.034482758620689655
+        },
+        {
+          "case_id": "RC96-CH04-02",
+          "actual_empty": true,
+          "value_exact": "1/53",
+          "value_decimal": 0.018867924528301886
+        },
+        {
+          "case_id": "RC96-CH03-02",
+          "actual_empty": false,
+          "value_exact": "1/64",
+          "value_decimal": 0.015625
+        },
+        {
+          "case_id": "RC96-CH06-03",
+          "actual_empty": true,
+          "value_exact": "1/70",
+          "value_decimal": 0.014285714285714285
+        },
+        {
+          "case_id": "RC96-CH02-04",
+          "actual_empty": false,
+          "value_exact": "2/105",
+          "value_decimal": 0.01904761904761905
+        },
+        {
+          "case_id": "RC96-CH08-03",
+          "actual_empty": true,
+          "value_exact": "1/54",
+          "value_decimal": 0.018518518518518517
+        },
+        {
+          "case_id": "RC96-CH01-04",
+          "actual_empty": false,
+          "value_exact": "5/188",
+          "value_decimal": 0.026595744680851064
+        }
+      ]
+    },
+    "chinese_comma_count": {
+      "best_single_threshold": {
+        "direction": "EMPTY_IF_VALUE_LT",
+        "threshold": 4,
+        "correct": 17,
+        "total": 24,
+        "confusion": {
+          "true_empty_predicted_empty": 1,
+          "true_nonempty_predicted_nonempty": 16,
+          "true_nonempty_predicted_empty": 0,
+          "true_empty_predicted_nonempty": 7
+        },
+        "predictions": [
+          {
+            "case_id": "RC96-CH01-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH03-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-01",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-01",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH03-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-02",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH01-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH03-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH01-01",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-03",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH04-02",
+            "actual_empty": true,
+            "predicted_empty": true
+          },
+          {
+            "case_id": "RC96-CH03-02",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH06-03",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH02-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH08-03",
+            "actual_empty": true,
+            "predicted_empty": false
+          },
+          {
+            "case_id": "RC96-CH01-04",
+            "actual_empty": false,
+            "predicted_empty": false
+          }
+        ]
+      },
+      "per_case": [
+        {
+          "case_id": "RC96-CH01-02",
+          "actual_empty": false,
+          "value": 10
+        },
+        {
+          "case_id": "RC96-CH02-01",
+          "actual_empty": true,
+          "value": 7
+        },
+        {
+          "case_id": "RC96-CH03-03",
+          "actual_empty": false,
+          "value": 7
+        },
+        {
+          "case_id": "RC96-CH04-03",
+          "actual_empty": false,
+          "value": 5
+        },
+        {
+          "case_id": "RC96-CH06-01",
+          "actual_empty": false,
+          "value": 6
+        },
+        {
+          "case_id": "RC96-CH08-01",
+          "actual_empty": false,
+          "value": 9
+        },
+        {
+          "case_id": "RC96-CH02-02",
+          "actual_empty": false,
+          "value": 9
+        },
+        {
+          "case_id": "RC96-CH03-01",
+          "actual_empty": true,
+          "value": 6
+        },
+        {
+          "case_id": "RC96-CH04-04",
+          "actual_empty": false,
+          "value": 7
+        },
+        {
+          "case_id": "RC96-CH06-02",
+          "actual_empty": false,
+          "value": 11
+        },
+        {
+          "case_id": "RC96-CH08-02",
+          "actual_empty": true,
+          "value": 11
+        },
+        {
+          "case_id": "RC96-CH01-03",
+          "actual_empty": false,
+          "value": 4
+        },
+        {
+          "case_id": "RC96-CH03-04",
+          "actual_empty": false,
+          "value": 8
+        },
+        {
+          "case_id": "RC96-CH04-01",
+          "actual_empty": true,
+          "value": 8
+        },
+        {
+          "case_id": "RC96-CH06-04",
+          "actual_empty": false,
+          "value": 9
+        },
+        {
+          "case_id": "RC96-CH08-04",
+          "actual_empty": false,
+          "value": 5
+        },
+        {
+          "case_id": "RC96-CH01-01",
+          "actual_empty": true,
+          "value": 7
+        },
+        {
+          "case_id": "RC96-CH02-03",
+          "actual_empty": false,
+          "value": 5
+        },
+        {
+          "case_id": "RC96-CH04-02",
+          "actual_empty": true,
+          "value": 3
+        },
+        {
+          "case_id": "RC96-CH03-02",
+          "actual_empty": false,
+          "value": 5
+        },
+        {
+          "case_id": "RC96-CH06-03",
+          "actual_empty": true,
+          "value": 9
+        },
+        {
+          "case_id": "RC96-CH02-04",
+          "actual_empty": false,
+          "value": 6
+        },
+        {
+          "case_id": "RC96-CH08-03",
+          "actual_empty": true,
+          "value": 15
+        },
+        {
+          "case_id": "RC96-CH01-04",
+          "actual_empty": false,
+          "value": 8
+        }
+      ]
+    }
+  },
+  "combination_classifier_trained": false,
+  "additional_surface_features_checked": false
+}

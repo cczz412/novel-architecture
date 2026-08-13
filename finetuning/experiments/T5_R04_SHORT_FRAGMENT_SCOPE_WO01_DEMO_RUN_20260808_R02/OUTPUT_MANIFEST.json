@@ -1,0 +1,51 @@
+{
+  "member_count": 9,
+  "members": [
+    {
+      "bytes": 835,
+      "path": "00_READ_ME_FIRST.md",
+      "sha256": "c49c94c13ac47bb301f315d2d597184afc1aaa9a9c6ffb7730b37ae9fc2c6eff"
+    },
+    {
+      "bytes": 524,
+      "path": "DEMO_R02_CONTRACT.md",
+      "sha256": "a51c51231b7bd4d8c401d8e05f30c35a316c035ba9ef27226c937702077cdab4"
+    },
+    {
+      "bytes": 2032,
+      "path": "FINAL_VALIDATION_RECEIPT.json",
+      "sha256": "508e59645f347e54a619cdbe91fa4a1b4d72b38529efdb40d56f18e1cbc72bf8"
+    },
+    {
+      "bytes": 2541,
+      "path": "RESULT_TICKET.md",
+      "sha256": "42c49253edc4e25568c5e5a226fe15338e4313bf96b225cbb570d44bf85fdc06"
+    },
+    {
+      "bytes": 3931,
+      "path": "SOURCE_BINDING.json",
+      "sha256": "4a7d914c6a772482faff46ae1dbcd8b1f102a18c99f38882c58758e3cad70ed1"
+    },
+    {
+      "bytes": 1130,
+      "path": "STATIC_VALIDATION_RECEIPT.json",
+      "sha256": "f14e1b6f0a0fd3dea7943f44026cbea662282299fd28bda789360b0859c6aa0f"
+    },
+    {
+      "bytes": 2946,
+      "path": "tests/test_r02.py",
+      "sha256": "81c2ccd4838f17d836d4a55ae0e3e27d2d5c4e45f8f7ca88c3718484b1bbc487"
+    },
+    {
+      "bytes": 1949,
+      "path": "tools/run_demo_r02.py",
+      "sha256": "707cf44135cc0784a662d3602ecb4e81be4e44fa162b4d7b7573f239fb1d8c15"
+    },
+    {
+      "bytes": 7144,
+      "path": "tools/score_demo_r02.py",
+      "sha256": "8ea4e73602b7e8381e72c1b6e3a719c4449b05d7836233f389addd37fdd99d63"
+    }
+  ],
+  "status": "PASS_ZERO_TRAINING_PRESCREEN_OUTPUT_SET_BOUND"
+}

@@ -1,0 +1,14 @@
+{
+  "candidate_authorization_interpretation": "候选施工授权，不是训练权利授权。",
+  "candidate_authorization_path": "/Users/a1234/挣钱/小说架构/TEMP/chatgpt_review_cycles/T5_R04_A_V27_PRUNED_CANDIDATE_20260807_R01/AUTHORIZATION.md",
+  "candidate_authorization_sha256": "cdaf692837c9c9df98b8290d5665542311908887f6247059047be39406bf5145",
+  "candidate_group_releases": 0,
+  "facts": 2783,
+  "local_training_grants_found": 0,
+  "p2_sealed_modified": false,
+  "production_canonical_built": false,
+  "rights_unknown_groups": 74,
+  "rows": 314,
+  "source_groups": 74,
+  "status": "PASS_RIGHTS_INTAKE_GROUPED_NO_GROUP_PROMOTED"
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": "base-out2-block300-stage1-prepare-receipt/1.0",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "issued_at": "2026-08-10T17:02:00+08:00",
+  "amended_at": "2026-08-10T18:53:28+08:00",
+  "experiment_id": "T5_R04_BASE_OUT2_BLOCK300_STAGE1_SCREEN_20260810_R01",
+  "members_excluding_this_receipt": {
+    "README.md": "4e05070a3334e681e337f24456c0c30be4340785845276cf5b13c26a7c98345e",
+    "SPEC.json": "83aa7b59394c70621b6ae719ebe528c83a2a4e6835aba4a1a82f38f0f36f13d1",
+    "run_block300_stage1.py": "94012594e122e6403ed2786421170eccd6971bc09044105da1bbdf290f18334f",
+    "score_block300_stage1.py": "711fd7824ea44fafe2afb6d19f5d3a695d1406cab9a50542faafef79cf7f1c13",
+    "BLOCK300_STAGE1_SOURCE_INDEX.jsonl": "33c3efb0d28af06dd2e970a5076c33a06f5d01ea2e0bb646c63da8bdcff06301",
+    "BLOCK300_STAGE1_REQUESTS.jsonl": "d5943413bae0ae2c3abf6cb1d581f238a5c4162622b7b15547494155789ea168"
+  },
+  "frozen_inputs": {
+    "real24_source_index_sha256": "0fe7ecb1649b93e4faab3d253d8904bee7f1a7a3e6f7f0fbb8b8e722c405de97",
+    "real24_old_txx_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "real24_gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "actual_h180_out2_request_sha256": "126b0f0843fdd244f007a46361397f24f97ce8d71c73d760ae9ad5a6bf5b3088",
+    "actual_full24_raw_sha256": "f9bd1fc02f93cfb7c51193f1dc319753472949bc2bbde4360a6779c415cdb28e",
+    "base_read2_projection_sha256": "c7f738181148acc4c06644e47058606b35f07b9a0603521ffdb98502267b1b97",
+    "base_context_final_sha256": "f625c10ecf0e1d4be8eade2032dc2fdbe6d398ac55a6ad89f47abffa117825c7",
+    "r02_candidates_sha256": "d4579d4c6dbcba7f85f92c6318f9461d574fc31daab493fa5fcd8457bd04e393",
+    "r02_stats_sha256": "06708fbbc6bb3ffa35705263098e57aad6f3e5a277ac241e670dccbd61af2ff1",
+    "r02_receipt_sha256": "dcf8bebc34bb1d481e4a8dfe60172dfabf085ffade800d1d9da30d691381ad9f",
+    "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6"
+  },
+  "static_results": {
+    "parent_cases": 8,
+    "requests_and_blocks": 22,
+    "case_order": ["C01", "C02", "C05", "C09", "C10", "C14", "C23", "C24"],
+    "all_blocks_reconstruct_eight_original_targets_without_gap_or_overlap": true,
+    "new_txx_reconstruct_each_block": "22/22",
+    "new_txx_units_are_block_local": true,
+    "new_txx_maps_block_original_target_and_source_absolute_coordinates": true,
+    "requests_contain_gold_or_density_or_crossing_metadata": false,
+    "halo_unicode_codepoints_each_side_max": 180,
+    "gold_and_gold_derived_r02_stats_receipt_read_only_after_mapping_and_request_bytes_frozen": true,
+    "original_gold_facts": 85,
+    "contained_gold_facts": 77,
+    "crossing_gold_facts_forced_fn": 8,
+    "new_model_calls_if_future_authorized": 22,
+    "full_target_new_calls": 0
+  },
+  "frozen_full_target_stage1": {
+    "tp": 29,
+    "fp": 52,
+    "fn": 56,
+    "f1": 0.3493975903614458,
+    "minimum_block300_f1_for_future_full24_prep": 0.3693975903614458
+  },
+  "hard_gates": {
+    "future_exact_ticket_before_run_root_or_model_load": true,
+    "model_13_member_gate_immediately_before_each_load": true,
+    "rows_json_schema_legal_evidence": "22/22",
+    "retry_within_block_duplicate_repetition_token_limit": 0,
+    "cross_block_duplicate_predictions": "DIAGNOSTIC_NOT_HARD_GATE_RETAIN_ALL_OCCURRENCES",
+    "cross_block_duplicate_scoring": "ONE_TO_ONE_AT_MOST_ONE_TP_EXTRA_OCCURRENCES_REMAIN_FP",
+    "blind_semantic_pending_before_final": 0,
+    "crossing_gold_never_rewarded": true,
+    "full24_requires_separate_future_workorder": true
+  },
+  "checks": {
+    "ruff": "PASS",
+    "deterministic_static_rebuild": "PASS",
+    "json_jsonl_parse": "PASS",
+    "runner_result_requests_sha256_accepted_by_scorer": "PASS",
+    "cross_block_duplicate_retained_and_extra_occurrence_scored_fp": "PASS",
+    "final_input_bundle_drift_hard_stop": "PASS",
+    "missing_ticket_hard_stop": "PASS",
+    "run_root_absent": "PASS"
+  },
+  "actions": {
+    "execution_ticket_created": false,
+    "run_root_created": false,
+    "model_loads": 0,
+    "training": 0,
+    "inference": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  }
+}

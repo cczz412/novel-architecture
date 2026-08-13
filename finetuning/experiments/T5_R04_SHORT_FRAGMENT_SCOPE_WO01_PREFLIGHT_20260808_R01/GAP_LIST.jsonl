@@ -1,0 +1,4 @@
+{"gap_id":"WO01-GAP-001","status":"RESOLVED_BY_CZ_FIXED_8_CHARACTER_RULE","summary":"旧施工中的完整分句邻域会让 6/24 题与当前窗口同输入；该未封方案已失效。最终固定为目标前最后8个 Unicode 字符和目标后最前8个 Unicode 字符，两次相邻比较均为24/24有效变化。"}
+{"gap_id":"WO01-GAP-002","status":"DISCLOSED_CONTRACT_DIFFERENCE","summary":"P3 C0 历史题面含可见 case ID 和 assistant gold；WO-01 按新无泄漏工单把二者移到隐藏 sidecar，因此 CURRENT_WINDOW 只在去掉题号后与 P3 C0 24/24 精确一致。"}
+{"gap_id":"WO01-GAP-003","status":"AUTHORIZATION_HARD_STOP","summary":"当前没有模型运行权；72 次推理、任何 retry、训练或参数修改均禁止。"}
+{"gap_id":"WO01-GAP-004","status":"INVALIDATED_CONSTRUCTION_ATTEMPT_REMOVED","summary":"CZ覆盖口径前曾尝试 tokenizer-only 长度诊断，首版把 BatchEncoding 的两个对象字段误写成2 token；后续纠正件同样不属于最终合同。TOKEN_BUDGET_REPORT 和 token 计数脚本已从正式交付删除，最终构建未加载 tokenizer、未调用模型或API，也不保留任何假 token 数。"}

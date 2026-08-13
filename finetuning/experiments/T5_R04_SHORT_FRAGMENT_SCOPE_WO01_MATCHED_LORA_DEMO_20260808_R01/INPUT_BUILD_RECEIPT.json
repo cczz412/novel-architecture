@@ -1,0 +1,49 @@
+{
+  "arms": [
+    "TARGET_ONLY",
+    "SMALL_HALO",
+    "CURRENT_WINDOW"
+  ],
+  "counts": {
+    "dev_facts_each": 48,
+    "dev_rows_each": 24,
+    "train_dev_case_overlap": 0,
+    "train_facts_each": 43,
+    "train_rows_each": 24
+  },
+  "dev_canonical_sha256": "fa04ce5e5f819f4f87aec248ef8c306541b04128d67f0b79cc7e61f2d401d7d9",
+  "files": {
+    "dev": {
+      "CURRENT_WINDOW": {
+        "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_MATCHED_LORA_DEMO_20260808_R01/data/dev/CURRENT_WINDOW.jsonl",
+        "sha256": "df766948d6b8494d6bd0481a56055cef2bda3af51be0c037d4a75d414120243f"
+      },
+      "SMALL_HALO": {
+        "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_MATCHED_LORA_DEMO_20260808_R01/data/dev/SMALL_HALO.jsonl",
+        "sha256": "a67454c07f75e74e189cc2ce7b7701f6ed67d958a6ad28b768e18ac238ad9a3f"
+      },
+      "TARGET_ONLY": {
+        "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_MATCHED_LORA_DEMO_20260808_R01/data/dev/TARGET_ONLY.jsonl",
+        "sha256": "c12f646634765f67425fbe957bda4b47c235636b74efb9231e1540169f345313"
+      }
+    },
+    "train": {
+      "CURRENT_WINDOW": {
+        "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_MATCHED_LORA_DEMO_20260808_R01/data/source_train/CURRENT_WINDOW.jsonl",
+        "sha256": "65b46e29c83092f8cf4bf2787638b3a91f4c04388fb126338bf9d93964757cf3"
+      },
+      "SMALL_HALO": {
+        "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_MATCHED_LORA_DEMO_20260808_R01/data/source_train/SMALL_HALO.jsonl",
+        "sha256": "be7e11980958028f51da0f4ad84c584d6b4028b29561fdbee812ea019bab6117"
+      },
+      "TARGET_ONLY": {
+        "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_MATCHED_LORA_DEMO_20260808_R01/data/source_train/TARGET_ONLY.jsonl",
+        "sha256": "91ca7f81d8f82676344d45df876bba9802524486272cc1837686988dff6de31b"
+      }
+    }
+  },
+  "renderer_sha256": "c56e6769786e6fb7ca2d69defee4f74bbdb867ddbf713f40efbcb88069d706d8",
+  "status": "PASS_MATCHED_3X24_TRAIN_AND_DEV_RENDERED",
+  "system_prompt_source_sha256": "71cc7b636fc2cf16a6c8eca31ca1ba124a220717a21b0f01d737bf45986c0c4a",
+  "train_canonical_sha256": "a2619894d09f285411481598fa4093af3a5f5027709020b10256b5c9efd99676"
+}

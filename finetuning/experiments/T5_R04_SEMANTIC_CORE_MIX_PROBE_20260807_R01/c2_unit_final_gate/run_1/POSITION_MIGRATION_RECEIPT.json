@@ -1,0 +1,13 @@
+{
+  "schema_version": "t5-r04-a-position-provenance-migration-receipt-v1",
+  "status": "PASS_LEGACY_POSITION_SIDECAR_BUILT",
+  "facts_total": 397,
+  "unique_position_backfilled": 396,
+  "legacy_position_ambiguous": 1,
+  "default_first_occurrence_used": false,
+  "manual_position_guess_used": false,
+  "outputs": {
+    "provenance_sha256": "ef87470cb8447ff697413698f4806276eaf54a969bafafea62dc1ccd9d813f5b",
+    "quarantine_sha256": "8c4161d38c432fcd085e3e6b78745027fa080274a827c788f8fe5f76a11dd166"
+  }
+}

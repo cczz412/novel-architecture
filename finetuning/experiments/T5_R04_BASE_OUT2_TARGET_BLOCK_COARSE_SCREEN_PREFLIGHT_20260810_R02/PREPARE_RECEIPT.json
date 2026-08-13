@@ -1,0 +1,67 @@
+{
+  "schema_version": "base-out2-target-block-coarse-screen-prepare-receipt/2.0",
+  "status": "PASS_CANDIDATE_PREFLIGHT_R02_NOT_AUTHORIZED_NOT_RUN",
+  "issued_at": "2026-08-10T16:44:00+08:00",
+  "parent_r01_exact_members_unchanged": {
+    "BLOCK_STATS.json": "84e2e1282a74379f04cf16bc249e67b954e3489de09ad748c898f4203f65b62f",
+    "PREPARE_RECEIPT.json": "e7d3593eb16657cd111dec553f921d580a52c81fbd158b4195344c09df78da5e",
+    "README.md": "916be6750f33ce0ecb7212f168b63f924bb1c95c5f70afbaf447a80b3ca03877",
+    "SPEC.json": "6cf29d8db2c512d34e154106e901a9a86d3f78302127d8c259602692961d3cf3",
+    "TARGET_BLOCK_CANDIDATES.jsonl": "0e83c0bce36887aca94fb1211e60d9678e951bbcb762ea716b35359da9d36684",
+    "build_target_block_candidates.py": "c57eea7991a31d95441efb3be3c94da6f51369ce410bca310e6784bad5624dba"
+  },
+  "members_excluding_this_receipt": {
+    "README.md": "671aaf9ffae8ce4f20acb7335d1f6faaa5bee4444bea49cab6ab994a78025ca1",
+    "SPEC.json": "6804d2f3e27e020c7da367ff577c5d0b4cd4dd17ed396a4e470ed4b90edac0fb",
+    "build_target_block_candidates_r02.py": "36a405a1aefbde64a39521b3b1049d028cb9e4e6c90e3e128ab137c355f881f5",
+    "TARGET_BLOCK_CANDIDATES_R02.jsonl": "d4579d4c6dbcba7f85f92c6318f9461d574fc31daab493fa5fcd8457bd04e393",
+    "BLOCK_STATS_R02.json": "06708fbbc6bb3ffa35705263098e57aad6f3e5a277ac241e670dccbd61af2ff1"
+  },
+  "evidence_order": {
+    "boundary_selection_reads_gold": false,
+    "candidate_sha_frozen_before_gold_read": "d4579d4c6dbcba7f85f92c6318f9461d574fc31daab493fa5fcd8457bd04e393",
+    "gold_sha_verified_after_freeze": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "gold_moved_boundaries": false
+  },
+  "disposition": {
+    "BLOCK60": "MECHANICAL_EXIT_TOO_FRAGMENTED_ZERO_MODEL_CALLS",
+    "BLOCK300": "ONLY_STAGE1_CANDIDATE",
+    "FULL_TARGET": "FROZEN_REUSE"
+  },
+  "stage1_8": {
+    "block60": {"blocks": 103, "gold_facts": 85, "contained": 36, "crossing": 49, "gold_empty_blocks": 69},
+    "block300": {"blocks": 22, "gold_facts": 85, "contained": 77, "crossing": 8, "gold_empty_blocks": 0},
+    "full_target": {"blocks": 8, "gold_facts": 85, "contained": 85, "crossing": 0, "gold_empty_blocks": 0}
+  },
+  "old_txx_boundary_diagnostic": {
+    "full24_internal_block_boundaries": 39,
+    "full24_boundaries_cutting_old_txx": 18,
+    "stage1_internal_block_boundaries": 14,
+    "stage1_boundaries_cutting_old_txx": 3,
+    "resolution": "STAGE1_REGENERATES_BLOCK_LOCAL_TXX_WITH_THREE_LEVEL_COORDINATE_MAPPING"
+  },
+  "full_target_reuse": {
+    "full24_raw_sha256": "f9bd1fc02f93cfb7c51193f1dc319753472949bc2bbde4360a6779c415cdb28e",
+    "base_read2_projection_sha256": "c7f738181148acc4c06644e47058606b35f07b9a0603521ffdb98502267b1b97",
+    "actual_request_sha256": "126b0f0843fdd244f007a46361397f24f97ce8d71c73d760ae9ad5a6bf5b3088",
+    "halo_final_metrics_sha256": "068c1341f0f4e48446dc175e0f2dee46078962f3f611e7505907e3cb886bafac",
+    "halo_final_receipt_sha256": "d874fca864278bd9002c1b6e2a9cee8d6abaada57e3522c36c34d30e5de49cfa",
+    "f1": 0.352941,
+    "new_model_calls": 0
+  },
+  "checks": {
+    "ruff": "PASS",
+    "deterministic_rebuild": "PASS",
+    "json_jsonl_parse": "PASS",
+    "source_txx_before_gold_order": "PASS"
+  },
+  "actions": {
+    "model_loads": 0,
+    "training": 0,
+    "inference": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  }
+}

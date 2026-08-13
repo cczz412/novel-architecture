@@ -1,0 +1,62 @@
+{
+  "schema_version": "t5-r04-p4-c0-source-binding-v1",
+  "status": "PASS_P3_C0_SOURCE_ARTIFACTS_LOCATED_P4_RUN_NOT_AUTHORIZED",
+  "p3_c0_questions": {
+    "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/sealed_inputs_r01/track_b/prompts/c0_current_minimal_QUESTIONS_24.jsonl",
+    "sha256": "94492f050aa18169b47a3d799be903d37462984c0ace352c135b850dd1725258",
+    "rows": 24
+  },
+  "p3_c0_build_script": {
+    "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/tools/build_p3_inputs.py",
+    "sha256": "e515ccd358125a94a40de18a5762c81711558aef5c383ce89006e6835f53ef78"
+  },
+  "p3_c0_run_script": {
+    "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/tools/run_p3_context_probe.py",
+    "sha256": "443b41eb2447d81827954145dfa49d7f886bd5d1925b32014ff1c46e0759235a"
+  },
+  "source_renderer": {
+    "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/set_b_r03_work/sealed/T5_R04_SYNTHETIC_MICRO24_SET_B_R03_20260808/tools/render_from_canonical.py",
+    "sha256": "e2d57aafba20d28ac1b322b9f4f52b07c5e2d4365cb25e599c40be4620f0bedb"
+  },
+  "source_c2_rendered_questions": {
+    "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/set_b_r03_work/sealed/T5_R04_SYNTHETIC_MICRO24_SET_B_R03_20260808/rendered/C2_FULL_ID_LIST_SET_B_24.jsonl",
+    "sha256": "b9f819d29434b43fae2974ff2de4dca333614c50cda9821d14fa37a5036d44c4",
+    "rows": 24
+  },
+  "system_prompt": {
+    "all_24_identical": true,
+    "utf8_sha256": "69b6263a06cf8db60b006b760772ff65fc50dff4132257d667ef4b76ffeac066",
+    "utf8_bytes": 313,
+    "content": "你是中文小说事实抽取器。B/T 编号只表示原文位置。只抽取【编号负责区】明确表达、会影响后续情节的事实。每条事实必须包含 fact、status、speaker、evidence_ids；evidence_ids 选择覆盖证据的最小连续 T 编号集合。输出严格 JSON，不要解释。"
+  },
+  "user_prompt": {
+    "identity": "P3_C0_24_CASE_RENDERED_REQUESTS",
+    "source": "p3_c0_questions.messages[1]",
+    "all_24_are_case_specific": true,
+    "representative_case_id": "MICRO24B-S01",
+    "representative_utf8_sha256": "fa964dd14b0f6451f38afa7c63d9bbe24bc4679df91ac48c9cca341293cedf5b",
+    "renderer_unchanged_in_p3": true
+  },
+  "output_contract": {
+    "source": "source_renderer plus p3_c0_questions.messages[2]",
+    "root_key": "facts",
+    "required_fact_keys": [
+      "fact",
+      "status",
+      "speaker",
+      "evidence_ids"
+    ],
+    "evidence_ids_type": "array_of_strings",
+    "formal_standalone_json_schema_found": false,
+    "contract_is_mechanically_bound_to_renderer_and_24_requests": true
+  },
+  "p4_boundary": {
+    "toy_prompt_identity": "TOY_ONLY_NOT_P3_C0",
+    "toy_prompt_must_not_become_future_default": true,
+    "future_runner_must_load_and_verify_bound_p3_system_prompt": true,
+    "p4_user_layout_is_a_new_preregistered_wrnw_renderer": true,
+    "p4_user_layout_must_not_be_described_as_byte_identical_to_p3_c0": true,
+    "p4_cannot_change_system_or_output_contract": true,
+    "model_run_authorized": false
+  }
+}

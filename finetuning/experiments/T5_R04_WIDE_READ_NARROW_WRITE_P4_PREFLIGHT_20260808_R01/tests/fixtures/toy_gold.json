@@ -1,0 +1,51 @@
+{
+  "schema_version": "t5-r04-p4-toy-frozen-gold-v1",
+  "frozen_before_splitter": true,
+  "facts": [
+    {
+      "fact_id": "TOY-F01",
+      "evidence_spans": [
+        {
+          "start_char": 33,
+          "end_char_exclusive": 43,
+          "text": "林舟把地图摊在桌上。"
+        }
+      ]
+    },
+    {
+      "fact_id": "TOY-F02",
+      "evidence_spans": [
+        {
+          "start_char": 54,
+          "end_char_exclusive": 66,
+          "text": "阿宁答应天亮前检查绳索。"
+        },
+        {
+          "start_char": 67,
+          "end_char_exclusive": 84,
+          "text": "如果河水继续上涨，他们就改走北坡。"
+        }
+      ]
+    },
+    {
+      "fact_id": "TOY-F03",
+      "evidence_spans": [
+        {
+          "start_char": 85,
+          "end_char_exclusive": 97,
+          "text": "林舟误以为北坡没有守卫。"
+        }
+      ]
+    },
+    {
+      "fact_id": "TOY-F04",
+      "evidence_spans": [
+        {
+          "start_char": 54,
+          "end_char_exclusive": 84,
+          "text": "阿宁答应天亮前检查绳索。\n如果河水继续上涨，他们就改走北坡。"
+        }
+      ]
+    }
+  ]
+}

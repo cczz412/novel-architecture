@@ -1,0 +1,53 @@
+{
+  "package_id": "DEMAND_DISCOVERY_RESEARCH_RETURNS_20260812_R01",
+  "created_on": "2026-08-13",
+  "source_batch_date": "2026-08-12",
+  "status": "historical_external_research_candidate_prior_only",
+  "source_provider": "ChatGPT",
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false
+  },
+  "decision_boundary": "Product adoption still requires CZ current instruction, formal Notion ledger decisions, and the current shared-context package.",
+  "files": [
+    {
+      "path": "returns/222调查结论.md",
+      "source_temp": "TEMP/bgboard-audit-20260809-r01/returns_demand_discovery_20260812/222调查结论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 27556,
+      "lines": 301,
+      "sha256": "10d0e949987b0011b8b2249052131598dcb8b5ae7fa76a2eeae99f650a56d9f0"
+    },
+    {
+      "path": "returns/333调查结论.md",
+      "source_temp": "TEMP/bgboard-audit-20260809-r01/returns_demand_discovery_20260812/333调查结论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 22425,
+      "lines": 295,
+      "sha256": "8ec2028913397b6893e7b80ad24f0e5d7d71e813b983b537d28c11b96ca815e2"
+    },
+    {
+      "path": "returns/AI 视频创作者与短剧工作室的故事供给需求调查.md",
+      "source_temp": "TEMP/bgboard-audit-20260809-r01/returns_demand_discovery_20260812/AI 视频创作者与短剧工作室的故事供给需求调查.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 31969,
+      "lines": 365,
+      "sha256": "3d04a79b61bbd028af176e76e0d56c93868544d282ab5a6e3dcc56196bb2e5a7"
+    },
+    {
+      "path": "returns/结构化故事引擎：完整需求地图.md",
+      "source_temp": "TEMP/bgboard-audit-20260809-r01/returns_demand_discovery_20260812/结构化故事引擎：完整需求地图.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 32452,
+      "lines": 400,
+      "sha256": "411987306a58cceb799ab346a8678f7c384a257127c7df1004ad63f35f9c1747"
+    }
+  ]
+}

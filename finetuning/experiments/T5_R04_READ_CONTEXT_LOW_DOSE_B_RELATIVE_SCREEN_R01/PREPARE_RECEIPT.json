@@ -1,0 +1,140 @@
+{
+  "schema_version": "read-context-low-dose-b-relative-screen-prepare-receipt/1.0",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "prepared_at": "2026-08-10T07:30:28+08:00",
+  "repaired_at": "2026-08-10T07:44:32+08:00",
+  "package_path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_READ_CONTEXT_LOW_DOSE_B_RELATIVE_SCREEN_R01",
+  "run_id": "T5_R04_READ_CONTEXT_LOW_DOSE_B_RELATIVE_SCREEN_R01",
+  "run_root": "/Users/a1234/挣钱/小说架构/runs/T5_R04_READ_CONTEXT_LOW_DOSE_B_RELATIVE_SCREEN_R01",
+  "run_root_exists": false,
+  "execution_ticket_created": false,
+  "training_started": false,
+  "inference_started": false,
+  "model_loaded": false,
+  "api_calls": 0,
+  "external_actions": {
+    "api": 0,
+    "notion": 0,
+    "git": 0,
+    "current_or_production_pointer": 0
+  },
+  "package_files_exact": [
+    "PREPARE_RECEIPT.json",
+    "SPEC.json",
+    "run_relative_screen.py",
+    "score_relative_screen.py"
+  ],
+  "immutable_member_sha256": {
+    "SPEC.json": "ff4ae3e702a318d3d47a0476d1cbbc18078884735e14176d1f9171b07232cd06",
+    "run_relative_screen.py": "2d9a06b5e65ab3107a78a840232231d498c93c743caa6ec7a9f80339e8af2167",
+    "score_relative_screen.py": "196304b03a9e0bf194bd929b5a00b9e436ace64bfa8a7bd530c12308e32b8b23"
+  },
+  "core_members_digest_sha256": "e648723409eb76e711f49fa6ba6634d23b2e8bf45a26198e84279cdc208b8c77",
+  "self_sha_excluded_reason": "回执不能把自身 SHA 写进自身；交付时单独报告本文件 SHA。",
+  "frozen_inputs": {
+    "train_read1_sha256": "84ad6f7886b372334b008d49cc2f3343afdd6b98d83a24a00d604ae49b8f09e0",
+    "train_read2_sha256": "09fdbc52f7131f1a2a60552740ce28430e418ed84c858f0f997abda16e4a7c5e",
+    "train_read4_sha256": "93b3ab7e9beed9a6f54df751400ba2ac65cfd5a18f1865da01c7c0c81540ed4a",
+    "eval_read1_sha256": "73423ace73ce60e497db6f0acf25d39bba3bfdccfc6d7a82abf9d8510d6157c0",
+    "eval_read2_sha256": "a12f1f5cb1adfed4958418bfa8373af52b6305fdef64122c9bf02e3338c77e85",
+    "eval_read4_sha256": "350799084dbc15791bc3b46a669552aec2da7920bfa39c8a3a110e1cbe431d4f",
+    "real24_gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "real24_txx_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "schema_sha256": "7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14",
+    "original_trainer_sha256": "78a4d0d04e4b214a0eb5ebafe5be7dea934365287b5b91f80b0e3ff37145b909",
+    "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6",
+    "read1_iter24_adapter_sha256": "7b01e203e45beb9562e55dff902bc0ecfd56c312f5a0a679c69813014ed14b1f",
+    "read1_iter24_adapter_config_sha256": "f18f85d70333202c43294bc057e4565773e3b360fd880f710031ebcce27c23b8",
+    "old_b_requests_sha256": "10969ace5317a7edd05a0ed89a79bac2e32cb9bb55a4a02a09c69a08ba45a663",
+    "old_b_raw_sha256": "d79e768c1163085016472591e47e92a203421d73266f78daf51e952b71690351",
+    "old_b_adjudications_sha256": "810fa1a4427b743854fc70def399a5635efe06c71daaf9feb0babd514aa1150f",
+    "old_b_final_metrics_sha256": "58087ff31edbf80315fe05b76341c2437e5722634970fffed7a8a6f3235bea43",
+    "old_fail_stop_ticket_sha256": "8ac276c9648657d4c488d3973092858e645afb2c600c78c6a0f7de18a0e72e61"
+  },
+  "train36_cross_arm_check": {
+    "rows_per_arm": 36,
+    "facts_per_arm": 714,
+    "case_order_equal": true,
+    "system_equal_row_by_row": true,
+    "assistant_equal_row_by_row": true,
+    "all_36_user_read_scopes_distinct_across_three_arms": true,
+    "b_contract_absent_from_training_system": true
+  },
+  "tokenizer_recheck": {
+    "interpreter": "/opt/homebrew/opt/python@3.12/bin/python3.12",
+    "model_weights_loaded": false,
+    "READ1": {
+      "min": 1647,
+      "max": 2772,
+      "mean": 2233.444
+    },
+    "READ2": {
+      "min": 1784,
+      "max": 2962,
+      "mean": 2420.111
+    },
+    "READ4": {
+      "min": 2705,
+      "max": 4161,
+      "mean": 3400.972
+    },
+    "max_seq_length": 4608,
+    "truncation_risk_cases": 0
+  },
+  "estimated_new_training_time": {
+    "READ2": "6-8 分钟",
+    "READ4": "9-11 分钟",
+    "basis": "按同机同臂旧 288 步实测时间线性折算到 24 步，再为首次编译留少量余量；仅是计划估算。"
+  },
+  "checks": {
+    "json_parse": "PASS",
+    "ruff_two_scripts": "PASS",
+    "runner_static_check": "PASS",
+    "scorer_help_smoke": "PASS",
+    "read1_b_request_byte_reproduction": "PASS",
+    "frozen_read1_b_mechanical_gate": {
+      "strict_json_cases": 8,
+      "schema_cases": 8,
+      "illegal_evidence_predictions": 0,
+      "repetition_cases": 0,
+      "token_limit_cases": 0,
+      "duplicate_predictions": 0,
+      "pass": true
+    },
+    "missing_ticket_exit_code": 1,
+    "missing_ticket_error": "EXECUTION_TICKET_REQUIRED_BEFORE_RUN_ROOT_OR_MODEL_LOAD",
+    "run_root_absent_after_missing_ticket_smoke": true,
+    "pycache_or_pyc_in_package": 0,
+    "repair_model_gate_order": {
+      "READ2_and_READ4_each_rehash_before_child_process": true,
+      "train_one_gate_line_before_popen": true,
+      "verified_model_load_runtime_order": [
+        "13_member_gate",
+        "actual_load"
+      ],
+      "stage1_actual_load_gate_entries": [
+        "LORA_READ2",
+        "LORA_READ4"
+      ],
+      "full24_synthetic_two_arm_actual_load_gate_entries": [
+        "SHARED_BASE_FOR_BASE_READ1_AND_BASE_READ2",
+        "LORA_READ1",
+        "LORA_READ2"
+      ],
+      "one_gate_call_per_actual_load": true,
+      "inference_result_records_gate_list_by_variant_or_arm": true
+    },
+    "repair_base_format_diagnostic_only": {
+      "synthetic_base_failed": true,
+      "synthetic_lora_all_passed": true,
+      "semantic_pre_allowed": true
+    },
+    "repair_lora_format_fail_hard_stop": {
+      "synthetic_lora_failed": true,
+      "semantic_pending": 0,
+      "blind_queue_bytes": 0,
+      "full_final_hard_stop": true
+    }
+  },
+  "boundary_zh": "旧 FAIL_STOP_AT_8 原结论保留；本包只准备条件式三臂相对排名，不授权训练，不把旧语义门改写成通过。"
+}

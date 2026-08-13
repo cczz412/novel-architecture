@@ -1,0 +1,64 @@
+{
+  "schema_version": "read2-low-dose-b-blind-adjudication-r02-receipt/1.0",
+  "status": "R02_EXACT_31_KEY_DOWNGRADE_COMPLETE_NOT_SCORED_NOT_FINAL",
+  "completed_at_shanghai": "2026-08-10T09:54:53+0800",
+  "source_bindings": {
+    "r01_adjudications_path": "SEMANTIC_ADJUDICATIONS_381.jsonl",
+    "r01_adjudications_sha256": "8af589c4429d634b3d133508fc60d6b86b56917015095f1930493ea10dee27c6",
+    "r01_receipt_sha256": "1c0a00678090ec4cd46fa15e99aff797f7fda77b5631f138bce4ee44641fa1d1",
+    "blind_queue_sha256": "2bc4e1bede78fd16b876abf8004e8378673d2264728d4ef0042de063b9b1799d",
+    "scorer_sha256": "e09335a159cae0ba8b1ea442622711f5d8f35337ed9ee041c67ef40fe7a56b4f"
+  },
+  "outputs": {
+    "r02_adjudications_path": "SEMANTIC_ADJUDICATIONS_381_R02.jsonl",
+    "r02_adjudications_bytes": 658120,
+    "r02_adjudications_sha256": "03eb97a774ac41599d6f897e64486cec37d0a237b073f0ab621039733d599636",
+    "correction_list_path": "R02_CORRECTION_LIST.json",
+    "correction_list_bytes": 10896,
+    "correction_list_sha256": "de100437e63a5829ac46082655b412e93bbab1b792a706f4000e25b8e00b32fd"
+  },
+  "change_scope": {
+    "requested_keys": 31,
+    "keys_found": 31,
+    "keys_originally_semantic_equivalent": 31,
+    "changed_rows": 31,
+    "changed_fields_per_row": [
+      "category",
+      "matched_gold_fact_id"
+    ],
+    "new_category": "NOT_MATCH",
+    "new_matched_gold_fact_id": null,
+    "unchanged_rows_byte_identical": 350,
+    "r01_files_modified": false
+  },
+  "r02_counts": {
+    "rows": 381,
+    "semantic_equivalent": 141,
+    "not_match": 240,
+    "out_of_scope": 0,
+    "unresolved": 0
+  },
+  "mechanical_checks": {
+    "scorer_read_only_adjudication_coverage": "PASS_381_OF_381",
+    "original_queue_order_preserved": true,
+    "duplicate_keys": 0,
+    "unknown_keys": 0,
+    "missing_keys": 0,
+    "identity_field_drifts": 0,
+    "invalid_gold_fact_bindings": 0,
+    "variant_or_arm_identity_leaks": 0,
+    "r01_to_r02_unlisted_line_diffs": 0,
+    "semantic_final_produced": false,
+    "f1_computed": false
+  },
+  "no_go_actions": {
+    "out_runs": 0,
+    "training": 0,
+    "inference": 0,
+    "model_loads": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "adapter_sha256": "321d96c10f00389e557efbeb2d8e3dc1344071cc3cd663b51b8a8c2bd38ea5f9",
+  "api_called": false,
+  "arms": [
+    "c0_current_minimal",
+    "c1_rulebook_8",
+    "c2_purpose_short",
+    "c4_previous_state_confirmed"
+  ],
+  "bindings": {
+    "c0_current_minimal": {
+      "elapsed_seconds": 82.437,
+      "inference_receipt_sha256": "9d032653ab50ee830ffd193d66dd0b3c8a0dde22f5eb97534d1acbd11a653288",
+      "peak_mlx_bytes": 8746631216,
+      "questions_sha256": "94492f050aa18169b47a3d799be903d37462984c0ace352c135b850dd1725258",
+      "raw_path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/results_r01/raw/c0_current_minimal/RAW_OUTPUTS.jsonl",
+      "raw_sha256": "091c6a51701e1bb8cd136690a765eb5d86d995167db60f30de70947130e26f3a"
+    },
+    "c1_rulebook_8": {
+      "elapsed_seconds": 68.517,
+      "inference_receipt_sha256": "24221cedad05adfaf0c77504a94f8a80497beee4cb0f2e5603aff2250075bf1f",
+      "peak_mlx_bytes": 8823456124,
+      "questions_sha256": "d4e8d5856d7a990bb8c643321f516767eb8dcdc8a3a348b015fb41a9c2ce0f48",
+      "raw_path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/results_r01/raw/c1_rulebook_8/RAW_OUTPUTS.jsonl",
+      "raw_sha256": "4585af97d8ef24a60ff15f8f8b79e15bcd0f7a978ae05b3bd883e4f3c78ce85b"
+    },
+    "c2_purpose_short": {
+      "elapsed_seconds": 89.503,
+      "inference_receipt_sha256": "86a09f6174bb26cb60ff4476a6919ccf077eda44d38ce6f2933f294cb717441f",
+      "peak_mlx_bytes": 8774205684,
+      "questions_sha256": "a0e5120478296a4c2d8553506d9b5416d053cde56985287fe4d82516c4914386",
+      "raw_path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/results_r01/raw/c2_purpose_short/RAW_OUTPUTS.jsonl",
+      "raw_sha256": "28ce663a20d769df5b5aeb8860a4fd4927741a7300389ccb310ceff4f877b65a"
+    },
+    "c4_previous_state_confirmed": {
+      "elapsed_seconds": 97.023,
+      "inference_receipt_sha256": "15cf0be68d7da8ba53ef6b7b10cf1701ecc6d8ca83bc02f644caa328506f5bc0",
+      "peak_mlx_bytes": 8807481768,
+      "questions_sha256": "34dbbbea27c1cfb9ab29081bbdc96fa97677e23c3d0b37d9e0cc39bda2439e56",
+      "raw_path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/results_r01/raw/c4_previous_state_confirmed/RAW_OUTPUTS.jsonl",
+      "raw_sha256": "4f409e79605daf1083f598368c9334a63dc0ef6c5427703d13dc4a895304e54b"
+    }
+  },
+  "canonical_sha256": "fa04ce5e5f819f4f87aec248ef8c306541b04128d67f0b79cc7e61f2d401d7d9",
+  "cases_each": 24,
+  "created_at": "2026-08-08T16:07:38+08:00",
+  "decode": {
+    "max_output_tokens": 1024,
+    "sampler": "greedy",
+    "temperature": 0.0
+  },
+  "model_role": "offline_proxy_model",
+  "retry": 0,
+  "sealed_input_inventory_sha256": "ad7305ee3c50be769aa607d2e0d016529d80af8cb98af0036adf2716637c0c82",
+  "status": "FROZEN_P3_ZERO_TRAINING_EXECUTION_COMPLETE",
+  "training": false
+}

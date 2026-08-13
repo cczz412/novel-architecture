@@ -1,0 +1,17 @@
+{
+  "schema_version": "t5-r04-c2-position-renderer-receipt-v1",
+  "status": "PASS_C2_UNIT_FINAL_GATE_WITH_LEGACY_QUARANTINE",
+  "inputs": {
+    "provenance_sha256": "ef87470cb8447ff697413698f4806276eaf54a969bafafea62dc1ccd9d813f5b",
+    "questions_sha256": "72fbdedae4861954f3f3b49c9d30fca587b2d9685ff79b5317781729e9254dfb",
+    "bindings_sha256": "29bcfa4d87595ee918a88d230c5787bf933f172a55a3db7c2db92de683c9bec4",
+    "units_sha256": "32b601227b2bd3529ee6562c75a95c1516e483c28106ca9a33dad9a1ade65449"
+  },
+  "outputs": {
+    "C2_POSITION_DERIVED_ELIGIBLE_FACTS.jsonl": "44c7bf15786f4e1827bdae61afefe3695c1ea02db8320bc79850fbd2dafe87f9",
+    "C2_TRAINABLE_COMPLETE_ROWS_PROTOTYPE.jsonl": "b78ea6eaba839572bde87b441621df3a07ad3a1ed819ab082eead77c21e7ec53",
+    "C2_ROW_QUARANTINE.jsonl": "f2fc7d3507def5d1fdb1c3c6a47078c990ebad46888145f3c7778cbe5d83bb31",
+    "C2_FACT_QUARANTINE.jsonl": "95113a5dffcafed668730cc0c2ad72f6e4619ab588898ae469c5b617b0fb6f41",
+    "FINAL_GATE_METRICS.json": "514bfcebe95fee073ad66234164bbc0cc6370b43f795287dce4542644753c798"
+  }
+}

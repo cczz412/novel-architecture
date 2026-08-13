@@ -1,0 +1,135 @@
+{
+  "schema_version": "base-h180-out2-full-target-ex-contrastive-prepare-receipt/1.0",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "prepared_at": "2026-08-10T23:47:21+08:00",
+  "repaired_at": "2026-08-11T01:03:26+08:00",
+  "experiment_id": "T5_R04_BASE_H180_OUT2_FULL_TARGET_EX_CONTRASTIVE_SCREEN_20260810_R01",
+  "exact_file_set": {
+    "README.md": "b228e14c0cb6ab24a09df84295aa02a0a27c936c9fe708792d347ba4721b8c8d",
+    "SPEC.json": "8d92708ad7a656197bd33eef2a4d0da2debc4fcd464d1430ec00c65b4cc8e130",
+    "FIXED_CONTRASTIVE_PAIR.json": "aec37c720b2791fa8902fe4bcb31f6389e7a94d5327fac524337b52dd3d8f0c1",
+    "run_ex_prompt_screen.py": "a155ebd8408bb9105637604e41fba3f1e9a6fe1f454edd5191ea18b903571cbd",
+    "score_ex_prompt_screen.py": "de0fe8a20495511c369c32699a73f701fcaf9ce98719dedc32b6843655d5e23c"
+  },
+  "exact_file_count_including_this_receipt": 6,
+  "upstream_bindings": {
+    "r10_readme_sha256": "039c67d025da3aecd4cea69b87fdf7c64dc32ced6b6325b3e539af83a7b8464e",
+    "r10_registry_sha256": "410c2489d6d031a2c82f05842b28f53fe5bc414a686cdefdbc0cdbe274de122a",
+    "r10_rule_result_ticket_sha256": "187a53f863bccb2456c4f42e507b1749faf14350187075bbdc8d6b0bd356744e",
+    "stable_rule_runner_sha256": "e4bee2a100a4962a28bcadd6b3efde5c24ae2b87f8c980c2057caafd28292867",
+    "stable_rule_scorer_sha256": "8f9bf1fff5718875316886f13937073753daab4532610602e34b69a96e84df84",
+    "rule_final_metrics_sha256": "699b06cb21b85b61304b35a226cb0169895d0e145f7ee71e0dd3ffa98bb1835b",
+    "rule_final_receipt_sha256": "ed39dcdca3eeb08ca2925fe89dd1372bb356a1c181bf1d64155e7b93fd25fbd9",
+    "gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "txx_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a"
+  },
+  "request_derivation": {
+    "rows": 24,
+    "request_sha256": "298854c2567e6842f2de774ffdc0e8a7d3cc0b6bcc1a6e187675c05648b77238",
+    "original_system_bytes_unchanged": true,
+    "actual_user_bytes_unchanged": true,
+    "message_order": "ORIGINAL_SYSTEM_A_USER_A_ASSISTANT_B_USER_B_ASSISTANT_ACTUAL_USER"
+  },
+  "pair_field_sha256": {
+    "A_user": "04a5657ace7c913a8914869d03e7c4ad8de7b4533ed5894b2b60a090c1108fe9",
+    "A_assistant": "62e772d5cc068fbabc2a4c38875141d2535fdea33a1bc6eb16dd3d1f5e30f544",
+    "B_user": "521292bfeede1082f9374934ca570734c816b49866e35856ceda4885fa196c75",
+    "B_assistant": "c5e46f85f2967cc93ae0325fb4ab16108eaedf6551c16a1fe0dbf3ec19a1dffc",
+    "pair_payload": "beb1b637f069e264751dd522202fea62dd8593d975a644a545ec87683656478f"
+  },
+  "pair_validation": {
+    "members": 2,
+    "member_order": [
+      "A",
+      "B"
+    ],
+    "assistant_schema_valid": 2,
+    "facts_per_member": {
+      "A": 5,
+      "B": 5
+    },
+    "t01_facts_per_member": {
+      "A": 2,
+      "B": 2
+    },
+    "t05_t08_facts_per_member": {
+      "A": 0,
+      "B": 0
+    },
+    "responsibility_unicode_lengths": {
+      "A": 311,
+      "B": 321
+    },
+    "facts_per_100_responsibility_unicode": {
+      "A": 1.607717,
+      "B": 1.557632
+    },
+    "shared_t06_t08_neutral_carrier_unicode": 165
+  },
+  "anti_copy_result": {
+    "forbidden_term_counts_in_real24_user_plus_gold": {
+      "周棠": 0,
+      "俞安": 0,
+      "防水布": 0,
+      "备用电池": 0,
+      "码头货架": 0,
+      "签收单": 0
+    },
+    "complete_fact_sha_overlap_count": 0,
+    "twelve_unicode_contiguous_copy_overlap_count_after_contract_strip": 0,
+    "future_output_recursive_decoded_string_gate": true,
+    "future_output_recovered_fact_object_gate": true,
+    "future_output_parsed_fact_against_entire_example_body_gate": true,
+    "future_output_minimum_contiguous_unicode_copy_length": 12,
+    "future_output_copy_comparison_whitespace_removed": true,
+    "raw_literal_check_is_supplement_only": true
+  },
+  "scoring_identity_repair": {
+    "anonymous_raw_field": "source_raw_sha256",
+    "queue_and_adjudication_recursive_identity_leak_gate": true,
+    "canonical_ex0_ex1_and_pattern_identity_markers_rejected": true,
+    "identity_markers_rejected_in_any_key_or_value": true,
+    "actual_request_sha_equals_runner_constant_and_ticket": true,
+    "result_binds_frozen_request_sha": true,
+    "request_rebuilt_bytes_equal_actual_request": true,
+    "result_presence_is_first_unconditional_identity_gate": true,
+    "missing_result_status": "EX1_RESULT_MISSING_NOT_SCOREABLE"
+  },
+  "checks": {
+    "runner_static_check": "PASS",
+    "scorer_static_check": "PASS",
+    "targeted_self_test": "PASS",
+    "ruff": "PASS",
+    "json_parse": "PASS",
+    "exact6": "PASS",
+    "anti_copy": "PASS",
+    "escaped_unicode_copy_hard_stop": "PASS",
+    "recovered_fact_copy_hard_stop": "PASS",
+    "parsed_fact_12_unicode_body_copy_hard_stop": "PASS",
+    "parsed_fact_11_unicode_non_copy_control": "PASS",
+    "anonymous_identity_leak_hard_stop": "PASS",
+    "ex0_ex1_queue_and_adjudication_key_value_hard_stop": "PASS",
+    "request_and_result_joint_tamper_hard_stop": "PASS",
+    "missing_result_explicit_status": "PASS",
+    "missing_result_real_verify_execution_identity_entry": "PASS",
+    "missing_ticket_hard_stop": "PASS",
+    "run_root_absent": true
+  },
+  "execution_boundary": {
+    "ticket_created": false,
+    "run_root_created": false,
+    "model_loaded": false,
+    "inference_executed": false,
+    "scoring_executed": false
+  },
+  "actions": {
+    "model_loads": 0,
+    "training": 0,
+    "inference": 0,
+    "scoring": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  }
+}

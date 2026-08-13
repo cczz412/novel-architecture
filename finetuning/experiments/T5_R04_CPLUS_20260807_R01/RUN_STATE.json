@@ -1,0 +1,17 @@
+{
+  "active_contract": "C2_UNIT",
+  "active_stage": "STAGE_1_ROOT_CAUSE",
+  "blockers": [
+    "CZ_DECISION_REQUIRED_FOR_EVALUATOR_R02_AND_NEXT_PROBE_SCOPE"
+  ],
+  "current_action": "REVIEW_STAGE_1_EXTERNAL_RETURN",
+  "experiment_id": "T5_R04_CPLUS_20260807_R01",
+  "large_scale_collection_started": false,
+  "model_api_called": false,
+  "next_action": "CZ_DECIDE_EVALUATOR_R02_AND_NEXT_PROBE_SCOPE",
+  "schema_version": "t5-r04-cplus-run-state-v1",
+  "stage_1_authorized": true,
+  "status": "STAGE_1_COMPLETE_EXTERNAL_REVIEW_RECEIVED_CZ_DECISION_REQUIRED",
+  "training_started": false,
+  "updated_at": "2026-08-07T20:19:52+08:00"
+}

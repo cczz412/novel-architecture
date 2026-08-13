@@ -1,0 +1,37 @@
+{
+  "adapter": null,
+  "core_gold_fact_count": 95,
+  "core_gold_rows": 48,
+  "core_gold_sha256": "90f68035708aa8dbfba609799a49f655a45c0cfb56e9af4e4c3085257a0e8494",
+  "created_at": "2026-08-07T23:03:13.408896+08:00",
+  "decode": {
+    "automatic_retries": 0,
+    "max_output_tokens": 2048,
+    "sampler": "greedy",
+    "temperature": 0.0
+  },
+  "external_api": false,
+  "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6",
+  "model_repo_id": "Qwen/Qwen3-4B-Instruct-2507",
+  "model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "questions": {
+    "Z00": {
+      "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/dev_core/sealed_r01/Z00_BASE_A_CORE_QUESTIONS.jsonl",
+      "rows": 48,
+      "sha256": "8414eda33f94a84bfa1f8ecffc3d878dd2816a2fa7754705606b49332cb173d2"
+    },
+    "Z01": {
+      "path": "/Users/a1234/挣钱/小说架构/finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/dev_core/sealed_r01/Z01_BASE_C2_CORE_QUESTIONS.jsonl",
+      "rows": 48,
+      "sha256": "3c94ccdc6d41efe5305e5105e062793fd3b3bb142938bd82183790da9f2ec665"
+    }
+  },
+  "run_order": [
+    "Z00",
+    "Z01"
+  ],
+  "schema_version": "t5-r04-dev-core-zero-training-run-lock-v1",
+  "sealed_inputs_mutable": false,
+  "status": "PREFLIGHT_PASS_READY_TO_RUN",
+  "training": false
+}

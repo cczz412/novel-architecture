@@ -1,0 +1,25 @@
+{
+  "content_multiset_identical": true,
+  "derived_sha256": "95e78fc3aff86194e2579f5c7d0ec5e5887cfacf0f30788702f02c4e3e88ac73",
+  "facts": 762,
+  "first36_byte_identical": true,
+  "gold_identical_by_case": true,
+  "rows": 48,
+  "runner_sha256": "e6fabfb6349f0f0c14f2cafe5760571a9cad6f898ece50a665b1642baf0ed507",
+  "scorer_sha256": "9cea499ff10a37dfe53cf54caad2e211e0d730e8ea13370dd99a88f49325383f",
+  "source_sha256": "87d241eee1d37569682b82d858b8fb7848c2e45b91092c7fc2bc99dec9297a98",
+  "tail_order": [
+    "LC-S01",
+    "LC-M06",
+    "LC-S02",
+    "LC-M05",
+    "LC-S03",
+    "LC-M04",
+    "LC-S04",
+    "LC-M03",
+    "LC-S05",
+    "LC-M02",
+    "LC-S06",
+    "LC-M01"
+  ]
+}

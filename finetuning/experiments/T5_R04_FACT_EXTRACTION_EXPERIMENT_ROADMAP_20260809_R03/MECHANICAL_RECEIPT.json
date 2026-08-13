@@ -1,0 +1,73 @@
+{
+  "schema_version": "fact-extraction-roadmap-mechanical-receipt/1.0",
+  "registry_id": "T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260809_R03",
+  "completed_at": "2026-08-09T20:05:55+08:00",
+  "status": "PASS_DESIGN_REGISTERED_NOT_RUN",
+  "parent": {
+    "registry_sha256": "1032f11162508f5b1747c606d932671d157eaadfdd02bf7f154e65ba78799134",
+    "tree_index_sha256_before": "8d00e5e59b8fcb3657e09401f4dd200d4cd9c149456ee95864e2b0a6b013d0e6",
+    "tree_index_sha256_after": "8d00e5e59b8fcb3657e09401f4dd200d4cd9c149456ee95864e2b0a6b013d0e6",
+    "byte_identity": "PASS_6_OF_6"
+  },
+  "hashes": {
+    "family_registry_sha256": "ebe2de313ad331cf36d77c85cd2582ffa62fddf4ff96a0c32b0e2e40bf401b69",
+    "output_manifest_sha256": "1761dd2ab777c92cb6d7cb65c702498c7dfd0f6038a123c118e748ab6565861f",
+    "consume_design_sha256": "9c212fb2e45a148600dbf056c8241b08e2e2200c499a1a7054d42c3cadcef20b",
+    "edge_design_sha256": "9501c206f04274c8a6e663035a5767b7302a48cdeb4b678773ce229feec9f43b"
+  },
+  "targeted_short_review": {
+    "status": "PASS",
+    "consume_p1_contract_line": 31,
+    "consume_search_contract_line": 56,
+    "edge_overdetermination_line": 30,
+    "edge_cycle_rule_line": 63,
+    "consume_v3_revision_record_lines": [101,102],
+    "edge_v3_revision_record_lines": [113,114],
+    "mechanism_absent_counterfactual_positive_remains_review_queue": true,
+    "runtime_semantic_verifier_added": false
+  },
+  "registry_checks": {
+    "inherited_extraction_families_exact_status_and_phase": "PASS_19_OF_19",
+    "new_unique_ids": [
+      "CONSUME",
+      "CONSUME-DOSE",
+      "CONSUME-SELECT",
+      "CONSUME-ROUTE",
+      "CONSUME-CRAFT",
+      "CONSUME-MODEL",
+      "EDGE"
+    ],
+    "new_id_collision_count": 0,
+    "all_new_statuses_design_registered_not_run": true,
+    "consume_counted_as_extraction_family": false,
+    "edge_writes_fact_truth_layer": false,
+    "read_queue_preserved": true,
+    "train72_read_route_interrupted": false,
+    "current_four_b_training_cells_consumed": false
+  },
+  "mechanical_checks": {
+    "json_parse": true,
+    "manifest_member_hashes_match": true,
+    "manifest_member_bytes_match": true,
+    "exact_directory_file_set": true,
+    "markdown_source_footers": true,
+    "parent_binding_matches": true,
+    "source_design_hashes_match": true
+  },
+  "authorization": {
+    "model_run_authorized": false,
+    "api_authorized": false,
+    "training_authorized": false,
+    "notion_write_authorized": false,
+    "git_operation_authorized": false,
+    "production_promotion_authorized": false
+  },
+  "external_actions": {
+    "model_or_api_calls": 0,
+    "training_runs": 0,
+    "notion_reads": 0,
+    "notion_writes": 0,
+    "git_stage_commit_push": 0,
+    "active_pointer_changes": 0
+  }
+}

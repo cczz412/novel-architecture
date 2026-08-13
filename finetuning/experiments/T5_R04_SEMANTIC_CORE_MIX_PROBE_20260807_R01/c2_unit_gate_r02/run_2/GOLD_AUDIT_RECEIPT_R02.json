@@ -1,0 +1,18 @@
+{
+  "schema_version": "t5-r04-c2-unit-r02-audit-receipt-v1",
+  "status": "HARD_STOP_C2_UNIT_R02_GATE_FAILED",
+  "inputs": {
+    "questions_sha256": "72fbdedae4861954f3f3b49c9d30fca587b2d9685ff79b5317781729e9254dfb",
+    "bindings_sha256": "29bcfa4d87595ee918a88d230c5787bf933f172a55a3db7c2db92de683c9bec4",
+    "units_sha256": "32b601227b2bd3529ee6562c75a95c1516e483c28106ca9a33dad9a1ade65449",
+    "rendered_sha256": "426ae03335496a3ab6cc866533110fb60f96bb5c8fa8807d5b165ae0b0bdd65b"
+  },
+  "outputs": {
+    "FACT_MAPPING_AUDIT_R02.jsonl": "607600c15e66fa93708e3b2bc111452bbe0a102d1453bc2bc086f76620aa87dc",
+    "DUPLICATE_EQUIVALENCE_SETS.jsonl": "8e1cba80a777806e84e276fda7459434770da32c29be351fc8dd67913d093c07",
+    "AMBIGUITY_CASES_R02.jsonl": "2962de0819b9577a14ffa7d0635ab189e880f6cce1a83f944647d91da68470a5",
+    "INCOMPLETE_MAPPING_CASES_R02.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "C2_DERIVED_EXISTING_SCHEMA.jsonl": "5c57bfa7d18ed963239843d8e2018cb4d63ec932a52e0ee9193d836075ecebae",
+    "MECHANICAL_AUDIT_R02.json": "8aa61b428984e137d15fa5b53f46e20986bdb8c9abfcbf9443b84dacd8e2812b"
+  }
+}

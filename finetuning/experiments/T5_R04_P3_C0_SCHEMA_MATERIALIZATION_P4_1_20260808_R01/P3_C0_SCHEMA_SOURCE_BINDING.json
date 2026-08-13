@@ -1,0 +1,140 @@
+{
+  "authority_snapshots": {
+    "p3_output_manifest": {
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/P3_OUTPUT_MANIFEST.json",
+      "sha256": "d61161cbb731e1156771530b711b403fca0072c9f44e62b8ac3a5ce7b4a5e47d"
+    },
+    "p3_source_lock": {
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/sealed_inputs_r01/P3_SOURCE_AND_EXECUTION_LOCK.json",
+      "sha256": "da12e6fec8eaf4be243f1c58ba22dcacbc82ab9fe1590922235ad2686cf00860"
+    },
+    "p4_c0_binding": {
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_C0_SOURCE_BINDING.json",
+      "sha256": "284577f96b3b285a48b6502d320ca5ee54c439def37e04c5fd1a10b4a6146c7f"
+    },
+    "p4_gap_list": {
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_PREFLIGHT_GAP_LIST.jsonl",
+      "sha256": "1bae06bedf2215618e874ea2c3d565569161d0e3a25dea640d640901b0a2e320"
+    },
+    "p4_result_ticket": {
+      "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_PREFLIGHT_RESULT_TICKET.md",
+      "sha256": "c8cc626e6dc0fd004ad4011f1d94a2a7fd69d3084c65e61e617e47a960525032"
+    }
+  },
+  "derived": {
+    "equivalence_checker": {
+      "authority": "P4_1_DERIVED",
+      "bytes": 31529,
+      "path": "finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/tools/verify_p3_c0_schema_equivalence.py",
+      "sha256": "88369a0bba96fd562658fd03b2d436139e23b871a0eee07862538d70ec2f38f7"
+    },
+    "mutation_corpus": {
+      "authority": "P4_1_DERIVED",
+      "bytes": 22640,
+      "path": "finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/P3_C0_SCHEMA_MUTATION_CORPUS.jsonl",
+      "sha256": "ededafeab91ebca3e3e7b98f4908b1f83352d7dd77a8de35081986449ce39e05"
+    },
+    "standalone_schema": {
+      "authority": "P4_1_DERIVED",
+      "bytes": 1352,
+      "path": "finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/P3_C0_OUTPUT_STRUCTURAL_SCHEMA.json",
+      "sha256": "7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14"
+    }
+  },
+  "equivalence_scope": "standalone Schema 与已核 SHA 的 frozen check_schema 在固定 44 条目标 corpus、24 gold、24 历史输出上的接受语言等价；目标 corpus 中正常返回的 42 条布尔等价，2 条 oracle 异常单列且 Schema 正常拒绝，不声称失败方式相同。",
+  "model_run_authorized": false,
+  "non_claims": [
+    "未完整导入 M1 runner 模块",
+    "不宣称与训练运行时所有行为完全等价",
+    "不宣称与 Prompt 语义等价",
+    "不宣称所有 JSON 输入都获得相同布尔返回或相同异常行为",
+    "不宣称 standalone Schema 可无差别替换旧 runtime runner"
+  ],
+  "schema_version": "t5-r04-p4-1-c0-schema-source-binding-v1",
+  "sources": {
+    "frozen_m1_runner": {
+      "authority": "P3_SOURCE_AND_EXECUTION_LOCK",
+      "bytes": 31601,
+      "check_schema_oracle": {
+        "decorator_count": 0,
+        "function_name": "check_schema",
+        "global_dependencies": [
+          "ALLOWED_STATUS",
+          "ARMS",
+          "Any",
+          "all",
+          "bool",
+          "dict",
+          "enumerate",
+          "isinstance",
+          "list",
+          "set",
+          "str",
+          "tuple"
+        ],
+        "lineno_end": 488,
+        "lineno_start": 462,
+        "nested_function_count": 0,
+        "oracle_name": "FROZEN_SOURCE_AST_ORACLE",
+        "registered_ast_assignments": [
+          "ALLOWED_STATUS",
+          "ARMS['c2_full']['required']"
+        ],
+        "source_segment": "def check_schema(value: Any, arm: str) -> tuple[bool, list[str]]:\n    if not isinstance(value, dict) or set(value) != {\"facts\"} or not isinstance(value.get(\"facts\"), list):\n        return False, [\"top_level_facts_schema\"]\n    required = set(ARMS[arm][\"required\"])\n    errors = []\n    for index, item in enumerate(value[\"facts\"]):\n        if not isinstance(item, dict) or set(item) != required:\n            errors.append(f\"fact_{index}_keys\")\n            continue\n        if not isinstance(item.get(\"fact\"), str) or not item[\"fact\"]:\n            errors.append(f\"fact_{index}_fact\")\n        if item.get(\"status\") not in ALLOWED_STATUS:\n            errors.append(f\"fact_{index}_status\")\n        if item.get(\"speaker\") is not None and not isinstance(item.get(\"speaker\"), str):\n            errors.append(f\"fact_{index}_speaker\")\n        if arm == \"a_full\" and (not isinstance(item.get(\"evidence\"), str) or not item[\"evidence\"]):\n            errors.append(f\"fact_{index}_evidence\")\n        if arm == \"c2_full\" and (not isinstance(item.get(\"evidence_ids\"), list) or not all(isinstance(x, str) for x in item[\"evidence_ids\"])):\n            errors.append(f\"fact_{index}_evidence_ids\")\n        if arm == \"d_range\" and (not isinstance(item.get(\"evidence_ranges\"), list) or not all(isinstance(x, str) for x in item[\"evidence_ranges\"])):\n            errors.append(f\"fact_{index}_evidence_ranges\")\n        if arm == \"e_unit_quote\":\n            if not isinstance(item.get(\"unit_ids\"), list) or not all(isinstance(x, str) for x in item[\"unit_ids\"]):\n                errors.append(f\"fact_{index}_unit_ids\")\n            if not isinstance(item.get(\"quote\"), str) or not item[\"quote\"]:\n                errors.append(f\"fact_{index}_quote\")\n    return not errors, errors",
+        "source_segment_sha256": "d640d941642bc80567a01dfd1595d2e4be44ac588a80f0214be67c0edfeba8b5"
+      },
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/m1_r01/tools/m1_runner.py",
+      "sha256": "f2199b8f911894d8347878a97244ca3b41e8e19fc5297408fd6e8d18a2f81be7"
+    },
+    "p3_baseline_reproduction": {
+      "authority": "P3_OUTPUT_MANIFEST",
+      "bytes": 1163,
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/results_r01/CONTEXT_BASELINE_REPRODUCTION_RECEIPT.json",
+      "sha256": "d6fa31002767a61d53c4dea1cd92aad5f526d4ecadd63c1e08c3d6fa813206a1"
+    },
+    "p3_build": {
+      "authority": "P4_C0_SOURCE_BINDING",
+      "bytes": 22374,
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/tools/build_p3_inputs.py",
+      "sha256": "e515ccd358125a94a40de18a5762c81711558aef5c383ce89006e6835f53ef78"
+    },
+    "p3_c0_questions": {
+      "authority": "P4_C0_SOURCE_BINDING",
+      "bytes": 39020,
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/sealed_inputs_r01/track_b/prompts/c0_current_minimal_QUESTIONS_24.jsonl",
+      "sha256": "94492f050aa18169b47a3d799be903d37462984c0ace352c135b850dd1725258"
+    },
+    "p3_c0_raw_outputs": {
+      "authority": "P3_OUTPUT_MANIFEST",
+      "bytes": 56120,
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/results_r01/raw/c0_current_minimal/RAW_OUTPUTS.jsonl",
+      "sha256": "091c6a51701e1bb8cd136690a765eb5d86d995167db60f30de70947130e26f3a"
+    },
+    "p3_c0_raw_receipt": {
+      "authority": "P3_OUTPUT_MANIFEST",
+      "bytes": 726,
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/results_r01/raw/c0_current_minimal/INFERENCE_RECEIPT.json",
+      "sha256": "9d032653ab50ee830ffd193d66dd0b3c8a0dde22f5eb97534d1acbd11a653288"
+    },
+    "p3_run": {
+      "authority": "P4_C0_SOURCE_BINDING",
+      "bytes": 11882,
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/tools/run_p3_context_probe.py",
+      "sha256": "443b41eb2447d81827954145dfa49d7f886bd5d1925b32014ff1c46e0759235a"
+    },
+    "p3_scorer": {
+      "authority": "P3_OUTPUT_MANIFEST",
+      "bytes": 26166,
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/tools/score_p3_context_probe.py",
+      "sha256": "c7df1d96d785122d7af818c39c168be646298aa158cfa698102f24e4094e6674"
+    },
+    "renderer": {
+      "authority": "P4_C0_SOURCE_BINDING",
+      "bytes": 8207,
+      "path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/set_b_r03_work/sealed/T5_R04_SYNTHETIC_MICRO24_SET_B_R03_20260808/tools/render_from_canonical.py",
+      "sha256": "e2d57aafba20d28ac1b322b9f4f52b07c5e2d4365cb25e599c40be4620f0bedb"
+    }
+  },
+  "status": "PASS_FROZEN_SOURCE_BYTES_BOUND_NO_RUN_AUTHORITY",
+  "training_authorized": false
+}

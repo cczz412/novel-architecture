@@ -1,0 +1,17 @@
+{
+  "api_calls": 0,
+  "blind_queue_arm_exposure": false,
+  "cross_arm_shared_adjudication": true,
+  "fixture_role": "TEST_ONLY_NOT_MODEL_OUTPUT_NOT_EXPERIMENT_RESULT",
+  "legacy_messages_minus_last_used": false,
+  "messages_per_request": 2,
+  "model_inference_calls": 0,
+  "model_loaded": false,
+  "schema_version": "t5-r04-wo01-no-model-dry-run-receipt-v1",
+  "scorer_fixture_cases": 8,
+  "serialization_rows": 72,
+  "status": "PASS_TEST_ONLY_RUNNER_SCORER_DRY_RUN",
+  "system_and_user_both_serialized": 72,
+  "tokenizer_loaded": false,
+  "training_started": false
+}

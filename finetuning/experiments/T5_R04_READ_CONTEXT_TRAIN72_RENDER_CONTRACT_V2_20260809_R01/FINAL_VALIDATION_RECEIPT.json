@@ -1,0 +1,69 @@
+{
+  "schema_version": "read-context-train72-render-contract-v2-final-receipt/1.0",
+  "dataset_status": "CANDIDATE_NOT_YET_APPROVED",
+  "conclusion_zh": "72题已按统一格式合同渲染为READ1、READ2、READ4三份候选教材；机械验证通过，但本票不是训练授权",
+  "output_manifest": {
+    "path": "OUTPUT_MANIFEST.json",
+    "bytes": 2719,
+    "sha256": "fa5fce34402fca1c28872e152cc60b1f117f541efcb82b2978250acb9bf90d5f"
+  },
+  "content_counts": {
+    "rows_per_arm": 72,
+    "arms": 3,
+    "train36_cases": 36,
+    "existing_s6_m6_cases": 12,
+    "compact24_cases": 24,
+    "facts": 830,
+    "empty_fact_cases": 7,
+    "double_empty_adjacent_batches": 0
+  },
+  "output_sha256": {
+    "READ_1_TARGET_TRAIN72.jsonl": "21213ae287d002351136b92c9caeb7388d2e71432574f9c8dcdf5ec1c3797f76",
+    "READ_2_HALO180_TRAIN72.jsonl": "99b640b5cff5bc209a7c7d60b421f8b6159def472bd5f54ad1aa2dbeb26ff320",
+    "READ_4_FULL_CHAPTER_TRAIN72.jsonl": "2b80fb4a6b3ca73f29c5bf6eb1dd6c7622ca5baa40b93d674fdf873d00baa98d"
+  },
+  "mechanical_validation": {
+    "frozen_input_sha_match": "6/6",
+    "upstream_bytes_unchanged_after_build": true,
+    "strict_utf8_source_chapters": "24/24",
+    "compact_source_coordinate_target_sha": "24/24",
+    "compact_target_units_reconstruct_target": "24/24",
+    "old48_user_and_assistant_byte_identity_by_case": "48x3",
+    "compact24_gold_and_txx_mapping": "24x3",
+    "case_order_identical_across_arms": "72/72",
+    "system_identical_across_arms": "72/72",
+    "assistant_identical_across_arms": "72/72",
+    "numbered_target_and_allowlist_identical_across_arms": "72/72",
+    "metadata_identical_except_arm": "72/72",
+    "strict_nested_read_ranges_target_halo_full": "72/72",
+    "halo_each_side_at_most_180_unicode_characters": "72/72",
+    "full_chapter_has_no_extra_halo_copy": "72/72",
+    "source_footer_absent_from_model_visible_messages": "216/216",
+    "strict_json_no_duplicate_keys": "216/216",
+    "structural_schema_pass": "216/216",
+    "deterministic_in_process_builds": "2/2 byte_identical",
+    "deterministic_external_builds": "2/2 byte_identical",
+    "ruff_single_builder": "PASS",
+    "manifest_members": "5/5 bytes_and_sha_match",
+    "expected_directory_file_count": 7
+  },
+  "data_boundaries": {
+    "project_original_training_material_only": true,
+    "high_density_extension_gold_230_included": false,
+    "l6_included": false,
+    "local_real_screen24_included": false,
+    "prompt_or_gold_semantics_changed_beyond_fixed_system_contract": false,
+    "training_authorized": false
+  },
+  "external_actions": {
+    "model_calls": 0,
+    "api_calls": 0,
+    "training_runs": 0,
+    "adapters_generated": 0,
+    "notion_reads": 0,
+    "notion_writes": 0,
+    "git_stage_commit_push": 0,
+    "current_pointer_changes": 0,
+    "production_promotions": 0
+  }
+}

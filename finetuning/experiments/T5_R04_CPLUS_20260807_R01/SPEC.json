@@ -1,0 +1,186 @@
+{
+  "artifact_groups": [
+    {
+      "base_relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01",
+      "group_id": "cplus_control_plane",
+      "patterns": [
+        "00_ROUTE_MAP.md",
+        "contracts/*.md",
+        "decisions/*.md",
+        "receipts/PREFLIGHT_RECEIPT.md",
+        "receipts/P0_IMPORT_RECEIPT.json",
+        "stage_1_root_cause/advisory_input/*"
+      ],
+      "required": true,
+      "store_id": "MAIN_REPO"
+    },
+    {
+      "base_relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01",
+      "group_id": "upstream_ac_read_only",
+      "patterns": [
+        "sealed/BUILD_RECEIPT.json",
+        "sealed/SPLIT_LOCK.json",
+        "sealed/datasets/a/full_a.jsonl",
+        "sealed/datasets/a/stage_1_positive_a.jsonl",
+        "sealed/datasets/a/stage_2_special_a.jsonl",
+        "sealed/datasets/c/full_c.jsonl",
+        "sealed/datasets/c/stage_1_positive_c.jsonl",
+        "sealed/datasets/c/stage_2_special_c.jsonl",
+        "sealed/exams/a/QUESTIONS.jsonl",
+        "sealed/exams/c/QUESTIONS.jsonl",
+        "sealed/private_gold/a/GOLD.jsonl",
+        "sealed/private_gold/c/GOLD.jsonl",
+        "exam_rebalance_r03/sealed/a/QUESTIONS.jsonl",
+        "exam_rebalance_r03/sealed/c/QUESTIONS.jsonl",
+        "exam_rebalance_r03/sealed/private_gold/a/GOLD.jsonl",
+        "exam_rebalance_r03/sealed/private_gold/c/GOLD.jsonl",
+        "exam_rebalance_r03/results/EXAM_RUN_LOCK.json",
+        "exam_rebalance_r03/results/arm_a/RAW_OUTPUTS.jsonl",
+        "exam_rebalance_r03/results/arm_c/RAW_OUTPUTS.jsonl",
+        "runs/arm_a/stage_1_positive/adapters.safetensors",
+        "runs/arm_a/final/adapters.safetensors",
+        "runs/arm_c/stage_1_positive/adapters.safetensors",
+        "runs/arm_c/final/adapters.safetensors",
+        "tools/ac_exam_r03_runner.py"
+      ],
+      "required": true,
+      "store_id": "LAB"
+    }
+  ],
+  "assertions": [
+    {
+      "measurements": [
+        "full_rows_each_arm",
+        "full_rows_arm_c"
+      ],
+      "type": "equal"
+    },
+    {
+      "measurements": [
+        "current_exam_rows_each_arm",
+        "current_exam_rows_arm_c"
+      ],
+      "type": "equal"
+    },
+    {
+      "measurements": [
+        "current_gold_facts_each_arm",
+        "current_gold_facts_arm_c"
+      ],
+      "type": "equal"
+    },
+    {
+      "measurements": [
+        "old_frozen_exam_rows_each_arm",
+        "old_frozen_exam_rows_arm_c"
+      ],
+      "type": "equal"
+    }
+  ],
+  "boundaries": {
+    "may_authorize_promotion": false,
+    "may_authorize_training": false,
+    "may_modify_frozen_evidence": false,
+    "may_move_or_delete_assets": false
+  },
+  "current_gate": {
+    "required_receipts": [
+      {
+        "allowed_values": [
+          "P0_IMPORTED_STAGE_1_AUTHORIZED"
+        ],
+        "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/receipts/P0_IMPORT_RECEIPT.json",
+        "status_pointer": "/status",
+        "store_id": "MAIN_REPO"
+      }
+    ]
+  },
+  "experiment_id": "T5_R04_CPLUS_20260807_R01",
+  "manifest_revision": "r01",
+  "measurements": {
+    "current_exam_rows_arm_c": {
+      "operation": "jsonl_rows",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/c/QUESTIONS.jsonl",
+      "relative_to_source_root": false,
+      "store_id": "LAB"
+    },
+    "current_exam_rows_each_arm": {
+      "operation": "jsonl_rows",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/a/QUESTIONS.jsonl",
+      "relative_to_source_root": false,
+      "store_id": "LAB"
+    },
+    "current_gold_facts_arm_c": {
+      "operation": "jsonl_facts",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/private_gold/c/GOLD.jsonl",
+      "relative_to_source_root": false,
+      "store_id": "LAB"
+    },
+    "current_gold_facts_each_arm": {
+      "operation": "jsonl_facts",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/exam_rebalance_r03/sealed/private_gold/a/GOLD.jsonl",
+      "relative_to_source_root": false,
+      "store_id": "LAB"
+    },
+    "evaluator_sha256": {
+      "operation": "file_sha256",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/tools/ac_exam_r03_runner.py",
+      "relative_to_source_root": false,
+      "store_id": "LAB"
+    },
+    "full_rows_arm_c": {
+      "operation": "jsonl_rows",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/c/full_c.jsonl",
+      "relative_to_source_root": false,
+      "store_id": "LAB"
+    },
+    "full_rows_each_arm": {
+      "operation": "jsonl_rows",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/datasets/a/full_a.jsonl",
+      "relative_to_source_root": false,
+      "store_id": "LAB"
+    },
+    "old_frozen_exam_rows_arm_c": {
+      "operation": "jsonl_rows",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/exams/c/QUESTIONS.jsonl",
+      "relative_to_source_root": false,
+      "store_id": "LAB"
+    },
+    "old_frozen_exam_rows_each_arm": {
+      "operation": "jsonl_rows",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/exams/a/QUESTIONS.jsonl",
+      "relative_to_source_root": false,
+      "store_id": "LAB"
+    },
+    "raw_answer_records_total": {
+      "operation": "json_value",
+      "pointer": "/derived_facts/raw_answer_records_total",
+      "relative_path": "finetuning/experiments/T5_R04_AC_FORMAT_COMPARE_20260807_R01/MANIFEST.json",
+      "relative_to_source_root": false,
+      "store_id": "MAIN_REPO"
+    },
+    "training_rows_each_arm": {
+      "operation": "json_value",
+      "pointer": "/derived_facts/training_rows_each_arm",
+      "relative_path": "finetuning/experiments/T5_R04_AC_FORMAT_COMPARE_20260807_R01/MANIFEST.json",
+      "relative_to_source_root": false,
+      "store_id": "MAIN_REPO"
+    },
+    "upstream_manifest_sha256": {
+      "operation": "file_sha256",
+      "relative_path": "finetuning/experiments/T5_R04_AC_FORMAT_COMPARE_20260807_R01/MANIFEST.json",
+      "relative_to_source_root": false,
+      "store_id": "MAIN_REPO"
+    }
+  },
+  "schema_version": "finetuning-experiment-spec-v2",
+  "source_root": {
+    "relative_path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01",
+    "store_id": "MAIN_REPO"
+  },
+  "state": {
+    "lifecycle": "active_stage_1_authorized",
+    "promotion_state": "not_promoted",
+    "storage_state": "main_repo_control_lab_upstream"
+  }
+}

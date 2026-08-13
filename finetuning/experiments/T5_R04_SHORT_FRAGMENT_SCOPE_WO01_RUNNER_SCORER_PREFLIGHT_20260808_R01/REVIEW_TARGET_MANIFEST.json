@@ -1,0 +1,154 @@
+{
+  "member_count": 27,
+  "members": [
+    {
+      "bytes": 1876,
+      "path": "00_READ_ME_FIRST.md",
+      "sha256": "ef80cc5da10411297aad018e6f47d24dacd649dca0ae1eb65e7cba0c906c5d54"
+    },
+    {
+      "bytes": 792,
+      "path": "BOOTSTRAP_CONTRACT.json",
+      "sha256": "f5a2fbefeba32d5ccbf1cbcf3d8913d7a406ed08f7b8b6dc1c5580dae863f0bf"
+    },
+    {
+      "bytes": 363,
+      "path": "BUILD_DETERMINISM_RECEIPT.json",
+      "sha256": "f4d39e46f13dbaa747db8d2784d23d5157113490a7f34e801300581d1e7471c2"
+    },
+    {
+      "bytes": 1892,
+      "path": "EXECUTION_LOCK.json",
+      "sha256": "8ebf099200b549aee394deb86c8b032dcd87bfd2b1eb647cc1d8ffbb08224d89"
+    },
+    {
+      "bytes": 3076,
+      "path": "GAP_LIST.jsonl",
+      "sha256": "082de208e17f0dc8ec41c5e4d14c7e4e3c76e28998afee24750128932547d24d"
+    },
+    {
+      "bytes": 927,
+      "path": "INDEPENDENT_REVIEW_SCOPE.md",
+      "sha256": "558a017abf9c8842e06483410fd330396a21def1d44778c2231ee05ff0e03a26"
+    },
+    {
+      "bytes": 7646,
+      "path": "MECHANICAL_CHECKS_RECEIPT.json",
+      "sha256": "eb230a1e1caa6f164306cd9e132b6634b7d95196ea0c0543faf05f44eaaf240e"
+    },
+    {
+      "bytes": 578,
+      "path": "PRE_FINAL_VALIDATION_RECEIPT.json",
+      "sha256": "dc2fb953bc2a88d4788bb8a984f7194f19d0039b76d12191325b55ba840545e5"
+    },
+    {
+      "bytes": 1707,
+      "path": "RESULT_TICKET.md",
+      "sha256": "26aeb06fda82f034ecde9745eb6f417e8e642ea1b41efd8b280490dca173f429"
+    },
+    {
+      "bytes": 2343,
+      "path": "RUNNER_CONTRACT.md",
+      "sha256": "de3c058c3f49c41cc4121cb23cf21f57dc5599cbc81359347743a21c973d41e9"
+    },
+    {
+      "bytes": 2311,
+      "path": "RUN_AUTHORIZATION_SCHEMA.json",
+      "sha256": "b4ab0bf957ca7fa01168f1bc94f6f069e43121001d99c9647ef1a8e22511ca19"
+    },
+    {
+      "bytes": 3537,
+      "path": "SCORING_CONTRACT.md",
+      "sha256": "bc1fe026f294733a06cbda2cb5beb1956bf63863c807666114a37d39f159cc36"
+    },
+    {
+      "bytes": 1199,
+      "path": "SEMANTIC_ADJUDICATION_SCHEMA.json",
+      "sha256": "3dc2e06e4b629b29c55c26c75f37ddcccf08b63c3769fe7ca93562d137ec4a0d"
+    },
+    {
+      "bytes": 568,
+      "path": "derived_candidate/NO_MODEL_DRY_RUN_RECEIPT.json",
+      "sha256": "c7cd354c07f8328d177ecc0fed162e52c5bafe3077cf3aa997fc42ae7b5cec21"
+    },
+    {
+      "bytes": 4968,
+      "path": "derived_candidate/SOURCE_BINDING.json",
+      "sha256": "e049201bb4a79cd3b926d41a0f055bbe0fa582680078ff1de273c259c786b3e3"
+    },
+    {
+      "bytes": 586,
+      "path": "derived_candidate/TEST_ONLY_CROSS_ARM_ADJUDICATION_RECEIPT.json",
+      "sha256": "df51d781189abbc69da57d11498788d6a56dd2c7e953fbed74fb16af4355fbbc"
+    },
+    {
+      "bytes": 10643,
+      "path": "derived_candidate/TEST_ONLY_SCORER_BRANCH_RESULTS_8.jsonl",
+      "sha256": "9c8f0a827adfb342ff0fa846092666dffc1576c9c665bd2f06e7c4379bba43c5"
+    },
+    {
+      "bytes": 50058,
+      "path": "derived_candidate/TEST_ONLY_SERIALIZATION_EVIDENCE_72.jsonl",
+      "sha256": "138c3442d757a7232eab840a77beac51c3c88acf9eaeeedee6dfaeb7920f4d19"
+    },
+    {
+      "bytes": 809,
+      "path": "test_fixtures/CROSS_ARM_SHARED_ADJUDICATION.json",
+      "sha256": "d41f17f50d90184a881060a096d062ff7cf867544f793e7e5985b0257ddc3cb8"
+    },
+    {
+      "bytes": 2473,
+      "path": "test_fixtures/SCORER_BRANCH_FIXTURES.jsonl",
+      "sha256": "1655460d91e121d1c9c823da0d17f99ee24c54eae04adad89633065750d48edb"
+    },
+    {
+      "bytes": 16552,
+      "path": "tests/test_wo01_runner_scorer.py",
+      "sha256": "c6b6fe72788dd0b2666da6ba2e3e82e0cd49573e21d58c3c293603747d394b50"
+    },
+    {
+      "bytes": 7978,
+      "path": "tools/build_preflight_evidence.py",
+      "sha256": "834eedc0cedff06969b9c046682117839d539ed3eb28072d5129848bfcedd97c"
+    },
+    {
+      "bytes": 7151,
+      "path": "tools/finalize_preflight.py",
+      "sha256": "7611a7b846659016fb414fd9323b30c685baf4833711f4cb1b2f8595816d0b71"
+    },
+    {
+      "bytes": 2639,
+      "path": "tools/run_mechanical_checks.py",
+      "sha256": "dfc49306644e7f8049c0074ea2ba84da3a320a922b5062f189c9db58ffd565f4"
+    },
+    {
+      "bytes": 25514,
+      "path": "tools/run_wo01_scope_probe.py",
+      "sha256": "f947f9799a487d90afd3df88e45b2b269b8d4de1c056cad36e4b8e55344bcd4d"
+    },
+    {
+      "bytes": 36825,
+      "path": "tools/score_wo01_scope_probe.py",
+      "sha256": "fd1f15c3020afd04ac3054e2349a4d307fc12a273aad004bd72ab2cf56143d58"
+    },
+    {
+      "bytes": 9303,
+      "path": "tools/validate_preflight.py",
+      "sha256": "095a2b98d3dcb649546b7cbc2acb3b156b84fc4b6ade57f8e36dac1f1fa03b91"
+    }
+  ],
+  "review_must_cover": [
+    "two_message_full_serialization",
+    "stream_generate_signature",
+    "memory_and_mlx_guards",
+    "base_model_13_member_formal_run_gate",
+    "single_use_fixed_run_root",
+    "raw_and_run_receipt_identity",
+    "cross_arm_blind_shared_semantic_adjudication",
+    "immutable_pre_and_final_scoring",
+    "bootstrap_contract",
+    "no_model_api_training_or_preflight_runtime_writes"
+  ],
+  "schema_version": "t5-r04-wo01-runner-scorer-review-target-v1",
+  "status": "READY_FOR_INDEPENDENT_READONLY_REVIEW"
+}

@@ -1,0 +1,78 @@
+{
+  "schema_version": "read1-train96-token-weighted-prepare-receipt/1.0",
+  "preparation_status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "conclusion_zh": "TRAIN96 READ1单臂资格包已准备，等待控制窗审计和精确执行票",
+  "members": {
+    "build_and_check_train96_prep.py": {
+      "bytes": 24671,
+      "sha256": "a6885ff4785aa2aae5b203a782eedfa968b9119cfadb26023c06bbb315bb005c"
+    },
+    "READ_1_TARGET_TRAIN96.jsonl": {
+      "bytes": 511621,
+      "sha256": "e059529d9ce39e7f9044f3d966dba00d0e19b2206098a827415473c38c46e4ad"
+    },
+    "TRAIN96_TOKEN_STATS.json": {
+      "bytes": 23569,
+      "sha256": "d888c3e6e7c77df6c903c98798eb8a18cf666230f88a351f9e13ae5b30782c25"
+    },
+    "SPEC.json": {
+      "bytes": 4663,
+      "sha256": "adce4c464d1b9ef0fa2fa79afd2ca781ec1435d36a109bb97646c928a4ab252e"
+    },
+    "run_train96_token_weighted.py": {
+      "bytes": 22690,
+      "sha256": "da6174592c09714660cbdedb7381cc7b58432bab7192615b84e4d688d598b40e"
+    },
+    "score_train96_l6.py": {
+      "bytes": 11613,
+      "sha256": "11ae95972f645d6d6fbab50558ec7d8465db47877c193f27cf5bc0a037fe18f7"
+    }
+  },
+  "upstream": {
+    "old_train72_sha256": "9c1a2202380f5c589d590a34354309643b1bb8fc0a12732184e11a282c924797",
+    "r03_source_sha256": "1067ec9ac4808523f543412cd419f133f3c352811467c032641ec1ba0ece350a",
+    "r03_gold_sha256": "1bec7dbfc26878e0553e8f34319c072c46da0f6b80e4a3ae19842629451bec6d",
+    "r03_sidecar_sha256": "239427e1780304be28eff3301132a5cf9304682798d37adc60fe6d5fed40d9df",
+    "r03_manifest_sha256": "7eff5f3f591e6b79a69e005c1d654e9b68cf0e4597c8cdd061fb17fb39703ee4",
+    "r03_receipt_sha256": "f79306c8d7eeaafdba7b465437bf455ea64ee8f6dfb479fd3c378d3f5096338c",
+    "diagnostic_fail_sha256": "399c7eab1bf4f99cdf5012bf9ee027e15c798567d99a4082d5f15efdae57f62c",
+    "preflight_receipt_sha256": "4e46a23ca6da1741c1027884a2a4e9c35cd3fb21576c1f8e58fc97166a08d31c",
+    "trainer_sha256": "2ff621480fb043220f8dff29d01f85f6e8f8ffe9b04fb2eebc415a837b0be1c6",
+    "vendor_tree_sha256": "2e77413bec6141f2a71b1fac032f5967bdfb9e2b65ba43a1b484d78d4e1f8059",
+    "r04_ledger_sha256": "dde7d3b38e82a093e0be2e47b74239261232504f71e28fa6d930c7454ea97267",
+    "r04_registry_sha256": "73b807ca6e64d290c618b8d4e37c9f1be5253c1274116d4c45a302498d7f82da"
+  },
+  "validation": {
+    "rows": 96,
+    "facts": 879,
+    "empty_answers": 15,
+    "old72_prefix_byte_identical": true,
+    "r03_new24_canonical_order": true,
+    "uniform_system_contract": true,
+    "l6_real24_exact_overlap": 0,
+    "l6_real24_coordinate_overlap": 0,
+    "max_sequence_tokens": 2850,
+    "truncated_samples": 0,
+    "run_root_exists": false,
+    "model_weights_loaded": false,
+    "training_runs": 0,
+    "inference_runs": 0,
+    "api_calls": 0
+  },
+  "token_accounting": {
+    "old72_assistant_loss_tokens": 31928,
+    "new24_assistant_loss_tokens": 2143,
+    "combined_assistant_loss_tokens": 34071,
+    "new24_share": 0.06289806580376273
+  },
+  "external_actions": {
+    "model_loads": 0,
+    "training_runs": 0,
+    "inference_runs": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_pointer_changes": 0,
+    "production_actions": 0
+  }
+}

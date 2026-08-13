@@ -1,0 +1,61 @@
+{
+  "actions_performed": {
+    "current_pointer_change": false,
+    "git_operation": false,
+    "gold_change": false,
+    "model_or_api_call": false,
+    "notion_write": false,
+    "p3_or_p4_existing_file_change": false,
+    "production_canonical_generation": false,
+    "prompt_or_renderer_change": false,
+    "rights_release": false,
+    "synthetic_generation": false,
+    "training": false
+  },
+  "authority": {
+    "model_run": false,
+    "production_promotion": false,
+    "real_six_arm_experiment": false,
+    "synthetic_generation": false,
+    "training": false
+  },
+  "construction_history": {
+    "cause": "冻结 runner 顶层训练依赖 yaml 不在仓库锁定环境；jsonschema 4.26.0 已存在。",
+    "final_resolution": "恢复 status=[] 与 status={}，以 accepted-language 等价为主口径；异常单列且 Schema 必须拒绝。未改旧 runner。",
+    "initial_locked_env_result": "3 failed / 1 passed",
+    "invalidated_method": "DIRECT_FULL_MODULE_IMPORT",
+    "resolution": "核整文件 SHA 后，以 FROZEN_SOURCE_AST_ORACLE 执行原 AST 函数节点及同 AST 常量；未安装依赖、未改旧 runner。",
+    "second_cause": "最初把非字符串 status 设为 list，冻结 runner 对不可哈希值抛 TypeError，无法形成布尔对照。",
+    "second_result": "2 failed / 2 passed",
+    "second_temporary_resolution_invalidated": "曾把该位换成数值 7；后续审查要求恢复不可哈希难例，因此该临时方案不再作为最终 corpus。"
+  },
+  "manifest": {
+    "bytes": 2273,
+    "listed_member_count": 11,
+    "path": "finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/P4_1_OUTPUT_MANIFEST.json",
+    "sha256": "91347c7bc64fd170e2b98d8a10aea9269f9e20d556ab254e431f3ddbc197936b"
+  },
+  "schema_version": "t5-r04-p4-1-final-validation-receipt-v1",
+  "status": "PASS_P3_C0_STRUCTURAL_SCHEMA_MATERIALIZED_NO_RUN_AUTHORITY",
+  "validated_at_asia_shanghai": "2026-08-08T18:43:23.472827+08:00",
+  "validated_at_utc": "2026-08-08T10:43:23.472827+00:00",
+  "validation": {
+    "accepted_language_mismatches_total": 0,
+    "equivalence_check": "{\"status\": \"PASS_P3_C0_STRUCTURAL_SCHEMA_MATERIALIZED_NO_RUN_AUTHORITY\", \"mutation_cases\": 44, \"gold_cases\": 24, \"historical_cases\": 24, \"accepted_language_mismatches\": 0, \"oracle_exceptions\": 2, \"ordered_case_id_sha256\": \"fa0969243f04dd7ec73c4d4a26c7e2986c3acd5e911767aafb84b5d88c8a63a0\"}",
+    "gold_replay": "24/24 accepted by both",
+    "historical_replay": "18 valid / 6 invalid / 0 accepted-language mismatches",
+    "mutation_cases": 44,
+    "normal_return_boolean_mismatches_total": 0,
+    "oracle": "FROZEN_SOURCE_AST_ORACLE",
+    "oracle_exception_cases": [
+      "M043",
+      "M044"
+    ],
+    "oracle_exception_type": "TypeError",
+    "ordered_case_id_sha256": "fa0969243f04dd7ec73c4d4a26c7e2986c3acd5e911767aafb84b5d88c8a63a0",
+    "pytest_command": "uv run --locked pytest -q finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/tests/test_p3_c0_schema_equivalence.py",
+    "pytest_result": "......                                                                   [100%]\n6 passed in 0.12s",
+    "ruff_command": "uv run --locked ruff check finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/tools finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/tests",
+    "ruff_result": "All checks passed!"
+  }
+}

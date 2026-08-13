@@ -1,0 +1,496 @@
+{
+  "comparisons_vs_c0": {
+    "c1_rulebook_8": {
+      "gold_matches_gained_vs_c0": 1,
+      "gold_matches_lost_vs_c0": 20,
+      "mean_input_token_delta": 104.0,
+      "mean_output_token_delta": -28.834,
+      "paired_case_f1": {
+        "arm_better": 2,
+        "arm_worse": 13,
+        "same": 9
+      },
+      "precision_delta": -0.028428,
+      "prediction_count_delta": -20,
+      "recall_delta": -0.395833,
+      "schema_case_delta": 2,
+      "semantic_f1_delta": -0.271995
+    },
+    "c2_purpose_short": {
+      "gold_matches_gained_vs_c0": 1,
+      "gold_matches_lost_vs_c0": 2,
+      "mean_input_token_delta": 46.0,
+      "mean_output_token_delta": -3.417,
+      "paired_case_f1": {
+        "arm_better": 1,
+        "arm_worse": 2,
+        "same": 21
+      },
+      "precision_delta": 0.018775,
+      "prediction_count_delta": -2,
+      "recall_delta": -0.020833,
+      "schema_case_delta": -1,
+      "semantic_f1_delta": -0.002313
+    },
+    "c4_previous_state_confirmed": {
+      "gold_matches_gained_vs_c0": 2,
+      "gold_matches_lost_vs_c0": 4,
+      "mean_input_token_delta": 69.458,
+      "mean_output_token_delta": 3.5,
+      "paired_case_f1": {
+        "arm_better": 1,
+        "arm_worse": 3,
+        "same": 20
+      },
+      "precision_delta": -0.096716,
+      "prediction_count_delta": 3,
+      "recall_delta": -0.041667,
+      "schema_case_delta": 1,
+      "semantic_f1_delta": -0.068875
+    }
+  },
+  "created_at": "2026-08-08T16:07:38+08:00",
+  "diagnostics": {
+    "c1_rule_induced_over_conservatism": {
+      "gold_matches_lost_vs_c0": 20,
+      "interpretation": "8 条规则显著压低输出与召回；这是过度保守信号，不是质量提升。",
+      "prediction_count_delta": -20
+    },
+    "c2_purpose_induced_summary_bias": {
+      "interpretation": "只登记概括化/过宽风险；不得把任务目的直接晋升为默认输入。",
+      "partial_or_broad_predictions": 2,
+      "prediction_count_delta": -2
+    },
+    "c4_background_only_unsupported_fact": {
+      "case_ids": [
+        "MICRO24B-S16",
+        "MICRO24B-S23"
+      ],
+      "count": 2,
+      "interpretation": "明确确认前态仍可能被模型抄入负责区答案。",
+      "mechanical_signal": "预测引用 B01；正式 C2 负责区只允许 Txx，故同时构成只读前态泄漏与不存在的目标 evidence ID。"
+    },
+    "c4_contract_note": "C4 重复显式标注了原题已含的 read_only_before；它测试标签/强调效果，不是新增信息量。",
+    "c4_previous_state_conflict": {
+      "count": 0,
+      "interpretation": "同题复核未见与确认前态直接矛盾的预测。"
+    }
+  },
+  "metrics": {
+    "c0_current_minimal": {
+      "case_count": 24,
+      "complete_schema": {
+        "cases": 18,
+        "rate": 0.75
+      },
+      "evidence_binding_on_semantic_matches": {
+        "denominator": 42,
+        "exact": 42,
+        "rate": 1.0
+      },
+      "evidence_id_validity": {
+        "all": 47,
+        "nonexistent": 0,
+        "rate": 1.0,
+        "valid": 47
+      },
+      "gold_fact_count": 48,
+      "input_tokens": {
+        "max": 224,
+        "mean": 188.75,
+        "min": 162,
+        "p50": 184.5,
+        "p95": 221.7
+      },
+      "json_parse": {
+        "cases": 24,
+        "rate": 1.0
+      },
+      "normalized_fact": {
+        "f1": 0.155844,
+        "fn": 42,
+        "fp": 23,
+        "precision": 0.206897,
+        "recall": 0.125,
+        "tp": 6
+      },
+      "output_tokens": {
+        "max": 152,
+        "mean": 71.542,
+        "min": 4,
+        "p50": 71.0,
+        "p95": 151.55
+      },
+      "prediction_count": 46,
+      "required_key_recall": {
+        "present": 184,
+        "rate": 1.0,
+        "total": 184
+      },
+      "semantic_category_counts": {
+        "EXTRA_BUT_TEXT_SUPPORTED_FACT": 2,
+        "PARTIALLY_CORRECT_UNDER_SPECIFIED": 1,
+        "SEMANTIC_EQUIVALENT": 42,
+        "WRONG": 1
+      },
+      "semantic_recoverable": {
+        "f1": 0.893617,
+        "fn": 6,
+        "fp": 4,
+        "precision": 0.913043,
+        "recall": 0.875,
+        "tp": 42
+      },
+      "semantic_structured": {
+        "f1": 0.649351,
+        "fn": 23,
+        "fp": 4,
+        "precision": 0.862069,
+        "recall": 0.520833,
+        "tp": 25
+      },
+      "speaker_accuracy_on_semantic_matches": {
+        "correct": 22,
+        "denominator": 42,
+        "rate": 0.52381
+      },
+      "status_accuracy_on_semantic_matches": {
+        "correct": 35,
+        "denominator": 42,
+        "rate": 0.833333
+      },
+      "status_legality": {
+        "correct": 39,
+        "denominator": 46,
+        "rate": 0.847826
+      },
+      "strict_fact": {
+        "f1": 0.155844,
+        "fn": 42,
+        "fp": 23,
+        "precision": 0.206897,
+        "recall": 0.125,
+        "tp": 6
+      },
+      "termination": {
+        "clean_cases": 24,
+        "exact_duplicate_objects": 0,
+        "repetition_cases": 0,
+        "token_limit_cases": 0
+      }
+    },
+    "c1_rulebook_8": {
+      "case_count": 24,
+      "complete_schema": {
+        "cases": 20,
+        "rate": 0.833333
+      },
+      "evidence_binding_on_semantic_matches": {
+        "denominator": 23,
+        "exact": 23,
+        "rate": 1.0
+      },
+      "evidence_id_validity": {
+        "all": 27,
+        "nonexistent": 0,
+        "rate": 1.0,
+        "valid": 27
+      },
+      "gold_fact_count": 48,
+      "input_tokens": {
+        "max": 328,
+        "mean": 292.75,
+        "min": 266,
+        "p50": 288.5,
+        "p95": 325.7
+      },
+      "json_parse": {
+        "cases": 24,
+        "rate": 1.0
+      },
+      "normalized_fact": {
+        "f1": 0.065574,
+        "fn": 46,
+        "fp": 11,
+        "precision": 0.153846,
+        "recall": 0.041667,
+        "tp": 2
+      },
+      "output_tokens": {
+        "max": 153,
+        "mean": 42.708,
+        "min": 4,
+        "p50": 19.5,
+        "p95": 144.8
+      },
+      "prediction_count": 26,
+      "required_key_recall": {
+        "present": 104,
+        "rate": 1.0,
+        "total": 104
+      },
+      "semantic_category_counts": {
+        "EXTRA_BUT_TEXT_SUPPORTED_FACT": 1,
+        "PARTIALLY_CORRECT_UNDER_SPECIFIED": 1,
+        "SEMANTIC_EQUIVALENT": 23,
+        "WRONG": 1
+      },
+      "semantic_recoverable": {
+        "f1": 0.621622,
+        "fn": 25,
+        "fp": 3,
+        "precision": 0.884615,
+        "recall": 0.479167,
+        "tp": 23
+      },
+      "semantic_structured": {
+        "f1": 0.360656,
+        "fn": 37,
+        "fp": 2,
+        "precision": 0.846154,
+        "recall": 0.229167,
+        "tp": 11
+      },
+      "speaker_accuracy_on_semantic_matches": {
+        "correct": 12,
+        "denominator": 23,
+        "rate": 0.521739
+      },
+      "status_accuracy_on_semantic_matches": {
+        "correct": 17,
+        "denominator": 23,
+        "rate": 0.73913
+      },
+      "status_legality": {
+        "correct": 22,
+        "denominator": 26,
+        "rate": 0.846154
+      },
+      "strict_fact": {
+        "f1": 0.065574,
+        "fn": 46,
+        "fp": 11,
+        "precision": 0.153846,
+        "recall": 0.041667,
+        "tp": 2
+      },
+      "termination": {
+        "clean_cases": 24,
+        "exact_duplicate_objects": 0,
+        "repetition_cases": 0,
+        "token_limit_cases": 0
+      }
+    },
+    "c2_purpose_short": {
+      "case_count": 24,
+      "complete_schema": {
+        "cases": 17,
+        "rate": 0.708333
+      },
+      "evidence_binding_on_semantic_matches": {
+        "denominator": 41,
+        "exact": 41,
+        "rate": 1.0
+      },
+      "evidence_id_validity": {
+        "all": 45,
+        "nonexistent": 0,
+        "rate": 1.0,
+        "valid": 45
+      },
+      "gold_fact_count": 48,
+      "input_tokens": {
+        "max": 270,
+        "mean": 234.75,
+        "min": 208,
+        "p50": 230.5,
+        "p95": 267.7
+      },
+      "json_parse": {
+        "cases": 24,
+        "rate": 1.0
+      },
+      "normalized_fact": {
+        "f1": 0.164384,
+        "fn": 42,
+        "fp": 19,
+        "precision": 0.24,
+        "recall": 0.125,
+        "tp": 6
+      },
+      "output_tokens": {
+        "max": 153,
+        "mean": 68.125,
+        "min": 4,
+        "p50": 68.5,
+        "p95": 151.55
+      },
+      "prediction_count": 44,
+      "required_key_recall": {
+        "present": 176,
+        "rate": 1.0,
+        "total": 176
+      },
+      "semantic_category_counts": {
+        "PARTIALLY_CORRECT_UNDER_SPECIFIED": 2,
+        "SEMANTIC_EQUIVALENT": 41,
+        "WRONG": 1
+      },
+      "semantic_recoverable": {
+        "f1": 0.891304,
+        "fn": 7,
+        "fp": 3,
+        "precision": 0.931818,
+        "recall": 0.854167,
+        "tp": 41
+      },
+      "semantic_structured": {
+        "f1": 0.60274,
+        "fn": 26,
+        "fp": 3,
+        "precision": 0.88,
+        "recall": 0.458333,
+        "tp": 22
+      },
+      "speaker_accuracy_on_semantic_matches": {
+        "correct": 23,
+        "denominator": 41,
+        "rate": 0.560976
+      },
+      "status_accuracy_on_semantic_matches": {
+        "correct": 33,
+        "denominator": 41,
+        "rate": 0.804878
+      },
+      "status_legality": {
+        "correct": 36,
+        "denominator": 44,
+        "rate": 0.818182
+      },
+      "strict_fact": {
+        "f1": 0.164384,
+        "fn": 42,
+        "fp": 19,
+        "precision": 0.24,
+        "recall": 0.125,
+        "tp": 6
+      },
+      "termination": {
+        "clean_cases": 24,
+        "exact_duplicate_objects": 0,
+        "repetition_cases": 0,
+        "token_limit_cases": 0
+      }
+    },
+    "c4_previous_state_confirmed": {
+      "case_count": 24,
+      "complete_schema": {
+        "cases": 19,
+        "rate": 0.791667
+      },
+      "evidence_binding_on_semantic_matches": {
+        "denominator": 40,
+        "exact": 40,
+        "rate": 1.0
+      },
+      "evidence_id_validity": {
+        "all": 49,
+        "nonexistent": 2,
+        "rate": 0.959184,
+        "valid": 47
+      },
+      "gold_fact_count": 48,
+      "input_tokens": {
+        "max": 295,
+        "mean": 258.208,
+        "min": 229,
+        "p50": 255.0,
+        "p95": 291.1
+      },
+      "json_parse": {
+        "cases": 24,
+        "rate": 1.0
+      },
+      "normalized_fact": {
+        "f1": 0.098765,
+        "fn": 44,
+        "fp": 29,
+        "precision": 0.121212,
+        "recall": 0.083333,
+        "tp": 4
+      },
+      "output_tokens": {
+        "max": 153,
+        "mean": 75.042,
+        "min": 32,
+        "p50": 70.5,
+        "p95": 151.4
+      },
+      "prediction_count": 49,
+      "required_key_recall": {
+        "present": 196,
+        "rate": 1.0,
+        "total": 196
+      },
+      "semantic_category_counts": {
+        "EXTRA_BUT_READ_ONLY_SUPPORTED_FACT": 1,
+        "EXTRA_BUT_TEXT_SUPPORTED_FACT": 5,
+        "PARTIALLY_CORRECT_OVER_BROAD": 1,
+        "PARTIALLY_CORRECT_UNDER_SPECIFIED": 1,
+        "SEMANTIC_EQUIVALENT": 40,
+        "WRONG": 1
+      },
+      "semantic_recoverable": {
+        "f1": 0.824742,
+        "fn": 8,
+        "fp": 9,
+        "precision": 0.816327,
+        "recall": 0.833333,
+        "tp": 40
+      },
+      "semantic_structured": {
+        "f1": 0.592593,
+        "fn": 24,
+        "fp": 9,
+        "precision": 0.727273,
+        "recall": 0.5,
+        "tp": 24
+      },
+      "speaker_accuracy_on_semantic_matches": {
+        "correct": 19,
+        "denominator": 40,
+        "rate": 0.475
+      },
+      "status_accuracy_on_semantic_matches": {
+        "correct": 33,
+        "denominator": 40,
+        "rate": 0.825
+      },
+      "status_legality": {
+        "correct": 43,
+        "denominator": 49,
+        "rate": 0.877551
+      },
+      "strict_fact": {
+        "f1": 0.098765,
+        "fn": 44,
+        "fp": 29,
+        "precision": 0.121212,
+        "recall": 0.083333,
+        "tp": 4
+      },
+      "termination": {
+        "clean_cases": 24,
+        "exact_duplicate_objects": 0,
+        "repetition_cases": 0,
+        "token_limit_cases": 0
+      }
+    }
+  },
+  "semantic_review": {
+    "new_same_case_decisions": 10,
+    "reused_frozen_decisions": 69,
+    "unique_predictions": 79
+  },
+  "status": "PASS_P3_CONTEXT_CONTRACT_ZERO_TRAINING_SCORING_COMPLETE"
+}

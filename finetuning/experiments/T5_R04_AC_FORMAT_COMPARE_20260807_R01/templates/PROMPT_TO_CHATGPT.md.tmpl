@@ -1,0 +1,48 @@
+# 任务：独立查明 T5 R04 A/C 两版 LoRA 对照失败原因
+
+请先完整解压附件，只认包内 `00_ROUTE_MAP.md`、`01_current_truth/`、`02_current_route/`、`03_upstream_evidence/` 和 `_route/ROUTE_SELECTION.json` 的材料身份。
+
+## 你要回答的核心问题
+
+同一 Qwen3-4B 基座、声称语义对齐但需要你独立核验的 A/C 训练内容，以及相同两阶段顺序下：
+
+- A 版要求模型输出 `fact/status/evidence/speaker`，证据为逐字原文；
+- C 版把 evidence 改成正文编号加不超过 5 字锚字；
+- A 出现大量长输出与截断；
+- C 的 JSON 成功率明显提高、输出更短，但编号加锚字几乎全部不合法，并出现更多复读；
+- 两臂严格文本 F1 都是 {{STRICT_F1_SHARED}}。
+
+请独立判断这些现象分别由什么造成。不要默认接受本地异常票，也不要把旧 B v2.1 顾问报告当答案。
+
+## 必须做的审查
+
+1. 逐行阅读 A/C 两版的正向与特殊训练集，以及四份实际消费训练输入。每臂封版母集共 {{FULL_ROWS_EACH_ARM}} 行，其中实际训练分母应为 {{TRAINING_ROWS_EACH_ARM}} 行＝正向 {{STAGE1_ROWS_EACH_ARM}}＋特殊 {{STAGE2_ROWS_EACH_ARM}}，另外 {{OLD_EXAM_ROWS_EACH_ARM}} 行是旧冻结评测隔离。请独立复算这些分母，并判断正向后特殊的两阶段训练是否造成遗忘、输出偏置或格式污染；不得把旧 {{OLD_EXAM_ROWS_EACH_ARM}} 行混进训练分母。
+2. 对比 A/C 训练答案的事实语义是否真的等价；查找系统提示、用户题面、编号桥接区、锚字、长链编号、speaker/status 和 JSON 序列化是否自相矛盾。
+3. 只用 `exam_rebalance_r03/sealed/` 的当前 {{CURRENT_EXAM_ROWS_EACH_ARM}} 题／{{CURRENT_GOLD_FACTS_EACH_ARM}} 条金标和 `exam_rebalance_r03/results/` 的输出做本轮成绩分析。`sealed/exams/` 的 {{OLD_EXAM_ROWS_EACH_ARM}} 题只是旧冻结隔离卷，不是当前成绩分母。对 {{RAW_ANSWER_RECORDS_TOTAL}} 份原始答卷逐案诊断，每臂 {{CURRENT_EXAM_ROWS_EACH_ARM}} 案必须各出现一次，不能只抽样看成功案例。
+4. 独立审查评分器：区分真正没命中与评分口径错杀，解释为什么严格三元组 F1 会同时为 0；至少人工复核每臂 10 个机器记 0 的案例，其中要覆盖格式有效、格式失败、复读和截断。
+5. 检查训练日志、配方、阶段衔接、解码参数和 {{MAX_OUTPUT_TOKENS}} 输出上限，判断哪些是直接机制、哪些只是放大因素。
+6. 对下列病因分别给直接证据、反证、置信度和最便宜的证伪方式：
+   - 教材语义或格式矛盾；
+   - C 编号／锚字生成任务本身过难或定义不稳；
+   - 两阶段顺序导致遗忘；
+   - 输出上限或解码设置造成表面失败；
+   - 评分器过严或实现错误；
+   - 基座容量不足；
+   - LoRA 参数或训练步数不合适。
+7. 给出下一轮最小实验，最多 3 个，要求一次只改一个变量。不要直接建议大规模重标或再训练很多轮。
+
+## 交付格式
+
+请生成一个可下载 ZIP，根目录严格包含：
+
+- `AC_ROOT_CAUSE_REPORT.md`：大白话总判、证据链、病因排序和不能下的结论；
+- `CASE_DIAGNOSIS_{{RAW_ANSWER_RECORDS_TOTAL}}.jsonl`：A/C 各 {{CURRENT_EXAM_ROWS_EACH_ARM}} 案逐案诊断；
+- `HYPOTHESIS_RANKING.json`：病因、直接证据、反证、置信度、证伪实验；
+- `EVALUATOR_AUDIT.md`：评分器审计与人工复核案例；
+- `MINIMAL_FALSIFICATION_PLAN.md`：最多 3 个单变量实验；
+- `RETURN_MANIFEST.json`；
+- `SELF_CHECK.md`。
+
+状态必须写 `CANDIDATE_PENDING_LOCAL_VERIFICATION`。不要修改或回传一份新的完整训练集，不要训练，不要调用外部 API，不要宣称已经替 CZ 拍板。
+
+来源：Codex

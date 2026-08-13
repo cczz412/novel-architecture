@@ -1,0 +1,176 @@
+{
+  "schema_version": "train96-source6-recut24-final-validation-receipt/2.0",
+  "dataset_status": "PASS_CANDIDATE_MODEL_NEUTRAL_GOLD_PENDING_CONTROL_REVIEW",
+  "conclusion_zh": "24题、49条模型中立Gold候选完成R02语义修正和长度捷径修复，等待控制窗审收，不是训练授权",
+  "output_manifest": {
+    "path": "OUTPUT_MANIFEST.json",
+    "bytes": 1639,
+    "sha256": "a03e5578917214eb37714249fe69e00dc7d621fe3e1d28709b349d4abc2eb80d"
+  },
+  "r01_byte_identity": {
+    "tree_digest_before": "223f63215de9190e55928e8c4049c9afce356b846fee129c160ab7a6cf6d073d",
+    "tree_digest_after": "223f63215de9190e55928e8c4049c9afce356b846fee129c160ab7a6cf6d073d",
+    "unchanged": true
+  },
+  "coordinate_changes": [
+    {
+      "case_id": "RC96-CH02-01",
+      "old_range": [
+        701,
+        911
+      ],
+      "new_range": [
+        701,
+        854
+      ],
+      "old_non_whitespace_characters": 206,
+      "new_non_whitespace_characters": 151,
+      "new_target_sha256": "528b904f8c6ea64d2c45abde29d512ed32692474085cd7051e126c75e666c2e5"
+    },
+    {
+      "case_id": "RC96-CH03-01",
+      "old_range": [
+        745,
+        950
+      ],
+      "new_range": [
+        745,
+        852
+      ],
+      "old_non_whitespace_characters": 199,
+      "new_non_whitespace_characters": 105,
+      "new_target_sha256": "727a7fe03f0bb3d4b8f2fbac59265bf1db9d35acec03807588baa7fb64d0087f"
+    },
+    {
+      "case_id": "RC96-CH04-01",
+      "old_range": [
+        875,
+        1102
+      ],
+      "new_range": [
+        985,
+        1102
+      ],
+      "old_non_whitespace_characters": 221,
+      "new_non_whitespace_characters": 115,
+      "new_target_sha256": "b980638280275bd879b1a723717d9e158da65cba1085cc21da7b015a183a1054"
+    },
+    {
+      "case_id": "RC96-CH01-01",
+      "old_range": [
+        1503,
+        1718
+      ],
+      "new_range": [
+        1503,
+        1654
+      ],
+      "old_non_whitespace_characters": 211,
+      "new_non_whitespace_characters": 149,
+      "new_target_sha256": "01bbf564c4c16c27da84eb8dfbf330cd3b852400a9c50718f233c65d3f64f974"
+    },
+    {
+      "case_id": "RC96-CH04-02",
+      "old_range": [
+        1104,
+        1360
+      ],
+      "new_range": [
+        1217,
+        1360
+      ],
+      "old_non_whitespace_characters": 249,
+      "new_non_whitespace_characters": 140,
+      "new_target_sha256": "a01fb465e4ecadf720bb690ff8805d0617a0a12b2c8508e1759f8b9f1767fb26"
+    }
+  ],
+  "semantic_fix_status": {
+    "RC96-CH01-02": "PASS",
+    "RC96-CH02-02": "PASS",
+    "RC96-CH03-03": "PASS",
+    "RC96-CH04-04": "PASS",
+    "RC96-CH06-01": "PASS",
+    "RC96-CH08-04": "PASS"
+  },
+  "validation": {
+    "cases": 24,
+    "facts": 49,
+    "fact_count_distribution": {
+      "0": 8,
+      "1": 4,
+      "2": 3,
+      "3": 3,
+      "4": 2,
+      "5": 2,
+      "6": 2
+    },
+    "zero_cases": 8,
+    "nonempty_cases": 16,
+    "coordinate_changes": 5,
+    "semantic_fixes": 6,
+    "unique_source_chapters": 6,
+    "targets_per_chapter": 4,
+    "within_recut24_overlaps": 0,
+    "prior_train72_l6_real24_overlaps": 0,
+    "target_non_whitespace_character_range": [
+      64,
+      224
+    ],
+    "zero_target_length_range": [
+      105,
+      224
+    ],
+    "positive_target_length_range": [
+      64,
+      224
+    ],
+    "r01_best_length_threshold": {
+      "threshold": 199,
+      "rule": "EMPTY_IF_LENGTH_GE",
+      "correct": 22,
+      "total": 24,
+      "confusion": {
+        "true_empty_predicted_empty": 7,
+        "true_nonempty_predicted_nonempty": 15,
+        "true_nonempty_predicted_empty": 1,
+        "true_empty_predicted_nonempty": 1
+      }
+    },
+    "r02_best_length_threshold": {
+      "threshold": 216,
+      "rule": "EMPTY_IF_LENGTH_GE",
+      "correct": 17,
+      "total": 24,
+      "confusion": {
+        "true_empty_predicted_empty": 2,
+        "true_nonempty_predicted_nonempty": 15,
+        "true_nonempty_predicted_empty": 1,
+        "true_empty_predicted_nonempty": 6
+      }
+    },
+    "length_fact_count_pearson": -0.25496697284032693,
+    "semantic_reviewed_cases": 24,
+    "unresolved_semantic_issues": 0,
+    "all_outputs_double_build_byte_identical": true,
+    "all_evidence_in_target_and_contiguous": "49/49",
+    "zero_case_exclusions_complete": "8/8",
+    "r01_pass_cases_preserved_or_re_reviewed": "18/18",
+    "semantic_fix_cases_passed": "6/6",
+    "ruff_single_checker": "PASS",
+    "json_parse": "PASS"
+  },
+  "rights_and_actions": {
+    "project_original_sources_only": true,
+    "model_visible_density_metadata": false,
+    "read_views_or_train96_generated": false,
+    "training_authorized": false,
+    "model_calls": 0,
+    "api_calls": 0,
+    "training_runs": 0,
+    "notion_reads": 0,
+    "notion_writes": 0,
+    "git_actions": 0,
+    "current_pointer_changes": 0,
+    "production_actions": 0
+  }
+}

@@ -1,0 +1,1 @@
+{"canonical_sample_id":"FS02B-006-S01","eligible_facts":28,"reason":"do not silently train the row after removing an ambiguous target fact","row_status":"ROW_QUARANTINED_LEGACY_POSITION_AMBIGUOUS","total_facts":29}

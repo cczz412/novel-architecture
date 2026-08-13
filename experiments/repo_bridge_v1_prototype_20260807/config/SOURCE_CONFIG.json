@@ -1,0 +1,72 @@
+{
+  "schema_version": "repo-bridge-source-config-v1",
+  "repo_id": "novel-architecture",
+  "semantic_sources": [
+    {
+      "adapter": "governance_current_state",
+      "authority_scope": "repository_current_execution_mirror",
+      "path": "governance/CURRENT_STATE.json",
+      "source_id": "repository_current_state"
+    },
+    {
+      "adapter": "directory_registry",
+      "authority_scope": "container_identity_only",
+      "path": "governance/directory_registry.json",
+      "source_id": "directory_registry"
+    },
+    {
+      "adapter": "finetuning_current",
+      "authority_scope": "finetuning_current_navigation",
+      "path": "finetuning/CURRENT.json",
+      "source_id": "finetuning_current"
+    },
+    {
+      "adapter": "evidence_only",
+      "authority_scope": "legacy_local_decision_mirror",
+      "path": "history/root-legacy-202607/decisions.md",
+      "source_id": "legacy_decisions"
+    },
+    {
+      "adapter": "json_evidence",
+      "authority_scope": "finetuning_r02_acceptance_receipt",
+      "path": "finetuning/R02_ACCEPTANCE_RECEIPT.json",
+      "source_id": "finetuning_r02_acceptance"
+    }
+  ],
+  "critical_evidence": [
+    {
+      "authority_scope": "repo_bridge_candidate_generator",
+      "evidence_id": "REPO-BRIDGE-GENERATOR",
+      "path": "experiments/repo_bridge_v1_prototype_20260807/program/repo_bridge.py"
+    },
+    {
+      "authority_scope": "repo_bridge_review_return_contract",
+      "evidence_id": "REPO-BRIDGE-REVIEW-SCHEMA",
+      "path": "experiments/repo_bridge_v1_prototype_20260807/contracts/REVIEW_RETURN.schema.json"
+    },
+    {
+      "authority_scope": "repo_bridge_mechanical_tests",
+      "evidence_id": "REPO-BRIDGE-TESTS",
+      "path": "experiments/repo_bridge_v1_prototype_20260807/tests/test_repo_bridge.py"
+    }
+  ],
+  "inventory": {
+    "exclude_roots": [
+      ".git",
+      ".local",
+      ".pytest_cache",
+      ".ruff_cache",
+      ".venv",
+      "corpus-downloads"
+    ],
+    "exclude_subpaths": [
+      "TEMP/repo_bridge"
+    ],
+    "high_frequency_roots": [
+      "TEMP",
+      "runs",
+      "reports",
+      "outbox"
+    ]
+  }
+}

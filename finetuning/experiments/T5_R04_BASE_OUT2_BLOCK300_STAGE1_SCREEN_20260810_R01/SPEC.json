@@ -1,0 +1,122 @@
+{
+  "schema_version": "base-out2-block300-stage1-screen-spec/1.0",
+  "experiment_id": "T5_R04_BASE_OUT2_BLOCK300_STAGE1_SCREEN_20260810_R01",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "created_at": "2026-08-10T16:50:00+08:00",
+  "question_zh": "固定未微调Base、H180和OUT2时，约300字责任块聚合能否比完整段八题至少提高0.02合法语义F1",
+  "stage1_case_order": ["C01", "C02", "C05", "C09", "C10", "C14", "C23", "C24"],
+  "static_shape": {
+    "parent_cases": 8,
+    "requests_and_blocks": 22,
+    "original_gold_facts": 85,
+    "contained_gold_facts": 77,
+    "crossing_gold_facts_forced_fn": 8,
+    "all_blocks_reconstruct_parent_targets_without_gap_or_overlap": true
+  },
+  "fixed_inference": {
+    "model": "Qwen3-4B-Instruct-2507_cdbee75f",
+    "unfinetuned_base": true,
+    "adapter_loaded": false,
+    "halo_unicode_codepoints_each_side_max": 180,
+    "output_format": "OUT2-IDLIST",
+    "system_contract": "EXACT_ACTUAL_H180_OUT2_SYSTEM",
+    "temperature": 0,
+    "greedy": true,
+    "max_output_tokens": 2048,
+    "retry": 0,
+    "model_loads": 1,
+    "model_receipt_members_gate_immediately_before_load": true
+  },
+  "aggregation_and_scoring": {
+    "aggregation": "CONCATENATE_PREDICTIONS_BY_CASE_THEN_BLOCK_ORDER_NO_MERGE_NO_DEDUP",
+    "main_gold_denominator": 85,
+    "legal_tp_requires_gold_evidence_fully_contained_in_prediction_block": true,
+    "crossing_gold_never_tp": true,
+    "halo_guessed_crossing_fact": "RESPONSIBILITY_OVERREACH_FP",
+    "wrong_block_contained_fact": "RESPONSIBILITY_OVERREACH_FP",
+    "diagnostics": [
+      "CONTAINED_RECALL_OVER_77",
+      "CROSSING_FACT_OVERREACH_HITS",
+      "CROSS_BLOCK_DUPLICATE_PREDICTIONS",
+      "STATUS_SPEAKER_EVIDENCE_CORRECTNESS"
+    ]
+  },
+  "mechanical_gate": {
+    "rows": "22/22",
+    "strict_json": "22/22",
+    "complete_schema": "22/22",
+    "illegal_or_noncontinuous_local_evidence": 0,
+    "within_block_duplicate_predictions": 0,
+    "cross_block_duplicate_predictions": "DIAGNOSTIC_ONLY_RETAIN_ALL_OCCURRENCES_NOT_MECHANICAL_GATE",
+    "cross_block_duplicate_scoring": "ONE_TO_ONE_AT_MOST_ONE_TP_EXTRA_OCCURRENCES_REMAIN_FP",
+    "repetition_cases": 0,
+    "token_limit_cases": 0,
+    "retry": 0
+  },
+  "semantic_gate": {
+    "blind_review_pending_must_be": 0,
+    "frozen_full_target_stage1": {
+      "tp": 29,
+      "fp": 52,
+      "fn": 56,
+      "predictions": 81,
+      "gold": 85,
+      "f1": 0.3493975903614458
+    },
+    "minimum_absolute_f1_gain": 0.02,
+    "minimum_legal_f1": 0.3693975903614458,
+    "pass_meaning": "MAY_PREPARE_FULL24_IN_A_SEPARATE_FUTURE_WORKORDER",
+    "fail_meaning": "RETAIN_FULL_TARGET_AND_CLOSE_BLOCK300"
+  },
+  "deferred_future_route": {
+    "active_now": false,
+    "if_block300_wins_fine_screen": {
+      "candidate_block_lengths": [150, 300, 450],
+      "reuse_without_rerun": [300],
+      "future_new_cells_only": [150, 450]
+    },
+    "train96_target_length_recount": {
+      "source": "FROZEN_READ_1_TARGET_TRAIN96",
+      "total_cases": 96,
+      "long_628_to_1061": 48,
+      "short_53_to_230": 48,
+      "middle_300_to_599": 0,
+      "meaning_zh": "现有教材是长短两头、中档断层；责任块赢家确认后保留旧教材不删，再从原创来源派生与赢家块长匹配的新训练视图。"
+    },
+    "prepare_or_train_now": false
+  },
+  "generated_static_outputs": {
+    "source_index_sha256": "33c3efb0d28af06dd2e970a5076c33a06f5d01ea2e0bb646c63da8bdcff06301",
+    "requests_sha256": "d5943413bae0ae2c3abf6cb1d581f238a5c4162622b7b15547494155789ea168"
+  },
+  "static_identity_order": {
+    "before_mapping_and_requests_freeze": [
+      "REAL24_SOURCE_INDEX",
+      "REAL24_OLD_TXX",
+      "ACTUAL_H180_REQUEST",
+      "R02_CANDIDATES"
+    ],
+    "after_mapping_and_requests_freeze_for_gold_audit": [
+      "REAL24_GOLD",
+      "R02_STATS",
+      "R02_RECEIPT"
+    ],
+    "gold_derived_stats_read_before_freeze": false
+  },
+  "execution": {
+    "run_id": "T5_R04_BASE_OUT2_BLOCK300_STAGE1_SCREEN_R01",
+    "run_root": "/Users/a1234/挣钱/小说架构/runs/T5_R04_BASE_OUT2_BLOCK300_STAGE1_SCREEN_R01",
+    "authorized_command_if_future_ticket_exists": "infer-block300-stage1",
+    "ticket_created": false,
+    "run_root_created": false
+  },
+  "no_go": [
+    "RUN_BLOCK60",
+    "RUN_FULL24",
+    "MOVE_BOUNDARIES",
+    "DELETE_CROSSING_GOLD",
+    "JOIN_TWO_BLOCKS_TO_CREATE_A_FACT",
+    "TRAINING_OR_API",
+    "NOTION_OR_GIT_OR_CURRENT_OR_PRODUCTION"
+  ]
+}

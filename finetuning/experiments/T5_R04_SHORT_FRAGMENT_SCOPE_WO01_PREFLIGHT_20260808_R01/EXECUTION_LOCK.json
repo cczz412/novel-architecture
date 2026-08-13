@@ -1,0 +1,78 @@
+{
+  "schema_version": "t5-r04-wo01-execution-lock-v1",
+  "status": "FROZEN_PREFLIGHT_READY_NO_RUN_AUTHORITY",
+  "experiment_id": "T5_R04_SHORT_FRAGMENT_SCOPE_WO01_PREFLIGHT_20260808_R01",
+  "model_role": "offline_proxy_model",
+  "checkpoint": {
+    "id": "C2_FULL_UPDATE72",
+    "sha256": "321d96c10f00389e557efbeb2d8e3dc1344071cc3cd663b51b8a8c2bd38ea5f9"
+  },
+  "dev": {
+    "identity": "DEV24_SET_B_R03_DO_NOT_TRAIN",
+    "cases": 24,
+    "gold_facts": 48,
+    "canonical_sha256": "fa04ce5e5f819f4f87aec248ef8c306541b04128d67f0b79cc7e61f2d401d7d9",
+    "ordered_case_id_sha256": "b0a15a4f42743deace689f65e47d1585802fac31a8869ab57dd35471e21bcdb9"
+  },
+  "arms": [
+    "TARGET_ONLY",
+    "SMALL_HALO",
+    "CURRENT_WINDOW"
+  ],
+  "request_count_if_authorized": 72,
+  "retry": 0,
+  "decode": {
+    "sampler": "greedy",
+    "temperature": 0.0,
+    "max_output_tokens": 1024
+  },
+  "prompt": {
+    "source": "P3_C0_SYSTEM",
+    "system_prompt_sha256": "69b6263a06cf8db60b006b760772ff65fc50dff4132257d667ef4b76ffeac066",
+    "visible_case_label_removed_for_all_arms": true,
+    "assistant_gold_in_model_request": false
+  },
+  "output_schema": {
+    "path": "finetuning/experiments/T5_R04_P3_C0_SCHEMA_MATERIALIZATION_P4_1_20260808_R01/P3_C0_OUTPUT_STRUCTURAL_SCHEMA.json",
+    "sha256": "7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14",
+    "role": "STRUCTURAL_VALIDATION_ONLY"
+  },
+  "sealed_inputs": {
+    "TARGET_ONLY": {
+      "path": "sealed_inputs_candidate/TARGET_ONLY_REQUESTS_24.jsonl",
+      "sha256": "05973a07f5edccc034f6bedeb5dd805baf8541f846df4a792a40e652f8e3aca0"
+    },
+    "SMALL_HALO": {
+      "path": "sealed_inputs_candidate/SMALL_HALO_REQUESTS_24.jsonl",
+      "sha256": "123c057aa8d6b72f6523d04a944814d1577245c2f421850640afe71e837275a3"
+    },
+    "CURRENT_WINDOW": {
+      "path": "sealed_inputs_candidate/CURRENT_WINDOW_REQUESTS_24.jsonl",
+      "sha256": "c8c994b756698f652abe7c7be85260bff5142144117ea71f78311e3b22f6f29c"
+    },
+    "hidden_sidecar": {
+      "path": "sealed_inputs_candidate/HIDDEN_REQUEST_SIDECAR_72.jsonl",
+      "sha256": "d07111c9ba117576b4ccce7f1a45adb987e18f406c96b5992ef0cd679762cf1c"
+    }
+  },
+  "length_guard": {
+    "path": "LENGTH_REPORT.json",
+    "sha256": "1e2d37c3bae3ae5f17e068f2cc2ff900605074efb3de3cd499df61ef6ec13176",
+    "tokenizer_loaded": false,
+    "token_count_claimed": false
+  },
+  "invariants": {
+    "same_target_and_t_ids": true,
+    "same_evidence_allowlist": true,
+    "same_gold_binding": true,
+    "same_case_order": true,
+    "only_read_only_context_range_changes": true,
+    "renderer_scope_selection_reads_gold": false,
+    "small_halo_unicode_characters_each_side": 8,
+    "tokenizer_loaded_in_final_preflight": false
+  },
+  "model_run_authorized": false,
+  "training_authorized": false,
+  "api_authorized": false,
+  "next_action": "CZ_DECISION_REQUIRED_BEFORE_ANY_72_REQUEST_RUN"
+}

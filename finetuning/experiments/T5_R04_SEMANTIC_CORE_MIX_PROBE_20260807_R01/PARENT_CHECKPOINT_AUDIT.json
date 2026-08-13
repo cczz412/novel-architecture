@@ -1,0 +1,64 @@
+{
+  "schema_version": "t5-r04-semantic-core-parent-audit-v1",
+  "status": "PASS_IDENTITY_AUDIT_NO_ELIGIBLE_CLEAN_PAIR",
+  "audited_at": "2026-08-07T20:38:01+08:00",
+  "base_model": {
+    "store_id": "LAB",
+    "relative_path": "models/Qwen3-4B-Instruct-2507_cdbee75f",
+    "repo_id": "Qwen/Qwen3-4B-Instruct-2507",
+    "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "receipt_status": "COMPLETE_VERIFIED"
+  },
+  "checkpoints": [
+    {
+      "checkpoint_id": "A_STAGE1_OLD",
+      "store_id": "LAB",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_a/stage_1_positive/adapters.safetensors",
+      "sha256": "1e2f5e736f9d913819b835b21533626915a0e569f23242a7a15b8c1655fb3cdf",
+      "bytes": 117465067,
+      "classification": "ENGINEERING_ONLY_PARENT",
+      "contract": "FULL_A_EVIDENCE",
+      "reason": "可以做旧 A 内部省时筛查，但不能与新 C2 判胜负"
+    },
+    {
+      "checkpoint_id": "A_FINAL_OLD",
+      "store_id": "LAB",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_a/final/adapters.safetensors",
+      "sha256": "e1217ec79657cd12cce2d273154db2da1c118a034dceca7a23975cddb27d9b74",
+      "bytes": 117465067,
+      "classification": "READ_ONLY_BASELINE",
+      "contract": "FULL_A_EVIDENCE_AFTER_SPECIAL_STAGE",
+      "reason": "适合研究已有格式污染能否修回，不适合当干净 parent"
+    },
+    {
+      "checkpoint_id": "C_STAGE1_OLD",
+      "store_id": "LAB",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_c/stage_1_positive/adapters.safetensors",
+      "sha256": "206886963a2de9553a6c7a8824db2bb12cbb0509834d695d6a8a54807fc28f3e",
+      "bytes": 117465067,
+      "classification": "READ_ONLY_BASELINE",
+      "contract": "LEGACY_GLOBAL_COORDINATE_AND_ANCHOR",
+      "reason": "旧 C 学的是全局编号、字符坐标和锚字，不是局部 B/T 的 C2_UNIT"
+    },
+    {
+      "checkpoint_id": "C_FINAL_OLD",
+      "store_id": "LAB",
+      "relative_path": "T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runs/arm_c/final/adapters.safetensors",
+      "sha256": "35595e49156cbe8c39ca5f90729f06deea16ca6bd12456cca7edabed43cd7175",
+      "bytes": 117465067,
+      "classification": "READ_ONLY_BASELINE",
+      "contract": "LEGACY_GLOBAL_COORDINATE_AND_ANCHOR_AFTER_SPECIAL_STAGE",
+      "reason": "训练历史和证据合同都与 C2_UNIT 不兼容"
+    }
+  ],
+  "eligible_clean_parent_pair": false,
+  "clean_parent_pair_missing": [
+    "P00_A_FULL0",
+    "P01_C2_FULL0"
+  ],
+  "boundaries": {
+    "old_c_may_be_used_as_c2_parent": false,
+    "a_stage1_may_decide_a_vs_c2": false,
+    "training_authorized": false
+  }
+}

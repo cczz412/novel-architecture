@@ -1,0 +1,26 @@
+{
+  "groups": [
+    {
+      "gold_sha256": "343e5bb2d90a9c37a9820d089ceb8874f9f0515eec287ed580cb00b0d4bf340a",
+      "group_id": "H00_A_STAGE1_OLD41",
+      "raw_sha256": "c46668e192134d2531a9a2fbd97a901465f63b13402d17bb1b599472aebc6ebc"
+    },
+    {
+      "gold_sha256": "343e5bb2d90a9c37a9820d089ceb8874f9f0515eec287ed580cb00b0d4bf340a",
+      "group_id": "H01_A_FINAL_OLD41",
+      "raw_sha256": "2949743ab490293f93b56e46b8f5f01f8269434acfe09899337d1edc07cd1c83"
+    },
+    {
+      "gold_sha256": "8624d06353abbf333baae9c9446a70cbd7438c065321dbf783aee5e6ef9ea543",
+      "group_id": "H02_C_STAGE1_OLD41",
+      "raw_sha256": "60ecd61cdde24c29f4d242e995aca069f9bf91e095c599aa84e343103292d395"
+    },
+    {
+      "gold_sha256": "8624d06353abbf333baae9c9446a70cbd7438c065321dbf783aee5e6ef9ea543",
+      "group_id": "H03_C_FINAL_OLD41",
+      "raw_sha256": "4cf94b61a5277c11f9fdf9203b2ce984a0336ab1b33075b1719ea5959eaf2901"
+    }
+  ],
+  "groups_file_sha256": "adb7102d0354cae03e6d84e3ff71c1b890922a5d08318020fc37fb479cbe8fb6",
+  "schema_version": "t5-r04-evaluator-r02-input-bindings-v1"
+}

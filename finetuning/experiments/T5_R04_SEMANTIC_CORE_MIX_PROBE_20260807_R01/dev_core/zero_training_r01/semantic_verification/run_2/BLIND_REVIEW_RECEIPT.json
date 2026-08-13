@@ -1,0 +1,26 @@
+{
+  "inputs": {
+    "blind_key": {
+      "bytes": 5475,
+      "sha256": "a76b63ace30e69b7a8ea0c3127b427673c0e0af75c97db617af16647fb462180"
+    },
+    "blind_queue": {
+      "bytes": 73358,
+      "sha256": "8bfe8dc72956f87dbf0076e009f27b1475b13088671eeda79a6657f54cf5e4b2"
+    },
+    "blind_review": {
+      "bytes": 5228,
+      "sha256": "6c86d22879bee078a0731ffef2ad441ad240c1ea9e153af9a52fd1a1308bac7e"
+    },
+    "paired_machine_metrics": {
+      "bytes": 85927,
+      "sha256": "5296827ae1ca5bdf8b0b90ec6c0e440f73775c010fd31f09b9d180eb2c13a2c4"
+    }
+  },
+  "outputs": {
+    "BLIND_SEMANTIC_CASES.jsonl": "353100fb505090c5b5d3509be1dbb295f581265195543bf388d6725e863ca0bc",
+    "BLIND_SEMANTIC_METRICS.json": "ba4434bdfc60493f0fda373bcd83a7afbdf418bfc2e214f934dfbced2daa79f2"
+  },
+  "scorer_sha256": "a629b697e4095a221ac34385388216390baa21457e1eac852561034505beb755",
+  "status": "PASS_BLIND_REVIEW_REVEALED_AFTER_ANNOTATION"
+}

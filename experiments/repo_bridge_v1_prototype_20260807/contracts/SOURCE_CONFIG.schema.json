@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "repo-bridge-source-config-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "repo_id",
+    "semantic_sources",
+    "critical_evidence",
+    "inventory"
+  ],
+  "properties": {
+    "schema_version": {"const": "repo-bridge-source-config-v1"},
+    "repo_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"},
+    "semantic_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "adapter", "path", "authority_scope"],
+        "properties": {
+          "source_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]+$"},
+          "adapter": {
+            "enum": [
+              "governance_current_state",
+              "directory_registry",
+              "finetuning_current",
+              "evidence_only",
+              "json_evidence"
+            ]
+          },
+          "path": {"$ref": "#/$defs/repoPath"},
+          "authority_scope": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "critical_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_id", "path", "authority_scope"],
+        "properties": {
+          "evidence_id": {"type": "string", "pattern": "^[A-Z0-9][A-Z0-9-]+$"},
+          "path": {"$ref": "#/$defs/repoPath"},
+          "authority_scope": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exclude_roots", "exclude_subpaths", "high_frequency_roots"],
+      "properties": {
+        "exclude_roots": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/repoPath"},
+          "uniqueItems": true
+        },
+        "exclude_subpaths": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/repoPath"},
+          "uniqueItems": true
+        },
+        "high_frequency_roots": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/repoPath"},
+          "uniqueItems": true
+        }
+      }
+    }
+  },
+  "$defs": {
+    "repoPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)(?!.*\\\\).+$"
+    }
+  }
+}

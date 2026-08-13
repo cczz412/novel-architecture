@@ -1,0 +1,12 @@
+{
+  "schema_version": "t5-r04-wo01-runner-scorer-build-determinism-v1",
+  "status": "PASS_TWO_BUILD_BYTE_IDENTICAL",
+  "builds": 2,
+  "file_count_each": 5,
+  "mismatches": 0,
+  "tree_digest": "340076d4a98c3de94d9beec342fb2bf0a0a12016f97500e42cb8ca402d98c6bb",
+  "model_loaded": false,
+  "model_inference_calls": 0,
+  "api_calls": 0,
+  "training_started": false
+}

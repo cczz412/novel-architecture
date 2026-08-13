@@ -1,0 +1,11 @@
+{
+  "input_manifest_sha256": "e4efced726b066002cb91630b77d21ef7a22cf2eb05ef7e4aca59a2482ae694f",
+  "target_only_requests_sha256": "05973a07f5edccc034f6bedeb5dd805baf8541f846df4a792a40e652f8e3aca0",
+  "small_halo_requests_sha256": "123c057aa8d6b72f6523d04a944814d1577245c2f421850640afe71e837275a3",
+  "current_window_requests_sha256": "c8c994b756698f652abe7c7be85260bff5142144117ea71f78311e3b22f6f29c",
+  "hidden_sidecar_sha256": "d07111c9ba117576b4ccce7f1a45adb987e18f406c96b5992ef0cd679762cf1c",
+  "checkpoint_sha256": "321d96c10f00389e557efbeb2d8e3dc1344071cc3cd663b51b8a8c2bd38ea5f9",
+  "runner_sha256": "0060de38f973fa7dfc5cb5498fb3cbc65e74075add47fae155e7e76fed1836a8",
+  "scorer_sha256": "eed88ee3c02eb9963cc10f67c06f343415d3a3aed27dd6a71f79e420ccea9d1c",
+  "tests_sha256": "2e2a90c8722b345f84ab5f164613808ce4a7e05ed2f439717fb410c592e2f6d2"
+}

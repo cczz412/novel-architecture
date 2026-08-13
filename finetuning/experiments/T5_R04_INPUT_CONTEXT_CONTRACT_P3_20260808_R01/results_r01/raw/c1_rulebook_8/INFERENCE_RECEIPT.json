@@ -1,0 +1,20 @@
+{
+  "adapter_sha256": "321d96c10f00389e557efbeb2d8e3dc1344071cc3cd663b51b8a8c2bd38ea5f9",
+  "api_called": false,
+  "arm": "c1_rulebook_8",
+  "cases": 24,
+  "completed_at": "2026-08-08T15:57:51+08:00",
+  "decode": {
+    "max_output_tokens": 1024,
+    "retry": 0,
+    "sampler": "greedy",
+    "temperature": 0.0
+  },
+  "elapsed_seconds": 68.517,
+  "peak_mlx_bytes": 8823456124,
+  "questions_sha256": "d4e8d5856d7a990bb8c643321f516767eb8dcdc8a3a348b015fb41a9c2ce0f48",
+  "raw_sha256": "4585af97d8ef24a60ff15f8f8b79e15bcd0f7a978ae05b3bd883e4f3c78ce85b",
+  "stable_projection_sha256": "5c641a4dcc1acfa200151fcc67e642d88045d6f104f484c0ba725d77b4a108c3",
+  "status": "PASS_CONTEXT_ARM_INFERENCE_COMPLETE",
+  "training": false
+}

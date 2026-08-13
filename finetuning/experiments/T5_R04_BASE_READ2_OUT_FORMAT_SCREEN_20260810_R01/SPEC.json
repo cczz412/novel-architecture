@@ -1,0 +1,139 @@
+{
+  "schema_version": "base-read2-out-format-screen-spec/1.0",
+  "experiment_id": "T5_R04_BASE_READ2_OUT_FORMAT_SCREEN_20260810_R01",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "created_at": "2026-08-10T12:20:18+08:00",
+  "scope_name_zh": "未微调本地4B+READ2+REAL24输出形式Demo",
+  "question_zh": "在冻结的未微调本地4B、READ2正文范围、REAL24和解码下，OUT2-IDLIST、OUT3-IDRANGE、OUT4-IDQUOTE哪种输出形式更合适当前Demo",
+  "not_r02_trained_out_round2": true,
+  "read_context": {
+    "arm": "READ2",
+    "meaning_zh": "目标两侧各最多180个Unicode字符作为只读理解上下文，末尾重放同一编号目标负责段；不是整章",
+    "source_request_sha256": "126b0f0843fdd244f007a46361397f24f97ce8d71c73d760ae9ad5a6bf5b3088"
+  },
+  "frozen_inputs": {
+    "parent_full24_raw_sha256": "f9bd1fc02f93cfb7c51193f1dc319753472949bc2bbde4360a6779c415cdb28e",
+    "out2_base_read2_projection_sha256": "c7f738181148acc4c06644e47058606b35f07b9a0603521ffdb98502267b1b97",
+    "gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "txx_map_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "base_context_final_metrics_sha256": "f625c10ecf0e1d4be8eade2032dc2fdbe6d398ac55a6ad89f47abffa117825c7",
+    "base_context_formal_decisions_sha256": "ddc75e55cb441c6dd90f354f2a7ee7ffb28dd32f08e82a91df2052d1ae5ccf4d",
+    "base_context_adjudication_receipt_sha256": "9170e59a8219efc5fff4e13291842f8a114fcdee00c95e9ffe85c063c345b6f3",
+    "semantic_policy_sha256": "73083a1d91edcc8fadabd2342fc59b89e10ef770aeaa6ffe926867f4f4c39a93",
+    "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6"
+  },
+  "incumbent_out2": {
+    "format": "OUT2-IDLIST",
+    "rerun": false,
+    "rows": 24,
+    "strict_json_cases": 24,
+    "readable_facts_cases": 24,
+    "schema_cases": 22,
+    "illegal_evidence_predictions": 0,
+    "recoverable_semantic": {
+      "tp": 93,
+      "fp": 154,
+      "fn": 187,
+      "precision": 0.376518,
+      "recall": 0.332143,
+      "f1": 0.352941
+    }
+  },
+  "new_cells": {
+    "OUT3-IDRANGE": {
+      "rows": 24,
+      "item_keys": [
+        "fact",
+        "status",
+        "speaker",
+        "evidence_ranges"
+      ],
+      "evidence_contract_zh": "evidence_ranges必须恰好只有1个字符串；单个证据写T01，连续证据写T01-T03；多个范围字符串即使相邻也违约",
+      "derived_request_sha256": "664726e8847a0513de36d9eb3852eaa5c98a2cda2e8f7a82e27ff5570a2e08ed",
+      "system_sha256": "19a84be4199fa0ce58af8eee50d29152a561421454a347861379a326b0d3e775"
+    },
+    "OUT4-IDQUOTE": {
+      "rows": 24,
+      "item_keys": [
+        "fact",
+        "status",
+        "speaker",
+        "unit_ids",
+        "quote"
+      ],
+      "evidence_contract_zh": "unit_ids为最小充分连续Txx；quote必须是所选单元文本内逐字连续原文，只做真实性机械核验",
+      "unique_gold_quote_created": false,
+      "derived_request_sha256": "aba03bca27429245795c1c274436d3b44a57c047ab0038e7c08167c091ddab26",
+      "system_sha256": "2b28b3468d48eb52f67f20d8020d11d7cd8f23ba7e0c8c21b101b001fc231765"
+    }
+  },
+  "single_variable_contract": {
+    "same_unfinetuned_base": true,
+    "same_read2_user_messages": true,
+    "same_case_order_C01_to_C24": true,
+    "same_read_only_context_and_numbered_focus_tail": true,
+    "same_gold_and_txx": true,
+    "same_fact_definition_statuses_and_speaker": true,
+    "same_decode": true,
+    "only_full_system_output_contract_replaced": true,
+    "old_evidence_ids_contract_appended": false
+  },
+  "inference": {
+    "run_id": "T5_R04_BASE_READ2_OUT_FORMAT_SCREEN_R01",
+    "run_root": "/Users/a1234/挣钱/小说架构/runs/T5_R04_BASE_READ2_OUT_FORMAT_SCREEN_R01",
+    "authorized_command_if_future_ticket_exists": "infer-new-formats",
+    "new_model_calls": 48,
+    "model_loads": 1,
+    "adapter_loaded": false,
+    "temperature": 0,
+    "greedy": true,
+    "max_output_tokens": 2048,
+    "retry": 0
+  },
+  "mechanical_qualification": {
+    "strict_json_cases": "24/24",
+    "readable_facts_cases": "24/24",
+    "minimum_schema_cases": 22,
+    "repetition_cases": 0,
+    "token_limit_cases": 0,
+    "duplicate_predictions": 0,
+    "illegal_evidence_range_or_quote_predictions": 0
+  },
+  "semantic_and_selection": {
+    "same_gold_anonymous_case_level_review": true,
+    "same_case_and_fact_sha_may_reuse_frozen_base_context_decision": true,
+    "semantic_metric": "RECOVERABLE_FACT_PRECISION_RECALL_F1",
+    "primary_selection": "HIGHEST_RECOVERABLE_SEMANTIC_F1_AMONG_FORMAT_QUALIFIED_CELLS",
+    "near_tie_if_absolute_f1_gap_strictly_below": 0.02,
+    "near_tie_order": [
+      "MORE_SCHEMA_VALID_CASES",
+      "HIGHER_EVIDENCE_FIELD_ACCURACY_AFTER_SEMANTIC_MATCH",
+      "FEWER_SERIALIZED_OUTPUT_CHARACTERS",
+      "SIMPLER_FIXED_ORDER_OUT2_THEN_OUT3_THEN_OUT4"
+    ],
+    "if_new_cells_fail_or_do_not_improve_out2": "OUT2_TEMPORARILY_RETAINED",
+    "relative_selection_does_not_establish_absolute_4b_mini_or_production_qualification": true,
+    "does_not_authorize_out_or_training": true
+  },
+  "known_gaps_before_run": [
+    "OUT3和OUT4尚未本地推理，完整Schema可达性未知",
+    "OUT4不制作280条唯一标准quote，只能检查引文是否为所选目标单元的逐字原文",
+    "新事实表述仍需后续盲审，本轮没有裁决或分数"
+  ],
+  "execution_gate": {
+    "future_exact_ticket_required_before_run_root_or_model_load": true,
+    "ticket_created_in_this_prep": false,
+    "run_root_created_in_this_prep": false
+  },
+  "no_go": [
+    "OUT1",
+    "THIRD_NEW_OUT_ARM",
+    "RULE",
+    "READ1_OR_READ4",
+    "TRAINING",
+    "BLIND_ADJUDICATION_IN_PREP",
+    "MODEL_OR_INFERENCE_IN_PREP",
+    "MINI_OR_API",
+    "NOTION_OR_GIT_OR_CURRENT_OR_PRODUCTION"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "bound_inputs": {
+    "cplus_brief_zip_sha256": "6534b2733633870d1769a6f64a41257a25e0b5cf6b60805409decb3acddd9db2",
+    "decision_sha256": "8ebc866dcbc83ef0ebc06ff5662f975dae133803963a66c245e12cd8793f60a0",
+    "preflight_sha256": "5a2529258dfe4b6244880c21b007f8accef6831b925e021e88f85e0ac09dddcd",
+    "root_cause_zip_sha256": "e303db4a2bbe671cb92935cfcecbe066adfa4746ac4a9e037ddb975be694cf90",
+    "thresholds_sha256": "fc428b8c8c299a166fc3d90a0be4c33ab9e1169ee33fdf8890a036d06425e580"
+  },
+  "experiment_id": "T5_R04_CPLUS_20260807_R01",
+  "global_governance_changed": false,
+  "large_scale_collection_started": false,
+  "model_api_called": false,
+  "schema_version": "t5-r04-cplus-p0-import-receipt-v1",
+  "stage_1_authorized": true,
+  "status": "P0_IMPORTED_STAGE_1_AUTHORIZED",
+  "training_started": false
+}

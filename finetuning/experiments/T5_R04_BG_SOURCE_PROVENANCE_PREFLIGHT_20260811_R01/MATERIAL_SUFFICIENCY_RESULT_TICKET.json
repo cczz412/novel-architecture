@@ -1,0 +1,117 @@
+{
+  "schema_version": "bg-source-provenance-material-sufficiency-ticket/1.0",
+  "artifact_status": "FAIL_INPUT_IDENTITY_MISMATCH_BG_SOURCE_PREFLIGHT_NOT_ACCEPTED",
+  "scope": "DEV24_REAL24_BG1_CONFIRMED_RELEVANT_BACKGROUND_PHYSICAL_SOURCE_PREFLIGHT",
+  "created_at": "2026-08-11T02:32:16+08:00",
+  "input_bindings": {
+    "r11_readme": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R11/00_READ_ME_FIRST.md",
+      "work_order_sha256": "274efcf9f1e5207ea49a4232e3d03645d1fcb66522dcb6da5feca8e13f99581",
+      "observed_sha256": "274efcf9f1e5207ea49a4232e3d03645d1fcb66522dcb6da5feca8e13f99581e",
+      "work_order_sha256_length": 63,
+      "match": false
+    },
+    "r11_registry": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R11/DECISION_REGISTRY.json",
+      "sha256": "147d6eea3d13d675b529293fafc2e845262eb947159867122c999651aff2b49f"
+    },
+    "r11_ex_result_ticket": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R11/EX_RESULT_TICKET.json",
+      "sha256": "721814540968c8154d21cba4dbf8149ea86f887233d37afcbedcb14a63df9938"
+    },
+    "r02_family_registry": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260809_R02/FAMILY_REGISTRY.json",
+      "sha256": "1032f11162508f5b1747c606d932671d157eaadfdd02bf7f154e65ba78799134"
+    },
+    "real24_source_index": {
+      "path": "finetuning/experiments/T5_R04_LOCAL_REAL_SCREEN24_READ_EVAL_20260809_R01/REAL24_SOURCE_INDEX.jsonl",
+      "sha256": "0fe7ecb1649b93e4faab3d253d8904bee7f1a7a3e6f7f0fbb8b8e722c405de97"
+    }
+  },
+  "output_binding": {
+    "inventory_path": "finetuning/experiments/T5_R04_BG_SOURCE_PROVENANCE_PREFLIGHT_20260811_R01/BG1_SOURCE_INVENTORY_24.jsonl",
+    "inventory_sha256": "ef2e2377a4ef80210c8a1def0d5bec49ab2374ea1ff2b045c65e6040338e4e06"
+  },
+  "authorized_read_scope": {
+    "read_real24_source_index": true,
+    "read_frozen_current_chapters_up_to_target_cutoff": true,
+    "read_physically_existing_earlier_chapters_of_same_book": true,
+    "read_gold": false,
+    "read_target_later_text_for_candidate_selection": false,
+    "scan_other_corpus": false
+  },
+  "bg1_inventory_summary": {
+    "case_count": 24,
+    "yes": 22,
+    "no": 2,
+    "uncertain": 0,
+    "no_case_ids": [
+      "C01",
+      "C02"
+    ],
+    "same_chapter_pre_h180_candidates": 16,
+    "earlier_chapter_candidates": 6,
+    "candidate_span_count": 22,
+    "all_candidate_spans_before_cutoff": true,
+    "all_candidate_spans_outside_h180": true,
+    "all_candidate_spans_unicode_half_open_reproducible": true,
+    "all_candidates_background_only_not_current_fact_or_evidence": true
+  },
+  "bg1_material_sufficiency": {
+    "formal_ticket_closed": false,
+    "full_24_case_material_complete": false,
+    "missing_case_count": 2,
+    "missing_reason": "C01、C02的目标位于第一章开头；目标前文本全部被H180覆盖，且同书没有更早章节。",
+    "prepare_bg_stage1_recommended": false,
+    "decision_reason": "冻结24题不能在同一分母下完整提供BG-1；材料缺口不是靠改span或硬凑普通前文可以修复。"
+  },
+  "bg2_token_neutral_control_source_check": {
+    "status": "UNCERTAIN_NOT_ESTABLISHED_WITHIN_AUTHORIZED_SOURCE_SCOPE",
+    "project_original_source_found": false,
+    "global_nonexistence_claimed": false,
+    "reason": "本工单授权读取的REAL24及同书更早章节全部属于LOCAL_EVAL_ONLY_RIGHTS_PENDING，不是项目原创；其他项目原创来源不在本次允许扫描范围内，因此只能判定本次范围内未建立BG-2来源。",
+    "background_text_written": false,
+    "token_balancing_performed": false
+  },
+  "rights_and_use_boundary": {
+    "real24_and_same_book_sources": "LOCAL_EVAL_ONLY_RIGHTS_PENDING",
+    "training_use": false,
+    "production_use": false,
+    "background_candidate_text_materialized": false,
+    "current_fact_or_evidence_use": false
+  },
+  "validation": {
+    "input_sha_bindings_match": false,
+    "r11_readme_identity_match": false,
+    "other_four_input_identity_matches": true,
+    "source_index_rows": 24,
+    "source_index_case_order": "C01-C24",
+    "current_chapter_sha_matches": 24,
+    "candidate_chapter_sha_matches": 22,
+    "candidate_span_sha_matches": 22,
+    "candidate_coordinate_rebuild_matches": 22,
+    "inventory_unique_case_ids": 24,
+    "unresolved_source_pointer_count": 0,
+    "gold_dependent_boundary_selection_count": 0
+  },
+  "actions": {
+    "bg_request_generated": 0,
+    "prompt_generated": 0,
+    "runner_or_scorer_generated": 0,
+    "execution_ticket_or_runroot_generated": 0,
+    "model_loads": 0,
+    "inference_calls": 0,
+    "training_runs": 0,
+    "api_calls": 0,
+    "notion_writes": 0,
+    "git_actions": 0,
+    "current_or_production_pointer_changes": 0
+  },
+  "hard_stop": {
+    "triggered": true,
+    "reason": "R11 README的工单SHA只有63位，且与现场64位SHA不相等；不得把明显近似值当作冻结身份匹配。",
+    "inventory_disposition": "PRELIMINARY_READ_ONLY_WORK_PRODUCT_NOT_ACCEPTED_AS_BOUND_PREFLIGHT",
+    "required_next_input": "CONTROL_WINDOW_CORRECTS_OR_REBINDS_R11_README_SHA"
+  },
+  "next_state": "HARD_STOP_WAIT_CONTROL_WINDOW_R11_SHA_CORRECTION"
+}

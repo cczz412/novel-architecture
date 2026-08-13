@@ -1,0 +1,96 @@
+{
+  "schema_version": "train72-compact-target24-model-neutral-gold-final-receipt/2.0",
+  "dataset_status": "CANDIDATE_NOT_YET_APPROVED",
+  "conclusion_zh": "R01机械通过但语义终审FAIL；R02已定点修正为68条，24题局部名词和关系可见性复核通过，但仍不是训练授权",
+  "output_manifest": {
+    "path": "OUTPUT_MANIFEST.json",
+    "bytes": 1743,
+    "sha256": "15da56cddac04480d025d90a8d52cc65f3627c39ee622fcffcaf100ec7c692a8"
+  },
+  "parent_compact_r01": {
+    "semantic_review_status": "FAIL",
+    "source_index_sha256": "689da403b6b6d0df13471f927f162c79d622dd335dd12802372d6925a390f1e4",
+    "gold_sha256": "8f84358f01da0822e7337fa4a30ce5cc7d0e8529724ea6214a6fce00ed6bb137",
+    "directory_tree_digest_before": "159f8b713eeed416c2f30444dd00937c461e8bb5763004d4782dd558148b8737",
+    "directory_tree_digest_after": "159f8b713eeed416c2f30444dd00937c461e8bb5763004d4782dd558148b8737",
+    "all_parent_bytes_unchanged": true,
+    "r02_source_index_byte_identical_to_parent": true
+  },
+  "upstream_supplement_r02_bindings": {
+    "source_index_sha256": "21c8c29ba1551129219b0f7ca46fc35093e1f0f66592553012d171a94e71dae6",
+    "gold_sha256": "35f028ee1c198ec5a0651a158ee7312dfb6e5eb072c806f4055bb2d91d759353",
+    "bindings_match_expected": true
+  },
+  "content_counts": {
+    "cases": 24,
+    "low_cases": 12,
+    "medium_cases": 12,
+    "unique_case_ids": 24,
+    "unique_target_sha256": 24,
+    "unique_source_chapters": 14,
+    "target_units": 117,
+    "r01_facts": 66,
+    "r02_facts": 68,
+    "empty_fact_cases": 5,
+    "semantic_reviewed_cases": 24,
+    "semantic_unresolved_disputes": 0
+  },
+  "density_review": {
+    "low_fact_counts": [0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 3],
+    "medium_fact_counts": [4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 5, 6],
+    "medium_four_fact_cases": 9,
+    "medium_five_fact_cases": 1,
+    "medium_six_fact_cases": 2,
+    "low_all_within_0_to_3": true,
+    "medium_all_within_4_to_6": true
+  },
+  "semantic_corrections": {
+    "low_cases_corrected": 2,
+    "medium_cases_with_parent_context_terms_corrected": 9,
+    "m10_compound_judgment_split_from_one_to_three": true,
+    "m10_final_fact_count": 6,
+    "all_nouns_and_relations_directly_supported_within_compact_target": "24/24",
+    "facts_outside_compact_target": 0,
+    "parent_or_full_chapter_identity_backfill": 0
+  },
+  "mechanical_validation": {
+    "strict_utf8_source_chapters": "24/24",
+    "source_sha_coordinate_target_sha": "24/24",
+    "target_units_reconstruct_target": "24/24",
+    "source_index_byte_identical_to_r01": true,
+    "source_index_double_build_byte_identical": true,
+    "within_compact24_overlaps": 0,
+    "overlaps_with_train36_s6_m6_l6_real24": 0,
+    "gold_case_order_matches_source_index": true,
+    "expected_fact_count_equals_len_facts": "24/24",
+    "fact_fields_complete": "68/68",
+    "fact_ids_sequential_and_unique_within_case": "68/68",
+    "statuses_legal": "68/68",
+    "speaker_types_legal": "68/68",
+    "evidence_in_compact_target_and_contiguous": "68/68",
+    "common_answer_entity_policy": "TARGET_VISIBLE_SURFACE_ONLY",
+    "exhaustive_candidate_flag": "24/24",
+    "strict_json_duplicate_keys": "PASS",
+    "checker_two_runs": "PASS",
+    "ruff_single_checker": "PASS",
+    "manifest_members": "4/4 bytes_and_sha_match"
+  },
+  "rights_and_data_boundaries": {
+    "project_original_targets_only": true,
+    "real24_third_party_text_copied_into_training_asset": false,
+    "l6_use_changed": false,
+    "messages_or_prompt_views_generated": false,
+    "train72_dataset_built": false,
+    "training_authorized": false
+  },
+  "external_actions": {
+    "model_calls": 0,
+    "api_calls": 0,
+    "training_runs": 0,
+    "notion_reads": 0,
+    "notion_writes": 0,
+    "git_stage_commit_push": 0,
+    "current_pointer_changes": 0,
+    "production_promotions": 0
+  }
+}

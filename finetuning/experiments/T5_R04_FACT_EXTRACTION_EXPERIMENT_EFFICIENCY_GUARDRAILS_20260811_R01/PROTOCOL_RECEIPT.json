@@ -1,0 +1,135 @@
+{
+  "schema_version": "T5_R04_EFFICIENCY_GUARDRAILS_PROTOCOL_RECEIPT_V1",
+  "status": "PASS_PROTOCOL_OVERLAY_ACTIVE_NO_RUN_AUTHORITY",
+  "created_at": "2026-08-11",
+  "scope": "T5_R04_FACT_EXTRACTION_EXPERIMENT_LINE_FROM_BG_FORWARD",
+  "overlay_only": true,
+  "parents_modified": false,
+  "parent_bindings": {
+    "r01_update_protocol": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260808_R01/UPDATE_PROTOCOL.md",
+      "sha256": "4b4aa8c3b1b8eceb6c8b282fb6385386dac789736270818f45a6d883da79189c"
+    },
+    "r02_family_registry": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260809_R02/FAMILY_REGISTRY.json",
+      "sha256": "1032f11162508f5b1747c606d932671d157eaadfdd02bf7f154e65ba78799134"
+    },
+    "r11_readme": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R11/00_READ_ME_FIRST.md",
+      "sha256": "274efcf9f1e5207ea49a4232e3d03645d1fcb66522dcb6da5feca8e13f99581e"
+    },
+    "r11_decision_registry": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R11/DECISION_REGISTRY.json",
+      "sha256": "147d6eea3d13d675b529293fafc2e845262eb947159867122c999651aff2b49f"
+    },
+    "r11_ex_result_ticket": {
+      "path": "finetuning/experiments/T5_R04_FACT_EXTRACTION_EXPERIMENT_ROADMAP_20260811_R11/EX_RESULT_TICKET.json",
+      "sha256": "721814540968c8154d21cba4dbf8149ea86f887233d37afcbedcb14a63df9938"
+    }
+  },
+  "member_count_excluding_receipt": 3,
+  "members": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "bytes": 1287,
+      "sha256": "9de610696bd2ff2ce7a4faa17393f054abba81fc40a6db64d82c753dcf0f4a2a"
+    },
+    {
+      "path": "EFFICIENCY_GUARDRAILS.md",
+      "bytes": 6008,
+      "sha256": "7079d6ec0acc746b8252ae2eda29cd9a1db06fea4906f5ea2f05a833ab560726"
+    },
+    {
+      "path": "FIRST_APPLICATION_BG.md",
+      "bytes": 3813,
+      "sha256": "6a40add18c81a59be1f442a387aa309a43e87b14855c3183c5af0ee4244e62f0"
+    }
+  ],
+  "external_research_outbox": {
+    "path": "outbox/t5-r04-external-research",
+    "send_authorized": false,
+    "files": [
+      {
+        "path": "outbox/t5-r04-external-research/00_READ_ME_FIRST.md",
+        "bytes": 932,
+        "sha256": "e3e77938c1bf15a7f4f9bf68426d4014ce68b7ac0bd89866b06980552255faed"
+      },
+      {
+        "path": "outbox/t5-r04-external-research/BRIEF_TEMPLATE.md",
+        "bytes": 1119,
+        "sha256": "c34f3b3813942ced3bb38c3116207ae7a1229077a18e65cf8085f7eac394565e"
+      }
+    ]
+  },
+  "research_reuse_bindings": [
+    {
+      "path": "references/survey-inbox/items/SI-002_T5_R04_fact_extraction_research.md",
+      "bytes": 1236,
+      "sha256": "a23f93eb7ae55fff7b0e891f26b64397eb3960245ca64edb576f64fd3c180aba"
+    },
+    {
+      "path": "references/survey-inbox/packages/T5_R04_FACT_EXTRACTION_RESEARCH_RETURNS_20260811_R01/BATCH_INDEX.md",
+      "bytes": 4753,
+      "sha256": "d5bdf43331562accfea8b633e7c656069978288e63e27c462143cbd49a0cfa15"
+    },
+    {
+      "path": "references/survey-inbox/packages/T5_R04_FACT_EXTRACTION_RESEARCH_RETURNS_20260811_R01/02_RETURNS_DIGEST.md",
+      "bytes": 7408,
+      "sha256": "30b7f8c3b50f5d7ac1dc56617ab3b330b543fec5b6ae9d50b7e2943021e96365"
+    },
+    {
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/sealed_inputs_r01/track_b/BACKGROUND_MIN_CONFIRMED_NOT_TESTABLE_GAP.md",
+      "bytes": 308,
+      "sha256": "9d7f2a5db8239a92f67c666390aeb70f355dfa65ab7a507800ef875ef39c67c3"
+    },
+    {
+      "path": "finetuning/experiments/T5_R04_INPUT_CONTEXT_CONTRACT_P3_20260808_R01/P3_RESULT_TICKET.md",
+      "bytes": 1897,
+      "sha256": "4da2d9550fc558cdaaf0afd475e3419838de4f45b0b990efabca676308ffc423"
+    }
+  ],
+  "progress_entry_snapshot": {
+    "path": "governance/progress/branches/finetuning/STATUS.md",
+    "bytes": 7922,
+    "sha256": "863d5497579c06cc04e813ef42521460e0f43bc9abf31b4932c1c2dfa76e8b1d"
+  },
+  "first_application": {
+    "family": "BG",
+    "local_research_disposition": "REUSE_EXISTING",
+    "gold_calibration_gate": "NOT_YET_SATISFIED",
+    "scorer_calibration_gate": "NOT_YET_SATISFIED",
+    "main_comparison_arms": [
+      "BG-0-NONE_REUSE",
+      "BG-1-CONFIRMED",
+      "BG-2-NEUTRAL"
+    ],
+    "blocked_diagnostic_arm": "BG-3-CONFLICT",
+    "blocked_conditional_training_arms": [
+      "BG-4-T0I0",
+      "BG-5-T0I1",
+      "BG-6-T1I0",
+      "BG-7-T1I1"
+    ],
+    "model_execution_ready": false,
+    "source_inventory_may_continue": true
+  },
+  "scope_boundaries": {
+    "model_call_authorized": false,
+    "training_authorized": false,
+    "api_authorized": false,
+    "external_send_authorized": false,
+    "notion_authorized": false,
+    "git_authorized": false,
+    "current_or_production_promotion_authorized": false
+  },
+  "actions": {
+    "model_loads": 0,
+    "inference_rows": 0,
+    "training_runs": 0,
+    "api_calls": 0,
+    "external_sends": 0,
+    "notion_writes": 0,
+    "git_actions": 0,
+    "production_promotions": 0
+  }
+}

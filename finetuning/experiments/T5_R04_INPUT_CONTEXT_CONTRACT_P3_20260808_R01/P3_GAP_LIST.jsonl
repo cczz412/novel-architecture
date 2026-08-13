@@ -1,0 +1,8 @@
+{"area":"rights","finding":"314 行、2,783 条事实压缩为 74 个来源组，但 74/74 都没有能绑定到对应书／来源且明确允许内部模型训练的本地证据。","gap_id":"P3-GAP-001","next_action":"由 CZ 按来源组补权威证据或裁决；不得由 Codex 猜测放行。","status":"BLOCKING_PRODUCTION_CANONICAL"}
+{"area":"origin_batch","finding":"P2 ledger 没有 origin_batch 字段。","gap_id":"P3-GAP-002","next_action":"本轮只保留可见 row_id_families，不从路径或编号反推批次。","status":"MISSING_FIELD_NOT_GUESSED"}
+{"area":"C3_confirmed_identity","finding":"24 题中只有 1 题有不泄 gold 的明确别名，低于预注册 16/24。","gap_id":"P3-GAP-003","next_action":"真实数据具备作者确认身份卡后另建同源实验。","status":"NOT_RUN"}
+{"area":"C4_previous_state","finding":"24/24 只有 canonical read_only_before 的相对来源，没有真实章节／块绝对位置。","gap_id":"P3-GAP-004","next_action":"不得把 relative_before_target 冒充真实 chapter/chunk provenance。","status":"RELATIVE_PROVENANCE_ONLY"}
+{"area":"C4_previous_state","finding":"MICRO24B-S16 与 MICRO24B-S23 把只读前态写入答案并引用 B01；正式负责区只允许 Txx。","gap_id":"P3-GAP-005","next_action":"冻结当前 C4 写法，不晋升为默认输入合同。","status":"INPUT_CONTRACT_FAILURE_SIGNAL"}
+{"area":"C5_structure_metadata","finding":"Set B R03 没有 chapter_index、chunk_index、chunk_count、responsibility_zone。","gap_id":"P3-GAP-006","next_action":"等真实元数据存在后再测；不得制造随机标签冒充。","status":"NOT_RUN"}
+{"area":"external_validity","finding":"本轮只有本地 Qwen 离线代理和合成 DEV24，不能替 Doubao Mini/Lite 或真实小说定版。","gap_id":"P3-GAP-007","next_action":"权利和真实 canonical 就绪后，再按跨模型复验计划筛最少候选。","status":"LOCAL_PROXY_SYNTHETIC_ONLY"}
+{"area":"semantic_review","finding":"69 种预测复用冻结 same-case 裁决，10 种新预测由本轮同题独立复核；没有新增第二位盲审。","gap_id":"P3-GAP-008","next_action":"若结果要进入生产模型选择或长期合同，补第二位独立复核。","status":"SINGLE_LOCAL_REVIEW"}

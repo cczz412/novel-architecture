@@ -1,0 +1,64 @@
+{
+  "schema_version": "t5-r04-current-four-b-recipe-stop-result/1.0",
+  "status": "CURRENT_TRAIN96_LOSS_DATA_ORDER_HPARAM_4B_RECIPE_STOPPED",
+  "created_at": "2026-08-10T06:48:41+08:00",
+  "run_id": "T5_R04_READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_R01",
+  "run_root": "runs/T5_R04_READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_R01",
+  "result": {
+    "execution_chain": "PASS",
+    "experiment": "FAIL",
+    "hard_stop": "PASS",
+    "micro_iterations": 48,
+    "optimizer_updates": 12,
+    "l6_gold_fact_counts": [0, 0, 2, 3, 5, 8],
+    "l6_prediction_counts": [0, 0, 0, 0, 0, 0],
+    "json_valid_cases": 6,
+    "schema_valid_cases": 6,
+    "illegal_evidence_predictions": 0,
+    "repetition_cases": 0,
+    "token_limit_cases": 0,
+    "duplicate_predictions": 0,
+    "failure_reason": "四道非空L6题全部输出空数组"
+  },
+  "evidence": {
+    "authorization_ticket_sha256": "90c6ac23dec23be5b2554f5c362a6ad03a327668c9c5f5886f8d32db49f65c4c",
+    "run_identity_sha256": "5c2ce05a3cd27be016e5d8255e639179fa93f2b2096ca2bf87f6c9b7692dc7ed",
+    "training_result_sha256": "8a2c8ef74b99a943962b2e9fa889229f4e745fa9c043714556bb5e634583f7b2",
+    "adapter_sha256": "2481aea0eefe5042f97e3541d93383f34ebe68ab0ad0943abd8eac98c0e82c8a",
+    "l6_raw_sha256": "579e2b009764ee9ae78f8164b6d017441136a28bdc75ac81acf335bd6e6a046b",
+    "l6_result_sha256": "236011454ab10088209a0b3626eee54c6504ab3a8c58529271078bdc7f400eb0",
+    "mechanical_gate_sha256": "848f9db04bc4aa96ea16402e76080f0aff74d87396605371950ac75dd0238a0f",
+    "fail_ticket_sha256": "90e461e52735193e75a56c59ed7544cf6ab187aa1941ffcf69c5473990061066"
+  },
+  "retired_scope": "当前TRAIN96加loss/data/order/hparam可调配方",
+  "not_retired_or_decided": [
+    "不等于永久淘汰4B；4B仍可在其他经控制窗核定的配方下作为低成本候选",
+    "不决定Mini或其他商用模型的结果",
+    "不否定模型中立Gold、TRAIN96、L6和既有实验结果的资产价值"
+  ],
+  "forbidden_followups_from_this_failed_run": [
+    "第三种loss",
+    "继续增加教材",
+    "继续调整行序",
+    "调整学习率、训练步数或LoRA参数",
+    "扫描checkpoint",
+    "retry或从失败adapter续训",
+    "进入READ2、READ4、OUT或REAL24"
+  ],
+  "preserved_unchanged": [
+    "模型中立Gold",
+    "TRAIN96",
+    "L6",
+    "所有旧结果与运行证据"
+  ],
+  "separate_control_window_decision": "现有另一个已跑过的低剂量/格式配方能否承接READ对照，由控制窗另行核定；本票不产生运行权。",
+  "external_actions": {
+    "model_or_training_runs": 0,
+    "inference_runs": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_pointer_changes": 0,
+    "production_actions": 0
+  }
+}

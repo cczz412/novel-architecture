@@ -1,0 +1,92 @@
+{
+  "schema_version": "novel_arch_shared_context_core_materials_manifest_v3",
+  "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260809_R05",
+  "status": "SELF_CONTAINED_SHARED_PRODUCT_CONTEXT_FOLDER_WITH_AGENT_ENTRY",
+  "built_at": "2026-08-09T20:07:56+08:00",
+  "local_evidence_cutoff": "2026-08-09T20:00:00+08:00",
+  "notion_decision_cutoff": "2026-08-07T01:06:00+08:00",
+  "cz_decision_cutoff": "2026-08-09T20:00:00+08:00",
+  "entry_point": "00_READ_ME_FIRST.md",
+  "distribution_mode": "COPY_THE_COMPLETE_FOLDER",
+  "parent": {
+    "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260808_R04",
+    "core_materials_sha256": "9b3dc9bb36481e1d6cd6bc4bd5421c48a8e193eb67f476af48e1a9eb63347d83",
+    "package_sha256": "f943202cf7f487873d51cd508bc0dd30ec2f3afcc7b593860f90715acbcda207",
+    "manifest_sha256": "e67ec98c0339a328d71de7d288e95facb023677eadb2077a543e49583d08553e",
+    "receipt_sha256": "4c4da71a7d114c0c1eff93494937c16f5c9e8814247657a61f47dae1848bf406",
+    "tree_index_sha256_before_build": "f0d76f605aec004a32803f3ee0d7b40335c741932a7ad9050d10d56881bed0b3",
+    "mutation_policy": "R04 remains byte-identical; R05 is a derived package."
+  },
+  "hash_contract": {
+    "algorithm": "sha256",
+    "core_materials_sha256_definition": "Sort the eight core Markdown member paths lexicographically, then hash UTF-8 lines formatted as path<TAB>member_sha256<LF>.",
+    "package_sha256_definition": "Use the same index algorithm over the eight core Markdown members, REFERENCE_PROJECT_INTEGRATION.md, and CORE_MATERIALS_MANIFEST.json. BUILD_RECEIPT.json is excluded to avoid a circular hash."
+  },
+  "core_materials_sha256": "9e364cef857e671312ac0419c155450cecf0ba873adc1aa9dc7b1d3a45a8c050",
+  "members": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "sha256": "a2d091605a3a9318da430daf78b5cd59be4e9f5f82f91f50bd3c13b67c59e1ec",
+      "bytes": 12330
+    },
+    {
+      "path": "01_PRODUCT_NORTH_STAR.md",
+      "sha256": "a38557e4d6a20f782d0ad105a9196bc1ff280ad987b726df42fbd6dbac1a2928",
+      "bytes": 11302
+    },
+    {
+      "path": "02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+      "sha256": "a524749d787e066aad3269c5a4041334b3c732b7d29333139801630e1e704c67",
+      "bytes": 7438
+    },
+    {
+      "path": "03_CREATION_AND_MEMORY_PIPELINES.md",
+      "sha256": "0e42a7d98da935639125d783139d0db640854c2eb301e22a93dc7ef57263f098",
+      "bytes": 5908
+    },
+    {
+      "path": "04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
+      "sha256": "2bf82531191cfb9ac028e597221f5e468bc75b79d1de52d632ba65404a445ec5",
+      "bytes": 13076
+    },
+    {
+      "path": "05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
+      "sha256": "ceff019f9de7c0157774d52fc2bfa873220d1e97cf477094e753d8dff82a19fe",
+      "bytes": 11275
+    },
+    {
+      "path": "06_SYNC_AND_CHANGE_PROTOCOL.md",
+      "sha256": "f09879454da05b2acf8e1668a7ad820815e8f8f5f66d5f81e4f51662ef30990d",
+      "bytes": 7773
+    },
+    {
+      "path": "07_GLOSSARY.md",
+      "sha256": "1e6f229a511d389da7c70ec37f52617692319848923075b8255695724aa2570c",
+      "bytes": 8413
+    }
+  ],
+  "auxiliary_members": [
+    {
+      "path": "REFERENCE_PROJECT_INTEGRATION.md",
+      "role": "OPTIONAL_REFERENCE_AGENT_ENTRY_ACTIVE_OTHER_LAYERS_INACTIVE",
+      "sha256": "b30401ed396bd736943f99c182ba1a44a030b98711e54ec787635b57ad9ac999",
+      "bytes": 2489
+    }
+  ],
+  "semantic_delta_only": [
+    "MINI_PRIMARY_LITE_BACKUP_P0_05_CLOSED_NO_EXECUTION_AUTHORITY",
+    "D11_D27_COMPRESSED_VIEW_IS_MULTIGRANULAR_DERIVED_SUMMARY_WITH_REQUIRED_SOURCE_RETRIEVAL",
+    "D13_PENDING_REVIEW_LEAD_ADDED_RED_ONLY_FOR_CONFIRMED_RECHECKABLE_HARD_CONFLICT",
+    "D24_CAUSAL_EDGE_IS_DERIVED_VIEW_CANDIDATE_PAIRS_THEN_CONSTRAINED_ADJUDICATION",
+    "FOUR_B_DUAL_ROLE_AND_CANONICAL_DATA_AS_LONG_TERM_MINI_ASSET_DISCUSSION_ONLY"
+  ],
+  "excluded_inputs": [
+    "TEMP/bgboard-audit-20260809-r01/05_WORKORDER_CONSUME_DRAFT.md",
+    "TEMP/bgboard-audit-20260809-r01/06_WORKORDER_CAUSAL_EDGE_DRAFT.md"
+  ],
+  "authority_boundaries": [
+    "This folder is shared product context, not the Notion decision ledger, current-task pointer, execution ticket, training authorization, or production default.",
+    "Mini is the current preferred extraction candidate and Lite is a backup option, but neither role grants model access, training, deployment, or promotion authority.",
+    "No training, model API call, Notion write, Git operation, data mutation, or production promotion is authorized by this package."
+  ]
+}

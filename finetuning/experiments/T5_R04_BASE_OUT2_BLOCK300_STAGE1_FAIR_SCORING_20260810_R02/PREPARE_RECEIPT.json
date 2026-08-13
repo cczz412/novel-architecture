@@ -1,0 +1,61 @@
+{
+  "schema_version": "base-out2-block300-stage1-fair-scoring-r02-prepare-receipt/1.0",
+  "status": "PREPARED_NOT_SCORED",
+  "issued_at": "2026-08-10T19:23:47+08:00",
+  "experiment_id": "T5_R04_BASE_OUT2_BLOCK300_STAGE1_FAIR_SCORING_20260810_R02",
+  "members_excluding_this_receipt": {
+    "README.md": "7df502bed683a228bcbb3be079c3bf85babdcb57391ac43f6cc47a048e2bdb86",
+    "SPEC.json": "1b671abf45cf4df6aa632945ac98c5c39777961a5343af2a99edef29de814a4f",
+    "score_block300_stage1_fair_r02.py": "f16a19eb9353e1cbc0bb2942373f322167c82c2a334253c7e0a97d2ac32c5acc"
+  },
+  "frozen_execution": {
+    "ticket_sha256": "f469994648cc6c1cda8611704c893e99b4ace0a4134716043c6b99c985b8a2a0",
+    "run_identity_sha256": "a936409dd80adc38f09197a70003213bbd67107ce786ab147a5a9c5072d612d6",
+    "raw_sha256": "39999bf84e5ce95b11f7ef63cdc59ec309c7dec7620e3a99d4f3f02481c94b9d",
+    "result_sha256": "0f0e95338e1e5f3293e09c8e03b9f0193a1f51268061c179524609d0dbbba68b",
+    "rows": 22,
+    "predictions": 117,
+    "model_rerun": false
+  },
+  "frozen_baseline": {
+    "parent_full24_raw_sha256": "f9bd1fc02f93cfb7c51193f1dc319753472949bc2bbde4360a6779c415cdb28e",
+    "full_target_stage1_projection_sha256": "7873faab7047a185acadccf71d304a591e28706fb017a4bd119461cb232a9f99",
+    "base_context_final_sha256": "f625c10ecf0e1d4be8eade2032dc2fdbe6d398ac55a6ad89f47abffa117825c7",
+    "tp": 29,
+    "predictions": 81,
+    "gold": 85,
+    "f1": 0.3493975903614458,
+    "minimum_block300_legal_f1": 0.3693975903614458
+  },
+  "fair_mechanical_contract": {
+    "hard_stop_out_of_allowlist_or_empty_or_nonlist_evidence": true,
+    "order_gap_minimality_are_diagnostics_not_hard_gate": true,
+    "candidate_evidence_diagnostic": "7/117",
+    "full_target_evidence_diagnostic": "6/81",
+    "candidate_all_117_predictions_retained": true,
+    "cross_block_duplicates_retained_in_denominator": true
+  },
+  "checks": {
+    "json_parse": "PASS",
+    "ruff": "PASS",
+    "r01_execution_and_prepare_sha": "PASS",
+    "same_function_candidate_and_baseline_diagnostic": "PASS",
+    "out_of_allowlist_hard_stop": "PASS",
+    "order_or_gap_only_mechanical_pass_and_queue": "PASS",
+    "raw_drift_hard_stop": "PASS",
+    "input_bundle_drift_hard_stop": "PASS",
+    "formal_pre_absent": "PASS",
+    "formal_final_absent": "PASS"
+  },
+  "actions": {
+    "formal_pre": false,
+    "formal_final": false,
+    "model_loads": 0,
+    "training": 0,
+    "inference": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  }
+}

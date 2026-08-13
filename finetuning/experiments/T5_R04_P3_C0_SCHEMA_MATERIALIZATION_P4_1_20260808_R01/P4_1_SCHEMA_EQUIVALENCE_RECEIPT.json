@@ -1,0 +1,137 @@
+{
+  "accepted_language_equivalence": {
+    "gold_cases": 24,
+    "historical_cases": 24,
+    "mismatches_total": 0,
+    "mutation_cases": 44
+  },
+  "actions_performed": {
+    "gold_change": false,
+    "model_or_api_call": false,
+    "prompt_change": false,
+    "runner_change": false,
+    "semantic_contract_change": false,
+    "training": false
+  },
+  "case_pairing": {
+    "gold_unique": true,
+    "historical_unique": true,
+    "ordered_case_id_sha256": "fa0969243f04dd7ec73c4d4a26c7e2986c3acd5e911767aafb84b5d88c8a63a0",
+    "ordered_lists_equal": true
+  },
+  "construction_history": {
+    "cause": "冻结 runner 顶层训练依赖 yaml 不在仓库锁定环境；jsonschema 4.26.0 已存在。",
+    "final_resolution": "恢复 status=[] 与 status={}，以 accepted-language 等价为主口径；异常单列且 Schema 必须拒绝。未改旧 runner。",
+    "initial_locked_env_result": "3 failed / 1 passed",
+    "invalidated_method": "DIRECT_FULL_MODULE_IMPORT",
+    "resolution": "核整文件 SHA 后，以 FROZEN_SOURCE_AST_ORACLE 执行原 AST 函数节点及同 AST 常量；未安装依赖、未改旧 runner。",
+    "second_cause": "最初把非字符串 status 设为 list，冻结 runner 对不可哈希值抛 TypeError，无法形成布尔对照。",
+    "second_result": "2 failed / 2 passed",
+    "second_temporary_resolution_invalidated": "曾把该位换成数值 7；后续审查要求恢复不可哈希难例，因此该临时方案不再作为最终 corpus。"
+  },
+  "determinism": {
+    "builds_compared": 2,
+    "byte_identical": true,
+    "stable_projection_sha256": "a7eceb36d36e17721facc5c99d5eab0dcbd4f45addd6508643acfb9d2ac73a33"
+  },
+  "equivalence_statement": "44 条目标 corpus 接受语言等价；正常返回的 42 条布尔等价；2 条 oracle 异常单列且 Schema 正常拒绝；不声称失败方式相同。",
+  "error_category_audit": {
+    "error_text_equivalence_required": false,
+    "frozen_runner": {
+      "fact_0_evidence_ids": 3,
+      "fact_0_fact": 2,
+      "fact_0_keys": 6,
+      "fact_0_speaker": 3,
+      "fact_0_status": 4,
+      "top_level_facts_schema": 7
+    },
+    "json_schema_validator_keywords": {
+      "additionalProperties": 2,
+      "enum": 6,
+      "minLength": 1,
+      "required": 5,
+      "type": 17
+    }
+  },
+  "frozen_check_schema_import": {
+    "decorator_count": 0,
+    "full_runner_module_import_succeeded": false,
+    "function_name": "check_schema",
+    "global_dependencies": [
+      "ALLOWED_STATUS",
+      "ARMS",
+      "Any",
+      "all",
+      "bool",
+      "dict",
+      "enumerate",
+      "isinstance",
+      "list",
+      "set",
+      "str",
+      "tuple"
+    ],
+    "lineno_end": 488,
+    "lineno_start": 462,
+    "method": "FROZEN_SOURCE_AST_ORACLE",
+    "nested_function_count": 0,
+    "oracle_name": "FROZEN_SOURCE_AST_ORACLE",
+    "registered_ast_assignments": [
+      "ALLOWED_STATUS",
+      "ARMS['c2_full']['required']"
+    ],
+    "source_segment": "def check_schema(value: Any, arm: str) -> tuple[bool, list[str]]:\n    if not isinstance(value, dict) or set(value) != {\"facts\"} or not isinstance(value.get(\"facts\"), list):\n        return False, [\"top_level_facts_schema\"]\n    required = set(ARMS[arm][\"required\"])\n    errors = []\n    for index, item in enumerate(value[\"facts\"]):\n        if not isinstance(item, dict) or set(item) != required:\n            errors.append(f\"fact_{index}_keys\")\n            continue\n        if not isinstance(item.get(\"fact\"), str) or not item[\"fact\"]:\n            errors.append(f\"fact_{index}_fact\")\n        if item.get(\"status\") not in ALLOWED_STATUS:\n            errors.append(f\"fact_{index}_status\")\n        if item.get(\"speaker\") is not None and not isinstance(item.get(\"speaker\"), str):\n            errors.append(f\"fact_{index}_speaker\")\n        if arm == \"a_full\" and (not isinstance(item.get(\"evidence\"), str) or not item[\"evidence\"]):\n            errors.append(f\"fact_{index}_evidence\")\n        if arm == \"c2_full\" and (not isinstance(item.get(\"evidence_ids\"), list) or not all(isinstance(x, str) for x in item[\"evidence_ids\"])):\n            errors.append(f\"fact_{index}_evidence_ids\")\n        if arm == \"d_range\" and (not isinstance(item.get(\"evidence_ranges\"), list) or not all(isinstance(x, str) for x in item[\"evidence_ranges\"])):\n            errors.append(f\"fact_{index}_evidence_ranges\")\n        if arm == \"e_unit_quote\":\n            if not isinstance(item.get(\"unit_ids\"), list) or not all(isinstance(x, str) for x in item[\"unit_ids\"]):\n                errors.append(f\"fact_{index}_unit_ids\")\n            if not isinstance(item.get(\"quote\"), str) or not item[\"quote\"]:\n                errors.append(f\"fact_{index}_quote\")\n    return not errors, errors",
+    "source_segment_sha256": "d640d941642bc80567a01dfd1595d2e4be44ac588a80f0214be67c0edfeba8b5"
+  },
+  "frozen_gold_replay": {
+    "accepted_by_runner": 24,
+    "accepted_by_schema": 24,
+    "accepted_language_mismatches": 0,
+    "cases": 24
+  },
+  "historical_c0_replay": {
+    "accepted_language_mismatches": 0,
+    "cases": 24,
+    "json_valid": 24,
+    "ordered_case_id_sha256": "fa0969243f04dd7ec73c4d4a26c7e2986c3acd5e911767aafb84b5d88c8a63a0",
+    "ordered_case_ids_match_gold": true,
+    "schema_invalid": 6,
+    "schema_valid": 18
+  },
+  "json_schema_draft": "2020-12",
+  "jsonschema_package_version": "4.26.0",
+  "mutation_corpus": {
+    "accepted": 17,
+    "accepted_language_mismatches": 0,
+    "cases": 44,
+    "rejected": 27,
+    "sha256": "ededafeab91ebca3e3e7b98f4908b1f83352d7dd77a8de35081986449ce39e05"
+  },
+  "normal_return_boolean_equivalence": {
+    "gold_cases_compared": 24,
+    "historical_cases_compared": 24,
+    "mismatches_total": 0,
+    "mutation_cases_compared": 42
+  },
+  "oracle_exception_audit": {
+    "cases": [
+      {
+        "case_id": "M043",
+        "exception_type": "TypeError",
+        "schema_accept": false
+      },
+      {
+        "case_id": "M044",
+        "exception_type": "TypeError",
+        "schema_accept": false
+      }
+    ],
+    "count": 2,
+    "failure_mode_equivalence_claimed": false,
+    "schema_rejected_all": true
+  },
+  "schema_version": "t5-r04-p4-1-schema-equivalence-receipt-v1",
+  "scope": "STRUCTURAL_ACCEPTED_LANGUAGE_EQUIVALENCE_AFTER_JSON_PARSE_ONLY",
+  "source_binding_sha256": "901b6e1de11daa9abf10d16e4ab0efa51421da28f0eea59878ff11dfdb55cf51",
+  "status": "PASS_P3_C0_STRUCTURAL_SCHEMA_MATERIALIZED_NO_RUN_AUTHORITY"
+}

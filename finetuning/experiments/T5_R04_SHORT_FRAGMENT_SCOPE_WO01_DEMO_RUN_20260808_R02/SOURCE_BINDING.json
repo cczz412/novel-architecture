@@ -1,0 +1,50 @@
+{
+  "status": "PASS_R02_SOURCES_BOUND",
+  "runtime": {
+    "python_path": "/opt/homebrew/opt/python@3.12/bin/python3.12",
+    "python_version": "3.12.12",
+    "mlx_lm_version": "0.30.7",
+    "vendor_path": "TEMP/T5_R04_SYNTHETIC_MICRO24_R01_PREFLIGHT/pipeline_r02/vendor_r02",
+    "vendor_init_sha256": "f9ffa88772d26e537a98aa39ab16488a7a0d13cc1fac5d665376132c94b49608"
+  },
+  "frozen_inputs": {
+    "wo01_input_manifest_path": "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_PREFLIGHT_20260808_R01/OUTPUT_MANIFEST.json",
+    "wo01_input_manifest_sha256": "e4efced726b066002cb91630b77d21ef7a22cf2eb05ef7e4aca59a2482ae694f",
+    "length_report_path": "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_PREFLIGHT_20260808_R01/LENGTH_REPORT.json",
+    "length_report_sha256": "1e2d37c3bae3ae5f17e068f2cc2ff900605074efb3de3cd499df61ef6ec13176",
+    "checkpoint_sha256": "321d96c10f00389e557efbeb2d8e3dc1344071cc3cd663b51b8a8c2bd38ea5f9"
+  },
+  "frozen_minimal_code": {
+    "r01_runner_path": "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_RUN_20260808_R01/tools/run_demo.py",
+    "r01_runner_sha256": "0060de38f973fa7dfc5cb5498fb3cbc65e74075add47fae155e7e76fed1836a8",
+    "r01_scorer_path": "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_RUN_20260808_R01/tools/score_demo.py",
+    "r01_scorer_sha256": "eed88ee3c02eb9963cc10f67c06f343415d3a3aed27dd6a71f79e420ccea9d1c",
+    "r01_failure_ticket_path": "finetuning/experiments/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_RUN_20260808_R01/RESULT_TICKET.md",
+    "r01_failure_ticket_sha256": "216b0027ca2b0b322caa7516e96390d05f27b0c71ebd163f8bee0e638d5c0145"
+  },
+  "run_artifacts": {
+    "smoke_raw_path": "runs/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_R02/smoke_6/RAW_OUTPUTS.jsonl",
+    "smoke_raw_sha256": "0e023be44065508009d8bc9c0972e214cb62fa58fa07624331f4cb999a8c2155",
+    "smoke_receipt_path": "runs/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_R02/smoke_6/RUN_RECEIPT.json",
+    "smoke_receipt_sha256": "169383d4f1a71a303c732fb39eaeeb89fc0af9f0c6d9f8654bddd8af8f60c02d",
+    "full_raw_path": "runs/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_R02/full_72/RAW_OUTPUTS.jsonl",
+    "full_raw_sha256": "63cbc42db5852e7ccae5625dc4981927f10d17bcb0559f62661e1e3fa699905b",
+    "full_receipt_path": "runs/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_R02/full_72/RUN_RECEIPT.json",
+    "full_receipt_sha256": "582697746bc4b2a69b4562063cc9f5ca2f711c248f06c074c65949af2ca546ea",
+    "original_semantic_adjudications_path": "runs/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_R02/semantic_adjudications/SEMANTIC_ADJUDICATIONS.jsonl",
+    "original_semantic_adjudications_sha256": "49610d11d89ed3581c2b455bf6ed45f9de2409a987778f73ca6de2bb495b7b22",
+    "new_recoverable_adjudications_path": "runs/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_R02/semantic_adjudications_r02/SEMANTIC_ADJUDICATIONS_NEW20.jsonl",
+    "new_recoverable_adjudications_sha256": "f575807b897e5d2d89fe4e951a11cf418c7cf649573a67253e99d56ea31667ea",
+    "adjudication_set_path": "runs/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_R02/semantic_adjudications_r02/ADJUDICATION_SET_R02.json",
+    "adjudication_set_sha256": "71524da66af77d4c1f3fcb5ce24669568c8b3cb85eb681d0aeba82671c8f8cb5",
+    "final_metrics_path": "runs/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_R02/scoring_recoverable_final/METRICS.json",
+    "final_metrics_sha256": "0816db49e1d2e39ec8e378d8b39699e8fbaf6bf0878e1bc370ca22ef35686104",
+    "final_scoring_receipt_path": "runs/T5_R04_SHORT_FRAGMENT_SCOPE_WO01_DEMO_R02/scoring_recoverable_final/SCORING_RECEIPT.json",
+    "final_scoring_receipt_sha256": "9726d5649913963d904abf01fc81c512497dac9ede894f61cb7a3e5e9533a93a"
+  },
+  "r02_code": {
+    "runner_sha256": "707cf44135cc0784a662d3602ecb4e81be4e44fa162b4d7b7573f239fb1d8c15",
+    "scorer_sha256": "8ea4e73602b7e8381e72c1b6e3a719c4449b05d7836233f389addd37fdd99d63",
+    "tests_sha256": "81c2ccd4838f17d836d4a55ae0e3e27d2d5c4e45f8f7ca88c3718484b1bbc487"
+  }
+}

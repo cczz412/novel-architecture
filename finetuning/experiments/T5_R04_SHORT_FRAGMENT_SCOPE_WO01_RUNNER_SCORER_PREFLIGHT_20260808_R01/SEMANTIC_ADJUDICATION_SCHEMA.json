@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "t5-r04-wo01-semantic-adjudication-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "case_id",
+    "prediction_fact",
+    "prediction_fact_sha256",
+    "source_raw_sha256",
+    "category",
+    "matched_gold_fact_id",
+    "counts_as_tp",
+    "reason",
+    "reviewer",
+    "reviewed_at"
+  ],
+  "properties": {
+    "case_id": {"type": "string", "pattern": "^MICRO24B-S\\d{2}$"},
+    "prediction_fact": {"type": "string"},
+    "prediction_fact_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "category": {
+      "enum": [
+        "SEMANTIC_EQUIVALENT",
+        "PARTIALLY_CORRECT_OVER_BROAD",
+        "PARTIALLY_CORRECT_UNDER_SPECIFIED",
+        "WRONG",
+        "EXTRA_BUT_TEXT_SUPPORTED_FACT",
+        "HALLUCINATED",
+        "UNCLEAR"
+      ]
+    },
+    "matched_gold_fact_id": {"type": ["string", "null"]},
+    "counts_as_tp": {"type": "boolean"},
+    "reason": {"type": "string", "minLength": 1},
+    "reviewer": {"type": "string", "minLength": 1},
+    "reviewed_at": {"type": "string", "minLength": 1}
+  }
+}

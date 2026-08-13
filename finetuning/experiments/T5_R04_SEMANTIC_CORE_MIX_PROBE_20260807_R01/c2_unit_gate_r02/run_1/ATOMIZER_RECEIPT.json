@@ -1,0 +1,32 @@
+{
+  "schema_version": "t5-r04-c2-unit-atomizer-receipt-v1",
+  "status": "ATOMIZER_RENDERER_COMPLETE_PENDING_GOLD_AUDIT",
+  "gold_read": false,
+  "input": {
+    "path": "finetuning/experiments/T5_R04_SEMANTIC_CORE_MIX_PROBE_20260807_R01/c2_unit_gate/prototype/PROTOTYPE_QUESTIONS_GOLD_FREE.jsonl",
+    "sha256": "72fbdedae4861954f3f3b49c9d30fca587b2d9685ff79b5317781729e9254dfb",
+    "rows": 40
+  },
+  "config": {
+    "max_chars": 40,
+    "min_visible_chars_for_tiny_merge": 8,
+    "visible_bridge_units": 3,
+    "split_order": [
+      "natural_newline_or_strong_punctuation",
+      "weak_punctuation",
+      "hard_unicode_limit"
+    ]
+  },
+  "outputs": {
+    "source_units": {
+      "path": "SOURCE_UNITS.jsonl",
+      "sha256": "32b601227b2bd3529ee6562c75a95c1516e483c28106ca9a33dad9a1ade65449",
+      "rows": 40
+    },
+    "c2_questions": {
+      "path": "C2_QUESTIONS.jsonl",
+      "sha256": "426ae03335496a3ab6cc866533110fb60f96bb5c8fa8807d5b165ae0b0bdd65b",
+      "rows": 40
+    }
+  }
+}

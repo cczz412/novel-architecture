@@ -1,0 +1,38 @@
+{
+  "schema_version": "t5-r04-c2-unit-prototype-lock-v1",
+  "status": "LOCKED_GOLD_FREE_INPUT",
+  "counts": {
+    "total": 40,
+    "positive": 30,
+    "special": 10,
+    "unique_canonical_sample_ids": 40,
+    "unique_source_sample_ids": 40,
+    "old_frozen_exam_overlap": 0
+  },
+  "selection_rule": "one deterministic row per source_sample_id, then target-length quantile coverage",
+  "selection_did_not_use_assistant": true,
+  "atomizer_input_contains_assistant": false,
+  "rights_scope": "INTERNAL_TRAINING_AND_EVALUATION_ONLY_INHERITED_FROM_SEALED_AC_CONTRACT",
+  "artifacts": {
+    "questions": {
+      "path": "PROTOTYPE_QUESTIONS_GOLD_FREE.jsonl",
+      "sha256": "72fbdedae4861954f3f3b49c9d30fca587b2d9685ff79b5317781729e9254dfb"
+    },
+    "bindings": {
+      "path": "SOURCE_BINDINGS.jsonl",
+      "sha256": "29bcfa4d87595ee918a88d230c5787bf933f172a55a3db7c2db92de683c9bec4"
+    },
+    "source_a_positive": {
+      "path": "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runtime_data/a_stage1_positive/train.jsonl",
+      "sha256": "59e3c96fa12b9c56165ca99e13dad4cb2a73dc580ee83da236b4641e87723eb4"
+    },
+    "source_a_special": {
+      "path": "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/runtime_data/a_stage2_special/train.jsonl",
+      "sha256": "81a84c6128f4e956bfaaf7be11d1bc5ebbc1ab1d1910761a96fe691a22e5dbae"
+    },
+    "old_frozen_exam_questions": {
+      "path": "/Users/a1234/挣钱/小说架构_隔离实验/T5_R04_A_C_FORMAT_COMPARE_20260807_R01/sealed/exams/a/QUESTIONS.jsonl",
+      "sha256": "3c42924b1f245c8f967d497f38b6dbe5a883ef352f4287d77a7b336e77dafe6e"
+    }
+  }
+}

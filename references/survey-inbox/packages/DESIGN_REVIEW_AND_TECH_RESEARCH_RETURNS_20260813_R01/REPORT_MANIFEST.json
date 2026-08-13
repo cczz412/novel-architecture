@@ -1,0 +1,84 @@
+{
+  "package": "DESIGN_REVIEW_AND_TECH_RESEARCH_RETURNS_20260813_R01",
+  "created": "2026-08-13",
+  "source": "CZ 通过 ChatGPT Deep Research 发出第三轮 15 份 prompt（25 号文件 Prompt 1-15），回包由 CZ 放入 Downloads，Cursor 搬运登记",
+  "prompt_source": "TEMP/bgboard-audit-20260809-r01/25_EXTERNAL_PROMPTS_DESIGN_REVIEW_20260813_R01.md",
+  "attachments_note": "Prompt 1-3 带 ZIP 附件（outbox/design-review-20260813/），其余不带；外部回包只是候选证据，不产生执行权",
+  "files": [
+    {
+      "file": "returns/P01_日常创作循环设计审查_当前循环走查.md",
+      "sha256": "ea4eba4c5dbc5bb4ff2959d8ecd07babcde04076d0a6ae75021a669a941648e8",
+      "lines": 319
+    },
+    {
+      "file": "returns/P02_账本体系架构审查.md",
+      "sha256": "1b7cb01d76b040b6356f8572d2f911605ed43ee62b11e680a3e9e74d992137cb",
+      "lines": 252
+    },
+    {
+      "file": "returns/P03_插件系统与内容生态审查.md",
+      "sha256": "5881e383110788a2e76a34c0684fdb8da17c975c4c4f2ed40295c77fe366c1c2",
+      "lines": 334
+    },
+    {
+      "file": "returns/P04_网文创作方法论地图.md",
+      "sha256": "a45e7913f7b5f50d20860d408f1875ecaaef5c87d6394d1400cca4f62730bb38",
+      "lines": 795
+    },
+    {
+      "file": "returns/P05_网文作者真实工作流.md",
+      "sha256": "10f5c13e00c474d063d15c1ceaf1c01dc7ce360daccd8306884eac07144c5519",
+      "lines": 223
+    },
+    {
+      "file": "returns/P06_AI写作产品失败案例研究.md",
+      "sha256": "6acf41b5663acf07089a6eb32030447b45bc4bceda8e066d22492e8043ae383e",
+      "lines": 293
+    },
+    {
+      "file": "returns/P07_程序化插画生成技术方案.md",
+      "sha256": "0ad357443aab3787ae0f55dd942296c902c9b7c290a1194d28833be07be03127",
+      "lines": 166
+    },
+    {
+      "file": "returns/P08_Web画布前端技术选型.md",
+      "sha256": "bc47cc076d3150d654e65c0d2f725a0e71b3ca7d22220568600279d5a429f5a1",
+      "lines": 258
+    },
+    {
+      "file": "returns/P09_结构化记忆vs长上下文.md",
+      "sha256": "afff55298cb33eecab27ea8c9993d22f401e74d163023f4117a680eaf6bb3dfc",
+      "lines": 314
+    },
+    {
+      "file": "returns/P10_叙事事实抽取SOTA.md",
+      "sha256": "fc8d36e2b570ae54234e0d2a7728d8134cf3025b110e758ffd0809e4c471dbdd",
+      "lines": 205
+    },
+    {
+      "file": "returns/P11_AI检测误伤与平台政策.md",
+      "sha256": "c832f5ba28fac29ab6b3c1ac1ef2ba69eea8a9ec48a4e2238ff57c5bef57a40f",
+      "lines": 113
+    },
+    {
+      "file": "returns/P12_互动叙事引擎架构拆解.md",
+      "sha256": "9107cf7743dc5b30d5591d74784b037456a3bc30306cf0a137a6afa382c56457",
+      "lines": 551
+    },
+    {
+      "file": "returns/P13_心理学标签驱动角色行为.md",
+      "sha256": "df539e5444af6ccddda200d2d29bf52d19c37b30ee11b26a1e0f59686bbecc9c",
+      "lines": 203
+    },
+    {
+      "file": "returns/P14_LLM交叉审计可靠性.md",
+      "sha256": "11eface300d60d9e34a3940854afc1d431830e5069dbdb69375ee19e872cdc7c",
+      "lines": 124
+    },
+    {
+      "file": "returns/P15_中文网文行业2026图景.md",
+      "sha256": "3a6c3949f7e3ca1f98c816d4e197211994d021f84645f30a89724d31277a6e0a",
+      "lines": 351
+    }
+  ]
+}

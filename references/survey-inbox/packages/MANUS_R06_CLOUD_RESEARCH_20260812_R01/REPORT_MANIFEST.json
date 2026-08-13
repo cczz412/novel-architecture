@@ -1,0 +1,34 @@
+{
+  "package_id": "MANUS_R06_CLOUD_RESEARCH_20260812_R01",
+  "created_on": "2026-08-12",
+  "status": "external_candidate_prior_only",
+  "authorizations": {
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_production_promotion": false,
+    "may_override_local_truth": false
+  },
+  "shared_context_ref": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260809_R06",
+  "files": [
+    {
+      "path": "returns/RETURN_01_FACT_EXTRACTION_EVAL_SURVEY_20260812_R01.md",
+      "title": "AI／LLM 小说与长文本事实抽取：常见评测做法调研",
+      "bytes": 26171,
+      "sha256": "975d0177b3443759991a43ac34a9a16268d9163f1c07b5fe0b6c4325d4870fe3",
+      "manus_task_id": "8GnWKa2f7tsrMvQd45TcDX",
+      "manus_task_url": "https://manus.im/app/8GnWKa2f7tsrMvQd45TcDX",
+      "source_temp": "TEMP/manus_shared_context_runs_20260811/results/T1_fact_extraction_eval_survey/deliverable_pasted.md"
+    },
+    {
+      "path": "returns/RETURN_02_AI_WRITING_AGENT_LANDSCAPE_20260812_R01.md",
+      "title": "会动手的写作 Agent／大纲工具／长篇记忆工具：公开竞品拆解",
+      "bytes": 26565,
+      "sha256": "10afdad1f67161197eb11894cf2be2f85d1a5d5ffbbd3b458e6da394c91b610f",
+      "manus_task_id": "EKEc7r5YfSSCstyWuzxHUu",
+      "manus_task_url": "https://manus.im/app/EKEc7r5YfSSCstyWuzxHUu",
+      "source_temp": "TEMP/manus_shared_context_runs_20260811/results/T3_ai_writing_agent_landscape/deliverable_pasted.md"
+    }
+  ]
+}

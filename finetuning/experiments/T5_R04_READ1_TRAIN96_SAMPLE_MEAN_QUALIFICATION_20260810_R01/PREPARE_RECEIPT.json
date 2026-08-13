@@ -1,0 +1,119 @@
+{
+  "schema_version": "read1-train96-sample-mean-qualification-prepare-receipt/1.0",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "created_at": "2026-08-10T06:01:11+08:00",
+  "revised_at": "2026-08-10T06:24:47+08:00",
+  "revision_reason": "控制窗退修：修当前raw语义成功分支、pre/final SHA锁、模型成员闸与单进程闸",
+  "package_path": "finetuning/experiments/T5_R04_READ1_TRAIN96_SAMPLE_MEAN_QUALIFICATION_20260810_R01",
+  "mechanical_result": {
+    "rows": 96,
+    "facts": 879,
+    "empty_answers": 15,
+    "old72_prefix_byte_identical": true,
+    "max_sequence_tokens": 2850,
+    "truncated_samples": 0,
+    "base_l6_rows_reusable": 6,
+    "base_l6_projection_sha256": "db5d40432a0849b78f3d5a09824251af4574002205b5221892bc9b32b3649476",
+    "run_root_exists": false,
+    "model_receipt_members": {
+      "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6",
+      "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+      "member_count": 13,
+      "total_bytes": 8060917568,
+      "all_member_paths_bytes_and_sha256_verified": true
+    }
+  },
+  "single_variable_result": {
+    "runtime_recipe_equal_after_excluding_output_paths": true,
+    "training_input_same_path_and_sha": true,
+    "token_stats_same_path_and_sha": true,
+    "l6_request_same_path_and_sha": true,
+    "base_l6_projection_same_bytes": true,
+    "only_change": "global-token mean trainer -> per-sample mean trainer",
+    "old_trainer_sha256": "2ff621480fb043220f8dff29d01f85f6e8f8ffe9b04fb2eebc415a837b0be1c6",
+    "new_trainer_sha256": "fd77af48343557171598bd449ec6c10c5fcd514efa503f6007aba78bc0c5da4d",
+    "claim_boundary": "actual local single-process path only",
+    "world_size_one_gate_before_model_load": true
+  },
+  "ticket_gate_result": {
+    "missing_ticket_train_exit_code": 1,
+    "missing_ticket_infer_l6_exit_code": 1,
+    "error": "CZ_CONTROL_WINDOW_TICKET_MISSING",
+    "run_root_created": false,
+    "model_loaded": false
+  },
+  "validation_runs": [
+    {
+      "name": "runner_static_check",
+      "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked python run_train96_sample_mean.py static-check",
+      "exit_code": 0,
+      "result": "PASS_STATIC_PREPARED_NOT_RUN"
+    },
+    {
+      "name": "scorer_static_check",
+      "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked python score_train96_sample_mean_l6.py static-check",
+      "exit_code": 0,
+      "result": "PASS_STATIC_PREPARED_NOT_RUN"
+    },
+    {
+      "name": "single_variable_runtime_recipe_and_l6_identity_check",
+      "command": "locked in-memory targeted comparison of old and new runner runtime_config, TRAIN96, L6 request and Base projection",
+      "exit_code": 0,
+      "result": "PASS_ONLY_TRAINER_AND_OUTPUT_IDENTITY_DIFFER"
+    },
+    {
+      "name": "missing_ticket_hard_gate_train_and_infer_l6",
+      "command": "Homebrew Python runner train/infer-l6 with a nonexistent ticket",
+      "expected_exit_code_each": 1,
+      "result": "PASS_HARD_STOP_BEFORE_RUN_ROOT_OR_MODEL_LOAD"
+    },
+    {
+      "name": "single_file_ruff",
+      "command": "PYTHONDONTWRITEBYTECODE=1 uv run --locked ruff check run_train96_sample_mean.py score_train96_sample_mean_l6.py",
+      "exit_code": 0,
+      "result": "All checks passed"
+    },
+    {
+      "name": "synthetic_mechanical_pass_to_blind_queue",
+      "command": "locked in-memory temporary L6 raw exercise; TemporaryDirectory cleaned after run",
+      "exit_code": 0,
+      "result": "PASS_CURRENT_SAMPLE_MEAN_RAW_CREATED_BLIND_QUEUE"
+    },
+    {
+      "name": "l6_pre_final_raw_sha_lock",
+      "command": "mutate temporary LoRA raw after l6-pre, then invoke l6-final",
+      "exit_code": 0,
+      "result": "PASS_HARD_STOP_L6_FINAL_COMBINED_RAW_SHA_DRIFT"
+    },
+    {
+      "name": "model_receipt_member_gate",
+      "command": "runner static-check verifies all 13 receipt members before any model load",
+      "exit_code": 0,
+      "result": "PASS_13_MEMBERS_8060917568_BYTES_REVISION_AND_SHA"
+    },
+    {
+      "name": "single_process_world_gate",
+      "command": "in-memory fake world size 1/2 exercise without model load",
+      "exit_code": 0,
+      "result": "PASS_WORLD_SIZE_ONE_AND_HARD_STOP_WORLD_SIZE_TWO"
+    }
+  ],
+  "artifact_sha256": {
+    "SPEC.json": "ec798212cbe04ded6c722c3a53fdb48b61f0eb23d1add0e73771d7a1eec65b16",
+    "run_train96_sample_mean.py": "12b40326776a57cec723d7747467abd9b437595a6ff0ceb14a7001e6644d6cbc",
+    "score_train96_sample_mean_l6.py": "197b43383314cd06b5d93d0fe6b3457057135267e43d229cc74d739c101b09a6",
+    "OUTPUT_MANIFEST.json": "f059f734beeff486667d5736c72a6e6f7ac5d8ab1b25d8dc9459dbcc3ef3a49e"
+  },
+  "external_actions": {
+    "execution_tickets_created": 0,
+    "run_roots_created": 0,
+    "qwen_loads": 0,
+    "training_runs": 0,
+    "inference_runs": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_pointer_changes": 0,
+    "production_actions": 0
+  }
+}

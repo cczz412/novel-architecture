@@ -1,0 +1,117 @@
+{
+  "schema_version": "base-out2-context-halo-screen-prepare-receipt/1.0",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_RUN",
+  "prepared_at": "2026-08-10T13:40:01+08:00",
+  "experiment_id": "T5_R04_BASE_OUT2_CONTEXT_HALO_SCREEN_20260810_R01",
+  "exact_file_set": [
+    "README.md",
+    "SPEC.json",
+    "run_base_out2_context_halo_screen.py",
+    "score_base_out2_context_halo_screen.py",
+    "PREPARE_RECEIPT.json"
+  ],
+  "bound_members": {
+    "README.md": "d15660d576519c8bd1084b582424d0ca9ff5499634ede9b26d5dfbee16bd81e2",
+    "SPEC.json": "6399783788666f25d7987c8cbd2014fa10f9f64bf113b9094b839c9fc7e58f50",
+    "run_base_out2_context_halo_screen.py": "296c1a5a131019a7b99b858091860999a8c90e67fa8c60695123dfa89c9283b1",
+    "score_base_out2_context_halo_screen.py": "bc4cbcb032ca9eea3696a78d70fba5b89a927aaf2da2699759ca754eea4aba8f"
+  },
+  "input_bindings": {
+    "source_index_sha256": "0fe7ecb1649b93e4faab3d253d8904bee7f1a7a3e6f7f0fbb8b8e722c405de97",
+    "txx_sha256": "9a52d321981b7c9c32b8b422ef6b96a4c89b5581b04a1385513c5403f75f915a",
+    "gold_sha256": "234963eee8c1024ccbdf7d0866e73d89e963ba7eaf21a0fbd1e3126c817641b4",
+    "h180_eval_view_sha256": "a12f1f5cb1adfed4958418bfa8373af52b6305fdef64122c9bf02e3338c77e85",
+    "h180_actual_out2_request_sha256": "126b0f0843fdd244f007a46361397f24f97ce8d71c73d760ae9ad5a6bf5b3088",
+    "h180_base_projection_sha256": "c7f738181148acc4c06644e47058606b35f07b9a0603521ffdb98502267b1b97",
+    "parent_full_raw_sha256": "f9bd1fc02f93cfb7c51193f1dc319753472949bc2bbde4360a6779c415cdb28e",
+    "r07_readme_sha256": "46dc1bbc99076517fa813d26d5d0f3967785e18457a3fe5ba9bc979813b59247",
+    "r07_registry_sha256": "96431fbb1c90a64cbd06b6117b4aada564b38b6e3256f81327312486cf904782",
+    "r07_out_result_ticket_sha256": "c38121cece96ac7dd5dda49e2976bab4c38bb17c30de38bdbaccb10e4ad1f376",
+    "base_context_final_sha256": "f625c10ecf0e1d4be8eade2032dc2fdbe6d398ac55a6ad89f47abffa117825c7",
+    "base_context_adjudications_sha256": "ddc75e55cb441c6dd90f354f2a7ee7ffb28dd32f08e82a91df2052d1ae5ccf4d",
+    "base_context_adjudication_receipt_sha256": "9170e59a8219efc5fff4e13291842f8a114fcdee00c95e9ffe85c063c345b6f3",
+    "read2_carryover_r02_adjudications_sha256": "03eb97a774ac41599d6f897e64486cec37d0a237b073f0ab621039733d599636",
+    "read2_carryover_r02_receipt_sha256": "89922af0093da4f34da59e5f661703502fc7b4b3507f46a387831e155ee354b3",
+    "read2_carryover_final_sha256": "524f8bcceb37aea95a6cf1ac7445580353360fdfd6de525982a216efa49ec96f",
+    "semantic_policy_sha256": "73083a1d91edcc8fadabd2342fc59b89e10ef770aeaa6ffe926867f4f4c39a93",
+    "output_schema_sha256": "7c6a6fab7d32c9a8c04b10a09f37f8f9ac47308c9b12127bfceb231418dbcd14",
+    "model_receipt_sha256": "431f5a7e82c46c716ac5419cd59bc4312bbc50292b09f0b3c842ab08b07d8bb6"
+  },
+  "deterministic_request_build": {
+    "builder_location": "run_base_out2_context_halo_screen.py",
+    "source": "ACTUAL_EXECUTED_H180_OUT2_REQUEST",
+    "H120": {
+      "rows": 24,
+      "case_order": "C01_TO_C24",
+      "request_sha256": "d31e907a4e897a59ce9503da70f746c8db42f010a8169a5bd001d6841abed655"
+    },
+    "H60": {
+      "rows": 24,
+      "case_order": "C01_TO_C24",
+      "request_sha256": "4b9e7aa3ec19e4f594a2ebc3ce1ed2e4ec7892067aff5a9ba99482434476fe6e"
+    },
+    "total_new_requests": 48,
+    "target_rebuilt_from_txx_units": "24/24",
+    "system_focus_target_allowlist_and_common_tail_equal": "48/48",
+    "h60_nested_in_h120_nested_in_h180": "24/24",
+    "unicode_coordinate_unit": "CODEPOINT",
+    "sentence_or_newline_snapping": false,
+    "padding": false,
+    "cross_chapter_text": false
+  },
+  "h180_frozen_baseline": {
+    "rerun": false,
+    "rows": 24,
+    "recoverable_semantic_f1": 0.352941,
+    "schema_cases": 22,
+    "illegal_evidence_predictions": 0
+  },
+  "model_receipt_member_gate": {
+    "status": "PASS_READ_ONLY_NO_MODEL_LOAD",
+    "member_count": 13,
+    "total_bytes": 8060917568,
+    "revision": "cdbee75f17c01a7cc42f958dc650907174af0554"
+  },
+  "checks": {
+    "runner_static_check": "PASS",
+    "scorer_static_check": "PASS",
+    "ruff_locked_environment": "PASS",
+    "source_utf8_sha_coordinates_and_target_sha": "PASS_24_OF_24",
+    "txx_target_rebuild": "PASS_24_OF_24",
+    "pinned_h120_request_sha": "PASS",
+    "pinned_h60_request_sha": "PASS",
+    "unicode_boundary_hard_stops": "PASS_4_OF_4_CRLF_COMBINING_VARIATION_SELECTOR_ZWJ",
+    "reusable_semantic_decision_keys": 604,
+    "reusable_semantic_decision_conflicts": 0,
+    "blind_queue_variant_input_order_byte_invariant": "PASS",
+    "anonymous_queue_identity_leak": 0,
+    "mechanically_failed_arm_excluded_from_queue": "PASS",
+    "pre_metrics_records_exact_queue_sha": "PASS",
+    "pre_queue_tamper_hard_stop_before_final_output": "PASS",
+    "adjudications_tamper_hard_stop_before_final_output": "PASS",
+    "final_receipt_binds_raw_pre_queue_adjudications_and_final": "PASS_SYNTHETIC_NO_MODEL",
+    "near_tie_schema_then_shorter_halo": "PASS",
+    "missing_ticket_exit_code": 1,
+    "missing_ticket_error": "EXECUTION_TICKET_REQUIRED_BEFORE_RUN_ROOT_OR_MODEL_LOAD",
+    "run_root_exists": false,
+    "execution_ticket_created": false,
+    "model_loaded": false
+  },
+  "known_gaps": [
+    "H120和H60尚未推理，哪种halo在当前Demo更合适仍未知",
+    "只有机械合格的新halo才会生成匿名语义队列；本轮没有裁决或分数",
+    "若两个新格都机械失败就保留H180；这个相对选择不代表4B、Mini或生产合格"
+  ],
+  "actions": {
+    "model_loads": 0,
+    "training": 0,
+    "inference": 0,
+    "blind_adjudication": 0,
+    "execution_tickets_created": 0,
+    "run_roots_created": 0,
+    "api_calls": 0,
+    "notion_actions": 0,
+    "git_actions": 0,
+    "current_or_production_actions": 0
+  }
+}

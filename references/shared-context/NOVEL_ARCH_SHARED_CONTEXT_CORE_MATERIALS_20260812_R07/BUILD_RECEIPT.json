@@ -1,0 +1,123 @@
+{
+  "schema_version": "novel_arch_shared_context_build_receipt_v7_local_and_notion_verified",
+  "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260812_R07",
+  "completed_at": "2026-08-12T21:32:34+08:00",
+  "result": "PASS_R07_RELEASE_AND_MECHANICAL_ACCEPTANCE",
+  "status_meaning": "R07 was built locally from immutable R06, reconciled atom by atom to the repaired 2026-08-12 21:18 Notion ledger entry, authored in Notion, and read back. It is the current shared product context, but it grants no construction, training, external-send, model-API, production, or launch authority.",
+  "repository": {
+    "observed_head": "a023bda8de96a629e3ca0db27b78ba36bf7edaab",
+    "worktree_at_start": "PRE_EXISTING_DIRTY_WITH_UNTRACKED_SHARED_CONTEXT_AND_FINETUNING_PATHS",
+    "new_directory": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260812_R07",
+    "existing_repository_files_modified_by_this_task": 0,
+    "root_agents_route_modified": false,
+    "current_pointer_modified": false,
+    "git_operations": 0
+  },
+  "parent_package": {
+    "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260809_R06",
+    "core_materials_sha256": "fd267b0a45e96a413ddf125120339f0be68b0c6b3bec5f318e28166a458ea827",
+    "package_sha256": "15d5ee2736b589a46f4060f5eceffe581655bc1e4920582176248491e51b13f2",
+    "manifest_sha256": "6449196a15c4b5504e183586fccb1c32e6aacc176b9ec1b89905ec8a71c746b1",
+    "receipt_sha256": "c76c59e8b7abc78b51296c5afbaccaebcd33c2c7183e8c7bafa41a7ee13d4a10",
+    "member_hashes_rechecked": 9,
+    "member_hashes_match_parent_manifest": true,
+    "byte_identity_policy": "R06_REMAINS_UNMODIFIED"
+  },
+  "decision_handling": {
+    "ledger_page_id": "e1eb1412-72b2-4db3-afd5-cf95b5cfe2c6",
+    "ledger_repair_entry": "2026-08-12T21:18:00+08:00",
+    "repair_authority": "CZ_EXPLICITLY_DIRECTED_THIS_WINDOW_TO_CREATE_AND_REPAIR_THE_MISSING_LEDGER_ENTRY",
+    "repair_content_source": "TEMP/bgboard-audit-20260809-r01/15_BGBOARD_R07_CANDIDATE_ADDITIONS_20260812_R03.md__LEDGER_PASTE_DRAFT_V3",
+    "ledger_entry_read_back_before_r07_authoring": true,
+    "approved_direction_count": 27,
+    "deferred_count": 2,
+    "deferred_ids": ["N10-A", "N10-B"],
+    "questions_15_and_16_remain_pending": true,
+    "carryover_between_atomic_ids": false
+  },
+  "notion_release": {
+    "container_page_id": "cb4e1478-cbab-4c27-ba3c-25bfebb655d3",
+    "package_page_id": "3ba5cadc-4d0f-8141-8578-d82a6c5aef75",
+    "package_url": "https://app.notion.com/p/3ba5cadc4d0f81418578d82a6c5aef75",
+    "package_pages_created": 1,
+    "member_pages_created": 14,
+    "markdown_member_pages_authored": 12,
+    "machine_member_pages_authored": 2,
+    "all_member_pages_read_back": true,
+    "notion_total_root_points_to_r07": true,
+    "content_relationship": "SEMANTICALLY_RECONCILED__LOCAL_RELATIVE_LINKS_AND_MARKDOWN_TABLES_ARE_RENDERED_AS_NOTION_PAGE_LINKS_AND_NATIVE_TABLES"
+  },
+  "hashes": {
+    "core_materials_sha256": "b3f445b3fbf4c144fdb31081b508708018a1f56ed2b8b1e7c77b997185f9e97b",
+    "manifest_sha256": "b17d4673b194d9a2958fded419d0e0af31587bfc4b3e21fe4e50b137f57ebfde",
+    "package_sha256": "6aab888762134e1db1dd7eb65c0f09c71b40f50772b40f30568da74978608444",
+    "package_sha256_scope": "All twelve Markdown members plus CORE_MATERIALS_MANIFEST.json, indexed as path<TAB>member_sha256<LF> in lexicographic path order. BUILD_RECEIPT.json is excluded to avoid a circular hash."
+  },
+  "counts": {
+    "folder_files": 14,
+    "markdown_members": 12,
+    "core_markdown_members": 8,
+    "auxiliary_or_reference_markdown_members": 4,
+    "machine_json_members": 2,
+    "r03_atomic_ids": 29,
+    "primary_atomic_sections": 29,
+    "unique_primary_atomic_sections": 29,
+    "local_markdown_links": 46
+  },
+  "mechanical_validation": {
+    "fourteen_expected_folder_files_present_exactly": true,
+    "twelve_markdown_members_present": true,
+    "all_markdown_last_nonempty_lines_are_source_codex": true,
+    "all_local_links_resolve": true,
+    "all_json_parse": true,
+    "r03_ids_match_primary_sections_one_to_one": true,
+    "manifest_atomic_ids_match_r03_order": true,
+    "manifest_member_paths_match_markdown_members": true,
+    "manifest_member_hashes_match_local_files": true,
+    "core_hash_reproduced": true,
+    "manifest_hash_reproduced": true,
+    "package_hash_reproduced": true,
+    "n19b_complete_mapping_and_four_deviation_cases_present": true,
+    "questions_15_and_16_remain_pending": true,
+    "parent_r06_member_hashes_match": true,
+    "all_notion_markdown_members_read_back_with_key_markers": true,
+    "r06_files_modified_by_this_task": false,
+    "no_out_of_scope_writes": true
+  },
+  "semantic_validation": {
+    "status": "PASS_LEDGER_TO_LOCAL_TO_NOTION_ATOMIC_RECONCILIATION",
+    "checks": {
+      "all_twenty_nine_atoms_have_one_primary_page": true,
+      "n10a_and_n10b_only_deferred_atoms": true,
+      "n19b_slot_mapping_is_complete": true,
+      "n14_freshness_five_part_rule_present": true,
+      "validation_market_risk_register_present": true,
+      "user_data_rights_security_policy_present": true,
+      "product_semantic_debt_register_present": true,
+      "questions_15_and_16_remain_pending": true,
+      "no_construction_or_training_authority_added": true
+    }
+  },
+  "external_actions": {
+    "notion_ledger_entries_inserted": 1,
+    "notion_pages_created": 15,
+    "notion_total_root_entry_updates": 1,
+    "model_api_calls": 0,
+    "training_jobs_started": 0,
+    "external_sends": 0,
+    "current_state_modified": 0,
+    "finetuning_files_modified": 0,
+    "t5_r04_files_modified": 0,
+    "git_stage": 0,
+    "git_commit": 0,
+    "git_push": 0,
+    "spending": 0
+  },
+  "hard_stops_preserved": [
+    "NO_CONSTRUCTION_TRAINING_EXTERNAL_SEND_MODEL_API_PRODUCTION_OR_LAUNCH_AUTHORITY",
+    "QUESTIONS_15_AND_16_REMAIN_PENDING",
+    "FINETUNING_AND_T5_R04_FILES_OUT_OF_SCOPE",
+    "R06_REMAINS_IMMUTABLE",
+    "ROOT_AGENTS_AND_LOCAL_CURRENT_POINTERS_NOT_CHANGED"
+  ]
+}
