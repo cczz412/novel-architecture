@@ -1,0 +1,13 @@
+{
+  "knowledge_base_id": "external-report-knowledge-base",
+  "current_version": "R01",
+  "current_package_id": "EXTERNAL_KNOWLEDGE_BASE_20260815_R01",
+  "entry_path": "EXTERNAL_KNOWLEDGE_BASE_20260815_R01/00_READ_ME_FIRST.md",
+  "manifest_path": "EXTERNAL_KNOWLEDGE_BASE_20260815_R01/MANIFEST.json",
+  "manifest_sha256": "6f85e9b5ac4f530b67671372888c5b4e358a38c812ee13ac5a94b4ba84be41cc",
+  "content_tree_sha256": "de1b9b48e03f06aa0dce84f6228bc51005fb8656520e3143c9539185948db36d",
+  "activated_on": "2026-08-15",
+  "activation_authority": "CZ explicit instruction: 同意，你就开始执行",
+  "authority": "EXTERNAL_REFERENCE_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
+  "product_shared_context_current": "R13"
+}

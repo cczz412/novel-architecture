@@ -9,9 +9,10 @@
 | 夹子 | 干什么 |
 |---|---|
 | **本夹** | 外部调查角度／灵感条目（GitHub、抖音讲法、漫剧技巧…） |
+| `packages/` | 已收回并登记的完整调查报告、Prompt 追溯和 SHA 清单 |
 | [book-meta/](../book-meta/) | 具体**书**的介绍／DR 回包／锚点卡 |
 | [side-tracks/](../../side-tracks/) | 旁路调查**进度台账**（窗号、下一手 Prompt） |
-| `TEMP/dr_*` | 某一窗调查的工作夹／回包原件 |
+| `TEMP/dr_*` | 某一窗尚未验收的临时工作夹；正式登记后不能继续依赖这里追原件 |
 
 ❌ 不要把本夹当主线路牌；也不要为每条灵感新开 ST 支线（攒一批再说）。
 
@@ -24,6 +25,8 @@
 - 分不清先说「丢进 survey-inbox」
 
 Agent 会：写一条 `items/SI-xxx.md` → 追加 [catalog.csv](catalog.csv) → 更新 [INDEX.md](INDEX.md)。
+
+收到一整批报告时，还要把原字节、Prompt 状态和 SHA 放进 `packages/<batch_id>/`。报告若要进入日常外部背景，再按[外部报告知识库](../external-knowledge-base/README.md)的准入、结论、来源和升版规则处理；不能把整篇报告直接贴进背景页。
 
 ## 标签怎么打（筛选用）
 

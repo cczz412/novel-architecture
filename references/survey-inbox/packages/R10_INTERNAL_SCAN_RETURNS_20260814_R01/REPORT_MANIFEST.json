@@ -1,0 +1,31 @@
+{
+  "package_id": "R10_INTERNAL_SCAN_RETURNS_20260814_R01",
+  "created_on": "2026-08-14",
+  "source_batch_date": "2026-08-14",
+  "status": "historical_external_research_candidate_prior_only",
+  "source_provider": "ChatGPT",
+  "prompt_source": "../../../../../novel-mvp/design/21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md",
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false
+  },
+  "decision_boundary": "Internal problem scan of official R10 only. Must not rewrite R10, assemble R11, merge R10.2, or decide ADD-043/044.",
+  "files": [
+    {
+      "return_id": "RETURN_01",
+      "prompt_topic": "R10 internal problem scan without R10.2 overlay",
+      "path": "returns/chatgpt_r10_internal_scan.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 35098,
+      "lines": 307,
+      "sha256": "b58355e04c75b4b7b782f44174c45fb605def5dc5474ef311c2273afdeea2744"
+    }
+  ]
+}

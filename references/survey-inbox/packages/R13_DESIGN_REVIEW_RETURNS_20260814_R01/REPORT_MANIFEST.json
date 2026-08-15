@@ -1,0 +1,48 @@
+{
+  "package_id": "R13_DESIGN_REVIEW_RETURNS_20260814_R01",
+  "created_on": "2026-08-15",
+  "source_batch_date": "2026-08-14",
+  "status": "historical_external_research_candidate_prior_only",
+  "source_provider": "ChatGPT",
+  "prompt_source": "PROMPT.md",
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false
+  },
+  "decision_boundary": "Design-doc stale scan against already-held R13. Must not rewrite R13 or novel-mvp design docs, or decide ADD-043/044/dark-draft.",
+  "files": [
+    {
+      "return_id": "RETURN_01",
+      "prompt_topic": "R13 vs current novel-mvp design docs",
+      "path": "returns/chatgpt_r13_design_review.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 43450,
+      "lines": 536,
+      "sha256": "21f1f9c59710b4f2fcfb11041410a27c4c9d92ea457372d2f56b32ff6a296889"
+    }
+  ],
+  "supporting_files": [
+    {
+      "path": "PROMPT.md",
+      "sha256": "c78c053fbb658a66edc46ad2ce148e59de491e4898fc3a9c1600efbb62ee0f3f",
+      "bytes": 6277
+    },
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "sha256": "bfdd5e8614921838eff3f0d327bcc583318b70e166ef20c463a8d9516e2f6f4d",
+      "bytes": 1260
+    },
+    {
+      "path": "02_RETURNS_DIGEST.md",
+      "sha256": "66d94fa1d8a521122a7642c88b5784ac9a053fef03decb4dbc1a069fd2b65f9b",
+      "bytes": 7238
+    }
+  ]
+}

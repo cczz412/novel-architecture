@@ -1888,6 +1888,708 @@
         }
       },
       "external_slots": []
+    },
+    "t03-multi-input-pipeline-direction-review": {
+      "label": "T-03 多形态输入抽取管线｜方向总审",
+      "purpose": "把当前输入／输出合同、R11 隔离候选、关键实验事实和产品复用场景交给 ChatGPT 做方向级独立审查；允许推翻现有问题定义、拆分管线或要求先重建 Gold，不授权 API、训练、生产、正式 MVP 回写或自动采纳外部结论。",
+      "snapshot_at": "2026-08-14T00:00:00+08:00",
+      "reviewer_prompt_path": "config/review_pack/prompts/t03_multi_input_pipeline_direction_review.md",
+      "truth_source": {
+        "authority": "CZ 当前对话明确授权制作一个 ZIP 和一个 Prompt，供其手工交给 ChatGPT 审查",
+        "local_current_state_status": "t03_candidate_sandbox_and_evidence_only_formal_mvp_unchanged",
+        "note": "本包请外部顾问主导判断方向，不要求维护现有设计。摘要只作导航；原实验报告优先。外部回包仍是候选建议，不能自动改产品真值、正式 MVP、API 权限或生产默认。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence"
+      ],
+      "forbidden_source_globs": [
+        "**/corpus-downloads/**",
+        "**/chapters/**",
+        "**/novels/**",
+        "**/data/**",
+        "**/scoring_lockbox/**",
+        "**/*.lockbox.json",
+        "config/gold/**",
+        "runs/**",
+        "reports/**",
+        "**/RAW_RESPONSES*",
+        "**/raw_response*",
+        "**/NORMALIZED_ITEMS*",
+        "**/stream_events*",
+        "**/reasoning*",
+        "**/transport*",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "当前任务、合同、材料导航与外审任务",
+          "roots": [
+            {
+              "root_id": "t03_direction_review_brief",
+              "required": true,
+              "authority": "cz_current_review_request_plus_local_t03_contracts",
+              "status": "active_external_review_snapshot",
+              "description": "说明真正产品目标、当前管线、实验事实强弱、复用场景和外部顾问的开放判断权。",
+              "globs": [
+                "TEMP/t03_chatgpt_pipeline_direction_review_prep_20260814_r01/00_READ_ME_FIRST.md",
+                "TEMP/t03_chatgpt_pipeline_direction_review_prep_20260814_r01/01_CURRENT_SYSTEM_AND_PIPELINE.md",
+                "TEMP/t03_chatgpt_pipeline_direction_review_prep_20260814_r01/02_EXPERIMENT_EVIDENCE_LEDGER.md",
+                "TEMP/t03_chatgpt_pipeline_direction_review_prep_20260814_r01/03_PRODUCT_REUSE_AND_OPEN_QUESTIONS.md",
+                "TEMP/t03_api_pipeline_debug_plan_20260813_r01/T03_API_PIPELINE_DEBUG_MASTER_PLAN_R01.md",
+                "TEMP/t03_api_pipeline_debug_plan_20260813_r01/T03_INPUT_CONTRACT_R01.md",
+                "TEMP/t03_api_pipeline_debug_plan_20260813_r01/T03_OUTPUT_CONTRACT_R01.md",
+                "TEMP/t03_api_pipeline_debug_plan_20260813_r01/T03_DEBUG_CASE_SCHEMA_R01.json",
+                "TEMP/t03_api_pipeline_debug_plan_20260813_r01/T03_EXTERNAL_QUESTION_LOG_R01.md",
+                "config/review_pack/prompts/t03_multi_input_pipeline_direction_review.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "R11 隔离候选与产品接口设计",
+          "roots": [
+            {
+              "root_id": "t03_r11_candidate_code",
+              "required": true,
+              "authority": "temp_isolated_candidate_not_formal_mvp",
+              "status": "latest_rollback_safe_candidate_snapshot",
+              "description": "当前隔离副本的入口、核心代码、合同和阶段建议；部分模块未接 CLI 或事实账。",
+              "globs": [
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/README.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/ARCHITECTURE.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/README.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/cli.py",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/config.json",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/contracts/C1_CHAPTER_DOC.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/contracts/C2_SEGMENT.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/contracts/C3_FACT_CANDIDATE.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/mvp/content_state.py",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/mvp/cross_source_overlap.py",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/mvp/extract.py",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/mvp/ingest.py",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/mvp/material_router.py",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/mvp/refine.py",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/mvp/segment.py",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/mvp/store.py"
+              ]
+            },
+            {
+              "root_id": "t03_product_reuse_designs",
+              "required": true,
+              "authority": "product_design_snapshot_for_interface_context_only",
+              "status": "designed_not_equivalent_to_implemented",
+              "description": "解释抽取结果将怎样进入导入、章改稿、规划和审查；不能据此声称功能已经写进正式 MVP。",
+              "globs": [
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/design/EXTRACTION_PIPELINE_DESIGN_R01.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/design/INTAKE_SHELVES_DESIGN_R01.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/design/CHAPTER_REVISION_DESIGN_R01.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/design/M8_PLANNING_DESIGN_R02.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/sandbox/design/REVIEW_OVERVIEW_DESIGN_R01.md"
+              ]
+            },
+            {
+              "root_id": "t03_r04_to_r11_candidate_evidence",
+              "required": true,
+              "authority": "local_candidate_stage_evidence",
+              "status": "mixed_stage_results_not_product_default",
+              "description": "从管线试装、内容状态、材料路由、项目字段拆分到跨来源重合的候选证据。",
+              "globs": [
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/evidence/MVP_MODIFICATION_RECOMMENDATIONS_R01.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/evidence/R04_PIPELINE_TRIAL_RESULT_R01.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/evidence/R05_CONTENT_STATE_TRIAL_RESULT_R01.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/evidence/R09_MATERIAL_ROUTER_RESULT_R01.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/evidence/R10_PROJECT_FIELD_SPLIT_RESULT_R01.md",
+                "TEMP/t03_mvp_sandbox_cross_source_overlap_trial_20260814_r11/evidence/R11_CROSS_SOURCE_OVERLAP_RESULT_R01.md"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "关键实验结果与失败证据",
+          "roots": [
+            {
+              "root_id": "t03_batch_and_semantic_audits",
+              "required": true,
+              "authority": "local_experimental_evidence_not_gold",
+              "status": "observed_results_with_working_labels",
+              "description": "当前主抽、去噪、Halo、验真和五类输入批次的总账与语义抽查。",
+              "globs": [
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_DENOISE_HALO_VERIFY_BATCH_RESULT_R01.md",
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_R08_FIVE_INPUT_UNSEEN_BATCH_RESULT_R01.md",
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_R09_ROUTED_FIVE_INPUT_BATCH_RESULT_R01.md",
+                "TEMP/t03_parallel_main_generalization_20260814_r01/evidence/G_MAIN_EXTRACT_COMPARISON_REPORT_R01.md",
+                "TEMP/t03_followup_main_extract_semantic_audit_20260814_r01/MAIN_EXTRACT_EXISTING_RAW_AUDIT_R01.md",
+                "TEMP/t03_followup_verify_semantic_audit_20260814_r01/VERIFY_EXISTING_RAW_AUDIT_R01.md"
+              ]
+            },
+            {
+              "root_id": "t03_targeted_probe_results",
+              "required": true,
+              "authority": "local_small_batch_candidate_tests",
+              "status": "small_sample_direction_evidence",
+              "description": "保留被淘汰路线、有限候选和真实未见切片，供外审判断我们的归因是否站得住。",
+              "globs": [
+                "TEMP/t03_denoise_dev_labels_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_halo_abc_smoke_run_20260814_r01/HALO_ABC_RESULT_NOTE_R01.md",
+                "TEMP/t03_halo_unseen_b_vs_none_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_halo_risk_trigger_ab_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_doubao_atomicity_ab_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_verifier_four_state_smoke_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_verifier_binary_quote_contract_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_r09_binary_verify_unseen_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_entity_resolution_unseen_r09_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_hybrid_provenance_conflict_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_real_100_chapter_sparse_body_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_real_100_chapter_title_sequence_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_five_input_semantic_baseline_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_five_input_narrow_probes_run_20260814_r02/RESULT_NOTE_R01.md",
+                "TEMP/t03_omission_only_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_atomic_splitter_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_appearance_attribute_card_probe_run_20260814_r02/RESULT_NOTE_R01.md",
+                "TEMP/t03_r10_project_preamble_unseen3_run_20260814_r01/PROMPT.txt",
+                "TEMP/t03_r10_project_preamble_unseen3_run_20260814_r01/RESULT_NOTE_R01.md"
+              ]
+            },
+            {
+              "root_id": "t03_prior_external_adoption_boundary",
+              "required": true,
+              "authority": "historical_external_advice_adoption_note_only",
+              "status": "prior_advice_not_current_direction_authority",
+              "description": "上一轮 24 小时工作复盘的采纳边界；帮助外审发现旧建议哪里已失效，不限制本轮推翻路线。",
+              "globs": [
+                "TEMP/t03_external_returns_intake_20260813_r01/24H/24H_ADOPTION_NOTE_R01.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "外部回包",
+          "roots": []
+        }
+      },
+      "external_slots": []
+    },
+    "t03-full-role-exam-design": {
+      "label": "T-03 全岗位模型擂台｜试卷与门槛外审",
+      "purpose": "把当前11个模型岗位、既有四份真实混合大纲、已观察到的错误与分岗位实验结果交给 ChatGPT，让它独立审查岗位拆法并设计每岗位4份材料、正常组与边界组、评分标准、淘汰线和上岗线。新选4本小说只给本地隐藏确认集的题材与难点元数据，不上传正文，不授权 API、训练、生产、正式 MVP 回写或自动采纳外部结论。",
+      "snapshot_at": "2026-08-15T00:00:00+08:00",
+      "reviewer_prompt_path": "TEMP/t03_full_role_exam_review_prep_20260815_r01/PROMPT.md",
+      "truth_source": {
+        "authority": "CZ 当前对话明确授权再选4本新小说并制作 ZIP 与 Prompt 交给 ChatGPT",
+        "local_current_state_status": "t03_exam_design_review_only_new_novel_text_local_holdout",
+        "note": "外部顾问可以推翻岗位拆法和门槛设计，但回包只作下一轮本地实验候选。4本新小说正文因训练／上传权利待确认，保持本地隐藏，不进入本包。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence"
+      ],
+      "forbidden_source_globs": [
+        "**/corpus-downloads/**",
+        "**/chapters_cache/**",
+        "**/chapters/**",
+        "**/novels/**",
+        "**/data/**",
+        "**/scoring_lockbox/**",
+        "**/*.lockbox.json",
+        "config/gold/**",
+        "runs/**",
+        "reports/**",
+        "**/RAW_RESPONSES*",
+        "**/raw_response*",
+        "**/NORMALIZED_ITEMS*",
+        "**/stream_events*",
+        "**/reasoning*",
+        "**/transport*",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "外审任务、岗位图与两端合同",
+          "roots": [
+            {
+              "root_id": "t03_full_role_exam_brief",
+              "required": true,
+              "authority": "cz_current_review_request_and_local_t03_contracts",
+              "status": "active_external_review_snapshot",
+              "description": "说明这轮真正要解决的问题、11个暂定岗位、4本本地隐藏确认书和不可上传边界。",
+              "globs": [
+                "TEMP/t03_full_role_exam_review_prep_20260815_r01/00_READ_ME_FIRST.md",
+                "TEMP/t03_full_role_exam_review_prep_20260815_r01/01_NEW_FOUR_LOCAL_HOLDOUT_SELECTION.md",
+                "TEMP/t03_full_role_exam_review_prep_20260815_r01/PROMPT.md",
+                "TEMP/t03_full_role_model_challenge_20260815_r01/README.md",
+                "TEMP/t03_api_pipeline_debug_plan_20260813_r01/T03_INPUT_CONTRACT_R01.md",
+                "TEMP/t03_api_pipeline_debug_plan_20260813_r01/T03_OUTPUT_CONTRACT_R01.md",
+                "TEMP/t03_api_pipeline_debug_plan_20260813_r01/T03_DEBUG_CASE_SCHEMA_R01.json"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "旧四份真实大纲与当前材料分拣擂台",
+          "roots": [
+            {
+              "root_id": "t03_four_existing_mixed_outlines",
+              "required": true,
+              "authority": "local_dev_fixture_and_working_labels_not_gold",
+              "status": "development_material_already_seen_not_confirmation_set",
+              "description": "4份真实混合大纲及工作标签，让外审能看见实际材料形状；它们已参与调试，不能再冒充未见确认集。",
+              "globs": [
+                "TEMP/t03_mvp_sandbox_candidate_block_doubao_lite_api_trial_20260814_r16/fixtures/CANDIDATE_BLOCKS_R01.json",
+                "TEMP/t03_mvp_sandbox_candidate_block_doubao_lite_api_trial_20260814_r16/fixtures/REFERENCE_CANDIDATE_LABELS_R01.json",
+                "TEMP/t03_mvp_sandbox_candidate_block_doubao_lite_api_trial_20260814_r16/fixtures/BLOCK_LABEL_SCHEMA_R01.json"
+              ]
+            },
+            {
+              "root_id": "t03_material_routing_incumbent_result",
+              "required": true,
+              "authority": "local_api_experiment_result_not_production_default",
+              "status": "current_incumbent_evidence_for_one_role_only",
+              "description": "豆包2.1 Turbo非思考与挑战者在材料分拣岗位的当前结果；只能证明这一岗位，不能外推到其余岗位。",
+              "globs": [
+                "TEMP/t03_openrouter_material_intake_compare_20260815_r01/MATERIAL_INTAKE_COMPARE_RESULT_R01.md"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "各岗位已有小批实验与错误地图",
+          "roots": [
+            {
+              "root_id": "t03_batch_evidence",
+              "required": true,
+              "authority": "local_experimental_evidence_not_gold",
+              "status": "observed_small_batch_results",
+              "description": "去噪、Halo、验真和五类输入的阶段证据，帮助外审避免从零想象。",
+              "globs": [
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_DENOISE_HALO_VERIFY_BATCH_RESULT_R01.md",
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_R08_FIVE_INPUT_UNSEEN_BATCH_RESULT_R01.md",
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_R09_ROUTED_FIVE_INPUT_BATCH_RESULT_R01.md",
+                "TEMP/t03_main_extract_error_map_20260814_r01/CURRENT_MAIN_EXTRACT_ERROR_MAP_R01.md"
+              ]
+            },
+            {
+              "root_id": "t03_role_specific_probes",
+              "required": true,
+              "authority": "local_small_batch_candidate_tests",
+              "status": "direction_evidence_not_default",
+              "description": "实体消歧、验真、跨来源冲突、原子拆分、补漏和外貌属性等岗位的真实小批探针。",
+              "globs": [
+                "TEMP/t03_entity_resolution_unseen_r09_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_verifier_binary_quote_contract_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_hybrid_provenance_conflict_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_atomic_splitter_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_omission_only_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_appearance_attribute_card_probe_run_20260814_r02/RESULT_NOTE_R01.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "外部回包",
+          "roots": []
+        }
+      },
+      "external_slots": []
+    },
+    "t03-model-portfolio-next-roles": {
+      "label": "T-03 模型组合、价格并发与后续岗位试卷外审",
+      "purpose": "把当前全部模型基础卷、专项卷、运输失败账、旧四份真实混合大纲、八岗位现状和上一轮外审交给 ChatGPT，独立审查模型组合，并调查官方 API、价格、企业并发与生命周期，设计剩余岗位和下一轮最小试验。",
+      "snapshot_at": "2026-08-15T09:30:00+08:00",
+      "reviewer_prompt_path": "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/PROMPT.md",
+      "truth_source": {
+        "authority": "CZ 当前对话明确要求把现阶段全部模型和岗位材料打包交 ChatGPT 审查、调查并设计下一批",
+        "local_current_state_status": "experimental_model_portfolio_review_only",
+        "note": "外部回包可推翻当前候选与岗位拆法，但只作为下一轮本地实验输入；不授权 API、生产切换、训练或正式 Gold。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence"
+      ],
+      "forbidden_source_globs": [
+        "**/corpus-downloads/**",
+        "**/chapters_cache/**",
+        "**/chapters/**",
+        "**/novels/**",
+        "**/data/**",
+        "**/scoring_lockbox/**",
+        "**/*.lockbox.json",
+        "config/gold/**",
+        "runs/**",
+        "reports/**",
+        "**/RAW_RESPONSES*",
+        "**/raw_response*",
+        "**/HUMAN_REVIEW_QUEUE*",
+        "**/MECHANICAL_SCORES*",
+        "**/stream_events*",
+        "**/reasoning*",
+        "**/transport*",
+        "**/mock-perfect*/**",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "本轮任务、成绩总账、岗位缺口与外审 Prompt",
+          "roots": [
+            {
+              "root_id": "t03_model_portfolio_review_brief",
+              "required": true,
+              "authority": "cz_current_review_request_and_local_run_evidence",
+              "status": "active_external_review_snapshot",
+              "description": "本轮审查目标、全模型成绩总账、岗位缺口、价格并发调查清单和开放式 Prompt。",
+              "globs": [
+                "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/00_READ_ME_FIRST.md",
+                "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/01_MODEL_SCORE_LEDGER.md",
+                "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/02_ROLES_CANDIDATES_AND_GAPS.md",
+                "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/03_PRICE_API_CAPACITY_RESEARCH_SCOPE.md",
+                "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/PROMPT.md"
+              ]
+            },
+            {
+              "root_id": "t03_current_role_exam_contract",
+              "required": true,
+              "authority": "local_dev_exam_contract_not_gold_or_production",
+              "status": "current_small_exam_definition",
+              "description": "当前八岗位登记、四岗位基础卷、模型路由登记和试卷说明。",
+              "globs": [
+                "TEMP/t03_role_exam_harness_20260815_r01/README.md",
+                "TEMP/t03_role_exam_harness_20260815_r01/ROLE_REGISTRY_R01.json",
+                "TEMP/t03_role_exam_harness_20260815_r01/EXAM_BANK_R01.json",
+                "TEMP/t03_role_exam_harness_20260815_r01/MODEL_ROSTER_R01.json"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "全部模型运行摘要、调用资源账与真实样本",
+          "roots": [
+            {
+              "root_id": "t03_all_base_exam_runs",
+              "required": true,
+              "authority": "local_api_experiment_evidence_not_model_promotion",
+              "status": "observed_run_summaries_including_failures",
+              "description": "基础卷所有完整、部分、探针失败与通道失败；SUMMARY给分，CALLS给时间、Token、响应模型和可得费用。",
+              "exclude_globs": [
+                "TEMP/t03_role_exam_runs/mock-perfect_*/**"
+              ],
+              "globs": [
+                "TEMP/t03_role_exam_runs/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r02/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r02/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r03/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r03/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r03_atomicity/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r03_atomicity/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r03_atomicity/M02_ATOMICITY_AB_RESULT_20260815.md",
+                "TEMP/t03_role_exam_runs_r04_deepseek_official/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r04_deepseek_official/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs/QWEN38_MAX_FULL_ROLE_SCORECARD_20260815_R01.md"
+              ]
+            },
+            {
+              "root_id": "t03_existing_four_mixed_outlines",
+              "required": true,
+              "authority": "local_dev_fixture_and_working_labels_not_gold",
+              "status": "development_material_already_seen",
+              "description": "四份来自真实用户式整书大纲的混合材料和工作标签，可用于设计题，不能冒充未见确认集。",
+              "globs": [
+                "TEMP/t03_mvp_sandbox_candidate_block_doubao_lite_api_trial_20260814_r16/fixtures/CANDIDATE_BLOCKS_R01.json",
+                "TEMP/t03_mvp_sandbox_candidate_block_doubao_lite_api_trial_20260814_r16/fixtures/REFERENCE_CANDIDATE_LABELS_R01.json",
+                "TEMP/t03_mvp_sandbox_candidate_block_doubao_lite_api_trial_20260814_r16/fixtures/BLOCK_LABEL_SCHEMA_R01.json",
+                "TEMP/t03_openrouter_material_intake_compare_20260815_r01/MATERIAL_INTAKE_COMPARE_RESULT_R01.md"
+              ]
+            },
+            {
+              "root_id": "t03_local_holdout_selection_only",
+              "required": true,
+              "authority": "local_holdout_metadata_no_novel_text_uploaded",
+              "status": "rights_bounded_test_design_input",
+              "description": "四本低热度新书的题材、难点与本地切题说明；不含正文。",
+              "globs": [
+                "TEMP/t03_full_role_exam_review_prep_20260815_r01/01_NEW_FOUR_LOCAL_HOLDOUT_SELECTION.md"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "上一轮外审、采纳边界与T-03错误证据",
+          "roots": [
+            {
+              "root_id": "t03_prior_full_role_review",
+              "required": true,
+              "authority": "external_advice_and_local_adoption_note",
+              "status": "prior_design_input_not_current_decision",
+              "description": "上一轮全岗位试卷报告与采纳判读，避免重复从零设计。",
+              "globs": [
+                "TEMP/chatgpt_review_returns/T03_FULL_ROLE_EXAM_DESIGN_20260815/T03_FULL_ROLE_EXAM_DESIGN_ChatGPT_Pro_review_20260815.md",
+                "TEMP/chatgpt_review_returns/T03_FULL_ROLE_EXAM_DESIGN_20260815/ADOPTION_NOTE_R01.md"
+              ]
+            },
+            {
+              "root_id": "t03_prior_model_and_pipeline_research",
+              "required": true,
+              "authority": "external_research_returns_with_local_adoption_boundaries",
+              "status": "research_evidence_not_model_score",
+              "description": "中文文本模型与管线方向的外部调查和本地采纳边界。",
+              "globs": [
+                "TEMP/t03_chinese_text_specialist_external_return_20260815_r01/EXTERNAL_RESEARCH_RETURN_R01.md",
+                "TEMP/t03_chinese_text_specialist_external_return_20260815_r01/ADOPTION_NOTE_R01.md",
+                "TEMP/t03_pipeline_direction_external_return_20260814_r01/CHATGPT_T03_PIPELINE_DIRECTION_REVIEW_R01.md",
+                "TEMP/t03_pipeline_direction_external_return_20260814_r01/T03_PIPELINE_DIRECTION_ADOPTION_NOTE_R01.md"
+              ]
+            },
+            {
+              "root_id": "t03_batch_and_error_evidence",
+              "required": true,
+              "authority": "local_experimental_evidence_not_gold",
+              "status": "observed_small_batch_results",
+              "description": "主抽错误图、五类输入、去噪、Halo、验真与路由结果。",
+              "globs": [
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_DENOISE_HALO_VERIFY_BATCH_RESULT_R01.md",
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_R08_FIVE_INPUT_UNSEEN_BATCH_RESULT_R01.md",
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_R09_ROUTED_FIVE_INPUT_BATCH_RESULT_R01.md",
+                "TEMP/t03_main_extract_error_map_20260814_r01/CURRENT_MAIN_EXTRACT_ERROR_MAP_R01.md",
+                "TEMP/t03_entity_resolution_unseen_r09_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_verifier_binary_quote_contract_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_hybrid_provenance_conflict_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_atomic_splitter_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_omission_only_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_appearance_attribute_card_probe_run_20260814_r02/RESULT_NOTE_R01.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "本轮外部回包",
+          "roots": []
+        }
+      },
+      "external_slots": []
+    },
+    "t03-model-portfolio-hard-followup": {
+      "label": "T-03 两波模型实验｜高难卷复盘与下一阶段指挥",
+      "purpose": "把第一波全岗位烟雾卷、上一轮ChatGPT建议、第二波M03/M04/M06高难卷、追加Lite/Mini/Mercury结果、调用账和失败账交给ChatGPT，独立判断实验是否走歪、岗位与试卷是否合理、模型如何分工以及下一阶段最小实验。",
+      "snapshot_at": "2026-08-15T13:30:00+08:00",
+      "reviewer_prompt_path": "TEMP/t03_model_portfolio_hard_followup_review_20260815_r01/PROMPT.md",
+      "truth_source": {
+        "authority": "CZ当前对话明确要求把第一波、第二波成绩和已做工作重新打包交ChatGPT评价并指导下一步",
+        "local_current_state_status": "experimental_two_wave_followup_review_only",
+        "note": "外审可以推翻当前岗位、试卷和模型组合；回包只作下一轮本地实验输入，不授权API、生产切换、训练、正式Gold或MVP回写。共同背景板R13由ChatGPT项目共享来源提供，本包只带增量证据。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews"
+      ],
+      "forbidden_source_globs": [
+        "**/corpus-downloads/**",
+        "**/chapters_cache/**",
+        "**/chapters/**",
+        "**/novels/**",
+        "**/data/**",
+        "**/scoring_lockbox/**",
+        "**/*.lockbox.json",
+        "config/gold/**",
+        "runs/**",
+        "reports/**",
+        "**/RAW_RESPONSES*",
+        "**/raw_response*",
+        "**/HUMAN_REVIEW_QUEUE*",
+        "**/stream_events*",
+        "**/reasoning*",
+        "**/transport*",
+        "**/mock-perfect*/**",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "本轮任务、两波总账与开放问题",
+          "roots": [
+            {
+              "root_id": "t03_two_wave_followup_brief",
+              "required": true,
+              "authority": "cz_current_review_request_and_local_evidence",
+              "status": "active_external_review_snapshot",
+              "description": "本轮真正要审的问题、两波大账、已做改动、仍未解决事项和开放式Prompt。",
+              "globs": [
+                "TEMP/t03_model_portfolio_hard_followup_review_20260815_r01/00_READ_ME_FIRST.md",
+                "TEMP/t03_model_portfolio_hard_followup_review_20260815_r01/01_TWO_WAVE_SCORECARD.md",
+                "TEMP/t03_model_portfolio_hard_followup_review_20260815_r01/02_WHAT_WE_DID_AND_CHANGED.md",
+                "TEMP/t03_model_portfolio_hard_followup_review_20260815_r01/03_OPEN_DECISIONS.md",
+                "TEMP/t03_model_portfolio_hard_followup_review_20260815_r01/PROMPT.md"
+              ]
+            },
+            {
+              "root_id": "t03_hard_exam_definition",
+              "required": true,
+              "authority": "local_synthetic_dev_exam_not_formal_gold",
+              "status": "executed_hard_exam_definition",
+              "description": "第二波高难岗位、56题合成DEV卷、模型与供应商身份和评分执行代码。",
+              "globs": [
+                "TEMP/t03_role_exam_harness_20260815_r05_hard_roles/README.md",
+                "TEMP/t03_role_exam_harness_20260815_r05_hard_roles/ROLE_REGISTRY_R05.json",
+                "TEMP/t03_role_exam_harness_20260815_r05_hard_roles/EXAM_BANK_R05.json",
+                "TEMP/t03_role_exam_harness_20260815_r05_hard_roles/MODEL_ROSTER_R05.json",
+                "TEMP/t03_role_exam_harness_20260815_r05_hard_roles/PROVIDERS_R05.json",
+                "TEMP/t03_role_exam_harness_20260815_r05_hard_roles/run_hard_roles_r05.py",
+                "TEMP/t03_role_exam_harness_20260815_r06_high_reasoning_recovery/README.md",
+                "TEMP/t03_role_exam_harness_20260815_r06_high_reasoning_recovery/MODEL_ROSTER_R06.json",
+                "TEMP/t03_role_exam_harness_20260815_r06_high_reasoning_recovery/run_high_recovery_r06.py",
+                "TEMP/t03_role_exam_harness_20260815_r07_lite_mini/README.md",
+                "TEMP/t03_role_exam_harness_20260815_r07_lite_mini/MODEL_ROSTER_R07.json",
+                "TEMP/t03_role_exam_harness_20260815_r07_lite_mini/PROVIDERS_R07.json"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "第一波与第二波真实运行证据",
+          "roots": [
+            {
+              "root_id": "t03_wave_one_score_and_runs",
+              "required": true,
+              "authority": "local_api_experiment_evidence_not_model_promotion",
+              "status": "wave_one_observed_results",
+              "description": "第一波模型成绩总账、全部基础卷和专项卷的摘要、时延与Token调用账。",
+              "exclude_globs": [
+                "TEMP/t03_role_exam_runs/mock-perfect_*/**"
+              ],
+              "globs": [
+                "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/01_MODEL_SCORE_LEDGER.md",
+                "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/02_ROLES_CANDIDATES_AND_GAPS.md",
+                "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/03_PRICE_API_CAPACITY_RESEARCH_SCOPE.md",
+                "TEMP/t03_role_exam_runs/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r02/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r02/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r03/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r03/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r03_atomicity/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r03_atomicity/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r03_atomicity/M02_ATOMICITY_AB_RESULT_20260815.md",
+                "TEMP/t03_role_exam_runs_r04_deepseek_official/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r04_deepseek_official/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs/QWEN38_MAX_FULL_ROLE_SCORECARD_20260815_R01.md"
+              ]
+            },
+            {
+              "root_id": "t03_wave_two_hard_results",
+              "required": true,
+              "authority": "local_synthetic_hard_exam_results_not_production",
+              "status": "wave_two_complete_with_failures_preserved",
+              "description": "第二波所有高难卷路线的摘要、调用账和逐题机械错因；包括完整、格式失败、限流和身份恢复。",
+              "globs": [
+                "TEMP/t03_role_exam_runs_r05_hard_roles/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r05_hard_roles/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r05_hard_roles/*/MECHANICAL_SCORES.jsonl",
+                "TEMP/t03_role_exam_runs_r05_hard_roles/deepseek-official-v4-pro-high-r05/INTERRUPTION_NOTE.md",
+                "TEMP/t03_role_exam_runs_r06_high_reasoning/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r06_high_reasoning/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r06_high_reasoning/*/MECHANICAL_SCORES.jsonl",
+                "TEMP/t03_role_exam_runs_r06_high_reasoning/CONSOLIDATED_RESULTS_R01.json",
+                "TEMP/t03_role_exam_runs_r06_high_reasoning/T03_HARD_ROLES_EIGHT_ROUTE_SCORECARD_R01.md",
+                "TEMP/t03_role_exam_runs_r07_lite_mini_mercury/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r07_lite_mini_mercury/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r07_lite_mini_mercury/*/MECHANICAL_SCORES.jsonl",
+                "TEMP/t03_role_exam_runs_r08_mercury/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r08_mercury/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r08_mercury/*/MECHANICAL_SCORES.jsonl",
+                "TEMP/t03_role_exam_runs_r09_mercury_remaining/*/SUMMARY.json",
+                "TEMP/t03_role_exam_runs_r09_mercury_remaining/*/CALLS.jsonl",
+                "TEMP/t03_role_exam_runs_r09_mercury_remaining/*/MECHANICAL_SCORES.jsonl",
+                "TEMP/t03_role_exam_runs_r09_mercury_remaining/R07_R09_LITE_MINI_MERCURY_RESULTS_R01.json",
+                "TEMP/t03_role_exam_runs_r09_mercury_remaining/R07_R09_LITE_MINI_MERCURY_ADDENDUM_R01.md"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "产品错误地图与此前T-03管线证据",
+          "roots": [
+            {
+              "root_id": "t03_pipeline_and_error_evidence",
+              "required": true,
+              "authority": "local_experimental_evidence_not_gold",
+              "status": "observed_small_batch_results",
+              "description": "帮助外审判断模型短题是否覆盖真实输入与产品消费者。",
+              "globs": [
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_DENOISE_HALO_VERIFY_BATCH_RESULT_R01.md",
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_R08_FIVE_INPUT_UNSEEN_BATCH_RESULT_R01.md",
+                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_R09_ROUTED_FIVE_INPUT_BATCH_RESULT_R01.md",
+                "TEMP/t03_main_extract_error_map_20260814_r01/CURRENT_MAIN_EXTRACT_ERROR_MAP_R01.md",
+                "TEMP/t03_entity_resolution_unseen_r09_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_verifier_binary_quote_contract_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_hybrid_provenance_conflict_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_atomic_splitter_probe_run_20260814_r01/RESULT_NOTE_R01.md",
+                "TEMP/t03_omission_only_probe_run_20260814_r01/RESULT_NOTE_R01.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "上一轮ChatGPT回包与本地采纳边界",
+          "roots": [
+            {
+              "root_id": "t03_prior_model_portfolio_review",
+              "required": true,
+              "authority": "prior_chatgpt_advice_and_local_adoption_note",
+              "status": "prior_advice_not_current_decision",
+              "description": "用于核对第二波是否真正回应了上一轮问题；不限制本轮推翻旧建议。",
+              "globs": [
+                "TEMP/chatgpt_review_returns/T03_MODEL_PORTFOLIO_COST_FULL_ROLE_EXAM_20260815_R01/ADOPTION_NOTE_R01.md",
+                "TEMP/chatgpt_review_returns/T03_MODEL_PORTFOLIO_COST_FULL_ROLE_EXAM_20260815_R01/extracted/00_EXECUTIVE_JUDGMENT.md",
+                "TEMP/chatgpt_review_returns/T03_MODEL_PORTFOLIO_COST_FULL_ROLE_EXAM_20260815_R01/extracted/01_MODEL_PORTFOLIO.md",
+                "TEMP/chatgpt_review_returns/T03_MODEL_PORTFOLIO_COST_FULL_ROLE_EXAM_20260815_R01/extracted/03_ROLE_AND_PIPELINE_REDESIGN.md",
+                "TEMP/chatgpt_review_returns/T03_MODEL_PORTFOLIO_COST_FULL_ROLE_EXAM_20260815_R01/extracted/06_MISSED_RISKS_AND_COUNTERARGUMENTS.md",
+                "TEMP/chatgpt_review_returns/T03_MODEL_PORTFOLIO_COST_FULL_ROLE_EXAM_20260815_R01/extracted/SCORING_RUBRIC_DRAFT.json",
+                "TEMP/chatgpt_review_returns/T03_MODEL_PORTFOLIO_COST_FULL_ROLE_EXAM_20260815_R01/extracted/EXAM_BANK_EXTENSION_DRAFT.json"
+              ]
+            }
+          ]
+        }
+      },
+      "external_slots": []
     }
   }
 }

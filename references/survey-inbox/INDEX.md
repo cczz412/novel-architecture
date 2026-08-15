@@ -14,4 +14,10 @@
 | SI-007 | 第三轮回包：设计审查＋佐证＋技术空白（15 份） | other | 设计审查（循环／账本／插件）／方法论地图／工作流／失败案例／插画／前端栈／记忆架构／抽取SOTA／检测合规／叙事引擎／心理标签／LLM审计／行业图景 | 作者工作台／产品架构／试验示范／媒体制作链／商业化 | tagged | [卡片](items/SI-007_design_review_and_tech_research_returns.md) |
 | SI-008 | 七份 Agent 工具／管线调查回包 | other | Agent工具／管线游标／双通道／执行包／生成前检查／触发器／画布指示器 | 作者工作台／产品架构 | tagged | [卡片](items/SI-008_agent_tools_pipeline_research_returns.md) |
 | SI-009 | 十份大纲／账本承重调查回包 | other | 大纲／实体户口／指针／章纲／写法／粒度／建表／真值／拆书／知情 | 作者工作台／产品架构 | tagged | [卡片](items/SI-009_outline_loadbearing_research_returns.md) |
+| SI-010 | 五份账本咬合／未决题调查回包 | other | 门牌／实体登记／关系边／现算／stale／规则／设定集／读者承诺／伏笔 | 作者工作台／产品架构 | tagged | [卡片](items/SI-010_ledger_bite_research_returns.md) |
+| SI-011 | R10.2 补丁设计审查回包 | other | 户口／真值／状态账／义务／交棒／覆盖阅读／设计审查 | 作者工作台／产品架构 | tagged | [卡片](items/SI-011_r10_2_patch_design_review.md) |
+| SI-012 | R10 整板深入问题扫描回包 | other | 背景板／内部矛盾／开章选线／不代写／导入／体检／词表／扫描 | 作者工作台／产品架构 | tagged | [卡片](items/SI-012_r10_internal_scan.md) |
+| SI-013 | R11 整板深入问题扫描回包 | other | 背景板／内部矛盾／激活／选定即消化／义务／词表／扫描 | 作者工作台／产品架构 | tagged | [卡片](items/SI-013_r11_internal_scan.md) |
+| SI-014 | R13 对照审 novel-mvp 设计稿回包 | other | 设计审查／激活／关章／第一屏／投影／扫描 | 作者工作台／产品架构 | tagged | [卡片](items/SI-014_r13_design_review.md) |
+| SI-015 | 30 份外部知识库调查回包 | other | 中国网文／写作技法／作者工作流／长篇记忆／抽取评测／Agent／合规商业化／知识治理 | 作者工作台／产品架构／试验示范／需求验证／商业化 | used | [卡片](items/SI-015_external_knowledge_research_returns.md) |
 | SI-016 | 规划账合同审查回包 | other | 合同／规划账／交棒／投影／关章 | 作者工作台／产品架构 | tagged | [卡片](items/SI-016_plan_contract_review.md) |

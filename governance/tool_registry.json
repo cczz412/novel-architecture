@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-07-31T11:26:04+08:00",
+  "updated_at": "2026-08-15T02:40:42+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 98,
-    "root_visible_python_entry_count": 99,
+    "root_entity_count": 99,
+    "root_visible_python_entry_count": 100,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -526,7 +526,7 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 13,
+    "reusable_component": 14,
     "batch_reproducer": 80,
     "active_entry": 2,
     "retired_compat": 3,
@@ -4045,6 +4045,47 @@
       ],
       "next_confirmed_consumer": "后续每个已终态、消费者已收口且真实外置的实验，沿用同一张短结论卡和命名取件组合；真正复制另开只接计划编号与新运行号的物化波次。",
       "retirement_condition_and_compatibility_boundary": "候选公共零件；R02 等非终态卡片整根不发现。restore-archive 不接任意 root/path/glob，不移动、不删除源容器，不签迁移票、不启用 10MB 硬门。",
+      "review_needed": false
+    },
+    {
+      "tool_id": "TOOL-099",
+      "path": "tools/build_background_board_upload_zip.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·背景板手工上传运输",
+      "purpose": "读取已登记的当前产品背景板与报告背景板，生成加版本前缀、单层平铺、排除缓存垃圾且可重复核验的 ZIP。",
+      "human_command": "uv run --locked python tools/build_background_board_upload_zip.py [build|check]",
+      "inputs": [
+        "config/background_board_upload/sources.json",
+        "references/shared-context/ 下版本号最大的完整产品共同背景板",
+        "references/external-knowledge-base/CURRENT.json 指向的当前外部报告背景板"
+      ],
+      "outputs": [
+        "TEMP/background-board-upload/ 下的版本化单层 ZIP",
+        "包内总导航、逐文件来源与运输 SHA 清单、SHA256SUMS"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地只读编译；不上传、不调用模型，不修改正式背景板。"
+      },
+      "current_consumers": [
+        "CZ 手工解压或上传 ChatGPT 的背景材料准备",
+        "config/background_board_upload/README.md",
+        "tests/test_background_board_upload.py"
+      ],
+      "consumer_evidence_rule": "产品板只从固定存放目录选择名称以 _R数字 收尾且入口、清单齐全的唯一最高版本；报告板必须通过 CURRENT.json 清单 SHA 校验。",
+      "test_references": [
+        "tests/test_background_board_upload.py"
+      ],
+      "last_use_clues": [
+        "config/background_board_upload/sources.json",
+        "config/background_board_upload/README.md",
+        "TEMP/background-board-upload/"
+      ],
+      "next_confirmed_consumer": "CZ 后续在 ChatGPT 项目来源平铺环境中反复上传或解压使用当前两套背景板。",
+      "retirement_condition_and_compatibility_boundary": "只生成无权限的运输副本；拒绝符号链接、入口漂移、清单漂移、平铺重名、TEMP 外输出和同名异字节覆盖。背景板升版由各自正式入口决定，工具不替它们转正。",
       "review_needed": false
     }
   ]

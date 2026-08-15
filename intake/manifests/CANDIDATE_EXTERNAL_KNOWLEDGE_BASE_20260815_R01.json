@@ -1,0 +1,10 @@
+{
+  "object_id": "CANDIDATE_EXTERNAL_KNOWLEDGE_BASE_20260815_R01",
+  "received_on": "2026-08-15",
+  "source_identity": "ChatGPT Pro return provided by CZ",
+  "raw_path": "intake/raw/CANDIDATE_EXTERNAL_KNOWLEDGE_BASE_20260815_R01.zip",
+  "bytes": 242595,
+  "sha256": "6c70cbf7fb9bdf624358d321c6c49f52d2bfd824f63c1227028f206027ec8a59",
+  "status": "RAW_EXTERNAL_RETURN_PRESERVED_NO_AUTHORITY",
+  "derived_target": "references/external-knowledge-base/EXTERNAL_KNOWLEDGE_BASE_20260815_R01"
+}

@@ -30,8 +30,8 @@
         "field": "thinking.type",
         "default": "enable",
         "allowed_values": [
-          "enable",
-          "disable"
+          "enabled",
+          "disabled"
         ]
       },
       "structured_output_contract": {

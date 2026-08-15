@@ -1,0 +1,235 @@
+{
+  "package_id": "EXTERNAL_KNOWLEDGE_BASE_20260815_R01",
+  "created_on": "2026-08-15",
+  "status": "REGISTERED_EXTERNAL_REFERENCE_KNOWLEDGE_BASE_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
+  "source_candidate_zip": {
+    "path": "intake/raw/CANDIDATE_EXTERNAL_KNOWLEDGE_BASE_20260815_R01.zip",
+    "sha256": "6c70cbf7fb9bdf624358d321c6c49f52d2bfd824f63c1227028f206027ec8a59"
+  },
+  "registered_new_report_package": "references/survey-inbox/packages/EXTERNAL_KNOWLEDGE_RESEARCH_RETURNS_20260815_R01",
+  "counts": {
+    "reports_total": 152,
+    "new_reports": 30,
+    "old_external_reports": 118,
+    "project_history_reviews": 4,
+    "claims_total": 167,
+    "sources_total": 2398,
+    "background_pages": 8,
+    "background_claims": 136,
+    "background_sources_checked": 157,
+    "positive_prior_claims": 85,
+    "positive_prior_claims_with_live_source": 85,
+    "new_reports_with_exported_urls": 13,
+    "new_reports_quarantined_untraceable": 17,
+    "new_report_prompt_status": {
+      "PROMPT_RECONSTRUCTED_FROM_REPORT_TITLE_AND_OUTPUT_SCOPE": 30
+    },
+    "claim_grades": {
+      "A": 49,
+      "B": 54,
+      "C": 18,
+      "D": 12,
+      "U": 34
+    },
+    "source_live_statuses": {
+      "LIVE_VERIFIED": 144,
+      "NOT_CHECKED_IN_THIS_BUILD": 2241,
+      "CHECK_FAILED_RETRY_REQUIRED": 9,
+      "LOGIN_OR_REGION_RESTRICTED": 4
+    },
+    "live_check_receipt_statuses": {
+      "LIVE_VERIFIED": 144,
+      "CHECK_FAILED_RETRY_REQUIRED": 9,
+      "LOGIN_OR_REGION_RESTRICTED": 4
+    },
+    "report_statuses": {
+      "QUARANTINE_UNTRACEABLE": 17,
+      "PARTIAL_USE": 75,
+      "ACCEPT_SOURCE": 4,
+      "SUPERSEDED_KEEP_SOURCE": 15,
+      "PROJECT_HISTORY_ONLY": 34,
+      "LEAD_ONLY": 7
+    }
+  },
+  "validation": {
+    "report_count_152": true,
+    "all_152_report_files_exist_and_sha_match": true,
+    "new_report_paths_are_registered_not_TEMP": true,
+    "claim_ids_unique": true,
+    "all_A_B_claims_have_registered_sources": true,
+    "all_claim_report_and_source_ids_exist": true,
+    "all_source_report_ids_exist": true,
+    "source_ids_and_urls_unique": true,
+    "all_background_claim_ids_exist": true,
+    "all_background_source_ids_exist": true,
+    "background_prior_sections_use_only_A_B_claims": true,
+    "all_positive_prior_claims_have_live_verified_source": true,
+    "all_157_background_sources_have_check_receipts": true,
+    "all_markdown_claim_ids_exist": true,
+    "all_markdown_has_required_footer": true,
+    "jsonl_parse_ok": true,
+    "csv_parse_ok": true,
+    "required_delivery_paths_present": true,
+    "source_live_check_scope": "157 sources referenced by current background pages; transport availability only, not semantic support or snapshots"
+  },
+  "authority_boundary": {
+    "product_shared_context_current": "R13",
+    "may_modify_R13": false,
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_API": false,
+    "may_authorize_Notion_or_Git": false,
+    "note": "CZ current decisions, product shared context and formal local results prevail over external suggestions."
+  },
+  "versioning": {
+    "previous_version": null,
+    "current_version": "R01",
+    "next_version_rule": "Any admitted report or formal ledger/background change creates a new immutable R version; CURRENT.json changes only with CZ authorization.",
+    "protocol": "08_LOCAL_RELEASE_AND_UPDATE_PROTOCOL.md"
+  },
+  "content_tree_sha256": "de1b9b48e03f06aa0dce84f6228bc51005fb8656520e3143c9539185948db36d",
+  "files": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "purpose": "入口、阅读路径、当前核验结果与权限边界",
+      "bytes": 2993,
+      "sha256": "8c83b1670a059f255538df761c5b99c957d7c25e3b0a56a5dd60875a87cc6803",
+      "record_count": null
+    },
+    {
+      "path": "01_REPORT_ADMISSION_LEDGER.md",
+      "purpose": "152 份报告准入身份、原件指针、限制与 SHA",
+      "bytes": 118560,
+      "sha256": "ab055d1080012ff99e18779679940a91bb5bedc9712cdadcda9984d3ace46b7c",
+      "record_count": 152
+    },
+    {
+      "path": "02_CLAIM_LEDGER.jsonl",
+      "purpose": "167 条原子结论与缺口",
+      "bytes": 347315,
+      "sha256": "0d42e4eda724c255fbd4bb7a3f7e99b7bd7d6a89388819924e5bf4125464d253",
+      "record_count": 167
+    },
+    {
+      "path": "03_SOURCE_REGISTRY.csv",
+      "purpose": "2398 条来源登记与打开状态",
+      "bytes": 1032085,
+      "sha256": "4dadbe1e80760710038568b4bcb1b2089735f19868fde1687c267978aaa6edc5",
+      "record_count": 2398
+    },
+    {
+      "path": "04_CONFLICT_AND_SUPERSESSION_MAP.md",
+      "purpose": "新旧补强、收窄、反驳、接替与隔离",
+      "bytes": 8676,
+      "sha256": "6ac45c914906d40a3ea5119aed089afe15023fa04b6633c770c2c3e49e558305",
+      "record_count": null
+    },
+    {
+      "path": "05_RESEARCH_GAPS_AND_REFRESH_QUEUE.md",
+      "purpose": "补链、人工复核、实验和刷新队列",
+      "bytes": 6259,
+      "sha256": "854f2409cb774d6af4c13d4ed9126f8043d8237d4e3cb45a267deb93d0830dd0",
+      "record_count": null
+    },
+    {
+      "path": "06_FUTURE_REPORT_INGESTION_STANDARD.md",
+      "purpose": "未来报告准入、合并、退场与本仓落点",
+      "bytes": 8894,
+      "sha256": "da5dad84df04baaa233a26d89cb5c656386ee1408eba96da4b6ec1d72bc9887f",
+      "record_count": null
+    },
+    {
+      "path": "07_SOURCE_LIVE_CHECK_RECEIPT.jsonl",
+      "purpose": "157 个背景来源的逐条自动打开回执",
+      "bytes": 65413,
+      "sha256": "8bf5de8464d6e6ca7f2bea85cbf9fbd43b111e0aa7dbe331b5026cf744f5cf4a",
+      "record_count": 157
+    },
+    {
+      "path": "07_SOURCE_LIVE_CHECK_SUMMARY.md",
+      "purpose": "来源打开核验的人读摘要与边界",
+      "bytes": 1565,
+      "sha256": "eefe96c0e560f87120cfcde715d4de555bb8028896186e3e80bca905f90e325c",
+      "record_count": null
+    },
+    {
+      "path": "08_LOCAL_RELEASE_AND_UPDATE_PROTOCOL.md",
+      "purpose": "本地位置、升版、验收和当前入口规则",
+      "bytes": 3311,
+      "sha256": "75a934c935c09d0a7cd2d0726063387ab1db274ac0394b1367ac2ff58236897e",
+      "record_count": null
+    },
+    {
+      "path": "09_CHANGELOG.md",
+      "purpose": "R01 来源与本地登记变化",
+      "bytes": 1410,
+      "sha256": "acbdcc8bb358ad0bd1879e109f2508d6afe287072be3f1e5eb8656b3730ce662",
+      "record_count": null
+    },
+    {
+      "path": "background/01_CHINESE_WEB_NOVEL_ECOSYSTEM.md",
+      "purpose": "按主题编译的日常外部知识背景页",
+      "bytes": 5520,
+      "sha256": "1ddfa266409c5b28bd14930708142dbc033bce38d42f0028e8b818b71873ef41",
+      "record_count": 22
+    },
+    {
+      "path": "background/02_CRAFT_AND_READER_EXPERIENCE.md",
+      "purpose": "按主题编译的日常外部知识背景页",
+      "bytes": 5966,
+      "sha256": "66376d58403d998c7928fcefd18b4f5c018b5910ffaf484fbd202a6c8a1f390b",
+      "record_count": 25
+    },
+    {
+      "path": "background/03_AUTHOR_WORKFLOW_AND_INPUTS.md",
+      "purpose": "按主题编译的日常外部知识背景页",
+      "bytes": 5274,
+      "sha256": "050da065ac59787a6932b034c0764644a8ed2e38008473951b948d3ad83ad0ab",
+      "record_count": 21
+    },
+    {
+      "path": "background/04_MEMORY_TRUTH_TIME_AND_RULES.md",
+      "purpose": "按主题编译的日常外部知识背景页",
+      "bytes": 4396,
+      "sha256": "375d04625e07dcbe71de83e597d96cb8e4b98725539247b15935efad1cc5bef7",
+      "record_count": 14
+    },
+    {
+      "path": "background/05_EXTRACTION_EVALUATION_AND_EVIDENCE.md",
+      "purpose": "按主题编译的日常外部知识背景页",
+      "bytes": 3777,
+      "sha256": "5664199366ec6a7834de1999a918e590f3f70cac8f29f5a436c207cf5b01969b",
+      "record_count": 9
+    },
+    {
+      "path": "background/06_PRODUCT_UX_AND_AGENT_TOOLS.md",
+      "purpose": "按主题编译的日常外部知识背景页",
+      "bytes": 4484,
+      "sha256": "5c7cca78abf9ebc6b0933226cf61279c8d5ec07b217433f30c90fe699a9911b5",
+      "record_count": 16
+    },
+    {
+      "path": "background/07_COMPLIANCE_BUSINESS_AND_ADAPTATION.md",
+      "purpose": "按主题编译的日常外部知识背景页",
+      "bytes": 6293,
+      "sha256": "2cd8dd6eb2ae92ff219f3c2b32f7b4e5290101bcc34b034b8927c7b074c1258b",
+      "record_count": 25
+    },
+    {
+      "path": "background/08_KNOWLEDGE_GOVERNANCE.md",
+      "purpose": "按主题编译的日常外部知识背景页",
+      "bytes": 4273,
+      "sha256": "5d7edbd3da39fede42e3a5d8547cf84491df30ba5399d493ddd167d3eb6e8a4e",
+      "record_count": 12
+    },
+    {
+      "path": "MANIFEST.json",
+      "purpose": "交付清单、计数、校验与权限边界",
+      "bytes": null,
+      "sha256": null,
+      "record_count": 1,
+      "note": "自引用文件不计算自身 SHA。"
+    }
+  ]
+}

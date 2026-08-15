@@ -1,0 +1,72 @@
+{
+  "package_id": "LEDGER_BITE_RESEARCH_RETURNS_20260814_R01",
+  "created_on": "2026-08-14",
+  "source_batch_date": "2026-08-14",
+  "status": "historical_external_research_candidate_prior_only",
+  "source_provider": "ChatGPT",
+  "prompt_source": "../../../../../novel-mvp/design/19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md",
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false
+  },
+  "decision_boundary": "Product adoption still requires CZ current instruction, formal Notion ledger decisions, and the current shared-context package. ADD-038-042 already CZ_CONFIRMED; ADD-043/044 remain ASK_CZ.",
+  "files": [
+    {
+      "return_id": "RETURN_01",
+      "prompt_topic": "P1 公共门牌同构",
+      "path": "returns/111111调查结论.md",
+      "source_download": "/Users/a1234/Downloads/111111调查结论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 24797,
+      "lines": 369,
+      "sha256": "d935a310d65e46d39119d8107bac1b88c3b2ba5c5e1edf780632e07ea1cbcc5c"
+    },
+    {
+      "return_id": "RETURN_02",
+      "prompt_topic": "P2 关系同一类边",
+      "path": "returns/22222结论.md",
+      "source_download": "/Users/a1234/Downloads/22222结论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 21034,
+      "lines": 326,
+      "sha256": "205d33abdbda3ab1b1fcbd34c18029af53c9a4feb38d430f83960d0808c3840c"
+    },
+    {
+      "return_id": "RETURN_03",
+      "prompt_topic": "P3 跨账现算 stale",
+      "path": "returns/3333调查结论.md",
+      "source_download": "/Users/a1234/Downloads/3333调查结论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 23653,
+      "lines": 371,
+      "sha256": "b3aba6f6841e78842650c35f3bc8916b0d19d5eec1cc480c9e69c998c05666ad"
+    },
+    {
+      "return_id": "RETURN_04",
+      "prompt_topic": "P4 规则拆条 ADD-043",
+      "path": "returns/44444调查结论.md",
+      "source_download": "/Users/a1234/Downloads/44444调查结论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 24912,
+      "lines": 338,
+      "sha256": "72b0fffb28796c62b4082a74a6c512d24d350be3f97c29ab34d0ab28a028c1d0"
+    },
+    {
+      "return_id": "RETURN_05",
+      "prompt_topic": "P5 读者承诺 ADD-044",
+      "path": "returns/55555结论.md",
+      "source_download": "/Users/a1234/Downloads/55555结论.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 22539,
+      "lines": 332,
+      "sha256": "f9aa8eb2b82589509cdb2ee3b099fc9a6ed111843573cc71f692b23299dea3b8"
+    }
+  ]
+}
