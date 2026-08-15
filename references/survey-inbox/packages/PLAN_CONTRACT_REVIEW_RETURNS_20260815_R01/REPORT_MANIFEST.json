@@ -1,0 +1,48 @@
+{
+  "package_id": "PLAN_CONTRACT_REVIEW_RETURNS_20260815_R01",
+  "created_on": "2026-08-15",
+  "source_batch_date": "2026-08-15",
+  "status": "historical_external_research_candidate_prior_only",
+  "source_provider": "ChatGPT",
+  "prompt_source": "PROMPT.md",
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false
+  },
+  "decision_boundary": "Contract ambiguity scan against already-held R13. Must not rewrite R13, land candidate contracts, or decide ADD-043/044/dark-draft/chapter-close.",
+  "files": [
+    {
+      "return_id": "RETURN_01",
+      "prompt_topic": "R13 vs landed contracts and plan-ledger field tables",
+      "path": "returns/chatgpt_plan_contract_review.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 90140,
+      "lines": 1739,
+      "sha256": "fdac5721fdff226adaee8b6bab3c09511cb8e7a4fca4f1990ef9c52191be1dbe"
+    }
+  ],
+  "supporting_files": [
+    {
+      "path": "PROMPT.md",
+      "sha256": "8441545291403ca4b9f6156423799043e6f7aade4f2d2c4af6d2ba8a654d7bb6",
+      "bytes": 6794
+    },
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "sha256": "9c2a8f963858e8d732f3fc9b7e9ac97bd15e5e8f8d586d7e0567a538f89a1495",
+      "bytes": 1292
+    },
+    {
+      "path": "02_RETURNS_DIGEST.md",
+      "sha256": "a34067b7cf617f704a39158a3b66b59e6de4539b6861d20679af1fa99208f536",
+      "bytes": 7186
+    }
+  ]
+}

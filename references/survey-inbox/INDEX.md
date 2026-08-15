@@ -1,6 +1,6 @@
 # survey-inbox｜总览
 
-更新：2026-08-14
+更新：2026-08-15
 入口说明：[README.md](README.md)｜大表：[catalog.csv](catalog.csv)
 
 | ID | 短标题 | 形态 | 讲什么（标签） | 产品角度 | 状态 | 卡片 |
@@ -14,3 +14,4 @@
 | SI-007 | 第三轮回包：设计审查＋佐证＋技术空白（15 份） | other | 设计审查（循环／账本／插件）／方法论地图／工作流／失败案例／插画／前端栈／记忆架构／抽取SOTA／检测合规／叙事引擎／心理标签／LLM审计／行业图景 | 作者工作台／产品架构／试验示范／媒体制作链／商业化 | tagged | [卡片](items/SI-007_design_review_and_tech_research_returns.md) |
 | SI-008 | 七份 Agent 工具／管线调查回包 | other | Agent工具／管线游标／双通道／执行包／生成前检查／触发器／画布指示器 | 作者工作台／产品架构 | tagged | [卡片](items/SI-008_agent_tools_pipeline_research_returns.md) |
 | SI-009 | 十份大纲／账本承重调查回包 | other | 大纲／实体户口／指针／章纲／写法／粒度／建表／真值／拆书／知情 | 作者工作台／产品架构 | tagged | [卡片](items/SI-009_outline_loadbearing_research_returns.md) |
+| SI-016 | 规划账合同审查回包 | other | 合同／规划账／交棒／投影／关章 | 作者工作台／产品架构 | tagged | [卡片](items/SI-016_plan_contract_review.md) |

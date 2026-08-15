@@ -12,7 +12,8 @@
 
 ## 其他活跃支线
 
-- 无已确认对象。
+- 产品共同背景板现行本地正式版是 **R13**（R12 封存；Notion 仍 R09）：[R13 入口](../../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md)。SI-013 五问已吸收（ADD-057～061）。ADD-043／044 仍开口。[第五册](../../TEMP/bgboard-audit-20260809-r01/32_R12_ADDENDUM_LEDGER_VOL5_20260814_R01.md)
+- 设计稿对照审已回：[SI-014](../../references/survey-inbox/items/SI-014_r13_design_review.md)。第二版之后又按 [SI-016](../../references/survey-inbox/items/SI-016_plan_contract_review.md) 做了第三版清旧句，入口在隔壁 [design/INDEX.md](../../../novel-mvp/design/INDEX.md)。规划账合同已落：[PLAN_LEDGER_STORAGE.md](../../../novel-mvp/contracts/PLAN_LEDGER_STORAGE.md)（planstore 未建）。自检后又清了 C7＝章篮、小抄读 C7、`closed` 收工残留。未改 R13、未拍暗稿签字／开下一章、收费数字仍冻、关章合同未开。日常走查／大纲结构稿本轮未改，INDEX 已标旧句以谁为准。
 
 ## 最近暂停／身份待定
 
@@ -28,6 +29,6 @@
 - 微调身份只认 [`../../finetuning/CURRENT.json`](../../finetuning/CURRENT.json)。
 - 本页与 STATUS 只做接力；冲突时停下校准，不覆盖 CZ 指令、CURRENT 或正式结果票。
 
-updated_at: 2026-08-12T20:14:13+08:00
+updated_at: 2026-08-15T10:20:00+08:00
 
 来源：Codex
