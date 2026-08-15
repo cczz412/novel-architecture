@@ -122,6 +122,7 @@ def test_registered_top_level_scope_is_exact_and_creates_no_nvm_style_layers() -
         "governance",
         "history",
         "intake",
+        "novel-mvp",
         "outbox",
         "references",
         "reports",

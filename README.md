@@ -24,7 +24,8 @@
 | `experiments/` | 候选实验、零调用程序件与成绩 | [试验说明](experiments/README.md) | 是否进 Git 逐件审 |
 | `tools/` | 统一入口、可复用组件、批次复现器 | [工具说明](tools/README.md)＋`governance/tool_registry.json` | 长期程序精确挑件 |
 | `tests/` | 不调用模型的机械回归 | [测试说明](tests/README.md) | 长期件 |
-| `references/` | 书目、调查和外部诊断材料 | [参考区说明](references/README.md) | 候选材料，不作真值 |
+| `references/` | 书目、调查、外部诊断；**共同背景板在这里的 `shared-context/`** | [参考区说明](references/README.md) | 候选材料，不作真值；R13 是共同理解，仍不是执行票 |
+| `novel-mvp/` | 产品试跑示例（代码偏旧；设计稿可参考） | [示例说明](novel-mvp/README.md) | 代码／设计稿进 Git；`data/` 和草稿不进 |
 | `analysis_library/` | 小说分析的轻量摘要、验收摘要和仓外指针 | [分析库说明](analysis_library/README.md) | 只跟踪轻量入口；完整原件在外置仓 |
 | `work/` | 设计稿、合同、提示词和执行配套 | [施工区说明](work/README.md) | 精确挑件 |
 | `side-tracks/` | 历史旁路／调查台账 | [支线说明](side-tracks/README.md) | 不是主线路牌 |

@@ -8,7 +8,7 @@
 - topic_tags：大纲；规划账；实体户口；指针；章纲；写法；伏笔；灵感；粒度；数据表；真值；拆书；知情
 - product_angle：作者工作台；产品架构
 - 备注：历史外部调查证据／候选先验；十份原字节归档。不产生产品结论、执行权、训练权、API 权、Notion 拍板、Git 权或生产晋级权。
-- Prompt 底稿：[18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md](../../../../novel-mvp/design/18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md)
+- Prompt 底稿：[18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md](../../../novel-mvp/design/18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md)
 - 消化稿：[02_RETURNS_DIGEST.md](../packages/OUTLINE_LOADBEARING_RESEARCH_RETURNS_20260814_R01/02_RETURNS_DIGEST.md)
 - 录入日：2026-08-14
 

@@ -6,7 +6,7 @@
 
 扫描自称读全 R13 成员＋ZIP 17 个文件。**没有读代码、没有读历史 R01、没有 JSON Schema。**
 
-本包不授权改合同、不授权改 R13、不把候选稿写成已落、不传 Notion、不产生施工权。CZ 后来另授权两刀；施工入口在隔壁 [design/INDEX.md](../../../../../novel-mvp/design/INDEX.md) 和 [PLAN_LEDGER_STORAGE.md](../../../../../novel-mvp/contracts/PLAN_LEDGER_STORAGE.md)，不在本包。
+本包不授权改合同、不授权改 R13、不把候选稿写成已落、不传 Notion、不产生施工权。CZ 后来另授权两刀；施工入口在隔壁 [design/INDEX.md](../../../../novel-mvp/design/INDEX.md) 和 [PLAN_LEDGER_STORAGE.md](../../../../novel-mvp/contracts/PLAN_LEDGER_STORAGE.md)，不在本包。
 
 ## 回包
 

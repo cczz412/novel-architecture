@@ -8,7 +8,7 @@
 - topic_tags：Agent工具；MCP；管线游标；双通道；执行包；RAG；生成前检查；触发器；Hook；义务；画布指示器；停点
 - product_angle：作者工作台；产品架构
 - 备注：历史外部调查证据／候选先验；七份原字节归档。Downloads 另有未点名的 `B：故事内触发器.md` 未入本包。不产生产品结论、执行权、训练权、API 权、Notion 拍板、Git 权或生产晋级权；产品吸收仍以 CZ 最新明确指令、Notion 正式账序与现行共同背景板为准。
-- Prompt 底稿：[17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md](../../../../novel-mvp/design/17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md)（相对本仓根的同级 `novel-mvp/`）
+- Prompt 底稿：[17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md](../../../novel-mvp/design/17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md)（相对本仓根的同级 `novel-mvp/`）
 - 消化稿：[02_RETURNS_DIGEST.md](../packages/AGENT_TOOLS_PIPELINE_RESEARCH_RETURNS_20260814_R01/02_RETURNS_DIGEST.md)
 - 录入日：2026-08-14
 

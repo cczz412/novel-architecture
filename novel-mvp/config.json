@@ -1,0 +1,13 @@
+{
+  "model_id": "doubao-seed-2-1-turbo-260628",
+  "model_note": "CZ 2026-08-13 拍板的临时默认（Agent Plan Small）；DISCRIM17 胜者出来后换这里即可",
+  "checker_model_id": "glm-5-2-260601",
+  "checker_note": "质检段（补漏/验真/去噪）用的另一家模型——CZ 拍板抽取与质检必须不同家族，防自查自话；同在 Agent Plan 池",
+  "transport": "arkcli",
+  "temperature": 0,
+  "max_output_tokens": 4096,
+  "call_timeout_seconds": 180,
+  "seg_min_chars": 620,
+  "seg_max_chars": 923,
+  "halo_chars": 180
+}

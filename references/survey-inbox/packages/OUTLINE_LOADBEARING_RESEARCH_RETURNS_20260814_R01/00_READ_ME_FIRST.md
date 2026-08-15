@@ -2,7 +2,7 @@
 
 状态：**历史外部调查证据／候选先验，不产生产品结论或执行权**
 
-这个包逐字节保存 CZ 于 2026-08-14 发回的十份 ChatGPT 调查回包。十份 Prompt 出自 [18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md](../../../../../novel-mvp/design/18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md)（相对本仓根再上溯到同级 `novel-mvp/`）。与 SI-008（工具怎么暴露）分工：这轮管「东西住哪、章纲能不能接住上下游和写法、几张表、多细」。
+这个包逐字节保存 CZ 于 2026-08-14 发回的十份 ChatGPT 调查回包。十份 Prompt 出自 [18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md](../../../../novel-mvp/design/18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md)（相对本仓根再上溯到同级 `novel-mvp/`）。与 SI-008（工具怎么暴露）分工：这轮管「东西住哪、章纲能不能接住上下游和写法、几张表、多细」。
 
 文件名对不上题号，按开头结论映射，不要把 `11111结论.md` 当成总消化。本轮按 CZ 指令**只登记、不通读消化**，避免十份混读。交叉裁决另开任务。
 

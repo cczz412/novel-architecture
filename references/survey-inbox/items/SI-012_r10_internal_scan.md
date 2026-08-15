@@ -8,7 +8,7 @@
 - topic_tags：背景板；内部矛盾；开章选线；不代写；导入；体检；词表；扫描
 - product_angle：作者工作台；产品架构
 - 备注：历史外部审查意见／候选先验。不产生产品结论、执行权、训练权、API 权、Notion 拍板、Git 权或生产晋级权。
-- Prompt 底稿：[21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md](../../../../novel-mvp/design/21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md)
+- Prompt 底稿：[21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md](../../../novel-mvp/design/21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md)
 - 消化稿：[02_RETURNS_DIGEST.md](../packages/R10_INTERNAL_SCAN_RETURNS_20260814_R01/02_RETURNS_DIGEST.md)
 - 录入日：2026-08-14
 

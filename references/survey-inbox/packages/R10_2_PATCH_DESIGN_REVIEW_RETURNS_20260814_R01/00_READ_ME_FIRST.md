@@ -2,7 +2,7 @@
 
 状态：**历史外部审查意见／候选先验，不产生产品结论或执行权**
 
-这份保存 CZ 发给已持有 R10 的 ChatGPT、对 [R10.2 户口／真值补丁](../../../../TEMP/bgboard-audit-20260809-r01/29_R10_2_HOUSEHOLD_TRUTH_PATCH_20260814_R01.md) 做的整体审查回包。Prompt 底稿：[20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md](../../../../../novel-mvp/design/20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md)。
+这份保存 CZ 发给已持有 R10 的 ChatGPT、对 [R10.2 户口／真值补丁](../../../../TEMP/bgboard-audit-20260809-r01/29_R10_2_HOUSEHOLD_TRUTH_PATCH_20260814_R01.md) 做的整体审查回包。Prompt 底稿：[20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md](../../../../novel-mvp/design/20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md)。
 
 审查结论（登记用，不是拍板）：骨架能站住；不换树、不合计划与事实；R10 有三处旧句必须按补丁覆盖阅读；043／044 保持未决也能先往下走。
 

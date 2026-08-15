@@ -8,7 +8,7 @@
 - topic_tags：门牌；实体登记；关系边；现算；stale；规则；设定集；读者承诺；伏笔
 - product_angle：作者工作台；产品架构
 - 备注：历史外部调查证据／候选先验；五份原字节归档。不产生产品结论、执行权、训练权、API 权、Notion 拍板、Git 权或生产晋级权。ADD-043／044 消化后仍交 CZ 拍。
-- Prompt 底稿：[19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md](../../../../novel-mvp/design/19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md)
+- Prompt 底稿：[19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md](../../../novel-mvp/design/19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md)
 - 消化稿：[02_RETURNS_DIGEST.md](../packages/LEDGER_BITE_RESEARCH_RETURNS_20260814_R01/02_RETURNS_DIGEST.md)
 - 录入日：2026-08-14
 

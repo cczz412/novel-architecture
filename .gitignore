@@ -56,6 +56,12 @@ venv/
 # Temporary packaging and scratch work
 /TEMP/
 
+# Product test example: author books and scratch stay local
+/novel-mvp/data/
+/novel-mvp/temp/
+/novel-mvp/emp/
+/novel-mvp/outside_proj/
+
 # Runtime / batch artifacts — keep on disk for local replay, do not track
 # 2026-07-23 tracked slim（目标 Git tracked ≤10MB；不删盘上文件、不做历史 filter）
 /runs/

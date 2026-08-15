@@ -2,7 +2,7 @@
 
 状态：**历史外部调查证据／候选先验，不产生产品结论或执行权**
 
-这个包逐字节保存 CZ 于 2026-08-14 发回的七份 ChatGPT 调查回包。七份 Prompt 出自 [17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md](../../../../../novel-mvp/design/17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md)（相对本仓根再上溯到同级 `novel-mvp/`）。与 SI-006（产品长什么样）、SI-007（设计审查＋技术空白）分工：这轮管「工具怎么暴露、管线怎么走、生成前怎么拦」。
+这个包逐字节保存 CZ 于 2026-08-14 发回的七份 ChatGPT 调查回包。七份 Prompt 出自 [17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md](../../../../novel-mvp/design/17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md)（相对本仓根再上溯到同级 `novel-mvp/`）。与 SI-006（产品长什么样）、SI-007（设计审查＋技术空白）分工：这轮管「工具怎么暴露、管线怎么走、生成前怎么拦」。
 
 七份回包可以帮助设计：Agent 工具菜单、管线游标、聊天／点选双通道、执行包编译、生成前守卫、触发器外壳、画布指示器。它们是公开材料整理＋外部模型推断，不是实测，不能单独改 R10 或开工。结论与 CZ 当前指令、Notion 正式账序、现行共同背景板、项目 CURRENT、正式合同或结果票冲突时，以更高层真源为准。
 

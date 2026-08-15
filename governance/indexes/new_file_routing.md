@@ -39,6 +39,9 @@
 | 微调域当前实验指针 | `finetuning/CURRENT.json` | 只保存当前实验身份和必要机器引用，不保存训练进度或结论。 | `finetuning_control_plane` |
 | 单次微调实验控制记录 | `finetuning/experiments/<experiment_id>` | 只保存机器清单、合同、摘要和回执；重资产仍由逻辑仓位与本机绑定解析。 | `finetuning_control_plane` |
 | 历史纠错切窗批次状态页 | `T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md` | 只说明该批历史状态，不能替代当前微调域或全仓当前状态。 | `historical_correction_segment_scan_workspace` |
+| 产品试跑示例说明 | `novel-mvp/README.md` | 只说明这是测试阶段示例、代码偏旧、设计稿可参考；不得写成现行产品或共同背景板。 | `product_mvp_test_example` |
+| 产品试跑设计稿 | `novel-mvp/design/<design_id>` | 只收该示例的人读设计稿和已落合同；作者书稿与抽事实结果不得进 Git。 | `product_mvp_test_example` |
+| 产品试跑代码 | `novel-mvp/mvp/<module>.py` | 只收该示例的程序与合同；不接收 data/、temp/ 或密钥。 | `product_mvp_test_example` |
 
 本表不授权移动旧文件，也不授权创建 `active/`、`staging/`、`frozen/`、`runtime/` 顶层目录。
 

@@ -2,7 +2,7 @@
 
 状态：**历史外部审查意见／候选先验，不产生产品结论或执行权**
 
-这份保存 CZ 发给已持有 R10 的 ChatGPT、对现行背景板做的整板问题扫描。Prompt 底稿：[21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md](../../../../../novel-mvp/design/21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md)。
+这份保存 CZ 发给已持有 R10 的 ChatGPT、对现行背景板做的整板问题扫描。Prompt 底稿：[21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md](../../../../novel-mvp/design/21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md)。
 
 扫描自称读全 12 个 Markdown 成员 + 清单／回执，**没有叠加 R10.2／第四册**。登记 43 条问题。
 

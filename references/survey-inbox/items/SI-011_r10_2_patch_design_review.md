@@ -8,7 +8,7 @@
 - topic_tags：户口；真值；状态账；义务；交棒；覆盖阅读；设计审查
 - product_angle：作者工作台；产品架构
 - 备注：历史外部审查意见／候选先验。不产生产品结论、执行权、训练权、API 权、Notion 拍板、Git 权或生产晋级权。
-- Prompt 底稿：[20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md](../../../../novel-mvp/design/20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md)
+- Prompt 底稿：[20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md](../../../novel-mvp/design/20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md)
 - 消化稿：[02_RETURNS_DIGEST.md](../packages/R10_2_PATCH_DESIGN_REVIEW_RETURNS_20260814_R01/02_RETURNS_DIGEST.md)
 - 录入日：2026-08-14
 

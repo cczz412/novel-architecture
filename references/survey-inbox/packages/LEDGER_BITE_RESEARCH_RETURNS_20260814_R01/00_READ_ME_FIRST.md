@@ -2,7 +2,7 @@
 
 状态：**历史外部调查证据／候选先验，不产生产品结论或执行权**
 
-这个包逐字节保存 CZ 于 2026-08-14 发回的五份 ChatGPT 调查回包。五份 Prompt 出自 [19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md](../../../../../novel-mvp/design/19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md)。
+这个包逐字节保存 CZ 于 2026-08-14 发回的五份 ChatGPT 调查回包。五份 Prompt 出自 [19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md](../../../../novel-mvp/design/19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md)。
 
 前三题与已确认的 ADD-038～042 同向（门牌同构、关系边、跨账现算），字段仍不拍死；后两题专查还没拍的 ADD-043（规则拆条）、ADD-044（读者承诺）。
 
