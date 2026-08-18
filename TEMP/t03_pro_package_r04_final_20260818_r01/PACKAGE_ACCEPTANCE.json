@@ -1,0 +1,64 @@
+{
+  "schema": "r04-review-package-acceptance-v1",
+  "task_id": "B-PRO-PACKAGE-R04-FINAL-01",
+  "status": "PASS",
+  "verdict": "PACKAGE_PREPARED_FOR_CZ_UPLOAD",
+  "route_id": "r13-six-window-global-pro-review-20260818-r04-final",
+  "zip": {
+    "path": "TEMP/t03_pro_package_r04_final_20260818_r01/package/chatgpt_review_route_r13-six-window-global-pro-review-20260818-r04-final_20260818_192704.zip",
+    "sha256": "a0d8d7472d19fb9c00faa8d954645869e9167becc9af2326a1f1c46e68d43f8b",
+    "bytes": 364114
+  },
+  "prompt": {
+    "path": "TEMP/t03_pro_package_r04_final_20260818_r01/PROMPT_CHATGPT_PRO.md",
+    "sha256": "20565198990a67b3a0d9d3d63d9d6d5976ae58ad05a740d8b19a5d0258200076"
+  },
+  "package_receipt": {
+    "path": "TEMP/t03_pro_package_r04_final_20260818_r01/package/PACKAGE_RECEIPT.json",
+    "sha256": "106cde125f34dcbc91683361a0fc73588c0d9396f9dc3828c065dfc86cda590c"
+  },
+  "member_count": 71,
+  "payload_count": 69,
+  "layer_counts": {
+    "current_truth": 18,
+    "current_route": 16,
+    "upstream_evidence": 20,
+    "external_reviews": 10
+  },
+  "checks_passed": 32,
+  "checks_total": 32,
+  "checks": {
+    "attachment_zip_count_1": true,
+    "review_zip_not_replay": true,
+    "zip_sha_matches_receipt": true,
+    "zip_bytes_match_receipt": true,
+    "zip_under_25mb": true,
+    "crc_pass": true,
+    "member_count_matches_receipt": true,
+    "duplicate_members_0": true,
+    "unsafe_member_paths_0": true,
+    "nested_zip_0": true,
+    "manifest_and_sums_present": true,
+    "checksum_member_set_exact": true,
+    "all_checksum_sha_match": true,
+    "manifest_member_set_exact": true,
+    "all_manifest_sha_and_bytes_match": true,
+    "route_id_exact": true,
+    "layer_counts_exact": true,
+    "external_slot_exact_10": true,
+    "external_original_zip_0": true,
+    "gold_lockbox_blind_members_0": true,
+    "novel_body_members_0": true,
+    "raw_response_reasoning_members_0": true,
+    "secret_scan_0": true,
+    "local_path_redaction_pass": true,
+    "local_absolute_paths_0": true,
+    "prompt_embedded_exact": true,
+    "prompt_current_facts_exact": true,
+    "c10_validator_in_zip_current_sha": true,
+    "receipt_integrity_pass": true,
+    "prompt_zip_receipt_all_exist": true,
+    "replay_artifacts_0": true,
+    "upload_send_actions_0": true
+  }
+}

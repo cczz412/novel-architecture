@@ -1,0 +1,99 @@
+{
+  "identity": "T03_UNIFIED_EXACT_JSON_FENCE_OFFLINE_REPLAY_FINAL_RECEIPT_R01",
+  "completed_at": "2026-08-19T01:15:10+08:00",
+  "status": "COMPLETE_RESULT_STOP",
+  "verdict": "OFFLINE_UNIFIED_TRANSPORT_REPLAY_PASS",
+  "stop_class": "RESULT_STOP",
+  "continuation_started": "NONE",
+  "deliverable_root": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_unified_exact_json_fence_offline_replay_20260819_r01",
+  "primary_result": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_unified_exact_json_fence_offline_replay_20260819_r01/STAGE_RESULT.md",
+  "execution": {
+    "api_calls": 0,
+    "model_calls": 0,
+    "automatic_retries": 0,
+    "manual_retries": 0,
+    "source_raw_replays": 2,
+    "fixture_cases": 13,
+    "fixture_cases_passed": 13
+  },
+  "unified_contract": {
+    "same_transport_rule_for_both_routes": true,
+    "naked_json_allowed_for_both": true,
+    "exact_single_lowercase_json_fence_allowed_for_both": true,
+    "outside_characters_allowed": false,
+    "json_repair": false,
+    "field_injection": false,
+    "payload_mutation": false,
+    "same_frozen_validator_for_both_routes": true
+  },
+  "actual_replay": {
+    "routes_passed": 2,
+    "routes_total": 2,
+    "DOUBAO": {
+      "raw_sha256": "ac9eb1d66ea35da08f2fb81236a96a90d5f9566592be583811577f55500d4b0a",
+      "content_sha256": "ea7016958f9b82b73623ac13cc033d648bed8942b90289ea116d02269caecd83",
+      "payload_sha256": "9f4d0ff9abcf2d58d5aad4ee4408f4a5188610c9061a7d02e2134703ccc842ff",
+      "transport_shape": "EXACT_SINGLE_JSON_FENCE",
+      "rewrap_exact": true,
+      "validator_pass": true
+    },
+    "FLASH": {
+      "raw_sha256": "023ea971d02dad641d564ba488f23abf2176dd28876e9ee8724ff8707fc62247",
+      "content_sha256": "b678f21b98157df0fa8ce06fafa151b34e12610b0a012633602f485d764d6009",
+      "payload_sha256": "39cc38ecec0c3c26274e4f483038e4ef7206d3a2f21de1137b8daea3509ea02e",
+      "transport_shape": "EXACT_SINGLE_JSON_FENCE",
+      "rewrap_exact": true,
+      "validator_pass": true
+    }
+  },
+  "fail_closed_checks": {
+    "outside_prefix_rejected": true,
+    "outside_suffix_rejected": true,
+    "uppercase_json_tag_rejected": true,
+    "missing_language_tag_rejected": true,
+    "double_fence_rejected": true,
+    "bad_json_rejected": true,
+    "wrong_identity_rejected": true,
+    "missing_field_rejected": true,
+    "extra_field_rejected": true,
+    "naked_json_positive_both_routes": true,
+    "exact_fence_positive_both_routes": true
+  },
+  "preserved_history": {
+    "old_handshake_verdict": "HANDSHAKE_FAIL",
+    "old_handshake_verdict_overwritten": false,
+    "old_eight_call_ability_verdict": "NO_VERDICT",
+    "old_ability_verdict_reactivated": false,
+    "old_ability_raw_read": false
+  },
+  "evidence_identity": {
+    "offline_transport_replay_only": true,
+    "ability_score": false,
+    "model_ranking": false,
+    "formal_c3_c4_qualification": false,
+    "production_claim": false,
+    "third_call_authority": false,
+    "new_ability_batch_authority": false
+  },
+  "boundary_attestation": {
+    "formal_writes": 0,
+    "formal_contract_writes": 0,
+    "mvp_writes": 0,
+    "r13_writes": 0,
+    "gold_writes": 0,
+    "truth_writes": 0,
+    "git_actions": 0,
+    "notion_actions": 0,
+    "uploads": 0
+  },
+  "no_touch_receipt": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_unified_exact_json_fence_offline_replay_20260819_r01/NO_TOUCH_RECEIPT_R01.json",
+  "input_output_sha_receipt": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_unified_exact_json_fence_offline_replay_20260819_r01/INPUT_OUTPUT_SHA_RECEIPT_R01.json",
+  "manifest": {
+    "path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_unified_exact_json_fence_offline_replay_20260819_r01/OUTPUT_MANIFEST_R01.json",
+    "bytes": 1806,
+    "sha256": "cfaba7c07d05625fa002bc12d0cd7a596936756d6a5488d99586b8f0422607da"
+  },
+  "new_failure": null,
+  "dependency_or_write_conflict": null,
+  "next_gate": "等待总控派单；不得自行进入第三次调用或新能力批次。"
+}

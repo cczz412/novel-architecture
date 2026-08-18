@@ -1,0 +1,199 @@
+{
+  "identity": "D_C11_ACTION_ENTRY_POSTFIX_REPLAY_LEDGER_R01",
+  "task_id": "D-C11-ACTION-ENTRY-SCHEMA-COMPOSITION-POSTFIX-REPLAY-01",
+  "status": "COMPLETE",
+  "verdict": "PASS_INDEPENDENT_POSTFIX_REPLAY",
+  "independence": {
+    "case_generation": "D_PREVIOUS_FAIL_FIRST_MUTATION_PATTERN",
+    "used_a_five_case_output_as_expected_results": false,
+    "used_current_formal_fixtures_to_generate_five_cases": false
+  },
+  "cases": [
+    {
+      "case_id": "ENTRY-01-LEGAL-REPLACE",
+      "construction_source": "D_PREVIOUS_FAIL_FIRST_MUTATION_PATTERN",
+      "mutation": "NONE",
+      "schema": {
+        "accepted": true,
+        "error_code": null,
+        "error": null
+      },
+      "validate_action": {
+        "return_value": "PRECHECK_ALLOWED",
+        "expected": "PRECHECK_ALLOWED"
+      },
+      "failure_path": false,
+      "state_sha256_before": "e40de6ecc199340b7af9f15fc9911872463905d9af75a4e6478d9cf5ae0afe2d",
+      "state_sha256_after": "e40de6ecc199340b7af9f15fc9911872463905d9af75a4e6478d9cf5ae0afe2d",
+      "writes": {
+        "ledger_records": 0,
+        "c1_current_views": 0,
+        "facts": 0,
+        "projection_receipts": 0,
+        "planstore_reconciliation_edges": 0,
+        "planstore_history_rows": 0
+      },
+      "zero_write": null,
+      "pass": true
+    },
+    {
+      "case_id": "ENTRY-02-INVALID-INITIAL",
+      "construction_source": "D_PREVIOUS_FAIL_FIRST_MUTATION_PATTERN",
+      "mutation": "items[0].change_kind=INITIAL",
+      "schema": {
+        "accepted": false,
+        "error_code": "SCHEMA_REJECT",
+        "error": "SCHEMA_REJECT::{'contract': 'CHAPTER_REVISION_COMMIT_ACTION', 'version': 'v1', 'operation_id': 'op-r2', 'actor': 'AUTHOR', 'intent': 'ADOPT_AS_CURRENT_CHAPTER_REVISION', 'items': [{'target_chapter_id': 'c01', 'expected_current_revision_no': 1, 'candidate_title': '第一章', 'candidate_content_ref': {'kind': 'C10_SOURCE_SPAN', 'source_id': 'SRC-R2', 'source_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca', 'coordinate_basis': 'DECODED_UNICODE_CODEPOINT_V1', 'start': 0, 'end': 10, 'slice_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca'}, 'candidate_origin_material_ref': {'material_unit_id': 'MU-R2', 'identity_revision_no': 1}, 'candidate_text_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca', 'change_kind': 'INITIAL', 'restores_revision_no': None, 'target_basis': 'EXPLICIT_CHAPTER_ID', 'reason': '作者采用修订稿'}]} is not valid under any of the given schemas"
+      },
+      "validate_action": {
+        "return_value": "REJECTED_ACTION_SCHEMA",
+        "expected": "REJECTED_ACTION_SCHEMA"
+      },
+      "failure_path": true,
+      "state_sha256_before": "e40de6ecc199340b7af9f15fc9911872463905d9af75a4e6478d9cf5ae0afe2d",
+      "state_sha256_after": "e40de6ecc199340b7af9f15fc9911872463905d9af75a4e6478d9cf5ae0afe2d",
+      "writes": {
+        "ledger_records": 0,
+        "c1_current_views": 0,
+        "facts": 0,
+        "projection_receipts": 0,
+        "planstore_reconciliation_edges": 0,
+        "planstore_history_rows": 0
+      },
+      "zero_write": true,
+      "pass": true
+    },
+    {
+      "case_id": "ENTRY-03-INVALID-BOGUS",
+      "construction_source": "D_PREVIOUS_FAIL_FIRST_MUTATION_PATTERN",
+      "mutation": "items[0].change_kind=BOGUS",
+      "schema": {
+        "accepted": false,
+        "error_code": "SCHEMA_REJECT",
+        "error": "SCHEMA_REJECT::{'contract': 'CHAPTER_REVISION_COMMIT_ACTION', 'version': 'v1', 'operation_id': 'op-r2', 'actor': 'AUTHOR', 'intent': 'ADOPT_AS_CURRENT_CHAPTER_REVISION', 'items': [{'target_chapter_id': 'c01', 'expected_current_revision_no': 1, 'candidate_title': '第一章', 'candidate_content_ref': {'kind': 'C10_SOURCE_SPAN', 'source_id': 'SRC-R2', 'source_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca', 'coordinate_basis': 'DECODED_UNICODE_CODEPOINT_V1', 'start': 0, 'end': 10, 'slice_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca'}, 'candidate_origin_material_ref': {'material_unit_id': 'MU-R2', 'identity_revision_no': 1}, 'candidate_text_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca', 'change_kind': 'BOGUS', 'restores_revision_no': None, 'target_basis': 'EXPLICIT_CHAPTER_ID', 'reason': '作者采用修订稿'}]} is not valid under any of the given schemas"
+      },
+      "validate_action": {
+        "return_value": "REJECTED_ACTION_SCHEMA",
+        "expected": "REJECTED_ACTION_SCHEMA"
+      },
+      "failure_path": true,
+      "state_sha256_before": "e40de6ecc199340b7af9f15fc9911872463905d9af75a4e6478d9cf5ae0afe2d",
+      "state_sha256_after": "e40de6ecc199340b7af9f15fc9911872463905d9af75a4e6478d9cf5ae0afe2d",
+      "writes": {
+        "ledger_records": 0,
+        "c1_current_views": 0,
+        "facts": 0,
+        "projection_receipts": 0,
+        "planstore_reconciliation_edges": 0,
+        "planstore_history_rows": 0
+      },
+      "zero_write": true,
+      "pass": true
+    },
+    {
+      "case_id": "ENTRY-04A-MISSING-CONTRACT",
+      "construction_source": "D_PREVIOUS_FAIL_FIRST_MUTATION_PATTERN",
+      "mutation": "top-level contract removed",
+      "schema": {
+        "accepted": false,
+        "error_code": "SCHEMA_REJECT",
+        "error": "SCHEMA_REJECT::{'version': 'v1', 'operation_id': 'op-r2', 'actor': 'AUTHOR', 'intent': 'ADOPT_AS_CURRENT_CHAPTER_REVISION', 'items': [{'target_chapter_id': 'c01', 'expected_current_revision_no': 1, 'candidate_title': '第一章', 'candidate_content_ref': {'kind': 'C10_SOURCE_SPAN', 'source_id': 'SRC-R2', 'source_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca', 'coordinate_basis': 'DECODED_UNICODE_CODEPOINT_V1', 'start': 0, 'end': 10, 'slice_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca'}, 'candidate_origin_material_ref': {'material_unit_id': 'MU-R2', 'identity_revision_no': 1}, 'candidate_text_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca', 'change_kind': 'REPLACE', 'restores_revision_no': None, 'target_basis': 'EXPLICIT_CHAPTER_ID', 'reason': '作者采用修订稿'}]} is not valid under any of the given schemas"
+      },
+      "validate_action": {
+        "return_value": "REJECTED_ACTION_SCHEMA",
+        "expected": "REJECTED_ACTION_SCHEMA"
+      },
+      "failure_path": true,
+      "state_sha256_before": "e40de6ecc199340b7af9f15fc9911872463905d9af75a4e6478d9cf5ae0afe2d",
+      "state_sha256_after": "e40de6ecc199340b7af9f15fc9911872463905d9af75a4e6478d9cf5ae0afe2d",
+      "writes": {
+        "ledger_records": 0,
+        "c1_current_views": 0,
+        "facts": 0,
+        "projection_receipts": 0,
+        "planstore_reconciliation_edges": 0,
+        "planstore_history_rows": 0
+      },
+      "zero_write": true,
+      "pass": true
+    },
+    {
+      "case_id": "ENTRY-04B-MISSING-VERSION",
+      "construction_source": "D_PREVIOUS_FAIL_FIRST_MUTATION_PATTERN",
+      "mutation": "top-level version removed",
+      "schema": {
+        "accepted": false,
+        "error_code": "SCHEMA_REJECT",
+        "error": "SCHEMA_REJECT::{'contract': 'CHAPTER_REVISION_COMMIT_ACTION', 'operation_id': 'op-r2', 'actor': 'AUTHOR', 'intent': 'ADOPT_AS_CURRENT_CHAPTER_REVISION', 'items': [{'target_chapter_id': 'c01', 'expected_current_revision_no': 1, 'candidate_title': '第一章', 'candidate_content_ref': {'kind': 'C10_SOURCE_SPAN', 'source_id': 'SRC-R2', 'source_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca', 'coordinate_basis': 'DECODED_UNICODE_CODEPOINT_V1', 'start': 0, 'end': 10, 'slice_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca'}, 'candidate_origin_material_ref': {'material_unit_id': 'MU-R2', 'identity_revision_no': 1}, 'candidate_text_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca', 'change_kind': 'REPLACE', 'restores_revision_no': None, 'target_basis': 'EXPLICIT_CHAPTER_ID', 'reason': '作者采用修订稿'}]} is not valid under any of the given schemas"
+      },
+      "validate_action": {
+        "return_value": "REJECTED_ACTION_SCHEMA",
+        "expected": "REJECTED_ACTION_SCHEMA"
+      },
+      "failure_path": true,
+      "state_sha256_before": "e40de6ecc199340b7af9f15fc9911872463905d9af75a4e6478d9cf5ae0afe2d",
+      "state_sha256_after": "e40de6ecc199340b7af9f15fc9911872463905d9af75a4e6478d9cf5ae0afe2d",
+      "writes": {
+        "ledger_records": 0,
+        "c1_current_views": 0,
+        "facts": 0,
+        "projection_receipts": 0,
+        "planstore_reconciliation_edges": 0,
+        "planstore_history_rows": 0
+      },
+      "zero_write": true,
+      "pass": true
+    }
+  ],
+  "legal_restore_semantics": {
+    "expected": "PRECHECK_ALLOWED",
+    "actual": "PRECHECK_ALLOWED",
+    "pass": true
+  },
+  "current_validator": {
+    "command_returncode_zero": true,
+    "json_output_parsed": true,
+    "all_pass": true,
+    "old_75_of_75": true,
+    "new_5_of_5": true,
+    "total_80_of_80": true,
+    "restore_reactivation_5_of_5": true
+  },
+  "ruff": {
+    "returncode": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": "",
+    "pass": true
+  },
+  "json_parse": {
+    "schema_json": {
+      "pass": true,
+      "top_level_id": "https://local.novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json"
+    },
+    "fixtures_jsonl": {
+      "pass": true,
+      "lines": 80,
+      "error": null
+    }
+  },
+  "statistics": {
+    "independent_cases_passed": 5,
+    "independent_cases_total": 5,
+    "illegal_cases_zero_write": 4,
+    "illegal_cases_total": 4,
+    "old_validator_cases_passed": 75,
+    "old_validator_cases_total": 75,
+    "new_validator_cases_passed": 5,
+    "new_validator_cases_total": 5,
+    "all_validator_cases_passed": 80,
+    "all_validator_cases_total": 80,
+    "formal_input_drift": 0,
+    "cache_hits": 0,
+    "api_calls": 0,
+    "model_calls": 0,
+    "automatic_retries": 0,
+    "formal_writes": 0
+  },
+  "formal_fix_applied": false,
+  "scope_expanded": false
+}

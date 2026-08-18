@@ -1,0 +1,28 @@
+{
+  "identity": "D_C11_R2_STALE_PROPAGATION_SHA_RECEIPT_R01",
+  "task_id": "D-C11-R2-STALE-PROPAGATION-ONE-SCENARIO-01",
+  "verdict": "RUNTIME_OR_CONTRACT_GAP_FOUND",
+  "input_sha_authority": {
+    "manifest_path": "results/input_manifest.json",
+    "manifest_sha256": "299179214b018581eb9f24f38488a4bcf9e04fba7c81fd06b53eb11ddc757743",
+    "registered_inputs": 10,
+    "changed_during_probe": []
+  },
+  "output_sha256": {
+    "probe_one_scenario.py": "48c2940cc5ae7bb95bbaeda192f7cccde06a953e90968d1795052c1ba2efabac",
+    "CZ_ONE_PAGE_VERDICT.md": "2fcdf525fb5203360ce648dc693cdbb9facdfcf26295bc514429f5c2c5a42627",
+    "STAGE_FINAL_CAPSULE.md": "1c670b5babd8e452f72886ed3eafb127a546956cbe315035ca329ff8143ce17d",
+    "results/gate_ledger.json": "ac5d69ee3cb7a0cd4851e130adbe992c8fdd6e9a3d9a320a19c62aadf5eb28f9",
+    "results/input_manifest.json": "299179214b018581eb9f24f38488a4bcf9e04fba7c81fd06b53eb11ddc757743",
+    "results/no_touch_receipt.json": "eaccd70d1f955058da33314d81bde9dec78b87b163a4568966f9f70583a2fb99",
+    "results/probe_result.json": "04926fdffb89ad321003fa128636a8ab5d80cf10fbed8fa3081c954a558a4834",
+    "results/runtime_capability_inventory.json": "57e93ee4cd99efafad2dc3a38c51ef20e2598d9ac9b757ce57faa40824a9a141",
+    "results/scenario_fixture.json": "0515561f7fc4fdb24be2f8e849390ab9cd9ace3a26c51058822eacefc635d5fb"
+  },
+  "formal_writes": 0,
+  "product_writes": 0,
+  "git_operations": 0,
+  "api_calls": 0,
+  "model_calls": 0,
+  "automatic_retries": 0
+}

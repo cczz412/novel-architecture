@@ -1,0 +1,7 @@
+dry-run route=r13-six-window-global-pro-review-20260818-r04-final files=69 bytes=911130 (~0.9MB raw)（零写入）
+layers=current_truth,current_route,upstream_evidence,external_reviews
+source_files=64
+generated_route_files=5
+required_roots=all_present
+required_external_slots=all_present
+result=PASS

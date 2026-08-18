@@ -1,0 +1,41 @@
+{
+  "task_id": "A-C11-ACTION-SCHEMA-COMPOSITION-FORMAL-FIX-01",
+  "status": "CONTRACT_LOCAL_PASS",
+  "c11": {
+    "all_pass": true,
+    "old_cases": "75/75",
+    "new_action_entry_cases": "5/5",
+    "total_cases": "80/80",
+    "formal_cases": "42/42",
+    "wrong_success_gates": "2/2",
+    "eligibility_gates": "15/15",
+    "restore_reactivation_gates": "5/5",
+    "batch_atomicity_gates": "1/1",
+    "previous_machine_gate_cases": "10/10"
+  },
+  "preserved_error_semantics": {
+    "legal_replace": "PRECHECK_ALLOWED",
+    "legal_restore": "PRECHECK_ALLOWED",
+    "author_or_intent": "REJECTED_AUTHOR_INTENT_REQUIRED",
+    "stale": "REJECTED_STALE",
+    "no_change": "NO_CHANGE_ZERO_WRITES"
+  },
+  "d_five_case_replay": "5/5 PASS",
+  "failure_path_writes": 0,
+  "c10_v4_validator": {
+    "status": "PASS",
+    "fixture_count": 28,
+    "negative_probe_count": 33
+  },
+  "json_parse": {
+    "schema": "PASS",
+    "fixtures_jsonl": "PASS",
+    "fixture_lines": 80
+  },
+  "ruff": "PASS",
+  "direct_public_callers_depending_on_invalid_action": 0,
+  "new_failure": false,
+  "api_calls": 0,
+  "model_calls": 0,
+  "automatic_retries": 0
+}

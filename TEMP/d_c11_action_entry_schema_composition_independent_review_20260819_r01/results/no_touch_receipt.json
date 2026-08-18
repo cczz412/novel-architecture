@@ -1,0 +1,17 @@
+{
+  "identity": "D_C11_ACTION_ENTRY_NO_TOUCH_R01",
+  "designated_inputs_unchanged": true,
+  "changed_inputs": [],
+  "cache_hits": [],
+  "unauthorized_write_path": 0,
+  "formal_writes": 0,
+  "product_writes": 0,
+  "r13_writes": 0,
+  "gold_reads_or_writes": 0,
+  "novel_reads": 0,
+  "notion_operations": 0,
+  "git_operations": 0,
+  "api_calls": 0,
+  "model_calls": 0,
+  "automatic_retries": 0
+}

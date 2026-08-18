@@ -1,0 +1,37 @@
+{
+  "identity": "T03_UNIFIED_EXACT_JSON_FENCE_TRANSPORT_CONTRACT_R01",
+  "contract_identity": "OFFLINE_CANDIDATE__NOT_FORMAL_CONTRACT",
+  "routes": ["DOUBAO", "FLASH"],
+  "same_transport_rule_for_both_routes": true,
+  "accepted_shapes": {
+    "NAKED_JSON": "两路统一允许；整个 content 必须恰好是一个严格 JSON 对象，外部无空白或说明",
+    "EXACT_SINGLE_LOWERCASE_JSON_FENCE": "两路统一允许；整个 content 恰好一层小写 json Markdown fence，围栏外 0 字符"
+  },
+  "rejected_shapes": [
+    "OUTSIDE_TEXT_OR_WHITESPACE",
+    "UPPERCASE_JSON_FENCE",
+    "FENCE_WITHOUT_LANGUAGE_TAG",
+    "NESTED_OR_MULTIPLE_FENCE",
+    "BAD_JSON",
+    "NON_OBJECT_JSON"
+  ],
+  "normalization_limit": {
+    "remove_exact_opening_fence": true,
+    "remove_exact_closing_fence": true,
+    "modify_inner_payload_bytes": false,
+    "json_repair": false,
+    "field_injection": false,
+    "field_deletion": false,
+    "value_rewrite": false,
+    "array_reorder": false,
+    "identity_rewrite": false,
+    "evidence_rewrite": false
+  },
+  "validator": {
+    "source_path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_preflight_20260818_r01/normalize_and_validate.py",
+    "source_sha256": "061cf0f98042258a2be4f8afe2e7a23306b914394707feb2de71f291b6c70428",
+    "entrypoint": "validate_candidate",
+    "same_validator_for_both_routes": true
+  },
+  "evidence_limit": "只证明既有两份合成 raw 在统一候选运输规则下可机械重放；不产生能力、排名、C3/C4 或生产结论。"
+}

@@ -1,0 +1,108 @@
+{
+  "created_at": "2026-08-18T19:27:04",
+  "integrity": {
+    "crc_passed": true,
+    "errors": [],
+    "member_count": 71,
+    "passed": true,
+    "payload_count": 69,
+    "zip_bytes": 364114,
+    "zip_sha256": "a0d8d7472d19fb9c00faa8d954645869e9167becc9af2326a1f1c46e68d43f8b"
+  },
+  "local_path_redaction": {
+    "changed_member_count": 5,
+    "changed_members": [
+      {
+        "member": "03_upstream_evidence/TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/STAGE_FINAL_CAPSULE.txt",
+        "original_sha256": "2795ad1b46edf82c85e5dc3565c49468f40e15338c2386cab2032a14ee505eb1",
+        "replacement_counts": {
+          "repo_root": 4
+        },
+        "sanitized_sha256": "e6f866ddd7e495c71bdcbcb5543857dcd41611c85ec14721d7c1c7944d01a897"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/no_touch_sha_receipt_v2.json",
+        "original_sha256": "e9550765ed2e78d43da6b8108c28e6ba4ad2f20a1310a29ae3cae9e9fb0f7284",
+        "replacement_counts": {
+          "repo_root": 1
+        },
+        "sanitized_sha256": "147291c8f2bbfeabcbd23238558dbd2f0d8cf4a42325f01d818dd17eedc95140"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/FINAL_RECEIPT.json",
+        "original_sha256": "95043af1e9a4a54de1459e2a31e96e770df1fbc761b51440eadd7eccea6b2f8a",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "fb85a0b12e534600fe83ebc0722a3a86b818020dbf69893504287f8569229eed"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/FINAL_RECEIPT.json",
+        "original_sha256": "76a6fd4eb27a0aacbd8245a47fd022dc34a320a3ffde6a1f7dfed26bf2d9623b",
+        "replacement_counts": {
+          "repo_root": 4
+        },
+        "sanitized_sha256": "432a91fcce7f01758156997ff242830ec8542b110430cf891373b52ee8b7f33a"
+      },
+      {
+        "member": "04_external_reviews/prior_r13_six_window_review/RETURN_INTAKE_RECEIPT.json",
+        "original_sha256": "9c3636175339d55f0dcb214908a60d0ca3808df008bec0222d535045f4868c3c",
+        "replacement_counts": {
+          "user_home": 1
+        },
+        "sanitized_sha256": "4b3c59d5dc49ceacbca480afe3c44cb7fcc2e150403dee01eae7b970c027b466"
+      }
+    ],
+    "note": "只改外发副本：仓库绝对路径替换为 <repo-root>，用户目录替换为 <user-home>；本地原件未改。",
+    "result": "PASS",
+    "schema_version": "chatgpt-review-local-path-redaction-v1"
+  },
+  "max_zip_mb": 25.0,
+  "notes": [
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/current_truth/r04_review_scope_and_prompt:TEMP/t03_pro_package_r04_final_20260818_r01/00_R04_REVIEW_SCOPE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/current_truth/r04_review_scope_and_prompt:TEMP/t03_pro_package_r04_final_20260818_r01/PROMPT_CHATGPT_PRO.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_a_c11_and_c10_formal_stops:TEMP/t03_c11_eligibility_restore_formalization_20260818_r01/RUN_REPORT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_a_c11_and_c10_formal_stops:TEMP/t03_c11_eligibility_restore_formalization_20260818_r01/VALIDATION_RESULTS.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_a_c11_and_c10_formal_stops:TEMP/t03_c11_eligibility_restore_formalization_20260818_r01/FORMAL_SHA_RECEIPT.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_a_c11_and_c10_formal_stops:TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/RUN_REPORT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_a_c11_and_c10_formal_stops:TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/VALIDATION_RESULTS.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_a_c11_and_c10_formal_stops:TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/SHA_RECEIPT.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_b_r03_route_snapshot:TEMP/t03_pro_review_route_final_snapshot_20260818_r01/PRO_ROUTE_CANDIDATE_R03.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_b_r03_route_snapshot:TEMP/t03_pro_review_route_final_snapshot_20260818_r01/ROUTE_CONSISTENCY_CHECK_R03.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_c_owner_closure:TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/01_ONE_PAGE_JUNCTION_MAP.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_c_owner_closure:TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/field_owner_matrix.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_c_owner_closure:TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/final_validation_receipt_v2.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_c_owner_closure:TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/no_touch_sha_receipt_v2.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_c_owner_closure:TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/STAGE_FINAL_CAPSULE.txt",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_d_c11_narrow_replay:TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/CZ_ONE_PAGE_VERDICT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_d_c11_narrow_replay:TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/results/narrow_replay_ledger.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/window_d_c11_narrow_replay:TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/results/SHA_RECEIPT.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/t03_ability_no_verdict_and_output_handshake:TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/STAGE_RESULT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/t03_ability_no_verdict_and_output_handshake:TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/FINAL_RECEIPT.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/t03_ability_no_verdict_and_output_handshake:TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/STAGE_RESULT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-six-window-global-pro-review-20260818-r04-final/upstream_evidence/t03_ability_no_verdict_and_output_handshake:TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/FINAL_RECEIPT.json"
+  ],
+  "payload_file_count": 69,
+  "profile": null,
+  "raw_bytes": 911130,
+  "route": "r13-six-window-global-pro-review-20260818-r04-final",
+  "route_snapshot_at": "2026-08-18T19:21:21+08:00",
+  "schema_version": "chatgpt-review-route-pack-receipt-v1",
+  "secret_scan": {
+    "hit_count": 0,
+    "hits": [],
+    "result": "PASS",
+    "scanned_members": 68
+  },
+  "selected_layers": [
+    "current_truth",
+    "current_route",
+    "upstream_evidence",
+    "external_reviews"
+  ],
+  "zip": {
+    "bytes": 364114,
+    "path": "chatgpt_review_route_r13-six-window-global-pro-review-20260818-r04-final_20260818_192704.zip",
+    "sha256": "a0d8d7472d19fb9c00faa8d954645869e9167becc9af2326a1f1c46e68d43f8b"
+  }
+}

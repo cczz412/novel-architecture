@@ -1,0 +1,92 @@
+{
+  "schema": "t03-pro-package-r04-manifest-v1",
+  "task_id": "B-PRO-PACKAGE-R04-FINAL-01",
+  "status": "COMPLETE",
+  "verdict": "PACKAGE_PREPARED_FOR_CZ_UPLOAD",
+  "parent_cycle": "R13-SIX-WINDOW-GLOBAL-PRO-REVIEW-20260818-R02",
+  "route_id": "r13-six-window-global-pro-review-20260818-r04-final",
+  "artifacts": [
+    {
+      "path": "00_R04_REVIEW_SCOPE.md",
+      "sha256": "42f3a41829181ade1069f9645a5e2b55add71243b79812d1e95c58e7f830db73"
+    },
+    {
+      "path": "PROMPT_CHATGPT_PRO.md",
+      "sha256": "20565198990a67b3a0d9d3d63d9d6d5976ae58ad05a740d8b19a5d0258200076"
+    },
+    {
+      "path": "DRY_RUN_RESULT.txt",
+      "sha256": "8e78b832ea13290cf12365866a0d957a2e513cf2550abe04710d7b0c07c91e94"
+    },
+    {
+      "path": "R04_PREFLIGHT.json",
+      "sha256": "cc07f4bf4fbf0a3125e12c7f3ab568532bde2b1182503c1ef9641ba16020ec0c"
+    },
+    {
+      "path": "ROUTE_R04_EXECUTABLE_SNAPSHOT.json",
+      "sha256": "9867eaf3b9270fabd0c48042656c697a8d4bf38003dc797042d4200143ed35e4"
+    },
+    {
+      "path": "ROUTES_BEFORE_STATE.json",
+      "sha256": "4b60d3d4ddeb25348deea60ce35147271b547172334254516b93ce3363c78369"
+    },
+    {
+      "path": "ROUTES_AFTER_STATE.json",
+      "sha256": "a98d0e3b2bca0cf38fd5c8676cef0f68adac0683786c71b5b5a66976550cdc08"
+    },
+    {
+      "path": "ROUTES_BEFORE.diff",
+      "sha256": "548db79ee7584d3d9f4c68235c44857a49310efdd72fd163fdcde21256b9cb7e"
+    },
+    {
+      "path": "ROUTES_AFTER.diff",
+      "sha256": "3c7fcd9eb83d8ca45247142d1ba21689d8c537fbdf742a534ef9dfb0929e6e40"
+    },
+    {
+      "path": "EXTERNAL_SLOT_SHA256SUMS.txt",
+      "sha256": "df5fbd05571634a72563a1056f021c5853a9497bdc8e3da917f9ee644c95e355"
+    },
+    {
+      "path": "ACCEPTANCE_ATTEMPT_01_FALSE_NEGATIVE.json",
+      "sha256": "b38bad5cec9135033c6a8532e36a53d7de9cd86999596328d87d105ed8d58b00"
+    },
+    {
+      "path": "PACKAGE_ACCEPTANCE.json",
+      "sha256": "866cc1dccc80be84722a0aee7c62bb2c1a9c85c2846e62680964923a8c60e294"
+    },
+    {
+      "path": "NO_TOUCH_RECEIPT.json",
+      "sha256": "a42fcbaab23af3d712fd9c76d462422e6d9d9c8e4d97ba06e9c5467976ab7a8c"
+    },
+    {
+      "path": "PARENT_CYCLE_PACKAGE_PREPARED.json",
+      "sha256": "96f5d20798233a767d69115a5c4f855fca9e395072cae5728d9ab38ad1e1fcbe"
+    },
+    {
+      "path": "HANDOFF_TO_CZ.md",
+      "sha256": "a8f71695bdcfff4e58a9ed0f6e41381561b362c1a2024996c9d3f376a25e79c9"
+    },
+    {
+      "path": "STAGE_FINAL_CAPSULE.txt",
+      "sha256": "68933a1509ae690f7703ea0a911da1ed5ef4ae77bbf592deee7c19e945625017"
+    },
+    {
+      "path": "package/PACKAGE_RECEIPT.json",
+      "sha256": "106cde125f34dcbc91683361a0fc73588c0d9396f9dc3828c065dfc86cda590c"
+    },
+    {
+      "path": "package/chatgpt_review_route_r13-six-window-global-pro-review-20260818-r04-final_20260818_192704.zip",
+      "sha256": "a0d8d7472d19fb9c00faa8d954645869e9167becc9af2326a1f1c46e68d43f8b"
+    }
+  ],
+  "formal_route_write": {
+    "path": "config/review_pack/routes.json",
+    "sha256_before": "ae3a1d38d026d7033f0e18c9c9d66bd7f096673a6549d327f556fb637d43cd10",
+    "sha256_after": "b2beb1a8510cdc5b10b2cfd67e90422c027fcfe59f9ebc413efc3814f196bb49",
+    "change": "ONE_NEW_ROUTE_APPENDED_ONLY"
+  },
+  "review_zip_count": 1,
+  "replay_zip_count": 0,
+  "uploaded": false,
+  "sent": false
+}

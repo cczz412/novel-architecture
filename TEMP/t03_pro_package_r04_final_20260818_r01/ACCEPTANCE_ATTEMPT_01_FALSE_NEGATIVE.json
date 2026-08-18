@@ -1,0 +1,15 @@
+{
+  "task_id": "B-PRO-PACKAGE-R04-FINAL-01",
+  "status": "CHECKER_FALSE_NEGATIVE",
+  "package_changed": false,
+  "failed_check": "checksum_member_set_exact",
+  "wrong_assumption": "SHA256SUMS excludes MANIFEST.json",
+  "actual_contract": "SHA256SUMS covers every ZIP member except SHA256SUMS itself, including MANIFEST.json",
+  "evidence": {
+    "sha256sums_lines": 70,
+    "zip_members": 71,
+    "manifest_line_present": true,
+    "all_recorded_sha_matched": true
+  },
+  "correction": "Rerun checker with MANIFEST.json included in checksum target set; do not rebuild or mutate package."
+}

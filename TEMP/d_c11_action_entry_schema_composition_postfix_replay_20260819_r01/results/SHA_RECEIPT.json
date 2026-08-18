@@ -1,0 +1,31 @@
+{
+  "identity": "D_C11_ACTION_ENTRY_POSTFIX_REPLAY_SHA_RECEIPT_R01",
+  "task_id": "D-C11-ACTION-ENTRY-SCHEMA-COMPOSITION-POSTFIX-REPLAY-01",
+  "verdict": "PASS_INDEPENDENT_POSTFIX_REPLAY",
+  "input_sha_authority": {
+    "manifest_path": "results/input_manifest.json",
+    "manifest_sha256": "17ebe4445eca27acc812bc5930b57a62f3b4e6d596a4d7db3f0e0a3ca3b3b3e8",
+    "formal_inputs": 5,
+    "supporting_a_evidence": 2,
+    "formal_changed_during_replay": [],
+    "evidence_changed_during_replay": []
+  },
+  "output_sha256": {
+    "run_postfix_replay.py": "749bca664061275950de9329ee177c3f8a59cc6f9dd73d577d7604ecbf8360dc",
+    "CZ_ONE_PAGE_VERDICT.md": "84b89b3f509c10eb6044572ef18957f1766b9f01b05c0345441840f81a1e89b6",
+    "STAGE_FINAL_CAPSULE.md": "2e1e46563299c713b415eedfe5ad25a876d2360b57c1615aee01db0c04458fb7",
+    "results/capsule_delivery_receipt.json": "3f1e203950c86ac51f819454d5f9f3c170ec693c16aab4689e0b3548cb4b827b",
+    "results/current_validator_output.json": "7dfbe3bda3b75bbf9931d7f454530be607fa2886e49a8513835943edca4850c1",
+    "results/input_manifest.json": "17ebe4445eca27acc812bc5930b57a62f3b4e6d596a4d7db3f0e0a3ca3b3b3e8",
+    "results/no_touch_receipt.json": "aa9afe3b8d49b3bd41e1384b063205b86e94b45f2301145784367689d6f7d8f8",
+    "results/postfix_replay_ledger.json": "c3c5b12e318bcfb7a6776f61c188ee6fbf722529047c4127818cca48b9d7c7fa",
+    "results/ruff_result.json": "f41a59bdea6fc14afb5367270d1a44ea320c1970504b09b9d3486cf2f1a1e60c"
+  },
+  "formal_writes": 0,
+  "product_writes": 0,
+  "git_operations": 0,
+  "uploads": 0,
+  "api_calls": 0,
+  "model_calls": 0,
+  "automatic_retries": 0
+}

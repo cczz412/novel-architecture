@@ -1,0 +1,304 @@
+{
+  "schema_version": "r13_six_identity_global_pro_review_recommendation_v1",
+  "review_id": "R13_SIX_WINDOW_GLOBAL_PRO_REVIEW_20260818_R01",
+  "status": "ADVISORY_ONLY__NOT_AUTHORIZED",
+  "completed_on": "2026-08-18",
+  "input_package": {
+    "identity": "chatgpt_review_route_r13-six-window-global-pro-review-20260818-r01",
+    "files_read": 142,
+    "hard_boundaries": [
+      "01_current_truth/TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/00_READ_ME_FIRST.md",
+      "01_current_truth/TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/01_REVIEW_SCOPE_AND_AUTHORITY.md",
+      "01_current_truth/TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/05_SHARED_PAGE_DISPATCH_PROTOCOL.md",
+      "01_current_truth/TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/06_RETURN_CONTRACT.md"
+    ],
+    "evidence_index_read_first": true,
+    "identity_rule": "WINDOW_ID_AND_EXPLICIT_RECEIPT_OVERRIDE_DIRECTORY_PREFIX_AND_OLD_THREAD_NAME"
+  },
+  "authority": {
+    "advisory_only": true,
+    "may_execute": false,
+    "may_modify_formal_contract": false,
+    "may_modify_r13": false,
+    "may_modify_product": false,
+    "may_modify_gold": false,
+    "may_call_model_api": false,
+    "may_spend": false,
+    "may_train": false,
+    "may_deploy_production": false,
+    "may_upload": false,
+    "may_write_author_truth": false,
+    "may_merge_window_identities": false
+  },
+  "overall_verdict": "B_ACCEPTED_NARROW__A_T03_BLOCKERS_LIVE__C_FROZEN_CANDIDATE__D_CURRENT_BYTE_REPLAY_REQUIRED__CONTROLLER_PROTOCOL_HARDENING_REQUIRED",
+  "identity_recommendations": [
+    {
+      "window_id": "CONTROLLER",
+      "verdict_action": "ACCEPT_WITH_NARROWING",
+      "should_run": true,
+      "recommendation_id": "CTRL-SHARED-PAGE-PROTOCOL-HARDENING-01",
+      "writeset": [
+        "TEMP/shared_page_protocol_hardening_20260818_r01/**"
+      ],
+      "reason": "single-page protocol lacks dual SHA, exception states, exactly-once routing, namespace and authority hardening"
+    },
+    {
+      "window_id": "T03",
+      "verdict_action": "ACCEPT_FAILURE_VERDICT__NARROW_SAFETY_CLAIMS",
+      "should_run": true,
+      "recommendation_id": "T03-UNRESOLVED-BUNDLE-AND-CLOSED-COUNTEREVIDENCE-01",
+      "writeset": [
+        "TEMP/v0_c3_unresolved_bundle_stage_20260818_r02/**"
+      ],
+      "reason": "verbatim safety is proven but unseen full delivery 6/11 and negative false trigger 19/55 fail"
+    },
+    {
+      "window_id": "A",
+      "verdict_action": "ACCEPT_BLOCKER__REBASELINE_CURRENT_BYTES_REQUIRED",
+      "should_run": true,
+      "recommendation_id": "A-CHAPTER-REVISION-MINIMUM-CONTRACT-DESIGN-01",
+      "writeset": [
+        "TEMP/m1_m4_chapter_revision_contract_candidate_20260818_r01/**"
+      ],
+      "reason": "two wrong-success counterexamples expose missing lineage, stale semantics, anchors and consumer waterlines"
+    },
+    {
+      "window_id": "B",
+      "verdict_action": "ACCEPT_NARROW_PASS",
+      "should_run": false,
+      "recommendation_id": "B-INTENTIONAL-IDLE-AFTER-M5-WRITER-01",
+      "wait_for": [
+        "A_revision_candidate",
+        "CZ_dark_draft_chapter_close_authority"
+      ],
+      "reason": "writer path is closed; next work crosses unresolved product semantics"
+    },
+    {
+      "window_id": "C",
+      "verdict_action": "ACCEPT_EXPERIMENTAL_RULE_FAMILY__NO_FORMAL_C9",
+      "should_run": false,
+      "recommendation_id": "C-INTENTIONAL-IDLE-BEFORE-C9-01",
+      "wait_for": [
+        "A_revision_waterline",
+        "T03_unresolved_bundle",
+        "D_current_byte_receipt",
+        "current_planstore_read_contract"
+      ],
+      "reason": "R19 actuality plus R21 budget are frozen candidates; REAL-03 and formal C9 remain open"
+    },
+    {
+      "window_id": "D",
+      "verdict_action": "ACCEPT_HISTORICAL_PASS__OVERTURN_CURRENT_BYTE_STATUS",
+      "should_run": true,
+      "recommendation_id": "D-CURRENT-BYTE-SEAM-REBASELINE-01",
+      "writeset": [
+        "TEMP/t03_m1_m11_current_byte_seam_rebaseline_20260818_r01/**"
+      ],
+      "reason": "all four old fixtures included pre-B store bytes; READY-03/04 also used pre-B C4"
+    }
+  ],
+  "critical_findings": [
+    {
+      "id": "F-B-WRITER",
+      "severity": "HIGH_POSITIVE",
+      "finding": "M5 facts writes and active RE stale now share one factstore-planstore transaction path",
+      "non_inference": "does_not_authorize_dark_draft_auto_next_or_chapter_close"
+    },
+    {
+      "id": "F-D-STALE-SHA",
+      "severity": "P0",
+      "finding": "D four-pass batch is historical because C4/store input hashes differ from current B-final bytes",
+      "old_c4_sha_prefix": "5c190819",
+      "current_c4_sha_prefix": "0e8f282e",
+      "old_store_sha_prefix": "1e914557",
+      "current_store_sha_prefix": "a2d944a7"
+    },
+    {
+      "id": "F-A-REVISION",
+      "severity": "P0",
+      "finding": "modified reimport forks a new chapter and stale confirmed fact remains queryable",
+      "wrong_success_count": 2
+    },
+    {
+      "id": "F-T03-SEMANTIC",
+      "severity": "P0",
+      "finding": "unseen unresolved discovery fails full-delivery and negative-control gates",
+      "full": "6/11",
+      "partial": "5/11",
+      "negative_false_trigger": "19/55",
+      "verbatim_rewrites": 0,
+      "truth_writes": 0
+    },
+    {
+      "id": "F-C-RULE-FAMILY",
+      "severity": "P1",
+      "finding": "R19 actuality and R21 budget may be retained as experimental family; unresolved-current remains separate",
+      "doubao_hard": "7/7",
+      "deepseek_hard": "6/7",
+      "formal_c9": false
+    },
+    {
+      "id": "F-PROTOCOL-DUAL-SHA",
+      "severity": "P0",
+      "finding": "evidence index original hashes and sanitized transport hashes legitimately differ for 25 files",
+      "required_fix": "original_sha+transport_sha+transform_receipt"
+    }
+  ],
+  "module_maturity": [
+    {
+      "module": "M1",
+      "status": "PARTIAL_RUNTIME__REVISION_BLOCKER",
+      "owner": "M1_intake; revision_owner_open",
+      "waits_for": [
+        "A_contract_candidate",
+        "CZ_owner"
+      ]
+    },
+    {
+      "module": "M2",
+      "status": "NARROW_RUNTIME__WATERLINE_GAP",
+      "owner": "M2",
+      "waits_for": [
+        "A_revision_waterline_for_persistent_anchors"
+      ]
+    },
+    {
+      "module": "M3",
+      "status": "MECHANICAL_SAFE__SEMANTIC_NOT_READY",
+      "owner": "M3",
+      "waits_for": [
+        "T03_unresolved_bundle"
+      ]
+    },
+    {
+      "module": "M4",
+      "status": "STRONG_WRITER_BASE__SEMANTIC_GAPS",
+      "owner": "M4_factstore",
+      "waits_for": [
+        "A_stale_semantics",
+        "T03_unresolved_identity"
+      ]
+    },
+    {
+      "module": "M5",
+      "status": "NARROW_ACTION_PATH_PASS__UX_UNBUILT",
+      "owner": "M5_action; M4_persistence",
+      "waits_for": [
+        "M9_C5_for_overview_UX",
+        "CZ_high_impact_semantics"
+      ]
+    },
+    {
+      "module": "M6",
+      "status": "RUNTIME_STUB__STALE_RISK",
+      "owner": "M6",
+      "waits_for": [
+        "A_revision_filter",
+        "M11_C9"
+      ]
+    },
+    {
+      "module": "M7",
+      "status": "NARROW_RUNTIME__VERSION_GAP",
+      "owner": "M7",
+      "waits_for": [
+        "D_current_replay",
+        "A_revision_waterline"
+      ]
+    },
+    {
+      "module": "M8",
+      "status": "PARTIAL_RUNTIME__NOT_FULL_M8",
+      "owner": "M8_action; planstore_persistence",
+      "waits_for": [
+        "CZ_dark_draft_close_semantics_for_next_scope",
+        "M11_for_context_integration"
+      ]
+    },
+    {
+      "module": "M9",
+      "status": "DESIGN_ONLY__BODY_GAP",
+      "owner": "M9",
+      "waits_for": [
+        "stable_read_identity_not_all_upstream_completion"
+      ]
+    },
+    {
+      "module": "M10",
+      "status": "DESIGN_ONLY__BODY_GAP",
+      "owner": "M10",
+      "waits_for": [
+        "stable_plan_object_and_C8_contract"
+      ]
+    },
+    {
+      "module": "M11",
+      "status": "EXPERIMENTAL_RULES__NO_C9__NO_RUNTIME",
+      "owner": "M11",
+      "waits_for": [
+        "A_revision_waterline",
+        "T03_unresolved_bundle",
+        "D_current_replay",
+        "planstore_read_contract"
+      ]
+    }
+  ],
+  "protocol_review": {
+    "verdict": "MITIGABLE_BUT_NOT_PROVABLY_ISOLATED",
+    "shared_page_is_security_boundary": false,
+    "required_states": [
+      "EXPIRED",
+      "ABORTED",
+      "SUPERSEDED",
+      "QUARANTINED",
+      "CAPTURE_FAILED",
+      "ROUTE_FAILED"
+    ],
+    "required_fields": [
+      "INSTRUCTION_EPOCH",
+      "MODULE_NAMESPACE",
+      "SOURCE_ORIGINAL_SHA256",
+      "TRANSPORT_MEMBER_SHA256",
+      "TRANSFORM_RECEIPT_SHA256",
+      "CURRENT_FORMAL_MANIFEST_SHA256",
+      "ADVISORY_ONLY",
+      "ROUTING_RECEIPT_ID"
+    ],
+    "cold_start_after_global_review": true
+  },
+  "explicit_non_conclusions": [
+    "T03_6_of_11_full_is_not_pass",
+    "C_7_of_7_plus_6_of_7_is_not_formal_C9",
+    "D_4_of_4_is_not_contract_frozen_or_current_byte_verified",
+    "B_writer_unification_does_not_authorize_dark_draft_auto_next_or_chapter_close",
+    "M1_to_M11_have_direction_does_not_mean_modules_are_complete"
+  ],
+  "cz_explicit_approval_required": [
+    "Gold_or_blind_reference_identity_or_threshold_change",
+    "formal_contract_changes_including_C1_C3_C4_C6_C9_PLAN_LEDGER",
+    "R13_text_changes",
+    "product_code_or_formal_design_changes",
+    "dark_draft_signature_auto_next_chapter_or_chapter_close_semantics",
+    "chapter_revision_authoritative_owner_and_migration",
+    "new_model_API_supplier_spend_training_production_upload",
+    "author_truth_write",
+    "cross_window_identity_or_writeset_merge",
+    "formal_shared_page_protocol_adoption"
+  ],
+  "output_files": [
+    "00_EXECUTIVE_JUDGMENT.md",
+    "01_SIX_IDENTITY_AUDIT.md",
+    "02_CROSS_MODULE_SEAMS_AND_OWNERS.md",
+    "03_CONTRACT_AND_PRODUCT_DELTA.md",
+    "04_NEXT_LONG_STAGE_PORTFOLIO.md",
+    "05_SHARED_PAGE_PROTOCOL_REVIEW.md",
+    "06_RISKS_AND_COUNTERARGUMENTS.md",
+    "MACHINE_RECOMMENDATION.json",
+    "WINDOW_INSTRUCTIONS/CONTROLLER.md",
+    "WINDOW_INSTRUCTIONS/T03.md",
+    "WINDOW_INSTRUCTIONS/A.md",
+    "WINDOW_INSTRUCTIONS/B.md",
+    "WINDOW_INSTRUCTIONS/C.md",
+    "WINDOW_INSTRUCTIONS/D.md"
+  ]
+}

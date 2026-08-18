@@ -1,0 +1,56 @@
+{
+  "schema_version": "chatgpt_pro_return_intake.v1",
+  "review_id": "R13_SIX_WINDOW_GLOBAL_PRO_REVIEW_20260818_R01",
+  "received_at_utc": "2026-08-17T23:00:11Z",
+  "source": {
+    "kind": "cz_manual_chatgpt_pro_return",
+    "provided_path": "/Users/a1234/Downloads/R13_SIX_WINDOW_GLOBAL_PRO_REVIEW_RETURN_20260818_R01.zip",
+    "chatgpt_conversation_url_claimed": false
+  },
+  "outbound_review": {
+    "package_path": "TEMP/external_review_handoffs_20260818_r01/builds/chatgpt_pro_r02/chatgpt_review_route_r13-six-window-global-pro-review-20260818-r01_20260818_055243.zip",
+    "package_sha256": "e9c45ad2656f8facaad3e310d9969f59e52f6c7ae92df40f7bf944b75616f208",
+    "prompt_path": "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/PROMPT_CHATGPT_PRO.md",
+    "prompt_sha256": "12f4422894402ac919cd35bb44d76274ecdaef5b3f3f5d6becd7f5f8c09d7b7b",
+    "package_receipt_path": "TEMP/external_review_handoffs_20260818_r01/builds/chatgpt_pro_r02/PACKAGE_RECEIPT.json",
+    "package_receipt_sha256": "338582c3b0f099d9c6bc42dd3d9d9bb848191a76e368097c26cdcb1cd31187ab"
+  },
+  "return_zip": {
+    "preserved_path": "TEMP/chatgpt_review_returns/R13_SIX_WINDOW_GLOBAL_PRO_REVIEW_RETURN_20260818_R01/original/R13_SIX_WINDOW_GLOBAL_PRO_REVIEW_RETURN_20260818_R01.zip",
+    "sha256": "a8e7a5d094e5a8e30b0d0aa6dd44fdcdf72a6491e35086db0397ed5f4e7e6388",
+    "compressed_bytes": 51859,
+    "member_count": 14,
+    "uncompressed_bytes": 96764
+  },
+  "checks": {
+    "zip_nonempty": true,
+    "crc_passed": true,
+    "required_members_complete": true,
+    "unexpected_members": 0,
+    "duplicate_members": 0,
+    "absolute_or_parent_paths": 0,
+    "symlinks": 0,
+    "nested_zips": 0,
+    "empty_files": 0,
+    "utf8_failures": 0,
+    "machine_recommendation_json_parsed": true,
+    "status": "RETURN_INTEGRITY_PASS"
+  },
+  "members": [
+    {"path": "00_EXECUTIVE_JUDGMENT.md", "sha256": "5793858182f79e40aaf15c7a9fd82a34393f067870dadf92e1732847a74a180a", "bytes": 9128},
+    {"path": "01_SIX_IDENTITY_AUDIT.md", "sha256": "24ee23e4a8f1ce7e29e517797c841d452b05a506f0ec5ff2de9511b898a72ce3", "bytes": 12639},
+    {"path": "02_CROSS_MODULE_SEAMS_AND_OWNERS.md", "sha256": "b5291d61b6dad2c65dbd87fcafa4d65df2f6b409efa63f18c85e21c5bccd4f29", "bytes": 10467},
+    {"path": "03_CONTRACT_AND_PRODUCT_DELTA.md", "sha256": "c9facffb9486b0900ebb7da180bf4548f021cb3bc5883fc1c799b306f0c4db75", "bytes": 10234},
+    {"path": "04_NEXT_LONG_STAGE_PORTFOLIO.md", "sha256": "fb8032e095f9c7cabc46da84d8717aab4a9972314ef34bfe23eee5a8eb9087e5", "bytes": 6435},
+    {"path": "05_SHARED_PAGE_PROTOCOL_REVIEW.md", "sha256": "c9cbf19f818a65459a418f6121de961644eb820fde72b39a14eac35037882c61", "bytes": 9435},
+    {"path": "06_RISKS_AND_COUNTERARGUMENTS.md", "sha256": "11c66e88c2c506d944890ecd60203794b2c10bf1a88ad9cdc78c5b384e9f9700", "bytes": 8561},
+    {"path": "MACHINE_RECOMMENDATION.json", "sha256": "1cf2448fc4a8795271021491cd8473526e205111c25c65250f27202dde6d5163", "bytes": 10091},
+    {"path": "WINDOW_INSTRUCTIONS/A.md", "sha256": "c4ea6617014abad76391de7140bc089c9d0764a75b419b57124da64bd37b567c", "bytes": 4763},
+    {"path": "WINDOW_INSTRUCTIONS/B.md", "sha256": "cc79c0dfc424c0c95be3b1531dbf6436de2a086a439022b586dc3797abf4adcd", "bytes": 1730},
+    {"path": "WINDOW_INSTRUCTIONS/C.md", "sha256": "2f6529a78621f878ff0b39c733c1426613ac7f0663bf785e6255c386b2635c2f", "bytes": 1862},
+    {"path": "WINDOW_INSTRUCTIONS/CONTROLLER.md", "sha256": "f815a3257e3a03dbc898d6deb1ed7e1f8557a018bef237a804b4039b1e125d35", "bytes": 3498},
+    {"path": "WINDOW_INSTRUCTIONS/D.md", "sha256": "206fb5b03e37d2972394755547c5c49052b932cf7389abfaad3a62286cd5cdfa", "bytes": 3809},
+    {"path": "WINDOW_INSTRUCTIONS/T03.md", "sha256": "aa915d09f97f33b8417568d770c86172841e074aab17c8f9211e53a825dabc39", "bytes": 4112}
+  ],
+  "authority_boundary": "External ChatGPT Pro advice only. This receipt grants no authority for formal contracts, R13, product code, Gold, API spend, training, production, upload, author truth, or cross-window writeset merging."
+}

@@ -1,0 +1,165 @@
+{
+  "created_at": "2026-08-18T00:28:44.427+00:00",
+  "file_count": 25,
+  "files": [
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/00_READ_ME_FIRST.md",
+      "sha256": "3dae19ed7803b8e5f2d099922bc566859c0fb13648d29e03edc4af3e8838c23c",
+      "size_bytes": 544
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/01_ONE_PAGE_BOUNDARY.md",
+      "sha256": "094cdac8311c490b10f9de927f1ded7a51d8c7210ee88e9fab36c943a827070d",
+      "size_bytes": 1764
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/02_CANDIDATE_DESIGN.md",
+      "sha256": "66bd4a2bedd40782c8685633c1d8c1d4a03c7a87ae461dea7433b56332dccd22",
+      "size_bytes": 2358
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/03_OWNER_AND_FLOW.md",
+      "sha256": "13ca8ac52c5ee2b65943e3f75e5c21025e36bb0872de5c1f938643240da68d97",
+      "size_bytes": 1648
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/04_STATE_MACHINE_AND_ERRORS.md",
+      "sha256": "8f295a358989695e3acd7bf5ec6d41b76eaaf1a09ac808691715aff1c1ec05d7",
+      "size_bytes": 1751
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/05_MECHANICAL_EXAMPLES.md",
+      "sha256": "0c8af9876032fbd1b20f5340eeb86d70d2548a91b51243bc35728b7c1168509c",
+      "size_bytes": 1513
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/06_COUNTEREXAMPLE_LEDGER.md",
+      "sha256": "ad3e792b867723192b1a7bc159d7221973b669b32f09fbd4310868896049a7a1",
+      "size_bytes": 1217
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/07_NEXT_FORMAL_GATE.md",
+      "sha256": "ccaa2e0961f7aab87e192a169d0fe24a755f57498ec2bc6d3770e4c8dc245f01",
+      "size_bytes": 1038
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/08_SELF_ACCEPTANCE.md",
+      "sha256": "2b11129267c269e8ba304a188e05f2cca6e310f061f5868b7b8a3eeebc60bf90",
+      "size_bytes": 642
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/STAGE_FINAL_CAPSULE.txt",
+      "sha256": "0e2fd1f9ac52e0cf3c3b8aa2b784abae2512ef783d031d20e73345aa8cdd945c",
+      "size_bytes": 1801
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/candidate/c9_actuality_budget_candidate_skeleton.json",
+      "sha256": "3ef1286dc998348ae2d37137149d7ac51a42e1643fdc3b1a9b45b2753aa17797",
+      "size_bytes": 4725
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/finalize_skeleton.py",
+      "sha256": "476eda343b116a05f55a8df811aa42a69e4cb2003c45e327f035f413249f3a91",
+      "size_bytes": 6716
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/mechanical_validate.py",
+      "sha256": "5f2cffd64c108a18dddcfc9d120a0acfab98bf0060dbcc1ed429ce7b516e24de",
+      "size_bytes": 18234
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/results/final_validation_receipt.json",
+      "sha256": "3de1f1317994295332893f04b1b7bae9c6757fc53dc0427d019bcbb39707472b",
+      "size_bytes": 2677
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/results/input_snapshot_before.json",
+      "sha256": "4a8442dac2e11d6f695e22aca28c6332b9433fc1c66b2d976cbb95bf7e8833f8",
+      "size_bytes": 15501
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/results/mechanical_examples_receipt.json",
+      "sha256": "ce84365bf27ef0c10d434053f3f0c249bbfcce73636edb791addb0b2e05e9020",
+      "size_bytes": 7775
+    },
+    {
+      "group": "PREVIOUS_SKELETON",
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_actuality_budget_candidate_skeleton_20260818_r01/results/no_touch_sha_receipt.json",
+      "sha256": "e302158a580684a8769ddc96820af92464be847e5a6d47e7e3938ffaf8417b4f",
+      "size_bytes": 533
+    },
+    {
+      "group": "DIRECT_CURRENT_CONTRACT_OR_CONSUMER",
+      "name": "architecture",
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/ARCHITECTURE.md",
+      "sha256": "8ec50a3c71a89bd1af67b016ca98052a0523b6d45b22d812ded70606f1c81443",
+      "size_bytes": 17577
+    },
+    {
+      "group": "DIRECT_CURRENT_CONTRACT_OR_CONSUMER",
+      "name": "cli_runtime",
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/cli.py",
+      "sha256": "ec2b1395d00c750f9b32ab843605dc98f41535ed625f9970d4baa23ede46e28e",
+      "size_bytes": 14963
+    },
+    {
+      "group": "DIRECT_CURRENT_CONTRACT_OR_CONSUMER",
+      "name": "c4_contract",
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/C4_FACT_QUERY.md",
+      "sha256": "cfb5ec5e44dd6175e738f7d10ba97447b7e0fb651742fe3aed31704e94b3b147",
+      "size_bytes": 6256
+    },
+    {
+      "group": "DIRECT_CURRENT_CONTRACT_OR_CONSUMER",
+      "name": "c7_contract",
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/C7_PLOT_LAYER.md",
+      "sha256": "1359f9b620d49e39efc3e8b0e89cdfd0abf035e8ca6bc211628b454a2f8fe621",
+      "size_bytes": 6477
+    },
+    {
+      "group": "DIRECT_CURRENT_CONTRACT_OR_CONSUMER",
+      "name": "plan_contract",
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+      "sha256": "1c35b3ca8dd636544ec82b1cbbcdd0d645839fa74c030fa7739ba5ac597fa4ca",
+      "size_bytes": 69708
+    },
+    {
+      "group": "DIRECT_CURRENT_CONTRACT_OR_CONSUMER",
+      "name": "packer_design",
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/design/CONTEXT_PACKER_DESIGN_R01.md",
+      "sha256": "86206029f01177d5d32b00b180218c8a7ca4b458d9c0579fd77f20f3eeef1946",
+      "size_bytes": 30832
+    },
+    {
+      "group": "DIRECT_CURRENT_CONTRACT_OR_CONSUMER",
+      "name": "m8_design",
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/design/M8_PLANNING_DESIGN_R04.md",
+      "sha256": "041adf1f333856df52b8417f8a5245c65321ad87c976331cc683b9d45a7499a9",
+      "size_bytes": 45391
+    },
+    {
+      "group": "DIRECT_CURRENT_CONTRACT_OR_CONSUMER",
+      "name": "plan_runtime",
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/mvp/plan.py",
+      "sha256": "2759d4d9c93fd96a75e2706cbaa16b9c6db39e6f1912aae3583a5283bd668694",
+      "size_bytes": 14136
+    }
+  ],
+  "identity": "C9_OWNER_CLOSURE_INPUT_SNAPSHOT"
+}

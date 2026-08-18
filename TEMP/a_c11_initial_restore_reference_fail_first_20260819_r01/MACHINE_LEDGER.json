@@ -1,0 +1,32 @@
+{
+  "task_id": "A-C11-INITIAL-RESTORE-REFERENCE-FAIL-FIRST-01",
+  "verdict": "CONTRACT_MACHINE_GAP_FOUND",
+  "case_count": 6,
+  "wrong_success_count": 6,
+  "root_causes": [
+    "INITIAL_ELIGIBILITY_HELPER_NOT_COMPOSED_WITH_LEDGER_VALIDATION",
+    "INITIAL_REVISION_POSITION_RULE_NOT_MACHINE_ENFORCED",
+    "RESTORE_HISTORICAL_IDENTITY_REVISION_EXISTENCE_NOT_CHECKED"
+  ],
+  "reachability": {
+    "initial_action_contract": "NOT_REPRESENTABLE",
+    "initial_direct_ledger_machine_surface": "REACHABLE_AND_ACCEPTS_ALL_FIVE_INITIAL_CASES",
+    "restore_formal_action_surface": "REACHABLE_AND_ACCEPTS_MISSING_HISTORICAL_IDENTITY_REVISION",
+    "product_runtime_proven": false
+  },
+  "runner": {
+    "path": "TEMP/a_c11_initial_restore_reference_fail_first_20260819_r01/run_fail_first.py",
+    "sha256": "13cf06565e76da575180e57a45c4970cccfb58d75c8641f307328ec8a99fe315",
+    "ruff": "PASS",
+    "automatic_retries": 0,
+    "temp_implementation_corrections": 1,
+    "temp_correction": "REMOVED_UNUSED_IMPORT_ONLY"
+  },
+  "formal_writes": 0,
+  "api_calls": 0,
+  "model_calls": 0,
+  "novel_reads": 0,
+  "gold_reads": 0,
+  "notion_writes": 0,
+  "git_mutations": 0
+}

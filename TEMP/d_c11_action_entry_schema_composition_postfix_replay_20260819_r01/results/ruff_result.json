@@ -1,0 +1,14 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--locked",
+    "ruff",
+    "check",
+    "--no-cache",
+    "novel-mvp/contracts/validate_c11_chapter_revision_ledger.py"
+  ],
+  "returncode": 0,
+  "stdout": "All checks passed!\n",
+  "stderr": ""
+}

@@ -1,0 +1,597 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--locked",
+    "python",
+    "novel-mvp/contracts/validate_c11_chapter_revision_ledger.py"
+  ],
+  "returncode": 0,
+  "stderr": "",
+  "parse_error": null,
+  "summary": {
+    "action_entry_cases_passed": 5,
+    "action_entry_cases_total": 5,
+    "all_pass": true,
+    "api_calls": 0,
+    "automatic_retries": 0,
+    "batch_atomicity_gates_passed": 1,
+    "batch_atomicity_gates_total": 1,
+    "contract": "C11_CHAPTER_REVISION_LEDGER",
+    "eligibility_gates_passed": 15,
+    "eligibility_gates_total": 15,
+    "formal_cases_passed": 42,
+    "formal_cases_total": 42,
+    "identity": "C11_CHAPTER_REVISION_LEDGER_V1_FORMAL_VALIDATION",
+    "machine_gate_cases_passed": 10,
+    "machine_gate_cases_total": 10,
+    "restore_reactivation_gates_passed": 5,
+    "restore_reactivation_gates_total": 5,
+    "results": [
+      {
+        "actual": "PASS",
+        "case_id": "CR-01",
+        "expected": "PASS",
+        "pass": true,
+        "rule": "initial_revision_one"
+      },
+      {
+        "actual": "PASS",
+        "case_id": "CR-02",
+        "expected": "PASS",
+        "pass": true,
+        "rule": "explicit_replace_same_chapter"
+      },
+      {
+        "actual": "REJECTED_REVISION_SEQUENCE",
+        "case_id": "CR-03",
+        "expected": "REJECTED_REVISION_SEQUENCE",
+        "pass": true,
+        "rule": "revision_sequence_gap"
+      },
+      {
+        "actual": "REJECTED_APPEND_ONLY_DRIFT",
+        "case_id": "CR-04",
+        "expected": "REJECTED_APPEND_ONLY_DRIFT",
+        "pass": true,
+        "rule": "append_only_history_drift"
+      },
+      {
+        "actual": "REJECTED_CURRENT_POINTER",
+        "case_id": "CR-05",
+        "expected": "REJECTED_CURRENT_POINTER",
+        "pass": true,
+        "rule": "current_not_last"
+      },
+      {
+        "actual": "NEEDS_TARGET_CONFIRMATION",
+        "case_id": "CR-06",
+        "expected": "NEEDS_TARGET_CONFIRMATION",
+        "pass": true,
+        "rule": "title_only_target"
+      },
+      {
+        "actual": "NEEDS_TARGET_CONFIRMATION",
+        "case_id": "CR-07",
+        "expected": "NEEDS_TARGET_CONFIRMATION",
+        "pass": true,
+        "rule": "multiple_target_candidates"
+      },
+      {
+        "actual": "PRECHECK_ALLOWED",
+        "case_id": "CR-08",
+        "expected": "PRECHECK_ALLOWED",
+        "pass": true,
+        "rule": "author_explicit_target"
+      },
+      {
+        "actual": "REJECTED_AUTHOR_INTENT_REQUIRED",
+        "case_id": "CR-09",
+        "expected": "REJECTED_AUTHOR_INTENT_REQUIRED",
+        "pass": true,
+        "rule": "non_author_or_missing_intent"
+      },
+      {
+        "actual": "REJECTED_STALE",
+        "case_id": "CR-10",
+        "expected": "REJECTED_STALE",
+        "pass": true,
+        "rule": "stale_expected_revision"
+      },
+      {
+        "actual": "NO_CHANGE_ZERO_WRITES",
+        "case_id": "CR-11",
+        "expected": "NO_CHANGE_ZERO_WRITES",
+        "pass": true,
+        "rule": "identical_current_content"
+      },
+      {
+        "actual": "REPLAYED_ORIGINAL_RECEIPT",
+        "case_id": "CR-12",
+        "expected": "REPLAYED_ORIGINAL_RECEIPT",
+        "pass": true,
+        "rule": "same_operation_same_payload"
+      },
+      {
+        "actual": "OPERATION_ID_PAYLOAD_CONFLICT",
+        "case_id": "CR-13",
+        "expected": "OPERATION_ID_PAYLOAD_CONFLICT",
+        "pass": true,
+        "rule": "same_operation_different_payload"
+      },
+      {
+        "actual": "PASS",
+        "case_id": "CR-14",
+        "expected": "PASS",
+        "pass": true,
+        "rule": "restore_as_new_revision"
+      },
+      {
+        "actual": "REJECTED_RESTORE_TARGET",
+        "case_id": "CR-15",
+        "expected": "REJECTED_RESTORE_TARGET",
+        "pass": true,
+        "rule": "restore_missing_revision"
+      },
+      {
+        "actual": "FACT_ANCHOR_MIGRATED",
+        "case_id": "CR-16",
+        "expected": "FACT_ANCHOR_MIGRATED",
+        "pass": true,
+        "rule": "verified_slice_unique_in_new_revision"
+      },
+      {
+        "actual": "NEEDS_RECHECK_EVIDENCE_GONE",
+        "case_id": "CR-17",
+        "expected": "NEEDS_RECHECK_EVIDENCE_GONE",
+        "pass": true,
+        "rule": "verified_slice_missing_in_new_revision"
+      },
+      {
+        "actual": "NEEDS_RECHECK_ANCHOR_AMBIGUOUS",
+        "case_id": "CR-18",
+        "expected": "NEEDS_RECHECK_ANCHOR_AMBIGUOUS",
+        "pass": true,
+        "rule": "verified_slice_ambiguous_in_new_revision"
+      },
+      {
+        "actual": "LEGACY_ANCHOR_VERIFIED",
+        "case_id": "CR-19",
+        "expected": "LEGACY_ANCHOR_VERIFIED",
+        "pass": true,
+        "rule": "legacy_quote_unique_both_revisions"
+      },
+      {
+        "actual": "NEEDS_RECHECK_LEGACY_ANCHOR_UNVERIFIED",
+        "case_id": "CR-20",
+        "expected": "NEEDS_RECHECK_LEGACY_ANCHOR_UNVERIFIED",
+        "pass": true,
+        "rule": "legacy_quote_not_unique_both_revisions"
+      },
+      {
+        "actual": "REJECTED_COORDINATE_BASIS",
+        "case_id": "CR-21",
+        "expected": "REJECTED_COORDINATE_BASIS",
+        "pass": true,
+        "rule": "normalized_segment_offset_as_anchor"
+      },
+      {
+        "actual": "REJECTED_SLICE_SHA",
+        "case_id": "CR-22",
+        "expected": "REJECTED_SLICE_SHA",
+        "pass": true,
+        "rule": "anchor_slice_sha_mismatch"
+      },
+      {
+        "actual": "STALE_NO_AUTOMATIC_RERUN",
+        "case_id": "CR-23",
+        "expected": "STALE_NO_AUTOMATIC_RERUN",
+        "pass": true,
+        "rule": "c6_report_revision_is_old"
+      },
+      {
+        "actual": "ALL_CURRENT_TRUTH_CONSUMERS_EXCLUDE",
+        "case_id": "CR-24",
+        "expected": "ALL_CURRENT_TRUTH_CONSUMERS_EXCLUDE",
+        "pass": true,
+        "rule": "needs_recheck_consumer_filter"
+      },
+      {
+        "actual": "MAPPING_UNCHANGED",
+        "case_id": "CR-25",
+        "expected": "MAPPING_UNCHANGED",
+        "pass": true,
+        "rule": "stable_slot_mapping"
+      },
+      {
+        "actual": "REJECTED_OWNER_MISMATCH",
+        "case_id": "CR-26",
+        "expected": "REJECTED_OWNER_MISMATCH",
+        "pass": true,
+        "rule": "c10_identity_revision_as_chapter_revision"
+      },
+      {
+        "actual": "REJECTED_OWNER_MISMATCH",
+        "case_id": "CR-27",
+        "expected": "REJECTED_OWNER_MISMATCH",
+        "pass": true,
+        "rule": "work_or_plan_rev_as_chapter_revision"
+      },
+      {
+        "actual": "ALL_ZERO_WRITES",
+        "case_id": "CR-28",
+        "expected": "ALL_ZERO_WRITES",
+        "pass": true,
+        "rule": "fact_effects_preflight_failure"
+      },
+      {
+        "actual": "ALL_BEFORE_OR_ALL_AFTER",
+        "case_id": "CR-29",
+        "expected": "ALL_BEFORE_OR_ALL_AFTER",
+        "pass": true,
+        "rule": "crash_after_prepare"
+      },
+      {
+        "actual": "NEEDS_MANUAL_RECOVERY",
+        "case_id": "CR-30",
+        "expected": "NEEDS_MANUAL_RECOVERY",
+        "pass": true,
+        "rule": "unknown_recovery_sha"
+      },
+      {
+        "actual": "ALL_ZERO_WRITES",
+        "case_id": "CR-31",
+        "expected": "ALL_ZERO_WRITES",
+        "pass": true,
+        "rule": "batch_contains_stale_target"
+      },
+      {
+        "actual": "REJECTED_RESTORE_REQUIRED",
+        "case_id": "CR-32",
+        "expected": "REJECTED_RESTORE_REQUIRED",
+        "pass": true,
+        "rule": "physical_rollback_after_commit"
+      },
+      {
+        "actual": "MIGRATED_TO_R1_C10_SPAN",
+        "case_id": "CR-33",
+        "expected": "MIGRATED_TO_R1_C10_SPAN",
+        "pass": true,
+        "rule": "legacy_c1_unique_c10_span"
+      },
+      {
+        "actual": "MIGRATED_TO_R1_LEGACY_BLOB",
+        "case_id": "CR-34",
+        "expected": "MIGRATED_TO_R1_LEGACY_BLOB",
+        "pass": true,
+        "rule": "legacy_c1_no_replay_source"
+      },
+      {
+        "actual": "MIGRATION_HARD_STOP",
+        "case_id": "CR-35",
+        "expected": "MIGRATION_HARD_STOP",
+        "pass": true,
+        "rule": "legacy_identity_or_fact_dangling"
+      },
+      {
+        "actual": "LEGACY_REVISION_UNKNOWN",
+        "case_id": "CR-36",
+        "expected": "LEGACY_REVISION_UNKNOWN",
+        "pass": true,
+        "rule": "legacy_c6_without_revision_ref"
+      },
+      {
+        "actual": "FAIL_CLOSED",
+        "case_id": "CR-37",
+        "expected": "FAIL_CLOSED",
+        "pass": true,
+        "rule": "old_reader_business_consumes_v1"
+      },
+      {
+        "actual": "STRICT_SCHEMA_REJECT",
+        "case_id": "CR-38",
+        "expected": "STRICT_SCHEMA_REJECT",
+        "pass": true,
+        "rule": "v1_missing_identity_or_extra_field"
+      },
+      {
+        "actual": "CONFIRMED_WITH_VERIFIED_ANCHOR",
+        "case_id": "CR-39",
+        "expected": "CONFIRMED_WITH_VERIFIED_ANCHOR",
+        "pass": true,
+        "rule": "revision_bound_reconciliation_admission"
+      },
+      {
+        "actual": "RE_STALE_NO_ACTUAL_SUPPORT",
+        "case_id": "CR-40",
+        "expected": "RE_STALE_NO_ACTUAL_SUPPORT",
+        "pass": true,
+        "rule": "revision_stales_dependent_re"
+      },
+      {
+        "actual": "RECOVERED_ALL_BEFORE",
+        "case_id": "CR-41",
+        "expected": "RECOVERED_ALL_BEFORE",
+        "pass": true,
+        "rule": "cross_owner_partial_failure"
+      },
+      {
+        "actual": "MAPPING_ACTIVE_UNCHANGED",
+        "case_id": "CR-42",
+        "expected": "MAPPING_ACTIVE_UNCHANGED",
+        "pass": true,
+        "rule": "revision_does_not_mutate_slot_mapping"
+      },
+      {
+        "actual": "ONE_STABLE_CHAPTER_CURRENT_R2",
+        "case_id": "WS-01",
+        "expected": "ONE_STABLE_CHAPTER_CURRENT_R2",
+        "pass": true,
+        "rule": "same_chapter_reimport_wrong_success"
+      },
+      {
+        "actual": "OLD_FACT_NOT_CURRENT_TRUTH",
+        "case_id": "WS-02",
+        "expected": "OLD_FACT_NOT_CURRENT_TRUTH",
+        "pass": true,
+        "rule": "deleted_evidence_wrong_success"
+      },
+      {
+        "actual": "C10_CONFIRMED_CHAPTER_ELIGIBLE",
+        "case_id": "EG-01",
+        "expected": "C10_CONFIRMED_CHAPTER_ELIGIBLE",
+        "pass": true,
+        "rule": "initial_confirmed_chapter"
+      },
+      {
+        "actual": "PRECHECK_ALLOWED",
+        "case_id": "EG-02",
+        "expected": "PRECHECK_ALLOWED",
+        "pass": true,
+        "rule": "replace_confirmed_chapter"
+      },
+      {
+        "actual": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "case_id": "EG-03",
+        "expected": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "pass": true,
+        "rule": "setting_rejected"
+      },
+      {
+        "actual": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "case_id": "EG-04",
+        "expected": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "pass": true,
+        "rule": "intro_rejected"
+      },
+      {
+        "actual": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "case_id": "EG-05",
+        "expected": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "pass": true,
+        "rule": "title_rejected"
+      },
+      {
+        "actual": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "case_id": "EG-06",
+        "expected": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "pass": true,
+        "rule": "tags_rejected"
+      },
+      {
+        "actual": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "case_id": "EG-07",
+        "expected": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "pass": true,
+        "rule": "unknown_rejected"
+      },
+      {
+        "actual": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "case_id": "EG-08",
+        "expected": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "pass": true,
+        "rule": "candidate_rejected"
+      },
+      {
+        "actual": "C10_IDENTITY_REVISION_STALE",
+        "case_id": "EG-09",
+        "expected": "C10_IDENTITY_REVISION_STALE",
+        "pass": true,
+        "rule": "stale_identity_revision"
+      },
+      {
+        "actual": "C10_SOURCE_REF_MISMATCH",
+        "case_id": "EG-10",
+        "expected": "C10_SOURCE_REF_MISMATCH",
+        "pass": true,
+        "rule": "source_ref_mismatch"
+      },
+      {
+        "actual": "C10_MATERIAL_UNIT_NOT_FOUND",
+        "case_id": "EG-11",
+        "expected": "C10_MATERIAL_UNIT_NOT_FOUND",
+        "pass": true,
+        "rule": "material_unit_not_found"
+      },
+      {
+        "actual": "ACTION_MATERIAL_IDENTITY_OVERRIDE_FORBIDDEN",
+        "case_id": "EG-12",
+        "expected": "ACTION_MATERIAL_IDENTITY_OVERRIDE_FORBIDDEN",
+        "pass": true,
+        "rule": "action_identity_override_forbidden"
+      },
+      {
+        "actual": "PRECHECK_ALLOWED",
+        "case_id": "EG-13",
+        "expected": "PRECHECK_ALLOWED",
+        "pass": true,
+        "rule": "restore_two_gates_pass"
+      },
+      {
+        "actual": "REJECTED_RESTORE_TARGET",
+        "case_id": "EG-14",
+        "expected": "REJECTED_RESTORE_TARGET",
+        "pass": true,
+        "rule": "restore_target_missing"
+      },
+      {
+        "actual": "REJECTED_RESTORE_LINEAGE_MISMATCH",
+        "case_id": "EG-15",
+        "expected": "REJECTED_RESTORE_LINEAGE_MISMATCH",
+        "pass": true,
+        "rule": "restore_lineage_mismatch"
+      },
+      {
+        "actual": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "case_id": "RR-01",
+        "expected": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "pass": true,
+        "rule": "restore_current_role_not_chapter"
+      },
+      {
+        "actual": "C10_SOURCE_REF_MISMATCH",
+        "case_id": "RR-02",
+        "expected": "C10_SOURCE_REF_MISMATCH",
+        "pass": true,
+        "rule": "restore_current_source_mismatch"
+      },
+      {
+        "actual": "C10_REACTIVATION_LEGACY_NO_CURRENT_REF",
+        "case_id": "RR-03",
+        "expected": "C10_REACTIVATION_LEGACY_NO_CURRENT_REF",
+        "pass": true,
+        "rule": "restore_legacy_snapshot_fail_closed"
+      },
+      {
+        "actual": "PRECHECK_ALLOWED",
+        "case_id": "RR-04",
+        "expected": "PRECHECK_ALLOWED",
+        "pass": true,
+        "rule": "restore_reloads_current_identity_revision"
+      },
+      {
+        "actual": "REJECTED_RESTORE_NEW_ORIGIN_REF",
+        "case_id": "RR-05",
+        "expected": "REJECTED_RESTORE_NEW_ORIGIN_REF",
+        "pass": true,
+        "rule": "restore_new_origin_ref_forbidden"
+      },
+      {
+        "actual": "ALL_ZERO_WRITES",
+        "case_id": "BA-01",
+        "expected": "ALL_ZERO_WRITES",
+        "pass": true,
+        "rule": "batch_eligibility_failure_zero_writes"
+      },
+      {
+        "actual": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "case_id": "FF-01",
+        "expected": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "pass": true,
+        "rule": "initial_setting_rejected_by_composed_entry"
+      },
+      {
+        "actual": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "case_id": "FF-02",
+        "expected": "C10_CHAPTER_EMISSION_NOT_ELIGIBLE",
+        "pass": true,
+        "rule": "initial_candidate_rejected_by_composed_entry"
+      },
+      {
+        "actual": "C10_IDENTITY_REVISION_STALE",
+        "case_id": "FF-03",
+        "expected": "C10_IDENTITY_REVISION_STALE",
+        "pass": true,
+        "rule": "initial_stale_identity_rejected_by_composed_entry"
+      },
+      {
+        "actual": "REJECTED_INITIAL_POSITION",
+        "case_id": "FF-04",
+        "expected": "REJECTED_INITIAL_POSITION",
+        "pass": true,
+        "rule": "revision_one_must_be_initial"
+      },
+      {
+        "actual": "REJECTED_INITIAL_POSITION",
+        "case_id": "FF-05",
+        "expected": "REJECTED_INITIAL_POSITION",
+        "pass": true,
+        "rule": "later_revision_must_not_be_initial"
+      },
+      {
+        "actual": "C10_HISTORICAL_IDENTITY_REVISION_NOT_FOUND",
+        "case_id": "FF-06",
+        "expected": "C10_HISTORICAL_IDENTITY_REVISION_NOT_FOUND",
+        "pass": true,
+        "rule": "restore_historical_identity_revision_must_exist"
+      },
+      {
+        "actual": "C10_CONFIRMED_CHAPTER_ELIGIBLE",
+        "case_id": "MG-01",
+        "expected": "C10_CONFIRMED_CHAPTER_ELIGIBLE",
+        "pass": true,
+        "rule": "legal_initial_composed_entry"
+      },
+      {
+        "actual": "PRECHECK_ALLOWED",
+        "case_id": "MG-02",
+        "expected": "PRECHECK_ALLOWED",
+        "pass": true,
+        "rule": "legal_historical_restore"
+      },
+      {
+        "actual": "PRECHECK_ALLOWED",
+        "case_id": "MG-03",
+        "expected": "PRECHECK_ALLOWED",
+        "pass": true,
+        "rule": "historical_noncurrent_but_existing_restore"
+      },
+      {
+        "actual": "C10_MATERIAL_RECORD_INVALID",
+        "case_id": "MG-04",
+        "expected": "C10_MATERIAL_RECORD_INVALID",
+        "pass": true,
+        "rule": "c10_identity_chain_index_mismatch"
+      },
+      {
+        "actual": "ACTION_SCHEMA_AND_ENTRY_ALLOWED",
+        "case_id": "AS-01",
+        "expected": "ACTION_SCHEMA_AND_ENTRY_ALLOWED",
+        "pass": true,
+        "rule": "legal_replace_schema_and_entry_pass"
+      },
+      {
+        "actual": "ACTION_SCHEMA_AND_ENTRY_REJECTED",
+        "case_id": "AS-02",
+        "expected": "ACTION_SCHEMA_AND_ENTRY_REJECTED",
+        "pass": true,
+        "rule": "initial_schema_and_entry_reject"
+      },
+      {
+        "actual": "ACTION_SCHEMA_AND_ENTRY_REJECTED",
+        "case_id": "AS-03",
+        "expected": "ACTION_SCHEMA_AND_ENTRY_REJECTED",
+        "pass": true,
+        "rule": "bogus_schema_and_entry_reject"
+      },
+      {
+        "actual": "ACTION_SCHEMA_AND_ENTRY_REJECTED",
+        "case_id": "AS-04",
+        "expected": "ACTION_SCHEMA_AND_ENTRY_REJECTED",
+        "pass": true,
+        "rule": "missing_contract_schema_and_entry_reject"
+      },
+      {
+        "actual": "ACTION_SCHEMA_AND_ENTRY_REJECTED",
+        "case_id": "AS-05",
+        "expected": "ACTION_SCHEMA_AND_ENTRY_REJECTED",
+        "pass": true,
+        "rule": "missing_version_schema_and_entry_reject"
+      }
+    ],
+    "schema_examples_passed": 9,
+    "version": "v1",
+    "wrong_success_gates_passed": 2,
+    "wrong_success_gates_total": 2
+  }
+}

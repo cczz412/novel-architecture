@@ -1,0 +1,279 @@
+{
+  "schema_version": "r13_six_window_current_formal_review_r04.v1",
+  "review_id": "R13_SIX_WINDOW_CURRENT_FORMAL_BYTE_REVIEW_20260818_R04",
+  "status": "ADVISORY_ONLY__NOT_AUTHORIZED",
+  "completed_on": "2026-08-18",
+  "overall_verdict": "FORMAL_C10_C11_CURRENT__END_TO_END_PRODUCT_CAPABILITY_HOLD__C9_RUNTIME_OPEN__T03_SEMANTIC_NO_VERDICT",
+  "authority": {
+    "advisory_only": true,
+    "may_execute": false,
+    "may_modify_formal_contract": false,
+    "may_modify_r13": false,
+    "may_modify_product": false,
+    "may_modify_gold": false,
+    "may_call_model_api": false,
+    "may_spend": false,
+    "may_train": false,
+    "may_deploy": false,
+    "may_upload": false,
+    "may_write_author_truth": false
+  },
+  "accepted_current_facts": [
+    {
+      "id": "ACCEPT-C11-FORMAL",
+      "finding": "C11 action, schema, fixtures and validator are current formal bytes",
+      "evidence": [
+        "03_upstream_evidence/TEMP/t03_c11_eligibility_restore_formalization_20260818_r01/FORMAL_SHA_RECEIPT.json",
+        "01_current_truth/TEMP/t03_pro_package_r04_final_20260818_r01/00_R04_REVIEW_SCOPE.md"
+      ]
+    },
+    {
+      "id": "ACCEPT-C10-DUAL-SHA",
+      "finding": "C10 C1/C2 SHA locks are formally refreshed; current validator SHA is aeac1c24226019ec4a763bc64c55d2156af60aaa18679151029bafffcc8024ab",
+      "evidence": [
+        "03_upstream_evidence/TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/SHA_RECEIPT.json",
+        "03_upstream_evidence/TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/RUN_REPORT.md"
+      ]
+    },
+    {
+      "id": "ACCEPT-D-NARROW",
+      "finding": "D narrow replay is valid for its five named tickets only",
+      "evidence": [
+        "03_upstream_evidence/TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/CZ_ONE_PAGE_VERDICT.md",
+        "03_upstream_evidence/TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/results/narrow_replay_ledger.json"
+      ]
+    },
+    {
+      "id": "ACCEPT-C-OWNER-CLOSURE",
+      "finding": "C owner closure remains valid while runtime producer, runtime consumer, several input owners and evidence recall remain open",
+      "evidence": [
+        "03_upstream_evidence/TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/01_ONE_PAGE_JUNCTION_MAP.md",
+        "03_upstream_evidence/TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/field_owner_matrix.json"
+      ]
+    },
+    {
+      "id": "ACCEPT-T03-STOP",
+      "finding": "Old eight-call batch remains NO_VERDICT; new two-call handshake is transport-only with Flash PASS and Doubao FAIL",
+      "evidence": [
+        "03_upstream_evidence/TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/FINAL_RECEIPT.json",
+        "03_upstream_evidence/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/FINAL_RECEIPT.json"
+      ]
+    }
+  ],
+  "major_blockers": [
+    {
+      "id": "B-01",
+      "severity": "P0",
+      "title": "INITIAL_C10_GATE_NOT_CLOSED_AS_A_MACHINE_ENTRY",
+      "finding": "The formal rule exists, but the package contains no INITIAL action path; ledger validation does not receive C10 records and the fixtures do not provide invalid INITIAL ledger negatives.",
+      "evidence": [
+        "02_current_route/novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md",
+        "02_current_route/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json",
+        "02_current_route/novel-mvp/contracts/validate_c11_chapter_revision_ledger.py",
+        "02_current_route/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.fixtures.jsonl"
+      ]
+    },
+    {
+      "id": "B-02",
+      "severity": "P0",
+      "title": "RESTORE_HISTORICAL_IDENTITY_REVISION_EXISTENCE_UNCHECKED",
+      "finding": "RESTORE reactivation checks current C10 role and source but does not demonstrate that the historical origin identity_revision_no exists in the C10 chain.",
+      "evidence": [
+        "02_current_route/novel-mvp/contracts/validate_c11_chapter_revision_ledger.py",
+        "02_current_route/novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md"
+      ]
+    },
+    {
+      "id": "B-03",
+      "severity": "P0",
+      "title": "CROSS_OBJECT_CURRENT_EQUALITIES_AND_RUNTIME_MISSING",
+      "finding": "C1/C2/C3/C4/C6 schemas validate shapes but do not jointly prove chapter, revision, SHA and anchor equality; multiple revision-aware products are explicitly not implemented.",
+      "evidence": [
+        "02_current_route/novel-mvp/contracts/C1_CHAPTER_DOC.md",
+        "02_current_route/novel-mvp/contracts/C2_SEGMENT.md",
+        "02_current_route/novel-mvp/contracts/C3_FACT_CANDIDATE.md",
+        "02_current_route/novel-mvp/contracts/C4_FACT_QUERY.md",
+        "02_current_route/novel-mvp/contracts/C6_HEALTH_REPORT.md",
+        "02_current_route/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json"
+      ]
+    },
+    {
+      "id": "B-04",
+      "severity": "P1",
+      "title": "PLANSTORE_R07_SERIALIZATION_IDENTITY_AMBIGUOUS",
+      "finding": "The human contract is plan-v2-candidate-r07 while persisted schema remains plan-v2; the current package does not show a machine-detectable r06/r07 boundary.",
+      "evidence": [
+        "02_current_route/novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+      ]
+    },
+    {
+      "id": "B-05",
+      "severity": "P1",
+      "title": "FACT_ADMISSION_QUOTE_AND_CANDIDATE_IDENTITY_GAPS",
+      "finding": "C3 optionality conflicts with schema required fields, fact candidate keys lack an owner in the current route, and admission says quote exists while C4 requires a unique match.",
+      "evidence": [
+        "02_current_route/novel-mvp/contracts/C3_FACT_CANDIDATE.md",
+        "02_current_route/novel-mvp/contracts/C4_FACT_QUERY.md",
+        "02_current_route/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json",
+        "02_current_route/novel-mvp/contracts/RECONCILIATION_FACT_ADMISSION_ACTION.md"
+      ]
+    },
+    {
+      "id": "B-06",
+      "severity": "P0",
+      "title": "C9_RUNTIME_PRODUCER_CONSUMER_AND_RECALL_OPEN",
+      "finding": "No formal C9 runtime exists; M8 still bypasses C9, and evidence recall plus several input owners have no default.",
+      "evidence": [
+        "03_upstream_evidence/TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/01_ONE_PAGE_JUNCTION_MAP.md",
+        "03_upstream_evidence/TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/field_owner_matrix.json",
+        "02_current_route/novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+      ]
+    },
+    {
+      "id": "B-07",
+      "severity": "P0",
+      "title": "T03_HAS_NO_SEMANTIC_VERDICT_AND_NO_THIRD_CALL_AUTHORITY",
+      "finding": "Doubao failed the route-specific transport policy before shared validation; neither old nor new evidence yields semantic scores or model ranking, and no third call is authorized.",
+      "evidence": [
+        "03_upstream_evidence/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/FINAL_RECEIPT.json",
+        "03_upstream_evidence/TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/FINAL_RECEIPT.json"
+      ]
+    }
+  ],
+  "window_recommendations": [
+    {
+      "window_id": "T03",
+      "posture": "INTENTIONAL_IDLE",
+      "reason": "Two-call cap is exhausted; third call and new ability batch are unauthorized.",
+      "evidence": [
+        "03_upstream_evidence/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/FINAL_RECEIPT.json"
+      ]
+    },
+    {
+      "window_id": "A",
+      "posture": "RUN_ONE_NARROW_TASK",
+      "task_id": "A-C11-INITIAL-RESTORE-REFERENCE-FAIL-FIRST-01",
+      "objective": "Fail-first audit of INITIAL current-C10 enforcement and RESTORE historical identity revision existence.",
+      "inputs": [
+        "02_current_route/novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.md",
+        "02_current_route/novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.schema.json",
+        "02_current_route/novel-mvp/contracts/validate_c10_intake_material_identity.py",
+        "02_current_route/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md",
+        "02_current_route/novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md",
+        "02_current_route/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json",
+        "02_current_route/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.fixtures.jsonl",
+        "02_current_route/novel-mvp/contracts/validate_c11_chapter_revision_ledger.py"
+      ],
+      "writeset": [
+        "TEMP/a_c11_initial_restore_reference_fail_first_20260818_r01/**"
+      ],
+      "acceptance_gate": [
+        "Invalid INITIAL role/state/current references are explicitly rejected or recorded as uncovered.",
+        "A nonexistent historical identity_revision_no is explicitly rejected or recorded as uncovered.",
+        "Formal and product writes remain zero.",
+        "API, model and Gold operations remain zero."
+      ],
+      "stop": "Stop at NO_NEW_GAP, CONTRACT_MACHINE_GAP_FOUND or CZ_DECISION_REQUIRED; do not patch formal files."
+    },
+    {
+      "window_id": "B",
+      "posture": "INTENTIONAL_IDLE",
+      "reason": "The R04 route already corrects R03; rebuilding before A/D stop points would create another stale snapshot.",
+      "evidence": [
+        "01_current_truth/TEMP/t03_pro_package_r04_final_20260818_r01/00_R04_REVIEW_SCOPE.md",
+        "03_upstream_evidence/TEMP/t03_pro_review_route_final_snapshot_20260818_r01/PRO_ROUTE_CANDIDATE_R03.json"
+      ]
+    },
+    {
+      "window_id": "C",
+      "posture": "INTENTIONAL_IDLE",
+      "reason": "Owner closure is complete and explicitly waits for total-control assignment; runtime and recall require new formal authority.",
+      "evidence": [
+        "03_upstream_evidence/TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/STAGE_FINAL_CAPSULE.txt",
+        "03_upstream_evidence/TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/field_owner_matrix.json"
+      ]
+    },
+    {
+      "window_id": "D",
+      "posture": "RUN_ONE_NARROW_TASK",
+      "task_id": "D-C11-R2-STALE-PROPAGATION-ONE-SCENARIO-01",
+      "objective": "One c01 r1-to-r2 evidence-deletion scenario across C1, C4, pin/RE, actual, C6 and old fact admission.",
+      "inputs": [
+        "02_current_route/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md",
+        "02_current_route/novel-mvp/contracts/C1_CHAPTER_DOC.md",
+        "02_current_route/novel-mvp/contracts/C4_FACT_QUERY.md",
+        "02_current_route/novel-mvp/contracts/C6_HEALTH_REPORT.md",
+        "02_current_route/novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+        "02_current_route/novel-mvp/contracts/RECONCILIATION_FACT_ADMISSION_ACTION.md",
+        "02_current_route/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json",
+        "02_current_route/novel-mvp/contracts/validate_c11_chapter_revision_ledger.py"
+      ],
+      "writeset": [
+        "TEMP/d_c11_r2_stale_propagation_one_scenario_20260818_r01/**"
+      ],
+      "acceptance_gate": [
+        "C1 equals C11 current r2 by id, revision and text SHA.",
+        "The deleted-evidence fact becomes needs_recheck and is excluded from M6/M8/M11.",
+        "The dependent pin and RE lose current support; naked actual is not retained.",
+        "The r1 C6 report is derived STALE and the old admission action is rejected before writes.",
+        "Concurrent commit/admission is serialized, replay is idempotent, and failure yields all-before or all-after.",
+        "Missing runtime paths are reported NOT_IMPLEMENTED rather than simulated PASS."
+      ],
+      "stop": "Stop after this single scenario at PASS_ONE_SCENARIO, RUNTIME_OR_CONTRACT_GAP_FOUND or CZ_DECISION_REQUIRED."
+    }
+  ],
+  "r13": {
+    "steel_lines_remain_valid": [
+      "guide_and_verify_without_prose_generation",
+      "plan_manuscript_fact_and_actual_identity_separation",
+      "author_confirmation_for_truth",
+      "immutable_manuscript_versions_and_restore_as_new",
+      "minimal_sufficient_expandable_context_with_recall",
+      "projection_is_not_truth",
+      "unknown_and_coverage_receipts_must_not_be_false_certainty"
+    ],
+    "superseded_status_notes": [
+      "C11_is_no_longer_only_a_design_candidate",
+      "C10_dual_sha_is_no_longer_unapplied",
+      "D_has_current_5_of_5_narrow_replay",
+      "C9_design_direction_does_not_mean_runtime",
+      "T03_current_evidence_does_not_produce_ability_scores"
+    ],
+    "cz_decisions_required": [
+      "ADD_043_rule_ability_exception_split",
+      "ADD_044_reader_promise_identity",
+      "question_16_machine_fields_enums_combinations_unknown",
+      "dark_draft_signature_and_next_chapter",
+      "INITIAL_command_and_same_text_different_title_no_change",
+      "C9_input_budget_actuality_obligation_unresolved_and_recall_owners",
+      "planstore_r07_serialization_version",
+      "C3_candidate_key_quote_requiredness_and_unique_anchor",
+      "pin_RE_C6_C9_stale_atomic_scope"
+    ],
+    "evidence": [
+      "01_current_truth/references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+      "01_current_truth/references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/03_CREATION_AND_MEMORY_PIPELINES.md",
+      "01_current_truth/references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
+      "01_current_truth/references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/06_SYNC_AND_CHANGE_PROTOCOL.md"
+    ]
+  },
+  "explicit_non_conclusions": [
+    "C11_formalization_is_not_end_to_end_product_completion",
+    "D_5_of_5_is_not_complete_consumer_or_migration_coverage",
+    "C_owner_closure_is_not_formal_C9_or_runtime_readiness",
+    "Flash_handshake_pass_is_not_native_naked_JSON_or_semantic_ability",
+    "Doubao_handshake_fail_is_not_semantic_failure",
+    "Old_eight_call_zero_metrics_are_not_zero_semantic_scores",
+    "External_advice_is_not_CZ_authorization"
+  ],
+  "output_files": [
+    "00_EXECUTIVE_JUDGMENT.md",
+    "01_IDENTITY_LAYER_AUDIT.md",
+    "02_CROSS_SEAM_COMPATIBILITY.md",
+    "03_R13_STALENESS_MAP.md",
+    "04_T03_HANDSHAKE_AND_C_RUNTIME_OPEN.md",
+    "05_NEXT_TASK_PORTFOLIO.md",
+    "06_RISKS_AND_COUNTERARGUMENTS.md",
+    "MACHINE_RECOMMENDATION.json"
+  ]
+}

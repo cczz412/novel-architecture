@@ -1,0 +1,103 @@
+{
+  "identity": "D_C11_R2_STALE_PROPAGATION_GATE_LEDGER_R01",
+  "task_id": "D-C11-R2-STALE-PROPAGATION-ONE-SCENARIO-01",
+  "status": "RUNTIME_OR_CONTRACT_GAP_FOUND",
+  "verdict": "RUNTIME_OR_CONTRACT_GAP_FOUND",
+  "gates": [
+    {
+      "gate": 1,
+      "name": "C11 current -> C1 current view exact identity",
+      "contract_or_validator_check": true,
+      "runtime_execution": "UNTESTABLE",
+      "verdict": "VALIDATOR_FIXTURE_PASS__RUNTIME_UNTESTABLE",
+      "reason": "The supplied validator can validate an exact C1 fixture, but no current C1 v1 projection writer is executable in the supplied surface."
+    },
+    {
+      "gate": 2,
+      "name": "f001 needs_recheck/evidence_gone and consumer exclusion",
+      "contract_or_validator_check": true,
+      "runtime_execution": "NOT_IMPLEMENTED",
+      "verdict": "FORMAL_VALIDATOR_PASS__PRODUCT_RUNTIME_NOT_IMPLEMENTED",
+      "reason": "Formal migration/filter functions pass; C4 v1 revision-aware product migration is explicitly pending."
+    },
+    {
+      "gate": 3,
+      "name": "basis pin needs_recheck and active RE stale",
+      "contract_or_validator_check": true,
+      "runtime_execution": "NOT_IMPLEMENTED",
+      "verdict": "CONTRACT_AND_FIXTURE_ONLY__R07_RUNTIME_NOT_IMPLEMENTED",
+      "reason": "The current formal validator mutates only a local edge fixture and has no planstore r07 writer or basis-pin transition runtime."
+    },
+    {
+      "gate": 4,
+      "name": "actual support becomes unsupported",
+      "contract_or_validator_check": true,
+      "runtime_execution": "NOT_IMPLEMENTED",
+      "verdict": "CONTRACT_AND_FIXTURE_ONLY__R07_RUNTIME_NOT_IMPLEMENTED",
+      "reason": "The no-support rule is frozen, but no current r07 derived-actual runtime is available here."
+    },
+    {
+      "gate": 5,
+      "name": "C6 r1 report is derived STALE by current reader",
+      "contract_or_validator_check": true,
+      "runtime_execution": "UNTESTABLE",
+      "verdict": "FORMAL_PREDICATE_PASS__CURRENT_READER_UNTESTABLE",
+      "reason": "The validator compares refs but does not expose the C6 current reader that overrides an input self-report."
+    },
+    {
+      "gate": 6,
+      "name": "r1 admission is rejected before any write",
+      "contract_or_validator_check": true,
+      "runtime_execution": "NOT_IMPLEMENTED",
+      "verdict": "CONTRACT_PREDICATE_PASS__V2_RUNTIME_NOT_IMPLEMENTED",
+      "reason": "The stale mismatch is deterministic, while the contract explicitly says the current reconcile runtime remains v1."
+    },
+    {
+      "gate": 7,
+      "name": "revision commit and admission share one lock and reread current",
+      "contract_or_validator_check": true,
+      "runtime_execution": "NOT_IMPLEMENTED",
+      "verdict": "CONTRACT_DEFINED__COORDINATOR_NOT_IMPLEMENTED",
+      "reason": "No executable cross-owner revision commit coordinator exists in the supplied runtime surface."
+    },
+    {
+      "gate": 8,
+      "name": "operation replay idempotency and payload conflict",
+      "contract_or_validator_check": true,
+      "runtime_execution": "UNTESTABLE",
+      "verdict": "FORMAL_VALIDATOR_PASS__CROSS_OWNER_RUNTIME_UNTESTABLE",
+      "reason": "C11 fixture semantics pass, but the combined revision/admission transaction path is absent."
+    },
+    {
+      "gate": 9,
+      "name": "faults recover only all-before or all-after",
+      "contract_or_validator_check": true,
+      "runtime_execution": "UNTESTABLE",
+      "verdict": "FORMAL_VALIDATOR_PASS__TRANSACTION_RUNTIME_UNTESTABLE",
+      "reason": "The formal SHA classifier passes; there is no executable multi-owner transaction to fault-inject."
+    },
+    {
+      "gate": 10,
+      "name": "runtime absence is not reported as PASS",
+      "contract_or_validator_check": true,
+      "runtime_execution": "RUNTIME_GAP_CONFIRMED",
+      "verdict": "PASS_GAP_DETECTION",
+      "reason": "Formal contracts explicitly distinguish frozen v1/r07/v2 semantics from current product implementations."
+    }
+  ],
+  "statistics": {
+    "gates_total": 10,
+    "contract_or_validator_checks_passed": 10,
+    "product_runtime_gates_passed": 0,
+    "runtime_gap_gates": 10,
+    "new_semantic_wrong_success": 0,
+    "input_drift": 0,
+    "cache_hits": 0,
+    "api_calls": 0,
+    "model_calls": 0,
+    "automatic_retries": 0,
+    "formal_writes": 0
+  },
+  "scope": "ONE_SCENARIO_ONLY",
+  "product_promotion": false
+}

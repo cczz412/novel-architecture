@@ -1,0 +1,19 @@
+{
+  "identity": "T03_UNIFIED_EXACT_JSON_FENCE_NO_TOUCH_RECEIPT_R01",
+  "checked_at": "2026-08-19T01:15:10+08:00",
+  "input_freeze_reverified": true,
+  "source_raw_unchanged": {
+    "DOUBAO": "ac9eb1d66ea35da08f2fb81236a96a90d5f9566592be583811577f55500d4b0a",
+    "FLASH": "023ea971d02dad641d564ba488f23abf2176dd28876e9ee8724ff8707fc62247"
+  },
+  "preflight_final_receipt_unchanged": "18f7f25c0924d8631f3c4816f51bc50163149eded83f04dab2d88a686fb906d7",
+  "two_call_final_receipt_unchanged": "76a6fd4eb27a0aacbd8245a47fd022dc34a320a3ffde6a1f7dfed26bf2d9623b",
+  "old_eight_call_stage_result_unchanged": "fe7d2702aa3d40cac66144f0b1ea66d92c6cfa7587acaf1790f621c70b1a386a",
+  "old_eight_call_final_receipt_unchanged": "95043af1e9a4a54de1459e2a31e96e770df1fbc761b51440eadd7eccea6b2f8a",
+  "old_handshake_verdict_preserved": "HANDSHAKE_FAIL",
+  "old_ability_verdict_preserved": "NO_VERDICT",
+  "source_files_modified": 0,
+  "old_ability_raw_read": false,
+  "api_calls": 0,
+  "model_calls": 0
+}

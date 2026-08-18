@@ -1,0 +1,778 @@
+diff --git a/config/review_pack/routes.json b/config/review_pack/routes.json
+index 3183b93..6be0753 100644
+--- a/config/review_pack/routes.json
++++ b/config/review_pack/routes.json
+@@ -2097,9 +2097,12 @@
+       ],
+       "forbidden_source_globs": [
+         "**/corpus-downloads/**",
++        "**/corpus*/**",
+         "**/chapters_cache/**",
+         "**/chapters/**",
+         "**/novels/**",
++        "**/books/**",
++        "**/original/**",
+         "**/data/**",
+         "**/scoring_lockbox/**",
+         "**/*.lockbox.json",
+@@ -2590,6 +2593,760 @@
+         }
+       },
+       "external_slots": []
++    },
++    "t03-difficulty-router-terminal-audit": {
++      "label": "T-03 疑难分流与终审模型路线设计",
++      "purpose": "把现有模型成绩、高难卷、真实错误信号和上一轮外审交给 ChatGPT，设计不重做全量的疑难分流器、终审证据包和下一轮 A/B/C 对照实验。",
++      "snapshot_at": "2026-08-16T00:00:00+08:00",
++      "reviewer_prompt_path": "TEMP/t03_difficulty_router_terminal_audit_review_20260816_r01/PROMPT.md",
++      "truth_source": {
++        "authority": "CZ 当前对话明确要求把现有成绩和疑难分流问题打包交 ChatGPT 设计下一轮",
++        "local_current_state_status": "t03_experimental_review_current_chat_authority_over_stale_repository_mirror",
++        "note": "只做外审材料准备；回包不自动授权 API、生产模型切换、训练、MVP 回写或正式 Gold。共同背景板 R13 由 ChatGPT 项目共享来源提供。"
++      },
++      "default_layers": [
++        "current_truth",
++        "current_route",
++        "upstream_evidence",
++        "external_reviews"
++      ],
++      "forbidden_source_globs": [
++        "**/corpus-downloads/**",
++        "**/chapters_cache/**",
++        "**/chapters/**",
++        "**/novels/**",
++        "**/data/**",
++        "**/scoring_lockbox/**",
++        "**/*.lockbox.json",
++        "config/gold/**",
++        "runs/**",
++        "reports/**",
++        "**/RAW_RESPONSES*",
++        "**/raw_response*",
++        "**/HUMAN_REVIEW_QUEUE*",
++        "**/stream_events*",
++        "**/reasoning*",
++        "**/transport*",
++        "**/mock-perfect*/**",
++        "**/.env",
++        "**/.env.*",
++        "**/*.pem",
++        "**/*.key",
++        "**/*API_KEY*",
++        "**/*SECRET*",
++        "**/__pycache__/**",
++        "**/*.pyc"
++      ],
++      "redact_local_absolute_paths": true,
++      "allow_explicit_temp_sources": true,
++      "layers": {
++        "current_truth": {
++          "label": "本轮问题、证据摘要与开放式 Prompt",
++          "roots": [
++            {
++              "root_id": "t03_difficulty_router_review_brief",
++              "required": true,
++              "authority": "cz_current_review_request_and_local_evidence",
++              "status": "active_external_review_snapshot",
++              "description": "本轮问题边界、成绩摘要、疑难分流开放问题、对照实验要求和外发 Prompt。",
++              "globs": [
++                "TEMP/t03_difficulty_router_terminal_audit_review_20260816_r01/00_READ_ME_FIRST.md",
++                "TEMP/t03_difficulty_router_terminal_audit_review_20260816_r01/01_CURRENT_EVIDENCE_SUMMARY.md",
++                "TEMP/t03_difficulty_router_terminal_audit_review_20260816_r01/02_DIFFICULTY_ROUTER_OPEN_PROBLEM.md",
++                "TEMP/t03_difficulty_router_terminal_audit_review_20260816_r01/03_CONTROLLED_EXPERIMENT_REQUEST.md",
++                "TEMP/t03_difficulty_router_terminal_audit_review_20260816_r01/PROMPT.md"
++              ]
++            },
++            {
++              "root_id": "t03_exam_contracts",
++              "required": true,
++              "authority": "local_dev_exam_contract_not_formal_gold",
++              "status": "executed_dev_exam_definitions",
++              "description": "基础卷和高难卷的岗位、试题与模型身份登记；只作开发证据。",
++              "globs": [
++                "TEMP/t03_role_exam_harness_20260815_r01/README.md",
++                "TEMP/t03_role_exam_harness_20260815_r01/ROLE_REGISTRY_R01.json",
++                "TEMP/t03_role_exam_harness_20260815_r01/EXAM_BANK_R01.json",
++                "TEMP/t03_role_exam_harness_20260815_r01/MODEL_ROSTER_R01.json",
++                "TEMP/t03_role_exam_harness_20260815_r05_hard_roles/README.md",
++                "TEMP/t03_role_exam_harness_20260815_r05_hard_roles/ROLE_REGISTRY_R05.json",
++                "TEMP/t03_role_exam_harness_20260815_r05_hard_roles/EXAM_BANK_R05.json",
++                "TEMP/t03_role_exam_harness_20260815_r05_hard_roles/MODEL_ROSTER_R05.json",
++                "TEMP/t03_role_exam_harness_20260815_r06_high_reasoning_recovery/README.md",
++                "TEMP/t03_role_exam_harness_20260815_r06_high_reasoning_recovery/MODEL_ROSTER_R06.json"
++              ]
++            }
++          ]
++        },
++        "current_route": {
++          "label": "模型成绩、高难卷和追加候选结果",
++          "roots": [
++            {
++              "root_id": "t03_score_ledgers_and_addenda",
++              "required": true,
++              "authority": "local_api_experiment_evidence_not_model_promotion",
++              "status": "observed_results_with_failures_preserved",
++              "description": "基础卷、高难卷、追加 Qwen 和 Dots3 结果的人读总账。",
++              "globs": [
++                "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/01_MODEL_SCORE_LEDGER.md",
++                "TEMP/t03_model_portfolio_next_roles_review_20260815_r01/02_ROLES_CANDIDATES_AND_GAPS.md",
++                "TEMP/t03_role_exam_runs/AGENT_PLAN_SMALL_NONTHINKING_SCORECARD_20260815_R01.md",
++                "TEMP/t03_role_exam_runs/OPENROUTER_FIVE_MODEL_NONTHINKING_SCORECARD_20260815_R01.md",
++                "TEMP/t03_role_exam_runs/QIANFAN_ERNIE_SCORECARD_20260815_R01.md",
++                "TEMP/t03_role_exam_runs/QWEN38_MAX_FULL_ROLE_SCORECARD_20260815_R01.md",
++                "TEMP/t03_role_exam_runs_r06_high_reasoning/CONSOLIDATED_RESULTS_R01.json",
++                "TEMP/t03_role_exam_runs_r06_high_reasoning/T03_HARD_ROLES_EIGHT_ROUTE_SCORECARD_R01.md",
++                "TEMP/t03_role_exam_runs_r09_mercury_remaining/R07_R09_LITE_MINI_MERCURY_RESULTS_R01.json",
++                "TEMP/t03_role_exam_runs_r09_mercury_remaining/R07_R09_LITE_MINI_MERCURY_ADDENDUM_R01.md",
++                "TEMP/t03_qwen_two_route_first_batch_runs_20260815_r01/RESULT_R01.md",
++                "TEMP/t03_qwen38_manual_recovery_runs_20260815_r01/RESULT_R02.md",
++                "TEMP/t03_role_exam_harness_20260815_r10_dots3_note/RESULT_NOTE_R01.md"
++              ]
++            },
++            {
++              "root_id": "t03_machine_run_summaries",
++              "required": true,
++              "authority": "local_run_receipts_and_mechanical_scores",
++              "status": "machine_observed_no_raw_responses",
++              "description": "逐路线摘要、调用资源账和机械错因；不带原始回答或推理过程。",
++              "exclude_globs": [
++                "TEMP/t03_role_exam_runs/mock-perfect_*/**"
++              ],
++              "globs": [
++                "TEMP/t03_role_exam_runs/*/SUMMARY.json",
++                "TEMP/t03_role_exam_runs/*/CALLS.jsonl",
++                "TEMP/t03_role_exam_runs_r05_hard_roles/*/SUMMARY.json",
++                "TEMP/t03_role_exam_runs_r05_hard_roles/*/CALLS.jsonl",
++                "TEMP/t03_role_exam_runs_r05_hard_roles/*/MECHANICAL_SCORES.jsonl",
++                "TEMP/t03_role_exam_runs_r06_high_reasoning/*/SUMMARY.json",
++                "TEMP/t03_role_exam_runs_r06_high_reasoning/*/CALLS.jsonl",
++                "TEMP/t03_role_exam_runs_r06_high_reasoning/*/MECHANICAL_SCORES.jsonl",
++                "TEMP/t03_qwen_two_route_first_batch_runs_20260815_r01/*/SUMMARY.json",
++                "TEMP/t03_qwen38_manual_recovery_runs_20260815_r01/*/SUMMARY.json"
++              ]
++            }
++          ]
++        },
++        "upstream_evidence": {
++          "label": "真实错误图与管线失败信号",
++          "roots": [
++            {
++              "root_id": "t03_pipeline_error_evidence",
++              "required": true,
++              "authority": "local_experimental_evidence_not_gold",
++              "status": "observed_small_batch_results",
++              "description": "帮助判断疑难信号、证据包和上游失败归因。",
++              "globs": [
++                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_DENOISE_HALO_VERIFY_BATCH_RESULT_R01.md",
++                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_R08_FIVE_INPUT_UNSEEN_BATCH_RESULT_R01.md",
++                "TEMP/t03_t01_t02_t03_evidence_consolidation_20260814_r01/T03_R09_ROUTED_FIVE_INPUT_BATCH_RESULT_R01.md",
++                "TEMP/t03_main_extract_error_map_20260814_r01/CURRENT_MAIN_EXTRACT_ERROR_MAP_R01.md",
++                "TEMP/t03_entity_resolution_unseen_r09_run_20260814_r01/RESULT_NOTE_R01.md",
++                "TEMP/t03_verifier_binary_quote_contract_run_20260814_r01/RESULT_NOTE_R01.md",
++                "TEMP/t03_verifier_four_state_smoke_run_20260814_r01/RESULT_NOTE_R01.md",
++                "TEMP/t03_hybrid_provenance_conflict_probe_run_20260814_r01/RESULT_NOTE_R01.md",
++                "TEMP/t03_atomic_splitter_probe_run_20260814_r01/RESULT_NOTE_R01.md",
++                "TEMP/t03_omission_only_probe_run_20260814_r01/RESULT_NOTE_R01.md",
++                "TEMP/t03_halo_risk_trigger_ab_run_20260814_r01/RESULT_NOTE_R01.md"
++              ]
++            }
++          ]
++        },
++        "external_reviews": {
++          "label": "上一轮 ChatGPT 回包与本地采纳边界",
++          "roots": [
++            {
++              "root_id": "t03_prior_two_wave_review",
++              "required": true,
++              "authority": "prior_chatgpt_advice_and_local_adoption_note",
++              "status": "prior_advice_not_current_decision",
++              "description": "避免从零重做；本轮可以推翻上一轮建议。",
++              "globs": [
++                "TEMP/chatgpt_review_returns/T03_TWO_WAVE_MODEL_EXPERIMENT_REVIEW_20260815_R01/ADOPTION_NOTE_R01.md",
++                "TEMP/chatgpt_review_returns/T03_TWO_WAVE_MODEL_EXPERIMENT_REVIEW_20260815_R01/extracted/00_EXECUTIVE_JUDGMENT.md",
++                "TEMP/chatgpt_review_returns/T03_TWO_WAVE_MODEL_EXPERIMENT_REVIEW_20260815_R01/extracted/01_TWO_WAVE_METHOD_AUDIT.md",
++                "TEMP/chatgpt_review_returns/T03_TWO_WAVE_MODEL_EXPERIMENT_REVIEW_20260815_R01/extracted/02_MODEL_AND_ROLE_PORTFOLIO.md",
++                "TEMP/chatgpt_review_returns/T03_TWO_WAVE_MODEL_EXPERIMENT_REVIEW_20260815_R01/extracted/03_EXAM_GOLD_AND_DANGEROUS_ERRORS.md",
++                "TEMP/chatgpt_review_returns/T03_TWO_WAVE_MODEL_EXPERIMENT_REVIEW_20260815_R01/extracted/04_PIPELINE_DIRECTION.md",
++                "TEMP/chatgpt_review_returns/T03_TWO_WAVE_MODEL_EXPERIMENT_REVIEW_20260815_R01/extracted/05_NEXT_MINIMUM_EXPERIMENT.md",
++                "TEMP/chatgpt_review_returns/T03_TWO_WAVE_MODEL_EXPERIMENT_REVIEW_20260815_R01/extracted/07_MISSED_RISKS_AND_COUNTERARGUMENTS.md",
++                "TEMP/chatgpt_review_returns/T03_TWO_WAVE_MODEL_EXPERIMENT_REVIEW_20260815_R01/extracted/MACHINE_RECOMMENDATION.json"
++              ]
++            }
++          ]
++        }
++      },
++      "external_slots": []
++    },
++    "r13-six-window-global-pro-review-20260818-r01": {
++      "label": "R13 六身份全局停点深审 R01",
++      "purpose": "把总控与 T03/A/B/C/D 五窗最新大停点、当前正式合同和产品实现、跨模块接缝及上一轮 R13 外审交给 ChatGPT Pro，审查隐藏错误、过期假设、唯一 owner、下一轮长阶段组合和共享页面单通道路由；不自动授权施工。",
++      "snapshot_at": "2026-08-18T05:44:00+08:00",
++      "reviewer_prompt_path": "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/PROMPT_CHATGPT_PRO.md",
++      "truth_source": {
++        "authority": "CZ 当前明确要求在五窗全部停点后制作一次 ChatGPT Pro 全局深审包；当前工作树正式字节与五窗最终回执为直接证据",
++        "local_current_state_status": "stale_mirror_only_do_not_override_current_cz_and_stop_receipts",
++        "note": "六身份保持独立；外审建议不产生 API、Gold、正式合同、R13、产品、训练、生产、上传或作者真值权限。"
++      },
++      "default_layers": [
++        "current_truth",
++        "current_route",
++        "upstream_evidence",
++        "external_reviews"
++      ],
++      "forbidden_source_globs": [
++        "**/corpus-downloads/**",
++        "**/chapters_cache/**",
++        "**/chapters/**",
++        "**/novels/**",
++        "**/scoring_lockbox/**",
++        "**/*.lockbox.json",
++        "config/gold/**",
++        "**/*GOLD*",
++        "**/*gold*",
++        "**/*BLIND_REFERENCE*",
++        "**/*NEGATIVE_CONTROLS*",
++        "**/*ADJUDICATION*.jsonl",
++        "**/raw/**",
++        "**/raw_responses/**",
++        "**/RAW_*",
++        "**/*RESPONSES*",
++        "**/reasoning*",
++        "**/transport*",
++        "**/runtime_data/**",
++        "**/probe_data/**",
++        "**/*.zip",
++        "**/*.pdf",
++        "**/*.doc",
++        "**/*.docx",
++        "**/*.epub",
++        "**/*.mobi",
++        "**/.env",
++        "**/.env.*",
++        "**/*.pem",
++        "**/*.key",
++        "**/*API_KEY*",
++        "**/*SECRET*",
++        "**/__pycache__/**",
++        "**/*.pyc"
++      ],
++      "redact_local_absolute_paths": true,
++      "allow_explicit_temp_sources": true,
++      "layers": {
++        "current_truth": {
++          "label": "本轮权限、六身份快照与 R13 产品语义",
++          "roots": [
++            {
++              "root_id": "six_identity_review_brief",
++              "required": true,
++              "authority": "cz_current_external_review_request",
++              "status": "frozen_six_identity_review_snapshot",
++              "description": "本轮权限、六身份状态、跨窗发现、开放决策、共享页面协议、回包合同和 Pro Prompt。",
++              "globs": [
++                "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/00_READ_ME_FIRST.md",
++                "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/01_REVIEW_SCOPE_AND_AUTHORITY.md",
++                "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/02_SIX_IDENTITY_SNAPSHOT.md",
++                "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/03_CROSS_WINDOW_FINDINGS.md",
++                "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/04_OPEN_DECISIONS_AND_RED_LINES.md",
++                "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/05_SHARED_PAGE_DISPATCH_PROTOCOL.md",
++                "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/06_RETURN_CONTRACT.md",
++                "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/PROMPT_CHATGPT_PRO.md",
++                "TEMP/external_review_handoffs_20260818_r01/chatgpt_pro/WINDOW_EVIDENCE_INDEX.json"
++              ]
++            },
++            {
++              "root_id": "r13_shared_context",
++              "required": true,
++              "authority": "local_current_product_shared_context_r13",
++              "status": "product_semantics_not_execution_ticket",
++              "description": "R13 共同背景板当前本地包；只提供产品语义和边界。",
++              "globs": [
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/01_PRODUCT_NORTH_STAR.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/03_CREATION_AND_MEMORY_PIPELINES.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/06_SYNC_AND_CHANGE_PROTOCOL.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/07_GLOSSARY.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/08_VALIDATION_MARKET_AND_RISK_REGISTER.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/PRODUCT_SEMANTIC_DEBT_REGISTER.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/REFERENCE_PROJECT_INTEGRATION.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/USER_DATA_RIGHTS_AND_SECURITY_POLICY.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/CORE_MATERIALS_MANIFEST.json",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/BUILD_RECEIPT.json"
++              ]
++            },
++            {
++              "root_id": "local_governance_boundaries",
++              "required": true,
++              "authority": "local_governance_and_current_cz_boundary",
++              "status": "current_state_stale_read_only_boundary",
++              "description": "仓库入口、旧机器镜像和当前进度路由；CURRENT_STATE 明确是旧镜像，不能覆盖本包停点。",
++              "globs": [
++                "AGENTS.md",
++                "governance/CURRENT_STATE.json",
++                "governance/progress/current-progress.md",
++                "config/review_pack/CHATGPT_REVIEW_SOP.md"
++              ]
++            },
++            {
++              "root_id": "prior_rolling_control_ledger",
++              "required": true,
++              "authority": "cz_rolling_decision_ledger_and_historical_window_freeze",
++              "status": "decisions_preserved_window_status_superseded_by_20260818_snapshot",
++              "description": "上一批 CZ 拍板、候选池和耦合缝；窗口运行状态已过期，只保留决策和历史差异。",
++              "globs": [
++                "TEMP/t03_five_window_rolling_candidate_batch_20260817_r01/00_READ_ME_FIRST.md",
++                "TEMP/t03_five_window_rolling_candidate_batch_20260817_r01/CZ_DECISION_LEDGER.md",
++                "TEMP/t03_five_window_rolling_candidate_batch_20260817_r01/COUPLING_SEAMS.md",
++                "TEMP/t03_five_window_rolling_candidate_batch_20260817_r01/FIVE_WINDOW_FREEZE_MANIFEST.json",
++                "TEMP/t03_five_window_rolling_candidate_batch_20260817_r01/FROZEN_WINDOW_ATOMS.jsonl",
++                "TEMP/t03_five_window_rolling_candidate_batch_20260817_r01/CANDIDATE_POOL.jsonl",
++                "TEMP/t03_five_window_rolling_candidate_batch_20260817_r01/VALIDATION_RECEIPT.json"
++              ]
++            }
++          ]
++        },
++        "current_route": {
++          "label": "当前设计、正式合同、直接实现与长期测试",
++          "roots": [
++            {
++              "root_id": "affected_product_designs",
++              "required": true,
++              "authority": "novel_mvp_design_inputs_not_implemented_capabilities",
++              "status": "current_design_documents_for_impact_review",
++              "description": "与五窗本轮证据和 M1～M11 接缝直接相关的产品设计稿。",
++              "globs": [
++                "novel-mvp/design/INDEX.md",
++                "novel-mvp/design/INTAKE_SHELVES_DESIGN_R03.md",
++                "novel-mvp/design/CHAPTER_REVISION_DESIGN_R01.md",
++                "novel-mvp/design/EXTRACTION_PIPELINE_DESIGN_R01.md",
++                "novel-mvp/design/REVIEW_OVERVIEW_DESIGN_R03.md",
++                "novel-mvp/design/M8_PLANNING_DESIGN_R04.md",
++                "novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R04.md",
++                "novel-mvp/design/CONTEXT_PACKER_DESIGN_R01.md",
++                "novel-mvp/design/PLUGIN_SKILL_SYSTEM_DESIGN_R02.md",
++                "novel-mvp/design/DAILY_LOOP_WALKTHROUGH_R03.md",
++                "novel-mvp/design/CHAPTER_WORKBENCH_DESIGN_R02.md",
++                "novel-mvp/design/STOP_POINT_REGISTRY_R03.md",
++                "novel-mvp/design/SCENE_CARD_EXPORT_DESIGN_R01.md",
++                "novel-mvp/design/MCP_INTERFACE_DESIGN_R01.md"
++              ]
++            },
++            {
++              "root_id": "current_formal_contracts",
++              "required": true,
++              "authority": "formal_novel_mvp_contracts_current_worktree_bytes",
++              "status": "formal_contracts_some_uncommitted_current_bytes",
++              "description": "当前正式合同字节；B 最新改动已在其中，不能由旧停点 SHA 覆盖。",
++              "globs": [
++                "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.md",
++                "novel-mvp/contracts/C1_CHAPTER_DOC.md",
++                "novel-mvp/contracts/C2_SEGMENT.md",
++                "novel-mvp/contracts/C3_FACT_CANDIDATE.md",
++                "novel-mvp/contracts/C4_FACT_QUERY.md",
++                "novel-mvp/contracts/C6_HEALTH_REPORT.md",
++                "novel-mvp/contracts/C7_PLOT_LAYER.md",
++                "novel-mvp/contracts/C7_SELECTION_ACTION.md",
++                "novel-mvp/contracts/FACT_REVIEW_ACTION.md",
++                "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
++                "novel-mvp/contracts/RECONCILIATION_CANDIDATE.md",
++                "novel-mvp/contracts/RECONCILIATION_FACT_ADMISSION_ACTION.md",
++                "novel-mvp/contracts/WORK_DRAFT_HANDOVER_ACTION.md",
++                "novel-mvp/contracts/WRITING_DESK_CHECK_DISPOSITION_ACTION.md",
++                "novel-mvp/contracts/WRITING_DESK_CHECK_RESULT.md",
++                "novel-mvp/contracts/WRITING_DESK_CHECK_UNKNOWN_ADJUDICATION_ACTION.md",
++                "novel-mvp/contracts/WRITING_DESK_CLOSEOUT_ACTION.md",
++                "novel-mvp/contracts/WRITING_DESK_WORK_DRAFT.md",
++                "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.schema.json",
++                "novel-mvp/contracts/validate_c10_intake_material_identity.py"
++              ]
++            },
++            {
++              "root_id": "direct_product_implementation",
++              "required": true,
++              "authority": "current_novel_mvp_worktree_implementation",
++              "status": "working_tree_implementation_not_production_ready",
++              "description": "B 最新 writer、直接消费者和入口实现；工作树改动不等于提交或生产能力。",
++              "globs": [
++                "novel-mvp/ARCHITECTURE.md",
++                "novel-mvp/README.md",
++                "novel-mvp/cli.py",
++                "novel-mvp/mvp/README.md",
++                "novel-mvp/mvp/store.py",
++                "novel-mvp/mvp/factstore.py",
++                "novel-mvp/mvp/planstore.py",
++                "novel-mvp/mvp/reconcile.py",
++                "novel-mvp/mvp/ask.py",
++                "novel-mvp/mvp/check.py"
++              ]
++            },
++            {
++              "root_id": "direct_long_term_tests_and_registry",
++              "required": true,
++              "authority": "current_local_mechanical_validation",
++              "status": "targeted_tests_pass_full_suite_has_preexisting_failures",
++              "description": "直接长期测试和生成登记；全仓旧失败不能冒充本轮新增。",
++              "globs": [
++                "tests/test_novel_mvp_fact_review_transaction.py",
++                "tests/test_novel_mvp_reconciliation_facts_admission.py",
++                "tests/test_novel_mvp_planstore_handover.py",
++                "governance/test_policy.json",
++                "governance/module_registry.json",
++                "governance/index_manifest.json"
++              ]
++            }
++          ]
++        },
++        "upstream_evidence": {
++          "label": "总控与五窗最新冻结停点证据",
++          "roots": [
++            {
++              "root_id": "controller_cross_window_audit",
++              "required": true,
++              "authority": "controller_read_only_cross_window_audit",
++              "status": "completed_snapshot_before_latest_b_changes",
++              "description": "M1～M11 成熟度、owner、重复真源和等待关系；B 后续改动要求 Pro 做时间差审查。",
++              "globs": [
++                "TEMP/t03_m1_m11_cross_pipeline_seam_audit_20260818_r01/CZ_ONE_PAGE_CONCLUSION.md",
++                "TEMP/t03_m1_m11_cross_pipeline_seam_audit_20260818_r01/M1_M11_MATURITY_MATRIX.md",
++                "TEMP/t03_m1_m11_cross_pipeline_seam_audit_20260818_r01/SEAM_OWNERSHIP_MAP.md",
++                "TEMP/t03_m1_m11_cross_pipeline_seam_audit_20260818_r01/DUPLICATE_TRUTH_AND_IDENTITY_RISKS.md",
++                "TEMP/t03_m1_m11_cross_pipeline_seam_audit_20260818_r01/WAIT_FOR_ACTIVE_STOPS.md",
++                "TEMP/t03_m1_m11_cross_pipeline_seam_audit_20260818_r01/SEAM_AUDIT_LEDGER.json",
++                "TEMP/t03_m1_m11_cross_pipeline_seam_audit_20260818_r01/VALIDATION_RECEIPT.json"
++              ]
++            },
++            {
++              "root_id": "t03_unresolved_discovery_final",
++              "required": true,
++              "authority": "local_api_experiment_final_stop",
++              "status": "c3_c4_not_ready_unresolved_discovery",
++              "description": "T03 最新未决发现负结果、机器回执、未见评估与候选表示合同；不带盲参考、正文、逐条裁决或 raw。",
++              "globs": [
++                "TEMP/v0_c3_unresolved_discovery_stage_20260818_r01/STAGE_RESULT.md",
++                "TEMP/v0_c3_unresolved_discovery_stage_20260818_r01/FINAL_RECEIPT.json",
++                "TEMP/v0_c3_unresolved_discovery_stage_20260818_r01/UNSEEN_SEMANTIC_EVALUATION_R01.json",
++                "TEMP/v0_c3_unresolved_discovery_stage_20260818_r01/UNSEEN_SELECTION_R02.json",
++                "TEMP/v0_c3_unresolved_discovery_stage_20260818_r01/UNSEEN_REFERENCE_FREEZE_RECEIPT_R01.json",
++                "TEMP/v0_c3_unresolved_discovery_stage_20260818_r01/DISCOVERY_REPRESENTATION_CONTRACT_R03.json",
++                "TEMP/v0_c3_unresolved_discovery_stage_20260818_r01/VERBATIM_SOURCE_GAP_CONTRACT_R04.json"
++              ]
++            },
++            {
++              "root_id": "window_a_chapter_revision_stop",
++              "required": true,
++              "authority": "local_zero_api_mechanical_audit",
++              "status": "blocked_by_contract_or_decision",
++              "description": "A 章节 revision 机械反例、合同缺口和下一决策；不带 probe 运行数据。",
++              "globs": [
++                "TEMP/m1_m4_chapter_revision_audit_20260818_r01/RUN_REPORT.md",
++                "TEMP/m1_m4_chapter_revision_audit_20260818_r01/CURRENT_PATH_AUDIT.md",
++                "TEMP/m1_m4_chapter_revision_audit_20260818_r01/CONTRACT_GAP_MATRIX.md",
++                "TEMP/m1_m4_chapter_revision_audit_20260818_r01/MECHANICAL_PROBE_RESULTS.json",
++                "TEMP/m1_m4_chapter_revision_audit_20260818_r01/NEXT_DECISION.md",
++                "TEMP/m1_m4_chapter_revision_audit_20260818_r01/WRITESET_RECEIPT.md"
++              ]
++            },
++            {
++              "root_id": "window_b_m5_unified_writer_stop",
++              "required": true,
++              "authority": "formal_contract_and_product_regression_evidence",
++              "status": "m5_fact_writer_unified_pass",
++              "description": "B 最新正式 writer 结果、入口清单、正式文件 SHA 和机器结果。",
++              "globs": [
++                "TEMP/t03_parallel_r13_m8_planstore_20260815_r01/outputs/m5_unified_fact_writer_r01/M5_UNIFIED_FACT_WRITER_RESULT_20260818_R01.md",
++                "TEMP/t03_parallel_r13_m8_planstore_20260815_r01/outputs/m5_unified_fact_writer_r01/M5_LEGACY_WRITER_INVENTORY.json",
++                "TEMP/t03_parallel_r13_m8_planstore_20260815_r01/outputs/m5_unified_fact_writer_r01/FORMAL_SHA256SUMS.txt",
++                "TEMP/t03_parallel_r13_m8_planstore_20260815_r01/outputs/m5_unified_fact_writer_r01/RESULT.json"
++              ]
++            },
++            {
++              "root_id": "window_c_m11_r21_stop",
++              "required": true,
++              "authority": "local_cross_model_experiment_candidate",
++              "status": "r21_budget_rule_candidate_pass_formal_c9_false",
++              "description": "C R21 预算规则的法医、执行、跨阶段对照、规则族收口和验收票；不带 raw、逐题或 Gold。",
++              "globs": [
++                "TEMP/t03_parallel_r13_m11_context_packer_20260818_budget_discipline_long_stage/00_READ_ME_FIRST.md",
++                "TEMP/t03_parallel_r13_m11_context_packer_20260818_budget_discipline_long_stage/01_BUDGET_FORENSIC.md",
++                "TEMP/t03_parallel_r13_m11_context_packer_20260818_budget_discipline_long_stage/02_EXECUTION_LEDGER.md",
++                "TEMP/t03_parallel_r13_m11_context_packer_20260818_budget_discipline_long_stage/03_COMPARISON_AND_DIAGNOSIS.md",
++                "TEMP/t03_parallel_r13_m11_context_packer_20260818_budget_discipline_long_stage/04_RULE_FAMILY_CLOSEOUT.md",
++                "TEMP/t03_parallel_r13_m11_context_packer_20260818_budget_discipline_long_stage/05_SELF_ACCEPTANCE.md",
++                "TEMP/t03_parallel_r13_m11_context_packer_20260818_budget_discipline_long_stage/prompt/PROMPT_DIFF.patch",
++                "TEMP/t03_parallel_r13_m11_context_packer_20260818_budget_discipline_long_stage/results/r17_r19_r20_r21_comparison.json",
++                "TEMP/t03_parallel_r13_m11_context_packer_20260818_budget_discipline_long_stage/results/final_validation_receipt.json",
++                "TEMP/t03_parallel_r13_m11_context_packer_20260818_budget_discipline_long_stage/results/r21_self_acceptance_receipt.json"
++              ]
++            },
++            {
++              "root_id": "window_d_ready_seam_stop",
++              "required": true,
++              "authority": "local_zero_api_mechanical_seam_evidence",
++              "status": "four_mechanical_passes_with_contract_gaps",
++              "description": "D 四项机械接缝结果、重复 owner 检查、等待项和回执；不带 runtime_data。",
++              "globs": [
++                "TEMP/t03_m1_m11_ready_seam_batch_20260818_r01/CZ_SELF_ACCEPTANCE.md",
++                "TEMP/t03_m1_m11_ready_seam_batch_20260818_r01/SEAM_TEST_SUMMARY.md",
++                "TEMP/t03_m1_m11_ready_seam_batch_20260818_r01/DUPLICATE_OWNER_CHECK.md",
++                "TEMP/t03_m1_m11_ready_seam_batch_20260818_r01/WAIT_ESCALATIONS.md",
++                "TEMP/t03_m1_m11_ready_seam_batch_20260818_r01/results/SHA_RECEIPT.json",
++                "TEMP/t03_m1_m11_ready_seam_batch_20260818_r01/results/fixture_manifest.json",
++                "TEMP/t03_m1_m11_ready_seam_batch_20260818_r01/results/seam_receipts.jsonl",
++                "TEMP/t03_m1_m11_ready_seam_batch_20260818_r01/results/seam_test_ledger.json"
++              ]
++            }
++          ]
++        },
++        "external_reviews": {
++          "label": "旧 R13 合同设计稿与上一轮 Pro 外审",
++          "roots": []
++        }
++      },
++      "external_slots": [
++        {
++          "slot_id": "r13_contract_design_baseline",
++          "required": true,
++          "provider": "cz_local_baseline_document",
++          "model": null,
++          "status": "historical_contract_design_baseline_to_be_revised"
++        },
++        {
++          "slot_id": "prior_r13_pro_review",
++          "required": true,
++          "provider": "chatgpt_pro_prior_return_preserved_local",
++          "model": "chatgpt_pro",
++          "status": "prior_advice_not_current_authority"
++        }
++      ]
++    },
++    "r13-six-window-global-pro-review-20260818-r04-final": {
++      "label": "R13 六身份当前正式字节大审 R04",
++      "purpose": "把总控与 T03/A/B/C/D 当前停点、C10/C11 正式字节、C owner closure、D 窄重放、T03 输出合同握手及上一轮 Pro 回包交给 ChatGPT Pro，审查身份分层、跨缝兼容、R13 过期表述和下一批五窗任务；外审只作顾问建议。",
++      "snapshot_at": "2026-08-18T19:21:21+08:00",
++      "reviewer_prompt_path": "TEMP/t03_pro_package_r04_final_20260818_r01/PROMPT_CHATGPT_PRO.md",
++      "truth_source": {
++        "authority": "CZ 明字授权 B 在 A 与 T03 完成后刷新 route 并本地生成下一次 ChatGPT Pro Prompt/ZIP；不自动上传",
++        "local_current_state_status": "r04_final_snapshot_overrides_stale_repository_mirror_for_this_review_only",
++        "note": "A C11 四件与 C10 双 SHA 刷新已正式落地；D 窄重放 5/5 PASS；C runtime consumer/evidence recall 仍 OPEN；T03 旧批次 NO_VERDICT，新握手 HANDSHAKE_FAIL 只证明双路运输合同未同时通过。外审建议不产生执行权。"
++      },
++      "default_layers": [
++        "current_truth",
++        "current_route",
++        "upstream_evidence",
++        "external_reviews"
++      ],
++      "forbidden_source_globs": [
++        "**/corpus-downloads/**",
++        "**/corpus*/**",
++        "**/books/**",
++        "**/chapters_cache/**",
++        "**/chapters/**",
++        "**/novels/**",
++        "**/data/**",
++        "**/scoring_lockbox/**",
++        "**/*.lockbox.json",
++        "config/gold/**",
++        "**/*GOLD*",
++        "**/*gold*",
++        "**/*BLIND_REFERENCE*",
++        "**/*blind_reference*",
++        "**/*NEGATIVE_CONTROLS*",
++        "**/*ADJUDICATION*.jsonl",
++        "**/raw/**",
++        "**/raw_responses/**",
++        "**/RAW_*",
++        "**/*RESPONSES*",
++        "**/*response*",
++        "**/reasoning*",
++        "**/transport*",
++        "**/runtime_data/**",
++        "**/probe_data/**",
++        "**/original/**",
++        "**/*.zip",
++        "**/*.pdf",
++        "**/*.doc",
++        "**/*.docx",
++        "**/*.epub",
++        "**/*.mobi",
++        "**/.env",
++        "**/.env.*",
++        "**/*.pem",
++        "**/*.key",
++        "**/*API_KEY*",
++        "**/*SECRET*",
++        "**/__pycache__/**",
++        "**/*.pyc"
++      ],
++      "redact_local_absolute_paths": true,
++      "allow_explicit_temp_sources": true,
++      "layers": {
++        "current_truth": {
++          "label": "本轮权限、当前事实和 R13 产品语义",
++          "roots": [
++            {
++              "root_id": "r04_review_scope_and_prompt",
++              "required": true,
++              "authority": "cz_current_local_package_authorization",
++              "status": "current_r04_review_truth",
++              "description": "Parent cycle、当前六身份事实、外审问题和唯一 ChatGPT Pro Prompt。",
++              "globs": [
++                "TEMP/t03_pro_package_r04_final_20260818_r01/00_R04_REVIEW_SCOPE.md",
++                "TEMP/t03_pro_package_r04_final_20260818_r01/PROMPT_CHATGPT_PRO.md"
++              ]
++            },
++            {
++              "root_id": "r13_shared_context",
++              "required": true,
++              "authority": "local_current_product_shared_context_r13",
++              "status": "product_semantics_not_execution_ticket",
++              "description": "R13 共同背景板当前本地包；Pro 需要辨别其中哪些表述仍有效、哪些已被现行正式字节取代。",
++              "globs": [
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/01_PRODUCT_NORTH_STAR.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/03_CREATION_AND_MEMORY_PIPELINES.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/06_SYNC_AND_CHANGE_PROTOCOL.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/07_GLOSSARY.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/08_VALIDATION_MARKET_AND_RISK_REGISTER.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/PRODUCT_SEMANTIC_DEBT_REGISTER.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/REFERENCE_PROJECT_INTEGRATION.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/USER_DATA_RIGHTS_AND_SECURITY_POLICY.md",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/CORE_MATERIALS_MANIFEST.json",
++                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/BUILD_RECEIPT.json"
++              ]
++            },
++            {
++              "root_id": "local_authority_boundary",
++              "required": true,
++              "authority": "project_agent_and_review_adapter_boundary",
++              "status": "current_local_governance_for_review_only",
++              "description": "说明本包的授权边界、人工上传要求和外审建议的非执行身份。",
++              "globs": [
++                "AGENTS.md",
++                "config/review_pack/CHATGPT_REVIEW_SOP.md"
++              ]
++            }
++          ]
++        },
++        "current_route": {
++          "label": "当前直接相关正式合同与合同验证件",
++          "roots": [
++            {
++              "root_id": "exact_current_formal_contracts_r04",
++              "required": true,
++              "authority": "formal_novel_mvp_contracts_current_worktree_bytes",
++              "status": "c11_formal_and_c10_dual_sha_refresh_current",
++              "description": "只收 C10/C11、下游投影视图、事实链和 planstore 跨缝需要的 16 份精确正式文件；不收整个 novel-mvp 或代码树。",
++              "globs": [
++                "novel-mvp/contracts/C1_CHAPTER_DOC.md",
++                "novel-mvp/contracts/C2_SEGMENT.md",
++                "novel-mvp/contracts/C3_FACT_CANDIDATE.md",
++                "novel-mvp/contracts/C4_FACT_QUERY.md",
++                "novel-mvp/contracts/C6_HEALTH_REPORT.md",
++                "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.md",
++                "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.schema.json",
++                "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.fixtures.jsonl",
++                "novel-mvp/contracts/validate_c10_intake_material_identity.py",
++                "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md",
++                "novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md",
++                "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json",
++                "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.fixtures.jsonl",
++                "novel-mvp/contracts/validate_c11_chapter_revision_ledger.py",
++                "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
++                "novel-mvp/contracts/RECONCILIATION_FACT_ADMISSION_ACTION.md"
++              ]
++            }
++          ]
++        },
++        "upstream_evidence": {
++          "label": "T03、A、B、C、D 当前停点与机器回执",
++          "roots": [
++            {
++              "root_id": "window_a_c11_and_c10_formal_stops",
++              "required": true,
++              "authority": "a_formalization_and_current_sha_receipts",
++              "status": "c11_formal_pass__c10_dual_sha_formal_refresh_pass",
++              "description": "C11 四件正式化与 C10 C1/C2 双 SHA 正式刷新；不带旧候选补丁正文。",
++              "globs": [
++                "TEMP/t03_c11_eligibility_restore_formalization_20260818_r01/RUN_REPORT.md",
++                "TEMP/t03_c11_eligibility_restore_formalization_20260818_r01/VALIDATION_RESULTS.json",
++                "TEMP/t03_c11_eligibility_restore_formalization_20260818_r01/FORMAL_SHA_RECEIPT.json",
++                "TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/RUN_REPORT.md",
++                "TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/VALIDATION_RESULTS.json",
++                "TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/SHA_RECEIPT.json"
++              ]
++            },
++            {
++              "root_id": "window_b_r03_route_snapshot",
++              "required": true,
++              "authority": "b_current_route_prepackage_evidence",
++              "status": "r03_candidate_pass_superseded_only_by_r04_c10_t03_refresh",
++              "description": "R04 的直接 route 基线和 25 项一致性票；其中 C10 候选状态由本轮正式刷新票覆盖。",
++              "globs": [
++                "TEMP/t03_pro_review_route_final_snapshot_20260818_r01/PRO_ROUTE_CANDIDATE_R03.json",
++                "TEMP/t03_pro_review_route_final_snapshot_20260818_r01/ROUTE_CONSISTENCY_CHECK_R03.json"
++              ]
++            },
++            {
++              "root_id": "window_c_owner_closure",
++              "required": true,
++              "authority": "c_current_owner_closure_with_open_runtime_seams",
++              "status": "owner_closure_current__runtime_consumer_and_evidence_recall_open",
++              "description": "C9 producer/consumer/owner 当前结论；正式方向与运行时缺口必须分开。",
++              "globs": [
++                "TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/01_ONE_PAGE_JUNCTION_MAP.md",
++                "TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/field_owner_matrix.json",
++                "TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/final_validation_receipt_v2.json",
++                "TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/no_touch_sha_receipt_v2.json",
++                "TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/STAGE_FINAL_CAPSULE.txt"
++              ]
++            },
++            {
++              "root_id": "window_d_c11_narrow_replay",
++              "required": true,
++              "authority": "d_current_narrow_replay_evidence",
++              "status": "pass_narrow_replay_5_of_5",
++              "description": "C11 当前正式字节的五张窄重放、机器总账与 SHA 回执。",
++              "globs": [
++                "TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/CZ_ONE_PAGE_VERDICT.md",
++                "TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/results/narrow_replay_ledger.json",
++                "TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/results/SHA_RECEIPT.json"
++              ]
++            },
++            {
++              "root_id": "t03_ability_no_verdict_and_output_handshake",
++              "required": true,
++              "authority": "t03_current_experiment_stops_not_formal_c3_c4_qualification",
++              "status": "old_ability_no_verdict__two_call_handshake_fail_transport_only",
++              "description": "旧 8 次能力批次保持 NO_VERDICT；新两次握手只裁运输合同，Flash PASS、豆包围栏门 FAIL；不带 10 份 raw。",
++              "globs": [
++                "TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/STAGE_RESULT.md",
++                "TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/FINAL_RECEIPT.json",
++                "TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/STAGE_RESULT.md",
++                "TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/FINAL_RECEIPT.json"
++              ]
++            }
++          ]
++        },
++        "external_reviews": {
++          "label": "上一轮 R13 六身份 ChatGPT Pro 回包",
++          "roots": []
++        }
++      },
++      "external_slots": [
++        {
++          "slot_id": "prior_r13_six_window_review",
++          "required": true,
++          "provider": "chatgpt_pro_prior_return_curated_from_verified_extract",
++          "model": "chatgpt_pro",
++          "status": "accepted_extracted_8_plus_intake_and_local_triage__advisory_only"
++        }
++      ]
+     }
+   }
+ }

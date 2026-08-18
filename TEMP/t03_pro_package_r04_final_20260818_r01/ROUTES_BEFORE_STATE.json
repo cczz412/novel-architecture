@@ -1,0 +1,11 @@
+{
+  "task_id": "B-PRO-PACKAGE-R04-FINAL-01",
+  "captured_at": "2026-08-18T19:21:21+08:00",
+  "routes_path": "config/review_pack/routes.json",
+  "routes_sha256_before": "ae3a1d38d026d7033f0e18c9c9d66bd7f096673a6549d327f556fb637d43cd10",
+  "git_diff_sha256_before": "548db79ee7584d3d9f4c68235c44857a49310efdd72fd163fdcde21256b9cb7e",
+  "git_diff_stat_before": "1 file changed, 531 insertions(+)",
+  "target_route_id": "r13-six-window-global-pro-review-20260818-r04-final",
+  "target_route_existed_before": false,
+  "preservation_rule": "APPEND_ONE_NEW_ROUTE_ONLY__NO_REORDER_NO_UNRELATED_FORMATTING"
+}

@@ -1,0 +1,10 @@
+{
+  "task_id": "D-C11-R2-STALE-PROPAGATION-ONE-SCENARIO-01",
+  "status": "RUNTIME_OR_CONTRACT_GAP_FOUND",
+  "verdict": "RUNTIME_OR_CONTRACT_GAP_FOUND",
+  "gate_ledger": "results/gate_ledger.json",
+  "fixture": "results/scenario_fixture.json",
+  "runtime_inventory": "results/runtime_capability_inventory.json",
+  "input_manifest": "results/input_manifest.json",
+  "no_touch_receipt": "results/no_touch_receipt.json"
+}

@@ -1,0 +1,36 @@
+{
+  "identity": "D_C11_R2_STALE_PROPAGATION_RUNTIME_INVENTORY_R01",
+  "supplied_executable_surface": [
+    "novel-mvp/contracts/validate_c11_chapter_revision_ledger.py"
+  ],
+  "formal_validator_cases": {
+    "CR-02": "PASS",
+    "CR-17": "NEEDS_RECHECK_EVIDENCE_GONE",
+    "CR-23": "STALE_NO_AUTOMATIC_RERUN",
+    "CR-24": "ALL_CURRENT_TRUTH_CONSUMERS_EXCLUDE",
+    "CR-40": "RE_STALE_NO_ACTUAL_SUPPORT",
+    "CR-12": "REPLAYED_ORIGINAL_RECEIPT",
+    "CR-13": "OPERATION_ID_PAYLOAD_CONFLICT",
+    "CR-29": "ALL_BEFORE_OR_ALL_AFTER",
+    "CR-30": "NEEDS_MANUAL_RECOVERY",
+    "CR-41": "RECOVERED_ALL_BEFORE"
+  },
+  "explicit_runtime_gaps": {
+    "c1_v1_current_view_writer": true,
+    "c4_revision_aware_product_writer": true,
+    "planstore_r07_revision_seam": true,
+    "reconciliation_v2_admission": true,
+    "c6_v1_current_reader_not_in_supplied_executable_surface": true,
+    "cross_owner_revision_commit_coordinator": true
+  },
+  "contract_anchors": {
+    "fact_evidence_gone_and_consumers": true,
+    "basis_pin_and_re_stale": true,
+    "actual_unsupported_when_not_current": true,
+    "c6_reader_derives_stale": true,
+    "admission_rejects_before_writes": true,
+    "shared_lock_and_atomic_group": true,
+    "idempotency_and_conflict": true
+  },
+  "product_runtime_chain_executed_end_to_end": false
+}

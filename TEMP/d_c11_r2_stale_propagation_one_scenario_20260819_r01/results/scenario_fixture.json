@@ -1,0 +1,190 @@
+{
+  "identity": "D_C11_R2_STALE_PROPAGATION_ONE_SCENARIO_FIXTURE_R01",
+  "chapter_id": "c01",
+  "r1_text": "甲拿起钥匙。乙离开。",
+  "r2_text": "甲放下钥匙。乙回家。",
+  "removed_quote": "甲拿起钥匙。",
+  "fact_id": "f001",
+  "ledger_r1": {
+    "contract": "CHAPTER_REVISION_LEDGER",
+    "version": "v1",
+    "chapter_id": "c01",
+    "current_revision_no": 1,
+    "revisions": [
+      {
+        "revision_no": 1,
+        "title": "第一章",
+        "text_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5",
+        "chars": 10,
+        "content_ref": {
+          "kind": "C10_SOURCE_SPAN",
+          "source_id": "SRC-R1",
+          "source_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5",
+          "coordinate_basis": "DECODED_UNICODE_CODEPOINT_V1",
+          "start": 0,
+          "end": 10,
+          "slice_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5"
+        },
+        "origin_material_ref": {
+          "material_unit_id": "MU-R1",
+          "identity_revision_no": 1
+        },
+        "change_kind": "INITIAL",
+        "restores_revision_no": null,
+        "committed_at": "2026-08-18T04:01:00+08:00",
+        "commit_operation_id": "op-r1",
+        "actor": "AUTHOR"
+      }
+    ],
+    "last_operation_id": "op-r1"
+  },
+  "ledger_r2": {
+    "contract": "CHAPTER_REVISION_LEDGER",
+    "version": "v1",
+    "chapter_id": "c01",
+    "current_revision_no": 2,
+    "revisions": [
+      {
+        "revision_no": 1,
+        "title": "第一章",
+        "text_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5",
+        "chars": 10,
+        "content_ref": {
+          "kind": "C10_SOURCE_SPAN",
+          "source_id": "SRC-R1",
+          "source_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5",
+          "coordinate_basis": "DECODED_UNICODE_CODEPOINT_V1",
+          "start": 0,
+          "end": 10,
+          "slice_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5"
+        },
+        "origin_material_ref": {
+          "material_unit_id": "MU-R1",
+          "identity_revision_no": 1
+        },
+        "change_kind": "INITIAL",
+        "restores_revision_no": null,
+        "committed_at": "2026-08-18T04:01:00+08:00",
+        "commit_operation_id": "op-r1",
+        "actor": "AUTHOR"
+      },
+      {
+        "revision_no": 2,
+        "title": "第一章",
+        "text_sha256": "59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca",
+        "chars": 10,
+        "content_ref": {
+          "kind": "C10_SOURCE_SPAN",
+          "source_id": "SRC-R2",
+          "source_sha256": "59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca",
+          "coordinate_basis": "DECODED_UNICODE_CODEPOINT_V1",
+          "start": 0,
+          "end": 10,
+          "slice_sha256": "59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca"
+        },
+        "origin_material_ref": {
+          "material_unit_id": "MU-R2",
+          "identity_revision_no": 1
+        },
+        "change_kind": "REPLACE",
+        "restores_revision_no": null,
+        "committed_at": "2026-08-18T04:02:00+08:00",
+        "commit_operation_id": "op-c11-r2",
+        "actor": "AUTHOR"
+      }
+    ],
+    "last_operation_id": "op-c11-r2"
+  },
+  "c1_r2_contract_fixture": {
+    "contract": "C1_CHAPTER_DOC",
+    "version": "v1",
+    "id": "c01",
+    "title": "第一章",
+    "kind": "draft",
+    "text": "甲放下钥匙。乙回家。",
+    "added_at": "2026-08-19 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 2,
+      "revision_text_sha256": "59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca"
+    }
+  },
+  "fact_r1": {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f001",
+    "chapter_id": "c01",
+    "text": "甲拿起钥匙。",
+    "quote": "甲拿起钥匙。",
+    "status": "confirmed",
+    "source": "fixture",
+    "note": "",
+    "added_at": "2026-08-18 04:00:00",
+    "seg": 1,
+    "decided_at": "2026-08-18 04:01:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 0,
+      "end": 6,
+      "slice_sha256": "dcc8a1de9bf9fa634b18e46736b07814c665daa75379516e98bf7616f57cce1a"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  "fact_after_formal_migration": {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f001",
+    "chapter_id": "c01",
+    "text": "甲拿起钥匙。",
+    "quote": "甲拿起钥匙。",
+    "status": "needs_recheck",
+    "source": "fixture",
+    "note": "",
+    "added_at": "2026-08-18 04:00:00",
+    "seg": 1,
+    "decided_at": "2026-08-18 04:01:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 0,
+      "end": 6,
+      "slice_sha256": "dcc8a1de9bf9fa634b18e46736b07814c665daa75379516e98bf7616f57cce1a"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": {
+      "previous_status": "confirmed",
+      "reason": "evidence_gone",
+      "from_revision_no": 1,
+      "target_revision_no": 2,
+      "flagged_at": "2026-08-18T05:00:00+08:00"
+    }
+  },
+  "old_admission_action_minimum": {
+    "operation_id": "op-admit-r1",
+    "chapter_ref": "c01",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5"
+    },
+    "chapter_text_sha256": "c25d8f591d4405928c76e27bf497cb593c06fd6f97154e0eb26e2518ffc1ddf5"
+  },
+  "fixture_identity_sha256": "603249667439a1fa19211153740dc237b3c330e1559474b9c8b945f786b14c11",
+  "warning": "Contract fixture only; not a product state or author truth write."
+}

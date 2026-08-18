@@ -1,0 +1,192 @@
+{
+  "identity": "TEMP_C9_PRODUCER_CONSUMER_OWNER_MATRIX_R01",
+  "formal_c9": false,
+  "schema_changed": false,
+  "fields_added": [],
+  "input_fields": [
+    {
+      "field": "task_id",
+      "unique_owner": "OPEN_NOT_FORMALLY_ASSIGNED",
+      "allowed_producer": "M0_OR_M8_TASK_ENTRY_DESIGN_ONLY",
+      "real_runtime_producer": "NONE_IDENTIFIED",
+      "consumer": "M11_CANDIDATE_INPUT_GATE",
+      "missing_or_conflict": "M11_STOP_INPUT_INVALID",
+      "authority_limit": "CORRELATION_ONLY_NOT_AUTHORIZATION",
+      "closure": "OPEN"
+    },
+    {
+      "field": "task_actuality_scope",
+      "unique_owner": "OPEN_NOT_FORMALLY_ASSIGNED",
+      "allowed_producer": "TASK_PRODUCER_ROLE_ONLY",
+      "real_runtime_producer": "NONE_IDENTIFIED",
+      "consumer": "M11_CANDIDATE_INPUT_GATE",
+      "missing_or_conflict": "M11_STOP_OPEN_SEAM",
+      "authority_limit": "M11_MUST_NOT_INFER_TASK_SCOPE",
+      "closure": "OPEN"
+    },
+    {
+      "field": "budget_tokens",
+      "unique_owner": "OPEN_CONFIG_OWNER_O1_UNRESOLVED",
+      "allowed_producer": "VERSIONED_TASK_OR_CONFIG_SOURCE_NOT_YET_FROZEN",
+      "real_runtime_producer": "NONE_IDENTIFIED",
+      "consumer": "M11_CANDIDATE_INPUT_GATE",
+      "missing_or_conflict": "M11_STOP_INPUT_INVALID",
+      "authority_limit": "M11_ENFORCES_CAP_BUT_DOES_NOT_SET_CAP",
+      "closure": "OPEN"
+    },
+    {
+      "field": "token_estimator_ref",
+      "unique_owner": "OPEN_NOT_FORMALLY_ASSIGNED",
+      "allowed_producer": "VERSIONED_TOKEN_ESTIMATOR_ROLE_ONLY",
+      "real_runtime_producer": "NONE_IDENTIFIED",
+      "consumer": "M11_CANDIDATE_INPUT_GATE",
+      "missing_or_conflict": "M11_STOP_INPUT_INVALID",
+      "authority_limit": "M11_MUST_NOT_MIX_OR_INVENT_ESTIMATOR_IDENTITIES",
+      "closure": "OPEN"
+    },
+    {
+      "field": "candidate_materials[].id",
+      "unique_owner": "SOURCE_LEDGER_WRITER_BY_OBJECT_TYPE",
+      "allowed_producer": "C4_M4_FACTSTORE_OR_PLANSTORE_READ_VIEW",
+      "real_runtime_producer": "C4_AND_PLANSTORE_EXIST_BUT_NO_C9_ASSEMBLER",
+      "consumer": "M11_CANDIDATE_INPUT_GATE",
+      "missing_or_conflict": "M11_STOP_INPUT_INVALID_SOURCE_OWNER_REPAIRS",
+      "authority_limit": "M11_MUST_NOT_RENUMBER_OR_MERGE_SOURCE_IDS",
+      "closure": "SOURCE_OWNER_CLOSED_C9_ROUTE_OPEN"
+    },
+    {
+      "field": "candidate_materials[].estimated_tokens",
+      "unique_owner": "OPEN_TOKEN_ESTIMATOR_OWNER",
+      "allowed_producer": "SAME_VERSION_AS_TOKEN_ESTIMATOR_REF",
+      "real_runtime_producer": "NONE_IDENTIFIED",
+      "consumer": "M11_CANDIDATE_INPUT_GATE",
+      "missing_or_conflict": "M11_STOP_INPUT_INVALID",
+      "authority_limit": "M11_RECOMPUTES_TOTAL_BUT_DOES_NOT_INVENT_PER_ITEM_ESTIMATE",
+      "closure": "OPEN"
+    },
+    {
+      "field": "candidate_materials[].actuality_class",
+      "unique_owner": "OPEN_UNIFIED_MAPPING_OWNER",
+      "allowed_producer": "AUTHORITATIVE_SOURCE_OWNER_MAPPING_NOT_YET_FROZEN",
+      "real_runtime_producer": "NONE_IDENTIFIED",
+      "consumer": "M11_CANDIDATE_INPUT_GATE",
+      "missing_or_conflict": "M11_STOP_OPEN_SEAM_SOURCE_OWNER_REPAIRS",
+      "authority_limit": "C4_AND_PLANSTORE_SEMANTICS_CANNOT_BE_REWRITTEN_BY_M11",
+      "closure": "OPEN"
+    },
+    {
+      "field": "candidate_materials[].obligation_tier",
+      "unique_owner": "OPEN_OBLIGATION_OWNER",
+      "allowed_producer": "AUTHOR_OR_TASK_CONTRACT_ROLE_NOT_YET_FROZEN",
+      "real_runtime_producer": "NONE_IDENTIFIED",
+      "consumer": "M11_CANDIDATE_INPUT_GATE",
+      "missing_or_conflict": "M11_STOP_INPUT_INVALID_OWNER_REPAIRS",
+      "authority_limit": "M11_MUST_NOT_PROMOTE_RELEVANCE_TO_HARD",
+      "closure": "OPEN"
+    },
+    {
+      "field": "candidate_materials[].selection_rank",
+      "unique_owner": "OPEN_OBLIGATION_OWNER",
+      "allowed_producer": "SAME_OWNER_AS_OBLIGATION_TIER",
+      "real_runtime_producer": "NONE_IDENTIFIED",
+      "consumer": "M11_CANDIDATE_INPUT_GATE",
+      "missing_or_conflict": "M11_STOP_CONFLICT",
+      "authority_limit": "M11_MUST_NOT_USE_INPUT_ORDER_AS_HIDDEN_RANK",
+      "closure": "OPEN"
+    }
+  ],
+  "output_fields": [
+    {
+      "field": "decision_state",
+      "unique_owner": "M11_CANDIDATE_OUTPUT",
+      "allowed_producer": "M11_ONLY",
+      "declared_consumer": "M8",
+      "real_runtime_consumer": "NONE_C9_ROUTE_NOT_IMPLEMENTED",
+      "missing_or_conflict": "M11_STOP_VERIFICATION_AND_FUTURE_M8_REJECT",
+      "closure": "DECLARED_ONLY_RUNTIME_OPEN"
+    },
+    {
+      "field": "load_ids",
+      "unique_owner": "M11_CANDIDATE_OUTPUT",
+      "allowed_producer": "M11_ONLY",
+      "declared_consumer": "M8",
+      "real_runtime_consumer": "NONE_C9_ROUTE_NOT_IMPLEMENTED",
+      "missing_or_conflict": "M11_STOP_VERIFICATION_AND_FUTURE_M8_REJECT",
+      "closure": "DECLARED_ONLY_RUNTIME_OPEN"
+    },
+    {
+      "field": "omitted",
+      "unique_owner": "M11_CANDIDATE_OUTPUT",
+      "allowed_producer": "M11_ONLY",
+      "declared_consumer": "M8",
+      "real_runtime_consumer": "NONE_C9_ROUTE_NOT_IMPLEMENTED",
+      "missing_or_conflict": "M11_STOP_VERIFICATION_AND_FUTURE_M8_REJECT",
+      "closure": "DECLARED_ONLY_RUNTIME_OPEN"
+    },
+    {
+      "field": "loaded_token_estimate",
+      "unique_owner": "M11_CANDIDATE_OUTPUT",
+      "allowed_producer": "M11_ONLY_USING_FROZEN_ESTIMATOR_REF",
+      "declared_consumer": "M8",
+      "real_runtime_consumer": "NONE_C9_ROUTE_NOT_IMPLEMENTED",
+      "missing_or_conflict": "M11_STOP_BUDGET_ACCOUNTING_AND_FUTURE_M8_REJECT",
+      "closure": "DECLARED_ONLY_RUNTIME_OPEN"
+    },
+    {
+      "field": "budget_tokens",
+      "unique_owner": "M11_ECHO_ONLY_INPUT_OWNER_RETAINS_AUTHORITY",
+      "allowed_producer": "M11_ECHO_WITHOUT_MUTATION",
+      "declared_consumer": "M8",
+      "real_runtime_consumer": "NONE_C9_ROUTE_NOT_IMPLEMENTED",
+      "missing_or_conflict": "M11_STOP_VERIFICATION_AND_FUTURE_M8_REJECT",
+      "closure": "DECLARED_ONLY_RUNTIME_OPEN"
+    },
+    {
+      "field": "why_loaded",
+      "unique_owner": "M11_CANDIDATE_OUTPUT",
+      "allowed_producer": "M11_ONLY_FROM_INPUT_RELATION_AND_OBLIGATION",
+      "declared_consumer": "M8_AND_AUTHOR_DEBUG_VIEW_DESIGN_ONLY",
+      "real_runtime_consumer": "NONE_C9_ROUTE_NOT_IMPLEMENTED",
+      "missing_or_conflict": "M11_STOP_VERIFICATION_AND_FUTURE_M8_REJECT",
+      "closure": "DECLARED_ONLY_RUNTIME_OPEN"
+    },
+    {
+      "field": "errors",
+      "unique_owner": "M11_CANDIDATE_OUTPUT",
+      "allowed_producer": "M11_ONLY",
+      "declared_consumer": "M8_OR_ORCHESTRATOR_DESIGN_ONLY",
+      "real_runtime_consumer": "NONE_C9_ROUTE_NOT_IMPLEMENTED",
+      "missing_or_conflict": "M11_MUST_NOT_RETURN_READY_WITH_NONEMPTY_ERRORS",
+      "closure": "DECLARED_ONLY_RUNTIME_OPEN"
+    }
+  ],
+  "authority_boundaries": {
+    "actuality": {
+      "may_decide": "AUTHORITATIVE_SOURCE_OWNERS_WITH_FORMAL_MAPPING_STILL_OPEN",
+      "m11_may_do": "APPLY_SUPPLIED_CLASS_AND_FAIL_ON_OPEN_OR_CONFLICT",
+      "must_not_decide": [
+        "UNRESOLVED_STATE_POLICY",
+        "EVIDENCE_RECALL_POLICY"
+      ]
+    },
+    "budget": {
+      "may_decide_cap": "OPEN_TASK_OR_CONFIG_OWNER",
+      "m11_may_do": "ENFORCE_CAP_RESERVE_ALL_HARD_DEFER_OPTIONAL",
+      "must_not_decide": [
+        "UNRESOLVED_STATE_POLICY",
+        "EVIDENCE_RECALL_DESTINATION",
+        "BROAD_GENERALIZATION_THRESHOLD"
+      ]
+    },
+    "unresolved_state": {
+      "status": "OPEN_NO_DEFAULT",
+      "fail_closed_actor": "M11_INPUT_GATE",
+      "repair_owner": "CZ_OR_FUTURE_FORMAL_SEMANTIC_OWNER"
+    },
+    "evidence_recall": {
+      "status": "OPEN_NO_DEFAULT",
+      "fail_closed_actor": "M11_MUST_NOT_CLAIM_RECALL_AVAILABILITY",
+      "repair_owner": "CZ_OR_FUTURE_FORMAL_RECALL_OWNER"
+    }
+  }
+}

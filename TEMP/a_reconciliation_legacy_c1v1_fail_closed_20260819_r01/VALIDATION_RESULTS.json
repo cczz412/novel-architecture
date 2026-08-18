@@ -1,0 +1,35 @@
+{
+  "task_id": "A-RECONCILIATION-LEGACY-C1V1-FAIL-CLOSED-01",
+  "status": "CONTRACT_LOCAL_PASS",
+  "post_fix_cases": {
+    "passed": 4,
+    "total": 4,
+    "c1_v1_observe_rejected_before_write": true,
+    "c1_v1_admission_rejected_before_write": true,
+    "r06_reader_actual_support_false": true,
+    "legacy_c1_v0_unchanged": true
+  },
+  "failure_path_writes": {
+    "observe": 0,
+    "admission": 0,
+    "reader": 0
+  },
+  "legacy_positive": {
+    "observation_edges": 6,
+    "facts_writes": 4,
+    "actual_support_edges": 2
+  },
+  "pytest": {
+    "command": "uv run --locked pytest tests/test_novel_mvp_reconciliation_facts_admission.py tests/test_novel_mvp_fact_review_transaction.py",
+    "passed": 50,
+    "failed": 0
+  },
+  "ruff": {
+    "command": "uv run --locked ruff check novel-mvp/mvp/reconcile.py",
+    "status": "PASS"
+  },
+  "new_failure": false,
+  "api_calls": 0,
+  "model_calls": 0,
+  "automatic_retries": 0
+}

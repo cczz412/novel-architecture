@@ -1,0 +1,25 @@
+{
+  "identity": "D_C11_ACTION_ENTRY_SCHEMA_COMPOSITION_SHA_RECEIPT_R01",
+  "task_id": "D-C11-ACTION-ENTRY-SCHEMA-COMPOSITION-INDEPENDENT-REVIEW-01",
+  "verdict": "CONTRACT_MACHINE_ENTRY_GAP_FOUND",
+  "input_sha_authority": {
+    "manifest_path": "results/input_manifest.json",
+    "manifest_sha256": "790150ae7cef8921e879859507f7e6cf8c5f619c522592b5fe9484f63671d5bd",
+    "registered_inputs": 8,
+    "changed_during_review": []
+  },
+  "output_sha256": {
+    "review_action_entry.py": "02ff2f9350350a006b57be83399d323774d9e94020813e0750c330d2de0f0554",
+    "CZ_ONE_PAGE_VERDICT.md": "bc7c6308bd14c4836324073dfb63e82611a7eb4eac8c9388c194fadd5e0dd32b",
+    "STAGE_FINAL_CAPSULE.md": "920f8c9658a3c53352b3d923b8a1817f47ef678d09f50d84ddd2f7726278cd8b",
+    "results/gate_ledger.json": "6482ba822ff822526a767189b830fe9f6468c33e40eff0f224c2b8139febac0e",
+    "results/input_manifest.json": "790150ae7cef8921e879859507f7e6cf8c5f619c522592b5fe9484f63671d5bd",
+    "results/no_touch_receipt.json": "dc8d20fe7c7f6f397446fa8271b829824abf837a8bd6e87cb287819403fc9220"
+  },
+  "formal_writes": 0,
+  "product_writes": 0,
+  "git_operations": 0,
+  "api_calls": 0,
+  "model_calls": 0,
+  "automatic_retries": 0
+}

@@ -1,0 +1,17 @@
+{
+  "identity": "T03_UNIFIED_EXACT_JSON_FENCE_OUTPUT_MANIFEST_R01",
+  "file_count_excluding_manifest_and_final_receipt": 11,
+  "files": [
+    {"path": "INPUT_FREEZE_R01.json", "bytes": 4323, "mode": "0644", "sha256": "e491860e143708be8b89acceaf6926d3d35d2c151c76a334f1351395cb10a498"},
+    {"path": "INPUT_OUTPUT_SHA_RECEIPT_R01.json", "bytes": 1229, "mode": "0644", "sha256": "c98ffd866a788635b817101d12c50d8791824bc76be1ae012fbfcab8614dc0ea"},
+    {"path": "NO_TOUCH_RECEIPT_R01.json", "bytes": 986, "mode": "0644", "sha256": "73b525d87a0d3ee1cfaea40430ff3e966f107d682cb3de80b62f82b9ec500316"},
+    {"path": "README.md", "bytes": 566, "mode": "0644", "sha256": "381fe0f2af71b96fe2ffabd1f4f52a7d27981a8fddd2595e2fe6bfef0567a986"},
+    {"path": "REPLAY_RESULT_R01.json", "bytes": 2911, "mode": "0644", "sha256": "5cd98a91d9dc787c1beef2f25517009b3a0e0951cfa5fe0e61e831c3e019d197"},
+    {"path": "STAGE_FINAL_CAPSULE.md", "bytes": 1401, "mode": "0644", "sha256": "2d43f225fcb060892710d2cdcf8189fe8ad46cd7961770b5a09646ddcfafa9dd"},
+    {"path": "STAGE_RESULT.md", "bytes": 1375, "mode": "0644", "sha256": "62b8e3a2666df6c2024deb3629a44a9621ef23df8cdb9f1b5b435e0cd483d520"},
+    {"path": "SYNTHETIC_FIXTURE_CASES_R01.json", "bytes": 2073, "mode": "0644", "sha256": "867e53466c54a66266d06fee5b52ae90d863cc4528d983079f0ef45012b30208"},
+    {"path": "UNIFIED_TRANSPORT_CONTRACT_R01.json", "bytes": 1547, "mode": "0644", "sha256": "2df036cf089c4b18ff7bc3fafb922b8a538ab091952a04455b1afaf11d675fbd"},
+    {"path": "run_offline_replay.py", "bytes": 6479, "mode": "0644", "sha256": "48e5a35a149b6d7897e8611c59995e4225bf1f16d6e460d6931a507f027f3afe"},
+    {"path": "unified_normalize_and_validate.py", "bytes": 3509, "mode": "0644", "sha256": "8cfa6f1c96098849e655ce76ce1fbdaec27c277a978975fba403d97effd0e1ff"}
+  ]
+}

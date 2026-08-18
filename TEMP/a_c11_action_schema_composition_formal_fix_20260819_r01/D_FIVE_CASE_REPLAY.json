@@ -1,0 +1,54 @@
+{
+  "identity": "A_C11_D_FIVE_CASE_REPLAY_R01",
+  "task_id": "A-C11-ACTION-SCHEMA-COMPOSITION-FORMAL-FIX-01",
+  "status": "PASS",
+  "cases": [
+    {
+      "case_id": "ENTRY-01-LEGAL-REPLACE",
+      "mutation": "NONE",
+      "schema": {"accepted": true, "error_code": null},
+      "validate_action": "PRECHECK_ALLOWED",
+      "writes": 0,
+      "pass": true
+    },
+    {
+      "case_id": "ENTRY-02-INVALID-INITIAL",
+      "mutation": "items[0].change_kind=INITIAL",
+      "schema": {"accepted": false, "error_code": "SCHEMA_REJECT"},
+      "validate_action": "REJECTED_ACTION_SCHEMA",
+      "writes": 0,
+      "pass": true
+    },
+    {
+      "case_id": "ENTRY-03-INVALID-BOGUS",
+      "mutation": "items[0].change_kind=BOGUS",
+      "schema": {"accepted": false, "error_code": "SCHEMA_REJECT"},
+      "validate_action": "REJECTED_ACTION_SCHEMA",
+      "writes": 0,
+      "pass": true
+    },
+    {
+      "case_id": "ENTRY-04A-MISSING-CONTRACT",
+      "mutation": "top-level contract removed",
+      "schema": {"accepted": false, "error_code": "SCHEMA_REJECT"},
+      "validate_action": "REJECTED_ACTION_SCHEMA",
+      "writes": 0,
+      "pass": true
+    },
+    {
+      "case_id": "ENTRY-04B-MISSING-VERSION",
+      "mutation": "top-level version removed",
+      "schema": {"accepted": false, "error_code": "SCHEMA_REJECT"},
+      "validate_action": "REJECTED_ACTION_SCHEMA",
+      "writes": 0,
+      "pass": true
+    }
+  ],
+  "cases_passed": 5,
+  "cases_total": 5,
+  "failure_path_writes": 0,
+  "input_drift_during_replay": [],
+  "api_calls": 0,
+  "model_calls": 0,
+  "automatic_retries": 0
+}

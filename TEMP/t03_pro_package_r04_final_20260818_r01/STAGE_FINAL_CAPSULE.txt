@@ -1,0 +1,19 @@
+STAGE_FINAL_CAPSULE
+WINDOW=B
+TASK_ID=B-PRO-PACKAGE-R04-FINAL-01
+STATUS=COMPLETE
+STOP_CLASS=INTENTIONAL_IDLE
+CONTINUATION_STARTED=NONE
+VERDICT=PACKAGE_PREPARED_FOR_CZ_UPLOAD
+DELIVERABLE_ROOT=/Users/a1234/挣钱/小说架构/TEMP/t03_pro_package_r04_final_20260818_r01/
+PRIMARY_RESULT=/Users/a1234/挣钱/小说架构/TEMP/t03_pro_package_r04_final_20260818_r01/package/chatgpt_review_route_r13-six-window-global-pro-review-20260818-r04-final_20260818_192704.zip
+MACHINE_RECEIPT=/Users/a1234/挣钱/小说架构/TEMP/t03_pro_package_r04_final_20260818_r01/PACKAGE_ACCEPTANCE.json
+API_MODEL_RETRY=0/0/0；小说、Gold、Notion、上传、下载、训练、生产和浏览器动作也全部为0
+FORMAL_WRITES=config/review_pack/routes.json仅追加r13-six-window-global-pro-review-20260818-r04-final；既有531行脏改动保留，其他正式件0修改
+NEW_FAILURE=NONE；验收首轮1项假阴性来自checker误解SHA256SUMS覆盖MANIFEST，已留档，ZIP未重建，正确格式复验32/32 PASS
+DEPENDENCY_OR_WRITE_CONFLICT=NONE；C10双SHA已正式刷新，T03握手HANDSHAKE_FAIL按运输门身份进入Prompt，无第三次调用授权
+CZ_DECISION_REQUIRED=NO_FOR_LOCAL_PACKAGE；下一动作仅为CZ手工上传唯一ZIP并粘贴唯一Prompt
+SHARED_REVIEW_NEEDED=NO；本窗口不操作共享页面或ChatGPT
+NEXT_SAFE_TASK=CZ按HANDOFF_TO_CZ.md手工上传；B保持IDLE并等待原始回包路径
+ONE_PARAGRAPH_SUMMARY=R04 executable route已最小追加并通过dry-run。唯一review ZIP含71成员，CRC、Manifest、SHA、字节和成员集合全部通过；包体364114字节，密钥、Gold/锁箱/盲参考细目、小说正文、raw/response/reasoning、本机绝对路径、nested ZIP均为0。Prompt、ZIP、PACKAGE_RECEIPT三者SHA齐全。没有生成replay包，没有上传、发送或轮询。
+END_STAGE_FINAL_CAPSULE

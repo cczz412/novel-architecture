@@ -1,0 +1,67 @@
+{
+  "identity": "D_C11_R2_STALE_PROPAGATION_INPUT_MANIFEST_R01",
+  "material_status": "STABLE",
+  "inputs": [
+    {
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/chatgpt_review_returns/R13_SIX_WINDOW_CURRENT_FORMAL_REVIEW_R04_ADVISORY_20260819_R01/extracted/05_NEXT_TASK_PORTFOLIO.md",
+      "before_sha256": "5edeb2e0eb3d1bc6895a438c502c730d6d794d2a0cec1f4a82b6efaa98fba5b5",
+      "after_sha256": "5edeb2e0eb3d1bc6895a438c502c730d6d794d2a0cec1f4a82b6efaa98fba5b5",
+      "stable": true
+    },
+    {
+      "path": "/Users/a1234/挣钱/小说架构/TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/CZ_ONE_PAGE_VERDICT.md",
+      "before_sha256": "0202857c3a8936594040668acd152070d5a30630dbeef80c55dbe8755e8fc5bf",
+      "after_sha256": "0202857c3a8936594040668acd152070d5a30630dbeef80c55dbe8755e8fc5bf",
+      "stable": true
+    },
+    {
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md",
+      "before_sha256": "7d27d0577ca5187424928bf22cfde6667dbb7153480b0164a17b43a5e2f5330e",
+      "after_sha256": "7d27d0577ca5187424928bf22cfde6667dbb7153480b0164a17b43a5e2f5330e",
+      "stable": true
+    },
+    {
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json",
+      "before_sha256": "ea2d47078140bd1e3b465e75c1ad6455bb9651e1f0ae1c1fcb4eb4534b760578",
+      "after_sha256": "ea2d47078140bd1e3b465e75c1ad6455bb9651e1f0ae1c1fcb4eb4534b760578",
+      "stable": true
+    },
+    {
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/C1_CHAPTER_DOC.md",
+      "before_sha256": "0363659ee3c9c754f6c5d4a96c131647bf0e5fb4f6cc2b5c6716f711b8d325f8",
+      "after_sha256": "0363659ee3c9c754f6c5d4a96c131647bf0e5fb4f6cc2b5c6716f711b8d325f8",
+      "stable": true
+    },
+    {
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/C4_FACT_QUERY.md",
+      "before_sha256": "cfb5ec5e44dd6175e738f7d10ba97447b7e0fb651742fe3aed31704e94b3b147",
+      "after_sha256": "cfb5ec5e44dd6175e738f7d10ba97447b7e0fb651742fe3aed31704e94b3b147",
+      "stable": true
+    },
+    {
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/C6_HEALTH_REPORT.md",
+      "before_sha256": "333d0376df79a3085d3680e204f4e93c3a26a920f9f7d89a0b0f7e9379d3558c",
+      "after_sha256": "333d0376df79a3085d3680e204f4e93c3a26a920f9f7d89a0b0f7e9379d3558c",
+      "stable": true
+    },
+    {
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+      "before_sha256": "1c35b3ca8dd636544ec82b1cbbcdd0d645839fa74c030fa7739ba5ac597fa4ca",
+      "after_sha256": "1c35b3ca8dd636544ec82b1cbbcdd0d645839fa74c030fa7739ba5ac597fa4ca",
+      "stable": true
+    },
+    {
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/RECONCILIATION_FACT_ADMISSION_ACTION.md",
+      "before_sha256": "acf489a922ae720f32cdb4709764624a7ec363f3c2b2e989bfba6c7a3a64d6f3",
+      "after_sha256": "acf489a922ae720f32cdb4709764624a7ec363f3c2b2e989bfba6c7a3a64d6f3",
+      "stable": true
+    },
+    {
+      "path": "/Users/a1234/挣钱/小说架构/novel-mvp/contracts/validate_c11_chapter_revision_ledger.py",
+      "before_sha256": "dea6a9195aa4cbd458739d01017f7da2f64e4b85dc52b46e199b6294683811e2",
+      "after_sha256": "dea6a9195aa4cbd458739d01017f7da2f64e4b85dc52b46e199b6294683811e2",
+      "stable": true
+    }
+  ],
+  "changed_during_probe": []
+}

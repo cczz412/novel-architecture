@@ -1,0 +1,28 @@
+{
+  "identity": "D_C11_ACTION_ENTRY_POSTFIX_CAPSULE_DELIVERY_RECEIPT_R01",
+  "task_id": "D-C11-ACTION-ENTRY-SCHEMA-COMPOSITION-POSTFIX-REPLAY-01",
+  "target_thread_id": "01a00bb7-88f8-7092-9b55-34ca4127a4a1",
+  "target_thread_title": "总控",
+  "target_thread_status_at_probe": "active",
+  "target_host_id": "local",
+  "capsule_path": "STAGE_FINAL_CAPSULE.md",
+  "delivered": false,
+  "manual_delivery_attempts": 2,
+  "automatic_retries": 0,
+  "attempts": [
+    {
+      "host_id_supplied": false,
+      "result": "REJECTED_BY_THREAD_TOOL",
+      "error": "Cannot steer conversation 01a00bb7-88f8-7092-9b55-34ca4127a4a1 without an active turn id"
+    },
+    {
+      "host_id_supplied": true,
+      "host_id": "local",
+      "result": "REJECTED_BY_THREAD_TOOL",
+      "error": "Cannot steer conversation 01a00bb7-88f8-7092-9b55-34ca4127a4a1 without an active turn id"
+    }
+  ],
+  "business_replay_rerun": false,
+  "formal_or_product_writes": 0,
+  "next_action": "DO_NOT_RETRY_IN_THIS_TURN"
+}

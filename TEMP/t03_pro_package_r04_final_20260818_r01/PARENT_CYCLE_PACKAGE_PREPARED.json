@@ -1,0 +1,28 @@
+{
+  "schema": "chatgpt-pro-parent-cycle-local-prepared-v1",
+  "parent_cycle": "R13-SIX-WINDOW-GLOBAL-PRO-REVIEW-20260818-R02",
+  "task_id": "B-PRO-PACKAGE-R04-FINAL-01",
+  "state": "package_prepared",
+  "verdict": "PACKAGE_PREPARED_FOR_CZ_UPLOAD",
+  "route_id": "r13-six-window-global-pro-review-20260818-r04-final",
+  "artifacts": {
+    "review_zip": {
+      "path": "TEMP/t03_pro_package_r04_final_20260818_r01/package/chatgpt_review_route_r13-six-window-global-pro-review-20260818-r04-final_20260818_192704.zip",
+      "sha256": "a0d8d7472d19fb9c00faa8d954645869e9167becc9af2326a1f1c46e68d43f8b"
+    },
+    "prompt": {
+      "path": "TEMP/t03_pro_package_r04_final_20260818_r01/PROMPT_CHATGPT_PRO.md",
+      "sha256": "20565198990a67b3a0d9d3d63d9d6d5976ae58ad05a740d8b19a5d0258200076"
+    },
+    "package_receipt": {
+      "path": "TEMP/t03_pro_package_r04_final_20260818_r01/package/PACKAGE_RECEIPT.json",
+      "sha256": "106cde125f34dcbc91683361a0fc73588c0d9396f9dc3828c065dfc86cda590c"
+    }
+  },
+  "attachments_for_cz": 1,
+  "replay_package_generated": false,
+  "browser_opened": false,
+  "uploaded": false,
+  "sent": false,
+  "response_polled": false
+}

@@ -1,0 +1,43 @@
+{
+  "task_id": "A-C11-INITIAL-RESTORE-MACHINE-GATE-FORMAL-FIX-01",
+  "algorithm": "sha256",
+  "formal_writes": [
+    {
+      "path": "novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md",
+      "before": "c8a33888790ce4ff59e5a6c91f4b6b9208d0017ea9e47faa7560ab93f42c803b",
+      "after": "48dfd296c0cb70873e0f1abb5c08a731ad494cde287a23d1d1e63f7d1a80a651"
+    },
+    {
+      "path": "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json",
+      "before": "ea2d47078140bd1e3b465e75c1ad6455bb9651e1f0ae1c1fcb4eb4534b760578",
+      "after": "708e19c5ba8e748fd9f50f18e65ad243f06eebcbd30bce7cda804764ad64ef63"
+    },
+    {
+      "path": "novel-mvp/contracts/validate_c11_chapter_revision_ledger.py",
+      "before": "dea6a9195aa4cbd458739d01017f7da2f64e4b85dc52b46e199b6294683811e2",
+      "after": "54861c0ead77cbcc474c7115b1e07d711250368f84fb83cbc90238c230de2411"
+    },
+    {
+      "path": "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.fixtures.jsonl",
+      "before": "1da9be3a7953651ae2221009ac5c5924d3d1b17f8c7983d618ea68de808f2c6c",
+      "after": "5f258aed2a9d739eaf69ef2ff4fce3801446487dd562d9d8e9f0371ad3fd3e00"
+    }
+  ],
+  "no_touch": [
+    {"path": "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md", "sha256": "7d27d0577ca5187424928bf22cfde6667dbb7153480b0164a17b43a5e2f5330e"},
+    {"path": "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.md", "sha256": "8a0db5cf8ad3ef2d30260a3604d4c92b9a1e250c40a06b002d0b91bc5c84d15d"},
+    {"path": "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.schema.json", "sha256": "d007216ae13d17711723b80c43cfdbd640e73a3d10baca7d843298198727b379"},
+    {"path": "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.fixtures.jsonl", "sha256": "d267227a2bbbef1b23f956406c656b35d1ae1a12842fbc5fefa9580757baf8e0"},
+    {"path": "novel-mvp/contracts/validate_c10_intake_material_identity.py", "sha256": "aeac1c24226019ec4a763bc64c55d2156af60aaa18679151029bafffcc8024ab"},
+    {"path": "novel-mvp/contracts/C1_CHAPTER_DOC.md", "sha256": "0363659ee3c9c754f6c5d4a96c131647bf0e5fb4f6cc2b5c6716f711b8d325f8"},
+    {"path": "novel-mvp/contracts/C2_SEGMENT.md", "sha256": "50ca44b1b638ddf7b8012c3b7bc0a2cda7c2c6c4412b7f900e0573852aea1829"},
+    {"path": "novel-mvp/contracts/C3_FACT_CANDIDATE.md", "sha256": "4405400b44d813bcf83a2e2d2a7e679ede8f32f466ac39fd03d0c8926f280873"},
+    {"path": "novel-mvp/contracts/C4_FACT_QUERY.md", "sha256": "cfb5ec5e44dd6175e738f7d10ba97447b7e0fb651742fe3aed31704e94b3b147"},
+    {"path": "novel-mvp/contracts/C6_HEALTH_REPORT.md", "sha256": "333d0376df79a3085d3680e204f4e93c3a26a920f9f7d89a0b0f7e9379d3558c"},
+    {"path": "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md", "sha256": "1c35b3ca8dd636544ec82b1cbbcdd0d645839fa74c030fa7739ba5ac597fa4ca"},
+    {"path": "novel-mvp/contracts/RECONCILIATION_FACT_ADMISSION_ACTION.md", "sha256": "acf489a922ae720f32cdb4709764624a7ec363f3c2b2e989bfba6c7a3a64d6f3"}
+  ],
+  "api_calls": 0,
+  "model_calls": 0,
+  "automatic_retries": 0
+}

@@ -1,0 +1,112 @@
+{
+  "task_id": "A-RECONCILIATION-LEGACY-C1V1-FAIL-CLOSED-01",
+  "phase": "FAIL_FIRST",
+  "verdict": "ALL_THREE_WRONG_SUCCESS_PROVEN",
+  "formal_reconcile_sha256_before": "ecc6617973e7211c5c552baf3c2ef362430d7eeb77a8149f7fb01e77aadf6d1d",
+  "formal_reconcile_sha256_after": "ecc6617973e7211c5c552baf3c2ef362430d7eeb77a8149f7fb01e77aadf6d1d",
+  "formal_writes": 0,
+  "cases": [
+    {
+      "case_id": "FF-01",
+      "name": "legacy_observe_creates_r06_re_on_c1_v1",
+      "wrong_success": true,
+      "observed": {
+        "status": "COMMITTED",
+        "edge_count": 6,
+        "edges_missing_chapter_revision_ref": 6
+      },
+      "file_set_before_count": 13,
+      "file_set_after_count": 19,
+      "key_sha256_before": {
+        "chapters.json": "8a1ae315eec08014a2ca75538882271e485d59d904a98a6e3aa4a05d76ea8571",
+        "facts.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "plan.json": "a5d90762054497eae75673bb00abebd393f2fbc8ccfe601b6a15101a60b5f36b",
+        "plan_history.jsonl": "a465b49adfc11114bd88af3efe5ea624e09b3ee8b710bccc593ac7d2e0ec4acc",
+        "commit_log.jsonl": "d20d160df2d97c4e0f5f1c66e6abb2adff9247508dc63fc06748ec2489f46aa5"
+      },
+      "key_sha256_after": {
+        "chapters.json": "8a1ae315eec08014a2ca75538882271e485d59d904a98a6e3aa4a05d76ea8571",
+        "facts.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "plan.json": "5d3c264a5cbdc0be4aaba870615f39c3761549d9aec6b3ab9640d53f6b770135",
+        "plan_history.jsonl": "d26b971608c9b58a4fd1fdf1b38760f7c0b5de08cf6bc9e95cd7df4010ba076e",
+        "commit_log.jsonl": "6947c8af2b22a542d4821a21d22b65fb8cfc63b8bff1a319599899d4e093b56e"
+      },
+      "changed_files": [
+        "blobs/32/324a1a74fb3b95b2a76b22dac23562dc66d743df424632e1f9ec630881d28444.json",
+        "blobs/35/352806e7ad8f8c7e796c4e57c0666e4c87909d82b63e1c0b454dcad62401e60a.json",
+        "blobs/57/5786bd0801121f79b86d3575fbd2deafa388f03cdfe35420d2a6647605e99d3a.json",
+        "blobs/5c/5c44cfcd9c7d971a90c599acc314fe5ec8c46d6073035ce58d609a0941aacf44.json",
+        "blobs/63/637c8ec100a67626619f0f172f4b7fed02783a4170eca0947a1cc1c9abb5ebf3.json",
+        "blobs/f8/f8f90be6ca8f53410ffe3897257f060579d4efc07c335bf71fdeb269b7f8d81c.json",
+        "commit_log.jsonl",
+        "plan.json",
+        "plan_history.jsonl"
+      ]
+    },
+    {
+      "case_id": "FF-02",
+      "name": "legacy_admission_writes_facts_on_c1_v1",
+      "wrong_success": true,
+      "observed": {
+        "status": "COMMITTED",
+        "facts_writes": 4,
+        "facts_count_after": 4
+      },
+      "file_set_before_count": 19,
+      "file_set_after_count": 23,
+      "key_sha256_before": {
+        "chapters.json": "8a1ae315eec08014a2ca75538882271e485d59d904a98a6e3aa4a05d76ea8571",
+        "facts.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "plan.json": "3f6193d6c93ea21d25f0f2f7fd7834f5a1f22559c002d4f5ca7e036c163fa677",
+        "plan_history.jsonl": "34bca3c397397694dd436e2bf17cc06abbdaf8852b6678bdbad41e0206206aee",
+        "commit_log.jsonl": "43b9ad3c6d0d72b68fd5a0ab5a9109cdac954b6ed88d0396fba3e2298cf8c292"
+      },
+      "key_sha256_after": {
+        "chapters.json": "8a1ae315eec08014a2ca75538882271e485d59d904a98a6e3aa4a05d76ea8571",
+        "facts.json": "1bdd4a52a6e01b5d37d72830522d4779013562ad594dc83e335c751a2e84f880",
+        "plan.json": "5375f5c01a3fcaecca76d95235021f4b3d41fe49b05e8bbbc38d07c8a4b23d71",
+        "plan_history.jsonl": "bf41779046f6735e96e35d30643cd66e9a88d07434272ffcb3bc2ba12cd82c61",
+        "commit_log.jsonl": "7cda560e4524e6aee5d54c78f0ae8b55df2a234eae0c284d96fbfae61709ce61"
+      },
+      "changed_files": [
+        "blobs/0d/0dad9d65c903782bdc93767d446768395faad3449f077ced91b9e7de67d30bef.json",
+        "blobs/4d/4d7695dc04556c52405e46f571297d43d5bd62d2aaafcfa32c978b0c54951328.json",
+        "blobs/a5/a54c7294f3d20d771c110357d9bf25a5074194695ec1aab41baa1493e17bfc2a.json",
+        "blobs/d2/d2cf1434d91d02a6185cb64c7c06773793720a9f74c791e8eb34bf1738e8218b.json",
+        "commit_log.jsonl",
+        "facts.json",
+        "plan.json",
+        "plan_history.jsonl"
+      ]
+    },
+    {
+      "case_id": "FF-03",
+      "name": "r06_reader_sha_only_actual_support_on_c1_v1",
+      "wrong_success": true,
+      "observed": {
+        "actual_support_refs": ["RE-0001", "RE-0002"],
+        "reader_writes": 0
+      },
+      "file_set_before_count": 23,
+      "file_set_after_count": 23,
+      "key_sha256_before": {
+        "chapters.json": "8a1ae315eec08014a2ca75538882271e485d59d904a98a6e3aa4a05d76ea8571",
+        "facts.json": "1bdd4a52a6e01b5d37d72830522d4779013562ad594dc83e335c751a2e84f880",
+        "plan.json": "f9d63f0db1295d5f96089a44dd243d5fa928f7750f614996899d7d833aa605de",
+        "plan_history.jsonl": "b4ca01cfe933e628cd01345ddc999cb2a0db624635301fa6c6e87a536437a6d5",
+        "commit_log.jsonl": "9aafe5715be181c9cf9692215645468be1e41375837f82732c0b9389eda5f714"
+      },
+      "key_sha256_after": {
+        "chapters.json": "8a1ae315eec08014a2ca75538882271e485d59d904a98a6e3aa4a05d76ea8571",
+        "facts.json": "1bdd4a52a6e01b5d37d72830522d4779013562ad594dc83e335c751a2e84f880",
+        "plan.json": "f9d63f0db1295d5f96089a44dd243d5fa928f7750f614996899d7d833aa605de",
+        "plan_history.jsonl": "b4ca01cfe933e628cd01345ddc999cb2a0db624635301fa6c6e87a536437a6d5",
+        "commit_log.jsonl": "9aafe5715be181c9cf9692215645468be1e41375837f82732c0b9389eda5f714"
+      },
+      "changed_files": []
+    }
+  ],
+  "api_calls": 0,
+  "model_calls": 0,
+  "automatic_retries": 0
+}

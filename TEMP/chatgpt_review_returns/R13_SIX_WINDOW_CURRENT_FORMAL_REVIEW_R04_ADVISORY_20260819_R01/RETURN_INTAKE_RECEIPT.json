@@ -1,0 +1,84 @@
+{
+  "schema": "chatgpt-pro-return-intake-v1",
+  "task_id": "R13_SIX_WINDOW_CURRENT_FORMAL_REVIEW_R04_ADVISORY",
+  "received_at": "2026-08-19T00:10:29+08:00",
+  "status": "PASS",
+  "authority": "ADVISORY_ONLY__NOT_AUTHORIZED",
+  "source": {
+    "user_supplied_path": "/Users/a1234/Downloads/R13_SIX_WINDOW_CURRENT_FORMAL_REVIEW_R04_ADVISORY.zip",
+    "preserved_original": "TEMP/chatgpt_review_returns/R13_SIX_WINDOW_CURRENT_FORMAL_REVIEW_R04_ADVISORY_20260819_R01/original/R13_SIX_WINDOW_CURRENT_FORMAL_REVIEW_R04_ADVISORY.zip",
+    "sha256": "aaae8815a1aa82b7fbb11867d7ef8ef7814d3dd5c54e32f9886ec5ba3e4a6e25",
+    "size_bytes": 38636
+  },
+  "input_review": {
+    "review_zip": "TEMP/t03_pro_package_r04_final_20260818_r01/package/chatgpt_review_route_r13-six-window-global-pro-review-20260818-r04-final_20260818_192704.zip",
+    "review_zip_sha256": "a0d8d7472d19fb9c00faa8d954645869e9167becc9af2326a1f1c46e68d43f8b",
+    "prompt": "TEMP/t03_pro_package_r04_final_20260818_r01/PROMPT_CHATGPT_PRO.md",
+    "prompt_sha256": "20565198990a67b3a0d9d3d63d9d6d5976ae58ad05a740d8b19a5d0258200076"
+  },
+  "integrity": {
+    "zip_nonempty": true,
+    "zip_crc_pass": true,
+    "member_count": 8,
+    "markdown_count": 7,
+    "json_count": 1,
+    "nonempty_members": 8,
+    "absolute_paths": 0,
+    "parent_traversal_paths": 0,
+    "duplicate_paths": 0,
+    "nested_zip_members": 0,
+    "symlink_members": 0,
+    "machine_json_parse": "PASS",
+    "high_confidence_secret_hits": 0,
+    "local_absolute_path_hits": 0
+  },
+  "members": [
+    {
+      "path": "00_EXECUTIVE_JUDGMENT.md",
+      "sha256": "dd3c21aaacccca0a4373b86f051ff85c094d703bae40a14ffc26ecad0d53f546",
+      "bytes": 9152
+    },
+    {
+      "path": "01_IDENTITY_LAYER_AUDIT.md",
+      "sha256": "1e2fb0876af594c0b4d539b76af8b5490f34edd14a8e81785eab06b85889ea50",
+      "bytes": 10068
+    },
+    {
+      "path": "02_CROSS_SEAM_COMPATIBILITY.md",
+      "sha256": "c610886f9e4454a0fbbc3ba2842161d567b53d2a9cf018ffce8df46c65450b0d",
+      "bytes": 15415
+    },
+    {
+      "path": "03_R13_STALENESS_MAP.md",
+      "sha256": "9b6d04b594d221e659955ce17431c05234633a0c7d6a41866f5ac86f72e6fc1d",
+      "bytes": 12586
+    },
+    {
+      "path": "04_T03_HANDSHAKE_AND_C_RUNTIME_OPEN.md",
+      "sha256": "dab0833930cce23ee9200320746cba3b99fa77b7c7e89b07d38e6aff0bbc3e7b",
+      "bytes": 7899
+    },
+    {
+      "path": "05_NEXT_TASK_PORTFOLIO.md",
+      "sha256": "5edeb2e0eb3d1bc6895a438c502c730d6d794d2a0cec1f4a82b6efaa98fba5b5",
+      "bytes": 8243
+    },
+    {
+      "path": "06_RISKS_AND_COUNTERARGUMENTS.md",
+      "sha256": "5f16e78c18bbd3dcef81514de896dd5836f207ecb1a70e9a8fe073658340f966",
+      "bytes": 13990
+    },
+    {
+      "path": "MACHINE_RECOMMENDATION.json",
+      "sha256": "bafc8be27f76bd220822ced08c6c7109afad8ec6da79eb94f9f09b645484df3d",
+      "bytes": 14166
+    }
+  ],
+  "interpretation_boundary": {
+    "external_advice_is_project_truth": false,
+    "external_run_words_are_authority": false,
+    "formal_or_product_changes_authorized": false,
+    "api_or_model_calls_authorized": false,
+    "safe_next_step": "LOCAL_TRIAGE_AND_FAIL_FIRST_VERIFICATION_ONLY"
+  }
+}

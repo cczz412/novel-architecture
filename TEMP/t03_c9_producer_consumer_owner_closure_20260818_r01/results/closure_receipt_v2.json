@@ -1,0 +1,71 @@
+{
+  "closed": [
+    "C4_FACT_SOURCE_OWNER_M4_M5_AND_CURRENT_CONFIRMED_READ_GATE",
+    "PLANSTORE_OWNS_PLAN_JSON_AND_PLANNED_DOES_NOT_EQUAL_ACTUAL",
+    "C9_DECLARED_PRODUCER_M11",
+    "C9_DECLARED_CONSUMER_M8",
+    "C9_STALE_ON_ANY_SOURCE_CHANGE_AND_NO_WRITEBACK",
+    "M11_OWNS_ONLY_CANDIDATE_OUTPUT_SELECTION_AND_VERIFICATION",
+    "PERMISSION_CAPABILITY_PROJECT_AND_HANDLE_REMAIN_EXTERNAL_PREFLIGHT"
+  ],
+  "conditions": {
+    "actuality_and_budget_cannot_decide_open_seams": true,
+    "all_outputs_runtime_open": true,
+    "c4_current_truth_gate_present": true,
+    "c4_owner_and_reader_boundary_present": true,
+    "formal_c7_has_no_c9_lineage_field": true,
+    "formal_plan_contract_declares_m11_producer_m8_consumer": true,
+    "formal_plan_contract_declares_recompile_and_no_writeback": true,
+    "m8_design_c9_is_still_pending": true,
+    "matrix_declares_no_schema_change": true,
+    "no_input_fields_added": true,
+    "no_output_fields_added": true,
+    "open_fields_not_assigned_to_m11": true,
+    "packer_design_budget_owner_open": true,
+    "packer_design_declares_m11_to_m8": true,
+    "packer_design_is_not_contract": true,
+    "packer_design_task_producer_is_design_only": true,
+    "plan_contract_separates_planned_from_actual": true,
+    "previous_skeleton_formal_false": true,
+    "runtime_packer_absent": true,
+    "runtime_plan_bypasses_c9": true,
+    "unresolved_and_evidence_open": true
+  },
+  "continuation_started": true,
+  "created_at": "2026-08-18T00:29:43.889+00:00",
+  "identity": "C9_PRODUCER_CONSUMER_OWNER_CLOSURE_RECEIPT",
+  "new_failure": false,
+  "open": [
+    "RUNTIME_M11_PACKER_IMPLEMENTATION",
+    "RUNTIME_M8_C9_CONSUMER",
+    "FORMAL_TASK_TICKET_PRODUCER_AND_CONTRACT",
+    "BUDGET_CAP_OWNER_AND_VALUE",
+    "TOKEN_ESTIMATOR_OWNER_AND_VERSION",
+    "UNIFIED_ACTUALITY_MAPPING_ACROSS_C4_AND_PLANSTORE",
+    "OBLIGATION_TIER_AND_SELECTION_RANK_OWNER",
+    "UNRESOLVED_STATE_SEMANTICS",
+    "EVIDENCE_RECALL_POLICY",
+    "C9_TO_C7_LINEAGE_FIELDS_AND_CONSUMER_GATE"
+  ],
+  "permissions": {
+    "api": 0,
+    "formal_c9": 0,
+    "git": 0,
+    "model_runs": 0,
+    "new_books": 0,
+    "new_gold": 0,
+    "notion": 0,
+    "product": 0,
+    "r13": 0,
+    "retry": 0
+  },
+  "runtime_finding": {
+    "declared_c9_consumer": "M8",
+    "formal_c7_lineage": "NO_C9_OR_PREMISE_PACK_REF_FIELD",
+    "legacy_bypass": "mvp/plan.py reads store.facts(project) directly and does not consume C9",
+    "mvp_packer_py": "ABSENT",
+    "runtime_c9_consumer": "NONE_IDENTIFIED"
+  },
+  "status": "PASS_WITH_EXPLICIT_OPEN_RUNTIME_SEAMS",
+  "stop_class": "CONTINUE_SAFE"
+}

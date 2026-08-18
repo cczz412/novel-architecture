@@ -1,0 +1,226 @@
+{
+  "allow_explicit_temp_sources": true,
+  "default_layers": [
+    "current_truth",
+    "current_route",
+    "upstream_evidence",
+    "external_reviews"
+  ],
+  "external_slots": [
+    {
+      "model": "chatgpt_pro",
+      "provider": "chatgpt_pro_prior_return_curated_from_verified_extract",
+      "required": true,
+      "slot_id": "prior_r13_six_window_review",
+      "status": "accepted_extracted_8_plus_intake_and_local_triage__advisory_only"
+    }
+  ],
+  "forbidden_source_globs": [
+    "**/corpus-downloads/**",
+    "**/corpus*/**",
+    "**/books/**",
+    "**/chapters_cache/**",
+    "**/chapters/**",
+    "**/novels/**",
+    "**/data/**",
+    "**/scoring_lockbox/**",
+    "**/*.lockbox.json",
+    "config/gold/**",
+    "**/*GOLD*",
+    "**/*gold*",
+    "**/*BLIND_REFERENCE*",
+    "**/*blind_reference*",
+    "**/*NEGATIVE_CONTROLS*",
+    "**/*ADJUDICATION*.jsonl",
+    "**/raw/**",
+    "**/raw_responses/**",
+    "**/RAW_*",
+    "**/*RESPONSES*",
+    "**/*response*",
+    "**/reasoning*",
+    "**/transport*",
+    "**/runtime_data/**",
+    "**/probe_data/**",
+    "**/original/**",
+    "**/*.zip",
+    "**/*.pdf",
+    "**/*.doc",
+    "**/*.docx",
+    "**/*.epub",
+    "**/*.mobi",
+    "**/.env",
+    "**/.env.*",
+    "**/*.pem",
+    "**/*.key",
+    "**/*API_KEY*",
+    "**/*SECRET*",
+    "**/__pycache__/**",
+    "**/*.pyc"
+  ],
+  "label": "R13 六身份当前正式字节大审 R04",
+  "layers": {
+    "current_route": {
+      "label": "当前直接相关正式合同与合同验证件",
+      "roots": [
+        {
+          "authority": "formal_novel_mvp_contracts_current_worktree_bytes",
+          "description": "只收 C10/C11、下游投影视图、事实链和 planstore 跨缝需要的 16 份精确正式文件；不收整个 novel-mvp 或代码树。",
+          "globs": [
+            "novel-mvp/contracts/C1_CHAPTER_DOC.md",
+            "novel-mvp/contracts/C2_SEGMENT.md",
+            "novel-mvp/contracts/C3_FACT_CANDIDATE.md",
+            "novel-mvp/contracts/C4_FACT_QUERY.md",
+            "novel-mvp/contracts/C6_HEALTH_REPORT.md",
+            "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.md",
+            "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.schema.json",
+            "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.fixtures.jsonl",
+            "novel-mvp/contracts/validate_c10_intake_material_identity.py",
+            "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md",
+            "novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md",
+            "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json",
+            "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.fixtures.jsonl",
+            "novel-mvp/contracts/validate_c11_chapter_revision_ledger.py",
+            "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+            "novel-mvp/contracts/RECONCILIATION_FACT_ADMISSION_ACTION.md"
+          ],
+          "required": true,
+          "root_id": "exact_current_formal_contracts_r04",
+          "status": "c11_formal_and_c10_dual_sha_refresh_current"
+        }
+      ]
+    },
+    "current_truth": {
+      "label": "本轮权限、当前事实和 R13 产品语义",
+      "roots": [
+        {
+          "authority": "cz_current_local_package_authorization",
+          "description": "Parent cycle、当前六身份事实、外审问题和唯一 ChatGPT Pro Prompt。",
+          "globs": [
+            "TEMP/t03_pro_package_r04_final_20260818_r01/00_R04_REVIEW_SCOPE.md",
+            "TEMP/t03_pro_package_r04_final_20260818_r01/PROMPT_CHATGPT_PRO.md"
+          ],
+          "required": true,
+          "root_id": "r04_review_scope_and_prompt",
+          "status": "current_r04_review_truth"
+        },
+        {
+          "authority": "local_current_product_shared_context_r13",
+          "description": "R13 共同背景板当前本地包；Pro 需要辨别其中哪些表述仍有效、哪些已被现行正式字节取代。",
+          "globs": [
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/01_PRODUCT_NORTH_STAR.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/03_CREATION_AND_MEMORY_PIPELINES.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/06_SYNC_AND_CHANGE_PROTOCOL.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/07_GLOSSARY.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/08_VALIDATION_MARKET_AND_RISK_REGISTER.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/PRODUCT_SEMANTIC_DEBT_REGISTER.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/REFERENCE_PROJECT_INTEGRATION.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/USER_DATA_RIGHTS_AND_SECURITY_POLICY.md",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/CORE_MATERIALS_MANIFEST.json",
+            "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/BUILD_RECEIPT.json"
+          ],
+          "required": true,
+          "root_id": "r13_shared_context",
+          "status": "product_semantics_not_execution_ticket"
+        },
+        {
+          "authority": "project_agent_and_review_adapter_boundary",
+          "description": "说明本包的授权边界、人工上传要求和外审建议的非执行身份。",
+          "globs": [
+            "AGENTS.md",
+            "config/review_pack/CHATGPT_REVIEW_SOP.md"
+          ],
+          "required": true,
+          "root_id": "local_authority_boundary",
+          "status": "current_local_governance_for_review_only"
+        }
+      ]
+    },
+    "external_reviews": {
+      "label": "上一轮 R13 六身份 ChatGPT Pro 回包",
+      "roots": []
+    },
+    "upstream_evidence": {
+      "label": "T03、A、B、C、D 当前停点与机器回执",
+      "roots": [
+        {
+          "authority": "a_formalization_and_current_sha_receipts",
+          "description": "C11 四件正式化与 C10 C1/C2 双 SHA 正式刷新；不带旧候选补丁正文。",
+          "globs": [
+            "TEMP/t03_c11_eligibility_restore_formalization_20260818_r01/RUN_REPORT.md",
+            "TEMP/t03_c11_eligibility_restore_formalization_20260818_r01/VALIDATION_RESULTS.json",
+            "TEMP/t03_c11_eligibility_restore_formalization_20260818_r01/FORMAL_SHA_RECEIPT.json",
+            "TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/RUN_REPORT.md",
+            "TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/VALIDATION_RESULTS.json",
+            "TEMP/t03_c10_dual_sha_lock_formal_refresh_20260818_r01/SHA_RECEIPT.json"
+          ],
+          "required": true,
+          "root_id": "window_a_c11_and_c10_formal_stops",
+          "status": "c11_formal_pass__c10_dual_sha_formal_refresh_pass"
+        },
+        {
+          "authority": "b_current_route_prepackage_evidence",
+          "description": "R04 的直接 route 基线和 25 项一致性票；其中 C10 候选状态由本轮正式刷新票覆盖。",
+          "globs": [
+            "TEMP/t03_pro_review_route_final_snapshot_20260818_r01/PRO_ROUTE_CANDIDATE_R03.json",
+            "TEMP/t03_pro_review_route_final_snapshot_20260818_r01/ROUTE_CONSISTENCY_CHECK_R03.json"
+          ],
+          "required": true,
+          "root_id": "window_b_r03_route_snapshot",
+          "status": "r03_candidate_pass_superseded_only_by_r04_c10_t03_refresh"
+        },
+        {
+          "authority": "c_current_owner_closure_with_open_runtime_seams",
+          "description": "C9 producer/consumer/owner 当前结论；正式方向与运行时缺口必须分开。",
+          "globs": [
+            "TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/01_ONE_PAGE_JUNCTION_MAP.md",
+            "TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/field_owner_matrix.json",
+            "TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/final_validation_receipt_v2.json",
+            "TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/results/no_touch_sha_receipt_v2.json",
+            "TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/STAGE_FINAL_CAPSULE.txt"
+          ],
+          "required": true,
+          "root_id": "window_c_owner_closure",
+          "status": "owner_closure_current__runtime_consumer_and_evidence_recall_open"
+        },
+        {
+          "authority": "d_current_narrow_replay_evidence",
+          "description": "C11 当前正式字节的五张窄重放、机器总账与 SHA 回执。",
+          "globs": [
+            "TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/CZ_ONE_PAGE_VERDICT.md",
+            "TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/results/narrow_replay_ledger.json",
+            "TEMP/t03_d_c11_narrow_replay_batch_20260818_r01/results/SHA_RECEIPT.json"
+          ],
+          "required": true,
+          "root_id": "window_d_c11_narrow_replay",
+          "status": "pass_narrow_replay_5_of_5"
+        },
+        {
+          "authority": "t03_current_experiment_stops_not_formal_c3_c4_qualification",
+          "description": "旧 8 次能力批次保持 NO_VERDICT；新两次握手只裁运输合同，Flash PASS、豆包围栏门 FAIL；不带 10 份 raw。",
+          "globs": [
+            "TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/STAGE_RESULT.md",
+            "TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/FINAL_RECEIPT.json",
+            "TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/STAGE_RESULT.md",
+            "TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/FINAL_RECEIPT.json"
+          ],
+          "required": true,
+          "root_id": "t03_ability_no_verdict_and_output_handshake",
+          "status": "old_ability_no_verdict__two_call_handshake_fail_transport_only"
+        }
+      ]
+    }
+  },
+  "purpose": "把总控与 T03/A/B/C/D 当前停点、C10/C11 正式字节、C owner closure、D 窄重放、T03 输出合同握手及上一轮 Pro 回包交给 ChatGPT Pro，审查身份分层、跨缝兼容、R13 过期表述和下一批五窗任务；外审只作顾问建议。",
+  "redact_local_absolute_paths": true,
+  "reviewer_prompt_path": "TEMP/t03_pro_package_r04_final_20260818_r01/PROMPT_CHATGPT_PRO.md",
+  "snapshot_at": "2026-08-18T19:21:21+08:00",
+  "truth_source": {
+    "authority": "CZ 明字授权 B 在 A 与 T03 完成后刷新 route 并本地生成下一次 ChatGPT Pro Prompt/ZIP；不自动上传",
+    "local_current_state_status": "r04_final_snapshot_overrides_stale_repository_mirror_for_this_review_only",
+    "note": "A C11 四件与 C10 双 SHA 刷新已正式落地；D 窄重放 5/5 PASS；C runtime consumer/evidence recall 仍 OPEN；T03 旧批次 NO_VERDICT，新握手 HANDSHAKE_FAIL 只证明双路运输合同未同时通过。外审建议不产生执行权。"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "r04-review-route-preflight-v1",
+  "task_id": "B-PRO-PACKAGE-R04-FINAL-01",
+  "route_id": "r13-six-window-global-pro-review-20260818-r04-final",
+  "status": "PASS",
+  "source_count": 64,
+  "generated_route_file_count": 5,
+  "dry_run_total_file_count": 69,
+  "layer_counts": {
+    "current_truth": 18,
+    "current_route": 16,
+    "upstream_evidence": 20,
+    "external_reviews": 10
+  },
+  "source_set_sha256": "bcc69c117a0a2dfddf460d0b76dd572242ce483557c23621e11f97cf9e866a35",
+  "explicit_temp_source_notes": 22,
+  "checks": {
+    "route_id_unique": true,
+    "route_draft_to_executable": true,
+    "dry_run_passed": true,
+    "formal_file_count_16": true,
+    "no_whole_code_tree": true,
+    "c10_validator_sha_current": true,
+    "a_c10_formal_refresh_pass": true,
+    "d_narrow_replay_pass": true,
+    "t03_old_no_verdict": true,
+    "t03_handshake_identity_exact": true,
+    "external_slot_source_count_10": true,
+    "source_layer_counts_exact": true,
+    "all_source_refs_stable": true,
+    "no_raw_response_reasoning_source": true,
+    "no_zip_source": true,
+    "prompt_current_facts": true,
+    "package_not_uploaded": true
+  }
+}

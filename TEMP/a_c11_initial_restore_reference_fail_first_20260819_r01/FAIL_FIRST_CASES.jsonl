@@ -1,0 +1,6 @@
+{"case_id":"FF-01","name":"INITIAL 引用 Confirmed Setting","target":"INITIAL","risk":"non_chapter_initial_accepted_without_composed_gate"}
+{"case_id":"FF-02","name":"INITIAL 引用 Candidate","target":"INITIAL","risk":"candidate_initial_accepted_without_composed_gate"}
+{"case_id":"FF-03","name":"INITIAL 引用 stale identity revision","target":"INITIAL","risk":"stale_initial_accepted_without_composed_gate"}
+{"case_id":"FF-04","name":"r1 使用非 INITIAL","target":"LEDGER_SEQUENCE","risk":"first_revision_kind_not_enforced"}
+{"case_id":"FF-05","name":"r2 使用 INITIAL","target":"LEDGER_SEQUENCE","risk":"later_initial_kind_not_enforced"}
+{"case_id":"FF-06","name":"RESTORE 历史 identity revision 不存在","target":"RESTORE","risk":"historical_identity_revision_existence_not_enforced"}

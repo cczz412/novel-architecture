@@ -1,0 +1,28 @@
+{
+  "identity": "T03_UNIFIED_EXACT_JSON_FENCE_OFFLINE_REPLAY_INPUT_FREEZE_R01",
+  "status": "FROZEN_BEFORE_REPLAY",
+  "sources": [
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_preflight_20260818_r01/FINAL_RECEIPT.json", "sha256": "18f7f25c0924d8631f3c4816f51bc50163149eded83f04dab2d88a686fb906d7"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_preflight_20260818_r01/OUTPUT_MANIFEST_R01.json", "sha256": "5cfe3232b1f65551e2b15fd2423e9fdc502410c61253ba364a223cad3556fc48"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_preflight_20260818_r01/HANDSHAKE_PREREGISTRATION_R01.json", "sha256": "1572bd03b287139fa6353ddfd128c7f970f1da8ff628e7102b8d21859b27d0a0"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_preflight_20260818_r01/NORMALIZER_AND_VALIDATOR_CONTRACT_R01.json", "sha256": "8419f594ecc07e37d6d02973965c8571ce99809dd32b9320e1ed4a0ddf95736d"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_preflight_20260818_r01/normalize_and_validate.py", "sha256": "061cf0f98042258a2be4f8afe2e7a23306b914394707feb2de71f291b6c70428"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_preflight_20260818_r01/schema/HANDSHAKE_OUTPUT_SCHEMA_R01.json", "sha256": "d421a4f6fe31eef2800c4883ca21b388dd64a47b4c921848aeb68a2a3008369b"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_preflight_20260818_r01/SYNTHETIC_INPUT_R01.json", "sha256": "416ef838057d593bcfa21cb724a630d79c9792ba7f8414744959b75c3e266705"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_preflight_20260818_r01/LOCAL_TEST_LEDGER_R01.json", "sha256": "162465e0893a6e935ad5dea105af5cbce5d192f1f7e77d89ea33446b0d98b491"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/FINAL_RECEIPT.json", "sha256": "76a6fd4eb27a0aacbd8245a47fd022dc34a320a3ffde6a1f7dfed26bf2d9623b"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/OUTPUT_MANIFEST_R01.json", "sha256": "5eb5cbd67e91c60a0aa107593d255e6334ed22dd0a5a161559517ba95d9aba93"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/STAGE_RESULT.md", "sha256": "f38704699bc6d397d5f96f93c2e52b4f15268a1a45c4b5bef71284bbcb24e05b"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/CALL_LEDGER_R01.json", "sha256": "c7119ee80e0473d02b7119a3093e87a2a1bae7e3176a79f566f9ecfb096af206"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/NO_TOUCH_RECEIPT_R01.json", "sha256": "88fdc896bee47659c8df525b738f606ef229ccb62c1de9c017303d25bbdb96cf"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/run/raw/DOUBAO.arkcli.raw.json", "sha256": "ac9eb1d66ea35da08f2fb81236a96a90d5f9566592be583811577f55500d4b0a"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/run/raw/FLASH.arkcli.raw.json", "sha256": "023ea971d02dad641d564ba488f23abf2176dd28876e9ee8724ff8707fc62247"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/run/validations/DOUBAO.json", "sha256": "d6e3cbb52724e787cc0ffacfde9248fac4e83778b71a781f1271365c205321d7"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_output_contract_handshake_two_call_20260818_r01/run/validations/FLASH.json", "sha256": "40ab346d2b1a816beca16870181a81a256fe1465950f673272a4d47826a2a1f2"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/STAGE_RESULT.md", "sha256": "fe7d2702aa3d40cac66144f0b1ea66d92c6cfa7587acaf1790f621c70b1a386a"},
+    {"path": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_auto_candidate_ability_b_paired_20260818_r01/FINAL_RECEIPT.json", "sha256": "95043af1e9a4a54de1459e2a31e96e770df1fbc761b51440eadd7eccea6b2f8a"}
+  ],
+  "old_files_mutable": false,
+  "old_handshake_verdict_preserved": "HANDSHAKE_FAIL",
+  "old_ability_verdict_preserved": "NO_VERDICT"
+}

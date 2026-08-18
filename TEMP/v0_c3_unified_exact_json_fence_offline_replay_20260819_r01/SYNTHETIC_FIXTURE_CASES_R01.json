@@ -1,0 +1,19 @@
+{
+  "identity": "T03_UNIFIED_EXACT_JSON_FENCE_SYNTHETIC_FIXTURES_R01",
+  "fixture_identity": "TEST_ONLY__SYNTHETIC_HANDSHAKE__NO_ABILITY",
+  "cases": [
+    {"case_id": "PASS_DOUBAO_EXACT_FENCE", "route": "DOUBAO", "builder": "ACTUAL_CONTENT", "expected": "PASS", "expected_shape": "EXACT_SINGLE_JSON_FENCE"},
+    {"case_id": "PASS_FLASH_EXACT_FENCE", "route": "FLASH", "builder": "ACTUAL_CONTENT", "expected": "PASS", "expected_shape": "EXACT_SINGLE_JSON_FENCE"},
+    {"case_id": "PASS_DOUBAO_NAKED_JSON", "route": "DOUBAO", "builder": "NAKED_PAYLOAD", "expected": "PASS", "expected_shape": "NAKED_JSON"},
+    {"case_id": "PASS_FLASH_NAKED_JSON", "route": "FLASH", "builder": "NAKED_PAYLOAD", "expected": "PASS", "expected_shape": "NAKED_JSON"},
+    {"case_id": "REJECT_OUTSIDE_PREFIX", "route": "DOUBAO", "builder": "OUTSIDE_PREFIX", "expected": "REJECT", "expected_error": "FENCE_SHAPE"},
+    {"case_id": "REJECT_OUTSIDE_SUFFIX", "route": "FLASH", "builder": "OUTSIDE_SUFFIX", "expected": "REJECT", "expected_error": "FENCE_SHAPE"},
+    {"case_id": "REJECT_UPPERCASE_JSON_TAG", "route": "DOUBAO", "builder": "UPPERCASE_TAG", "expected": "REJECT", "expected_error": "FENCE_SHAPE"},
+    {"case_id": "REJECT_NO_LANGUAGE_TAG", "route": "FLASH", "builder": "NO_LANGUAGE_TAG", "expected": "REJECT", "expected_error": "FENCE_SHAPE"},
+    {"case_id": "REJECT_DOUBLE_FENCE", "route": "DOUBAO", "builder": "DOUBLE_FENCE", "expected": "REJECT", "expected_error": "NESTED_OR_MULTIPLE_FENCE"},
+    {"case_id": "REJECT_BAD_JSON", "route": "FLASH", "builder": "BAD_JSON", "expected": "REJECT", "expected_error": "BAD_JSON"},
+    {"case_id": "REJECT_IDENTITY_WRONG", "route": "DOUBAO", "builder": "IDENTITY_WRONG", "expected": "REJECT", "expected_error": "OUTPUT_IDENTITY"},
+    {"case_id": "REJECT_TOP_FIELD_MISSING", "route": "FLASH", "builder": "TOP_FIELD_MISSING", "expected": "REJECT", "expected_error": "TOP_LEVEL_FIELDS"},
+    {"case_id": "REJECT_TOP_FIELD_EXTRA", "route": "DOUBAO", "builder": "TOP_FIELD_EXTRA", "expected": "REJECT", "expected_error": "TOP_LEVEL_FIELDS"}
+  ]
+}

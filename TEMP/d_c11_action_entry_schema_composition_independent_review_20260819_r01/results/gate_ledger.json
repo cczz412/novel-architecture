@@ -1,0 +1,117 @@
+{
+  "identity": "D_C11_ACTION_ENTRY_SCHEMA_COMPOSITION_LEDGER_R01",
+  "task_id": "D-C11-ACTION-ENTRY-SCHEMA-COMPOSITION-INDEPENDENT-REVIEW-01",
+  "status": "COMPLETE",
+  "verdict": "CONTRACT_MACHINE_ENTRY_GAP_FOUND",
+  "cases": [
+    {
+      "case_id": "ENTRY-01-LEGAL-REPLACE",
+      "group": 1,
+      "mutation": "NONE",
+      "executed": true,
+      "schema": {
+        "accepted": true,
+        "error_code": null,
+        "error": null
+      },
+      "validate_action": {
+        "returned": true,
+        "return_value": "PRECHECK_ALLOWED",
+        "exception_type": null,
+        "exception": null
+      },
+      "expected": {
+        "schema_accepted": true,
+        "validate_action_return": "PRECHECK_ALLOWED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "ENTRY-02-INVALID-INITIAL",
+      "group": 2,
+      "mutation": "items[0].change_kind=INITIAL",
+      "executed": true,
+      "schema": {
+        "accepted": false,
+        "error_code": "SCHEMA_REJECT",
+        "error": "SCHEMA_REJECT::{'contract': 'CHAPTER_REVISION_COMMIT_ACTION', 'version': 'v1', 'operation_id': 'op-r2', 'actor': 'AUTHOR', 'intent': 'ADOPT_AS_CURRENT_CHAPTER_REVISION', 'items': [{'target_chapter_id': 'c01', 'expected_current_revision_no': 1, 'candidate_title': '第一章', 'candidate_content_ref': {'kind': 'C10_SOURCE_SPAN', 'source_id': 'SRC-R2', 'source_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca', 'coordinate_basis': 'DECODED_UNICODE_CODEPOINT_V1', 'start': 0, 'end': 10, 'slice_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca'}, 'candidate_origin_material_ref': {'material_unit_id': 'MU-R2', 'identity_revision_no': 1}, 'candidate_text_sha256': '59dc09a3e8176085b7f05856b545a9fc6ffd956eed4ec1d886de1a272d89a3ca', 'change_kind': 'INITIAL', 'restores_revision_no': None, 'target_basis': 'EXPLICIT_CHAPTER_ID', 'reason': '作者采用修订稿'}]} is not valid under any of the given schemas"
+      },
+      "validate_action": {
+        "returned": true,
+        "return_value": "PRECHECK_ALLOWED",
+        "exception_type": null,
+        "exception": null
+      },
+      "expected": {
+        "schema_accepted": false,
+        "validate_action_must_reject": true
+      },
+      "verdict": "CONTRACT_MACHINE_ENTRY_GAP_FOUND"
+    },
+    {
+      "case_id": "ENTRY-03-INVALID-BOGUS",
+      "group": 3,
+      "mutation": "items[0].change_kind=BOGUS",
+      "executed": false,
+      "schema": null,
+      "validate_action": null,
+      "expected": {
+        "schema_accepted": false,
+        "validate_action_must_reject": true
+      },
+      "verdict": "NOT_RUN_AFTER_FAIL_FIRST_STOP"
+    },
+    {
+      "case_id": "ENTRY-04A-MISSING-CONTRACT",
+      "group": 4,
+      "mutation": "top-level contract removed",
+      "executed": false,
+      "schema": null,
+      "validate_action": null,
+      "expected": {
+        "schema_accepted": false,
+        "validate_action_must_reject": true
+      },
+      "verdict": "NOT_RUN_AFTER_FAIL_FIRST_STOP"
+    },
+    {
+      "case_id": "ENTRY-04B-MISSING-VERSION",
+      "group": 4,
+      "mutation": "top-level version removed",
+      "executed": false,
+      "schema": null,
+      "validate_action": null,
+      "expected": {
+        "schema_accepted": false,
+        "validate_action_must_reject": true
+      },
+      "verdict": "NOT_RUN_AFTER_FAIL_FIRST_STOP"
+    }
+  ],
+  "statistics": {
+    "groups_planned": 4,
+    "subcases_planned": 5,
+    "subcases_executed": 2,
+    "subcases_not_run_after_fail_first": 3,
+    "schema_invalid_entry_precheck_allowed": 1,
+    "input_drift": 0,
+    "cache_hits": 0,
+    "api_calls": 0,
+    "model_calls": 0,
+    "automatic_retries": 0,
+    "formal_writes": 0
+  },
+  "minimal_impact": [
+    "The formal action Schema rejects INITIAL in items[].change_kind.",
+    "The public validate_action entry returns PRECHECK_ALLOWED for that same action.",
+    "validate_action does not compose validate_schema_document before semantic branching.",
+    "Its current branch treats every non-RESTORE change_kind as the REPLACE path."
+  ],
+  "candidate_difference_not_applied": [
+    "Validate the complete action with the formal action Schema at the public entry boundary.",
+    "Return a stable rejection for Schema-invalid actions before any semantic eligibility check.",
+    "After Schema acceptance, branch only on exact REPLACE or RESTORE values."
+  ],
+  "formal_fix_applied": false,
+  "scope_expanded_to_callers": false
+}

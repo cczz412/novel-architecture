@@ -1,0 +1,6 @@
+{"case_id":"FF-01","schema_result":"PASS","validate_ledger_result":"PASS","eligibility_helper_result":"C10_CHAPTER_EMISSION_NOT_ELIGIBLE","formal_entry_result":"INITIAL_NOT_IN_ACTION__DIRECT_LEDGER_ACCEPTED","wrong_success":true}
+{"case_id":"FF-02","schema_result":"PASS","validate_ledger_result":"PASS","eligibility_helper_result":"C10_CHAPTER_EMISSION_NOT_ELIGIBLE","formal_entry_result":"INITIAL_NOT_IN_ACTION__DIRECT_LEDGER_ACCEPTED","wrong_success":true}
+{"case_id":"FF-03","schema_result":"PASS","validate_ledger_result":"PASS","eligibility_helper_result":"C10_IDENTITY_REVISION_STALE","formal_entry_result":"INITIAL_NOT_IN_ACTION__DIRECT_LEDGER_ACCEPTED","wrong_success":true}
+{"case_id":"FF-04","schema_result":"PASS","validate_ledger_result":"PASS","eligibility_helper_result":"C10_CONFIRMED_CHAPTER_ELIGIBLE","formal_entry_result":"R1_NON_INITIAL_DIRECT_LEDGER_ACCEPTED","wrong_success":true}
+{"case_id":"FF-05","schema_result":"PASS","validate_ledger_result":"PASS","eligibility_helper_result":"C10_CONFIRMED_CHAPTER_ELIGIBLE","formal_entry_result":"R2_INITIAL_DIRECT_LEDGER_ACCEPTED","wrong_success":true}
+{"case_id":"FF-06","schema_result":"PASS","validate_ledger_result":"PASS","eligibility_helper_result":"C10_CONFIRMED_CHAPTER_ELIGIBLE","formal_entry_result":"VALIDATE_ACTION_PRECHECK_ALLOWED","historical_identity_revision_exists":false,"wrong_success":true}

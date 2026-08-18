@@ -1,0 +1,21 @@
+{
+  "task_id": "A-C11-INITIAL-RESTORE-REFERENCE-FAIL-FIRST-01",
+  "result": "PASS",
+  "before_after_identical": true,
+  "formal_writes": 0,
+  "inputs": [
+    {"path":"novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.md","before_sha256":"8a0db5cf8ad3ef2d30260a3604d4c92b9a1e250c40a06b002d0b91bc5c84d15d","after_sha256":"8a0db5cf8ad3ef2d30260a3604d4c92b9a1e250c40a06b002d0b91bc5c84d15d"},
+    {"path":"novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.schema.json","before_sha256":"d007216ae13d17711723b80c43cfdbd640e73a3d10baca7d843298198727b379","after_sha256":"d007216ae13d17711723b80c43cfdbd640e73a3d10baca7d843298198727b379"},
+    {"path":"novel-mvp/contracts/validate_c10_intake_material_identity.py","before_sha256":"aeac1c24226019ec4a763bc64c55d2156af60aaa18679151029bafffcc8024ab","after_sha256":"aeac1c24226019ec4a763bc64c55d2156af60aaa18679151029bafffcc8024ab"},
+    {"path":"novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md","before_sha256":"7d27d0577ca5187424928bf22cfde6667dbb7153480b0164a17b43a5e2f5330e","after_sha256":"7d27d0577ca5187424928bf22cfde6667dbb7153480b0164a17b43a5e2f5330e"},
+    {"path":"novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md","before_sha256":"c8a33888790ce4ff59e5a6c91f4b6b9208d0017ea9e47faa7560ab93f42c803b","after_sha256":"c8a33888790ce4ff59e5a6c91f4b6b9208d0017ea9e47faa7560ab93f42c803b"},
+    {"path":"novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json","before_sha256":"ea2d47078140bd1e3b465e75c1ad6455bb9651e1f0ae1c1fcb4eb4534b760578","after_sha256":"ea2d47078140bd1e3b465e75c1ad6455bb9651e1f0ae1c1fcb4eb4534b760578"},
+    {"path":"novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.fixtures.jsonl","before_sha256":"1da9be3a7953651ae2221009ac5c5924d3d1b17f8c7983d618ea68de808f2c6c","after_sha256":"1da9be3a7953651ae2221009ac5c5924d3d1b17f8c7983d618ea68de808f2c6c"},
+    {"path":"novel-mvp/contracts/validate_c11_chapter_revision_ledger.py","before_sha256":"dea6a9195aa4cbd458739d01017f7da2f64e4b85dc52b46e199b6294683811e2","after_sha256":"dea6a9195aa4cbd458739d01017f7da2f64e4b85dc52b46e199b6294683811e2"}
+  ],
+  "advisory_input": {
+    "path": "TEMP/chatgpt_review_returns/R13_SIX_WINDOW_CURRENT_FORMAL_REVIEW_R04_ADVISORY_20260819_R01/extracted/00_EXECUTIVE_JUDGMENT.md",
+    "sha256": "dd3c21aaacccca0a4373b86f051ff85c094d703bae40a14ffc26ecad0d53f546",
+    "authority": "ADVISORY_ONLY"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "identity": "T03_UNIFIED_EXACT_JSON_FENCE_OFFLINE_REPLAY_RESULT_R01",
+  "verdict": "OFFLINE_UNIFIED_TRANSPORT_REPLAY_PASS",
+  "api_calls": 0,
+  "model_calls": 0,
+  "retries": 0,
+  "ability_scoring": false,
+  "actual_replay": [
+    {
+      "route": "DOUBAO",
+      "response_model": "doubao-seed-2-1-turbo-260628",
+      "raw_bytes": 2136,
+      "raw_sha256": "ac9eb1d66ea35da08f2fb81236a96a90d5f9566592be583811577f55500d4b0a",
+      "content_bytes": 1519,
+      "content_sha256": "ea7016958f9b82b73623ac13cc033d648bed8942b90289ea116d02269caecd83",
+      "transport_shape": "EXACT_SINGLE_JSON_FENCE",
+      "payload_bytes": 1507,
+      "payload_sha256": "9f4d0ff9abcf2d58d5aad4ee4408f4a5188610c9061a7d02e2134703ccc842ff",
+      "rewrap_exact": true,
+      "field_or_value_mutation": false,
+      "same_validator_pass": true,
+      "replay": "PASS"
+    },
+    {
+      "route": "FLASH",
+      "response_model": "deepseek-v4-flash-ga-260731",
+      "raw_bytes": 2132,
+      "raw_sha256": "023ea971d02dad641d564ba488f23abf2176dd28876e9ee8724ff8707fc62247",
+      "content_bytes": 1517,
+      "content_sha256": "b678f21b98157df0fa8ce06fafa151b34e12610b0a012633602f485d764d6009",
+      "transport_shape": "EXACT_SINGLE_JSON_FENCE",
+      "payload_bytes": 1505,
+      "payload_sha256": "39cc38ecec0c3c26274e4f483038e4ef7206d3a2f21de1137b8daea3509ea02e",
+      "rewrap_exact": true,
+      "field_or_value_mutation": false,
+      "same_validator_pass": true,
+      "replay": "PASS"
+    }
+  ],
+  "actual_routes_passed": 2,
+  "actual_routes_total": 2,
+  "fixture_cases_passed": 13,
+  "fixture_cases_total": 13,
+  "fixture_outcomes": [
+    {"case_id": "PASS_DOUBAO_EXACT_FENCE", "outcome": "PASS", "shape": "EXACT_SINGLE_JSON_FENCE"},
+    {"case_id": "PASS_FLASH_EXACT_FENCE", "outcome": "PASS", "shape": "EXACT_SINGLE_JSON_FENCE"},
+    {"case_id": "PASS_DOUBAO_NAKED_JSON", "outcome": "PASS", "shape": "NAKED_JSON"},
+    {"case_id": "PASS_FLASH_NAKED_JSON", "outcome": "PASS", "shape": "NAKED_JSON"},
+    {"case_id": "REJECT_OUTSIDE_PREFIX", "outcome": "REJECT", "error": "FENCE_SHAPE"},
+    {"case_id": "REJECT_OUTSIDE_SUFFIX", "outcome": "REJECT", "error": "FENCE_SHAPE"},
+    {"case_id": "REJECT_UPPERCASE_JSON_TAG", "outcome": "REJECT", "error": "FENCE_SHAPE"},
+    {"case_id": "REJECT_NO_LANGUAGE_TAG", "outcome": "REJECT", "error": "FENCE_SHAPE"},
+    {"case_id": "REJECT_DOUBLE_FENCE", "outcome": "REJECT", "error": "NESTED_OR_MULTIPLE_FENCE"},
+    {"case_id": "REJECT_BAD_JSON", "outcome": "REJECT", "error": "BAD_JSON"},
+    {"case_id": "REJECT_IDENTITY_WRONG", "outcome": "REJECT", "error": "OUTPUT_IDENTITY"},
+    {"case_id": "REJECT_TOP_FIELD_MISSING", "outcome": "REJECT", "error": "TOP_LEVEL_FIELDS"},
+    {"case_id": "REJECT_TOP_FIELD_EXTRA", "outcome": "REJECT", "error": "TOP_LEVEL_FIELDS"}
+  ],
+  "same_normalizer_for_both_routes": true,
+  "same_validator_for_both_routes": true,
+  "all_pass": true
+}
