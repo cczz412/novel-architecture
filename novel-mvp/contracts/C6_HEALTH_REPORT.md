@@ -1,8 +1,8 @@
 # C6 · 体检报告（HEALTH_REPORT）
 
-**版本：v0**（描述现状；要加字段先升版本并同步收发两端）
+**版本：v1**（增加来源 chapter revision 水位与 stale 身份；v0 报告作为 legacy）
 
-读法：`evidence.quote` 是模型转抄、未逐字回填，只能当定位线索，不得标为已核证据。产品内投影可改，确认后才进真值。C6 只报告质检，不写关章，也不能单独推出六道门已过。当前 v0 没有 `source_commit_seq`，升 v1 前不得为高影响写操作提供依据。
+读法：C6 是可覆盖投影，不是真值。v1 保存生成时消费的 chapter revision refs；读取时与 C11 current 比较，旧版报告派生 `STALE`，不得自动清灯、自动重跑或写回事实。`evidence.quote` 仍只是定位线索，只有带 VERIFIED C11 anchor 才是已核证据。
 
 一句话用途：一致性体检的完整产出——矛盾、存疑、别名提示、账本完整性四本账分开记，每条都带涉事事实号和双方证据。它是事实账的投影快照：重跑覆盖、会过期作废，确认后的事实改动仍回审查台，绝不回写 facts.json。
 
@@ -15,8 +15,11 @@
 
 | 字段 | 类型 | 含义 | 必填 |
 |---|---|---|---|
-| contract | str | 固定 `"C6_HEALTH_REPORT v0"` | 是 |
+| contract | str | 固定 `C6_HEALTH_REPORT` | 是 |
+| version | str | 固定 `v1` | 是 |
 | project / generated_at / model | str | 哪本书、何时体检、用什么模型 | 是 |
+| chapter_revision_refs | list[obj] | 本报告实际消费的 chapter revisions，去重保存 | 是 |
+| source_revision_state | enum | `CURRENT`／`STALE`／`LEGACY_REVISION_UNKNOWN`；由读取端与 C11 派生 | 是 |
 | scan | obj | 扫描台账：扫了多少、分几组、花多少调用（字段见下） | 是 |
 | conflicts | list | **矛盾账**：模型判「确实打架」的问题 | 是（可空） |
 | insufficient | list | **存疑账**：可能矛盾但材料不足判不死的，**不算矛盾** | 是（可空） |
@@ -37,13 +40,13 @@
 | fact_ids | list | 涉事事实号（C4 的 `id`，项目内唯一；不用 seg 当键） | 是 |
 | note | str | 为何亮灯（模型一句话说明） | 是 |
 | next_step | str | 下一步去哪（按 layer/verdict 生成的固定话术） | 是 |
-| evidence | list | 双方证据，每条 `{fact_id, chapter_id, seg, status, text, quote}` | 是 |
+| evidence | list | 双方证据；v1 追加 `chapter_revision_ref`，VERIFIED 时可追加 `anchor_ref` | 是 |
 | found_by | list | 哪些扫描组发现的（合并去重后可能多个） | 是 |
 | confidence / hard | str / bool | 模型自评（置信、是否铁矛盾），程序据此定灯，仅供追溯 | 是 |
 
 灯（severity）、说明（note）、证据（evidence）、去向（next_step）是四个独立字段——灯只管红黄，为何亮、凭什么、怎么办各管各的。
 
-## 真实示例
+## v0 真实示例（legacy）
 
 取自 `data/万鬼伏藏/health_report.json`（2026-08-13 实跑；顶层其余字段略）：
 
@@ -125,8 +128,16 @@
 3. **数据事故不冒充剧情矛盾**：账本自身违约（重复事实号）由完整性预检机械拦下，坏号只认首次出现，副本不喂模型。
 4. **只读投影**：本报告不改任何事实状态；`next_step` 都指回审查台或原文，不提供「就地修复」。
 5. 证据定位只有 `chapter_id`＋`seg` 段级坐标；`quote` 是抽取时模型转抄、未回填校验（I-013），**不保证能在原文精确 find 到**。
+6. v1 报告的任一 `chapter_revision_ref` 落后于 C11 current 时，整份报告的 `source_revision_state` 派生为 STALE；投影可以继续展示历史，但不能为高影响写操作提供依据。
+7. 旧 v0 报告没有 revision ref，迁移时统一标 `LEGACY_REVISION_UNKNOWN`，重跑后才能成为 CURRENT。
 
-## 已知缺口（v0 不含，升版本再加）
+## Backward compatibility
+
+- v0 顶层组合字符串 `C6_HEALTH_REPORT v0` 不冒充 v1；旧 reader 遇到 v1 必须 fail closed。
+- v1 不修改 conflicts／insufficient／alias／integrity 的故事语义，只增加来源版本水位。
+- 产品 `check.py` 尚未施工 v1；本票只冻结正式合同。
+
+## 仍未解决
 
 - 无双序（故事顺序 vs 叙述顺序）：倒叙/回忆会触发时间线误报，故 v0 时间线封顶黄灯。
 - 无豁免机制：作者「已阅，故意的」无处落笔，重跑会原样再报（零唠叨只管单次报告内去重）。

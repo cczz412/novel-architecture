@@ -1,0 +1,965 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY.schema.json",
+  "title": "C10_INTAKE_MATERIAL_IDENTITY v4 with v1/v2/v3 compatibility",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/v1_record"
+    },
+    {
+      "$ref": "#/$defs/v2_record"
+    },
+    {
+      "$ref": "#/$defs/v3_record"
+    },
+    {
+      "$ref": "#/$defs/v4_record"
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nullable_non_empty_string": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "source_sha256",
+        "coordinate_basis",
+        "start",
+        "end",
+        "slice_sha256"
+      ],
+      "properties": {
+        "source_id": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "source_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "coordinate_basis": {
+          "const": "DECODED_UNICODE_CODEPOINT_V1"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "slice_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "reference"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "USER_DECLARATION",
+            "STRUCTURED_ENTRY",
+            "CONTENT_CLASSIFICATION_CANDIDATE",
+            "NO_ASSERTION"
+          ]
+        },
+        "reference": {
+          "$ref": "#/$defs/nullable_non_empty_string"
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "reference"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "USER",
+            "SYSTEM",
+            "PARSER",
+            "MODEL"
+          ]
+        },
+        "reference": {
+          "$ref": "#/$defs/nullable_non_empty_string"
+        }
+      }
+    },
+    "identity_revision_base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision_no",
+        "role",
+        "state",
+        "basis",
+        "actor",
+        "recorded_at",
+        "reason"
+      ],
+      "properties": {
+        "revision_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "role": {},
+        "state": {
+          "enum": [
+            "CONFIRMED",
+            "CANDIDATE",
+            "UNKNOWN"
+          ]
+        },
+        "basis": {
+          "$ref": "#/$defs/basis"
+        },
+        "actor": {
+          "$ref": "#/$defs/actor"
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reason": {
+          "$ref": "#/$defs/nullable_non_empty_string"
+        }
+      }
+    },
+    "v1_revision": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/identity_revision_base"
+        },
+        {
+          "properties": {
+            "role": {
+              "enum": [
+                "INTRO",
+                "CHAPTER",
+                null
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "CONFIRMED"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "INTRO",
+                  "CHAPTER"
+                ]
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "USER_DECLARATION",
+                      "STRUCTURED_ENTRY"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "USER",
+                      "SYSTEM"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "reason": {
+                "$ref": "#/$defs/non_empty_string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "CANDIDATE"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "const": "INTRO"
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "const": "CONTENT_CLASSIFICATION_CANDIDATE"
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "PARSER",
+                      "MODEL"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "reason": {
+                "$ref": "#/$defs/non_empty_string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "UNKNOWN"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "type": "null"
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "const": "NO_ASSERTION"
+                  },
+                  "reference": {
+                    "type": "null"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "const": "SYSTEM"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/authority_pairing"
+        }
+      ]
+    },
+    "v2_revision": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/identity_revision_base"
+        },
+        {
+          "properties": {
+            "role": {
+              "enum": [
+                "INTRO",
+                "CHAPTER",
+                "SETTING",
+                null
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "CONFIRMED"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "INTRO",
+                  "CHAPTER",
+                  "SETTING"
+                ]
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "USER_DECLARATION",
+                      "STRUCTURED_ENTRY"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "USER",
+                      "SYSTEM"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "reason": {
+                "$ref": "#/$defs/non_empty_string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "CANDIDATE"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "INTRO",
+                  "SETTING"
+                ]
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "const": "CONTENT_CLASSIFICATION_CANDIDATE"
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "PARSER",
+                      "MODEL"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "reason": {
+                "$ref": "#/$defs/non_empty_string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "UNKNOWN"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "type": "null"
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "const": "NO_ASSERTION"
+                  },
+                  "reference": {
+                    "type": "null"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "const": "SYSTEM"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/authority_pairing"
+        }
+      ]
+    },
+    "v3_revision": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/identity_revision_base"
+        },
+        {
+          "properties": {
+            "role": {
+              "enum": [
+                "INTRO",
+                "CHAPTER",
+                "SETTING",
+                "TITLE",
+                null
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "CONFIRMED"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "INTRO",
+                  "CHAPTER",
+                  "SETTING",
+                  "TITLE"
+                ]
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "USER_DECLARATION",
+                      "STRUCTURED_ENTRY"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "USER",
+                      "SYSTEM"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "reason": {
+                "$ref": "#/$defs/non_empty_string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "CANDIDATE"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "INTRO",
+                  "SETTING",
+                  "TITLE"
+                ]
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "const": "CONTENT_CLASSIFICATION_CANDIDATE"
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "PARSER",
+                      "MODEL"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "reason": {
+                "$ref": "#/$defs/non_empty_string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "UNKNOWN"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "type": "null"
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "const": "NO_ASSERTION"
+                  },
+                  "reference": {
+                    "type": "null"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "const": "SYSTEM"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/authority_pairing"
+        }
+      ]
+    },
+    "v4_revision": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/identity_revision_base"
+        },
+        {
+          "properties": {
+            "role": {
+              "enum": [
+                "INTRO",
+                "CHAPTER",
+                "SETTING",
+                "TITLE",
+                "TAGS",
+                null
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "CONFIRMED"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "INTRO",
+                  "CHAPTER",
+                  "SETTING",
+                  "TITLE",
+                  "TAGS"
+                ]
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "USER_DECLARATION",
+                      "STRUCTURED_ENTRY"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "USER",
+                      "SYSTEM"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "reason": {
+                "$ref": "#/$defs/non_empty_string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "CANDIDATE"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "INTRO",
+                  "SETTING",
+                  "TITLE",
+                  "TAGS"
+                ]
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "const": "CONTENT_CLASSIFICATION_CANDIDATE"
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "PARSER",
+                      "MODEL"
+                    ]
+                  },
+                  "reference": {
+                    "$ref": "#/$defs/non_empty_string"
+                  }
+                }
+              },
+              "reason": {
+                "$ref": "#/$defs/non_empty_string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "UNKNOWN"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "type": "null"
+              },
+              "basis": {
+                "properties": {
+                  "type": {
+                    "const": "NO_ASSERTION"
+                  },
+                  "reference": {
+                    "type": "null"
+                  }
+                }
+              },
+              "actor": {
+                "properties": {
+                  "type": {
+                    "const": "SYSTEM"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/authority_pairing"
+        }
+      ]
+    },
+    "authority_pairing": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "properties": {
+                  "type": {
+                    "const": "USER_DECLARATION"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            },
+            "required": [
+              "basis"
+            ]
+          },
+          "then": {
+            "properties": {
+              "actor": {
+                "properties": {
+                  "type": {
+                    "const": "USER"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "properties": {
+                  "type": {
+                    "const": "STRUCTURED_ENTRY"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            },
+            "required": [
+              "basis"
+            ]
+          },
+          "then": {
+            "properties": {
+              "actor": {
+                "properties": {
+                  "type": {
+                    "const": "SYSTEM"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "record_base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "material_unit_id",
+        "source_ref",
+        "identity_revisions"
+      ],
+      "properties": {
+        "contract": {
+          "const": "C10_INTAKE_MATERIAL_IDENTITY"
+        },
+        "version": {
+          "enum": [
+            "v1",
+            "v2",
+            "v3",
+            "v4"
+          ]
+        },
+        "material_unit_id": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/source_ref"
+        },
+        "identity_revisions": {
+          "type": "array",
+          "minItems": 1
+        }
+      }
+    },
+    "v1_record": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record_base"
+        },
+        {
+          "properties": {
+            "version": {
+              "const": "v1"
+            },
+            "identity_revisions": {
+              "items": {
+                "$ref": "#/$defs/v1_revision"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "v2_record": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record_base"
+        },
+        {
+          "properties": {
+            "version": {
+              "const": "v2"
+            },
+            "identity_revisions": {
+              "items": {
+                "$ref": "#/$defs/v2_revision"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "v3_record": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record_base"
+        },
+        {
+          "properties": {
+            "version": {
+              "const": "v3"
+            },
+            "identity_revisions": {
+              "items": {
+                "$ref": "#/$defs/v3_revision"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "v4_record": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record_base"
+        },
+        {
+          "properties": {
+            "version": {
+              "const": "v4"
+            },
+            "identity_revisions": {
+              "items": {
+                "$ref": "#/$defs/v4_revision"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,450 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json",
+  "title": "C11 chapter revision contract family v1",
+  "oneOf": [
+    {"$ref": "#/$defs/ledger"},
+    {"$ref": "#/$defs/action"},
+    {"$ref": "#/$defs/receipt"},
+    {"$ref": "#/$defs/anchor"},
+    {"$ref": "#/$defs/c1_v1"},
+    {"$ref": "#/$defs/c2_v1"},
+    {"$ref": "#/$defs/c3_v1"},
+    {"$ref": "#/$defs/c4_v1"},
+    {"$ref": "#/$defs/c6_v1"}
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "chapter_id": {
+      "type": "string",
+      "pattern": "^c[0-9]{2,}$"
+    },
+    "chapter_revision_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chapter_id", "revision_no", "revision_text_sha256"],
+      "properties": {
+        "chapter_id": {"$ref": "#/$defs/chapter_id"},
+        "revision_no": {"type": "integer", "minimum": 1},
+        "revision_text_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "c10_source_span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_id",
+        "source_sha256",
+        "coordinate_basis",
+        "start",
+        "end",
+        "slice_sha256"
+      ],
+      "properties": {
+        "kind": {"const": "C10_SOURCE_SPAN"},
+        "source_id": {"$ref": "#/$defs/non_empty_string"},
+        "source_sha256": {"$ref": "#/$defs/sha256"},
+        "coordinate_basis": {"const": "DECODED_UNICODE_CODEPOINT_V1"},
+        "start": {"type": "integer", "minimum": 0},
+        "end": {"type": "integer", "minimum": 1},
+        "slice_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "legacy_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "blob_sha256"],
+      "properties": {
+        "kind": {"const": "LEGACY_C1_SNAPSHOT"},
+        "blob_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "content_ref": {
+      "oneOf": [
+        {"$ref": "#/$defs/c10_source_span"},
+        {"$ref": "#/$defs/legacy_snapshot"}
+      ]
+    },
+    "origin_material_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["material_unit_id", "identity_revision_no"],
+      "properties": {
+        "material_unit_id": {"$ref": "#/$defs/non_empty_string"},
+        "identity_revision_no": {"type": "integer", "minimum": 1}
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision_no",
+        "title",
+        "text_sha256",
+        "chars",
+        "content_ref",
+        "origin_material_ref",
+        "change_kind",
+        "restores_revision_no",
+        "committed_at",
+        "commit_operation_id",
+        "actor"
+      ],
+      "properties": {
+        "revision_no": {"type": "integer", "minimum": 1},
+        "title": {"$ref": "#/$defs/non_empty_string"},
+        "text_sha256": {"$ref": "#/$defs/sha256"},
+        "chars": {"type": "integer", "minimum": 0},
+        "content_ref": {"$ref": "#/$defs/content_ref"},
+        "origin_material_ref": {
+          "oneOf": [
+            {"$ref": "#/$defs/origin_material_ref"},
+            {"type": "null"}
+          ]
+        },
+        "change_kind": {"enum": ["INITIAL", "REPLACE", "RESTORE"]},
+        "restores_revision_no": {
+          "oneOf": [
+            {"type": "integer", "minimum": 1},
+            {"type": "null"}
+          ]
+        },
+        "committed_at": {"$ref": "#/$defs/non_empty_string"},
+        "commit_operation_id": {"$ref": "#/$defs/non_empty_string"},
+        "actor": {"const": "AUTHOR"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"change_kind": {"const": "RESTORE"}}},
+          "then": {"properties": {"restores_revision_no": {"type": "integer", "minimum": 1}}},
+          "else": {"properties": {"restores_revision_no": {"type": "null"}}}
+        },
+        {
+          "if": {"properties": {"content_ref": {"properties": {"kind": {"const": "C10_SOURCE_SPAN"}}}}},
+          "then": {"properties": {"origin_material_ref": {"$ref": "#/$defs/origin_material_ref"}}},
+          "else": {"properties": {"origin_material_ref": {"type": "null"}}}
+        }
+      ]
+    },
+    "ledger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "chapter_id", "current_revision_no", "revisions", "last_operation_id"],
+      "properties": {
+        "contract": {"const": "CHAPTER_REVISION_LEDGER"},
+        "version": {"const": "v1"},
+        "chapter_id": {"$ref": "#/$defs/chapter_id"},
+        "current_revision_no": {"type": "integer", "minimum": 1},
+        "revisions": {
+          "type": "array",
+          "minItems": 1,
+          "prefixItems": [
+            {
+              "allOf": [
+                {"$ref": "#/$defs/revision"},
+                {
+                  "properties": {
+                    "revision_no": {"const": 1},
+                    "change_kind": {"const": "INITIAL"}
+                  }
+                }
+              ]
+            }
+          ],
+          "items": {
+            "allOf": [
+              {"$ref": "#/$defs/revision"},
+              {"properties": {"change_kind": {"enum": ["REPLACE", "RESTORE"]}}}
+            ]
+          }
+        },
+        "last_operation_id": {"$ref": "#/$defs/non_empty_string"}
+      }
+    },
+    "action_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_chapter_id",
+        "expected_current_revision_no",
+        "candidate_title",
+        "candidate_content_ref",
+        "candidate_origin_material_ref",
+        "candidate_text_sha256",
+        "change_kind",
+        "restores_revision_no",
+        "target_basis",
+        "reason"
+      ],
+      "properties": {
+        "target_chapter_id": {"$ref": "#/$defs/chapter_id"},
+        "expected_current_revision_no": {"type": "integer", "minimum": 1},
+        "candidate_title": {"$ref": "#/$defs/non_empty_string"},
+        "candidate_content_ref": {"$ref": "#/$defs/content_ref"},
+        "candidate_origin_material_ref": {
+          "oneOf": [
+            {"$ref": "#/$defs/origin_material_ref"},
+            {"type": "null"}
+          ]
+        },
+        "candidate_text_sha256": {"$ref": "#/$defs/sha256"},
+        "change_kind": {"enum": ["REPLACE", "RESTORE"]},
+        "restores_revision_no": {
+          "oneOf": [
+            {"type": "integer", "minimum": 1},
+            {"type": "null"}
+          ]
+        },
+        "target_basis": {
+          "enum": ["EXPLICIT_CHAPTER_ID", "EXPLICIT_SLOT_MAPPING", "AUTHOR_CONFIRMED_CANDIDATE"]
+        },
+        "reason": {"type": "string"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"change_kind": {"const": "RESTORE"}}},
+          "then": {"properties": {"restores_revision_no": {"type": "integer", "minimum": 1}}},
+          "else": {"properties": {"restores_revision_no": {"type": "null"}}}
+        },
+        {
+          "if": {"properties": {"change_kind": {"const": "RESTORE"}}},
+          "then": {"properties": {"candidate_origin_material_ref": {"type": "null"}}},
+          "else": {
+            "properties": {
+              "candidate_origin_material_ref": {"$ref": "#/$defs/origin_material_ref"},
+              "candidate_content_ref": {"$ref": "#/$defs/c10_source_span"}
+            }
+          }
+        }
+      ]
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "operation_id", "actor", "intent", "items"],
+      "properties": {
+        "contract": {"const": "CHAPTER_REVISION_COMMIT_ACTION"},
+        "version": {"const": "v1"},
+        "operation_id": {"$ref": "#/$defs/non_empty_string"},
+        "actor": {"const": "AUTHOR"},
+        "intent": {"const": "ADOPT_AS_CURRENT_CHAPTER_REVISION"},
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/action_item"}
+        }
+      }
+    },
+    "writes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ledger_records",
+        "c1_current_views",
+        "facts",
+        "projection_receipts",
+        "planstore_reconciliation_edges",
+        "planstore_history_rows"
+      ],
+      "properties": {
+        "ledger_records": {"type": "integer", "minimum": 0},
+        "c1_current_views": {"type": "integer", "minimum": 0},
+        "facts": {"type": "integer", "minimum": 0},
+        "projection_receipts": {"type": "integer", "minimum": 0},
+        "planstore_reconciliation_edges": {"type": "integer", "minimum": 0},
+        "planstore_history_rows": {"type": "integer", "minimum": 0}
+      }
+    },
+    "receipt_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_id",
+        "before_revision_no",
+        "after_revision_no",
+        "result",
+        "text_sha256",
+        "facts_migrated",
+        "facts_needs_recheck"
+      ],
+      "properties": {
+        "chapter_id": {"$ref": "#/$defs/chapter_id"},
+        "before_revision_no": {"type": "integer", "minimum": 1},
+        "after_revision_no": {"type": "integer", "minimum": 1},
+        "result": {"enum": ["REVISION_APPENDED", "UNCHANGED", "REJECTED"]},
+        "text_sha256": {"$ref": "#/$defs/sha256"},
+        "facts_migrated": {"type": "integer", "minimum": 0},
+        "facts_needs_recheck": {"type": "integer", "minimum": 0}
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "operation_id", "transaction_id", "status", "replayed", "reason_code", "items", "writes"],
+      "properties": {
+        "contract": {"const": "CHAPTER_REVISION_COMMIT_RECEIPT"},
+        "version": {"const": "v1"},
+        "operation_id": {"$ref": "#/$defs/non_empty_string"},
+        "transaction_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/non_empty_string"},
+            {"type": "null"}
+          ]
+        },
+        "status": {"enum": ["COMMITTED", "NO_CHANGE", "REJECTED", "NEEDS_TARGET_CONFIRMATION", "NEEDS_MANUAL_RECOVERY"]},
+        "replayed": {"type": "boolean"},
+        "reason_code": {
+          "oneOf": [
+            {"$ref": "#/$defs/non_empty_string"},
+            {"type": "null"}
+          ]
+        },
+        "items": {"type": "array", "items": {"$ref": "#/$defs/receipt_item"}},
+        "writes": {"$ref": "#/$defs/writes"}
+      }
+    },
+    "anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chapter_id", "revision_no", "revision_text_sha256", "coordinate_basis", "start", "end", "slice_sha256"],
+      "properties": {
+        "chapter_id": {"$ref": "#/$defs/chapter_id"},
+        "revision_no": {"type": "integer", "minimum": 1},
+        "revision_text_sha256": {"$ref": "#/$defs/sha256"},
+        "coordinate_basis": {"const": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN"},
+        "start": {"type": "integer", "minimum": 0},
+        "end": {"type": "integer", "minimum": 1},
+        "slice_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "recheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["previous_status", "reason", "from_revision_no", "target_revision_no", "flagged_at"],
+      "properties": {
+        "previous_status": {"enum": ["extracted", "confirmed", "rejected"]},
+        "reason": {"enum": ["evidence_gone", "anchor_ambiguous", "legacy_anchor_unverified"]},
+        "from_revision_no": {"type": "integer", "minimum": 1},
+        "target_revision_no": {"type": "integer", "minimum": 1},
+        "flagged_at": {"$ref": "#/$defs/non_empty_string"}
+      }
+    },
+    "c1_v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "id", "title", "kind", "text", "added_at", "chapter_revision_ref"],
+      "properties": {
+        "contract": {"const": "C1_CHAPTER_DOC"},
+        "version": {"const": "v1"},
+        "id": {"$ref": "#/$defs/chapter_id"},
+        "title": {"$ref": "#/$defs/non_empty_string"},
+        "kind": {"const": "draft"},
+        "text": {"type": "string"},
+        "added_at": {"$ref": "#/$defs/non_empty_string"},
+        "chapter_revision_ref": {"$ref": "#/$defs/chapter_revision_ref"}
+      }
+    },
+    "c2_v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "chapter_revision_ref", "seg", "text", "start", "end", "halo_before", "halo_after"],
+      "properties": {
+        "contract": {"const": "C2_SEGMENT"},
+        "version": {"const": "v1"},
+        "chapter_revision_ref": {"$ref": "#/$defs/chapter_revision_ref"},
+        "seg": {"type": "integer", "minimum": 1},
+        "text": {"type": "string"},
+        "start": {"type": "integer", "minimum": 0},
+        "end": {"type": "integer", "minimum": 0},
+        "halo_before": {"type": "string"},
+        "halo_after": {"type": "string"}
+      }
+    },
+    "c3_v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "chapter_revision_ref", "text", "quote", "seg"],
+      "properties": {
+        "contract": {"const": "C3_FACT_CANDIDATE"},
+        "version": {"const": "v1"},
+        "chapter_revision_ref": {"$ref": "#/$defs/chapter_revision_ref"},
+        "text": {"$ref": "#/$defs/non_empty_string"},
+        "quote": {"type": "string"},
+        "seg": {"type": "integer", "minimum": 1}
+      }
+    },
+    "c4_v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "id", "chapter_id", "text", "quote", "status", "source", "note", "added_at", "chapter_revision_ref", "anchor_ref", "anchor_state", "recheck"],
+      "properties": {
+        "contract": {"const": "C4_FACT_QUERY"},
+        "version": {"const": "v1"},
+        "id": {"type": "string", "pattern": "^f[0-9]{3,}$"},
+        "chapter_id": {"$ref": "#/$defs/chapter_id"},
+        "text": {"$ref": "#/$defs/non_empty_string"},
+        "quote": {"type": "string"},
+        "status": {"enum": ["extracted", "confirmed", "rejected", "needs_recheck"]},
+        "source": {"$ref": "#/$defs/non_empty_string"},
+        "note": {"type": "string"},
+        "added_at": {"$ref": "#/$defs/non_empty_string"},
+        "seg": {"type": "integer", "minimum": 1},
+        "decided_at": {"$ref": "#/$defs/non_empty_string"},
+        "chapter_revision_ref": {"$ref": "#/$defs/chapter_revision_ref"},
+        "anchor_ref": {
+          "oneOf": [
+            {"$ref": "#/$defs/anchor"},
+            {"type": "null"}
+          ]
+        },
+        "anchor_state": {"enum": ["VERIFIED", "LEGACY_UNVERIFIED"]},
+        "recheck": {
+          "oneOf": [
+            {"$ref": "#/$defs/recheck"},
+            {"type": "null"}
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"anchor_state": {"const": "VERIFIED"}}},
+          "then": {"properties": {"anchor_ref": {"$ref": "#/$defs/anchor"}}},
+          "else": {"properties": {"anchor_ref": {"type": "null"}}}
+        },
+        {
+          "if": {"properties": {"status": {"const": "needs_recheck"}}},
+          "then": {"properties": {"recheck": {"$ref": "#/$defs/recheck"}}},
+          "else": {"properties": {"recheck": {"type": "null"}}}
+        }
+      ]
+    },
+    "c6_v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "project", "generated_at", "model", "chapter_revision_refs", "source_revision_state", "scan", "conflicts", "insufficient", "alias_hints", "integrity", "summary"],
+      "properties": {
+        "contract": {"const": "C6_HEALTH_REPORT"},
+        "version": {"const": "v1"},
+        "project": {"$ref": "#/$defs/non_empty_string"},
+        "generated_at": {"$ref": "#/$defs/non_empty_string"},
+        "model": {"$ref": "#/$defs/non_empty_string"},
+        "chapter_revision_refs": {"type": "array", "items": {"$ref": "#/$defs/chapter_revision_ref"}},
+        "source_revision_state": {"enum": ["CURRENT", "STALE", "LEGACY_REVISION_UNKNOWN"]},
+        "scan": {"type": "object"},
+        "conflicts": {"type": "array"},
+        "insufficient": {"type": "array"},
+        "alias_hints": {"type": "array"},
+        "integrity": {"type": "object"},
+        "summary": {"type": "object"}
+      }
+    }
+  }
+}

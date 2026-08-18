@@ -100,6 +100,26 @@ graph LR
 
 **大卡小卡的说法**（考古对照，v2 捞货 31）：旧设计的「大卡＝本章主管线问题」在本结构里就是章篮的「本章目标」，不另设卡对象；「小卡＝修遗留逻辑」落在计划事件的目的标签里——R02 给目的标签加了第五种「修复」（见 3.6），一张小卡就是一个 purpose=修复 的计划事件，正文引用它要修的遗留问题（体检报告条目或风险项）。跨章遗留问题本身住在体检／风险侧（M7 的地盘），规划账只放「打算怎么修」。
 
+#### 3.4.1 章纲整体版本与编译基线
+
+章纲仍是现有 `plan.json` 中章槽、场、计划事件和写法挂件组成的章级可重编译工件，不新建章纲库或第二本 planstore。当前落位版本由 `chapter_slot.outline_checkpoint` 表达：
+
+```json
+{
+  "outline_rev": 2,
+  "source_slot_ref": "S-0001",
+  "source_commit_seq": 8
+}
+```
+
+- `outline_rev` 是同一稳定章槽下的章纲整体修订号，与场／PE／挂件自己的对象 `rev` 分开；
+- `source_slot_ref` 必须等于承载该 checkpoint 的章槽 ID，防止另一章的合法 baseline 冒充；
+- `source_commit_seq` 引用该章最近一个会改变章纲编译输入的正式 planning 提交水位，不复制 planning snapshot。
+
+`S-0001@outline-r2` 只是“稳定章槽 ID＋整体修订号”的派生读法，不是新对象 ID，也不占新发号器。章纲落位动作 `outline_land` 是 planning 的派生结果，不推进该章 planning 输入水位；另一章变化同样不推进本章水位。当前章出现更新的有效 planning 输入后，旧 checkpoint 自动 stale，只失去消费资格：旧内容不删、不静默改 baseline，继续从现有规划流水和 blob 追溯，等 M8 重编译新版本。
+
+只有消费就绪、baseline 存在且属于当前章、baseline 仍是该章最新 planning 输入水位的章纲才能成为 current。blocked／未消费就绪投影不能获得 current；`slot_status=partial` 仍只表示书稿部分交棒，不承担章纲编译状态。
+
 ### 3.5 场篮（按考古捞货升级，分两档）
 
 旧设计的「场景单元最小合同」（v2 捞货 34）比 R01 的场篮多出一整套戏剧字段。R02 分两档吸收，**MVP 只上最小档**，别一次全上：

@@ -227,7 +227,21 @@ M8 稿 §8.4 的配套账本增补清单（arc_card／point_board／触发字段
 
 ### 1.13 槽位映射记录 `slot_mapping`（MAP-）
 
-与 R01 一致：`slot_ref`／`chapter_id`／`expected_chapter_no`／`mapping_kind`（`as_written`／`split`／`merge`／`inserted`／`non_narrative`）／`reason`／`decided_by`／`mapping_status`／`superseded_by`。不带 `truth_bearing`。拆章时的「哪半写成了」由槽位的 `handover_parts` 承担（1.4），映射行只管两条序的对位。
+沿用 R01 的映射语义，并补齐已正式化的稳定 MAP 身份。拆章时的「哪半写成了」由槽位的 `handover_parts` 承担（1.4），映射行只管两条序的对位，不带 `truth_bearing`。
+
+| 字段英文名 | 类型 | 必填 | 人话含义 | 约束／例子 |
+|---|---|---|---|---|
+| `id` | str | 是 | 稳定映射身份 | `MAP-0001`；由 `id_counters.MAP` 发号 |
+| `slot_ref` | str/null | 是 | 哪个规划槽 | `as_written/split/merge` 引用真实 S-；`inserted/non_narrative` 不承接叙事规划时为 null |
+| `chapter_id` | str/null | 是 | 实际 C1 章号 | 写成后引用真实 C1；仅预调整时可 null |
+| `expected_chapter_no` | int/null | 是 | 预计物理章号 | 非空时为正整数；预调整无 C1 时必填 |
+| `mapping_kind` | enum | 是 | 对位方式 | `as_written/split/merge/inserted/non_narrative` |
+| `reason` | str | 是 | 映射理由 | 可以为空串 |
+| `decided_by` | enum | 是 | 谁决定 | `author/auto`；auto 仍受既有停点权限约束 |
+| `mapping_status` | enum | 是 | 是否现行 | `active/superseded` |
+| `superseded_by` | str/null | 是 | 新替代映射 | active 时 null；superseded 时引用真实、非自身 MAP- |
+
+`slot_mappings=[]` 只表示映射尚未完成／pending，不表示作者明确决定无映射。完整 handover 必须在同一事务写入与 C1、章槽相符的 active mapping；不得跳过映射只写 `handover_parts`。
 
 ### 1.14 对账边 `reconciliation_edge`（RE-，前缀暂定交词典 N9）【R02 新增（ADD-030.2，2026-08-13 替拍）】
 
@@ -316,7 +330,8 @@ erDiagram
 | 前缀 | 对象 | 登记状态 |
 |---|---|---|
 | `S-`／`PE-`／`H-`／`L-`／`OPT-`／`MC-`／`F-` | 同 R01 | 已登记 |
-| `BK-`／`VOL-`／`SCN-`／`WG-`／`PIN-`／`MAP-` | R01 新增 | 暂定，交词典 N9 |
+| `BK-`／`VOL-`／`SCN-`／`WG-`／`PIN-` | R01 新增 | 暂定，交词典 N9 |
+| `MAP-` | 槽位映射 | 已正式用于 `slot_mapping.id`，由 `id_counters.MAP` 发号 |
 | `RE-` | 对账边 | 【R02 新增】**暂定**，交词典 N9 |
 | `CH-` | 人物（人物账侧编号，本账只引用，永不发放——同 `F-` 地位） | 人物账稿已登记暂定 |
 
@@ -439,12 +454,18 @@ R01 版的两处走样在这里修正：①`handover` 单值表达不了「一�
 
 ```json
 {"op": "op-20260813-a1b2", "phase": "prepare", "story_commit_seq": 108,
- "files": [{"path": "plan.json", "expected_rev": 41}, {"path": "plan_history.jsonl", "append": true}],
+ "request_sha256": "…",
+ "files": [{"path": "plan.json", "expected_sha256": "…", "target_sha256": "…"},
+           {"path": "plan_history.jsonl", "append": true, "expected_size": 2401, "append_sha256": "…"}],
  "action": "handover", "ts": "2026-08-13 03:10:00"}
 {"op": "op-20260813-a1b2", "phase": "commit", "ts": "2026-08-13 03:10:01"}
 ```
 
+现行 JSON 实现已收掉旧原型的 `expected_rev=0` 占位：整文件替换使用 before／target SHA-256，追加文件使用原字节长度＋追加内容 SHA-256，blob 使用内容地址本身。`.planstore_txn/` 只在 prepare 到 terminal 之间保存恢复所需的原字节和目标字节，terminal 后删除；它不是第二真源。`.planstore.lock` 用操作系统文件锁把恢复扫描、幂等检查、C1 建章和 planstore 提交串在同一个跨进程互斥区内。
+
 **启动恢复扫描**：planstore 每次启动先扫 `commit_log.jsonl` 尾部——发现只有 prepare 没有 commit 的悬空单，按单核对各文件实际状态：全部写成了就补 commit 行；写了一半就按补偿操作回滚到动作前状态，并把该 op 标 `rolled_back`。崩溃后账本要么整个动作在、要么整个动作不在，没有半截。
+
+恢复器不靠文件“看起来像”来猜：当前文件必须匹配 prepare manifest 的 before 或 target 指纹。出现第三种摘要、恢复底稿丢失、重复 terminal 或相互冲突的 terminal 时，状态固定为 `NEEDS_MANUAL_RECOVERY`，整条写路径停止。
 
 **幂等**：重试同一 `operation_id` 先查 commit_log——已 commit 的直接返回成功，不重复建 PE/H/MC（I-014 重复号事故的跨文件版防线；回包故障清单第 2 条「同一 operation_id 连续执行两次不重复建条目」就是验收用例）。
 

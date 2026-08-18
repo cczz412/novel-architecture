@@ -8,11 +8,13 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from mvp import admission
 from mvp import ask as qa
 from mvp import check as hc
 from mvp import extract as ex
@@ -27,12 +29,46 @@ def cmd_init(args):
 
 def cmd_ingest(args):
     kind = "outline" if args.outline else "draft"
+    declaration_manifest = None
+    declarations_path = getattr(args, "declarations", None)
+    material_role = getattr(args, "material_role", None)
+    if args.outline and (declarations_path is not None or material_role is not None):
+        raise SystemExit("--outline 不能与 --material-role／--declarations 同时使用")
+    if declarations_path is not None:
+        try:
+            declaration_manifest = json.loads(Path(declarations_path).read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise SystemExit(f"读不了 declarations JSON：{exc}") from exc
     report = ingest.ingest_files(
-        args.project, args.files, kind=kind, title=args.title,
+        args.project,
+        args.files,
+        kind=kind,
+        title=args.title,
         on_imported=lambda ch, n: print(f"已导入 {ch['id']}［{kind}］{ch['title']}（{n} 字）"),
+        material_role=material_role,
+        declaration_manifest=declaration_manifest,
     )
+    material_count = len(report.get("material_units", []))
+    if kind == "draft":
+        print(f"C10 material units：{material_count}；Chapter C1：{report['count']}")
     for w in report["warnings"]:
         print(f"⚠️ {w}")
+
+
+def prepare_m3_segments(chapter: dict, cfg: dict) -> tuple[list[dict], dict]:
+    """让现役抽取路径只消费 Pre-M3 准入门放行的精确原文片段。"""
+    receipt = admission.apply_pre_m3_admission(chapter)
+    if receipt["status"] != "READY":
+        return [], receipt
+
+    segments: list[dict] = []
+    for target in receipt["m3_eligible_targets"]:
+        built = segment.segment_chapter(
+            target["text"], cfg["seg_min_chars"], cfg["seg_max_chars"], cfg["halo_chars"]
+        )
+        for item in built:
+            segments.append({**item, "seg": len(segments) + 1})
+    return segments, receipt
 
 
 def cmd_extract(args):
@@ -50,8 +86,13 @@ def cmd_extract(args):
             print(f"{ch['id']} 已有抽取结果，跳过（--redo 强制重抽）")
             continue
         print(f"\n抽取 {ch['id']}《{ch['title']}》…")
-        segs = segment.segment_chapter(
-            ch["text"], cfg["seg_min_chars"], cfg["seg_max_chars"], cfg["halo_chars"])
+        segs, admission_receipt = prepare_m3_segments(ch, cfg)
+        if admission_receipt["status"] != "READY":
+            print(f"  ⚠️ Pre-M3 准入未放行（{admission_receipt['status']}），本章未调用模型")
+            continue
+        isolated_count = len(admission_receipt["isolated_author_note_segments"])
+        if isolated_count:
+            print(f"  已隔离作者提示 {isolated_count} 段，不进入 M3")
         cands, errors, ok = [], [], 0
         for seg in segs:
             print(f"  段 {seg['seg']}/{len(segs)}（{len(seg['text'])} 字）调用中…", flush=True)
@@ -78,8 +119,11 @@ def cmd_refine(args):
     bad = [s for s in stages if s not in refine.ALL_STAGES]
     if bad:
         raise SystemExit(f"未知管线段：{bad}（可选：{','.join(refine.ALL_STAGES)}）")
-    segs = segment.segment_chapter(
-        ch["text"], cfg["seg_min_chars"], cfg["seg_max_chars"], cfg["halo_chars"])
+    segs, admission_receipt = prepare_m3_segments(ch, cfg)
+    if admission_receipt["status"] != "READY":
+        raise SystemExit(
+            f"Pre-M3 准入未放行（{admission_receipt['status']}），未调用主抽或质检模型"
+        )
 
     if args.fresh:
         print(f"主抽 {ch['id']}《{ch['title']}》（{cfg['model_id']}）…")
@@ -108,6 +152,14 @@ def cmd_refine(args):
 
 
 def cmd_candidates(args):
+    chapters = [item for item in store.chapters(args.project) if item["id"] == args.chapter]
+    if len(chapters) != 1:
+        raise SystemExit(f"章节不存在：{args.chapter}")
+    admission_receipt = admission.apply_pre_m3_admission(chapters[0])
+    if admission_receipt["status"] != "READY":
+        raise SystemExit(
+            f"Pre-M3 准入未放行（{admission_receipt['status']}），未载入外部候选"
+        )
     items = ex.load_candidates_file(args.json_file)
     n = store.add_fact_candidates(args.project, args.chapter, items, source=Path(args.json_file).name)
     print(f"已载入候选 {n} 条")
@@ -146,8 +198,12 @@ def cmd_confirm(args):
                 print("\n输入结束，确认中止。")
                 break
             if new:
-                store.edit_fact_text(args.project, f["id"], new)
-                store.set_status(args.project, f["id"], store.STATUS_CONFIRMED)
+                store.review_fact(
+                    args.project,
+                    f["id"],
+                    decision="edit_and_confirm",
+                    replacement_text=new,
+                )
         # s 或其他输入 = 跳过
     print("\n确认结束。")
 
@@ -226,11 +282,21 @@ def main():
     p.add_argument("project")
     p.set_defaults(fn=cmd_init)
 
-    p = sub.add_parser("ingest", help="导入章节或大纲")
+    p = sub.add_parser("ingest", help="C10-first 导入明确材料或兼容导入大纲")
     p.add_argument("project")
     p.add_argument("files", nargs="+")
     p.add_argument("--outline", action="store_true", help="按大纲导入（不走抽取）")
     p.add_argument("--title", help="章节标题（默认取文件名）")
+    identity = p.add_mutually_exclusive_group()
+    identity.add_argument(
+        "--material-role",
+        choices=["chapter", "intro", "setting", "title", "tags", "unknown"],
+        help="用户明确声明整份／整批材料身份；不填时按 Unknown 保存，0 C1",
+    )
+    identity.add_argument(
+        "--declarations",
+        help="精确 C10 declarations JSON；单 source 用数组，多 source 用 source_name→数组对象",
+    )
     p.set_defaults(fn=cmd_ingest)
 
     p = sub.add_parser("extract", help="调用模型抽取事实句候选")

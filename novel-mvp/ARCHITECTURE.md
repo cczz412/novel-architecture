@@ -30,11 +30,11 @@ graph LR
 | 代号 | 名字 | 管什么 | 吃 | 吐 | 现状 |
 |---|---|---|---|---|---|
 | M0 | 编排器 | CLI／未来 Web 入口，按用户命令调其他模块 | 用户命令 | — | `cli.py` 已拆净：只剩参数解析＋模块调用（第一单） |
-| M1 | 导入器 | 多格式接收（TXT/MD/DOCX/ZIP/粘贴）→ 拆单元 → 自动分拣上架（见下「材料架」）→ 作者确认分拣；普通导入 ≤10 章正文；导入损失报告 | 用户文件 | C1 | `mvp/ingest.py` 已拆出，含损失报告最小版（章数/字数/空章警告）；分拣是 C1 v1 扩展单 |
+| M1 | 导入器 | 多格式接收（TXT/MD/DOCX/ZIP/粘贴）→ 拆单元 → 明确身份上架（见下「材料架」）→ 作者确认；身份不清时 Unknown／强停，不靠内容猜 | 用户文件 | C10 → C1 | T03-A 已 `CLOSED_LOCAL_PASS`：常用入口统一 C10-first，只有 Confirmed Chapter 可生成 C1；不是 Production Ready，语义自动分类未实现 |
 | M2 | 切窗器 | 章节 → 冠军结构责任段（620–923 字＋180 halo） | C1 | C2 | `mvp/segment.py` 已拆出 |
 | M3 | 抽取器 | 责任段 → 事实句候选（调 API） | C2 | C3 | `mvp/extract.py` 已收窄：只剩 prompt 构造＋arkcli 调用＋JSON 解析；换模型/Prompt 只动这里 |
-| M4 | 事实账 | 候选入账、确认/驳回、状态管理、查询；已确认事实的唯一写域 | C3＋审查操作 | C4 | `mvp/store.py` 已就位（schema v0 临时件，等 N16） |
-| M5 | 审查台 | 作者确认界面：默认故事概览（半屏图＋梗概），点开看细节 | C5＋C4 | 确认/驳回 → M4 | `cli.py confirm` 极简版；概览 UX 待建 |
+| M4 | 事实账 | 候选入账、确认/驳回、状态管理、查询；已确认事实的唯一写域 | C3＋审查操作 | C4 | `mvp/factstore.py` 是唯一 facts 事务 writer；`store.py` 保留兼容调用面（schema v0 临时件，等 N16） |
+| M5 | 审查台 | 作者确认界面：默认故事概览（半屏图＋梗概），点开看细节 | C5＋C4 | FACT_REVIEW_ACTION → M4 | `cli.py confirm` 极简版已统一走事务；概览 UX 待建 |
 | M6 | 取证问答 | 关键词/问题 → 带原文依据的回答 | C4 | 回答＋证据 | `mvp/ask.py` 已拆出（关键词全含匹配版） |
 | M7 | 一致性体检 | **导入口岸的进货检查**（【一致性修订 20260813】ADD-013 G7）：存量正文扫内伤（人名/时间线/设定冲突，每条带证据）＋新章正文粘回入库时的增量核对；不做例行全书体检；创作侧仍须做关章质检及必要的本章增量检查 | C4 | C6 | `mvp/check.py` 已建（第二单）：机械分组＋一组一次调用＋四账分开（矛盾/存疑/别名/完整性），报告分层（真值≠候选） |
 | M8 | 续写规划 | 事实账＋作者目的 → 卡片选项＋卡上目的注解＋写作指导（副产品）；冲突爆出；可反向拆前置卡。不代写正文 | C4＋用户意图＋规划账 | C7 出题快照 | CLI 最小出题 V0 已建（`mvp/plan.py`，`cli.py plan`）；网页画布未建。设计：[M8_PLANNING_DESIGN_R04.md](design/M8_PLANNING_DESIGN_R04.md)；字段：[PLAN_LEDGER_STORAGE.md](contracts/PLAN_LEDGER_STORAGE.md) |
@@ -63,22 +63,36 @@ graph LR
 
 格式支持：TXT/MD 直读；DOCX 用标准库解包（zip+xml 抽正文）；ZIP 解包后对内容物递归分拣；纯粘贴按文本走。
 
+### T03-A 本地收口边界（2026-08-18）
+
+- Explicit Intro／Setting／Title／Tags 已进入正式 C10 身份链；Unknown 不生成 C1。
+- TXT／MD／DOCX／ZIP 共用本地格式路由，已覆盖的解码、容器、章序和 source-span 错误在写 C1 前失败关闭。
+- 已知错误成功为 0；S1A F09、未声明前置区的 R03 和复杂格式长尾仍允许安全停止。
+- `--outline` 仍是历史 C1 兼容入口，但 Pre-M3 admission 会阻断；迁移、R13 对齐、ADD-043 和长尾格式均为后续债。
+- 身份只能写成 `CLOSED_LOCAL_PASS`，不代表生产上线或完整六架语义自动分诊。
+
 ## 合同清单
 
 合同文件放 [contracts/](contracts/)，每份合同一个 md：字段表＋JSON 示例＋版本号。**改合同必须升版本号并同步收发两端；模块内部随便改，不用打招呼。**
 
 | 代号 | 连接 | 内容一句话 | 状态 |
 |---|---|---|---|
-| C1 | M1→M2 | v0 描述现状（仍可能含 outline）。v1 方向：`chapters.json` 只收章节书稿；大纲进材料架／规划侧 | v0 已落：[C1_CHAPTER_DOC.md](contracts/C1_CHAPTER_DOC.md) |
+| C1 | M1／写作区交棒→M2 | v0 字段描述现状（仍可能含 outline）；v0-r01 补工作稿经作者显式交棒后才进入 C1 的接收边界 | v0-r01 已落：[C1_CHAPTER_DOC.md](contracts/C1_CHAPTER_DOC.md) |
 | C2 | M2→M3 | 责任段：正文段＋左右 halo＋位置信息 | v0 已落：[C2_SEGMENT.md](contracts/C2_SEGMENT.md) |
 | C3 | M3→M4 | 事实候选：text＋quote 原文依据＋段落来源＋模型标注 | v0 已落：[C3_FACT_CANDIDATE.md](contracts/C3_FACT_CANDIDATE.md) |
-| C4 | M4→下游 | 事实查询：状态（extracted/confirmed/rejected）＋证据＋章节坐标 | v0 已落：[C4_FACT_QUERY.md](contracts/C4_FACT_QUERY.md) |
+| C4 | M4→下游 | 事实查询：状态（extracted/confirmed/rejected）＋证据＋章节坐标 | v0-r02 已落：[C4_FACT_QUERY.md](contracts/C4_FACT_QUERY.md) |
+| FACT_REVIEW | M5 作者动作层→M4 | 确认／驳回／改判／改写后采纳的短命命令；旧 CLI 只保留兼容表面 | v1 已落：[FACT_REVIEW_ACTION.md](contracts/FACT_REVIEW_ACTION.md) |
 | C5 | M9→M5 | 概览卡：本章事件梗概＋配图引用＋可展开的细节锚点 | 待落 |
 | C6 | M7→UI | 体检报告：矛盾类型＋涉事事实＋双方证据＋严重度；矛盾/存疑/别名/完整性四账分开 | v0 已落：[C6_HEALTH_REPORT.md](contracts/C6_HEALTH_REPORT.md) |
 | C7 | M8→CLI／临时消费者 | 一次出题快照，只覆盖写 `plan_latest.json`；不是规划账，不是 `plan.json` | v0 已落：[C7_PLOT_LAYER.md](contracts/C7_PLOT_LAYER.md) |
-| PLAN_LEDGER | M8／画布→planstore | 规划账：未来怎么写，以及计划和书稿怎样对照 | 施工合同已落：[PLAN_LEDGER_STORAGE.md](contracts/PLAN_LEDGER_STORAGE.md)；planstore 未建 |
+| PLAN_LEDGER | M8／画布→planstore | 规划账：未来怎么写，以及计划和书稿怎样对照 | 合同 r05 已落；`mvp/planstore.py` 已实现 handover＋跨文件恢复，`mvp/reconcile.py` 已实现六态观察／作者 facts 准入／stale；通用 planstore 其他动作未完成 |
+| RECONCILIATION | C1＋C3＋planstore→M4/M5 | 短命六态候选与作者 facts 准入动作；模型只观察，作者确认后才接 confirmed C4 与 RE | v1 已落：[RECONCILIATION_CANDIDATE.md](contracts/RECONCILIATION_CANDIDATE.md)／[RECONCILIATION_FACT_ADMISSION_ACTION.md](contracts/RECONCILIATION_FACT_ADMISSION_ACTION.md) |
+| WORK_DRAFT | 写作区 owner→检测／收工／交棒动作层 | 同一章槽的作者当前工作稿＋单调 revision；不是 C1、冻结书稿或事实 | v1 已落：[WRITING_DESK_WORK_DRAFT.md](contracts/WRITING_DESK_WORK_DRAFT.md) |
+| WRITING_CLOSEOUT | 写作区作者动作层→收工流程 | `full_check`／`skip_check`／`no_prose` 三路短命命令；不写规划账、不关章 | v1 已落：[WRITING_DESK_CLOSEOUT_ACTION.md](contracts/WRITING_DESK_CLOSEOUT_ACTION.md) |
+| WORK_DRAFT_HANDOVER | 写作区作者动作层→C1 接收边界 | 显式“以这篇为准”的短命命令；C1 成功后才可进入 `handover_parts` | v1 已落：[WORK_DRAFT_HANDOVER_ACTION.md](contracts/WORK_DRAFT_HANDOVER_ACTION.md) |
 | C8 | M10→外部 | 场景卡：画面描述＋人物＋情绪＋台词信息点（谁说出什么信息＋语气，**不给成句台词**——【一致性修订 20260813】ADD-017 J1 口径）（视频工作流可直接吃） | 未开工 |
 | C9 | M11→M8/M6/M7 | 共同前提包：分区（铁律/近章/本线/望远/禁做/回取索引）＋每项「为何加载」＋预算与版本 | 设计稿有字段建议，待落 |
+| C10 | M1 Intake writer→材料存储／C1 投影门 | source-span 材料身份＋authority＋revision；v2 增加 Setting，v3 增加 Title，v4 增加 Tags，仍只有 Confirmed Chapter 可生成章节 C1 | v4 正式合同已落并兼容 v1／v2／v3：[C10_INTAKE_MATERIAL_IDENTITY.md](contracts/C10_INTAKE_MATERIAL_IDENTITY.md)；运行时 Intro／Setting／Title／Tags 产品路径已接。正式 validator 仍冻结旧登记文字“Tags 产品未实现”和 `NON_BLOCKING_ADOPTION_STATUS_DEBT`，这是采用状态债，不代表当前运行时能力 |
 
 ## 设计纪律（旧设计打捞＋现行拍板凝练，2026-08-13）
 

@@ -1,6 +1,6 @@
 # C3 · 事实候选（FACT_CANDIDATE）
 
-**版本：v0**（描述现状；要加字段先升版本并同步收发两端）
+**版本：v1**（增加来源章节 revision 身份；quote 仍只是未核定位线索）
 
 一句话用途：抽取器（或外部 JSON 文件）产出的候选事实句，投给事实账之前的传输形态；入账后由 M4 补齐记录字段变成 C4。
 
@@ -13,6 +13,9 @@
 
 | 字段 | 类型 | 含义 | 必填 |
 |---|---|---|---|
+| contract | str | 固定 `C3_FACT_CANDIDATE` | 是 |
+| version | str | 固定 `v1` | 是 |
+| chapter_revision_ref | obj | 必须等于产生本候选的 C2/C1 revision ref | 是 |
 | text | str | 事实句，独立完整、主语明确 | 是（空白条目入账时被丢弃） |
 | quote | str | 责任段内的原文依据片段（模型转抄，未做一致性校验） | 否（可空串） |
 | seg | int | 来源责任段序号（对应 C2 的 `seg`） | 否（extract 路径必带；外部候选文件通常没有） |
@@ -21,7 +24,7 @@
 
 | 参数 | 类型 | 含义 |
 |---|---|---|
-| chapter_id | str | 这批候选属于哪一章 |
+| chapter_id | str | 兼容调用参数；必须等于每条 `chapter_revision_ref.chapter_id` |
 | source | str | 候选来源：模型 ID（extract 路径）或候选文件名（candidates 路径），入库时打在每条上 |
 
 ## 真实示例
@@ -30,18 +33,21 @@
 
 ```json
 {
+  "contract": "C3_FACT_CANDIDATE",
+  "version": "v1",
+  "chapter_revision_ref": {
+    "chapter_id": "c01",
+    "revision_no": 2,
+    "revision_text_sha256": "0aeb78621f82e724f19a56e01f2dc9bfcdec630b1748e2fb2c78edb0b0e47cfc"
+  },
   "text": "市医院精神科的陈医生询问李星燃有什么症状。",
   "quote": "“你叫李星燃对吧，说说看吧，你都有什么症状。”",
   "seg": 1
 }
 ```
 
-外部候选文件（`cli.py candidates` 的备用入口）格式＝上述条目的 JSON 数组，`seg` 可省：
+外部候选文件进入 v1 时也必须携带 revision ref 与 seg；旧 v0 无 revision 的候选只能走显式 legacy migration，不能直接进入 C4 v1。
 
-```json
-[{"text": "事实句", "quote": "原文依据"}]
-```
-
-## 已知缺口（v0 不含，升版本再加）
+## 仍未解决
 
 - 无置信分（I-008 置信分层依赖它）；无字符级坐标，证据定位只能到段粒度。

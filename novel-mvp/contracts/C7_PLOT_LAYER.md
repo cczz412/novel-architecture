@@ -1,13 +1,13 @@
 # C7 · 剧情层（PLOT_LAYER）
 
-**版本：v0**（M8 CLI 最小出题切片；要加字段先升版本并同步收发两端）
+**版本：v1**（M8 单次出题快照；v0 只少本版新增的三个稳定引用）
 
 一句话用途：作者给一句「我要达成的目的」，系统吐出**计划**——卡片选项、卡上目的注解、写作指导三层、跟已确认事实打架的冲突。这是计划，不是事实；不回写 `facts.json`。
 
 | 方向 | 模块 |
 |---|---|
-| 发 | M8 续写规划（[plan.py](../mvp/plan.py) 的 `run_plan`；落盘 `data/<项目>/plan_latest.json`） |
-| 收 | M0 展示（`cli.py plan`）；未来 M9／M10／网页画布（本切片不接线） |
+| 发 | M8 续写规划；现有 [plan.py](../mvp/plan.py) 仍是未升级的 v0 试跑代码，不属于本轮施工 |
+| 收 | M0 展示、选择／停点动作层；未来 M9／M10／网页画布（本切片不接线） |
 
 语义规则（ADD-037／A9、ADD-036／G5）：
 
@@ -16,12 +16,13 @@
 - 反向模式先生成「前面得先达成什么」的前置卡。
 - 写作指导是出题副产品，不另开 API。三层＝卡片要解决什么／对白透露什么／插件写法（没有插件就空串）。
 - J1：给要求给信息点，**不给示范成文**。
+- C7 是可覆盖、可过期的只读快照。它没有规划账、事实账或 actual 写权，也不是完整章计划。
 
 ## 顶层结构
 
 | 字段 | 类型 | 含义 | 必填 |
 |---|---|---|---|
-| contract | str | 固定 `"C7_PLOT_LAYER v0"` | 是 |
+| contract | str | 固定 `"C7_PLOT_LAYER v1"` | 是 |
 | project / generated_at / model | str | 哪本书、何时出题、用什么模型（`--stub` 时为 `stub`） | 是 |
 | purpose | str | 作者要达成的目的 | 是 |
 | purpose_note | str | 卡上注解／额外限制（可空） | 是 |
@@ -41,9 +42,16 @@
 | title | str | 卡标题（人话） | 是 |
 | purpose_note | str | 本卡要达成的效果／作者注解 | 是 |
 | options | list | 至少 1 条；每条 `{id, label, reveal_intent}` | 是 |
+| recommended_option_ref | str | 主推荐的稳定引用 | 是；必须指向本卡一个真实 `options[].id` |
+| planning_card_ref | str | 这道题所属的稳定主架卡／规划对象引用 | 是；正式 AC 号或完整沙箱卡引用 |
+| planning_card_rev | int | 出题时看到的规划对象修订号 | 是；从 1 起，写前必须仍与当前对象一致 |
 | guidance | obj | 写作指导三层，见下 | 是 |
 
 `options[].id`：`A`／`B`／`C`。`label`＝选项方向（不是成文）。`reveal_intent`＝对白该透露的信息点。
+
+`recommended_option_ref` 只保存选项 ID，不复制选项正文。选项重排后，推荐对象身份不能变化；引用不存在时必须拒绝，不能退回 `options[0]`。
+
+`planning_card_ref` 优先引用已有稳定 AC 号；沙箱期使用章工作台规定的完整引用，例如 `SB-0001#d-ac-1`。C7 的局部 `cards[].id` 只用于在本快照内找卡，不得进入长期规划账。`planning_card_ref` 不存在、不可选择，或 `planning_card_rev` 已过期时，选择动作必须在 planstore 写入前停止。
 
 `guidance`：
 
@@ -67,7 +75,7 @@
 
 ```json
 {
-  "contract": "C7_PLOT_LAYER v0",
+  "contract": "C7_PLOT_LAYER v1",
   "project": "_m8_v0_selftest",
   "generated_at": "2026-08-13 19:00:00",
   "model": "stub",
@@ -88,6 +96,9 @@
         {"id": "B", "label": "先安排一次无法用「已死」解释的现场痕迹", "reveal_intent": "痕迹本身，不解释来源"},
         {"id": "C", "label": "先让知情者自己动摇", "reveal_intent": "动摇，不给新设定"}
       ],
+      "recommended_option_ref": "B",
+      "planning_card_ref": "SB-0001#d-ac-1",
+      "planning_card_rev": 1,
       "guidance": {
         "card_problem": "后面要让人活着出现，先处理「已经死了」这笔账",
         "dialogue_reveal": "只能透露「这件事没结」",
@@ -107,8 +118,9 @@
 }
 ```
 
-## 已知缺口（v0 不含，升版本再加）
+## 接缝边界与未施工部分
 
-- 选定选项后不改账、不重出变更清单（J5 组合输入是设计稿能力，本切片只出题）。
-- 不落规划账 `plan.json`（planstore 未建）；只覆盖写 `plan_latest.json`。
+- C7 自己不改账、不重出变更清单。选定、整组驳回或自动放行必须另走 [C7_SELECTION_ACTION.md](C7_SELECTION_ACTION.md)，再由 planstore 校验和落盘。
+- C7 不落规划账 `plan.json`；现有 v0 试跑代码仍只覆盖写 `plan_latest.json`，正式 v1 发送端与 planstore 尚未施工。
+- 本版只绑定稳定规划卡，不把 `arc_card`、槽、场、PE、事实或 actual 塞进 C7。
 - 插件写法位恒空，不接插件系统。

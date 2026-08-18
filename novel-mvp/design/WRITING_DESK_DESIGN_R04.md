@@ -1,6 +1,6 @@
 # 内置写作区＋对照检测＋暗稿机制 设计稿 R04（WRITING_DESK_DESIGN）
 
-身份：**轻档设计稿。** 第三版清旧句。内置纯净写作区仍是主画面；复制出去写是备选。暗稿「默认已发生、仍是事实」（K3）**一字不动**。开口只剩：算不算签过字、能不能开下一章——本稿不替拍。收工不得写入 `slot_status=closed`；`slot_status` 只表示交棒进度。历史稿 [WRITING_DESK_DESIGN_R03.md](WRITING_DESK_DESIGN_R03.md)／[R02](WRITING_DESK_DESIGN_R02.md)／[R01](WRITING_DESK_DESIGN_R01.md) 保留不动。
+身份：**轻档设计稿 R04＋工作稿／检测结果／mismatch 处置／收工／交棒正式接缝 v1。** 第三版清旧句。内置纯净写作区仍是主画面；复制出去写是备选。暗稿「默认已发生、仍是事实」（K3）**一字不动**。开口只剩：算不算签过字、能不能开下一章——本稿不替拍。收工不得写入 `slot_status=closed`；`slot_status` 只表示交棒进度。历史稿 [WRITING_DESK_DESIGN_R03.md](WRITING_DESK_DESIGN_R03.md)／[R02](WRITING_DESK_DESIGN_R02.md)／[R01](WRITING_DESK_DESIGN_R01.md) 保留不动。
 
 它接的是 CZ 第五轮校准（ADD-018 K3/K4，兼吃 K5/K7）。正面回答走查的 GAP-07。收口流以 [M8_PLANNING_DESIGN_R04.md](M8_PLANNING_DESIGN_R04.md) §6 为准。字段以 [PLAN_LEDGER_STORAGE.md](../contracts/PLAN_LEDGER_STORAGE.md) 为准。
 
@@ -36,6 +36,19 @@ R02 按第三册挂账本（`/Users/a1234/挣钱/小说架构/TEMP/bgboard-audit
 | 3 | 收工不拿移交／审查／对账当完成条件 |
 | 4 | 小抄是可改投影，确认后才写回规划账 |
 | 5 | PE 统一叫计划事件，不叫计划事实句 |
+
+## R04 正式接缝微改（2026-08-17）
+
+本轮已经把固定机械题与原始模型回包验证过的边界分段升正式：
+
+1. 当前作者工作稿按 [WRITING_DESK_WORK_DRAFT.md](../contracts/WRITING_DESK_WORK_DRAFT.md) 保存，同一章槽使用 `S-…@work-rN` 派生身份；
+2. 三路收工按 [WRITING_DESK_CLOSEOUT_ACTION.md](../contracts/WRITING_DESK_CLOSEOUT_ACTION.md) 形成短命命令，不落进规划账；
+3. 只有作者显式“以这篇为准”才产生 [WORK_DRAFT_HANDOVER_ACTION.md](../contracts/WORK_DRAFT_HANDOVER_ACTION.md)，并按 work → C1 → `handover_parts` 顺序交接。
+4. T14 当场检测按 [WRITING_DESK_CHECK_RESULT.md](../contracts/WRITING_DESK_CHECK_RESULT.md) 形成版本化诊断结果；五类 finding、coverage 与 work／outline stale 都由正式合同约束。
+5. 只有 current mismatch finding 可以进入 [WRITING_DESK_CHECK_DISPOSITION_ACTION.md](../contracts/WRITING_DESK_CHECK_DISPOSITION_ACTION.md)；actor 只允许 author，三条 route 只负责路由，不能自动改稿、改计划或写真值。
+6. current unknown finding 可以由作者按 [WRITING_DESK_CHECK_UNKNOWN_ADJUDICATION_ACTION.md](../contracts/WRITING_DESK_CHECK_UNKNOWN_ADJUDICATION_ACTION.md) 独立裁成 covered／missing／mismatch；原 unknown 不变，receipt 只作为 `self_reported` 展示覆盖层。
+
+no-manuscript 的“规划进度 +1”长期 owner 仍开放。missing／unplanned 的专门作者动作未冻结；unknown 人工裁决已正式，但不写 planstore。本轮没有增加智能编辑、暗稿转正、事实入账、关章或自动开下一章能力。
 
 出处简写：
 
@@ -117,7 +130,9 @@ graph TD
 
 **左栏小抄**＝章计划精简条的活版本（读 `plan.json` 本槽投影，不是 C7 出题快照；字段挑选原则沿用 M8 §5）。**默认展示粒度＝节拍级，可展开到事实句级**——R02 修订（A10，2026-08-13 替拍）：按场分组折叠，每场展开先看到的是**场目标一句＋3–5 行节拍**（节拍＝该场事实句的聚类标题，铺满调用顺手产出，零新增调用），每行节拍可再展开到它名下的 PE 逐条（前面一个空框——检测过后打勾）＋信息释放点。为什么：130 条事实句 ÷ 3,000 字＝每 23 字兑现一条，句级当默认就是把写作变成逐句翻译；K1 拍过「本章核心内容其实很少」，小抄默认给的就该是那「很少」的骨架。检测判定照旧落在 PE 级——粒度只是展示层，账一条不少；节拍行的勾＝名下 PE 全勾的派生显示。小抄底部常驻三个抽屉：红线全量（含伏笔安全摘要）、出口钩子、写法指导。**小抄是可改投影**：计划可以在小抄上改，确认后才写回规划账；不要另开第二真源。导出的静态文件可以只读。
 
-**右栏编辑区**＝纯文本。没有 AI 补全、没有联想、没有波浪线建议、没有任何模型触碰——这是 K3 钉死的：产品的「不代写」在这张桌子上是物理性的。编辑器本体用成熟纯文本组件，V0 不做富文本、不做排版（作者要发布格式，导出后自己排）。字数实时计、**本地草稿自动保存**——草稿是运输区暂存（同 TEMP 性质），不进账本、不进版本链、不给任何下游读，收工或放弃时清理；它存在只为一件事：写到一半断电不丢字。这不违反「尽量不存正文」——那条管的是账，不是防丢。
+写作区的**打开／读取动作**只消费当前章槽中已经消费就绪、且 `outline_checkpoint.source_commit_seq` 仍等于本章最新 planning 输入水位的 current 章纲。收到 stale、blocked、跨章或不存在 baseline 时必须拒绝静默打开，要求取得 current／重新编译；这次只读动作不得修改 checkpoint、抬高 baseline、反写 planstore，或把整份章纲保存成自己的长期副本。小抄 view model 仍是可从 current `plan.json` 重建的短命读取投影。作者另行发起上段已有的“小抄修改＋确认写回”属于独立规划编辑动作：它不能直接改 checkpoint，写入后会推进本章 planning 输入水位，使旧章纲 stale，再走重编译。
+
+**右栏编辑区**＝纯文本。没有 AI 补全、没有联想、没有波浪线建议、没有任何模型触碰——这是 K3 钉死的：产品的「不代写」在这张桌子上是物理性的。编辑器本体用成熟纯文本组件，V0 不做富文本、不做排版（作者要发布格式，导出后自己排）。字数实时计、**工作稿自动保存**——当前工作稿按 [WRITING_DESK_WORK_DRAFT.md](../contracts/WRITING_DESK_WORK_DRAFT.md) 由稳定章槽派生 `work_ref`，作者内容改变时 `work_rev` 严格 +1。它是可恢复的作者工作态资产，但不进规划账、不进 C1／章节版本链、不给事实或 actual 下游读；去向与清理由作者后续处置和数据保留规则决定，不能静默删除。它存在只为一件事：写到一半断电不丢字。这不违反「尽量不存正文」——那条管的是章节入库与真值，不是防丢。
 
 ### 1.3 「哪一段对着哪部分抄」：手动锚定，不做滚动联动
 
@@ -189,9 +204,9 @@ K3 的口径一字不折：「描写方式你遵守不够我不管，但我引�
 
 | 按钮 | 谁动手 | 账上发生什么 |
 |---|---|---|
-| **改正文** | 作者自己改编辑区（系统永不代改正文——净桌铁律） | 无账务动作；改完可再查，红条消 |
-| **无视（只认大纲）** | 作者点一下 | 该 PE 挂 `deviation_note`（「作者无视：正文写 Y，账以大纲 X 为准」）；若这章后来存入产品，抽取审查时正文侧的 Y 会自然进候选、跟大纲冲突由体检抓——账没撒谎，只是各记各的 |
-| **反向改大纲** | 作者改 PE 文本（可就地改，落的是章计划那条 PE） | 普通编辑留痕 `rev`+1；未收工前大纲随时可改（K3/K4 原话）。若该 PE 已消化挂 OPT，改文本触发 P4 重核提示（既有机制，按作者档位停或不停） |
+| **改正文** | 作者点 [disposition `edit_work`](../contracts/WRITING_DESK_CHECK_DISPOSITION_ACTION.md)，再自己改编辑区（系统永不代改正文——净桌铁律） | disposition 只返回工作稿编辑入口；作者另行保存后 work revision +1、旧 check stale，再重新检测 |
+| **无视（只认大纲）** | 作者点 [disposition `keep_plan`](../contracts/WRITING_DESK_CHECK_DISPOSITION_ACTION.md) | **0 mutation**：work、outline、planstore 都不变；原 finding 仍是 mismatch，不写 `deviation_note`，不冒充 all-clear。若未来要长期记“作者已看过”，先另证消费者和失效规则 |
+| **反向改大纲** | 作者点 [disposition `edit_plan`](../contracts/WRITING_DESK_CHECK_DISPOSITION_ACTION.md)，再进入既有作者规划编辑入口 | disposition 不带 plan patch、不写 planstore；作者确认写回后才由 planstore `actor=author`／`action=update` 提交，baseline 前进，旧 outline／check stale |
 
 踩红线的条目（如上例提前抖底）永远置顶＋🔥标——它比「写得不一样」重：写岔了是偏差，抖底是事故。但处置仍是同三键，系统不拦（他的书他说了算，提醒过就闭嘴）。
 
@@ -202,7 +217,11 @@ K3 的口径一字不折：「描写方式你遵守不够我不管，但我引�
 | **机械** | ①人名：正文出现的人名对照角色名＋别名表——表内名直接认；表外名且与在场人物编辑距离近 → 「你是不是想写林晚棠？（正文第 4 段写的是『林晚』）」②数字：章计划里出现的具体数字（年数、金额、次数）在正文里逐字对照 ③红线关键词：must_not 里的硬词（如被封禁的名字）出现即亮 | 本地字符串匹配，零积分 | 打字停顿静默跑，随时 |
 | **模型** | ①覆盖判定：每条 PE 在正文里有无对应（语义级——「师妹送饭」写成「师妹提着食盒找来」算覆盖）②正确判定：对应上了但关键内容不符 ③红线语义级：暗示性泄底这种机械抓不到的 | 一次调用：输入＝本章 PE 清单＋红线＋信息释放点＋正文（本场或全章），输出＝逐条判定＋证据引文 | 手动触发，计入会话包 |
 
-模型输出的机械校验（V0 级断言，同 M8 §3.5 家法）——R02 修订（ADD-031.2，2026-08-13 替拍）：判定的 `pe_id` 必须 ⊆ 输入清单；`evidence_quote` 必须逐字存在于本次正文（防拿幻觉当证据）；**每条输入 PE 必须被判进 covered/mismatch/missing/`unknown` 四态之一**——`unknown`＝模型不知道（证据不足以判写没写，允许弃权，与验真段「允许弃权」同构，N17 unknown 六分对齐），漏判强制进 unknown 不再强制进 missing（把「没写」和「我判不出」混在一桶才是藏账）。unknown 条目界面上灰条显示「拿不准，自己扫一眼」，作者手勾写了/没写——他勾的结果 `prose_basis` 老实记 `self_reported`，不冒充 `verified`。检测不许藏账（同对账覆盖率兜底思路，M8 §6.3）。检测卡是派生视图不落账；落账的只有作者的处置结果（deviation_note、PE 改动、勾选状态）。
+模型输出与正式结果的分工按 [WRITING_DESK_CHECK_RESULT.md](../contracts/WRITING_DESK_CHECK_RESULT.md)：模型只交分类、工作稿证据和诊断理由；程序负责 result identity、work／outline／planning baseline、requirement 引用、coverage、Schema 与 stale。每条输入 requirement 必须恰好判进 covered／mismatch／missing／unknown 之一；漏项是 STRICT FAIL，不能由程序伪造 unknown 补齐。工作稿出现规划外新增内容时，可以在既定 PE 判定之外另加 unplanned；它只进入作者后续对账候选，不生成 F-、actual 或 PE。unknown 继续表示安全弃权，不得 fallback 成其他类别。
+
+界面检测卡仍是从正式结果编译的派生视图；正式结果本体只作为诊断工件供 full-check 引用，不进 planstore 或真值账。包含 mismatch、missing、unplanned 或 unknown 的结果仍可以表示“检测完整执行”，但绝不等于全绿。只有 mismatch 进入正式 [作者三路处置动作](../contracts/WRITING_DESK_CHECK_DISPOSITION_ACTION.md)，检测侧不能代选或自动修稿；covered 不制造待办，missing／unplanned 保持各自身份，不强制套三选。
+
+unknown 可以继续保持，也可以由作者另走 [人工裁决动作](../contracts/WRITING_DESK_CHECK_UNKNOWN_ADJUDICATION_ACTION.md)。界面必须并列显示“模型诊断 unknown”与“作者裁决 X（self-reported）”，不得覆盖原诊断或显示成 verified。work／outline 变化或重新检测切到新结果后，旧 receipt 对当前界面 stale；full-check、handover、planstore 和真值层都不消费这张 receipt。
 
 ## 3. 暗稿机制：没写的，默认已经发生
 
@@ -249,8 +268,8 @@ STORAGE 的 PE（§1.6）增补两个字段（提交存储稿升版清单，第 
 
 - **暗稿不是消化状态也不是作废**：`digest_status` 照旧管「计划安排了没」（暗稿的 PE 通常是 `digested`——当初安排了，只是没写）；清点里点「作废」才翻 `digest_status: voided`（既有语义留痕）。两个维度正交，不混。
 - **打标记哲学落到底**（K3 原话「很多位置内容先打标签，后续想用随时抓」）：V0 对暗稿做的**只有**打上 `dark_draft` 这个标记＋流水一行；不建暗稿清单页、不做捞取提醒、不做「暗稿该回收了」的相位——那些全归将来的暗稿插件（要捞的时候按 `prose_status=dark_draft` 一查全出来，标记就是接口）。
-- 收工动作在槽位上落一个 `closeout` 对象：`{mode: full_check/self_report/no_prose, closed_at, dark_count, prose_disposition: stored/exported/discarded}`——一章收工的账面身份证，收工卡和下游都从这读。
-- 流水动作词加 `closeout`、`dark_mark`（STORAGE §7 词表增补）。
+- 收工只形成正式 [WRITING_DESK_CLOSEOUT_ACTION.md](../contracts/WRITING_DESK_CLOSEOUT_ACTION.md) 短命动作；本版不在章槽落 `closeout` 对象，也不写 `slot_status=closed`。长期收工结果和 no-manuscript 规划进度的 owner 仍是 GAP。
+- 不因这张短命动作给规划流水新增 `closeout`；暗稿处置若落账，仍走它自己的既有作者动作和流水边界。
 
 ### 3.3 暗稿在下游的裁决：暗稿＝事实，只是 undescribed
 
@@ -285,6 +304,10 @@ STORAGE 的 PE（§1.6）增补两个字段（提交存储稿升版清单，第 
 | 事实抽取/证据坐标/取证 | 存入才有 | 存入才有 | 无——这章的事实层＝已收工的 PE（含暗稿） |
 | **进度口径**——R02 修订（ADD-031.3） | 已写章数＋1、连续更新照记、字数入账 | 同左 | **只涨「规划进度」**（第 N 章计划完成）；已写章数、连续更新天数、全书字数**一律不动**——计划完成不冒充章节写成，书卡/收工卡/战报全按此分轨显示 |
 
+三路动作的机器身份固定为 `full_check`／`skip_check`／`no_prose`。full-check 必须引用与 current work、current outline 和全章 coverage 同时匹配的正式 [WRITING_DESK_CHECK_RESULT v1](../contracts/WRITING_DESK_CHECK_RESULT.md)；skip-check 的检测引用必须为空，且只表示作者明确跳检，不能冒充 PASS；no-prose 不得携带工作稿或检测引用。三路都不能产生 C1、交棒、facts、actual、关章或自动开下一章。
+
+本轮只正式确认 no-prose 动作存在。“规划进度 +1”由哪个长期 owner 保存仍未决定；在 owner 拍板前只允许 TEMP 回执标记 `NOT_FORMAL_PLANSTORE_WRITE`，不能塞入 planstore 或写成已写章节。
+
 两处就地裁决：
 
 - **裁决一：不交棒的收工是合法状态。** ADD-010 的移交触发点是「正文入库」；R13 改成：入库默认只对照，作者选「以这篇为准」才交棒。无正文（或不存正文）收工时没有入库，真值接力棒**不交**——大纲继续为真（`truth_bearing` 保持 `primary`）。收工只记工作流结果，**不得**把 `slot_status` 写成 `closed`；该字段只表示交棒进度（planned／partial／handed_over／dropped）。收工不是关章，也不等于可以开下一章。
@@ -294,6 +317,8 @@ STORAGE 的 PE（§1.6）增补两个字段（提交存储稿升版清单，第 
 
 - 写作区稿子「存入产品」＝走既有单章入库流，版本链 rev 1 起建（REVISION §1.2 的 `versions[]`，`source_ref` 记「写作区收工存入」）——这就是 K3 说的「用户导入的才存」：作者点了存入，就是一次导入。
 - 日后改这章：章卡「更新本章正文」可以**把现行版载入写作区**继续改（左小抄换成当时的章计划投影），收工存入＝同章重导（版本链 rev+1、事实三类分流，REVISION §2–3 全套现成）。写作区从此也是改稿的桌子，重导不再只有粘贴框一个入口。
+
+工作稿 revision 与 C1 章节版本链是两套身份：`S-…@work-rN` 只表示作者当前工作态，不能冒充 C1 rev。只有作者显式“以这篇为准”产生 handover action、C1 接收成功并生成合法 chapter identity 后，章节版本链和规划账交棒才可继续。
 
 ## 5. 正文存不存：裁决与调和
 
@@ -312,8 +337,8 @@ K3 说「尽量不存正文（用户导入的才存；用户存的也只作参�
 ### 6.1 新收口流（本稿视角）
 
 ```
-写作区写完 → 当场检测已处置完（A 路径）→ 收工按钮 → 暗稿清点 →
-正文去向三选 →（存入：入库→只对照→抽取→审查；交棒／对账另选）→ 收工卡庆祝
+写作区 current work → 可选检测 → 三路 closeout（与交棒分开）→ 暗稿清点／正文去向 →
+作者若明确“以这篇为准”：handover action → C1 接收 → 合法 chapter_id → planstore handover_parts
 ```
 
 旧流的「①粘贴新章→②入库」不再是收口的起点，而是「存入产品」这一个按钮的内部动作——粘回入库变成写作区的自然产物。外写路径（复制精简条出去写）保留，粘贴框还在，殊途同归到同一张清点屏。
@@ -329,7 +354,7 @@ K3 说「尽量不存正文（用户导入的才存；用户存的也只作参�
 | 5 | §6.3 对账未写桶 | 三键升四键：「转暗稿」置顶为默认（K3），挪下一章/作废/就这样保留；并注明全检路径下未写桶预期为空（当场检测已前移处理），对账降级为兜底核对 |
 | 6 | §6.5 完成态判定 | 按收工路径分叉：收工只表示本次写作处理结束；保存、交棒、审查、对账、关章各是各的，不得互相充当完成条件。无正文/不存路径＝暗稿清点完成即可收工。收工卡统计加两行——「本次默认转暗稿 N 条（另重签区亲手定 M 条）」（R02，ADD-031.5）＋进度分轨口径：无正文收工的收工卡只报「规划进度」，不报已写章数/连续天数增量（R02，ADD-031.3） |
 | 7 | §7 会话包 | 预估公式加「当场检测 2～3 次×（~2）」项 |
-| 8 | §8.4 存储增补清单 | 加本稿字段：PE `prose_status`/`prose_basis`/`impact`（R02 增）；`closeout` 仍是工作流结果、不进规划账必填 schema；**禁止**给 `slot_status` 加 `closed`。流水动作词待 `closeout` 对象合同补齐后再加 |
+| 8 | §8.4 存储增补清单 | 加本稿字段：PE `prose_status`/`prose_basis`/`impact`（R02 增）；closeout 已有独立短命动作合同，仍不进规划账必填 schema；**禁止**给 `slot_status` 加 `closed`。no-manuscript 规划进度 owner 继续开放 |
 | 9 | 走查稿 | 屏 7「离开产品去写正文」加作废注：K3 推翻，内置写作区为主画面（走查感受与毛刺记录保留作历史证据）——已由走查 R02 落实 |
 | 10 | C9/M11（落地时） | 打包规则加暗稿装载：已收工章 PE 按 `prose_status` 装入，`dark_draft` 带「已发生·未描写」标注（本稿 3.3）；读者知情/伏笔兑现的消费闸门按 `prose_basis=verified`（R02，ADD-031.2） |
 | 11 | M8 R02（修订员甲并行承办） | 检测/对账语义判定合同加 `unknown` 第四态＋弃权处置（R02，ADD-031.2）；收工卡/战报的进度分轨（R02，ADD-031.3）；本表 11–12 行按挂账本口径开给 M8 R02，两边冲突以挂账本为准 |
@@ -399,11 +424,11 @@ K7 拍的是数据层原则：所有引用永远指向唯一角色 ID，不硬�
 |---|---|---|---|
 | B-1 | 高影响判定标准 | `impact: high` 由机械规则打：PE 涉及死亡/重伤致残、身份揭露、阵营叛变、主线伏笔的 payoff、不可逆世界事件五类之一即 high；模型检测时可补举证但不能降级机械判定；作者可在章计划里手动升降单条 | ADD-031.1 只说「高影响事件」没给清单；五类取自一致性检查的既有高危面，机械可判、不加调用 |
 | B-2 | 重签区交互形态 | 清点屏顶部独立分区，每条单独两键［确认已发生·转暗稿］［没发生·处置▾］，无全选、无批量键作用域；重签区非空时收工按钮置灰 | 「强制单签禁批量」的最小实现；置灰是防绕过的唯一可靠机械手段 |
-| B-3 | unknown 的账面落点 | `unknown` 不是 `prose_status` 新值——它是检测输出的第四态，落账时强制作者三选（写了/没写/转暗稿）后才收工；账面仍只有三值＋`prose_basis` 两级 | 账本字段保持封闭枚举，弃权态留在交互层，不让「拿不准」永久躺进数据 |
+| B-3 | unknown 的账面落点 | `unknown` 不是 `prose_status` 新值，而是可以继续保持的合法检测结果；它不阻止 full-check，也不强迫作者改判或转暗稿。作者主动人工裁决时走 [WRITING_DESK_CHECK_UNKNOWN_ADJUDICATION_ACTION v1](../contracts/WRITING_DESK_CHECK_UNKNOWN_ADJUDICATION_ACTION.md)：原 unknown 不变，receipt 只显示 `self_reported`，不能冒充 `verified` 或直写 planstore；work／outline 变化或重检切换结果后 receipt stale | unknown 是安全弃权；人工裁决只服务当前写作区展示，不给 full-check、handover 或真值层加权 |
 | B-4 | `prose_basis` 取值与升级 | `self_reported`（作者清点屏手点）/`verified`（模型检测覆盖判定支持）两值；后补正文重导并检测通过时自动 self_reported→verified，不反向降级 | ADD-031.2 拆两级但没给字段形状；单向升级避免「一次检测失败抹掉作者签字」 |
 | B-5 | 废纸篓实现边界 | 本机存储、按章一条、保留窗口候选 7–30 天（不承诺默认 30）；不进账本/版本链/打包器读集；找回＝回到收工前的编辑区草稿态，需重走收工 | ADD-031.4 只说「7-30 天废纸篓」；「找回后重走收工」保证账实一致，不出现「closeout 已落、正文又活了」。收工不写 `slot_status=closed` |
 | B-6 | 导出确认的判定 | txt 路径＝浏览器下载完成事件；剪贴板路径＝复制成功＋作者点「我已粘贴保存」二次确认；两者其一通过才放行「不留」 | 剪贴板无法机械验证落地，二次确认是不加成本的最低护栏 |
-| B-7 | 进度分轨的字段宿主 | 「规划进度」记在槽位 `closeout.progress_kind: planned_only/with_prose`；书卡两计数（已写章数/连续天数）只统计 `with_prose`；不新建独立进度账 | ADD-031.3 只拆口径没给存储；复用 closeout 对象最省，一处写两处读 |
+| B-7 | 进度分轨的字段宿主 | **继续开放。** no-manuscript 动作可正式表达，但“规划进度 +1”不写 `slot.closeout`、written、actual 或新进度账；owner 另案拍板 | 固定 14 题只证明动作和权限，不足以替长期存储归属拍板 |
 | B-8 | 「本版变化 N 项」收纳范围 | 收纳的是：小抄同步的沙箱/正式账变化、别名表更新、角色账新条目三类系统通知；红线告警、重签区、收工卡不收纳（各有专属位置） | ADD-035.6 说「不弹模态收纳一处」；红线是当场决策不能藏，收纳只吃「知道就行」类 |
 | B-9 | 节拍级小抄的数据源 | 节拍行＝PE 的 `beat_summary`（M8 出卡时已生成的一句话概括），无新增字段；句级展开＝PE 原文；无 beat_summary 的旧数据回退句级显示 | A10 说「默认节拍级」；复用 M8 既有产物，不为显示层加账本字段 |
 

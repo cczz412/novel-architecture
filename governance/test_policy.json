@@ -38,11 +38,11 @@
     "M01": ["tests/test_zbatch.py"],
     "M02": ["tests/test_zbatch_module_equivalence.py"],
     "M03": ["tests/test_extract_module_contracts.py"],
-    "M04": ["tests/test_api_transport_contract.py"],
-    "M05": ["tests/test_extract_module_contracts.py"],
+    "M04": ["tests/test_api_transport_contract.py", "tests/test_novel_mvp_fact_review_transaction.py", "tests/test_novel_mvp_reconciliation_facts_admission.py"],
+    "M05": ["tests/test_extract_module_contracts.py", "tests/test_novel_mvp_fact_review_transaction.py"],
     "M06": ["tests/test_z57_stable_semantic_identity.py"],
     "M07": ["tests/test_zbatch_cutover.py"],
-    "M08": ["tests/test_zbatch.py"],
+    "M08": ["tests/test_zbatch.py", "tests/test_novel_mvp_planstore_handover.py", "tests/test_novel_mvp_reconciliation_facts_admission.py", "tests/test_novel_mvp_fact_review_transaction.py"],
     "M09": ["tests/test_z73_finalize_gold_v1_2.py"],
     "M10": ["tests/test_z75_multidirection_score.py"],
     "M11": [
@@ -57,6 +57,48 @@
     ]
   },
   "path_rules": [
+    {
+      "name": "novel-mvp handover planstore writer",
+      "pattern": "novel-mvp/mvp/planstore.py",
+      "modules": ["M08"],
+      "tests": ["tests/test_novel_mvp_planstore_handover.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp handover planstore writer tests",
+      "pattern": "tests/test_novel_mvp_planstore_handover.py",
+      "modules": ["M08"],
+      "tests": ["tests/test_novel_mvp_planstore_handover.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp reconciliation and facts admission",
+      "pattern": "novel-mvp/mvp/reconcile.py",
+      "modules": ["M08"],
+      "tests": ["tests/test_novel_mvp_reconciliation_facts_admission.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp reconciliation and facts admission tests",
+      "pattern": "tests/test_novel_mvp_reconciliation_facts_admission.py",
+      "modules": ["M08"],
+      "tests": ["tests/test_novel_mvp_reconciliation_facts_admission.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp M5 fact review transaction",
+      "pattern": "novel-mvp/mvp/factstore.py",
+      "modules": ["M04", "M05", "M08"],
+      "tests": ["tests/test_novel_mvp_fact_review_transaction.py", "tests/test_novel_mvp_reconciliation_facts_admission.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp M5 fact review transaction tests",
+      "pattern": "tests/test_novel_mvp_fact_review_transaction.py",
+      "modules": ["M04", "M05", "M08"],
+      "tests": ["tests/test_novel_mvp_fact_review_transaction.py"],
+      "full_chain": false
+    },
     {
       "name": "统一薄入口",
       "pattern": "tools/novel_pipeline.py",
