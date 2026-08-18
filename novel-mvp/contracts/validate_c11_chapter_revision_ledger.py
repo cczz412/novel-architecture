@@ -27,12 +27,14 @@ MACHINE_GATE_CASES = [
     *(f"FF-{number:02d}" for number in range(1, 7)),
     *(f"MG-{number:02d}" for number in range(1, 5)),
 ]
+ACTION_ENTRY_CASES = [f"AS-{number:02d}" for number in range(1, 6)]
 EXPECTED_CASES = [
     *ORIGINAL_CASES,
     *ELIGIBILITY_CASES,
     *RESTORE_REACTIVATION_CASES,
     *BATCH_CASES,
     *MACHINE_GATE_CASES,
+    *ACTION_ENTRY_CASES,
 ]
 EXPECTED_RULES = {
     "CR-01": "initial_revision_one",
@@ -110,6 +112,11 @@ EXPECTED_RULES = {
     "MG-02": "legal_historical_restore",
     "MG-03": "historical_noncurrent_but_existing_restore",
     "MG-04": "c10_identity_chain_index_mismatch",
+    "AS-01": "legal_replace_schema_and_entry_pass",
+    "AS-02": "initial_schema_and_entry_reject",
+    "AS-03": "bogus_schema_and_entry_reject",
+    "AS-04": "missing_contract_schema_and_entry_reject",
+    "AS-05": "missing_version_schema_and_entry_reject",
 }
 
 CONTRACT_ANCHORS = {
@@ -530,22 +537,38 @@ def validate_action(
     ledger: dict[str, Any],
     material_records: list[dict[str, Any]],
 ) -> str:
-    if action.get("actor") != "AUTHOR" or action.get("intent") != "ADOPT_AS_CURRENT_CHAPTER_REVISION":
-        return "REJECTED_AUTHOR_INTENT_REQUIRED"
-    items = action.get("items")
-    if not isinstance(items, list) or not items:
-        return "REJECTED_ACTION_SHAPE"
+    try:
+        validate_schema_document(schema_validator(), action)
+    except ContractError as exc:
+        if not str(exc).startswith("SCHEMA_REJECT:"):
+            raise
+        if (
+            action.get("actor") != "AUTHOR"
+            or action.get("intent") != "ADOPT_AS_CURRENT_CHAPTER_REVISION"
+        ):
+            return "REJECTED_AUTHOR_INTENT_REQUIRED"
+        items = action.get("items")
+        if isinstance(items, list) and any(
+            isinstance(item, dict)
+            and type(item.get("expected_current_revision_no")) is int
+            and item["expected_current_revision_no"] != ledger["current_revision_no"]
+            for item in items
+        ):
+            return "REJECTED_STALE"
+        return "REJECTED_ACTION_SCHEMA"
+    items = action["items"]
     current = ledger["revisions"][-1]
     for item in items:
         if item.get("target_chapter_id") != ledger["chapter_id"]:
             return "NEEDS_TARGET_CONFIRMATION"
         if item.get("expected_current_revision_no") != ledger["current_revision_no"]:
             return "REJECTED_STALE"
-        if item.get("change_kind") == "RESTORE":
+        change_kind = item["change_kind"]
+        if change_kind == "RESTORE":
             restore_result = validate_restore_gates(item, ledger, material_records)
             if restore_result != "C10_CONFIRMED_CHAPTER_ELIGIBLE":
                 return restore_result
-        else:
+        elif change_kind == "REPLACE":
             if item.get("candidate_text_sha256") != item.get("candidate_content_ref", {}).get(
                 "slice_sha256"
             ):
@@ -558,6 +581,8 @@ def validate_action(
             )
             if eligibility != "C10_CONFIRMED_CHAPTER_ELIGIBLE":
                 return eligibility
+        else:  # Schema 已封闭枚举；保留显式防御，禁止未知值落入 REPLACE。
+            return "REJECTED_ACTION_SCHEMA"
         if item.get("candidate_text_sha256") == current["text_sha256"]:
             return "NO_CHANGE_ZERO_WRITES"
     return "PRECHECK_ALLOWED"
@@ -1195,6 +1220,39 @@ def evaluate(case_id: str) -> str:  # noqa: C901, PLR0911, PLR0912, PLR0915
         record = c10_material_record(old, "R1", identity_revision_no=2)
         record["identity_revisions"][1]["revision_no"] = 3
         return validate_action(restore_action(candidate, 1), candidate, [record])
+    if case_id in ACTION_ENTRY_CASES:
+        action = base_action(changed_gone)
+        if case_id == "AS-02":
+            action["items"][0]["change_kind"] = "INITIAL"
+        elif case_id == "AS-03":
+            action["items"][0]["change_kind"] = "BOGUS"
+        elif case_id == "AS-04":
+            del action["contract"]
+        elif case_id == "AS-05":
+            del action["version"]
+        schema_accepted = True
+        try:
+            validate_schema_document(schema_validator(), action)
+        except ContractError as exc:
+            if not str(exc).startswith("SCHEMA_REJECT:"):
+                raise
+            schema_accepted = False
+        entry_result = validate_action(
+            action,
+            ledger,
+            [c10_material_record(changed_gone, "R2")],
+        )
+        if case_id == "AS-01":
+            return (
+                "ACTION_SCHEMA_AND_ENTRY_ALLOWED"
+                if schema_accepted and entry_result == "PRECHECK_ALLOWED"
+                else "FAIL"
+            )
+        return (
+            "ACTION_SCHEMA_AND_ENTRY_REJECTED"
+            if not schema_accepted and entry_result == "REJECTED_ACTION_SCHEMA"
+            else "FAIL"
+        )
     raise ContractError(f"UNKNOWN_CASE:{case_id}")
 
 
@@ -1245,6 +1303,9 @@ def run() -> dict[str, Any]:
     machine_gate_results = [
         row for row in results if row["case_id"].startswith(("FF-", "MG-"))
     ]
+    action_entry_results = [
+        row for row in results if row["case_id"].startswith("AS-")
+    ]
     summary = {
         "identity": "C11_CHAPTER_REVISION_LEDGER_V1_FORMAL_VALIDATION",
         "contract": "C11_CHAPTER_REVISION_LEDGER",
@@ -1263,6 +1324,8 @@ def run() -> dict[str, Any]:
         "batch_atomicity_gates_total": len(batch_results),
         "machine_gate_cases_passed": sum(row["pass"] for row in machine_gate_results),
         "machine_gate_cases_total": len(machine_gate_results),
+        "action_entry_cases_passed": sum(row["pass"] for row in action_entry_results),
+        "action_entry_cases_total": len(action_entry_results),
         "schema_examples_passed": len(base_documents()),
         "all_pass": all(row["pass"] for row in results),
         "results": results,
