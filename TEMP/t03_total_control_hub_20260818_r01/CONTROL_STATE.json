@@ -1,0 +1,492 @@
+{
+  "schema_version": "t03-total-control-hub-v1",
+  "identity": "T03_TOTAL_CONTROL_HUB_20260818_R01",
+  "updated_at": "2026-08-19T01:47:11+08:00",
+  "authority_boundary": {
+    "role": "local_runtime_coordination_cache",
+    "does_not_override": [
+      "CZ_CURRENT_EXPLICIT_INSTRUCTION",
+      "governance/CURRENT_STATE.json",
+      "FORMAL_TICKETS_AND_RECEIPTS",
+      "FORMAL_CONTRACTS",
+      "GOLD_OR_TRUTH"
+    ]
+  },
+  "controller": {
+    "thread_id": "01a00bb7-88f8-7092-9b55-34ca4127a4a1",
+    "title": "总控",
+    "responsibility": "read, queue, dispatch, validate, route, escalate",
+    "status": "ACTIVE",
+    "heartbeat": {
+      "automation_id": "t03",
+      "name": "T03七窗轻量总控自动流转",
+      "interval_minutes": 2,
+      "status": "ACTIVE",
+      "notification_policy": "failed_runs_only"
+    }
+  },
+  "shared_chatgpt": {
+    "thread_id": "6a8389d0-e72c-83ea-9154-c0b749614b3e",
+    "title": "全局深审与分拆建议",
+    "url": "https://chatgpt.com/g/g-p-6a73425437ac8191877c9fac561471fe/c/6a8389d0-e72c-83ea-9154-c0b749614b3e",
+    "page_owner": "CONTROLLER_ONLY",
+    "status": "PENDING_NOT_VERIFIED",
+    "current_dispatch": null,
+    "pending_send_attempt": {
+      "dispatch_seq": 17,
+      "status": "PENDING_NOT_VERIFIED",
+      "send_interface_returned_thread_id": true,
+      "readback_latest_dispatch_seq": 16,
+      "verified_as_sent": false,
+      "captured": false,
+      "sequence_consumed": false,
+      "blind_resend_allowed": false
+    },
+    "last_completed_dispatch": "T03-R13-SHARED-20260818-0016",
+    "last_completed_disposition": {
+      "dispatch_id": "T03-R13-SHARED-20260818-0016",
+      "verdict": "ACCEPT",
+      "disposition": "ADVISORY_ABSORBED_BY_T03_OFFLINE_REPLAY__NO_FURTHER_ORDINARY_REVIEW",
+      "route_evidence": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_unified_exact_json_fence_offline_replay_20260819_r01/FINAL_RECEIPT.json",
+      "route_evidence_sha256": "46ebff3aac31808071f86c4d79930ab4a86dd72624c202627a7a136391efca5a"
+    },
+    "next_dispatch_seq": 17,
+    "refresh_policy": "capture_and_route_previous_response_before_refreshing_for_next_send"
+  },
+  "milestone_chatgpt": {
+    "thread_id": "6a83ad56-47b0-83ea-9d57-827a4cadf24f",
+    "title": "里程碑编辑页",
+    "url": "https://chatgpt.com/g/g-p-6a73425437ac8191877c9fac561471fe-xiao-shuo-jia-gou/c/6a83ad56-47b0-83ea-9d57-827a4cadf24f",
+    "page_owner": "CONTROLLER_ONLY",
+    "status": "READY",
+    "current_batch": null,
+    "last_completed_batch": "MILESTONE-20260818-0001",
+    "next_batch_seq": 2,
+    "output_protocol": "B1_NEXT_ACTION_THROUGH_B6_RESEARCH_BACKLOG",
+    "authority": "ADVISORY_TEXT_EDITOR_ONLY"
+  },
+  "windows": {
+    "T03": {
+      "thread_id": "019feeb1-a0ab-7d43-a3d2-3e9ba92e1ca7",
+      "status": "IDLE",
+      "idle_class": "INTENTIONAL_IDLE",
+      "current_task": null,
+      "write_scope": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_unified_exact_json_fence_offline_replay_20260819_r01/**",
+      "last_result": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_unified_exact_json_fence_offline_replay_20260819_r01/STAGE_RESULT.md",
+      "last_result_sha256": "62b8e3a2666df6c2024deb3629a44a9621ef23df8cdb9f1b5b435e0cd483d520",
+      "last_receipt": "/Users/a1234/挣钱/小说架构/TEMP/v0_c3_unified_exact_json_fence_offline_replay_20260819_r01/FINAL_RECEIPT.json",
+      "last_receipt_sha256": "46ebff3aac31808071f86c4d79930ab4a86dd72624c202627a7a136391efca5a",
+      "last_verdict": "OFFLINE_UNIFIED_TRANSPORT_REPLAY_PASS",
+      "last_usage": {
+        "api_calls": 0,
+        "model_calls": 0,
+        "automatic_retries": 0,
+        "manual_retries": 0,
+        "source_raw_replays": 2,
+        "fixture_cases": 13,
+        "fixture_cases_passed": 13
+      },
+      "last_findings": {
+        "existing_raw_routes": "2/2_PASS",
+        "fixtures": "13/13_PASS",
+        "old_handshake_fail_overwritten": false,
+        "old_eight_call_no_verdict_reactivated": false,
+        "old_eight_call_raw_read": false,
+        "ability_score": false
+      },
+      "shared_review": "T03-R13-SHARED-20260818-0016_ACCEPTED_AND_ABSORBED_BY_OFFLINE_REPLAY",
+      "next_event": "TOTAL_CONTROL_ASSIGNMENT__THIRD_CALL_AND_NEW_ABILITY_BATCH_FORBIDDEN"
+    },
+    "A": {
+      "thread_id": "01a005ec-27b1-7b02-8680-19d59ee23f71",
+      "status": "IDLE",
+      "idle_class": "INTENTIONAL_IDLE",
+      "current_task": null,
+      "write_scope": "/Users/a1234/挣钱/小说架构/TEMP/a_c11_action_schema_composition_formal_fix_20260819_r01/**",
+      "last_completed_formal_write_scope": [
+        "novel-mvp/contracts/validate_c11_chapter_revision_ledger.py",
+        "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.fixtures.jsonl"
+      ],
+      "last_completed_temp_write_scope": "/Users/a1234/挣钱/小说架构/TEMP/a_c11_action_schema_composition_formal_fix_20260819_r01/**",
+      "last_completed_task_boundary": {
+        "task_id": "A-C11-ACTION-SCHEMA-COMPOSITION-FORMAL-FIX-01",
+        "formal_write_count": 2,
+        "api_calls": 0,
+        "model_calls": 0,
+        "automatic_retries": 0,
+        "action_markdown_changed": false,
+        "schema_changed": false,
+        "c10_validator_changed": false,
+        "third_formal_file_written": false
+      },
+      "last_result": "/Users/a1234/挣钱/小说架构/TEMP/a_c11_action_schema_composition_formal_fix_20260819_r01/RUN_REPORT.md",
+      "last_result_sha256": "6c1ac08588a926db1055cd1d62c24395a66023c3b4c7413db85d95800697118e",
+      "last_receipt": "/Users/a1234/挣钱/小说架构/TEMP/a_c11_action_schema_composition_formal_fix_20260819_r01/FORMAL_SHA_RECEIPT.json",
+      "last_receipt_sha256": "604a62aae38bf75b68a76dcb763512d1dfcd1f9050a1f8722f9c55a5bb7f8a99",
+      "validation_receipt": "/Users/a1234/挣钱/小说架构/TEMP/a_c11_action_schema_composition_formal_fix_20260819_r01/VALIDATION_RESULTS.json",
+      "validation_receipt_sha256": "b844d571098241e3b67957338feb5948f665338e399798b87015c53290b37a12",
+      "d_five_case_replay": "/Users/a1234/挣钱/小说架构/TEMP/a_c11_action_schema_composition_formal_fix_20260819_r01/D_FIVE_CASE_REPLAY.json",
+      "d_five_case_replay_sha256": "a8179c820975ea6724d0c314f9c9c1a780f29c82aa39d1400b1d7222dedebd8b",
+      "last_verdict": "CONTRACT_LOCAL_PASS",
+      "last_findings": {
+        "d_five_case_replay": "5/5_PASS",
+        "failure_path_writes": 0,
+        "c11_old_cases": "75/75_PASS",
+        "c11_total": "80/80_PASS",
+        "c10_v4_validator": "PASS",
+        "json_and_jsonl": "PASS",
+        "ruff": "PASS",
+        "formal_after_sha256": {
+          "validate_c11_chapter_revision_ledger.py": "eb80054278c8bb219ae04bda2544ee614ab4e317089ca8b4db08fa60721438ae",
+          "C11_CHAPTER_REVISION_LEDGER.fixtures.jsonl": "af9db754ae83ca5003a881bdd830b21e88002c33782ea3839abd6dea17c906f8"
+        }
+      },
+      "shared_review": "SOURCE_CAPSULE_SAYS_NO__STANDING_PROTOCOL_CONFLICT_REPORTED",
+      "next_event": "TOTAL_CONTROL_ASSIGNMENT"
+    },
+    "B": {
+      "thread_id": "01a005ec-251c-7e91-9668-3c82df660473",
+      "status": "IDLE",
+      "idle_class": "INTENTIONAL_IDLE",
+      "current_task": null,
+      "last_result": "/Users/a1234/挣钱/小说架构/TEMP/t03_pro_package_r04_final_20260818_r01/package/chatgpt_review_route_r13-six-window-global-pro-review-20260818-r04-final_20260818_192704.zip",
+      "last_result_sha256": "a0d8d7472d19fb9c00faa8d954645869e9167becc9af2326a1f1c46e68d43f8b",
+      "last_receipt": "/Users/a1234/挣钱/小说架构/TEMP/t03_pro_package_r04_final_20260818_r01/PACKAGE_ACCEPTANCE.json",
+      "last_receipt_sha256": "866cc1dccc80be84722a0aee7c62bb2c1a9c85c2846e62680964923a8c60e294",
+      "last_verdict": "PACKAGE_PREPARED_FOR_CZ_UPLOAD",
+      "write_scope": "config/review_pack/routes.json + /Users/a1234/挣钱/小说架构/TEMP/t03_pro_package_r04_final_20260818_r01/**",
+      "package": {
+        "zip": "/Users/a1234/挣钱/小说架构/TEMP/t03_pro_package_r04_final_20260818_r01/package/chatgpt_review_route_r13-six-window-global-pro-review-20260818-r04-final_20260818_192704.zip",
+        "zip_sha256": "a0d8d7472d19fb9c00faa8d954645869e9167becc9af2326a1f1c46e68d43f8b",
+        "prompt": "/Users/a1234/挣钱/小说架构/TEMP/t03_pro_package_r04_final_20260818_r01/PROMPT_CHATGPT_PRO.md",
+        "prompt_sha256": "20565198990a67b3a0d9d3d63d9d6d5976ae58ad05a740d8b19a5d0258200076",
+        "package_receipt": "/Users/a1234/挣钱/小说架构/TEMP/t03_pro_package_r04_final_20260818_r01/package/PACKAGE_RECEIPT.json",
+        "package_receipt_sha256": "106cde125f34dcbc91683361a0fc73588c0d9396f9dc3828c065dfc86cda590c",
+        "acceptance": "32/32_PASS",
+        "zip_members": 71,
+        "sensitive_hits": 0,
+        "uploaded": true,
+        "upload_mode": "CZ_MANUAL",
+        "completed_on": "2026-08-18",
+        "upload_completed_at": null,
+        "return_received": true
+      },
+      "pro_return": {
+        "status": "RETURN_RECEIVED__LOCAL_TRIAGE_AND_PROBES_RUNNING",
+        "completed_on": "2026-08-18",
+        "received_at": "2026-08-19T00:10:29+08:00",
+        "user_path": "/Users/a1234/Downloads/R13_SIX_WINDOW_CURRENT_FORMAL_REVIEW_R04_ADVISORY.zip",
+        "preserved_original": "/Users/a1234/挣钱/小说架构/TEMP/chatgpt_review_returns/R13_SIX_WINDOW_CURRENT_FORMAL_REVIEW_R04_ADVISORY_20260819_R01/original/R13_SIX_WINDOW_CURRENT_FORMAL_REVIEW_R04_ADVISORY.zip",
+        "zip_sha256": "aaae8815a1aa82b7fbb11867d7ef8ef7814d3dd5c54e32f9886ec5ba3e4a6e25",
+        "intake_receipt": "/Users/a1234/挣钱/小说架构/TEMP/chatgpt_review_returns/R13_SIX_WINDOW_CURRENT_FORMAL_REVIEW_R04_ADVISORY_20260819_R01/RETURN_INTAKE_RECEIPT.json",
+        "intake_receipt_sha256": "be24ac02d6ea5f32adcdaa95c185a1899e8960b246bda526436c498a7b5ab8e9",
+        "members": 8,
+        "crc": "PASS",
+        "authority": "ADVISORY_ONLY__NOT_AUTHORIZED"
+      },
+      "shared_review": "SOURCE_CAPSULE_SAYS_NO__STANDING_PROTOCOL_CONFLICT_REPORTED",
+      "next_event": "WAIT_A_D_TEMP_PROBES_AND_CONTROLLER_LOCAL_TRIAGE"
+    },
+    "C": {
+      "thread_id": "01a00bc0-7f75-7ee3-834b-5582a9f5434f",
+      "status": "IDLE",
+      "idle_class": "INTENTIONAL_IDLE",
+      "current_task": null,
+      "last_result": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/01_ONE_PAGE_JUNCTION_MAP.md",
+      "last_receipt_sha256": "68cada0923941c47cc9719a9af8dc6c03e2f92e9268830d4935a4c322f34b4e0",
+      "last_verdict": "PASS_WITH_EXPLICIT_OPEN_RUNTIME_SEAMS",
+      "write_scope": "/Users/a1234/挣钱/小说架构/TEMP/t03_c9_producer_consumer_owner_closure_20260818_r01/**",
+      "shared_review": "C-R13-SHARED-20260818-0004_ACCEPTED",
+      "next_event": "TOTAL_CONTROL_ASSIGNMENT_AFTER_OPEN_OWNER_DECISIONS"
+    },
+    "D": {
+      "thread_id": "01a00bc0-7f74-7f41-a260-2ad98f1bed51",
+      "status": "IDLE",
+      "idle_class": "INTENTIONAL_IDLE",
+      "current_task": null,
+      "shared_review": "SOURCE_CAPSULE_SAYS_NO__STANDING_PROTOCOL_CONFLICT_REPORTED",
+      "write_scope": "/Users/a1234/挣钱/小说架构/TEMP/d_c11_action_entry_schema_composition_postfix_replay_20260819_r01/**",
+      "task_boundary": {
+        "temp_only": true,
+        "api_call_cap": 0,
+        "formal_write_cap": 0,
+        "formal_fix_authorized": false,
+        "target": "INDEPENDENT_D_FIVE_CASE_AND_C11_80_OF_80_POSTFIX_REPLAY"
+      },
+      "last_result": "/Users/a1234/挣钱/小说架构/TEMP/d_c11_action_entry_schema_composition_postfix_replay_20260819_r01/CZ_ONE_PAGE_VERDICT.md",
+      "last_result_sha256": "84b89b3f509c10eb6044572ef18957f1766b9f01b05c0345441840f81a1e89b6",
+      "last_receipt": "/Users/a1234/挣钱/小说架构/TEMP/d_c11_action_entry_schema_composition_postfix_replay_20260819_r01/results/SHA_RECEIPT.json",
+      "last_receipt_sha256": "0dfab91663d7a575702699dc7a90f6c6a4cd457e66c07bee62cd44219a1f173f",
+      "postfix_replay_ledger": "/Users/a1234/挣钱/小说架构/TEMP/d_c11_action_entry_schema_composition_postfix_replay_20260819_r01/results/postfix_replay_ledger.json",
+      "postfix_replay_ledger_sha256": "c3c5b12e318bcfb7a6776f61c188ee6fbf722529047c4127818cca48b9d7c7fa",
+      "capsule_delivery_receipt": "/Users/a1234/挣钱/小说架构/TEMP/d_c11_action_entry_schema_composition_postfix_replay_20260819_r01/results/capsule_delivery_receipt.json",
+      "capsule_delivery_receipt_sha256": "3f1e203950c86ac51f819454d5f9f3c170ec693c16aab4689e0b3548cb4b827b",
+      "last_verdict": "PASS_INDEPENDENT_POSTFIX_REPLAY",
+      "last_findings": {
+        "independent_five_cases": "5/5_PASS",
+        "illegal_entry_cases": "4/4_SCHEMA_REJECT_TO_REJECTED_ACTION_SCHEMA",
+        "failure_path_writes": 0,
+        "legal_replace": "PRECHECK_ALLOWED",
+        "legal_restore": "PRECHECK_ALLOWED",
+        "c11_total": "80/80_PASS",
+        "ruff": "PASS",
+        "schema_json": "PASS",
+        "fixtures_jsonl": "PASS",
+        "formal_input_drift": false,
+        "a_supporting_receipt_drift": false,
+        "formal_writes": 0,
+        "api_calls": 0,
+        "model_calls": 0,
+        "automatic_retries": 0,
+        "capsule_delivery": "THREAD_TOOL_FAILED__CAPTURED_BY_CONTROLLER_WAIT_THREADS__NOT_BUSINESS_FAILURE"
+      },
+      "next_event": "TOTAL_CONTROL_ASSIGNMENT__NO_SAFE_RELAY_PREREGISTERED"
+    }
+  },
+  "support_windows": {
+    "E": {
+      "thread_id": "01a01491-0b5b-73a0-bfb0-82f03113dab7",
+      "status": "IDLE",
+      "responsibility": "TOTAL_CONTROL_RUNTIME_LEDGER_CLERK",
+      "write_scope": "/Users/a1234/挣钱/小说架构/TEMP/t03_total_control_hub_20260818_r01/**",
+      "current_task": null,
+      "last_result": "/Users/a1234/挣钱/小说架构/TEMP/t03_total_control_hub_20260818_r01/CLERK_HANDOFF_RECEIPT.json",
+      "next_event": "CONTROLLER_INCREMENTAL_FACT"
+    },
+    "F": {
+      "thread_id": "01a01491-0b5b-73a0-bfb0-82d6dece771c",
+      "status": "REGISTERED",
+      "responsibility": null,
+      "write_scope": null,
+      "current_task": null
+    }
+  },
+  "queues": {
+    "shared_chatgpt": 0,
+    "milestone_editor": 0,
+    "notion": 0,
+    "pro_review": 0,
+    "deep_research": 0
+  },
+  "notion_supervision": {
+    "status": "UPLOADED_AND_READBACK_VERIFIED__INCREMENT_PENDING",
+    "identity": "ADVISORY_SUPERVISION_MIRROR",
+    "truth_source": false,
+    "execution_ticket": false,
+    "cz_authorization": {
+      "scope": "SELECTIVE_CLOUD_SUPERVISION_UPLOAD_OF_CURRENT_SEVEN_WINDOW_WORK",
+      "whole_temp_upload_allowed": false
+    },
+    "page": {
+      "title": "工程运行监督｜七窗当前工作｜2026-08-19 R01",
+      "page_id": "3c05cadc-4d0f-8198-8cd0-d50a245831f9",
+      "url": "https://app.notion.com/p/3c05cadc4d0f81988cd0d50a245831f9",
+      "parent_title": "小说架构根页",
+      "parent_page_id": "3be5cadc-4d0f-8044-8727-d77bcacd9235"
+    },
+    "readback": {
+      "status": "PASS",
+      "anchors": [
+        "SEVEN_WINDOW_STATUS",
+        "FOUR_RECENT_MAJOR_STEPS",
+        "OPEN_QUESTIONS",
+        "AUTO_ROUTING_RULES",
+        "FOUR_CLOUD_SUPERVISION_QUESTIONS",
+        "PROHIBITED_UPLOAD_LIST"
+      ]
+    },
+    "excluded_from_upload": [
+      "NOVEL_MANUSCRIPT",
+      "RAW_OR_REASONING",
+      "GOLD_OR_BLIND_REFERENCE_DETAILS",
+      "SECRETS",
+      "LOCAL_ABSOLUTE_PATHS",
+      "OLD_SCORE_RECALCULATION",
+      "UNAUTHORIZED_PRODUCT_CONCLUSIONS"
+    ],
+    "recorded_at": "2026-08-19T01:36:26+08:00",
+    "authority_boundary": "ADVISORY_MIRROR_ONLY__DOES_NOT_OVERRIDE_LOCAL_TRUTH_OR_AUTHORIZE_CONSTRUCTION",
+    "agent_cloud_snapshot": {
+      "status": "LOCAL_DOCUMENT_REFRESHED__NOT_UPLOADED_BY_E",
+      "refreshed_at": "2026-08-19T01:47:11+08:00",
+      "active_work_windows": [],
+      "results": {
+        "A-C11-ACTION-SCHEMA-COMPOSITION-FORMAL-FIX-01": {
+          "status": "CONTRACT_LOCAL_PASS",
+          "c11": "80/80_PASS",
+          "formal_writes": 2,
+          "api_calls": 0
+        },
+        "D-C11-ACTION-ENTRY-SCHEMA-COMPOSITION-POSTFIX-REPLAY-01": {
+          "supervision_status": "PASS_INDEPENDENT_ENTRY_REVIEW",
+          "formal_receipt_verdict": "PASS_INDEPENDENT_POSTFIX_REPLAY",
+          "independent_cases": "5/5_PASS",
+          "formal_writes": 0
+        },
+        "T03-UNIFIED-EXACT-JSON-FENCE-OFFLINE-REPLAY-01": {
+          "status": "OFFLINE_UNIFIED_TRANSPORT_REPLAY_PASS"
+        },
+        "A-RECONCILIATION-LEGACY-C1V1-FAIL-CLOSED-01": {
+          "status": "CONTRACT_LOCAL_PASS"
+        }
+      },
+      "upload_actions_by_e": 0,
+      "git_actions_by_e": 0
+    },
+    "pending_increment": {
+      "status": "PENDING_CLOUD_UPDATE__CLERK_MUST_NOT_OPERATE_NOTION",
+      "count": 1,
+      "source_task": "D-C11-ACTION-ENTRY-SCHEMA-COMPOSITION-POSTFIX-REPLAY-01",
+      "changes": [
+        "MARK_A_C11_ACTION_SCHEMA_FIX_AS_CONTRACT_LOCAL_PASS_80_OF_80_TWO_FORMAL_WRITES_ZERO_API",
+        "MARK_D_POSTFIX_REPLAY_AS_PASS_INDEPENDENT_ENTRY_REVIEW_5_OF_5_ZERO_FORMAL_WRITES",
+        "PRESERVE_T03_OFFLINE_FENCE_REPLAY_PASS_AND_RECONCILIATION_NARROW_FIX_PASS",
+        "REMOVE_STALE_ACTIVE_STATUS"
+      ],
+      "recorded_at": "2026-08-19T01:47:11+08:00"
+    }
+  },
+  "pro_review": {
+    "status": "RETURN_ABSORBED__NO_ROUTE_REBUILD",
+    "package_completed_on": "2026-08-18",
+    "return_received_at": "2026-08-19T00:10:29+08:00",
+    "authority": "ADVISORY_ONLY__NOT_AUTHORIZED",
+    "triage_owner": "CONTROLLER",
+    "absorbed_at": "2026-08-19T00:21:43+08:00",
+    "route_rebuild": false,
+    "completed_temp_probes": [
+      "A-C11-INITIAL-RESTORE-REFERENCE-FAIL-FIRST-01",
+      "D-C11-R2-STALE-PROPAGATION-ONE-SCENARIO-01"
+    ],
+    "cz_candidate": {
+      "item": "C11_MACHINE_GATE_FORMAL_REPAIR",
+      "status": "AUTO_AUTH_CLASS_APPLIED__COMPLETED_CONTRACT_LOCAL_PASS",
+      "task_id": "A-C11-INITIAL-RESTORE-MACHINE-GATE-FORMAL-FIX-01"
+    },
+    "deferred_without_construction": "D_LARGE_PRODUCT_RUNTIME_BLOCK"
+  },
+  "authorization_policy": {
+    "latest_cz_text": "这种都是自动授权",
+    "recorded_at": "2026-08-19T00:51:23+08:00",
+    "receipt": "/Users/a1234/挣钱/小说架构/TEMP/t03_total_control_hub_20260818_r01/CZ_AUTO_AUTHORIZATION_20260819_R01.md",
+    "receipt_sha256": "bc4f0eb0e046d2fd2169ce9d01cdf075ff26855cbbf0f4630baf5e1c927ce50f",
+    "auto_auth_class": {
+      "all_conditions_required": [
+        "LOCALLY_PROVEN_BY_COUNTEREXAMPLES",
+        "CURRENT_SEMANTICS_UNIQUE",
+        "EXACT_NARROW_WRITE_SCOPE",
+        "NO_GOLD_API_R13_OR_PRODUCT_ROUTE_FORK"
+      ],
+      "write_scope_expansion_invalidates_auto_auth": true,
+      "owner_expansion_invalidates_auto_auth": true
+    },
+    "latest_application": {
+      "task_id": "A-C11-ACTION-SCHEMA-COMPOSITION-FORMAL-FIX-01",
+      "status": "COMPLETED",
+      "verdict": "CONTRACT_LOCAL_PASS",
+      "evidence_closed": true,
+      "new_cz_decision_required": false,
+      "completed_at": "2026-08-19T01:30:13+08:00"
+    },
+    "scheduled_auto_relay": {
+      "task_id": "A-C11-ACTION-SCHEMA-COMPOSITION-FORMAL-FIX-01",
+      "status": "COMPLETED__CONTRACT_LOCAL_PASS",
+      "owner": "A",
+      "prerequisite_task": "A-RECONCILIATION-LEGACY-C1V1-FAIL-CLOSED-01",
+      "source_gap_task": "D-C11-ACTION-ENTRY-SCHEMA-COMPOSITION-INDEPENDENT-REVIEW-01",
+      "auto_auth_class_eligible": true,
+      "candidate_formal_write_scope": [
+        "novel-mvp/contracts/validate_c11_chapter_revision_ledger.py",
+        "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.fixtures.jsonl"
+      ],
+      "action_or_schema_semantics_change_allowed": false,
+      "third_file_required_hard_stop": true,
+      "semantic_choice_required_hard_stop": true,
+      "owner_expansion_allowed": false,
+      "prerequisite_accepted": true,
+      "dispatched": true,
+      "dispatched_at": "2026-08-19T01:24:27+08:00",
+      "completed_at": "2026-08-19T01:30:13+08:00",
+      "verdict": "CONTRACT_LOCAL_PASS"
+    },
+    "postfix_replay": {
+      "task_id": "D-C11-ACTION-ENTRY-SCHEMA-COMPOSITION-POSTFIX-REPLAY-01",
+      "status": "COMPLETED__PASS_INDEPENDENT_POSTFIX_REPLAY",
+      "owner": "D",
+      "prerequisite_task": "A-C11-ACTION-SCHEMA-COMPOSITION-FORMAL-FIX-01",
+      "prerequisite_verdict": "CONTRACT_LOCAL_PASS",
+      "write_scope": "/Users/a1234/挣钱/小说架构/TEMP/d_c11_action_entry_schema_composition_postfix_replay_20260819_r01/**",
+      "formal_write_cap": 0,
+      "api_call_cap": 0,
+      "target": "INDEPENDENT_D_FIVE_CASE_AND_C11_80_OF_80_POSTFIX_REPLAY",
+      "completed_at": "2026-08-19T01:37:41+08:00",
+      "verdict": "PASS_INDEPENDENT_POSTFIX_REPLAY",
+      "gap_status": "CLOSED",
+      "next_safe_relay": null
+    }
+  },
+  "mechanical_attention": [
+    {
+      "id": "B_R04_SHARED_REVIEW_POLICY_CONFLICT",
+      "status": "REPORTED_WAIT_CONTROLLER",
+      "source_capsule": "SHARED_REVIEW_NEEDED=NO",
+      "standing_protocol": "ALL_SUBSTANTIVE_STAGE_CAPSULES_ENTER_SHARED_QUEUE",
+      "clerk_action": "NO_ENQUEUE_OR_POLICY_CHANGE"
+    },
+    {
+      "id": "A_D_FINAL_SHARED_REVIEW_POLICY_CONFLICT",
+      "status": "REPORTED_WAIT_CONTROLLER",
+      "source_capsules": "SHARED_REVIEW_NEEDED=NO",
+      "standing_protocol": "ALL_SUBSTANTIVE_STAGE_CAPSULES_ENTER_SHARED_QUEUE",
+      "clerk_action": "NO_ENQUEUE_OR_POLICY_CHANGE"
+    },
+    {
+      "id": "A_FORMAL_FIX_FINAL_SHARED_REVIEW_POLICY_CONFLICT",
+      "status": "REPORTED_WAIT_CONTROLLER",
+      "source_capsule": "SHARED_REVIEW_NEEDED=NO",
+      "standing_protocol": "ALL_SUBSTANTIVE_STAGE_CAPSULES_ENTER_SHARED_QUEUE",
+      "clerk_action": "NO_ENQUEUE_OR_POLICY_CHANGE"
+    },
+    {
+      "id": "D_ACTION_ENTRY_REVIEW_SHARED_REVIEW_POLICY_CONFLICT",
+      "status": "REPORTED_WAIT_CONTROLLER",
+      "source_capsule": "SHARED_REVIEW_NEEDED=NO",
+      "standing_protocol": "ALL_SUBSTANTIVE_STAGE_CAPSULES_ENTER_SHARED_QUEUE",
+      "clerk_action": "NO_ENQUEUE_OR_POLICY_CHANGE"
+    },
+    {
+      "id": "A_RECONCILIATION_SHARED_REVIEW_POLICY_CONFLICT",
+      "status": "REPORTED_WAIT_CONTROLLER",
+      "source_capsule": "SHARED_REVIEW_NEEDED=NO",
+      "standing_protocol": "ALL_SUBSTANTIVE_STAGE_CAPSULES_ENTER_SHARED_QUEUE",
+      "clerk_action": "NO_ENQUEUE_OR_POLICY_CHANGE"
+    },
+    {
+      "id": "A_ACTION_SCHEMA_FORMAL_FIX_SHARED_REVIEW_POLICY_CONFLICT",
+      "status": "REPORTED_WAIT_CONTROLLER",
+      "source_capsule": "SHARED_REVIEW_NEEDED=NO",
+      "standing_protocol": "ALL_SUBSTANTIVE_STAGE_CAPSULES_ENTER_SHARED_QUEUE",
+      "clerk_action": "NO_ENQUEUE_OR_POLICY_CHANGE"
+    },
+    {
+      "id": "D_POSTFIX_REPLAY_SHARED_REVIEW_POLICY_CONFLICT",
+      "status": "REPORTED_WAIT_CONTROLLER",
+      "source_capsule": "SHARED_REVIEW_NEEDED=NO",
+      "standing_protocol": "ALL_SUBSTANTIVE_STAGE_CAPSULES_ENTER_SHARED_QUEUE",
+      "clerk_action": "NO_ENQUEUE_OR_POLICY_CHANGE"
+    }
+  ],
+  "redlines_requiring_cz_explicit_text": [
+    "GOLD",
+    "TRUE_SEMANTIC_FORK",
+    "OWNER_OR_FORMAL_WRITE_SCOPE_EXPANSION",
+    "FORMAL_CONTRACT_OUTSIDE_AUTO_AUTH_CLASS",
+    "API_OR_MODEL_COST",
+    "R13_TEXT",
+    "PRODUCT_LARGE_SCOPE_CONSTRUCTION",
+    "TRAINING",
+    "PRODUCTION",
+    "UPLOAD",
+    "AUTHOR_TRUTH"
+  ]
+}

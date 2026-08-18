@@ -1,0 +1,30 @@
+{
+  "schema_version": "agent_plan_model_check.v1",
+  "checked_at": "2026-08-18T09:20:00+08:00",
+  "check_method": "arkcli plans get + arkcli plans model-list --plan agent-plan",
+  "plan": {
+    "key": "agent-plan",
+    "scope": "personal",
+    "tier": "small",
+    "status": "Running"
+  },
+  "deepseek_v4_flash": {
+    "request_model_id": "deepseek-v4-flash-260801",
+    "observed_output_name": "deepseek-v4-flash-ga-260731",
+    "enabled_thinking": true,
+    "required_thinking_mode_for_t03": "disabled"
+  },
+  "doubao": {
+    "request_model_id": "doubao-seed-2-1-turbo-260628",
+    "observed_output_name": "doubao-seed-2-1-turbo-260628",
+    "required_thinking_mode_for_t03": "disabled"
+  },
+  "routing_decision": "USE_AGENT_PLAN_FOR_BOTH_MODELS",
+  "deepseek_official_paid_route_allowed": false,
+  "incremental_paid_api_fee_cap_cny": 0,
+  "notes": [
+    "request model id and output identity are different and must both be frozen",
+    "any request-to-response identity mismatch is a stop condition",
+    "this directory check does not call either model"
+  ]
+}
