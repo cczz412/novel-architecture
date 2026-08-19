@@ -137,6 +137,10 @@ def test_restart_returns_exact_context_and_three_source_watermarks(
         "chapter_index",
         "facts",
         "chapter_index",
+        "facts",
+        "chapter_index",
+        "facts",
+        "chapter_index",
         "chapters",
     ]
     assert result["facts_snapshot"] == {
