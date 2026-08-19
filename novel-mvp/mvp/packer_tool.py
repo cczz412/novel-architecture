@@ -61,6 +61,10 @@ BUDGET_FIELDS = frozenset(
 OMISSION_FIELDS = frozenset(
     {"id", "reason", "recall_disposition", "recall_handle"}
 )
+AUTHOR_SAFE_OMISSION_REASON_LABELS = {
+    "OUTSIDE_TASK_ACTUALITY_SCOPE": "超出当前故事时点或本次任务允许范围",
+    "BUDGET_OPTIONAL_DEFERRED": "本次预算未装入",
+}
 UNRESOLVED_FIELDS = frozenset({"id", "reason", "obligation_tier"})
 ERROR_FIELDS = frozenset({"code", "detail"})
 
@@ -481,19 +485,19 @@ def _render_recall(row: dict[str, Any]) -> str:
     return "不可回取，无回取入口"
 
 
-def render(value: object) -> str:
-    """把已有 M11 原型结果排版为人读清单，不修改决策。"""
-
-    result = validate_render_result(value)
-    state_descriptions = {
+def _state_descriptions() -> dict[str, str]:
+    return {
         "READY": "已形成本次 M11 原型包；不代表正式 C9 或生产可用",
         "STOP_UNRESOLVED": "存在未决事项；本次没有自动解决，也没有形成上下文包",
         "STOP_HARD_BUDGET": "硬性材料超过本次预算；本次没有形成上下文包",
     }
+
+
+def _render_identity_lines(result: dict[str, Any], *, title: str) -> list[str]:
     receipt = result["task_receipt"]
     budget = result["budget"]
-    lines = [
-        "M11 上下文装包清单（原型）",
+    return [
+        title,
         f"原型：{result['prototype']['identity']} / {result['prototype']['version']}",
         f"任务：{receipt['task_id']}",
         f"事实范围：{receipt['task_actuality_scope']}",
@@ -504,11 +508,13 @@ def render(value: object) -> str:
         ),
         (
             f"最终状态：{result['decision_state']}（"
-            f"{state_descriptions[result['decision_state']]}）"
+            f"{_state_descriptions()[result['decision_state']]}）"
         ),
-        "",
-        f"已装入材料（{len(result['loaded'])}）",
     ]
+
+
+def _render_loaded_lines(result: dict[str, Any]) -> list[str]:
+    lines = [f"已装入材料（{len(result['loaded'])}）"]
     if result["loaded"]:
         for index, material in enumerate(result["loaded"], start=1):
             rank = (
@@ -528,7 +534,65 @@ def render(value: object) -> str:
             )
     else:
         lines.append("- 无")
+    return lines
 
+
+def _render_unresolved_lines(result: dict[str, Any]) -> list[str]:
+    lines = [f"未决事项（{len(result['unresolved'])}）"]
+    if result["unresolved"]:
+        for index, row in enumerate(result["unresolved"], start=1):
+            lines.append(
+                f"{index}. {row['id']}｜义务 {row['obligation_tier']}｜"
+                f"原因 {row['reason']}"
+            )
+    else:
+        lines.append("- 无")
+    return lines
+
+
+def _render_error_lines(result: dict[str, Any]) -> list[str]:
+    lines = [f"停止／错误说明（{len(result['errors'])}）"]
+    if result["errors"]:
+        for index, row in enumerate(result["errors"], start=1):
+            lines.append(f"{index}. {row['code']}｜{row['detail']}")
+    else:
+        lines.append("- 无")
+    return lines
+
+
+def _render_closing_note() -> list[str]:
+    return [
+        "说明：“本次未装入”不代表永久删除；"
+        "“未决”仍等待上游或作者处理，不代表系统已自动解决。",
+    ]
+
+
+def _author_safe_omission_lines(omitted: list[dict[str, Any]]) -> list[str]:
+    counts = {reason: 0 for reason in AUTHOR_SAFE_OMISSION_REASON_LABELS}
+    recheckable = 0
+    for row in omitted:
+        reason = row["reason"]
+        if reason not in AUTHOR_SAFE_OMISSION_REASON_LABELS:
+            raise PackerToolError("AUTHOR_SAFE_OMISSION_REASON_UNKNOWN")
+        counts[reason] += 1
+        if row["recall_disposition"] == "RETRIEVABLE":
+            recheckable += 1
+    lines = [
+        "被挡材料",
+        f"已阻断 {len(omitted)} 条",
+    ]
+    for reason, label in AUTHOR_SAFE_OMISSION_REASON_LABELS.items():
+        lines.append(f"{label}：{counts[reason]} 条")
+    lines.append(f"可由系统重新检查：{recheckable} 条")
+    return lines
+
+
+def render(value: object) -> str:
+    """把已有 M11 原型结果排版为人读清单，不修改决策。"""
+
+    result = validate_render_result(value)
+    lines = _render_identity_lines(result, title="M11 上下文装包清单（原型）")
+    lines.extend(["", *_render_loaded_lines(result)])
     lines.extend(["", f"本次未装入材料（{len(result['omitted'])}）"])
     if result["omitted"]:
         for index, row in enumerate(result["omitted"], start=1):
@@ -538,30 +602,22 @@ def render(value: object) -> str:
             )
     else:
         lines.append("- 无")
+    lines.extend(["", *_render_unresolved_lines(result)])
+    lines.extend(["", *_render_error_lines(result)])
+    lines.extend(["", *_render_closing_note()])
+    return "\n".join(lines) + "\n"
 
-    lines.extend(["", f"未决事项（{len(result['unresolved'])}）"])
-    if result["unresolved"]:
-        for index, row in enumerate(result["unresolved"], start=1):
-            lines.append(
-                f"{index}. {row['id']}｜义务 {row['obligation_tier']}｜"
-                f"原因 {row['reason']}"
-            )
-    else:
-        lines.append("- 无")
 
-    lines.extend(["", f"停止／错误说明（{len(result['errors'])}）"])
-    if result["errors"]:
-        for index, row in enumerate(result["errors"], start=1):
-            lines.append(f"{index}. {row['code']}｜{row['detail']}")
-    else:
-        lines.append("- 无")
-    lines.extend(
-        [
-            "",
-            "说明：“本次未装入”不代表永久删除；"
-            "“未决”仍等待上游或作者处理，不代表系统已自动解决。",
-        ]
-    )
+def render_author_safe(value: object) -> str:
+    """把已有 M11 原型结果排版为作者页；被挡材料只出分桶计数。"""
+
+    result = validate_render_result(value)
+    lines = _render_identity_lines(result, title="M11 作者安全装包说明（原型）")
+    lines.extend(["", *_render_loaded_lines(result)])
+    lines.extend(["", *_author_safe_omission_lines(result["omitted"])])
+    lines.extend(["", *_render_unresolved_lines(result)])
+    lines.extend(["", *_render_error_lines(result)])
+    lines.extend(["", *_render_closing_note()])
     return "\n".join(lines) + "\n"
 
 
@@ -642,10 +698,16 @@ def main(
     parser = argparse.ArgumentParser(description="M11 LOCAL_FILESYSTEM_ONLY 上下文打包工具")
     parser.add_argument("--input", help="打包请求或已有结果 JSON；不给时从 stdin 读")
     parser.add_argument("--output", help="本地结果文件；不给时写 stdout")
-    parser.add_argument(
+    render_mode = parser.add_mutually_exclusive_group()
+    render_mode.add_argument(
         "--render",
         action="store_true",
         help="把已有 M11 原型结果严格校验后排版为人读清单",
+    )
+    render_mode.add_argument(
+        "--render-author-safe",
+        action="store_true",
+        help="把已有 M11 原型结果严格校验后排版为作者安全说明；不展示被挡材料身份",
     )
     args = parser.parse_args(argv)
     stdin = stdin or sys.stdin
@@ -659,8 +721,12 @@ def main(
                 request = json.load(stdin)
             except json.JSONDecodeError as exc:
                 raise PackerToolError(f"STDIN_NOT_JSON:{exc}") from exc
-        if args.render:
-            rendered = render(request)
+        if args.render or args.render_author_safe:
+            rendered = (
+                render_author_safe(request)
+                if args.render_author_safe
+                else render(request)
+            )
             if args.output:
                 _write_text_atomic(Path(args.output), rendered)
             else:

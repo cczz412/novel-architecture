@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import base64
 import copy
+import hashlib
 import io
 import json
 import os
@@ -578,3 +580,240 @@ def test_render_atomic_failure_preserves_existing_output(
     assert "synthetic render replace failure" in stderr.getvalue()
     assert output_path.read_bytes() == before
     assert not list(tmp_path.glob(".receipt.txt.*.tmp"))
+
+
+def _spoiler_omission_request() -> dict:
+    return _request(
+        _hard("HARD-SAFE", 20),
+        _material(
+            "凶手其实是店主",
+            tokens=10,
+            actuality="FUTURE_PLAN_OR_PROJECTION",
+            obligation="MAY",
+            rank=1,
+            handle="plan://reveal/killer-shopkeeper",
+        ),
+        _material(
+            "MAY-BUDGET",
+            tokens=90,
+            actuality="CURRENT_FACT_OR_STATE",
+            obligation="MAY",
+            rank=2,
+        ),
+        budget=30,
+    )
+
+
+def _assert_hides_omission_identity(text: str) -> None:
+    secrets = (
+        "凶手其实是店主",
+        "凶手",
+        "店主",
+        "MAY-BUDGET",
+        "plan://reveal/killer-shopkeeper",
+        "killer",
+        "shopkeeper",
+        "plan://",
+        "material://MAY-BUDGET",
+        "OUTSIDE_TASK_ACTUALITY_SCOPE",
+        "BUDGET_OPTIONAL_DEFERRED",
+    )
+    for secret in secrets:
+        assert secret not in text
+    for raw in ("凶手其实是店主", "plan://reveal/killer-shopkeeper", "MAY-BUDGET"):
+        encoded = raw.encode("utf-8")
+        assert hashlib.sha256(encoded).hexdigest() not in text
+        assert base64.b64encode(encoded).decode("ascii") not in text
+        assert raw[:4] not in text
+
+
+def test_author_safe_render_hides_omission_identity_and_keeps_machine_refs() -> None:
+    result = packer_tool.execute(_spoiler_omission_request())
+    technical = packer_tool.render(result)
+    author_text = packer_tool.render_author_safe(result)
+
+    assert result["decision_state"] == "READY"
+    assert [item["id"] for item in result["loaded"]] == ["HARD-SAFE"]
+    omitted_by_id = {row["id"]: row for row in result["omitted"]}
+    assert omitted_by_id["凶手其实是店主"] == {
+        "id": "凶手其实是店主",
+        "reason": "OUTSIDE_TASK_ACTUALITY_SCOPE",
+        "recall_disposition": "RETRIEVABLE",
+        "recall_handle": "plan://reveal/killer-shopkeeper",
+    }
+    assert omitted_by_id["MAY-BUDGET"]["reason"] == "BUDGET_OPTIONAL_DEFERRED"
+    assert omitted_by_id["MAY-BUDGET"]["recall_handle"] == "material://MAY-BUDGET"
+
+    assert "1. HARD-SAFE｜义务 HARD" in author_text
+    assert "已阻断 2 条" in author_text
+    assert "超出当前故事时点或本次任务允许范围：1 条" in author_text
+    assert "本次预算未装入：1 条" in author_text
+    assert "可由系统重新检查：2 条" in author_text
+    _assert_hides_omission_identity(author_text)
+
+    assert "凶手其实是店主｜原因 OUTSIDE_TASK_ACTUALITY_SCOPE" in technical
+    assert "回取：可回取，入口 plan://reveal/killer-shopkeeper" in technical
+    assert "MAY-BUDGET｜原因 BUDGET_OPTIONAL_DEFERRED" in technical
+
+
+def test_author_safe_not_retrievable_omission_is_not_recheckable() -> None:
+    result = packer_tool.execute(
+        _request(
+            _hard("HARD-SAFE", 20),
+            _material(
+                "凶手其实是店主",
+                tokens=10,
+                actuality="FUTURE_PLAN_OR_PROJECTION",
+                obligation="MAY",
+                rank=1,
+                recall="NOT_RETRIEVABLE",
+                handle=None,
+            ),
+            budget=30,
+        )
+    )
+
+    author_text = packer_tool.render_author_safe(result)
+
+    assert result["omitted"][0]["recall_disposition"] == "NOT_RETRIEVABLE"
+    assert "已阻断 1 条" in author_text
+    assert "可由系统重新检查：0 条" in author_text
+    assert "凶手" not in author_text
+    assert "店主" not in author_text
+
+
+def test_author_safe_unknown_omission_reason_fails_closed_without_raw_reason() -> None:
+    result = packer_tool.execute(_spoiler_omission_request())
+    result["omitted"][0]["reason"] = "凶手其实是店主"
+
+    with pytest.raises(
+        packer_tool.PackerToolError,
+        match="AUTHOR_SAFE_OMISSION_REASON_UNKNOWN",
+    ) as caught:
+        packer_tool.render_author_safe(result)
+
+    assert str(caught.value) == "AUTHOR_SAFE_OMISSION_REASON_UNKNOWN"
+    assert "凶手" not in str(caught.value)
+
+    stderr = io.StringIO()
+    stdout = io.StringIO()
+    code = packer_tool.main(
+        ["--render-author-safe"],
+        stdin=io.StringIO(json.dumps(result, ensure_ascii=False)),
+        stdout=stdout,
+        stderr=stderr,
+    )
+    assert code == 2
+    assert stdout.getvalue() == ""
+    assert stderr.getvalue() == (
+        "M11_PACKER_TOOL_REJECTED:AUTHOR_SAFE_OMISSION_REASON_UNKNOWN\n"
+    )
+
+
+def test_author_safe_cli_file_and_stdin_are_stable_and_match_object_render(
+    tmp_path: Path,
+) -> None:
+    result = packer_tool.execute(_spoiler_omission_request())
+    input_path = tmp_path / "result.json"
+    output_path = tmp_path / "author.txt"
+    _write_json(input_path, result)
+    command = [
+        sys.executable,
+        str(PACKER_TOOL_SCRIPT),
+        "--render-author-safe",
+        "--input",
+        str(input_path),
+        "--output",
+        str(output_path),
+    ]
+
+    completed = subprocess.run(
+        command,
+        check=False,
+        capture_output=True,
+        text=True,
+        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+    )
+    assert completed.returncode == 0, completed.stderr
+    first = output_path.read_bytes()
+    assert first == packer_tool.render_author_safe(result).encode("utf-8")
+    _assert_hides_omission_identity(first.decode("utf-8"))
+
+    repeated = subprocess.run(
+        command,
+        check=False,
+        capture_output=True,
+        text=True,
+        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+    )
+    assert repeated.returncode == 0, repeated.stderr
+    assert output_path.read_bytes() == first
+
+    stdout = io.StringIO()
+    assert (
+        packer_tool.main(
+            ["--render-author-safe"],
+            stdin=io.StringIO(json.dumps(result, ensure_ascii=False)),
+            stdout=stdout,
+        )
+        == 0
+    )
+    assert stdout.getvalue().encode("utf-8") == first
+
+
+def test_author_safe_atomic_failure_preserves_existing_output(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    input_path = tmp_path / "result.json"
+    output_path = tmp_path / "author.txt"
+    _write_json(input_path, packer_tool.execute(_spoiler_omission_request()))
+    output_path.write_text("旧作者页\n", encoding="utf-8")
+    before = output_path.read_bytes()
+
+    def fail_replace(_source: str, _target: Path) -> None:
+        raise OSError("synthetic author-safe replace failure")
+
+    monkeypatch.setattr(packer_tool.os, "replace", fail_replace)
+    stderr = io.StringIO()
+    code = packer_tool.main(
+        [
+            "--render-author-safe",
+            "--input",
+            str(input_path),
+            "--output",
+            str(output_path),
+        ],
+        stderr=stderr,
+    )
+
+    assert code == 2
+    assert "synthetic author-safe replace failure" in stderr.getvalue()
+    assert output_path.read_bytes() == before
+    assert not list(tmp_path.glob(".author.txt.*.tmp"))
+
+
+def test_render_and_render_author_safe_flags_are_mutually_exclusive(
+    tmp_path: Path,
+) -> None:
+    input_path = tmp_path / "result.json"
+    _write_json(input_path, packer_tool.execute(_request(_hard("HARD-01", 20))))
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(PACKER_TOOL_SCRIPT),
+            "--render",
+            "--render-author-safe",
+            "--input",
+            str(input_path),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+    )
+
+    assert completed.returncode != 0
+    assert completed.stdout == ""
+    assert "not allowed with argument" in completed.stderr
