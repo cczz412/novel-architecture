@@ -1,0 +1,11 @@
+{
+  "board_id": "atomic-expectations-background",
+  "current_version": "R02",
+  "current_package_id": "ATOMIC_EXPECTATION_BACKGROUND_20260819_R02",
+  "entry_path": "ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/00_READ_ME_FIRST.md",
+  "manifest_path": "ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/MANIFEST.json",
+  "manifest_sha256": "02e49455a5d59c8b566938736089d0ab3a40522188f428d069b18b681e5075e7",
+  "activated_on": "2026-08-19",
+  "activation_authority": "CZ explicit instruction",
+  "authority": "SHARED_DESIGN_AND_ACCEPTANCE_REFERENCE_NO_EXECUTION_AUTHORITY"
+}
