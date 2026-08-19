@@ -1,0 +1,164 @@
+{
+  "api_calls": 0,
+  "automatic_retries": 0,
+  "case_count": 7,
+  "generated_by": "build_cases.py",
+  "gold": 0,
+  "identity": "SYNTHETIC_M1_M7_CONTENT_REVIEW_CASES_R01",
+  "members": [
+    {
+      "bytes": 1203,
+      "path": "01_m1_upload_inspection/CASE_NOTE.md",
+      "sha256": "dc54c4ba1637560ce1b7072e1daad0a5fa936989dae0442dc05a72595215161f"
+    },
+    {
+      "bytes": 1957,
+      "path": "01_m1_upload_inspection/current_output.json",
+      "sha256": "536c79ad597cc250d75154871594df4bf93eee6f86c226b834fd3264150f4cba"
+    },
+    {
+      "bytes": 1400,
+      "path": "01_m1_upload_inspection/current_output.md",
+      "sha256": "0bcdac741d3c2ce91db907252022bdcfcc7b3241bc758843c2c18a9809e69001"
+    },
+    {
+      "bytes": 509,
+      "path": "01_m1_upload_inspection/input.json",
+      "sha256": "6fbc58cfd12ab216fe3c92c2158c4f000ea2630bda00cda1237c310666c1c666"
+    },
+    {
+      "bytes": 85,
+      "path": "01_m1_upload_inspection/人物备注.md",
+      "sha256": "7549311ae5925023c51a8e95691317c452520b1f29364a6bd9173a334ca56b11"
+    },
+    {
+      "bytes": 404,
+      "path": "01_m1_upload_inspection/第1章_雨夜.txt",
+      "sha256": "6a7a4e7f95e9be2bea8db129d6e601e2faea43b2500d6533b8f39fa820ffd04a"
+    },
+    {
+      "bytes": 1145,
+      "path": "02_m2_segment_map/CASE_NOTE.md",
+      "sha256": "a2476b166cee1e2ac2a6cdc4f9fdad8be4f6ea34921ba85ff765fc09b68650ef"
+    },
+    {
+      "bytes": 2050,
+      "path": "02_m2_segment_map/current_output.json",
+      "sha256": "22e46c74b2ce30a41b009ecbeb681196441cbc94b4e67fdecd8fe07153380a30"
+    },
+    {
+      "bytes": 1886,
+      "path": "02_m2_segment_map/current_output.md",
+      "sha256": "693bb09141efdce42cb17a4dc217e3b12818e3c25c06aa519d832fc294c1ebcc"
+    },
+    {
+      "bytes": 926,
+      "path": "02_m2_segment_map/input.json",
+      "sha256": "3ae58694e06aba54fc85b3596edd8523f8711091ada0cea0cf7ee6b23401282c"
+    },
+    {
+      "bytes": 1209,
+      "path": "03_m3_frozen_extraction/CASE_NOTE.md",
+      "sha256": "07d8bc286465f72a90b8cfd7064d21777729fb789eded94a9299d7160b2162f2"
+    },
+    {
+      "bytes": 3157,
+      "path": "03_m3_frozen_extraction/current_output.json",
+      "sha256": "0105af24dc9c01507fe196f04fff9175b7c79dcef51d566a552fa4853b9490f9"
+    },
+    {
+      "bytes": 3161,
+      "path": "03_m3_frozen_extraction/input.json",
+      "sha256": "d42a08f33dfdd280757c8a43a3c073195596f6b5f5b0ff7b9e2680b9bc9c5b44"
+    },
+    {
+      "bytes": 1131,
+      "path": "04_m4_extracted_facts/CASE_NOTE.md",
+      "sha256": "77473075f596280e5fe1d8344ed6aa57195345c1a303760209df81153b6cf822"
+    },
+    {
+      "bytes": 8449,
+      "path": "04_m4_extracted_facts/current_output.json",
+      "sha256": "9cac2e06a6621ce805120e834e4727e44631dfc219c7b7bf90165e459b31558b"
+    },
+    {
+      "bytes": 5367,
+      "path": "04_m4_extracted_facts/input.json",
+      "sha256": "487af778a028dcabf4368042a6ca746f177688a81bbd5e954fdeea6563b8c355"
+    },
+    {
+      "bytes": 1212,
+      "path": "05_m5_author_review_page/CASE_NOTE.md",
+      "sha256": "fe4356c12667f5a0e669d4b82e5032069a7791a3d6e4b7eead87fcbc5ce38419"
+    },
+    {
+      "bytes": 8684,
+      "path": "05_m5_author_review_page/current_output.json",
+      "sha256": "8f1b4b7557c7a173570f4f031deaab1fde1272e55ff2f2ba9c202518ddadb222"
+    },
+    {
+      "bytes": 3683,
+      "path": "05_m5_author_review_page/current_output.md",
+      "sha256": "70474567453334f9adccff1cbaefc4364c7a9ab8d0ccbfd84ccac3baf6efdd73"
+    },
+    {
+      "bytes": 8684,
+      "path": "05_m5_author_review_page/input.json",
+      "sha256": "8f1b4b7557c7a173570f4f031deaab1fde1272e55ff2f2ba9c202518ddadb222"
+    },
+    {
+      "bytes": 1257,
+      "path": "06_m6_reader_scope_evidence/CASE_NOTE.md",
+      "sha256": "3b883a626a2fdf253dd91074fa05d05a187666e2ad5653c2697f9eec4f3ac4b3"
+    },
+    {
+      "bytes": 1547,
+      "path": "06_m6_reader_scope_evidence/current_output.json",
+      "sha256": "895e2e1d622266fd8390cb154774e5f684b874a786972eb62b8a6e4762e1426f"
+    },
+    {
+      "bytes": 935,
+      "path": "06_m6_reader_scope_evidence/current_output.md",
+      "sha256": "7afae05e1f64bf67c1fc6444dca7a0dfa6da237c87ff75137ea7e33ffb46f7fd"
+    },
+    {
+      "bytes": 2610,
+      "path": "06_m6_reader_scope_evidence/input.json",
+      "sha256": "aee4b08397f50a68c865b21314f750b894748e0a6f4eb9269db499989fef6f70"
+    },
+    {
+      "bytes": 1263,
+      "path": "07_m7_health_report/CASE_NOTE.md",
+      "sha256": "d74d902964d2fcce2e6e28c9bc020c05ac889b5a82da3242a092a25b3ff31c0b"
+    },
+    {
+      "bytes": 3906,
+      "path": "07_m7_health_report/current_output.json",
+      "sha256": "8a7588be13356ea0861abce9c3522af41f6d2cdc7316d26bdc4df4a33d62254a"
+    },
+    {
+      "bytes": 1756,
+      "path": "07_m7_health_report/current_output.md",
+      "sha256": "1f2ad6e92b2e6319d804ac200726342c90015ce9ad1dd086a24753d01231d256"
+    },
+    {
+      "bytes": 3407,
+      "path": "07_m7_health_report/input.json",
+      "sha256": "b45d2fbb2a6fc6da147fde430a0bcb0f938cc87bb9aeb98c9a73961dbe9f6d5e"
+    },
+    {
+      "bytes": 801,
+      "path": "README.md",
+      "sha256": "e45f6cffca0e90c149afd3384218c3baf8e3109beaa5131720ab3baa3983ea0b"
+    },
+    {
+      "bytes": 23275,
+      "path": "build_cases.py",
+      "sha256": "f28c07c49befb26b0336d5ed0019da8f294808bb46f4afac9f23adfb9efd46ca"
+    }
+  ],
+  "model_calls": 0,
+  "raw_response": 0,
+  "real_novel_text": 0,
+  "reasoning": 0
+}

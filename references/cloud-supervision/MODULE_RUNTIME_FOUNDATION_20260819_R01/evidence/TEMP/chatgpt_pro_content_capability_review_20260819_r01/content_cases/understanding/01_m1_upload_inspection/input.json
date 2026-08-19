@@ -1,0 +1,18 @@
+{
+  "identity": "SYNTHETIC_UPLOAD_BATCH",
+  "raw_bytes_location": "同目录两个合成文本文件",
+  "uploads": [
+    {
+      "bytes": 403,
+      "encoding_hint": null,
+      "source_name": "第1章_雨夜.txt",
+      "source_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+    },
+    {
+      "bytes": 85,
+      "encoding_hint": null,
+      "source_name": "人物备注.md",
+      "source_sha256": "7549311ae5925023c51a8e95691317c452520b1f29364a6bd9173a334ca56b11"
+    }
+  ]
+}

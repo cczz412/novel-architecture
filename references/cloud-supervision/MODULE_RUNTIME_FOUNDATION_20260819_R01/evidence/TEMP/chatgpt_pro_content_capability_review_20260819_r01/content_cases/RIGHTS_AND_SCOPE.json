@@ -1,0 +1,34 @@
+{
+  "schema_version": "synthetic-content-review-scope-v1",
+  "identity": "SYNTHETIC_CONTENT_CAPABILITY_CASES_20260819_R01",
+  "case_count": 13,
+  "groups": {
+    "understanding_m1_m7": 7,
+    "creation_pa_m8_m11": 6
+  },
+  "content_origin": "fully_synthetic_for_this_review",
+  "allowed_use": [
+    "chatgpt_pro_synthetic_content_experience_review",
+    "content_evaluation_blueprint_design"
+  ],
+  "prohibited_claims": [
+    "real_novel_generalization_pass",
+    "real_model_semantic_quality_pass",
+    "production_ready",
+    "gold_quality",
+    "training_authorized"
+  ],
+  "sensitive_material_counts": {
+    "real_novel_text": 0,
+    "real_author_project": 0,
+    "gold": 0,
+    "raw_model_response": 0,
+    "reasoning": 0,
+    "api_key": 0
+  },
+  "execution_counts": {
+    "api_calls": 0,
+    "model_calls": 0,
+    "retries": 0
+  }
+}

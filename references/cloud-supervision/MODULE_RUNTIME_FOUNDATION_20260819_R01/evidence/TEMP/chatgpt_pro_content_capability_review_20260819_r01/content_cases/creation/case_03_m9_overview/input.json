@@ -1,0 +1,117 @@
+{
+  "frozen_synthetic_provider_fixture": {
+    "beats": [
+      {
+        "fact_refs": [
+          "f201",
+          "f202"
+        ],
+        "text": "纸条被藏起，其来历被指向旧塔。",
+        "visual_hint": "茶盏压住纸条，顾川指向窗外的旧塔。"
+      }
+    ],
+    "orphan_refs": [
+      "f203"
+    ],
+    "synopsis": "沈遥藏起纸条；顾川判断来信来自旧塔；店主就是寄件人。",
+    "visual_hint": "信息来源层级需要作者一眼分清。"
+  },
+  "request": {
+    "current_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97"
+    },
+    "facts": [
+      {
+        "added_at": "2026-08-19 19:00:00",
+        "anchor_ref": {
+          "chapter_id": "c01",
+          "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+          "end": 14,
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97",
+          "slice_sha256": "c2d05e18e2c6be3abe847dd5e622397e984022ed03bf7b88f95477395ad88481",
+          "start": 0
+        },
+        "anchor_state": "VERIFIED",
+        "chapter_id": "c01",
+        "chapter_revision_ref": {
+          "chapter_id": "c01",
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97"
+        },
+        "contract": "C4_FACT_QUERY",
+        "id": "f201",
+        "note": "",
+        "quote": "沈遥把潮湿的纸条压在茶盏下。",
+        "recheck": null,
+        "seg": 1,
+        "source": "SYNTHETIC_C4_V1",
+        "status": "confirmed",
+        "text": "沈遥把潮湿的纸条压在茶盏下。",
+        "version": "v1"
+      },
+      {
+        "added_at": "2026-08-19 19:00:00",
+        "anchor_ref": {
+          "chapter_id": "c01",
+          "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+          "end": 27,
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97",
+          "slice_sha256": "ede754b52764f8c6a19acb5ddd8a472338738459b334b00c1118663fe5079169",
+          "start": 14
+        },
+        "anchor_state": "VERIFIED",
+        "chapter_id": "c01",
+        "chapter_revision_ref": {
+          "chapter_id": "c01",
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97"
+        },
+        "contract": "C4_FACT_QUERY",
+        "id": "f202",
+        "note": "",
+        "quote": "顾川说纸条是从旧塔寄出的。",
+        "recheck": null,
+        "seg": 1,
+        "source": "SYNTHETIC_C4_V1",
+        "status": "extracted",
+        "text": "顾川声称纸条来自旧塔。",
+        "version": "v1"
+      },
+      {
+        "added_at": "2026-08-19 19:00:00",
+        "anchor_ref": {
+          "chapter_id": "c01",
+          "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+          "end": 34,
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97",
+          "slice_sha256": "fd15c0141ceaf1727e8cf61c5852b6f88accf478e4209a43745b066404581ac4",
+          "start": 27
+        },
+        "anchor_state": "VERIFIED",
+        "chapter_id": "c01",
+        "chapter_revision_ref": {
+          "chapter_id": "c01",
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97"
+        },
+        "contract": "C4_FACT_QUERY",
+        "id": "f203",
+        "note": "",
+        "quote": "店主背过身去。",
+        "recheck": null,
+        "seg": 1,
+        "source": "SYNTHETIC_C4_V1",
+        "status": "rejected",
+        "text": "店主就是纸条的寄件人。",
+        "version": "v1"
+      }
+    ],
+    "generated_at": "2026-08-19 19:00:00",
+    "source_revision": "facts@c01-r1-synthetic-content-review"
+  }
+}

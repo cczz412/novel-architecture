@@ -1,0 +1,36 @@
+{
+  "budget_tokens": 100,
+  "candidate_materials": [
+    {
+      "actuality_class": "CURRENT_FACT_OR_STATE",
+      "estimated_tokens": 20,
+      "id": "FACT-CURRENT-02",
+      "obligation_tier": "HARD",
+      "recall_disposition": "NOT_RETRIEVABLE",
+      "recall_handle": null,
+      "selection_rank": null,
+      "task_relation": "沈遥已收到无署名纸条",
+      "unresolved_reason": null
+    },
+    {
+      "actuality_class": "UNRESOLVED",
+      "estimated_tokens": 10,
+      "id": "OPEN-AUTHOR-CHOICE-01",
+      "obligation_tier": "HARD",
+      "recall_disposition": "NOT_RETRIEVABLE",
+      "recall_handle": null,
+      "selection_rank": null,
+      "task_relation": "下一场必须知道沈遥是否改变不赴约的决定",
+      "unresolved_reason": "作者尚未决定沈遥是拒绝赴约，还是改去另一个地点"
+    }
+  ],
+  "task_actuality_scope": "CURRENT_TRUTH_REQUIRED",
+  "task_id": "M11-SYNTHETIC-UNRESOLVED",
+  "token_estimator": {
+    "estimates": {
+      "FACT-CURRENT-02": 20,
+      "OPEN-AUTHOR-CHOICE-01": 10
+    },
+    "identity": "M11_FIXED_MECHANICAL_LOOKUP_V1"
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "execution_receipt": {
+    "api_calls": 0,
+    "functions": [
+      "chapter_slot_snapshot_tool.execute",
+      "writing_check_package_tool.execute",
+      "writing_check_result_tool.execute",
+      "writing_check_package_reader.render_package"
+    ],
+    "model_calls": 0,
+    "retries": 0
+  },
+  "formal_check_result": {
+    "check_result_ref": "S-0101@work-r1#check-op-synthetic-t14-r1",
+    "contract": "WRITING_DESK_CHECK_RESULT",
+    "input_package_sha256": "2c0f6d66bf28759d36fce2edd1e059aa1f46ec918d6fb6498809982d6e2fd61c",
+    "judgments": [
+      {
+        "category": "covered",
+        "evidence_quote": "沈遥拆开潮湿的纸条。",
+        "explanation": "合成冻结判断：原文直接出现了拆纸条动作。",
+        "requirement_ref": "PE-0101"
+      },
+      {
+        "category": "mismatch",
+        "evidence_quote": "她没有立刻答应去城北码头",
+        "explanation": "合成冻结判断：暂不答应不等于明确拒绝。",
+        "requirement_ref": "PE-0102"
+      },
+      {
+        "category": "unknown",
+        "evidence_quote": "纸条底部没有署名。",
+        "explanation": "合成冻结判断：当前只能看出没署名，无法证明后文没有间接泄底。",
+        "requirement_ref": "S-0101@outline-r3#must_not:5a89b1b7e5a3"
+      },
+      {
+        "category": "unplanned",
+        "evidence_quote": "窗棂被风吹响了一声。",
+        "explanation": "合成冻结判断：这个细节不在已冻结 requirement 中。",
+        "requirement_ref": null
+      }
+    ],
+    "operation_id": "op-synthetic-t14-r1",
+    "scope": {
+      "mode": "chapter",
+      "requirement_refs": [
+        "PE-0101",
+        "PE-0102",
+        "S-0101@outline-r3#must_not:5a89b1b7e5a3"
+      ],
+      "target_ref": "S-0101"
+    },
+    "slot_ref": "S-0101",
+    "source_commit_seq": 21,
+    "source_outline_ref": "S-0101@outline-r3",
+    "status": "completed",
+    "version": "v1",
+    "work_ref": "S-0101@work",
+    "work_rev": 1,
+    "work_text_sha256": "46c3962e63e33a89853b048359dd958038e0cf4c83625755f8f5cddbdaf7d7b4"
+  },
+  "input_package": {
+    "check_operation_id": "op-synthetic-t14-r1",
+    "identity": "WRITING_CHECK_INPUT_PACKAGE_PROTOTYPE_R01",
+    "input_package_sha256": "2c0f6d66bf28759d36fce2edd1e059aa1f46ec918d6fb6498809982d6e2fd61c",
+    "planning_source": {
+      "generation_watermark": {
+        "outline_source_commit_seq": 21,
+        "slot_rev": 4,
+        "source_plan_sha256": "6f610eebbc34dd3365123ec2f84dee6df78ffa22459887a6fcf3afb6682726b2",
+        "source_plan_version": 7
+      },
+      "source_commit_seq": 21,
+      "source_plan_sha256": "6f610eebbc34dd3365123ec2f84dee6df78ffa22459887a6fcf3afb6682726b2",
+      "source_plan_version": 7
+    },
+    "prototype": true,
+    "requirements": [
+      {
+        "requirement_ref": "PE-0101",
+        "source_kind": "planned_event",
+        "source_text": "沈遥拆开潮湿的纸条"
+      },
+      {
+        "requirement_ref": "PE-0102",
+        "source_kind": "planned_event",
+        "source_text": "沈遥明确拒绝立刻赴约"
+      },
+      {
+        "requirement_ref": "S-0101@outline-r3#must_not:5a89b1b7e5a3",
+        "source_kind": "must_not",
+        "source_text": "不得揭露寄件人身份"
+      }
+    ],
+    "scope": {
+      "mode": "chapter",
+      "requirement_refs": [
+        "PE-0101",
+        "PE-0102",
+        "S-0101@outline-r3#must_not:5a89b1b7e5a3"
+      ],
+      "target_ref": "S-0101"
+    },
+    "work": {
+      "slot_ref": "S-0101",
+      "source_outline_ref": "S-0101@outline-r3",
+      "text": "沈遥拆开潮湿的纸条。纸条底部没有署名。她没有立刻答应去城北码头，只把纸条压在茶盏下。窗棂被风吹响了一声。",
+      "text_sha256": "46c3962e63e33a89853b048359dd958038e0cf4c83625755f8f5cddbdaf7d7b4",
+      "work_ref": "S-0101@work",
+      "work_rev": 1
+    }
+  }
+}

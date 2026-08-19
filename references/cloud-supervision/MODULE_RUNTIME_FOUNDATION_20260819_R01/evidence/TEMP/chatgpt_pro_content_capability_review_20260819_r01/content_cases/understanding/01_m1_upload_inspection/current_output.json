@@ -1,0 +1,71 @@
+{
+  "api_calls": 0,
+  "automatic_retries": 0,
+  "blocks": [],
+  "discarded": [],
+  "identity": "M1_UPLOAD_INSPECTION_R01",
+  "model_calls": 0,
+  "status": "READY",
+  "terminal_materials": [
+    {
+      "bytes": 403,
+      "chapter_no_hint": 1,
+      "decoded_chars": 137,
+      "decoded_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+      "derived_from_sha256": null,
+      "encoding": "utf-8-sig",
+      "format": "txt",
+      "source_chain": [
+        "第1章_雨夜.txt"
+      ],
+      "source_name": "第1章_雨夜.txt",
+      "source_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+      "state": "decoded"
+    },
+    {
+      "bytes": 85,
+      "chapter_no_hint": null,
+      "decoded_chars": 29,
+      "decoded_text_sha256": "7549311ae5925023c51a8e95691317c452520b1f29364a6bd9173a334ca56b11",
+      "derived_from_sha256": null,
+      "encoding": "utf-8-sig",
+      "format": "md",
+      "source_chain": [
+        "人物备注.md"
+      ],
+      "source_name": "人物备注.md",
+      "source_sha256": "7549311ae5925023c51a8e95691317c452520b1f29364a6bd9173a334ca56b11",
+      "state": "decoded"
+    }
+  ],
+  "terminal_source_count": 2,
+  "uploads": [
+    {
+      "bytes": 403,
+      "chapter_no_hint": 1,
+      "encoding": "utf-8-sig",
+      "format": "txt",
+      "position": 1,
+      "source_chain": [
+        "第1章_雨夜.txt"
+      ],
+      "source_name": "第1章_雨夜.txt",
+      "source_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+      "state": "decoded"
+    },
+    {
+      "bytes": 85,
+      "chapter_no_hint": null,
+      "encoding": "utf-8-sig",
+      "format": "md",
+      "position": 2,
+      "source_chain": [
+        "人物备注.md"
+      ],
+      "source_name": "人物备注.md",
+      "source_sha256": "7549311ae5925023c51a8e95691317c452520b1f29364a6bd9173a334ca56b11",
+      "state": "decoded"
+    }
+  ],
+  "warnings": []
+}

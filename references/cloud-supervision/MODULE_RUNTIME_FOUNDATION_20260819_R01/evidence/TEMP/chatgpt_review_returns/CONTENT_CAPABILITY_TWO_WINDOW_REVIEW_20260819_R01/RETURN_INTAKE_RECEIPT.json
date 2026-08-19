@@ -1,0 +1,51 @@
+{
+  "schema_version": "chatgpt-pro-content-two-window-return-intake-v1",
+  "received_at": "2026-08-19T22:23:34+08:00",
+  "identity": "CONTENT_CAPABILITY_TWO_WINDOW_REVIEW_20260819_R01",
+  "authority": "ADVISORY_ONLY",
+  "input_package": {
+    "sha256": "163c36c66d726dc03ba3ab37e1acda649ff1864ac34496baa8007b38f66a1817"
+  },
+  "input_prompts": [
+    {
+      "name": "PROMPT_05_CURRENT_SYNTHETIC_CONTENT_EXPERIENCE.md",
+      "sha256": "c665df05125940cf41f43fadca6b89f3c6220963c3f12067c72729312098b29f"
+    },
+    {
+      "name": "PROMPT_06_CONTENT_EVALUATION_BLUEPRINT.md",
+      "sha256": "b00f5a772372398b77de0b4de0d22436e8bda6d58ea31ecc8d9563af00d6f19b"
+    }
+  ],
+  "returns": [
+    {
+      "zip": "original/CURRENT_SYNTHETIC_CONTENT_EXPERIENCE_REVIEW.zip",
+      "zip_sha256": "608f1ac76e875b151b9b4bef5cd6c846298407dacb6cce9a056adfc9ed43e7f7",
+      "member": "CURRENT_SYNTHETIC_CONTENT_EXPERIENCE_REVIEW.md",
+      "member_sha256": "a9bc67a585b120f59e4598222aba628757478258a81b8c375fff6b41779b681f"
+    },
+    {
+      "zip": "original/CONTENT_CAPABILITY_EVALUATION_BLUEPRINT.zip",
+      "zip_sha256": "ceacc0d08e7c0615057c5a66efd999e876ec9941fe936162449d5155e6571d28",
+      "member": "CONTENT_CAPABILITY_EVALUATION_BLUEPRINT.md",
+      "member_sha256": "85182f2da25b2907a7dcf13e270d27c32ce294c3226800010963619740531bc1"
+    }
+  ],
+  "integrity": {
+    "zip_count": 2,
+    "markdown_count": 2,
+    "crc_passed": true,
+    "single_root_markdown_per_zip": true,
+    "absolute_path_members": 0,
+    "parent_traversal_members": 0,
+    "duplicate_members": 0,
+    "nested_zip_members": 0,
+    "result": "PASS"
+  },
+  "permissions": {
+    "construction_authority": false,
+    "contract_authority": false,
+    "api_call_authority": false,
+    "model_budget_authority": false,
+    "upload_authority": false
+  }
+}

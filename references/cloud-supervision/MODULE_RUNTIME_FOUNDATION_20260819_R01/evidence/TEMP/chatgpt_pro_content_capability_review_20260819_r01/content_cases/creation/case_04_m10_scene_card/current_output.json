@@ -1,0 +1,159 @@
+{
+  "c8_scene_card_prototype": {
+    "ai_label": {
+      "contains_ai_generated_content": false,
+      "note": "M10 零模型确定性投影；内容身份继承 C7 来源"
+    },
+    "anchors": {
+      "characters": [
+        {
+          "aliases": [],
+          "anchor_id": "AN-CHAR-101",
+          "entity_ref": "CH-101",
+          "kind": "character",
+          "look": "右臂缠着新绷带，深灰披风的女子",
+          "name": "沈遥",
+          "revision": 1,
+          "source_refs": [
+            "SYN-AN-CHAR-101"
+          ],
+          "status": "confirmed",
+          "voice_hint": "克制"
+        },
+        {
+          "aliases": [],
+          "anchor_id": "AN-CHAR-102",
+          "entity_ref": "CH-102",
+          "kind": "character",
+          "look": "旧皮外套，背着铜制工具箱的青年",
+          "name": "顾川",
+          "revision": 1,
+          "source_refs": [
+            "SYN-AN-CHAR-102"
+          ],
+          "status": "confirmed",
+          "voice_hint": "克制"
+        }
+      ],
+      "locations": [
+        {
+          "aliases": [],
+          "anchor_id": "AN-LOC-101",
+          "entity_ref": "LOC-101",
+          "kind": "location",
+          "look": "黄昏的木质站台，轨道旁堆着湿漉的盐袋",
+          "name": "潮声驿站",
+          "revision": 1,
+          "source_refs": [
+            "SYN-AN-LOC-101"
+          ],
+          "status": "confirmed",
+          "voice_hint": ""
+        }
+      ]
+    },
+    "book_title": "潮汐驿站（合成）",
+    "cards": [
+      {
+        "card_id": "SC-SCN-1101",
+        "cast": [
+          {
+            "anchor_ref": "AN-CHAR-101",
+            "presence": "用双手抱着木匣站在站牌下"
+          },
+          {
+            "anchor_ref": "AN-CHAR-102",
+            "presence": "接过木匣并检查封条"
+          }
+        ],
+        "chapter_hint": 8,
+        "chapter_title": "受伤前的交接",
+        "dialogue_sheet": [
+          {
+            "info": "指出封条不完整，但不猜盒内东西",
+            "speaker": "顾川",
+            "tone": "压低声音"
+          }
+        ],
+        "director_notes": {
+          "goal": "沈遥在受伤前把木匣交给顾川",
+          "guidance": [
+            "严格表现受伤前的人物状态"
+          ],
+          "pov": "沈遥",
+          "resistance": "两人都不愿说出木匣的来历",
+          "turn": "顾川发现木匣封条少了一角"
+        },
+        "dont_show": [
+          "禁止：不得展示木匣内部或后续受伤原因"
+        ],
+        "frame_refs": [],
+        "key_frame": "顾川发现木匣封条少了一角",
+        "logline": "这是时间线上明确早于沈遥右臂受伤的场景",
+        "mood_arc": "警惕→勉强达成一次交易",
+        "scene_count": 1,
+        "scene_order": 1,
+        "scene_prompt": "黄昏的木质站台，轨道旁堆着湿漉的盐袋；右臂受伤前一日黄昏；沈遥用双手抱住木匣，站台空旷；沈遥：右臂缠着新绷带，深灰披风的女子；顾川：旧皮外套，背着铜制工具箱的青年；氛围：警惕→勉强达成一次交易；关键动作：顾川发现木匣封条少了一角",
+        "setting": {
+          "location_ref": "AN-LOC-101",
+          "time": "右臂受伤前一日黄昏",
+          "tone": "警惕→勉强达成一次交易"
+        },
+        "shots": [
+          {
+            "action": "开场环境镜：沈遥用双手抱住木匣，站台空旷",
+            "beat_ref": null,
+            "dialogue": null,
+            "duration_hint_s": 3,
+            "shot_hint": "全景",
+            "shot_no": 1,
+            "visual": "黄昏的木质站台，轨道旁堆着湿漉的盐袋"
+          },
+          {
+            "action": "沈遥用双手把木匣递给顾川",
+            "beat_ref": "PE-1101",
+            "dialogue": "顾川→指出封条不完整，但不猜盒内东西（语气：压低声音）",
+            "duration_hint_s": 5,
+            "shot_hint": "中景后切封条特写",
+            "shot_no": 2,
+            "visual": "中景：两人在站牌下交接木匣"
+          }
+        ],
+        "source": {
+          "basis_note": "synthetic-plan@before-injury",
+          "plan_id": "PLAN-TIDE-SYN-r1",
+          "scene_id": "SCN-1101"
+        }
+      }
+    ],
+    "contract": "C8_SCENE_CARD_PROTOTYPE",
+    "export_id": "EXP-3f02b208dd8f86d3",
+    "exported_at": "2026-08-19 19:00:00",
+    "range": {
+      "chapters": [
+        8
+      ],
+      "scene_ids": [
+        "SCN-1101"
+      ]
+    },
+    "source_note": [
+      {
+        "basis_note": "synthetic-plan@before-injury",
+        "plan_id": "PLAN-TIDE-SYN-r1"
+      }
+    ],
+    "source_sha256": "3f02b208dd8f86d3652ffde2eb7222fd26e2c81962c7463bbd6d0d86592d2e4f",
+    "version": "v0-prototype-r1"
+  },
+  "execution_receipt": {
+    "api_calls": 0,
+    "functions": [
+      "scene_export_tool.execute",
+      "scene_export.validate_c8_prototype",
+      "scene_export_tool.render_all"
+    ],
+    "model_calls": 0,
+    "retries": 0
+  }
+}

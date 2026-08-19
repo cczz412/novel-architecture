@@ -1,0 +1,116 @@
+{
+  "source": {
+    "anchors": [
+      {
+        "aliases": [],
+        "anchor_id": "AN-CHAR-101",
+        "entity_ref": "CH-101",
+        "kind": "character",
+        "look": "右臂缠着新绷带，深灰披风的女子",
+        "name": "沈遥",
+        "revision": 1,
+        "source_refs": [
+          "SYN-AN-CHAR-101"
+        ],
+        "status": "confirmed",
+        "voice_hint": "克制"
+      },
+      {
+        "aliases": [],
+        "anchor_id": "AN-CHAR-102",
+        "entity_ref": "CH-102",
+        "kind": "character",
+        "look": "旧皮外套，背着铜制工具箱的青年",
+        "name": "顾川",
+        "revision": 1,
+        "source_refs": [
+          "SYN-AN-CHAR-102"
+        ],
+        "status": "confirmed",
+        "voice_hint": "克制"
+      },
+      {
+        "aliases": [],
+        "anchor_id": "AN-LOC-101",
+        "entity_ref": "LOC-101",
+        "kind": "location",
+        "look": "黄昏的木质站台，轨道旁堆着湿漉的盐袋",
+        "name": "潮声驿站",
+        "revision": 1,
+        "source_refs": [
+          "SYN-AN-LOC-101"
+        ],
+        "status": "confirmed",
+        "voice_hint": ""
+      }
+    ],
+    "basis_note": "synthetic-plan@before-injury",
+    "book_title": "潮汐驿站（合成）",
+    "contract": "C7_PLOT_LAYER v1",
+    "generated_at": "2026-08-19 19:00:00",
+    "model": "stub",
+    "plan_id": "PLAN-TIDE-SYN-r1",
+    "planned_events": [
+      {
+        "action": "沈遥用双手把木匣递给顾川",
+        "dialogue_hint_refs": [
+          "D-1101"
+        ],
+        "id": "PE-1101",
+        "scene_ref": "SCN-1101",
+        "shot_hint": "中景后切封条特写",
+        "visual": "中景：两人在站牌下交接木匣"
+      }
+    ],
+    "project": "潮汐驿站（完全合成）",
+    "scene_export_slice": "m10-scene-slice-r1",
+    "scenes": [
+      {
+        "chapter_hint": 8,
+        "chapter_title": "受伤前的交接",
+        "character_presence": {
+          "CH-101": "用双手抱着木匣站在站牌下",
+          "CH-102": "接过木匣并检查封条"
+        },
+        "characters": [
+          "CH-101",
+          "CH-102"
+        ],
+        "dialogue_hints": [
+          {
+            "id": "D-1101",
+            "info": "指出封条不完整，但不猜盒内东西",
+            "kind": "information_point",
+            "speaker_ref": "CH-102",
+            "tone": "压低声音"
+          }
+        ],
+        "goal": "沈遥在受伤前把木匣交给顾川",
+        "id": "SCN-1101",
+        "location_ref": "AN-LOC-101",
+        "mood_in": "警惕",
+        "mood_out": "勉强达成一次交易",
+        "pe_refs": [
+          "PE-1101"
+        ],
+        "pov": "CH-101",
+        "resistance": "两人都不愿说出木匣的来历",
+        "scene_count": 1,
+        "scene_order": 1,
+        "spoiler_guard": [
+          {
+            "audience_state": "known_at_scene",
+            "instruction": "不得展示木匣内部或后续受伤原因"
+          }
+        ],
+        "summary": "这是时间线上明确早于沈遥右臂受伤的场景",
+        "time": "右臂受伤前一日黄昏",
+        "turn": "顾川发现木匣封条少了一角",
+        "visual_hint": "沈遥用双手抱住木匣，站台空旷",
+        "writing_guidance": [
+          "严格表现受伤前的人物状态"
+        ]
+      }
+    ]
+  }
+}

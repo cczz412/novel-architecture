@@ -1,0 +1,146 @@
+{
+  "execution_receipt": {
+    "api_calls": 0,
+    "functions": [
+      "overview.execute",
+      "overview.validate_card",
+      "overview.render_card"
+    ],
+    "model_calls": 0,
+    "provider_calls": 1,
+    "provider_kind": "frozen_synthetic_callable",
+    "retries": 0
+  },
+  "overview_card": {
+    "basis": "fact_snapshot",
+    "beats": [
+      {
+        "beat_id": "b01",
+        "fact_refs": [
+          "f201",
+          "f202"
+        ],
+        "text": "纸条被藏起，其来历被指向旧塔。",
+        "visual_hint": "茶盏压住纸条，顾川指向窗外的旧塔。"
+      }
+    ],
+    "card_id": "prototype:c01:r1:bdd03876c6ae",
+    "chapter_ref": "c01",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97"
+    },
+    "contract": "C5_OVERVIEW_CARD_PROTOTYPE",
+    "coverage": {
+      "beat_ref_count": 2,
+      "coverage_ratio": 1.0,
+      "covered_fact_count": 3,
+      "fact_count": 3,
+      "orphan_count": 1
+    },
+    "evidence": [
+      {
+        "anchor_ref": {
+          "chapter_id": "c01",
+          "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+          "end": 14,
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97",
+          "slice_sha256": "c2d05e18e2c6be3abe847dd5e622397e984022ed03bf7b88f95477395ad88481",
+          "start": 0
+        },
+        "chapter_revision_ref": {
+          "chapter_id": "c01",
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97"
+        },
+        "fact_id": "f201",
+        "quote": "沈遥把潮湿的纸条压在茶盏下。",
+        "source": "SYNTHETIC_C4_V1",
+        "status": "confirmed"
+      },
+      {
+        "anchor_ref": {
+          "chapter_id": "c01",
+          "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+          "end": 27,
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97",
+          "slice_sha256": "ede754b52764f8c6a19acb5ddd8a472338738459b334b00c1118663fe5079169",
+          "start": 14
+        },
+        "chapter_revision_ref": {
+          "chapter_id": "c01",
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97"
+        },
+        "fact_id": "f202",
+        "quote": "顾川说纸条是从旧塔寄出的。",
+        "source": "SYNTHETIC_C4_V1",
+        "status": "extracted"
+      },
+      {
+        "anchor_ref": {
+          "chapter_id": "c01",
+          "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+          "end": 34,
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97",
+          "slice_sha256": "fd15c0141ceaf1727e8cf61c5852b6f88accf478e4209a43745b066404581ac4",
+          "start": 27
+        },
+        "chapter_revision_ref": {
+          "chapter_id": "c01",
+          "revision_no": 1,
+          "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97"
+        },
+        "fact_id": "f203",
+        "quote": "店主背过身去。",
+        "source": "SYNTHETIC_C4_V1",
+        "status": "rejected"
+      }
+    ],
+    "generated_at": "2026-08-19 19:00:00",
+    "orphan_refs": [
+      "f203"
+    ],
+    "projection_only": true,
+    "source_summary": {
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "5cc4c9e8fd9919aab2b9714abf8dfdecb64c91bf60e97cb25e1a58e199797b97"
+      },
+      "fact_count": 3,
+      "fact_refs": [
+        {
+          "fact_id": "f201",
+          "record_sha256": "5cc7091c6c4ac6da2c1f09f96f8feaf0a79ac801c3b6fb8f33d48ced19477c10",
+          "status": "confirmed"
+        },
+        {
+          "fact_id": "f202",
+          "record_sha256": "35d39c503bd1fcf4ec73929352f77d47ce7751985ebb5dd0b9e835f4a3947c49",
+          "status": "extracted"
+        },
+        {
+          "fact_id": "f203",
+          "record_sha256": "7f56c056dce1f20edf65b66e4b4d3d4b92db794d66f0602b65736689b1e38624",
+          "status": "rejected"
+        }
+      ],
+      "source_facts_sha256": "bdd03876c6aec62d202d2c2b54db34a00beb0ef3ab34a458221ace7d7255bb81",
+      "source_revision": "facts@c01-r1-synthetic-content-review",
+      "status_counts": {
+        "confirmed": 1,
+        "extracted": 1,
+        "rejected": 1
+      }
+    },
+    "synopsis": "沈遥藏起纸条；顾川判断来信来自旧塔；店主就是寄件人。",
+    "version": "v0",
+    "visual_hint": "信息来源层级需要作者一眼分清。",
+    "writes_truth": false
+  }
+}

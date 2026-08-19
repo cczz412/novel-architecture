@@ -1,0 +1,248 @@
+{
+  "chapter_id": "c01",
+  "chapter_revision_ref": {
+    "chapter_id": "c01",
+    "revision_no": 1,
+    "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+  },
+  "facts_snapshot": {
+    "sha256": "dc38ded56c20ea34a59e8c6aca5f912578eaa4c44cdc19ee1f432b5879776cc2",
+    "version": 1
+  },
+  "has_more": false,
+  "items": [
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "anchor_ref": {
+        "chapter_id": "c01",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 35,
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+        "slice_sha256": "c11bccd47da1c9536ca13ec66c5fb701df4590f49a65fc408137ca94e905b61e",
+        "start": 21
+      },
+      "anchor_state": "VERIFIED",
+      "chapter_id": "c01",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+      },
+      "contract": "C4_FACT_QUERY",
+      "id": "f001",
+      "note": "",
+      "quote": "把一封没有署名的信放在柜台上",
+      "recheck": null,
+      "seg": 1,
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE",
+      "status": "extracted",
+      "text": "林乔把一封没有署名的信放在旧书铺柜台上。",
+      "version": "v1"
+    },
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "anchor_ref": {
+        "chapter_id": "c01",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 47,
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+        "slice_sha256": "ac4eba1934453edb691ea96040a6e09a7691e79a8a1540c3db3ff5078fd71ff2",
+        "start": 36
+      },
+      "anchor_state": "VERIFIED",
+      "chapter_id": "c01",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+      },
+      "contract": "C4_FACT_QUERY",
+      "id": "f002",
+      "note": "",
+      "quote": "信封背面画着一枚断月印",
+      "recheck": null,
+      "seg": 1,
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE",
+      "status": "extracted",
+      "text": "信封背面画着一枚断月印。",
+      "version": "v1"
+    },
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "anchor_ref": {
+        "chapter_id": "c01",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 59,
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+        "slice_sha256": "cc587574accfc1646a52902c713d11d753702453fc993d79fcb0f791d26b7cf4",
+        "start": 53
+      },
+      "anchor_state": "VERIFIED",
+      "chapter_id": "c01",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+      },
+      "contract": "C4_FACT_QUERY",
+      "id": "f003",
+      "note": "",
+      "quote": "苏晚没有拆信",
+      "recheck": null,
+      "seg": 1,
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE",
+      "status": "extracted",
+      "text": "苏晚没有拆开无署名信。",
+      "version": "v1"
+    },
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "anchor_ref": {
+        "chapter_id": "c01",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 79,
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+        "slice_sha256": "78b7fc601ada5c8b208a0cbaa43f5daf460ea56ae04e4a150a9efb5f08229542",
+        "start": 69
+      },
+      "anchor_state": "VERIFIED",
+      "chapter_id": "c01",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+      },
+      "contract": "C4_FACT_QUERY",
+      "id": "f004",
+      "note": "",
+      "quote": "把铜钥匙藏进蓝布包里",
+      "recheck": null,
+      "seg": 1,
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE",
+      "status": "extracted",
+      "text": "苏晚把铜钥匙藏进蓝布包里。",
+      "version": "v1"
+    },
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "anchor_ref": {
+        "chapter_id": "c01",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 92,
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+        "slice_sha256": "2f668185a117901c94b54212a744aaef81887d10d251f80f51d6d89c8f7cf6c9",
+        "start": 86
+      },
+      "anchor_state": "VERIFIED",
+      "chapter_id": "c01",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+      },
+      "contract": "C4_FACT_QUERY",
+      "id": "f005",
+      "note": "",
+      "quote": "今晚别去北桥",
+      "recheck": null,
+      "seg": 1,
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE",
+      "status": "extracted",
+      "text": "苏晚告诫林乔今晚不要去北桥。",
+      "version": "v1"
+    },
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "anchor_ref": {
+        "chapter_id": "c01",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 106,
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+        "slice_sha256": "bb03cdde1eec12769c267140b6622593d3d6a8ca8dcedbaf8699d533a8019134",
+        "start": 96
+      },
+      "anchor_state": "VERIFIED",
+      "chapter_id": "c01",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+      },
+      "contract": "C4_FACT_QUERY",
+      "id": "f006",
+      "note": "",
+      "quote": "巷口忽然传来三声短哨",
+      "recheck": null,
+      "seg": 2,
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE",
+      "status": "extracted",
+      "text": "巷口传来三声短哨。",
+      "version": "v1"
+    },
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "anchor_ref": {
+        "chapter_id": "c01",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 124,
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+        "slice_sha256": "7c4501831bdff251bb2a492103353aff318f799e19c03cced784f92cf49e6596",
+        "start": 113
+      },
+      "anchor_state": "VERIFIED",
+      "chapter_id": "c01",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+      },
+      "contract": "C4_FACT_QUERY",
+      "id": "f007",
+      "note": "",
+      "quote": "哥哥生前约定的求救暗号",
+      "recheck": null,
+      "seg": 2,
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE",
+      "status": "extracted",
+      "text": "三声短哨是林乔与哥哥生前约定的求救暗号。",
+      "version": "v1"
+    },
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "anchor_ref": {
+        "chapter_id": "c01",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 136,
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae",
+        "slice_sha256": "8fdb3932dfb945f446cd1b5e8d60a5df00436c24465d187ee849221629d57487",
+        "start": 129
+      },
+      "anchor_state": "VERIFIED",
+      "chapter_id": "c01",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+      },
+      "contract": "C4_FACT_QUERY",
+      "id": "f008",
+      "note": "",
+      "quote": "子夜前赶到北桥",
+      "recheck": null,
+      "seg": 2,
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE",
+      "status": "extracted",
+      "text": "林乔决定在子夜前赶到北桥。",
+      "version": "v1"
+    }
+  ],
+  "next_after_fact_ref": "f008"
+}

@@ -1,0 +1,78 @@
+{
+  "as_of_chapter_id": "c01",
+  "current_revision_refs": [
+    {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "43d6185fd668b77fff8e591846874834b78ee109c512c3c78d12d8b7eed74ed8"
+    },
+    {
+      "chapter_id": "c02",
+      "revision_no": 1,
+      "revision_text_sha256": "5ff93583b40a58d1718f6d601052816fb12cbd75d2890bf9aced37a8535ab885"
+    }
+  ],
+  "facts": [
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "anchor_ref": {
+        "chapter_id": "c01",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 15,
+        "revision_no": 1,
+        "revision_text_sha256": "43d6185fd668b77fff8e591846874834b78ee109c512c3c78d12d8b7eed74ed8",
+        "slice_sha256": "789dd70982dfe28efd6666debd204b01112727948b3387bd34786d7d26ab20cd",
+        "start": 6
+      },
+      "anchor_state": "VERIFIED",
+      "chapter_id": "c01",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "43d6185fd668b77fff8e591846874834b78ee109c512c3c78d12d8b7eed74ed8"
+      },
+      "contract": "C4_FACT_QUERY",
+      "decided_at": "2026-08-19 19:11:00",
+      "id": "f101",
+      "note": "",
+      "quote": "蓝布包里装的是账本",
+      "recheck": null,
+      "seg": 1,
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE",
+      "status": "confirmed",
+      "text": "众人以为蓝布包里装的是账本。",
+      "version": "v1"
+    },
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "anchor_ref": {
+        "chapter_id": "c02",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 22,
+        "revision_no": 1,
+        "revision_text_sha256": "5ff93583b40a58d1718f6d601052816fb12cbd75d2890bf9aced37a8535ab885",
+        "slice_sha256": "0d965bfc3c984803456b61cceebb44b0024234a50fcda7afe7fb830e8e64c7e8",
+        "start": 4
+      },
+      "anchor_state": "VERIFIED",
+      "chapter_id": "c02",
+      "chapter_revision_ref": {
+        "chapter_id": "c02",
+        "revision_no": 1,
+        "revision_text_sha256": "5ff93583b40a58d1718f6d601052816fb12cbd75d2890bf9aced37a8535ab885"
+      },
+      "contract": "C4_FACT_QUERY",
+      "decided_at": "2026-08-19 19:11:00",
+      "id": "f102",
+      "note": "",
+      "quote": "蓝布包，里面其实藏着北桥库门的铜钥匙",
+      "recheck": null,
+      "seg": 1,
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE",
+      "status": "confirmed",
+      "text": "蓝布包里藏着北桥库门的铜钥匙。",
+      "version": "v1"
+    }
+  ],
+  "query": "蓝布包"
+}

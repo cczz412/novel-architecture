@@ -1,0 +1,72 @@
+{
+  "budget_tokens": 80,
+  "candidate_materials": [
+    {
+      "actuality_class": "CURRENT_FACT_OR_STATE",
+      "estimated_tokens": 30,
+      "id": "FACT-CURRENT-01",
+      "obligation_tier": "HARD",
+      "recall_disposition": "NOT_RETRIEVABLE",
+      "recall_handle": null,
+      "selection_rank": null,
+      "task_relation": "当前章已确认：沈遥今夜不去城北码头",
+      "unresolved_reason": null
+    },
+    {
+      "actuality_class": "ACTIVE_CONSTRAINT",
+      "estimated_tokens": 25,
+      "id": "PIN-AUTHOR-01",
+      "obligation_tier": "HARD",
+      "recall_disposition": "NOT_RETRIEVABLE",
+      "recall_handle": null,
+      "selection_rank": null,
+      "task_relation": "作者明确要求：临时合作不能写成和解",
+      "unresolved_reason": null
+    },
+    {
+      "actuality_class": "CURRENT_FACT_OR_STATE",
+      "estimated_tokens": 25,
+      "id": "SCENE-RECENT-01",
+      "obligation_tier": "SHOULD",
+      "recall_disposition": "RETRIEVABLE",
+      "recall_handle": "scene://synthetic/c01/last",
+      "selection_rank": 1,
+      "task_relation": "上一场两人仍以对立语气说话",
+      "unresolved_reason": null
+    },
+    {
+      "actuality_class": "CURRENT_FACT_OR_STATE",
+      "estimated_tokens": 20,
+      "id": "DETAIL-REMOTE-01",
+      "obligation_tier": "MAY",
+      "recall_disposition": "RETRIEVABLE",
+      "recall_handle": "evidence://synthetic/bell",
+      "selection_rank": 1,
+      "task_relation": "三章前站台的铜铃细节，可用于氛围呼应",
+      "unresolved_reason": null
+    },
+    {
+      "actuality_class": "FUTURE_PLAN_OR_PROJECTION",
+      "estimated_tokens": 10,
+      "id": "FUTURE-REVEAL-01",
+      "obligation_tier": "MAY",
+      "recall_disposition": "RETRIEVABLE",
+      "recall_handle": "plan://synthetic/future-sender",
+      "selection_rank": 1,
+      "task_relation": "未来才揭露寄件人，当前章不应当真值装入",
+      "unresolved_reason": null
+    }
+  ],
+  "task_actuality_scope": "CURRENT_TRUTH_REQUIRED",
+  "task_id": "M11-SYNTHETIC-CURRENT-CHAPTER",
+  "token_estimator": {
+    "estimates": {
+      "DETAIL-REMOTE-01": 20,
+      "FACT-CURRENT-01": 30,
+      "FUTURE-REVEAL-01": 10,
+      "PIN-AUTHOR-01": 25,
+      "SCENE-RECENT-01": 25
+    },
+    "identity": "M11_FIXED_MECHANICAL_LOOKUP_V1"
+  }
+}

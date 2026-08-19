@@ -1,0 +1,245 @@
+{
+  "created_at": "2026-08-19T18:51:06",
+  "integrity": {
+    "crc_passed": true,
+    "errors": [],
+    "member_count": 230,
+    "passed": true,
+    "payload_count": 228,
+    "zip_bytes": 1287359,
+    "zip_sha256": "9f3b19b3405bd7fbab58069ef54d3b27b380ab55cdd9cf1b7382c5102db08879"
+  },
+  "local_path_redaction": {
+    "changed_member_count": 22,
+    "changed_members": [
+      {
+        "member": "02_current_route/novel-mvp/design/CHAPTER_REVISION_DESIGN_R01.md",
+        "original_sha256": "12749d8668fabd5faafcb3edfdc942083d1d98e0eaf93559fe9130bace697a4a",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "3ab22aef1e3763abad91b72bf06d4539e5eb9c6b43d31c088a933e228f4d936a"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/CHAPTER_WORKBENCH_DESIGN_R02.md",
+        "original_sha256": "609b9a559df624e0cc01517c648e8c4b467b04c898de7bfab5cd711d8ef7933d",
+        "replacement_counts": {
+          "repo_root": 1
+        },
+        "sanitized_sha256": "29ab91eeb2bc314d8d13c5163adadfdf8aafe34d4c37712ca8f758a3e1825daa"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/CHARACTER_LEDGER_DESIGN_R02.md",
+        "original_sha256": "529cc0500bce1bc12addd8794a3de00ddfbbb342813fa3fef94c9fbad4b8b172",
+        "replacement_counts": {
+          "repo_root": 5
+        },
+        "sanitized_sha256": "9ee5ea7214064b9784c27c60837a0558066ccface2cca8998871d9ff72946137"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/CONTEXT_PACKER_DESIGN_R01.md",
+        "original_sha256": "86206029f01177d5d32b00b180218c8a7ca4b458d9c0579fd77f20f3eeef1946",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "79fa912f394379d29d73e0c4e7a1cf3535b78eb9c2c9d5aca9382f13e1d7221d"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/DAILY_LOOP_WALKTHROUGH_R03.md",
+        "original_sha256": "292931b5d5fe8988bc657a81cd0cb842e58665770740c9188440758ebb9d9ec0",
+        "replacement_counts": {
+          "repo_root": 8
+        },
+        "sanitized_sha256": "f1b28f92fe9807d3540b79c2b17950ab2ff70e9accd12e3b42b100aaabf6e660"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/IDEA_LEDGER_DESIGN_R02.md",
+        "original_sha256": "d8bfa498dbd0eab1afce4e4480b33101788ec8bf4a55748192d7ea1ecc365b23",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "5bc430eb117a6c4f43512ed1ed9860c393d594ca38ce5703cac4198f457a1b4e"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/INTAKE_SHELVES_DESIGN_R03.md",
+        "original_sha256": "da31920338948c7aeae33cab868ae15e24e195e86b238aa96d71514e02575ba0",
+        "replacement_counts": {
+          "repo_root": 1
+        },
+        "sanitized_sha256": "5429b7ca58c2feaa217ede7015b54b44b3793c39870d2efd31f4d4f0f1f36181"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/M8_PLANNING_DESIGN_R04.md",
+        "original_sha256": "041adf1f333856df52b8417f8a5245c65321ad87c976331cc683b9d45a7499a9",
+        "replacement_counts": {
+          "repo_root": 2
+        },
+        "sanitized_sha256": "3497f75ff2775d1116a650562e5b39ca9b43d99caa9c047d24726c15b1db1dfd"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/OUTLINE_STRUCTURE_DESIGN_R02.md",
+        "original_sha256": "f4f17204bfad4898d3956f44f30ef034fec1066d863c364aa776dbf4653bd212",
+        "replacement_counts": {
+          "repo_root": 2
+        },
+        "sanitized_sha256": "ed077aca600b5894ba7c7a75080f6acac80c8eafa007321eb987b4faac84840d"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R04.md",
+        "original_sha256": "0e4af0ae7fdeaa21ee96a3055ae525c9c60f3dbf3c187717494d59033d841f55",
+        "replacement_counts": {
+          "repo_root": 2
+        },
+        "sanitized_sha256": "6627dae66aca4b3eb6e22616e4a98c347b0d3d02661cf6e22a1010020465900b"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/REVIEW_OVERVIEW_DESIGN_R03.md",
+        "original_sha256": "48803eabb1d565b87fd0af713c476bc8b61aaae393d744489e218e5a5d24fdca",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "6a1e5a3249815af33d74d1c565a7e0244268b89bb5d59ad38b9a0ba5e27a39d6"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/SCENE_CARD_EXPORT_DESIGN_R01.md",
+        "original_sha256": "babf9e389c77b4fedcb880f51208e6e1ec372f6d02da771b86ec71d89bbffe8a",
+        "replacement_counts": {
+          "repo_root": 4
+        },
+        "sanitized_sha256": "5281c148f0e5ce68b86690a66f2561910c925469cb3830b06d1a3cf06e831ae0"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/STOP_POINT_REGISTRY_R03.md",
+        "original_sha256": "8179100901516f7f4b9edb92f4185385e891cb34636a6c722912e4759a4b7ad3",
+        "replacement_counts": {
+          "repo_root": 2
+        },
+        "sanitized_sha256": "01f3ce5fadffb838db63a53054ca4ffb4953745a0e57fe2ef0c4196bb9b314fa"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/WRITING_DESK_DESIGN_R04.md",
+        "original_sha256": "1fb4a23089c3bf987cadec78a859d8c5f0a35888bc77fd8aec1e2efd1c590b1b",
+        "replacement_counts": {
+          "repo_root": 5
+        },
+        "sanitized_sha256": "45fce4377e12eebb08ed207760340597a46a20a8af3c2db27aa1cbb0a57513fa"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/a_p_a_no_prose_closeout_preflight_20260819_r01/MODULE_RESULT.md",
+        "original_sha256": "e02492692b02cf1f875db9784fe4297d0ffd070c8673572d64d30f711a1c04f8",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "7c7e451b288464a024f8f0953a9e1045fc374ecb6b2a10dcd94286b264326815"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/a_p_a_work_draft_author_workspace_current_save_20260819_r01/MODULE_RESULT.md",
+        "original_sha256": "bbb224766e81a214e0458d22b1516100a56c08a131243af4d1d40986a3e7fa45",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "f6c467e6377e1ee56d38d6c0b815358a9f156d658e59c2ce3c8c1be12c1b3a54"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/a_p_a_work_draft_explicit_handover_preflight_20260819_r01/MODULE_RESULT.md",
+        "original_sha256": "98c7a628bfee850a910cbe92df34f6fccdc29dc5d136c2fea6cfe31471f9ff26",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "965bb3ac309122904ae11efde3dcca28b4bc0f01546fbb4e8505df8d3defbaaa"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/a_p_a_work_draft_skip_check_closeout_preflight_20260819_r01/MODULE_RESULT.md",
+        "original_sha256": "5d0c0f695914757316ec4f3ee33820bea5e68e251b1f180160bc916c94af173e",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "5464bd7545129e9654f4512e6894bea300365659114022b220813b3993e9a46f"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/a_p_a_writing_check_package_standalone_tool_20260819_r01/MODULE_RESULT.md",
+        "original_sha256": "1afd9503d91c57837fc34cb8e0887ae9b89c6020f38df34aa34f2c1a13533f94",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "7e6442ad058db08758b0bdeaf0b35c714a703fcebcc5ff5677586766b6d149dd"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/a_p_a_writing_check_result_intake_tool_20260819_r01/MODULE_RESULT.md",
+        "original_sha256": "27a2002a3688593d33ae77058efa093bb6fc6e49964d2be309abafb9c2a2219e",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "67d6e4037774ef4a25b20b25d3ab160edef298f1df91bbfb6fa546f5e96bde47"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/README.md",
+        "original_sha256": "e902a3dad9d0c3069052a491d6eb415d537d701459c99f314825c981469991c9",
+        "replacement_counts": {
+          "repo_root": 1
+        },
+        "sanitized_sha256": "e2e896817730a14c3fe9f16fa6806022e5432f8084b795be622fb8374f2ee11d"
+      },
+      {
+        "member": "03_upstream_evidence/TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/run_handoff.py",
+        "original_sha256": "dd4876b41ba1c2bd065878630dcf3f7f452a7c279741e14fcc610a8c367ec374",
+        "replacement_counts": {
+          "repo_root": 2
+        },
+        "sanitized_sha256": "8be3ebfe4548c7e1f42741600d8aaa1375603dc86db426f73e8c493d6d694de3"
+      }
+    ],
+    "note": "只改外发副本：仓库绝对路径替换为 <repo-root>，用户目录替换为 <user-home>；本地原件未改。",
+    "result": "PASS",
+    "schema_version": "chatgpt-review-local-path-redaction-v1"
+  },
+  "max_zip_mb": 25.0,
+  "notes": [
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/current_truth/four_window_task_boundary:TEMP/t03_total_control_hub_20260818_r01/CURRENT_CONTROLLER_BRIEF.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/current_truth/four_window_task_boundary:TEMP/chatgpt_pro_module_review_four_windows_20260819_r01/00_SHARED_UPLOAD_INSTRUCTIONS.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/current_truth/deep_research_candidate_summary_only:TEMP/deep_search_real_author_needs_returns_20260819_r01/CANDIDATE_LEDGER_R01.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/current_truth/deep_research_candidate_summary_only:TEMP/deep_search_real_author_needs_returns_20260819_r01/LOCAL_TRIAGE_R01.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/current_truth/deep_research_candidate_summary_only:TEMP/deep_search_real_author_needs_returns_20260819_r01/INTAKE_INDEX.md",
+    "ROUTE_FILE_EXCLUDED:r13-module-usable-pro-four-window-review-20260819-r01/current_route/current_contracts_and_validators:novel-mvp/contracts/__pycache__/validate_c10_intake_material_identity.cpython-312.pyc",
+    "ROUTE_FILE_EXCLUDED:r13-module-usable-pro-four-window-review-20260819-r01/current_route/current_contracts_and_validators:novel-mvp/contracts/__pycache__/validate_c11_chapter_revision_ledger.cpython-312.pyc",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/pa_current_module_results:TEMP/a_p_a_work_draft_author_workspace_current_save_20260819_r01/MODULE_RESULT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/pa_current_module_results:TEMP/a_p_a_work_draft_explicit_handover_preflight_20260819_r01/MODULE_RESULT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/pa_current_module_results:TEMP/a_p_a_work_draft_skip_check_closeout_preflight_20260819_r01/MODULE_RESULT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/pa_current_module_results:TEMP/a_p_a_no_prose_closeout_preflight_20260819_r01/MODULE_RESULT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/pa_current_module_results:TEMP/a_p_a_writing_check_package_standalone_tool_20260819_r01/MODULE_RESULT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/pa_current_module_results:TEMP/a_p_a_writing_check_result_intake_tool_20260819_r01/MODULE_RESULT.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/m8_m10_workspace_file_handoff:TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/README.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/m8_m10_workspace_file_handoff:TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/run_handoff.py",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/m8_m10_workspace_file_handoff:TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/inputs/plan.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/m8_m10_workspace_file_handoff:TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/inputs/explicit_bindings.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/m8_m10_workspace_file_handoff:TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/intermediate/plan_snapshot.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/m8_m10_workspace_file_handoff:TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/intermediate/slot.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/m8_m10_workspace_file_handoff:TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/intermediate/m10_scene_request.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/m8_m10_workspace_file_handoff:TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/outputs/c8_scene_cards.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/m8_m10_workspace_file_handoff:TEMP/f_m8_m10_workspace_file_handoff_20260819_r01/failure/m10_failure_stderr.txt",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-usable-pro-four-window-review-20260819-r01/upstream_evidence/prior_module_expansion_local_triage:TEMP/chatgpt_review_returns/MODULE_EXPANSION_ARCHITECTURE_DESIGN_20260819_R01/LOCAL_TRIAGE_R01.md"
+  ],
+  "payload_file_count": 228,
+  "profile": null,
+  "raw_bytes": 3883599,
+  "route": "r13-module-usable-pro-four-window-review-20260819-r01",
+  "route_snapshot_at": "2026-08-19T18:49:22+08:00",
+  "schema_version": "chatgpt-review-route-pack-receipt-v1",
+  "secret_scan": {
+    "hit_count": 0,
+    "hits": [],
+    "result": "PASS",
+    "scanned_members": 227
+  },
+  "selected_layers": [
+    "current_truth",
+    "current_route",
+    "upstream_evidence",
+    "external_reviews"
+  ],
+  "zip": {
+    "bytes": 1287359,
+    "path": "chatgpt_review_route_r13-module-usable-pro-four-window-review-20260819-r01_20260819_185106.zip",
+    "sha256": "9f3b19b3405bd7fbab58069ef54d3b27b380ab55cdd9cf1b7382c5102db08879"
+  }
+}

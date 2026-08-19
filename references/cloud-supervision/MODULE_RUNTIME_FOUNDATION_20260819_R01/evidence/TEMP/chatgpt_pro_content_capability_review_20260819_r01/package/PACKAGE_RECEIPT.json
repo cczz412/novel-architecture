@@ -1,0 +1,166 @@
+{
+  "created_at": "2026-08-19T21:15:32",
+  "integrity": {
+    "crc_passed": true,
+    "errors": [],
+    "member_count": 170,
+    "passed": true,
+    "payload_count": 168,
+    "zip_bytes": 851714,
+    "zip_sha256": "163c36c66d726dc03ba3ab37e1acda649ff1864ac34496baa8007b38f66a1817"
+  },
+  "local_path_redaction": {
+    "changed_member_count": 7,
+    "changed_members": [
+      {
+        "member": "02_current_route/novel-mvp/design/BOOK_DISSECT_MENU_DESIGN_R01.md",
+        "original_sha256": "99d1964b42ac01675af298ff47572b77542bebdecedd2dd20635cd30cd4c82ce",
+        "replacement_counts": {
+          "repo_root": 4
+        },
+        "sanitized_sha256": "f5264e578dd0110c55f7556f9e8a4b8081f5ded2e12874abd76d28384e5a08f5"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/DAILY_LOOP_WALKTHROUGH_R03.md",
+        "original_sha256": "292931b5d5fe8988bc657a81cd0cb842e58665770740c9188440758ebb9d9ec0",
+        "replacement_counts": {
+          "repo_root": 8
+        },
+        "sanitized_sha256": "f1b28f92fe9807d3540b79c2b17950ab2ff70e9accd12e3b42b100aaabf6e660"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/FIRST_SCREEN_SYSTEM_DESIGN_R02.md",
+        "original_sha256": "6961d287a6f1c7caa6a9e7f8ec94e8b12d34e3d4929102e08c9f6fd449022a5f",
+        "replacement_counts": {
+          "repo_root": 1
+        },
+        "sanitized_sha256": "ab513a2ee39162324fe880d7004e8e266458da0dd4caaea18bc7741149d454f2"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/GENRE_RHYTHM_PACK_DESIGN_R01.md",
+        "original_sha256": "36c78376274458b604ac8cd43532a2fbf40d44d990fcf90ae1cf70ef910446c7",
+        "replacement_counts": {
+          "repo_root": 5
+        },
+        "sanitized_sha256": "f6cfd53cb866f68a5da97727a1702708277437c9be663534d9cf7c0dfcf9c343"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/GLOBAL_OUTLINE_DESIGN_R01.md",
+        "original_sha256": "fc5fed029fb1ca445071bdc846fa98865d8dfeb68f0d01dbfc09470843b34f13",
+        "replacement_counts": {
+          "repo_root": 2
+        },
+        "sanitized_sha256": "834760de5d3ea679fc6e7b0ab4bb8b9460e60f77bd2d24c758cb9de8365ccb57"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/REVERSE_PLOT_MAP_DESIGN_R02.md",
+        "original_sha256": "0cdc38f7b5037b0942498393d8a9d48e5bafc943295e4e95b544c59b77008004",
+        "replacement_counts": {
+          "repo_root": 3
+        },
+        "sanitized_sha256": "cb2eea41875afcb1d832e56678d69064559b553f9e6ee39123fb8b75234bbe1e"
+      },
+      {
+        "member": "02_current_route/novel-mvp/design/ROLE_POV_MODE_DESIGN_R01.md",
+        "original_sha256": "9868d9a91464a56ab6ebe26cfdcd7807e3d05d6928336816cf632b08d8eb6cd4",
+        "replacement_counts": {
+          "repo_root": 2
+        },
+        "sanitized_sha256": "262d851ebbd981ee4ceb5761eec3ecca45aecb9cd6bad8b5d42ba9d29ee19f7b"
+      }
+    ],
+    "note": "只改外发副本：仓库绝对路径替换为 <repo-root>，用户目录替换为 <user-home>；本地原件未改。",
+    "result": "PASS",
+    "schema_version": "chatgpt-review-local-path-redaction-v1"
+  },
+  "max_zip_mb": 25.0,
+  "notes": [
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/current_truth/content_review_task_boundary:TEMP/chatgpt_pro_content_capability_review_20260819_r01/00_SHARED_CONTENT_REVIEW_INSTRUCTIONS.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/current_truth/deep_research_content_need_candidates:TEMP/deep_search_real_author_needs_returns_20260819_r01/CANDIDATE_LEDGER_R01.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/current_truth/deep_research_content_need_candidates:TEMP/deep_search_real_author_needs_returns_20260819_r01/LOCAL_TRIAGE_R01.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/00_READ_ME_FIRST.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/RIGHTS_AND_SCOPE.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/INDEX.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/RUN_RECEIPT.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/build_cases.py",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_01_pa_writing_check/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_01_pa_writing_check/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_01_pa_writing_check/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_01_pa_writing_check/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_02_m8_planning_card/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_02_m8_planning_card/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_02_m8_planning_card/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_02_m8_planning_card/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_03_m9_overview/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_03_m9_overview/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_03_m9_overview/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_03_m9_overview/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_04_m10_scene_card/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_04_m10_scene_card/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_04_m10_scene_card/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_04_m10_scene_card/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_05_m11_budget_selection/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_05_m11_budget_selection/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_05_m11_budget_selection/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_05_m11_budget_selection/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_06_m11_unresolved_stop/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_06_m11_unresolved_stop/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_06_m11_unresolved_stop/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/creation/case_06_m11_unresolved_stop/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/01_m1_upload_inspection/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/01_m1_upload_inspection/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/01_m1_upload_inspection/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/01_m1_upload_inspection/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/01_m1_upload_inspection/人物备注.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/01_m1_upload_inspection/第1章_雨夜.txt",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/02_m2_segment_map/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/02_m2_segment_map/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/02_m2_segment_map/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/02_m2_segment_map/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/03_m3_frozen_extraction/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/03_m3_frozen_extraction/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/03_m3_frozen_extraction/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/04_m4_extracted_facts/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/04_m4_extracted_facts/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/04_m4_extracted_facts/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/05_m5_author_review_page/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/05_m5_author_review_page/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/05_m5_author_review_page/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/05_m5_author_review_page/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/06_m6_reader_scope_evidence/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/06_m6_reader_scope_evidence/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/06_m6_reader_scope_evidence/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/06_m6_reader_scope_evidence/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/07_m7_health_report/CASE_NOTE.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/07_m7_health_report/current_output.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/07_m7_health_report/current_output.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/07_m7_health_report/input.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/MANIFEST.json",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/README.md",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/synthetic_content_cases_and_outputs:TEMP/chatgpt_pro_content_capability_review_20260819_r01/content_cases/understanding/build_cases.py",
+    "ROUTE_EXPLICIT_TEMP_SOURCE_ALLOWED:r13-module-content-capability-pro-two-window-review-20260819-r01/upstream_evidence/four_return_intake_receipt:TEMP/chatgpt_review_returns/MODULE_USABILITY_FOUR_WINDOW_REVIEW_20260819_R01/RETURN_INTAKE_RECEIPT.json"
+  ],
+  "payload_file_count": 168,
+  "profile": null,
+  "raw_bytes": 2349112,
+  "route": "r13-module-content-capability-pro-two-window-review-20260819-r01",
+  "route_snapshot_at": "2026-08-19T21:08:33+08:00",
+  "schema_version": "chatgpt-review-route-pack-receipt-v1",
+  "secret_scan": {
+    "hit_count": 0,
+    "hits": [],
+    "result": "PASS",
+    "scanned_members": 167
+  },
+  "selected_layers": [
+    "current_truth",
+    "current_route",
+    "upstream_evidence",
+    "external_reviews"
+  ],
+  "zip": {
+    "bytes": 851714,
+    "path": "chatgpt_review_route_r13-module-content-capability-pro-two-window-review-20260819-r01_20260819_211532.zip",
+    "sha256": "163c36c66d726dc03ba3ab37e1acda649ff1864ac34496baa8007b38f66a1817"
+  }
+}

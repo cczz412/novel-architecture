@@ -1,0 +1,71 @@
+{
+  "c7_snapshot": {
+    "cards": [
+      {
+        "guidance": {
+          "card_problem": "怎样让并肩行动不会被误读为和解",
+          "dialogue_reveal": "对话只谈当下交易，不谈原谅",
+          "plugin_craft": ""
+        },
+        "id": "card01",
+        "options": [
+          {
+            "id": "A",
+            "label": "先约定合作边界再行动",
+            "reveal_intent": "两人仍不交换核心秘密"
+          },
+          {
+            "id": "B",
+            "label": "用共同危险迫使两人合作",
+            "reveal_intent": "合作来自外部压力，不是感情修复"
+          },
+          {
+            "id": "C",
+            "label": "让第三人传话组织配合",
+            "reveal_intent": "两人避免直接信任对方"
+          }
+        ],
+        "planning_card_ref": "AC-2001",
+        "planning_card_rev": 1,
+        "purpose_note": "让两人只为共同危险合作一次",
+        "recommended_option_ref": "B",
+        "role": "attach",
+        "title": "临时同盟不等于和解"
+      }
+    ],
+    "chapter_intent": "沈遥与顾川暂时并肩，但关系仍然破裂",
+    "confirmed_fact_ids": [
+      "f101"
+    ],
+    "conflicts": [
+      {
+        "ask": "改目的，还是改已确认事实？",
+        "fact_id": "f101",
+        "fact_text": "沈遥明确说今夜不去城北码头。",
+        "kind": "fact",
+        "why": "已确认事实是今夜不去城北码头，不能默认把合作地点放在那里"
+      }
+    ],
+    "contract": "C7_PLOT_LAYER v1",
+    "generated_at": "2026-08-19 19:00:00",
+    "mode": "forward",
+    "model": "FROZEN_SYNTHETIC_PLANNING_FIXTURE_R01",
+    "project": "潮汐驿站（完全合成）",
+    "purpose": "让沈遥在不信任顾川的前提下接受一次临时合作",
+    "purpose_note": "只形成一次临时行动，不把它写成和解",
+    "purpose_placement": "attach"
+  },
+  "execution_receipt": {
+    "api_calls": 0,
+    "functions": [
+      "plan_tool.execute",
+      "plan_tool.validate_c7_v1",
+      "plan_tool.render_c7_v1"
+    ],
+    "model_calls": 0,
+    "provider_calls": 1,
+    "provider_kind": "frozen_synthetic_callable",
+    "retries": 0
+  },
+  "source_c7_snapshot_sha256": "747f4b84663c3c698996e73711d1a55de36801eafe61797e22c6bdbbaa50afef"
+}

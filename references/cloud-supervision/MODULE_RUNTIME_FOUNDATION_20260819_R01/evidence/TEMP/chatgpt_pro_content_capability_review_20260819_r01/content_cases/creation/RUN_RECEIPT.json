@@ -1,0 +1,21 @@
+{
+  "api_calls": 0,
+  "author_workspace_writes": 0,
+  "case_count": 6,
+  "case_ids": [
+    "case_01_pa_writing_check",
+    "case_02_m8_planning_card",
+    "case_03_m9_overview",
+    "case_04_m10_scene_card",
+    "case_05_m11_budget_selection",
+    "case_06_m11_unresolved_stop"
+  ],
+  "gold": 0,
+  "identity": "SYNTHETIC_CREATION_CONTENT_CASES_R01",
+  "model_calls": 0,
+  "raw_model_response": 0,
+  "real_novel_text": 0,
+  "reasoning": 0,
+  "retries": 0,
+  "story_identity": "潮汐驿站（完全合成）"
+}

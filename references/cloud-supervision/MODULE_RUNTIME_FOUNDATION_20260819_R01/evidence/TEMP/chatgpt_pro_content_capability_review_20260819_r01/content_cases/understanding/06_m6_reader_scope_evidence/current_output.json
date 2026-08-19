@@ -1,0 +1,54 @@
+{
+  "evidence": [
+    {
+      "anchor_ref": {
+        "chapter_id": "c01",
+        "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+        "end": 15,
+        "revision_no": 1,
+        "revision_text_sha256": "43d6185fd668b77fff8e591846874834b78ee109c512c3c78d12d8b7eed74ed8",
+        "slice_sha256": "789dd70982dfe28efd6666debd204b01112727948b3387bd34786d7d26ab20cd",
+        "start": 6
+      },
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "43d6185fd668b77fff8e591846874834b78ee109c512c3c78d12d8b7eed74ed8"
+      },
+      "fact_id": "f101",
+      "quote": "蓝布包里装的是账本",
+      "source": "SYNTHETIC_CONTENT_REVIEW_CASE"
+    }
+  ],
+  "excluded_counts": {
+    "current_revision_missing": 0,
+    "extracted": 0,
+    "invalid_c4_v1": 0,
+    "invalid_evidence": 0,
+    "keyword_miss": 0,
+    "needs_recheck": 0,
+    "rejected": 0,
+    "stale_revision": 0,
+    "unverified_evidence": 0
+  },
+  "matches": [
+    {
+      "chapter_id": "c01",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "43d6185fd668b77fff8e591846874834b78ee109c512c3c78d12d8b7eed74ed8"
+      },
+      "fact_id": "f101",
+      "text": "众人以为蓝布包里装的是账本。"
+    }
+  ],
+  "query": "蓝布包",
+  "reader_scope": {
+    "as_of_chapter_id": "c01",
+    "blocked_fact_count": 1,
+    "future_chapter_count": 1,
+    "mode": "AS_OF_CHAPTER",
+    "visible_chapter_count": 1
+  }
+}

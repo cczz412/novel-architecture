@@ -1,0 +1,70 @@
+{
+  "schema_version": "chatgpt-pro-four-window-return-intake-v1",
+  "received_at": "2026-08-19T21:01:44+08:00",
+  "identity": "MODULE_USABILITY_FOUR_WINDOW_REVIEW_20260819_R01",
+  "authority": "ADVISORY_ONLY",
+  "input_package": {
+    "sha256": "9f3b19b3405bd7fbab58069ef54d3b27b380ab55cdd9cf1b7382c5102db08879"
+  },
+  "input_prompts": [
+    {
+      "name": "PROMPT_01_GLOBAL_CAPABILITY_GRAPH.md",
+      "sha256": "e7450b70410e3685df55b0717b62bbd5579593f60b2b1308957cc70650b94793"
+    },
+    {
+      "name": "PROMPT_02_PA_AUTHOR_LOOP.md",
+      "sha256": "b616127ffb080b4d5fc6df9d54e3d65fb9564ab4a349dd6b07102a3716a9e655"
+    },
+    {
+      "name": "PROMPT_03_M1_M6_USABILITY.md",
+      "sha256": "9b8f95ba69f94e9ecdb25402d2c50edb813ca48df0d42dbefc05d93a4e1a5dbc"
+    },
+    {
+      "name": "PROMPT_04_M7_M11_USABILITY.md",
+      "sha256": "f2edf1b3dab557169503eb85167b3da5c95d51416b62b898dc80340bd9d5035d"
+    }
+  ],
+  "returns": [
+    {
+      "zip": "original/GLOBAL_CAPABILITY_GRAPH_AND_NEXT_WAVE_REVIEW.zip",
+      "zip_sha256": "bf7ca045a17bcc171e3cc20bf44fe6b1c8fc26575d2efc9c510f0802e0c49260",
+      "member": "GLOBAL_CAPABILITY_GRAPH_AND_NEXT_WAVE_REVIEW.md",
+      "member_sha256": "83e8c4edaa3c7e4fba17493410def76fc6892ecd9d6844557dd810271f4ba645"
+    },
+    {
+      "zip": "original/PA_AUTHOR_DRAFT_CHECK_CLOSEOUT_HANDOVER_REVIEW.zip",
+      "zip_sha256": "7bcc9e8d1677768f028853bb6eecb83e8387aac10d13a426a110df24e960f495",
+      "member": "PA_AUTHOR_DRAFT_CHECK_CLOSEOUT_HANDOVER_REVIEW.md",
+      "member_sha256": "b25fb8c305f1ec68b9835aaf7f81e458afe6fbf2da248061a27498060b650f68"
+    },
+    {
+      "zip": "original/M1_M6_USABILITY_REVIEW_20260819_R01.zip",
+      "zip_sha256": "be90425200ce88cb8ac8a227794f251e8411349538ad74428875b7e0d9fe704e",
+      "member": "M1_M6_USABILITY_REVIEW.md",
+      "member_sha256": "e129d0c70b50e425f428767c0365bd4a21dbf02f47f33a38ddf9ea81a80abfa2"
+    },
+    {
+      "zip": "original/M7_M11_PRO_REVIEW.zip",
+      "zip_sha256": "c3cde159d8e21e4dfac8b95df1e2f1200320ffb102bdc17f293edd3a3b74af87",
+      "member": "M7_M11_PRO_REVIEW.md",
+      "member_sha256": "3bd2deaecdfb6ce9e93f9c2d605fe28d2c01a3f737e57e7099a22c5ce38a3629"
+    }
+  ],
+  "integrity": {
+    "zip_count": 4,
+    "markdown_count": 4,
+    "crc_passed": true,
+    "single_root_markdown_per_zip": true,
+    "absolute_path_members": 0,
+    "parent_traversal_members": 0,
+    "duplicate_members": 0,
+    "nested_zip_members": 0,
+    "result": "PASS"
+  },
+  "permissions": {
+    "construction_authority": false,
+    "contract_authority": false,
+    "notion_authority": false,
+    "upload_authority": false
+  }
+}

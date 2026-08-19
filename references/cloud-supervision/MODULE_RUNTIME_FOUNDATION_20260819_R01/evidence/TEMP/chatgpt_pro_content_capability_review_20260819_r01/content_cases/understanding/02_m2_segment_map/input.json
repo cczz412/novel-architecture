@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "added_at": "2026-08-19 19:10:00",
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+      },
+      "contract": "C1_CHAPTER_DOC",
+      "id": "c01",
+      "kind": "draft",
+      "text": "雨水敲着纸灯巷的瓦檐。林乔推开旧书铺的门，把一封没有署名的信放在柜台上。信封背面画着一枚断月印。\n\n守店的苏晚没有拆信。她先把门闩扣好，又把铜钥匙藏进蓝布包里，对林乔说：“今晚别去北桥。”\n\n巷口忽然传来三声短哨。林乔认出那是哥哥生前约定的求救暗号，仍决定在子夜前赶到北桥。",
+      "title": "第一章 雨夜来信",
+      "version": "v1"
+    }
+  ],
+  "options": {
+    "halo_chars": 24,
+    "seg_max_chars": 95,
+    "seg_min_chars": 45
+  }
+}

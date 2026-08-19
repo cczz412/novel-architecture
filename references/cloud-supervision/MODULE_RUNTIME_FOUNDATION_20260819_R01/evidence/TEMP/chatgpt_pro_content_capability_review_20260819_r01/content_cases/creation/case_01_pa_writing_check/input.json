@@ -1,0 +1,126 @@
+{
+  "frozen_synthetic_judgment_fixture": {
+    "fixture_identity": "FROZEN_SYNTHETIC_JUDGMENT_FIXTURE_R01",
+    "judgments": [
+      {
+        "category": "covered",
+        "evidence_quote": "沈遥拆开潮湿的纸条。",
+        "explanation": "合成冻结判断：原文直接出现了拆纸条动作。",
+        "requirement_ref": "PE-0101"
+      },
+      {
+        "category": "mismatch",
+        "evidence_quote": "她没有立刻答应去城北码头",
+        "explanation": "合成冻结判断：暂不答应不等于明确拒绝。",
+        "requirement_ref": "PE-0102"
+      },
+      {
+        "category": "unknown",
+        "evidence_quote": "纸条底部没有署名。",
+        "explanation": "合成冻结判断：当前只能看出没署名，无法证明后文没有间接泄底。",
+        "requirement_ref": "S-0101@outline-r3#must_not:5a89b1b7e5a3"
+      },
+      {
+        "category": "unplanned",
+        "evidence_quote": "窗棂被风吹响了一声。",
+        "explanation": "合成冻结判断：这个细节不在已冻结 requirement 中。",
+        "requirement_ref": null
+      }
+    ],
+    "usage": {
+      "api_calls": 0,
+      "model_calls": 0,
+      "retries": 0
+    }
+  },
+  "package_request": {
+    "chapter_slot_snapshot": {
+      "basis_refs": {
+        "event_refs": [
+          "PE-0101",
+          "PE-0102"
+        ],
+        "scene_refs": [
+          "SCN-0101"
+        ],
+        "slot_ref": "S-0101",
+        "storyline_refs": []
+      },
+      "contract": "CHAPTER_SLOT_SNAPSHOT",
+      "entry_state": "沈遥与顾川仍不信任对方",
+      "events": [
+        {
+          "id": "PE-0101",
+          "rev": 1,
+          "scene_ref": "SCN-0101",
+          "text": "沈遥拆开潮湿的纸条"
+        },
+        {
+          "id": "PE-0102",
+          "rev": 1,
+          "scene_ref": "SCN-0101",
+          "text": "沈遥明确拒绝立刻赴约"
+        }
+      ],
+      "exit_condition": "沈遥对赴约作出明确选择",
+      "exit_hook": "窗外的铜铃在无人触碰时响起",
+      "generation_watermark": {
+        "outline_source_commit_seq": 21,
+        "slot_rev": 4,
+        "source_plan_sha256": "6f610eebbc34dd3365123ec2f84dee6df78ffa22459887a6fcf3afb6682726b2",
+        "source_plan_version": 7
+      },
+      "goal": "让沈遥决定是否接受城北码头的邀约",
+      "must_not": [
+        "不得揭露寄件人身份"
+      ],
+      "outline_checkpoint": {
+        "outline_rev": 3,
+        "source_commit_seq": 21,
+        "source_slot_ref": "S-0101"
+      },
+      "risks": [
+        "沈遥转变得太快会损害人物一致性"
+      ],
+      "scene_refs": [
+        "SCN-0101"
+      ],
+      "scenes": [
+        {
+          "goal": "读纸条并暂缓决定",
+          "id": "SCN-0101",
+          "pe_refs": [
+            "PE-0101",
+            "PE-0102"
+          ],
+          "rev": 2,
+          "slot_ref": "S-0101",
+          "summary": "沈遥拆开纸条，不立刻答应邀约"
+        }
+      ],
+      "slot_ref": "S-0101",
+      "slot_rev": 4,
+      "source_plan_sha256": "6f610eebbc34dd3365123ec2f84dee6df78ffa22459887a6fcf3afb6682726b2",
+      "source_plan_version": 7,
+      "status": "plan",
+      "storyline_refs": [],
+      "storylines": [],
+      "summary": "沈遥收到无署名纸条，但暂不能知道寄件人",
+      "version": "v1"
+    },
+    "check_operation_id": "op-synthetic-t14-r1",
+    "work_draft": {
+      "contract": "WRITING_DESK_WORK_DRAFT",
+      "entry_mode": "edited",
+      "last_operation_id": "op-synthetic-work-r1",
+      "slot_ref": "S-0101",
+      "source_outline_ref": "S-0101@outline-r3",
+      "state": "working",
+      "text": "沈遥拆开潮湿的纸条。纸条底部没有署名。她没有立刻答应去城北码头，只把纸条压在茶盏下。窗棂被风吹响了一声。",
+      "text_sha256": "46c3962e63e33a89853b048359dd958038e0cf4c83625755f8f5cddbdaf7d7b4",
+      "version": "v1",
+      "work_ref": "S-0101@work",
+      "work_rev": 1
+    }
+  }
+}

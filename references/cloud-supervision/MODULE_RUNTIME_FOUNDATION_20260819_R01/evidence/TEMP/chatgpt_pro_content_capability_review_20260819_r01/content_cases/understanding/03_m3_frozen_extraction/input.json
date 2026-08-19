@@ -1,0 +1,94 @@
+{
+  "normalized_provider_output": {
+    "c01:r1:s1": {
+      "data": {
+        "facts": [
+          {
+            "quote": "把一封没有署名的信放在柜台上",
+            "text": "林乔把一封没有署名的信放在旧书铺柜台上。"
+          },
+          {
+            "quote": "信封背面画着一枚断月印",
+            "text": "信封背面画着一枚断月印。"
+          },
+          {
+            "quote": "苏晚没有拆信",
+            "text": "苏晚没有拆开无署名信。"
+          },
+          {
+            "quote": "把铜钥匙藏进蓝布包里",
+            "text": "苏晚把铜钥匙藏进蓝布包里。"
+          },
+          {
+            "quote": "今晚别去北桥",
+            "text": "苏晚告诫林乔今晚不要去北桥。"
+          }
+        ]
+      },
+      "model": "FROZEN_SYNTHETIC_ZERO_MODEL",
+      "usage": {}
+    },
+    "c01:r1:s2": {
+      "data": {
+        "facts": [
+          {
+            "quote": "巷口忽然传来三声短哨",
+            "text": "巷口传来三声短哨。"
+          },
+          {
+            "quote": "哥哥生前约定的求救暗号",
+            "text": "三声短哨是林乔与哥哥生前约定的求救暗号。"
+          },
+          {
+            "quote": "子夜前赶到北桥",
+            "text": "林乔决定在子夜前赶到北桥。"
+          }
+        ]
+      },
+      "model": "FROZEN_SYNTHETIC_ZERO_MODEL",
+      "usage": {}
+    }
+  },
+  "provider_mode": "FROZEN_SYNTHETIC_ZERO_MODEL_NORMALIZED_OUTPUT",
+  "request": {
+    "current_chapter_revision_refs": [
+      {
+        "chapter_id": "c01",
+        "revision_no": 1,
+        "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+      }
+    ],
+    "items": [
+      {
+        "chapter_revision_ref": {
+          "chapter_id": "c01",
+          "revision_no": 1,
+          "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+        },
+        "contract": "C2_SEGMENT",
+        "end": 93,
+        "halo_after": "\n巷口忽然传来三声短哨。林乔认出那是哥哥生前约定",
+        "halo_before": "",
+        "seg": 1,
+        "start": 0,
+        "text": "雨水敲着纸灯巷的瓦檐。林乔推开旧书铺的门，把一封没有署名的信放在柜台上。信封背面画着一枚断月印。\n守店的苏晚没有拆信。她先把门闩扣好，又把铜钥匙藏进蓝布包里，对林乔说：“今晚别去北桥。”",
+        "version": "v1"
+      },
+      {
+        "chapter_revision_ref": {
+          "chapter_id": "c01",
+          "revision_no": 1,
+          "revision_text_sha256": "acd0dd0520848129e106a23beec5dc76f538698360408cb145cb53e0d3be59ae"
+        },
+        "contract": "C2_SEGMENT",
+        "end": 135,
+        "halo_after": "",
+        "halo_before": "钥匙藏进蓝布包里，对林乔说：“今晚别去北桥。”\n",
+        "seg": 2,
+        "start": 94,
+        "text": "巷口忽然传来三声短哨。林乔认出那是哥哥生前约定的求救暗号，仍决定在子夜前赶到北桥。",
+        "version": "v1"
+      }
+    ]
+  }
+}

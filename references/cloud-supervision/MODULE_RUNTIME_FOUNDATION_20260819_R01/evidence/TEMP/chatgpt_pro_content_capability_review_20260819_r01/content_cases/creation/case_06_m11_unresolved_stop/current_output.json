@@ -1,0 +1,45 @@
+{
+  "context_pack_prototype": {
+    "budget": {
+      "estimator_identity": "M11_FIXED_MECHANICAL_LOOKUP_V1",
+      "limit_tokens": 100,
+      "used_tokens": 0
+    },
+    "decision_state": "STOP_UNRESOLVED",
+    "errors": [
+      {
+        "code": "M11_UNRESOLVED_REQUIRES_CALLER_DECISION",
+        "detail": "存在调用者明确登记的未决状态；本原型不替上游判定"
+      }
+    ],
+    "loaded": [],
+    "omitted": [],
+    "prototype": {
+      "identity": "M11_CONTEXT_PACK_FILE_TOOL_PROTOTYPE",
+      "version": "v1"
+    },
+    "task_receipt": {
+      "normalized_request_sha256": "be57d42cd14fa75c0ace194b17db896e66c114d47a7815558b816c9eef780b96",
+      "task_actuality_scope": "CURRENT_TRUTH_REQUIRED",
+      "task_id": "M11-SYNTHETIC-UNRESOLVED"
+    },
+    "unresolved": [
+      {
+        "id": "OPEN-AUTHOR-CHOICE-01",
+        "obligation_tier": "HARD",
+        "reason": "作者尚未决定沈遥是拒绝赴约，还是改去另一个地点"
+      }
+    ],
+    "why_loaded": {}
+  },
+  "execution_receipt": {
+    "api_calls": 0,
+    "functions": [
+      "packer_tool.execute",
+      "packer_tool.validate_render_result",
+      "packer_tool.render"
+    ],
+    "model_calls": 0,
+    "retries": 0
+  }
+}

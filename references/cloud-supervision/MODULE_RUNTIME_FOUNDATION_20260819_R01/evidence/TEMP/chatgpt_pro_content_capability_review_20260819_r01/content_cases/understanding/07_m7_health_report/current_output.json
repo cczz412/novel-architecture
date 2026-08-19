@@ -1,0 +1,136 @@
+{
+  "alias_hints": [],
+  "chapter_revision_refs": [
+    {
+      "chapter_id": "c03",
+      "revision_no": 1,
+      "revision_text_sha256": "60c7ade1164019200769ddbec99be059acbf02a7511da2e4fbbe7355f53f60c0"
+    }
+  ],
+  "conflicts": [
+    {
+      "confidence": "high",
+      "evidence": [
+        {
+          "anchor_ref": {
+            "chapter_id": "c03",
+            "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+            "end": 10,
+            "revision_no": 1,
+            "revision_text_sha256": "60c7ade1164019200769ddbec99be059acbf02a7511da2e4fbbe7355f53f60c0",
+            "slice_sha256": "fe38399599222057031e8ab2b3a22fa3cc53580cb3ae80f56259e3be25681cd3",
+            "start": 0
+          },
+          "chapter_id": "c03",
+          "chapter_revision_ref": {
+            "chapter_id": "c03",
+            "revision_no": 1,
+            "revision_text_sha256": "60c7ade1164019200769ddbec99be059acbf02a7511da2e4fbbe7355f53f60c0"
+          },
+          "fact_id": "f201",
+          "quote": "苏晚说铜钥匙已经烧毁",
+          "seg": 1,
+          "status": "confirmed",
+          "text": "苏晚声称铜钥匙已经烧毁。"
+        },
+        {
+          "anchor_ref": {
+            "chapter_id": "c03",
+            "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+            "end": 29,
+            "revision_no": 1,
+            "revision_text_sha256": "60c7ade1164019200769ddbec99be059acbf02a7511da2e4fbbe7355f53f60c0",
+            "slice_sha256": "9da93a43794766ed27cc4c36bca7a23bea9b34454a1957a825551026e142d71e",
+            "start": 15
+          },
+          "chapter_id": "c03",
+          "chapter_revision_ref": {
+            "chapter_id": "c03",
+            "revision_no": 1,
+            "revision_text_sha256": "60c7ade1164019200769ddbec99be059acbf02a7511da2e4fbbe7355f53f60c0"
+          },
+          "fact_id": "f202",
+          "quote": "林乔在桌上看见了同一把铜钥匙",
+          "seg": 1,
+          "status": "confirmed",
+          "text": "林乔随后在桌上看见同一把铜钥匙。"
+        }
+      ],
+      "fact_ids": [
+        "f201",
+        "f202"
+      ],
+      "found_by": [
+        "当前确认事实"
+      ],
+      "hard": true,
+      "issue_id": "h001",
+      "kind": "setting",
+      "layer": "confirmed",
+      "next_step": "真值层矛盾：回对应章·段复核原文；确属笔误就在审查台改写或驳回其中一方",
+      "note": "同一把铜钥匙先被声称已经烧毁，随后又以完整实物出现。",
+      "severity": "red"
+    }
+  ],
+  "contract": "C6_HEALTH_REPORT",
+  "generated_at": "2026-08-19 19:20:00",
+  "insufficient": [],
+  "integrity": {
+    "duplicate_ids": [],
+    "next_step": "",
+    "note": ""
+  },
+  "model": "FROZEN_SYNTHETIC_ZERO_MODEL_HEALTH_MAP",
+  "project": "纸灯巷·合成体检",
+  "scan": {
+    "api_calls": 0,
+    "clean_groups": 0,
+    "confirmed": 2,
+    "duplicate_dropped": 0,
+    "excluded_counts": {
+      "current_revision_missing": 0,
+      "duplicate_dropped": 0,
+      "invalid_c4_v1": 0,
+      "invalid_evidence": 0,
+      "needs_recheck": 0,
+      "rejected": 0,
+      "stale_revision": 0,
+      "unverified_evidence": 0
+    },
+    "extracted": 0,
+    "facts_total": 2,
+    "failed_calls": 0,
+    "groups": [
+      {
+        "facts": 2,
+        "findings": 1,
+        "kind": "leftover",
+        "name": "当前确认事实",
+        "status": "ok"
+      }
+    ],
+    "rejected_excluded": 0,
+    "seconds": 0.0,
+    "total_tokens": 0
+  },
+  "source_revision_state": "CURRENT",
+  "summary": {
+    "alias_hints": 0,
+    "by_kind": {
+      "event": 0,
+      "naming": 0,
+      "setting": 1,
+      "timeline": 0
+    },
+    "by_layer": {
+      "candidate": 0,
+      "confirmed": 1,
+      "mixed": 0
+    },
+    "duplicate_ids": 0,
+    "insufficient": 0,
+    "red": 1,
+    "yellow": 0
+  },
+  "version": "v1"
+}
