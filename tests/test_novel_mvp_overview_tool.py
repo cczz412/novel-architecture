@@ -29,6 +29,15 @@ def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def _canonical_json_bytes(value: object) -> bytes:
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+
+
 def _revision_ref(
     *,
     chapter_id: str = "c01",
@@ -127,15 +136,15 @@ def _second_request(*, chapter_id: str = "c02", revision_no: int = 1) -> dict:
 
 def _provider_result() -> dict:
     return {
-        "synopsis": "甲拿起钥匙，乙注意到了这个动作。",
+        "synopsis": "恶意自由文字：店主就是寄件人。",
         "beats": [
             {
                 "text": "钥匙进入场景并被注意。",
-                "fact_refs": ["f001", "f002"],
+                "fact_refs": ["f002"],
                 "visual_hint": "近景：手、钥匙与旁观者视线。",
             }
         ],
-        "orphan_refs": ["f003"],
+        "orphan_refs": [],
         "visual_hint": "单章事实概览排版卡。",
     }
 
@@ -146,7 +155,7 @@ def _second_provider_result() -> dict:
         "beats": [
             {
                 "text": "窗户开启，风声进入场景。",
-                "fact_refs": ["f101", "f102"],
+                "fact_refs": ["f101"],
                 "visual_hint": "窗边双人构图。",
             }
         ],
@@ -182,37 +191,78 @@ def test_execute_builds_prototype_projection_with_full_traceability() -> None:
     assert result["basis"] == "fact_snapshot"
     assert result["chapter_revision_ref"] == _revision_ref()
     assert result["coverage"] == {
-        "fact_count": 3,
-        "beat_ref_count": 2,
-        "orphan_count": 1,
-        "covered_fact_count": 3,
+        "fact_count": 1,
+        "beat_ref_count": 1,
+        "orphan_count": 0,
+        "covered_fact_count": 1,
         "coverage_ratio": 1.0,
     }
     assert result["source_summary"]["source_revision"] == "facts@c01-r2-synthetic"
-    assert len(result["source_summary"]["source_facts_sha256"]) == 64
-    assert result["source_summary"]["status_counts"] == {
-        "confirmed": 1,
-        "extracted": 1,
-        "rejected": 1,
-    }
-    assert [item["status"] for item in result["evidence"]] == [
-        "extracted",
-        "confirmed",
-        "rejected",
-    ]
+    assert result["source_summary"]["source_facts_sha256"] == hashlib.sha256(
+        _canonical_json_bytes(before["facts"])
+    ).hexdigest()
+    assert result["source_summary"]["status_counts"] == {"confirmed": 1}
+    assert [item["status"] for item in result["evidence"]] == ["confirmed"]
+    assert [item["fact_id"] for item in result["evidence"]] == ["f002"]
+    assert result["synopsis"] == "乙看见了钥匙。"
+    assert result["beats"][0]["text"] == "乙看见了钥匙。"
+    assert result["visual_hint"] == ""
+    assert result["beats"][0]["visual_hint"] == ""
     assert all("text" not in item for item in result["source_summary"]["fact_refs"])
     assert all("text" not in item for item in result["evidence"])
 
 
-def test_orphan_fact_remains_visible_and_is_not_hidden_in_a_beat() -> None:
-    result = overview.execute(_request(), _provider(_provider_result()))
-
-    assert result["orphan_refs"] == ["f003"]
-    assert {ref for beat in result["beats"] for ref in beat["fact_refs"]} == {
-        "f001",
-        "f002",
+def test_orphan_confirmed_fact_remains_visible_and_is_not_hidden_in_a_beat() -> None:
+    request = {
+        "facts": [
+            _fact(
+                "f101",
+                "丁推开窗户。",
+                status="confirmed",
+                chapter_id="c02",
+                revision_no=1,
+                chapter_text=CHAPTER_TWO_TEXT,
+            ),
+            _fact(
+                "f102",
+                "戊听见风声。",
+                status="confirmed",
+                chapter_id="c02",
+                revision_no=1,
+                chapter_text=CHAPTER_TWO_TEXT,
+            ),
+        ],
+        "current_revision_ref": _revision_ref(
+            chapter_id="c02",
+            revision_no=1,
+            text=CHAPTER_TWO_TEXT,
+        ),
+        "source_revision": "facts@c02-r1-synthetic",
+        "generated_at": "2026-08-19 18:06:00",
     }
-    assert result["source_summary"]["fact_count"] == 3
+    result = overview.execute(
+        request,
+        _provider(
+            {
+                "synopsis": "把散条事实藏进自由文字。",
+                "beats": [
+                    {
+                        "text": "只讲开窗。",
+                        "fact_refs": ["f101"],
+                        "visual_hint": "",
+                    }
+                ],
+                "orphan_refs": ["f102"],
+                "visual_hint": "",
+            }
+        ),
+    )
+
+    assert result["orphan_refs"] == ["f102"]
+    assert {ref for beat in result["beats"] for ref in beat["fact_refs"]} == {"f101"}
+    assert result["synopsis"] == "丁推开窗户。戊听见风声。"
+    assert result["beats"][0]["text"] == "丁推开窗户。"
+    assert result["source_summary"]["fact_count"] == 2
 
 
 def test_render_card_is_complete_readable_and_every_reference_has_evidence() -> None:
@@ -228,9 +278,13 @@ def test_render_card_is_complete_readable_and_every_reference_has_evidence() -> 
     assert "- 事实快照：facts@c01-r2-synthetic" in rendered
     assert card["source_summary"]["source_facts_sha256"] in rendered
     assert card["synopsis"] in rendered
-    assert "钥匙进入场景并被注意。（事实：f001、f002）" in rendered
-    assert "- [f003] 丙离开。" in rendered
-    assert "- 已覆盖：3/3" in rendered
+    assert card["synopsis"] == "乙看见了钥匙。"
+    assert "乙看见了钥匙。（事实：f002）" in rendered
+    assert "店主" not in rendered
+    assert "钥匙进入场景并被注意。" not in rendered
+    assert "甲拿起钥匙。" not in rendered
+    assert "丙离开。" not in rendered
+    assert "- 已覆盖：1/1" in rendered
     evidence_ids = {item["fact_id"] for item in card["evidence"]}
     referenced_ids = {
         ref for beat in card["beats"] for ref in beat["fact_refs"]
@@ -247,11 +301,11 @@ def test_render_card_is_complete_readable_and_every_reference_has_evidence() -> 
     [
         (
             lambda card: card["evidence"].pop(),
-            "CARD_SOURCE_FACT_COUNT_MISMATCH",
+            "CARD_EVIDENCE_MUST_BE_NONEMPTY_LIST",
         ),
         (
-            lambda card: card["orphan_refs"].append("f001"),
-            "CARD_FACT_REFS_DUPLICATE:f001",
+            lambda card: card["orphan_refs"].append("f002"),
+            "CARD_FACT_REFS_DUPLICATE:f002",
         ),
         (
             lambda card: card["beats"][0]["fact_refs"].append("f999"),
@@ -299,6 +353,7 @@ def test_rendering_one_chapter_never_includes_another_chapter() -> None:
     assert "单章概览卡｜c02" in rendered
     assert "f101" in rendered
     assert "丁推开窗户。" in rendered
+    assert "戊听见风声。" not in rendered
     assert "c01" not in rendered
     assert "f001" not in rendered
     assert "甲拿起钥匙。" not in rendered
@@ -308,22 +363,30 @@ def test_rendering_one_chapter_never_includes_another_chapter() -> None:
     ("mutate", "reason"),
     [
         (
-            lambda value: value["orphan_refs"].clear(),
-            "UNCOVERED_FACT_REFS:f003",
+            lambda value: value["beats"].clear(),
+            "UNCOVERED_FACT_REFS:f002",
         ),
         (
             lambda value: value["beats"][0]["fact_refs"].append("f999"),
             "UNKNOWN_FACT_REFS:f999",
         ),
         (
+            lambda value: value["beats"][0]["fact_refs"].append("f001"),
+            "NON_CONFIRMED_FACT_REFS:f001",
+        ),
+        (
+            lambda value: value["orphan_refs"].append("f003"),
+            "NON_CONFIRMED_FACT_REFS:f003",
+        ),
+        (
             lambda value: value["beats"].append(
                 {
                     "text": "重复使用同一事实。",
-                    "fact_refs": ["f001"],
+                    "fact_refs": ["f002"],
                     "visual_hint": "",
                 }
             ),
-            "DUPLICATE_FACT_REFS:f001",
+            "DUPLICATE_FACT_REFS:f002",
         ),
         (
             lambda value: value["orphan_refs"].append("f002"),
@@ -371,17 +434,114 @@ def test_old_revision_or_bad_anchor_is_rejected_before_provider(mutate, reason: 
     assert called is False
 
 
+def test_provider_receives_only_current_confirmed_facts() -> None:
+    captured: list[dict] = []
+
+    def provider(provider_request: dict) -> dict:
+        captured.append(copy.deepcopy(provider_request))
+        return _provider_result()
+
+    overview.execute(_request(), provider)
+
+    assert len(captured) == 1
+    assert [fact["id"] for fact in captured[0]["facts"]] == ["f002"]
+    assert {fact["status"] for fact in captured[0]["facts"]} == {"confirmed"}
+
+
+def test_no_confirmed_facts_fails_closed_without_calling_provider() -> None:
+    request = _request()
+    request["facts"][1]["status"] = "extracted"
+    called = False
+
+    def provider(_request: dict) -> dict:
+        nonlocal called
+        called = True
+        return _provider_result()
+
+    with pytest.raises(overview.OverviewError, match="NO_CONFIRMED_FACTS"):
+        overview.execute(request, provider)
+    assert called is False
+
+
+def test_rejected_and_extracted_never_enter_author_card_even_if_provider_leaks_them() -> None:
+    chapter_text = "主角在雨夜收到一封信。寄件人身份未确定。店主就是寄件人。"
+    request = {
+        "facts": [
+            _fact(
+                "f_confirmed",
+                "主角在雨夜收到一封信",
+                status="confirmed",
+                chapter_text=chapter_text,
+            ),
+            _fact(
+                "f_extracted",
+                "寄件人身份未确定",
+                status="extracted",
+                chapter_text=chapter_text,
+            ),
+            _fact(
+                "f_rejected",
+                "店主就是寄件人",
+                status="rejected",
+                chapter_text=chapter_text,
+            ),
+        ],
+        "current_revision_ref": _revision_ref(text=chapter_text),
+        "source_revision": "facts@c01-r2-redline",
+        "generated_at": "2026-08-19 18:07:00",
+    }
+    captured: list[dict] = []
+
+    def provider(provider_request: dict) -> dict:
+        captured.append(copy.deepcopy(provider_request))
+        return {
+            "synopsis": "店主就是寄件人，把信送到了。",
+            "beats": [
+                {
+                    "text": "店主就是寄件人",
+                    "fact_refs": ["f_confirmed"],
+                    "visual_hint": "店主的脸",
+                }
+            ],
+            "orphan_refs": [],
+            "visual_hint": "店主就是寄件人",
+        }
+
+    card = overview.execute(request, provider)
+    rendered = overview.render_card(card)
+    payload = json.dumps(card, ensure_ascii=False)
+
+    assert [fact["id"] for fact in captured[0]["facts"]] == ["f_confirmed"]
+    assert card["synopsis"] == "主角在雨夜收到一封信"
+    assert card["beats"][0]["text"] == "主角在雨夜收到一封信"
+    assert card["visual_hint"] == ""
+    assert card["beats"][0]["visual_hint"] == ""
+    assert [item["fact_id"] for item in card["evidence"]] == ["f_confirmed"]
+    assert "店主" not in payload
+    assert "店主" not in rendered
+    assert "店主就是寄件人" not in payload
+    assert "店主就是寄件人" not in rendered
+    assert "寄件人身份未确定" not in payload
+    assert "寄件人身份未确定" not in rendered
+    assert "主角在雨夜收到一封信" in rendered
+
+
+def test_unconfirmed_status_change_still_changes_source_identity() -> None:
+    first = overview.execute(_request(), _provider(_provider_result()))
+    mutated = _request()
+    mutated["facts"][0]["status"] = "rejected"
+    second = overview.execute(mutated, _provider(_provider_result()))
+
+    assert first["synopsis"] == second["synopsis"] == "乙看见了钥匙。"
+    assert (
+        first["source_summary"]["source_facts_sha256"]
+        != second["source_summary"]["source_facts_sha256"]
+    )
+    assert first["card_id"] != second["card_id"]
+
+
 def _write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
-
-
-def _canonical_json_bytes(value: object) -> bytes:
-    return json.dumps(
-        value,
-        ensure_ascii=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
 
 
 def _offline_responses(*requests: dict) -> dict:
@@ -484,7 +644,7 @@ def test_cli_local_files_round_trip_can_be_reparsed_after_process_exit(tmp_path:
     )
     assert reparsed == expected
     assert reparsed["contract"] == "C5_OVERVIEW_CARD_PROTOTYPE"
-    assert reparsed["source_summary"]["fact_count"] == 3
+    assert reparsed["source_summary"]["fact_count"] == 1
 
 
 def test_cli_render_stdout_and_file_are_byte_stable_across_processes(
@@ -619,6 +779,7 @@ def test_cli_second_chapter_failure_keeps_old_output_and_leaves_no_tmp(
 def test_cli_failure_does_not_replace_existing_good_output(tmp_path: Path) -> None:
     request = _request()
     bad_result = _provider_result()
+    bad_result["beats"] = []
     bad_result["orphan_refs"] = []
     input_path = tmp_path / "input.json"
     responses_path = tmp_path / "responses.json"

@@ -56,7 +56,7 @@ def _fact(fact_id: str, chapter_id: str, quote: str) -> dict:
         "chapter_id": chapter_id,
         "text": quote,
         "quote": quote,
-        "status": "extracted",
+        "status": "confirmed",
         "source": "M9_BOOK_WORKSPACE_SYNTHETIC_FIXTURE",
         "note": "",
         "added_at": "2026-08-19 20:00:00",
@@ -192,8 +192,8 @@ def test_mixed_current_and_stale_cards_follow_inventory_order_and_restart_bytes(
     assert "# ⚠️ 历史概览（已过期）" in view["markdown"]
     assert "`FACTS_SNAPSHOT_CHANGED`" in view["markdown"]
     assert "# 当前概览（CURRENT）" in view["markdown"]
-    assert view["markdown"].index("c01 的作者可读概览") < view["markdown"].index(
-        "c02 的作者可读概览"
+    assert view["markdown"].index("单章概览卡｜c01") < view["markdown"].index(
+        "单章概览卡｜c02"
     )
     assert _inventory(runtime) == before
 

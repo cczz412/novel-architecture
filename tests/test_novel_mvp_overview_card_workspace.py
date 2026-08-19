@@ -55,7 +55,7 @@ def _fact(fact_id: str, chapter_id: str, quote: str) -> dict:
         "chapter_id": chapter_id,
         "text": quote,
         "quote": quote,
-        "status": "extracted",
+        "status": "confirmed",
         "source": "M9_CARD_WORKSPACE_SYNTHETIC_FIXTURE",
         "note": "",
         "added_at": "2026-08-19 20:00:00",

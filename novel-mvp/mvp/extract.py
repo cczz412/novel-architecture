@@ -54,6 +54,8 @@ C2_V1_KEYS = frozenset(
 )
 REVISION_REF_KEYS = frozenset({"chapter_id", "revision_no", "revision_text_sha256"})
 _V1_IDENTITY_KEYS = frozenset({"contract", "version", "chapter_revision_ref"})
+CALL_RESULT_KEYS = frozenset({"data", "usage", "model"})
+FACT_ITEM_KEYS = frozenset({"text", "quote"})
 
 
 class C2V1ContractError(RuntimeError):
@@ -206,23 +208,41 @@ def call_json(instructions: str, user_content: str, cfg: dict) -> dict:
 
 
 def parse_fact_call_result(r: object) -> dict:
-    """共用解析边界：把 call_json 形状清洗成 M3 候选内存态。"""
+    """共用解析边界：把 call_json 形状严格核成 M3 候选内存态。
+
+    与离线入口 ``extract_tool._validate_provider_result`` 同尺：不 strip、
+    不补默认值、不丢坏项。任一字段或条目不合法，整段拒绝。
+    """
     if not isinstance(r, dict):
         raise RuntimeError(f"抽取返回不是对象：{str(r)[:200]}")
-    if "data" not in r:
-        raise RuntimeError("抽取返回缺少 data")
+    missing = sorted(CALL_RESULT_KEYS - r.keys())
+    extra = sorted(r.keys() - CALL_RESULT_KEYS)
+    if missing:
+        raise RuntimeError(f"抽取返回缺少字段：{','.join(missing)}")
+    if extra:
+        raise RuntimeError(f"抽取返回多了字段：{','.join(extra)}")
+    if not isinstance(r["usage"], dict) or not isinstance(r["model"], str):
+        raise RuntimeError("抽取返回 usage/model 形状不合法")
+
     data = r["data"]
-    if not isinstance(data, dict):
-        raise RuntimeError(f"模型输出不是合法 JSON 对象：{str(data)[:200]}")
-    facts = data.get("facts", [])
+    if not isinstance(data, dict) or set(data) != {"facts"}:
+        raise RuntimeError("模型输出 data 形状不合法")
+    facts = data["facts"]
     if not isinstance(facts, list):
         raise RuntimeError("模型输出 facts 不是数组")
-    cleaned = [
-        {"text": f["text"].strip(), "quote": (f.get("quote") or "").strip()}
-        for f in facts
-        if isinstance(f, dict) and (f.get("text") or "").strip()
-    ]
-    return {"facts": cleaned, "usage": r.get("usage", {}), "model": r.get("model", "")}
+
+    parsed: list[dict] = []
+    for index, item in enumerate(facts, start=1):
+        if not isinstance(item, dict) or set(item) != FACT_ITEM_KEYS:
+            raise RuntimeError(f"模型输出第 {index} 条事实形状不合法")
+        text = item["text"]
+        quote = item["quote"]
+        if not isinstance(text, str) or not text or text != text.strip():
+            raise RuntimeError(f"模型输出第 {index} 条 text 不合法")
+        if not isinstance(quote, str) or quote != quote.strip():
+            raise RuntimeError(f"模型输出第 {index} 条 quote 不合法")
+        parsed.append({"text": text, "quote": quote})
+    return {"facts": parsed, "usage": r["usage"], "model": r["model"]}
 
 
 def call_model(user_content: str, cfg: dict, instructions: str = INSTRUCTIONS) -> dict:

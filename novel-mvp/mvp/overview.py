@@ -2,6 +2,9 @@
 
 本模块只处理内存对象，不读取路径、项目或事实账。``overview_provider`` 是
 唯一的模型供应器替换缝；调用者可以像本票一样传入冻结离线映射适配器。
+
+作者卡只收录已确认事实。provider 只负责给 confirmed refs 分组、排序和选
+orphan；它返回的自由文字不会进入梗概、事件点或视觉提示。
 """
 
 from __future__ import annotations
@@ -57,6 +60,7 @@ C4_REQUIRED_KEYS = frozenset(
 )
 C4_OPTIONAL_KEYS = frozenset({"seg", "decided_at"})
 CURRENT_FACT_STATUSES = frozenset({"extracted", "confirmed", "rejected"})
+AUTHOR_CARD_FACT_STATUS = "confirmed"
 PROVIDER_RESULT_KEYS = frozenset(
     {"synopsis", "beats", "visual_hint", "orphan_refs"}
 )
@@ -283,11 +287,22 @@ def provider_key_for_request(request: dict[str, Any]) -> str:
     )
 
 
+def _confirmed_facts(facts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [fact for fact in facts if fact["status"] == AUTHOR_CARD_FACT_STATUS]
+
+
+def _join_confirmed_texts(
+    facts_by_id: dict[str, dict[str, Any]], refs: list[str]
+) -> str:
+    return "".join(facts_by_id[ref]["text"] for ref in refs)
+
+
 def _validate_provider_result(
     value: object,
     *,
-    fact_ids: set[str],
-) -> tuple[str, list[dict[str, Any]], str, list[str]]:
+    confirmed_ids: set[str],
+    snapshot_ids: set[str],
+) -> tuple[list[dict[str, Any]], list[str]]:
     if not isinstance(value, dict):
         raise OverviewError("PROVIDER_RESULT_NOT_OBJECT")
     missing = sorted(PROVIDER_RESULT_KEYS - value.keys())
@@ -297,8 +312,8 @@ def _validate_provider_result(
     if extra:
         raise OverviewError(f"PROVIDER_RESULT_EXTRA_FIELDS:{','.join(extra)}")
 
-    synopsis = _require_clean_string(value["synopsis"], reason="SYNOPSIS_INVALID")
-    visual_hint = _require_clean_string(
+    _require_clean_string(value["synopsis"], reason="SYNOPSIS_INVALID")
+    _require_clean_string(
         value["visual_hint"], reason="VISUAL_HINT_INVALID", allow_empty=True
     )
     raw_beats = value["beats"]
@@ -313,8 +328,8 @@ def _validate_provider_result(
     for index, raw_beat in enumerate(raw_beats, start=1):
         if not isinstance(raw_beat, dict) or set(raw_beat) != PROVIDER_BEAT_KEYS:
             raise OverviewError(f"BEAT_SHAPE_INVALID:{index}")
-        text = _require_clean_string(raw_beat["text"], reason=f"BEAT_TEXT_INVALID:{index}")
-        beat_visual_hint = _require_clean_string(
+        _require_clean_string(raw_beat["text"], reason=f"BEAT_TEXT_INVALID:{index}")
+        _require_clean_string(
             raw_beat["visual_hint"],
             reason=f"BEAT_VISUAL_HINT_INVALID:{index}",
             allow_empty=True,
@@ -328,34 +343,40 @@ def _validate_provider_result(
         beats.append(
             {
                 "beat_id": f"b{index:02d}",
-                "text": text,
                 "fact_refs": list(fact_refs),
-                "visual_hint": beat_visual_hint,
             }
         )
 
     if any(not isinstance(ref, str) or not ref for ref in orphan_refs):
         raise OverviewError("ORPHAN_REF_INVALID")
     references.extend(orphan_refs)
-    unknown = sorted(set(references) - fact_ids)
+    unknown = sorted(set(references) - snapshot_ids)
     if unknown:
         raise OverviewError(f"UNKNOWN_FACT_REFS:{','.join(unknown)}")
+    non_confirmed = sorted(set(references) - confirmed_ids)
+    if non_confirmed:
+        raise OverviewError(f"NON_CONFIRMED_FACT_REFS:{','.join(non_confirmed)}")
     duplicates = sorted(ref for ref, count in Counter(references).items() if count > 1)
     if duplicates:
         raise OverviewError(f"DUPLICATE_FACT_REFS:{','.join(duplicates)}")
-    missing_refs = sorted(fact_ids - set(references))
+    missing_refs = sorted(confirmed_ids - set(references))
     if missing_refs:
         raise OverviewError(f"UNCOVERED_FACT_REFS:{','.join(missing_refs)}")
-    return synopsis, beats, visual_hint, list(orphan_refs)
+    return beats, list(orphan_refs)
 
 
 def execute(request: dict[str, Any], overview_provider: OverviewProvider) -> dict[str, Any]:
-    """把一章 current C4 v1 快照投影成一张全覆盖原型概览卡。"""
+    """把一章 current C4 v1 快照投影成一张仅含已确认事实的原型概览卡。"""
     if not callable(overview_provider):
         raise OverviewError("OVERVIEW_PROVIDER_NOT_CALLABLE")
     facts, current_ref, source_revision, generated_at, facts_sha256 = _validate_request(
         request
     )
+    confirmed = _confirmed_facts(facts)
+    if not confirmed:
+        raise OverviewError("NO_CONFIRMED_FACTS")
+    confirmed_ids = {fact["id"] for fact in confirmed}
+    snapshot_ids = {fact["id"] for fact in facts}
     provider_request = {
         "provider_key": _provider_key(
             current_revision_ref=current_ref,
@@ -367,13 +388,31 @@ def execute(request: dict[str, Any], overview_provider: OverviewProvider) -> dic
         "writes_truth": False,
         "current_revision_ref": copy.deepcopy(current_ref),
         "source_facts_sha256": facts_sha256,
-        "facts": copy.deepcopy(facts),
+        "facts": copy.deepcopy(confirmed),
     }
     provider_result = overview_provider(provider_request)
-    synopsis, beats, visual_hint, orphan_refs = _validate_provider_result(
+    provider_beats, orphan_refs = _validate_provider_result(
         provider_result,
-        fact_ids={fact["id"] for fact in facts},
+        confirmed_ids=confirmed_ids,
+        snapshot_ids=snapshot_ids,
     )
+
+    facts_by_id = {fact["id"]: fact for fact in confirmed}
+    ordered_refs: list[str] = []
+    beats: list[dict[str, Any]] = []
+    for provider_beat in provider_beats:
+        fact_refs = provider_beat["fact_refs"]
+        ordered_refs.extend(fact_refs)
+        beats.append(
+            {
+                "beat_id": provider_beat["beat_id"],
+                "text": _join_confirmed_texts(facts_by_id, fact_refs),
+                "fact_refs": list(fact_refs),
+                "visual_hint": "",
+            }
+        )
+    ordered_refs.extend(orphan_refs)
+    synopsis = _join_confirmed_texts(facts_by_id, ordered_refs)
 
     source_fact_refs = [
         {
@@ -381,7 +420,7 @@ def execute(request: dict[str, Any], overview_provider: OverviewProvider) -> dic
             "status": fact["status"],
             "record_sha256": _canonical_sha256(fact),
         }
-        for fact in facts
+        for fact in confirmed
     ]
     evidence = [
         {
@@ -392,7 +431,7 @@ def execute(request: dict[str, Any], overview_provider: OverviewProvider) -> dic
             "chapter_revision_ref": copy.deepcopy(fact["chapter_revision_ref"]),
             "anchor_ref": copy.deepcopy(fact["anchor_ref"]),
         }
-        for fact in facts
+        for fact in confirmed
     ]
     beat_ref_count = sum(len(beat["fact_refs"]) for beat in beats)
     return {
@@ -410,9 +449,9 @@ def execute(request: dict[str, Any], overview_provider: OverviewProvider) -> dic
         "synopsis": synopsis,
         "beats": beats,
         "orphan_refs": orphan_refs,
-        "visual_hint": visual_hint,
+        "visual_hint": "",
         "coverage": {
-            "fact_count": len(facts),
+            "fact_count": len(confirmed),
             "beat_ref_count": beat_ref_count,
             "orphan_count": len(orphan_refs),
             "covered_fact_count": beat_ref_count + len(orphan_refs),
@@ -422,8 +461,10 @@ def execute(request: dict[str, Any], overview_provider: OverviewProvider) -> dic
             "source_revision": source_revision,
             "source_facts_sha256": facts_sha256,
             "chapter_revision_ref": copy.deepcopy(current_ref),
-            "fact_count": len(facts),
-            "status_counts": dict(sorted(Counter(f["status"] for f in facts).items())),
+            "fact_count": len(confirmed),
+            "status_counts": dict(
+                sorted(Counter(fact["status"] for fact in confirmed).items())
+            ),
             "fact_refs": source_fact_refs,
         },
         "evidence": evidence,
@@ -442,8 +483,8 @@ def _validate_card_evidence(
     fact_id = _require_clean_string(
         value["fact_id"], reason=f"CARD_EVIDENCE_FACT_ID_INVALID:{index}"
     )
-    if value["status"] not in CURRENT_FACT_STATUSES:
-        raise OverviewError(f"CARD_EVIDENCE_STATUS_INVALID:{fact_id}")
+    if value["status"] != AUTHOR_CARD_FACT_STATUS:
+        raise OverviewError(f"CARD_EVIDENCE_STATUS_NOT_CONFIRMED:{fact_id}")
     _require_clean_string(
         value["source"], reason=f"CARD_EVIDENCE_SOURCE_INVALID:{fact_id}"
     )

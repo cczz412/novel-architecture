@@ -48,7 +48,7 @@ def _fact(
     chapter_id: str,
     quote: str,
     *,
-    status: str = "extracted",
+    status: str = "confirmed",
     bad_anchor: bool = False,
     revision_no: int = 2,
 ) -> dict:
