@@ -38,6 +38,7 @@ LOGICAL_KEY_FILES = {
     "segments": "segments.json",
     "settings": "settings.json",
     "state": "state.json",
+    "writing_check_results": "writing_check_results.json",
 }
 IMMUTABLE_KINDS = {"attachment", "module_blob", "raw_upload"}
 IMMUTABLE_RECEIPT_KEYS = {
