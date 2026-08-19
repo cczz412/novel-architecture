@@ -7,10 +7,15 @@
 from __future__ import annotations
 
 import copy
+import hashlib
+import json
 import re
 import uuid
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
+
+from jsonschema import Draft202012Validator
 
 try:
     from . import planstore
@@ -46,6 +51,14 @@ FAULT_POINTS = {
     "after_commit",
 }
 FACT_ID_RE = re.compile(r"f(\d+)$")
+C11_SCHEMA_PATH = (
+    Path(__file__).resolve().parent.parent
+    / "contracts"
+    / "C11_CHAPTER_REVISION_LEDGER.schema.json"
+)
+ANCHOR_COORDINATE_BASIS = (
+    "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN"
+)
 
 
 class FactstoreError(planstore.PlanstoreError):
@@ -79,8 +92,216 @@ def allocate_fact_ids(facts: list[dict[str, Any]], count: int) -> list[str]:
     return result
 
 
+@lru_cache(maxsize=1)
+def _c11_validator() -> Draft202012Validator:
+    schema = json.loads(C11_SCHEMA_PATH.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    return Draft202012Validator(schema)
+
+
+def _validate_c11_object(value: Any, contract: str, version: str = "v1") -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise FactstoreError(f"{contract}_NOT_OBJECT")
+    if value.get("contract") != contract or value.get("version") != version:
+        raise FactstoreError(f"{contract}_IDENTITY_INVALID")
+    errors = sorted(_c11_validator().iter_errors(value), key=lambda item: list(item.path))
+    if errors:
+        first = errors[0]
+        path = "/".join(map(str, first.path)) or "$"
+        raise FactstoreError(f"{contract}_SCHEMA_INVALID:{path}:{first.message}")
+    return value
+
+
+def validate_c4_v1_snapshot(value: Any) -> list[dict[str, Any]]:
+    """校验并复制一份完整 C4 v1 快照，不授予任何新状态或写权限。"""
+    if not isinstance(value, list):
+        raise FactstoreError("C4_V1_SNAPSHOT_NOT_LIST")
+    facts = [
+        copy.deepcopy(_validate_c11_object(fact, "C4_FACT_QUERY"))
+        for fact in value
+    ]
+    fact_refs = [fact["id"] for fact in facts]
+    if len(fact_refs) != len(set(fact_refs)):
+        raise FactstoreError("C4_FACT_ID_DUPLICATE")
+    for fact in facts:
+        revision_ref = fact["chapter_revision_ref"]
+        if revision_ref["chapter_id"] != fact["chapter_id"]:
+            raise FactstoreError("C4_CHAPTER_REVISION_REF_MISMATCH")
+        if fact["anchor_state"] != "VERIFIED":
+            continue
+        quote = fact["quote"]
+        anchor = fact["anchor_ref"]
+        if not quote or not isinstance(anchor, dict):
+            raise FactstoreError("C4_VERIFIED_ANCHOR_INVALID")
+        if any(anchor.get(key) != revision_ref[key] for key in revision_ref):
+            raise FactstoreError("C4_ANCHOR_REVISION_REF_MISMATCH")
+        start, end = anchor["start"], anchor["end"]
+        if end - start != len(quote):
+            raise FactstoreError("C4_ANCHOR_QUOTE_LENGTH_MISMATCH")
+        quote_sha = hashlib.sha256(quote.encode("utf-8")).hexdigest()
+        if anchor["slice_sha256"] != quote_sha:
+            raise FactstoreError("C4_ANCHOR_QUOTE_SHA_MISMATCH")
+    return facts
+
+
+def _normalized_text_with_raw_positions(raw_text: str) -> tuple[str, list[int]]:
+    chunks: list[tuple[int, int]] = []
+    cursor = 0
+    for match in re.finditer(r"\n\s*\n|\n", raw_text):
+        chunks.append((cursor, match.start()))
+        cursor = match.end()
+    chunks.append((cursor, len(raw_text)))
+
+    paragraphs: list[tuple[str, int, int]] = []
+    for start, end in chunks:
+        chunk = raw_text[start:end]
+        stripped = chunk.strip()
+        if not stripped:
+            continue
+        left_trim = len(chunk) - len(chunk.lstrip())
+        raw_start = start + left_trim
+        paragraphs.append((stripped, raw_start, raw_start + len(stripped)))
+
+    normalized_parts: list[str] = []
+    raw_positions: list[int] = []
+    previous_raw_end: int | None = None
+    for paragraph, raw_start, raw_end in paragraphs:
+        if normalized_parts:
+            if previous_raw_end is None:
+                raise FactstoreError("C2_NORMALIZED_TO_REVISION_MAPPING_INVALID")
+            separator = raw_text.find("\n", previous_raw_end, raw_start)
+            if separator < 0:
+                raise FactstoreError("C2_NORMALIZED_TO_REVISION_MAPPING_INVALID")
+            normalized_parts.append("\n")
+            raw_positions.append(separator)
+        normalized_parts.append(paragraph)
+        raw_positions.extend(range(raw_start, raw_end))
+        previous_raw_end = raw_end
+    return "".join(normalized_parts), raw_positions
+
+
+def build_extracted_c4_snapshot(
+    *,
+    chapter: dict[str, Any],
+    segments: list[dict[str, Any]],
+    candidates: list[dict[str, Any]],
+    existing_facts: list[dict[str, Any]],
+    source: str,
+    added_at: str,
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """把同一 C1 revision 下的 C2/C3 对象纯函数转换为 C4 v1 extracted 快照。"""
+    chapter = _validate_c11_object(chapter, "C1_CHAPTER_DOC")
+    if not isinstance(source, str) or not source.strip():
+        raise FactstoreError("C4_SOURCE_INVALID")
+    if not isinstance(added_at, str) or not added_at.strip():
+        raise FactstoreError("C4_ADDED_AT_INVALID")
+    if not isinstance(segments, list) or not isinstance(candidates, list):
+        raise FactstoreError("C2_C3_BATCH_NOT_LIST")
+    if not isinstance(existing_facts, list):
+        raise FactstoreError("C4_EXISTING_SNAPSHOT_NOT_LIST")
+
+    revision_ref = chapter["chapter_revision_ref"]
+    chapter_text = chapter["text"]
+    if revision_ref["chapter_id"] != chapter["id"]:
+        raise FactstoreError("C1_REVISION_CHAPTER_MISMATCH")
+    chapter_sha = hashlib.sha256(chapter_text.encode("utf-8")).hexdigest()
+    if revision_ref["revision_text_sha256"] != chapter_sha:
+        raise FactstoreError("C1_REVISION_SHA_MISMATCH")
+    normalized_text, raw_positions = _normalized_text_with_raw_positions(chapter_text)
+
+    segments_by_no: dict[int, dict[str, Any]] = {}
+    occupied_ranges: list[tuple[int, int]] = []
+    for segment in segments:
+        segment = _validate_c11_object(segment, "C2_SEGMENT")
+        if segment["chapter_revision_ref"] != revision_ref:
+            raise FactstoreError("C2_REVISION_REF_MISMATCH")
+        if segment["seg"] in segments_by_no:
+            raise FactstoreError("C2_SEGMENT_NUMBER_DUPLICATE")
+        start, end = segment["start"], segment["end"]
+        if end != start + len(segment["text"]):
+            raise FactstoreError("C2_SEGMENT_RANGE_LENGTH_MISMATCH")
+        if normalized_text[start:end] != segment["text"]:
+            raise FactstoreError("C2_SEGMENT_TEXT_RANGE_MISMATCH")
+        if any(start < other_end and other_start < end for other_start, other_end in occupied_ranges):
+            raise FactstoreError("C2_SEGMENT_RANGE_OVERLAP")
+        occupied_ranges.append((start, end))
+        segments_by_no[segment["seg"]] = segment
+
+    facts_before = validate_c4_v1_snapshot(existing_facts)
+
+    validated_candidates: list[tuple[dict[str, Any], dict[str, Any], int, int]] = []
+    for candidate in candidates:
+        candidate = _validate_c11_object(candidate, "C3_FACT_CANDIDATE")
+        if candidate["chapter_revision_ref"] != revision_ref:
+            raise FactstoreError("C3_REVISION_REF_MISMATCH")
+        if not candidate["text"].strip():
+            raise FactstoreError("C3_FACT_TEXT_EMPTY")
+        segment = segments_by_no.get(candidate["seg"])
+        if segment is None:
+            raise FactstoreError("C3_SEGMENT_NOT_FOUND")
+        quote = candidate["quote"]
+        if not quote:
+            raise FactstoreError("C3_QUOTE_REQUIRED_FOR_VERIFIED_ANCHOR")
+        local_start = segment["text"].find(quote)
+        if local_start < 0:
+            raise FactstoreError("C3_QUOTE_NOT_IN_C2_SEGMENT")
+        if segment["text"].find(quote, local_start + 1) >= 0:
+            raise FactstoreError("C3_QUOTE_AMBIGUOUS_IN_C2_SEGMENT")
+        normalized_start = segment["start"] + local_start
+        normalized_end = normalized_start + len(quote)
+        quote_positions = raw_positions[normalized_start:normalized_end]
+        if len(quote_positions) != len(quote):
+            raise FactstoreError("C3_QUOTE_REVISION_MAPPING_INCOMPLETE")
+        raw_start = quote_positions[0]
+        raw_end = quote_positions[-1] + 1
+        if (
+            quote_positions != list(range(raw_start, raw_end))
+            or chapter_text[raw_start:raw_end] != quote
+        ):
+            raise FactstoreError("C3_QUOTE_NOT_CONTIGUOUS_IN_REVISION")
+        validated_candidates.append((candidate, segment, raw_start, raw_end))
+
+    new_ids = allocate_fact_ids(facts_before, len(validated_candidates))
+    new_records: list[dict[str, Any]] = []
+    for (candidate, segment, raw_start, raw_end), fact_ref in zip(
+        validated_candidates, new_ids
+    ):
+        quote = candidate["quote"]
+        record = {
+            "contract": "C4_FACT_QUERY",
+            "version": "v1",
+            "id": fact_ref,
+            "chapter_id": chapter["id"],
+            "text": candidate["text"],
+            "quote": quote,
+            "status": STATUS_EXTRACTED,
+            "source": source,
+            "note": "",
+            "added_at": added_at,
+            "seg": segment["seg"],
+            "chapter_revision_ref": copy.deepcopy(revision_ref),
+            "anchor_ref": {
+                **copy.deepcopy(revision_ref),
+                "coordinate_basis": ANCHOR_COORDINATE_BASIS,
+                "start": raw_start,
+                "end": raw_end,
+                "slice_sha256": hashlib.sha256(quote.encode("utf-8")).hexdigest(),
+            },
+            "anchor_state": "VERIFIED",
+            "recheck": None,
+        }
+        new_records.append(
+            copy.deepcopy(_validate_c11_object(record, "C4_FACT_QUERY"))
+        )
+    return [*facts_before, *new_records], new_ids
+
+
 def fact_sha256(fact: dict[str, Any]) -> str:
     return planstore._sha256_json(fact)
+
+
+def c4_snapshot_sha256(snapshot: list[dict[str, Any]]) -> str:
+    return planstore._sha256_json(validate_c4_v1_snapshot(snapshot))
 
 
 def new_operation_id(prefix: str) -> str:
@@ -153,6 +374,63 @@ def build_review_action(
     }
     _validate_review_action(action)
     return action
+
+
+def apply_review_action_to_c4_snapshot(
+    *,
+    snapshot: list[dict[str, Any]],
+    action: dict[str, Any],
+    chapter_revision_ref: dict[str, Any],
+    decided_at: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """纯对象执行一条正式 M5 动作；不提交文件、不碰 planstore。"""
+    facts_before = validate_c4_v1_snapshot(snapshot)
+    _validate_review_action(action)
+    if not isinstance(decided_at, str) or not decided_at.strip():
+        raise FactstoreError("FACT_REVIEW_DECIDED_AT_INVALID")
+    matches = [fact for fact in facts_before if fact["id"] == action["fact_ref"]]
+    if len(matches) != 1:
+        raise FactstoreError("FACT_REVIEW_TARGET_NOT_FOUND")
+    fact_before = matches[0]
+    if fact_before["chapter_revision_ref"] != chapter_revision_ref:
+        raise FactstoreError("STALE_CHAPTER_REVISION_REF")
+    if (
+        fact_before["status"] != action["expected_status"]
+        or fact_sha256(fact_before) != action["expected_fact_sha256"]
+    ):
+        raise FactstoreError("STALE_FACT_REVISION")
+
+    facts_after = copy.deepcopy(facts_before)
+    fact_after = next(fact for fact in facts_after if fact["id"] == action["fact_ref"])
+    decision = action["decision"]
+    if decision == "confirm":
+        fact_after["status"] = STATUS_CONFIRMED
+    elif decision == "reject":
+        fact_after["status"] = STATUS_REJECTED
+    elif decision in {"edit", "edit_and_confirm"}:
+        old_text = fact_after["text"]
+        fact_after["text"] = action["replacement_text"].strip()
+        fact_after["note"] = action["note"] or f"原文候选：{old_text}"
+        if decision == "edit_and_confirm":
+            fact_after["status"] = STATUS_CONFIRMED
+    if action["note"] and decision not in {"edit", "edit_and_confirm"}:
+        fact_after["note"] = action["note"]
+    if decision in {"confirm", "reject", "edit_and_confirm"}:
+        fact_after["decided_at"] = decided_at
+
+    facts_after = validate_c4_v1_snapshot(facts_after)
+    return facts_after, {
+        "operation_id": action["operation_id"],
+        "fact_ref": action["fact_ref"],
+        "decision": decision,
+        "before_status": fact_before["status"],
+        "after_status": fact_after["status"],
+        "before_fact_sha256": fact_sha256(fact_before),
+        "after_fact_sha256": fact_sha256(fact_after),
+        "changed_fields": sorted(
+            key for key in fact_after if fact_before.get(key) != fact_after.get(key)
+        ),
+    }
 
 
 def _history_row(

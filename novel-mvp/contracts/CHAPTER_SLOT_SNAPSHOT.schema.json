@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/CHAPTER_SLOT_SNAPSHOT.schema.json",
+  "title": "CHAPTER_SLOT_SNAPSHOT v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "status",
+    "source_plan_version",
+    "source_plan_sha256",
+    "generation_watermark",
+    "basis_refs",
+    "slot_ref",
+    "slot_rev",
+    "goal",
+    "summary",
+    "entry_state",
+    "exit_condition",
+    "exit_hook",
+    "storyline_refs",
+    "scene_refs",
+    "must_not",
+    "risks",
+    "outline_checkpoint",
+    "scenes",
+    "events",
+    "storylines"
+  ],
+  "properties": {
+    "contract": {"const": "CHAPTER_SLOT_SNAPSHOT"},
+    "version": {"const": "v1"},
+    "status": {"const": "plan"},
+    "source_plan_version": {"type": "integer", "minimum": 1},
+    "source_plan_sha256": {"$ref": "#/$defs/sha256"},
+    "generation_watermark": {"$ref": "#/$defs/generation_watermark"},
+    "basis_refs": {"$ref": "#/$defs/basis_refs"},
+    "slot_ref": {"$ref": "#/$defs/non_empty_string"},
+    "slot_rev": {"type": "integer", "minimum": 1},
+    "goal": {"type": "string"},
+    "summary": {"type": "string"},
+    "entry_state": {"$ref": "#/$defs/nullable_string"},
+    "exit_condition": {"$ref": "#/$defs/nullable_string"},
+    "exit_hook": {"$ref": "#/$defs/nullable_string"},
+    "storyline_refs": {"$ref": "#/$defs/unique_string_array"},
+    "scene_refs": {"$ref": "#/$defs/unique_string_array"},
+    "must_not": {"$ref": "#/$defs/string_array"},
+    "risks": {"$ref": "#/$defs/string_array"},
+    "outline_checkpoint": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/outline_checkpoint"}
+      ]
+    },
+    "scenes": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/scene"}
+    },
+    "events": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/event"}
+    },
+    "storylines": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/storyline"}
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nullable_string": {
+      "type": ["string", "null"]
+    },
+    "string_array": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "unique_string_array": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/non_empty_string"},
+      "uniqueItems": true
+    },
+    "outline_checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outline_rev", "source_slot_ref", "source_commit_seq"],
+      "properties": {
+        "outline_rev": {"type": "integer", "minimum": 1},
+        "source_slot_ref": {"$ref": "#/$defs/non_empty_string"},
+        "source_commit_seq": {"type": "integer", "minimum": 0}
+      }
+    },
+    "generation_watermark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_plan_version",
+        "source_plan_sha256",
+        "slot_rev",
+        "outline_source_commit_seq"
+      ],
+      "properties": {
+        "source_plan_version": {"type": "integer", "minimum": 1},
+        "source_plan_sha256": {"$ref": "#/$defs/sha256"},
+        "slot_rev": {"type": "integer", "minimum": 1},
+        "outline_source_commit_seq": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "basis_refs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slot_ref", "scene_refs", "event_refs", "storyline_refs"],
+      "properties": {
+        "slot_ref": {"$ref": "#/$defs/non_empty_string"},
+        "scene_refs": {"$ref": "#/$defs/unique_string_array"},
+        "event_refs": {"$ref": "#/$defs/unique_string_array"},
+        "storyline_refs": {"$ref": "#/$defs/unique_string_array"}
+      }
+    },
+    "scene": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "rev", "slot_ref", "goal", "summary", "pe_refs"],
+      "properties": {
+        "id": {"$ref": "#/$defs/non_empty_string"},
+        "rev": {"type": "integer", "minimum": 1},
+        "slot_ref": {"$ref": "#/$defs/non_empty_string"},
+        "goal": {"type": "string"},
+        "summary": {"type": "string"},
+        "pe_refs": {"$ref": "#/$defs/unique_string_array"},
+        "location": {"$ref": "#/$defs/nullable_string"},
+        "characters": {"$ref": "#/$defs/unique_string_array"},
+        "mood_in": {"$ref": "#/$defs/nullable_string"},
+        "mood_out": {"$ref": "#/$defs/nullable_string"},
+        "visual_hint": {"$ref": "#/$defs/nullable_string"},
+        "dialogue_hints": {"$ref": "#/$defs/string_array"},
+        "resistance": {"$ref": "#/$defs/nullable_string"},
+        "turn": {"$ref": "#/$defs/nullable_string"},
+        "pov": {"$ref": "#/$defs/nullable_string"},
+        "spoiler_notes": {"$ref": "#/$defs/string_array"},
+        "word_estimate": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "rev", "scene_ref", "text"],
+      "properties": {
+        "id": {"$ref": "#/$defs/non_empty_string"},
+        "rev": {"type": "integer", "minimum": 1},
+        "scene_ref": {"$ref": "#/$defs/non_empty_string"},
+        "text": {"type": "string"},
+        "storyline_ref": {"$ref": "#/$defs/nullable_string"},
+        "purpose": {"enum": ["setup", "advance", "reveal", "payoff", "repair"]},
+        "story_time_hint": {"$ref": "#/$defs/nullable_string"},
+        "origin_ref": {"$ref": "#/$defs/nullable_string"},
+        "repair_ref": {"$ref": "#/$defs/nullable_string"},
+        "deviation_note": {"$ref": "#/$defs/nullable_string"},
+        "defer_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "storyline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "rev", "name", "alias", "priority", "members", "line_status"],
+      "properties": {
+        "id": {"$ref": "#/$defs/non_empty_string"},
+        "rev": {"type": "integer", "minimum": 1},
+        "name": {"type": "string"},
+        "alias": {"$ref": "#/$defs/nullable_string"},
+        "priority": {"type": "integer"},
+        "members": {"$ref": "#/$defs/unique_string_array"},
+        "line_status": {"enum": ["active", "paused", "converged", "merged"]}
+      }
+    }
+  }
+}

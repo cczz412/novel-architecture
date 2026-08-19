@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from mvp import input_router, intake_identity, store
+from mvp.upload_source import UploadSource
 
 
 MATERIAL_ROLES = {"INTRO", "CHAPTER", "SETTING", "TITLE", "TAGS"}
@@ -115,8 +116,26 @@ def _resolve_declarations(
     items: list[dict[str, Any]],
     material_role: str | None,
     declaration_manifest: list[dict[str, Any]] | dict[str, list[dict[str, Any]]] | None,
+    embedded_declarations: dict[str, list[dict[str, Any]]] | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
     names = [item["source_name"] for item in items]
+    embedded = embedded_declarations or {}
+    if embedded:
+        if declaration_manifest is not None:
+            raise ValueError("UploadSource declarations 不能再叠加 declaration_manifest")
+        return {
+            item["source_name"]: (
+                embedded[item["source_name"]]
+                if item["source_name"] in embedded
+                else [
+                    _whole_source_declaration(
+                        len(item["raw_bytes"].decode(item["encoding"], errors="strict")),
+                        material_role,
+                    )
+                ]
+            )
+            for item in items
+        }
     if declaration_manifest is None:
         return {
             item["source_name"]: [
@@ -197,9 +216,59 @@ def ingest_files(
         raise ValueError(f"不支持的导入 kind：{kind}")
 
     items, format_receipt = input_router.collect_paths(files)
+    return _ingest_routed_items(
+        project,
+        items,
+        format_receipt,
+        title=title,
+        on_imported=on_imported,
+        material_role=material_role,
+        declaration_manifest=declaration_manifest,
+    )
+
+
+def ingest_uploads(
+    project: str,
+    uploads: list[UploadSource],
+    *,
+    title: str | None = None,
+    on_imported=None,
+    material_role: str | None = None,
+) -> dict:
+    """上传对象入口；与本地路径 draft 入口共用同一终端材料处理。"""
+    items, format_receipt = input_router.collect_uploads(uploads)
+    return _ingest_routed_items(
+        project,
+        items,
+        format_receipt,
+        title=title,
+        on_imported=on_imported,
+        material_role=material_role,
+        declaration_manifest=None,
+    )
+
+
+def _ingest_routed_items(
+    project: str,
+    items: list[dict[str, Any]],
+    format_receipt: dict[str, Any],
+    *,
+    title: str | None,
+    on_imported,
+    material_role: str | None,
+    declaration_manifest: list[dict[str, Any]]
+    | dict[str, list[dict[str, Any]]]
+    | None,
+) -> dict:
+    """终端文本的唯一 C10-first 处理；调用方来源可以是本地路径或上传对象。"""
     if format_receipt["status"] != "READY":
         raise input_router.InputRoutingBlocked(format_receipt)
-    declarations = _resolve_declarations(items, material_role, declaration_manifest)
+    declarations = _resolve_declarations(
+        items,
+        material_role,
+        declaration_manifest,
+        format_receipt.get("terminal_declarations"),
+    )
     batch_items = []
     for item in items:
         source_name = item["source_name"]
@@ -239,6 +308,7 @@ def ingest_files(
         "material_units": report["material_units"],
         "projection_receipts": report["projection_receipts"],
         "format_receipt": format_receipt,
+        "upload_objects": format_receipt["upload_objects"],
         "api_calls": 0,
         "automatic_retries": 0,
     }

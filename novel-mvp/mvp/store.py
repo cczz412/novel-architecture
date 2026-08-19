@@ -3,6 +3,9 @@
 schema v0 是临时件：只为跑通「导入→确认→入账→取证」这个环。
 小说架构仓的 N16 语义合同（表述/命题拆分）定案后，本文件整体重建。
 
+C1 v1 current view 只接受上游已经提交的 C11 revision ref；本模块不创建、
+不猜测 chapter revision，也不把 legacy C1 v0 静默升级。
+
 目录结构：
     data/<项目名>/project.json    项目元信息
     data/<项目名>/chapters.json   章节列表（含正文全文，字段见 contracts/C1_CHAPTER_DOC.md）
@@ -16,13 +19,22 @@ schema v0 是临时件：只为跑通「导入→确认→入账→取证」这�
 
 from __future__ import annotations
 
+import copy
+import hashlib
 import json
 import time
 from pathlib import Path
 
+from jsonschema import Draft202012Validator
+
 from . import factstore
 
 DATA_ROOT = Path(__file__).resolve().parent.parent / "data"
+C11_SCHEMA_PATH = (
+    Path(__file__).resolve().parent.parent
+    / "contracts"
+    / "C11_CHAPTER_REVISION_LEDGER.schema.json"
+)
 
 STATUS_EXTRACTED = "extracted"
 STATUS_CONFIRMED = "confirmed"
@@ -211,6 +223,45 @@ def add_intake_c1_projections(project: str, receipts: list[dict]) -> list[dict]:
 def add_chapter(project: str, title: str, text: str, kind: str = "draft") -> dict:
     """kind: draft=已有正文, outline=大纲/规划条目"""
     return add_chapters(project, [{"title": title, "text": text, "kind": kind}])[0]
+
+
+def _validate_c1_v1_current_view(chapter: dict) -> None:
+    schema = json.loads(C11_SCHEMA_PATH.read_text(encoding="utf-8"))
+    validator = Draft202012Validator(schema)
+    if next(validator.iter_errors(chapter), None) is not None:
+        raise ValueError("C1_V1_CURRENT_VIEW_INVALID")
+    revision_ref = chapter["chapter_revision_ref"]
+    if revision_ref["chapter_id"] != chapter["id"]:
+        raise ValueError("C1_V1_REVISION_CHAPTER_MISMATCH")
+    text_sha256 = hashlib.sha256(chapter["text"].encode("utf-8")).hexdigest()
+    if revision_ref["revision_text_sha256"] != text_sha256:
+        raise ValueError("C1_V1_REVISION_SHA_MISMATCH")
+
+
+def add_c1_v1_current_view(
+    project: str,
+    *,
+    title: str,
+    text: str,
+    chapter_revision_ref: dict,
+) -> dict:
+    """写入一条 C1 v1 current view；C11 真源与事务提交由上游协调器负责。"""
+    d = _require(project)
+    chs = chapters(project)
+    chapter = {
+        "contract": "C1_CHAPTER_DOC",
+        "version": "v1",
+        "id": f"c{len(chs) + 1:02d}",
+        "title": title,
+        "kind": "draft",
+        "text": text,
+        "added_at": _now(),
+        "chapter_revision_ref": copy.deepcopy(chapter_revision_ref),
+    }
+    _validate_c1_v1_current_view(chapter)
+    chs.append(chapter)
+    _save(d / "chapters.json", chs)
+    return chapter
 
 
 def add_chapters(project: str, items: list[dict]) -> list[dict]:
