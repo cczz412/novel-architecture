@@ -2592,14 +2592,14 @@
       "external_slots": []
     },
     "module-runtime-r14-global-delta-review": {
-      "label": "小说辅助产品｜R14 与 01efc50 当前运行能力总审",
+      "label": "小说辅助产品｜R14 与 79bd2e2 Project Sources 当前运行能力总审",
       "purpose": "让 ChatGPT Pro 按当前合同、代码和直接测试重画运行能力图，核对 a7b3ecb 之后新增切片，找出作者最早断点并给出不超过八张窄任务卡；不执行 API、不改仓库、不把背景目标冒充当前能力。",
-      "snapshot_at": "2026-08-20T22:30:00+08:00",
+      "snapshot_at": "2026-08-21T00:00:53+08:00",
       "reviewer_prompt_path": "config/review_pack/prompts/module_runtime_r14_global_delta_review.md",
       "truth_source": {
         "authority": "CZ 当前对话明确授权制作新基线与逐窗口 ChatGPT Pro ZIP／Prompt",
-        "local_current_state_status": "committed_clean_branch_01efc50_with_background_product_r14_report_r01_atomic_r03",
-        "note": "三背景共同基线由 CZ 另行上传。本包只带当前代码、合同、测试和本轮任务；旧报告不能覆盖当前实现。"
+        "local_current_state_status": "project_source_release_8e66fe30e71fdfed_workspace_79bd2e2_runtime_delta_01efc50",
+        "note": "CZ 先向目标 Project Sources 上传 8+1 发布一次；本聊天只上传当前代码、合同、测试和本轮任务 ZIP。未经 CZ 精确确认前远端状态仍是 UNKNOWN；旧报告不能覆盖当前实现。"
       },
       "default_layers": [
         "current_truth",
@@ -2646,8 +2646,8 @@
               "globs": [
                 "AGENTS.md",
                 "governance/progress/current-progress.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/BASELINE_IDENTITY.json",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/BASELINE_IDENTITY.json",
                 "config/review_pack/prompts/module_runtime_r14_global_delta_review.md"
               ]
             }
@@ -2687,8 +2687,8 @@
               "status": "observed_test_result_with_missing_temp_fixture_preserved",
               "description": "记录可复跑测试、缺 TEMP 夹具的收集阻断和 a7b3ecb 到 01efc50 的提交差量。",
               "globs": [
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/01_CURRENT_TEST_BASELINE.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/02_RUNTIME_DELTA_INDEX.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/01_CURRENT_TEST_BASELINE.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/02_RUNTIME_DELTA_INDEX.md",
                 "governance/tool_registry.json"
               ]
             }
@@ -2704,11 +2704,11 @@
     "chapter-fact-dual-lane-ledger-design": {
       "label": "小说辅助产品｜双车道、章事实稿、十本账与检查交接",
       "purpose": "让 ChatGPT Pro 依据 R14 拍板和 01efc50 当前代码，设计外来道与自产章事实稿的正式接线、十本账最小接口、M11供料、T14检查及跨存储恢复；旧顾问材料只作线索。",
-      "snapshot_at": "2026-08-20T22:30:00+08:00",
+      "snapshot_at": "2026-08-21T00:00:53+08:00",
       "reviewer_prompt_path": "config/review_pack/prompts/chapter_fact_dual_lane_ledger_design.md",
       "truth_source": {
         "authority": "CZ 当前对话明确授权制作新基线与逐窗口 ChatGPT Pro ZIP／Prompt",
-        "local_current_state_status": "committed_clean_branch_01efc50_product_semantics_r14",
+        "local_current_state_status": "project_source_release_8e66fe30e71fdfed_workspace_79bd2e2_runtime_delta_01efc50",
         "note": "标题方案A、水印保守版、C10外来/C11自产、双存储非原子均已拍；事实确认粒度仍需设计后由CZ决定。"
       },
       "default_layers": [
@@ -2757,8 +2757,8 @@
               "globs": [
                 "AGENTS.md",
                 "governance/progress/current-progress.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/BASELINE_IDENTITY.json",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/BASELINE_IDENTITY.json",
                 "config/review_pack/prompts/chapter_fact_dual_lane_ledger_design.md"
               ]
             }
@@ -2827,8 +2827,8 @@
               "status": "observed_current_branch_evidence",
               "description": "帮助区分当前可运行切片和仍缺的正式接线。",
               "globs": [
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/01_CURRENT_TEST_BASELINE.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/02_RUNTIME_DELTA_INDEX.md"
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/01_CURRENT_TEST_BASELINE.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/02_RUNTIME_DELTA_INDEX.md"
               ]
             }
           ]
@@ -2852,11 +2852,11 @@
     "atomic-r03-test-addendum-design": {
       "label": "小说辅助产品｜R03 142条原子需求六例测试补齐",
       "purpose": "让 ChatGPT Pro 校验旧127条六例设计并为R03新增15条生成90个小测试，区分零API机械、未来语义与合同阻断；不调用API、不生成Gold、不改原子需求权重。",
-      "snapshot_at": "2026-08-20T22:30:00+08:00",
+      "snapshot_at": "2026-08-21T00:00:53+08:00",
       "reviewer_prompt_path": "config/review_pack/prompts/atomic_r03_test_addendum_design.md",
       "truth_source": {
         "authority": "CZ 当前对话明确授权制作新基线与逐窗口 ChatGPT Pro ZIP／Prompt",
-        "local_current_state_status": "atomic_r03_142_current_old_six_case_designs_cover_r02_127_only",
+        "local_current_state_status": "project_source_release_8e66fe30e71fdfed_atomic_r03_142_old_six_case_designs_cover_r02_127_only",
         "note": "R03是长期预期，不证明当前实现；旧四份设计是顾问方案，不是Gold或运行结果。"
       },
       "default_layers": [
@@ -2905,8 +2905,8 @@
               "globs": [
                 "AGENTS.md",
                 "governance/progress/current-progress.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/BASELINE_IDENTITY.json",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/BASELINE_IDENTITY.json",
                 "config/review_pack/prompts/atomic_r03_test_addendum_design.md",
                 "references/atomic-expectations/CURRENT.json",
                 "references/atomic-expectations/README.md"
@@ -2951,8 +2951,8 @@
               "status": "observed_current_branch_evidence",
               "description": "不能把测试文件存在或冻结回包通过当成语义能力。",
               "globs": [
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/01_CURRENT_TEST_BASELINE.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/02_RUNTIME_DELTA_INDEX.md"
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/01_CURRENT_TEST_BASELINE.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/02_RUNTIME_DELTA_INDEX.md"
               ]
             }
           ]
@@ -2976,11 +2976,11 @@
     "multi-form-creative-intake-design": {
       "label": "小说辅助产品｜剧本、灵感与产品原生大纲导入设计",
       "purpose": "让 ChatGPT Pro 设计三类创作材料的身份、原样保存、确认、账本路由和往返不变式；禁止把它们默认当正文送M2/M3，也不新造模块或统一平台。",
-      "snapshot_at": "2026-08-20T22:30:00+08:00",
+      "snapshot_at": "2026-08-21T00:00:53+08:00",
       "reviewer_prompt_path": "config/review_pack/prompts/multi_form_creative_intake_design.md",
       "truth_source": {
         "authority": "CZ 当前对话明确登记三类导入缺口并授权制作 ChatGPT Pro ZIP／Prompt",
-        "local_current_state_status": "future_gap_registered_not_formal_contract_not_implemented",
+        "local_current_state_status": "project_source_release_8e66fe30e71fdfed_future_gap_registered_not_formal_contract_not_implemented",
         "note": "剧本、灵感、产品原生大纲只在progress登记；本轮让顾问设计候选，不自动升级R14/R03或取得施工权。"
       },
       "default_layers": [
@@ -3028,8 +3028,8 @@
               "globs": [
                 "AGENTS.md",
                 "governance/progress/current-progress.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/BASELINE_IDENTITY.json",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/BASELINE_IDENTITY.json",
                 "config/review_pack/prompts/multi_form_creative_intake_design.md"
               ]
             }
@@ -3102,8 +3102,8 @@
               "status": "current_existing_format_evidence_only",
               "description": "只证明现有格式和失败门，不证明三类新材料已经支持。",
               "globs": [
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/01_CURRENT_TEST_BASELINE.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/02_RUNTIME_DELTA_INDEX.md"
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/01_CURRENT_TEST_BASELINE.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/02_RUNTIME_DELTA_INDEX.md"
               ]
             }
           ]
