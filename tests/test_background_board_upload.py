@@ -283,13 +283,25 @@ def test_current_atomic_board_is_stable_projection() -> None:
         (board / "02_ATOMIC_EXPECTATIONS.json").read_text(encoding="utf-8")
     )
     records = payload["records"]
-    assert len(records) == 127
-    assert len({row["预期ID"] for row in records}) == 127
-    assert payload["totals"] == {
-        "records": 127,
-        "core": 78,
-        "bonus": 49,
-        "needs_real_novel": 44,
+    totals = payload["totals"]
+    assert len(records) == totals["records"]
+    assert len({row["预期ID"] for row in records}) == len(records)
+
+    recalculated_totals = {
+        "core": sum(
+            row["当前产品判断"]["层级"] == "核心" for row in records
+        ),
+        "bonus": sum(
+            row["当前产品判断"]["层级"] == "附加" for row in records
+        ),
+        "needs_real_novel": sum(
+            bool(row["现行验收参考"]["需要真实小说"])
+            for row in records
+        ),
+    }
+    assert recalculated_totals == {
+        key: totals[key]
+        for key in ("core", "bonus", "needs_real_novel")
     }
 
     forbidden = {

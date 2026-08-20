@@ -25,7 +25,7 @@
 | `experiments/` | 候选实验、零调用程序件与成绩 | [试验说明](experiments/README.md) | 是否进 Git 逐件审 |
 | `tools/` | 统一入口、可复用组件、批次复现器 | [工具说明](tools/README.md)＋`governance/tool_registry.json` | 长期程序精确挑件 |
 | `tests/` | 不调用模型的机械回归 | [测试说明](tests/README.md) | 长期件 |
-| `references/` | 书目、调查、外部诊断；**共同背景板在这里的 `shared-context/`** | [参考区说明](references/README.md) | 候选材料，不作真值；R13 是共同理解，仍不是执行票 |
+| `references/` | 书目、调查、外部诊断；共同背景板和原子需求都在这里 | [R14 共同背景](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)＋[R03 原子需求 CURRENT](references/atomic-expectations/CURRENT.json)＋[参考区说明](references/README.md) | 候选材料不作运行真值；R14／R03 是当前语义入口，不证明实现完成 |
 | `novel-mvp/` | 产品试跑示例（代码偏旧；设计稿可参考） | [示例说明](novel-mvp/README.md) | 代码／设计稿进 Git；`data/` 和草稿不进 |
 | `analysis_library/` | 小说分析的轻量摘要、验收摘要和仓外指针 | [分析库说明](analysis_library/README.md) | 只跟踪轻量入口；完整原件在外置仓 |
 | `work/` | 设计稿、合同、提示词和执行配套 | [施工区说明](work/README.md) | 精确挑件 |
@@ -100,4 +100,5 @@ uv run --locked python tools/chatgpt_review_pack.py --dry-run
 
 来源：Codex
 
-<!-- active_product_background: references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md -->
+<!-- active_product_background: references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md -->
+<!-- active_atomic_expectations: references/atomic-expectations/CURRENT.json -->

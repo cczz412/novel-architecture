@@ -1,0 +1,10 @@
+{
+  "schema_version": "atomic-test-design-pointer-v1",
+  "identity": "ATOMIC_EXPECTATION_127_X_6_TEST_DESIGN_20260820_R01",
+  "entry": "ATOMIC_TEST_DESIGN_20260820_R01/00_READ_ME_FIRST.md",
+  "design": "ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json",
+  "design_sha256": "8f040e215f3b72188e245d4671bceaa5267dea7be7ea94805507aa269290dba1",
+  "validation_receipt": "ATOMIC_TEST_DESIGN_20260820_R01/VALIDATION_RECEIPT.json",
+  "validation_receipt_sha256": "65493a8abaeb5306acf0cc6b3676f994710e18bf640e3a3de32c6489bff2b9fa",
+  "status": "ADVISORY_TEST_DESIGN_ACCEPTED_FOR_FIXTURE_PREPARATION_NOT_EXECUTED"
+}
