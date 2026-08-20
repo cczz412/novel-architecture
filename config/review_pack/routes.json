@@ -2590,6 +2590,530 @@
         }
       },
       "external_slots": []
+    },
+    "module-runtime-r14-global-delta-review": {
+      "label": "小说辅助产品｜R14 与 01efc50 当前运行能力总审",
+      "purpose": "让 ChatGPT Pro 按当前合同、代码和直接测试重画运行能力图，核对 a7b3ecb 之后新增切片，找出作者最早断点并给出不超过八张窄任务卡；不执行 API、不改仓库、不把背景目标冒充当前能力。",
+      "snapshot_at": "2026-08-20T22:30:00+08:00",
+      "reviewer_prompt_path": "config/review_pack/prompts/module_runtime_r14_global_delta_review.md",
+      "truth_source": {
+        "authority": "CZ 当前对话明确授权制作新基线与逐窗口 ChatGPT Pro ZIP／Prompt",
+        "local_current_state_status": "committed_clean_branch_01efc50_with_background_product_r14_report_r01_atomic_r03",
+        "note": "三背景共同基线由 CZ 另行上传。本包只带当前代码、合同、测试和本轮任务；旧报告不能覆盖当前实现。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence"
+      ],
+      "forbidden_source_globs": [
+        "**/books/**",
+        "**/corpus/**",
+        "**/chapters/**",
+        "**/novels/**",
+        "**/data/**",
+        "**/gold/**",
+        "**/Gold/**",
+        "**/*lockbox*",
+        "runs/**",
+        "reports/**",
+        "outbox/**",
+        "**/raw_response*",
+        "**/responses/**",
+        "**/reasoning*",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/*.zip",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "本轮授权、共同基线身份与顾问任务",
+          "roots": [
+            {
+              "root_id": "module_runtime_wave_identity",
+              "required": true,
+              "authority": "current_cz_instruction_and_local_committed_identity",
+              "status": "active_external_review_snapshot",
+              "description": "上传顺序、产品口径、代码提交、测试边界和本窗口唯一任务。",
+              "globs": [
+                "AGENTS.md",
+                "governance/progress/current-progress.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/BASELINE_IDENTITY.json",
+                "config/review_pack/prompts/module_runtime_r14_global_delta_review.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "当前小说辅助产品运行代码、合同与直接测试",
+          "roots": [
+            {
+              "root_id": "module_runtime_current_code_and_tests",
+              "required": true,
+              "authority": "committed_code_contract_and_direct_tests",
+              "status": "current_at_01efc50_not_product_completion_claim",
+              "description": "完整读取现役模块代码、正式合同和直接模块测试；测试存在不等于真实内容质量。",
+              "globs": [
+                ".python-version",
+                "pyproject.toml",
+                "uv.lock",
+                "novel-mvp/ARCHITECTURE.md",
+                "novel-mvp/README.md",
+                "novel-mvp/design/INDEX.md",
+                "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
+                "novel-mvp/contracts/*",
+                "novel-mvp/mvp/*.py",
+                "tests/test_novel_mvp_*.py"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "当前测试基线与代码差量索引",
+          "roots": [
+            {
+              "root_id": "module_runtime_test_and_delta_evidence",
+              "required": true,
+              "authority": "local_mechanical_baseline_and_git_delta_index",
+              "status": "observed_test_result_with_missing_temp_fixture_preserved",
+              "description": "记录可复跑测试、缺 TEMP 夹具的收集阻断和 a7b3ecb 到 01efc50 的提交差量。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/01_CURRENT_TEST_BASELINE.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/02_RUNTIME_DELTA_INDEX.md",
+                "governance/tool_registry.json"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "本窗口不带旧顾问回包",
+          "roots": []
+        }
+      },
+      "external_slots": []
+    },
+    "chapter-fact-dual-lane-ledger-design": {
+      "label": "小说辅助产品｜双车道、章事实稿、十本账与检查交接",
+      "purpose": "让 ChatGPT Pro 依据 R14 拍板和 01efc50 当前代码，设计外来道与自产章事实稿的正式接线、十本账最小接口、M11供料、T14检查及跨存储恢复；旧顾问材料只作线索。",
+      "snapshot_at": "2026-08-20T22:30:00+08:00",
+      "reviewer_prompt_path": "config/review_pack/prompts/chapter_fact_dual_lane_ledger_design.md",
+      "truth_source": {
+        "authority": "CZ 当前对话明确授权制作新基线与逐窗口 ChatGPT Pro ZIP／Prompt",
+        "local_current_state_status": "committed_clean_branch_01efc50_product_semantics_r14",
+        "note": "标题方案A、水印保守版、C10外来/C11自产、双存储非原子均已拍；事实确认粒度仍需设计后由CZ决定。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews"
+      ],
+      "forbidden_source_globs": [
+        "**/books/**",
+        "**/corpus/**",
+        "**/chapters/**",
+        "**/novels/**",
+        "**/data/**",
+        "**/gold/**",
+        "**/Gold/**",
+        "**/*lockbox*",
+        "runs/**",
+        "reports/**",
+        "outbox/**",
+        "**/raw_response*",
+        "**/responses/**",
+        "**/reasoning*",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/*.zip",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "本轮授权、共同基线身份与双车道任务",
+          "roots": [
+            {
+              "root_id": "dual_lane_wave_identity",
+              "required": true,
+              "authority": "current_cz_instruction_and_r14_product_direction",
+              "status": "active_external_design_snapshot",
+              "description": "上传顺序、已拍口径、当前停点和本窗口唯一任务。",
+              "globs": [
+                "AGENTS.md",
+                "governance/progress/current-progress.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/BASELINE_IDENTITY.json",
+                "config/review_pack/prompts/chapter_fact_dual_lane_ledger_design.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "章事实稿、交棒、账本、供料与检查的当前代码闭集",
+          "roots": [
+            {
+              "root_id": "dual_lane_contracts_code_and_tests",
+              "required": true,
+              "authority": "formal_contracts_and_current_runtime_slices",
+              "status": "mixed_runnable_prototype_preflight_and_missing_formal_consumer",
+              "description": "必须逐文件判断哪些能写账、哪些只读、哪些只生成原型。",
+              "globs": [
+                ".python-version",
+                "pyproject.toml",
+                "uv.lock",
+                "novel-mvp/ARCHITECTURE.md",
+                "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
+                "novel-mvp/contracts/*",
+                "novel-mvp/mvp/*.py",
+                "tests/test_novel_mvp_*.py",
+                "novel-mvp/contracts/C1_CHAPTER_DOC.md",
+                "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY*",
+                "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER*",
+                "novel-mvp/contracts/CHAPTER_REVISION_COMMIT_*",
+                "novel-mvp/contracts/CHAPTER_SLOT_SNAPSHOT*",
+                "novel-mvp/contracts/FACT_REVIEW_ACTION.md",
+                "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+                "novel-mvp/contracts/WORK_DRAFT_HANDOVER_ACTION.md",
+                "novel-mvp/contracts/WRITING_DESK_*.md",
+                "novel-mvp/mvp/workspace.py",
+                "novel-mvp/mvp/chapter_workspace.py",
+                "novel-mvp/mvp/chapter_slot_*.py",
+                "novel-mvp/mvp/chapter_fact_*.py",
+                "novel-mvp/mvp/external_chapter_route_tool.py",
+                "novel-mvp/mvp/ledger_directory_*.py",
+                "novel-mvp/mvp/ingest_workspace.py",
+                "novel-mvp/mvp/factstore.py",
+                "novel-mvp/mvp/fact_workspace.py",
+                "novel-mvp/mvp/planstore.py",
+                "novel-mvp/mvp/plan_workspace.py",
+                "novel-mvp/mvp/packer_fact_workspace.py",
+                "novel-mvp/mvp/writing_check_*.py",
+                "novel-mvp/mvp/writing_closeout_workspace.py",
+                "tests/test_novel_mvp_chapter_*.py",
+                "tests/test_novel_mvp_external_chapter_route_tool.py",
+                "tests/test_novel_mvp_ledger_directory_*.py",
+                "tests/test_novel_mvp_fact_workspace.py",
+                "tests/test_novel_mvp_planstore_r07.py",
+                "tests/test_novel_mvp_plan_workspace.py",
+                "tests/test_novel_mvp_packer_fact_workspace.py",
+                "tests/test_novel_mvp_writing_*.py"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "当前测试基线和本轮差量",
+          "roots": [
+            {
+              "root_id": "dual_lane_current_evidence",
+              "required": true,
+              "authority": "local_mechanical_baseline",
+              "status": "observed_current_branch_evidence",
+              "description": "帮助区分当前可运行切片和仍缺的正式接线。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/01_CURRENT_TEST_BASELINE.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/02_RUNTIME_DELTA_INDEX.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "旧交棒与归属设计｜只作顾问线索",
+          "roots": []
+        }
+      },
+      "external_slots": [
+        {
+          "slot_id": "prior_owner_gap_design",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "historical_advisory_must_recheck_against_01efc50",
+          "description": "OWNER_GAPS_AND_HANDOVER_DESIGN_R01 的原始 Markdown 与 JSON；旧判断不能覆盖当前代码。"
+        }
+      ]
+    },
+    "atomic-r03-test-addendum-design": {
+      "label": "小说辅助产品｜R03 142条原子需求六例测试补齐",
+      "purpose": "让 ChatGPT Pro 校验旧127条六例设计并为R03新增15条生成90个小测试，区分零API机械、未来语义与合同阻断；不调用API、不生成Gold、不改原子需求权重。",
+      "snapshot_at": "2026-08-20T22:30:00+08:00",
+      "reviewer_prompt_path": "config/review_pack/prompts/atomic_r03_test_addendum_design.md",
+      "truth_source": {
+        "authority": "CZ 当前对话明确授权制作新基线与逐窗口 ChatGPT Pro ZIP／Prompt",
+        "local_current_state_status": "atomic_r03_142_current_old_six_case_designs_cover_r02_127_only",
+        "note": "R03是长期预期，不证明当前实现；旧四份设计是顾问方案，不是Gold或运行结果。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence",
+        "external_reviews"
+      ],
+      "forbidden_source_globs": [
+        "**/books/**",
+        "**/corpus/**",
+        "**/chapters/**",
+        "**/novels/**",
+        "**/data/**",
+        "**/gold/**",
+        "**/Gold/**",
+        "**/*lockbox*",
+        "runs/**",
+        "reports/**",
+        "outbox/**",
+        "**/raw_response*",
+        "**/responses/**",
+        "**/reasoning*",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/*.zip",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "本轮授权、R03身份与测试设计任务",
+          "roots": [
+            {
+              "root_id": "atomic_r03_wave_identity",
+              "required": true,
+              "authority": "current_cz_instruction_and_atomic_r03_pointer",
+              "status": "active_external_test_design_snapshot",
+              "description": "上传顺序、版本身份、当前边界和本窗口唯一任务。",
+              "globs": [
+                "AGENTS.md",
+                "governance/progress/current-progress.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/BASELINE_IDENTITY.json",
+                "config/review_pack/prompts/atomic_r03_test_addendum_design.md",
+                "references/atomic-expectations/CURRENT.json",
+                "references/atomic-expectations/README.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "R02/R03差量、当前代码和直接测试",
+          "roots": [
+            {
+              "root_id": "atomic_r03_current_requirements_code_tests",
+              "required": true,
+              "authority": "current_atomic_reference_plus_committed_code_and_tests",
+              "status": "requirements_not_implementation_claim",
+              "description": "用R02/R03机器JSON找新增15条，再按当前代码和测试标真实覆盖。",
+              "globs": [
+                ".python-version",
+                "pyproject.toml",
+                "uv.lock",
+                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/02_ATOMIC_EXPECTATIONS.json",
+                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/00_READ_ME_FIRST.md",
+                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/01_ATOMIC_EXPECTATIONS.md",
+                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/02_ATOMIC_EXPECTATIONS.json",
+                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/04_GLOBAL_ACCEPTANCE_RULES.md",
+                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/05_AUTHOR_USAGE_SCENARIOS.md",
+                "novel-mvp/ARCHITECTURE.md",
+                "novel-mvp/contracts/*",
+                "novel-mvp/mvp/*.py",
+                "tests/test_novel_mvp_*.py"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "当前测试基线与旧零API边界",
+          "roots": [
+            {
+              "root_id": "atomic_r03_current_test_evidence",
+              "required": true,
+              "authority": "local_mechanical_baseline",
+              "status": "observed_current_branch_evidence",
+              "description": "不能把测试文件存在或冻结回包通过当成语义能力。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/01_CURRENT_TEST_BASELINE.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/02_RUNTIME_DELTA_INDEX.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "R02旧127条四份六例测试设计",
+          "roots": []
+        }
+      },
+      "external_slots": [
+        {
+          "slot_id": "prior_atomic_test_designs",
+          "required": true,
+          "provider": "ChatGPT Pro",
+          "model": "user_supplied_external_advisor",
+          "status": "historical_r02_test_design_not_gold_not_current_pass",
+          "description": "ATOMIC_TEST_DESIGN_PART_1～4 的Markdown和JSON解压原件。"
+        }
+      ]
+    },
+    "multi-form-creative-intake-design": {
+      "label": "小说辅助产品｜剧本、灵感与产品原生大纲导入设计",
+      "purpose": "让 ChatGPT Pro 设计三类创作材料的身份、原样保存、确认、账本路由和往返不变式；禁止把它们默认当正文送M2/M3，也不新造模块或统一平台。",
+      "snapshot_at": "2026-08-20T22:30:00+08:00",
+      "reviewer_prompt_path": "config/review_pack/prompts/multi_form_creative_intake_design.md",
+      "truth_source": {
+        "authority": "CZ 当前对话明确登记三类导入缺口并授权制作 ChatGPT Pro ZIP／Prompt",
+        "local_current_state_status": "future_gap_registered_not_formal_contract_not_implemented",
+        "note": "剧本、灵感、产品原生大纲只在progress登记；本轮让顾问设计候选，不自动升级R14/R03或取得施工权。"
+      },
+      "default_layers": [
+        "current_truth",
+        "current_route",
+        "upstream_evidence"
+      ],
+      "forbidden_source_globs": [
+        "**/books/**",
+        "**/corpus/**",
+        "**/chapters/**",
+        "**/novels/**",
+        "**/data/**",
+        "**/gold/**",
+        "**/Gold/**",
+        "**/*lockbox*",
+        "runs/**",
+        "reports/**",
+        "outbox/**",
+        "**/raw_response*",
+        "**/responses/**",
+        "**/reasoning*",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*API_KEY*",
+        "**/*SECRET*",
+        "**/*.zip",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "redact_local_absolute_paths": true,
+      "allow_explicit_temp_sources": true,
+      "layers": {
+        "current_truth": {
+          "label": "本轮授权、缺口登记与顾问任务",
+          "roots": [
+            {
+              "root_id": "multi_form_intake_wave_identity",
+              "required": true,
+              "authority": "current_cz_registered_gap_and_local_committed_identity",
+              "status": "candidate_product_design_only",
+              "description": "明确三类材料尚未实现，禁止顾问把候选设计写成当前合同。",
+              "globs": [
+                "AGENTS.md",
+                "governance/progress/current-progress.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/BASELINE_IDENTITY.json",
+                "config/review_pack/prompts/multi_form_creative_intake_design.md"
+              ]
+            }
+          ]
+        },
+        "current_route": {
+          "label": "当前导入、材料身份、十本账和规划代码",
+          "roots": [
+            {
+              "root_id": "multi_form_intake_current_code_and_tests",
+              "required": true,
+              "authority": "current_code_contracts_and_direct_tests",
+              "status": "existing_inputs_only_new_three_forms_not_implemented",
+              "description": "先看现役边界再设计复用，不能凭后缀或背景目标猜现状。",
+              "globs": [
+                ".python-version",
+                "pyproject.toml",
+                "uv.lock",
+                "novel-mvp/ARCHITECTURE.md",
+                "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
+                "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY*",
+                "novel-mvp/contracts/validate_c10_intake_material_identity.py",
+                "novel-mvp/contracts/C7_*.md",
+                "novel-mvp/contracts/CHAPTER_SLOT_SNAPSHOT*",
+                "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+                "novel-mvp/mvp/upload_source.py",
+                "novel-mvp/mvp/upload_inspect_tool.py",
+                "novel-mvp/mvp/chapterize.py",
+                "novel-mvp/mvp/watermark_candidates.py",
+                "novel-mvp/mvp/store.py",
+                "novel-mvp/mvp/input_router.py",
+                "novel-mvp/mvp/intent_router.py",
+                "novel-mvp/mvp/intent_router_tool.py",
+                "novel-mvp/mvp/ingest.py",
+                "novel-mvp/mvp/ingest_workspace.py",
+                "novel-mvp/mvp/intake_identity.py",
+                "novel-mvp/mvp/workspace.py",
+                "novel-mvp/mvp/ledger_directory_*.py",
+                "novel-mvp/mvp/planstore.py",
+                "novel-mvp/mvp/plan.py",
+                "novel-mvp/mvp/plan_tool.py",
+                "novel-mvp/mvp/plan_selection_target_tool.py",
+                "novel-mvp/mvp/chapter_slot_*.py",
+                "novel-mvp/mvp/plan_workspace.py",
+                "novel-mvp/mvp/planning_longline_*.py",
+                "tests/test_novel_mvp_upload_*.py",
+                "tests/test_novel_mvp_chapterization.py",
+                "tests/test_novel_mvp_intent_router*.py",
+                "tests/test_novel_mvp_ingest*.py",
+                "tests/test_novel_mvp_c10_first_entrypoints.py",
+                "tests/test_novel_mvp_workspace.py",
+                "tests/test_novel_mvp_ledger_directory_*.py",
+                "tests/test_novel_mvp_planstore_r07.py",
+                "tests/test_novel_mvp_plan_tool.py",
+                "tests/test_novel_mvp_plan_selection_target_tool.py",
+                "tests/test_novel_mvp_chapter_slot_*.py",
+                "tests/test_novel_mvp_plan_workspace.py",
+                "tests/test_novel_mvp_planning_longline_*.py"
+              ]
+            }
+          ]
+        },
+        "upstream_evidence": {
+          "label": "当前测试基线与材料入口差量",
+          "roots": [
+            {
+              "root_id": "multi_form_intake_current_evidence",
+              "required": true,
+              "authority": "local_mechanical_baseline",
+              "status": "current_existing_format_evidence_only",
+              "description": "只证明现有格式和失败门，不证明三类新材料已经支持。",
+              "globs": [
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/01_CURRENT_TEST_BASELINE.md",
+                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r01/02_RUNTIME_DELTA_INDEX.md"
+              ]
+            }
+          ]
+        },
+        "external_reviews": {
+          "label": "本窗口不带旧顾问回包",
+          "roots": []
+        }
+      },
+      "external_slots": []
     }
   }
 }
