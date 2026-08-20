@@ -1,0 +1,194 @@
+name: WO2 narrow stale-test fix on push
+
+on:
+  push:
+    branches:
+      - chatgpt/clean-baseline-wo2-semantic-main-20260821
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wo2-narrow-test-fix-push
+  cancel-in-progress: false
+
+jobs:
+  fix-verify-clean:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Clone exact branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git clone --branch "$BRANCH_NAME" --single-branch \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
+          cd repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main:refs/remotes/origin/main
+
+      - name: Narrow-fix only the stale assertions in the named test
+        run: |
+          set -euo pipefail
+          cd repo
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("tests/test_background_board_upload.py")
+          text = path.read_text(encoding="utf-8")
+          old = '''    records = payload["records"]
+    assert len(records) == 127
+    assert len({row["预期ID"] for row in records}) == 127
+    assert payload["totals"] == {
+        "records": 127,
+        "core": 78,
+        "bonus": 49,
+        "needs_real_novel": 44,
+    }
+'''
+          new = '''    records = payload["records"]
+    totals = payload["totals"]
+    assert len(records) == totals["records"]
+    assert len({row["预期ID"] for row in records}) == len(records)
+
+    recalculated_totals = {
+        "core": sum(
+            row["当前产品判断"]["层级"] == "核心" for row in records
+        ),
+        "bonus": sum(
+            row["当前产品判断"]["层级"] == "附加" for row in records
+        ),
+        "needs_real_novel": sum(
+            bool(row["现行验收参考"]["需要真实小说"])
+            for row in records
+        ),
+    }
+    assert recalculated_totals == {
+        key: totals[key]
+        for key in ("core", "bonus", "needs_real_novel")
+    }
+'''
+          if text.count(old) != 1:
+              raise SystemExit(
+                  f"expected exactly one stale assertion block, got {text.count(old)}"
+              )
+          updated = text.replace(old, new, 1)
+          if updated.count("def test_current_atomic_board_is_stable_projection()") != 1:
+              raise SystemExit("target test function identity changed unexpectedly")
+          path.write_text(updated, encoding="utf-8")
+          PY
+
+          git diff --check -- tests/test_background_board_upload.py
+          test "$(git diff --name-only | tr -d '\n')" = \
+            "tests/test_background_board_upload.py"
+
+      - name: Install locked runner
+        run: python -m pip install --disable-pip-version-check uv
+
+      - name: Run requested tests, freshness check, and Ruff
+        run: |
+          set -euo pipefail
+          cd repo
+          uv run --locked pytest \
+            tests/test_background_board_upload.py \
+            tests/test_current_freshness.py -q
+          uv run --locked python tools/check_current_freshness.py \
+            --format both \
+            --json-out /tmp/wo2-freshness.json \
+            --check
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("/tmp/wo2-freshness.json").read_text(encoding="utf-8")
+          )
+          assert report["status"] == "PASS"
+          assert report["errors"] == []
+          print(
+              "PASS_WO2_NARROW_FRESHNESS "
+              f"errors={len(report['errors'])} "
+              f"warnings={len(report['warnings'])}"
+          )
+          PY
+          uv run --locked ruff check \
+            tests/test_background_board_upload.py \
+            tools/check_current_freshness.py
+
+      - name: Verify exact narrow diff and remove temporary workflows
+        run: |
+          set -euo pipefail
+          cd repo
+          python - <<'PY'
+          import subprocess
+
+          patch = subprocess.check_output(
+              [
+                  "git",
+                  "diff",
+                  "--unified=0",
+                  "--",
+                  "tests/test_background_board_upload.py",
+              ],
+              text=True,
+          )
+          required = (
+              'assert len(records) == totals["records"]',
+              'assert len({row["预期ID"] for row in records}) == len(records)',
+              'row["当前产品判断"]["层级"] == "核心"',
+              'row["当前产品判断"]["层级"] == "附加"',
+              'row["现行验收参考"]["需要真实小说"]',
+          )
+          for marker in required:
+              if marker not in patch:
+                  raise SystemExit(f"missing required narrow-fix marker: {marker}")
+          forbidden = (
+              'assert len(records) == 127',
+              '"records": 127',
+              '"core": 78',
+              '"bonus": 49',
+              '"needs_real_novel": 44',
+          )
+          for marker in forbidden:
+              if marker in patch:
+                  raise SystemExit(f"version-locked assertion remains: {marker}")
+          print("PASS_WO2_EXACT_TEST_FUNCTION_DIFF")
+          PY
+
+          git rm \
+            .github/workflows/wo2-narrow-test-fix.yml \
+            .github/workflows/wo2-narrow-test-fix-push.yml
+          rmdir .github/workflows .github 2>/dev/null || true
+
+          python - <<'PY'
+          import subprocess
+
+          changed = set(
+              subprocess.check_output(
+                  ["git", "diff", "--name-only", "HEAD"], text=True
+              ).splitlines()
+          )
+          expected = {
+              ".github/workflows/wo2-narrow-test-fix.yml",
+              ".github/workflows/wo2-narrow-test-fix-push.yml",
+              "tests/test_background_board_upload.py",
+          }
+          if changed != expected:
+              raise SystemExit(f"unexpected narrow-fix working diff: {sorted(changed)}")
+          print("PASS_WO2_NARROW_WORKING_SET")
+          PY
+
+      - name: Commit verified narrow fix to same branch
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          cd repo
+          git add tests/test_background_board_upload.py
+          git diff --cached --check
+          git commit -m "test(background): derive atomic totals from current payload [skip ci]"
+          git push origin "HEAD:${BRANCH_NAME}"
