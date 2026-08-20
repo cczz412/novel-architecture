@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import os
 import subprocess
@@ -518,3 +519,177 @@ print(json.dumps(result, ensure_ascii=False, sort_keys=True, separators=(',', ':
 
     assert completed.returncode == 0, completed.stderr.decode()
     assert completed.stdout == _canonical(expected)
+
+
+def test_preflight_after_restart_returns_current_request_without_writes(
+    tmp_path: Path,
+) -> None:
+    runtime, workspace = _setup(tmp_path)
+    draft, action = _pair(workspace)
+    _save(workspace, draft, action)
+    reopened = WorkspaceRouter(runtime).open_project(ALICE, workspace.project_id)
+    project_dir = _project_dir(runtime, reopened)
+    before = _tree_bytes(project_dir)
+
+    result = chapter_fact_handover_workspace.prepare_pending_handover_consumption(
+        reopened,
+        action["operation_id"],
+    )
+
+    assert result["status"] == "CURRENT_NOT_APPLIED"
+    assert _canonical(result["request"]["chapter_fact_draft"]) == _canonical(draft)
+    assert _canonical(result["request"]["handover_action"]) == _canonical(action)
+    assert result["requests_snapshot"]["version"] == 1
+    assert result["current_plan_snapshot"]["version"] == 1
+    assert result["effects"] == {
+        "c11": "none",
+        "chapter_ledger": "none",
+        "facts": "none",
+        "plan": "none",
+    }
+    rendered = json.dumps(result, ensure_ascii=False, sort_keys=True)
+    for forbidden in (
+        "HANDOVER_COMPLETE",
+        '"chapter_id"',
+        '"fact_id"',
+        '"revision"',
+    ):
+        assert forbidden not in rendered
+    assert _tree_bytes(project_dir) == before
+
+
+def test_preflight_rejects_request_after_plan_has_advanced_without_writes(
+    tmp_path: Path,
+) -> None:
+    runtime, workspace = _setup(tmp_path)
+    draft, action = _pair(workspace)
+    _save(workspace, draft, action)
+    changed = _plan()
+    changed["slots"][0]["summary"] = "作者已经推进当前章槽"
+    changed["slots"][0]["rev"] = 3
+    plan_workspace.save_plan(workspace, "advance-plan", changed, 1)
+    before = _tree_bytes(_project_dir(runtime, workspace))
+
+    with pytest.raises(
+        chapter_fact_handover_workspace.ChapterFactHandoverWorkspaceError,
+        match="CHAPTER_FACT_DRAFT_PLAN_NOT_CURRENT",
+    ):
+        chapter_fact_handover_workspace.prepare_pending_handover_consumption(
+            workspace,
+            action["operation_id"],
+        )
+
+    assert _tree_bytes(_project_dir(runtime, workspace)) == before
+
+
+def test_preflight_rejects_request_store_change_between_reads(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, workspace = _setup(tmp_path)
+    first_draft, first_action = _pair(workspace)
+    _save(workspace, first_draft, first_action)
+    first_state = chapter_fact_handover_workspace._state(workspace)
+    second_draft, second_action = _pair(
+        workspace,
+        draft_operation_id="draft-op-2",
+        handover_operation_id="handover-op-2",
+        title="第二封信",
+    )
+    _save(workspace, second_draft, second_action, expected=1)
+    second_state = chapter_fact_handover_workspace._state(workspace)
+    states = [copy.deepcopy(first_state), copy.deepcopy(second_state)]
+    before = _tree_bytes(_project_dir(runtime, workspace))
+
+    monkeypatch.setattr(
+        chapter_fact_handover_workspace,
+        "_state",
+        lambda handle: states.pop(0),
+    )
+    with pytest.raises(
+        chapter_fact_handover_workspace.ChapterFactHandoverWorkspaceError,
+        match="HANDOVER_REQUEST_STORE_CHANGED_DURING_PREFLIGHT",
+    ):
+        chapter_fact_handover_workspace.prepare_pending_handover_consumption(
+            workspace,
+            first_action["operation_id"],
+        )
+
+    assert states == []
+    assert _tree_bytes(_project_dir(runtime, workspace)) == before
+
+
+def test_preflight_rejects_plan_change_between_validations(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, workspace = _setup(tmp_path)
+    draft, action = _pair(workspace)
+    _save(workspace, draft, action)
+    original = chapter_fact_handover_workspace._current_plan_watermark
+    calls = 0
+
+    def change_before_second(handle, current_draft):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            changed = _plan()
+            changed["slots"][0]["summary"] = "预检期间规划变化"
+            changed["slots"][0]["rev"] = 3
+            plan_workspace.save_plan(handle, "race-plan-preflight", changed, 1)
+        return original(handle, current_draft)
+
+    monkeypatch.setattr(
+        chapter_fact_handover_workspace,
+        "_current_plan_watermark",
+        change_before_second,
+    )
+    with pytest.raises(
+        chapter_fact_handover_workspace.ChapterFactHandoverWorkspaceError,
+        match="CURRENT_PLAN_CHANGED_DURING_PREFLIGHT",
+    ):
+        chapter_fact_handover_workspace.prepare_pending_handover_consumption(
+            workspace,
+            action["operation_id"],
+        )
+
+    assert calls == 2
+    assert workspace.read("chapter_fact_handover_requests")["version"] == 1
+    assert workspace.read("plan")["version"] == 2
+
+
+def test_preflight_unknown_operation_path_and_cross_author_fail_closed(
+    tmp_path: Path,
+) -> None:
+    runtime, alice = _setup(tmp_path)
+    draft, action = _pair(alice)
+    _save(alice, draft, action)
+    bob = WorkspaceRouter(runtime).create_project(BOB, "Bob 预检")
+    before = _tree_bytes(_project_dir(runtime, alice))
+
+    with pytest.raises(
+        chapter_fact_handover_workspace.ChapterFactHandoverWorkspaceError,
+        match="PENDING_HANDOVER_REQUEST_NOT_FOUND",
+    ):
+        chapter_fact_handover_workspace.prepare_pending_handover_consumption(
+            bob,
+            action["operation_id"],
+        )
+    with pytest.raises(
+        chapter_fact_handover_workspace.ChapterFactHandoverWorkspaceError,
+        match="PENDING_HANDOVER_REQUEST_NOT_FOUND",
+    ):
+        chapter_fact_handover_workspace.prepare_pending_handover_consumption(
+            alice,
+            "handover-op-missing",
+        )
+    with pytest.raises(
+        chapter_fact_handover_workspace.ChapterFactHandoverWorkspaceError,
+        match="AUTHOR_WORKSPACE_HANDLE_REQUIRED",
+    ):
+        chapter_fact_handover_workspace.prepare_pending_handover_consumption(
+            tmp_path,  # type: ignore[arg-type]
+            action["operation_id"],
+        )
+
+    assert _tree_bytes(_project_dir(runtime, alice)) == before

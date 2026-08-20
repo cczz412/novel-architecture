@@ -29,6 +29,7 @@ from .workspace import (
 
 LOGICAL_KEY = "chapter_fact_handover_requests"
 STORE_SCHEMA = "chapter-fact-handover-request-store-v1"
+PREFLIGHT_STATUS = "CURRENT_NOT_APPLIED"
 STORE_KEYS = {"schema_version", "requests"}
 REQUEST_KEYS = {
     "operation_id",
@@ -355,8 +356,72 @@ def read_pending_handover_request(
     return _result(state, operation_id, replayed=False)
 
 
+def prepare_pending_handover_consumption(
+    workspace: AuthorWorkspace,
+    operation_id: str,
+) -> dict[str, Any]:
+    """复核一条待处理请求仍绑定当前规划；只读，不应用交棒。"""
+    handle = _workspace(workspace)
+    if (
+        not isinstance(operation_id, str)
+        or OPERATION_ID_RE.fullmatch(operation_id) is None
+    ):
+        _fail("HANDOVER_OPERATION_ID_INVALID")
+
+    first = _state(handle)
+    first_request = first["payload"]["requests"].get(operation_id)
+    if first_request is None:
+        _fail("PENDING_HANDOVER_REQUEST_NOT_FOUND")
+    first_plan = _current_plan_watermark(
+        handle,
+        first_request["chapter_fact_draft"],
+    )
+
+    second = _state(handle)
+    if (
+        second["version"] != first["version"]
+        or second["sha256"] != first["sha256"]
+    ):
+        _fail("HANDOVER_REQUEST_STORE_CHANGED_DURING_PREFLIGHT")
+    second_request = second["payload"]["requests"].get(operation_id)
+    if (
+        second_request is None
+        or second_request["request_sha256"] != first_request["request_sha256"]
+    ):
+        _fail("HANDOVER_REQUEST_CHANGED_DURING_PREFLIGHT")
+    try:
+        second_plan = _current_plan_watermark(
+            handle,
+            second_request["chapter_fact_draft"],
+        )
+    except ChapterFactHandoverWorkspaceError as exc:
+        raise ChapterFactHandoverWorkspaceError(
+            "CURRENT_PLAN_CHANGED_DURING_PREFLIGHT"
+        ) from exc
+    if second_plan != first_plan:
+        _fail("CURRENT_PLAN_CHANGED_DURING_PREFLIGHT")
+
+    return {
+        "status": PREFLIGHT_STATUS,
+        "operation_id": operation_id,
+        "request": copy.deepcopy(second_request),
+        "requests_snapshot": {
+            "version": second["version"],
+            "sha256": second["sha256"],
+        },
+        "current_plan_snapshot": copy.deepcopy(second_plan),
+        "effects": {
+            "c11": "none",
+            "chapter_ledger": "none",
+            "facts": "none",
+            "plan": "none",
+        },
+    }
+
+
 __all__ = [
     "ChapterFactHandoverWorkspaceError",
+    "prepare_pending_handover_consumption",
     "read_pending_handover_request",
     "save_pending_handover_request",
 ]
