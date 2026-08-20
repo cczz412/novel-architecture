@@ -1,0 +1,21 @@
+{
+  "schema_version": "atomic-test-design-addendum-manifest-v1",
+  "package_id": "ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01",
+  "files": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "bytes": 1225,
+      "sha256": "0d59220eed65aeda0d8a7efc8cd3d240c6963322a9d10c67999b5b045d30de3c"
+    },
+    {
+      "path": "01_ATOMIC_TEST_DESIGN.json",
+      "bytes": 614128,
+      "sha256": "1f6ba19738a03512fe64bb0df2b34440586049240f26bdc0d65be3f73cc6f776"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": null,
+      "sha256": null
+    }
+  ]
+}

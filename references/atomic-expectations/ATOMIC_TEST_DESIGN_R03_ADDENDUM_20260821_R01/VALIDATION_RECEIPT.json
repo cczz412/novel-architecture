@@ -1,0 +1,32 @@
+{
+  "schema_version": "atomic-test-design-addendum-validation-receipt-v1",
+  "package_id": "ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01",
+  "status": "PASS",
+  "requirement_count": 15,
+  "small_test_count": 90,
+  "tests_per_requirement": 6,
+  "unique_requirement_ids": 15,
+  "unique_test_ids": 90,
+  "execution_tiers": {
+    "MECHANICAL": 60,
+    "SEMANTIC": 13,
+    "NOT_EXECUTABLE": 17
+  },
+  "legacy_external_lane_only_test_count": 42,
+  "priority_pending_cz": 15,
+  "source_advisory_sha256": "7b03c462f1a1f164df25798ee3d4b85fe68681c495a12031ca225eddcaddb367",
+  "design_sha256": "1f6ba19738a03512fe64bb0df2b34440586049240f26bdc0d65be3f73cc6f776",
+  "manifest_sha256": "d681b983199b556abfc6c10a52c2c7647c9cef4eab16de06681fe40ec9633a17",
+  "checks": [
+    "AT5_IDS_90_UNIQUE",
+    "REQUIREMENTS_15_EACH_SIX_CASES",
+    "EXECUTION_TIERS_60_13_17",
+    "LEGACY_EXTERNAL_LANE_ONLY_42",
+    "SOURCE_ZIP_SHA_MATCHES_ADVISORY_INDEX",
+    "PRIORITY_ALL_PENDING_CZ",
+    "SOURCE_RETURN_ZIP_SHA_MATCHES_ADVISORY_INDEX"
+  ],
+  "boundary": "Mechanical validation of the design package; not execution or semantic quality proof.",
+  "source_return_zip_sha256": "f0de2eb114aa5191358ff424778425961d82b0e9c15f9e59e3b41d84d7c9303e",
+  "source_window_package_sha256": "b2c50aa6a53bed52e6eb55bd74a715ce29726cc58b0365a3a42a28d5726c1199"
+}
