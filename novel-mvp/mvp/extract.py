@@ -8,7 +8,7 @@
 
 合同：正式路径吃 C2 v1，吐 C3 v1，并原样继承 chapter revision ref。
 旧 CLI 尚未改造的 v0 内存段仍保留兼容，但只有 v1 路径会得到 revision-aware C3。
-对外失败口径统一为 RuntimeError（超时、坏 JSON 都包成它，方便编排层收集）。
+对外失败仍是 RuntimeError 子类；传输、截断与原始回包失败另带结构化回执元数据。
 
 `call_json` 是本仓所有「要 JSON 输出的模型调用」的共用底层通道
 （M7 体检也走它，传自己的 instructions）；抽取专用的指令和清洗留在 `call_model`。
@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 from collections.abc import Callable
@@ -30,13 +31,6 @@ INSTRUCTIONS = (
     "- 心理活动、比喻、猜测、未发生的计划不算事实\n"
     '- 只输出 JSON 对象：{"facts":[{"text":"事实句","quote":"责任段中的原文依据片段"}]}\n'
     '- 责任段没有可抽事实时输出 {"facts":[]}'
-)
-
-# I-009 截断重试用：高密度段降密度指令（追加在 INSTRUCTIONS 后）
-RETRY_CAP_FACTS = 25
-RETRY_DENSITY_NOTE = (
-    f"\n- 本段信息密度过高，上一次输出被截断：只输出前 {RETRY_CAP_FACTS} 条最重要的事实"
-    "（优先人物状态/关系/设定/关键事件），其余舍弃，确保 JSON 完整闭合"
 )
 
 C2_V1_KEYS = frozenset(
@@ -62,9 +56,75 @@ class C2V1ContractError(RuntimeError):
     """C2 v1 输入或 revision 身份不能安全进入 M3。"""
 
 
-class TruncatedOutput(RuntimeError):
-    """模型输出疑似被 max_output_tokens 截断（JSON 解析失败＋输出 token 逼近上限）。
-    是 RuntimeError 子类：不专门接它的调用方仍按普通失败处理。"""
+class ExtractCallFailure(RuntimeError):
+    """一次模型传输／原始回包失败；只携带可写入运行回执的元数据。"""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        completion_state: str,
+        code: str,
+        finish_reason: str | None = None,
+        raw_response_sha256: str | None = None,
+        raw_response_bytes: int | None = None,
+    ):
+        super().__init__(message)
+        self.completion_state = completion_state
+        self.code = code
+        self.finish_reason = finish_reason
+        self.raw_response_sha256 = raw_response_sha256
+        self.raw_response_bytes = raw_response_bytes
+
+    def receipt_failure(self, *, failed_item_key: str | None) -> dict:
+        return {
+            "code": self.code,
+            "failed_item_key": failed_item_key,
+            "finish_reason": self.finish_reason,
+            "raw_response_sha256": self.raw_response_sha256,
+            "raw_response_bytes": self.raw_response_bytes,
+        }
+
+
+class TruncatedOutput(ExtractCallFailure):
+    """模型输出疑似被 max_output_tokens 截断；本层不自动重试。"""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        finish_reason: str | None = None,
+        raw_response_sha256: str | None = None,
+        raw_response_bytes: int | None = None,
+    ):
+        # 保留旧调用方可只传 message 的构造方式；状态和错误码由类型唯一决定。
+        super().__init__(
+            message,
+            completion_state="INCOMPLETE_TRUNCATED",
+            code="MODEL_OUTPUT_TRUNCATED",
+            finish_reason=finish_reason,
+            raw_response_sha256=raw_response_sha256,
+            raw_response_bytes=raw_response_bytes,
+        )
+
+
+def _raw_response_identity(value: object) -> tuple[str | None, int | None]:
+    if value is None:
+        return None, None
+    if isinstance(value, bytes):
+        payload = value
+    else:
+        payload = str(value).encode("utf-8", errors="replace")
+    return hashlib.sha256(payload).hexdigest(), len(payload)
+
+
+def _finish_reason(response: object) -> str | None:
+    if not isinstance(response, dict):
+        return None
+    value = response.get("finish_reason")
+    if isinstance(value, str) and value and value == value.strip():
+        return value
+    return None
 
 
 def load_config() -> dict:
@@ -157,10 +217,9 @@ def validate_c2_v1_segment(seg: object, *, current_chapter_revision_ref: object)
 
 
 def call_json(instructions: str, user_content: str, cfg: dict) -> dict:
-    """底层通道：带指定 instructions 调 arkcli +chat 并要求 JSON 输出。
+    """底层通道：成功形状不变；失败抛可结构化的 ``ExtractCallFailure``。
 
-    返回 {'data': 模型输出解析成的对象, 'usage': …, 'model': …}。
-    超时、arkcli 失败、坏 JSON 一律包成 RuntimeError。
+    本函数只尝试一次。原始回包不写入异常，只登记 SHA、字节数与 finish reason。
     """
     cmd = [
         "arkcli", "+chat",
@@ -177,17 +236,45 @@ def call_json(instructions: str, user_content: str, cfg: dict) -> dict:
     timeout = cfg.get("call_timeout_seconds", 180)
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-    except subprocess.TimeoutExpired as e:
-        raise RuntimeError(f"arkcli 调用超时（>{timeout}s）") from e
+    except subprocess.TimeoutExpired as exc:
+        raw_sha, raw_bytes = _raw_response_identity(exc.stdout)
+        raise ExtractCallFailure(
+            f"arkcli 调用超时（>{timeout}s）",
+            completion_state="FAILED_TIMEOUT",
+            code="ARKCLI_TIMEOUT",
+            raw_response_sha256=raw_sha,
+            raw_response_bytes=raw_bytes,
+        ) from exc
+    raw_sha, raw_bytes = _raw_response_identity(proc.stdout)
     if proc.returncode != 0:
-        raise RuntimeError(f"arkcli 调用失败（exit {proc.returncode}）：{proc.stderr.strip()[:500]}")
+        raise ExtractCallFailure(
+            f"arkcli 调用失败（exit {proc.returncode}）",
+            completion_state="FAILED_TRANSPORT",
+            code=f"ARKCLI_EXIT_{proc.returncode}",
+            raw_response_sha256=raw_sha,
+            raw_response_bytes=raw_bytes,
+        )
     try:
         resp = json.loads(proc.stdout)
-    except json.JSONDecodeError as e:
-        raise RuntimeError(f"arkcli 输出不是 JSON：{proc.stdout[:200]}") from e
+    except (json.JSONDecodeError, TypeError) as exc:
+        raise ExtractCallFailure(
+            "arkcli 原始回包不是合法 JSON",
+            completion_state="FAILED_RAW_RESPONSE",
+            code="ARKCLI_ENVELOPE_JSON_INVALID",
+            raw_response_sha256=raw_sha,
+            raw_response_bytes=raw_bytes,
+        ) from exc
+    if not isinstance(resp, dict):
+        raise ExtractCallFailure(
+            "arkcli 原始回包顶层不是对象",
+            completion_state="FAILED_RAW_RESPONSE",
+            code="ARKCLI_ENVELOPE_NOT_OBJECT",
+            raw_response_sha256=raw_sha,
+            raw_response_bytes=raw_bytes,
+        )
     content = resp.get("content", "")
     if isinstance(content, str):
-        # 有的模型（如 GLM）即使要求 json_object 也会包 ```json 围栏，剥掉再解析
+        # 有的模型即使要求 json_object 也会包 JSON 围栏；只剥围栏，不修内容。
         stripped = content.strip()
         if stripped.startswith("```"):
             stripped = stripped.split("\n", 1)[-1] if "\n" in stripped else stripped
@@ -195,15 +282,30 @@ def call_json(instructions: str, user_content: str, cfg: dict) -> dict:
             content = stripped.strip()
     try:
         obj = json.loads(content)
-    except (json.JSONDecodeError, TypeError) as e:
-        # I-009 截断判据：解析失败且输出 token ≥ 上限的 95%，判为截断而非坏输出
-        usage = resp.get("usage") or {}
-        out_tokens = usage.get("completion_tokens", 0)
+    except (json.JSONDecodeError, TypeError) as exc:
+        usage = resp.get("usage")
+        out_tokens = (
+            usage.get("completion_tokens", 0)
+            if isinstance(usage, dict)
+            else 0
+        )
         limit = cfg.get("max_output_tokens", 2000)
+        finish_reason = _finish_reason(resp)
         if isinstance(out_tokens, int) and out_tokens >= limit * 0.95:
             raise TruncatedOutput(
-                f"输出疑似截断（output {out_tokens}/{limit} tokens，JSON 未闭合）") from e
-        raise RuntimeError(f"模型输出不是合法 JSON：{str(content)[:200]}") from e
+                f"输出疑似截断（output {out_tokens}/{limit} tokens，JSON 未闭合）",
+                finish_reason=finish_reason,
+                raw_response_sha256=raw_sha,
+                raw_response_bytes=raw_bytes,
+            ) from exc
+        raise ExtractCallFailure(
+            "模型 content 不是合法 JSON",
+            completion_state="FAILED_RAW_RESPONSE",
+            code="MODEL_CONTENT_JSON_INVALID",
+            finish_reason=finish_reason,
+            raw_response_sha256=raw_sha,
+            raw_response_bytes=raw_bytes,
+        ) from exc
     return {"data": obj, "usage": resp.get("usage", {}), "model": resp.get("model", "")}
 
 
@@ -263,8 +365,8 @@ def extract_segment(
     完整继承这份 ref。response_provider 是零 API 测试缝：它收到同一份
     instructions/user_content/cfg，必须返回 call_json 形状，再走同一解析边界。
 
-    I-009：输出截断不弃段——自动降密度重试一次（只要前 N 条最重要事实）；
-    重试仍失败才向上抛，由编排层记失败段。
+    传输、截断或原始回包失败只尝试一次并向上抛；工作区 owner 负责写结构化
+    运行回执。不在本层自动重试，也不把部分候选冒充完整 C3。
     """
     revision_ref = None
     if _V1_IDENTITY_KEYS.intersection(seg):
@@ -277,14 +379,7 @@ def extract_segment(
     if response_provider is not None:
         r = parse_fact_call_result(response_provider(INSTRUCTIONS, user_content, cfg))
     else:
-        try:
-            r = call_model(user_content, cfg)
-        except TruncatedOutput:
-            try:
-                r = call_model(user_content, cfg, instructions=INSTRUCTIONS + RETRY_DENSITY_NOTE)
-                r["truncation_retried"] = True
-            except TruncatedOutput as e:
-                raise RuntimeError(f"高密度段降密度重试后仍截断：{e}") from e
+        r = call_model(user_content, cfg)
 
     if revision_ref is None:
         return [{**fact, "seg": seg["seg"]} for fact in r["facts"]]

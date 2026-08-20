@@ -564,7 +564,7 @@ def test_second_chapter_bad_candidate_rejects_without_half_snapshot(
 
     with pytest.raises(
         fact_workspace.FactWorkspaceError,
-        match="M4_MATERIALIZATION_REJECTED",
+        match="M4_CURRENT_SOURCE_INVALID:FACT_CANDIDATES_COMPLETE_RECEIPT_MISSING",
     ):
         fact_workspace.materialize_current_extracted_snapshot(
             workspace,

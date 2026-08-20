@@ -25,6 +25,7 @@ LOGICAL_KEY_FILES = {
     "chapter_index": "chapter_index.json",
     "chapters": "chapters.json",
     "draft": "draft.json",
+    "fact_candidate_runs": "fact_candidate_runs.json",
     "fact_candidates": "fact_candidates.json",
     "facts": "facts.json",
     "health_report": "health_report.json",

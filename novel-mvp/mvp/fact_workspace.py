@@ -23,7 +23,12 @@ from .workspace import AuthorWorkspace
 
 
 LOGICAL_KEY = "facts"
-UPSTREAM_KEYS = ("chapters", "chapter_index", "segments", "fact_candidates")
+UPSTREAM_KEYS = (
+    "chapters",
+    "chapter_index",
+    "segments",
+    "fact_candidates",
+)
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
 
 
@@ -112,7 +117,9 @@ def _read_current_upstream(
     try:
         chapters = chapter_workspace.read_c1_current_views(workspace)
         segments_payload = segment_workspace.read_current_segments(workspace)
-        candidates_payload = extract_workspace.read_current_fact_candidates(workspace)
+        candidates_payload = (
+            extract_workspace.read_current_complete_fact_candidates(workspace)
+        )
     except (
         chapter_workspace.ChapterWorkspaceError,
         segment_workspace.SegmentWorkspaceError,
