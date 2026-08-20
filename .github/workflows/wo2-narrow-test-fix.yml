@@ -76,8 +76,8 @@ jobs:
           for marker in forbidden_source:
               if marker in source:
                   raise SystemExit(f"version-locked assertion remains: {marker}")
-          if patch.count("@@") != 1:
-              raise SystemExit("target test file has more than one changed hunk")
+          if patch.count("def test_") != 1:
+              raise SystemExit("target test diff reaches another test function")
           print("PASS_WO2_APPROVED_TEST_FUNCTION_DIFF")
           PY
 
