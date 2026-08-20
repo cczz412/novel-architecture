@@ -359,6 +359,9 @@ def _watermark_receipt(prepared: list[dict[str, Any]]) -> dict[str, Any]:
                         "source_body_start": (
                             material_start + candidate["source_ref"]["body_start"]
                         ),
+                        "source_body_end": (
+                            material_start + candidate["source_ref"]["body_end"]
+                        ),
                         "text": text,
                         "text_sha256": candidate["text_sha256"],
                     }

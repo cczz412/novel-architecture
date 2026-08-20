@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import io
 import json
@@ -17,7 +18,7 @@ PRODUCT_ROOT = ROOT / "novel-mvp"
 sys.path.insert(0, str(PRODUCT_ROOT))
 try:
     import cli as product_cli
-    from mvp import ingest, input_router, store
+    from mvp import ingest, input_router, store, watermark_candidates
 finally:
     sys.path.pop(0)
 
@@ -552,6 +553,127 @@ def test_entry_13e_approximate_or_middle_repetition_is_not_upgraded_to_candidate
     assert report["watermark_receipt"]["candidate_count"] == 0
     assert report["watermark_receipt"]["candidates"] == []
     assert not any("疑似水印" in warning for warning in report["warnings"])
+
+
+def test_entry_13f_author_action_only_creates_derived_clean_sources(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    _init(tmp_path, monkeypatch, "watermark-derived")
+    texts = {
+        "c01.txt": "第一章\n正文甲。\n求收藏\n",
+        "c02.txt": "第二章\n正文乙。\n求收藏\n",
+        "人物备注.txt": "沈砚怕水。\n",
+    }
+    report = ingest.ingest_files(
+        "watermark-derived",
+        [
+            str(_write(tmp_path, name, text))
+            for name, text in texts.items()
+        ],
+        declaration_manifest={
+            name: [
+                _confirmed(
+                    0,
+                    len(text),
+                    "CHAPTER" if name.startswith("c") else "INTRO",
+                    name,
+                )
+            ]
+            for name, text in texts.items()
+        },
+    )
+    receipt = report["watermark_receipt"]
+    source_sha = watermark_candidates.receipt_sha256(report["sources"], receipt)
+    action = {
+        "contract": "M1_WATERMARK_DERIVED_CLEAN_ACTION",
+        "version": "v1",
+        "operation_id": "op-watermark-clean-01",
+        "actor": "author",
+        "intent": "create_derived_clean_copy",
+        "source_receipt_sha256": source_sha,
+        "candidate_ids": [receipt["candidates"][0]["candidate_id"]],
+    }
+    sources_before = copy.deepcopy(report["sources"])
+    receipt_before = copy.deepcopy(receipt)
+    chapters_before = copy.deepcopy(store.chapters("watermark-derived"))
+
+    result = watermark_candidates.derive_clean_copy(
+        report["sources"], receipt, action
+    )
+
+    assert result["status"] == "DERIVED_CLEAN_COPY_READY"
+    assert result["effects"] == {
+        "original_upload_write": 0,
+        "c10_write": 0,
+        "c1_write": 0,
+        "workspace_write": 0,
+    }
+    assert [row["derived_decoded_text"] for row in result["derived_sources"]] == [
+        "第一章\n正文甲。\n",
+        "第二章\n正文乙。\n",
+        "沈砚怕水。\n",
+    ]
+    assert all(
+        row["removed_occurrences"][0]["raw_text"] == "求收藏"
+        for row in result["derived_sources"][:2]
+    )
+    assert result["derived_sources"][2]["removed_occurrences"] == []
+    assert report["sources"] == sources_before
+    assert receipt == receipt_before
+    assert store.chapters("watermark-derived") == chapters_before
+
+
+@pytest.mark.parametrize(
+    ("change", "expected_error"),
+    [
+        ({"actor": "provider"}, "WATERMARK_CLEAN_ACTION_INVALID"),
+        ({"source_receipt_sha256": "0" * 64}, "WATERMARK_SOURCE_RECEIPT_SHA_MISMATCH"),
+        ({"candidate_ids": ["wm-does-not-exist"]}, "WATERMARK_CLEAN_UNKNOWN_CANDIDATE"),
+    ],
+)
+def test_entry_13g_bad_clean_action_fails_without_touching_sources(
+    tmp_path,
+    monkeypatch,
+    change: dict,
+    expected_error: str,
+) -> None:
+    project = f"watermark-clean-{expected_error}"
+    _init(tmp_path, monkeypatch, project)
+    report = ingest.ingest_files(
+        project,
+        [
+            str(_write(tmp_path, "c01.txt", "第一章\n正文甲。\n本章完\n")),
+            str(_write(tmp_path, "c02.txt", "第二章\n正文乙。\n本章完\n")),
+        ],
+        material_role="CHAPTER",
+    )
+    receipt = report["watermark_receipt"]
+    action = {
+        "contract": "M1_WATERMARK_DERIVED_CLEAN_ACTION",
+        "version": "v1",
+        "operation_id": "op-watermark-clean-bad",
+        "actor": "author",
+        "intent": "create_derived_clean_copy",
+        "source_receipt_sha256": watermark_candidates.receipt_sha256(
+            report["sources"], receipt
+        ),
+        "candidate_ids": [receipt["candidates"][0]["candidate_id"]],
+        **change,
+    }
+    before_sources = copy.deepcopy(report["sources"])
+    before_chapters = copy.deepcopy(store.chapters(project))
+
+    with pytest.raises(
+        watermark_candidates.WatermarkCandidateError,
+        match=expected_error,
+    ):
+        watermark_candidates.derive_clean_copy(
+            report["sources"], receipt, action
+        )
+
+    assert report["sources"] == before_sources
+    assert store.chapters(project) == before_chapters
 
 
 @pytest.mark.parametrize(
