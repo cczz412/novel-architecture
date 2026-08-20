@@ -101,12 +101,19 @@ jobs:
             tools/check_traceability.py \
             tests/test_traceability.py
 
-      - name: Remove temporary execution helpers
+      - name: Remove temporary execution helpers and stage final result
         run: |
           set -euo pipefail
           cd repo
           git rm .github/wo3_apply.py .github/workflows/wo3-apply.yml
           rmdir .github/workflows .github 2>/dev/null || true
+          git add \
+            governance/capability_traceability.json \
+            governance/current_pointers.json \
+            references/atomic-expectations/TEST_DESIGN_CURRENT.json \
+            references/atomic-expectations/ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01 \
+            tools/check_traceability.py \
+            tests/test_traceability.py
 
       - name: Enforce exact WO3 write set
         run: |
@@ -116,7 +123,7 @@ jobs:
           import subprocess
 
           changed = subprocess.check_output(
-              ['git', 'diff', '--name-only', 'origin/main'], text=True
+              ['git', 'diff', '--cached', '--name-only', 'origin/main'], text=True
           ).splitlines()
           allowed_exact = {
               'governance/capability_traceability.json',
@@ -159,13 +166,6 @@ jobs:
         run: |
           set -euo pipefail
           cd repo
-          git add \
-            governance/capability_traceability.json \
-            governance/current_pointers.json \
-            references/atomic-expectations/TEST_DESIGN_CURRENT.json \
-            references/atomic-expectations/ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01 \
-            tools/check_traceability.py \
-            tests/test_traceability.py
           git diff --cached --check
           git commit -m "feat(governance): add reviewed traceability and R03 test addendum [skip ci]"
           git push origin "HEAD:${BRANCH_NAME}"
