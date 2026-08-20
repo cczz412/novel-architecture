@@ -4,9 +4,9 @@
 
 | 名字 | 打开哪里 | 别当成 |
 |---|---|---|
-| **共同背景板（现行）** | [R13 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md) · [Notion 镜像](https://app.notion.com/p/3be5cadc4d0f81ab8c21deafb82d89c3) | 仓里没有叫 SHARE TEXT 的文件；就是这一包 |
+| **共同背景板（现行）** | [R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) | R13 已标为 superseded 并留在 Git；旧 Notion 镜像不冒充 R14 |
 | **外部报告背景板** | [当前入口](references/external-knowledge-base/README.md) | 只提供证据、反例和未知，不能替产品拍板 |
-| **原子需求与验收背景板** | [当前入口](references/atomic-expectations/README.md) | 说明局部能力要给用户什么、怎样验收；不是当前进度或施工票 |
+| **原子需求与验收背景板** | [R03 CURRENT](references/atomic-expectations/CURRENT.json) · [人读入口](references/atomic-expectations/README.md) | 142 条需求；六例设计 CURRENT 仍只覆盖旧 127 条 |
 | **P3 背景卡** | `references/novel_fact_extraction_contract_v2.md` | 抽事实的五条小抄，不是设计理念 |
 | **foundation/** | 2026-07-16 的 04 批快照 | 不是现行背景板；后来的改判不在这份原文里 |
 | **novel-mvp/** | [试跑示例 README](novel-mvp/README.md) | 测试阶段示例。代码偏旧；设计稿有用。不是已经上线的产品 |
@@ -16,9 +16,9 @@
 - 人看全仓治理状态：[治理索引](governance/INDEX.md)；机器读取当前执行状态只认 [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)。CZ 拍板仍以当前明确指令和 Notion 账序／队列为准。
 - 当前版本、路径、候选分支与后续工单只认 [`governance/current_pointers.json`](governance/current_pointers.json)；它不保存运行成绩，也不替产品或领域 CURRENT 拍板。
 - 新窗口接力先看 [`governance/progress/current-progress.md`](governance/progress/current-progress.md)，再读它点名的专题页。它只负责接力，不能覆盖 `CURRENT_STATE.json`、正式结果票或 CZ 指令；两者时间或结论冲突时停下校准。
-- 产品共同理解从 [共同背景板 R13 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md) 开始；需要在 Notion 阅读时走[新工作页镜像](https://app.notion.com/p/3be5cadc4d0f81ab8c21deafb82d89c3)。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
+- 产品共同理解从 [共同背景板 R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) 开始。R13 仍留 Git 供追溯，但已经退出默认路由；旧 Notion 镜像不代表 R14。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
 - 外部论文、官方文档、行业材料和作者经验的可复用结论从[外部报告知识库当前入口](references/external-knowledge-base/README.md)开始；Notion 人读镜像在[报告背景 R01](https://app.notion.com/p/3be5cadc4d0f819eb8ebd02ca1b9b8e5)。它与产品共同背景板分开，只提供证据、反例和待核缺口。
-- 原子需求与验收背景将在工单 2 以正式 CURRENT 上 main；工单 1 期间只从 [`governance/current_pointers.json`](governance/current_pointers.json) 查看候选身份，不把候选分支文件冒充 main current。
+- 原子需求与验收背景只认 [R03 CURRENT](references/atomic-expectations/CURRENT.json)：142 条唯一 ID；人读入口见 [README](references/atomic-expectations/README.md)。旧 R02 留 Git 作历史并退出默认路由；[六例测试设计 CURRENT](references/atomic-expectations/TEST_DESIGN_CURRENT.json) 仍只覆盖旧 127 条／762 例，不能冒充覆盖 R03 新增 15 条。
 - 路径职责与新文件落点只认 [`governance/directory_registry.json`](governance/directory_registry.json) 和生成的 [`governance/indexes/new_file_routing.md`](governance/indexes/new_file_routing.md)。
 
 ## 2. Task routing
@@ -34,7 +34,7 @@
 | 查抽取研究 | `governance/route_registry.json` | 对应实验结果票；产品解释再看 R04 第 04 页 |
 | 查已验证的工程结论、技术选型或管线骨架 | `references/engineering-ledger/00_READ_ME_FIRST.md` | 按账内指针回正式结果票／冻结合同核对；当前执行状态仍看 `governance/CURRENT_STATE.json` |
 | 查已吸收的外部证据、行业经验、冲突或研究缺口 | `references/external-knowledge-base/README.md` | 按主题页的 claim ID 追 `02_CLAIM_LEDGER.jsonl`、来源登记和原报告；不能替产品拍板 |
-| 查模块长期需求、测试配方或评分维度 | `references/atomic-expectations/README.md` | 按预期 ID 读取人读版或机器 JSON；当前实现仍回代码、合同和结果票核对 |
+| 查模块长期需求、测试配方或评分维度 | `references/atomic-expectations/CURRENT.json` | 人读看 `README.md`；机器内容看 R03 包；旧六例设计另看 `TEST_DESIGN_CURRENT.json` |
 | 查历史外部调查，避免同类问题重做 | `references/survey-inbox/INDEX.md` | 对应 `SI-*` 卡和 `packages/.../00_READ_ME_FIRST.md`；历史报告只作证据与候选先验，不产生执行权 |
 | 接仓库重构任务 | 当前 CZ 工单／本任务回执 | `governance/progress/current-progress.md`；没登记该线就停下，不靠搜索猜 |
 | 找历史外置对象 | `governance/external_archive_registry.json` | 对象登记的 manifest／恢复方式 |

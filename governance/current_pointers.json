@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-pointers-v1",
-  "updated_at": "2026-08-21T02:49:17+08:00",
+  "updated_at": "2026-08-21T04:34:14+08:00",
   "authority": {
     "role": "当前版本、路径、候选身份和后续登记的唯一机器索引",
     "does_not_replace": [
@@ -39,13 +39,17 @@
     {
       "pointer_id": "product_background",
       "status": "ACTIVE_CURRENT",
-      "version": "R13",
-      "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
-      "next_candidate": {
-        "version": "R14",
+      "version": "R14",
+      "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+      "source": {
         "branch": "codex/module-runtime-foundation-20260819-r01",
-        "tip": "cc793c4719fb6470946c70e744f463147989547b",
-        "admission_work_order": 2
+        "commit": "cc793c4719fb6470946c70e744f463147989547b",
+        "admitted_by_work_order": 2
+      },
+      "supersedes": {
+        "version": "R13",
+        "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
+        "status": "SUPERSEDED_HISTORICAL"
       }
     },
     {
@@ -57,23 +61,37 @@
     },
     {
       "pointer_id": "atomic_expectations",
-      "status": "PENDING_WORK_ORDER",
+      "status": "ACTIVE_CURRENT",
       "version": "R03",
       "path": "references/atomic-expectations/CURRENT.json",
-      "branch": "codex/module-runtime-foundation-20260819-r01",
-      "tip": "cc793c4719fb6470946c70e744f463147989547b",
-      "admission_work_order": 2,
-      "record_count": 142
+      "entry_path": "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/00_READ_ME_FIRST.md",
+      "manifest_path": "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/MANIFEST.json",
+      "record_count": 142,
+      "source": {
+        "branch": "codex/module-runtime-foundation-20260819-r01",
+        "commit": "cc793c4719fb6470946c70e744f463147989547b",
+        "admitted_by_work_order": 2
+      },
+      "supersedes": {
+        "version": "R02",
+        "path": "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/00_READ_ME_FIRST.md",
+        "status": "SUPERSEDED_HISTORICAL"
+      }
     },
     {
       "pointer_id": "atomic_test_design",
-      "status": "PENDING_WORK_ORDER",
+      "status": "ACTIVE_CURRENT",
       "version": "R01_FOR_R02_127",
       "path": "references/atomic-expectations/TEST_DESIGN_CURRENT.json",
-      "branch": "codex/module-runtime-foundation-20260819-r01",
-      "tip": "cc793c4719fb6470946c70e744f463147989547b",
-      "admission_work_order": 2,
-      "boundary": "不能冒充覆盖 R03 新增 15 条。"
+      "covered_expectations": 127,
+      "designed_test_cases": 762,
+      "scope_status": "CURRENT_PARTIAL_COVERAGE_FOR_R03",
+      "source": {
+        "branch": "codex/module-runtime-foundation-20260819-r01",
+        "commit": "cc793c4719fb6470946c70e744f463147989547b",
+        "admitted_by_work_order": 2
+      },
+      "boundary": "只覆盖 R02 的 127 条／762 例；不能冒充覆盖 R03 新增 15 条，新增 90 例留给工单 3。"
     },
     {
       "pointer_id": "design_registry",
@@ -108,9 +126,11 @@
     }
   ],
   "invariants": [
-    "repository_current 与 product_background 各自只有一个 ACTIVE_CURRENT。",
+    "repository_current、product_background 与 atomic_expectations 各自只有一个 ACTIVE_CURRENT。",
+    "产品共同背景现行只认 R14；R13 留 Git 作 SUPERSEDED_HISTORICAL。",
+    "原子需求现行只认 R03／142 条唯一 ID；R02 留 Git 作 SUPERSEDED_HISTORICAL。",
+    "六例设计 CURRENT 仍只覆盖旧 127 条／762 例，不得冒充覆盖 R03 新增 15 条。",
     "候选分支、PLANNED 和 PENDING_WORK_ORDER 不得冒充 main current。",
-    "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",
-    "工单 1 保持 R13；R14/R03 只能由工单 2 纯语义 PR 转正。"
+    "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。"
   ]
 }

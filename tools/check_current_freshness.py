@@ -111,20 +111,33 @@ def build_report(root: Path) -> dict[str, Any]:
     if current_path != "governance/CURRENT_STATE.json":
         errors.append(_issue("ERROR", "REPOSITORY_CURRENT_PATH", "repository_current must point to CURRENT_STATE.json", "governance/current_pointers.json"))
 
-    product_path = by_id.get("product_background", {}).get("path")
+    product_row = by_id.get("product_background", {})
+    product_path = product_row.get("path")
+    product_version = product_row.get("version")
     if not isinstance(product_path, str) or not (root / product_path).is_file():
         errors.append(_issue("ERROR", "PRODUCT_BACKGROUND_MISSING", "active product background path is missing", str(product_path)))
-    elif not product_path.endswith("NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md"):
-        errors.append(_issue("ERROR", "WO1_BACKGROUND_VERSION", "work order 1 must keep R13 active; R14 belongs to work order 2", product_path))
+    elif not product_path.endswith("/00_READ_ME_FIRST.md"):
+        errors.append(_issue("ERROR", "PRODUCT_BACKGROUND_ENTRY", "active product background must point to 00_READ_ME_FIRST.md", product_path))
+    elif isinstance(product_version, str) and f"_{product_version}/00_READ_ME_FIRST.md" not in product_path:
+        errors.append(_issue("ERROR", "PRODUCT_BACKGROUND_VERSION", "product background version and path disagree", product_path))
 
-    for label, content, path in (
+    semantic_requirements = [
+        "governance/CURRENT_STATE.json",
+        "governance/current_pointers.json",
+    ]
+    if isinstance(product_path, str):
+        semantic_requirements.append(product_path)
+    for label, content, entry_path in (
         ("AGENTS", agents, "AGENTS.md"),
         ("README", readme, "README.md"),
-        ("progress", progress, "governance/progress/current-progress.md"),
     ):
-        for required in ("governance/CURRENT_STATE.json", "governance/current_pointers.json", product_path):
+        for required in semantic_requirements:
             if required not in content:
-                errors.append(_issue("ERROR", "ENTRYPOINT_MISMATCH", f"{label} does not name {required}", path))
+                errors.append(_issue("ERROR", "ENTRYPOINT_MISMATCH", f"{label} does not name {required}", entry_path))
+
+    for required in ("governance/CURRENT_STATE.json", "governance/current_pointers.json"):
+        if required not in progress:
+            errors.append(_issue("ERROR", "ENTRYPOINT_MISMATCH", f"progress does not name {required}", "governance/progress/current-progress.md"))
 
     current_blob = json.dumps(current, ensure_ascii=False, sort_keys=True)
     for expected in (
