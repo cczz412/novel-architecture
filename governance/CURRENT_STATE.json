@@ -1,13 +1,13 @@
 {
   "schema_version": "governance-current-state-v2",
-  "snapshot_at": "2026-08-08T20:21:22+08:00",
+  "snapshot_at": "2026-08-21T02:49:17+08:00",
   "authority": {
     "role": "本地唯一机器可读当前执行状态真源",
     "external_truth": {
       "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
       "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
       "legacy_frozen_ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-      "rule": "2026-07-27 起拍板状态只以账序真源 v2 与 LEGACY 在跑队列为准；旧 04 页已冻结，禁止新增或修改。回读后只在本文件形成当前状态镜像。"
+      "rule": "本文件只保存当前执行状态；旧大体量历史快照已移到 governance/CURRENT_STATE_HISTORY.json。产品拍板仍以 CZ 最新明确指令与 Notion 账序／队列为准。"
     },
     "local_precedence": [
       "子运行 main/hard_stop.json",
@@ -20,27 +20,32 @@
   },
   "current_execution": {
     "task": {
-      "task_id": "REPOSITORY-OPERATIONS-W05-W06-20260808",
-      "label": "仓库卫生已收口，根入口已瘦身，现役命令仍有两处并发延期",
-      "status": "repository_hygiene_closed_routing_aligned_command_partial",
-      "status_label": "W05 已关闭且 tracked size gate 已通过；W06 根 AGENTS 已正式收敛，8 份命令说明完成 6 份，Repo Bridge 与 finetuning 两份继续延期。"
+      "task_id": "CLEAN-BASELINE-M1-M11-INTEGRATION-20260821",
+      "label": "M1～M11 产品主线与干净基线重构",
+      "status": "work_order_1_current_convergence_candidate",
+      "status_label": "main 正在收口唯一 current；模块候选分支尚未合并，不得冒充完成态。"
     },
     "authorization": {
-      "kind": "cz_explicit_w06d_current_state_freshness_refresh",
-      "authority_time": "2026-08-08T20:21:22+08:00",
+      "kind": "cz_explicit_clean_baseline_seven_work_orders",
+      "authority_time": "2026-08-21T02:49:17+08:00",
       "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
       "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "scope": "只刷新 repository-wide machine mirror；不改职责、Schema、领域 CURRENT、训练许可或历史原票。"
+      "scope": "按 1→2→(3/4)→5→6→7 逐票执行；一张工单一条分支一个 PR；不直写 main。"
     },
     "run": {
       "run_id": null,
       "run_directory": null
     },
     "controls": {
-      "quality_boundary": "本状态只证明仓库治理与寻路现场已按列明 SHA 刷新，不替代任何领域质量结论。",
-      "evidence_boundary": "W05/W06 只取封存收口票、正式提交和登记册；微调只保留 CURRENT 与人类接力入口，不复制实验成绩、recipe、权利明细或 TEMP 路径。",
-      "stop_rule": "Production Canonical 候选仍不存在，finetuning/CURRENT.json 明确不得授权训练或晋升；没有独立训练执行锁就不能训练。",
-      "next_action": "仓库路由线等待 Repo Bridge 与 finetuning 两个并发写集释放后补齐 12 处命令；微调工作从 finetuning/CURRENT.json 和 governance/progress/t5-r04-production-canonical-p2.md 继续。"
+      "quality_boundary": "本状态只登记仓库身份、版本和施工顺序，不证明 M1～M11 已完成，也不证明真实小说语义质量。",
+      "evidence_boundary": "main=f8680907f5be5c199479ba52510e9ab4f16eded7；candidate=codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b；工单 1 不修改产品语义、需求、设计、合同或 runtime。",
+      "stop_rule": "不得整体合并超级分支、不得直接写 main；R14/R03 必须等工单 2 的纯语义 PR。",
+      "next_action": "CZ 复核并合并工单 1 PR；随后从新 main 开工单 2。"
+    },
+    "candidate": {
+      "branch": "codex/module-runtime-foundation-20260819-r01",
+      "tip": "cc793c4719fb6470946c70e744f463147989547b",
+      "identity": "SUPER_INTEGRATION_CANDIDATE_NOT_COMPLETED_PRODUCT"
     },
     "artifacts": {
       "report_directory": null,
@@ -48,19 +53,20 @@
       "machine_receipt": null
     },
     "validation": {
-      "status": "REPO_WIDE_STATE_REFRESHED_FROM_HASHED_SOURCES",
+      "status": "CLEAN_BASELINE_WORK_ORDER_1_IN_PROGRESS",
       "completed_checks": [
-        "W05_REPOSITORY_HYGIENE_CAMPAIGN_PASS",
-        "GLOBAL_TRACKED_SIZE_GATE_PASS",
-        "M2_FORMALLY_CLOSED_SUPERSEDED",
-        "W06C_AGENTS_SLIMMING_FORMAL_PASS",
-        "W06C_COMMAND_ALIGNMENT_PARTIAL_PASS",
-        "12/12 high-frequency routes reach the correct authority with max hops 2"
+        "ROOT_CURRENT_RETIRED_TO_HISTORY",
+        "CURRENT_STATE_HISTORY_SEPARATED",
+        "CURRENT_POINTERS_MATERIALIZED",
+        "MAIN_R13_POINTERS_ALIGNED",
+        "CURRENT_FRESHNESS_CHECK_AVAILABLE"
       ],
       "pending_checks": [
-        "Repo Bridge README command prefix alignment after owner release",
-        "finetuning README command prefix alignment after owner release",
-        "Production Canonical rights and identity prerequisites before any training lock"
+        "work order 7: merge freshness checker into monolithic tool registry and five-check suite",
+        "CZ review and merge work order 1",
+        "work order 2: R14 and atomic R03 semantic layer",
+        "work order 3: capability traceability",
+        "work order 4: design currentness registry"
       ]
     },
     "usage": {
@@ -72,25 +78,25 @@
     "protection": {
       "current_state_role_changed": false,
       "current_state_schema_changed": false,
-      "finetuning_current_modified": false,
-      "progress_promoted_to_machine_truth": false,
+      "product_semantics_modified": false,
+      "requirements_modified": false,
+      "design_modified": false,
+      "contracts_modified": false,
+      "runtime_modified": false,
       "training_authorized": false,
       "promotion_authorized": false,
-      "production_canonical_claimed": false,
-      "w05_history_reopened": false,
-      "m2_reopened": false,
-      "shared_context_r03_modified": false
+      "production_canonical_claimed": false
     },
     "blockers": [
       {
-        "blocker_id": "FINETUNING-PRODUCTION-CANONICAL-NOT-READY",
-        "summary": "Production Canonical 候选尚不存在，当前没有训练执行锁。",
-        "route": "finetuning/CURRENT.json → governance/progress/t5-r04-production-canonical-p2.md"
+        "blocker_id": "MODULE-BRANCH-NOT-MERGED",
+        "summary": "M1～M11 候选分支是超级集成分支，必须在工单 5 拆票后再合入 main。",
+        "route": "codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b"
       },
       {
-        "blocker_id": "W06-C-COMMAND-ALIGNMENT-DEFERRED",
-        "summary": "Repo Bridge 与 finetuning 两份现役说明仍属于并发写集，12 处命令替换延期。",
-        "route": "TEMP/repo-routing-w06-c-r01/W06C_COMMAND_OWNERSHIP.csv"
+        "blocker_id": "SEMANTIC-BASELINE-WO2-PENDING",
+        "summary": "main 当前仍以 R13 为共同背景；R14 与原子需求 R03 等工单 2 纯语义 PR。",
+        "route": "governance/current_pointers.json"
       }
     ]
   },
@@ -105,952 +111,49 @@
     }
   ],
   "historical_context": {
-    "frozen_mainline_snapshots": [
-      {
-        "task_id": "Z98-KNIFE-A-PATCH-STEP2-EXECUTOR-REHEARSAL",
-        "status": "engineering_pass_live_not_started_frozen",
-        "run_id": "Z98-KNIFE-A-PATCH-STEP2-EXECUTOR-REHEARSAL-r07-v1.3",
-        "run_directory": "runs/Z98_刀A小额补丁实验_步二正式执行器预演_r07_v1.3_20260724",
-        "boundary": "68节点零调用预演工程通过；外部信任根未齐时从未发第一个模型请求；用户现已结束该主线施工窗，恢复须新授权与新运行编号。"
-      },
-      {
-        "task_id": "V02-C9-C10-ENGINEERING-CANDIDATES",
-        "status": "engineering_candidates_frozen_semantic_quality_unresolved",
-        "boundary": "C9 工程闸候选仍有语义分歧，C10 只证明可计分性与报告口径；均不得冒充质量结论、正式映射或现役升级。"
-      },
-      {
-        "task_id": "W05-REPOSITORY-HYGIENE-CAMPAIGN-20260808",
-        "status": "closed",
-        "closed_at": "2026-08-08T19:27:36+08:00",
-        "route_to_history": "governance/external_archive_registry.json#repository-hygiene-w05-campaign-20260808-v1",
-        "boundary": "W05 已关闭；历史原件从外置登记恢复，不重开对象搜寻。"
-      },
-      {
-        "task_id": "T5-MICRO24-M2",
-        "status": "closed_superseded",
-        "closed_at": "2026-08-08T19:15:14+08:00",
-        "superseded_by": "CPLUS / Production Canonical P2",
-        "route_to_history": "governance/external_archive_registry.json",
-        "boundary": "旧 M2 无执行权；不改冻结结果票，不从 CLOSED 恢复训练。"
-      }
-    ],
-    "accepted_steps": [
-      {
-        "task_id": "Z97-RFU-UCR-LEDGER",
-        "label": "第97道·RFU建账＋UCR五层候选",
-        "status": "accepted_engineering_closed_git_published",
-        "status_label": "2026-07-24 15:55统一审收PASS；工程收口、质量未判；精确范围已推main",
-        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-24T15:55:00+08:00",
-        "local_receipt": "reports/Z97_RFU建账与UCR五层候选_20260724/第97道停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f81139c67d3799050f0c7",
-        "git_commit": "a5727b9fe954132ac9aec6d10ee0e122998e6548",
-        "evidence_boundary": "只收工程胜负；Z89五列只作历史离线诊断，retry03五项留空；候选fact_head不作语义真值。"
-      },
-      {
-        "task_id": "Z96-A_PLUS-ANCHOR-EVIDENCE-CLOSURE",
-        "label": "第96道·刀B A+锚层与证据闭包候选",
-        "status": "accepted_engineering_closed_git_published",
-        "status_label": "2026-07-24 14:55 r03统一审收PASS；工程收口、质量未判；精确范围已推main",
-        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-24T14:55:00+08:00",
-        "local_receipt": "reports/Z96_刀B_Aplus锚层与证据闭包_r03_20260724/第96道续令②停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f81f184a8df45d9dcdf9a",
-        "git_commit": "cfa8666fed9abfa39b8b7ed08a925db1982bdaa5",
-        "evidence_boundary": "只收工程胜负；r02夹具读数不入正式账；新增候选锚语义精度仍待新尺。"
-      },
-      {
-        "task_id": "GOLDEN3-RIGHTS-REGISTRY-v0.2-BACKFILL",
-        "label": "并行B收尾·v0.2五本正式入册补账",
-        "status": "accepted_closed_git_release_approved",
-        "status_label": "2026-07-24 13:25统一审收PASS；BOOK-010～014全部生产阻断；模板与登记件获Git放行",
-        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-24T13:25:00+08:00",
-        "local_receipt": "reports/九项第四道_并行B正式入册_v0.2_20260724/并行B正式入册v0.2停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f8102ab51d14a49a91c42",
-        "evidence_boundary": "14本登记仍为candidate_not_enabled；高风险14、生产阻断14、无条件允许0；实际取材仍须逐书权利票。",
-        "git_mirror_directory": "references/golden-three-chapters/v0.2"
-      },
-      {
-        "task_id": "GOLDEN3-WEBNOVEL-TEMPLATE-CLOSEOUT",
-        "label": "并行B收尾·12份网文模板子件",
-        "status": "accepted_closed",
-        "status_label": "2026-07-24 12:15 统一审收PASS；12份新网文模板与v2.1路由生效为候选供料，研究启用仍为0",
-        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-24T12:15:00+08:00",
-        "local_receipt": "reports/九项第四道_并行B收尾_20260724/并行B收尾停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f811c8afdfe7d3f49b6e0",
-        "evidence_boundary": "只验收空白模板与路由；不代表五本授权登记已审收，不允许正文读取、取材、人审或模型调用。"
-      },
-      {
-        "task_id": "GOLDEN3-WEBNOVEL-ROSTER-REWORK",
-        "label": "黄金三章12本网文书单重做",
-        "status": "accepted_closed",
-        "status_label": "2026-07-24 10:55统一审收PASS，作为并行B模板收尾供料；研究启用仍为0",
-        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-24T10:55:00+08:00",
-        "local_receipt": "reports/九项第四道_黄金三章网文书单重做_20260724/重做停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f81528d88c9fc711f70d9",
-        "evidence_boundary": "书单、分层、校准册与5本补账候选通过；不代表作品授权通过，也未启动正文读取、人审或模型实验。"
-      },
-      {
-        "task_id": "PRE-NET-G2-RIGHTS-AND-GOLDEN3-MATERIALS",
-        "label": "G2发网前凭据备料＋旧黄金三章12本工作台备料",
-        "status": "accepted_closed_git_published_then_golden3_roster_superseded",
-        "status_label": "2026-07-24 10:20统一审收PASS；治理路牌已推送；其中G2件保持有效，旧黄金三章经典文学选书于10:25被CZ改判作废",
-        "authority_kind": "notion_ledger_and_queue_unified_acceptance_then_scope_change",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-24T10:20:00+08:00",
-        "local_receipt": "reports/九项第四道_拍板后备料_20260724/盲测发网前置链与并行B备料停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a75cadc4d0f816d9f7bfa81800a82d5",
-        "git_commit": "6c8ca01c69109ff07110e0a416b21662f1c9cb33",
-        "evidence_boundary": "G2的X02／X03凭据备料继续有效；旧黄金三章书单只保留历史，不再作为研究选书池。"
-      },
-      {
-        "task_id": "NINE-ITEMS-04-RIGHTS-AND-PARALLEL-PREP",
-        "label": "九项落地第四道·⑥语料授权清单＋并行A/B/C",
-        "status": "accepted_closed_git_published",
-        "status_label": "2026-07-24 08:20 统一审收PASS；四线各自收口；Git已推送main",
-        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-24T08:20:00+08:00",
-        "local_receipt": "reports/九项第四道_⑥语料授权清单_20260724/第⑥道停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a65cadc4d0f81d5916bfad65b84883b",
-        "git_commit": "2e1e11aba15915f6bbdb3897480adabeec461368",
-        "evidence_boundary": "⑥登记册与20本白名单提案、并行A/B设计及并行C候选生产均已审收；白名单未自动启用，权利票未过前不发网、不取材，SFT候选不得直接训练。"
-      },
-      {
-        "task_id": "NINE-ITEMS-03-CLAIM-ANCHOR-DESIGN",
-        "label": "九项落地第三道·⑧主张级核锚并单设计",
-        "status": "accepted_closed_git_published",
-        "status_label": "2026-07-23 23:58 统一审收PASS；Git已推送main",
-        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-23T23:58:00+08:00",
-        "local_receipt": "reports/九项第三道_主张级核锚并单设计_20260723/第⑧道停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a65cadc4d0f81759223c62c99f532d1",
-        "git_commit": "bff93a75a4dda6f9ff5ca3209b65aae025e43ec2",
-        "evidence_boundary": "四件候选设计收口；0模型API；未接运行器、未改金标、未形成自动语义真值。"
-      },
-      {
-        "task_id": "NINE-ITEMS-02-STATE-LAYERING",
-        "label": "九项落地第二道·①真源分层",
-        "status": "accepted_closed_git_published",
-        "status_label": "2026-07-23 23:20 统一审收PASS；Git已推送main",
-        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-23T23:20:00+08:00",
-        "local_receipt": "reports/九项第二道_真源分层_20260723/真源分层停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a65cadc4d0f8132bd8cc9845dfe3656",
-        "git_commit": "652ef8db8863c2ec57065a394aca5e8df668e8ac",
-        "evidence_boundary": "本道治理施工已审收并推送；40项条件XFAIL仍是到期挂账，不冒充通过。"
-      },
-      {
-        "task_id": "Z84-repo-hygiene",
-        "label": "第84道仓库卫生批（P0-P2）",
-        "status": "accepted",
-        "status_label": "2026-07-22 04:25 已审收 PASS",
-        "authority_kind": "notion_ledger_and_queue",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "local_receipt": "reports/Z84_repo_hygiene_P0P2_20260722/第84道停点回包.md",
-        "evidence_boundary": "04:25 PASS 来自 Notion 回读；本地回包只证明此前停点与 479×2，不单独证明审收。"
-      },
-      {
-        "task_id": "Z85-schema-v0.1.2-second-batch",
-        "label": "第85道 Schema 补丁第二批",
-        "status": "accepted_local_stop_callback_returned",
-        "status_label": "v0.1.2候选、P0七件与P1三件观察列完成；0 API，机械双跑与测试全绿，Notion正文／账序／队列已回传回读",
-        "authority_kind": "notion_queue_work_order_and_local_callback",
-        "authority_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-        "local_receipt": "reports/Z85_Schema_v0.1.2第二批候选_20260722/",
-        "notion_receipt_url": "https://app.notion.com/p/3a55cadc4d0f81f58eecd4b0bde90f85",
-        "candidate_sha256": "0168a66eca0cbc5416403471e92c39a8dc446056fc6c2bffe604cef4e0f55bba",
-        "evidence_boundary": "候选未生效、不接现役链；本条只登记施工停点，不代替后续产品拍板。"
-      },
-      {
-        "task_id": "Z90-v4-flash-opt-consult-pack",
-        "label": "第90道 V4 Flash 优化问诊打包件",
-        "status": "pro_return_received_candidate_silver",
-        "status_label": "ChatGPT Pro 外部问诊回包已收件；候选银标；全文已上传 Notion；账序／队列已回传回读；待统一审收",
-        "authority_kind": "notion_queue_and_ledger_work_order",
-        "authority_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-        "authority_time": "2026-07-23T04:33:00+08:00",
-        "local_authorization_readback": "governance/CURRENT_STATE.json#current_step",
-        "local_stop_receipt": "reports/Z90_v4_flash_opt_consult_pack_20260723/第90道停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a55cadc4d0f8164b919cc3b195b1606",
-        "model_api_logical_samples": 0,
-        "model_api_network_attempts": 0,
-        "model_api_usage_tokens": 0,
-        "pack_dir": "reports/Z90_v4_flash_opt_consult_pack_20260723",
-        "pack_sha256": "25f98ebce11123904861dddbe9a1f9b12c19e98de25735b8886d29c67ca8c0e5",
-        "leakage_detect_count": 0,
-        "stop_rule": "0 API；不改现役件与封存目录；回包只进候选银标；发送须云端代审＋CZ 过目。",
-        "notion_ledger_readback": true,
-        "notion_queue_readback": true,
-        "next_action": "等待统一审收；审收前不得据此改现役件。",
-        "prior_step_note": "第89道对照阶段已叫停收口；样张仍为候选银标等待统一审收。",
-        "notion_return_receipt_url": "https://app.notion.com/p/3a55cadc4d0f8170a765e190ca359154",
-        "return_local_dir": "reports/Z90_pro_return_candidate_20260723",
-        "return_sha256": "b54d0ea55f532a8e06f83d4e8f45190d5d8836a8167e9b098f4bec40f9462174",
-        "accepted_note": "superseded_by_Z92_stop_mirror"
-      },
-      {
-        "task_id": "Z93-five-formal-gold-promotion",
-        "label": "第93道五本金标验闸至转正全链",
-        "status": "accepted_full_chain_closed",
-        "status_label": "2026-07-23 15:58 统一审收PASS；预筛、验闸、攻击、修订、转正五段全收口",
-        "authority_kind": "notion_ledger_and_queue_unified_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-23T15:58:00+08:00",
-        "local_receipt": "reports/Z93_五本结构层金标v1.3转正_20260723/unified_acceptance_readback.json",
-        "notion_receipt_url": "https://app.notion.com/p/3a65cadc4d0f8133ad5cd125456962a1",
-        "formal_gold_registry_sha256": "f1d5fced2a00e7284273e6a17d100beeabbd98ae491fde63c1945e0e5ca691ad",
-        "formal_gold_entry_total": 6,
-        "z93_formal_gold_book_total": 5,
-        "formal_gold_part_total": 105,
-        "formal_gold_denominator_total": 91,
-        "formal_gold_hindsight_total": 14,
-        "formal_gold_anchor_total": 184,
-        "evidence_boundary": "六本金标同级；provenance只记录审核来源。五本可作后续验闸与跨书对照真值参照；升默认或接现役链仍须另拍。"
-      },
-      {
-        "task_id": "Z94-flash-local-semantic-supply",
-        "label": "第94道 Flash 局部语义包供料实验",
-        "status": "accepted_engineering_pass_quality_fail_route_closed",
-        "status_label": "2026-07-23 21:05 CZ拍甲收官；工程PASS、质量正式FAIL、路线不再复跑",
-        "authority_kind": "cz_decision_and_notion_ledger_queue",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "authority_time": "2026-07-23T21:05:00+08:00",
-        "local_receipt": "reports/Z94_续令③迁移与正式收口_20260723/第94道续令③停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a65cadc4d0f81098312ced88101a9c7",
-        "formal_scorecard_sha256": "dbb7b7b0b95290590cf540824fa08d5efe5b67ea2865a0dbe62e6f78576e8335",
-        "allowed_conclusion": "局部语义包供料改法本轮未展现质量收益；通道第二变量随账，不作严格单变量归因。",
-        "closure_boundary": "不做SenseNova同通道复跑；retry14不发；被拒件与封存目录禁捞回。"
-      },
-      {
-        "task_id": "TEST-DEBT-CLEANUP-01",
-        "label": "九项落地第一道·旧测试挂账限期清账",
-        "status": "accepted_closed",
-        "status_label": "2026-07-23 22:15 统一审收 PASS；旧测试挂账第一道收口",
-        "authority_kind": "notion_ledger_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "local_receipt": "reports/九项第一道_旧测试挂账清账_20260723/旧测试挂账清账停点回包.md",
-        "notion_receipt_url": "https://app.notion.com/p/3a65cadc4d0f81339acafebc417850f8",
-        "evidence_boundary": "40项条件XFAIL仍按逐项负责人和2026-07-30到期日管理，不算通过；本道不改其合同。"
-      },
-      {
-        "task_id": "SLIM-OVERLAY-Z94-01",
-        "label": "overlay 6项外置重扫窗",
-        "status": "accepted_closed",
-        "status_label": "2026-07-23 22:35 统一审收 PASS；整理件收口",
-        "authority_kind": "notion_ledger_acceptance",
-        "authority_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-        "evidence_boundary": "6项只挪不删并留stub；CURRENT_STATE主身份留给九项第二道处理。"
-      }
-    ],
-    "legacy_mainline": {
-      "task_id": "Z83-program-side-repair",
-      "label": "第83道抽取线程序侧治法",
-      "authority_status": "retry13_executed_hard_stop_candidate_failed",
-      "authority_status_label": "CZ 17:20 亲拍乙的续令⑪已执行：13个源事件按不增删事实口径形成32个单对象修复请求，运输与机械合同通过；最终四闸仅机械闸通过，候选质量失败并硬停",
-      "authority_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "original_run_status_label": "原运行首个主采样请求 401，已按 main/hard_stop.json 硬停",
-      "retry01_status_label": "retry01 第3章 HTTP 200 后在第13章请求阶段中断并硬停；本地缺对应外部授权回执",
-      "retry02_status_label": "retry02 只完成零调用准备，未进入 main",
-      "local_observed_status": "retry13_completed_then_hard_stop_candidate_failed",
-      "local_observed_status_label": "retry13 复用 retry03 三章唯一样张，完成32次修复与3次检查员调用；本轮新增35次网络尝试、0次429、301277 token，最终175条事件已完成语义复核并硬停",
-      "original_hard_stop_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722/main/hard_stop.json",
-      "latest_local_run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13",
-      "quality_status": "candidate_fail_retry13_four_gates_and_risk_hard_stop",
-      "quality_status_label": "retry13 候选质量 FAIL：机械三闸 PASS；旧25零退化 FAIL（2条退化）；第3章金标门槛 FAIL（严格6/23、有效20/23）；语义锚无效0 FAIL（1条）；另有1条程序风险须重写",
-      "formal_stop_receipt_url": "https://app.notion.com/p/3a55cadc4d0f81c6a4eef4b2c05ff6d2",
-      "formal_stop_receipt_pending_callback": false,
-      "local_stop_receipt": "reports/Z83_retry13双合同原子化硬停_20260722/第83道续令⑪retry13停点回包.md",
-      "latest_authorization": {
-        "step": "Z83-retry13-dual-contract-atomic-repair",
-        "status": "executed_hard_stop",
-        "authority_time": "2026-07-22T17:24:00+08:00",
-        "authority_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-        "local_readback_at": "2026-07-22T19:13:37+08:00",
-        "local_authorization_readback": "reports/Z83_retry13发网授权_20260722/Notion续令⑪回读票.json",
-        "local_run_directory": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13",
-        "local_process_observed": true,
-        "evidence_boundary": "Notion 队列续令⑪与04批账序17:24条授权已回读；retry13 依冻结计划完成32个单对象修复请求与3章检查员复核。权威结果为 final/scorecard.json 的 hard_stop_candidate_failed；原运行目录不回写，正文回包、账序和队列已在21:27回传并回读。"
-      },
-      "z85_gate": {
-        "status": "completed_before_retry06",
-        "status_label": "第85道已先行完成并回传；retry06 开工时未与第85道混跑",
-        "authority_time": "2026-07-22T08:12:00+08:00",
-        "authority_url": "https://app.notion.com/p/3a55cadc4d0f81f58eecd4b0bde90f85"
-      },
-      "governance_boundary": "retry03～12旧运行目录全部封存不回写、不捞回旧响应；retry13 已完成正式采样并按四闸失败硬停封存，不二次重写、不发 retry14。金标、现役122条、默认链、分类规则与outbox均未改；路线仍记在试，是否重开只等 CZ 新拍。第85道已在此前独立收口。"
-    },
-    "archived_run_states": [
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722",
-        "effective_status": "hard_stop_401",
-        "status_label": "首个主采样请求 401，原运行硬停",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722/main/hard_stop.json",
-        "ticket_level": "main_hard_stop",
-        "legacy_manifest_status": "prepared",
-        "network_attempts": 1,
-        "successful_model_responses": 0,
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry01",
-        "effective_status": "hard_stop_interrupted",
-        "status_label": "第3章 HTTP 200 后、发出第13章请求时 KeyboardInterrupt 硬停",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry01/main/hard_stop.json",
-        "ticket_level": "main_hard_stop",
-        "legacy_manifest_status": "prepared",
-        "network_attempts": 2,
-        "successful_model_responses": 1,
-        "external_authorization_receipt": null,
-        "evidence_gap": "本地未找到与该新目录对应的 Notion 续令票或停点回包；这里只登记现场事实，不补授权结论。",
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry02",
-        "effective_status": "prepared_zero_call",
-        "status_label": "冻结请求复验通过，尚无 main 运行票据",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry02/prepared_verification.json",
-        "ticket_level": "prepared_verification",
-        "legacy_manifest_status": "prepared",
-        "network_attempts": 0,
-        "successful_model_responses": 0,
-        "provider_credential_accepted": "not_tested",
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03",
-        "effective_status": "inspector_hard_stop_length",
-        "status_label": "三章主采样完成；检查员首批响应截断，未产生可选结果，硬停",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/review/inspector/hard_stop.json",
-        "ticket_level": "subrun_hard_stop",
-        "legacy_manifest_status": "main_completed",
-        "network_attempts": 3,
-        "network_attempts_imported": 1,
-        "successful_model_responses": 3,
-        "successful_model_response_lineage": "retry01 复用第3章1份＋retry03新采第13／19章2份",
-        "retry03_new_main_sample_network_attempts": 2,
-        "retry03_new_inspector_network_attempts": 1,
-        "provider_credential_accepted": true,
-        "inspector_network_attempts": 1,
-        "inspector_logical_model_calls_completed": 0,
-        "top_manifest_sync_status": "acknowledged_projection_conflict",
-        "top_manifest_sync_note": "顶层仍是 main_completed；Notion 05:47 已确认不回写该封存运行，由 CURRENT_STATE 与 INDEX 对外裁定并保留兼容挂账。",
-        "external_authorization_receipt": "https://app.notion.com/p/3a45cadc4d0f817699d6d9b8d29ee8e0",
-        "evidence_gap": "正式硬停页已经覆盖 retry03 运行谱系；本文件不再把 retry03 记作缺停点回执。",
-        "owned_by_governance_window": false,
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry04",
-        "effective_status": "inspector_hard_stop_quote_drift",
-        "status_label": "复用三章主样张；第3章检查员32k完整返回但改写输入短引，结果拒收并硬停",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry04/review/inspector/hard_stop.json",
-        "ticket_level": "subrun_hard_stop_with_top_sync",
-        "legacy_manifest_status": "main_inspector_hard_stop",
-        "historical_main_network_attempts_imported": 3,
-        "retry04_new_main_network_attempts": 0,
-        "retry04_new_inspector_network_attempts": 1,
-        "retry04_new_usage_tokens": 24630,
-        "successful_transport_responses": 1,
-        "accepted_inspector_logical_results": 0,
-        "provider_credential_accepted": true,
-        "inspector_finish_reason": "stop",
-        "result_rejection_reason": "EV-C0003-01 改写 E0002 的输入短引",
-        "chapter_13_19_inspector_calls": 0,
-        "top_manifest_sync_status": "synced_to_main_inspector_hard_stop",
-        "external_authorization_receipt": "https://app.notion.com/p/3a45cadc4d0f81f38569e57520175532",
-        "owned_by_governance_window": false,
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry05",
-        "effective_status": "inspector_hard_stop_quote_truncation",
-        "status_label": "复用retry03三章主样张；第3章逐字闸通过，第13章25条中8条截短输入锚尾部，程序拒收并硬停",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry05/review/inspector/hard_stop.json",
-        "ticket_level": "subrun_hard_stop_with_top_sync",
-        "legacy_manifest_status": "main_inspector_hard_stop",
-        "historical_main_network_attempts_imported": 3,
-        "retry05_new_main_network_attempts": 0,
-        "retry05_new_inspector_network_attempts": 2,
-        "retry05_new_usage_tokens": 43421,
-        "successful_transport_responses": 2,
-        "accepted_inspector_logical_results": 1,
-        "provider_credential_accepted": true,
-        "inspector_finish_reason": "stop",
-        "result_rejection_reason": "第13章8条合法锚短引被截短；首个失败为EV-C0013-19／E0058",
-        "chapter_19_inspector_calls": 0,
-        "top_manifest_sync_status": "synced_to_main_inspector_hard_stop",
-        "external_authorization_receipt": "https://app.notion.com/p/3a45cadc4d0f8135bf6ee000547f2bb6",
-        "owned_by_governance_window": false,
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry06",
-        "effective_status": "inspector_hard_stop_true_non_substring",
-        "status_label": "复用retry03三章主样张和retry05第3章检查员响应；第13章出现1条真改字，程序拒收并硬停",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry06/review/inspector/hard_stop.json",
-        "ticket_level": "subrun_hard_stop_with_top_sync",
-        "legacy_manifest_status": "main_inspector_hard_stop",
-        "historical_main_network_attempts_imported": 3,
-        "retry06_new_main_network_attempts": 0,
-        "retry06_reused_inspector_chapters": [
-          3
-        ],
-        "retry06_new_inspector_network_attempts": 1,
-        "retry06_new_usage_tokens": 15667,
-        "successful_transport_responses": 1,
-        "accepted_inspector_logical_results": 0,
-        "provider_credential_accepted": true,
-        "inspector_finish_reason": "stop",
-        "result_rejection_reason": "EV-C0013-03／E0006把中文右引号替换为英文引号，不是冻结短引的逐字连续子串",
-        "chapter_19_inspector_calls": 0,
-        "top_manifest_sync_status": "synced_to_main_inspector_hard_stop",
-        "external_authorization_receipt": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-42",
-        "external_stop_receipt": "https://app.notion.com/p/3a55cadc4d0f811d89b2f8658d6481ff",
-        "owned_by_governance_window": false,
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry07",
-        "effective_status": "hard_stop_engineering_preflight_zero_call",
-        "status_label": "零调用准备通过；发网前独立终审发现标点归一化碰撞与收口重建验收缺口，三章未发并硬停",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry07/main/hard_stop.json",
-        "ticket_level": "main_hard_stop",
-        "legacy_manifest_status": "preflight_hard_stop",
-        "network_attempts": 0,
-        "successful_model_responses": 0,
-        "model_api_calls": 0,
-        "usage_tokens": 0,
-        "provider_credential_accepted": "not_tested",
-        "chapter_3_13_19_inspector_calls": 0,
-        "external_authorization_receipt": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-09-16",
-        "external_stop_receipt": "https://app.notion.com/p/3a55cadc4d0f819e829ce7c23019b661",
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry08",
-        "effective_status": "hard_stop_semantic_pre_retry_capacity_exceeded",
-        "status_label": "程序与运输通过；第3章4个不同源事件须定点重写，超过每章3条上限，在重试计划前硬停；候选质量未收口",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry08/review/semantic_pre_retry_hard_stop.json",
-        "ticket_level": "semantic_review_hard_stop",
-        "legacy_manifest_status": "semantic_pre_retry_hard_stop_capacity_exceeded",
-        "historical_main_network_attempts_imported": 3,
-        "retry08_new_main_network_attempts": 0,
-        "retry08_reused_inspector_chapters": [
-          3
-        ],
-        "retry08_new_inspector_network_attempts": 2,
-        "retry08_new_usage_tokens": 37024,
-        "successful_transport_responses": 2,
-        "raw_response_usage_rebuild_passed_chapters": [
-          13,
-          19
-        ],
-        "retry_plan_created": false,
-        "targeted_rewrite_calls": 0,
-        "four_gate_scorecard_created": false,
-        "external_authorization_receipt": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-10-29",
-        "external_stop_receipt": "https://app.notion.com/p/3a55cadc4d0f814cb16be5e29e9aaf8c",
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry09",
-        "effective_status": "hard_stop_total_retry_capacity_exceeded",
-        "status_label": "246行判词完成；第3／13／19章分别需4／3／6条重写，共13条超过整轮6条上限，在重试计划前硬停；候选质量未收口",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry09/review/semantic_pre_retry_hard_stop.json",
-        "ticket_level": "semantic_review_hard_stop",
-        "legacy_manifest_status": "hard_stop_before_retry_plan_total_capacity_exceeded",
-        "historical_main_network_attempts_imported": 3,
-        "retry09_new_main_network_attempts": 0,
-        "retry09_reused_inspector_evidence_chapters": [
-          3,
-          13,
-          19
-        ],
-        "retry09_new_inspector_network_attempts": 0,
-        "retry09_new_usage_tokens": 0,
-        "full_semantic_adjudication_rows": 246,
-        "confirmed_retry_source_events": 13,
-        "confirmed_retry_source_events_by_chapter": {
-          "3": 4,
-          "13": 3,
-          "19": 6
-        },
-        "retry_plan_created": false,
-        "targeted_rewrite_calls": 0,
-        "four_gate_scorecard_created": false,
-        "external_authorization_receipt": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-12-36",
-        "external_stop_receipt": "https://app.notion.com/p/3a55cadc4d0f81a0b49dcfee3de681fe",
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry10",
-        "effective_status": "hard_stop_fifth_targeted_rewrite_contract_violation",
-        "status_label": "13条一次性特批计划已生成；第5条EV-C0013-06在不允许拆分时返回2条替换事件，程序拒收硬停；剩余8条未发，候选质量未判",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry10/repair/hard_stop.json",
-        "ticket_level": "repair_hard_stop",
-        "legacy_manifest_status": "repair_hard_stop_no_unapproved_repair",
-        "historical_main_network_attempts_imported": 3,
-        "retry10_new_main_network_attempts": 0,
-        "retry10_targeted_rewrite_network_attempts": 5,
-        "retry10_targeted_rewrite_usage_tokens": 46482,
-        "successful_transport_responses": 5,
-        "planned_targeted_rewrites": 13,
-        "called_targeted_rewrites": 5,
-        "accepted_targeted_rewrite_results": 0,
-        "failed_event_id": "EV-C0013-06",
-        "failed_event_allow_split": false,
-        "failed_event_returned_replacements": 2,
-        "remaining_events_not_called": 8,
-        "second_rewrite_calls": 0,
-        "final_review_created": false,
-        "four_gate_scorecard_created": false,
-        "external_authorization_receipt": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-14-21",
-        "external_stop_receipt": "https://app.notion.com/p/3a55cadc4d0f81fe8bf3e03e1aafa881",
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry11",
-        "effective_status": "hard_stop_second_targeted_rewrite_anchor_field_violation",
-        "status_label": "13条显式份数合同计划已生成；探路EV-C0013-06通过，第2条EV-C0003-05虽只返1条且锚ID合法，但锚对象夹带quote字段，程序拒收硬停；剩余11条未发，候选质量未判",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry11/repair/hard_stop.json",
-        "ticket_level": "repair_hard_stop",
-        "legacy_manifest_status": "main_completed",
-        "top_manifest_projection_status": "stale_repair_not_started_overridden_by_child_hard_stop_and_current_state",
-        "historical_main_network_attempts_imported": 3,
-        "retry11_new_main_network_attempts": 0,
-        "retry11_targeted_rewrite_logical_requests": 2,
-        "retry11_targeted_rewrite_network_attempts": 3,
-        "retry11_targeted_rewrite_429_attempts": 1,
-        "retry11_targeted_rewrite_usage_tokens": 22792,
-        "successful_transport_responses": 2,
-        "planned_targeted_rewrites": 13,
-        "called_targeted_rewrites": 2,
-        "accepted_targeted_rewrite_results": 0,
-        "probe_event_id": "EV-C0013-06",
-        "probe_replacement_count": 1,
-        "failed_event_id": "EV-C0003-05",
-        "failed_event_returned_replacements": 1,
-        "failed_event_anchor_ids_in_catalog": true,
-        "failed_event_unexpected_anchor_field": "quote",
-        "remaining_events_not_called": 11,
-        "second_rewrite_calls": 0,
-        "final_review_created": false,
-        "four_gate_scorecard_created": false,
-        "external_authorization_receipt": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-14-57",
-        "external_stop_receipt": "https://app.notion.com/p/3a55cadc4d0f8106ad44d161b7b002ef",
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry12",
-        "effective_status": "hard_stop_ninth_targeted_rewrite_exact_count_violation",
-        "status_label": "13条请求与retry11逐字相同，程序侧锚叶剥离闸已就位；第9条EV-C0019-25返回2条replacement_events，常设份数闸拒收硬停；前8条未捞回、后4条未发，候选质量未判",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry12/repair/hard_stop.json",
-        "ticket_level": "repair_hard_stop",
-        "legacy_manifest_status": "main_completed",
-        "top_manifest_projection_status": "stale_repair_not_started_overridden_by_child_hard_stop_and_current_state",
-        "historical_main_network_attempts_imported": 3,
-        "retry12_new_main_network_attempts": 0,
-        "retry12_targeted_rewrite_logical_requests": 9,
-        "retry12_targeted_rewrite_network_attempts": 13,
-        "retry12_targeted_rewrite_429_attempts": 4,
-        "retry12_targeted_rewrite_usage_tokens": 88311,
-        "successful_transport_responses": 9,
-        "planned_targeted_rewrites": 13,
-        "called_targeted_rewrites": 9,
-        "accepted_targeted_rewrite_results": 0,
-        "anchor_extra_field_strip_rows": 0,
-        "failed_plan_ordinal": 9,
-        "failed_event_id": "EV-C0019-25",
-        "failed_event_returned_replacements": 2,
-        "remaining_events_not_called": 4,
-        "second_rewrite_calls": 0,
-        "final_review_created": false,
-        "four_gate_scorecard_created": false,
-        "external_authorization_receipt": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-15-45",
-        "external_stop_receipt": "https://app.notion.com/p/3a55cadc4d0f814da99cf953c5837bc4",
-        "frozen": true
-      },
-      {
-        "run_id": "Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13",
-        "effective_status": "hard_stop_candidate_failed_four_gates_and_risk",
-        "status_label": "32个单对象修复请求与3章检查员复核完成；机械闸通过，但其余三闸失败且有1条程序风险阻断，候选按令硬停留档",
-        "authoritative_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final/scorecard.json",
-        "ticket_level": "final_scorecard",
-        "legacy_manifest_status": "hard_stop_candidate_failed",
-        "historical_main_network_attempts_imported": 3,
-        "retry13_new_main_network_attempts": 0,
-        "retry13_parent_source_events": 13,
-        "retry13_frozen_single_object_requests": 32,
-        "retry13_atomic_split_children": 25,
-        "retry13_repair_network_attempts": 32,
-        "retry13_inspector_network_attempts": 3,
-        "retry13_new_network_attempts": 35,
-        "retry13_new_429_attempts": 0,
-        "retry13_new_prompt_tokens": 275588,
-        "retry13_new_completion_tokens": 25689,
-        "retry13_new_usage_tokens": 301277,
-        "historical_main_usage_tokens_imported": 83297,
-        "lineage_usage_tokens": 384574,
-        "stable_source_event_count": 156,
-        "final_event_count": 175,
-        "plan_sha256": "8ad6bd77c7590c0c2493305b91c84fbad573565ba7f1671eeb6d7d1e10c843e4",
-        "preflight_sha256": "069c39fe38cd74f42974e554271fe98c93a9ca7642c33251ea31a54aa3369524",
-        "preflight_checks_sha256": "875544df936b4a8a0cfb43b998c3c771a40638d52d779f635474a00e8a05452a",
-        "double_verification_consistent": true,
-        "final_review_created": true,
-        "final_adjudication_sha256": "6b2c5fb6259f3821e8d5d0a31649365b90fb831ec047a714095e91f9139e5539",
-        "four_gate_scorecard_created": true,
-        "scorecard_sha256": "3f702e7641765eac5a8e3b643cc332dc995c43a99dfcfd64ae324ed6188c0dcf",
-        "four_gates": {
-          "mechanical_three_gates": true,
-          "old25_zero_regression": false,
-          "chapter3_gold_floor": false,
-          "semantic_anchor_invalid_zero": false
-        },
-        "gold_chapter_3": {
-          "strict_hit": 6,
-          "effective_recall": 20,
-          "surface_coverage": 21,
-          "formal_denominator": 23
-        },
-        "old25_degraded_record_ids": [
-          "B-C0019-04",
-          "D-C0019-02"
-        ],
-        "invalid_anchor_event_ids": [
-          "EV-C0003-04"
-        ],
-        "blocking_risk_ids": [
-          "RISK-EV-C0019-59"
-        ],
-        "external_authorization_receipt": "reports/Z83_retry13发网授权_20260722/Notion续令⑪回读票.json",
-        "local_stop_receipt": "reports/Z83_retry13双合同原子化硬停_20260722/硬停回执.json",
-        "external_stop_receipt": "https://app.notion.com/p/3a55cadc4d0f81c6a4eef4b2c05ff6d2",
-        "external_stop_receipt_pending_callback": false,
-        "frozen": true
-      },
-      {
-        "run_id": "Z80_事实说明书注入包v4_三组复验_v1.0_20260721",
-        "effective_status": "prepared_zero_call_archived",
-        "status_label": "零调用准备目录，路线已退役",
-        "authoritative_ticket": "runs/Z80_事实说明书注入包v4_三组复验_v1.0_20260721/prepared_request_verification.json",
-        "ticket_level": "prepared_verification",
-        "legacy_manifest_status": "prepared",
-        "frozen": true
-      },
-      {
-        "run_id": "Z80_事实说明书注入包v4_三组复验_v1.1_20260721",
-        "effective_status": "prepared_zero_call_archived",
-        "status_label": "零调用准备目录，路线已退役",
-        "authoritative_ticket": "runs/Z80_事实说明书注入包v4_三组复验_v1.1_20260721/prepared_request_verification.json",
-        "ticket_level": "prepared_verification",
-        "legacy_manifest_status": "prepared",
-        "frozen": true
-      },
-      {
-        "run_id": "Z80_事实说明书注入包v4_三组复验_v1.2_20260721",
-        "effective_status": "prepared_zero_call_archived",
-        "status_label": "零调用准备目录，路线已退役",
-        "authoritative_ticket": "runs/Z80_事实说明书注入包v4_三组复验_v1.2_20260721/prepared_request_verification.json",
-        "ticket_level": "prepared_verification",
-        "legacy_manifest_status": "prepared",
-        "frozen": true
-      },
-      {
-        "run_id": "Z80_事实说明书注入包v4_三组复验_v1.3_20260721",
-        "effective_status": "retired_after_group_1_failure",
-        "status_label": "组1质量闸失败后止损，Prompt 定点修复路线退役",
-        "authoritative_ticket": "reports/Z80_事实说明书注入包v4三组复验_20260721/G1_X01_成绩与硬停总表.json",
-        "ticket_level": "legacy_adjudication_receipt",
-        "legacy_manifest_status": "prepared",
-        "legacy_exception": "旧运行没有 main/hard_stop.json，且按令不得回写；用目录外成绩裁定票覆盖顶层 prepared 对外状态。",
-        "network_attempts": 3,
-        "successful_model_responses": 3,
-        "frozen": true
-      },
-      {
-        "run_id": "Z89_X01_DeepSeekV4Pro强模型对照_第3章_v1.0_20260723",
-        "effective_status": "candidate_silver_scored_callback_returned",
-        "status_label": "DeepSeek V4 Pro 第3章单次裸考完成；机械三闸PASS，严格10/23、有效20/23、表面23/23；达到模型能力归因门槛，等待CZ审收与另拍",
-        "authoritative_ticket": "runs/Z89_X01_DeepSeekV4Pro强模型对照_第3章_v1.0_20260723/final/scorecard.json",
-        "ticket_level": "formal_candidate_scorecard",
-        "network_attempts": 1,
-        "successful_model_responses": 1,
-        "usage_tokens": 37226,
-        "strict_hit": 10,
-        "effective_recall": 20,
-        "surface_coverage": 23,
-        "invalid_anchor_observation": 3,
-        "local_stop_receipt": "reports/Z89_DeepSeekV4Pro强模型对照_20260723/第89道停点回包｜DeepSeekV4Pro第3章强模型对照裸考_20260723.md",
-        "external_stop_receipt": "https://app.notion.com/p/3a55cadc4d0f8184be6df75615aca197",
-        "frozen": true
-      }
-    ],
-    "issue_ledger": [
-      {
-        "issue_id": "Z83-RETRY13-ANCHOR-GOLD-ISSUE-001",
-        "priority": "P0",
-        "status": "pending_cz_decision_after_hard_stop",
-        "summary": "EV-C0003-04 把原文的可能因果写成确定因果，造成1条语义锚无效；第3章严格6/23低于门槛10/23",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final/scorecard.json",
-        "adjudication": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final_review/adjudication_final.json",
-        "no_action_reason": "续令⑪写死任一闸失败即硬停、重写条目不二次重写；本轮不得现场修句、补锚或再发请求。"
-      },
-      {
-        "issue_id": "Z83-RETRY13-OLD25-REGRESSION-ISSUE-001",
-        "priority": "P0",
-        "status": "pending_cz_decision_after_hard_stop",
-        "summary": "现役五靶章旧25条中 B-C0019-04 与 D-C0019-02 相对要求线退化，旧事件零退化闸失败",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final/scorecard.json",
-        "adjudication": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final_review/adjudication_final.json",
-        "no_action_reason": "retry13 候选已封存；是否调整程序侧拆分、判词或另开路线，须 CZ 审收后新拍。"
-      },
-      {
-        "issue_id": "Z83-RETRY13-INSTRUCTION-SCOPE-ISSUE-001",
-        "priority": "P0",
-        "status": "pending_cz_decision_after_hard_stop",
-        "summary": "EV-C0019-59 把原文中由三项指令共同触发的后果缩窄成只由“不回来禀报”触发，程序风险前置条件阻断",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final/scorecard.json",
-        "adjudication": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final_review/adjudication_final.json",
-        "no_action_reason": "该条已用本轮唯一重写额度；续令⑪禁止二次重写，当前只登记风险并等待 CZ。"
-      },
-      {
-        "issue_id": "Z83-RETRY13-MANIFEST-PROJECTION-ISSUE-001",
-        "priority": "P1",
-        "status": "pending_engineering_correction",
-        "summary": "retry13 顶层 manifest 的总状态已是候选失败硬停，但 review／repair 子状态和 final/run_manifest 仍是语义终审前旧投影",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/run_manifest.json",
-        "authoritative_override": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry13/final/scorecard.json",
-        "no_action_reason": "硬停后不回写封存运行目录；由 CURRENT_STATE 和治理索引明确最终裁定，投影同步缺口另拍。"
-      },
-      {
-        "issue_id": "Z83-RETRY11-ANCHOR-OBJECT-SCHEMA-ISSUE-001",
-        "priority": "P0",
-        "status": "resolved_by_retry12_program_anchor_leaf_strip",
-        "summary": "EV-C0003-05 返回恰好1条且锚ID全部合法，但每个锚对象夹带固定JSON合同未允许的quote字段，触发第2条硬停",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry11/repair/responses/targeted_retry/z83_repair_ch0003_ev-c0003-05_raw.json",
-        "hard_stop_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry11/repair/hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a55cadc4d0f8106ad44d161b7b002ef",
-        "resolution": "续令⑩在retry12把锚叶多余字段改为程序剥离旁账，正式锚只认合法anchor_id、正式短引由冻结目录回填；13份模型请求相对retry11零改动。实际前8条锚对象均无多余字段，未再触发本问题；当前新失败面见Z83-RETRY12-EXACT-COUNT-REGRESSION-ISSUE-001。",
-        "no_action_reason": "retry11原目录继续封存，不捞回其中间响应；锚对象多余字段处置已经在retry12隔离程序中实现，现役默认链未改。"
-      },
-      {
-        "issue_id": "Z83-RETRY12-EXACT-COUNT-REGRESSION-ISSUE-001",
-        "priority": "P0",
-        "status": "resolved_by_retry13_single_object_contract",
-        "summary": "模型可见请求与retry11逐字相同且恰好1条合同常设，但EV-C0019-25仍返回2个replacement_events，触发第9条硬停",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry12/repair/responses/targeted_retry/z83_repair_ch0019_ev-c0019-25_raw.json",
-        "hard_stop_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry12/repair/hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a55cadc4d0f814da99cf953c5837bc4",
-        "resolution": "CZ 亲拍续令⑪采用单对象输出合同与程序侧预拆；retry13 的32个逻辑请求均按单对象合同完成，没有再出现数组容器份数越权。",
-        "no_action_reason": "retry12原目录继续封存不捞回；retry13 的新质量失败面分别登记在三项 P0 挂账中。"
-      },
-      {
-        "issue_id": "Z83-RETRY11-TOP-MANIFEST-PROJECTION-ISSUE-001",
-        "priority": "P1",
-        "status": "pending_engineering_correction",
-        "summary": "repair子运行已硬停，但顶层run_manifest仍写repair未开始，可能误导只读顶层清单的新窗口",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry11/run_manifest.json",
-        "authoritative_override": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry11/repair/hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a55cadc4d0f8106ad44d161b7b002ef",
-        "no_action_reason": "硬停后不回写封存运行目录；当前由CURRENT_STATE和治理索引覆盖旧投影，工程同步缺口等另拍修复。"
-      },
-      {
-        "issue_id": "Z83-RETRY12-TOP-MANIFEST-PROJECTION-ISSUE-001",
-        "priority": "P1",
-        "status": "pending_engineering_correction",
-        "summary": "retry12 repair子运行已硬停，但顶层run_manifest仍写repair未开始，可能误导只读顶层清单的新窗口",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry12/run_manifest.json",
-        "authoritative_override": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry12/repair/hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a55cadc4d0f814da99cf953c5837bc4",
-        "no_action_reason": "硬停后不回写封存运行目录；当前由CURRENT_STATE和治理索引覆盖旧投影，工程同步缺口等另拍修复。"
-      },
-      {
-        "issue_id": "Z83-RETRY10-SPLIT-CONTRACT-ISSUE-001",
-        "priority": "P0",
-        "status": "resolved_by_retry11_visible_exact_count_contract",
-        "summary": "只获准修锚支撑且禁止拆分的 EV-C0013-06 返回了2条替换事件，触发第5条硬停",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry10/repair/responses/targeted_retry/z83_repair_ch0013_ev-c0013-06_raw.json",
-        "hard_stop_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry10/repair/hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a55cadc4d0f81fe8bf3e03e1aafa881",
-        "resolution": "续令⑨在retry11把恰好1条与禁拆／并／增／删写进模型可见合同；前置探路EV-C0013-06只返回1条并通过份数与结构闸，原拆分越权问题解除。当前新失败面见Z83-RETRY11-ANCHOR-OBJECT-SCHEMA-ISSUE-001。",
-        "no_action_reason": "retry10原目录继续封存，不捞回其中间响应；当前待处置问题已转到retry11锚对象格式越权。"
-      },
-      {
-        "issue_id": "Z83-RETRY09-TOTAL-CAPACITY-ISSUE-001",
-        "priority": "P0",
-        "status": "resolved_by_retry10_thirteen_item_one_time_override",
-        "summary": "完整246行判词确认13个不同源事件须重写，超过整轮最多6条的止损线",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry09/review/adjudication_completed.json",
-        "hard_stop_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry09/review/semantic_pre_retry_hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a55cadc4d0f81a0b49dcfee3de681fe",
-        "resolution": "续令⑧一次性批准点名13条并在retry10生成封闭计划；容量问题已解除，当前停点转为第5条不拆分合同失败面。",
-        "no_action_reason": "retry09原目录继续封存；当前待处置问题见Z83-RETRY10-SPLIT-CONTRACT-ISSUE-001。"
-      },
-      {
-        "issue_id": "Z83-RETRY08-CAPACITY-ISSUE-001",
-        "priority": "P0",
-        "status": "resolved_by_retry09_one_time_override_and_full_adjudication",
-        "summary": "第3章已确认4个不同源事件须定点重写，超过每章最多3个源事件的止损线",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry08/review/semantic_pre_retry_hard_stop.json",
-        "hard_stop_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry08/review/semantic_pre_retry_hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a55cadc4d0f814cb16be5e29e9aaf8c",
-        "resolution": "续令⑦一次性批准第3章4条并要求完成三章全量判词；retry09 已完成246行判词，当前问题已升级为整轮13条大于总上限6。",
-        "no_action_reason": "retry08原目录继续封存；当前待拍问题见Z83-RETRY09-TOTAL-CAPACITY-ISSUE-001。"
-      },
-      {
-        "issue_id": "Z83-RETRY07-PREFLIGHT-ISSUE-001",
-        "priority": "P0",
-        "status": "resolved_by_retry08_engineering_fix",
-        "summary": "标点归一化把整对省略号、三个普通句号与全半角混拼压成同一字符串；最终验收又未从原始响应和usage逐章重建核死",
-        "evidence": "reports/Z83_程序侧治法_retry07发网前终审硬停_20260722/发网前独立终审票.json",
-        "hard_stop_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry07/main/hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a55cadc4d0f819e829ce7c23019b661",
-        "resolution": "续令⑥在新运行编号retry08完成无碰撞标点单元比较和原始响应/usage逐章重建，两项工程闸均通过。",
-        "no_action_reason": "retry07原目录继续封存；当前停点已转为retry08语义重写容量超限。"
-      },
-      {
-        "issue_id": "Z83-RETRY06-ISSUE-001",
-        "priority": "P0",
-        "status": "resolved_by_retry07_punctuation_adjudication_then_superseded",
-        "summary": "续令⑤已把 retry06 病例裁为等价标点；本地字节复核实际是中文句号换英文句点，非右引号变化",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry06/review/inspector/ch0013/run/responses/semantic_route/Z83-MAIN-CH0013-API_raw.json",
-        "hard_stop_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry06/review/inspector/hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a55cadc4d0f811d89b2f8658d6481ff",
-        "resolution": "产品裁定已入锚；retry07 未捞回 retry06 第13章结果，改为新章重发方案，但在发网前工程终审被新失败面拦住。",
-        "no_action_reason": "retry06 继续封存；当前待处置的是 retry07 的无碰撞比较与收口自证缺口。"
-      },
-      {
-        "issue_id": "Z83-RETRY05-ISSUE-001",
-        "priority": "P0",
-        "status": "resolved_by_retry06_program_contract_then_superseded",
-        "summary": "检查员收到逐字硬约束后仍在第13章截短8条输入锚尾部，提示约束路线已到预写止损点",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry05/review/inspector/ch0013/run/responses/semantic_route/Z83-MAIN-CH0013-API_raw.json",
-        "hard_stop_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry05/review/inspector/hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a45cadc4d0f8135bf6ee000547f2bb6",
-        "resolution": "续令④已改为anchor_id权威、程序回填、模型短引子串校验；retry05的8条截短在新闸下均可通过。",
-        "no_action_reason": "retry05原目录继续封存；retry06的新真改字失败面另列Z83-RETRY06-ISSUE-001。"
-      },
-      {
-        "issue_id": "Z83-RETRY04-ISSUE-001",
-        "priority": "P0",
-        "status": "pending_new_decision",
-        "summary": "检查员在合法锚 ID 下缩写了输入短引，违反逐字引用合同",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry04/review/inspector/ch0003/run/responses/semantic_route/Z83-MAIN-CH0003-API_raw.json",
-        "hard_stop_ticket": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry04/review/inspector/hard_stop.json",
-        "external_receipt": "https://app.notion.com/p/3a45cadc4d0f81f38569e57520175532",
-        "no_action_reason": "第83道要求新失败面硬停不缝补；是否加强教学、接受可验证子串或由程序按 anchor_id 回填短引，须另拍。"
-      },
-      {
-        "issue_id": "Z86-ISSUE-001",
-        "priority": "P0",
-        "status": "acknowledged_in_notion",
-        "summary": "retry03 检查员已硬停，但顶层 run_manifest 仍是 main_completed",
-        "evidence": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/review/inspector/hard_stop.json",
-        "conflicting_projection": "runs/Z83_X01_v3程序侧治法_三章复验_v1.0_20260722_transport_retry03/run_manifest.json",
-        "external_acknowledgement": "Notion 2026-07-22 05:47 独立审查补记确认不回写原始运行件，由治理镜像裁定。",
-        "no_action_reason": "第86道禁止改写 runs；第83道正式回包已把投影冲突列为已知挂账，本道只在 CURRENT_STATE 与 INDEX 裁定。"
-      },
-      {
-        "issue_id": "Z86-ISSUE-002",
-        "priority": "P1",
-        "status": "partially_resolved",
-        "summary": "retry03 已有正式硬停回执；retry01、retry02 仍无逐目录独立授权／停点回执",
-        "evidence": "governance/CURRENT_STATE.json#run_states",
-        "resolution": "retry03 正式页说明了 retry01 复用、retry02 作废和 retry03 谱系；不再把 retry03 记为缺票。",
-        "no_action_reason": "不从目录名或运行结果反推 retry01／retry02 的独立授权；保留证据边界即可。"
-      },
-      {
-        "issue_id": "Z93-X01-GOLD-C0003-07-N01-ANCHOR-ISSUE-001",
-        "priority": "P1",
-        "status": "deferred_by_cz_choice_a_to_z92_anchor_gate",
-        "summary": "现役金标 X01-07-N01 的“廷根技术学校”完整校名没有被当前所挂锚托住",
-        "evidence": "reports/Z93_五本金标候选逐条验闸_20260723/cursor_red_team_attack_receipt.json",
-        "available_anchor": "冻结证据目录 E0156 可托住完整校名",
-        "external_decision": "Notion 2026-07-23 13:28，CZ选甲＝只挂账不改",
-        "current_design_proposal": "reports/九项第三道_主张级核锚并单设计_20260723/04_X01-07-N01挂账处置提案.md",
-        "proposed_gate_result_for_new_candidate": "REJECT；完整专名主张为HALF_SUPPORT",
-        "resolution_requires": "另拍金标证据修复候选版、受影响判分与消费者检查，并由CZ另拍切换current指针",
-        "no_action_reason": "现役金标v1.2、指针和历史成绩均不动；本道只把缺口纳入主张级闸设计与独立问题提案，不用运行时overlay偷补。"
-      }
-    ],
-    "closure_policy": {
-      "applies_to": "第86道后新建运行",
-      "hard_stop_ticket": "主运行硬停落 main/hard_stop.json；检查员等子运行须在本层落 hard_stop.json，并由顶层同步引用。",
-      "required_sync": [
-        "子运行落硬停票或收口票",
-        "同步顶层 run_manifest",
-        "更新 governance/CURRENT_STATE.json",
-        "运行治理索引 refresh 与 check"
-      ],
-      "legacy_exception": "Z80、Z83 既有目录不回写，只由本文件解释冲突。"
-    }
+    "moved_to": "governance/CURRENT_STATE_HISTORY.json",
+    "source_snapshot_at": "2026-08-08T20:21:22+08:00",
+    "source_sha256": "44dfe9670b47fb05958400cd6300b3c0aa01f7932e4df655708c2a13873516f0",
+    "role": "HISTORICAL_ONLY_NO_CURRENT_AUTHORITY"
   },
   "refresh_metadata": {
-    "updated_at": "2026-08-08T20:21:22+08:00",
-    "mode": "content_refresh_from_hashed_responsibility_surfaces",
-    "source_count": 11,
+    "updated_at": "2026-08-21T02:49:17+08:00",
+    "mode": "clean_baseline_work_order_1_current_convergence",
+    "source_count": 6,
     "source_snapshot": [
       {
-        "path": "governance/CURRENT_STATE.json",
-        "sha256": "1d1fca5302cc1fea62e12a8a5362ab7fb9f6a6b9a0b945f886f27e173ec569bc"
+        "identity": "main",
+        "commit": "f8680907f5be5c199479ba52510e9ab4f16eded7"
       },
       {
-        "path": "TEMP/repo-hygiene-w05-j-r01/W05_J_CLOSEOUT_RECEIPT.json",
-        "sha256": "fd666ca5668dcb67d761e2ca9e6688c0701fd9dfa930958b9c54cf2749584e2e"
+        "identity": "module_candidate",
+        "branch": "codex/module-runtime-foundation-20260819-r01",
+        "commit": "cc793c4719fb6470946c70e744f463147989547b"
       },
       {
-        "path": "TEMP/repo-hygiene-w05-j-r01/W05_REPOSITORY_HYGIENE_CAMPAIGN_CLOSEOUT.json",
-        "sha256": "dd9eb81d1befc1b840ae0bebe2909d30eed4c7a9e73b23620e81a9250f63e786"
+        "path": "current.md",
+        "role": "ROOT_COMPATIBILITY_STUB"
       },
       {
-        "path": "TEMP/repo-hygiene-w05-j-r01/M2_FORMAL_CLOSURE_RECEIPT.json",
-        "sha256": "e84c1add390b2b8b28c65b849566ef901345ede8515272e6d11602444bb981c0"
+        "path": "governance/current_pointers.json",
+        "role": "CURRENT_VERSION_AND_PATH_REGISTRY"
       },
       {
-        "path": "TEMP/repo-routing-w06-c-r01/W06C_EXECUTION_RECEIPT.json",
-        "sha256": "90eb6bdf3a2ee0cbc75487ade9d0b29d719f2294ef35decb0622358ca079dc24"
-      },
-      {
-        "path": "AGENTS.md",
-        "sha256": "c66848166159a44c21a548137393e0f08ab03e6f536661ba22c610f62f8f089e"
+        "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
+        "role": "ACTIVE_PRODUCT_BACKGROUND_R13"
       },
       {
         "path": "governance/progress/current-progress.md",
-        "sha256": "aa730e2ba9d790c68a2ae570e1b13d09fd7ef6e703ed0cce6938619df5c864a7"
-      },
-      {
-        "path": "governance/progress/t5-r04-production-canonical-p2.md",
-        "sha256": "e7f67f679a5ec5e6f67d6be52e0300f611ef633861d7f2bce25795b2c544b1d4"
-      },
-      {
-        "path": "finetuning/CURRENT.json",
-        "sha256": "5abaa79b952532881dfc5e147e7da190471baba386aac263474b51edd414f8dd"
-      },
-      {
-        "path": "finetuning/experiments/T5_R04_CPLUS_20260807_R01/MANIFEST.json",
-        "sha256": "7f5818391b9988be2ddeb0d5ac89fe49363c0d0e245a7d02660cf649cab08216"
-      },
-      {
-        "path": "governance/external_archive_registry.json",
-        "sha256": "2c776787f78eeda68dd05323d6ac0d6975b6e7b696f3b53f9e3101e73af866ec"
+        "role": "HUMAN_HANDOFF_ONLY"
       }
     ],
     "responsibility_boundary": {
       "repository_current": "governance/CURRENT_STATE.json",
-      "finetuning_navigation": "finetuning/CURRENT.json",
-      "human_continuation": "governance/progress/current-progress.md"
+      "repository_history": "governance/CURRENT_STATE_HISTORY.json",
+      "current_pointers": "governance/current_pointers.json",
+      "product_background": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
+      "human_continuation": "governance/progress/current-progress.md",
+      "finetuning_navigation": "finetuning/CURRENT.json"
     }
   }
 }

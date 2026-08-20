@@ -1,0 +1,116 @@
+{
+  "schema_version": "governance-current-pointers-v1",
+  "updated_at": "2026-08-21T02:49:17+08:00",
+  "authority": {
+    "role": "当前版本、路径、候选身份和后续登记的唯一机器索引",
+    "does_not_replace": [
+      "governance/CURRENT_STATE.json",
+      "CZ 最新明确指令与 Notion 账序／队列",
+      "领域 CURRENT、冻结合同与正式结果票"
+    ]
+  },
+  "pointers": [
+    {
+      "pointer_id": "repository_current",
+      "status": "ACTIVE_CURRENT",
+      "version": "governance-current-state-v2",
+      "path": "governance/CURRENT_STATE.json"
+    },
+    {
+      "pointer_id": "repository_history",
+      "status": "HISTORICAL_REFERENCE",
+      "version": "2026-08-08T20:21:22+08:00",
+      "path": "governance/CURRENT_STATE_HISTORY.json"
+    },
+    {
+      "pointer_id": "human_handoff",
+      "status": "ACTIVE_CURRENT",
+      "version": "2026-08-21-WO1",
+      "path": "governance/progress/current-progress.md"
+    },
+    {
+      "pointer_id": "current_freshness_checker",
+      "status": "ACTIVE_CURRENT",
+      "version": "v1",
+      "path": "tools/check_current_freshness.py",
+      "registry_status": "PENDING_WORK_ORDER_7",
+      "boundary": "只读检查；不自动改 current、需求、设计或合同。"
+    },
+    {
+      "pointer_id": "product_background",
+      "status": "ACTIVE_CURRENT",
+      "version": "R13",
+      "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
+      "next_candidate": {
+        "version": "R14",
+        "branch": "codex/module-runtime-foundation-20260819-r01",
+        "tip": "cc793c4719fb6470946c70e744f463147989547b",
+        "admission_work_order": 2
+      }
+    },
+    {
+      "pointer_id": "external_report_background",
+      "status": "ACTIVE_CURRENT",
+      "version": "R01",
+      "path": "references/external-knowledge-base/README.md",
+      "current_pointer": "references/external-knowledge-base/CURRENT.json"
+    },
+    {
+      "pointer_id": "atomic_expectations",
+      "status": "PENDING_WORK_ORDER",
+      "version": "R03",
+      "path": "references/atomic-expectations/CURRENT.json",
+      "branch": "codex/module-runtime-foundation-20260819-r01",
+      "tip": "cc793c4719fb6470946c70e744f463147989547b",
+      "admission_work_order": 2,
+      "record_count": 142
+    },
+    {
+      "pointer_id": "atomic_test_design",
+      "status": "PENDING_WORK_ORDER",
+      "version": "R01_FOR_R02_127",
+      "path": "references/atomic-expectations/TEST_DESIGN_CURRENT.json",
+      "branch": "codex/module-runtime-foundation-20260819-r01",
+      "tip": "cc793c4719fb6470946c70e744f463147989547b",
+      "admission_work_order": 2,
+      "boundary": "不能冒充覆盖 R03 新增 15 条。"
+    },
+    {
+      "pointer_id": "design_registry",
+      "status": "PLANNED",
+      "version": null,
+      "path": "novel-mvp/design/design_registry.json",
+      "admission_work_order": 4
+    },
+    {
+      "pointer_id": "capability_traceability",
+      "status": "PLANNED",
+      "version": null,
+      "path": "governance/capability_traceability.json",
+      "admission_work_order": 3,
+      "boundary": "142/142 候选映射不等于实现完成。"
+    },
+    {
+      "pointer_id": "module_runtime_candidate",
+      "status": "CANDIDATE_BRANCH",
+      "version": "cc793c4719fb6470946c70e744f463147989547b",
+      "path": "novel-mvp/",
+      "branch": "codex/module-runtime-foundation-20260819-r01",
+      "tip": "cc793c4719fb6470946c70e744f463147989547b",
+      "integration_work_order": 5
+    },
+    {
+      "pointer_id": "finetuning_navigation",
+      "status": "ACTIVE_DOMAIN_POINTER",
+      "version": null,
+      "path": "finetuning/CURRENT.json",
+      "boundary": "不授权训练或晋升。"
+    }
+  ],
+  "invariants": [
+    "repository_current 与 product_background 各自只有一个 ACTIVE_CURRENT。",
+    "候选分支、PLANNED 和 PENDING_WORK_ORDER 不得冒充 main current。",
+    "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",
+    "工单 1 保持 R13；R14/R03 只能由工单 2 纯语义 PR 转正。"
+  ]
+}
