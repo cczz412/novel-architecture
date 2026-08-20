@@ -12,6 +12,8 @@
 
 - 机器指针：[CURRENT.json](CURRENT.json)
 - 人读入口：[原子需求与验收背景板 R02](ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/00_READ_ME_FIRST.md)
+- 六例验收设计：[原子需求测试设计 R01](ATOMIC_TEST_DESIGN_20260820_R01/00_READ_ME_FIRST.md)
+- 测试设计机器指针：[TEST_DESIGN_CURRENT.json](TEST_DESIGN_CURRENT.json)
 
 本背景板不是正式合同、施工票、当前运行状态或产品完成证明。具体字段、接口和模块实现可以变化；原子预期的用户目标、失败后果和验收含义不能被实现方案悄悄改写。
 
