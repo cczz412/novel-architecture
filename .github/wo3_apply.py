@@ -86,7 +86,7 @@ def extract_runtime_evidence(
         if req_id not in r03_ids or not isinstance(raw_status, str):
             continue
         normalized = raw_status.upper().replace("-", "_").replace(" ", "_")
-        if "CONFLICT" in normalized:
+        if "CONFLICT" in normalized or "CONTRADICT" in normalized:
             classification = "CURRENT_PATH_CONFLICT"
         elif "BACKGROUND" in normalized:
             classification = "BACKGROUND_ONLY"
