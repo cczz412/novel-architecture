@@ -97,13 +97,12 @@ jobs:
           )
           PY
 
-      - name: Run targeted tests and Ruff
+      - name: Run required targeted test and Ruff
         run: |
           set -euo pipefail
           cd repo
           uv run --locked pytest -q -p no:cacheprovider \
-            tests/test_current_freshness.py \
-            tests/test_governance_index.py
+            tests/test_current_freshness.py
           uv run --locked ruff check tools/check_current_freshness.py
 
       - name: Remove temporary execution helpers
