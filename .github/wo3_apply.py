@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Compatibility wrapper for the WO3 materialization helper.
 
-The advisory seed can carry wording that predates the current R03 projection.
-R03 is the authoritative requirement text for this ticket. This wrapper loads the
-original helper from its fixed commit, preserves any differing seed wording as a
-candidate note, replaces only the traceability copy with R03 text, and runs the
-otherwise unchanged migration.
+R03 is authoritative for requirement wording. The advisory addendum uses a
+blocked/not-ready vocabulary for its 17 currently non-executable cases. This
+wrapper preserves the original helper, aligns traceability text to R03, extends
+only the execution-tier label recognizer, and runs the otherwise unchanged
+migration.
 """
 
 from __future__ import annotations
@@ -38,4 +38,34 @@ NAMESPACE: dict[str, object] = {
     "__file__": str(THIS_FILE),
 }
 exec(compile(SOURCE, "wo3_apply_impl.py", "exec"), NAMESPACE)
+
+
+def classify_execution_label(value: str) -> str | None:
+    normalized = value.upper().replace("-", "_").replace(" ", "_")
+    blocked_tokens = (
+        "NOT_EXECUTABLE",
+        "UNEXECUTABLE",
+        "NOT_CURRENTLY_EXECUTABLE",
+        "CURRENTLY_BLOCKED",
+        "BLOCKED",
+        "NOT_RUNNABLE",
+        "NOT_READY",
+        "UNAVAILABLE",
+        "UNIMPLEMENTED",
+        "FUTURE_ONLY",
+        "PENDING_OWNER",
+        "PENDING_PRODUCT_DECISION",
+    )
+    if any(token in normalized for token in blocked_tokens) or any(
+        token in value for token in ("暂不可执行", "不可执行", "当前阻断", "阻断", "尚未实现")
+    ):
+        return "NOT_EXECUTABLE"
+    if "SEMANTIC" in normalized or "语义" in value:
+        return "SEMANTIC"
+    if "MECHANICAL" in normalized or "ZERO_API" in normalized or "机械" in value:
+        return "MECHANICAL"
+    return None
+
+
+NAMESPACE["classify_execution_label"] = classify_execution_label
 NAMESPACE["main"]()
