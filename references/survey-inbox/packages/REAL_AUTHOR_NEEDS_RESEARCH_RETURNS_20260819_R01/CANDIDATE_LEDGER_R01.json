@@ -1,0 +1,162 @@
+{
+  "identity": "DEEP_SEARCH_REAL_AUTHOR_NEEDS_CANDIDATE_LEDGER_R01",
+  "created_at": "2026-08-19",
+  "source_report_count": 6,
+  "baseline_expectation_count": 127,
+  "authority": "ADVISORY_CANDIDATES_ONLY",
+  "source_boundary": "六份原始 Markdown 只有 ChatGPT 内部引用标记，没有完整的可打开来源映射；候选不得自动改现行预期、权重、合同或施工路线。",
+  "records": [
+    {
+      "candidate_id": "DS-RA-001",
+      "group": "建项目与长期恢复",
+      "expectation": "第一次导入多个旧大纲时，区分仍执行、已替代、备选和无法判断，不能让旧计划静默约束下一章。",
+      "nearest_existing": ["M1-E03", "M8-E01"],
+      "validation": "用多代旧大纲混在一起的首次建项走查，观察作者能否发现废弃计划被错误启用。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-002",
+      "group": "建项目与长期恢复",
+      "expectation": "已经连载的小说要区分本地当前稿、平台草稿和读者实际看到的版本，续写时不能接错故事状态。",
+      "nearest_existing": ["M1-E06"],
+      "validation": "让已连载作者迁入一个本地稿与线上稿不同步的项目。",
+      "status": "HOLD_LOW_TO_MEDIUM_EVIDENCE"
+    },
+    {
+      "candidate_id": "DS-RA-003",
+      "group": "建项目与长期恢复",
+      "expectation": "恢复旧创作决定时，不仅看到以前选了什么，也看到当时为什么这样选、保护什么目标、哪些前提后来变了。",
+      "nearest_existing": ["M5-C03"],
+      "validation": "用断更、跨卷改线和回滚人物命运三类情境检查理由是否真的减少误删。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-004",
+      "group": "建项目与长期恢复",
+      "expectation": "长断更后，时间只触发回看；旧未来决定仍坚持、待重想或已替代必须由作者重新确认，系统不能按天数自动作废。",
+      "nearest_existing": ["M5-C03", "M9-E05", "M9-E09"],
+      "validation": "让真实作者在离开项目数月后恢复一次旧规划。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-005",
+      "group": "建项目与长期恢复",
+      "expectation": "共同作者或编辑接手时，前任定稿、探索笔记、整理材料、新方案和未知空洞保持不同来源，并说清谁有最终裁决权。",
+      "nearest_existing": ["M9-E09"],
+      "validation": "用真实多人创作或编辑接手项目验证，不外推到单人作者。",
+      "status": "FUTURE_TEAM_BRANCH"
+    },
+    {
+      "candidate_id": "DS-RA-006",
+      "group": "下一章与当前章",
+      "expectation": "系统比较作者今天剩余时间、更新要求、场景难度和查资料成本，帮助判断今天能完整交付什么，而不是只按故事容量拆章。",
+      "nearest_existing": ["M8-E08"],
+      "validation": "记录真实作者一天的时间预算、赶更选择和实际结果。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-007",
+      "group": "下一章与当前章",
+      "expectation": "保住存稿安全垫与尽快获得读者反馈发生冲突时，系统展示取舍，不替所有作者写死一个最佳做法。",
+      "nearest_existing": [],
+      "validation": "比较依赖即时反馈与依赖稳定存稿的两类作者。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-008",
+      "group": "下一章与当前章",
+      "expectation": "高风险剧情还没想稳时，允许比较直接落地、先放轻引子或推迟，并明确各方案的不可逆程度。",
+      "nearest_existing": ["M8-E02"],
+      "validation": "用争议转折上线前的真实选择验证低承诺方案是否有用。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-009",
+      "group": "下一章与当前章",
+      "expectation": "最近已发布章节越写越歪但还没有硬矛盾时，帮助判断局部补丁、后文拉回、改路线还是主线级问题，不自动修改。",
+      "nearest_existing": ["M7-E09"],
+      "validation": "用真实连载中逐渐写不下去但机械事实仍成立的案例。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-010",
+      "group": "下一章与当前章",
+      "expectation": "现稿偏离已接受章计划时只报告差异，让作者选改计划、改正文或标故意偏离，不能自动把正文拉回旧计划。",
+      "nearest_existing": ["M4-C05", "M8-E01", "M9-E03"],
+      "validation": "让作者处理一次成文后才出现的新创作决定。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-011",
+      "group": "下一章与当前章",
+      "expectation": "作者连续起草正文时，后台可以查询和扫描，但普通建议先排队，不抢输入焦点。",
+      "nearest_existing": ["M5-B03"],
+      "validation": "比较输入中弹出和场景结束后汇总对思路中断与采纳质量的影响。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-012",
+      "group": "下一章与当前章",
+      "expectation": "作者请求局部改写时，只给可审查的小补丁；选区外以及未授权的事实、视角和人物知情状态零修改。",
+      "nearest_existing": ["M7-E05"],
+      "validation": "用真实小说段落测试超范围修改、语义损伤和作者发现率。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-013",
+      "group": "下一章与当前章",
+      "expectation": "历史、悬疑、职业等题材里，外部事实不确定时区分现在查清、模糊处理、换场景或推迟；外部资料不能自动进入小说事实账。",
+      "nearest_existing": ["AE-M11-C01"],
+      "validation": "按题材验证，不把考据流程强加给所有小说。",
+      "status": "CONDITIONAL_CANDIDATE"
+    },
+    {
+      "candidate_id": "DS-RA-014",
+      "group": "发布后反馈与跨工具往返",
+      "expectation": "评论、段评、后台指标和编辑原话保留平台、时间、章节、原文锚和统计窗口；同名指标不能跨平台直接合并。",
+      "nearest_existing": ["M1-E01", "M4-C05", "AE-AW-C05"],
+      "validation": "用真实脱敏评论串、编辑意见和后台截图验证来源及口径是否可追。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-015",
+      "group": "发布后反馈与跨工具往返",
+      "expectation": "数据和评论先成为观察或待验证假设，允许多个竞争解释；作者决定和后续结果只追加记录，不能把相关变化写成因果规律。",
+      "nearest_existing": ["M4-C05", "M5-C02", "M6-B03"],
+      "validation": "回放一次真实的反馈、判断、改稿与后续数据变化。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-016",
+      "group": "发布后反馈与跨工具往返",
+      "expectation": "编辑或外部 AI 的意见保留来源、底稿版本、锚点、是否硬性要求、采纳状态和最终落到哪一版。",
+      "nearest_existing": ["M4-C05", "M5-C02", "M5-C03"],
+      "validation": "用真实编辑返稿或外部 AI 往返，检查看过、部分采纳和正式采纳是否会混。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-017",
+      "group": "发布后反馈与跨工具往返",
+      "expectation": "发布前记录平台、卷章、标题顺序、源版本和立即或定时；发布后区分已提交、审核中、定时等待、已公开、修改中和撤回。",
+      "nearest_existing": ["M1-E06", "AE-X-C02"],
+      "validation": "用真实发布前后的人工核对过程验证错卷、错序和线上状态不一致。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-018",
+      "group": "发布后反馈与跨工具往返",
+      "expectation": "Word 或 WPS 返稿回来时，先确认它基于哪一版，分别展示正文改动、批注和修订，不能直接覆盖工作区当前稿。",
+      "nearest_existing": ["M1-E01", "M1-B03", "M1-E06"],
+      "validation": "用真实返稿样本验证旧底稿覆盖和批注漂移风险。",
+      "status": "CANDIDATE_NEEDS_REAL_AUTHOR_VALIDATION"
+    },
+    {
+      "candidate_id": "DS-RA-019",
+      "group": "发布后反馈与跨工具往返",
+      "expectation": "送云端 AI 前显示将外发的正文、设定和秘密范围；回来后保留工具、用途、时间和回包来源，只有作者接受的部分才能成为新版本。",
+      "nearest_existing": ["M4-C05"],
+      "validation": "分别用云端、平台内置和本地模型用户验证，不把一种服务的数据边界外推到全部工具。",
+      "status": "CONDITIONAL_CANDIDATE"
+    }
+  ]
+}

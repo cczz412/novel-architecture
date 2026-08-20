@@ -2646,8 +2646,8 @@
               "globs": [
                 "AGENTS.md",
                 "governance/progress/current-progress.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/BASELINE_IDENTITY.json",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/01_PRO_WAVE_UPLOAD_BASELINE.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/02_PRO_WAVE_BASELINE_IDENTITY.json",
                 "config/review_pack/prompts/module_runtime_r14_global_delta_review.md"
               ]
             }
@@ -2672,7 +2672,8 @@
                 "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
                 "novel-mvp/contracts/*",
                 "novel-mvp/mvp/*.py",
-                "tests/test_novel_mvp_*.py"
+                "tests/test_novel_mvp_*.py",
+                "tests/fixtures/novel_mvp/intake_regressions/**"
               ]
             }
           ]
@@ -2684,11 +2685,12 @@
               "root_id": "module_runtime_test_and_delta_evidence",
               "required": true,
               "authority": "local_mechanical_baseline_and_git_delta_index",
-              "status": "observed_test_result_with_missing_temp_fixture_preserved",
-              "description": "记录可复跑测试、缺 TEMP 夹具的收集阻断和 a7b3ecb 到 01efc50 的提交差量。",
+              "status": "historical_missing_fixture_record_plus_current_full_module_pass",
+              "description": "同时保存迁移前的缺件记录、迁移后1574项完整模块测试结果，以及a7b3ecb到01efc50的提交差量。",
               "globs": [
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/01_CURRENT_TEST_BASELINE.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/02_RUNTIME_DELTA_INDEX.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/03_TEST_BASELINE_BEFORE_FIXTURE_MIGRATION.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/05_CURRENT_TEST_BASELINE_AFTER_FIXTURE_MIGRATION.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/04_RUNTIME_DELTA_A7B3ECB_TO_01EFC50.md",
                 "governance/tool_registry.json"
               ]
             }
@@ -2757,8 +2759,8 @@
               "globs": [
                 "AGENTS.md",
                 "governance/progress/current-progress.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/BASELINE_IDENTITY.json",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/01_PRO_WAVE_UPLOAD_BASELINE.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/02_PRO_WAVE_BASELINE_IDENTITY.json",
                 "config/review_pack/prompts/chapter_fact_dual_lane_ledger_design.md"
               ]
             }
@@ -2782,6 +2784,7 @@
                 "novel-mvp/contracts/*",
                 "novel-mvp/mvp/*.py",
                 "tests/test_novel_mvp_*.py",
+                "tests/fixtures/novel_mvp/intake_regressions/**",
                 "novel-mvp/contracts/C1_CHAPTER_DOC.md",
                 "novel-mvp/contracts/C10_INTAKE_MATERIAL_IDENTITY*",
                 "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER*",
@@ -2827,27 +2830,34 @@
               "status": "observed_current_branch_evidence",
               "description": "帮助区分当前可运行切片和仍缺的正式接线。",
               "globs": [
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/01_CURRENT_TEST_BASELINE.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/02_RUNTIME_DELTA_INDEX.md"
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/03_TEST_BASELINE_BEFORE_FIXTURE_MIGRATION.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/05_CURRENT_TEST_BASELINE_AFTER_FIXTURE_MIGRATION.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/04_RUNTIME_DELTA_A7B3ECB_TO_01EFC50.md"
               ]
             }
           ]
         },
         "external_reviews": {
-          "label": "旧交棒与归属设计｜只作顾问线索",
-          "roots": []
+          "label": "已入仓的交棒与长期保存设计｜只作顾问线索",
+          "roots": [
+            {
+              "root_id": "tracked_owner_gaps_and_handover_advisory",
+              "required": true,
+              "authority": "historical_external_advisory_with_currentness_note",
+              "status": "tracked_candidate_prior_recheck_against_current_code",
+              "description": "原外部设计与任务卡已入调查收件箱；必须先读当前口径校正，不能把旧任务卡冒充当前施工队列。",
+              "globs": [
+                "references/survey-inbox/packages/OWNER_GAPS_AND_HANDOVER_DESIGN_RETURNS_20260820_R01/00_READ_ME_FIRST.md",
+                "references/survey-inbox/packages/OWNER_GAPS_AND_HANDOVER_DESIGN_RETURNS_20260820_R01/02_CURRENTNESS_NOTE.md",
+                "references/survey-inbox/packages/OWNER_GAPS_AND_HANDOVER_DESIGN_RETURNS_20260820_R01/OWNER_GAPS_AND_HANDOVER_DESIGN.md",
+                "references/survey-inbox/packages/OWNER_GAPS_AND_HANDOVER_DESIGN_RETURNS_20260820_R01/OWNER_GAPS_TASK_CARDS.json",
+                "references/survey-inbox/packages/OWNER_GAPS_AND_HANDOVER_DESIGN_RETURNS_20260820_R01/REPORT_MANIFEST.json"
+              ]
+            }
+          ]
         }
       },
-      "external_slots": [
-        {
-          "slot_id": "prior_owner_gap_design",
-          "required": true,
-          "provider": "ChatGPT Pro",
-          "model": "user_supplied_external_advisor",
-          "status": "historical_advisory_must_recheck_against_01efc50",
-          "description": "OWNER_GAPS_AND_HANDOVER_DESIGN_R01 的原始 Markdown 与 JSON；旧判断不能覆盖当前代码。"
-        }
-      ]
+      "external_slots": []
     },
     "atomic-r03-test-addendum-design": {
       "label": "小说辅助产品｜R03 142条原子需求六例测试补齐",
@@ -2905,8 +2915,8 @@
               "globs": [
                 "AGENTS.md",
                 "governance/progress/current-progress.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/BASELINE_IDENTITY.json",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/01_PRO_WAVE_UPLOAD_BASELINE.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/02_PRO_WAVE_BASELINE_IDENTITY.json",
                 "config/review_pack/prompts/atomic_r03_test_addendum_design.md",
                 "references/atomic-expectations/CURRENT.json",
                 "references/atomic-expectations/README.md"
@@ -2936,7 +2946,8 @@
                 "novel-mvp/ARCHITECTURE.md",
                 "novel-mvp/contracts/*",
                 "novel-mvp/mvp/*.py",
-                "tests/test_novel_mvp_*.py"
+                "tests/test_novel_mvp_*.py",
+                "tests/fixtures/novel_mvp/intake_regressions/**"
               ]
             }
           ]
@@ -2951,27 +2962,33 @@
               "status": "observed_current_branch_evidence",
               "description": "不能把测试文件存在或冻结回包通过当成语义能力。",
               "globs": [
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/01_CURRENT_TEST_BASELINE.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/02_RUNTIME_DELTA_INDEX.md"
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/03_TEST_BASELINE_BEFORE_FIXTURE_MIGRATION.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/05_CURRENT_TEST_BASELINE_AFTER_FIXTURE_MIGRATION.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/04_RUNTIME_DELTA_A7B3ECB_TO_01EFC50.md"
               ]
             }
           ]
         },
         "external_reviews": {
-          "label": "R02旧127条四份六例测试设计",
-          "roots": []
+          "label": "已入仓的 R02 旧127条六例测试设计",
+          "roots": [
+            {
+              "root_id": "tracked_atomic_test_design_r01",
+              "required": true,
+              "authority": "historical_r02_six_case_acceptance_design",
+              "status": "tracked_design_not_gold_not_current_pass",
+              "description": "四份旧设计已合并成一份仓内机器设计；只覆盖旧127条，不能冒充覆盖R03新增15条。",
+              "globs": [
+                "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/00_READ_ME_FIRST.md",
+                "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json",
+                "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/MANIFEST.json",
+                "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/VALIDATION_RECEIPT.json"
+              ]
+            }
+          ]
         }
       },
-      "external_slots": [
-        {
-          "slot_id": "prior_atomic_test_designs",
-          "required": true,
-          "provider": "ChatGPT Pro",
-          "model": "user_supplied_external_advisor",
-          "status": "historical_r02_test_design_not_gold_not_current_pass",
-          "description": "ATOMIC_TEST_DESIGN_PART_1～4 的Markdown和JSON解压原件。"
-        }
-      ]
+      "external_slots": []
     },
     "multi-form-creative-intake-design": {
       "label": "小说辅助产品｜剧本、灵感与产品原生大纲导入设计",
@@ -3028,8 +3045,8 @@
               "globs": [
                 "AGENTS.md",
                 "governance/progress/current-progress.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/00_WAVE_BASELINE_AND_UPLOAD_ORDER.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/BASELINE_IDENTITY.json",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/01_PRO_WAVE_UPLOAD_BASELINE.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/02_PRO_WAVE_BASELINE_IDENTITY.json",
                 "config/review_pack/prompts/multi_form_creative_intake_design.md"
               ]
             }
@@ -3077,6 +3094,7 @@
                 "novel-mvp/mvp/planning_longline_*.py",
                 "tests/test_novel_mvp_upload_*.py",
                 "tests/test_novel_mvp_chapterization.py",
+                "tests/fixtures/novel_mvp/intake_regressions/**",
                 "tests/test_novel_mvp_intent_router*.py",
                 "tests/test_novel_mvp_ingest*.py",
                 "tests/test_novel_mvp_c10_first_entrypoints.py",
@@ -3102,8 +3120,9 @@
               "status": "current_existing_format_evidence_only",
               "description": "只证明现有格式和失败门，不证明三类新材料已经支持。",
               "globs": [
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/01_CURRENT_TEST_BASELINE.md",
-                "TEMP/chatgpt_review_cycles/module_runtime_pro_wave_20260820_r02/02_RUNTIME_DELTA_INDEX.md"
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/03_TEST_BASELINE_BEFORE_FIXTURE_MIGRATION.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/05_CURRENT_TEST_BASELINE_AFTER_FIXTURE_MIGRATION.md",
+                "references/cloud-supervision/MODULE_RUNTIME_FOUNDATION_20260821_R02/04_RUNTIME_DELTA_A7B3ECB_TO_01EFC50.md"
               ]
             }
           ]

@@ -1,0 +1,184 @@
+{
+  "package_id": "MODULE_RUNTIME_ADVISORY_ARCHIVE_20260820_R01",
+  "created_on": "2026-08-21",
+  "source_batch_dates": [
+    "2026-08-19",
+    "2026-08-20"
+  ],
+  "status": "historical_external_advisory_and_candidate_implementation_prior_only",
+  "source_providers": [
+    "ChatGPT Pro",
+    "Codex local intake"
+  ],
+  "currentness_note": "02_CURRENTNESS_NOTE.md",
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false,
+    "may_apply_candidate_patch": false
+  },
+  "decision_boundary": "Current code and direct tests, R14, R03 with 142 expectations, and later CZ decisions override every historical advisory, task card, test count and candidate patch in this package.",
+  "source_archives": [
+    {
+      "archive_id": "MODULE_EXPANSION_ARCHITECTURE_DESIGN_20260819_R01",
+      "sha256": "f0e7eee6feace47879c37645edd901b907dc18c41952f0ce123e9d47b2bddf3b",
+      "crc_verified": true,
+      "submitted_binary": false,
+      "extracted_members": [
+        "MODULE_EXPANSION_ARCHITECTURE_DESIGN.md"
+      ]
+    },
+    {
+      "archive_id": "SIX_REPORT_COMPONENT_DESIGN_AND_CLEAN_TASKS",
+      "sha256": "0427a040cf470c2e4218a0021277db11bcac58dab4447519e609735eefbb5bf9",
+      "crc_verified": true,
+      "submitted_binary": false,
+      "extracted_members": [
+        "SIX_REPORT_COMPONENT_DESIGN_AND_CLEAN_TASKS.md"
+      ]
+    },
+    {
+      "archive_id": "FIRST_CONTENT_PILOT_AND_API_EXPERIMENT_PLAN",
+      "sha256": "fdea49930eb1fd96fa9aa90aa601a401df0ee207916ed4c4c9686d6e999c7afe",
+      "crc_verified": true,
+      "submitted_binary": false,
+      "extracted_members": [
+        "FIRST_CONTENT_PILOT_AND_API_EXPERIMENT_PLAN.md"
+      ]
+    },
+    {
+      "archive_id": "ZERO_API_FIXTURE_MANIFEST_REBASE_ADVISORY_ONLY",
+      "sha256": "f8c2cf4ffa91ac846732881f85ebafd8e3ae4fa9942116819176f24355d405a7",
+      "crc_verified": true,
+      "submitted_binary": false,
+      "extracted_members": [
+        "ZERO_API_FIXTURE_MANIFEST_REBASE.md",
+        "ZERO_API_FIXTURE_MANIFEST.json"
+      ]
+    },
+    {
+      "archive_id": "MECHANICAL_GAPS_CANDIDATE_IMPLEMENTATION",
+      "sha256": "fe0e6917baad66159dfb845ef4c7fddf3749bdcc4b401b1695395e9499068b68",
+      "crc_verified": true,
+      "submitted_binary": false,
+      "extracted_members": [
+        "MECHANICAL_GAPS_CANDIDATE_IMPLEMENTATION.md",
+        "MECHANICAL_GAPS_CANDIDATE_PATCH.diff",
+        "MECHANICAL_GAPS_TEST_PLAN.json"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file_id": "MODULE_EXPANSION_ADVISORY",
+      "path": "MODULE_EXPANSION_ARCHITECTURE_DESIGN.md",
+      "source_attribution": "ChatGPT Pro",
+      "bytes": 84352,
+      "lines": 501,
+      "sha256": "cc1be07abe15301b065cd01ba442bc54e2cb3da475f95c9c13d94a1c635fda08"
+    },
+    {
+      "file_id": "SIX_REPORT_COMPONENT_ADVISORY",
+      "path": "SIX_REPORT_COMPONENT_DESIGN_AND_CLEAN_TASKS.md",
+      "source_attribution": "ChatGPT Pro",
+      "bytes": 74667,
+      "lines": 1263,
+      "sha256": "3a501ad887069f03fb01c60dc38ebcca709a4efbd70d591f9f9fe37156dc246d"
+    },
+    {
+      "file_id": "FIRST_CONTENT_PILOT_PLAN",
+      "path": "FIRST_CONTENT_PILOT_AND_API_EXPERIMENT_PLAN.md",
+      "source_attribution": "ChatGPT Pro",
+      "bytes": 76038,
+      "lines": 1006,
+      "sha256": "2971309909f591c39032ebe266defeb9a0cae8b72afce148e255ce5a08884b85"
+    },
+    {
+      "file_id": "ZERO_API_FIXTURE_REBASE_REPORT",
+      "path": "ZERO_API_FIXTURE_MANIFEST_REBASE.md",
+      "source_attribution": "ChatGPT Pro",
+      "bytes": 184131,
+      "lines": 2800,
+      "sha256": "0f4918545c817694879f149c7b18cdf8537f6b222ee26da9906c8f337330cd28"
+    },
+    {
+      "file_id": "ZERO_API_FIXTURE_REBASE_MANIFEST",
+      "path": "ZERO_API_FIXTURE_MANIFEST.json",
+      "source_attribution": "ChatGPT Pro",
+      "bytes": 249596,
+      "lines": 5837,
+      "sha256": "041f8b67b307be28982593a56bf8c3e06582a813280d0bcfecaf572b5322e3a3"
+    },
+    {
+      "file_id": "MECHANICAL_GAPS_CANDIDATE_REPORT",
+      "path": "MECHANICAL_GAPS_CANDIDATE_IMPLEMENTATION.md",
+      "source_attribution": "ChatGPT Pro",
+      "bytes": 18277,
+      "lines": 396,
+      "sha256": "9e4b19e7a752d043af08a8d3d926ccb3509443a81b5dc343c4d2442d6d408170"
+    },
+    {
+      "file_id": "MECHANICAL_GAPS_CANDIDATE_PATCH",
+      "path": "MECHANICAL_GAPS_CANDIDATE_PATCH.diff",
+      "source_attribution": "ChatGPT Pro",
+      "bytes": 89251,
+      "lines": 2427,
+      "sha256": "5393a732bc1028e46f42c9415bd00f93a9b4fd8dd9fe43c2a2eb9148652db8e8"
+    },
+    {
+      "file_id": "MECHANICAL_GAPS_TEST_PLAN",
+      "path": "MECHANICAL_GAPS_TEST_PLAN.json",
+      "source_attribution": "ChatGPT Pro",
+      "bytes": 17152,
+      "lines": 450,
+      "sha256": "1c0f9b40d2501bdf086f38cd28a264fd68379e7b40dfe526f67f5f801fb84b46"
+    },
+    {
+      "file_id": "LOCAL_ACCEPTANCE_REPORT",
+      "path": "LOCAL_ACCEPTANCE_R01.md",
+      "source_attribution": "Codex local intake",
+      "bytes": 6677,
+      "lines": 81,
+      "sha256": "6a6be3029635f6f5c9bd30158db33ee5dd3867edcfc238d5feadb3f011e6bdc7"
+    },
+    {
+      "file_id": "LOCAL_ACCEPTANCE_SUMMARY",
+      "path": "LOCAL_ACCEPTANCE_R01.json",
+      "source_attribution": "Codex local intake",
+      "bytes": 2381,
+      "lines": 65,
+      "sha256": "21f6d2d98db51d4d15daa2a1afc5bcc7197c2ebdaebd70adfed064038687ec1b"
+    }
+  ],
+  "supporting_files": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "source_attribution": "Codex",
+      "bytes": 3100,
+      "lines": 30,
+      "sha256": "91e8ce17efe443478cd8aab8341ddc2b2203aa1428b1ef0895b6accf264a8cbb"
+    },
+    {
+      "path": "02_CURRENTNESS_NOTE.md",
+      "source_attribution": "Codex",
+      "bytes": 3345,
+      "lines": 46,
+      "sha256": "e9aa0211ea59f9d696333b13506af36fe885251aae00ad985e62af0d86e08295"
+    }
+  ],
+  "exclusions": {
+    "source_zip_binaries": 5,
+    "real_novel_or_author_text": 0,
+    "gold_or_sealed_answers": 0,
+    "secrets": 0,
+    "raw_model_response_bodies": 0,
+    "reasoning_traces": 0,
+    "local_absolute_paths": 0
+  }
+}

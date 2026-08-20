@@ -1,0 +1,46 @@
+{
+  "package_id": "MODULE_RUNTIME_FOUNDATION_20260821_R02",
+  "created_on": "2026-08-21",
+  "status": "CURRENT_CLOUD_COLLABORATION_READING_ENTRY",
+  "code_branch": "codex/module-runtime-foundation-20260819-r01",
+  "historical_evidence_parent": "../MODULE_RUNTIME_FOUNDATION_20260819_R01/00_READ_ME_FIRST.md",
+  "authority": "READING_AND_HANDOFF_ONLY_NO_CONSTRUCTION_API_GOLD_TRAINING_UPLOAD_OR_PRODUCTION_AUTHORITY",
+  "files": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "bytes": 5567,
+      "lines": 55,
+      "sha256": "7ae91270a4f312ef1ca7c0ae963403e1efe77cd1ec243f5a5b82d5f7d6ea6b7f"
+    },
+    {
+      "path": "01_PRO_WAVE_UPLOAD_BASELINE.md",
+      "bytes": 3374,
+      "lines": 55,
+      "sha256": "de52bccc8c10c5779ecafa9cabb3b21848bc7b238e11c7d5f4a2392ef0f2bcc3"
+    },
+    {
+      "path": "02_PRO_WAVE_BASELINE_IDENTITY.json",
+      "bytes": 3304,
+      "lines": 76,
+      "sha256": "6b2f33adcd99452c16060455b9ea5b8ff183a9a7f3cd4f80dd340cbba698850c"
+    },
+    {
+      "path": "03_TEST_BASELINE_BEFORE_FIXTURE_MIGRATION.md",
+      "bytes": 1337,
+      "lines": 38,
+      "sha256": "743064a2a471e8d4614e04627897fc55d0f456ad5543e52d4a6273094c0d5376"
+    },
+    {
+      "path": "04_RUNTIME_DELTA_A7B3ECB_TO_01EFC50.md",
+      "bytes": 2928,
+      "lines": 60,
+      "sha256": "d47fbfc3f63bd4c92baa1173ee329c03155b0ce791f0748072b17dc89f982a01"
+    },
+    {
+      "path": "05_CURRENT_TEST_BASELINE_AFTER_FIXTURE_MIGRATION.md",
+      "bytes": 1633,
+      "lines": 36,
+      "sha256": "c4c9e9363a6763aded7725d7961a43a56217056e08a5d14c0f6b7eabe8a51ba9"
+    }
+  ]
+}

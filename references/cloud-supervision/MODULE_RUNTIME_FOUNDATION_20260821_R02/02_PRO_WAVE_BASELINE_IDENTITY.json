@@ -1,0 +1,76 @@
+{
+  "schema_version": "module-runtime-chatgpt-pro-wave-baseline-v1",
+  "wave_id": "MODULE_RUNTIME_PRO_WAVE_20260820_R02",
+  "authority": "LOCAL_PACKAGE_IDENTITY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
+  "product_code": {
+    "branch": "codex/module-runtime-foundation-20260819-r01",
+    "commit": "79bd2e2d6d0eb28610d5ed4608288251c6ffa424",
+    "packaging_definition_commit": "79bd2e2",
+    "delta_reference_commit": "a7b3ecb",
+    "product_code_clean_before_packaging_changes": true,
+    "packaging_configuration_changes_are_not_product_runtime_changes": true
+  },
+  "project_source_release": {
+    "target_project": "g-p-6a73425437ac8191877c9fac561471fe",
+    "release_id": "PROJECT_SOURCE_RELEASE_8e66fe30e71fdfed",
+    "release_manifest_sha256": "ab2155e19a8a33fea573896f22e97ac3ea6ecd5a46cf41940267cc9163318ac6",
+    "release_sha256s_sha256": "ca12ffe3512a5afa56bae5d6ed310e81fce992402662a927489af748f0ec5674",
+    "artifact_count": 8,
+    "release_file_count_including_sha": 9,
+    "local_preparation_status": "VALIDATED",
+    "remote_presence_status": "UNKNOWN",
+    "product_background": {
+      "version": "R14",
+      "core_materials_sha256": "c824ed9304986641599085560c8b7ef69e7aedca2bbf2690b8c1dd3ef9ea97de"
+    },
+    "external_report_background": {
+      "version": "R01",
+      "manifest_sha256": "6f85e9b5ac4f530b67671372888c5b4e358a38c812ee13ac5a94b4ba84be41cc"
+    },
+    "atomic_expectations_background": {
+      "version": "R03",
+      "expectation_count": 142,
+      "manifest_sha256": "7a28d4c32da3f1a499e96683b0f0c4f22296b0941dfd7f377b7b0566a7613151",
+      "csv_filename": "ATOMIC_R03__142_EXPECTATIONS.csv",
+      "csv_sha256": "11749551b55f13dd4ae63e90a85a20a7492959c16eb219385ac152d36fe41937"
+    },
+    "workspace_baseline": {
+      "baseline_id": "WORKSPACE_BASELINE_79bd2e2d6d0e_1ea1f200",
+      "commit": "79bd2e2d6d0eb28610d5ed4608288251c6ffa424",
+      "zip_sha256": "27c8b12c73ec14541c049117685a0c5f788d38355c0a54d533f298d7f807c93b",
+      "index_sha256": "5e87679fe2a0c3b6bae0bf012d97fd1a743cb36449d323e7c3e9c26352d2bb21"
+    }
+  },
+  "test_baseline": {
+    "full_module_collection": "BLOCKED_BY_TWO_UNVERSIONED_TEMP_FIXTURE_DEPENDENCIES",
+    "blocked_test_files": [
+      "tests/test_novel_mvp_m3_admission.py",
+      "tests/test_novel_mvp_chapterization.py"
+    ],
+    "remaining_module_tests": {
+      "status": "PASS",
+      "passed": 1542,
+      "failed": 0
+    },
+    "ruff": {
+      "status": "PASS",
+      "scope": "novel-mvp/mvp and tests/test_novel_mvp_*.py"
+    }
+  },
+  "external_advisory_inputs": {
+    "atomic_test_design_part_1_zip_sha256": "6b4395fb0eed7ce19594884913c4cb55fc19738e9896c44557d96a4c8fed7f30",
+    "atomic_test_design_part_2_zip_sha256": "81a3f2299c77cb705f019d22e1f49af60c10a4aa3dd275aae8ab383f83ea14ec",
+    "atomic_test_design_part_3_zip_sha256": "0579bc38469ef917faa989dda211998135f2c2edca163064224c3a7e1d0d48d9",
+    "atomic_test_design_part_4_zip_sha256": "81d51496ee78e2f93da7c32af6db45fa4a3975758abdb6f3c6c8ae9b08d9c9e8",
+    "owner_gap_design_zip_sha256": "318f646ba79df52fc0a07af13a47f9630d1176f816fa80bf02ce371d17cc099e"
+  },
+  "permissions": {
+    "api_calls": false,
+    "model_calls": false,
+    "gold": false,
+    "training": false,
+    "production": false,
+    "automatic_upload": false,
+    "automatic_adoption": false
+  }
+}

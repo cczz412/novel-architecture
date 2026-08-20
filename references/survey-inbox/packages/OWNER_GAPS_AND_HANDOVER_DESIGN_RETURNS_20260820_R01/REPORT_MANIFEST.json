@@ -1,0 +1,55 @@
+{
+  "package_id": "OWNER_GAPS_AND_HANDOVER_DESIGN_RETURNS_20260820_R01",
+  "created_on": "2026-08-21",
+  "source_batch_date": "2026-08-20",
+  "status": "historical_external_advisory_candidate_prior_only",
+  "source_provider": "ChatGPT Pro",
+  "source_identity": "OWNER_GAPS_AND_HANDOVER_DESIGN_20260820_R01",
+  "currentness_note": "02_CURRENTNESS_NOTE.md",
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false
+  },
+  "decision_boundary": "R14, later CZ decisions, current code and direct tests override this historical advisory. The report and task cards are not contracts or a current execution queue.",
+  "files": [
+    {
+      "file_id": "ADVISORY_REPORT",
+      "path": "OWNER_GAPS_AND_HANDOVER_DESIGN.md",
+      "source_attribution": "ChatGPT",
+      "bytes": 56372,
+      "lines": 1162,
+      "sha256": "fcbab3e6cf1551d207717e845eb090d51aa9d629d9e8f19153149f551774e027"
+    },
+    {
+      "file_id": "ADVISORY_TASK_CARDS",
+      "path": "OWNER_GAPS_TASK_CARDS.json",
+      "source_attribution": "ChatGPT",
+      "bytes": 45768,
+      "lines": 838,
+      "sha256": "446522e8c0492b637149457711f9ae98f0365f1da4a74420db2b6cf8e674edd2"
+    }
+  ],
+  "supporting_files": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "source_attribution": "Codex",
+      "bytes": 1627,
+      "lines": 22,
+      "sha256": "f2087efbd9b7faca2e3260c258240d383fbfe025e465f1ebac69717aca3991b4"
+    },
+    {
+      "path": "02_CURRENTNESS_NOTE.md",
+      "source_attribution": "Codex",
+      "bytes": 2973,
+      "lines": 30,
+      "sha256": "09fc40e01d81c0f8d7b517a5df44ad545352e9398f52a0a5675b4d61e29f5f8e"
+    }
+  ]
+}

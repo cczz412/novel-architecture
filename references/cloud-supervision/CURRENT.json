@@ -1,0 +1,41 @@
+{
+  "entry_id": "module-runtime-cloud-supervision",
+  "current_version": "R02",
+  "current_package_id": "MODULE_RUNTIME_FOUNDATION_20260821_R02",
+  "entry_path": "MODULE_RUNTIME_FOUNDATION_20260821_R02/00_READ_ME_FIRST.md",
+  "manifest_path": "MODULE_RUNTIME_FOUNDATION_20260821_R02/MANIFEST.json",
+  "activated_on": "2026-08-21",
+  "code_branch": "codex/module-runtime-foundation-20260819-r01",
+  "code_baseline_commit_when_created": "207ee6c210c129bf87582cf212bde8bf462b76ac",
+  "product_context": {
+    "version": "R14",
+    "entry_path": "../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+  },
+  "atomic_expectations": {
+    "version": "R03",
+    "expectation_count": 142,
+    "entry_path": "../atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/00_READ_ME_FIRST.md"
+  },
+  "atomic_test_design": {
+    "version": "R01",
+    "covered_expectation_count": 127,
+    "small_test_count": 762,
+    "missing_addendum_expectation_count": 15,
+    "missing_addendum_small_test_count": 90,
+    "entry_path": "../atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/00_READ_ME_FIRST.md"
+  },
+  "historical_cloud_evidence": "MODULE_RUNTIME_FOUNDATION_20260819_R01/00_READ_ME_FIRST.md",
+  "current_test_baseline": {
+    "entry_path": "MODULE_RUNTIME_FOUNDATION_20260821_R02/05_CURRENT_TEST_BASELINE_AFTER_FIXTURE_MIGRATION.md",
+    "module_test_count": 1574,
+    "status": "PASS",
+    "real_novel_content_quality_claim": false
+  },
+  "supporting_advisory_entries": [
+    "../survey-inbox/items/SI-017_real_author_needs_research_returns.md",
+    "../survey-inbox/items/SI-018_owner_gaps_and_handover_design.md",
+    "../survey-inbox/items/SI-019_module_runtime_advisory_archive.md"
+  ],
+  "collaboration_mode": "CLOUD_AGENT_PRIMARY_LOCAL_PACKAGING_INTAKE_AND_MECHANICAL_ACCEPTANCE",
+  "authority": "READING_AND_HANDOFF_ENTRY_ONLY_NO_CONSTRUCTION_API_GOLD_TRAINING_UPLOAD_OR_PRODUCTION_AUTHORITY"
+}

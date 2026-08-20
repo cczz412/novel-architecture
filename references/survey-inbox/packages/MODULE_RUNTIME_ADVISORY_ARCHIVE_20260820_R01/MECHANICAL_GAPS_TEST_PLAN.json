@@ -1,0 +1,450 @@
+{
+  "schema_version": "mechanical-gaps-candidate-test-plan-v1",
+  "artifact_identity": "ADVISORY_CANDIDATE_IMPLEMENTATION_ONLY",
+  "generated_for_task": "three_mechanical_gaps_candidate_implementation",
+  "source_package": {
+    "filename": "01_REMAINING_GAPS_SHARED_PACKAGE.zip",
+    "sha256": "857d9b57fd608e63d3931c0fc8f36ca7e0f73cb8ef59c3401e3f1d6199576211",
+    "file_count_read": 247,
+    "sha256sum_entries_verified": 246,
+    "sha256sum_mismatches": 0,
+    "manifest_json_parsed": true
+  },
+  "execution_boundaries": {
+    "api_calls": 0,
+    "model_calls": 0,
+    "automatic_retries": 0,
+    "gold_generated": 0,
+    "training_changes": 0,
+    "production_permission_changes": 0,
+    "r13_changes": 0,
+    "public_product_completion_claim": false
+  },
+  "classifications": [
+    {
+      "gap_id": "M1_WATERMARK_DISPOSITION",
+      "classification": "NEEDS_CZ_CHOICE",
+      "patch_included": false,
+      "current_semantics_supported": [
+        "watermark is candidate-only",
+        "original prose must not be silently deleted or rewritten",
+        "normal repeated prose must not be treated as archive junk",
+        "disposition and loss must be visible"
+      ],
+      "blocking_choices": [
+        "candidate equality and normalization rule",
+        "mechanically-confirmable threshold and necessary conditions",
+        "warn-only versus must-ask boundary",
+        "member/chapter/batch stop scope",
+        "whether author confirmation only changes disposition or may create a separate derived cleaned view"
+      ],
+      "forbidden_defaults": [
+        "repeat count threshold",
+        "cross-chapter percentage threshold",
+        "automatic whitespace/case/fullwidth/URL normalization",
+        "automatic deletion or replacement",
+        "reusing known_archive_junk for prose lines"
+      ]
+    },
+    {
+      "gap_id": "M3_RUN_RECEIPT_AND_M4_COMPLETE_GATE",
+      "classification": "IMPLEMENTABLE_WITH_CURRENT_SEMANTICS",
+      "patch_included": true,
+      "state_owner": "novel-mvp/mvp/extract_workspace.py",
+      "logical_keys": [
+        "fact_candidates",
+        "fact_candidate_runs"
+      ],
+      "completion_states": [
+        "COMPLETE",
+        "FAILED_TIMEOUT",
+        "INCOMPLETE_TRUNCATED",
+        "FAILED_TRANSPORT",
+        "FAILED_RAW_RESPONSE",
+        "FAILED_PROVIDER_SHAPE"
+      ],
+      "attempt_count": 1
+    },
+    {
+      "gap_id": "M11_RECALL_HANDLE_OWNER",
+      "classification": "IMPLEMENTABLE_WITH_CURRENT_SEMANTICS",
+      "patch_included": true,
+      "state_owner": "novel-mvp/mvp/recall_handle_workspace.py",
+      "logical_keys": [
+        "recall_handles"
+      ],
+      "author_safe_renderer_changed": false,
+      "real_handle_author_visible": false
+    }
+  ],
+  "patch": {
+    "filename": "MECHANICAL_GAPS_CANDIDATE_PATCH.diff",
+    "sha256": "5393a732bc1028e46f42c9415bd00f93a9b4fd8dd9fe43c2a2eb9148652db8e8",
+    "format": "unified_diff_relative_to_repository_root",
+    "files_changed": 11,
+    "insertions": 2172,
+    "deletions": 44,
+    "write_set": [
+      {
+        "path": "novel-mvp/mvp/extract.py",
+        "action": "modify",
+        "owner_role": "transport failure classifier; no persistent state ownership"
+      },
+      {
+        "path": "novel-mvp/mvp/extract_run_receipt.py",
+        "action": "add",
+        "owner_role": "pure M3 receipt schema and validation"
+      },
+      {
+        "path": "novel-mvp/mvp/extract_workspace.py",
+        "action": "modify",
+        "owner_role": "sole M3 receipt/current C3 workspace writer"
+      },
+      {
+        "path": "novel-mvp/mvp/fact_workspace.py",
+        "action": "modify",
+        "owner_role": "M4 read gate only"
+      },
+      {
+        "path": "novel-mvp/mvp/packer_workspace.py",
+        "action": "add",
+        "owner_role": "M11 AuthorWorkspace preflight adapter only"
+      },
+      {
+        "path": "novel-mvp/mvp/recall_handle_workspace.py",
+        "action": "add",
+        "owner_role": "sole recall handle registry owner"
+      },
+      {
+        "path": "novel-mvp/mvp/workspace.py",
+        "action": "modify",
+        "owner_role": "logical key allowlist only"
+      },
+      {
+        "path": "tests/test_novel_mvp_extract_run_receipt.py",
+        "action": "add",
+        "owner_role": "M3/M4 direct tests"
+      },
+      {
+        "path": "tests/test_novel_mvp_extract_transport_receipts.py",
+        "action": "add",
+        "owner_role": "transport/parser direct tests"
+      },
+      {
+        "path": "tests/test_novel_mvp_fact_workspace.py",
+        "action": "modify",
+        "owner_role": "existing expectation aligned to earlier complete gate"
+      },
+      {
+        "path": "tests/test_novel_mvp_recall_handle_workspace.py",
+        "action": "add",
+        "owner_role": "M11 direct tests"
+      }
+    ]
+  },
+  "test_cases": [
+    {
+      "id": "M1-WM-NEGATIVE-CONTROL",
+      "gap_id": "M1_WATERMARK_DISPOSITION",
+      "status": "BLOCKED_PENDING_CZ_CHOICE",
+      "category": "normal",
+      "fixture": "same neutral narrative sentence repeated across chapters",
+      "invariants": [
+        "original text unchanged",
+        "chapter boundaries unchanged",
+        "must not be classified through known_archive_junk"
+      ]
+    },
+    {
+      "id": "M1-WM-EXACT-HEADER",
+      "gap_id": "M1_WATERMARK_DISPOSITION",
+      "status": "BLOCKED_PENDING_CZ_CHOICE",
+      "category": "candidate",
+      "fixture": "exact same short line at repeated header/footer positions",
+      "invariants": [
+        "original text unchanged",
+        "candidate evidence and positions visible"
+      ],
+      "missing_expected_value": "warn-only, mechanically-confirmable, or must-ask"
+    },
+    {
+      "id": "M1-WM-NEAR-DUPLICATE",
+      "gap_id": "M1_WATERMARK_DISPOSITION",
+      "status": "BLOCKED_PENDING_CZ_CHOICE",
+      "category": "bad_input_or_ambiguous",
+      "fixture": "whitespace/fullwidth/case/URL variants",
+      "invariants": [
+        "no hidden normalization",
+        "no deletion or rewrite"
+      ],
+      "missing_expected_value": "candidate equality rule"
+    },
+    {
+      "id": "M1-WM-STOP-SCOPE",
+      "gap_id": "M1_WATERMARK_DISPOSITION",
+      "status": "BLOCKED_PENDING_CZ_CHOICE",
+      "category": "failure_no_overwrite",
+      "fixture": "one suspicious member mixed with valid members",
+      "invariants": [
+        "old visible project state unchanged on stop",
+        "all original upload bytes remain traceable"
+      ],
+      "missing_expected_value": "member/chapter/batch stop scope"
+    },
+    {
+      "id": "M3-COMPLETE-RESTART",
+      "gap_id": "M3_RUN_RECEIPT_AND_M4_COMPLETE_GATE",
+      "status": "EXECUTED_PASS",
+      "category": "normal_restart",
+      "test": "tests/test_novel_mvp_extract_run_receipt.py::test_complete_receipt_binds_current_c3_and_survives_restart",
+      "invariants": [
+        "C3 and COMPLETE receipt committed atomically",
+        "restart returns exact current identity",
+        "M4 gate accepts only exact binding"
+      ]
+    },
+    {
+      "id": "M3-FAILURE-NO-OVERWRITE",
+      "gap_id": "M3_RUN_RECEIPT_AND_M4_COMPLETE_GATE",
+      "status": "EXECUTED_PASS",
+      "category": "failure_no_overwrite",
+      "test": "tests/test_novel_mvp_extract_run_receipt.py::test_failed_run_receipt_never_overwrites_last_complete_c3",
+      "invariants": [
+        "failure receipt appended",
+        "prior complete C3 version and SHA unchanged",
+        "restart preserves prior C3"
+      ]
+    },
+    {
+      "id": "M3-OLD-OPERATION-REPLAY",
+      "gap_id": "M3_RUN_RECEIPT_AND_M4_COMPLETE_GATE",
+      "status": "EXECUTED_PASS",
+      "category": "idempotent_restart",
+      "test": "tests/test_novel_mvp_extract_run_receipt.py::test_complete_operation_replays_after_later_run_receipt",
+      "invariants": [
+        "old operation reconstructs original ledger prefix",
+        "no duplicate C3 or receipt"
+      ]
+    },
+    {
+      "id": "M3-BAD-PARTITION",
+      "gap_id": "M3_RUN_RECEIPT_AND_M4_COMPLETE_GATE",
+      "status": "EXECUTED_PASS",
+      "category": "bad_input",
+      "test": "tests/test_novel_mvp_extract_run_receipt.py::test_bad_failure_partition_writes_nothing",
+      "invariants": [
+        "expected/completed/unprocessed partition must be exact",
+        "zero visible write"
+      ]
+    },
+    {
+      "id": "M3-STALE-RECEIPT-VERSION",
+      "gap_id": "M3_RUN_RECEIPT_AND_M4_COMPLETE_GATE",
+      "status": "EXECUTED_PASS",
+      "category": "stale",
+      "test": "tests/test_novel_mvp_extract_run_receipt.py::test_stale_failure_receipt_version_writes_nothing",
+      "invariants": [
+        "version conflict rejects",
+        "prior ledger and C3 unchanged"
+      ]
+    },
+    {
+      "id": "M4-REJECT-UNRECEIPTED-C3",
+      "gap_id": "M3_RUN_RECEIPT_AND_M4_COMPLETE_GATE",
+      "status": "EXECUTED_PASS",
+      "category": "bad_input_gate",
+      "test": "tests/test_novel_mvp_extract_run_receipt.py::test_m4_rejects_valid_c3_without_complete_receipt",
+      "invariants": [
+        "schema-valid C3 is insufficient without exact COMPLETE receipt",
+        "facts write remains unchanged"
+      ]
+    },
+    {
+      "id": "M4-REJECT-STALE-SOURCE",
+      "gap_id": "M3_RUN_RECEIPT_AND_M4_COMPLETE_GATE",
+      "status": "EXECUTED_PASS",
+      "category": "stale",
+      "test": "tests/test_novel_mvp_extract_run_receipt.py::test_source_change_marks_complete_receipt_and_c3_stale",
+      "invariants": [
+        "old C2/current revision cannot enter M4",
+        "no facts overwrite"
+      ]
+    },
+    {
+      "id": "M3-TRANSPORT-STATE-MATRIX",
+      "gap_id": "M3_RUN_RECEIPT_AND_M4_COMPLETE_GATE",
+      "status": "EXECUTED_PASS",
+      "category": "failure_matrix",
+      "tests": [
+        "tests/test_novel_mvp_extract_transport_receipts.py::test_timeout_is_structured_and_single_attempt",
+        "tests/test_novel_mvp_extract_transport_receipts.py::test_transport_error_records_raw_stdout_fingerprint",
+        "tests/test_novel_mvp_extract_transport_receipts.py::test_invalid_outer_response_is_structured_raw_response_failure",
+        "tests/test_novel_mvp_extract_transport_receipts.py::test_non_object_outer_response_is_structured_raw_response_failure",
+        "tests/test_novel_mvp_extract_transport_receipts.py::test_truncated_content_is_structured_and_never_retried",
+        "tests/test_novel_mvp_extract_transport_receipts.py::test_extract_segment_propagates_truncation_after_one_model_attempt"
+      ],
+      "invariants": [
+        "attempt_count exactly one",
+        "no retry",
+        "raw response body not embedded",
+        "only SHA/bytes/finish_reason retained"
+      ]
+    },
+    {
+      "id": "M11-REGISTER-RESOLVE-RESTART",
+      "gap_id": "M11_RECALL_HANDLE_OWNER",
+      "status": "EXECUTED_PASS",
+      "category": "normal_restart",
+      "test": "tests/test_novel_mvp_recall_handle_workspace.py::test_register_resolve_restart_and_idempotent_replay",
+      "invariants": [
+        "opaque binding survives restart",
+        "same operation is idempotent",
+        "source version/SHA checked"
+      ]
+    },
+    {
+      "id": "M11-OLD-OPERATION-REPLAY",
+      "gap_id": "M11_RECALL_HANDLE_OWNER",
+      "status": "EXECUTED_PASS",
+      "category": "idempotent_restart",
+      "test": "tests/test_novel_mvp_recall_handle_workspace.py::test_old_registration_replays_after_later_registration",
+      "invariants": [
+        "original registry prefix is reproducible",
+        "later handles are not injected into old result"
+      ]
+    },
+    {
+      "id": "M11-MISSING-STALE-CROSS-AUTHOR",
+      "gap_id": "M11_RECALL_HANDLE_OWNER",
+      "status": "EXECUTED_PASS",
+      "category": "missing_stale_security",
+      "test": "tests/test_novel_mvp_recall_handle_workspace.py::test_missing_stale_and_cross_author_fail_closed",
+      "invariants": [
+        "missing fails",
+        "version/SHA change fails",
+        "cross-author behaves as not found"
+      ]
+    },
+    {
+      "id": "M11-FAILED-REBIND-NO-OVERWRITE",
+      "gap_id": "M11_RECALL_HANDLE_OWNER",
+      "status": "EXECUTED_PASS",
+      "category": "bad_input_failure_no_overwrite",
+      "test": "tests/test_novel_mvp_recall_handle_workspace.py::test_failed_rebind_or_bad_source_never_overwrites_registry",
+      "invariants": [
+        "handle cannot silently rebind",
+        "bad source/version conflict/operation conflict write nothing"
+      ]
+    },
+    {
+      "id": "M11-PACKER-PUBLIC-SHAPE-AND-SAFE-RENDER",
+      "gap_id": "M11_RECALL_HANDLE_OWNER",
+      "status": "EXECUTED_PASS",
+      "category": "normal_public_compatibility",
+      "test": "tests/test_novel_mvp_recall_handle_workspace.py::test_packer_workspace_requires_current_handles_and_preserves_public_result",
+      "invariants": [
+        "wrapper result equals packer_tool.execute result",
+        "author output contains safe ordinal only",
+        "no real handle or material ID"
+      ]
+    },
+    {
+      "id": "M11-SOURCE-RACE-NO-REGISTRY-WRITE",
+      "gap_id": "M11_RECALL_HANDLE_OWNER",
+      "status": "EXECUTED_PASS",
+      "category": "stale_failure_no_overwrite",
+      "test": "tests/test_novel_mvp_recall_handle_workspace.py::test_source_change_during_pack_rejects_without_rewriting_registry",
+      "invariants": [
+        "source checked before and after pack",
+        "race rejects result",
+        "registry unchanged"
+      ]
+    }
+  ],
+  "executed_validation": {
+    "m3_m4": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -m pytest -q tests/test_novel_mvp_chapter_workspace.py tests/test_novel_mvp_extract_tool.py tests/test_novel_mvp_extract_workspace.py tests/test_novel_mvp_m3_c2v1_c3v1.py tests/test_novel_mvp_extract_run_receipt.py tests/test_novel_mvp_extract_transport_receipts.py tests/test_novel_mvp_fact_tool.py tests/test_novel_mvp_fact_workspace.py",
+      "result": "PASS",
+      "passed": 130,
+      "failed": 0,
+      "duration_seconds": 26.83,
+      "limitation": "The review snapshot omits current mvp/store.py. A temporary validation-only stub for _validate_c1_v1_current_view was used and removed; it is not in the patch or ZIP."
+    },
+    "m11": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -m pytest -q tests/test_novel_mvp_recall_handle_workspace.py tests/test_novel_mvp_packer.py tests/test_novel_mvp_packer_tool.py",
+      "result": "PASS",
+      "passed": 56,
+      "failed": 0,
+      "duration_seconds": 5.05
+    },
+    "diff_check": {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    "clean_copy_apply_check": {
+      "command": "git apply --check MECHANICAL_GAPS_CANDIDATE_PATCH.diff",
+      "result": "PASS"
+    },
+    "clean_copy_apply": {
+      "command": "git apply MECHANICAL_GAPS_CANDIDATE_PATCH.diff",
+      "result": "PASS"
+    },
+    "changed_python_compile": {
+      "files": 11,
+      "result": "PASS"
+    },
+    "ruff": {
+      "result": "NOT_RUN",
+      "reason": "Review snapshot pins Python 3.12.12 and Ruff 0.15.22; the available environment has Python 3.13 and no usable locked Ruff/Python 3.12 environment."
+    },
+    "full_repository_suite": {
+      "result": "NOT_RUN_IN_PARTIAL_REVIEW_SNAPSHOT",
+      "reason": "The routed ZIP intentionally omits some current repository files and tests such as the real mvp/store.py and CLI paths."
+    }
+  },
+  "required_full_repository_commands": [
+    "git apply --check MECHANICAL_GAPS_CANDIDATE_PATCH.diff",
+    "git apply MECHANICAL_GAPS_CANDIDATE_PATCH.diff",
+    "uv sync --frozen --group dev",
+    "uv run --python 3.12.12 ruff check novel-mvp/mvp tests",
+    "uv run --python 3.12.12 pytest -q",
+    "git diff --check"
+  ],
+  "failure_invariants": {
+    "M1_WATERMARK_DISPOSITION": [
+      "No patch before CZ choices are frozen",
+      "No silent prose deletion/rewrite",
+      "No hidden normalization",
+      "No archive-junk rule reuse for prose lines"
+    ],
+    "M3_RUN_RECEIPT_AND_M4_COMPLETE_GATE": [
+      "Failure never writes partial current C3",
+      "Failure receipt does not overwrite prior complete current C3",
+      "M4 rejects receipt-less or stale C3",
+      "Attempt count is exactly one",
+      "No raw response body is persisted by the receipt",
+      "Version conflicts and malformed partitions write nothing"
+    ],
+    "M11_RECALL_HANDLE_OWNER": [
+      "Missing/stale/cross-author handles fail closed",
+      "Same handle cannot silently rebind",
+      "Resolve and pack failures do not rewrite the registry",
+      "Author-safe renderer never receives or emits the real handle",
+      "Registry validates source logical-state version/SHA but does not claim domain object existence or return source body"
+    ]
+  },
+  "not_claimable": [
+    "M1 gap closed",
+    "all three gaps closed",
+    "M3 semantic extraction quality or real-model completeness",
+    "production transport behavior verified",
+    "formal C3/C9 contracts changed or frozen",
+    "M4 safe incremental second-batch admission closed",
+    "M11 source body retrieval implemented",
+    "all source owners integrated",
+    "M8 consumer integration complete",
+    "module or product completion",
+    "R13, Gold, training, production, permission, or model configuration changed",
+    "full repository clean/pass based only on the partial review snapshot"
+  ]
+}

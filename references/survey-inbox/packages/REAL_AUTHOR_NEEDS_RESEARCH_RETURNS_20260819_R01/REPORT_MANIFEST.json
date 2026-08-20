@@ -1,0 +1,150 @@
+{
+  "package_id": "REAL_AUTHOR_NEEDS_RESEARCH_RETURNS_20260819_R01",
+  "created_on": "2026-08-21",
+  "source_batch_date": "2026-08-19",
+  "status": "historical_external_research_advisory_needs_real_author_validation",
+  "source_provider": "ChatGPT Deep Research",
+  "research_baseline": {
+    "atomic_expectation_count_at_research_time": 127,
+    "current_atomic_expectation_count_at_ingest": 142,
+    "current_entry": "../../../atomic-expectations/README.md",
+    "may_override_current_baseline": false
+  },
+  "evidence_boundary": {
+    "internal_turn_citations_present": true,
+    "open_http_source_urls_present": false,
+    "independently_recheckable_bibliography_present": false,
+    "candidate_count": 19,
+    "required_next_evidence": "Map each important claim to an open primary URL and validate candidate use moments with real authors before adoption."
+  },
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_adopt_atomic_expectation": false,
+    "may_change_weight": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_upload": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false
+  },
+  "prompts": [
+    {
+      "prompt_id": "PROMPT_01",
+      "topic": "material entry and project recovery",
+      "path": "prompts/PROMPT_01_MATERIAL_ENTRY_AND_RECOVERY.txt",
+      "sha256": "a5e0eaa715db7f7111e37bacb0c820aa50d620b384a09d1175a03f4fe09421d2",
+      "bytes": 2342
+    },
+    {
+      "prompt_id": "PROMPT_02",
+      "topic": "next chapter decision",
+      "path": "prompts/PROMPT_02_NEXT_CHAPTER_DECISION.txt",
+      "sha256": "8353982f71b75ccc8a1c682007757d7eff2f5788b927e6170502e11719d0a0b3",
+      "bytes": 2306
+    },
+    {
+      "prompt_id": "PROMPT_03",
+      "topic": "current chapter and AI control",
+      "path": "prompts/PROMPT_03_CURRENT_CHAPTER_AND_AI_CONTROL.txt",
+      "sha256": "04d4dbca254a2ba3830b9ba9aa5cacabeae5759c79fd52b10fc006440edda18c",
+      "bytes": 2237
+    },
+    {
+      "prompt_id": "PROMPT_04",
+      "topic": "long-term revision and return",
+      "path": "prompts/PROMPT_04_LONG_TERM_REVISION_AND_RETURN.txt",
+      "sha256": "b81ad86d7a72b501f16cd87eb4c4c89706dd5d21e118ff2b6e9cf67c9bf09071",
+      "bytes": 2207
+    },
+    {
+      "prompt_id": "PROMPT_05",
+      "topic": "post-publication feedback",
+      "path": "prompts/PROMPT_05_POST_PUBLICATION_FEEDBACK.txt",
+      "sha256": "f5bf0a4b1cc0418ec3ba76ec08bf831aa479bd6dc7f1ffa3778be3ffd09bfff5",
+      "bytes": 2088
+    },
+    {
+      "prompt_id": "PROMPT_06",
+      "topic": "cross-tool and editor handoff",
+      "path": "prompts/PROMPT_06_CROSS_TOOL_AND_EDITOR_HANDOFF.txt",
+      "sha256": "0234b28aebb203e19e52f4d96b3edee06e35b3d06aa97d68b998a503bc903327",
+      "bytes": 2321
+    }
+  ],
+  "returns": [
+    {
+      "return_id": "RETURN_01",
+      "prompt_id": "PROMPT_01",
+      "original_name": "deep-research-report - 2026-08-19T063908.171.md",
+      "path": "returns/RETURN_01_MATERIAL_ENTRY_AND_RECOVERY.md",
+      "sha256": "5aa4ae4c0af2ba936e4cfb3f9f6aba2e31a4b8e64635ad66ecdfc30971bfab92",
+      "bytes": 29796
+    },
+    {
+      "return_id": "RETURN_02",
+      "prompt_id": "PROMPT_02",
+      "original_name": "deep-research-report - 2026-08-19T063912.395.md",
+      "path": "returns/RETURN_02_NEXT_CHAPTER_DECISION.md",
+      "sha256": "721380eb5f3cf5b7215c20cbfc6f794bfa3d24a5f9123babf95df1d4cdda2331",
+      "bytes": 32808
+    },
+    {
+      "return_id": "RETURN_03",
+      "prompt_id": "PROMPT_03",
+      "original_name": "deep-research-report - 2026-08-19T064543.613.md",
+      "path": "returns/RETURN_03_CURRENT_CHAPTER_AND_AI_CONTROL.md",
+      "sha256": "7aa69f36a03fc8e7c1d9e9a08494a855a2b0860111d35928171d9404d843226d",
+      "bytes": 37442
+    },
+    {
+      "return_id": "RETURN_04",
+      "prompt_id": "PROMPT_04",
+      "original_name": "deep-research-report - 2026-08-19T064546.014.md",
+      "path": "returns/RETURN_04_LONG_TERM_REVISION_AND_RETURN.md",
+      "sha256": "970a012eb88f12ecf5628d7f03ba5773d11db30da1f49869821c7040d8a5a806",
+      "bytes": 36409
+    },
+    {
+      "return_id": "RETURN_05",
+      "prompt_id": "PROMPT_05",
+      "original_name": "deep-research-report - 2026-08-19T064548.856.md",
+      "path": "returns/RETURN_05_POST_PUBLICATION_FEEDBACK.md",
+      "sha256": "bfdf581ab86e855845da3cccb8053e1616fc9a967c216b9965b83f3d134a0b66",
+      "bytes": 33976
+    },
+    {
+      "return_id": "RETURN_06",
+      "prompt_id": "PROMPT_06",
+      "original_name": "deep-research-report - 2026-08-19T064551.182.md",
+      "path": "returns/RETURN_06_CROSS_TOOL_AND_EDITOR_HANDOFF.md",
+      "sha256": "19d84816feb31b4f1e3385ec981ba92b2dda80ff873d3d8c3658c9df7e136a55",
+      "bytes": 36197
+    }
+  ],
+  "supporting_files": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "sha256": "d531796e2aa92c1ac8d087c11f8336c94ce1c9224db62b0b06cef63fc6534147",
+      "bytes": 1934
+    },
+    {
+      "path": "INTAKE_INDEX.md",
+      "sha256": "2243ddaa577842587a9ace4c1fbbee33324f185d1f371838095536c31aa3dd52",
+      "bytes": 2289
+    },
+    {
+      "path": "LOCAL_TRIAGE_R01.md",
+      "sha256": "4769291ca95781dd89fecb462611c8c6226f7cbf235d267561a1c96bf08fb7b3",
+      "bytes": 7757
+    },
+    {
+      "path": "CANDIDATE_LEDGER_R01.json",
+      "sha256": "47ed4b463d092f5bbecdf662fce4b73066865c24cea6063b027afa2f495a2eaa",
+      "bytes": 9275
+    }
+  ]
+}

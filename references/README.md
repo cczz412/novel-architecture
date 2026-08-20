@@ -7,6 +7,8 @@
 | 子区 | 干什么 | 入口 |
 |---|---|---|
 | `shared-context/` | **现行共同背景板 R14**（产品怎么想） | [R14 入口](shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) |
+| `atomic-expectations/` | **现行 142 条原子需求 R03**（局部能力要给作者什么、怎样验收） | [原子需求入口](atomic-expectations/README.md) |
+| `cloud-supervision/` | 云端 Agent 当前协作入口；分清现行口径、当前代码和历史证据 | [云端协作入口](cloud-supervision/README.md) |
 | `book-meta/` | 书目元数据、语料重标等 | [book-meta/README.md](book-meta/README.md) · [INDEX.md](book-meta/INDEX.md) |
 | `survey-inbox/` | 调查角度收件箱（GitHub／短视频讲法） | [survey-inbox/README.md](survey-inbox/README.md) |
 | `external-knowledge-base/` | 已从调查报告拆出的短背景、结论、来源、冲突和研究缺口 | [external-knowledge-base/README.md](external-knowledge-base/README.md) |

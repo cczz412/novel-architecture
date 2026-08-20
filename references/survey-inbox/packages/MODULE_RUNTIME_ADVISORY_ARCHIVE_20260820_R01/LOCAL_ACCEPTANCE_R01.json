@@ -1,0 +1,65 @@
+{
+  "schema_version": "remaining-gaps-and-atomic-tests-local-acceptance-v1",
+  "identity": "REMAINING_GAPS_AND_ATOMIC_TESTS_20260820_R01",
+  "return_intake": {
+    "zip_count": 6,
+    "status": "RETURN_INTAKE_PASS",
+    "authority": "ADVISORY_ONLY"
+  },
+  "candidate_implementation": {
+    "m1_watermark": {
+      "decision": "CZ_SELECTED_CONSERVATIVE_CANDIDATE_ONLY",
+      "code_adopted": true,
+      "branch": "codex/module-runtime-foundation-20260819-r01",
+      "commit": "b5fd8af",
+      "original_text_mutation": false,
+      "import_blocking": false,
+      "derived_clean_copy_action_implemented": false
+    },
+    "m3_m4_receipt_and_complete_gate": {
+      "decision": "ACCEPTED_LOCAL_IMPLEMENTATION",
+      "code_adopted": true,
+      "branch": "codex/module-runtime-foundation-20260819-r01",
+      "commit": "4af83ac10825c0e577770270e4617a431c597ebe",
+      "remote_readback_matched": true,
+      "targeted_tests_passed": 130,
+      "broad_adjacent_tests_passed": 1168,
+      "ruff": "PASS",
+      "git_diff_check": "PASS"
+    },
+    "m11_recall_handle": {
+      "decision": "REJECTED_INCOMPLETE_OBJECT_EXISTENCE_AND_BINDING_PROOF",
+      "code_adopted": false,
+      "reasons": [
+        "object_ref existence is not verified inside the source object",
+        "source_owner is caller supplied text rather than a bound owner capability",
+        "the handle is not bound to the consuming M11 material identity"
+      ]
+    }
+  },
+  "atomic_test_design": {
+    "decision": "ACCEPTED_FOR_FIXTURE_PREPARATION_NOT_EXECUTED",
+    "branch": "codex/module-runtime-foundation-20260819-r01",
+    "commit": "52b67c717ae514ce58b5f1cc7f2bd7f2b3009521",
+    "repository_path": "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01",
+    "remote_readback_matched": true,
+    "expectation_count": 127,
+    "small_test_count": 762,
+    "blocked_small_test_count": 364,
+    "api_calls": 0,
+    "model_calls": 0,
+    "gold_created": false
+  },
+  "owner_gap_design": {
+    "decision": "ADVISORY_DESIGN_ACCEPTED_NOT_CONSTRUCTION_AUTHORITY",
+    "task_card_count": 8,
+    "chapter_title_decision": "CZ_SELECTED_SCHEME_A",
+    "handover_v2_commit": "1be52c6",
+    "full_c10_c11_c1_coordinator_implemented": false
+  },
+  "resolved_cz_decisions": [
+    "M1_WATERMARK_CONSERVATIVE_CANDIDATE_ONLY",
+    "INITIAL_CHAPTER_TITLE_SCHEME_A"
+  ],
+  "open_cz_decisions_from_this_batch": []
+}

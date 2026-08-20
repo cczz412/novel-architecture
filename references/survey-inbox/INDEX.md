@@ -1,6 +1,6 @@
 # survey-inbox｜总览
 
-更新：2026-08-15
+更新：2026-08-21
 入口说明：[README.md](README.md)｜大表：[catalog.csv](catalog.csv)
 
 | ID | 短标题 | 形态 | 讲什么（标签） | 产品角度 | 状态 | 卡片 |
@@ -21,3 +21,6 @@
 | SI-014 | R13 对照审 novel-mvp 设计稿回包 | other | 设计审查／激活／关章／第一屏／投影／扫描 | 作者工作台／产品架构 | tagged | [卡片](items/SI-014_r13_design_review.md) |
 | SI-015 | 30 份外部知识库调查回包 | other | 中国网文／写作技法／作者工作流／长篇记忆／抽取评测／Agent／合规商业化／知识治理 | 作者工作台／产品架构／试验示范／需求验证／商业化 | used | [卡片](items/SI-015_external_knowledge_research_returns.md) |
 | SI-016 | 规划账合同审查回包 | other | 合同／规划账／交棒／投影／关章 | 作者工作台／产品架构 | tagged | [卡片](items/SI-016_plan_contract_review.md) |
+| SI-017 | 真实作者需求六题 Deep Research 回包 | other | 真实作者需求／建项目／下一章／当前章／长篇恢复／发布反馈／跨工具交接 | 作者工作台／产品架构／需求验证 | tagged | [卡片](items/SI-017_real_author_needs_research_returns.md) |
+| SI-018 | 长期保存、交棒与取料设计回包 | other | 规划选择／章事实稿／交棒恢复／人物状态时间线／取件码／材料回取 | 作者工作台／产品架构 | tagged | [卡片](items/SI-018_owner_gaps_and_handover_design.md) |
+| SI-019 | 模块运行历史顾问设计归档 | other | 模块能力图／组件设计／合成评测／0 API／候选补丁／历史验收 | 作者工作台／产品架构／需求验证／试验示范 | tagged | [卡片](items/SI-019_module_runtime_advisory_archive.md) |
