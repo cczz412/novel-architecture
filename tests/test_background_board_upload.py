@@ -32,13 +32,21 @@ def _manifest_rows(root: Path, relatives: list[str]) -> list[dict]:
     ]
 
 
-def _fixture_repo(tmp_path: Path, *, add_symlink: bool = False) -> tuple[Path, Path]:
+def _fixture_repo(
+    tmp_path: Path,
+    *,
+    add_symlink: bool = False,
+    add_unregistered: bool = False,
+) -> tuple[Path, Path]:
     root = tmp_path / "repo"
     product = root / "references/shared-context/PRODUCT_BOARD_R13"
     report_parent = root / "references/external-knowledge-base"
     report = report_parent / "REPORT_BOARD_R01"
+    atomic_parent = root / "references/atomic-expectations"
+    atomic = atomic_parent / "ATOMIC_BOARD_R03"
     product.joinpath("assets").mkdir(parents=True)
     report.joinpath("background").mkdir(parents=True)
+    atomic.mkdir(parents=True)
 
     product.joinpath("00_READ_ME_FIRST.md").write_text(
         "# 产品\n\n[同名页](same.md) [图片](assets/picture.png)\n",
@@ -51,6 +59,10 @@ def _fixture_repo(tmp_path: Path, *, add_symlink: bool = False) -> tuple[Path, P
     product.joinpath("__pycache__/cache.pyc").write_bytes(b"cache")
     if add_symlink:
         product.joinpath("linked.md").symlink_to("same.md")
+    if add_unregistered:
+        product.joinpath("not-in-manifest.md").write_text(
+            "不能悄悄进包\n", encoding="utf-8"
+        )
     product_manifest = product / "CORE_MATERIALS_MANIFEST.json"
     _write_json(
         product_manifest,
@@ -104,6 +116,34 @@ def _fixture_repo(tmp_path: Path, *, add_symlink: bool = False) -> tuple[Path, P
             "manifest_sha256": _sha256(report_manifest),
         },
     )
+    atomic.joinpath("00_READ_ME_FIRST.md").write_text(
+        "# 原子需求\n\n[机器条目](expectations.json)\n", encoding="utf-8"
+    )
+    _write_json(atomic / "expectations.json", {"expectation_count": 142})
+    atomic_manifest = atomic / "MANIFEST.json"
+    _write_json(
+        atomic_manifest,
+        {
+            "package_id": "ATOMIC_BOARD_R03",
+            "files": [
+                *_manifest_rows(
+                    atomic,
+                    ["00_READ_ME_FIRST.md", "expectations.json"],
+                ),
+                {"path": "MANIFEST.json", "bytes": None, "sha256": None},
+            ],
+        },
+    )
+    _write_json(
+        atomic_parent / "CURRENT.json",
+        {
+            "current_version": "R03",
+            "current_package_id": "ATOMIC_BOARD_R03",
+            "entry_path": "ATOMIC_BOARD_R03/00_READ_ME_FIRST.md",
+            "manifest_path": "ATOMIC_BOARD_R03/MANIFEST.json",
+            "manifest_sha256": _sha256(atomic_manifest),
+        },
+    )
     root.joinpath("AGENTS.md").write_text(
         "[当前产品板](references/shared-context/PRODUCT_BOARD_R13/00_READ_ME_FIRST.md)\n",
         encoding="utf-8",
@@ -141,6 +181,19 @@ def _fixture_repo(tmp_path: Path, *, add_symlink: bool = False) -> tuple[Path, P
                     "daily_directory": "background",
                     "flatten_aliases": {"background": "BG"},
                 },
+                {
+                    "source_id": "atomic_expectations_background",
+                    "label": "原子需求与验收背景板",
+                    "role": "acceptance_reference",
+                    "prefix": "ATOMIC",
+                    "resolver": "current_pointer",
+                    "pointer_path": "references/atomic-expectations/CURRENT.json",
+                    "entry_field": "entry_path",
+                    "manifest_field": "manifest_path",
+                    "version_field": "current_version",
+                    "daily_directory": None,
+                    "flatten_aliases": {},
+                },
             ],
         },
     )
@@ -153,8 +206,8 @@ def test_builds_deterministic_flat_prefixed_clean_zip(tmp_path: Path) -> None:
     first = builder.compile_package(root, config_path)
     second = builder.compile_package(root, config_path)
     assert first.zip_bytes == second.zip_bytes
-    assert first.source_file_count == 8
-    assert first.zip_member_count == 11
+    assert first.source_file_count == 11
+    assert first.zip_member_count == 14
     assert first.skipped_count == 4
     assert first.sources[0].version == "R13"
 
@@ -171,6 +224,8 @@ def test_builds_deterministic_flat_prefixed_clean_zip(tmp_path: Path) -> None:
         assert all("/" not in name for name in names)
         assert "PRODUCT_R13__00_READ_ME_FIRST.md" in names
         assert "REPORT_R01__00_READ_ME_FIRST.md" in names
+        assert "ATOMIC_R03__00_READ_ME_FIRST.md" in names
+        assert "ATOMIC_R03__expectations.json" in names
         assert "REPORT_R01__BG__topic.md" in names
         assert "PRODUCT_R13__same.md" in names
         assert "REPORT_R01__same.md" in names
@@ -182,13 +237,55 @@ def test_builds_deterministic_flat_prefixed_clean_zip(tmp_path: Path) -> None:
         assert "(PRODUCT_R13__assets__picture.png)" in product_entry
         report_topic = archive.read("REPORT_R01__BG__topic.md").decode()
         assert "(REPORT_R01__same.md)" in report_topic
+        atomic_entry = archive.read("ATOMIC_R03__00_READ_ME_FIRST.md").decode()
+        assert "(ATOMIC_R03__expectations.json)" in atomic_entry
+        router = archive.read(builder.ROUTER_NAME).decode()
+        assert "## 三块当前背景板" in router
+        assert "原子需求背景板回答" in router
+        assert "不是正式合同、当前进度或完成证明" in router
         manifest = json.loads(archive.read(builder.MANIFEST_NAME))
-        assert manifest["source_count"] == 2
+        assert manifest["source_count"] == 3
         assert manifest["junk_excluded_count"] == 4
+        assert {
+            source["source_id"] for source in manifest["sources"]
+        } == {
+            "product_background",
+            "report_background",
+            "atomic_expectations_background",
+        }
 
 
 def test_rejects_symlink_inside_source_board(tmp_path: Path) -> None:
     root, config_path = _fixture_repo(tmp_path, add_symlink=True)
 
     with pytest.raises(builder.BackgroundPackageError, match="符号链接"):
+        builder.compile_package(root, config_path)
+
+
+def test_rejects_unregistered_plain_file(tmp_path: Path) -> None:
+    root, config_path = _fixture_repo(tmp_path, add_unregistered=True)
+
+    with pytest.raises(builder.BackgroundPackageError, match="清单未登记的普通文件"):
+        builder.compile_package(root, config_path)
+
+
+def test_rejects_atomic_current_manifest_sha_drift(tmp_path: Path) -> None:
+    root, config_path = _fixture_repo(tmp_path)
+    pointer_path = root / "references/atomic-expectations/CURRENT.json"
+    pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+    pointer["manifest_sha256"] = "0" * 64
+    _write_json(pointer_path, pointer)
+
+    with pytest.raises(builder.BackgroundPackageError, match="清单 SHA 漂移"):
+        builder.compile_package(root, config_path)
+
+
+def test_rejects_atomic_current_without_package_identity(tmp_path: Path) -> None:
+    root, config_path = _fixture_repo(tmp_path)
+    pointer_path = root / "references/atomic-expectations/CURRENT.json"
+    pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+    pointer.pop("current_package_id")
+    _write_json(pointer_path, pointer)
+
+    with pytest.raises(builder.BackgroundPackageError, match="current_package_id"):
         builder.compile_package(root, config_path)

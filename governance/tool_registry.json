@@ -4054,12 +4054,13 @@
       "primary_identity_label": "可复用组件",
       "status": "candidate_not_default",
       "status_label": "候选组件·背景板手工上传运输",
-      "purpose": "读取已登记的当前产品背景板与报告背景板，生成加版本前缀、单层平铺、排除缓存垃圾且可重复核验的 ZIP。",
+      "purpose": "读取已登记的当前产品、外部报告与原子需求三块背景板，生成加版本前缀、单层平铺、排除缓存垃圾且可重复核验的 ZIP。",
       "human_command": "uv run --locked python tools/build_background_board_upload_zip.py [build|check]",
       "inputs": [
         "config/background_board_upload/sources.json",
         "references/shared-context/ 下版本号最大的完整产品共同背景板",
-        "references/external-knowledge-base/CURRENT.json 指向的当前外部报告背景板"
+        "references/external-knowledge-base/CURRENT.json 指向的当前外部报告背景板",
+        "references/atomic-expectations/CURRENT.json 指向的当前原子需求与验收背景板"
       ],
       "outputs": [
         "TEMP/background-board-upload/ 下的版本化单层 ZIP",
@@ -4075,7 +4076,7 @@
         "config/background_board_upload/README.md",
         "tests/test_background_board_upload.py"
       ],
-      "consumer_evidence_rule": "产品板只从固定存放目录选择名称以 _R数字 收尾且入口、清单齐全的唯一最高版本；报告板必须通过 CURRENT.json 清单 SHA 校验。",
+      "consumer_evidence_rule": "产品板只从固定存放目录选择名称以 _R数字 收尾且入口、清单齐全的唯一最高版本；报告板与原子需求板必须通过各自 CURRENT.json 的包身份和清单 SHA 校验；三块板都拒绝清单未登记的普通文件。",
       "test_references": [
         "tests/test_background_board_upload.py"
       ],
@@ -4084,7 +4085,7 @@
         "config/background_board_upload/README.md",
         "TEMP/background-board-upload/"
       ],
-      "next_confirmed_consumer": "CZ 后续在 ChatGPT 项目来源平铺环境中反复上传或解压使用当前两套背景板。",
+      "next_confirmed_consumer": "CZ 后续在 ChatGPT 项目来源平铺环境中反复上传或解压使用当前三块背景板。",
       "retirement_condition_and_compatibility_boundary": "只生成无权限的运输副本；拒绝符号链接、入口漂移、清单漂移、平铺重名、TEMP 外输出和同名异字节覆盖。背景板升版由各自正式入口决定，工具不替它们转正。",
       "review_needed": false
     }

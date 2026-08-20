@@ -77,7 +77,7 @@ payload；`status` 若没有 CMIN-B 的正式当前状态，就保持“不替�
 |---|---|---|
 | `simple_pack.py` | 小型 Prompt＋材料外发包；`--controlled-review` 是轻量摘要外审卫生门 | 普通模式保留旧行为；受控模式拒收符号链接、嵌套 ZIP、锁箱／金标／正文式材料名、密钥、绝对路径、非法 JSON 和超长行，并生成模型与发送核对单 |
 | `chatgpt_review_pack.py` | 仓库结构与路线证据审查包 | 全仓用 profile；高频产品线用四层 route 取材地图；包内 manifest／SHA／来源票；包外验收票；所有回读通过后才落目标目录 |
-| `build_background_board_upload_zip.py` | 把当前产品背景板和报告背景板做成 ChatGPT 单层运输 ZIP | 只读正式原件；加身份与版本前缀、改写包内链接、排除缓存垃圾，成品只落 `TEMP`，不上传、不覆盖同名异字节 ZIP |
+| `build_background_board_upload_zip.py` | 把当前产品、外部报告和原子需求三块背景板做成 ChatGPT 单层运输 ZIP | 只读正式原件和各自当前指针；加身份与版本前缀、改写包内链接、拒绝未登记普通文件、排除缓存垃圾，成品只落 `TEMP`，不上传、不覆盖同名异字节 ZIP |
 
 打包成功只说明归档字节完整，不等于材料的语义结论已经审收。
 
@@ -104,7 +104,7 @@ python3 tools/simple_pack.py \
 uv run --locked python tools/build_background_board_upload_zip.py
 ```
 
-它会从正式入口读取两套当前背景板，生成一个带总导航的单层 ZIP。详细规则见
+它会从正式入口读取三块当前背景板，生成一个带总导航的单层 ZIP。详细规则见
 `config/background_board_upload/README.md`。
 
 ## 开跑前的保护线
