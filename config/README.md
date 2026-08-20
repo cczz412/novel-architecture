@@ -7,7 +7,7 @@
   方式、流式方式与输出上限策略。
 - `prompts/`：可复用提示词正文及它的 SHA 清单。
 - `context_recipes/`：只记录上下文怎么拼，不保存某次已经拼好的完整上下文。
-- `background_board_upload/`：登记当前两套背景板怎样编译成单层手工上传 ZIP。
+- `background_board_upload/`：登记当前三块共同背景怎样编译成单层手工上传 ZIP。
 - `contracts/`：任务输入输出等可复用 JSON 结构约束。
 - `batches/`：某一批测哪本书、多少章、用哪版提示词、最多允许多少次调用。
 - `test_replay/`：退出日常验收的历史测试节点、取件范围和外置回放包封签。

@@ -1,6 +1,14 @@
 # Notion 指针（深挖优先走这里）
 
-本地是镜像；详细过程多在 Notion。需要时打开，**默认不要整页扫进对话**。
+本地正式包和登记件是真源；Notion 主要给人读和讨论。需要时打开，**默认不要整页扫进对话**。
+
+## 当前工作页
+
+| 用途 | 链接 |
+|---|---|
+| 小说架构新工作页 | https://app.notion.com/p/3be5cadc4d0f80448727d77bcacd9235 |
+| 产品背景卡｜现行 R13 | https://app.notion.com/p/3be5cadc4d0f81ab8c21deafb82d89c3 |
+| 报告背景｜外部报告知识库 R01 | https://app.notion.com/p/3be5cadc4d0f819eb8ebd02ca1b9b8e5 |
 
 ## 主线相关
 

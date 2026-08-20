@@ -1,0 +1,61 @@
+{
+  "schema": "model-switch-d2-r06",
+  "declared_model_phase": "USER_MUST_START_THIS_FRESH_CHAT_WITH_EXTRA_HIGH",
+  "run_id": "D2-20260820-024452-F61C01",
+  "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "cpu_count": 5,
+  "affinity": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "cpu_max": "400000 100000",
+  "memory_max": "4294967296",
+  "hostname": "4ad2069a84f2",
+  "cwd": "/mnt/data/D2_FRESH_EXTRA_HIGH_PAYLOAD",
+  "df": {
+    "exit_code": 0,
+    "stdout": "Filesystem     Type  Size  Used Avail Use% Mounted on\n/dev/vda       ext4   63G   22G   38G  37% /\n/dev/vda       ext4   63G   22G   38G  37% /\n",
+    "stderr": ""
+  },
+  "node": {
+    "exit_code": 0,
+    "stdout": "v22.16.0\n",
+    "stderr": ""
+  },
+  "git": {
+    "exit_code": 0,
+    "stdout": "git version 2.47.3\n",
+    "stderr": ""
+  },
+  "os_release": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"13\"\nVERSION=\"13 (trixie)\"\nVERSION_CODENAME=trixie\nDEBIAN_VERSION_FULL=13.3\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+  "cgroup": "0::/\n",
+  "network": {
+    "example.com": {
+      "dns_error": "gaierror(-3, 'Temporary failure in name resolution')"
+    },
+    "api.openai.com": {
+      "dns_error": "gaierror(-3, 'Temporary failure in name resolution')"
+    },
+    "github.com": {
+      "dns_error": "gaierror(-3, 'Temporary failure in name resolution')"
+    }
+  },
+  "project_sources": {
+    "00_ProjectSources_同时加入_平铺MD.md": {
+      "exists": true,
+      "path": "/mnt/data/00_ProjectSources_同时加入_平铺MD.md",
+      "sha256": "ac38501337866bfac229733a706e6e4f5af77a100a5d599ff4c4dcda51b1ade7",
+      "bytes": 631764
+    },
+    "00_ProjectSources_同时加入_ZIP.zip": {
+      "exists": true,
+      "path": "/mnt/data/00_ProjectSources_同时加入_ZIP.zip",
+      "sha256": "2809a00e4b922f61565ab0e5a00bc80201f95e9296c9a8c90660de184bcfeca2",
+      "bytes": 31030
+    }
+  }
+}

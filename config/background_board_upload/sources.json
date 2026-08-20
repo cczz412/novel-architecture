@@ -4,6 +4,9 @@
   "sources": [
     {
       "base_directory": "references/shared-context",
+      "additional_included_files": [
+        "BUILD_RECEIPT.json"
+      ],
       "daily_directory": null,
       "directory_prefix": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_",
       "entry_name": "00_READ_ME_FIRST.md",
@@ -28,6 +31,19 @@
       "resolver": "current_pointer",
       "role": "external_evidence",
       "source_id": "report_background",
+      "version_field": "current_version"
+    },
+    {
+      "daily_directory": null,
+      "entry_field": "entry_path",
+      "flatten_aliases": {},
+      "label": "原子需求与验收背景板",
+      "manifest_field": "manifest_path",
+      "pointer_path": "references/atomic-expectations/CURRENT.json",
+      "prefix": "ATOMIC",
+      "resolver": "current_pointer",
+      "role": "requirements_acceptance_baseline",
+      "source_id": "atomic_expectations_background",
       "version_field": "current_version"
     }
   ]

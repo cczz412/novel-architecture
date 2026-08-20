@@ -1,0 +1,20 @@
+{
+  "schema": "chatgpt-review-delta-manifest-v1",
+  "delta_id": "<DELTA_ID>",
+  "parent_package_id": "<PARENT_ID>",
+  "parent_package_sha256": "<PARENT_SHA>",
+  "operations": [
+    {
+      "op": "ADD_OR_REPLACE",
+      "path": "<PATH>",
+      "sha256": "<SHA>"
+    },
+    {
+      "op": "DELETE",
+      "path": "<PATH>",
+      "previous_sha256": "<OLD_SHA>"
+    }
+  ],
+  "apply_mode": "STAGING_THEN_VERIFY",
+  "expected_result_manifest_sha256": "<SHA>"
+}

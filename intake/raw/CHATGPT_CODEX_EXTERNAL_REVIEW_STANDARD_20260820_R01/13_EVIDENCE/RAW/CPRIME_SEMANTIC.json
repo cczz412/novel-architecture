@@ -1,0 +1,64 @@
+{
+  "schema": "pabr05-cprime-semantic",
+  "experiment_id": "PABR05-1D65915A599D",
+  "bprime_run_id": "NOT_RETRIEVABLE",
+  "md_source_answers": {
+    "md01_root": "MROOT-0ErC9vtUhWsjd7Y",
+    "md02_heading": "MHEAD-kHHqgwDSzShKQ8U",
+    "md03_code": "MCODE-w_BKhDAdxyk7q_o",
+    "md04_table": "MTABLE-Oq_RD2EK-zML3M4",
+    "md05_unicode": "M中文-0e6c90a95b",
+    "md06_negative": "MNEG-tKbnyfFkJj2xNn4",
+    "md07_order": "cobalt > willow > seventeen > harbor",
+    "md08_middle": "MMID-hu9p9JLDJG4rEFk",
+    "md09_near_tail": "MNT-o3PuNKmC1M9FRL4",
+    "md10_long_tail": "MTAIL-wY7JAjHa_-eWBwY"
+  },
+  "zip_source_answers": {
+    "zip01_root": "NOT_RETRIEVABLE",
+    "zip02_nested1": "NOT_RETRIEVABLE",
+    "zip03_nested2": "NOT_RETRIEVABLE",
+    "zip04_inner_zip": "NOT_RETRIEVABLE",
+    "zip05_hidden": "NOT_RETRIEVABLE",
+    "zip06_dupe_a": "NOT_RETRIEVABLE",
+    "zip07_dupe_b": "NOT_RETRIEVABLE",
+    "zip08_unicode": "NOT_RETRIEVABLE",
+    "zip09_csv": "NOT_RETRIEVABLE",
+    "zip10_long_tail": "NOT_RETRIEVABLE"
+  },
+  "bprime_memory_recall": {
+    "BP01_token": "NOT_RETRIEVABLE",
+    "BP02_number": "NOT_RETRIEVABLE",
+    "BP03_date": "NOT_RETRIEVABLE",
+    "BP04_filename": "NOT_RETRIEVABLE",
+    "BP05_unicode": "NOT_RETRIEVABLE",
+    "BP06_relation": "NOT_RETRIEVABLE",
+    "BP07_negative": "NOT_RETRIEVABLE",
+    "BP08_order": "NOT_RETRIEVABLE",
+    "BP09_code_a": "NOT_RETRIEVABLE",
+    "BP10_code_b": "NOT_RETRIEVABLE",
+    "BP11_phrase": "NOT_RETRIEVABLE",
+    "BP12_nested": "NOT_RETRIEVABLE"
+  },
+  "bprime_status_recall": "NOT_RETRIEVABLE",
+  "freeform_bprime_reconstruction": "B′ 的实际执行结果在当前 Project chat 上下文中不可检索。当前可见的上一聊天信息只包含 B′ 的执行指令，不能证明脚本是否成功，也不能恢复 BPRIME_STATUS 或 12 项 memory canary 的具体值。为避免猜测，所有结果相关信息均记为 NOT_RETRIEVABLE。",
+  "project_memory_mode": "PROJECT_ONLY_EXPECTED_BUT_UI_CONFIRM_REQUIRED",
+  "status": {
+    "md_reaccess": "10/10",
+    "zip_reaccess": "0/10",
+    "project_chat_memory": "0/12",
+    "bprime_fs_cross_chat": "FAIL"
+  },
+  "notes": {
+    "bprime_run_id_input": "NOT_RETRIEVABLE",
+    "bprime_run_id_caveat": "The user did not provide the copied BPRIME_RUN_ID, and it was not recoverable from current Project context or mounted filesystem. run_cprime.py was executed with the explicit placeholder NOT_RETRIEVABLE; therefore the filesystem-seed outcome is an operational FAIL and is not conclusive for the unknown real B′ run ID.",
+    "md_retrieval_method": "Current Project Sources semantic/file search; all 10 requested MD probes were returned across root, middle, near-tail, and long-tail chunks.",
+    "zip_retrieval_method": "Current Project Sources semantic/file search only. Multiple exact queries for ZIP01_ROOT through ZIP10_LONG_TAIL returned no ZIP source or archive-member content. The mounted raw ZIP was not opened or extracted for semantic answers.",
+    "project_chat_memory_method": "Current Project conversation context and available safe prior-reasoning lookup were checked; no exact BPRIME_MEMORY_BLOCK values or BPRIME_STATUS were recoverable.",
+    "bprime_status_recall_grade": "FAIL",
+    "raw_project_source_fs_visibility": {
+      "md": "PASS",
+      "zip": "PASS"
+    }
+  }
+}

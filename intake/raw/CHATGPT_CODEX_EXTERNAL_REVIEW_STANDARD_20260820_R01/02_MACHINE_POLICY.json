@@ -1,0 +1,176 @@
+{
+  "schema": "chatgpt-codex-external-review-policy-v1",
+  "spec_id": "CHATGPT_CODEX_EXTERNAL_REVIEW_STANDARD_20260820_R01",
+  "status": "LOCAL_LONG_TERM_REFERENCE_CANDIDATE",
+  "authority": "PACKAGING_AND_EXTERNAL_REVIEW_COLLABORATION_ONLY",
+  "evidence_cutoff": "2026-08-20",
+  "evidence_levels": [
+    "OFFICIAL",
+    "EMPIRICAL_REPEATED",
+    "EMPIRICAL_SINGLE",
+    "NORMATIVE",
+    "UNKNOWN"
+  ],
+  "defaults": {
+    "project_memory": "PROJECT_ONLY",
+    "project_sources_strategy": "FLAT_SEMANTIC_PLUS_ZIP_ASSET",
+    "chat_unit": "ONE_STAGE_OR_MAJOR_WORKSTREAM",
+    "sandbox_network_assumption": "OFFLINE",
+    "exact_state_storage": "FILES_NOT_MEMORY",
+    "result_handoff": "DOWNLOAD_RESULT_ZIP_IMMEDIATELY"
+  },
+  "official_limits": {
+    "max_file_bytes": 536870912,
+    "max_text_tokens_per_file": 2000000,
+    "pro_project_file_count": 40,
+    "pro_library_gb_listed": 100,
+    "note": "Official pages currently expose different cross-feature storage figures; use in-product Settings > Storage as runtime truth."
+  },
+  "recommended_budgets": {
+    "max_upload_zip_mib": 450,
+    "max_routine_extracted_gib": 8,
+    "max_expected_peak_ram_gib": 2.5,
+    "max_archive_members_before_split": 10000,
+    "max_nested_archive_depth": 2,
+    "project_source_target_slots": 30,
+    "project_source_reserved_slots": 10,
+    "semantic_source_target_size_kib": {
+      "min": 10,
+      "max": 750
+    }
+  },
+  "project_sources": {
+    "required_semantic_files": [
+      "00_PROJECT_ROUTER.md",
+      "01_CURRENT.md_or_json",
+      "02_AUTHORITY_AND_SCOPE.md"
+    ],
+    "semantic_roles": [
+      "router",
+      "current",
+      "authority",
+      "contract_index",
+      "topic_digest",
+      "claim_ledger",
+      "open_questions"
+    ],
+    "asset_roles": [
+      "codebase_zip",
+      "fixtures_zip",
+      "reports_archive_zip",
+      "offline_dependencies_zip"
+    ],
+    "zip_semantic_retrieval": "DO_NOT_RELY",
+    "raw_file_mount": "EMPIRICALLY_AVAILABLE_REDISCOVER_BY_NAME_AND_SHA"
+  },
+  "package_profiles": {
+    "PROJECT_SOURCE_SEMANTIC": {
+      "format": [
+        "md",
+        "json",
+        "csv"
+      ],
+      "semantic_retrieval_required": true
+    },
+    "PROJECT_SOURCE_ASSET": {
+      "format": [
+        "zip"
+      ],
+      "raw_mount_required": true
+    },
+    "CHAT_BOOTSTRAP": {
+      "format": [
+        "zip"
+      ],
+      "self_contained": true
+    },
+    "CHAT_DELTA": {
+      "format": [
+        "zip"
+      ],
+      "requires_parent_sha": true
+    },
+    "INDEPENDENT_REVIEW": {
+      "format": [
+        "zip"
+      ],
+      "frozen_input": true,
+      "fresh_chat": true
+    },
+    "RESULT": {
+      "format": [
+        "zip"
+      ],
+      "download_immediately": true
+    }
+  },
+  "required_zip_members": [
+    "00_READ_ME_FIRST.md",
+    "MANIFEST.json",
+    "SHA256SUMS.txt"
+  ],
+  "forbidden_secret_patterns": [
+    "PRIVATE KEY",
+    "AKIA",
+    "sk-",
+    "_API_KEY=",
+    "_TOKEN=",
+    "PASSWORD="
+  ],
+  "chat_rules": {
+    "reuse_same_chat_when": [
+      "same_stage",
+      "same_baseline",
+      "needs_existing_workspace",
+      "delta_only"
+    ],
+    "new_chat_when": [
+      "independent_review",
+      "stage_closed",
+      "major_baseline_change",
+      "context_drift",
+      "sandbox_reset",
+      "different_module"
+    ],
+    "checkpoint_before": [
+      "model_switch",
+      "large_test",
+      "long_pause",
+      "final_packaging",
+      "source_update"
+    ]
+  },
+  "model_switch": {
+    "same_chat_allowed": true,
+    "checkpoint_required": true,
+    "workspace_persistence_evidence": "PASS_PRO_TO_EXTRA_HIGH_2026_08_20",
+    "model_labels_must_be_recorded_in_receipt": true
+  },
+  "dependency_rules": {
+    "python": "LOCKFILE_PLUS_WHEELHOUSE_NO_INDEX",
+    "node": "LOCKFILE_PLUS_LOCAL_TARBALL_OR_VENDOR",
+    "native_binaries": "LINUX_X86_64_COMPATIBILITY_DECLARATION_REQUIRED",
+    "mac_venv_allowed": false,
+    "mac_native_node_modules_allowed": false,
+    "online_install_required": false
+  },
+  "result_contract": {
+    "required": [
+      "SUMMARY.md",
+      "MACHINE_RESULT.json",
+      "FINDINGS.md",
+      "COVERAGE_RECEIPT.json",
+      "FINALIZE_RECEIPT.json",
+      "MANIFEST.json",
+      "SHA256SUMS.txt"
+    ],
+    "chat_final_fields": [
+      "RUN_ID",
+      "STATUS",
+      "RESULT_ZIP",
+      "SHA256",
+      "DOWNLOAD_LINK"
+    ]
+  },
+  "empirical_reference": "13_EVIDENCE/EMPIRICAL_RESULTS.json"
+}

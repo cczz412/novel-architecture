@@ -1,0 +1,50 @@
+{
+  "schema": "probe-c-semantic-r04",
+  "project_source_answers": {
+    "root": "NOT_RETRIEVABLE",
+    "nested1": "NOT_RETRIEVABLE",
+    "nested2": "NOT_RETRIEVABLE",
+    "inner_zip": "NOT_RETRIEVABLE",
+    "hidden": "NOT_RETRIEVABLE",
+    "dupe_a": "NOT_RETRIEVABLE",
+    "dupe_b": "NOT_RETRIEVABLE",
+    "unicode": "NOT_RETRIEVABLE",
+    "csv": "NOT_RETRIEVABLE",
+    "long_tail": "NOT_RETRIEVABLE"
+  },
+  "a_memory_canary_recall": "MEM-A-RZk7ea-HNC7M05hYg8Numg",
+  "b_project_memory_block_recall": {
+    "MB01_token": "NOT_RETRIEVABLE",
+    "MB02_number": "NOT_RETRIEVABLE",
+    "MB03_date": "NOT_RETRIEVABLE",
+    "MB04_filename": "NOT_RETRIEVABLE",
+    "MB05_unicode": "NOT_RETRIEVABLE",
+    "MB06_relation": "NOT_RETRIEVABLE",
+    "MB07_negative": "NOT_RETRIEVABLE",
+    "MB08_order": "NOT_RETRIEVABLE",
+    "MB09_code_a": "NOT_RETRIEVABLE",
+    "MB10_code_b": "NOT_RETRIEVABLE",
+    "MB11_phrase": "NOT_RETRIEVABLE",
+    "MB12_nested": "NOT_RETRIEVABLE"
+  },
+  "b_status_recall": {
+    "a_fs_seed": "NOT_RETRIEVABLE",
+    "project_source_semantic": "NOT_RETRIEVABLE",
+    "project_source_raw_bytes": "NOT_RETRIEVABLE",
+    "a_memory": "NOT_RETRIEVABLE",
+    "library_a_result": "NOT_RETRIEVABLE"
+  },
+  "library_b_result_found": false,
+  "library_b_result_attachable": false,
+  "project_memory_mode": "FAIL_EXACT_PRIOR_CHAT_OUTPUT_NOT_RETRIEVABLE__TASK_PROMPT_ONLY",
+  "freeform_previous_project_chat_reconstruction": "上一聊天的任务说明可见：它要求在同一 Project 的第一个新聊天中运行 run_probe_b.py。该聊天还要求测试 A 的文件系统 seed、Project Sources、A 的普通聊天记忆与 Library 中的 A 结果。当前新聊天没有取回上一聊天生成的 B_RUN_ID、完整 12 项 PROJECT_MEMORY_BLOCK 或最终 B_STATUS。因此无法可靠复述上一聊天实际跑出了什么结论，所有缺失结果均按 NOT_RETRIEVABLE 记录，没有猜测。",
+  "notes": {
+    "a_run_id_source": "Recovered exactly from prior ordinary-chat assistant output via account conversation context.",
+    "a_memory_source": "Recovered exactly from the same prior ordinary-chat assistant output; not supplied by the current user.",
+    "b_run_id_input": "NOT_RETRIEVABLE sentinel used because the exact B_RUN_ID was not available from prior-project-chat retrieval, Library search, current filesystem, or current attachments.",
+    "b_full_filesystem_scan": "No CHATGPT_PROBE_B_FS_SEED_*.json found under /mnt/data, /tmp, /home/oai, /workspace, or /root at probe time.",
+    "project_source_reaccess": "Repeated source/file searches for project id PSR04-29EB6E3CC550 and root/nested1/nested2/inner_zip/hidden/dupe_a/dupe_b/unicode/csv/long_tail returned no relevant canary content.",
+    "library_search": "Generic and exact-prefix searches for CHATGPT_PROBE_B_RESULT returned no matching Library item; therefore it could not be attached to this chat.",
+    "no_guessing": true
+  }
+}

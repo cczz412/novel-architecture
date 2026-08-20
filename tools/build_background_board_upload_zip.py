@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""把当前产品背景板和报告背景板编译成可上传的单层 ZIP。"""
+"""把当前共同背景板编译成可上传的单层 ZIP。"""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = Path("config/background_board_upload/sources.json")
 CONFIG_SCHEMA = "background-board-flat-package-config-v1"
 MANIFEST_SCHEMA = "background-board-flat-package-manifest-v1"
-TOOL_VERSION = "1.0"
+TOOL_VERSION = "1.1"
 ROUTER_NAME = "00_CHATGPT_MASTER_ROUTER.md"
 MANIFEST_NAME = "01_PACKAGE_MANIFEST.json"
 SHA256SUMS_NAME = "02_SHA256SUMS.txt"
@@ -68,6 +68,7 @@ class SourceSpec:
     manifest_sha256: str
     daily_directory: str | None
     flatten_aliases: dict[str, str]
+    additional_included_files: tuple[str, ...]
     pointer_relative: str | None
 
 
@@ -196,7 +197,7 @@ def is_junk(relative: PurePosixPath) -> bool:
     return name.endswith("~") or any(name.endswith(suffix) for suffix in JUNK_SUFFIXES)
 
 
-def validate_manifest(source: SourceSpec) -> None:
+def validate_manifest(source: SourceSpec) -> frozenset[str]:
     manifest_path = source.root / PurePosixPath(source.manifest_relative)
     if not manifest_path.is_file() or manifest_path.is_symlink():
         raise BackgroundPackageError(
@@ -217,6 +218,7 @@ def validate_manifest(source: SourceSpec) -> None:
         raise BackgroundPackageError(
             f"{source.label} 清单缺少 members 或 files 数组"
         )
+    listed: set[str] = set()
     for index, row in enumerate(rows):
         if not isinstance(row, dict) or not isinstance(row.get("path"), str):
             raise BackgroundPackageError(
@@ -224,13 +226,23 @@ def validate_manifest(source: SourceSpec) -> None:
             )
         expected_sha = row.get("sha256")
         expected_bytes = row.get("bytes")
-        if expected_sha is None and expected_bytes is None:
-            continue
         relative = PurePosixPath(row["path"])
         if relative.is_absolute() or ".." in relative.parts:
             raise BackgroundPackageError(
                 f"{source.label} 清单成员路径不安全：{row['path']}"
             )
+        normalized = relative.as_posix()
+        if normalized in listed:
+            raise BackgroundPackageError(
+                f"{source.label} 清单成员重复：{normalized}"
+            )
+        listed.add(normalized)
+        if expected_sha is None and expected_bytes is None:
+            if normalized != source.manifest_relative:
+                raise BackgroundPackageError(
+                    f"{source.label} 只有清单自身可省略 bytes 和 sha256：{normalized}"
+                )
+            continue
         path = source.root / Path(*relative.parts)
         if not path.is_file() or path.is_symlink():
             raise BackgroundPackageError(
@@ -244,6 +256,21 @@ def validate_manifest(source: SourceSpec) -> None:
             raise BackgroundPackageError(
                 f"{source.label} 清单成员 SHA 漂移：{row['path']}"
             )
+    listed.add(source.manifest_relative)
+    overlap = sorted(listed.intersection(source.additional_included_files))
+    if overlap:
+        raise BackgroundPackageError(
+            f"{source.label} 的 additional_included_files 与清单重复：{overlap}"
+        )
+    for relative_raw in source.additional_included_files:
+        relative = PurePosixPath(relative_raw)
+        path = source.root / Path(*relative.parts)
+        if not path.is_file() or path.is_symlink():
+            raise BackgroundPackageError(
+                f"{source.label} 明确追加文件不存在或不是普通文件：{relative_raw}"
+            )
+        listed.add(relative_raw)
+    return frozenset(listed)
 
 
 def resolve_direct_source(
@@ -496,6 +523,26 @@ def resolve_sources(repo_root: Path, config: dict[str, Any]) -> tuple[SourceSpec
             for key, value in aliases.items()
         ):
             raise BackgroundPackageError(f"flatten_aliases 不合法：{source_id}")
+        additional_raw = row.get("additional_included_files", [])
+        if not isinstance(additional_raw, list) or not all(
+            isinstance(value, str) for value in additional_raw
+        ):
+            raise BackgroundPackageError(
+                f"additional_included_files 不合法：{source_id}"
+            )
+        additional: list[str] = []
+        for value in additional_raw:
+            relative = PurePosixPath(value.replace("\\", "/"))
+            if relative.is_absolute() or not relative.parts or ".." in relative.parts:
+                raise BackgroundPackageError(
+                    f"additional_included_files 必须是安全相对路径：{value}"
+                )
+            normalized = relative.as_posix()
+            if normalized in additional:
+                raise BackgroundPackageError(
+                    f"additional_included_files 重复：{normalized}"
+                )
+            additional.append(normalized)
         common = {
             "source_id": source_id,
             "label": str(row["label"]),
@@ -507,6 +554,7 @@ def resolve_sources(repo_root: Path, config: dict[str, Any]) -> tuple[SourceSpec
                 else None
             ),
             "flatten_aliases": dict(aliases),
+            "additional_included_files": tuple(additional),
         }
         resolver = row["resolver"]
         if resolver == "direct_entry":
@@ -548,6 +596,7 @@ def enumerate_source_files(
     skipped: list[dict[str, str]] = []
     folded_names: dict[str, str] = {}
     for source in sources:
+        allowed_files = validate_manifest(source)
         for path in sorted(source.root.rglob("*")):
             if not path.is_file():
                 continue
@@ -561,6 +610,10 @@ def enumerate_source_files(
                     }
                 )
                 continue
+            if relative.as_posix() not in allowed_files:
+                raise BackgroundPackageError(
+                    f"{source.label} 出现清单外普通文件，拒绝打包：{relative.as_posix()}"
+                )
             name = flat_name(source, relative)
             folded = unicodedata.normalize("NFC", name).casefold()
             if folded in folded_names:
@@ -701,20 +754,42 @@ def render_router(
         "",
         "## 怎么读",
         "",
-        "1. 产品共同背景板回答“我们准备做什么、哪些边界已经拍下”。",
-        "2. 外部报告背景板回答“外面有什么证据、经验、反例和未知”，不能反过来替产品拍板。",
-        "3. 平时按任务只读入口和相关主题页；要核证据时，再追报告的 claim、source 和原报告登记。",
-        "4. 包外的本地相对链接不会被塞进本包；只有同一背景板内、且本包确实包含目标文件的链接会改成平铺文件名。",
-        "",
-        "## 两套当前背景板",
-        "",
-        "| 身份 | 版本 | 入口 | 日常读法 |",
-        "|---|---|---|---|",
     ]
+    for index, source in enumerate(sources, start=1):
+        if source.role == "product_authority":
+            meaning = "回答我们准备做什么产品、哪些原则和边界已经拍下"
+        elif source.role == "external_evidence":
+            meaning = "回答外面有什么证据、经验、反例和未知，不能替产品拍板"
+        elif source.role == "requirements_acceptance_baseline":
+            meaning = "回答每项局部能力应让用户得到什么、怎样验收，不能证明代码已经做到"
+        else:
+            meaning = "按入口声明的身份和权限边界使用"
+        lines.append(f"{index}. {source.label}{meaning}。")
+    lines.extend(
+        [
+            f"{len(sources) + 1}. 平时只读与任务直接相关的入口和主题，不把所有材料一次塞进上下文。",
+            f"{len(sources) + 2}. 当前代码、正式合同和运行结果不在本包里；判断‘已经做到什么’必须回本地现物核对。",
+            f"{len(sources) + 3}. 包外的本地相对链接不会被塞进本包；只有同一背景板内、且本包确实包含目标文件的链接会改成平铺文件名。",
+            "",
+            "## 冲突时怎么判断",
+            "",
+            "- CZ 最新明确指令和正式合同／结果票高于背景板文字。",
+            "- 产品共同背景板负责产品原则；原子需求板负责拆解目标和验收，不能反过来改产品原则。",
+            "- 外部报告只提供证据、反例和候选，不产生产品、施工、训练或上传权限。",
+            "- 涉及作者数据时，优先读取产品板里的数据权利与安全政策；换平台不能降低作者隔离和最小授权边界。",
+            "",
+            "## 当前背景板",
+            "",
+            "| 身份 | 版本 | 入口 | 日常读法 |",
+            "|---|---|---|---|",
+        ]
+    )
     for source in sources:
         entry_flat = flat_by_source_relative[(source.source_id, source.entry_relative)]
         if source.role == "product_authority":
             daily = "先读入口，再按产品问题选 01～08 或政策／债务页"
+        elif source.role == "requirements_acceptance_baseline":
+            daily = "先读入口；人按模块查预期，Agent 精确读取机器 JSON"
         elif source.daily_directory:
             daily = f"先读 `{source.prefix}_{source.version}__{source.flatten_aliases.get(source.daily_directory, source.daily_directory)}__*` 主题页"
         else:
@@ -850,6 +925,7 @@ def compile_package(repo_root: Path, config_path: Path) -> CompiledPackage:
                 "manifest_source_relative_path": source.manifest_relative,
                 "manifest_sha256": source.manifest_sha256,
                 "current_pointer": source.pointer_relative,
+                "additional_included_files": list(source.additional_included_files),
             }
         )
     manifest = {
@@ -983,7 +1059,7 @@ def run(repo_root: Path, config_path: Path, *, check: bool) -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="一键生成当前产品背景板＋报告背景板的 ChatGPT 单层 ZIP。"
+        description="一键生成当前共同背景板的 ChatGPT 单层 ZIP。"
     )
     parser.add_argument(
         "action",

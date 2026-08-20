@@ -1,0 +1,162 @@
+{
+  "schema": "chatgpt-codex-external-review-empirical-results-v1",
+  "evidence_date": "2026-08-20",
+  "scope": "Observed on this user account and these runs; not an OpenAI SLA.",
+  "environment_profile": {
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "architecture": "x86_64",
+    "os": "Debian GNU/Linux 13 (trixie)",
+    "python": "3.13.5",
+    "node": "22.16.0",
+    "git": "2.47.3",
+    "cpu_visible": 5,
+    "cpu_affinity_count": 5,
+    "cpu_cgroup_max": "400000 100000",
+    "cpu_quota_interpretation": "about 4 CPU equivalents",
+    "memory_cgroup_max_bytes": 4294967296,
+    "memory_cgroup_max_gib": 4.0,
+    "root_filesystem_observed_gib": 63,
+    "root_filesystem_available_observed_gib": 38,
+    "dev_shm_observed_mib": 989,
+    "gpu_observed": false,
+    "docker_observed": false
+  },
+  "capabilities": {
+    "same_chat_multi_tool_filesystem": {
+      "result": "PASS",
+      "evidence": [
+        "A35 marker exists/readable/SHA exact"
+      ]
+    },
+    "cross_chat_filesystem": {
+      "result": "DO_NOT_RELY",
+      "evidence": [
+        "A→B exact seed not found",
+        "B→C bounded scans found no B seed"
+      ]
+    },
+    "direct_public_network": {
+      "result": "UNAVAILABLE_IN_ALL_TESTED_RUNS",
+      "evidence": [
+        "DNS failures for fixed public domains in A/B/C/D2",
+        "HTTPS and remote Git failed in A"
+      ]
+    },
+    "fresh_pip_npm_download": {
+      "result": "DO_NOT_RELY",
+      "evidence": [
+        "pip failed on DNS",
+        "npm timed out while network unavailable"
+      ]
+    },
+    "local_file_and_code_work": {
+      "result": "PASS",
+      "evidence": [
+        "ZIP roundtrip",
+        "Python SQLite",
+        "local Git",
+        "localhost",
+        "subprocess timeout",
+        "1500-file ZIP"
+      ]
+    },
+    "project_source_markdown_semantic": {
+      "result": "PASS_REPEATED",
+      "bprime_score": "10/10",
+      "cprime_score": "10/10",
+      "tested_bytes": 631764,
+      "long_tail_retrieval": true
+    },
+    "project_source_zip_semantic": {
+      "result": "NOT_RETRIEVABLE_REPEATED",
+      "bprime_score": "0/10",
+      "cprime_score": "0/10"
+    },
+    "project_source_raw_file_mount": {
+      "result": "PASS_REPEATED",
+      "markdown_sha256": "ac38501337866bfac229733a706e6e4f5af77a100a5d599ff4c4dcda51b1ade7",
+      "zip_sha256": "2809a00e4b922f61565ab0e5a00bc80201f95e9296c9a8c90660de184bcfeca2",
+      "observed_in": [
+        "B′",
+        "C′",
+        "D1 Pro",
+        "D1 Extra High after switch",
+        "D2 fresh Extra High"
+      ],
+      "path_note": "/mnt/data observed; path is not guaranteed and must be discovered by name/SHA."
+    },
+    "project_chat_exact_memory": {
+      "result": "NOT_A_STATE_STORE",
+      "exact_score_cprime": "0/12",
+      "caveat": "C′ did not receive BPRIME_RUN_ID; use as a reliability warning, not proof that project memory never works."
+    },
+    "ordinary_chat_memory_into_nonisolated_project": {
+      "result": "EXACT_CANARY_RECALLED_IN_B_AND_C",
+      "implication": "Default/non-isolated memory can introduce outside-chat context into a project."
+    },
+    "library_automatic_assistant_retrieval": {
+      "result": "NOT_FOUND_IN_B_AND_C",
+      "caveat": "Official Library manual browse/add remains available; this only rejects automatic handoff as a reliable contract."
+    },
+    "model_switch_same_chat_workspace": {
+      "result": "PASS",
+      "checks": {
+        "marker_exists": true,
+        "marker_sha_match": true,
+        "blob_exists": true,
+        "blob_sha_match": true,
+        "db_exists": true,
+        "db_token_hash_match": true,
+        "db_previous_phase": "PRO_STAGE1",
+        "git_repo_exists": true,
+        "git_head_match": true
+      },
+      "same_hostname_before_after": true,
+      "same_source_sha_before_after": true
+    },
+    "fresh_extra_high_environment_profile": {
+      "result": "NO_MATERIAL_DIFFERENCE_OBSERVED",
+      "cpu_count": 5,
+      "cpu_max": "400000 100000",
+      "memory_max": "4294967296",
+      "platform": "Linux-6.18.35-x86_64-with-glibc2.41"
+    }
+  },
+  "source_result_zips": {
+    "A": {
+      "filename": "CHATGPT_PROBE_A_RESULT_A-20260820-004405-3C39D7.zip",
+      "sha256": "c3edc12d9b7fc94d9f8cdb316f713a0add5e59ba3804e13aa3584176cbf84a3c",
+      "bytes": 12406207
+    },
+    "B": {
+      "filename": "CHATGPT_PROBE_B_RESULT_B-20260820-010634-11E80C(1).zip",
+      "sha256": "dfdc72822d89096662e653224732b42551b2d5221013f99e0227ed807b04aa6e",
+      "bytes": 12370567
+    },
+    "C": {
+      "filename": "CHATGPT_PROBE_C_RESULT_C-20260820-012045-4F30D9(1).zip",
+      "sha256": "e52e9598eecbfa0aef1a93423f76638a5746e68c3a2e270ca06c0eea5283f83d",
+      "bytes": 5149
+    },
+    "BP": {
+      "filename": "CHATGPT_PROJECT_SOURCE_BP_RESULT_BP-20260820-020907-3C0DAE.zip",
+      "sha256": "c22eb2183f38997d52a45a879600fa0cb89be9b30ed54cf6691531786c5cb8a6",
+      "bytes": 5406
+    },
+    "CP": {
+      "filename": "CHATGPT_PROJECT_SOURCE_CP_RESULT_CP-20260820-021712-341156.zip",
+      "sha256": "dac44ba9f1fbb894b3f9a1ec0148c3973bc9fa59b5e1a646641a9436eede127f",
+      "bytes": 3503
+    },
+    "D1": {
+      "filename": "MODEL_SWITCH_D1_RESULT_D1-20260820-023750-C08D8B.zip",
+      "sha256": "53ad419dfb64fbab2675582fe8227128b538ccb33a6073910dd770d02a68b488",
+      "bytes": 2657
+    },
+    "D2": {
+      "filename": "MODEL_SWITCH_D2_RESULT_D2-20260820-024452-F61C01.zip",
+      "sha256": "cbe0e0c308dceea2bf228a2061ac7fbba040d82acb19e12b7a7fe7565e9e03db",
+      "bytes": 1255
+    }
+  }
+}

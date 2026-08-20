@@ -6,6 +6,7 @@
 
 - 机器指针：[CURRENT.json](CURRENT.json)
 - 人读入口：[外部报告知识库 R01](EXTERNAL_KNOWLEDGE_BASE_20260815_R01/00_READ_ME_FIRST.md)
+- Notion 人读镜像：[报告背景｜外部报告知识库 R01](https://app.notion.com/p/3be5cadc4d0f819eb8ebd02ca1b9b8e5)
 - 原始 30 份新报告：[SI-015](../survey-inbox/items/SI-015_external_knowledge_research_returns.md)
 
 ## 平时怎么读

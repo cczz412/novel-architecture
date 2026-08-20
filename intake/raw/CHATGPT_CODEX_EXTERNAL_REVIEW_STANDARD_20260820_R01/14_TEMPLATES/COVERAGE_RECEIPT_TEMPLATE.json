@@ -1,0 +1,17 @@
+{
+  "schema": "coverage-receipt-v1",
+  "input_package_id": "<ID>",
+  "current_version": "<VERSION>",
+  "read_files": [],
+  "unread_files": [
+    {
+      "path": "<PATH>",
+      "reason": "<REASON>"
+    }
+  ],
+  "failed_parse": [],
+  "excluded_scope": [],
+  "tests_run": [],
+  "stale_inputs": [],
+  "coverage_complete_for_declared_scope": false
+}

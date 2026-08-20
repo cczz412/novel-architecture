@@ -1,0 +1,28 @@
+{
+  "schema": "pabr05-cprime-machine",
+  "experiment_id": "PABR05-1D65915A599D",
+  "bprime_run_id": "NOT_RETRIEVABLE",
+  "cprime_run_id": "CP-20260820-021712-341156",
+  "environment": {
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "python": "3.13.5",
+    "cpu_count": 5,
+    "memory_max": "4294967296",
+    "cpu_max": "400000 100000"
+  },
+  "bprime_fs_seed_hits": [],
+  "md_source_raw_fs_hits": [
+    {
+      "path": "/mnt/data/00_ProjectSources_同时加入_平铺MD.md",
+      "sha256": "ac38501337866bfac229733a706e6e4f5af77a100a5d599ff4c4dcda51b1ade7",
+      "sha_match": true
+    }
+  ],
+  "zip_source_raw_fs_hits": [
+    {
+      "path": "/mnt/data/00_ProjectSources_同时加入_ZIP.zip",
+      "sha256": "2809a00e4b922f61565ab0e5a00bc80201f95e9296c9a8c90660de184bcfeca2",
+      "sha_match": true
+    }
+  ]
+}

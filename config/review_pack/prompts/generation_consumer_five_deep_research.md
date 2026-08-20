@@ -1,16 +1,12 @@
 # ChatGPT Deep Research Prompt｜生成侧（消费端）五个调查
 
-你收到的 ZIP 不是一个已完成的生成系统，而是我们当前的事实抽取合同、大纲中枢方向、长线账方向和研究空白。请先读 `00_READ_ME_FOR_REVIEWER.md`、`00_ROUTE_MAP.md`，再按四层路线阅读。
+你收到的附件不是一个已完成的生成系统，而是我们当前的事实抽取合同、大纲中枢方向、长线账方向和研究空白。请按材料中的身份标记理解现行边界、候选设计和历史证据。
 
-## 包内身份顺序
+## 材料身份
 
-- `01_current_truth/.../NOTION_TRUTH_SNAPSHOT.md`：已拍、现行、设计支撑和历史候选的身份边界。
-- `01_current_truth/.../01_CURRENT_SYSTEM_BRIEF.md`：你必须对齐的当前系统概况。
-- `02_current_route/.../02_FACT_STORE_AND_EXTRACTION_CONTRACT.md`：事实库可提供什么。
-- `02_current_route/.../03_OUTLINE_EXECUTION_AND_RETRIEVAL.md`：第 N+1 章的既有执行包与检索候选。
-- `02_current_route/.../04_LONG_TERM_MEMORY_CONFLICT_QC.md`：长期记忆和冲突检测的已有分层。
-- `02_current_route/.../05_RESEARCH_GAPS_AND_DECISIONS.md`：真正缺的公开证据和回包后待 CZ 决定的题。
-- `03_upstream_evidence/.../HISTORICAL_CANDIDATE_NOT_TRUTH.md`：只供证伪的历史候选，不是已实现功能。
+- 已拍、现行、设计支撑和历史候选必须分开。
+- 事实库接口、章节执行与检索、长期记忆和冲突检测属于当前研究背景，不等于全部已经产品化。
+- 历史候选只供证伪，不能覆盖现行边界。
 
 ## 你要完成的五项深研
 
@@ -33,38 +29,10 @@
 - 你的建议是外部顾问候选，不改写本包的现行边界，不替 CZ 选默认。
 - 本路线的任务单和授权票覆盖通用 SOP；通用 SOP 中的 Notion 回写、回包后本地施工等条款不适用于本轮。不得替我们写回 Notion、调用模型/API 或改本地仓库。
 
-## 必答的映射表
+## 必须覆盖的本地对象
 
-在综合报告中给出一张“公开证据→我们现有对象”映射表，至少覆盖：
+研究必须覆盖事实、状态、知情与误信、因果、Hook、义务与承诺、世界规则、故事线、章节大纲、章节出口和体验目标。请判断它们更适合常驻、按需回取、冲突时回证据还是废弃，并讨论索引键、时间范围、排序信号、token 预算和失败发现方式。
 
-- 事实、状态、知情/误信、因果、Hook、义务/承诺、世界规则、故事线、章节大纲、章节出口、体验目标。
-- 建议常驻、按需回取、冲突时回证据，还是应当废弃。
-- 索引键、时间范围、排序信号、token 预算和失败发现方式。
-
-## 回件 ZIP
-
-请生成一个可下载 ZIP。ZIP 根目录包含恰好 8 份实质文件：
-
-1. `00_EXECUTIVE_VERDICT.md`
-2. `01_LONG_FORM_COHERENCE.md`
-3. `02_FACT_TO_GENERATION_INTERFACE.md`
-4. `03_CONFLICT_DETECTOR.md`
-5. `04_PLOT_CONTROL_ENGINE.md`
-6. `05_OUTLINE_SCALE_LIMITS.md`
-7. `06_RECOMMENDED_ARCHITECTURE_AND_EXPERIMENTS.md`
-8. `SOURCE_EVIDENCE_MATRIX.csv`
-
-另附 `MANIFEST.json` 和 `SHA256SUMS`，不占上面 8 份；ZIP 根目录总共恰好 10 个成员，不得加其他业务文件。
-
-`06_RECOMMENDED_ARCHITECTURE_AND_EXPERIMENTS.md` 要给出：
-
-- 适合我们当前对象的 2～3 个候选架构，不要只给一个答案。
-- 每个候选的优点、失败方式、调用量、运维复杂度和适用边界。
-- 一个最小实验阶梯：零 API 夹具→短篇/几章→卷级→长篇；每阶段写输入、对照组、指标、预算变量和停止线。
-- 一张“现在能做/需验证/公开证据不足”分界表。
-
-CSV 每行至少包含：`claim_id,topic,claim,source_title,source_url,source_type,published_date,evaluation_scale,metric,result,limitations,confidence,applies_to_our_object`。
-
-运输规则：成员路径必须是相对路径；禁止绝对路径、`..`、重复成员和符号链接。`SHA256SUMS` 覆盖 8 份实质文件并可逐项复算。不要输出完整思考过程，只给证据、分析、限制和候选方案。
+请比较 2～3 个适合当前对象的候选架构，说明各自优点、失败方式、调用量、运维复杂度和适用边界。实验建议应从零 API 夹具逐步扩大到短篇、几章、卷级和长篇，并说明每一步的对照、指标、预算变量和停止线。
 
 来源：Codex

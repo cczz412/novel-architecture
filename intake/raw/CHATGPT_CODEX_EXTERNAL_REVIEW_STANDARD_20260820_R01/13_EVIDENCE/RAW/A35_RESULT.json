@@ -1,0 +1,17 @@
+{
+  "schema": "probe-a35-same-chat-second-tool-r04",
+  "run_id": "A-20260820-004405-3C39D7",
+  "status": "PASS",
+  "verification": {
+    "path": "/mnt/data/CHATGPT_PROBE_A_SAME_CHAT_A-20260820-004405-3C39D7.json",
+    "exists": true,
+    "readable": true,
+    "json_valid": true,
+    "run_id_matches": true,
+    "marker_field_present": true,
+    "expected_sha256": "0bf72903e9025ad8be4ee9a94ded56a580011e27578ae08aeb75d5fa2e851e69",
+    "actual_sha256": "0bf72903e9025ad8be4ee9a94ded56a580011e27578ae08aeb75d5fa2e851e69",
+    "sha256_matches": true
+  },
+  "error": null
+}

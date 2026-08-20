@@ -1,0 +1,27 @@
+{
+  "schema": "chatgpt-review-package-manifest-v1",
+  "package_id": "<PACKAGE_ID>",
+  "profile": "CHAT_BOOTSTRAP",
+  "version": "R01",
+  "parent_package_id": null,
+  "parent_package_sha256": null,
+  "created_at": "<ISO8601>",
+  "authority": "ADVISORY_ONLY",
+  "task_id": "<TASK_ID>",
+  "estimated_extracted_bytes": 0,
+  "estimated_peak_ram_bytes": 0,
+  "target_environment": {
+    "os": "linux",
+    "arch": "x86_64",
+    "python": ">=3.13"
+  },
+  "files": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "bytes": 0,
+      "sha256": "<SHA>",
+      "role": "ENTRY",
+      "status": "CURRENT"
+    }
+  ]
+}

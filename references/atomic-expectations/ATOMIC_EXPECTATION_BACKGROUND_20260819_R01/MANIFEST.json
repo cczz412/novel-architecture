@@ -1,0 +1,48 @@
+{
+  "schema_version": "atomic-expectation-background-manifest-v1",
+  "package_id": "ATOMIC_EXPECTATION_BACKGROUND_20260819_R01",
+  "version": "R01",
+  "identity": "shared_requirements_and_acceptance_reference",
+  "authority": "NO_EXECUTION_CONTRACT_WEIGHT_CHANGE_PRODUCT_COMPLETION_API_TRAINING_GOLD_UPLOAD_PRODUCTION_OR_GIT_AUTHORITY",
+  "source_snapshot": {
+    "identity": "CURRENT_ATOMIC_EXPECTATIONS_R01",
+    "sha256": "35b8b877b65ee757eac805d8e4077fcecd4776cd43a11e478426a87e0ac26ea3"
+  },
+  "files": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "bytes": 2921,
+      "sha256": "baa43b2bfb1777ff1da35aaf93e3dfa98526a8cc66d16453786ca3be14f56259"
+    },
+    {
+      "path": "01_ATOMIC_EXPECTATIONS.md",
+      "bytes": 153251,
+      "sha256": "8e38611b94e4c247b80676ca01191efd24a06945edd648b1a1214f9c6de4b0ce"
+    },
+    {
+      "path": "02_ATOMIC_EXPECTATIONS.json",
+      "bytes": 185983,
+      "sha256": "18577c07898aae601a825cf64d2cc6699aee581874852a1a108f98b5f4553698"
+    },
+    {
+      "path": "03_CHANGE_PROTOCOL.md",
+      "bytes": 1658,
+      "sha256": "e9a6150e0c2a62ceb4e39670dead506df8aa8a0e649c97bd1ce800fe3eb9699b"
+    },
+    {
+      "path": "04_GLOBAL_ACCEPTANCE_RULES.md",
+      "bytes": 2270,
+      "sha256": "91ea6008b6df0b1bf69a6b8fae1f1b0ea9c0be9afbdb4059e1ec0ed7f7e6eecf"
+    },
+    {
+      "path": "05_AUTHOR_USAGE_SCENARIOS.md",
+      "bytes": 2621,
+      "sha256": "fd300eb8c428246c992752e4968bcd972b9e389145b43fc3b9e63549ea4f3900"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": null,
+      "sha256": null
+    }
+  ]
+}

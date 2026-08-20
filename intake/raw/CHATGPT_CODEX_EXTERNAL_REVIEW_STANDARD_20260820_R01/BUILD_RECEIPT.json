@@ -1,0 +1,13 @@
+{
+  "schema": "chatgpt-codex-external-review-standard-build-receipt-v1",
+  "spec_id": "CHATGPT_CODEX_EXTERNAL_REVIEW_STANDARD_20260820_R01",
+  "result": "PASS",
+  "created_at": "2026-08-20T03:08:23.527245+00:00",
+  "member_count": 61,
+  "python_tools_compiled": true,
+  "raw_probe_result_zips_included": false,
+  "selected_probe_json_included": true,
+  "official_sources_registered": true,
+  "private_keys_or_real_api_keys_included": false,
+  "self_conforms_to_required_entry_name": true
+}

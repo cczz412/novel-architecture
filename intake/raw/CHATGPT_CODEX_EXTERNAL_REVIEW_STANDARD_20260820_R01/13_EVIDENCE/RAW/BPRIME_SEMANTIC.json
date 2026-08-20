@@ -1,0 +1,52 @@
+{
+  "schema": "pabr05-bprime-semantic",
+  "experiment_id": "PABR05-1D65915A599D",
+  "project_memory_mode": "PROJECT_ONLY_EXPECTED_BUT_UI_CONFIRM_REQUIRED",
+  "md_source_answers": {
+    "md01_root": "MROOT-0ErC9vtUhWsjd7Y",
+    "md02_heading": "MHEAD-kHHqgwDSzShKQ8U",
+    "md03_code": "MCODE-w_BKhDAdxyk7q_o",
+    "md04_table": "MTABLE-Oq_RD2EK-zML3M4",
+    "md05_unicode": "M中文-0e6c90a95b",
+    "md06_negative": "MNEG-tKbnyfFkJj2xNn4",
+    "md07_order": "cobalt > willow > seventeen > harbor",
+    "md08_middle": "MMID-hu9p9JLDJG4rEFk",
+    "md09_near_tail": "MNT-o3PuNKmC1M9FRL4",
+    "md10_long_tail": "MTAIL-wY7JAjHa_-eWBwY"
+  },
+  "zip_source_answers": {
+    "zip01_root": "NOT_RETRIEVABLE",
+    "zip02_nested1": "NOT_RETRIEVABLE",
+    "zip03_nested2": "NOT_RETRIEVABLE",
+    "zip04_inner_zip": "NOT_RETRIEVABLE",
+    "zip05_hidden": "NOT_RETRIEVABLE",
+    "zip06_dupe_a": "NOT_RETRIEVABLE",
+    "zip07_dupe_b": "NOT_RETRIEVABLE",
+    "zip08_unicode": "NOT_RETRIEVABLE",
+    "zip09_csv": "NOT_RETRIEVABLE",
+    "zip10_long_tail": "NOT_RETRIEVABLE"
+  },
+  "source_access_notes": {
+    "md": "可直接检索",
+    "zip": "完全不可读"
+  },
+  "ui_source_presence": {
+    "md": "YES",
+    "zip": "YES"
+  },
+  "status": {
+    "md_semantic": "10/10",
+    "zip_semantic": "0/10",
+    "md_raw_fs": "YES",
+    "zip_raw_fs": "YES"
+  },
+  "notes": {
+    "semantic_retrieval_method": "Current Project file_search / Sources retrieval only",
+    "md_result": "All 10 Markdown probes were returned by Project source retrieval, including middle, near-tail, and long-tail probes.",
+    "zip_result": "Repeated Project source retrieval queries for the ZIP filename, probe labels, expected ZIP probe document title, and internal-member fields returned no ZIP source or ZIP-member content. The ZIP was not unpacked or read in the code environment for semantic answers; all ZIP fields are therefore NOT_RETRIEVABLE.",
+    "ui_presence_basis": "Both filenames were supplied in the current Project Sources context. The assistant does not receive a literal UI screenshot, so YES records source presence in the Project context rather than visual inspection of the source panel.",
+    "raw_fs_basis": "run_bprime.py found exact SHA-256 matches for both raw source files in /mnt/data.",
+    "md_source_sha256": "ac38501337866bfac229733a706e6e4f5af77a100a5d599ff4c4dcda51b1ade7",
+    "zip_source_sha256": "2809a00e4b922f61565ab0e5a00bc80201f95e9296c9a8c90660de184bcfeca2"
+  }
+}

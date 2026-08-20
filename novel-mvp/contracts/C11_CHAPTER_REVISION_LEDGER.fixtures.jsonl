@@ -73,3 +73,8 @@
 {"case_id":"MG-02","rule":"legal_historical_restore","expected":"PRECHECK_ALLOWED"}
 {"case_id":"MG-03","rule":"historical_noncurrent_but_existing_restore","expected":"PRECHECK_ALLOWED"}
 {"case_id":"MG-04","rule":"c10_identity_chain_index_mismatch","expected":"C10_MATERIAL_RECORD_INVALID"}
+{"case_id":"AS-01","rule":"legal_replace_schema_and_entry_pass","expected":"ACTION_SCHEMA_AND_ENTRY_ALLOWED"}
+{"case_id":"AS-02","rule":"initial_schema_and_entry_reject","expected":"ACTION_SCHEMA_AND_ENTRY_REJECTED"}
+{"case_id":"AS-03","rule":"bogus_schema_and_entry_reject","expected":"ACTION_SCHEMA_AND_ENTRY_REJECTED"}
+{"case_id":"AS-04","rule":"missing_contract_schema_and_entry_reject","expected":"ACTION_SCHEMA_AND_ENTRY_REJECTED"}
+{"case_id":"AS-05","rule":"missing_version_schema_and_entry_reject","expected":"ACTION_SCHEMA_AND_ENTRY_REJECTED"}

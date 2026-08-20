@@ -1,6 +1,6 @@
 # 全部背景板一键打包 SOP
 
-✅ 这套工具会把“当前产品背景板＋当前外部报告背景板”编译成一个单层 ZIP，放到仓库的 `TEMP/background-board-upload/`。你只要运行一条命令，再自己解压或上传。
+✅ 这套工具会把“当前产品背景板＋当前外部报告背景板＋当前原子需求与验收背景板”编译成一个单层 ZIP，放到仓库的 `TEMP/background-board-upload/`。你只要运行一条命令，再自己解压或上传。
 
 ## 一键制作
 
@@ -14,25 +14,28 @@ uv run --locked python tools/build_background_board_upload_zip.py
 
 - 产品文件统一加 `PRODUCT_R版本__` 前缀。
 - 报告文件统一加 `REPORT_R版本__` 前缀；报告的日常背景页使用 `REPORT_R版本__BG__` 前缀。
+- 原子需求文件统一加 `ATOMIC_R版本__` 前缀。
 - 所有材料放在 ZIP 同一层，不依赖上传平台保留文件夹结构。
 - 同一背景板内的 Markdown 链接会改指向平铺后的文件名。
 - 图片和其他附件只改文件名，原始字节不改。
 - `.DS_Store`、`__MACOSX`、`._*`、`Thumbs.db`、`__pycache__`、工具缓存和编辑器临时文件不会进入 ZIP；原背景板里的文件不会被删除。
 - 自动生成总导航、逐文件清单和 SHA-256 校验表。
 - 同样的输入会得到字节完全一致的 ZIP。
+- 每块背景只允许清单成员、清单自身和配置里明确登记的附加回执进入；出现其他普通文件会停下，不会顺手打包。
 
 ## 成品怎么用
 
-成品名会带两套背景板的真实版本，例如：
+成品名会带三块背景板的真实版本，例如：
 
 ```text
-TEMP/background-board-upload/CHATGPT_FLAT_BACKGROUND_BOARDS_PRODUCT_R13_REPORT_R01.zip
+TEMP/background-board-upload/CHATGPT_FLAT_BACKGROUND_BOARDS_PRODUCT_R13_REPORT_R01_ATOMIC_R02.zip
 ```
 
 解压后先读 `00_CHATGPT_MASTER_ROUTER.md`。它会告诉 ChatGPT：
 
 - 哪些文件是产品共同背景；
 - 哪些文件是外部报告证据；
+- 哪些文件是原子需求与验收背景；
 - 平时该读哪些短主题页；
 - 需要核证据时怎样追 claim、source 和报告登记。
 
@@ -44,7 +47,7 @@ TEMP/background-board-upload/CHATGPT_FLAT_BACKGROUND_BOARDS_PRODUCT_R13_REPORT_R
 uv run --locked python tools/build_background_board_upload_zip.py check
 ```
 
-看到 `PASS_BYTE_IDENTICAL`，表示现有 ZIP 与当前两套背景板重新编译出的字节完全一致。
+看到 `PASS_BYTE_IDENTICAL`，表示现有 ZIP 与当前三块背景板重新编译出的字节完全一致。
 
 看到报错就停下，不要手工覆盖同名 ZIP。最常见的原因是：背景板内容变了，但版本号或当前入口还没一起升。
 
@@ -56,6 +59,8 @@ uv run --locked python tools/build_background_board_upload_zip.py check
 
 例如 R14 完整落盘后，下一次会自动使用 R14。`R14_DRAFT`、缺入口、缺清单或清单身份不匹配的半成品不会被选中。若同一个最高版本出现两个完整目录，工具会停下让人处理，不会猜一个。
 
+原子需求与验收背景板会读取 `references/atomic-expectations/CURRENT.json`。R02 转正时新建版本目录并切换这个指针；不要原地改 R01，也不要把当前完成度、运行分数和临时数据包状态编进背景板。
+
 ## 这套工具不会做什么
 
 - 不改 R13、R01 或以后版本的正式原件。
@@ -65,5 +70,7 @@ uv run --locked python tools/build_background_board_upload_zip.py check
 - 不覆盖同名但字节不同的旧 ZIP；背景板正式升版后会自然生成新文件名。
 
 配置入口是 `config/background_board_upload/sources.json`。除背景板正式升版外，不要为一次上传临时改它。
+
+产品 R13 的 `BUILD_RECEIPT.json` 没登记在旧版内容清单里，因此配置把它单独列成明确附加回执。这个口子只认精确相对文件名，不接受目录、glob 或自动发现。
 
 来源：Codex

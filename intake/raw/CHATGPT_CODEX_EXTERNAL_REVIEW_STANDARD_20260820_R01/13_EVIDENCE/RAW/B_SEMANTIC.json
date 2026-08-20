@@ -1,0 +1,34 @@
+{
+  "schema": "probe-b-semantic-r04",
+  "project_public_id_expected": "PSR04-29EB6E3CC550",
+  "project_source_answers": {
+    "root": "NOT_RETRIEVABLE",
+    "nested1": "NOT_RETRIEVABLE",
+    "nested2": "NOT_RETRIEVABLE",
+    "inner_zip": "NOT_RETRIEVABLE",
+    "hidden": "NOT_RETRIEVABLE",
+    "dupe_a": "NOT_RETRIEVABLE",
+    "dupe_b": "NOT_RETRIEVABLE",
+    "unicode": "NOT_RETRIEVABLE",
+    "csv": "NOT_RETRIEVABLE",
+    "long_tail": "NOT_RETRIEVABLE"
+  },
+  "a_memory_canary_recall": "MEM-A-RZk7ea-HNC7M05hYg8Numg",
+  "project_memory_mode": "PRIOR_ORDINARY_CHAT_RECALL",
+  "library_a_result_found": false,
+  "library_a_result_attachable": false,
+  "library_notes": "Exact CHATGPT_PROBE_A_RESULT_A-20260820-004405-3C39D7.zip was not found in File Library; re-adding it to this chat was therefore not possible.",
+  "b_status": {
+    "a_fs_seed": "NOT_FOUND",
+    "project_source_semantic": "NOT_RETRIEVABLE",
+    "project_source_raw_bytes": "NOT_FOUND",
+    "a_memory": "RETRIEVED",
+    "library_a_result": "NOT_FOUND"
+  },
+  "notes": {
+    "project_source_retrieval": "Actual Project/file retrieval searches for the target ZIP name, project public ID, expected SHA-256, canary namespace, and all 10 labels returned no target Project Source. No Python extraction of a Project Source ZIP was used.",
+    "a_memory_retrieval": "Recovered exactly from prior ordinary-chat history using the available memory retrieval path; it was not supplied in this prompt, loaded from an A result ZIP, or found on the current filesystem.",
+    "library_search": "Performed after the memory test. The exact A result ZIP was not found, so attachability was recorded as false.",
+    "b_status_line": "B_STATUS: A_FS=NOT_FOUND; PROJECT_SOURCE_SEMANTIC=NOT_RETRIEVABLE; RAW_BYTES=NOT_FOUND; A_MEMORY=RETRIEVED; LIBRARY_A=NOT_FOUND"
+  }
+}

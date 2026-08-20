@@ -298,6 +298,18 @@ def _validate_batch_chapter_sequence(prepared: list[dict[str, Any]]) -> None:
         hint = item["chapter_no_hint"]
         for receipt in item["projection_receipts"]:
             candidates = receipt["chapterization"]["candidates"]
+            if len(candidates) == 1:
+                content_number = candidates[0].get("chapter_no")
+                if (
+                    type(hint) is int
+                    and type(content_number) is int
+                    and hint != content_number
+                ):
+                    source_name = item["source"]["source_name"]
+                    raise ValueError(
+                        "文件名章号与正文标题章号冲突，禁止猜真值："
+                        f"{source_name} 文件名={hint} 正文={content_number}"
+                    )
             for candidate in candidates:
                 number = candidate.get("chapter_no")
                 if number is None and len(candidates) == 1:

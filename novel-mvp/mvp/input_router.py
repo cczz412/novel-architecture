@@ -1,4 +1,4 @@
-"""T03-A 本地格式入口：文件／ZIP → 可交给 C10-first 的严格文本 sources。
+"""T03-A 格式入口：UploadSource／本地文件 → C10-first 严格文本 sources。
 
 这里只做格式、容器、解码和来源链机械处理，不猜材料 role，不写 C1，不调模型。
 """
@@ -7,12 +7,15 @@ from __future__ import annotations
 
 import hashlib
 import io
+import copy
 import re
 import stat
 import zipfile
 from pathlib import Path, PurePosixPath
 from typing import Any
 from xml.etree import ElementTree
+
+from .upload_source import UploadSource, from_local_path
 
 
 IDENTITY = "NOVEL_MVP_C10_FIRST_INPUT_ROUTER_R01"
@@ -95,9 +98,12 @@ def filename_chapter_no(name: str) -> int | None:
     return None
 
 
-def _decode_text(payload: bytes) -> tuple[str, str]:
-    attempts = ["utf-16"] if payload.startswith((b"\xff\xfe", b"\xfe\xff")) else []
-    attempts.extend(["utf-8-sig", "gb18030"])
+def _decode_text(payload: bytes, encoding_hint: str | None = None) -> tuple[str, str]:
+    if encoding_hint is not None:
+        attempts = [encoding_hint]
+    else:
+        attempts = ["utf-16"] if payload.startswith((b"\xff\xfe", b"\xfe\xff")) else []
+        attempts.extend(["utf-8-sig", "gb18030"])
     errors: list[str] = []
     for encoding in attempts:
         try:
@@ -193,6 +199,8 @@ class _Collector:
         self.blocks: list[dict[str, str]] = []
         self.warnings: list[str] = []
         self.discarded: list[dict[str, str]] = []
+        self.upload_objects: list[dict[str, Any]] = []
+        self.terminal_declarations: dict[str, list[dict[str, Any]]] = {}
         self._file_count = 0
         self._total_uncompressed = 0
         self._terminal_names: set[str] = set()
@@ -248,10 +256,17 @@ class _Collector:
             }
         )
 
-    def _text(self, name: str, payload: bytes, format_name: str, chain: list[str]) -> None:
+    def _text(
+        self,
+        name: str,
+        payload: bytes,
+        format_name: str,
+        chain: list[str],
+        encoding_hint: str | None = None,
+    ) -> None:
         receipt = self._source_receipt(name, payload, format_name, chain)
         try:
-            text, encoding = _decode_text(payload)
+            text, encoding = _decode_text(payload, encoding_hint)
         except ValueError as exc:
             receipt["state"] = "blocked"
             self._block("decode_error", name, str(exc))
@@ -360,10 +375,17 @@ class _Collector:
             receipt["state"] = "blocked"
             self._block("no_terminal_source", name, "ZIP 中没有可导入的 TXT／MD／DOCX 材料")
 
-    def process(self, name: str, payload: bytes, chain: list[str], archive_layer: int) -> None:
+    def process(
+        self,
+        name: str,
+        payload: bytes,
+        chain: list[str],
+        archive_layer: int,
+        encoding_hint: str | None = None,
+    ) -> None:
         format_name = _format(name, payload)
         if format_name in {"txt", "md"}:
-            self._text(name, payload, format_name, chain)
+            self._text(name, payload, format_name, chain, encoding_hint)
         elif format_name == "docx":
             self._docx(name, payload, chain)
         elif format_name == "zip":
@@ -387,9 +409,71 @@ class _Collector:
             "blocks": self.blocks,
             "warnings": self.warnings,
             "discarded": self.discarded,
+            "upload_objects": self.upload_objects,
+            "terminal_declarations": self.terminal_declarations,
             "api_calls": 0,
             "automatic_retries": 0,
         }
+
+
+def _collect_uploads_into(
+    collector: _Collector,
+    uploads: list[UploadSource],
+) -> None:
+    root_names: set[str] = set()
+    for upload in uploads:
+        if not isinstance(upload, UploadSource):
+            raise ValueError("collect_uploads 只接受 UploadSource")
+        name = upload.source_name
+        if name in root_names:
+            collector._block("duplicate_root_name", name, "同批上传对象逻辑名重复")
+            continue
+        root_names.add(name)
+        collector.upload_objects.append(upload.caller_record())
+        if len(upload.raw_bytes) > collector.limits["max_single_file_bytes"]:
+            collector._block("input_file_too_large", name, "根上传对象超过保守单文件大小上限")
+            continue
+        terminal_start = len(collector.items)
+        collector.process(name, upload.raw_bytes, [name], 0, upload.encoding_hint)
+        terminal_items = collector.items[terminal_start:]
+        terminal_names = {item["source_name"] for item in terminal_items}
+        declarations = upload.declarations
+        if isinstance(declarations, list):
+            if len(terminal_items) != 1:
+                collector._block(
+                    "ambiguous_upload_declarations",
+                    name,
+                    "数组 declarations 只允许对应一个终端 source",
+                )
+                continue
+            collector.terminal_declarations[terminal_items[0]["source_name"]] = copy.deepcopy(
+                declarations
+            )
+        elif isinstance(declarations, dict):
+            if set(declarations) != terminal_names:
+                collector._block(
+                    "upload_declaration_manifest_mismatch",
+                    name,
+                    f"declarations 与终端 source 不闭合：expected={sorted(terminal_names)} actual={sorted(declarations)}",
+                )
+                continue
+            for item in terminal_items:
+                collector.terminal_declarations[item["source_name"]] = copy.deepcopy(
+                    declarations[item["source_name"]]
+                )
+
+
+def collect_uploads(
+    uploads: list[UploadSource],
+    *,
+    limits: dict[str, int] | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """M1 核心：纯内存上传对象进入现有 TXT／MD／DOCX／ZIP 路由。"""
+    if not isinstance(uploads, list) or not uploads:
+        raise ValueError("导入至少需要一个 UploadSource")
+    collector = _Collector(limits)
+    _collect_uploads_into(collector, uploads)
+    return collector.items, collector.receipt()
 
 
 def collect_paths(
@@ -397,34 +481,20 @@ def collect_paths(
     *,
     limits: dict[str, int] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """读取所有输入；任一格式错误只返回 BLOCKED，调用方不得落半套账。"""
+    """LOCAL_FILESYSTEM_ONLY：读 bytes 后委托 collect_uploads，不传递 Path。"""
     if not isinstance(paths, list) or not paths:
         raise ValueError("导入至少需要一个文件")
     collector = _Collector(limits)
-    root_names: set[str] = set()
+    uploads: list[UploadSource] = []
     for value in paths:
-        path = Path(value)
-        if not path.is_file():
-            collector._block("missing_input", str(path), "文件不存在或不是普通文件")
-            continue
-        name = path.name
-        if name in root_names:
-            collector._block("duplicate_root_name", name, "同批根文件名重复")
-            continue
-        root_names.add(name)
         try:
-            input_bytes = path.stat().st_size
+            uploads.append(from_local_path(value))
+        except FileNotFoundError as exc:
+            collector._block("missing_input", str(value), str(exc))
         except OSError as exc:
-            collector._block("input_read_error", name, f"无法读取文件属性：{exc}")
-            continue
-        if input_bytes > collector.limits["max_single_file_bytes"]:
-            collector._block("input_file_too_large", name, "根文件超过保守单文件大小上限")
-            continue
-        try:
-            payload = path.read_bytes()
-        except OSError as exc:
-            collector._block("input_read_error", name, f"无法读取文件：{exc}")
-            continue
-        collector.process(name, payload, [name], 0)
-    receipt = collector.receipt()
-    return collector.items, receipt
+            collector._block("input_read_error", str(value), f"无法读取文件：{exc}")
+        except ValueError as exc:
+            collector._block("unsafe_root_name", str(value), str(exc))
+    if uploads:
+        _collect_uploads_into(collector, uploads)
+    return collector.items, collector.receipt()

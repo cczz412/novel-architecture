@@ -1,0 +1,17 @@
+{
+  "object_id": "CHATGPT_CODEX_EXTERNAL_REVIEW_STANDARD_20260820_R01",
+  "received_on": "2026-08-20",
+  "source_identity": "ChatGPT specification candidate provided by CZ",
+  "raw_path": "intake/raw/CHATGPT_CODEX_EXTERNAL_REVIEW_STANDARD_20260820_R01.zip",
+  "extracted_path": "intake/raw/CHATGPT_CODEX_EXTERNAL_REVIEW_STANDARD_20260820_R01",
+  "bytes": 80718,
+  "uncompressed_bytes": 139450,
+  "member_count": 61,
+  "sha256": "5c72a62ea7224da1f7d06754d936123b26ea8a6bd34ec81dd46b1e2a461f6d1a",
+  "crc_check": "PASS",
+  "path_safety_check": "PASS",
+  "internal_sha256_entries_checked": 60,
+  "internal_sha256_mismatches": 0,
+  "status": "RAW_EXTERNAL_SPEC_CANDIDATE_PRESERVED_NO_AUTHORITY",
+  "authority_boundary": "Preservation does not adopt or modify the current ChatGPT review SOP, packaging routes, product contracts, or execution authority."
+}

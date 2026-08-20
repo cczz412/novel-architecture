@@ -1,0 +1,25 @@
+{
+  "schema": "project-current-v1",
+  "project_id": "<PROJECT_ID>",
+  "current_version": "<VERSION>",
+  "effective_at": "<ISO8601>",
+  "semantic_sources": [
+    {
+      "path": "<FILE>",
+      "sha256": "<SHA>",
+      "role": "CURRENT"
+    }
+  ],
+  "asset_sources": [
+    {
+      "path": "<ZIP>",
+      "sha256": "<SHA>",
+      "role": "READ_ONLY_BASELINE"
+    }
+  ],
+  "formal_contracts": [],
+  "current_results": [],
+  "superseded": [],
+  "open_items": [],
+  "authority": "LOCAL_CURRENT_POINTER_ONLY"
+}

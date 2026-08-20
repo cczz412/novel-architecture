@@ -1,4 +1,4 @@
-"""plan-v2 最小正式 writer：handover／对账／facts 跨文件事务恢复与幂等。
+"""plan-v2 writer：r07 规划记录、handover 与跨文件事务恢复／幂等。
 
 业务语义分别由 handover 与 reconciliation 接缝校验；本模块不做模型抽取、暗稿或关章。
 """
@@ -75,6 +75,24 @@ RECONCILIATION_EDGE_KEYS = {
     "superseded_by",
     "rev",
 }
+RECONCILIATION_EDGE_R07_KEYS = RECONCILIATION_EDGE_KEYS | {"chapter_revision_ref"}
+CHAPTER_REVISION_REF_KEYS = {
+    "chapter_id",
+    "revision_no",
+    "revision_text_sha256",
+}
+R07_PLANNING_RECORD_INPUT_KEYS = {
+    "planned_ref",
+    "planned_rev",
+    "chapter_ref",
+    "slot_ref",
+    "source_item_key",
+    "outcome",
+    "coverage",
+    "variant_note",
+    "author_decision",
+    "decided_by",
+}
 FORBIDDEN_TRUTH_KEYS = {"facts", "F-", "actual", "actuality", "dark_draft", "chapter_close"}
 OPERATION_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 C1_RE = re.compile(r"c(\d+)$")
@@ -93,6 +111,7 @@ FAULT_POINTS = {
     "before_commit",
     "after_commit",
 }
+R07_PLANNING_FAULT_POINTS = FAULT_POINTS - {"after_chapters"}
 
 
 class PlanstoreError(RuntimeError):
@@ -117,6 +136,25 @@ def _sha256_json(value: Any) -> str:
 
 def _fact_basis_sha256(records: list[dict[str, Any]]) -> str:
     return _sha256_json(sorted(records, key=lambda item: str(item.get("id"))))
+
+
+def _validate_chapter_revision_ref(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict) or set(value) != CHAPTER_REVISION_REF_KEYS:
+        raise PlanstoreError("CHAPTER_REVISION_REF_SHAPE_INVALID")
+    chapter_id = value.get("chapter_id")
+    revision_no = value.get("revision_no")
+    revision_sha = value.get("revision_text_sha256")
+    if not isinstance(chapter_id, str) or C1_RE.fullmatch(chapter_id) is None:
+        raise PlanstoreError("CHAPTER_REVISION_REF_CHAPTER_INVALID")
+    if (
+        not isinstance(revision_no, int)
+        or isinstance(revision_no, bool)
+        or revision_no <= 0
+    ):
+        raise PlanstoreError("CHAPTER_REVISION_REF_NUMBER_INVALID")
+    if not isinstance(revision_sha, str) or SHA256_RE.fullmatch(revision_sha) is None:
+        raise PlanstoreError("CHAPTER_REVISION_REF_SHA_INVALID")
+    return value
 
 
 def _read_json(path: Path) -> Any:
@@ -432,7 +470,11 @@ def _validate_plan(plan: Any) -> None:
     edges_by_id = {item.get("id"): item for item in plan["reconciliation_edges"]}
     for edge in plan["reconciliation_edges"]:
         if (
-            set(edge) != RECONCILIATION_EDGE_KEYS
+            frozenset(edge)
+            not in {
+                frozenset(RECONCILIATION_EDGE_KEYS),
+                frozenset(RECONCILIATION_EDGE_R07_KEYS),
+            }
             or not isinstance(edge.get("id"), str)
             or RECONCILIATION_EDGE_RE.fullmatch(edge["id"]) is None
         ):
@@ -463,6 +505,12 @@ def _validate_plan(plan: Any) -> None:
             raise PlanstoreError("EMPTY_RECONCILIATION_FACT_BASIS_MUST_BE_NULL")
         if not isinstance(edge.get("chapter_ref"), str) or C1_RE.fullmatch(edge["chapter_ref"]) is None:
             raise PlanstoreError("RECONCILIATION_CHAPTER_REF_INVALID")
+        if "chapter_revision_ref" in edge:
+            revision_ref = _validate_chapter_revision_ref(edge["chapter_revision_ref"])
+            if revision_ref["chapter_id"] != edge["chapter_ref"]:
+                raise PlanstoreError("RECONCILIATION_CHAPTER_REVISION_REF_MISMATCH")
+            if revision_ref["revision_text_sha256"] != edge.get("chapter_text_sha256"):
+                raise PlanstoreError("RECONCILIATION_CHAPTER_REVISION_SHA_MISMATCH")
         if not isinstance(edge.get("slot_ref"), str) or not edge["slot_ref"]:
             raise PlanstoreError("RECONCILIATION_SLOT_REF_INVALID")
         if (
@@ -1189,6 +1237,286 @@ def recover(project_dir: str | Path, *, timestamp: str) -> list[dict[str, Any]]:
         return _recover_pending_locked(root, timestamp=timestamp)
 
 
+def _latest_committed_story_seq(root: Path) -> int:
+    committed_operations = {
+        row.get("op")
+        for row in _commit_rows(root)
+        if row.get("phase") == "commit" and row.get("op") is not None
+    }
+    return max(
+        (
+            row["story_commit_seq"]
+            for row in _commit_rows(root)
+            if row.get("phase") == "prepare"
+            and row.get("op") in committed_operations
+            and isinstance(row.get("story_commit_seq"), int)
+        ),
+        default=0,
+    )
+
+
+def _planning_record_identity(plan: dict[str, Any]) -> str:
+    edges = plan["reconciliation_edges"]
+    if edges and all("chapter_revision_ref" in edge for edge in edges):
+        return "plan-v2-r07"
+    if any("chapter_revision_ref" in edge for edge in edges):
+        return "plan-v2-r06-r07-mixed-legacy-read-only"
+    return "plan-v2-r06-legacy-read-only"
+
+
+def _validate_r07_planning_record_input(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict) or set(value) != R07_PLANNING_RECORD_INPUT_KEYS:
+        raise PlanstoreError("R07_PLANNING_RECORD_INPUT_SCHEMA_MISMATCH")
+    if not isinstance(value.get("source_item_key"), str) or not value["source_item_key"]:
+        raise PlanstoreError("RECONCILIATION_SOURCE_IDENTITY_INVALID")
+    return value
+
+
+def _r07_material_fields(edge: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: copy.deepcopy(edge[key])
+        for key in R07_PLANNING_RECORD_INPUT_KEYS
+    } | {"chapter_revision_ref": copy.deepcopy(edge["chapter_revision_ref"])}
+
+
+def _replayed_r07_planning_receipt(root: Path, operation_id: str) -> dict[str, Any]:
+    edges = [
+        edge
+        for edge in _read_json(root / "plan.json")["reconciliation_edges"]
+        if edge.get("source_run_id") == operation_id
+        and "chapter_revision_ref" in edge
+    ]
+    if len(edges) != 1:
+        raise PlanstoreError("COMMITTED_R07_PLANNING_RECEIPT_UNRESOLVABLE")
+    prepare = next(
+        (
+            row
+            for row in _operation_rows(root, operation_id)
+            if row.get("phase") == "prepare"
+        ),
+        None,
+    )
+    if prepare is None:
+        raise PlanstoreError("COMMITTED_R07_PLANNING_RECEIPT_UNRESOLVABLE")
+    edge = edges[0]
+    return {
+        "operation_id": operation_id,
+        "status": "COMMITTED",
+        "record_version": "r07",
+        "record_ref": edge["id"],
+        "chapter_revision_ref": copy.deepcopy(edge["chapter_revision_ref"]),
+        "story_commit_seq": prepare["story_commit_seq"],
+        "facts_writes": 0,
+        "new_f_ids": 0,
+        "actual_changes": 0,
+        "replayed": True,
+    }
+
+
+def read_planning_records(project_dir: str | Path) -> dict[str, Any]:
+    """读取 plan-v2；只有所有现存 RE 都带 revision ref 时才声明 r07。"""
+    root = Path(project_dir)
+    with _exclusive_lock(root):
+        unsettled = [
+            operation_id
+            for operation_id in {
+                str(row.get("op"))
+                for row in _commit_rows(root)
+                if row.get("op") is not None
+            }
+            if _operation_status_unlocked(root, operation_id)["state"]
+            in {"PENDING_RECOVERY", "NEEDS_MANUAL_RECOVERY"}
+        ]
+        if unsettled:
+            raise PlanstoreError(f"STORAGE_RECOVERY_REQUIRED:{sorted(unsettled)}")
+        plan = _read_json(root / "plan.json")
+        _validate_plan(plan)
+        identity = _planning_record_identity(plan)
+        return {
+            "schema": "plan-v2",
+            "record_identity": identity,
+            "revision_aware": identity == "plan-v2-r07",
+            "read_only_compatibility": identity != "plan-v2-r07",
+            "records": copy.deepcopy(plan["reconciliation_edges"]),
+        }
+
+
+def write_revision_aware_planning_record(
+    project_dir: str | Path,
+    *,
+    operation_id: str,
+    planning_record: dict[str, Any],
+    chapter_revision_ref: dict[str, Any],
+    current_chapter_revision_ref: dict[str, Any],
+    timestamp: str,
+    fault_at: str | None = None,
+) -> dict[str, Any]:
+    """把一条带显式 C11 revision ref 的最小 r07 RE 写进现有 planstore。"""
+    root = Path(project_dir)
+    operation_id = _validate_operation_id(operation_id)
+    planning_record = _validate_r07_planning_record_input(planning_record)
+    chapter_revision_ref = _validate_chapter_revision_ref(chapter_revision_ref)
+    current_chapter_revision_ref = _validate_chapter_revision_ref(
+        current_chapter_revision_ref
+    )
+    if chapter_revision_ref != current_chapter_revision_ref:
+        raise PlanstoreError("STALE_CHAPTER_REVISION_REF")
+    if not isinstance(timestamp, str) or not timestamp:
+        raise PlanstoreError("R07_PLANNING_TIMESTAMP_INVALID")
+    if fault_at is not None and fault_at not in R07_PLANNING_FAULT_POINTS:
+        raise PlanstoreError("UNKNOWN_R07_PLANNING_FAULT_POINT")
+
+    request_sha = _sha256_json(
+        {
+            "operation_id": operation_id,
+            "planning_record": planning_record,
+            "chapter_revision_ref": chapter_revision_ref,
+            "current_chapter_revision_ref": current_chapter_revision_ref,
+        }
+    )
+    with _exclusive_lock(root):
+        _recover_pending_locked(root, timestamp=timestamp)
+        status = _operation_status_unlocked(root, operation_id)
+        if status["state"] == "COMMITTED":
+            if status["request_sha256"] != request_sha:
+                raise PlanstoreError("OPERATION_ID_PAYLOAD_CONFLICT")
+            return _replayed_r07_planning_receipt(root, operation_id)
+        if status["terminal_phase"] == "rolled_back":
+            raise PlanstoreError("OPERATION_ROLLED_BACK_REQUIRES_NEW_ID")
+        if status["state"] == "NEEDS_MANUAL_RECOVERY":
+            raise PlanstoreError("OPERATION_NEEDS_MANUAL_RECOVERY")
+
+        plan_before = _read_json(root / "plan.json")
+        _validate_plan(plan_before)
+        legacy_edges = [
+            edge["id"]
+            for edge in plan_before["reconciliation_edges"]
+            if "chapter_revision_ref" not in edge
+        ]
+        if legacy_edges:
+            raise PlanstoreError(
+                f"LEGACY_R06_RE_MIGRATION_REQUIRED:{','.join(legacy_edges)}"
+            )
+        if planning_record["chapter_ref"] != chapter_revision_ref["chapter_id"]:
+            raise PlanstoreError("RECONCILIATION_CHAPTER_REVISION_REF_MISMATCH")
+        mapping_matches = [
+            item
+            for item in plan_before["slot_mappings"]
+            if item.get("slot_ref") == planning_record["slot_ref"]
+            and item.get("chapter_id") == planning_record["chapter_ref"]
+            and item.get("mapping_status") == "active"
+        ]
+        if len(mapping_matches) != 1:
+            raise PlanstoreError("CURRENT_SLOT_MAPPING_NOT_FOUND")
+        planned_objects = {
+            item["id"]: item
+            for key in ("events", "hooks", "must_carries")
+            for item in plan_before.get(key, [])
+            if isinstance(item, dict) and isinstance(item.get("id"), str)
+        }
+        planned_ref = planning_record["planned_ref"]
+        if planned_ref is not None:
+            current_planned = planned_objects.get(planned_ref)
+            if current_planned is None:
+                raise PlanstoreError("CURRENT_PLANNING_OBJECT_NOT_FOUND")
+            if current_planned.get("rev") != planning_record["planned_rev"]:
+                raise PlanstoreError("STALE_PLANNED_REVISION")
+
+        material = copy.deepcopy(planning_record) | {
+            "chapter_revision_ref": copy.deepcopy(chapter_revision_ref)
+        }
+        for edge in plan_before["reconciliation_edges"]:
+            if edge.get("edge_status") == "active" and _r07_material_fields(edge) == material:
+                return {
+                    "operation_id": operation_id,
+                    "status": "NO_CHANGE",
+                    "record_version": "r07",
+                    "record_ref": edge["id"],
+                    "chapter_revision_ref": copy.deepcopy(chapter_revision_ref),
+                    "story_commit_seq": _latest_committed_story_seq(root),
+                    "facts_writes": 0,
+                    "new_f_ids": 0,
+                    "actual_changes": 0,
+                    "replayed": False,
+                }
+        active_same_binding = [
+            edge["id"]
+            for edge in plan_before["reconciliation_edges"]
+            if edge.get("edge_status") == "active"
+            and edge.get("chapter_ref") == planning_record["chapter_ref"]
+            and edge.get("planned_ref") == planning_record["planned_ref"]
+        ]
+        if active_same_binding:
+            raise PlanstoreError(
+                f"ACTIVE_RECONCILIATION_EDGE_ALREADY_EXISTS:{','.join(active_same_binding)}"
+            )
+
+        counter = plan_before["id_counters"].get("RE")
+        if not isinstance(counter, int) or counter < 0:
+            raise PlanstoreError("RE_COUNTER_INVALID")
+        edge = {
+            "id": f"RE-{counter + 1:04d}",
+            "planned_ref": planning_record["planned_ref"],
+            "planned_rev": planning_record["planned_rev"],
+            "actual_fact_refs": [],
+            "actual_fact_basis_sha256": None,
+            "chapter_ref": planning_record["chapter_ref"],
+            "chapter_revision_ref": copy.deepcopy(chapter_revision_ref),
+            "slot_ref": planning_record["slot_ref"],
+            "chapter_text_sha256": chapter_revision_ref["revision_text_sha256"],
+            "source_run_id": operation_id,
+            "source_item_key": planning_record["source_item_key"],
+            "outcome": planning_record["outcome"],
+            "coverage": planning_record["coverage"],
+            "variant_note": planning_record["variant_note"],
+            "author_decision": copy.deepcopy(planning_record["author_decision"]),
+            "basis_commit_seq": _latest_committed_story_seq(root),
+            "decided_by": planning_record["decided_by"],
+            "edge_status": "active",
+            "superseded_by": None,
+            "rev": 1,
+        }
+        plan_after = copy.deepcopy(plan_before)
+        plan_after["reconciliation_edges"].append(edge)
+        plan_after["id_counters"]["RE"] = counter + 1
+        _validate_plan(plan_after)
+
+        before = {"id": edge["id"], "rev": 0, "state": "absent"}
+        content_hash, blob = _blob_record(before)
+        history_row = {
+            "ts": timestamp,
+            "op": operation_id,
+            "actor": planning_record["decided_by"],
+            "action": "planning_record_r07",
+            "object_id": edge["id"],
+            "rev": 1,
+            "changes": {"state": [None, copy.deepcopy(edge)]},
+            "content_hash": content_hash,
+            "note": "显式章节修订依据的规划对账记录",
+        }
+        return _commit_generic_transaction_locked(
+            root,
+            operation_id=operation_id,
+            action_name="planning_record_r07",
+            request_sha256=request_sha,
+            replacements={"plan.json": _canonical_bytes(plan_after)},
+            appends={"plan_history.jsonl": _canonical_bytes(history_row)},
+            blobs=[blob],
+            receipt={
+                "operation_id": operation_id,
+                "status": "COMMITTED",
+                "record_version": "r07",
+                "record_ref": edge["id"],
+                "chapter_revision_ref": copy.deepcopy(chapter_revision_ref),
+                "facts_writes": 0,
+                "new_f_ids": 0,
+                "actual_changes": 0,
+            },
+            timestamp=timestamp,
+            fault_at=fault_at,
+        )
+
+
 def accept_work_draft_handover(
     project_dir: str | Path,
     *,
@@ -1311,6 +1639,7 @@ def verify_storage(project_dir: str | Path) -> dict[str, Any]:
             committed_prepares.append(prepare)
             if prepare.get("action") not in {
                 "handover",
+                "planning_record_r07",
                 "reconciliation_observe",
                 "reconciliation_fact_admission",
                 "reconciliation_stale",
@@ -1385,13 +1714,35 @@ def verify_storage(project_dir: str | Path) -> dict[str, Any]:
                     label = path_name.removesuffix(".json").upper()
                     raise PlanstoreError(f"FINAL_{label}_COMMIT_HASH_MISMATCH")
         facts_by_id = {item.get("id"): item for item in facts if isinstance(item, dict)}
+        chapters_by_id = {
+            item.get("id"): item for item in chapters if isinstance(item, dict)
+        }
         stale_edges = []
         for edge in plan["reconciliation_edges"]:
             if edge["edge_status"] != "active" or not edge["actual_fact_refs"]:
                 continue
             supporting = [facts_by_id.get(ref) for ref in edge["actual_fact_refs"]]
+            chapter = chapters_by_id.get(edge["chapter_ref"])
+            revision_stale = (
+                "chapter_revision_ref" in edge
+                and (
+                    chapter is None
+                    or chapter.get("chapter_revision_ref")
+                    != edge["chapter_revision_ref"]
+                )
+            )
             if (
-                any(item is None or item.get("status") != "confirmed" for item in supporting)
+                revision_stale
+                or (
+                    "chapter_revision_ref" not in edge
+                    and isinstance(chapter, dict)
+                    and chapter.get("contract") == "C1_CHAPTER_DOC"
+                    and chapter.get("version") == "v1"
+                )
+                or any(
+                    item is None or item.get("status") != "confirmed"
+                    for item in supporting
+                )
                 or _fact_basis_sha256(supporting) != edge["actual_fact_basis_sha256"]
             ):
                 stale_edges.append(edge["id"])
@@ -1422,8 +1773,20 @@ def _load_object(path: str) -> dict[str, Any]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="plan-v2 工作稿交棒 writer 与恢复工具")
+    parser = argparse.ArgumentParser(description="plan-v2 规划记录、工作稿交棒与恢复工具")
     sub = parser.add_subparsers(dest="command", required=True)
+
+    planning_write = sub.add_parser("planning-write-r07")
+    planning_write.add_argument("project_dir")
+    planning_write.add_argument("--operation-id", required=True)
+    planning_write.add_argument("--record", required=True)
+    planning_write.add_argument("--chapter-revision-ref", required=True)
+    planning_write.add_argument("--current-chapter-revision-ref", required=True)
+    planning_write.add_argument("--timestamp", required=True)
+    planning_write.add_argument("--fault-at", choices=sorted(R07_PLANNING_FAULT_POINTS))
+
+    planning_read = sub.add_parser("planning-read")
+    planning_read.add_argument("project_dir")
 
     handover = sub.add_parser("handover")
     handover.add_argument("project_dir")
@@ -1446,7 +1809,21 @@ def main() -> int:
 
     args = parser.parse_args()
     try:
-        if args.command == "handover":
+        if args.command == "planning-write-r07":
+            result = write_revision_aware_planning_record(
+                args.project_dir,
+                operation_id=args.operation_id,
+                planning_record=_load_object(args.record),
+                chapter_revision_ref=_load_object(args.chapter_revision_ref),
+                current_chapter_revision_ref=_load_object(
+                    args.current_chapter_revision_ref
+                ),
+                timestamp=args.timestamp,
+                fault_at=args.fault_at,
+            )
+        elif args.command == "planning-read":
+            result = read_planning_records(args.project_dir)
+        elif args.command == "handover":
             result = accept_work_draft_handover(
                 args.project_dir,
                 action=_load_object(args.action),

@@ -1,0 +1,64 @@
+{
+  "schema": "model-switch-d1-stage2-r06",
+  "declared_model_phase": "USER_MUST_RUN_THIS_PHASE_WITH_EXTRA_HIGH",
+  "stage1_result_dir": "/mnt/data/MODEL_SWITCH_D1_RESULT_D1-20260820-023750-C08D8B",
+  "workdir_exists": true,
+  "checks": {
+    "marker_exists": true,
+    "marker_sha_match": true,
+    "blob_exists": true,
+    "blob_sha_match": true,
+    "db_exists": true,
+    "db_token_hash_match": true,
+    "db_previous_phase": "PRO_STAGE1",
+    "git_repo_exists": true,
+    "git_head_match": true
+  },
+  "env_extra_high_after_switch": {
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "cpu_count": 5,
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "cpu_max": "400000 100000",
+    "memory_max": "4294967296",
+    "hostname": "8a42dbdaf717",
+    "cwd": "/",
+    "df": {
+      "exit_code": 0,
+      "stdout": "Filesystem     Type  Size  Used Avail Use% Mounted on\n/dev/vda       ext4   63G   22G   38G  37% /\n/dev/vda       ext4   63G   22G   38G  37% /\n",
+      "stderr": ""
+    },
+    "node": {
+      "exit_code": 0,
+      "stdout": "v22.16.0\n",
+      "stderr": ""
+    },
+    "git": {
+      "exit_code": 0,
+      "stdout": "git version 2.47.3\n",
+      "stderr": ""
+    },
+    "os_release": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"13\"\nVERSION=\"13 (trixie)\"\nVERSION_CODENAME=trixie\nDEBIAN_VERSION_FULL=13.3\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+    "cgroup": "0::/\n"
+  },
+  "project_sources_after_switch": {
+    "00_ProjectSources_同时加入_平铺MD.md": {
+      "exists_after_switch": true,
+      "sha256_after_switch": "ac38501337866bfac229733a706e6e4f5af77a100a5d599ff4c4dcda51b1ade7",
+      "same_sha_as_before_switch": true
+    },
+    "00_ProjectSources_同时加入_ZIP.zip": {
+      "exists_after_switch": true,
+      "sha256_after_switch": "2809a00e4b922f61565ab0e5a00bc80201f95e9296c9a8c90660de184bcfeca2",
+      "same_sha_as_before_switch": true
+    }
+  },
+  "extra_high_marker_sha256": "31de0ce4532dd125b4b3b04d652349fcb450c8d9acc7ee6d59ee94389e23d932",
+  "same_chat_workspace_persistence": "PASS"
+}

@@ -399,6 +399,85 @@ def test_entry_13_cross_file_chapter_gap_blocks_before_c10_or_c1(tmp_path, monke
     assert store.chapters("sequence-gap") == []
 
 
+def test_entry_13a_filename_and_content_chapter_number_conflict_blocks_all_writes(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    _init(tmp_path, monkeypatch, "filename-content-conflict")
+    path = _write(
+        tmp_path,
+        "c01.txt",
+        "第六十七章 风暴\n沈砚推门。\n",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="文件名章号与正文标题章号冲突",
+    ):
+        ingest.ingest_files(
+            "filename-content-conflict",
+            [str(path)],
+            material_role="CHAPTER",
+        )
+
+    assert store.intake_sources("filename-content-conflict") == []
+    assert store.intake_material_units("filename-content-conflict") == []
+    assert store.intake_c1_projections("filename-content-conflict") == []
+    assert store.chapters("filename-content-conflict") == []
+
+
+def test_entry_13b_zip_member_filename_and_content_conflict_is_atomic(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    _init(tmp_path, monkeypatch, "zip-filename-content-conflict")
+    payload = _zip(
+        {
+            "c01.txt": "第六十七章 风暴\n沈砚推门。\n".encode(),
+            "c02.txt": "第二章 清晨\n他离开旧宅。\n".encode(),
+        }
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="文件名章号与正文标题章号冲突",
+    ):
+        ingest.ingest_files(
+            "zip-filename-content-conflict",
+            [str(_write(tmp_path, "book.zip", payload))],
+            material_role="CHAPTER",
+        )
+
+    assert store.intake_sources("zip-filename-content-conflict") == []
+    assert store.intake_material_units("zip-filename-content-conflict") == []
+    assert store.intake_c1_projections("zip-filename-content-conflict") == []
+    assert store.chapters("zip-filename-content-conflict") == []
+
+
+def test_entry_13c_matching_filename_and_content_chapter_number_still_passes(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    _init(tmp_path, monkeypatch, "filename-content-match")
+    report = ingest.ingest_files(
+        "filename-content-match",
+        [
+            str(
+                _write(
+                    tmp_path,
+                    "c01.txt",
+                    "第一章 雨夜\n沈砚推门。\n",
+                )
+            )
+        ],
+        material_role="CHAPTER",
+    )
+
+    assert len(report["chapters"]) == 1
+    assert report["chapters"][0]["title"] == "第一章 雨夜"
+    assert report["chapters"] == store.chapters("filename-content-match")
+
+
 @pytest.mark.parametrize(
     "members",
     [

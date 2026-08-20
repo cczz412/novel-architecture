@@ -70,6 +70,8 @@ OBSERVATION_FAULT_POINTS = {
     "after_commit",
 }
 ADMISSION_FAULT_POINTS = OBSERVATION_FAULT_POINTS | {"after_facts"}
+REVISION_AWARE_C1_CONTRACT = "C1_CHAPTER_DOC"
+REVISION_AWARE_C1_VERSION = "v1"
 
 
 class ReconciliationError(planstore.PlanstoreError):
@@ -85,6 +87,19 @@ def _chapter_by_id(chapters: list[dict[str, Any]], chapter_ref: str) -> dict[str
     if len(matches) != 1 or matches[0].get("kind") != "draft":
         raise ReconciliationError("CURRENT_C1_NOT_FOUND")
     return matches[0]
+
+
+def _is_revision_aware_c1(chapter: dict[str, Any] | None) -> bool:
+    return bool(
+        chapter is not None
+        and chapter.get("contract") == REVISION_AWARE_C1_CONTRACT
+        and chapter.get("version") == REVISION_AWARE_C1_VERSION
+    )
+
+
+def _require_legacy_c1_for_r06(chapter: dict[str, Any]) -> None:
+    if _is_revision_aware_c1(chapter):
+        raise ReconciliationError("LEGACY_RECONCILIATION_V1_REQUIRES_LEGACY_C1")
 
 
 def _planned_objects(plan: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -170,6 +185,7 @@ def validate_candidate(
         raise ReconciliationError("C1_CHAPTERS_NOT_LIST")
     planstore._validate_plan(plan)
     chapter = _chapter_by_id(chapters, candidate["chapter_ref"])
+    _require_legacy_c1_for_r06(chapter)
     chapter_sha = planstore._sha256_bytes(chapter["text"].encode("utf-8"))
     if chapter_sha != candidate["chapter_text_sha256"]:
         raise ReconciliationError("STALE_C1_TEXT")
@@ -781,6 +797,8 @@ def reconciliation_edge_states_unlocked(
         if len(mapping_matches) != 1:
             reasons.append("STALE_SLOT_MAPPING")
         chapter = chapters_by_id.get(edge["chapter_ref"])
+        if _is_revision_aware_c1(chapter) and "chapter_revision_ref" not in edge:
+            reasons.append("LEGACY_RE_CHAPTER_REVISION_UNKNOWN")
         if (
             chapter is None
             or planstore._sha256_bytes(str(chapter.get("text", "")).encode("utf-8"))

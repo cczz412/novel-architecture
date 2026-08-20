@@ -10,6 +10,7 @@
 | `book-meta/` | 书目元数据、语料重标等 | [book-meta/README.md](book-meta/README.md) · [INDEX.md](book-meta/INDEX.md) |
 | `survey-inbox/` | 调查角度收件箱（GitHub／短视频讲法） | [survey-inbox/README.md](survey-inbox/README.md) |
 | `external-knowledge-base/` | 已从调查报告拆出的短背景、结论、来源、冲突和研究缺口 | [external-knowledge-base/README.md](external-knowledge-base/README.md) |
+| `atomic-expectations/` | 跨平台共用的原子需求、验收配方、共同质量家规和作者使用情境 | [atomic-expectations/README.md](atomic-expectations/README.md) |
 | `diagnostic-returns/` | 外部诊断回包归档（候选材料） | [diagnostic-returns/README.md](diagnostic-returns/README.md) |
 
 ## 根上指针文件
