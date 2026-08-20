@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/novel-architecture/capability-traceability-candidate-r01.schema.json",
+  "title": "Novel architecture capability traceability candidate",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "authority",
+    "requirements"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "capability-traceability-candidate-r01"
+    },
+    "authority": {
+      "const": "ADVISORY_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY"
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 142,
+      "maxItems": 142,
+      "items": {
+        "type": "object",
+        "required": [
+          "requirement_id",
+          "requirement_level",
+          "journey_stage",
+          "primary_owner",
+          "capability_type",
+          "truth_write_level",
+          "source_authority",
+          "maturity"
+        ],
+        "properties": {
+          "requirement_id": {
+            "type": "string"
+          },
+          "requirement_level": {
+            "enum": [
+              "NORTH_STAR",
+              "CORE_CAPABILITY",
+              "ATOMIC_EXPECTATION",
+              "ACCEPTANCE_CASE"
+            ]
+          },
+          "journey_stage": {
+            "type": "string"
+          },
+          "primary_owner": {
+            "type": "string"
+          },
+          "shared_owners": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "capability_type": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "SEMANTIC",
+                "MECHANICAL",
+                "TRANSPORT",
+                "PERSISTENCE",
+                "SECURITY",
+                "HUMAN_DECISION",
+                "RENDERING",
+                "OBSERVABILITY"
+              ]
+            }
+          },
+          "truth_write_level": {
+            "enum": [
+              "READ_ONLY",
+              "PROJECTION_ONLY",
+              "CANDIDATE_WRITE",
+              "AUTHOR_CONFIRMED_WRITE",
+              "SYSTEM_STATE_WRITE"
+            ]
+          },
+          "risk_class": {
+            "enum": [
+              "LOW_MEDIUM",
+              "MEDIUM",
+              "HIGH",
+              "UNDECIDED"
+            ]
+          },
+          "source_authority": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "input_contracts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "output_contracts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "design_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "implementation_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "test_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "blocked_by": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "maturity": {
+            "enum": [
+              "REQUIREMENT_ONLY",
+              "TEST_DESIGNED",
+              "FIXTURE_READY",
+              "MECHANICAL_RUNNABLE",
+              "SEMANTIC_RUNNABLE",
+              "PARTIALLY_IMPLEMENTED",
+              "INDEPENDENT_TOOL",
+              "AUTHOR_USABLE",
+              "MAIN_LOOP_INTEGRATED",
+              "BLOCKED"
+            ]
+          },
+          "conflicts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false,
+  "notes": [
+    "This schema is a design candidate; it does not change existing requirement IDs or weights.",
+    "A path or test reference is evidence of an artifact, not proof of semantic or author-facing completion.",
+    "Source authority and currentness must be independently validated."
+  ]
+}
