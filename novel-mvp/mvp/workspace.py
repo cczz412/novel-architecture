@@ -23,6 +23,7 @@ from typing import Any, Iterator, Mapping
 
 LOGICAL_KEY_FILES = {
     "chapter_admission_operations": "chapter_admission_operations.json",
+    "chapter_fact_handover_requests": "chapter_fact_handover_requests.json",
     "chapter_index": "chapter_index.json",
     "chapter_materials": "chapter_materials.json",
     "chapter_revisions": "chapter_revisions.json",
