@@ -72,10 +72,20 @@ ADMISSION_KEYS = {
     "revision_no",
     "revision_text_sha256",
     "committed_at",
+    "plan_handover",
 }
 ADMISSION_STAGES = {
     "AW_COMMITTED_PLANSTORE_PENDING",
     "HANDOVER_COMPLETE",
+}
+PLAN_HANDOVER_KEYS = {
+    "operation_id",
+    "request_sha256",
+    "plan_version",
+    "plan_sha256",
+    "mapping_id",
+    "handover_part_no",
+    "handed_at",
 }
 
 
@@ -238,6 +248,31 @@ def _validated_admission(value: object, operation_id: str) -> dict[str, Any]:
     ):
         _fail("CHAPTER_ADMISSION_OPERATION_STORE_INVALID")
     _committed_at(value["committed_at"])
+    plan_handover = value.get("plan_handover")
+    if value["stage"] == "AW_COMMITTED_PLANSTORE_PENDING":
+        if plan_handover is not None:
+            _fail("PENDING_ADMISSION_HAS_PLAN_HANDOVER")
+    elif (
+        not isinstance(plan_handover, dict)
+        or set(plan_handover) != PLAN_HANDOVER_KEYS
+        or not isinstance(plan_handover.get("operation_id"), str)
+        or OPERATION_ID_RE.fullmatch(plan_handover["operation_id"]) is None
+        or not isinstance(plan_handover.get("request_sha256"), str)
+        or SHA256_RE.fullmatch(plan_handover["request_sha256"]) is None
+        or not isinstance(plan_handover.get("plan_version"), int)
+        or isinstance(plan_handover.get("plan_version"), bool)
+        or plan_handover["plan_version"] < 1
+        or not isinstance(plan_handover.get("plan_sha256"), str)
+        or SHA256_RE.fullmatch(plan_handover["plan_sha256"]) is None
+        or not isinstance(plan_handover.get("mapping_id"), str)
+        or not plan_handover["mapping_id"]
+        or not isinstance(plan_handover.get("handover_part_no"), int)
+        or isinstance(plan_handover.get("handover_part_no"), bool)
+        or plan_handover["handover_part_no"] < 1
+    ):
+        _fail("COMPLETED_ADMISSION_PLAN_HANDOVER_INVALID")
+    if plan_handover is not None:
+        _committed_at(plan_handover.get("handed_at"))
     return copy.deepcopy(value)
 
 
@@ -464,6 +499,7 @@ def _result(
     *,
     replayed: bool,
 ) -> dict[str, Any]:
+    plan_handover = copy.deepcopy(operation["plan_handover"])
     return {
         "identity": ADMISSION_IDENTITY,
         "status": operation["stage"],
@@ -481,7 +517,8 @@ def _result(
             "identity_revision_no": 1,
         },
         "workspace_state": copy.deepcopy(bundle["watermarks"]),
-        "planstore_write": 0,
+        "plan_handover": plan_handover,
+        "planstore_write": 0 if plan_handover is None else 1,
     }
 
 
@@ -497,6 +534,7 @@ def commit_initial_work_draft(
     )
     committed_at, added_at = _committed_at(committed_at)
     request_sha = _request_sha(normalized_action, committed_at)
+    handle.recover()
 
     before = _read_bundle(handle)
     existing = before["payloads"][OPERATIONS_KEY]["operations"].get(
@@ -656,6 +694,7 @@ def commit_initial_work_draft(
         "revision_no": 1,
         "revision_text_sha256": text_sha,
         "committed_at": committed_at,
+        "plan_handover": None,
     }
 
     payloads[SOURCE_KEY]["sources"][source_id] = source
