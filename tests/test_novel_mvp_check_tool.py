@@ -212,11 +212,109 @@ def test_current_extracted_candidate_participates_and_produces_mixed_layer() -> 
     assert report["scan"]["confirmed"] == 1
     assert report["scan"]["extracted"] == 1
     assert report["conflicts"][0]["layer"] == "mixed"
+    assert report["conflicts"][0]["severity"] == "yellow"
+    assert report["summary"]["red"] == 0
+    assert report["summary"]["yellow"] == 1
     assert report["summary"]["by_layer"] == {
         "confirmed": 0,
         "mixed": 1,
         "candidate": 0,
     }
+
+
+def test_two_extracted_candidates_can_only_produce_a_yellow_candidate_finding() -> None:
+    fact_a, fact_b = _facts()
+    for fact in (fact_a, fact_b):
+        fact["status"] = "extracted"
+        fact.pop("decided_at")
+
+    report = check_tool.execute(
+        _request(fact_a, fact_b),
+        check_tool.FrozenFindingProvider(_frozen(_finding())),
+    )
+
+    assert report["conflicts"][0]["layer"] == "candidate"
+    assert report["conflicts"][0]["severity"] == "yellow"
+    assert report["summary"]["red"] == 0
+    assert report["summary"]["yellow"] == 1
+    assert report["summary"]["by_layer"] == {
+        "confirmed": 0,
+        "mixed": 0,
+        "candidate": 1,
+    }
+
+
+@pytest.mark.parametrize("layer", ["mixed", "candidate"])
+def test_report_validator_rejects_red_light_outside_confirmed_layer(
+    layer: str,
+) -> None:
+    fact_a, fact_b = _facts()
+    if layer == "mixed":
+        fact_b["status"] = "extracted"
+        fact_b.pop("decided_at")
+    else:
+        for fact in (fact_a, fact_b):
+            fact["status"] = "extracted"
+            fact.pop("decided_at")
+    report = check_tool.execute(
+        _request(fact_a, fact_b),
+        check_tool.FrozenFindingProvider(_frozen(_finding())),
+    )
+    report["conflicts"][0]["severity"] = "red"
+
+    with pytest.raises(
+        check_tool.CheckToolError,
+        match="severity 与现行判法不一致",
+    ):
+        check_tool.validate_report(report)
+
+
+def test_report_validator_recomputes_layer_from_evidence_statuses() -> None:
+    fact_a, fact_b = _facts()
+    for fact in (fact_a, fact_b):
+        fact["status"] = "extracted"
+        fact.pop("decided_at")
+    report = check_tool.execute(
+        _request(fact_a, fact_b),
+        check_tool.FrozenFindingProvider(_frozen(_finding())),
+    )
+    report["conflicts"][0]["layer"] = "confirmed"
+    report["conflicts"][0]["severity"] = "red"
+    report["summary"]["red"] = 1
+    report["summary"]["yellow"] = 0
+    report["summary"]["by_layer"] = {
+        "confirmed": 1,
+        "mixed": 0,
+        "candidate": 0,
+    }
+
+    with pytest.raises(
+        check_tool.CheckToolError,
+        match="layer 与 evidence 状态不一致",
+    ):
+        check_tool.validate_report(report)
+
+
+def test_unknown_kind_cannot_make_candidate_layer_red() -> None:
+    fact_a, fact_b = _facts()
+    for fact in (fact_a, fact_b):
+        fact["status"] = "extracted"
+        fact.pop("decided_at")
+    report = check_tool.execute(
+        _request(fact_a, fact_b),
+        check_tool.FrozenFindingProvider(_frozen(_finding())),
+    )
+    report["conflicts"][0]["kind"] = "mismatch"
+    report["conflicts"][0]["severity"] = "red"
+    report["summary"]["red"] = 1
+    report["summary"]["yellow"] = 0
+    report["summary"]["by_kind"] = {"mismatch": 1}
+
+    with pytest.raises(
+        check_tool.CheckToolError,
+        match="severity 与现行判法不一致",
+    ):
+        check_tool.validate_report(report)
 
 
 def test_old_revision_rejected_needs_recheck_and_bad_anchor_are_excluded() -> None:
