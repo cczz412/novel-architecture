@@ -307,6 +307,7 @@ def _ingest_routed_items(
         "sources": report["sources"],
         "material_units": report["material_units"],
         "projection_receipts": report["projection_receipts"],
+        "watermark_receipt": report["watermark_receipt"],
         "format_receipt": format_receipt,
         "upload_objects": format_receipt["upload_objects"],
         "api_calls": 0,

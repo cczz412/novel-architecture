@@ -478,6 +478,82 @@ def test_entry_13c_matching_filename_and_content_chapter_number_still_passes(
     assert report["chapters"] == store.chapters("filename-content-match")
 
 
+def test_entry_13d_repeated_boundary_line_is_only_flagged_and_never_removed(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    _init(tmp_path, monkeypatch, "watermark-conservative")
+    first_text = "第一章 雨夜\n沈砚推门。\n求收藏\n"
+    second_text = "第二章 清晨\n天亮了。\n  求收藏  \n"
+    report = ingest.ingest_files(
+        "watermark-conservative",
+        [
+            str(_write(tmp_path, "c01.txt", first_text)),
+            str(_write(tmp_path, "c02.txt", second_text)),
+        ],
+        material_role="CHAPTER",
+    )
+
+    receipt = report["watermark_receipt"]
+    assert receipt["policy"] == {
+        "candidate_equivalence": "TRIM_OUTER_WHITESPACE_THEN_EXACT",
+        "mechanically_confirmed": False,
+        "blocks_import": False,
+        "mutates_original_text": False,
+        "default_action": "kept_flagged",
+        "derived_clean_copy_requires_author_confirmation": True,
+    }
+    assert receipt["candidate_count"] == 1
+    candidate = receipt["candidates"][0]
+    assert candidate["normalized_text"] == "求收藏"
+    assert candidate["chapter_count"] == 2
+    assert candidate["status"] == "CANDIDATE_ONLY"
+    assert candidate["action"] == "kept_flagged"
+    assert candidate["author_decision"] == "not_requested"
+    assert candidate["signals"]["non_narrative_cue"] is True
+    assert [row["raw_text"] for row in candidate["occurrences"]] == [
+        "求收藏",
+        "  求收藏  ",
+    ]
+    sources = {source["source_id"]: source for source in report["sources"]}
+    for occurrence in candidate["occurrences"]:
+        assert occurrence["coordinate_basis"] == "DECODED_UNICODE_CODEPOINT_V1"
+        source = sources[occurrence["source_id"]]
+        assert (
+            source["decoded_text"][
+                occurrence["source_start"] : occurrence["source_end"]
+            ]
+            == occurrence["raw_text"]
+        )
+    assert [chapter["text"] for chapter in report["chapters"]] == [
+        "沈砚推门。\n求收藏\n",
+        "天亮了。\n  求收藏  \n",
+    ]
+    assert report["chapters"] == store.chapters("watermark-conservative")
+    assert any("只标候选" in warning for warning in report["warnings"])
+
+
+def test_entry_13e_approximate_or_middle_repetition_is_not_upgraded_to_candidate(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    _init(tmp_path, monkeypatch, "watermark-negative-control")
+    first_lines = ["甲一", "甲二", "甲三", "这是正文重复句", "甲五", "甲六", "求收藏"]
+    second_lines = ["乙一", "乙二", "乙三", "这是正文重复句", "乙五", "乙六", "求收藏！"]
+    report = ingest.ingest_files(
+        "watermark-negative-control",
+        [
+            str(_write(tmp_path, "c01.txt", "第一章\n" + "\n".join(first_lines) + "\n")),
+            str(_write(tmp_path, "c02.txt", "第二章\n" + "\n".join(second_lines) + "\n")),
+        ],
+        material_role="CHAPTER",
+    )
+
+    assert report["watermark_receipt"]["candidate_count"] == 0
+    assert report["watermark_receipt"]["candidates"] == []
+    assert not any("疑似水印" in warning for warning in report["warnings"])
+
+
 @pytest.mark.parametrize(
     "members",
     [
