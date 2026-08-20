@@ -133,11 +133,23 @@ def _fence_for(value: str) -> str:
     return fence
 
 
-def _quote_lines(value: str | None) -> list[str]:
+EVIDENCE_KIND_LABELS = {
+    "missing_without_quote": "明确缺失，所以没有引文",
+    "unknown_without_quote": "无法判断，也没有可安全定位的引文",
+    "unknown_with_quote": "有相关引文，但仍无法判断",
+    "quoted": "有逐字引文",
+}
+
+
+def _quote_lines(judgment: dict[str, Any]) -> list[str]:
+    kind = writing_check_result_tool.evidence_text_kind(judgment)
+    value = judgment["evidence_quote"]
+    lines = [f"- 引文状态：{EVIDENCE_KIND_LABELS[kind]}"]
     if value is None:
-        return ["- 逐字引文：无"]
+        return [*lines, "- 逐字引文：无"]
+    assert isinstance(value, str)
     fence = _fence_for(value)
-    return ["- 逐字引文：", "", fence, value, fence]
+    return [*lines, "- 逐字引文：", "", fence, value, fence]
 
 
 def render(request: dict[str, Any]) -> str:
@@ -180,7 +192,7 @@ def render(request: dict[str, Any]) -> str:
                 "",
                 f"- Requirement：`{requirement_ref}`" if requirement_ref else "- Requirement：无",
                 f"- 原判断说明：{change['explanation']}",
-                *_quote_lines(change["evidence_quote"]),
+                *_quote_lines(change),
                 "",
             ]
         )

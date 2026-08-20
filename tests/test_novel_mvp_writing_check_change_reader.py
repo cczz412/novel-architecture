@@ -208,8 +208,24 @@ def test_five_categories_keep_only_four_changes_in_original_order() -> None:
     assert "### 2. unplanned" in rendered
     assert "### 3. missing" in rendered
     assert "### 4. unknown" in rendered
+    assert "引文状态：有逐字引文" in rendered
+    assert "引文状态：明确缺失，所以没有引文" in rendered
+    assert "引文状态：有相关引文，但仍无法判断" in rendered
     assert "只排版现有判断，不作整体结论" in rendered
     assert "不会创建 closeout" in rendered
+
+
+def test_unknown_without_quote_has_its_own_honest_label() -> None:
+    package = _package()
+    judgments = _mixed_judgments(package)
+    judgments[-1]["evidence_quote"] = None
+    request = _request(judgments)
+
+    rendered = writing_check_change_reader.render(request)
+
+    assert "引文状态：无法判断，也没有可安全定位的引文" in rendered
+    assert "- 逐字引文：无" in rendered
+    assert "引文状态：明确缺失，所以没有引文" in rendered
 
 
 def test_multiline_evidence_quote_is_preserved_byte_for_byte() -> None:
