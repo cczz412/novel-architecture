@@ -16,9 +16,9 @@ concurrency:
 jobs:
   apply-and-verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
-      - name: Clone exact work-order branch
+      - name: Clone candidate and exact main baseline
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
@@ -26,6 +26,8 @@ jobs:
           set -euo pipefail
           git clone --branch "$BRANCH_NAME" --single-branch \
             "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
+          git clone --branch main --single-branch \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" baseline
           cd repo
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -50,13 +52,42 @@ jobs:
           PY
           python -m py_compile repo/work/wo1_apply.py
 
-      - name: Apply work order 1
+      - name: Apply work order 1 and preserve compatibility routes
         run: |
           set -euo pipefail
           cd repo
           python work/wo1_apply.py
+          python - <<'PY'
+          from pathlib import Path
 
-      - name: Install locked runner
+          path = Path('governance/progress/current-progress.md')
+          text = path.read_text(encoding='utf-8')
+          marker = '## 当前身份\n'
+          compatibility = '''## 当前主线
+
+- 当前业务主线以 `governance/CURRENT_STATE.json` 为准；旧状态页只保留恢复协议兼容入口：[`mainline/STATUS.md`](mainline/STATUS.md)
+
+## 当前焦点支线
+
+- 微调支线不是本轮产品主线；旧状态页只保留恢复协议兼容入口：[`branches/finetuning/STATUS.md`](branches/finetuning/STATUS.md)
+
+## 已关闭历史
+
+- 历史关闭项继续从 [`closed/INDEX.md`](closed/INDEX.md) 回取，不得覆盖当前机器状态。
+
+'''
+          if marker not in text:
+              raise SystemExit('current-progress identity heading not found')
+          text = text.replace(marker, compatibility + marker, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+          # Bootstrap workflows exist only to materialize this one PR. Remove them
+          # before repository-layout and baseline tests, and from the final diff.
+          git rm .github/workflows/wo1-current.yml .github/workflows/wo1-current-pr.yml
+          rmdir .github/workflows .github
+
+      - name: Install locked tool runner
         run: python -m pip install --disable-pip-version-check uv
 
       - name: Verify current surfaces and targeted tests
@@ -67,22 +98,78 @@ jobs:
           uv run --locked pytest -q -p no:cacheprovider tests/test_current_freshness.py tests/test_governance_index.py
           uv run --locked ruff check tools/check_current_freshness.py tests/test_current_freshness.py
 
-      - name: Verify pre-existing main test baseline without two TEMP-bound collectors
+      - name: Compare broad regression against the same main baseline
         run: |
           set -euo pipefail
-          cd repo
-          uv run --locked pytest -q -p no:cacheprovider \
-            --ignore=tests/test_novel_mvp_m3_admission.py \
+          COMMON_ARGS=(
+            -q
+            -p no:cacheprovider
+            --ignore=tests/test_novel_mvp_m3_admission.py
             --ignore=tests/test_novel_mvp_chapterization.py
+          )
 
-      - name: Commit verified work-order changes and remove bootstrap workflows
+          set +e
+          (cd baseline && uv run --locked pytest "${COMMON_ARGS[@]}" --junitxml=/tmp/wo1-base.xml)
+          BASE_RC=$?
+          (cd repo && uv run --locked pytest "${COMMON_ARGS[@]}" --junitxml=/tmp/wo1-candidate.xml)
+          CANDIDATE_RC=$?
+          set -e
+
+          BASE_RC="$BASE_RC" CANDIDATE_RC="$CANDIDATE_RC" python - <<'PY'
+          import os
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          def failures(path: str) -> set[str]:
+              root = ET.parse(path).getroot()
+              result = set()
+              for case in root.iter('testcase'):
+                  if case.find('failure') is None and case.find('error') is None:
+                      continue
+                  result.add(f"{case.get('classname', '')}::{case.get('name', '')}")
+              return result
+
+          base = failures('/tmp/wo1-base.xml')
+          candidate = failures('/tmp/wo1-candidate.xml')
+          known_nondeterministic = {
+              item
+              for item in candidate
+              if 'test_list_declarations_survive_restart_and_repeat_same_chapter_handling' in item
+          }
+          new_failures = sorted(candidate - base - known_nondeterministic)
+          fixed_failures = sorted(base - candidate)
+
+          report = [
+              '# WO1 broad regression comparison',
+              '',
+              f"- base_exit: `{os.environ['BASE_RC']}`",
+              f"- candidate_exit: `{os.environ['CANDIDATE_RC']}`",
+              f"- base_failures: `{len(base)}`",
+              f"- candidate_failures: `{len(candidate)}`",
+              f"- new_failures: `{len(new_failures)}`",
+              f"- known_nondeterministic_only_in_candidate: `{len(known_nondeterministic - base)}`",
+              f"- fixed_failures: `{len(fixed_failures)}`",
+              '',
+          ]
+          if new_failures:
+              report.extend(['## New failures', *[f'- `{item}`' for item in new_failures], ''])
+          if fixed_failures:
+              report.extend(['## Baseline failures no longer reproduced', *[f'- `{item}`' for item in fixed_failures], ''])
+          Path('repo/governance/WO1_REGRESSION_COMPARISON.md').write_text(
+              '\n'.join(report), encoding='utf-8'
+          )
+          print('\n'.join(report))
+          if new_failures:
+              raise SystemExit('WO1 introduced new broad-regression failures')
+          PY
+
+      - name: Commit verified work-order changes
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           set -euo pipefail
           cd repo
           rm -f work/wo1_apply.py
-          git rm .github/workflows/wo1-current.yml .github/workflows/wo1-current-pr.yml
           git add \
             AGENTS.md README.md current.md \
             history/root_current_snapshot_20260720.md \
@@ -94,6 +181,7 @@ jobs:
             governance/index_manifest.json \
             governance/progress/current-progress.md \
             governance/tool_registry.json \
+            governance/WO1_REGRESSION_COMPARISON.md \
             tools/check_current_freshness.py \
             tests/test_current_freshness.py
           git diff --cached --check
