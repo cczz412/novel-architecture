@@ -1,0 +1,180 @@
+{
+  "schema_version": "archive-candidates-r01",
+  "authority": "ADVISORY_ONLY_NO_DELETE_OR_MOVE_AUTHORITY",
+  "candidates": [
+    {
+      "candidate_id": "ARC-001",
+      "path": "current.md",
+      "current_identity": "STALE_ENTRYPOINT",
+      "recommended_action": "REPLACE_WITH_TINY_HISTORY_STUB_OR_MOVE_UNDER_HISTORY",
+      "why": "Root filename looks authoritative, but its first line says it stopped updating in July and is only archaeology.",
+      "current_references": [
+        "README.md",
+        "AGENTS.md",
+        "governance/INDEX.md"
+      ],
+      "prechecks": [
+        "search all references to current.md",
+        "ensure governance/INDEX.md and CURRENT_STATE are reachable",
+        "add redirect/stub before move"
+      ],
+      "rollback": "Restore path from pre-migration commit/tag.",
+      "cz_choice": true
+    },
+    {
+      "candidate_id": "ARC-002",
+      "path": "governance/CURRENT_STATE.json",
+      "current_identity": "ACTIVE_GOVERNANCE_BUT_STALE",
+      "recommended_action": "REFRESH_OR_SPLIT_REPOSITORY_STATE_FROM_PRODUCT_WORK_STATE",
+      "why": "It declares itself the sole machine current state but still describes the Aug-8 repository-hygiene task while progress points to the Aug-21 module branch.",
+      "prechecks": [
+        "define whether file is repository-wide state or all-project current work",
+        "update AGENTS precedence wording",
+        "add freshness validator"
+      ],
+      "rollback": "Restore previous JSON; keep refresh receipt.",
+      "cz_choice": true
+    },
+    {
+      "candidate_id": "ARC-003",
+      "path": "foundation/",
+      "current_identity": "HISTORICAL_REFERENCE",
+      "recommended_action": "REMOVE_FROM_DEFAULT_DISCOVERABILITY_OR_EXTERNALIZE_WITH_POINTER",
+      "why": "Root instructions already state it is a July snapshot, yet root placement makes it easy for agents to discover and reuse.",
+      "prechecks": [
+        "reference closure",
+        "archive registry entry",
+        "manifest and restore test"
+      ],
+      "rollback": "Restore archive by registered object SHA or Git tag.",
+      "cz_choice": true
+    },
+    {
+      "candidate_id": "ARC-004",
+      "path": "references/shared-context/* except CURRENT R14",
+      "current_identity": "HISTORICAL_REFERENCE",
+      "recommended_action": "KEEP_HISTORY_BUT_ROUTE_ONLY_THROUGH_CURRENT_AND_VERSION_INDEX",
+      "why": "Multiple full versions are valuable history but should not all appear in default agent routes.",
+      "prechecks": [
+        "CURRENT points to R14",
+        "all old versions have manifests",
+        "no current link points to old version except explicit history"
+      ],
+      "rollback": "Pointer-only change; old versions remain in Git/history.",
+      "cz_choice": false
+    },
+    {
+      "candidate_id": "ARC-005",
+      "path": "references/atomic-expectations/R01 and R02 directories",
+      "current_identity": "HISTORICAL_REFERENCE",
+      "recommended_action": "KEEP_HISTORY_AND_HIDE_FROM_DEFAULT_ROUTER",
+      "why": "R03 is current; old boards are required for change history but should not compete with current requirements.",
+      "prechecks": [
+        "CURRENT R03 validation",
+        "supersession metadata",
+        "test-design R01 keeps explicit R02 identity"
+      ],
+      "rollback": "Pointer/index rollback.",
+      "cz_choice": false
+    },
+    {
+      "candidate_id": "ARC-006",
+      "path": "novel-mvp/design/older versions and waiting-rewrite designs",
+      "current_identity": "HISTORICAL_REFERENCE",
+      "recommended_action": "INDEX_AS_HISTORY_AND_ADD_MACHINE_CURRENTNESS_METADATA",
+      "why": "Design INDEX already marks several documents waiting for R14 rewrites; search still returns their old semantics.",
+      "prechecks": [
+        "machine-readable design registry",
+        "current successor or explicit no-successor",
+        "current routers exclude waiting-rewrite docs by default"
+      ],
+      "rollback": "Registry change only; documents remain.",
+      "cz_choice": false
+    },
+    {
+      "candidate_id": "ARC-007",
+      "path": "references/cloud-supervision/**/evidence/TEMP/**",
+      "current_identity": "TEMPORARY_EVIDENCE",
+      "recommended_action": "EXTERNALIZE_OR_PACKAGE_AS_FROZEN_ARCHIVE; KEEP_ONLY_INDEX_AND_SHA",
+      "why": "The candidate branch embeds prompt packages, synthetic cases and review returns under a TEMP path inside active Git history, creating evidence pollution.",
+      "prechecks": [
+        "freeze package manifest",
+        "verify no active tests import these files",
+        "archive restore drill",
+        "retain currentness note"
+      ],
+      "rollback": "Restore package from archive using SHA/manifests.",
+      "cz_choice": false
+    },
+    {
+      "candidate_id": "ARC-008",
+      "path": "references/survey-inbox/packages/MODULE_RUNTIME_ADVISORY_ARCHIVE_*",
+      "current_identity": "FROZEN_EVIDENCE",
+      "recommended_action": "KEEP_ADMISSION_INDEX; CONSIDER EXTERNALIZING BULKY ORIGINAL RETURNS",
+      "why": "Advisory reports are valuable evidence but not active product truth; full originals need not all sit in the default tree.",
+      "prechecks": [
+        "claim/digest preservation",
+        "source SHA registry",
+        "current consumers identified"
+      ],
+      "rollback": "Retrieve archived originals by registered SHA.",
+      "cz_choice": true
+    },
+    {
+      "candidate_id": "ARC-009",
+      "path": "config/batches/ root versioned JSONs",
+      "current_identity": "MIXED_ACTIVE_AND_HISTORICAL",
+      "recommended_action": "MOVE_NONCURRENT_BATCHES_BEHIND active/archive POINTERS",
+      "why": "Many historical Z00* batch files remain directly discoverable beside active configuration despite existing active/archive folders.",
+      "prechecks": [
+        "ACTIVE_ARCHIVE_MANIFEST closure",
+        "tool lookup behavior",
+        "historical replay registry"
+      ],
+      "rollback": "Path mapping/compatibility stubs or Git restore.",
+      "cz_choice": false
+    },
+    {
+      "candidate_id": "ARC-010",
+      "path": "experiments/",
+      "current_identity": "EXPERIMENT",
+      "recommended_action": "KEEP_ISOLATED; REQUIRE ACTIVE INDEX AND RETIREMENT STATUS",
+      "why": "Experiments are legitimate but should never become product truth through search recency or folder naming.",
+      "prechecks": [
+        "experiment INDEX completeness",
+        "owner/status/exit criteria",
+        "no current router points to retired experiments"
+      ],
+      "rollback": "No deletion required.",
+      "cz_choice": false
+    },
+    {
+      "candidate_id": "ARC-011",
+      "path": "finetuning/",
+      "current_identity": "EXPERIMENT",
+      "recommended_action": "KEEP_DOMAIN_CURRENT_AND EXTERNALIZE BULK RESULTS",
+      "why": "Fine-tuning status is a separate domain and must not dominate product architecture currentness.",
+      "prechecks": [
+        "finetuning/CURRENT.json unique",
+        "training rights remain locked",
+        "bulk result pointers validated"
+      ],
+      "rollback": "Domain pointer rollback.",
+      "cz_choice": false
+    },
+    {
+      "candidate_id": "ARC-012",
+      "path": "config/review_pack/prompts/ one-off prompts",
+      "current_identity": "MIXED_ACTIVE_REFERENCE_AND_TEMPORARY",
+      "recommended_action": "KEEP_REUSABLE_ROUTES; ARCHIVE COMPLETED ONE-OFF PROMPTS",
+      "why": "Prompt sources are useful, but one-off completed review prompts increase default discoverability and can silently revive old assumptions.",
+      "prechecks": [
+        "routes.json reference scan",
+        "identify reusable templates vs completed task prompts",
+        "preserve task receipt/SHA"
+      ],
+      "rollback": "Restore from review archive.",
+      "cz_choice": false
+    }
+  ]
+}
