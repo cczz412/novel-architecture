@@ -200,40 +200,67 @@ def _current_chapters() -> list[dict]:
     ]
 
 
-def _prepare_current_c1_c2_c3(workspace) -> dict:
-    chapters = _current_chapters()
+def _current_version(workspace, logical_key: str) -> int:
+    state = workspace.read(logical_key)
+    return 0 if state is None else state["version"]
+
+
+def _prepare_current_c1_c2_c3(
+    workspace,
+    *,
+    chapters: list[dict] | None = None,
+    empty_chapter_ids: set[str] | None = None,
+    fact_text_by_chapter: dict[str, tuple[str, str]] | None = None,
+) -> dict:
+    chapters = copy.deepcopy(_current_chapters() if chapters is None else chapters)
+    empty_chapter_ids = set() if empty_chapter_ids is None else empty_chapter_ids
+    fact_text_by_chapter = (
+        {} if fact_text_by_chapter is None else fact_text_by_chapter
+    )
+    chapter_version = _current_version(workspace, "chapters")
+    index_version = _current_version(workspace, "chapter_index")
     chapter_workspace.persist_c1_current_views(
         workspace,
-        "op-current-c1",
+        f"op-current-c1-{chapter_version + 1}",
         chapters,
         [copy.deepcopy(item["chapter_revision_ref"]) for item in chapters],
-        {"chapters": 0, "chapter_index": 0},
+        {"chapters": chapter_version, "chapter_index": index_version},
     )
+    segment_version = _current_version(workspace, "segments")
     segment_workspace.persist_current_segments(
         workspace,
-        "op-current-c2",
+        f"op-current-c2-{segment_version + 1}",
         SEGMENT_OPTIONS["seg_min_chars"],
         SEGMENT_OPTIONS["seg_max_chars"],
         SEGMENT_OPTIONS["halo_chars"],
-        0,
+        segment_version,
     )
     responses = {}
     for item in segment_workspace.read_current_segments(workspace)["items"]:
         chapter_id = item["chapter_revision_ref"]["chapter_id"]
-        if chapter_id == "c01":
+        if chapter_id in fact_text_by_chapter:
+            fact_text, quote = fact_text_by_chapter[chapter_id]
+        elif chapter_id == "c01":
             fact_text, quote = "甲拿起钥匙。", QUOTE
         else:
             fact_text, quote = "丁点亮了灯。", "丁点灯"
         responses[extract_tool.item_key(item)] = {
-            "data": {"facts": [{"text": fact_text, "quote": quote}]},
+            "data": {
+                "facts": (
+                    []
+                    if chapter_id in empty_chapter_ids
+                    else [{"text": fact_text, "quote": quote}]
+                )
+            },
             "usage": {},
             "model": "FROZEN_OFFLINE_RESPONSE",
         }
+    candidate_version = _current_version(workspace, "fact_candidates")
     extract_workspace.persist_current_fact_candidates(
         workspace,
-        "op-current-c3",
+        f"op-current-c3-{candidate_version + 1}",
         responses,
-        0,
+        candidate_version,
     )
     return responses
 
@@ -578,6 +605,197 @@ def test_second_chapter_bad_candidate_rejects_without_half_snapshot(
         "sha256": None,
         "facts": [],
     }
+    assert workspace.read("fact_materialization_runs") is None
+
+
+def test_second_current_batch_appends_only_new_chapter_and_preserves_old_status(
+    tmp_path: Path,
+) -> None:
+    runtime_root, _, workspace = _open_workspace(tmp_path)
+    chapters = _current_chapters()
+    _prepare_current_c1_c2_c3(workspace, chapters=chapters[:1])
+    first = fact_workspace.materialize_current_extracted_snapshot(
+        workspace,
+        operation_id="op-materialize-wave-1",
+        source="M4_CURRENT_WORKSPACE",
+        added_at="2026-08-19 16:30:00",
+    )
+    confirmed = fact_workspace.read_snapshot(workspace)["facts"]
+    confirmed[0].update(
+        status="confirmed",
+        decided_at="2026-08-19 16:31:00",
+    )
+    fact_workspace.save_snapshot(
+        workspace,
+        operation_id="op-author-confirm-wave-1",
+        snapshot=confirmed,
+        expected_version=first["version"],
+    )
+
+    _prepare_current_c1_c2_c3(workspace, chapters=chapters)
+    second = fact_workspace.materialize_current_extracted_snapshot(
+        workspace,
+        operation_id="op-materialize-wave-2",
+        source="M4_CURRENT_WORKSPACE",
+        added_at="2026-08-19 16:32:00",
+    )
+    current = fact_workspace.read_snapshot(workspace)
+    restarted = _subprocess_read(runtime_root, workspace.project_id)
+
+    assert second["added_chapter_ids"] == ["c02"]
+    assert current["version"] == 3
+    assert current["facts"][0] == confirmed[0]
+    assert current["facts"][1]["id"] == "f002"
+    assert current["facts"][1]["chapter_id"] == "c02"
+    assert current["facts"][1]["status"] == "extracted"
+    assert restarted == current
+    ledger = workspace.read("fact_materialization_runs")
+    assert ledger["version"] == 2
+    assert list(ledger["payload"]["processed_chapters"]) == ["c01", "c02"]
+
+    replay = fact_workspace.materialize_current_extracted_snapshot(
+        workspace,
+        operation_id="op-materialize-wave-1",
+        source="M4_CURRENT_WORKSPACE",
+        added_at="2026-08-19 16:30:00",
+    )
+    assert replay == {
+        "status": "COMMITTED",
+        "operation_id": "op-materialize-wave-1",
+        "version": first["version"],
+        "sha256": first["sha256"],
+        "added_chapter_ids": ["c01"],
+        "replayed": True,
+    }
+    assert fact_workspace.read_snapshot(workspace) == current
+    assert workspace.read("fact_materialization_runs") == ledger
+
+
+def test_zero_candidate_chapter_is_recorded_once_then_returns_no_change(
+    tmp_path: Path,
+) -> None:
+    _, _, workspace = _open_workspace(tmp_path)
+    chapters = _current_chapters()
+    _prepare_current_c1_c2_c3(workspace, chapters=chapters[:1])
+    fact_workspace.materialize_current_extracted_snapshot(
+        workspace,
+        operation_id="op-zero-wave-1",
+        source="M4_CURRENT_WORKSPACE",
+        added_at="2026-08-19 16:30:00",
+    )
+    _prepare_current_c1_c2_c3(
+        workspace,
+        chapters=chapters,
+        empty_chapter_ids={"c02"},
+    )
+    appended = fact_workspace.materialize_current_extracted_snapshot(
+        workspace,
+        operation_id="op-zero-wave-2",
+        source="M4_CURRENT_WORKSPACE",
+        added_at="2026-08-19 16:31:00",
+    )
+    facts_before = fact_workspace.read_snapshot(workspace)
+    ledger_before = workspace.read("fact_materialization_runs")
+
+    no_change = fact_workspace.materialize_current_extracted_snapshot(
+        workspace,
+        operation_id="op-zero-wave-3",
+        source="M4_CURRENT_WORKSPACE",
+        added_at="2026-08-19 16:32:00",
+    )
+
+    assert appended["added_chapter_ids"] == ["c02"]
+    assert len(facts_before["facts"]) == 1
+    assert ledger_before["payload"]["processed_chapters"]["c02"][
+        "c3_candidate_count"
+    ] == 0
+    assert no_change == {
+        "status": "NO_CHANGE",
+        "operation_id": "op-zero-wave-3",
+        "version": facts_before["version"],
+        "sha256": facts_before["sha256"],
+        "added_chapter_ids": [],
+        "replayed": False,
+    }
+    assert fact_workspace.read_snapshot(workspace) == facts_before
+    assert workspace.read("fact_materialization_runs") == ledger_before
+
+
+def test_processed_chapter_candidate_change_requires_separate_lifecycle(
+    tmp_path: Path,
+) -> None:
+    _, _, workspace = _open_workspace(tmp_path)
+    chapters = _current_chapters()[:1]
+    _prepare_current_c1_c2_c3(workspace, chapters=chapters)
+    fact_workspace.materialize_current_extracted_snapshot(
+        workspace,
+        operation_id="op-processed-c3-wave-1",
+        source="M4_CURRENT_WORKSPACE",
+        added_at="2026-08-19 16:30:00",
+    )
+    facts_before = workspace.read("facts")
+    ledger_before = workspace.read("fact_materialization_runs")
+    _prepare_current_c1_c2_c3(
+        workspace,
+        chapters=chapters,
+        fact_text_by_chapter={"c01": ("甲碰过钥匙。", QUOTE)},
+    )
+
+    with pytest.raises(
+        fact_workspace.FactWorkspaceError,
+        match="M4_PROCESSED_C3_CHANGED",
+    ):
+        fact_workspace.materialize_current_extracted_snapshot(
+            workspace,
+            operation_id="op-processed-c3-wave-2",
+            source="M4_CURRENT_WORKSPACE",
+            added_at="2026-08-19 16:31:00",
+        )
+
+    assert workspace.read("facts") == facts_before
+    assert workspace.read("fact_materialization_runs") == ledger_before
+
+
+def test_processed_chapter_revision_change_stops_before_append(
+    tmp_path: Path,
+) -> None:
+    _, _, workspace = _open_workspace(tmp_path)
+    chapter = _current_chapters()[0]
+    _prepare_current_c1_c2_c3(workspace, chapters=[chapter])
+    fact_workspace.materialize_current_extracted_snapshot(
+        workspace,
+        operation_id="op-revision-wave-1",
+        source="M4_CURRENT_WORKSPACE",
+        added_at="2026-08-19 16:30:00",
+    )
+    facts_before = workspace.read("facts")
+    ledger_before = workspace.read("fact_materialization_runs")
+    revised = copy.deepcopy(chapter)
+    revised.update(
+        text=UPDATED_TEXT,
+        chapter_revision_ref=_revision_ref_for(
+            "c01", UPDATED_TEXT, revision_no=2
+        ),
+    )
+    _prepare_current_c1_c2_c3(
+        workspace,
+        chapters=[revised],
+        fact_text_by_chapter={"c01": ("甲把钥匙交给乙。", "甲把钥匙交给乙。")},
+    )
+
+    with pytest.raises(
+        fact_workspace.FactWorkspaceError,
+        match="M4_REVISION_LIFECYCLE_REQUIRED",
+    ):
+        fact_workspace.materialize_current_extracted_snapshot(
+            workspace,
+            operation_id="op-revision-wave-2",
+            source="M4_CURRENT_WORKSPACE",
+            added_at="2026-08-19 16:31:00",
+        )
+
+    assert workspace.read("facts") == facts_before
+    assert workspace.read("fact_materialization_runs") == ledger_before
 
 
 def test_source_change_during_materialization_has_zero_facts_write(
@@ -618,7 +836,7 @@ def test_source_change_during_materialization_has_zero_facts_write(
     assert fact_workspace.read_snapshot(workspace)["version"] == 0
 
 
-def test_existing_facts_version_conflict_never_replaces_prior_batch(
+def test_existing_facts_without_materialization_ledger_are_not_guessed(
     tmp_path: Path,
 ) -> None:
     _, _, workspace = _open_workspace(tmp_path)
@@ -631,7 +849,10 @@ def test_existing_facts_version_conflict_never_replaces_prior_batch(
         expected_version=0,
     )
 
-    with pytest.raises(VersionConflictError, match="VERSION_CONFLICT"):
+    with pytest.raises(
+        fact_workspace.FactWorkspaceError,
+        match="M4_MATERIALIZATION_LEDGER_MISSING",
+    ):
         fact_workspace.materialize_current_extracted_snapshot(
             workspace,
             operation_id="op-m4-existing-facts",
@@ -662,7 +883,9 @@ def test_materialize_operation_is_idempotent_and_changed_payload_conflicts(
     before = fact_workspace.read_snapshot(workspace)
 
     assert replay["replayed"] is True
-    assert replay["generation_id"] == first["generation_id"]
+    assert replay["version"] == first["version"]
+    assert replay["sha256"] == first["sha256"]
+    assert replay["added_chapter_ids"] == first["added_chapter_ids"]
     with pytest.raises(
         OperationConflictError,
         match="OPERATION_ID_REUSED_WITH_DIFFERENT_REQUEST",

@@ -19,10 +19,12 @@ from . import (
     factstore,
     segment_workspace,
 )
-from .workspace import AuthorWorkspace
+from .workspace import AuthorWorkspace, OperationConflictError
 
 
 LOGICAL_KEY = "facts"
+MATERIALIZATION_KEY = "fact_materialization_runs"
+MATERIALIZATION_SCHEMA = "m4-materialization-ledger-v1"
 UPSTREAM_KEYS = (
     "chapters",
     "chapter_index",
@@ -30,6 +32,19 @@ UPSTREAM_KEYS = (
     "fact_candidates",
 )
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
+PROCESSED_KEYS = {
+    "chapter_revision_ref",
+    "c3_candidates_sha256",
+    "c3_candidate_count",
+    "first_operation_id",
+}
+MATERIALIZATION_OPERATION_KEYS = {
+    "operation_id",
+    "request_sha256",
+    "added_chapter_ids",
+    "source_identity",
+    "facts_snapshot",
+}
 
 
 class FactWorkspaceError(factstore.FactstoreError):
@@ -57,6 +72,164 @@ def _canonical_bytes(value: Any) -> bytes:
     except (TypeError, ValueError) as exc:
         raise FactWorkspaceError("M4_SOURCE_NOT_JSON_SERIALIZABLE") from exc
     return (text + "\n").encode("utf-8")
+
+
+def _payload_sha256(value: Any) -> str:
+    return hashlib.sha256(_canonical_bytes(value)).hexdigest()
+
+
+def _empty_materialization_ledger() -> dict[str, Any]:
+    return {
+        "schema": MATERIALIZATION_SCHEMA,
+        "processed_chapters": {},
+        "operations": [],
+    }
+
+
+def _validated_source_identity(value: object) -> dict[str, dict[str, Any]]:
+    if not isinstance(value, dict) or set(value) != set(UPSTREAM_KEYS):
+        raise FactWorkspaceError("M4_MATERIALIZATION_SOURCE_IDENTITY_INVALID")
+    result: dict[str, dict[str, Any]] = {}
+    for key in UPSTREAM_KEYS:
+        identity = value.get(key)
+        if (
+            not isinstance(identity, dict)
+            or set(identity) != {"version", "sha256"}
+            or not isinstance(identity.get("version"), int)
+            or isinstance(identity.get("version"), bool)
+            or identity["version"] < 1
+            or not isinstance(identity.get("sha256"), str)
+            or SHA256_RE.fullmatch(identity["sha256"]) is None
+        ):
+            raise FactWorkspaceError(
+                "M4_MATERIALIZATION_SOURCE_IDENTITY_INVALID"
+            )
+        result[key] = copy.deepcopy(identity)
+    return result
+
+
+def _validated_materialization_ledger(value: object) -> dict[str, Any]:
+    if (
+        not isinstance(value, dict)
+        or set(value) != {"schema", "processed_chapters", "operations"}
+        or value.get("schema") != MATERIALIZATION_SCHEMA
+        or not isinstance(value.get("processed_chapters"), dict)
+        or not isinstance(value.get("operations"), list)
+    ):
+        raise FactWorkspaceError("M4_MATERIALIZATION_LEDGER_INVALID")
+    processed: dict[str, dict[str, Any]] = {}
+    for chapter_id, row in value["processed_chapters"].items():
+        if (
+            not isinstance(chapter_id, str)
+            or not chapter_id
+            or not isinstance(row, dict)
+            or set(row) != PROCESSED_KEYS
+        ):
+            raise FactWorkspaceError("M4_MATERIALIZATION_LEDGER_INVALID")
+        try:
+            ref = chapter_workspace._validated_revision_refs(
+                [row["chapter_revision_ref"]]
+            )[chapter_id]
+        except (chapter_workspace.ChapterWorkspaceError, KeyError) as exc:
+            raise FactWorkspaceError("M4_MATERIALIZATION_LEDGER_INVALID") from exc
+        count = row.get("c3_candidate_count")
+        digest = row.get("c3_candidates_sha256")
+        operation_id = row.get("first_operation_id")
+        if (
+            isinstance(count, bool)
+            or not isinstance(count, int)
+            or count < 0
+            or not isinstance(digest, str)
+            or SHA256_RE.fullmatch(digest) is None
+            or not isinstance(operation_id, str)
+            or not operation_id
+        ):
+            raise FactWorkspaceError("M4_MATERIALIZATION_LEDGER_INVALID")
+        processed[chapter_id] = {
+            "chapter_revision_ref": ref,
+            "c3_candidates_sha256": digest,
+            "c3_candidate_count": count,
+            "first_operation_id": operation_id,
+        }
+
+    operations: list[dict[str, Any]] = []
+    seen_operations: set[str] = set()
+    covered_chapters: list[str] = []
+    previous_facts_version = 0
+    for row in value["operations"]:
+        if not isinstance(row, dict) or set(row) != MATERIALIZATION_OPERATION_KEYS:
+            raise FactWorkspaceError("M4_MATERIALIZATION_LEDGER_INVALID")
+        operation_id = row.get("operation_id")
+        request_sha = row.get("request_sha256")
+        added = row.get("added_chapter_ids")
+        facts_snapshot = row.get("facts_snapshot")
+        if (
+            not isinstance(operation_id, str)
+            or not operation_id
+            or operation_id in seen_operations
+            or not isinstance(request_sha, str)
+            or SHA256_RE.fullmatch(request_sha) is None
+            or not isinstance(added, list)
+            or not added
+            or any(
+                not isinstance(chapter_id, str) or not chapter_id
+                for chapter_id in added
+            )
+            or len(added) != len(set(added))
+            or not isinstance(facts_snapshot, dict)
+            or set(facts_snapshot) != {"version", "sha256"}
+            or not isinstance(facts_snapshot.get("version"), int)
+            or isinstance(facts_snapshot.get("version"), bool)
+            or facts_snapshot["version"] <= previous_facts_version
+            or not isinstance(facts_snapshot.get("sha256"), str)
+            or SHA256_RE.fullmatch(facts_snapshot["sha256"]) is None
+        ):
+            raise FactWorkspaceError("M4_MATERIALIZATION_LEDGER_INVALID")
+        seen_operations.add(operation_id)
+        covered_chapters.extend(added)
+        previous_facts_version = facts_snapshot["version"]
+        operations.append(
+            {
+                "operation_id": operation_id,
+                "request_sha256": request_sha,
+                "added_chapter_ids": list(added),
+                "source_identity": _validated_source_identity(
+                    row["source_identity"]
+                ),
+                "facts_snapshot": copy.deepcopy(facts_snapshot),
+            }
+        )
+    if len(covered_chapters) != len(set(covered_chapters)) or set(
+        covered_chapters
+    ) != set(processed):
+        raise FactWorkspaceError("M4_MATERIALIZATION_LEDGER_COVERAGE_INVALID")
+    if any(
+        processed[chapter_id]["first_operation_id"] != operation["operation_id"]
+        for operation in operations
+        for chapter_id in operation["added_chapter_ids"]
+    ):
+        raise FactWorkspaceError("M4_MATERIALIZATION_LEDGER_COVERAGE_INVALID")
+    return {
+        "schema": MATERIALIZATION_SCHEMA,
+        "processed_chapters": processed,
+        "operations": operations,
+    }
+
+
+def _read_materialization_state(workspace: AuthorWorkspace) -> dict[str, Any]:
+    state = workspace.read(MATERIALIZATION_KEY)
+    if state is None:
+        return {
+            "version": 0,
+            "sha256": None,
+            "payload": _empty_materialization_ledger(),
+        }
+    state = _validated_state_entry(state, MATERIALIZATION_KEY)
+    return {
+        "version": state["version"],
+        "sha256": state["sha256"],
+        "payload": _validated_materialization_ledger(state["payload"]),
+    }
 
 
 def _validated_state_entry(value: Any, logical_key: str) -> dict[str, Any]:
@@ -316,13 +489,87 @@ def materialize_current_extracted_snapshot(
     source: str,
     added_at: str,
 ) -> dict[str, Any]:
-    """把工作区 current C1＋C2＋C3 整批物化为一个 C4 EXTRACTED 快照。"""
+    """把尚未处理的 current 章节全有或全无地追加进 C4。"""
     workspace = _require_workspace(workspace)
+    if not isinstance(operation_id, str) or not operation_id:
+        raise FactWorkspaceError("M4_OPERATION_ID_INVALID")
+    if not isinstance(source, str) or not source or source != source.strip():
+        raise FactWorkspaceError("M4_SOURCE_INVALID")
+    if (
+        not isinstance(added_at, str)
+        or not added_at
+        or added_at != added_at.strip()
+    ):
+        raise FactWorkspaceError("M4_ADDED_AT_INVALID")
+
+    materialization_state = _read_materialization_state(workspace)
+    request_sha = _payload_sha256(
+        {
+            "operation_id": operation_id,
+            "source": source,
+            "added_at": added_at,
+        }
+    )
+    existing_operation = next(
+        (
+            row
+            for row in materialization_state["payload"]["operations"]
+            if row["operation_id"] == operation_id
+        ),
+        None,
+    )
+    if existing_operation is not None:
+        if existing_operation["request_sha256"] != request_sha:
+            raise OperationConflictError(
+                "OPERATION_ID_REUSED_WITH_DIFFERENT_REQUEST"
+            )
+        return {
+            "status": "COMMITTED",
+            "operation_id": operation_id,
+            "version": existing_operation["facts_snapshot"]["version"],
+            "sha256": existing_operation["facts_snapshot"]["sha256"],
+            "added_chapter_ids": copy.deepcopy(
+                existing_operation["added_chapter_ids"]
+            ),
+            "replayed": True,
+        }
+
+    facts_state = workspace.read(LOGICAL_KEY)
+    if facts_state is None:
+        if materialization_state["version"] != 0:
+            raise FactWorkspaceError("M4_FACTS_MATERIALIZATION_STATE_DIVERGED")
+        existing_facts: list[dict[str, Any]] = []
+        facts_version = 0
+        facts_sha = None
+    else:
+        facts_state = _validated_state_entry(facts_state, LOGICAL_KEY)
+        existing_facts = factstore.validate_c4_v1_snapshot(
+            facts_state["payload"]
+        )
+        facts_version = facts_state["version"]
+        facts_sha = facts_state["sha256"]
+        if materialization_state["version"] == 0:
+            raise FactWorkspaceError("M4_MATERIALIZATION_LEDGER_MISSING")
+
+    processed = materialization_state["payload"]["processed_chapters"]
+    operations = materialization_state["payload"]["operations"]
+    if operations and facts_version < operations[-1]["facts_snapshot"]["version"]:
+        raise FactWorkspaceError("M4_FACTS_MATERIALIZATION_STATE_DIVERGED")
+    if any(
+        fact["chapter_id"] not in processed
+        or fact["chapter_revision_ref"]
+        != processed[fact["chapter_id"]]["chapter_revision_ref"]
+        for fact in existing_facts
+    ):
+        raise FactWorkspaceError("M4_FACTS_MATERIALIZATION_STATE_DIVERGED")
+
     chapters, segments, candidates, source_identity = _read_current_upstream(
         workspace
     )
 
-    chapter_keys = [_revision_key(chapter["chapter_revision_ref"]) for chapter in chapters]
+    chapter_keys = [
+        _revision_key(chapter["chapter_revision_ref"]) for chapter in chapters
+    ]
     if len(chapter_keys) != len(set(chapter_keys)):
         raise FactWorkspaceError("M4_CHAPTER_REVISION_REF_DUPLICATE")
     segments_by_revision: dict[str, list[dict[str, Any]]] = {
@@ -344,26 +591,74 @@ def materialize_current_extracted_snapshot(
     if any(not segments_by_revision[key] for key in chapter_keys):
         raise FactWorkspaceError("M4_CHAPTER_SEGMENTS_MISSING")
 
-    snapshot: list[dict[str, Any]] = []
+    current_by_id = {
+        chapter["id"]: chapter["chapter_revision_ref"]
+        for chapter in chapters
+    }
+    if set(processed) - set(current_by_id):
+        raise FactWorkspaceError("M4_PROCESSED_CHAPTER_NO_LONGER_CURRENT")
+    for chapter_id, record in processed.items():
+        if record["chapter_revision_ref"] != current_by_id[chapter_id]:
+            raise FactWorkspaceError("M4_REVISION_LIFECYCLE_REQUIRED")
+        key = _revision_key(current_by_id[chapter_id])
+        current_candidates = candidates_by_revision[key]
+        if (
+            record["c3_candidate_count"] != len(current_candidates)
+            or record["c3_candidates_sha256"]
+            != _payload_sha256(current_candidates)
+        ):
+            raise FactWorkspaceError("M4_PROCESSED_C3_CHANGED")
+
+    new_chapters = [chapter for chapter in chapters if chapter["id"] not in processed]
+    if not new_chapters:
+        return {
+            "status": "NO_CHANGE",
+            "operation_id": operation_id,
+            "version": facts_version,
+            "sha256": facts_sha,
+            "added_chapter_ids": [],
+            "replayed": False,
+        }
+
+    snapshot: list[dict[str, Any]] = copy.deepcopy(existing_facts)
+    processed_after = copy.deepcopy(processed)
     try:
-        for chapter, key in zip(chapters, chapter_keys, strict=True):
+        for chapter in new_chapters:
+            key = _revision_key(chapter["chapter_revision_ref"])
+            chapter_candidates = candidates_by_revision[key]
+            candidate_keys = [_canonical_bytes(row) for row in chapter_candidates]
+            if len(candidate_keys) != len(set(candidate_keys)):
+                raise FactWorkspaceError("M4_C3_DUPLICATE_CANDIDATE")
             result = fact_tool.execute(
                 {
                     "chapter": chapter,
                     "segments": segments_by_revision[key],
-                    "candidates": candidates_by_revision[key],
+                    "candidates": chapter_candidates,
                     "existing_c4": snapshot,
                     "source": source,
                     "added_at": added_at,
                 }
             )
             snapshot = result["facts"]
+            processed_after[chapter["id"]] = {
+                "chapter_revision_ref": copy.deepcopy(
+                    chapter["chapter_revision_ref"]
+                ),
+                "c3_candidates_sha256": _payload_sha256(chapter_candidates),
+                "c3_candidate_count": len(chapter_candidates),
+                "first_operation_id": operation_id,
+            }
     except (factstore.FactstoreError, KeyError, TypeError) as exc:
         raise FactWorkspaceError(f"M4_MATERIALIZATION_REJECTED:{exc}") from exc
 
     snapshot = factstore.validate_c4_v1_snapshot(snapshot)
-    if any(fact["status"] != factstore.STATUS_EXTRACTED for fact in snapshot):
-        raise FactWorkspaceError("M4_MATERIALIZATION_STATUS_NOT_EXTRACTED")
+    if snapshot[: len(existing_facts)] != existing_facts:
+        raise FactWorkspaceError("M4_EXISTING_FACTS_CHANGED_DURING_APPEND")
+    if any(
+        fact["status"] != factstore.STATUS_EXTRACTED
+        for fact in snapshot[len(existing_facts) :]
+    ):
+        raise FactWorkspaceError("M4_NEW_FACT_STATUS_NOT_EXTRACTED")
 
     try:
         _, _, _, latest_identity = _read_current_upstream(workspace)
@@ -374,9 +669,42 @@ def materialize_current_extracted_snapshot(
     if latest_identity != source_identity:
         raise FactWorkspaceSourceChangedError("M4_SOURCE_CHANGED_DURING_RUN")
 
-    return save_snapshot(
-        workspace,
-        operation_id=operation_id,
-        snapshot=snapshot,
-        expected_version=0,
+    facts_snapshot = {
+        "version": facts_version + 1,
+        "sha256": _payload_sha256(snapshot),
+    }
+    ledger = copy.deepcopy(materialization_state["payload"])
+    added_chapter_ids = [chapter["id"] for chapter in new_chapters]
+    ledger["processed_chapters"] = processed_after
+    ledger["operations"].append(
+        {
+            "operation_id": operation_id,
+            "request_sha256": request_sha,
+            "added_chapter_ids": added_chapter_ids,
+            "source_identity": copy.deepcopy(source_identity),
+            "facts_snapshot": facts_snapshot,
+        }
     )
+    ledger = _validated_materialization_ledger(ledger)
+    expected = {
+        LOGICAL_KEY: {"version": facts_version, "sha256": facts_sha},
+        MATERIALIZATION_KEY: {
+            "version": materialization_state["version"],
+            "sha256": materialization_state["sha256"],
+        },
+    }
+    committed = workspace.commit_guarded(
+        operation_id,
+        {LOGICAL_KEY: snapshot, MATERIALIZATION_KEY: ledger},
+        expected,
+        source_identity,
+    )
+    return {
+        "status": committed["status"],
+        "operation_id": operation_id,
+        "version": committed["versions"][LOGICAL_KEY],
+        "sha256": committed["payload_sha256"][LOGICAL_KEY],
+        "added_chapter_ids": added_chapter_ids,
+        "generation_id": committed["generation_id"],
+        "replayed": committed["replayed"],
+    }
