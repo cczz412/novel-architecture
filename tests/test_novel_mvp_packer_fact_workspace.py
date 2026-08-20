@@ -613,3 +613,29 @@ def test_restart_returns_byte_stable_pack_and_recall(tmp_path: Path) -> None:
     )
     assert router.open_project(PRINCIPAL, workspace.project_id).read("facts") is not None
     assert _inventory(runtime_root) == before
+
+
+def test_public_validator_is_strict_and_returns_a_deep_copy(tmp_path: Path) -> None:
+    _, _, workspace = _open_workspace(tmp_path)
+    result, _, _ = _ready_pack(workspace)
+
+    validated = packer_fact_workspace.validate_result(result)
+    assert validated == result
+    validated["loaded_facts"][0]["fact"]["text"] = "调用方修改副本"
+    assert result["loaded_facts"][0]["fact"]["text"] == "事实句：甲拿起钥匙。"
+
+    bad_mirror = copy.deepcopy(result)
+    bad_mirror["decision_state"] = "STOP_UNRESOLVED"
+    with pytest.raises(
+        packer_fact_workspace.PackerFactWorkspaceError,
+        match="FACT_PACK_M11_MIRROR_MISMATCH",
+    ):
+        packer_fact_workspace.validate_result(bad_mirror)
+
+    bad_loaded = copy.deepcopy(result)
+    bad_loaded["loaded_facts"][0]["fact"]["status"] = "extracted"
+    with pytest.raises(
+        packer_fact_workspace.PackerFactWorkspaceError,
+        match="FACT_PACK_LOADED_FACT_INVALID",
+    ):
+        packer_fact_workspace.validate_result(bad_loaded)

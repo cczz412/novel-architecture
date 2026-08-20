@@ -17,6 +17,45 @@ from .workspace import AuthorWorkspace
 
 IDENTITY = "SUPPLY_CANDIDATE"
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
+RESULT_FIELDS = {
+    "identity",
+    "not_c11",
+    "not_fact",
+    "author_handover",
+    "writes",
+    "source_plan_version",
+    "source_plan_sha256",
+    "generation_watermark",
+    "slot_ref",
+    "slot_rev",
+    "outline_checkpoint",
+    "future_event_materials",
+    "writing_note_sources",
+    "longline_context",
+}
+GENERATION_WATERMARK_FIELDS = {
+    "source_plan_version",
+    "source_plan_sha256",
+    "slot_rev",
+    "outline_source_commit_seq",
+}
+OUTLINE_CHECKPOINT_FIELDS = {
+    "outline_rev",
+    "source_slot_ref",
+    "source_commit_seq",
+}
+EVENT_REQUIRED_FIELDS = {"id", "rev", "scene_ref", "text"}
+CHAPTER_REQUIRED_NOTE_FIELDS = {"slot_ref", "slot_rev", "goal", "summary"}
+SCENE_REQUIRED_NOTE_FIELDS = {"id", "rev", "goal", "summary"}
+STORYLINE_FIELDS = {
+    "id",
+    "rev",
+    "name",
+    "alias",
+    "priority",
+    "members",
+    "line_status",
+}
 PLAN_ENTRY_KEYS = frozenset({"version", "sha256", "plan"})
 EVENT_OPTIONAL_FIELDS = (
     "storyline_ref",
@@ -170,6 +209,283 @@ def _has_material(value: Any) -> bool:
     return value not in {None, ""} if not isinstance(value, list) else bool(value)
 
 
+def _positive_int(value: Any, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        _fail("SUPPLY_RESULT_INTEGER_INVALID", field)
+    return value
+
+
+def _nonnegative_int(value: Any, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        _fail("SUPPLY_RESULT_INTEGER_INVALID", field)
+    return value
+
+
+def _string(value: Any, field: str, *, nonempty: bool = False) -> str:
+    if not isinstance(value, str) or (nonempty and not value):
+        _fail("SUPPLY_RESULT_STRING_INVALID", field)
+    return value
+
+
+def _string_list(value: Any, field: str, *, unique: bool = False) -> list[str]:
+    if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+        _fail("SUPPLY_RESULT_STRING_LIST_INVALID", field)
+    if unique and (
+        any(not item for item in value) or len(value) != len(set(value))
+    ):
+        _fail("SUPPLY_RESULT_STRING_LIST_INVALID", field)
+    return list(value)
+
+
+def _present_string(value: Any, field: str) -> str:
+    text = _string(value, field, nonempty=True)
+    if not _has_material(text):
+        _fail("SUPPLY_RESULT_EMPTY_OPTIONAL_FIELD", field)
+    return text
+
+
+def _validate_generation_watermark(
+    value: Any,
+    *,
+    source_plan_version: int,
+    source_plan_sha256: str,
+    slot_rev: int,
+    outline_source_commit_seq: int,
+) -> dict[str, Any]:
+    expected = {
+        "source_plan_version": source_plan_version,
+        "source_plan_sha256": source_plan_sha256,
+        "slot_rev": slot_rev,
+        "outline_source_commit_seq": outline_source_commit_seq,
+    }
+    if not isinstance(value, dict) or set(value) != GENERATION_WATERMARK_FIELDS:
+        _fail("SUPPLY_RESULT_GENERATION_WATERMARK_INVALID")
+    if value != expected:
+        _fail("SUPPLY_RESULT_GENERATION_WATERMARK_MISMATCH")
+    return copy.deepcopy(value)
+
+
+def _validate_outline_checkpoint(value: Any, slot_ref: str) -> dict[str, Any]:
+    if not isinstance(value, dict) or set(value) != OUTLINE_CHECKPOINT_FIELDS:
+        _fail("SUPPLY_RESULT_OUTLINE_CHECKPOINT_INVALID")
+    _positive_int(value.get("outline_rev"), "outline_checkpoint.outline_rev")
+    if value.get("source_slot_ref") != slot_ref:
+        _fail("SUPPLY_RESULT_OUTLINE_SLOT_MISMATCH")
+    _nonnegative_int(
+        value.get("source_commit_seq"),
+        "outline_checkpoint.source_commit_seq",
+    )
+    return copy.deepcopy(value)
+
+
+def _validate_future_events(
+    value: Any,
+    *,
+    scene_ids: set[str],
+    storyline_ids: set[str],
+) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        _fail("SUPPLY_RESULT_FUTURE_EVENTS_INVALID")
+    result: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    allowed = EVENT_REQUIRED_FIELDS | set(EVENT_OPTIONAL_FIELDS)
+    for index, row in enumerate(value):
+        if (
+            not isinstance(row, dict)
+            or not EVENT_REQUIRED_FIELDS.issubset(row)
+            or not set(row).issubset(allowed)
+        ):
+            _fail("SUPPLY_RESULT_FUTURE_EVENT_INVALID", str(index))
+        event_id = _string(row.get("id"), f"future_event[{index}].id", nonempty=True)
+        if event_id in seen:
+            _fail("SUPPLY_RESULT_FUTURE_EVENT_DUPLICATE", event_id)
+        seen.add(event_id)
+        _positive_int(row.get("rev"), f"future_event[{event_id}].rev")
+        scene_ref = _string(
+            row.get("scene_ref"),
+            f"future_event[{event_id}].scene_ref",
+            nonempty=True,
+        )
+        if scene_ref not in scene_ids:
+            _fail("SUPPLY_RESULT_EVENT_SCENE_NOT_FOUND", event_id)
+        _string(row.get("text"), f"future_event[{event_id}].text")
+        for field in {
+            "storyline_ref",
+            "story_time_hint",
+            "origin_ref",
+            "repair_ref",
+            "deviation_note",
+        } & set(row):
+            _present_string(row[field], f"future_event[{event_id}].{field}")
+        if "storyline_ref" in row and row["storyline_ref"] not in storyline_ids:
+            _fail("SUPPLY_RESULT_EVENT_STORYLINE_NOT_FOUND", event_id)
+        if "purpose" in row and row["purpose"] not in {
+            "setup",
+            "advance",
+            "reveal",
+            "payoff",
+            "repair",
+        }:
+            _fail("SUPPLY_RESULT_EVENT_PURPOSE_INVALID", event_id)
+        if "defer_count" in row:
+            _nonnegative_int(
+                row["defer_count"], f"future_event[{event_id}].defer_count"
+            )
+        result.append(copy.deepcopy(row))
+    return result
+
+
+def _validate_chapter_note(value: Any, slot_ref: str, slot_rev: int) -> dict[str, Any]:
+    allowed = CHAPTER_REQUIRED_NOTE_FIELDS | set(CHAPTER_OPTIONAL_NOTE_FIELDS)
+    if (
+        not isinstance(value, dict)
+        or not CHAPTER_REQUIRED_NOTE_FIELDS.issubset(value)
+        or not set(value).issubset(allowed)
+        or value.get("slot_ref") != slot_ref
+        or value.get("slot_rev") != slot_rev
+    ):
+        _fail("SUPPLY_RESULT_CHAPTER_NOTE_INVALID")
+    _string(value.get("goal"), "writing_note_sources.chapter.goal")
+    _string(value.get("summary"), "writing_note_sources.chapter.summary")
+    for field in {"entry_state", "exit_condition", "exit_hook"} & set(value):
+        _present_string(value[field], f"writing_note_sources.chapter.{field}")
+    for field in {"must_not", "risks"} & set(value):
+        rows = _string_list(value[field], f"writing_note_sources.chapter.{field}")
+        if not rows:
+            _fail("SUPPLY_RESULT_EMPTY_OPTIONAL_FIELD", field)
+    return copy.deepcopy(value)
+
+
+def _validate_scene_notes(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        _fail("SUPPLY_RESULT_SCENE_NOTES_INVALID")
+    result: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    allowed = SCENE_REQUIRED_NOTE_FIELDS | set(SCENE_OPTIONAL_NOTE_FIELDS)
+    for index, row in enumerate(value):
+        if (
+            not isinstance(row, dict)
+            or not SCENE_REQUIRED_NOTE_FIELDS.issubset(row)
+            or not set(row).issubset(allowed)
+        ):
+            _fail("SUPPLY_RESULT_SCENE_NOTE_INVALID", str(index))
+        scene_id = _string(row.get("id"), f"scene_note[{index}].id", nonempty=True)
+        if scene_id in seen:
+            _fail("SUPPLY_RESULT_SCENE_NOTE_DUPLICATE", scene_id)
+        seen.add(scene_id)
+        _positive_int(row.get("rev"), f"scene_note[{scene_id}].rev")
+        _string(row.get("goal"), f"scene_note[{scene_id}].goal")
+        _string(row.get("summary"), f"scene_note[{scene_id}].summary")
+        for field in {
+            "location",
+            "pov",
+            "mood_in",
+            "mood_out",
+            "visual_hint",
+            "resistance",
+            "turn",
+        } & set(row):
+            _present_string(row[field], f"scene_note[{scene_id}].{field}")
+        for field in {"characters", "dialogue_hints", "spoiler_notes"} & set(row):
+            rows = _string_list(
+                row[field],
+                f"scene_note[{scene_id}].{field}",
+                unique=field == "characters",
+            )
+            if not rows:
+                _fail("SUPPLY_RESULT_EMPTY_OPTIONAL_FIELD", field)
+        if "word_estimate" in row:
+            _nonnegative_int(
+                row["word_estimate"], f"scene_note[{scene_id}].word_estimate"
+            )
+        result.append(copy.deepcopy(row))
+    return result
+
+
+def _validate_storylines(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        _fail("SUPPLY_RESULT_LONGLINE_CONTEXT_INVALID")
+    result: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for index, row in enumerate(value):
+        if not isinstance(row, dict) or set(row) != STORYLINE_FIELDS:
+            _fail("SUPPLY_RESULT_STORYLINE_INVALID", str(index))
+        storyline_id = _string(
+            row.get("id"), f"storyline[{index}].id", nonempty=True
+        )
+        if storyline_id in seen:
+            _fail("SUPPLY_RESULT_STORYLINE_DUPLICATE", storyline_id)
+        seen.add(storyline_id)
+        _positive_int(row.get("rev"), f"storyline[{storyline_id}].rev")
+        _string(row.get("name"), f"storyline[{storyline_id}].name")
+        if row.get("alias") is not None:
+            _string(row["alias"], f"storyline[{storyline_id}].alias")
+        if isinstance(row.get("priority"), bool) or not isinstance(
+            row.get("priority"), int
+        ):
+            _fail("SUPPLY_RESULT_INTEGER_INVALID", f"storyline[{storyline_id}].priority")
+        _string_list(
+            row.get("members"),
+            f"storyline[{storyline_id}].members",
+            unique=True,
+        )
+        if row.get("line_status") not in {
+            "active",
+            "paused",
+            "converged",
+            "merged",
+        }:
+            _fail("SUPPLY_RESULT_STORYLINE_STATUS_INVALID", storyline_id)
+        result.append(copy.deepcopy(row))
+    return result
+
+
+def validate_result(value: object) -> dict[str, Any]:
+    """严格校验现役短命供料结果，不重新读取规划账或补写字段。"""
+
+    if not isinstance(value, dict) or set(value) != RESULT_FIELDS:
+        _fail("SUPPLY_RESULT_FIELDS_INVALID")
+    result = copy.deepcopy(value)
+    if (
+        result["identity"] != IDENTITY
+        or result["not_c11"] is not True
+        or result["not_fact"] is not True
+        or result["author_handover"] is not False
+        or result["writes"] != "none"
+    ):
+        _fail("SUPPLY_RESULT_IDENTITY_INVALID")
+    source_version = _positive_int(
+        result["source_plan_version"], "source_plan_version"
+    )
+    source_sha = result["source_plan_sha256"]
+    if not isinstance(source_sha, str) or SHA256_RE.fullmatch(source_sha) is None:
+        _fail("SUPPLY_RESULT_SOURCE_SHA_INVALID")
+    slot_ref = _string(result["slot_ref"], "slot_ref", nonempty=True)
+    slot_rev = _positive_int(result["slot_rev"], "slot_rev")
+    checkpoint = _validate_outline_checkpoint(result["outline_checkpoint"], slot_ref)
+    result["generation_watermark"] = _validate_generation_watermark(
+        result["generation_watermark"],
+        source_plan_version=source_version,
+        source_plan_sha256=source_sha,
+        slot_rev=slot_rev,
+        outline_source_commit_seq=checkpoint["source_commit_seq"],
+    )
+    notes = result["writing_note_sources"]
+    if not isinstance(notes, dict) or set(notes) != {"chapter", "scenes"}:
+        _fail("SUPPLY_RESULT_WRITING_NOTES_INVALID")
+    chapter = _validate_chapter_note(notes["chapter"], slot_ref, slot_rev)
+    scenes = _validate_scene_notes(notes["scenes"])
+    storylines = _validate_storylines(result["longline_context"])
+    result["future_event_materials"] = _validate_future_events(
+        result["future_event_materials"],
+        scene_ids={scene["id"] for scene in scenes},
+        storyline_ids={storyline["id"] for storyline in storylines},
+    )
+    result["writing_note_sources"] = {"chapter": chapter, "scenes": scenes}
+    result["longline_context"] = storylines
+    return result
+
+
 def _copy_existing_fields(
     source: dict[str, Any], fields: tuple[str, ...]
 ) -> dict[str, Any]:
@@ -253,7 +569,7 @@ def execute(workspace: AuthorWorkspace, slot_ref: str) -> dict[str, Any]:
     if checkpoint is None:
         _fail("OUTLINE_CHECKPOINT_REQUIRED_FOR_SUPPLY")
 
-    return {
+    result = {
         "identity": IDENTITY,
         "not_c11": True,
         "not_fact": True,
@@ -271,4 +587,11 @@ def execute(workspace: AuthorWorkspace, slot_ref: str) -> dict[str, Any]:
         "writing_note_sources": _writing_note_sources(snapshot),
         "longline_context": copy.deepcopy(snapshot["storylines"]),
     }
+    return validate_result(result)
 
+
+__all__ = [
+    "ChapterFactSupplyWorkspaceError",
+    "execute",
+    "validate_result",
+]

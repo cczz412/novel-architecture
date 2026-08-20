@@ -521,3 +521,29 @@ sys.stdout.buffer.write((json.dumps(value, ensure_ascii=False, sort_keys=True, s
 
     assert reopened.stdout == _canonical_bytes(expected)
     assert _tree_bytes(project_dir) == before
+
+
+def test_public_validator_is_strict_and_returns_a_deep_copy(tmp_path: Path) -> None:
+    _, workspace = _workspace_with_plan(tmp_path)
+    result = chapter_fact_supply_workspace.execute(workspace, "S-0001")
+
+    validated = chapter_fact_supply_workspace.validate_result(result)
+    assert validated == result
+    validated["future_event_materials"][0]["text"] = "调用方修改副本"
+    assert result["future_event_materials"][0]["text"] == "许岚计划把密封信交给林照"
+
+    bad_watermark = copy.deepcopy(result)
+    bad_watermark["generation_watermark"]["slot_rev"] += 1
+    with pytest.raises(
+        chapter_fact_supply_workspace.ChapterFactSupplyWorkspaceError,
+        match="SUPPLY_RESULT_GENERATION_WATERMARK_MISMATCH",
+    ):
+        chapter_fact_supply_workspace.validate_result(bad_watermark)
+
+    bad_event = copy.deepcopy(result)
+    bad_event["future_event_materials"][0]["scene_ref"] = "SCN-MISSING"
+    with pytest.raises(
+        chapter_fact_supply_workspace.ChapterFactSupplyWorkspaceError,
+        match="SUPPLY_RESULT_EVENT_SCENE_NOT_FOUND",
+    ):
+        chapter_fact_supply_workspace.validate_result(bad_event)

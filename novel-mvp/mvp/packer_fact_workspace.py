@@ -271,7 +271,9 @@ def _valid_snapshot_identity(value: object) -> bool:
     )
 
 
-def _validated_pack_result(value: object) -> dict[str, Any]:
+def validate_result(value: object) -> dict[str, Any]:
+    """严格校验现役事实包结果，不重新读取事实账或重新执行打包。"""
+
     if not isinstance(value, dict) or set(value) != RESULT_FIELDS:
         _fail("FACT_PACK_RESULT_FIELDS_INVALID")
     result = copy.deepcopy(value)
@@ -349,7 +351,7 @@ def recall_omitted(
     """只回取同一包明确遗漏、可回取且仍绑定原水位的一条 current C4。"""
 
     handle = _require_workspace(workspace)
-    result = _validated_pack_result(pack_result)
+    result = validate_result(pack_result)
     if result["workspace_binding_sha256"] != _workspace_binding(handle):
         _fail("RECALL_WORKSPACE_BINDING_MISMATCH")
     if result["decision_state"] != "READY":
@@ -396,4 +398,5 @@ __all__ = [
     "PackerFactWorkspaceError",
     "execute",
     "recall_omitted",
+    "validate_result",
 ]
