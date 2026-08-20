@@ -1,0 +1,714 @@
+{
+  "artifact": "MULTI_FORM_CREATIVE_INTAKE_TASK_CARDS_R01",
+  "schema_version": "multi-form-creative-intake-task-cards-v1",
+  "status": "DESIGN_CANDIDATE_ONLY",
+  "authority": "ADVISORY_ONLY_NO_CONTRACT_CODE_R14_R03_OR_EXECUTION_AUTHORITY",
+  "source_identity": {
+    "project_source_release": "PROJECT_SOURCE_RELEASE_8e66fe30e71fdfed",
+    "product_background": "R14",
+    "atomic_expectations_background": "R03_142",
+    "workspace_baseline": "WORKSPACE_BASELINE_79bd2e2d6d0e_1ea1f200",
+    "workspace_commit": "79bd2e2d6d0eb28610d5ed4608288251c6ffa424",
+    "current_product_code_commit": "01efc50d863bf01ac048dc6c50284fcebc7e51f4",
+    "task_zip_sha256": "26317d112756dc6990df8b8e340a4cf8913a64f478e464540837e44be7c458be",
+    "direct_selected_tests_passed": 247
+  },
+  "global_principles": [
+    "raw-before-parse for inputs that pass the root-object acceptance limit",
+    "format detection never grants material role or truth authority",
+    "preview and advisory stages always return writes=[]",
+    "only the owning ledger writer may change current state",
+    "all author confirmations bind preview_sha256 plus expected target version and sha256",
+    "same content is stored once; cross-ledger usage is by stable reference, not silent copying",
+    "plan and idea content never becomes confirmed fact through intake",
+    "authenticated author and project context never comes from imported file metadata",
+    "unknown contract, version, field, reference or lineage fails closed",
+    "no M12, no M13, no unified import platform, no RAG, no plugin bus, no general database layer"
+  ],
+  "sequence": [
+    "MFI-01",
+    "MFI-02",
+    "MFI-03",
+    "MFI-04",
+    "MFI-05",
+    "MFI-06"
+  ],
+  "task_cards": [
+    {
+      "task_id": "MFI-01",
+      "title": "原件先存与三类材料身份接缝",
+      "priority": "P0",
+      "status": "CANDIDATE_NOT_AUTHORIZED",
+      "depends_on": [],
+      "goal": "在任何剧本、灵感或原生大纲解析之前，先形成作者隔离、内容寻址、可幂等回放的原件回执；只建立材料或包身份，不做转换与账本写入。",
+      "current_reuse": [
+        "mvp.upload_source.UploadSource",
+        "mvp.workspace.AuthorWorkspace.store_immutable(raw_upload)",
+        "workspace operation_id idempotency and expected version/sha guards",
+        "C10 source_ref, source_sha256, slice_sha256 and append-only identity revision discipline"
+      ],
+      "current_gaps": [
+        "current ingest_workspace treats one M1 batch as the current input_manifest rather than an appendable creative-material history",
+        "C10 v4 has no SCREENPLAY or IDEA_NOTE role",
+        "C10 decoded-codepoint source_ref does not by itself identify a binary native-outline package",
+        "current M1 normally blocks before persistence when parsing fails; this card must separate accepted raw capture from conversion"
+      ],
+      "candidate_shapes": [
+        "RAW_CREATIVE_INPUT_RECEIPT v1-candidate",
+        "C10 versioned text-role extension decision for SCREENPLAY and IDEA_NOTE",
+        "PRODUCT_NATIVE_OUTLINE_EXCHANGE package identity kept separate from C10 text spans"
+      ],
+      "scope_in": [
+        "safe logical source name validation",
+        "root-object byte limit and opaque-byte capture",
+        "exact received bytes for uploads",
+        "exact received Unicode plus UTF-8 bytes for paste",
+        "author-scoped immutable receipt",
+        "material/package instance identity",
+        "operation id replay and same-id-different-payload conflict",
+        "status RAW_STORED or QUARANTINED"
+      ],
+      "scope_out": [
+        "screenplay parsing",
+        "idea placement recommendation",
+        "native package member validation",
+        "C1, plan, longline or fact writes",
+        "automatic classification by filename or extension"
+      ],
+      "acceptance_tests": [
+        {
+          "id": "MFI-01-T01",
+          "case": "accepted-size TXT upload",
+          "expect": "raw bytes, size and sha256 round-trip exactly; no parser output and no ledger mutation"
+        },
+        {
+          "id": "MFI-01-T02",
+          "case": "malformed DOCX or ZIP",
+          "expect": "opaque original can be quarantined after safe root capture; conversion remains blocked; current ledgers unchanged"
+        },
+        {
+          "id": "MFI-01-T03",
+          "case": "same operation_id and same payload replay",
+          "expect": "same receipt, no second blob identity and no duplicate index entry"
+        },
+        {
+          "id": "MFI-01-T04",
+          "case": "same operation_id with different bytes",
+          "expect": "operation conflict before any visible mutation"
+        },
+        {
+          "id": "MFI-01-T05",
+          "case": "same bytes uploaded by two authenticated authors",
+          "expect": "author-scoped identities; neither author can infer or read the other author's object"
+        },
+        {
+          "id": "MFI-01-T06",
+          "case": "file metadata contains another author_id and project_id",
+          "expect": "metadata remains provenance only and grants no access"
+        },
+        {
+          "id": "MFI-01-T07",
+          "case": "paste with leading/trailing whitespace and mixed newlines",
+          "expect": "server-received character sequence and UTF-8 sha256 stay exact; no trim or normalization"
+        },
+        {
+          "id": "MFI-01-T08",
+          "case": "failure after blob write before identity commit",
+          "expect": "recovery yields either a referenced raw receipt or an unreferenced safe blob eligible for deterministic cleanup; no half-visible material current"
+        }
+      ],
+      "deliverables": [
+        "candidate schema and fixtures for raw creative input receipt",
+        "C10 extension versus companion-contract decision note",
+        "author-workspace adapter tests for raw-before-parse and isolation",
+        "migration plan that does not reinterpret existing M1 input_manifest as a complete history"
+      ],
+      "done_when": [
+        "all acceptance tests pass without API or model calls",
+        "raw capture and identity creation contain zero ten-ledger writes",
+        "unknown material kind remains UNKNOWN rather than defaulting to Chapter",
+        "existing C10 v1-v4 fixtures and existing M1 entrypoints remain byte-compatible"
+      ],
+      "failure_conditions": [
+        "parser runs before the raw receipt is durable",
+        "a malformed input can create a ledger object",
+        "a filename or extension grants SCREENPLAY, IDEA, CHAPTER or native-package authority",
+        "current C10 v4 records are silently rewritten"
+      ],
+      "must_not_claim": [
+        "screenplay import implemented",
+        "idea ledger implemented",
+        "native outline import implemented",
+        "C10 vNext adopted"
+      ]
+    },
+    {
+      "task_id": "MFI-02",
+      "title": "剧本结构保真只读预览与用途一问",
+      "priority": "P0",
+      "status": "CANDIDATE_NOT_AUTHORIZED",
+      "depends_on": [
+        "MFI-01"
+      ],
+      "goal": "从已保存的文本型剧本原件生成场景、人物提示、对白、动作、备注和未知块的有序 projection；只展示一个最高影响用途问题，零账本写入。",
+      "current_reuse": [
+        "M1 strict TXT/MD/CSV/DOCX/ZIP decoding and source-chain receipts",
+        "C10 source span and slice sha discipline",
+        "filename_chapter_no as hint only after explicit Chapter identity",
+        "upload inspection safe summaries"
+      ],
+      "current_gaps": [
+        "no screenplay structure parser",
+        "CSV has text semantics only, not columns",
+        "DOCX only covers main document flow and blocks on comments, headers, footnotes, text boxes, deletions or altChunk",
+        "no intended_use axis for WRITTEN_CONTENT, FUTURE_PLAN or SETTING_REFERENCE"
+      ],
+      "candidate_contracts": [
+        "SCREENPLAY_INTAKE_PREVIEW v1-candidate",
+        "SCREENPLAY_STRUCTURE_PROJECTION v1-candidate"
+      ],
+      "scope_in": [
+        "scene heading recognition with exact source spans",
+        "character cue, dialogue, parenthetical, action, transition, note and unknown_block",
+        "source-order preservation",
+        "stable projection IDs derived from material identity and source span",
+        "one question: written content, future plan or setting reference",
+        "routing preview with writes=[]"
+      ],
+      "scope_out": [
+        "entity resolution into character ledger",
+        "chapter current write",
+        "plan or longline write",
+        "fact extraction or confirmation",
+        "Excel workbook parsing",
+        "automatic CSV column mapping"
+      ],
+      "acceptance_tests": [
+        {
+          "id": "MFI-02-T01",
+          "case": "standard multi-scene plain-text screenplay",
+          "expect": "all source characters covered exactly once by typed blocks or unknown_block; scene and block order unchanged"
+        },
+        {
+          "id": "MFI-02-T02",
+          "case": "dialogue states a false rumor",
+          "expect": "preview labels it dialogue only and creates no world-fact output"
+        },
+        {
+          "id": "MFI-02-T03",
+          "case": "same display name could map to two characters",
+          "expect": "literal cue preserved; entity links remain candidates and writes=[]"
+        },
+        {
+          "id": "MFI-02-T04",
+          "case": "mixed director notes and unrecognized syntax",
+          "expect": "notes and unknown blocks remain visible with spans; no silent drop"
+        },
+        {
+          "id": "MFI-02-T05",
+          "case": "DOCX with unsupported comments or text boxes",
+          "expect": "current M1 block is honored; raw receipt remains available; no partial projection presented as complete"
+        },
+        {
+          "id": "MFI-02-T06",
+          "case": "CSV with arbitrary headers",
+          "expect": "raw text preview only; no guessed scene/speaker/text mapping"
+        },
+        {
+          "id": "MFI-02-T07",
+          "case": "material declaration conflicts with content cues",
+          "expect": "one human-readable conflict question; no automatic override"
+        },
+        {
+          "id": "MFI-02-T08",
+          "case": "no intended use supplied",
+          "expect": "status AWAITING_AUTHOR_DECISION and exactly one use question"
+        }
+      ],
+      "deliverables": [
+        "pure parser/projection code with deterministic fixtures",
+        "preview renderer showing source loss and unknown blocks",
+        "candidate schema with explicit field-origin annotations",
+        "tests proving zero writes to chapter, fact, plan and longline ledgers"
+      ],
+      "done_when": [
+        "projection coverage and order checks pass",
+        "all preview records bind source and preview sha256",
+        "dialogue, action and notes never acquire truth authority",
+        "existing M1 format and C10 tests remain green"
+      ],
+      "failure_conditions": [
+        "unparsed text disappears",
+        "speaker cue becomes a confirmed character identity",
+        "screenplay filename creates a Chapter",
+        "preview mutates any ledger"
+      ],
+      "must_not_claim": [
+        "screenplay is imported into a ledger",
+        "screenplay facts are confirmed",
+        "CSV or Excel screenplay structure is generally supported"
+      ]
+    },
+    {
+      "task_id": "MFI-03",
+      "title": "灵感原样收件箱、唯一真源与 advice-only 放置",
+      "priority": "P0",
+      "status": "CANDIDATE_NOT_AUTHORIZED",
+      "depends_on": [
+        "MFI-01"
+      ],
+      "goal": "让一句话或一段灵感先原样保存为长线账中的 UNPLACED idea；复用 intent_router 只给建议与一个必要问题，禁止自动排章、写事实或复制多账。",
+      "current_reuse": [
+        "intent_router homes, commitment, confidence, candidate_homes, clarification_question, advice_only and writes=[]",
+        "R14 longline ownership semantics",
+        "R03 M8-E06, M8-N01 and M8-N04 expectation boundaries",
+        "AuthorWorkspace idempotent and author-scoped storage"
+      ],
+      "current_gaps": [
+        "current intent_router has no persistence",
+        "current longline view explicitly marks ideas and expected timing unavailable",
+        "open_hook is a recommendation home, not proof that an idea record exists",
+        "no stable idea ID, rev, placement status or reminder trigger owner"
+      ],
+      "candidate_contracts": [
+        "IDEA_NOTE_RECORD v1-candidate",
+        "LONGLINE_IDEA_INBOX v1-candidate",
+        "IDEA_PLACEMENT_ACTION v1-candidate"
+      ],
+      "scope_in": [
+        "verbatim idea text and source ref",
+        "stable IDEA ID and rev",
+        "UNPLACED default state",
+        "advice-only placement suggestion",
+        "optional timing and reminder trigger",
+        "explicit placement references",
+        "origin_ref from plan object back to one idea source"
+      ],
+      "scope_out": [
+        "automatic next-chapter scheduling",
+        "fact or author-Canon promotion",
+        "automatic character/place/rule writes",
+        "model-generated prose",
+        "silent multi-ledger copies"
+      ],
+      "acceptance_tests": [
+        {
+          "id": "MFI-03-T01",
+          "case": "one-line unscheduled idea",
+          "expect": "saved immediately as UNPLACED before any clarification; no plan or fact mutation"
+        },
+        {
+          "id": "MFI-03-T02",
+          "case": "idea clearly says next chapter",
+          "expect": "router may recommend chapter_plan but still writes=[] until author action"
+        },
+        {
+          "id": "MFI-03-T03",
+          "case": "ambiguous future character change",
+          "expect": "at most two candidate homes and exactly one clarification question"
+        },
+        {
+          "id": "MFI-03-T04",
+          "case": "idea uses decisive factual wording such as someone will die",
+          "expect": "commitment remains future idea/plan identity and is invisible to fact consumers"
+        },
+        {
+          "id": "MFI-03-T05",
+          "case": "author places idea into a chapter",
+          "expect": "plan object stores origin_ref; idea text remains one source; a placement ref is appended by author action"
+        },
+        {
+          "id": "MFI-03-T06",
+          "case": "same idea explicitly used in three places",
+          "expect": "one idea plus three author-confirmed placement references, not three independent copies"
+        },
+        {
+          "id": "MFI-03-T07",
+          "case": "reminder derivation fails",
+          "expect": "idea current record remains unchanged because reminder is rebuildable projection"
+        },
+        {
+          "id": "MFI-03-T08",
+          "case": "cross-author same text",
+          "expect": "no deduplication leak and no shared ID"
+        }
+      ],
+      "deliverables": [
+        "longline idea owner candidate schema and fixtures",
+        "adapter from intent_router output to advisory receipt only",
+        "explicit placement action shape",
+        "read-only reminder projection and tests",
+        "tests proving one content source and reference-only downstream use"
+      ],
+      "done_when": [
+        "save never waits for placement classification",
+        "UNPLACED ideas survive restart and version conflict safely",
+        "all automatic routing outputs keep writes=[]",
+        "fact, chapter and plan ledgers are unchanged until an explicit placement action"
+      ],
+      "failure_conditions": [
+        "open_hook recommendation is treated as a persisted record",
+        "idea wording is promoted to fact",
+        "same idea text is silently copied to two ledgers",
+        "reminder timing becomes an automatic chapter assignment"
+      ],
+      "must_not_claim": [
+        "full longline ledger implemented",
+        "idea reminder production-ready",
+        "idea has been internalized into the story without author action"
+      ]
+    },
+    {
+      "task_id": "MFI-04",
+      "title": "产品原生大纲交换包、完整性校验与无损往返",
+      "priority": "P0",
+      "status": "CANDIDATE_NOT_AUTHORIZED",
+      "depends_on": [
+        "MFI-01"
+      ],
+      "goal": "定义并验证产品原生大纲交换包，保留 plan/longline 对象、稳定 ID、rev、引用、作者选择、history 与 blobs；只做 package validation、diff 和 round-trip fingerprints，不写 current。",
+      "current_reuse": [
+        "PLAN_LEDGER_STORAGE plan-v2 payload and object semantics",
+        "option_records full selection history",
+        "planstore history, blob and story_commit_seq discipline",
+        "M1 ZIP safety checks",
+        "AuthorWorkspace immutable raw package storage"
+      ],
+      "current_gaps": [
+        "input_router currently treats generic JSON as unsupported and generic ZIP before a native-package route exists",
+        "legacy kind=outline loses object identity and cannot be used",
+        "no native exchange manifest or lineage model",
+        "no complete longline storage owner",
+        "plan_workspace.save_plan does not restore plan history and blobs"
+      ],
+      "candidate_contracts": [
+        "PRODUCT_NATIVE_OUTLINE_EXCHANGE v1-candidate",
+        "PRODUCT_NATIVE_OUTLINE_IMPORT_PREVIEW v1-candidate",
+        "LONGLINE_LEDGER_STORAGE_CANDIDATE v1-candidate"
+      ],
+      "scope_in": [
+        "manifest content-signature routing before generic ZIP member classification",
+        "strict UTF-8 core JSON",
+        "member path, size, CRC and sha256 validation",
+        "plan-v2 validation",
+        "longline payload preservation as a candidate owner member",
+        "object inventory, reference graph, selection and history fingerprints",
+        "unknown extension preservation or fail-closed result",
+        "deterministic export fixtures and export-import-export comparison",
+        "diff preview with writes=[]"
+      ],
+      "scope_out": [
+        "current plan or longline write",
+        "arbitrary project merge",
+        "fact, chapter or entity payload import",
+        "Markdown fallback",
+        "migration of unknown core versions"
+      ],
+      "acceptance_tests": [
+        {
+          "id": "MFI-04-T01",
+          "case": "valid native package",
+          "expect": "manifest and all member hashes validate; plan-v2 and reference graph close; writes=[]"
+        },
+        {
+          "id": "MFI-04-T02",
+          "case": "package renamed to .md",
+          "expect": "native identity is recognized only by controlled package content when uploaded as a package; pasted or flattened text is not treated as native outline"
+        },
+        {
+          "id": "MFI-04-T03",
+          "case": "one member byte changed",
+          "expect": "package quarantined; no attempt to repair or continue"
+        },
+        {
+          "id": "MFI-04-T04",
+          "case": "dangling scene or option reference",
+          "expect": "references_closed=false and can_apply=false"
+        },
+        {
+          "id": "MFI-04-T05",
+          "case": "unknown core contract version",
+          "expect": "raw package preserved, application blocked, no Markdown coercion"
+        },
+        {
+          "id": "MFI-04-T06",
+          "case": "unknown extension member",
+          "expect": "member bytes preserved; if exact re-export cannot be guaranteed, whole package remains non-applyable"
+        },
+        {
+          "id": "MFI-04-T07",
+          "case": "export A, import to isolated validator state, export B without edits",
+          "expect": "canonical payload, object inventory, reference graph, selection records and history graph fingerprints are identical"
+        },
+        {
+          "id": "MFI-04-T08",
+          "case": "all option records including unchosen options",
+          "expect": "chosen, recommended, decided_by, digest and option order remain exact"
+        },
+        {
+          "id": "MFI-04-T09",
+          "case": "package contains unsafe path, symlink or oversized member",
+          "expect": "M1-equivalent container gate blocks the whole package"
+        }
+      ],
+      "deliverables": [
+        "exchange manifest schema",
+        "canonical packaging and fingerprint specification",
+        "valid, tampered, stale, dangling-ref and unknown-version fixtures",
+        "pure validator and diff preview",
+        "round-trip test report separating raw package sha from logical payload fingerprints"
+      ],
+      "done_when": [
+        "all five logical round-trip fingerprints are stable",
+        "full author selection records survive",
+        "unknown core versions never coerce to legacy outline or Markdown",
+        "validator has zero current-state writes"
+      ],
+      "failure_conditions": [
+        "object IDs or revs are regenerated",
+        "import provenance is written into and mutates source plan objects",
+        "unchosen options or history blobs disappear",
+        "generic ZIP routing destroys the native package before manifest validation"
+      ],
+      "must_not_claim": [
+        "native outline restore implemented",
+        "full longline writer implemented",
+        "arbitrary cross-project merge supported"
+      ]
+    },
+    {
+      "task_id": "MFI-05",
+      "title": "剧本与灵感确认后的窄账本 writer",
+      "priority": "P0",
+      "status": "CANDIDATE_NOT_AUTHORIZED",
+      "depends_on": [
+        "MFI-02",
+        "MFI-03"
+      ],
+      "goal": "消费绑定 preview SHA 和 target expected version/SHA 的作者动作，把剧本或灵感写入唯一合法 owner；所有其他账保持不变。",
+      "current_reuse": [
+        "AuthorWorkspace guarded commit and VersionConflictError",
+        "C10 append-only identity revision pattern",
+        "plan-v2 reference and source_identity checks",
+        "C7 author selection discipline",
+        "ten-ledger directory ownership boundaries"
+      ],
+      "current_gaps": [
+        "no screenplay source-version writer",
+        "no longline idea writer",
+        "no screenplay-to-plan projection writer",
+        "no explicit idea placement action"
+      ],
+      "candidate_actions": [
+        "SCREENPLAY_USE_ACTION v1-candidate",
+        "SCREENPLAY_CHAPTER_SOURCE_WRITE v1-candidate",
+        "SCREENPLAY_PLAN_PROJECTION_WRITE v1-candidate",
+        "IDEA_PLACEMENT_ACTION v1-candidate"
+      ],
+      "scope_in": [
+        "screenplay use confirmation",
+        "WRITTEN_CONTENT working versus explicitly frozen lifecycle",
+        "chapter mapping when present",
+        "future screenplay routing to exactly one of plan or longline",
+        "setting-reference source-only result",
+        "idea home and placement action",
+        "origin_ref and placement refs",
+        "version conflict, idempotency and restart recovery"
+      ],
+      "scope_out": [
+        "screenplay fact confirmation",
+        "M2/M3 screenplay semantic extraction quality",
+        "automatic entity/rule writes",
+        "native outline package application",
+        "multi-ledger copying"
+      ],
+      "acceptance_tests": [
+        {
+          "id": "MFI-05-T01",
+          "case": "screenplay marked written content but still WORKING",
+          "expect": "chapter source asset may be registered only as working; it is not evidence-eligible and creates no facts"
+        },
+        {
+          "id": "MFI-05-T02",
+          "case": "screenplay explicitly frozen and mapped to a chapter",
+          "expect": "one chapter-ledger source version with exact structure/source refs; downstream eligibility is external-lane only"
+        },
+        {
+          "id": "MFI-05-T03",
+          "case": "screenplay marked future plan with next-chapter anchor",
+          "expect": "plan candidate written only after author confirms object diff; no longline duplicate"
+        },
+        {
+          "id": "MFI-05-T04",
+          "case": "screenplay marked future but unscheduled",
+          "expect": "longline candidate only; no automatic next-chapter assignment"
+        },
+        {
+          "id": "MFI-05-T05",
+          "case": "screenplay marked setting reference",
+          "expect": "source-only status; zero ten-ledger content writes"
+        },
+        {
+          "id": "MFI-05-T06",
+          "case": "idea placed into current chapter",
+          "expect": "one plan object with origin_ref and one author-confirmed placement ref; idea content remains single-source"
+        },
+        {
+          "id": "MFI-05-T07",
+          "case": "target plan changes after preview",
+          "expect": "VERSION_CONFLICT; no chapter, plan, longline or identity partial mutation"
+        },
+        {
+          "id": "MFI-05-T08",
+          "case": "same action replay after commit",
+          "expect": "same receipt and no duplicate objects or placements"
+        },
+        {
+          "id": "MFI-05-T09",
+          "case": "injected crash at each write boundary",
+          "expect": "recovery exposes all-old or all-new owner state, never a half-applied route"
+        }
+      ],
+      "deliverables": [
+        "strict author action schemas",
+        "separate owner adapters for chapter, plan and longline",
+        "guarded commit receipts",
+        "negative tests for all forbidden ledger mutations",
+        "handoff receipt that states which downstream is now eligible"
+      ],
+      "done_when": [
+        "each action writes at most one content owner plus reference/history metadata",
+        "no screenplay or idea action writes facts",
+        "target changes invalidate old previews",
+        "same input can be recovered and replayed without duplicate side effects"
+      ],
+      "failure_conditions": [
+        "one screenplay use writes both plan and longline content copies",
+        "setting reference populates rules or entities automatically",
+        "idea placement deletes or rewrites the source idea text",
+        "dialogue is promoted directly to confirmed fact"
+      ],
+      "must_not_claim": [
+        "M2/M3 understands screenplay semantics",
+        "facts were confirmed",
+        "full ten-ledger intake is complete"
+      ]
+    },
+    {
+      "task_id": "MFI-06",
+      "title": "产品原生大纲 guarded restore/update writer",
+      "priority": "P0",
+      "status": "CANDIDATE_NOT_AUTHORIZED",
+      "depends_on": [
+        "MFI-04"
+      ],
+      "goal": "在 exchange package、history、reference graph 和 target diff 全部通过后，用 planstore/longline owner 加 AuthorWorkspace guarded commit 完成同 lineage 更新或自足包空项目恢复；冲突时 current 零变化。",
+      "current_reuse": [
+        "planstore validation, history/blob and story_commit_seq semantics",
+        "AuthorWorkspace expected version and sha guarded commit",
+        "operation_id idempotency and recovery",
+        "plan-v2 stable object IDs, revs, references and option_records"
+      ],
+      "current_blockers": [
+        "formal longline storage owner is absent",
+        "current plan_workspace.save_plan replaces current plan but does not restore the full plan history/blob graph",
+        "cross-ledger restore transaction contract is not frozen",
+        "empty-project restore can only be enabled for a self-contained dependency mode"
+      ],
+      "candidate_actions": [
+        "NATIVE_OUTLINE_APPLY_ACTION v1-candidate",
+        "PLANSTORE_NATIVE_IMPORT_TRANSACTION v1-candidate",
+        "LONGLINE_NATIVE_IMPORT_TRANSACTION v1-candidate"
+      ],
+      "scope_in": [
+        "UPDATE_SAME_LINEAGE",
+        "RESTORE_EMPTY_TARGET only when package dependency mode is self-contained",
+        "exact expected plan and longline version/sha",
+        "expected story_commit_seq",
+        "same package replay and ALREADY_PRESENT",
+        "same package id/revision different sha conflict",
+        "multi-owner prepare, commit, recovery and audit receipt",
+        "post-commit re-export fingerprint verification"
+      ],
+      "scope_out": [
+        "merge into a non-empty different lineage",
+        "automatic ID remapping",
+        "fact, chapter or entity ledger cloning",
+        "unknown-version migration",
+        "model-assisted conflict resolution"
+      ],
+      "acceptance_tests": [
+        {
+          "id": "MFI-06-T01",
+          "case": "same-lineage target exactly matches package base",
+          "expect": "apply succeeds atomically and preserves source object IDs/revs; import receipt is external to source objects"
+        },
+        {
+          "id": "MFI-06-T02",
+          "case": "target plan version or sha differs",
+          "expect": "strong stop before writes; current plan and longline bytes unchanged"
+        },
+        {
+          "id": "MFI-06-T03",
+          "case": "target story_commit_seq differs",
+          "expect": "preview/action stale; no write"
+        },
+        {
+          "id": "MFI-06-T04",
+          "case": "identical payload already present",
+          "expect": "ALREADY_PRESENT with zero new object revs and zero duplicate history rows"
+        },
+        {
+          "id": "MFI-06-T05",
+          "case": "same package id and revision but different sha",
+          "expect": "IDENTITY_CONTENT_CONFLICT and quarantine"
+        },
+        {
+          "id": "MFI-06-T06",
+          "case": "different lineage non-empty target",
+          "expect": "merge unsupported; raw package remains stored but no apply"
+        },
+        {
+          "id": "MFI-06-T07",
+          "case": "crash after plan prepare, after plan data, after longline data and before current pointer switch",
+          "expect": "recovery reaches all-old or all-new; never mixed owner watermarks"
+        },
+        {
+          "id": "MFI-06-T08",
+          "case": "successful apply followed by export",
+          "expect": "all five logical round-trip fingerprints match the imported package"
+        },
+        {
+          "id": "MFI-06-T09",
+          "case": "cross-author package metadata claims current target",
+          "expect": "metadata cannot bypass authenticated author/project capability"
+        }
+      ],
+      "deliverables": [
+        "apply action schema binding package_sha256, preview_sha256 and target watermarks",
+        "owner-specific native import transactions",
+        "cross-owner guarded commit and recovery protocol",
+        "concurrency, crash and lineage fixtures",
+        "post-apply round-trip verification receipt"
+      ],
+      "done_when": [
+        "version conflict and lineage mismatch leave byte-identical current state",
+        "successful import preserves IDs, revs, references, selections and history fingerprints",
+        "same action is safely replayable",
+        "no fact, chapter or entity ledger is written by the outline package"
+      ],
+      "failure_conditions": [
+        "blind full-plan replacement without history/blob restoration",
+        "object revs increment merely because they were imported",
+        "plan commits while longline remains old",
+        "different lineage is auto-merged or ID-remapped"
+      ],
+      "must_not_claim": [
+        "arbitrary project merge supported",
+        "full project backup restored",
+        "facts or chapters restored by an outline-only package",
+        "longline contract adopted before its owner is frozen"
+      ]
+    }
+  ]
+}

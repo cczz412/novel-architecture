@@ -1,0 +1,809 @@
+{
+  "artifact": {
+    "name": "DUAL_LANE_LEDGER_TASK_CARDS_R01",
+    "version": "R01",
+    "status": "ADVISORY_DESIGN_ONLY",
+    "runtime_delta_commit": "01efc50d863bf01ac048dc6c50284fcebc7e51f4",
+    "workspace_baseline_commit": "79bd2e2d6d0eb28610d5ed4608288251c6ffa424",
+    "project_source_release": "PROJECT_SOURCE_RELEASE_8e66fe30e71fdfed",
+    "permissions": {
+      "api_calls": false,
+      "code_patch": false,
+      "r14_change": false,
+      "r03_change": false,
+      "automatic_adoption": false
+    }
+  },
+  "global_invariants": [
+    "External prose uses C10; native chapter-fact content does not use C10.",
+    "Native chapter-fact content never returns to M2 or M3.",
+    "WORK_DRAFT prose semantics cannot be reused for chapter-fact content.",
+    "C11 owns stable chapter_id and formal revision_no only after successful commit.",
+    "No caller may fabricate chapter_id, revision_no, fact_id, timestamps, titles, or complete plan-card fields.",
+    "Scheme-A INITIAL title is author-confirmed, single-line, trimmed, and never guessed or defaulted.",
+    "AuthorWorkspace and planstore are separate physical commits; pending and recovery states must remain visible.",
+    "T14 completed means judgment coverage is complete, not all-clear.",
+    "Unknown author adjudication is an overlay and never rewrites the original unknown judgment.",
+    "Empty or whitespace-only evidence_quote is invalid and cannot encode null.",
+    "Rendered prose is optional projection and never the sole source of truth.",
+    "The ledger directory routes access but never owns ledger content or a unified database."
+  ],
+  "dependency_order": [
+    "DLH-01",
+    "DLH-02",
+    "DLH-03",
+    "DLH-04",
+    "DLH-05",
+    "DLH-06",
+    "DLH-07"
+  ],
+  "cz_decision_points": [
+    {
+      "decision_id": "CZ-01",
+      "topic": "Formal chapter-fact draft identity",
+      "recommendation": "Use a slot-derived chapter-fact lineage plus monotonic draft revision before handover; let C11 own chapter_id plus revision_no after handover; add stable local entry refs that are not fact IDs.",
+      "must_not_default": [
+        "WORK_DRAFT work_ref/work_rev semantics",
+        "chapter_id before C11 commit",
+        "array position as permanent entry identity"
+      ]
+    },
+    {
+      "decision_id": "CZ-02",
+      "topic": "Fact confirmation granularity",
+      "recommendation": "Whole-package submission plus per-item states; ordinary low-impact items may be batch-confirmed, high-impact items require individual signing, unresolved items remain unconfirmed.",
+      "must_not_default": [
+        "whole-package submission equals every fact confirmed",
+        "self-produced facts start as extracted",
+        "unresolved fields filled with defaults"
+      ]
+    },
+    {
+      "decision_id": "CZ-03",
+      "topic": "C11 native content and rendered prose compatibility",
+      "recommendation": "Add a native chapter-fact content kind to C11 and keep rendered prose as an optional revision-bound attachment; do not automatically materialize native chapters as C1 text truth.",
+      "must_not_default": [
+        "serialize structured payload into C11 text",
+        "require a rendered manuscript",
+        "let a projection overwrite native chapter-fact truth"
+      ]
+    },
+    {
+      "decision_id": "CZ-04",
+      "topic": "T14 closeout as a handover gate",
+      "recommendation": "Require an explicit closeout receipt before handover; full_check references a current completed result, while any skip route must remain an explicit author choice with its own receipt.",
+      "must_not_default": [
+        "completed means all-clear",
+        "unknown overlays change eligibility or original judgments",
+        "closeout itself performs handover"
+      ]
+    },
+    {
+      "decision_id": "CZ-05",
+      "topic": "Cancellation after AuthorWorkspace commit",
+      "recommendation": "Keep the C11 revision as saved but unmapped; do not use automatic deletion as compensation. A dedicated deletion policy, if desired, is a separate product decision.",
+      "must_not_default": [
+        "delete C11 because planstore failed",
+        "auto-rebind to a different slot",
+        "treat pending as complete"
+      ]
+    }
+  ],
+  "task_cards": [
+    {
+      "task_id": "DLH-01",
+      "order": 1,
+      "title": "Formal chapter-fact draft owner, revisions, and local entry identity",
+      "status": "BLOCKED_ON_CZ_01_FIELD_FREEZE",
+      "depends_on": [],
+      "objective": "Turn the existing immutable prototype into a restart-safe AuthorWorkspace asset without reusing WORK_DRAFT prose semantics or allocating chapter/fact IDs.",
+      "inputs": [
+        "current CHAPTER_SLOT_SNAPSHOT",
+        "current M11 chapter-fact material bundle snapshot",
+        "author-authored ordered fact_text and separate writing_note values",
+        "operation_id",
+        "expected current draft revision and payload SHA for edits"
+      ],
+      "outputs": [
+        "formal chapter-fact draft object with a slot-derived lineage",
+        "monotonic draft revision and current/stale read result",
+        "stable local entry ref per fact sentence, distinct from fact_id",
+        "source plan/slot/facts/bundle watermarks",
+        "canonical payload SHA and replay receipt",
+        "author-readable current draft page"
+      ],
+      "save": {
+        "owner": "AuthorWorkspace chapter-fact draft owner",
+        "physical_scope": "AuthorWorkspace only",
+        "logical_content": "current chapter-fact draft plus revision metadata and operation receipts",
+        "not_saved": [
+          "chapter_id",
+          "C11 revision_no",
+          "fact_id",
+          "plan mapping"
+        ]
+      },
+      "consumers": [
+        "T14 chapter-fact check adapter",
+        "chapter-fact handover action builder",
+        "author draft editor and reader"
+      ],
+      "failure_states": [
+        "STALE_CHAPTER_FACT_DRAFT_REVISION",
+        "SOURCE_PLAN_OR_SLOT_CHANGED",
+        "M11_BUNDLE_SNAPSHOT_CHANGED",
+        "ENTRY_REF_DUPLICATE_OR_MISSING",
+        "FACT_TEXT_EMPTY_OR_WHITESPACE",
+        "OPERATION_ID_REUSED_WITH_DIFFERENT_PAYLOAD",
+        "NEEDS_MANUAL_RECOVERY for unknown store SHA"
+      ],
+      "minimum_write_set": {
+        "existing_files_to_modify": [
+          "novel-mvp/mvp/chapter_fact_draft_tool.py",
+          "novel-mvp/mvp/chapter_fact_handover_tool.py",
+          "novel-mvp/mvp/__init__.py"
+        ],
+        "candidate_new_files": [
+          "novel-mvp/contracts/CHAPTER_FACT_DRAFT.md",
+          "novel-mvp/mvp/chapter_fact_draft_workspace.py",
+          "tests/test_novel_mvp_chapter_fact_draft_workspace.py"
+        ]
+      },
+      "tests": {
+        "happy_path": [
+          "create r1, edit to r2, restart and read exact bytes",
+          "reorder unchanged entry refs without changing fact identity",
+          "exact operation replay produces zero extra revision"
+        ],
+        "failure_and_race": [
+          "stale expected revision has zero writes",
+          "source plan/slot/bundle changes during guarded commit have zero writes",
+          "same operation ID with different payload is rejected",
+          "all-whitespace fact_text is rejected"
+        ],
+        "recovery": [
+          "crash before pointer yields complete before state",
+          "crash after pointer yields complete after state",
+          "unknown SHA fails closed"
+        ]
+      },
+      "forbidden_changes": [
+        "Do not rename or reuse WORK_DRAFT as the chapter-fact object.",
+        "Do not allocate chapter_id, revision_no, or fact_id.",
+        "Do not normalize or rewrite author fact text.",
+        "Do not fill missing title/time/identity with defaults.",
+        "Do not write C11, facts, planstore, actual, or handover state."
+      ],
+      "remaining_boundary": [
+        "C11 identity does not exist until DLH-03/DLH-05.",
+        "Retention of historical pre-handover draft payloads remains a product storage policy.",
+        "This card does not decide fact confirmation."
+      ],
+      "acceptance": [
+        "A current chapter-fact draft can be saved, edited, restarted, read, and declared stale without any prose WORK_DRAFT identity.",
+        "Every fact sentence has a local stable ref, but no global fact ID exists yet."
+      ]
+    },
+    {
+      "task_id": "DLH-02",
+      "order": 2,
+      "title": "M11 role firewall and T14 adapter for unhanded chapter-fact drafts",
+      "status": "IMPLEMENTABLE_AFTER_DLH_01",
+      "depends_on": [
+        "DLH-01"
+      ],
+      "objective": "Bind the existing M11 current-fact/future-plan split and T14 semantics to the exact current chapter-fact draft revision.",
+      "inputs": [
+        "current formal chapter-fact draft from DLH-01",
+        "M11 bundle with current_fact_pack and planning_supply roles",
+        "provider judgments only through the existing controlled result interface",
+        "optional author unknown adjudication action",
+        "full_check closeout action referencing an exact result"
+      ],
+      "outputs": [
+        "chapter-fact T14 input package with prior-fact, future-plan, and draft-entry zones",
+        "completed check result bound to draft ref/revision/payload SHA and source snapshots",
+        "author change view preserving four evidence states",
+        "unknown self-reported overlay that leaves the original judgment unchanged",
+        "full_check closeout preflight/receipt that does not claim all-clear"
+      ],
+      "save": {
+        "owner": "T14 check result owner and unknown overlay owner",
+        "physical_scope": "AuthorWorkspace only",
+        "writes": [
+          "check result",
+          "optional unknown overlay",
+          "optional closeout receipt"
+        ],
+        "zero_writes": [
+          "chapter-fact draft",
+          "C11",
+          "facts",
+          "planstore",
+          "actual"
+        ]
+      },
+      "consumers": [
+        "author check page",
+        "explicit handover preflight according to CZ-04",
+        "audit and restart readers"
+      ],
+      "failure_states": [
+        "STALE_CHAPTER_FACT_DRAFT",
+        "M11_SOURCE_SNAPSHOT_CHANGED",
+        "PLANNED_REQUIREMENT_COVERAGE_INCOMPLETE",
+        "EVIDENCE_QUOTE_NOT_IN_DRAFT",
+        "EMPTY_OR_WHITESPACE_QUOTE_INVALID",
+        "UNKNOWN_FINDING_ALREADY_ADJUDICATED",
+        "CHECK_RESULT_NOT_CURRENT"
+      ],
+      "minimum_write_set": {
+        "existing_files_to_modify": [
+          "novel-mvp/mvp/writing_check_package_tool.py",
+          "novel-mvp/mvp/writing_check_result_tool.py",
+          "novel-mvp/mvp/writing_check_result_workspace.py",
+          "novel-mvp/mvp/writing_check_change_reader.py",
+          "novel-mvp/mvp/writing_check_unknown_adjudication_workspace.py",
+          "novel-mvp/mvp/writing_closeout_workspace.py"
+        ],
+        "candidate_new_files": [
+          "novel-mvp/contracts/CHAPTER_FACT_CHECK_PACKAGE.md",
+          "novel-mvp/mvp/chapter_fact_check_workspace.py",
+          "tests/test_novel_mvp_chapter_fact_check_workspace.py"
+        ]
+      },
+      "tests": {
+        "happy_path": [
+          "covered/mismatch/missing/unknown/unplanned all remain distinguishable",
+          "missing null quote, unknown null quote, unknown exact quote, and ordinary exact quote render distinctly",
+          "full_check accepts completed result with findings",
+          "unknown adjudication survives restart and parent remains unknown"
+        ],
+        "failure_and_race": [
+          "empty and whitespace quote are rejected",
+          "draft edit after check makes result stale",
+          "plan/facts/bundle watermark change makes result stale",
+          "provider cannot inject identity, scope, completed status, or replacement content"
+        ],
+        "recovery": [
+          "same result save is idempotent",
+          "same unknown action replays with zero write",
+          "corrupt overlay or result SHA fails closed"
+        ]
+      },
+      "forbidden_changes": [
+        "Do not let future plans enter prior-confirmed-fact zone.",
+        "Do not interpret covered as fact confirmed or actual.",
+        "Do not interpret completed/full_check as all-clear.",
+        "Do not rewrite an unknown judgment after author adjudication.",
+        "Do not use empty strings as null evidence.",
+        "Do not perform handover or close chapter."
+      ],
+      "remaining_boundary": [
+        "Whether closeout is mandatory before handover is CZ-04.",
+        "Severity/blocking policy is not frozen by this card.",
+        "No real model quality claim follows from schema tests."
+      ],
+      "acceptance": [
+        "T14 checks only an exact current unhanded chapter-fact draft.",
+        "All four evidence states are author-readable and mechanically unambiguous.",
+        "Result/overlay/closeout remain separate objects with zero truth writes."
+      ]
+    },
+    {
+      "task_id": "DLH-03",
+      "order": 3,
+      "title": "C11 native chapter-fact content adapter and optional rendered-prose attachment",
+      "status": "BLOCKED_ON_CZ_03_CONTRACT_FREEZE",
+      "depends_on": [
+        "DLH-01"
+      ],
+      "objective": "Keep one stable C11 chapter revision chain while allowing external text revisions and native structured chapter-fact revisions without treating rendered prose as truth.",
+      "inputs": [
+        "current formal chapter-fact draft ref/revision/payload SHA",
+        "author-confirmed INITIAL title using scheme A: single-line, trimmed, non-empty, and not inferred/defaulted",
+        "existing C11 ledger state or proof that INITIAL target is new",
+        "optional rendered-prose projection bound to an exact native revision"
+      ],
+      "outputs": [
+        "C11 native chapter-fact revision representation",
+        "immutable structured payload reference and source draft reference",
+        "C11-owned stable chapter_id and formal revision_no only at successful commit",
+        "optional rendered-prose attachment with renderer identity and paragraph-to-entry provenance",
+        "read adapter for M7/M9/M11 and exports"
+      ],
+      "save": {
+        "owner": "C11 chapter revision ledger plus immutable native payload/attachment owner",
+        "physical_scope": "AuthorWorkspace only",
+        "external_lane_unchanged": "C10_SOURCE_SPAN text revisions remain valid",
+        "native_lane": "native payload ref is primary; rendered prose is optional attachment"
+      },
+      "consumers": [
+        "DLH-04 fact admission",
+        "DLH-05 phase-A coordinator",
+        "M7 handed-over content reader",
+        "M9 chapter projection",
+        "M11 chapter retrieval",
+        "render/export readers"
+      ],
+      "failure_states": [
+        "C11_CONTENT_KIND_UNSUPPORTED",
+        "NATIVE_PAYLOAD_SHA_MISMATCH",
+        "STALE_SOURCE_DRAFT_REVISION",
+        "INITIAL_TITLE_INVALID",
+        "C11_CURRENT_REVISION_CONFLICT",
+        "RENDER_ATTACHMENT_SOURCE_MISMATCH",
+        "PARAGRAPH_PROVENANCE_INCOMPLETE"
+      ],
+      "minimum_write_set": {
+        "existing_files_to_modify": [
+          "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md",
+          "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.schema.json",
+          "novel-mvp/contracts/validate_c11_chapter_revision_ledger.py",
+          "novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md",
+          "novel-mvp/contracts/CHAPTER_REVISION_COMMIT_RECEIPT.md",
+          "novel-mvp/mvp/chapter_workspace.py"
+        ],
+        "candidate_new_files": [
+          "novel-mvp/contracts/CHAPTER_RENDERED_PROSE_ATTACHMENT.md",
+          "novel-mvp/mvp/chapter_fact_revision_adapter.py",
+          "novel-mvp/mvp/chapter_render_attachment_workspace.py",
+          "tests/test_novel_mvp_c11_native_chapter_fact.py",
+          "tests/test_novel_mvp_chapter_render_attachment.py"
+        ]
+      },
+      "tests": {
+        "happy_path": [
+          "external C10 text revision still validates byte-for-byte",
+          "native INITIAL receives one C11 chapter_id and r1 only during commit",
+          "native REPLACE appends revision under same chapter_id",
+          "render attachment is optional and can be regenerated without C11 revision change",
+          "paragraph provenance points to existing local entry refs"
+        ],
+        "failure_and_race": [
+          "structured payload serialized into text fields is rejected",
+          "render source revision mismatch is rejected",
+          "caller-supplied chapter_id/revision_no is rejected",
+          "leading/trailing whitespace or multiline INITIAL title is rejected",
+          "native route cannot create C10 material"
+        ],
+        "recovery": [
+          "C11 append is before-or-after complete within AuthorWorkspace",
+          "restore creates a new revision rather than moving current backward",
+          "unknown payload SHA enters manual recovery"
+        ]
+      },
+      "forbidden_changes": [
+        "Do not put native structured content into C11 text_sha256/chars/C10_SOURCE_SPAN.",
+        "Do not require rendered prose for a native chapter.",
+        "Do not let render edits overwrite native payload or facts.",
+        "Do not route native content through C10, M2, or M3.",
+        "Do not create a second chapter ID owner."
+      ],
+      "remaining_boundary": [
+        "Exact C11 schema version and field names require CZ-03 and contract review.",
+        "C1 compatibility behavior remains a product decision.",
+        "Rendered prose quality and model selection are outside this card."
+      ],
+      "acceptance": [
+        "One C11 chain can identify external-text and native-chapter-fact revisions without semantic overloading.",
+        "A native revision is usable when no rendered prose exists.",
+        "Rendered prose cannot become the sole source of truth."
+      ]
+    },
+    {
+      "task_id": "DLH-04",
+      "order": 4,
+      "title": "Native fact admission with whole-package submission and per-item states",
+      "status": "BLOCKED_ON_CZ_02_CONFIRMATION_POLICY",
+      "depends_on": [
+        "DLH-01",
+        "DLH-03"
+      ],
+      "objective": "Admit native chapter-fact entries into the fact owner without extraction, while preserving per-item author control and downstream invalidation.",
+      "inputs": [
+        "committed or prepared C11 native chapter-fact revision",
+        "ordered local entry refs and exact fact_text values",
+        "author package submission action",
+        "per-item decisions or pending markers",
+        "current facts snapshot and expected version/SHA"
+      ],
+      "outputs": [
+        "fact admission plan with one owner-generated fact record per eligible entry",
+        "AUTHOR_ATTESTATION/native-chapter source identity tied to C11 revision and entry ref",
+        "per-item status manifest",
+        "batch confirmation receipts for ordinary items",
+        "individual receipts for high-impact items",
+        "deterministic migration effects for unchanged/changed/deleted entries"
+      ],
+      "save": {
+        "owner": "facts owner",
+        "physical_scope": "AuthorWorkspace fact domain",
+        "atomic_scope": "one facts snapshot replacement per batch; phase-A coordinator may include prepared admissions in the same AuthorWorkspace commit",
+        "downstream_visibility": "confirmed current items only"
+      },
+      "consumers": [
+        "M5 author review UI",
+        "M6 evidence/query with visible author-attestation source",
+        "M7 consistency check",
+        "M8/M9/M10/M11 current-fact readers"
+      ],
+      "failure_states": [
+        "C11_NATIVE_REVISION_NOT_CURRENT",
+        "ENTRY_REF_NOT_FOUND_OR_DUPLICATE",
+        "FACT_ADMISSION_SOURCE_MISMATCH",
+        "HIGH_IMPACT_SINGLE_SIGN_REQUIRED",
+        "FACTS_VERSION_OR_SHA_CONFLICT",
+        "PARTIAL_BATCH_FORBIDDEN",
+        "CHANGED_ENTRY_RECONFIRM_REQUIRED"
+      ],
+      "minimum_write_set": {
+        "existing_files_to_modify": [
+          "novel-mvp/contracts/C4_FACT_QUERY.md",
+          "novel-mvp/contracts/FACT_REVIEW_ACTION.md",
+          "novel-mvp/mvp/factstore.py",
+          "novel-mvp/mvp/fact_workspace.py",
+          "novel-mvp/mvp/review_workspace.py"
+        ],
+        "candidate_new_files": [
+          "novel-mvp/contracts/CHAPTER_FACT_ADMISSION_ACTION.md",
+          "novel-mvp/mvp/chapter_fact_admission_tool.py",
+          "novel-mvp/mvp/chapter_fact_admission_workspace.py",
+          "tests/test_novel_mvp_chapter_fact_admission.py"
+        ]
+      },
+      "tests": {
+        "happy_path": [
+          "whole package submits once while each entry retains its own status",
+          "ordinary entries batch-confirm in one facts commit",
+          "high-impact entry requires separate explicit signature",
+          "unresolved entry remains invisible to M6/M8/M11",
+          "author-attested native fact is queryable without a fabricated prose anchor"
+        ],
+        "failure_and_race": [
+          "caller cannot supply fact IDs",
+          "one invalid item keeps the whole admission/batch at zero writes",
+          "stale C11 revision or facts SHA rejects before write",
+          "package submission cannot silently confirm pending entries",
+          "writing_note never becomes a fact"
+        ],
+        "revision_and_invalidation": [
+          "unchanged entry ref and text preserve status",
+          "changed text returns only that entry to re-confirmation and stales direct dependents",
+          "deleted entry leaves history but exits current",
+          "reordered unchanged entries preserve identity",
+          "re-confirming a fact does not silently resurrect stale reconciliation edges"
+        ]
+      },
+      "forbidden_changes": [
+        "Do not call M2, M3, or the M4 extraction path.",
+        "Do not label native entries extracted unless CZ explicitly broadens that status semantics.",
+        "Do not treat package submission as every fact confirmed.",
+        "Do not fabricate text anchors or quote evidence for author-attested facts.",
+        "Do not let the model submit review actions or fact IDs.",
+        "Do not leave a partial batch."
+      ],
+      "remaining_boundary": [
+        "Initial neutral status name and high-impact taxonomy require CZ-02.",
+        "Long-term deletion/withdrawal policy is separate from ordinary reject/reconfirm.",
+        "Cross-store plan reconciliation is DLH-06."
+      ],
+      "acceptance": [
+        "Native facts enter through author-controlled admission with zero extraction calls.",
+        "Every entry has an independent status and visible source identity.",
+        "Only confirmed current items reach downstream consumers."
+      ]
+    },
+    {
+      "task_id": "DLH-05",
+      "order": 5,
+      "title": "AuthorWorkspace phase-A native handover commit",
+      "status": "IMPLEMENTABLE_AFTER_DLH_02_DLH_03_DLH_04",
+      "depends_on": [
+        "DLH-02",
+        "DLH-03",
+        "DLH-04"
+      ],
+      "objective": "Commit the native chapter revision and fact admission state inside AuthorWorkspace only, then expose an honest planstore-pending operation.",
+      "inputs": [
+        "current chapter-fact draft and exact payload SHA",
+        "explicit author handover action with a scheme-A title validated as single-line, trimmed, and non-defaulted",
+        "current T14 closeout receipt according to CZ-04",
+        "prepared C11 native revision",
+        "prepared per-item fact admission/status plan",
+        "expected AuthorWorkspace owner versions/SHAs"
+      ],
+      "outputs": [
+        "C11 native chapter revision and current chapter index entry",
+        "owner-generated stable chapter_id and formal revision_no",
+        "facts snapshot containing per-item admission/status results",
+        "chapter handover operation at AW_COMMITTED_PLANSTORE_PENDING",
+        "receipt containing immutable chapter/facts/source watermarks",
+        "author-visible pending status"
+      ],
+      "save": {
+        "owner": "AuthorWorkspace transaction coordinator",
+        "physical_scope": "AuthorWorkspace only",
+        "single_store_atomic_group": [
+          "native payload/ledger/current pointer",
+          "chapter index",
+          "facts admission/status snapshot",
+          "handover operation record"
+        ],
+        "planstore_writes": 0
+      },
+      "consumers": [
+        "DLH-06 committed-chapter planstore consumer",
+        "pending status reader",
+        "recovery scanner",
+        "M7/M9/M11 only after HANDOVER_COMPLETE unless a reader explicitly asks for saved-unmapped content"
+      ],
+      "failure_states": [
+        "STALE_DRAFT_OR_HANDOVER_ACTION",
+        "T14_CLOSEOUT_NOT_CURRENT",
+        "INITIAL_TITLE_INVALID",
+        "C11_OR_FACTS_PREPARE_INVALID",
+        "AUTHOR_WORKSPACE_VERSION_CONFLICT",
+        "AW_COMMIT_GUARD_CHANGED",
+        "NEEDS_MANUAL_RECOVERY"
+      ],
+      "minimum_write_set": {
+        "existing_files_to_modify": [
+          "novel-mvp/mvp/chapter_initial_admission_workspace.py",
+          "novel-mvp/mvp/chapter_fact_handover_workspace.py",
+          "novel-mvp/mvp/chapter_fact_handover_reader_workspace.py",
+          "novel-mvp/mvp/workspace.py"
+        ],
+        "candidate_new_files": [
+          "novel-mvp/mvp/chapter_fact_initial_admission_workspace.py",
+          "tests/test_novel_mvp_chapter_fact_initial_admission_workspace.py"
+        ]
+      },
+      "tests": {
+        "happy_path": [
+          "native INITIAL commits one chapter revision, facts manifest, and pending marker",
+          "exact replay after restart is zero-write",
+          "next native chapter receives a distinct owner-generated chapter identity without overwriting the prior chapter",
+          "author page clearly says saved but plan handover pending"
+        ],
+        "failure_and_race": [
+          "draft/title/check/facts changes before commit produce zero writes",
+          "planstore remains untouched on every phase-A failure",
+          "same operation ID with different handover payload is rejected",
+          "caller-supplied IDs or timestamps are rejected"
+        ],
+        "recovery": [
+          "crash before AuthorWorkspace pointer recovers to all-before",
+          "crash after pointer recovers to complete pending after-state",
+          "partial owner state or unknown SHA fails closed"
+        ]
+      },
+      "forbidden_changes": [
+        "Do not write planstore in phase A.",
+        "Do not claim cross-store atomicity.",
+        "Do not route native content through C10, C1 text, M2, or M3.",
+        "Do not mark HANDOVER_COMPLETE before a verified planstore receipt.",
+        "Do not hide the pending chapter or delete it on later plan failure."
+      ],
+      "remaining_boundary": [
+        "Pending content is saved but not yet handed over to planning.",
+        "This card does not map slots or open the next chapter.",
+        "Cancellation behavior after this commit is CZ-05."
+      ],
+      "acceptance": [
+        "A successful phase A leaves a fully valid AuthorWorkspace after-state and exactly zero planstore writes.",
+        "The operation is visibly AW_COMMITTED_PLANSTORE_PENDING and restart-safe."
+      ]
+    },
+    {
+      "task_id": "DLH-06",
+      "order": 6,
+      "title": "Committed-chapter planstore consumer, AW acknowledgment, and idempotent recovery",
+      "status": "IMPLEMENTABLE_AFTER_DLH_05",
+      "depends_on": [
+        "DLH-05"
+      ],
+      "objective": "Let planstore consume an existing C11 chapter reference, then acknowledge completion in AuthorWorkspace without pretending the two stores form one transaction.",
+      "inputs": [
+        "AW_COMMITTED_PLANSTORE_PENDING operation",
+        "existing C11 current chapter revision ref",
+        "slot_ref and source_outline_ref captured by phase A",
+        "distinct plan operation ID and deterministic request SHA",
+        "current planstore version/SHA",
+        "planstore operation receipt query"
+      ],
+      "outputs": [
+        "planstore slot mapping and handover_parts referencing the existing chapter",
+        "planstore commit receipt with request SHA and after watermark",
+        "separate AuthorWorkspace HANDOVER_COMPLETE acknowledgment",
+        "derived recovery/author-visible status",
+        "zero-write replay result after restart"
+      ],
+      "save": {
+        "phase_b_owner": "planstore",
+        "phase_b_writes": [
+          "slot mapping",
+          "handover_parts",
+          "plan history/receipt"
+        ],
+        "phase_c_owner": "AuthorWorkspace operation store",
+        "phase_c_writes": [
+          "HANDOVER_COMPLETE marker and plan receipt pointer/SHA"
+        ],
+        "cross_store_atomicity": false
+      },
+      "consumers": [
+        "M8 next-chapter planner",
+        "M7 handed-over current-content reader",
+        "project status page",
+        "recovery scanner and audit"
+      ],
+      "failure_states": [
+        "PLAN_RECEIPT_NOT_FOUND_RETRYABLE",
+        "PLAN_VERSION_CONFLICT_RECHECKING",
+        "SLOT_ALREADY_MAPPED_OR_REBOUND",
+        "OUTLINE_NO_LONGER_COMPATIBLE",
+        "C11_CURRENT_REVISION_CHANGED",
+        "PLAN_RECEIPT_PAYLOAD_CONFLICT",
+        "PLAN_COMMITTED_AW_ACK_PENDING",
+        "NEEDS_MANUAL_RECOVERY"
+      ],
+      "minimum_write_set": {
+        "existing_files_to_modify": [
+          "novel-mvp/mvp/planstore.py",
+          "novel-mvp/mvp/chapter_handover_workspace.py",
+          "novel-mvp/mvp/chapter_fact_handover_reader_workspace.py",
+          "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+        ],
+        "candidate_new_files": [
+          "novel-mvp/mvp/committed_chapter_handover_bridge.py",
+          "novel-mvp/mvp/chapter_handover_recovery_workspace.py",
+          "tests/test_novel_mvp_aw_planstore_native_handover_recovery.py"
+        ]
+      },
+      "tests": {
+        "happy_path": [
+          "phase B maps an existing chapter without creating C10/C11/facts",
+          "phase C records exact plan receipt and HANDOVER_COMPLETE",
+          "exact replay after restart writes neither store",
+          "M8 can open the next chapter only after completion policy passes"
+        ],
+        "crash_points": [
+          "crash after phase A before B leaves visible pending",
+          "crash during B recovers planstore to complete before or after",
+          "crash after B before C is detected by receipt query and only C is retried",
+          "crash during C never duplicates mapping/handover_part"
+        ],
+        "conflict_and_manual_recovery": [
+          "plan version conflict auto-retries only when semantic target is unchanged",
+          "slot rebind or incompatible outline returns to author with no automatic remap",
+          "receipt request-SHA mismatch enters manual recovery",
+          "unknown journal/SHA never guesses before/after"
+        ]
+      },
+      "forbidden_changes": [
+        "Do not pass chapter-fact content, title, or paths to planstore.",
+        "Do not let planstore allocate chapter_id or C11 revision.",
+        "Do not delete or roll back the AuthorWorkspace chapter when planstore fails.",
+        "Do not use one operation ID to pretend a cross-store atomic commit.",
+        "Do not equate HANDOVER_COMPLETE with chapter close, all facts confirmed, or all-clear.",
+        "Do not automatically rebind a semantically changed slot."
+      ],
+      "remaining_boundary": [
+        "Cancellation after phase A is CZ-05.",
+        "Chapter-close hard gates remain a separate product workflow.",
+        "A completed handover does not prove every per-item fact is confirmed."
+      ],
+      "acceptance": [
+        "Every restart converges to one plan mapping/handover part or an explicit manual-recovery state.",
+        "The author can distinguish saved-pending, plan-committed-ack-pending, manual recovery, and complete.",
+        "No code path claims cross-store atomicity."
+      ]
+    },
+    {
+      "task_id": "DLH-07",
+      "order": 7,
+      "title": "Minimal ten-ledger retrieval router without a unified database",
+      "status": "IMPLEMENTABLE_AS_THIN_ROUTER_AFTER_OWNER_READERS_EXIST",
+      "depends_on": [
+        "DLH-03",
+        "DLH-04",
+        "DLH-06"
+      ],
+      "objective": "Turn the fixed ten-ledger registration into one honest retrieval window while leaving each ledger's data and writes with its module owner.",
+      "inputs": [
+        "registered fixed ten-ledger directory",
+        "owner-specific read adapters for chapter, fact, plan, and longline projection",
+        "caller purpose, requested ledger, scope, and authorization",
+        "source version/SHA watermarks"
+      ],
+      "outputs": [
+        "uniform read envelope containing ledger name, owner, content role, version/SHA, item refs, and omission/unavailable reasons",
+        "multi-ledger snapshot set with before/after watermark verification",
+        "honest capability status for scattered or registration-only ledgers",
+        "M11-compatible material references without arbitrary filesystem access"
+      ],
+      "save": {
+        "owner": "ledger directory registration and capability metadata only",
+        "content_writes": 0,
+        "v1_attached_readers": [
+          "chapter ledger",
+          "fact ledger",
+          "planning ledger",
+          "longline read-only projection"
+        ],
+        "honest_unavailable_or_scattered": [
+          "character",
+          "location",
+          "world rules",
+          "items",
+          "factions",
+          "system"
+        ]
+      },
+      "consumers": [
+        "M11 material packer",
+        "author ledger directory UI",
+        "authorized plugins and query tools"
+      ],
+      "failure_states": [
+        "LEDGER_NOT_REGISTERED",
+        "LEDGER_OWNER_READER_UNAVAILABLE",
+        "LEDGER_CONTENT_SCATTERED_ONLY",
+        "LEDGER_REGISTRATION_ONLY",
+        "SOURCE_WATERMARK_CHANGED_DURING_READ",
+        "CROSS_PROJECT_OR_UNAUTHORIZED_READ",
+        "UNSUPPORTED_SCOPE"
+      ],
+      "minimum_write_set": {
+        "existing_files_to_modify": [
+          "novel-mvp/mvp/ledger_directory_tool.py",
+          "novel-mvp/mvp/ledger_directory_workspace.py",
+          "novel-mvp/mvp/chapter_fact_material_bundle_workspace.py"
+        ],
+        "candidate_new_files": [
+          "novel-mvp/contracts/LEDGER_RETRIEVAL_ENVELOPE.md",
+          "novel-mvp/mvp/ledger_retrieval_router.py",
+          "novel-mvp/mvp/ledger_owner_readers.py",
+          "tests/test_novel_mvp_ledger_retrieval_router.py"
+        ]
+      },
+      "tests": {
+        "happy_path": [
+          "directory initializes once and restarts with fixed order",
+          "chapter/fact/plan reads return exact owner watermarks",
+          "longline returns read-only plan-owned projection",
+          "M11 reads only through registered adapters"
+        ],
+        "failure_and_race": [
+          "non-reusable ledger cannot claim PRESENT content",
+          "owner source change during multi-ledger read rejects the whole bundle",
+          "unknown or unauthorized ledger does not fall back to arbitrary logical keys",
+          "scattered/registration-only statuses remain explicit"
+        ],
+        "non_platform_boundary": [
+          "no content is copied into the directory",
+          "no unified writer or transaction engine is added",
+          "compact-to-rich storage migration remains behind owner adapters"
+        ]
+      },
+      "forbidden_changes": [
+        "Do not build a unified database, M12, RAG platform, or second truth store.",
+        "Do not give the directory write access to ledger content.",
+        "Do not copy one fact into multiple ledgers as independent truth.",
+        "Do not claim the seven non-ready ledgers have reusable storage.",
+        "Do not let M11 scan arbitrary AuthorWorkspace files or logical keys."
+      ],
+      "remaining_boundary": [
+        "Character/location/world-rule owners remain separate future work.",
+        "Items/factions/system remain registration-only until their module owners exist.",
+        "Automatic compact-to-rich ledger upgrades are not part of this card."
+      ],
+      "acceptance": [
+        "The ten ledgers are always visible with honest capability status.",
+        "M11 can retrieve from existing owners through one thin interface without a unified content store.",
+        "Unavailable ledgers fail clearly instead of returning guessed content."
+      ]
+    }
+  ]
+}
