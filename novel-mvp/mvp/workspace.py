@@ -35,6 +35,7 @@ LOGICAL_KEY_FILES = {
     "facts": "facts.json",
     "health_report": "health_report.json",
     "input_manifest": "input_manifest.json",
+    "ledger_directory": "ledger_directory.json",
     "module_state": "module_state.json",
     "overview_cards": "overview_cards.json",
     "plan": "plan.json",
