@@ -11,7 +11,10 @@ from typing import Any
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError, ValidationError
 
-import validate_c10_intake_material_identity as c10_contract
+try:
+    from . import validate_c10_intake_material_identity as c10_contract
+except ImportError:  # pragma: no cover - 兼容直接运行本文件
+    import validate_c10_intake_material_identity as c10_contract
 
 
 CONTRACTS_DIR = Path(__file__).resolve().parent
