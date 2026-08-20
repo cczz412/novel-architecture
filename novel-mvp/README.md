@@ -21,7 +21,7 @@ uv run --locked python novel-mvp/cli.py ask 我的第一本书 陈平
 uv run --locked python novel-mvp/cli.py status 我的第一本书
 ```
 
-`ingest` 不填 `--material-role` 时不会猜正文，整份按 Unknown 保存且不生成 C1。整份明确材料可选 `chapter / intro / setting / title / tags / unknown`；同一 source 内混合多种材料时用 `--declarations <JSON>` 提供精确 spans。TXT、MD、DOCX、ZIP 共用这一入口；DOCX 有未覆盖区域，或 ZIP 任一成员失败、没有有效材料时，都会整批强停，不留下半套 C1。`extract`、`refine` 和外部 `candidates` 都要先通过同一套 Pre-M3 准入门。
+`ingest` 不填 `--material-role` 时不会猜正文，整份按 Unknown 保存且不生成 C1。整份明确材料可选 `chapter / intro / setting / title / tags / unknown`；同一 source 内混合多种材料时用 `--declarations <JSON>` 提供精确 spans。TXT、MD、CSV、DOCX、ZIP 共用这一入口；CSV 只按原文本保存，不猜表头或字段含义。Excel 工作簿暂不直读，会整批停止并提示把每个需要的工作表另存为 CSV UTF-8。DOCX 有未覆盖区域，或 ZIP 任一成员失败、没有有效材料时，也会整批强停，不留下半套 C1。`extract`、`refine` 和外部 `candidates` 都要先通过同一套 Pre-M3 准入门。
 
 发现问题记 [ISSUES.md](ISSUES.md)。默认只记问题、不改核心代码，除非 CZ 点名。
 
@@ -29,7 +29,7 @@ uv run --locked python novel-mvp/cli.py status 我的第一本书
 
 | 你找的 | 在哪 | 不是什么 |
 |---|---|---|
-| 共同背景板 | 本仓 `references/shared-context/…R13` | 不是本夹，也不是 `foundation/` |
+| 共同背景板 | 本仓 `references/shared-context/…R14` | 不是本夹，也不是 `foundation/` |
 | P3 背景卡 | `references/novel_fact_extraction_contract_v2.md` | 只是抽事实的五条小抄 |
 | `foundation/` | 2026-07-16 快照 | 不是现行共享背景板 |
 

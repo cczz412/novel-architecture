@@ -89,6 +89,7 @@ def _confirmed(start: int, end: int, role: str, suffix: str) -> dict:
         ("title.txt", "《雾城来信》\n"),
         ("tags.txt", "标签：重生、权谋、女强\n"),
         ("unknown.txt", "身份未确认的材料。\n"),
+        ("table.csv", "名称,说明\n印册,不可焚毁\n"),
     ],
 )
 def test_entry_01_default_file_identity_is_unknown_and_never_c1(
@@ -745,3 +746,130 @@ def test_entry_14_zip_without_terminal_material_blocks_instead_of_succeeding(
     assert store.intake_sources("zip-empty") == []
     assert store.intake_material_units("zip-empty") == []
     assert store.chapters("zip-empty") == []
+
+
+def test_entry_15_csv_preserves_original_bytes_and_strict_decoded_text() -> None:
+    text = '姓名,备注\r\n"沈砚","怕雨,但不怕水"\r\n"阿九","第一行\n第二行"\r\n'
+    payload = b"\xef\xbb\xbf" + text.encode("utf-8")
+
+    items, receipt = input_router.collect_uploads(
+        [input_router.UploadSource("人物表.csv", payload)]
+    )
+
+    assert receipt["status"] == "READY"
+    assert receipt["blocks"] == []
+    assert receipt["sources"][0]["format"] == "csv"
+    assert receipt["sources"][0]["encoding"] == "utf-8-sig"
+    assert receipt["sources"][0]["source_sha256"] == hashlib.sha256(payload).hexdigest()
+    assert items == [
+        {
+            "source_name": "人物表.csv",
+            "raw_bytes": payload,
+            "encoding": "utf-8-sig",
+            "format": "csv",
+            "chapter_no_hint": None,
+        }
+    ]
+    assert items[0]["raw_bytes"].decode(items[0]["encoding"]) == text
+
+
+def test_entry_16_csv_explicit_setting_enters_c10_without_creating_c1(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    project = "csv-setting"
+    _init(tmp_path, monkeypatch, project)
+    text = "技能,代价\r\n影分身,体力减半\r\n"
+    report = ingest.ingest_files(
+        project,
+        [str(_write(tmp_path, "体系.csv", text.encode("utf-8")))],
+        material_role="SETTING",
+    )
+
+    assert report["format_receipt"]["status"] == "READY"
+    assert report["format_receipt"]["sources"][0]["format"] == "csv"
+    assert report["sources"][0]["decoded_text"] == text
+    assert report["sources"][0]["original_bytes_base64"]
+    assert report["material_units"][0]["identity_revisions"][-1]["role"] == "SETTING"
+    assert report["chapters"] == store.chapters(project) == []
+
+
+def test_entry_17_zip_member_csv_keeps_source_chain_and_content() -> None:
+    text = "地点,说明\n旧港,只能夜间进入\n"
+    payload = _zip({"tables/地点.csv": text.encode("utf-8")})
+
+    items, receipt = input_router.collect_uploads(
+        [input_router.UploadSource("设定包.zip", payload)]
+    )
+
+    assert receipt["status"] == "READY"
+    assert items[0]["source_name"] == "设定包.zip/tables/地点.csv"
+    assert items[0]["format"] == "csv"
+    assert items[0]["raw_bytes"].decode(items[0]["encoding"]) == text
+    terminal = receipt["sources"][-1]
+    assert terminal["source_chain"] == ["设定包.zip", "tables/地点.csv"]
+
+
+def test_entry_18_excel_workbook_is_one_explicit_block_not_internal_xml() -> None:
+    workbook = _zip(
+        {
+            "[Content_Types].xml": b"<Types/>",
+            "xl/workbook.xml": b"<workbook/>",
+            "xl/worksheets/sheet1.xml": b"<worksheet/>",
+        }
+    )
+
+    items, receipt = input_router.collect_uploads(
+        [input_router.UploadSource("人物表.xlsx", workbook)]
+    )
+
+    assert items == []
+    assert receipt["status"] == "BLOCKED"
+    assert [row["source_name"] for row in receipt["sources"]] == ["人物表.xlsx"]
+    assert receipt["sources"][0]["format"] == "excel"
+    assert receipt["blocks"][0]["type"] == "unsupported_excel_workbook"
+    assert "CSV UTF-8" in receipt["blocks"][0]["detail"]
+    public_failure = json.dumps(
+        {"sources": receipt["sources"], "blocks": receipt["blocks"]},
+        ensure_ascii=False,
+    )
+    assert "xl/workbook.xml" not in public_failure
+
+
+def test_entry_19_csv_and_excel_batch_failure_preserves_existing_project_state(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    project = "csv-excel-atomic"
+    _init(tmp_path, monkeypatch, project)
+    ingest.ingest_files(
+        project,
+        [str(_write(tmp_path, "旧设定.txt", "城门只在夜间开启。\n"))],
+        material_role="SETTING",
+    )
+    before = {
+        "sources": copy.deepcopy(store.intake_sources(project)),
+        "materials": copy.deepcopy(store.intake_material_units(project)),
+        "projections": copy.deepcopy(store.intake_c1_projections(project)),
+        "chapters": copy.deepcopy(store.chapters(project)),
+    }
+    workbook = _zip({"[Content_Types].xml": b"<Types/>", "xl/workbook.xml": b"<w/>"})
+
+    with pytest.raises(input_router.InputRoutingBlocked) as caught:
+        ingest.ingest_files(
+            project,
+            [
+                str(_write(tmp_path, "新设定.csv", "名称,说明\n印册,不可焚毁\n")),
+                str(_write(tmp_path, "人物表.xlsx", workbook)),
+            ],
+            material_role="SETTING",
+        )
+
+    assert any(
+        row["type"] == "unsupported_excel_workbook"
+        for row in caught.value.receipt["blocks"]
+    )
+    assert store.intake_sources(project) == before["sources"]
+    assert store.intake_material_units(project) == before["materials"]
+    assert store.intake_c1_projections(project) == before["projections"]
+    assert store.chapters(project) == before["chapters"]
