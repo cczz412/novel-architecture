@@ -5,6 +5,7 @@
 | 名字 | 打开哪里 | 别当成 |
 |---|---|---|
 | **共同背景板（现行）** | [R13 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md) · [Notion 镜像](https://app.notion.com/p/3be5cadc4d0f81ab8c21deafb82d89c3) | 仓里没有叫 SHARE TEXT 的文件；就是这一包 |
+| **产品总管线纠偏（现行方向）** | [本地总管线](novel-mvp/ARCHITECTURE.md) · [账本目录](novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md) · [CZ Notion 口径](https://app.notion.com/p/050b4f3d039644ce893f75c5bc2bce9a) | 修正 R13 里自产章回抽等旧路线；这是目标图，不是代码完成图 |
 | **外部报告背景板** | [当前入口](references/external-knowledge-base/README.md) | 只提供证据、反例和未知，不能替产品拍板 |
 | **原子需求与验收背景板** | [当前入口](references/atomic-expectations/README.md) | 说明局部能力要给用户什么、怎样验收；不是当前进度或施工票 |
 | **P3 背景卡** | `references/novel_fact_extraction_contract_v2.md` | 抽事实的五条小抄，不是设计理念 |
@@ -16,6 +17,7 @@
 - 人看全仓治理状态：[治理索引](governance/INDEX.md)；机器读取当前执行状态只认 [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)。CZ 拍板仍以当前明确指令和 Notion 账序／队列为准。
 - 新窗口接力先看 [`governance/progress/current-progress.md`](governance/progress/current-progress.md)，再读它点名的专题页。它只负责接力，不能覆盖 `CURRENT_STATE.json`、正式结果票或 CZ 指令；两者时间或结论冲突时停下校准。
 - 产品共同理解从 [共同背景板 R13 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md) 开始；需要在 Notion 阅读时走[新工作页镜像](https://app.notion.com/p/3be5cadc4d0f81ab8c21deafb82d89c3)。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
+- 涉及产品总管线、章事实稿、双车道、M5／M7／M8／M9 定位或 10 本账时，再读 [本地总管线](novel-mvp/ARCHITECTURE.md) 和 [账本目录 R01](novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md)。CZ 2026-08-20 的纠偏口径在这些主题上覆盖 R13 的旧单车道描述；它仍不证明代码已完成，也不自动授权改合同。
 - 外部论文、官方文档、行业材料和作者经验的可复用结论从[外部报告知识库当前入口](references/external-knowledge-base/README.md)开始；Notion 人读镜像在[报告背景 R01](https://app.notion.com/p/3be5cadc4d0f819eb8ebd02ca1b9b8e5)。它与产品共同背景板分开，只提供证据、反例和待核缺口。
 - 判断某个局部能力到底要解决什么、怎么备料和怎样验收，从[原子需求与验收背景板当前入口](references/atomic-expectations/README.md)开始。它不保存当前完成度、运行分数或窗口状态，也不能证明代码已经做到。
 - 路径职责与新文件落点只认 [`governance/directory_registry.json`](governance/directory_registry.json) 和生成的 [`governance/indexes/new_file_routing.md`](governance/indexes/new_file_routing.md)。
@@ -25,6 +27,7 @@
 | 你要做什么 | 第一站 | 需要时的第二站 |
 |---|---|---|
 | 理解产品目标 | `references/shared-context/.../01_PRODUCT_NORTH_STAR.md` | `02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md` |
+| 理解当前产品总管线和 10 本账 | `novel-mvp/ARCHITECTURE.md` | `novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md` |
 | 理解创作／记忆流程 | `references/shared-context/.../03_CREATION_AND_MEMORY_PIPELINES.md` | 无 |
 | 看产品试跑示例（代码偏旧，不是现行产品） | `novel-mvp/README.md` | `novel-mvp/design/INDEX.md` |
 | 看当前微调实验 | `finetuning/CURRENT.json` | 它指向实验的 `MANIFEST.json`／结果票 |
