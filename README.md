@@ -1,6 +1,6 @@
 # 小说架构实验仓
 
-> 人看当前状态只走 [治理索引](governance/INDEX.md)，机器读取当前任务／运行状态只走 [当前状态真源](governance/CURRENT_STATE.json)；拍板以 Notion 账序和队列为准。根 README 只讲长期不变的寻路规则，不抄当前道次、模型或成绩。
+> 人看当前状态只走 [治理索引](governance/INDEX.md)，机器读取当前任务／运行状态只走 [当前状态真源](governance/CURRENT_STATE.json)，当前版本、路径与候选身份只走 [current pointers](governance/current_pointers.json)；拍板以 Notion 账序和队列为准。根 README 只讲长期不变的寻路规则，不抄当前道次、模型或成绩。
 
 ✅ 你可以直接理解成：这个仓库一边打磨“大纲中枢”，一边把设计放进真实小说里做可回放的实验。
 
@@ -8,10 +8,11 @@
 
 1. 想知道现在做到哪：打开 [治理索引](governance/INDEX.md)。
 2. 程序要读当前状态：只读 [当前状态真源](governance/CURRENT_STATE.json)。
-3. 想一次看清有哪些入口：运行 `uv run --locked python tools/novel_pipeline.py catalog menu`。它是即时导航，不是第二份状态真源。
-4. 想找某条实验：先看 [试验专区说明](experiments/README.md)，再看该实验自己的 README／manifest；不要按“最新文件夹”猜。
-5. 想找正式金标、候选、运行或材料：从治理索引里的固定入口进入。
-6. 本地路牌和 Notion 尾条冲突：以 Notion 为准，先停下回读，不手工改生成页凑一致。
+3. 想知道当前背景、候选分支、后续设计登记和追踪表在哪：只读 [current pointers](governance/current_pointers.json)。
+4. 想一次看清有哪些入口：运行 `uv run --locked python tools/novel_pipeline.py catalog menu`。它是即时导航，不是第二份状态真源。
+5. 想找某条实验：先看 [试验专区说明](experiments/README.md)，再看该实验自己的 README／manifest；不要按“最新文件夹”猜。
+6. 想找正式金标、候选、运行或材料：从治理索引里的固定入口进入。
+7. 本地路牌和 Notion 尾条冲突：以 Notion 为准，先停下回读，不手工改生成页凑一致。
 
 ## 目录怎么认
 
@@ -31,7 +32,7 @@
 | `side-tracks/` | 历史旁路／调查台账 | [支线说明](side-tracks/README.md) | 不是主线路牌 |
 | `schemas/` | 稳定结构合同 | Schema 文件自身 | 长期件 |
 | `seed/` | 冷启动种子说明 | `seed/00_先读.md` | 长期件 |
-| `history/`、`current.md` | 历史旁注和旧路牌 | 只作考古，不从这里续当前任务 | 保留历史 |
+| `history/`、`current.md` | 历史旁注、旧路牌与根兼容 stub | 根 `current.md` 只跳转；旧全文在 `history/root_current_snapshot_20260720.md` | 保留历史 |
 | `runs/` | 请求、原始响应、usage 和中间工件 | 当前运行路径从治理索引进入 | 本机回放，默认不进 Git |
 | `reports/` | 人看的回包、判词和停点镜像 | 当前报告路径从治理索引进入 | 本机回放，默认不进 Git |
 | `outbox/` | 等待外发的运输件 | 对应 manifest／回执 | 本机运输，默认不进 Git |
@@ -60,8 +61,11 @@ uv run --locked python tools/novel_pipeline.py governance status
 # 检查生成路牌有没有漂移（不写仓库）
 uv run --locked python tools/governance_index.py --check
 
+# 检查唯一 current、版本路径和入口一致性（不写仓库）
+uv run --locked python tools/check_current_freshness.py --check
+
 # 全仓唯一测试命令（固定工作路径、固定 Python，只收集 tests/）
-cd /Users/a1234/挣钱/小说架构 && uv run --locked pytest -q
+cd <repo-root> && uv run --locked pytest -q
 
 # 预览外审包会收哪些文件（不发网）
 uv run --locked python tools/chatgpt_review_pack.py --dry-run
@@ -95,3 +99,5 @@ uv run --locked python tools/chatgpt_review_pack.py --dry-run
 - 不把 `runs/`、`reports/`、`TEMP/` 重新强行加进 Git。
 
 来源：Codex
+
+<!-- active_product_background: references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md -->
