@@ -232,7 +232,7 @@ def test_failed_rebind_bad_version_and_operation_conflict_are_zero_write(
     assert workspace.read("recall_handles") == before
 
 
-def test_packer_requires_current_handle_and_author_text_hides_it(
+def test_packer_author_safe_result_hides_internal_handle(
     tmp_path: Path,
 ) -> None:
     workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
@@ -255,11 +255,42 @@ def test_packer_requires_current_handle_and_author_text_hides_it(
     assert "MAY-01" not in author_text
     assert "已阻断 1 条" in author_text
 
+
+def test_packer_missing_handle_is_rejected(tmp_path: Path) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "principal-a", "M11"
+    )
+
     with pytest.raises(
         packer_workspace.PackerWorkspaceError,
         match="M11_RECALL_HANDLE_NOT_FOUND",
     ):
         packer_workspace.execute(workspace, _request(MISSING_HANDLE))
+
+
+def test_packer_stale_handle_is_rejected(tmp_path: Path) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "principal-a", "M11"
+    )
+    source = _source(workspace)
+    binding = _binding(workspace, source)
+    recall_handle_workspace.register_bindings(
+        workspace,
+        operation_id="op-register-stale",
+        bindings=[binding],
+        expected_registry_version=0,
+    )
+    workspace.commit(
+        "op-source-advance",
+        {"state": source["payload"]},
+        {"state": source["version"]},
+    )
+
+    with pytest.raises(
+        packer_workspace.PackerWorkspaceError,
+        match="M11_RECALL_HANDLE_STALE",
+    ):
+        packer_workspace.execute(workspace, _request(binding["handle"]))
 
 
 def test_source_change_during_pack_rejects_without_rewriting_registry(

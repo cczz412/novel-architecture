@@ -555,6 +555,55 @@ def test_entry_13e_approximate_or_middle_repetition_is_not_upgraded_to_candidate
     assert not any("疑似水印" in warning for warning in report["warnings"])
 
 
+@pytest.mark.parametrize(
+    ("run_id", "repeat_boundary_line"),
+    [
+        pytest.param("ZAFR-0010", False, id="no-repeat-control"),
+        pytest.param("ZAFR-0011", True, id="repeat-12-treatment"),
+    ],
+)
+def test_entry_13e_zero_api_watermark_differential_keeps_every_source_byte(
+    tmp_path,
+    monkeypatch,
+    run_id: str,
+    repeat_boundary_line: bool,
+) -> None:
+    project = f"watermark-{run_id.lower()}"
+    _init(tmp_path, monkeypatch, project)
+    source_texts = {
+        f"c{index:02d}.txt": (
+            f"第{index}章\n正文第{index}段。\n"
+            + ("求收藏\n" if repeat_boundary_line else f"唯一尾声{index}。\n")
+        )
+        for index in range(1, 13)
+    }
+    report = ingest.ingest_files(
+        project,
+        [
+            str(_write(tmp_path, name, text))
+            for name, text in source_texts.items()
+        ],
+        material_role="CHAPTER",
+    )
+
+    assert len(report["chapters"]) == 12
+    assert report["chapters"] == store.chapters(project)
+    for source in report["sources"]:
+        assert source["decoded_text"] == source_texts[source["source_name"]]
+    receipt = report["watermark_receipt"]
+    if repeat_boundary_line:
+        assert receipt["candidate_count"] == 1
+        candidate = receipt["candidates"][0]
+        assert candidate["normalized_text"] == "求收藏"
+        assert candidate["chapter_count"] == 12
+        assert candidate["occurrence_count"] == 12
+        assert candidate["status"] == "CANDIDATE_ONLY"
+        assert candidate["action"] == "kept_flagged"
+    else:
+        assert receipt["candidate_count"] == 0
+        assert receipt["candidates"] == []
+
+
 def test_entry_13f_author_action_only_creates_derived_clean_sources(
     tmp_path,
     monkeypatch,

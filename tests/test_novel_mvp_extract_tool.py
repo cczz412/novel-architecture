@@ -318,6 +318,42 @@ def test_provider_fields_are_not_repaired_or_silently_dropped(mutation: str) -> 
         extract_tool.execute(_request(), extract_tool.offline_response_provider(responses))
 
 
+@pytest.mark.parametrize(
+    ("run_id", "bad_response", "reason"),
+    [
+        pytest.param(
+            "ZAFR-0069",
+            {"data": {"facts": {}}, "usage": {}, "model": "FROZEN"},
+            "PROVIDER_FACTS_NOT_LIST:c01:r2:s1",
+            id="facts-not-array",
+        ),
+        pytest.param(
+            "ZAFR-0070",
+            [],
+            "PROVIDER_RESULT_NOT_OBJECT:c01:r2:s1",
+            id="root-not-object",
+        ),
+    ],
+)
+def test_zero_api_bad_provider_shape_rejects_the_whole_batch(
+    run_id: str,
+    bad_response: object,
+    reason: str,
+) -> None:
+    del run_id
+    calls = 0
+
+    def provider(_request: dict) -> object:
+        nonlocal calls
+        calls += 1
+        return copy.deepcopy(bad_response)
+
+    with pytest.raises(extract_tool.ExtractToolError, match=reason):
+        extract_tool.execute(_request(), provider)
+
+    assert calls == 1
+
+
 def test_failed_run_does_not_overwrite_existing_output(tmp_path: Path) -> None:
     input_path = tmp_path / "c2.json"
     responses_path = tmp_path / "responses.json"
