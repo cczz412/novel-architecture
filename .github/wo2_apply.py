@@ -3,9 +3,9 @@
 
 The original helper assumed count fields existed directly in
 TEST_DESIGN_CURRENT.json. The frozen pointer stores those counts in its signed
-validation receipt instead. This wrapper loads the prior helper from Git history,
-verifies the frozen design and receipt bytes, exposes the receipt counts to that
-helper, and then runs the unchanged migration.
+validation receipt instead. This wrapper loads the original helper from its fixed
+Git commit, verifies the frozen design and receipt bytes, exposes the receipt
+counts to that helper, and then runs the unchanged migration.
 """
 
 from __future__ import annotations
@@ -16,8 +16,9 @@ import subprocess
 from pathlib import Path
 
 THIS_FILE = Path(__file__).resolve()
+ORIGINAL_HELPER_COMMIT = "2931afa672f7da33ad887e88849f18013a2494f7"
 SOURCE = subprocess.check_output(
-    ["git", "show", "HEAD^:.github/wo2_apply.py"],
+    ["git", "show", f"{ORIGINAL_HELPER_COMMIT}:.github/wo2_apply.py"],
     text=True,
 )
 NAMESPACE: dict[str, object] = {
