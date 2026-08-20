@@ -11,7 +11,11 @@
 ## 当前入口
 
 - 机器指针：[CURRENT.json](CURRENT.json)
-- 人读入口：[原子需求与验收背景板 R02](ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/00_READ_ME_FIRST.md)
+- 人读入口：[原子需求与验收背景板 R03](ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/00_READ_ME_FIRST.md)
+- 六例验收设计（仍覆盖 R02 的 127 条）：[原子需求测试设计 R01](ATOMIC_TEST_DESIGN_20260820_R01/00_READ_ME_FIRST.md)
+- 测试设计机器指针：[TEST_DESIGN_CURRENT.json](TEST_DESIGN_CURRENT.json)
+
+现行需求板有 142 条；现行六例测试设计仍只有旧 127 条、762 个小测试。新增 15 条的 90 个小测试要另起版本补齐，不能把旧设计写成 142 条全覆盖。
 
 本背景板不是正式合同、施工票、当前运行状态或产品完成证明。具体字段、接口和模块实现可以变化；原子预期的用户目标、失败后果和验收含义不能被实现方案悄悄改写。
 

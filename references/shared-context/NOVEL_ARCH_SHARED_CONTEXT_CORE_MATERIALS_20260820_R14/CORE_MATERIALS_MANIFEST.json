@@ -1,0 +1,592 @@
+{
+  "schema_version": "novel_arch_shared_context_core_materials_manifest_v14_local_official_notion_separate",
+  "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14",
+  "status": "R14_LOCAL_OFFICIAL__COMPLETE_NOTION_MIRROR_NOT_BUILT",
+  "status_note": "R14 is the local official shared product context. Immutable parent R13 is preserved. CZ 2026-08-20 dual-lane, chapter-fact-draft, ten-ledger-directory, module-positioning decisions and atomic expectations R03 (142 records) are absorbed. The correction page exists; a complete R14 Notion mirror has not been built.",
+  "local_build_date": "2026-08-20",
+  "decision_basis": {
+    "required": "CZ_EXPLICIT_PRODUCT_CORRECTION_2026_08_20",
+    "currently_applied": "DUAL_LANE__CHAPTER_FACT_DRAFT__TEN_LEDGER_DIRECTORY__MODULE_POSITIONING__ATOMIC_R03_142",
+    "cz_decision_page": "https://app.notion.com/p/050b4f3d039644ce893f75c5bc2bce9a",
+    "atomic_expectations_pointer": "references/atomic-expectations/CURRENT.json",
+    "atomic_expectations_package": "ATOMIC_EXPECTATION_BACKGROUND_20260820_R03",
+    "atomic_expectations_count": 142,
+    "legacy_127x6_test_design_status": "HISTORICAL_R02_COVERAGE_ONLY__NOT_R03_142_COVERAGE",
+    "engineering_detail_policy": "BACKGROUND_DIRECTION_DOES_NOT_PROVE_RUNTIME_CAPABILITY_OR_GRANT_CONTRACT_CONSTRUCTION_API_GOLD_TRAINING_PRODUCTION_UPLOAD_AUTHORITY"
+  },
+  "entry_point": "00_READ_ME_FIRST.md",
+  "distribution_mode": "LOCAL_OFFICIAL__COMPLETE_R14_NOTION_MIRROR_NOT_BUILT__R13_IMMUTABLE_PARENT",
+  "parent_package": {
+    "package_id": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13",
+    "core_materials_sha256": "d5629b881e12968d9cf8e30fac1f251eb11c2483c4c83839ae717442c19d55de",
+    "package_sha256": "502a98afbeb54dcf19d4825e0701babbdba0ed207fea873a058615b7f0528a7b",
+    "manifest_sha256": "969c3c3cd90cb58217c16b645070bda4be2916f6c76775aaadf30368c38e3c86",
+    "receipt_sha256": "94110c1bded4c606973b292535fc6ed0efef83c3a1179cbf0cf675a39f6521b6",
+    "mutation_policy": "R13_REMAINS_UNMODIFIED__R14_IS_A_DERIVED_LOCAL_OFFICIAL_PACKAGE"
+  },
+  "notion_target": {
+    "status": "CZ_CORRECTION_PAGE_EXISTS__COMPLETE_R14_MIRROR_NOT_BUILT",
+    "decision_page": "https://app.notion.com/p/050b4f3d039644ce893f75c5bc2bce9a",
+    "note": "The decision page supports R14 derivation but is not a complete R14 mirror. A later authorized sync requires page-by-page readback."
+  },
+  "hash_contract": {
+    "algorithm": "sha256",
+    "core_materials_sha256_definition": "Sort the eight core Markdown member paths lexicographically, then hash UTF-8 lines formatted as path<TAB>member_sha256<LF>.",
+    "package_sha256_definition": "Use the same index algorithm over all twelve Markdown members and CORE_MATERIALS_MANIFEST.json.",
+    "package_and_manifest_sha256_location": "BUILD_RECEIPT.json only, so the manifest never hashes itself.",
+    "receipt_excluded": true
+  },
+  "core_materials_sha256": "c824ed9304986641599085560c8b7ef69e7aedca2bbf2690b8c1dd3ef9ea97de",
+  "members": [
+    {
+      "path": "00_READ_ME_FIRST.md",
+      "role": "CORE_ENTRY",
+      "sha256": "b632ff4642910a1943fbf187a8bd8638237a6c0e6d7862f3626ed74b89a08b54",
+      "bytes": 26862
+    },
+    {
+      "path": "01_PRODUCT_NORTH_STAR.md",
+      "role": "CORE",
+      "sha256": "954f3b8a693b3497c957e0b32a677d810d81bf2957ec0aa3fe648523e451ed8a",
+      "bytes": 26597
+    },
+    {
+      "path": "02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+      "role": "CORE",
+      "sha256": "9fbc8c2b794db32b7ec2d1d8d31a236c6085825a32d8fcfbfbe2c94c59ba71c2",
+      "bytes": 48271
+    },
+    {
+      "path": "03_CREATION_AND_MEMORY_PIPELINES.md",
+      "role": "CORE",
+      "sha256": "6275dcf50f4711cec5e76a607e07953d63d69e930ede6537c7e9e652398dac33",
+      "bytes": 71542
+    },
+    {
+      "path": "04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
+      "role": "CORE",
+      "sha256": "1532afa405616d60964de54ea120806faf4dcd64a21f263768829399b8d902f7",
+      "bytes": 21897
+    },
+    {
+      "path": "05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
+      "role": "CORE",
+      "sha256": "af79ef0a5724310ea36476a429e9c59682302a30097118ec283f05d59d05b193",
+      "bytes": 47998
+    },
+    {
+      "path": "06_SYNC_AND_CHANGE_PROTOCOL.md",
+      "role": "CORE",
+      "sha256": "9c3de324abb7ae23b60c266306cf0e3341e28ba9f994bd807c89608ee1b16d07",
+      "bytes": 13907
+    },
+    {
+      "path": "07_GLOSSARY.md",
+      "role": "CORE",
+      "sha256": "1654467fdffb1c5d05b7a2ed17228c5f9111b190c0455d3ebeeb8686e7ba2bae",
+      "bytes": 53531
+    },
+    {
+      "path": "08_VALIDATION_MARKET_AND_RISK_REGISTER.md",
+      "role": "AUXILIARY_REGISTER",
+      "sha256": "50636ee6278bee032a2d07474adde791e94813bdab82cae721fb2585dfe7d94c",
+      "bytes": 28410
+    },
+    {
+      "path": "PRODUCT_SEMANTIC_DEBT_REGISTER.md",
+      "role": "RELEASE_ATTACHMENT",
+      "sha256": "664ddfb10e4e51d66ce4f1316c1da4a459c4cd056b79ce65ef060765f5b8407a",
+      "bytes": 11384
+    },
+    {
+      "path": "REFERENCE_PROJECT_INTEGRATION.md",
+      "role": "OPTIONAL_REFERENCE",
+      "sha256": "40104c154b6d9e3b8f2d1182479cb52edf559f2913b4e71221cf80fc7787db06",
+      "bytes": 5331
+    },
+    {
+      "path": "USER_DATA_RIGHTS_AND_SECURITY_POLICY.md",
+      "role": "AUXILIARY_POLICY",
+      "sha256": "cef3c68ea7313eeba5aa542174a41cefff4e19202e62aa8967c7b857b318c66b",
+      "bytes": 12548
+    }
+  ],
+  "add_absorption_map": [
+    {
+      "id": "ADD-021",
+      "topic": "抽取管线四件：验真两步／覆盖账本／原子两层／跨家族降级",
+      "status": "ABSORBED_CZ_ACCEPTED_ORIGINAL_R10",
+      "pages": [
+        "03",
+        "04",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-022",
+      "topic": "上下文打包器口径补丁：瘦＝最小充分／宽窗口路由",
+      "status": "ABSORBED_CZ_ACCEPTED_REVISED_R10",
+      "pages": [
+        "02",
+        "03",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-023",
+      "topic": "插件系统硬化：锁文件／运行来源四段回执／索引行拆分等",
+      "status": "ABSORBED_CZ_ACCEPTED_REVISED_R10",
+      "pages": [
+        "02",
+        "03",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-024",
+      "topic": "插件内容施工附录：V0 核心为 1 套件、8 组件、前三层",
+      "status": "ABSORBED_CZ_ACCEPTED_AS_CONSTRUCTION_APPENDIX_R10",
+      "pages": [
+        "02",
+        "03",
+        "05",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-025",
+      "topic": "画布与前端设计基线（React Flow 等）＋CodeMirror 6",
+      "status": "ABSORBED_CZ_ACCEPTED_REVISED_R10",
+      "pages": [
+        "02"
+      ]
+    },
+    {
+      "id": "ADD-026",
+      "topic": "SVG 视觉系统设计基线：visual_version／素材台账／降级规则",
+      "status": "ABSORBED_CZ_ACCEPTED_REVISED_R10",
+      "pages": [
+        "02"
+      ]
+    },
+    {
+      "id": "ADD-027",
+      "topic": "体验与可观测性设计／验收目标",
+      "status": "ABSORBED_CZ_ACCEPTED_REVISED_R10",
+      "pages": [
+        "03",
+        "05",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-028",
+      "topic": "防降智判据与知情检查清单",
+      "status": "ABSORBED_CZ_ACCEPTED_REVISED_R10",
+      "pages": [
+        "03",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-029",
+      "topic": "行业与市场登记批（只挂登记安排注记）",
+      "status": "ABSORBED_CZ_ACCEPTED_ORIGINAL_R10",
+      "pages": [
+        "08"
+      ]
+    },
+    {
+      "id": "ADD-030",
+      "topic": "真值状态轴与对账边升级",
+      "status": "ABSORBED_CZ_ACCEPTED_ORIGINAL_R10",
+      "pages": [
+        "02",
+        "03",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-031",
+      "topic": "暗稿与收工合同候选",
+      "status": "ABSORBED_CZ_ACCEPTED_REVISED_R10",
+      "pages": [
+        "03",
+        "02"
+      ]
+    },
+    {
+      "id": "ADD-032",
+      "topic": "存储与账本工程边界：JSON＋护栏，终点 PostgreSQL，迁移时点未拍",
+      "status": "ABSORBED_CZ_ACCEPTED_REVISED_R10",
+      "pages": [
+        "02",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-033",
+      "topic": "人物账心理标签降为软先验与编辑索引",
+      "status": "ABSORBED_CZ_ACCEPTED_REVISED_R10",
+      "pages": [
+        "03",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-034",
+      "topic": "平台风险逐平台登记＋自愿创作证明包候选",
+      "status": "ABSORBED_CZ_ACCEPTED_REVISED_R10",
+      "pages": [
+        "08",
+        "01",
+        "07",
+        "POLICY"
+      ]
+    },
+    {
+      "id": "ADD-035",
+      "topic": "日常循环细化批",
+      "status": "ABSORBED_CZ_ACCEPTED_ORIGINAL_R10",
+      "pages": [
+        "03",
+        "05",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-036",
+      "topic": "CZ亲拍销账批（A2-A8、A10-A15、G5；A9另记分镜图）",
+      "status": "ABSORBED_CZ_CONFIRMED",
+      "pages": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "05",
+        "07",
+        "08",
+        "POLICY"
+      ]
+    },
+    {
+      "id": "ADD-037",
+      "topic": "A9目的卡+反向画布；A1知情多态（销题15）",
+      "status": "ABSORBED_CZ_CONFIRMED",
+      "pages": [
+        "00",
+        "02",
+        "03",
+        "05",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-038",
+      "topic": "户口总则：安排 vs 定义 vs 变化；一处指针",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "02",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-039",
+      "topic": "共享实体门牌（地点／势力／物品一种登记带类型）",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "02",
+        "03",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-040",
+      "topic": "五层树保留；中改补户口",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "03",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-041",
+      "topic": "真值按范围；收窄入库自动交棒",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "02",
+        "03",
+        "05",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-042",
+      "topic": "开表尺子与禁扩；义务 v1 不开",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "02",
+        "05"
+      ]
+    },
+    {
+      "id": "ADD-049",
+      "topic": "永不代写成文；删一键成文后门",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "01",
+        "03",
+        "05"
+      ]
+    },
+    {
+      "id": "ADD-050",
+      "topic": "开章：上层已定不问，没定好才问",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "01",
+        "02",
+        "03"
+      ]
+    },
+    {
+      "id": "ADD-051",
+      "topic": "计划 vs 已经发生；事实句＝管线句子形式",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "03",
+        "07",
+        "01"
+      ]
+    },
+    {
+      "id": "ADD-052",
+      "topic": "创作侧也要检查",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "03"
+      ]
+    },
+    {
+      "id": "ADD-053",
+      "topic": "导入章数阈值不拍死",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "01",
+        "03",
+        "05"
+      ]
+    },
+    {
+      "id": "ADD-054",
+      "topic": "词表扫：书稿／章节工作室／停点三档",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "01",
+        "03",
+        "05",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-055",
+      "topic": "真值切换：已发表导入必对原文；开写后书稿可选看",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "01",
+        "02",
+        "03"
+      ]
+    },
+    {
+      "id": "ADD-056",
+      "topic": "首价值不单压第四章规划",
+      "status": "ABSORBED_CZ_CONFIRMED_R11",
+      "pages": [
+        "00",
+        "01",
+        "05"
+      ]
+    },
+    {
+      "id": "ADD-057",
+      "topic": "激活＝看见系统在工作；专业有条理的投影跟着动",
+      "status": "ABSORBED_CZ_CONFIRMED_R13",
+      "pages": [
+        "00",
+        "01",
+        "03",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-058",
+      "topic": "关章硬门槛；系统建议到此为止；空手宣布不算",
+      "status": "ABSORBED_CZ_CONFIRMED_R13",
+      "pages": [
+        "00",
+        "03",
+        "05",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-059",
+      "topic": "打开项目第一屏＝梗概＋概览＋战报；黄金三章独立台",
+      "status": "ABSORBED_CZ_CONFIRMED_R13",
+      "pages": [
+        "00",
+        "01",
+        "03",
+        "05",
+        "07"
+      ]
+    },
+    {
+      "id": "ADD-060",
+      "topic": "沙箱选一转正＝对账，不是多支并回",
+      "status": "ABSORBED_CZ_CONFIRMED_R13",
+      "pages": [
+        "02",
+        "03",
+        "05"
+      ]
+    },
+    {
+      "id": "ADD-061",
+      "topic": "投影可改，进真值须作者确认；纠错记产品做错账",
+      "status": "ABSORBED_CZ_CONFIRMED_R13",
+      "pages": [
+        "01",
+        "02",
+        "07"
+      ]
+    }
+  ],
+  "ask_cz_open_questions": {
+    "note": "ADD-043/044 remain ASK_CZ and ride along. Question 16 field contract remains open and nonblocking. ADD-045-048 not absorbed. SI-013 five product questions closed by ADD-057-061.",
+    "items": [
+      "ADD-043",
+      "ADD-044",
+      "Question 16 field/enum/machine contract",
+      "暗稿算不算签过字、能不能开下一章"
+    ],
+    "closed_by_r11": [
+      "ADD-038",
+      "ADD-039",
+      "ADD-040",
+      "ADD-041",
+      "ADD-042",
+      "ADD-049",
+      "ADD-050",
+      "ADD-051",
+      "ADD-052",
+      "ADD-053",
+      "ADD-054",
+      "ADD-055",
+      "ADD-056"
+    ],
+    "closed_by_r13": [
+      "ADD-057",
+      "ADD-058",
+      "ADD-059",
+      "ADD-060",
+      "ADD-061"
+    ]
+  },
+  "authority_boundaries": [
+    "R14_IS_LOCAL_OFFICIAL__PARENT_R13_IMMUTABLE",
+    "R14_IS_CURRENT_SHARED_PRODUCT_CONTEXT_LOCALLY",
+    "R09_IS_LEGACY_COMPLETE_NOTION_MIRROR__NOT_CURRENT_R14",
+    "COMPLETE_R14_NOTION_MIRROR_NOT_BUILT",
+    "CHAPTER_FACT_DRAFT_HANDOVER_BINDS_PACKAGE__FACT_LEDGER_CONFIRMATION_GRANULARITY_OPEN",
+    "NOTION_SYNC_NOT_AUTHORIZED_IN_THIS_TASK",
+    "NO_CONTRACT_CONSTRUCTION_GOLD_TRAINING_EXTERNAL_SEND_MODEL_API_UPLOAD_OR_PRODUCTION_AUTHORITY",
+    "MONETIZATION_REMAINS_FROZEN"
+  ],
+  "r14_absorption_map": [
+    {
+      "topic": "dual_lane_and_chapter_fact_draft",
+      "pages": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "07",
+        "08"
+      ]
+    },
+    {
+      "topic": "truth_split_fact_plan_longline_and_optional_prose",
+      "pages": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "05",
+        "07",
+        "08"
+      ]
+    },
+    {
+      "topic": "module_positioning_m1_m11",
+      "pages": [
+        "00",
+        "01",
+        "03",
+        "05",
+        "07"
+      ]
+    },
+    {
+      "topic": "ten_ledger_directory",
+      "pages": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "05",
+        "07",
+        "08"
+      ]
+    },
+    {
+      "topic": "atomic_expectations_r03_142",
+      "pages": [
+        "00",
+        "05",
+        "06",
+        "08"
+      ]
+    },
+    {
+      "topic": "watermark_conservative_and_initial_title_option_a",
+      "pages": [
+        "03",
+        "05"
+      ]
+    }
+  ],
+  "carried_r07_r08_r09_r10_r11_r12_r13_content": {
+    "policy": "All prior absorbed content through immutable R13 is carried unless explicitly overridden by R14.",
+    "parent_identity": "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13",
+    "r14_current_overrides": [
+      "dual lane and chapter-fact-draft",
+      "fact versus plan/long-line truth split",
+      "M1-M11 product positioning",
+      "ten-ledger directory",
+      "atomic expectations R03 with 142 records"
+    ],
+    "legacy_r09_notion_note": "R09 is only a legacy complete Notion mirror; it is not the current local shared context and not a complete R14 mirror.",
+    "r13_historical_overrides": [
+      "activation equals seeing the system work, not 90-second fact confirmation",
+      "chapter-close has hard gates; empty author declaration does not close",
+      "project first screen is synopsis plus overview plus report",
+      "golden-three is an independent workstation",
+      "sandbox select-one-to-promote equals reconciliation",
+      "projection is editable; entering truth requires author confirmation"
+    ]
+  }
+}
