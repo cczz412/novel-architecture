@@ -1,11 +1,11 @@
 {
   "board_id": "atomic-expectations-background",
-  "current_version": "R02",
-  "current_package_id": "ATOMIC_EXPECTATION_BACKGROUND_20260819_R02",
-  "entry_path": "ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/00_READ_ME_FIRST.md",
-  "manifest_path": "ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/MANIFEST.json",
-  "manifest_sha256": "02e49455a5d59c8b566938736089d0ab3a40522188f428d069b18b681e5075e7",
-  "activated_on": "2026-08-19",
+  "current_version": "R03",
+  "current_package_id": "ATOMIC_EXPECTATION_BACKGROUND_20260820_R03",
+  "entry_path": "ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/00_READ_ME_FIRST.md",
+  "manifest_path": "ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/MANIFEST.json",
+  "manifest_sha256": "7a28d4c32da3f1a499e96683b0f0c4f22296b0941dfd7f377b7b0566a7613151",
+  "activated_on": "2026-08-20",
   "activation_authority": "CZ explicit instruction",
   "authority": "SHARED_DESIGN_AND_ACCEPTANCE_REFERENCE_NO_EXECUTION_AUTHORITY"
 }
