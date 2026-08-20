@@ -1,0 +1,199 @@
+{
+  "identity": "NOVEL_MVP_M3_ADMISSION_SYNTHETIC_REGRESSIONS_R01",
+  "fixture_root": ".",
+  "api_calls": 0,
+  "automatic_retries": 0,
+  "cases": [
+    {
+      "case_id": "G01",
+      "description": "长章正文前有明确作者备注",
+      "input_path": "texts/g01_long_note_then_story.txt",
+      "input_sha256": "69df4f6eb266150b119d60be80fa02cbbf7a4a3d6cd99e13b81bb7501d53670f",
+      "expected_status": "READY",
+      "expected_segments": {
+        "author_note": [
+          {
+            "start": 10,
+            "end": 56,
+            "text_sha256": "6affbb072a5587d4b5971d17523bea6e3e4c26b3c130fbf85b72a13277bcd227"
+          }
+        ],
+        "story": [
+          {
+            "start": 58,
+            "end": 1239,
+            "text_sha256": "e4fb77c2b361616e3bfdfd45bb73833bbd5c808edcb6283e8629961d9f62a9ef"
+          }
+        ],
+        "uncertain": []
+      }
+    },
+    {
+      "case_id": "G02",
+      "description": "作者提示在章节正文前",
+      "input_path": "texts/g02_author_note_before_story.txt",
+      "input_sha256": "2c09c7d5ec0ce0aef110de29700b4e137ce237175417141334dc3b750371812a",
+      "expected_status": "READY",
+      "expected_segments": {
+        "author_note": [
+          {
+            "start": 8,
+            "end": 25,
+            "text_sha256": "6956d273f083672460e7eddf75fb74ce6f76263be9363a48883c8de6bd78ad19"
+          }
+        ],
+        "story": [
+          {
+            "start": 27,
+            "end": 59,
+            "text_sha256": "1c457a068e3928cce3b3bf0cf5447d46bc2b656181dfa4237f6f6923f5b69432"
+          }
+        ],
+        "uncertain": []
+      }
+    },
+    {
+      "case_id": "G03",
+      "description": "作者说明在章节正文后",
+      "input_path": "texts/g03_author_note_after_story.txt",
+      "input_sha256": "c78bfd67a28da51277181c598486dc1e84a73dea92d8022c1e7cf0bbb1e19ab7",
+      "expected_status": "READY",
+      "expected_segments": {
+        "author_note": [
+          {
+            "start": 40,
+            "end": 63,
+            "text_sha256": "e7cf3ee5a5ff9bbf25713da3018403477b8b62f291d7b072956325ccf1b68e49"
+          }
+        ],
+        "story": [
+          {
+            "start": 8,
+            "end": 38,
+            "text_sha256": "b66a8f35b47a3b89fa8689665402da2cad17bd70395a4836353349a297fe92eb"
+          }
+        ],
+        "uncertain": []
+      }
+    },
+    {
+      "case_id": "G04",
+      "description": "作者提示夹在两章之间",
+      "input_path": "texts/g04_author_note_between_chapters.txt",
+      "input_sha256": "715fff9fed76226bc841157f0d9914e80c46aff8642ec440469cdf4128afdc6a",
+      "expected_status": "READY",
+      "expected_segments": {
+        "author_note": [
+          {
+            "start": 22,
+            "end": 36,
+            "text_sha256": "4a1372802860cdc4f4bceac6c860a2afb80dbefb4d810301b29f9a3eddaeccbb"
+          }
+        ],
+        "story": [
+          {
+            "start": 8,
+            "end": 20,
+            "text_sha256": "4b5d73aba2019f8833fbb4cc3c787f0a061f1d3cf887b025dd87d6d09a61b853"
+          },
+          {
+            "start": 46,
+            "end": 62,
+            "text_sha256": "c939fd723bc17c0e8740d162c126ed26367a93274fc7143d7c329195b85cd78f"
+          }
+        ],
+        "uncertain": []
+      }
+    },
+    {
+      "case_id": "G05",
+      "description": "作者提示内容长得像叙事句",
+      "input_path": "texts/g05_narrative_looking_author_note.txt",
+      "input_sha256": "45cfa7cf87008a08eaa18ca49bd925574020500f023e1ef95bedb6541157a23f",
+      "expected_status": "READY",
+      "expected_segments": {
+        "author_note": [
+          {
+            "start": 17,
+            "end": 42,
+            "text_sha256": "50fded92c0a5efb546736545011bae6b28b80a53ffc992abd845f9e1d48011bc"
+          }
+        ],
+        "story": [
+          {
+            "start": 8,
+            "end": 15,
+            "text_sha256": "bb3348124e4ee25221b01d334cacde0815a10b8882a57c81db3055946dfaba50"
+          },
+          {
+            "start": 44,
+            "end": 65,
+            "text_sha256": "c2ce0011698e205484398e90920d3a996b8f420ba131c739f99cdd49f68f8c28"
+          }
+        ],
+        "uncertain": []
+      }
+    },
+    {
+      "case_id": "G06",
+      "description": "合法正文里真的出现作者二字",
+      "input_path": "texts/g06_story_contains_author_word.txt",
+      "input_sha256": "157c4b7d8132cb38a31d617559af95f5daeb97343f38b1937ed055b416911d6c",
+      "expected_status": "READY",
+      "expected_segments": {
+        "author_note": [],
+        "story": [
+          {
+            "start": 8,
+            "end": 48,
+            "text_sha256": "21756ea6304b76dbe4881d7a53d50a88de88842a26a8971527c0dfbb38bf6c0e"
+          }
+        ],
+        "uncertain": []
+      }
+    },
+    {
+      "case_id": "G07",
+      "description": "独立方括号段落身份不明确",
+      "input_path": "texts/g07_uncertain_standalone_bracket.txt",
+      "input_sha256": "76a8a085303ec978ecc76ef2f7ba7f61917355ec2882ca2efc19005838ae5531",
+      "expected_status": "NEED_CONFIRM",
+      "expected_segments": {
+        "author_note": [],
+        "story": [
+          {
+            "start": 8,
+            "end": 15,
+            "text_sha256": "1b18560725268ae865f33240476d162922ea0cb0556198191260d709ecb66374"
+          },
+          {
+            "start": 29,
+            "end": 38,
+            "text_sha256": "597ff5d4b932747795679f1075b1126580f0125f5bb15b4a559972f6ce7b0452"
+          }
+        ],
+        "uncertain": [
+          {
+            "start": 17,
+            "end": 27,
+            "text_sha256": "22946554160385d2681cff32876ee11c245c18a0a63bc84da50de7fdb762b3de"
+          }
+        ]
+      }
+    }
+  ],
+  "auxiliary_texts": {
+    "standalone_narrative_section": {
+      "path": "texts/f06_standalone_narrative_section_sentence.txt",
+      "sha256": "122b642f702af4357df5ac89e5c8309a376c2b06275a5a161c52cf5373cfa48f"
+    },
+    "body_between_double_headings": {
+      "path": "texts/dht05_body_between_candidates.txt",
+      "sha256": "5975315cf1173df3f1cade4e7b212f14831ea86b7807b44345dd55124974809b"
+    },
+    "explicit_outline": {
+      "path": "texts/explicit_outline.txt",
+      "sha256": "0d25e4eee78472e7ab2f85d2cab4842e64b4b785d7cb89915dd63558fa35753d"
+    }
+  }
+}

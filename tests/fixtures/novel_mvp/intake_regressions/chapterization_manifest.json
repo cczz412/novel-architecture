@@ -1,0 +1,121 @@
+{
+  "identity": "NOVEL_MVP_CHAPTERIZATION_SYNTHETIC_REGRESSIONS_R01",
+  "fixture_root": ".",
+  "api_budget": 0,
+  "cases": [
+    {
+      "case_id": "P-CH-01",
+      "kind": "literal_text",
+      "text": "第一章 风起\n甲在桥上。\n第二章 入城\n乙推开门。\n第三章 回家\n丙回家。",
+      "chars": 37,
+      "sha256": "a3ba25f0e0eafcfaf277f8ee83dab0c8798471ef3d37353d98bfb3046f403742",
+      "expected_status": "READY",
+      "expected_chapters": 3,
+      "expected_numbers": [1, 2, 3]
+    },
+    {
+      "case_id": "P-CH-02",
+      "kind": "file_text",
+      "path": "texts/ten_chapter_section_control.txt",
+      "chars": 382,
+      "sha256": "26b0bbaaf56d761396c753292f32f18f1f5c6ce5e37844e63854fd8e0df7c7c2",
+      "expected_status": "READY",
+      "expected_chapters": 10,
+      "expected_numbers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    },
+    {
+      "case_id": "P-CH-03",
+      "kind": "literal_text",
+      "text": "第一章 同名\n甲。\n第二章 同名\n乙。",
+      "chars": 19,
+      "sha256": "87febbf60bc7cc1e3bc1194a0b68be3c4ada826823aabdbf27b88274964d81a1",
+      "expected_status": "READY",
+      "expected_chapters": 2,
+      "expected_numbers": [1, 2],
+      "expected_display_titles": ["同名", "同名"]
+    },
+    {
+      "case_id": "P-CH-04",
+      "kind": "literal_text",
+      "text": "第一章 空章\n第二章 极短\n短。\n第三章 正常\n正文。",
+      "chars": 27,
+      "sha256": "5d25337f3f721c62d4bab732d6f2f509ffd49a8f0fb0d0c7eb2852684c17d2c1",
+      "expected_status": "READY",
+      "expected_chapters": 3,
+      "expected_numbers": [1, 2, 3]
+    },
+    {
+      "case_id": "P-CH-05",
+      "kind": "generated_text",
+      "pattern": "无标题正文。",
+      "repeat": 800,
+      "chars": 4800,
+      "sha256": "5de5fdcde71ca86313985dc9c3da64a590f8856e0eb971e931511fc25e7f02c4",
+      "expected_status": "SINGLE_UNTITLED",
+      "expected_chapters": 1
+    },
+    {
+      "case_id": "P-CH-06",
+      "kind": "literal_text",
+      "text": "第一章 开始\n甲。\n第三章 跳号\n丙。",
+      "chars": 19,
+      "sha256": "90e6b5a907163a5ad6fd941608a44d44374ac6c2706eddaaf765e77c46786aea",
+      "expected_status": "BLOCKED",
+      "expected_chapters": 0,
+      "expected_block_type": "chapter_sequence_contradiction"
+    },
+    {
+      "case_id": "P-CH-07",
+      "kind": "coverage_assertion_over_cases",
+      "cases": ["P-CH-01", "P-CH-02", "P-CH-03", "P-CH-04", "P-CH-05"],
+      "expected_lost_chars": 0,
+      "expected_duplicated_chars": 0,
+      "expected_reordered_chars": 0,
+      "expected_illegal_overlap": 0
+    },
+    {
+      "case_id": "P-CH-08",
+      "kind": "product_path_probe",
+      "source_case": "P-CH-01",
+      "expected_c1": 3,
+      "expected_admission_ready": 3,
+      "api_calls": 0
+    }
+  ],
+  "regression_texts": {
+    "s1a_r01": {
+      "path": "texts/ten_chapter_section_control.txt",
+      "sha256": "26b0bbaaf56d761396c753292f32f18f1f5c6ce5e37844e63854fd8e0df7c7c2"
+    },
+    "r03": {
+      "path": "texts/three_chapter_double_heading_preamble.txt",
+      "sha256": "f42477f7783e9f63dfd5dc9b51ebbb93f21aa0b3e13ca6ad6ca6bf102519d814",
+      "chapter_start": 55,
+      "expected_titles": ["第1章灯塔", "第2章回声", "第3章交班"]
+    },
+    "f03": {
+      "path": "texts/f03_valid_bare_section_title.txt",
+      "sha256": "ac29fed14ce943ab1fb214fd131dcf87cc572c2870dfe01363f9cc2657599141"
+    },
+    "f04": {
+      "path": "texts/f04_valid_section_title_with_name.txt",
+      "sha256": "669f6a90383772361c9f09ada84a58e019b10fb9b0aeaffc18405e882abc205d"
+    },
+    "f09": {
+      "path": "texts/f09_ambiguous_compact_section_sentence.txt",
+      "sha256": "4a95eb1182fe7872e68e477facc6936e225f7694806298b565cdb7482bccb050"
+    },
+    "dht02": {
+      "path": "texts/dht02_stable_double_heading.txt",
+      "sha256": "ef72089c6d2eea1ede025b95fa3abebfd9889a2145d0247e48d1990d3daf0dd3"
+    },
+    "dht05": {
+      "path": "texts/dht05_body_between_candidates.txt",
+      "sha256": "5975315cf1173df3f1cade4e7b212f14831ea86b7807b44345dd55124974809b"
+    },
+    "dht10": {
+      "path": "texts/dht10_isolated_ambiguous_pair.txt",
+      "sha256": "c9d32076c54b03035fef6bd880160d820d5b04c9438b7d301a747ea51c6dc97c"
+    }
+  }
+}

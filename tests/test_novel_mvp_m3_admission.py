@@ -12,8 +12,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_ROOT = ROOT / "novel-mvp"
-T03_ROOT = ROOT / "TEMP/t03_parallel_r13_m1_m2_20260815_r01"
-RM06_ROOT = T03_ROOT / "rm06_m3_admission_gate_20260816_r01"
+FIXTURE_ROOT = ROOT / "tests/fixtures/novel_mvp/intake_regressions"
+MANIFEST_PATH = FIXTURE_ROOT / "m3_admission_manifest.json"
 
 sys.path.insert(0, str(PRODUCT_ROOT))
 try:
@@ -28,7 +28,22 @@ def _sha256(path: Path) -> str:
 
 
 def _lock() -> dict:
-    return json.loads((RM06_ROOT / "REGRESSION_FIXTURE_LOCK.json").read_text(encoding="utf-8"))
+    return json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+
+
+def _fixture_path(relative_path: str) -> Path:
+    relative = Path(relative_path)
+    assert not relative.is_absolute()
+    assert ".." not in relative.parts
+    path = (FIXTURE_ROOT / relative).resolve()
+    assert path.is_relative_to(FIXTURE_ROOT.resolve())
+    return path
+
+
+def _fixture(entry: dict) -> Path:
+    path = _fixture_path(entry["path"])
+    assert _sha256(path) == entry["sha256"]
+    return path
 
 
 def _expected_ref(item: dict) -> tuple[int, int, str]:
@@ -61,7 +76,7 @@ def _overlap(left: dict, right: dict) -> bool:
 
 @pytest.mark.parametrize("case", _lock()["cases"], ids=lambda item: item["case_id"])
 def test_frozen_rm06_cases_match_product_admission(case: dict) -> None:
-    source_path = Path(case["input_path"])
+    source_path = _fixture_path(case["input_path"])
     assert _sha256(source_path) == case["input_sha256"]
     source_text = source_path.read_text(encoding="utf-8")
     chapter = {
@@ -154,7 +169,7 @@ def _run_cmd_extract_without_api(monkeypatch, chapter: dict) -> tuple[list[dict]
 
 def test_cmd_extract_consumes_admitted_targets_without_api(monkeypatch) -> None:
     case = _lock()["cases"][0]
-    source_path = Path(case["input_path"])
+    source_path = _fixture_path(case["input_path"])
     source_text = source_path.read_text(encoding="utf-8")
     note = case["expected_segments"]["author_note"][0]
     note_start, note_end, _ = _expected_ref(note)
@@ -179,7 +194,7 @@ def test_cmd_extract_consumes_admitted_targets_without_api(monkeypatch) -> None:
 
 def test_cmd_extract_holds_uncertain_case_without_api(monkeypatch) -> None:
     case = _lock()["cases"][-1]
-    source_path = Path(case["input_path"])
+    source_path = _fixture_path(case["input_path"])
     chapter = {
         "id": "c01",
         "title": source_path.stem,
@@ -195,13 +210,14 @@ def test_cmd_extract_holds_uncertain_case_without_api(monkeypatch) -> None:
 
 
 def test_admission_does_not_migrate_s1a_or_dht05() -> None:
-    s1a_fixture = T03_ROOT / "t03_s1a_fix_20260817_r01/fixtures/F06_standalone_narrative_section_sentence.txt"
+    auxiliary = _lock()["auxiliary_texts"]
+    s1a_fixture = _fixture(auxiliary["standalone_narrative_section"])
     s1a_text = s1a_fixture.read_text(encoding="utf-8")
     s1a_c1 = {"id": "c01", "title": s1a_fixture.stem, "kind": "draft", "text": s1a_text}
     s1a_result = admission.apply_pre_m3_admission(s1a_c1)
     assert any("第七节课终于结束了。" in item["text"] for item in s1a_result["m3_eligible_targets"])
 
-    dht05 = T03_ROOT / "t03_r03_double_heading_fix_20260817_r01/fixtures/DHT-05_body_between_candidates.txt"
+    dht05 = _fixture(auxiliary["body_between_double_headings"])
     dht05_text = dht05.read_text(encoding="utf-8")
     dht05_c1 = {"id": "c01", "title": dht05.stem, "kind": "draft", "text": dht05_text}
     dht05_result = admission.apply_pre_m3_admission(dht05_c1)
@@ -247,8 +263,7 @@ def _assert_explicit_outline_excluded(chapter: dict) -> dict:
 
 
 def test_ol_01_explicit_outline_is_preserved_but_not_m3_eligible() -> None:
-    source_path = T03_ROOT / "fixtures/frozen_inputs/T02-03.txt"
-    assert _sha256(source_path) == "0d25e4eee78472e7ab2f85d2cab4842e64b4b785d7cb89915dd63558fa35753d"
+    source_path = _fixture(_lock()["auxiliary_texts"]["explicit_outline"])
     _assert_explicit_outline_excluded(_c1(source_path.read_text(encoding="utf-8"), kind="outline"))
 
 
@@ -322,7 +337,7 @@ def test_ol_07_frozen_rm06_regression_is_still_seven_of_seven() -> None:
     cases = _lock()["cases"]
     assert len(cases) == 7
     for case in cases:
-        source_path = Path(case["input_path"])
+        source_path = _fixture_path(case["input_path"])
         chapter = _c1(source_path.read_text(encoding="utf-8"))
         result = admission.apply_pre_m3_admission(chapter)
         assert result["status"] == case["expected_status"]
