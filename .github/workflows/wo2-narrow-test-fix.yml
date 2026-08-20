@@ -39,19 +39,23 @@ jobs:
           cd repo
           python - <<'PY'
           import subprocess
+          from pathlib import Path
 
           patch = subprocess.check_output(
               [
                   "git",
                   "diff",
                   "origin/main",
-                  "--unified=0",
+                  "--unified=3",
                   "--",
                   "tests/test_background_board_upload.py",
               ],
               text=True,
           )
-          required = (
+          source = Path("tests/test_background_board_upload.py").read_text(
+              encoding="utf-8"
+          )
+          required_patch = (
               'def test_current_atomic_board_is_stable_projection()',
               'assert len(records) == totals["records"]',
               'assert len({row["预期ID"] for row in records}) == len(records)',
@@ -59,19 +63,21 @@ jobs:
               'row["当前产品判断"]["层级"] == "附加"',
               'row["现行验收参考"]["需要真实小说"]',
           )
-          for marker in required:
+          for marker in required_patch:
               if marker not in patch:
                   raise SystemExit(f"missing approved marker: {marker}")
-          forbidden = (
+          forbidden_source = (
               'assert len(records) == 127',
-              '"records": 127',
-              '"core": 78',
-              '"bonus": 49',
-              '"needs_real_novel": 44',
+              'assert len({row["预期ID"] for row in records}) == 127',
+              '"records": 127,\n        "core": 78,',
+              '"bonus": 49,',
+              '"needs_real_novel": 44,',
           )
-          for marker in forbidden:
-              if marker in patch:
+          for marker in forbidden_source:
+              if marker in source:
                   raise SystemExit(f"version-locked assertion remains: {marker}")
+          if patch.count("@@") != 1:
+              raise SystemExit("target test file has more than one changed hunk")
           print("PASS_WO2_APPROVED_TEST_FUNCTION_DIFF")
           PY
 
