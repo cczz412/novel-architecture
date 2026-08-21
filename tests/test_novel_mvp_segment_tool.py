@@ -184,6 +184,98 @@ def test_render_map_shows_exact_responsibility_spans_and_read_only_halo(
             assert item["halo_after"] in rendered
 
 
+@pytest.mark.parametrize(
+    ("run_id", "left_clause", "right_clause", "boundary"),
+    [
+        pytest.param(
+            "ZAFR-0019",
+            "不是没去码头，",
+            "而是去了却没见到周宁。",
+            False,
+            id="negation-control",
+        ),
+        pytest.param(
+            "ZAFR-0020",
+            "不是没去码头，",
+            "而是去了却没见到周宁。",
+            True,
+            id="negation-boundary",
+        ),
+        pytest.param(
+            "ZAFR-0021",
+            "只有门铃响三次，",
+            "守卫才开门；否则继续封锁。",
+            False,
+            id="condition-control",
+        ),
+        pytest.param(
+            "ZAFR-0022",
+            "只有门铃响三次，",
+            "守卫才开门；否则继续封锁。",
+            True,
+            id="condition-boundary",
+        ),
+        pytest.param(
+            "ZAFR-0023",
+            "日落前必须送到，",
+            "日落后渡口就会封闭。",
+            False,
+            id="time-control",
+        ),
+        pytest.param(
+            "ZAFR-0024",
+            "日落前必须送到，",
+            "日落后渡口就会封闭。",
+            True,
+            id="time-boundary",
+        ),
+    ],
+)
+def test_scope_words_remain_once_when_they_cross_a_core_halo_boundary(
+    run_id: str,
+    left_clause: str,
+    right_clause: str,
+    boundary: bool,
+) -> None:
+    del run_id
+    text = "甲" * 24 + "。\n" + left_clause + "\n" + right_clause + "\n" + "乙" * 24 + "。"
+    source = {
+        "items": [_chapter(text=text)],
+        "options": {
+            "seg_min_chars": 30 if boundary else 100,
+            "seg_max_chars": 40 if boundary else 200,
+            "halo_chars": 30,
+        },
+    }
+
+    result = segment_tool.execute(copy.deepcopy(source))
+    items = result["items"]
+    normalized = "\n".join(segment.split_paragraphs(text))
+    rendered = segment_tool.render_segment_map(
+        {"source_request": source, "c2_result": result}
+    )
+
+    assert "\n".join(item["text"] for item in items) == normalized
+    assert sum(item["text"].count(left_clause) for item in items) == 1
+    assert sum(item["text"].count(right_clause) for item in items) == 1
+    assert all(
+        item["chapter_revision_ref"]
+        == source["items"][0]["chapter_revision_ref"]
+        for item in items
+    )
+    assert left_clause in rendered and right_clause in rendered
+    if boundary:
+        assert len(items) == 2
+        assert left_clause in items[0]["text"]
+        assert right_clause in items[1]["text"]
+        assert right_clause in items[0]["halo_after"]
+        assert left_clause in items[1]["halo_before"]
+    else:
+        assert len(items) == 1
+        assert left_clause in items[0]["text"]
+        assert right_clause in items[0]["text"]
+
+
 def test_render_accepts_legal_one_segment_short_chapter_and_rejects_empty_c2() -> None:
     source = _request()
     source["items"] = [_chapter(text="短章。", chapter_id="c01")]

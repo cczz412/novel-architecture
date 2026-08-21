@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import io
 import json
@@ -17,7 +18,7 @@ PRODUCT_ROOT = ROOT / "novel-mvp"
 sys.path.insert(0, str(PRODUCT_ROOT))
 try:
     import cli as product_cli
-    from mvp import ingest, input_router, store
+    from mvp import ingest, input_router, store, watermark_candidates
 finally:
     sys.path.pop(0)
 
@@ -88,6 +89,7 @@ def _confirmed(start: int, end: int, role: str, suffix: str) -> dict:
         ("title.txt", "《雾城来信》\n"),
         ("tags.txt", "标签：重生、权谋、女强\n"),
         ("unknown.txt", "身份未确认的材料。\n"),
+        ("table.csv", "名称,说明\n印册,不可焚毁\n"),
     ],
 )
 def test_entry_01_default_file_identity_is_unknown_and_never_c1(
@@ -478,6 +480,252 @@ def test_entry_13c_matching_filename_and_content_chapter_number_still_passes(
     assert report["chapters"] == store.chapters("filename-content-match")
 
 
+def test_entry_13d_repeated_boundary_line_is_only_flagged_and_never_removed(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    _init(tmp_path, monkeypatch, "watermark-conservative")
+    first_text = "第一章 雨夜\n沈砚推门。\n求收藏\n"
+    second_text = "第二章 清晨\n天亮了。\n  求收藏  \n"
+    report = ingest.ingest_files(
+        "watermark-conservative",
+        [
+            str(_write(tmp_path, "c01.txt", first_text)),
+            str(_write(tmp_path, "c02.txt", second_text)),
+        ],
+        material_role="CHAPTER",
+    )
+
+    receipt = report["watermark_receipt"]
+    assert receipt["policy"] == {
+        "candidate_equivalence": "TRIM_OUTER_WHITESPACE_THEN_EXACT",
+        "mechanically_confirmed": False,
+        "blocks_import": False,
+        "mutates_original_text": False,
+        "default_action": "kept_flagged",
+        "derived_clean_copy_requires_author_confirmation": True,
+    }
+    assert receipt["candidate_count"] == 1
+    candidate = receipt["candidates"][0]
+    assert candidate["normalized_text"] == "求收藏"
+    assert candidate["chapter_count"] == 2
+    assert candidate["status"] == "CANDIDATE_ONLY"
+    assert candidate["action"] == "kept_flagged"
+    assert candidate["author_decision"] == "not_requested"
+    assert candidate["signals"]["non_narrative_cue"] is True
+    assert [row["raw_text"] for row in candidate["occurrences"]] == [
+        "求收藏",
+        "  求收藏  ",
+    ]
+    sources = {source["source_id"]: source for source in report["sources"]}
+    for occurrence in candidate["occurrences"]:
+        assert occurrence["coordinate_basis"] == "DECODED_UNICODE_CODEPOINT_V1"
+        source = sources[occurrence["source_id"]]
+        assert (
+            source["decoded_text"][
+                occurrence["source_start"] : occurrence["source_end"]
+            ]
+            == occurrence["raw_text"]
+        )
+    assert [chapter["text"] for chapter in report["chapters"]] == [
+        "沈砚推门。\n求收藏\n",
+        "天亮了。\n  求收藏  \n",
+    ]
+    assert report["chapters"] == store.chapters("watermark-conservative")
+    assert any("只标候选" in warning for warning in report["warnings"])
+
+
+def test_entry_13e_approximate_or_middle_repetition_is_not_upgraded_to_candidate(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    _init(tmp_path, monkeypatch, "watermark-negative-control")
+    first_lines = ["甲一", "甲二", "甲三", "这是正文重复句", "甲五", "甲六", "求收藏"]
+    second_lines = ["乙一", "乙二", "乙三", "这是正文重复句", "乙五", "乙六", "求收藏！"]
+    report = ingest.ingest_files(
+        "watermark-negative-control",
+        [
+            str(_write(tmp_path, "c01.txt", "第一章\n" + "\n".join(first_lines) + "\n")),
+            str(_write(tmp_path, "c02.txt", "第二章\n" + "\n".join(second_lines) + "\n")),
+        ],
+        material_role="CHAPTER",
+    )
+
+    assert report["watermark_receipt"]["candidate_count"] == 0
+    assert report["watermark_receipt"]["candidates"] == []
+    assert not any("疑似水印" in warning for warning in report["warnings"])
+
+
+@pytest.mark.parametrize(
+    ("run_id", "repeat_boundary_line"),
+    [
+        pytest.param("ZAFR-0010", False, id="no-repeat-control"),
+        pytest.param("ZAFR-0011", True, id="repeat-12-treatment"),
+    ],
+)
+def test_entry_13e_zero_api_watermark_differential_keeps_every_source_byte(
+    tmp_path,
+    monkeypatch,
+    run_id: str,
+    repeat_boundary_line: bool,
+) -> None:
+    project = f"watermark-{run_id.lower()}"
+    _init(tmp_path, monkeypatch, project)
+    source_texts = {
+        f"c{index:02d}.txt": (
+            f"第{index}章\n正文第{index}段。\n"
+            + ("求收藏\n" if repeat_boundary_line else f"唯一尾声{index}。\n")
+        )
+        for index in range(1, 13)
+    }
+    report = ingest.ingest_files(
+        project,
+        [
+            str(_write(tmp_path, name, text))
+            for name, text in source_texts.items()
+        ],
+        material_role="CHAPTER",
+    )
+
+    assert len(report["chapters"]) == 12
+    assert report["chapters"] == store.chapters(project)
+    for source in report["sources"]:
+        assert source["decoded_text"] == source_texts[source["source_name"]]
+    receipt = report["watermark_receipt"]
+    if repeat_boundary_line:
+        assert receipt["candidate_count"] == 1
+        candidate = receipt["candidates"][0]
+        assert candidate["normalized_text"] == "求收藏"
+        assert candidate["chapter_count"] == 12
+        assert candidate["occurrence_count"] == 12
+        assert candidate["status"] == "CANDIDATE_ONLY"
+        assert candidate["action"] == "kept_flagged"
+    else:
+        assert receipt["candidate_count"] == 0
+        assert receipt["candidates"] == []
+
+
+def test_entry_13f_author_action_only_creates_derived_clean_sources(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    _init(tmp_path, monkeypatch, "watermark-derived")
+    texts = {
+        "c01.txt": "第一章\n正文甲。\n求收藏\n",
+        "c02.txt": "第二章\n正文乙。\n求收藏\n",
+        "人物备注.txt": "沈砚怕水。\n",
+    }
+    report = ingest.ingest_files(
+        "watermark-derived",
+        [
+            str(_write(tmp_path, name, text))
+            for name, text in texts.items()
+        ],
+        declaration_manifest={
+            name: [
+                _confirmed(
+                    0,
+                    len(text),
+                    "CHAPTER" if name.startswith("c") else "INTRO",
+                    name,
+                )
+            ]
+            for name, text in texts.items()
+        },
+    )
+    receipt = report["watermark_receipt"]
+    source_sha = watermark_candidates.receipt_sha256(report["sources"], receipt)
+    action = {
+        "contract": "M1_WATERMARK_DERIVED_CLEAN_ACTION",
+        "version": "v1",
+        "operation_id": "op-watermark-clean-01",
+        "actor": "author",
+        "intent": "create_derived_clean_copy",
+        "source_receipt_sha256": source_sha,
+        "candidate_ids": [receipt["candidates"][0]["candidate_id"]],
+    }
+    sources_before = copy.deepcopy(report["sources"])
+    receipt_before = copy.deepcopy(receipt)
+    chapters_before = copy.deepcopy(store.chapters("watermark-derived"))
+
+    result = watermark_candidates.derive_clean_copy(
+        report["sources"], receipt, action
+    )
+
+    assert result["status"] == "DERIVED_CLEAN_COPY_READY"
+    assert result["effects"] == {
+        "original_upload_write": 0,
+        "c10_write": 0,
+        "c1_write": 0,
+        "workspace_write": 0,
+    }
+    assert [row["derived_decoded_text"] for row in result["derived_sources"]] == [
+        "第一章\n正文甲。\n",
+        "第二章\n正文乙。\n",
+        "沈砚怕水。\n",
+    ]
+    assert all(
+        row["removed_occurrences"][0]["raw_text"] == "求收藏"
+        for row in result["derived_sources"][:2]
+    )
+    assert result["derived_sources"][2]["removed_occurrences"] == []
+    assert report["sources"] == sources_before
+    assert receipt == receipt_before
+    assert store.chapters("watermark-derived") == chapters_before
+
+
+@pytest.mark.parametrize(
+    ("change", "expected_error"),
+    [
+        ({"actor": "provider"}, "WATERMARK_CLEAN_ACTION_INVALID"),
+        ({"source_receipt_sha256": "0" * 64}, "WATERMARK_SOURCE_RECEIPT_SHA_MISMATCH"),
+        ({"candidate_ids": ["wm-does-not-exist"]}, "WATERMARK_CLEAN_UNKNOWN_CANDIDATE"),
+    ],
+)
+def test_entry_13g_bad_clean_action_fails_without_touching_sources(
+    tmp_path,
+    monkeypatch,
+    change: dict,
+    expected_error: str,
+) -> None:
+    project = f"watermark-clean-{expected_error}"
+    _init(tmp_path, monkeypatch, project)
+    report = ingest.ingest_files(
+        project,
+        [
+            str(_write(tmp_path, "c01.txt", "第一章\n正文甲。\n本章完\n")),
+            str(_write(tmp_path, "c02.txt", "第二章\n正文乙。\n本章完\n")),
+        ],
+        material_role="CHAPTER",
+    )
+    receipt = report["watermark_receipt"]
+    action = {
+        "contract": "M1_WATERMARK_DERIVED_CLEAN_ACTION",
+        "version": "v1",
+        "operation_id": "op-watermark-clean-bad",
+        "actor": "author",
+        "intent": "create_derived_clean_copy",
+        "source_receipt_sha256": watermark_candidates.receipt_sha256(
+            report["sources"], receipt
+        ),
+        "candidate_ids": [receipt["candidates"][0]["candidate_id"]],
+        **change,
+    }
+    before_sources = copy.deepcopy(report["sources"])
+    before_chapters = copy.deepcopy(store.chapters(project))
+
+    with pytest.raises(
+        watermark_candidates.WatermarkCandidateError,
+        match=expected_error,
+    ):
+        watermark_candidates.derive_clean_copy(
+            report["sources"], receipt, action
+        )
+
+    assert report["sources"] == before_sources
+    assert store.chapters(project) == before_chapters
+
+
 @pytest.mark.parametrize(
     "members",
     [
@@ -498,3 +746,130 @@ def test_entry_14_zip_without_terminal_material_blocks_instead_of_succeeding(
     assert store.intake_sources("zip-empty") == []
     assert store.intake_material_units("zip-empty") == []
     assert store.chapters("zip-empty") == []
+
+
+def test_entry_15_csv_preserves_original_bytes_and_strict_decoded_text() -> None:
+    text = '姓名,备注\r\n"沈砚","怕雨,但不怕水"\r\n"阿九","第一行\n第二行"\r\n'
+    payload = b"\xef\xbb\xbf" + text.encode("utf-8")
+
+    items, receipt = input_router.collect_uploads(
+        [input_router.UploadSource("人物表.csv", payload)]
+    )
+
+    assert receipt["status"] == "READY"
+    assert receipt["blocks"] == []
+    assert receipt["sources"][0]["format"] == "csv"
+    assert receipt["sources"][0]["encoding"] == "utf-8-sig"
+    assert receipt["sources"][0]["source_sha256"] == hashlib.sha256(payload).hexdigest()
+    assert items == [
+        {
+            "source_name": "人物表.csv",
+            "raw_bytes": payload,
+            "encoding": "utf-8-sig",
+            "format": "csv",
+            "chapter_no_hint": None,
+        }
+    ]
+    assert items[0]["raw_bytes"].decode(items[0]["encoding"]) == text
+
+
+def test_entry_16_csv_explicit_setting_enters_c10_without_creating_c1(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    project = "csv-setting"
+    _init(tmp_path, monkeypatch, project)
+    text = "技能,代价\r\n影分身,体力减半\r\n"
+    report = ingest.ingest_files(
+        project,
+        [str(_write(tmp_path, "体系.csv", text.encode("utf-8")))],
+        material_role="SETTING",
+    )
+
+    assert report["format_receipt"]["status"] == "READY"
+    assert report["format_receipt"]["sources"][0]["format"] == "csv"
+    assert report["sources"][0]["decoded_text"] == text
+    assert report["sources"][0]["original_bytes_base64"]
+    assert report["material_units"][0]["identity_revisions"][-1]["role"] == "SETTING"
+    assert report["chapters"] == store.chapters(project) == []
+
+
+def test_entry_17_zip_member_csv_keeps_source_chain_and_content() -> None:
+    text = "地点,说明\n旧港,只能夜间进入\n"
+    payload = _zip({"tables/地点.csv": text.encode("utf-8")})
+
+    items, receipt = input_router.collect_uploads(
+        [input_router.UploadSource("设定包.zip", payload)]
+    )
+
+    assert receipt["status"] == "READY"
+    assert items[0]["source_name"] == "设定包.zip/tables/地点.csv"
+    assert items[0]["format"] == "csv"
+    assert items[0]["raw_bytes"].decode(items[0]["encoding"]) == text
+    terminal = receipt["sources"][-1]
+    assert terminal["source_chain"] == ["设定包.zip", "tables/地点.csv"]
+
+
+def test_entry_18_excel_workbook_is_one_explicit_block_not_internal_xml() -> None:
+    workbook = _zip(
+        {
+            "[Content_Types].xml": b"<Types/>",
+            "xl/workbook.xml": b"<workbook/>",
+            "xl/worksheets/sheet1.xml": b"<worksheet/>",
+        }
+    )
+
+    items, receipt = input_router.collect_uploads(
+        [input_router.UploadSource("人物表.xlsx", workbook)]
+    )
+
+    assert items == []
+    assert receipt["status"] == "BLOCKED"
+    assert [row["source_name"] for row in receipt["sources"]] == ["人物表.xlsx"]
+    assert receipt["sources"][0]["format"] == "excel"
+    assert receipt["blocks"][0]["type"] == "unsupported_excel_workbook"
+    assert "CSV UTF-8" in receipt["blocks"][0]["detail"]
+    public_failure = json.dumps(
+        {"sources": receipt["sources"], "blocks": receipt["blocks"]},
+        ensure_ascii=False,
+    )
+    assert "xl/workbook.xml" not in public_failure
+
+
+def test_entry_19_csv_and_excel_batch_failure_preserves_existing_project_state(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    project = "csv-excel-atomic"
+    _init(tmp_path, monkeypatch, project)
+    ingest.ingest_files(
+        project,
+        [str(_write(tmp_path, "旧设定.txt", "城门只在夜间开启。\n"))],
+        material_role="SETTING",
+    )
+    before = {
+        "sources": copy.deepcopy(store.intake_sources(project)),
+        "materials": copy.deepcopy(store.intake_material_units(project)),
+        "projections": copy.deepcopy(store.intake_c1_projections(project)),
+        "chapters": copy.deepcopy(store.chapters(project)),
+    }
+    workbook = _zip({"[Content_Types].xml": b"<Types/>", "xl/workbook.xml": b"<w/>"})
+
+    with pytest.raises(input_router.InputRoutingBlocked) as caught:
+        ingest.ingest_files(
+            project,
+            [
+                str(_write(tmp_path, "新设定.csv", "名称,说明\n印册,不可焚毁\n")),
+                str(_write(tmp_path, "人物表.xlsx", workbook)),
+            ],
+            material_role="SETTING",
+        )
+
+    assert any(
+        row["type"] == "unsupported_excel_workbook"
+        for row in caught.value.receipt["blocks"]
+    )
+    assert store.intake_sources(project) == before["sources"]
+    assert store.intake_material_units(project) == before["materials"]
+    assert store.intake_c1_projections(project) == before["projections"]
+    assert store.chapters(project) == before["chapters"]

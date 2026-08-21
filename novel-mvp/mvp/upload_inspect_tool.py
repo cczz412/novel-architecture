@@ -1,7 +1,8 @@
 """M1 上传安全体检工具。
 
 对象核心只接 ``UploadSource`` 列表，复用现役 ``collect_uploads``
-检查 TXT／MD／DOCX／ZIP。它不建项目、不写 C10／C1，也不判断材料身份。
+检查 TXT／MD／CSV／DOCX／ZIP，并给 Excel 明确转换提示。它不建项目、
+不写 C10／C1，也不判断材料身份。
 """
 
 from __future__ import annotations

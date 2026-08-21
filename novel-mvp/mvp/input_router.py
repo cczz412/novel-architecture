@@ -127,6 +127,10 @@ def _safe_zip_name(name: str) -> bool:
 
 def _format(name: str, payload: bytes) -> str:
     suffix = Path(name).suffix.lower()
+    if suffix == ".csv":
+        return "csv"
+    if suffix in {".xls", ".xlsx", ".xlsm"}:
+        return "excel"
     if zipfile.is_zipfile(io.BytesIO(payload)):
         try:
             with zipfile.ZipFile(io.BytesIO(payload)) as archive:
@@ -373,7 +377,11 @@ class _Collector:
                 self.process(member_name, member_payload, [*chain, normalized], layer)
         if len(self.items) == terminal_count_before and len(self.blocks) == block_count_before:
             receipt["state"] = "blocked"
-            self._block("no_terminal_source", name, "ZIP 中没有可导入的 TXT／MD／DOCX 材料")
+            self._block(
+                "no_terminal_source",
+                name,
+                "ZIP 中没有可导入的 TXT／MD／CSV／DOCX 材料",
+            )
 
     def process(
         self,
@@ -384,7 +392,7 @@ class _Collector:
         encoding_hint: str | None = None,
     ) -> None:
         format_name = _format(name, payload)
-        if format_name in {"txt", "md"}:
+        if format_name in {"txt", "md", "csv"}:
             self._text(name, payload, format_name, chain, encoding_hint)
         elif format_name == "docx":
             self._docx(name, payload, chain)
@@ -393,12 +401,23 @@ class _Collector:
         elif format_name == "doc":
             self._source_receipt(name, payload, format_name, chain)["state"] = "blocked"
             self._block("unsupported_doc", name, "旧 DOC 暂不支持，请另存为 DOCX")
+        elif format_name == "excel":
+            self._source_receipt(name, payload, format_name, chain)["state"] = "blocked"
+            self._block(
+                "unsupported_excel_workbook",
+                name,
+                (
+                    "当前不能直接读取 Excel 工作簿；请把每个需要导入的工作表"
+                    "分别另存为 CSV UTF-8（逗号分隔）后重新上传；本批没有导入"
+                    "任何 Excel 内容"
+                ),
+            )
         elif format_name == "invalid_container":
             self._source_receipt(name, payload, format_name, chain)["state"] = "blocked"
             self._block("invalid_container", name, "ZIP／DOCX 文件头或中央目录不可读")
         else:
             self._source_receipt(name, payload, format_name, chain)["state"] = "blocked"
-            self._block("unsupported_format", name, "只支持 TXT／MD／DOCX／ZIP")
+            self._block("unsupported_format", name, "只支持 TXT／MD／CSV／DOCX／ZIP")
 
     def receipt(self) -> dict[str, Any]:
         return {
@@ -468,7 +487,7 @@ def collect_uploads(
     *,
     limits: dict[str, int] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """M1 核心：纯内存上传对象进入现有 TXT／MD／DOCX／ZIP 路由。"""
+    """M1 核心：纯内存上传对象进入 TXT／MD／CSV／DOCX／ZIP 路由。"""
     if not isinstance(uploads, list) or not uploads:
         raise ValueError("导入至少需要一个 UploadSource")
     collector = _Collector(limits)
