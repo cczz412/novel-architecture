@@ -46,13 +46,18 @@
       "DIRECT_CODE_EVIDENCE": 61,
       "PARTIAL_CODE_EVIDENCE": 43
     },
-    "priority_pending_cz": 15,
+    "priority_pending_cz": 0,
     "local_evidence_pending": 5,
-    "pending_cz_source": 1,
+    "pending_cz_source": 0,
     "old_six_case_requirements": 127,
     "new_addendum_requirements": 15,
     "new_addendum_tests": 90,
-    "legacy_external_lane_only_tests": 42
+    "legacy_external_lane_only_tests": 42,
+    "new_addendum_priority_counts": {
+      "P0": 9,
+      "P1": 3,
+      "P2": 3
+    }
   },
   "requirements": [
     {
@@ -1065,12 +1070,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "TEN_LEDGER_DIRECTORY_REGISTRATION_IS_ONLY_PARTIAL_SLICE",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "PARTIALLY_IMPLEMENTED",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P0",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -1120,7 +1125,10 @@
         "MECHANICAL": 5,
         "NOT_EXECUTABLE": 1
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "AE-AW-N02",
@@ -1179,12 +1187,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "UNIQUE_CONTENT_HOME_ROUTING_SEMANTICS_NOT_FROZEN",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "REQUIREMENT_ONLY",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P1",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -1235,7 +1243,10 @@
         "NOT_EXECUTABLE": 1,
         "MECHANICAL": 1
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "AE-AW-N03",
@@ -1295,12 +1306,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "LIGHT_TO_FULL_LEDGER_UPGRADE_CONTRACT_NOT_FROZEN",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "REQUIREMENT_ONLY",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P1",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -1349,7 +1360,10 @@
       "addendum_execution_tiers": {
         "NOT_EXECUTABLE": 6
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "AE-AW-N04",
@@ -1408,12 +1422,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "GENRE_PACK_PREFILL_IDENTITY_AND_WRITE_RULES_NOT_IMPLEMENTED",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "REQUIREMENT_ONLY",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P2",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -1462,7 +1476,10 @@
       "addendum_execution_tiers": {
         "MECHANICAL": 6
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "AE-M10-B01",
@@ -2536,13 +2553,13 @@
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
-        "AUTHORITATIVE_CHARACTER_TIME_STATE_OWNER_MISSING",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "CHARACTER_TIME_STATE_LEDGER_IMPLEMENTATION_INCOMPLETE",
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "REQUIREMENT_ONLY",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P0",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -2592,7 +2609,10 @@
         "MECHANICAL": 5,
         "NOT_EXECUTABLE": 1
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "AE-M10-N02",
@@ -2657,12 +2677,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "M10_TRUSTED_CHARACTER_STATE_READ_SEAM_INCOMPLETE",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "REQUIREMENT_ONLY",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P0",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -2711,7 +2731,10 @@
       "addendum_execution_tiers": {
         "MECHANICAL": 6
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "AE-M11-B01",
@@ -3777,13 +3800,13 @@
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
-        "RECALL_HANDLE_OWNER_FRESHNESS_AND_CONSUMER_SEAM_INCOMPLETE",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "RECALL_HANDLE_SEAM_IMPLEMENTATION_INCOMPLETE",
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "PARTIALLY_IMPLEMENTED",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P0",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -3832,7 +3855,10 @@
       "addendum_execution_tiers": {
         "MECHANICAL": 6
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "AE-X-B01",
@@ -5077,13 +5103,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "FORMAL_SELF_PRODUCED_LANE_HANDOVER_NOT_COMPLETE",
-        "CHAPTER_FACT_CONFIRMATION_RULE_NOT_FROZEN",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "BLOCKED",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P0",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -5133,7 +5158,10 @@
         "MECHANICAL": 4,
         "NOT_EXECUTABLE": 2
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "AE-X-N02",
@@ -5212,12 +5240,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "LANE_IDENTITY_NOT_CLOSED_ACROSS_C1_C2_C11",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "BLOCKED",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P0",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -5267,7 +5295,10 @@
         "MECHANICAL": 5,
         "SEMANTIC": 1
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "AE-X-N03",
@@ -5348,12 +5379,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "RENDER_PROVENANCE_AND_DIFF_TO_CANDIDATE_PIPELINE_INCOMPLETE",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "PARTIALLY_IMPLEMENTED",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P1",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -5403,7 +5434,10 @@
         "MECHANICAL": 4,
         "SEMANTIC": 2
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "M1-B01",
@@ -7701,10 +7735,14 @@
       "truth_write_level": "CANDIDATE_WRITE",
       "risk_class": "LOW_MEDIUM",
       "source_authority": [
-        "PENDING_CZ_SOURCE"
+        "R14_04_EXTRACTION_MODEL_ATOMIC_TWO_LAYER_STRUCTURE",
+        "R14_GLOSSARY_ADD_021"
       ],
-      "source_text": "来源待补",
-      "source_paths": [],
+      "source_text": "R14 第04章「原子粒度两层结构：事实句升级为 fact_core＋qualifiers（核心断言＋限定词分层）」；R14 词汇表登记为 ADD-021。",
+      "source_paths": [
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/07_GLOSSARY.md"
+      ],
       "input_contracts": [
         "novel-mvp/contracts/C2_SEGMENT.md",
         "novel-mvp/contracts/C3_FACT_CANDIDATE.md"
@@ -7732,10 +7770,7 @@
         "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json#M3-B03"
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R01_FOR_R02",
-      "blocked_by": [
-        "PENDING_CZ_SOURCE",
-        "SOURCE_AUTHORITY_MISSING"
-      ],
+      "blocked_by": [],
       "maturity": "REQUIREMENT_ONLY",
       "maturity_confidence": "LOW_TO_MEDIUM",
       "priority": "P2",
@@ -7748,7 +7783,7 @@
       "acceptance_dataset_recipe": "正文仍存独立 fixture；预期文件只保存标签和引用。对比平铺多句、单大句、fact_core＋qualifiers 三种表示的查询准确、重复率和作者可读性。",
       "acceptance_scoring_dimensions": "核心完整（35%）：核心变化准确且可独立查询\n限定保留（30%）：关键限定全部可追\n去碎片化（20%）：重复和碎句显著下降\n下游收益（15%）：查询或确认负担有可测改善",
       "conflicts": [],
-      "notes": "The source column itself says 来源待补; do not promote fact_core/qualifier shape from a design preference into a formal requirement without authority repair.",
+      "notes": "Source authority repaired via DR-20260821-01 (R14 §04 atomic two-layer structure, glossary ADD-021). R03 board text still reads 来源待补; bake the citation into the next atomic board upversion (R04).",
       "claim_boundary": "CANDIDATE_REVIEWED_NOT_PRODUCT_OR_EXECUTION_AUTHORITY",
       "requirement_text_candidate_before_r03_review": "一条复杂事实可以拆成核心变化和限定条件，既不碎成几十条，也不挤成一大坨",
       "primary_owner_candidate": "M3",
@@ -7774,14 +7809,13 @@
       "source_authority_candidate": [
         "MISSING_SOURCE_AUTHORITY"
       ],
-      "source_exemption": {
-        "status": "PENDING_CZ_SOURCE",
-        "reason": "R14 尚未找到 fact_core＋qualifiers 的唯一上游裁定来源；不得用设计或实现反推产品需求。",
-        "decision_required": "CZ 补 R14 对应段落或新增 ADD 拍板。"
-      },
+      "source_exemption": "RESOLVED_BY_DR-20260821-01",
       "local_evidence_status": "NOT_APPLICABLE",
       "priority_candidate": null,
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "M3-E01",
@@ -9716,14 +9750,13 @@
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
-        "CHAPTER_FACT_CONFIRMATION_RULE_NOT_FROZEN",
         "C11_TO_FACT_LEDGER_FORMAL_SEAM_INCOMPLETE",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "REQUIREMENT_ONLY",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P0",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -9774,7 +9807,10 @@
         "MECHANICAL": 1,
         "SEMANTIC": 1
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "M5-B01",
@@ -12714,12 +12750,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "FULL_OPTIMIZATION_WORKBENCH_NOT_IMPLEMENTED",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "REQUIREMENT_ONLY",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P2",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -12769,7 +12805,10 @@
         "SEMANTIC": 4,
         "MECHANICAL": 2
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "M8-E01",
@@ -14337,13 +14376,13 @@
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
-        "CHOICE_CARD_OWNER_AND_FULL_TEXT_PERSISTENCE_NOT_FROZEN",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "CHOICE_CARD_FULL_TEXT_PERSISTENCE_INCOMPLETE",
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "PARTIALLY_IMPLEMENTED",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P0",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -14393,7 +14432,10 @@
         "NOT_EXECUTABLE": 2,
         "MECHANICAL": 4
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "M8-N06",
@@ -14464,12 +14506,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "SELECTION_ACTION_TO_FORMAL_PLAN_LEDGER_WRITEBACK_INCOMPLETE",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "PARTIALLY_IMPLEMENTED",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P0",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -14519,7 +14561,10 @@
         "MECHANICAL": 5,
         "SEMANTIC": 1
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     },
     {
       "requirement_id": "M9-E01",
@@ -15674,12 +15719,12 @@
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
         "DASHBOARD_METRIC_CONTRACT_NOT_FROZEN",
-        "R03_ADDENDUM_90_ACCEPTANCE_CASES_NOT_YET_DESIGNED",
-        "PRIORITY_AND_WEIGHT_UNASSIGNED"
+        "ADDENDUM_SIX_CASE_TESTS_DESIGNED_NOT_EXECUTED",
+        "ACCEPTANCE_WEIGHT_UNASSIGNED"
       ],
       "maturity": "REQUIREMENT_ONLY",
       "maturity_confidence": "LOW_TO_MEDIUM",
-      "priority": "PENDING_CZ",
+      "priority": "P2",
       "hard_gate": false,
       "core_weight": 0,
       "bonus_score": 0,
@@ -15728,7 +15773,13 @@
       "addendum_execution_tiers": {
         "MECHANICAL": 6
       },
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "decision_refs": [
+        "governance/decision_records/DR-20260821-01.md"
+      ]
     }
+  ],
+  "decision_records": [
+    "governance/decision_records/DR-20260821-01.md"
   ]
 }
