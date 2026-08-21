@@ -129,3 +129,27 @@ D	tests/test_traceability.py	RULE_0_6_REVERSE_DIFFERENCE
 - 票 G 只登记冻结分支 evidence 和拆分完备性，不得重新搬运 runtime／tests。
 
 来源：GitHub Actions（WO5 PR-F）
+
+## 跨环境复核对照（复核方补记，2026-08-21）
+
+上表三连跑读数产生于本票 workflow 的 GitHub Actions 跑机。复核方在另一台云端复核机上对同一 `main`（`5d7639a`）独立复跑全量，读数为：
+
+```text
+69 failed, 2666 passed, 925 skipped, 40 deselected, 1 xfailed（总数一致）
+```
+
+两台机器失败集合互有出入，全部为环境相关：
+
+| 差异方向 | 条数 | 内容 | 原因 |
+|---|---:|---|---|
+| 复核机多 | 55 | `tests/test_experiment_artifact_retrieval.py`（43）＋ `tests/test_external_payload_validator.py`（12） | 依赖登记在外置登记册的本机外置对象，复核机不持有 |
+| 复核机少 | 5 | DeepSeek key-loader（2）＋供应商通道部分条目（3） | 该机工作树／环境恰好满足这些检查 |
+| 两机一致 | 14 | 治理口径漂移、仓库布局、T5 状态、测试影响、tool registry 等 | 与上表登记的域分类吻合 |
+
+### 权威口径（以此为准）
+
+1. **novel_mvp 产品域**：两台机器均 `1574 passed` 全绿——产品域基线**环境无关**，这是本回执唯一跨机成立的单一数字。
+2. **非 novel_mvp 债面是环境相关集合**：任何单一失败总数（19 或 69）只对声明的跑机成立；跨机引用一律按「域分类＋环境身份」记账，禁止把某台机器的总数当全仓真值。
+3. 收口归属：外置对象类与密钥类失败归工单 6／本地 Codex 环境；治理口径漂移与 tool registry 归工单 7。
+
+来源：Cursor 云端复核方独立实测
