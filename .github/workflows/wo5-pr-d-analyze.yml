@@ -1,11 +1,10 @@
-name: WO5 PR-D shared-runtime analysis
+name: WO5 PR-D shared-runtime selection snapshot
 
 on:
   pull_request:
     branches:
       - main
     types:
-      - opened
       - synchronize
       - reopened
 
@@ -13,12 +12,12 @@ permissions:
   contents: write
 
 jobs:
-  analyze:
+  select:
     if: ${{ github.event.pull_request.head.ref == 'chatgpt/wo5-pr-d-shared-runtime-20260821' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
-      - name: Clone candidate and fetch authorities
+      - name: Clone candidate
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: ${{ github.head_ref }}
@@ -29,21 +28,14 @@ jobs:
           cd repo
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin main:refs/remotes/origin/main
-          git fetch origin \
-            codex/module-runtime-foundation-20260819-r01:refs/remotes/origin/wo5-source
-          test "$(git rev-parse origin/main)" = \
-            "c533bbada4697bf9af2cf7f245bf4c08069e313f"
-          test "$(git rev-parse refs/remotes/origin/wo5-source)" = \
-            "cc793c4719fb6470946c70e744f463147989547b"
 
-      - name: Analyze source runtime graph and requirement owners
+      - name: Build and persist compact selection snapshot
         run: |
           set -euo pipefail
           cd repo
-          python -m py_compile .github/wo5_pr_d_analyze.py
-          python .github/wo5_pr_d_analyze.py >/tmp/wo5-pr-d-analysis.log
-          python -m json.tool .github/wo5_pr_d_analysis.json >/dev/null
-          git add .github/wo5_pr_d_analysis.json
-          git commit -m "ci: persist PR-D analysis snapshot [skip ci]"
+          python -m py_compile .github/wo5_pr_d_select.py
+          python .github/wo5_pr_d_select.py
+          python -m json.tool .github/wo5_pr_d_selection.json >/dev/null
+          git add .github/wo5_pr_d_selection.json
+          git commit -m "ci: persist PR-D selection snapshot [skip ci]"
           git push origin "HEAD:${{ github.head_ref }}"
