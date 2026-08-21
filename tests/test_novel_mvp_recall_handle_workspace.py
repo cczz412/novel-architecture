@@ -1,9 +1,7 @@
-# PR-D 临时收窄版：原版冻结在 cc793c4 的同一路径。
-# PR-E4 带入 packer_tool／packer_workspace 后，必须用 cc793c4 原版
-# 逐字节还原本文件。
 from __future__ import annotations
 
 import copy
+import inspect
 import sys
 from pathlib import Path
 
@@ -14,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_ROOT = ROOT / "novel-mvp"
 sys.path.insert(0, str(PRODUCT_ROOT))
 try:
-    from mvp import recall_handle_workspace
+    from mvp import packer_tool, packer_workspace, recall_handle_workspace
     from mvp.workspace import (
         OperationConflictError,
         ProjectNotFoundError,
@@ -48,6 +46,34 @@ def _binding(workspace, state: dict, *, object_ref: str = "state-01") -> dict:
             "sha256": state["sha256"],
         },
     )
+
+
+def _material(handle: str) -> dict:
+    return {
+        "id": "MAY-01",
+        "estimated_tokens": 20,
+        "actuality_class": "CURRENT_FACT_OR_STATE",
+        "obligation_tier": "MAY",
+        "selection_rank": 1,
+        "task_relation": "与当前合成任务相关",
+        "recall_disposition": "RETRIEVABLE",
+        "recall_handle": handle,
+        "unresolved_reason": None,
+    }
+
+
+def _request(handle: str) -> dict:
+    material = _material(handle)
+    return {
+        "task_id": "M11-RECALL-SYNTHETIC",
+        "task_actuality_scope": "CURRENT_TRUTH_REQUIRED",
+        "budget_tokens": 10,
+        "token_estimator": {
+            "identity": packer_tool.ESTIMATOR_IDENTITY,
+            "estimates": {material["id"]: material["estimated_tokens"]},
+        },
+        "candidate_materials": [material],
+    }
 
 
 def test_register_resolve_restart_and_idempotent_replay(tmp_path: Path) -> None:
@@ -204,3 +230,122 @@ def test_failed_rebind_bad_version_and_operation_conflict_are_zero_write(
             expected_registry_version=0,
         )
     assert workspace.read("recall_handles") == before
+
+
+def test_packer_author_safe_result_hides_internal_handle(
+    tmp_path: Path,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "principal-a", "M11"
+    )
+    binding = _binding(workspace, _source(workspace))
+    recall_handle_workspace.register_bindings(
+        workspace,
+        operation_id="op-register",
+        bindings=[binding],
+        expected_registry_version=0,
+    )
+    request = _request(binding["handle"])
+
+    result = packer_workspace.execute(workspace, request)
+    assert result == packer_tool.execute(copy.deepcopy(request))
+    assert packer_workspace.resolve_for_machine(workspace, binding["handle"]) == binding
+    author_text = packer_tool.render_author_safe(result)
+    assert binding["handle"] not in author_text
+    assert "MAY-01" not in author_text
+    assert "已阻断 1 条" in author_text
+
+
+def test_packer_missing_handle_is_rejected(tmp_path: Path) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "principal-a", "M11"
+    )
+
+    with pytest.raises(
+        packer_workspace.PackerWorkspaceError,
+        match="M11_RECALL_HANDLE_NOT_FOUND",
+    ):
+        packer_workspace.execute(workspace, _request(MISSING_HANDLE))
+
+
+def test_packer_stale_handle_is_rejected(tmp_path: Path) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "principal-a", "M11"
+    )
+    source = _source(workspace)
+    binding = _binding(workspace, source)
+    recall_handle_workspace.register_bindings(
+        workspace,
+        operation_id="op-register-stale",
+        bindings=[binding],
+        expected_registry_version=0,
+    )
+    workspace.commit(
+        "op-source-advance",
+        {"state": source["payload"]},
+        {"state": source["version"]},
+    )
+
+    with pytest.raises(
+        packer_workspace.PackerWorkspaceError,
+        match="M11_RECALL_HANDLE_STALE",
+    ):
+        packer_workspace.execute(workspace, _request(binding["handle"]))
+
+
+def test_source_change_during_pack_rejects_without_rewriting_registry(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "principal-a", "M11"
+    )
+    source = _source(workspace)
+    binding = _binding(workspace, source)
+    recall_handle_workspace.register_bindings(
+        workspace,
+        operation_id="op-register",
+        bindings=[binding],
+        expected_registry_version=0,
+    )
+    registry_before = workspace.read("recall_handles")
+    real_execute = packer_tool.execute
+
+    def execute_and_advance(request: dict) -> dict:
+        result = real_execute(request)
+        current = workspace.read("state")
+        workspace.commit(
+            "op-state-race",
+            {"state": current["payload"]},
+            {"state": current["version"]},
+        )
+        return result
+
+    monkeypatch.setattr(packer_tool, "execute", execute_and_advance)
+    with pytest.raises(
+        packer_workspace.PackerWorkspaceError,
+        match="M11_RECALL_HANDLE_STALE",
+    ):
+        packer_workspace.execute(workspace, _request(binding["handle"]))
+    assert workspace.read("recall_handles") == registry_before
+
+
+def test_public_entrypoints_require_bound_workspace_not_paths(tmp_path: Path) -> None:
+    with pytest.raises(
+        recall_handle_workspace.RecallHandleWorkspaceError,
+        match="AUTHOR_WORKSPACE_HANDLE_REQUIRED",
+    ):
+        recall_handle_workspace.resolve_handle(
+            Path("/tmp/not-a-workspace"), MISSING_HANDLE
+        )
+    with pytest.raises(
+        packer_workspace.PackerWorkspaceError,
+        match="AUTHOR_WORKSPACE_HANDLE_REQUIRED",
+    ):
+        packer_workspace.execute(
+            Path("/tmp/not-a-workspace"), _request(MISSING_HANDLE)
+        )
+    assert list(inspect.signature(packer_workspace.execute).parameters) == [
+        "workspace",
+        "request",
+    ]

@@ -370,4 +370,3 @@ def test_cli_user_planning_action_uses_unmodified_synthetic_input(tmp_path: Path
     assert _read_json(root / "plan.json")["reconciliation_edges"][0][
         "chapter_revision_ref"
     ] == _revision_ref()
-
