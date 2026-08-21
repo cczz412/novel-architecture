@@ -10,7 +10,7 @@ on:
       - reopened
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   analyze:
@@ -27,6 +27,8 @@ jobs:
           git clone --branch "$BRANCH_NAME" --single-branch \
             "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
           cd repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin main:refs/remotes/origin/main
           git fetch origin \
             codex/module-runtime-foundation-20260819-r01:refs/remotes/origin/wo5-source
@@ -40,4 +42,8 @@ jobs:
           set -euo pipefail
           cd repo
           python -m py_compile .github/wo5_pr_d_analyze.py
-          python .github/wo5_pr_d_analyze.py
+          python .github/wo5_pr_d_analyze.py >/tmp/wo5-pr-d-analysis.log
+          python -m json.tool .github/wo5_pr_d_analysis.json >/dev/null
+          git add .github/wo5_pr_d_analysis.json
+          git commit -m "ci: persist PR-D analysis snapshot [skip ci]"
+          git push origin "HEAD:${{ github.head_ref }}"
