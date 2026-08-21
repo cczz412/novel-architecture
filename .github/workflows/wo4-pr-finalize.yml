@@ -1,0 +1,251 @@
+name: WO4 PR finalization
+
+on:
+  push:
+    branches:
+      - chatgpt/clean-baseline-wo4-design-currentness-20260821
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: wo4-design-currentness
+  cancel-in-progress: false
+
+jobs:
+  verify-finalize:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Clone latest branch and pin main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git clone --branch "$BRANCH_NAME" --single-branch \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
+          cd repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main:refs/remotes/origin/main
+          MAIN_SHA="$(git rev-parse origin/main)"
+          case "$MAIN_SHA" in
+            c79bd0a*) ;;
+            *) echo "unexpected main tip: $MAIN_SHA"; exit 1 ;;
+          esac
+          test -f novel-mvp/design/design_registry.json
+          test -f tools/check_design_currentness.py
+          test -f tests/test_design_currentness.py
+
+      - name: Install locked runner
+        run: python -m pip install --disable-pip-version-check uv
+
+      - name: Run final checkers, tests and Ruff
+        run: |
+          set -euo pipefail
+          cd repo
+          uv run --locked python tools/check_design_currentness.py \
+            --format both --json-out /tmp/wo4-design.json --check
+          uv run --locked python tools/check_current_freshness.py \
+            --format both --json-out /tmp/wo4-freshness.json --check
+          uv run --locked pytest -q -p no:cacheprovider \
+            tests/test_design_currentness.py \
+            tests/test_current_freshness.py \
+            tests/test_traceability.py | tee /tmp/wo4-pytest.log
+          uv run --locked ruff check \
+            tools/check_design_currentness.py \
+            tests/test_design_currentness.py | tee /tmp/wo4-ruff.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          design = json.loads(Path('/tmp/wo4-design.json').read_text(encoding='utf-8'))
+          fresh = json.loads(Path('/tmp/wo4-freshness.json').read_text(encoding='utf-8'))
+          assert design['status'] == 'PASS'
+          assert design['errors'] == []
+          assert design['summary']['design_count'] == design['summary']['unique_path_count']
+          assert design['summary']['pr_c_successor_count'] == 4
+          assert fresh['status'] == 'PASS'
+          assert fresh['errors'] == []
+          assert not [
+              item for item in fresh['warnings']
+              if item.get('code') == 'PLANNED_PATH_NOT_MATERIALIZED'
+              and item.get('path') == 'novel-mvp/design/design_registry.json'
+          ]
+          stats = {
+              'design_count': design['summary']['design_count'],
+              'unique_path_count': design['summary']['unique_path_count'],
+              'status_counts': design['summary']['status_counts'],
+              'default_route_count': design['summary']['default_route_count'],
+              'warning_count': design['summary']['warning_count'],
+              'warning_counts': design['summary']['warning_counts'],
+              'pr_c_successor_count': design['summary']['pr_c_successor_count'],
+              'freshness_warning_count': fresh['summary']['warning_count'],
+          }
+          Path('/tmp/wo4-stats.json').write_text(
+              json.dumps(stats, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          print('WO4_FINAL_STATS=' + json.dumps(stats, ensure_ascii=False, sort_keys=True))
+          PY
+
+      - name: Remove temporary helpers and prove exact final scope
+        run: |
+          set -euo pipefail
+          cd repo
+          git rm -f --ignore-unmatch \
+            .github/wo4_apply.py \
+            .github/workflows/wo4-apply.yml \
+            .github/workflows/wo4-diagnostic.yml \
+            .github/workflows/wo4-final-verify.yml \
+            .github/workflows/wo4-pr-finalize.yml
+          rmdir .github/workflows .github 2>/dev/null || true
+          git add \
+            novel-mvp/design/INDEX.md \
+            novel-mvp/design/design_registry.json \
+            governance/current_pointers.json \
+            tools/check_design_currentness.py \
+            tests/test_design_currentness.py
+          python - <<'PY'
+          import subprocess
+
+          changed = subprocess.check_output(
+              ['git', 'diff', '--cached', '--name-only', 'origin/main'], text=True
+          ).splitlines()
+          allowed = {
+              'novel-mvp/design/INDEX.md',
+              'novel-mvp/design/design_registry.json',
+              'governance/current_pointers.json',
+              'tools/check_design_currentness.py',
+              'tests/test_design_currentness.py',
+          }
+          if set(changed) != allowed:
+              raise SystemExit(
+                  f'WO4 final scope mismatch: missing={sorted(allowed - set(changed))}; '
+                  f'extra={sorted(set(changed) - allowed)}'
+              )
+          print(f'PASS_WO4_FINAL_SCOPE changed_files={len(changed)}')
+          PY
+          git diff --cached --check
+
+      - name: Commit and push final clean branch
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          cd repo
+          git commit -m "ci: finalize verified WO4 PR [skip ci]"
+          git push origin "HEAD:${BRANCH_NAME}"
+
+      - name: Update PR description, comment, and mark ready
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          cd repo
+          BASE_SHA="$(git rev-parse origin/main)"
+          HEAD_SHA="$(git rev-parse HEAD)"
+          export BASE_SHA HEAD_SHA
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          stats = json.loads(Path('/tmp/wo4-stats.json').read_text(encoding='utf-8'))
+          counts = stats['status_counts']
+          body = f'''## 工单
+
+干净基线重构工单 4：设计稿 currentness 登记。
+
+## 当前结论
+
+`READY_FOR_REVIEW`
+
+main 上 `novel-mvp/design/` 的设计稿已经逐份登记 currentness；INDEX 与机器 registry 对齐，并加入“设计先于 runtime”的就近重写规则。状态只说明默认施工路由，不证明实现完成、语义质量或作者可用性。
+
+## 版本身份
+
+- Base：`{os.environ['BASE_SHA']}`
+- Head：`{os.environ['HEAD_SHA']}`
+- 最终改动文件数：`5`
+- 临时 `.github/` helper：已全部退出最终差异
+
+## Status 统计
+
+```text
+CURRENT={counts.get('CURRENT', 0)}
+WAITING_REWRITE={counts.get('WAITING_REWRITE', 0)}
+HISTORICAL={counts.get('HISTORICAL', 0)}
+SUPERSEDED={counts.get('SUPERSEDED', 0)}
+TOTAL={stats['design_count']}
+DEFAULT_ROUTES={stats['default_route_count']}
+EXPECTED_PR_C_SUCCESSORS={stats['pr_c_successor_count']}
+```
+
+## 已落地
+
+- 新增 `novel-mvp/design/design_registry.json`，覆盖 design 目录下每份 Markdown 设计稿，路径唯一；
+- 每份登记 `status`、`superseded_by`、默认路由、R14 关系和判定证据；
+- 冻结分支 `cc793c4` 的 4 份预期后继只登记为 `WORK_ORDER_5_PR_C`，在 PR-C 合入 main 前不冒充 current；
+- `novel-mvp/design/INDEX.md` 与 registry 同步，双方状态一致；
+- 就近重写规则：哪个模块要开工，先把对应设计稿升到 R14 口径并登记为 `CURRENT`，才准动代码；
+- 新增只读 `tools/check_design_currentness.py` 与定向测试；
+- `governance/current_pointers.json` 已把 design registry 从计划路径转为在册。
+
+## 验收自证
+
+- [x] 每份设计稿在 registry 有唯一 status；
+- [x] `uv run --locked python tools/check_design_currentness.py --check`：PASS，0 errors；
+- [x] 默认路由没有指向 `WAITING_REWRITE`／`HISTORICAL`／`SUPERSEDED`；
+- [x] `uv run --locked python tools/check_current_freshness.py --check`：PASS，0 errors；
+- [x] design registry 的 `PLANNED_PATH_NOT_MATERIALIZED` 警告已消失；
+- [x] 定向 pytest 全绿；
+- [x] Ruff：All checks passed；
+- [x] 没有重写任何设计稿正文，也没有修改 runtime、合同、需求、R14／R03、`work/` 或 `references/cloud-supervision/`。
+
+## Checker WARNING
+
+- 总数：`{stats['warning_count']}`
+- 分类：`{json.dumps(stats['warning_counts'], ensure_ascii=False, sort_keys=True)}`
+
+这些 WARNING 只是逐份列出未作为默认路由的 `WAITING_REWRITE`／`HISTORICAL`／`SUPERSEDED` 设计，不影响 checker PASS。
+
+## 最终改动文件清单
+
+```text
+governance/current_pointers.json
+novel-mvp/design/INDEX.md
+novel-mvp/design/design_registry.json
+tests/test_design_currentness.py
+tools/check_design_currentness.py
+```
+
+## 合并后
+
+停下等待 CZ 合并。不要自动开工单 5。
+'''
+          Path('/tmp/wo4-pr-body.md').write_text(body, encoding='utf-8')
+
+          comment = f'''## WO4 云端执行回执
+
+- Base：`{os.environ['BASE_SHA']}`
+- Head：`{os.environ['HEAD_SHA']}`
+- Designs：`{stats['design_count']}`，路径唯一；status：`{json.dumps(counts, ensure_ascii=False, sort_keys=True)}`
+- 默认路由：`{stats['default_route_count']}`；预期 PR-C 后继：`{stats['pr_c_successor_count']}`
+- Design checker：PASS，0 errors；Freshness：PASS，0 errors
+- 定向 pytest：PASS；Ruff：PASS
+- 最终 scope：5 个文件；临时 `.github/` helper 已清除
+
+状态：`READY_FOR_CZ_REVIEW_AND_MERGE`。按指令已停下，不启动工单 5。
+'''
+          Path('/tmp/wo4-pr-comment.md').write_text(comment, encoding='utf-8')
+          PY
+          gh pr edit 13 --repo "$GITHUB_REPOSITORY" --body-file /tmp/wo4-pr-body.md
+          gh api --method POST \
+            "repos/${GITHUB_REPOSITORY}/issues/13/comments" \
+            -f body="$(cat /tmp/wo4-pr-comment.md)"
+          gh pr ready 13 --repo "$GITHUB_REPOSITORY" || true
