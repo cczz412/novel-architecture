@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-pointers-v1",
-  "updated_at": "2026-08-21T04:34:14+08:00",
+  "updated_at": "2026-08-21T06:10:00+08:00",
   "authority": {
     "role": "当前版本、路径、候选身份和后续登记的唯一机器索引",
     "does_not_replace": [
@@ -81,17 +81,25 @@
     {
       "pointer_id": "atomic_test_design",
       "status": "ACTIVE_CURRENT",
-      "version": "R01_FOR_R02_127",
+      "version": "R03_COMPOSITE_127_PLUS_15",
       "path": "references/atomic-expectations/TEST_DESIGN_CURRENT.json",
-      "covered_expectations": 127,
-      "designed_test_cases": 762,
-      "scope_status": "CURRENT_PARTIAL_COVERAGE_FOR_R03",
+      "covered_expectations": 142,
+      "designed_test_cases": 852,
+      "scope_status": "CURRENT_ADVISORY_DESIGN_FULL_R03_COVERAGE_NOT_EXECUTED",
       "source": {
         "branch": "codex/module-runtime-foundation-20260819-r01",
         "commit": "cc793c4719fb6470946c70e744f463147989547b",
         "admitted_by_work_order": 2
       },
-      "boundary": "只覆盖 R02 的 127 条／762 例；不能冒充覆盖 R03 新增 15 条，新增 90 例留给工单 3。"
+      "boundary": "旧 127×6 与新增 15×6 身份分开；组合覆盖仍是设计，不是执行证明。",
+      "legacy_suite": {
+        "requirements": 127,
+        "small_tests": 762
+      },
+      "r03_addendum": {
+        "requirements": 15,
+        "small_tests": 90
+      }
     },
     {
       "pointer_id": "design_registry",
@@ -102,11 +110,16 @@
     },
     {
       "pointer_id": "capability_traceability",
-      "status": "PLANNED",
-      "version": null,
+      "status": "CANDIDATE_REVIEWED",
+      "version": "R01",
       "path": "governance/capability_traceability.json",
-      "admission_work_order": 3,
-      "boundary": "142/142 候选映射不等于实现完成。"
+      "record_count": 142,
+      "unassigned_count": 0,
+      "checker_path": "tools/check_traceability.py",
+      "checker_registry_status": "PENDING_WORK_ORDER_7",
+      "authority": "ADVISORY_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
+      "boundary": "142/142 候选追踪已复核，不等于 142 条实现完成或产品拍板。",
+      "admitted_by_work_order": 3
     },
     {
       "pointer_id": "module_runtime_candidate",
