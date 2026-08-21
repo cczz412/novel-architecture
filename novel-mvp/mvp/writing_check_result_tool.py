@@ -84,6 +84,13 @@ RESULT_KEYS = {
 }
 PLANNED_CATEGORIES = {"covered", "mismatch", "missing", "unknown"}
 ALL_CATEGORIES = {*PLANNED_CATEGORIES, "unplanned"}
+FINDING_CATEGORIES = {"mismatch", "missing", "unknown"}
+EVIDENCE_TEXT_KINDS = {
+    "missing_without_quote",
+    "unknown_without_quote",
+    "unknown_with_quote",
+    "quoted",
+}
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
 
 
@@ -138,6 +145,75 @@ def _sha(value: object, code: str) -> str:
     if not isinstance(value, str) or SHA256_RE.fullmatch(value) is None:
         _fail(code)
     return value
+
+
+def evidence_text_kind(judgment: object) -> str:
+    """按正式 judgment 字段区分引文状态，不从 explanation 猜原因。"""
+    if not isinstance(judgment, dict) or set(judgment) != JUDGMENT_KEYS:
+        _fail("JUDGMENT_FIELDS_INVALID")
+    category = judgment.get("category")
+    requirement_ref = judgment.get("requirement_ref")
+    quote = judgment.get("evidence_quote")
+    explanation = judgment.get("explanation")
+    if category not in ALL_CATEGORIES or not isinstance(explanation, str):
+        _fail("JUDGMENT_VALUE_INVALID")
+    if category == "unplanned":
+        if requirement_ref is not None:
+            _fail("JUDGMENT_REQUIREMENT_REF_INVALID")
+    elif not isinstance(requirement_ref, str) or not requirement_ref:
+        _fail("JUDGMENT_REQUIREMENT_REF_INVALID")
+    if quote is None:
+        if category == "missing":
+            return "missing_without_quote"
+        if category == "unknown":
+            return "unknown_without_quote"
+        _fail("JUDGMENT_EVIDENCE_QUOTE_INVALID")
+    if not isinstance(quote, str) or not quote or not quote.strip():
+        _fail("JUDGMENT_EVIDENCE_QUOTE_INVALID")
+    if category == "missing":
+        _fail("JUDGMENT_EVIDENCE_QUOTE_INVALID")
+    if category == "unknown":
+        return "unknown_with_quote"
+    return "quoted"
+
+
+def finding_ref(check_result_ref: object, judgment: object) -> str:
+    """按正式公式派生 finding 引用；null 引文固定贡献零个 UTF-8 字节。"""
+    if (
+        not isinstance(check_result_ref, str)
+        or not check_result_ref
+        or "\x00" in check_result_ref
+    ):
+        _fail("CHECK_RESULT_REF_INVALID")
+    kind = evidence_text_kind(judgment)
+    assert isinstance(judgment, dict)
+    category = judgment["category"]
+    if category not in FINDING_CATEGORIES:
+        _fail("JUDGMENT_NOT_ACTIONABLE_FINDING")
+    requirement_ref = judgment["requirement_ref"]
+    explanation = judgment["explanation"]
+    if (
+        not isinstance(requirement_ref, str)
+        or "\x00" in requirement_ref
+        or "\x00" in explanation
+    ):
+        _fail("JUDGMENT_FINDING_IDENTITY_INVALID")
+    quote = judgment["evidence_quote"]
+    if kind in {"missing_without_quote", "unknown_without_quote"}:
+        quote_bytes = b""
+    else:
+        assert isinstance(quote, str)
+        quote_bytes = quote.encode("utf-8")
+    digest_input = b"\x00".join(
+        [
+            category.encode("utf-8"),
+            requirement_ref.encode("utf-8"),
+            quote_bytes,
+            explanation.encode("utf-8"),
+        ]
+    )
+    digest = hashlib.sha256(digest_input).hexdigest()[:12]
+    return f"{check_result_ref}#finding:{digest}"
 
 
 def _validated_package(value: object) -> dict[str, Any]:
@@ -277,13 +353,21 @@ def _validated_judgments(
             seen_planned.append(requirement_ref)
 
         if category in {"covered", "mismatch", "unplanned"}:
-            if not isinstance(quote, str) or not quote or quote not in work_text:
+            if (
+                not isinstance(quote, str)
+                or not quote
+                or not quote.strip()
+                or quote not in work_text
+            ):
                 _fail(f"EVIDENCE_QUOTE_NOT_IN_WORK_TEXT:{index}")
         elif category == "missing":
             if quote is not None:
                 _fail(f"MISSING_EVIDENCE_QUOTE_MUST_BE_NULL:{index}")
         elif quote is not None and (
-            not isinstance(quote, str) or not quote or quote not in work_text
+            not isinstance(quote, str)
+            or not quote
+            or not quote.strip()
+            or quote not in work_text
         ):
             _fail(f"UNKNOWN_EVIDENCE_QUOTE_NOT_IN_WORK_TEXT:{index}")
         judgments.append(copy.deepcopy(raw))

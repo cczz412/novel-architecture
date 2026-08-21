@@ -10,8 +10,14 @@ from __future__ import annotations
 import copy
 from typing import Any, NoReturn
 
-from . import writing_check_result_tool
-from .workspace import AuthorWorkspace
+from . import (
+    chapter_slot_snapshot_tool,
+    chapter_slot_workspace,
+    work_draft_workspace,
+    writing_check_package_tool,
+    writing_check_result_tool,
+)
+from .workspace import OPERATION_ID_RE, AuthorWorkspace
 
 
 LOGICAL_KEY = "writing_check_results"
@@ -19,6 +25,19 @@ STORE_SCHEMA = "writing-check-results-v1"
 STORE_KEYS = {"schema", "results"}
 ENTRY_KEYS = {"result", "result_sha256", "unknown_overlays"}
 WORKSPACE_ENTRY_KEYS = {"logical_key", "version", "sha256", "payload"}
+UNKNOWN_ADJUDICATION_RECEIPT_KEYS = {
+    "contract",
+    "version",
+    "adjudication_ref",
+    "operation_id",
+    "actor",
+    "check_result_ref",
+    "finding_ref",
+    "decision",
+    "basis",
+    "status",
+}
+UNKNOWN_ADJUDICATION_DECISIONS = {"covered", "missing", "mismatch"}
 
 
 class WritingCheckResultWorkspaceError(writing_check_result_tool.WritingCheckResultError):
@@ -56,6 +75,36 @@ def _validated_stored_result(value: object) -> dict[str, Any]:
     return candidate
 
 
+def _validated_unknown_overlay(
+    value: object,
+    *,
+    check_result_ref: str,
+    unknown_finding_refs: set[str],
+) -> dict[str, Any]:
+    if not isinstance(value, dict) or set(value) != UNKNOWN_ADJUDICATION_RECEIPT_KEYS:
+        _fail("UNKNOWN_ADJUDICATION_RECEIPT_INVALID")
+    operation_id = value.get("operation_id")
+    finding_ref = value.get("finding_ref")
+    if (
+        value.get("contract")
+        != "WRITING_DESK_CHECK_UNKNOWN_ADJUDICATION_RECEIPT"
+        or value.get("version") != "v1"
+        or not isinstance(operation_id, str)
+        or OPERATION_ID_RE.fullmatch(operation_id) is None
+        or value.get("actor") != "author"
+        or value.get("check_result_ref") != check_result_ref
+        or not isinstance(finding_ref, str)
+        or finding_ref not in unknown_finding_refs
+        or value.get("decision") not in UNKNOWN_ADJUDICATION_DECISIONS
+        or value.get("basis") != "self_reported"
+        or value.get("status") != "recorded"
+        or value.get("adjudication_ref")
+        != f"{finding_ref}#adjudication-{operation_id}"
+    ):
+        _fail("UNKNOWN_ADJUDICATION_RECEIPT_INVALID")
+    return copy.deepcopy(value)
+
+
 def _validated_entry(value: object, *, check_result_ref: str) -> dict[str, Any]:
     if not isinstance(value, dict) or set(value) != ENTRY_KEYS:
         _fail("RESULTS_STORE_INVALID")
@@ -72,10 +121,30 @@ def _validated_entry(value: object, *, check_result_ref: str) -> dict[str, Any]:
     overlays = value.get("unknown_overlays")
     if not isinstance(overlays, list):
         _fail("RESULTS_STORE_INVALID")
+    unknown_finding_refs = {
+        writing_check_result_tool.finding_ref(check_result_ref, judgment)
+        for judgment in result["judgments"]
+        if judgment["category"] == "unknown"
+    }
+    validated_overlays = [
+        _validated_unknown_overlay(
+            overlay,
+            check_result_ref=check_result_ref,
+            unknown_finding_refs=unknown_finding_refs,
+        )
+        for overlay in overlays
+    ]
+    operation_ids = [overlay["operation_id"] for overlay in validated_overlays]
+    finding_refs = [overlay["finding_ref"] for overlay in validated_overlays]
+    if (
+        len(operation_ids) != len(set(operation_ids))
+        or len(finding_refs) != len(set(finding_refs))
+    ):
+        _fail("UNKNOWN_ADJUDICATION_RECEIPT_DUPLICATE")
     return {
         "result": result,
         "result_sha256": result_sha256,
-        "unknown_overlays": copy.deepcopy(overlays),
+        "unknown_overlays": validated_overlays,
     }
 
 
@@ -92,6 +161,13 @@ def _validated_store(value: object) -> dict[str, Any]:
         if not isinstance(raw_ref, str) or not raw_ref:
             _fail("RESULTS_STORE_INVALID")
         results[raw_ref] = _validated_entry(raw_entry, check_result_ref=raw_ref)
+    operation_ids = [
+        overlay["operation_id"]
+        for entry in results.values()
+        for overlay in entry["unknown_overlays"]
+    ]
+    if len(operation_ids) != len(set(operation_ids)):
+        _fail("UNKNOWN_ADJUDICATION_OPERATION_ID_DUPLICATE")
     return {"schema": STORE_SCHEMA, "results": results}
 
 
@@ -150,6 +226,110 @@ def _regenerate_formal_result(
     return regenerated
 
 
+def _read_current_draft(workspace: AuthorWorkspace) -> dict[str, Any]:
+    try:
+        current = work_draft_workspace.read_current_work_draft(workspace)
+    except work_draft_workspace.WorkDraftWorkspaceError as exc:
+        raise WritingCheckResultWorkspaceError("CURRENT_WORK_DRAFT_INVALID") from exc
+    if current.get("status") != "READY" or current.get("current_work_draft") is None:
+        _fail("CURRENT_WORK_DRAFT_REQUIRED")
+    return current
+
+
+def _read_current_slot(
+    workspace: AuthorWorkspace,
+    slot_ref: str,
+) -> dict[str, Any]:
+    try:
+        return chapter_slot_workspace.execute(workspace, slot_ref)
+    except (
+        chapter_slot_workspace.ChapterSlotWorkspaceError,
+        chapter_slot_snapshot_tool.ChapterSlotSnapshotError,
+    ) as exc:
+        raise WritingCheckResultWorkspaceError("CURRENT_CHAPTER_SLOT_INVALID") from exc
+
+
+def _assert_result_is_current(
+    entry: dict[str, Any],
+    current_draft: dict[str, Any],
+    slot: dict[str, Any],
+) -> None:
+    result = entry["result"]
+    draft = current_draft["current_work_draft"]
+    if (
+        result["status"] != "completed"
+        or result["slot_ref"] != draft["slot_ref"]
+        or result["work_ref"] != draft["work_ref"]
+        or result["work_rev"] != draft["work_rev"]
+        or result["work_text_sha256"] != draft["text_sha256"]
+        or result["source_outline_ref"] != draft["source_outline_ref"]
+        or result["slot_ref"] != slot["slot_ref"]
+        or result["source_commit_seq"]
+        != slot["outline_checkpoint"]["source_commit_seq"]
+    ):
+        _fail("WRITING_CHECK_RESULT_NOT_CURRENT")
+    try:
+        package = writing_check_package_tool.execute(
+            {
+                "work_draft": copy.deepcopy(draft),
+                "chapter_slot_snapshot": copy.deepcopy(slot),
+                "check_operation_id": result["operation_id"],
+            }
+        )
+        rebuilt = writing_check_result_tool.execute(
+            {
+                "input_package": package,
+                "provider_response": {
+                    "judgments": copy.deepcopy(result["judgments"]),
+                },
+            }
+        )
+    except (
+        writing_check_package_tool.WritingCheckPackageError,
+        writing_check_result_tool.WritingCheckResultError,
+    ) as exc:
+        raise WritingCheckResultWorkspaceError(
+            "WRITING_CHECK_RESULT_NOT_CURRENT"
+        ) from exc
+    if rebuilt != result:
+        _fail("WRITING_CHECK_RESULT_NOT_CURRENT")
+
+
+def resolve_current_writing_check_result_entry(
+    workspace: AuthorWorkspace,
+    check_result_ref: str,
+) -> dict[str, Any]:
+    """稳定复核 result、工作稿和章槽仍 current；不产生写入。"""
+    handle = _require_workspace(workspace)
+    first_entry = resolve_writing_check_result_entry(handle, check_result_ref)
+    first_draft = _read_current_draft(handle)
+    second_draft = _read_current_draft(handle)
+    if first_draft != second_draft:
+        _fail("WORK_DRAFT_CHANGED_DURING_RESULT_READ")
+    draft = second_draft["current_work_draft"]
+    first_slot = _read_current_slot(handle, draft["slot_ref"])
+    second_slot = _read_current_slot(handle, draft["slot_ref"])
+    if first_slot != second_slot:
+        _fail("CHAPTER_SLOT_CHANGED_DURING_RESULT_READ")
+    _assert_result_is_current(first_entry, second_draft, second_slot)
+
+    second_entry = resolve_writing_check_result_entry(handle, check_result_ref)
+    draft_after = _read_current_draft(handle)
+    slot_after = _read_current_slot(handle, draft["slot_ref"])
+    if second_entry != first_entry:
+        _fail("CHECK_RESULT_OWNER_CHANGED_DURING_RESULT_READ")
+    if draft_after != second_draft:
+        _fail("WORK_DRAFT_CHANGED_DURING_RESULT_READ")
+    if slot_after != second_slot:
+        _fail("CHAPTER_SLOT_CHANGED_DURING_RESULT_READ")
+    return {
+        **copy.deepcopy(first_entry),
+        "draft_workspace": copy.deepcopy(second_draft["draft_workspace"]),
+        "current_work_draft": copy.deepcopy(draft),
+        "chapter_slot_snapshot": copy.deepcopy(second_slot),
+    }
+
+
 def save_writing_check_result(
     workspace: AuthorWorkspace,
     operation_id: str,
@@ -184,11 +364,11 @@ def save_writing_check_result(
     )
 
 
-def resolve_writing_check_result(
+def resolve_writing_check_result_entry(
     workspace: AuthorWorkspace,
     check_result_ref: str,
 ) -> dict[str, Any]:
-    """只按绑定 workspace 中的完整 ref 读回深拷贝正式结果；不宣称 CURRENT。"""
+    """读回完整 owner entry；不宣称 result 或 overlay 仍为 CURRENT。"""
 
     handle = _require_workspace(workspace)
     if not isinstance(check_result_ref, str) or not check_result_ref:
@@ -202,13 +382,30 @@ def resolve_writing_check_result(
     return {
         "result": copy.deepcopy(entry["result"]),
         "result_sha256": entry["result_sha256"],
+        "unknown_overlays": copy.deepcopy(entry["unknown_overlays"]),
         "version": loaded["version"],
         "sha256": loaded["sha256"],
     }
 
 
+def resolve_writing_check_result(
+    workspace: AuthorWorkspace,
+    check_result_ref: str,
+) -> dict[str, Any]:
+    """只按完整 ref 读回正式结果；保持旧返回形状，不宣称 CURRENT。"""
+    entry = resolve_writing_check_result_entry(workspace, check_result_ref)
+    return {
+        "result": entry["result"],
+        "result_sha256": entry["result_sha256"],
+        "version": entry["version"],
+        "sha256": entry["sha256"],
+    }
+
+
 __all__ = [
     "WritingCheckResultWorkspaceError",
+    "resolve_current_writing_check_result_entry",
     "resolve_writing_check_result",
+    "resolve_writing_check_result_entry",
     "save_writing_check_result",
 ]

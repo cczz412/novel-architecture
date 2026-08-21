@@ -204,6 +204,51 @@ def test_mismatch_and_unknown_with_optional_exact_quote_are_valid() -> None:
     assert result["status"] == "completed"
 
 
+def test_evidence_text_kinds_distinguish_existing_absence_and_quote_states() -> None:
+    judgments = [
+        _planned("PE-0001", "missing", None, "明确缺失"),
+        _planned("PE-0001", "unknown", None, "无法定位"),
+        _planned("PE-0001", "unknown", "相关原文", "仍无法判断"),
+        _planned("PE-0001", "mismatch", "冲突原文", "明确冲突"),
+    ]
+
+    assert [
+        writing_check_result_tool.evidence_text_kind(row) for row in judgments
+    ] == [
+        "missing_without_quote",
+        "unknown_without_quote",
+        "unknown_with_quote",
+        "quoted",
+    ]
+
+
+def test_null_quote_finding_ref_uses_zero_utf8_bytes_and_category_stays_distinct() -> None:
+    result_ref = "S-0001@work-r2#check-op-t14-check-r2"
+    unknown = _planned("PE-0001", "unknown", None, "当前无法安全判断")
+    missing = _planned("PE-0001", "missing", None, "当前无法安全判断")
+    expected_digest = hashlib.sha256(
+        b"unknown\0PE-0001\0\0" + "当前无法安全判断".encode("utf-8")
+    ).hexdigest()[:12]
+
+    assert writing_check_result_tool.finding_ref(result_ref, unknown) == (
+        f"{result_ref}#finding:{expected_digest}"
+    )
+    assert writing_check_result_tool.finding_ref(
+        result_ref, missing
+    ) != writing_check_result_tool.finding_ref(result_ref, unknown)
+
+
+@pytest.mark.parametrize("quote", ["", " ", "\t", "\r\n"])
+def test_empty_or_whitespace_quote_is_not_a_second_null_encoding(quote: str) -> None:
+    judgment = _planned("PE-0001", "unknown", quote, "不能靠空白冒充引文")
+
+    with pytest.raises(
+        writing_check_result_tool.WritingCheckResultError,
+        match="JUDGMENT_EVIDENCE_QUOTE_INVALID",
+    ):
+        writing_check_result_tool.evidence_text_kind(judgment)
+
+
 @pytest.mark.parametrize(
     ("response_builder", "error"),
     [

@@ -377,10 +377,16 @@ def _validate_check_config(raw: object) -> dict[str, Any]:
     return copy.deepcopy(raw)
 
 
-def _expected_severity(finding: dict[str, Any]) -> str | None:
+def _expected_severity(
+    finding: dict[str, Any],
+    *,
+    layer: str | None = None,
+) -> str | None:
     if finding["verdict"] == "insufficient":
         return None
     if finding["kind"] == "timeline":
+        return "yellow"
+    if layer is not None and layer != "confirmed":
         return "yellow"
     if finding["hard"] and finding["confidence"] == "high":
         return "red"
@@ -431,11 +437,11 @@ def _provider_findings(
             raise CheckToolError(f"{label}.note 必须是 1–300 字符")
         if finding["verdict"] == "insufficient" and finding["hard"]:
             raise CheckToolError(f"{label} 材料不足不能标 hard")
-        expected_severity = _expected_severity(finding)
-        if finding["severity"] != expected_severity:
-            raise CheckToolError(
-                f"{label}.severity 与现行判法不一致，应为 {expected_severity}"
-            )
+        if finding["verdict"] == "conflict":
+            if finding["severity"] not in {"red", "yellow"}:
+                raise CheckToolError(f"{label}.severity 非法")
+        elif finding["severity"] is not None:
+            raise CheckToolError(f"{label} 材料不足时 severity 必须为空")
         fact_set = frozenset(fact_ids)
         if fact_set in seen_sets:
             raise CheckToolError(f"{label} 重复报告同一组事实")
@@ -462,13 +468,18 @@ def _evidence(fact_ids: list[str], by_id: dict[str, dict[str, Any]]) -> list[dic
     ]
 
 
-def _layer(fact_ids: list[str], by_id: dict[str, dict[str, Any]]) -> str:
-    statuses = {by_id[fact_id]["status"] for fact_id in fact_ids}
+def _layer_from_statuses(statuses: set[str]) -> str:
     if statuses == {"confirmed"}:
         return "confirmed"
     if "confirmed" in statuses:
         return "mixed"
     return "candidate"
+
+
+def _layer(fact_ids: list[str], by_id: dict[str, dict[str, Any]]) -> str:
+    return _layer_from_statuses(
+        {by_id[fact_id]["status"] for fact_id in fact_ids}
+    )
 
 
 def _next_step(layer: str, verdict: str) -> str:
@@ -544,7 +555,7 @@ def execute(
             "hard": finding["hard"],
         }
         if finding["verdict"] == "conflict":
-            record["severity"] = finding["severity"]
+            record["severity"] = _expected_severity(finding, layer=layer)
             conflicts.append(record)
         else:
             insufficient.append(record)
@@ -773,18 +784,24 @@ def _validate_finding(
     ]
     if evidence_ids != fact_ids:
         raise CheckToolError(f"{label} 的 fact_ids 与 evidence 引用不一致")
+    expected_layer = _layer_from_statuses(
+        {str(row["status"]) for row in evidence}
+    )
+    if value["layer"] != expected_layer:
+        raise CheckToolError(f"{label}.layer 与 evidence 状态不一致")
     if conflict:
         severity = value.get("severity")
         if severity not in {"red", "yellow"}:
             raise CheckToolError(f"{label}.severity 非法")
-        if value["kind"] in KINDS:
+        if value["layer"] != "confirmed" or value["kind"] in KINDS:
             expected = _expected_severity(
                 {
                     "verdict": "conflict",
                     "kind": value["kind"],
                     "hard": value["hard"],
                     "confidence": value["confidence"],
-                }
+                },
+                layer=value["layer"],
             )
             if severity != expected:
                 raise CheckToolError(f"{label}.severity 与现行判法不一致")
