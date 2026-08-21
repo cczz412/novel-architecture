@@ -1,6 +1,3 @@
-# PR-E1 临时收窄版：原版冻结在 cc793c4 的同一路径。
-# PR-E2 带入 fact_workspace 的 M4 入账修改后，必须用 cc793c4 原版
-# 逐字节还原本文件。
 from __future__ import annotations
 
 import copy
@@ -22,6 +19,7 @@ try:
         extract_run_receipt,
         extract_tool,
         extract_workspace,
+        fact_workspace,
         segment_workspace,
     )
     from mvp.workspace import VersionConflictError, WorkspaceRouter
@@ -306,6 +304,40 @@ def test_stale_failure_receipt_version_writes_nothing(tmp_path: Path) -> None:
         )
 
     assert workspace.read("fact_candidate_runs") == before
+
+
+def test_m4_rejects_valid_c3_without_complete_receipt(tmp_path: Path) -> None:
+    source_workspace = WorkspaceRouter(tmp_path / "source").create_project(
+        "principal-a", "source"
+    )
+    _setup(source_workspace)
+    extract_workspace.persist_current_fact_candidates(
+        source_workspace, "op-source-c3", _responses(source_workspace), 0
+    )
+    payload = source_workspace.read("fact_candidates")["payload"]
+
+    target_workspace = WorkspaceRouter(tmp_path / "target").create_project(
+        "principal-a", "target"
+    )
+    _setup(target_workspace)
+    target_workspace.commit(
+        "op-legacy-c3-without-receipt",
+        {"fact_candidates": payload},
+        {"fact_candidates": 0},
+    )
+
+    with pytest.raises(
+        fact_workspace.FactWorkspaceError,
+        match="FACT_CANDIDATES_COMPLETE_RECEIPT_MISSING",
+    ):
+        fact_workspace.materialize_current_extracted_snapshot(
+            target_workspace,
+            operation_id="op-m4-must-stop",
+            source="M4_CURRENT_WORKSPACE",
+            added_at="2026-08-20 00:01:00",
+        )
+
+    assert target_workspace.read("facts") is None
 
 
 def test_source_change_marks_complete_receipt_and_c3_stale(tmp_path: Path) -> None:
