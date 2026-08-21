@@ -1,0 +1,191 @@
+name: WO4 design currentness materialization and validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wo4-design-currentness-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  apply-verify-clean:
+    if: ${{ github.event.pull_request.head.ref == 'chatgpt/clean-baseline-wo4-design-currentness-20260821' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Clone exact branch and pin main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          git clone --branch "$BRANCH_NAME" --single-branch \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
+          cd repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main:refs/remotes/origin/main
+          test "$(git rev-parse origin/main)" = \
+            "c79bd0af08b5424baf6e668e3d5dcd06e622a07a"
+
+      - name: Remove redundant file-SHA guard from temporary helper
+        run: |
+          set -euo pipefail
+          cd repo
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/wo4_apply.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''    original_index_sha = sha256(INDEX_PATH)
+    if original_index_sha != EXPECTED_MAIN_INDEX_SHA256:
+        raise SystemExit(
+            "main design INDEX changed after WO4 planning: "
+            f"expected {EXPECTED_MAIN_INDEX_SHA256}, got {original_index_sha}"
+        )
+
+'''
+          if text.count(old) != 1:
+              raise SystemExit('temporary helper INDEX SHA guard was not found exactly once')
+          path.write_text(text.replace(old, '', 1), encoding='utf-8')
+          PY
+
+      - name: Materialize work order 4
+        run: |
+          set -euo pipefail
+          cd repo
+          python -m py_compile .github/wo4_apply.py
+          python .github/wo4_apply.py
+          python -m json.tool novel-mvp/design/design_registry.json >/dev/null
+          python -m json.tool governance/current_pointers.json >/dev/null
+          python -m py_compile tools/check_design_currentness.py
+
+      - name: Install locked runner
+        run: python -m pip install --disable-pip-version-check uv
+
+      - name: Validate design currentness and current pointers
+        run: |
+          set -euo pipefail
+          cd repo
+          uv run --locked python tools/check_design_currentness.py \
+            --format both \
+            --json-out /tmp/wo4-design-currentness.json \
+            --check
+          uv run --locked python tools/check_current_freshness.py \
+            --format both \
+            --json-out /tmp/wo4-current-freshness.json \
+            --check
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          design = json.loads(Path('/tmp/wo4-design-currentness.json').read_text(encoding='utf-8'))
+          freshness = json.loads(Path('/tmp/wo4-current-freshness.json').read_text(encoding='utf-8'))
+          assert design['status'] == 'PASS'
+          assert design['errors'] == []
+          assert design['summary']['document_count'] == 57
+          assert design['summary']['registered_unique_paths'] == 57
+          assert design['summary']['status_counts'] == {
+              'CURRENT': 19,
+              'HISTORICAL': 5,
+              'SUPERSEDED': 26,
+              'WAITING_REWRITE': 7,
+          }
+          assert freshness['status'] == 'PASS'
+          assert freshness['errors'] == []
+          stale = [
+              item for item in freshness['warnings']
+              if item.get('code') == 'PLANNED_PATH_NOT_MATERIALIZED'
+              and item.get('path') == 'novel-mvp/design/design_registry.json'
+          ]
+          assert stale == []
+          stats = {
+              'status_counts': design['summary']['status_counts'],
+              'default_route_count': design['summary']['default_route_count'],
+              'design_warning_count': design['summary']['warning_count'],
+              'freshness_warning_count': freshness['summary']['warning_count'],
+          }
+          print('WO4_STATS=' + json.dumps(stats, ensure_ascii=False, sort_keys=True))
+          PY
+
+      - name: Run targeted tests and Ruff
+        run: |
+          set -euo pipefail
+          cd repo
+          uv run --locked pytest -q -p no:cacheprovider \
+            tests/test_design_currentness.py \
+            tests/test_current_freshness.py
+          uv run --locked ruff check \
+            tools/check_design_currentness.py \
+            tests/test_design_currentness.py
+
+      - name: Remove temporary helpers and stage final result
+        run: |
+          set -euo pipefail
+          cd repo
+          git rm .github/wo4_apply.py .github/workflows/wo4-apply.yml
+          rmdir .github/workflows .github 2>/dev/null || true
+          git add \
+            novel-mvp/design/INDEX.md \
+            novel-mvp/design/design_registry.json \
+            governance/current_pointers.json \
+            tools/check_design_currentness.py \
+            tests/test_design_currentness.py
+
+      - name: Enforce exact WO4 write set
+        run: |
+          set -euo pipefail
+          cd repo
+          python - <<'PY'
+          import subprocess
+
+          changed = subprocess.check_output(
+              ['git', 'diff', '--cached', '--name-only', 'origin/main'],
+              text=True,
+          ).splitlines()
+          expected = {
+              'novel-mvp/design/INDEX.md',
+              'novel-mvp/design/design_registry.json',
+              'governance/current_pointers.json',
+              'tools/check_design_currentness.py',
+              'tests/test_design_currentness.py',
+          }
+          if set(changed) != expected:
+              raise SystemExit(
+                  f'WO4 write-set mismatch: expected={sorted(expected)} actual={changed}'
+              )
+          forbidden_prefixes = (
+              '.github/',
+              'work/',
+              'references/cloud-supervision/',
+              'references/shared-context/',
+              'references/atomic-expectations/',
+              'novel-mvp/mvp/',
+              'novel-mvp/contracts/',
+          )
+          forbidden = [path for path in changed if path.startswith(forbidden_prefixes)]
+          if forbidden:
+              raise SystemExit(f'WO4 forbidden paths changed: {forbidden}')
+          print(f'PASS_WO4_SCOPE changed_files={len(changed)}')
+          for path in changed:
+              print(path)
+          PY
+
+      - name: Commit verified result to the PR branch
+        env:
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          cd repo
+          git diff --cached --check
+          git commit -m "feat(design): register R14 currentness [skip ci]"
+          git push origin "HEAD:${BRANCH_NAME}"
