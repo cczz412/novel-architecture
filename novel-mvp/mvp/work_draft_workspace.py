@@ -52,6 +52,7 @@ HANDOVER_ACTION_KEYS = {
     "work_rev",
     "slot_ref",
     "source_outline_ref",
+    "chapter_title",
     "target_contract",
     "target_planstore_result",
 }
@@ -90,6 +91,18 @@ def _canonical_reference(value: object, code: str) -> str:
         or "\x00" in value
     ):
         raise WorkDraftWorkspaceError(code)
+    return value
+
+
+def _chapter_title(value: object) -> str:
+    if (
+        not isinstance(value, str)
+        or not value
+        or value != value.strip()
+        or len(value) > 200
+        or any(ord(char) < 32 or ord(char) == 127 for char in value)
+    ):
+        raise WorkDraftWorkspaceError("WORK_DRAFT_HANDOVER_TITLE_INVALID")
     return value
 
 
@@ -147,7 +160,7 @@ def _validated_handover_action(action: object) -> dict[str, Any]:
     work_rev = action["work_rev"]
     if action["contract"] != "WORK_DRAFT_HANDOVER_ACTION":
         raise WorkDraftWorkspaceError("WORK_DRAFT_HANDOVER_CONTRACT_INVALID")
-    if action["version"] != "v1":
+    if action["version"] != "v2":
         raise WorkDraftWorkspaceError("WORK_DRAFT_HANDOVER_VERSION_INVALID")
     if (
         not isinstance(operation_id, str)
@@ -179,6 +192,7 @@ def _validated_handover_action(action: object) -> dict[str, Any]:
         action["source_outline_ref"],
         "WORK_DRAFT_HANDOVER_SOURCE_OUTLINE_REF_INVALID",
     )
+    normalized["chapter_title"] = _chapter_title(action["chapter_title"])
     return normalized
 
 
