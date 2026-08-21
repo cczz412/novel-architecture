@@ -51,10 +51,11 @@ def _handover_action(
     work_ref: str = "S-0001@work",
     slot_ref: str = "S-0001",
     source_outline_ref: str = "S-0001@outline-r2",
+    chapter_title: str = "雨夜来信",
 ) -> dict:
     return {
         "contract": "WORK_DRAFT_HANDOVER_ACTION",
-        "version": "v1",
+        "version": "v2",
         "operation_id": "op-handover-work-r2",
         "actor": "author",
         "intent": "adopt_as_manuscript",
@@ -62,6 +63,7 @@ def _handover_action(
         "work_rev": work_rev,
         "slot_ref": slot_ref,
         "source_outline_ref": source_outline_ref,
+        "chapter_title": chapter_title,
         "target_contract": "C1_CHAPTER_DOC",
         "target_planstore_result": "handover_parts",
     }
@@ -489,6 +491,9 @@ def test_matching_current_r2_prepares_read_only_handover_bundle(
         ),
         ({"actor": "provider"}, "WORK_DRAFT_HANDOVER_ACTOR_INVALID"),
         ({"intent": "save_only"}, "WORK_DRAFT_HANDOVER_INTENT_INVALID"),
+        ({"chapter_title": ""}, "WORK_DRAFT_HANDOVER_TITLE_INVALID"),
+        ({"chapter_title": " 雨夜"}, "WORK_DRAFT_HANDOVER_TITLE_INVALID"),
+        ({"chapter_title": "雨夜\n来信"}, "WORK_DRAFT_HANDOVER_TITLE_INVALID"),
         ({"target_contract": "C11"}, "WORK_DRAFT_HANDOVER_TARGET_INVALID"),
         (
             {"target_planstore_result": "closed"},
