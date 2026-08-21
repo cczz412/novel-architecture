@@ -1,0 +1,82 @@
+name: WO5 PR-D compact shared-runtime shortlist
+
+on:
+  push:
+    branches:
+      - chatgpt/wo5-pr-d-shared-runtime-20260821
+
+permissions:
+  contents: write
+
+jobs:
+  compact:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Clone branch and write compact shortlist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git clone --branch "$BRANCH_NAME" --single-branch \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
+          cd repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('.')
+          analysis = json.loads((root / '.github/wo5_pr_d_analysis.json').read_text(encoding='utf-8'))
+          rows = analysis['all_runtime_files']
+          by_module = {row['module']: row for row in rows}
+          exact = {
+              'workspace', 'store', 'upload_source',
+          }
+          token_names = ('intent', 'router', 'route', 'handle', 'recall')
+          selected = {
+              row['module'] for row in rows
+              if row['module'] in exact
+              or any(token in row['module'].lower() for token in token_names)
+              or len({f for f in row.get('consumer_families', []) if f.startswith('M')}) >= 2
+          }
+          changed = True
+          while changed:
+              changed = False
+              for module in list(selected):
+                  row = by_module.get(module)
+                  if not row:
+                      continue
+                  for dep in row.get('imports', []):
+                      if dep not in selected:
+                          selected.add(dep)
+                          changed = True
+          details = []
+          for module in sorted(selected):
+              row = by_module[module]
+              details.append({key: row[key] for key in (
+                  'path', 'module', 'exists_on_main', 'source_blob', 'imports',
+                  'imported_by', 'consumer_families', 'own_families',
+                  'direct_tests', 'docstring'
+              )})
+          out = {
+              'source': analysis['source'],
+              'main': analysis['main'],
+              'requirement_ids': [row['requirement_id'] for row in analysis['requirements']],
+              'candidate_count': len(details),
+              'candidates': details,
+          }
+          (root / '.github/wo5_pr_d_compact.json').write_text(
+              json.dumps(out, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
+          )
+          print(json.dumps({
+              'candidate_count': len(details),
+              'paths': [row['path'] for row in details],
+          }, ensure_ascii=False, indent=2))
+          PY
+          git add .github/wo5_pr_d_compact.json
+          git commit -m "ci: persist compact PR-D shortlist [skip ci]"
+          git push origin "HEAD:${BRANCH_NAME}"
