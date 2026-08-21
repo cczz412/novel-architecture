@@ -151,6 +151,41 @@ def test_memory_zip_keeps_path_and_symlink_guards(payload: bytes, block_type: st
     assert any(item["type"] == block_type for item in receipt["blocks"])
 
 
+@pytest.mark.parametrize(
+    ("run_id", "archive_depth", "expected_status"),
+    [
+        pytest.param("ZAFR-0008", 2, "READY", id="depth-limit"),
+        pytest.param("ZAFR-0009", 3, "BLOCKED", id="depth-over"),
+    ],
+)
+def test_nested_zip_depth_boundary_is_all_or_nothing(
+    run_id: str,
+    archive_depth: int,
+    expected_status: str,
+) -> None:
+    del run_id
+    payload = _zip({"c01.txt": "第一章\n正文。\n".encode()})
+    for depth in range(1, archive_depth):
+        payload = _zip({f"layer-{depth}.zip": payload})
+
+    items, receipt = input_router.collect_uploads(
+        [UploadSource("book.zip", payload)]
+    )
+
+    assert receipt["status"] == expected_status
+    if expected_status == "READY":
+        assert len(items) == 1
+        assert items[0]["raw_bytes"] == "第一章\n正文。\n".encode()
+        assert receipt["terminal_source_count"] == 1
+        assert receipt["blocks"] == []
+    else:
+        assert items == []
+        assert receipt["terminal_source_count"] == 0
+        assert [row["type"] for row in receipt["blocks"]] == [
+            "nested_archive_too_deep"
+        ]
+
+
 def test_ingest_uploads_uses_embedded_declarations_without_disk_path(
     tmp_path: Path, monkeypatch
 ) -> None:

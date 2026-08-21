@@ -22,18 +22,27 @@ from typing import Any, Iterator, Mapping
 
 
 LOGICAL_KEY_FILES = {
+    "chapter_admission_operations": "chapter_admission_operations.json",
+    "chapter_fact_handover_requests": "chapter_fact_handover_requests.json",
     "chapter_index": "chapter_index.json",
+    "chapter_materials": "chapter_materials.json",
+    "chapter_revisions": "chapter_revisions.json",
+    "chapter_sources": "chapter_sources.json",
     "chapters": "chapters.json",
     "draft": "draft.json",
+    "fact_candidate_runs": "fact_candidate_runs.json",
     "fact_candidates": "fact_candidates.json",
+    "fact_materialization_runs": "fact_materialization_runs.json",
     "facts": "facts.json",
     "health_report": "health_report.json",
     "input_manifest": "input_manifest.json",
+    "ledger_directory": "ledger_directory.json",
     "module_state": "module_state.json",
     "overview_cards": "overview_cards.json",
     "plan": "plan.json",
     "project_state": "project_state.json",
     "reconciliation": "reconciliation.json",
+    "recall_handles": "recall_handles.json",
     "scene_cards": "scene_cards.json",
     "segments": "segments.json",
     "settings": "settings.json",
@@ -648,6 +657,8 @@ class _LocalFilesystemBackend:
         operation_id: str,
         mutations: Mapping[str, Any],
         expected_versions: Mapping[str, Any],
+        *,
+        _guard_versions: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         project_dir = self._require_project(author_id, project_id)
         operation_id = _validate_operation_id(operation_id)
@@ -662,11 +673,23 @@ class _LocalFilesystemBackend:
         expectations = self._normalize_expectations(
             set(validated_mutations), expected_versions
         )
+        guards: dict[str, dict[str, Any]] = {}
+        if _guard_versions is not None:
+            if not isinstance(_guard_versions, Mapping) or not _guard_versions:
+                raise VersionConflictError("GUARD_VERSIONS_INVALID")
+            guard_keys = {_validate_logical_key(key) for key in _guard_versions}
+            if len(guard_keys) != len(_guard_versions):
+                raise InvalidLogicalKeyError("LOGICAL_KEY_NOT_ALLOWED")
+            if guard_keys & set(validated_mutations):
+                raise VersionConflictError("GUARD_KEY_MUST_NOT_BE_MUTATED")
+            guards = self._normalize_expectations(guard_keys, _guard_versions)
         request_payload = {
             "operation_id": operation_id,
             "mutations": validated_mutations,
             "expected_versions": expectations,
         }
+        if guards:
+            request_payload["guard_versions"] = guards
         request_sha = _sha256_bytes(_canonical_bytes(request_payload))
         with self._exclusive_lock(project_dir):
             self._recover_unlocked(project_dir)
@@ -679,7 +702,7 @@ class _LocalFilesystemBackend:
                 project_dir, author_id, project_id
             )
             current_entries = copy.deepcopy(current_manifest["entries"])
-            for key, expectation in expectations.items():
+            for key, expectation in {**expectations, **guards}.items():
                 entry = current_entries.get(key)
                 current_version = 0 if entry is None else entry.get("version")
                 current_sha = None if entry is None else entry.get("payload_sha256")
@@ -780,6 +803,25 @@ class _LocalFilesystemBackend:
             self._maybe_fail("after_receipt")
             self._remove_file(journal_path)
             return {**receipt, "replayed": False}
+
+    def commit_guarded(
+        self,
+        author_id: str,
+        project_id: str,
+        operation_id: str,
+        mutations: Mapping[str, Any],
+        expected_versions: Mapping[str, Any],
+        guard_versions: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        """原子提交 mutations，同时只校验 guard_versions，不改写 guard 键。"""
+        return self.commit(
+            author_id,
+            project_id,
+            operation_id,
+            mutations,
+            expected_versions,
+            _guard_versions=guard_versions,
+        )
 
     def store_immutable(
         self,
@@ -950,6 +992,23 @@ class AuthorWorkspace:
             operation_id,
             mutations,
             expected_versions,
+        )
+
+    def commit_guarded(
+        self,
+        operation_id: str,
+        mutations: Mapping[str, Any],
+        expected_versions: Mapping[str, Any],
+        guard_versions: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        """提交业务状态，并在同一把锁内确认只读来源仍是调用方所见版本。"""
+        return self._backend.commit_guarded(
+            self.author_id,
+            self.project_id,
+            operation_id,
+            mutations,
+            expected_versions,
+            guard_versions,
         )
 
     def store_immutable(
