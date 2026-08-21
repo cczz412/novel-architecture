@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-pointers-v1",
-  "updated_at": "2026-08-21T06:10:00+08:00",
+  "updated_at": "2026-08-21T08:20:00+08:00",
   "authority": {
     "role": "当前版本、路径、候选身份和后续登记的唯一机器索引",
     "does_not_replace": [
@@ -103,10 +103,22 @@
     },
     {
       "pointer_id": "design_registry",
-      "status": "PLANNED",
-      "version": null,
+      "status": "ACTIVE_CURRENT",
+      "version": "R01",
       "path": "novel-mvp/design/design_registry.json",
-      "admission_work_order": 4
+      "index_path": "novel-mvp/design/INDEX.md",
+      "document_count": 57,
+      "status_counts": {
+        "CURRENT": 19,
+        "HISTORICAL": 5,
+        "SUPERSEDED": 26,
+        "WAITING_REWRITE": 7
+      },
+      "checker_path": "tools/check_design_currentness.py",
+      "checker_registry_status": "PENDING_WORK_ORDER_7",
+      "authority": "CURRENTNESS_ROUTING_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
+      "admitted_by_work_order": 4,
+      "boundary": "CURRENT 只允许进入默认设计路由；不证明实现、语义质量或施工授权。"
     },
     {
       "pointer_id": "capability_traceability",
@@ -144,6 +156,7 @@
     "原子需求现行只认 R03／142 条唯一 ID；R02 留 Git 作 SUPERSEDED_HISTORICAL。",
     "六例设计 CURRENT 仍只覆盖旧 127 条／762 例，不得冒充覆盖 R03 新增 15 条。",
     "候选分支、PLANNED 和 PENDING_WORK_ORDER 不得冒充 main current。",
-    "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。"
+    "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",
+    "设计默认路由只能指向 design_registry 中的 CURRENT；其他状态一律不得指导施工。"
   ]
 }

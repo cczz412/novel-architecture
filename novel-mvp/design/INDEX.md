@@ -1,84 +1,136 @@
-# 设计稿总索引｜第三版（清旧句＋规划账合同）
+# 设计稿总索引｜R14 currentness 登记 R01
 
-> 更新：2026-08-15。产品语义以背景板 **R13** 为准。冲突时背景板赢。设计稿是工程细节候选，不是现有产品能力，也不是施工放行票。
-> 旧稿一律保留作历史，不原位改字。本轮只清会让人各做各的旧句；规划账字段以 [PLAN_LEDGER_STORAGE.md](../contracts/PLAN_LEDGER_STORAGE.md) 为准。
-> ADD-043／044 仍开口。暗稿「默认已发生、仍是事实」（K3）不动；开口只剩：算不算签过字、能不能开下一章。收费数字仍冻。关章合同未开。
+> 更新：2026-08-21。产品语义只认背景板 **R14**。本页与 `design_registry.json` 是同一份 currentness 登记的两种视图；设计稿不是产品完成态，也不是施工放行票。
+> 本票不改任何设计稿正文。模块分支 `cc793c4` 的四个 design surface 只登记为工单 5 PR-C 的预期后继，不在本票带入。
 
-权威：`NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13`（小说架构仓共同背景板）。本索引不再以 R10 为准。
+## 就近重写规则（开工硬门）
 
-本版对齐的五句（ADD-057～061）：
+**哪个模块要开工，先把它的设计稿升到 R14 口径，并把 `design_registry.json` 中该稿状态改成 `CURRENT`，才准动模块代码。**
 
-- **激活**＝看见系统在干活。投影像财报／PPT，跟着动。90 秒只是模型别太慢，不是确认一条事实才算用起来。
-- **关章**有六道硬门：字数、任务、进展、质检、不冲突、符合规划。过了系统才建议「到此为止」。收工 ≠ 关章。正文对账是可选一站。
-- **打开小说项目**第一屏＝故事梗概＋故事概览＋战报。未关章再到上次处理处；已关章进下一章工作台。黄金三章是独立工作台，满意后再移交进项目。
-- **沙箱**＝选一转正＝对账。不是多支并回。
-- **投影**上可以改；进真值必须作者确认。
+- `WAITING_REWRITE`、`HISTORICAL`、`SUPERSEDED` 一律不能进入默认施工路由。
+- `CURRENT` 只表示可作默认设计参考；不能外推成代码完成、作者可用、真实语义通过或已获施工授权。
+- 机器检查：`uv run --locked python tools/check_design_currentness.py --check`。
+- 工具正式并入 `governance/tool_registry.json` 留到工单 7。
 
-## 日常创作主循环（读稿顺序建议）
+## 默认设计路由（只允许 CURRENT）
 
-| 稿 | 现行版 | 管什么 | 状态 |
+<!-- DESIGN_DEFAULT_ROUTES_START -->
+| 设计稿 | 状态 | R14 下的用途／边界 |
+|---|---|---|
+| [API_EXPOSURE_DESIGN_R01.md](API_EXPOSURE_DESIGN_R01.md) | `CURRENT` | API 暴露层；仍是设计，不代表接口已经开放。 |
+| [BOOK_DISSECT_MENU_DESIGN_R01.md](BOOK_DISSECT_MENU_DESIGN_R01.md) | `CURRENT` | 拆书菜单与只读分析入口。 |
+| [CHAPTER_REVISION_DESIGN_R01.md](CHAPTER_REVISION_DESIGN_R01.md) | `CURRENT` | 外来书稿改稿重导的版本与证据处理参考。 |
+| [CHAPTER_WORKBENCH_DESIGN_R02.md](CHAPTER_WORKBENCH_DESIGN_R02.md) | `CURRENT` | 下一章工作台、选线和章级沙箱。 |
+| [CHARACTER_LEDGER_DESIGN_R02.md](CHARACTER_LEDGER_DESIGN_R02.md) | `CURRENT` | 人物账结构与作者可见操作参考。 |
+| [EXTRACTION_PIPELINE_DESIGN_R01.md](EXTRACTION_PIPELINE_DESIGN_R01.md) | `CURRENT` | 外来道六段抽取管线；ADD-021 的 R02 改版另排。 |
+| [FIRST_SCREEN_SYSTEM_DESIGN_R02.md](FIRST_SCREEN_SYSTEM_DESIGN_R02.md) | `CURRENT` | 打开项目第一屏、关章门和投影编辑。 |
+| [GENRE_RHYTHM_PACK_DESIGN_R01.md](GENRE_RHYTHM_PACK_DESIGN_R01.md) | `CURRENT` | 体裁节奏包候选机制。 |
+| [GLOBAL_OUTLINE_DESIGN_R01.md](GLOBAL_OUTLINE_DESIGN_R01.md) | `CURRENT` | 全书大纲引导。 |
+| [INTAKE_SHELVES_DESIGN_R03.md](INTAKE_SHELVES_DESIGN_R03.md) | `CURRENT` | 外来材料导入六架；章节架只收外来书稿。 |
+| [MCP_INTERFACE_DESIGN_R01.md](MCP_INTERFACE_DESIGN_R01.md) | `CURRENT` | MCP 只读与提案接口。 |
+| [PLUGIN_CONTENT_WORKORDER_R01.md](PLUGIN_CONTENT_WORKORDER_R01.md) | `CURRENT` | 后续插件内容候选工单；27 个不是 V0 首发承诺。 |
+| [PLUGIN_SKILL_SYSTEM_DESIGN_R02.md](PLUGIN_SKILL_SYSTEM_DESIGN_R02.md) | `CURRENT` | 插件机制；V0 仍按 1 套件×8 组件×前三层。 |
+| [REVERSE_PLOT_MAP_DESIGN_R02.md](REVERSE_PLOT_MAP_DESIGN_R02.md) | `CURRENT` | 反向剧情投影；修改进入真值前仍需作者确认。 |
+| [ROLE_POV_MODE_DESIGN_R01.md](ROLE_POV_MODE_DESIGN_R01.md) | `CURRENT` | 角色视角模式。 |
+| [SCENE_CARD_EXPORT_DESIGN_R01.md](SCENE_CARD_EXPORT_DESIGN_R01.md) | `CURRENT` | 场景卡导出边界。 |
+| [STOP_POINT_REGISTRY_R03.md](STOP_POINT_REGISTRY_R03.md) | `CURRENT` | 停点登记；P3 不得自动搬剧情。 |
+| [TUTORIAL_SCRIPTS_DESIGN_R02.md](TUTORIAL_SCRIPTS_DESIGN_R02.md) | `CURRENT` | 教程、激活口径与黄金三章独立台。 |
+| [WEB_CANVAS_MVP_DESIGN_R01.md](WEB_CANVAS_MVP_DESIGN_R01.md) | `CURRENT` | 网页画布目标；完成与性能承诺仍需代码和结果票。 |
+<!-- DESIGN_DEFAULT_ROUTES_END -->
+
+## 等待 R14 改版（禁止默认施工）
+
+| 设计稿 | 状态 | 为什么要先改 |
+|---|---|---|
+| [CONTEXT_PACKER_DESIGN_R01.md](CONTEXT_PACKER_DESIGN_R01.md) | `WAITING_REWRITE` | 等待 M11→章事实稿、M11→章事实稿检查两根取件接缝改版。 |
+| [DAILY_LOOP_WALKTHROUGH_R03.md](DAILY_LOOP_WALKTHROUGH_R03.md) | `WAITING_REWRITE` | 等待双车道改版；自产章回 M2／M3 的旧路线不得指导施工。 |
+| [M8_PLANNING_DESIGN_R04.md](M8_PLANNING_DESIGN_R04.md) | `WAITING_REWRITE` | 等待边界改版；现行目标是只规划下一章并管理规划账／长线账。 |
+| [OUTLINE_STRUCTURE_DESIGN_R02.md](OUTLINE_STRUCTURE_DESIGN_R02.md) | `WAITING_REWRITE` | 等待账本目录改版；事实账、长线账、规划账要按范围拆开。 |
+| [PLAN_LEDGER_STORAGE_DESIGN_R04.md](PLAN_LEDGER_STORAGE_DESIGN_R04.md) | `WAITING_REWRITE` | 机械结构可查，但选择卡全文、独立长线账和十本账目录仍待改版。 |
+| [REVIEW_OVERVIEW_DESIGN_R03.md](REVIEW_OVERVIEW_DESIGN_R03.md) | `WAITING_REWRITE` | 等待驾驶舱改版；M9 只读算指标，M5 只做事实确认。 |
+| [WRITING_DESK_DESIGN_R04.md](WRITING_DESK_DESIGN_R04.md) | `WAITING_REWRITE` | 等待章事实稿改版；正文是可选出口，旧工作稿不能继续当产品名。 |
+
+## 工单 5 PR-C 的四个预期 design surface
+
+这些只是只读登记，不代表文件已经进入 main：
+
+| 路径 | 变化 | main 当前是否存在 | 预期后继 |
 |---|---|---|---|
-| DAILY_LOOP_WALKTHROUGH | [R03](DAILY_LOOP_WALKTHROUGH_R03.md) | 日常循环走查＋主流程状态表（**不能压过 R13**） | 第二版（本轮未再清；屏 10 仍写「正文赢自动更新」，以 [停点 R03](STOP_POINT_REGISTRY_R03.md)／[规划账合同](../contracts/PLAN_LEDGER_STORAGE.md) 为准） |
-| FIRST_SCREEN_SYSTEM | [R02](FIRST_SCREEN_SYSTEM_DESIGN_R02.md) | 打开项目第一屏＝梗概＋概览＋战报；关章六道门；投影可改 | 第二版（本轮未再清） |
-| CHAPTER_WORKBENCH | [R02](CHAPTER_WORKBENCH_DESIGN_R02.md) | 选线（没定好才问）；章级沙箱选一转正；分层回退 | 第二版（本轮未再清） |
-| M8_PLANNING | [R04](M8_PLANNING_DESIGN_R04.md) | 章计划与出题；入库只对照；对账不以交棒为前提 | 第三版已清旧句 |
-| WRITING_DESK | [R04](WRITING_DESK_DESIGN_R04.md) | 内置写作区／检测／暗稿；收工不写 `closed` | 第三版已清旧句 |
-| REVIEW_OVERVIEW | [R03](REVIEW_OVERVIEW_DESIGN_R03.md) | 故事概览；C5 先只收事实概览；投影可改须确认 | 第三版已清旧句 |
-| STOP_POINT_REGISTRY | [R03](STOP_POINT_REGISTRY_R03.md) | 停点表；P3 不得自动搬剧情 | 第三版已清旧句 |
+| `novel-mvp/design/INDEX.md` | `ENTRY_REFRESH` | `true` | `WORK_ORDER_5_PR_C` |
+| `novel-mvp/design/INTAKE_SHELVES_DESIGN_R02.md` | `HISTORICAL_DOCUMENT_PATCH` | `true` | `WORK_ORDER_5_PR_C` |
+| `novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md` | `NEW_DESIGN` | `false` | `WORK_ORDER_5_PR_C` |
+| `novel-mvp/design/STOP_POINT_REGISTRY_R03.md` | `CURRENT_DOCUMENT_PATCH` | `true` | `WORK_ORDER_5_PR_C` |
 
-## 账本与真值层
+## 全量机器登记镜像
 
-| 稿 | 现行版 | 管什么 | 状态 |
+下表覆盖当前 `novel-mvp/design/` 下全部 57 份设计／调查文档，不含本索引和 registry 自身。状态和 `superseded_by` 必须与 JSON 一致。
+
+<!-- DESIGN_STATUS_TABLE_START -->
+| 设计稿 | status | superseded_by | R14 relation |
 |---|---|---|---|
-| PLAN_LEDGER_STORAGE | [R04](PLAN_LEDGER_STORAGE_DESIGN_R04.md) | 规划账机制；字段以 [合同](../contracts/PLAN_LEDGER_STORAGE.md) 为准 | 第三版已清旧句 |
-| OUTLINE_STRUCTURE | [R02](OUTLINE_STRUCTURE_DESIGN_R02.md) | 五层篮子＋三横架结构 | 本轮未改（图上仍写「M4 唯一真源」、C7＝章篮快照；真值／C7 以 [ARCHITECTURE.md](../ARCHITECTURE.md)／[规划账合同](../contracts/PLAN_LEDGER_STORAGE.md) 为准） |
-| GLOBAL_OUTLINE | [R01](GLOBAL_OUTLINE_DESIGN_R01.md) | 全书大纲引导 | 本轮未改 |
-| CHARACTER_LEDGER | [R02](CHARACTER_LEDGER_DESIGN_R02.md) | 人物账 | 本轮未改 |
-| IDEA_LEDGER | [R02](IDEA_LEDGER_DESIGN_R02.md) | 灵感账 | 本轮未改 |
-| CHAPTER_REVISION | [R01](CHAPTER_REVISION_DESIGN_R01.md) | 改稿重导 | 本轮未改 |
-| REVERSE_PLOT_MAP | [R02](REVERSE_PLOT_MAP_DESIGN_R02.md) | 反向剧情图；投影可改、进真值须确认 | 第二版（本轮未再清） |
+| [17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md](17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md) | `HISTORICAL` | `—` | 外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。 |
+| [18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md](18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md) | `HISTORICAL` | `—` | 外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。 |
+| [19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md](19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md) | `HISTORICAL` | `—` | 外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。 |
+| [20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md](20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md) | `HISTORICAL` | `—` | 外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。 |
+| [21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md](21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md) | `HISTORICAL` | `—` | 外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。 |
+| [API_EXPOSURE_DESIGN_R01.md](API_EXPOSURE_DESIGN_R01.md) | `CURRENT` | `—` | API 暴露层；仍是设计，不代表接口已经开放。 |
+| [BOOK_DISSECT_MENU_DESIGN_R01.md](BOOK_DISSECT_MENU_DESIGN_R01.md) | `CURRENT` | `—` | 拆书菜单与只读分析入口。 |
+| [CHAPTER_REVISION_DESIGN_R01.md](CHAPTER_REVISION_DESIGN_R01.md) | `CURRENT` | `—` | 外来书稿改稿重导的版本与证据处理参考。 |
+| [CHAPTER_WORKBENCH_DESIGN_R01.md](CHAPTER_WORKBENCH_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/CHAPTER_WORKBENCH_DESIGN_R02.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [CHAPTER_WORKBENCH_DESIGN_R02.md](CHAPTER_WORKBENCH_DESIGN_R02.md) | `CURRENT` | `—` | 下一章工作台、选线和章级沙箱。 |
+| [CHARACTER_LEDGER_DESIGN_R01.md](CHARACTER_LEDGER_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/CHARACTER_LEDGER_DESIGN_R02.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [CHARACTER_LEDGER_DESIGN_R02.md](CHARACTER_LEDGER_DESIGN_R02.md) | `CURRENT` | `—` | 人物账结构与作者可见操作参考。 |
+| [CONTEXT_PACKER_DESIGN_R01.md](CONTEXT_PACKER_DESIGN_R01.md) | `WAITING_REWRITE` | `—` | 等待 M11→章事实稿、M11→章事实稿检查两根取件接缝改版。 |
+| [DAILY_LOOP_WALKTHROUGH_R01.md](DAILY_LOOP_WALKTHROUGH_R01.md) | `SUPERSEDED` | `novel-mvp/design/DAILY_LOOP_WALKTHROUGH_R03.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [DAILY_LOOP_WALKTHROUGH_R02.md](DAILY_LOOP_WALKTHROUGH_R02.md) | `SUPERSEDED` | `novel-mvp/design/DAILY_LOOP_WALKTHROUGH_R03.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [DAILY_LOOP_WALKTHROUGH_R03.md](DAILY_LOOP_WALKTHROUGH_R03.md) | `WAITING_REWRITE` | `—` | 等待双车道改版；自产章回 M2／M3 的旧路线不得指导施工。 |
+| [EXTRACTION_PIPELINE_DESIGN_R01.md](EXTRACTION_PIPELINE_DESIGN_R01.md) | `CURRENT` | `—` | 外来道六段抽取管线；ADD-021 的 R02 改版另排。 |
+| [FIRST_SCREEN_SYSTEM_DESIGN_R01.md](FIRST_SCREEN_SYSTEM_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/FIRST_SCREEN_SYSTEM_DESIGN_R02.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [FIRST_SCREEN_SYSTEM_DESIGN_R02.md](FIRST_SCREEN_SYSTEM_DESIGN_R02.md) | `CURRENT` | `—` | 打开项目第一屏、关章门和投影编辑。 |
+| [GENRE_RHYTHM_PACK_DESIGN_R01.md](GENRE_RHYTHM_PACK_DESIGN_R01.md) | `CURRENT` | `—` | 体裁节奏包候选机制。 |
+| [GLOBAL_OUTLINE_DESIGN_R01.md](GLOBAL_OUTLINE_DESIGN_R01.md) | `CURRENT` | `—` | 全书大纲引导。 |
+| [IDEA_LEDGER_DESIGN_R01.md](IDEA_LEDGER_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/IDEA_LEDGER_DESIGN_R02.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [IDEA_LEDGER_DESIGN_R02.md](IDEA_LEDGER_DESIGN_R02.md) | `SUPERSEDED` | `novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [INTAKE_SHELVES_DESIGN_R01.md](INTAKE_SHELVES_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/INTAKE_SHELVES_DESIGN_R03.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [INTAKE_SHELVES_DESIGN_R02.md](INTAKE_SHELVES_DESIGN_R02.md) | `SUPERSEDED` | `novel-mvp/design/INTAKE_SHELVES_DESIGN_R03.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [INTAKE_SHELVES_DESIGN_R03.md](INTAKE_SHELVES_DESIGN_R03.md) | `CURRENT` | `—` | 外来材料导入六架；章节架只收外来书稿。 |
+| [M8_PLANNING_DESIGN_R01.md](M8_PLANNING_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/M8_PLANNING_DESIGN_R04.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [M8_PLANNING_DESIGN_R02.md](M8_PLANNING_DESIGN_R02.md) | `SUPERSEDED` | `novel-mvp/design/M8_PLANNING_DESIGN_R04.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [M8_PLANNING_DESIGN_R03.md](M8_PLANNING_DESIGN_R03.md) | `SUPERSEDED` | `novel-mvp/design/M8_PLANNING_DESIGN_R04.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [M8_PLANNING_DESIGN_R04.md](M8_PLANNING_DESIGN_R04.md) | `WAITING_REWRITE` | `—` | 等待边界改版；现行目标是只规划下一章并管理规划账／长线账。 |
+| [MCP_INTERFACE_DESIGN_R01.md](MCP_INTERFACE_DESIGN_R01.md) | `CURRENT` | `—` | MCP 只读与提案接口。 |
+| [OUTLINE_STRUCTURE_DESIGN_R01.md](OUTLINE_STRUCTURE_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/OUTLINE_STRUCTURE_DESIGN_R02.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [OUTLINE_STRUCTURE_DESIGN_R02.md](OUTLINE_STRUCTURE_DESIGN_R02.md) | `WAITING_REWRITE` | `—` | 等待账本目录改版；事实账、长线账、规划账要按范围拆开。 |
+| [PLAN_LEDGER_STORAGE_DESIGN_R01.md](PLAN_LEDGER_STORAGE_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R04.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [PLAN_LEDGER_STORAGE_DESIGN_R02.md](PLAN_LEDGER_STORAGE_DESIGN_R02.md) | `SUPERSEDED` | `novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R04.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [PLAN_LEDGER_STORAGE_DESIGN_R03.md](PLAN_LEDGER_STORAGE_DESIGN_R03.md) | `SUPERSEDED` | `novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R04.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [PLAN_LEDGER_STORAGE_DESIGN_R04.md](PLAN_LEDGER_STORAGE_DESIGN_R04.md) | `WAITING_REWRITE` | `—` | 机械结构可查，但选择卡全文、独立长线账和十本账目录仍待改版。 |
+| [PLUGIN_CONTENT_WORKORDER_R01.md](PLUGIN_CONTENT_WORKORDER_R01.md) | `CURRENT` | `—` | 后续插件内容候选工单；27 个不是 V0 首发承诺。 |
+| [PLUGIN_SKILL_SYSTEM_DESIGN_R01.md](PLUGIN_SKILL_SYSTEM_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/PLUGIN_SKILL_SYSTEM_DESIGN_R02.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [PLUGIN_SKILL_SYSTEM_DESIGN_R02.md](PLUGIN_SKILL_SYSTEM_DESIGN_R02.md) | `CURRENT` | `—` | 插件机制；V0 仍按 1 套件×8 组件×前三层。 |
+| [REVERSE_PLOT_MAP_DESIGN_R01.md](REVERSE_PLOT_MAP_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/REVERSE_PLOT_MAP_DESIGN_R02.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [REVERSE_PLOT_MAP_DESIGN_R02.md](REVERSE_PLOT_MAP_DESIGN_R02.md) | `CURRENT` | `—` | 反向剧情投影；修改进入真值前仍需作者确认。 |
+| [REVIEW_OVERVIEW_DESIGN_R01.md](REVIEW_OVERVIEW_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/REVIEW_OVERVIEW_DESIGN_R03.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [REVIEW_OVERVIEW_DESIGN_R02.md](REVIEW_OVERVIEW_DESIGN_R02.md) | `SUPERSEDED` | `novel-mvp/design/REVIEW_OVERVIEW_DESIGN_R03.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [REVIEW_OVERVIEW_DESIGN_R03.md](REVIEW_OVERVIEW_DESIGN_R03.md) | `WAITING_REWRITE` | `—` | 等待驾驶舱改版；M9 只读算指标，M5 只做事实确认。 |
+| [ROLE_POV_MODE_DESIGN_R01.md](ROLE_POV_MODE_DESIGN_R01.md) | `CURRENT` | `—` | 角色视角模式。 |
+| [SCENE_CARD_EXPORT_DESIGN_R01.md](SCENE_CARD_EXPORT_DESIGN_R01.md) | `CURRENT` | `—` | 场景卡导出边界。 |
+| [STOP_POINT_REGISTRY_R01.md](STOP_POINT_REGISTRY_R01.md) | `SUPERSEDED` | `novel-mvp/design/STOP_POINT_REGISTRY_R03.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [STOP_POINT_REGISTRY_R02.md](STOP_POINT_REGISTRY_R02.md) | `SUPERSEDED` | `novel-mvp/design/STOP_POINT_REGISTRY_R03.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [STOP_POINT_REGISTRY_R03.md](STOP_POINT_REGISTRY_R03.md) | `CURRENT` | `—` | 停点登记；P3 不得自动搬剧情。 |
+| [TUTORIAL_SCRIPTS_DESIGN_R01.md](TUTORIAL_SCRIPTS_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/TUTORIAL_SCRIPTS_DESIGN_R02.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [TUTORIAL_SCRIPTS_DESIGN_R02.md](TUTORIAL_SCRIPTS_DESIGN_R02.md) | `CURRENT` | `—` | 教程、激活口径与黄金三章独立台。 |
+| [WEB_CANVAS_MVP_DESIGN_R01.md](WEB_CANVAS_MVP_DESIGN_R01.md) | `CURRENT` | `—` | 网页画布目标；完成与性能承诺仍需代码和结果票。 |
+| [WRITING_DESK_DESIGN_R01.md](WRITING_DESK_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/WRITING_DESK_DESIGN_R04.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [WRITING_DESK_DESIGN_R02.md](WRITING_DESK_DESIGN_R02.md) | `SUPERSEDED` | `novel-mvp/design/WRITING_DESK_DESIGN_R04.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [WRITING_DESK_DESIGN_R03.md](WRITING_DESK_DESIGN_R03.md) | `SUPERSEDED` | `novel-mvp/design/WRITING_DESK_DESIGN_R04.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
+| [WRITING_DESK_DESIGN_R04.md](WRITING_DESK_DESIGN_R04.md) | `WAITING_REWRITE` | `—` | 等待章事实稿改版；正文是可选出口，旧工作稿不能继续当产品名。 |
+<!-- DESIGN_STATUS_TABLE_END -->
 
-## 抽取与上下文
+## 待开新稿（不在当前文件清单）
 
-| 稿 | 现行版 | 管什么 | 状态 |
-|---|---|---|---|
-| EXTRACTION_PIPELINE | [R01](EXTRACTION_PIPELINE_DESIGN_R01.md) | 六段抽取管线 | 本轮未改（ADD-021 仍待 R02） |
-| CONTEXT_PACKER | [R01](CONTEXT_PACKER_DESIGN_R01.md) | 执行包编译 | 本轮未改 |
-| INTAKE_SHELVES | [R03](INTAKE_SHELVES_DESIGN_R03.md) | 导入六材料架；`chapters.json` 只收书稿 | 第三版已清旧句 |
-
-## 插件与内容
-
-| 稿 | 现行版 | 管什么 | 状态 |
-|---|---|---|---|
-| PLUGIN_SKILL_SYSTEM | [R02](PLUGIN_SKILL_SYSTEM_DESIGN_R02.md) | 插件机制；V0 首发仍是 1 套件×8 组件×前三层 | 本轮未改 |
-| PLUGIN_CONTENT_WORKORDER | [R01](PLUGIN_CONTENT_WORKORDER_R01.md) | 后续候选内容工单（27 个不是 V0 首发承诺） | 本轮未改正文；读时以机制稿 V0＝8 为准 |
-| GENRE_RHYTHM_PACK | [R01](GENRE_RHYTHM_PACK_DESIGN_R01.md) | 体裁节奏包 | 本轮未改 |
-| BOOK_DISSECT_MENU | [R01](BOOK_DISSECT_MENU_DESIGN_R01.md) | 拆别人的书 | 本轮未改 |
-
-## 端与接口
-
-| 稿 | 现行版 | 管什么 | 状态 |
-|---|---|---|---|
-| WEB_CANVAS_MVP | [R01](WEB_CANVAS_MVP_DESIGN_R01.md) | 网页画布 | 本轮未改。稿内「M1–M7 全部现成／性能承诺」只是设计目标，不是完成票 |
-| API_EXPOSURE | [R01](API_EXPOSURE_DESIGN_R01.md) | API 暴露层 | 本轮未改 |
-| MCP_INTERFACE | [R01](MCP_INTERFACE_DESIGN_R01.md) | MCP 只读＋提案 | 本轮未改 |
-| SCENE_CARD_EXPORT | [R01](SCENE_CARD_EXPORT_DESIGN_R01.md) | 场景卡出口 | 本轮未改 |
-| 17_～21_EXTERNAL_PROMPTS… | 调查题 | 外发调查，不是合同 | 不是本版施工依据 |
-
-## 其他功能面
-
-| 稿 | 现行版 | 管什么 | 状态 |
-|---|---|---|---|
-| TUTORIAL_SCRIPTS | [R02](TUTORIAL_SCRIPTS_DESIGN_R02.md) | 教程；激活＝看见系统在工作；黄金三章独立台 | 第二版（本轮未再清） |
-| ROLE_POV_MODE | [R01](ROLE_POV_MODE_DESIGN_R01.md) | 角色视角模式 | 本轮未改 |
-
-## 历史版（保留不动）
-
-FIRST_SCREEN_SYSTEM_R01、DAILY_LOOP_WALKTHROUGH_R01／R02、CHAPTER_WORKBENCH_R01、M8_PLANNING_R01／R02／R03、WRITING_DESK_R01／R02／R03、STOP_POINT_REGISTRY_R01／R02、PLAN_LEDGER_STORAGE_R01／R02／R03、INTAKE_SHELVES_R01／R02、TUTORIAL_SCRIPTS_R01、REVIEW_OVERVIEW_R01／R02、REVERSE_PLOT_MAP_R01，以及更早的 OUTLINE／CHARACTER／IDEA／PLUGIN R01。
-
-## 待开新稿（已拍待排）
-
-- EXTRACTION_PIPELINE_R02（ADD-021 四件）
+- `EXTRACTION_PIPELINE_R02`（ADD-021 四件）
 - 一致性体检原型设计（ADD-027.5）
+- `LEDGER_DIRECTORY_DESIGN_R01.md`：只读登记为工单 5 PR-C 预期新增，未进入本票。
 
-来源：Cursor 2026-08-15 按 SI-016 消化清旧句并落规划账合同；CZ 点头「两刀都做」
+来源：ChatGPT（工单 4 云端候选；依据 main INDEX、R14 与 cc793c4 的只读设计差量登记）

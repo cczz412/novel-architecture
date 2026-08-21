@@ -1,0 +1,1263 @@
+{
+  "schema_version": "design-currentness-registry-v1",
+  "registry_id": "NOVEL_MVP_DESIGN_CURRENTNESS_20260821_R01",
+  "authority": "CURRENTNESS_ROUTING_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
+  "review_status": "CANDIDATE_REVIEWED",
+  "updated_at": "2026-08-21T08:20:00+08:00",
+  "base_commit": "c79bd0af08b5424baf6e668e3d5dcd06e622a07a",
+  "product_background": {
+    "version": "R14",
+    "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+  },
+  "index_path": "novel-mvp/design/INDEX.md",
+  "checker_path": "tools/check_design_currentness.py",
+  "claim_boundary": "CURRENT means the document may be used as the default design reference under its recorded R14 boundary. It does not prove implementation, author usability, semantic quality, or construction authorization.",
+  "status_definitions": {
+    "CURRENT": "May appear in the default design route; still subordinate to R14, contracts, current code, and formal results.",
+    "WAITING_REWRITE": "Kept for history and partial mechanics; must be rewritten to R14 before related module code work.",
+    "SUPERSEDED": "Replaced or retired from the current route; follow superseded_by.",
+    "HISTORICAL": "Research/history artifact outside the product design route."
+  },
+  "nearby_rewrite_rule": {
+    "rule": "哪个模块要开工，先把它的设计稿升到 R14 口径并把 registry 状态改为 CURRENT，才准动该模块代码。",
+    "enforcement": "INDEX default route must contain CURRENT documents only; checker fails closed on non-current default routes.",
+    "does_not_authorize": [
+      "runtime changes",
+      "contract changes",
+      "product decisions"
+    ]
+  },
+  "inventory": {
+    "document_count": 57,
+    "status_counts": {
+      "CURRENT": 19,
+      "HISTORICAL": 5,
+      "SUPERSEDED": 26,
+      "WAITING_REWRITE": 7
+    },
+    "default_route_count": 19
+  },
+  "expected_work_order_5_pr_c_changes": {
+    "source_branch": "codex/module-runtime-foundation-20260819-r01",
+    "source_commit": "cc793c4719fb6470946c70e744f463147989547b",
+    "identity": "READ_ONLY_EXPECTED_SUCCESSORS_NOT_ADMITTED_BY_WO4",
+    "changes": [
+      {
+        "path": "novel-mvp/design/INDEX.md",
+        "change_kind": "ENTRY_REFRESH",
+        "present_on_main": true,
+        "expected_successor": "WORK_ORDER_5_PR_C"
+      },
+      {
+        "path": "novel-mvp/design/INTAKE_SHELVES_DESIGN_R02.md",
+        "change_kind": "HISTORICAL_DOCUMENT_PATCH",
+        "present_on_main": true,
+        "expected_successor": "WORK_ORDER_5_PR_C"
+      },
+      {
+        "path": "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
+        "change_kind": "NEW_DESIGN",
+        "present_on_main": false,
+        "expected_successor": "WORK_ORDER_5_PR_C"
+      },
+      {
+        "path": "novel-mvp/design/STOP_POINT_REGISTRY_R03.md",
+        "change_kind": "CURRENT_DOCUMENT_PATCH",
+        "present_on_main": true,
+        "expected_successor": "WORK_ORDER_5_PR_C"
+      }
+    ]
+  },
+  "documents": [
+    {
+      "design_id": "17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01",
+      "path": "novel-mvp/design/17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md",
+      "family": "17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814",
+      "version": "R01",
+      "status": "HISTORICAL",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "OUTSIDE_CURRENT_PRODUCT_ROUTE",
+        "note": "外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。",
+        "basis": "design INDEX labels 17–21 as external research prompts"
+      },
+      "body_sha256": "079a1cb5337cdee2d8006fbd2c1873fb504f81b56e81d5e39843cc01e32f4730",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01",
+      "path": "novel-mvp/design/18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md",
+      "family": "18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814",
+      "version": "R01",
+      "status": "HISTORICAL",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "OUTSIDE_CURRENT_PRODUCT_ROUTE",
+        "note": "外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。",
+        "basis": "design INDEX labels 17–21 as external research prompts"
+      },
+      "body_sha256": "8ef8ac0d004bf6dc9294824866c16e26ae005ece029df423472ff46441df8c27",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01",
+      "path": "novel-mvp/design/19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814_R01.md",
+      "family": "19_EXTERNAL_PROMPTS_LEDGER_BITE_20260814",
+      "version": "R01",
+      "status": "HISTORICAL",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "OUTSIDE_CURRENT_PRODUCT_ROUTE",
+        "note": "外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。",
+        "basis": "design INDEX labels 17–21 as external research prompts"
+      },
+      "body_sha256": "f21094708ef6823ad382b5231ca29118e1476fa201235130aa701f4f657e17bb",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01",
+      "path": "novel-mvp/design/20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814_R01.md",
+      "family": "20_EXTERNAL_PROMPT_R10_2_PATCH_REVIEW_20260814",
+      "version": "R01",
+      "status": "HISTORICAL",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "OUTSIDE_CURRENT_PRODUCT_ROUTE",
+        "note": "外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。",
+        "basis": "design INDEX labels 17–21 as external research prompts"
+      },
+      "body_sha256": "4fbc75320f0a75add77911953e04385692c940e13928c4c87bb47fa9ada3a104",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01",
+      "path": "novel-mvp/design/21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md",
+      "family": "21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814",
+      "version": "R01",
+      "status": "HISTORICAL",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "OUTSIDE_CURRENT_PRODUCT_ROUTE",
+        "note": "外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。",
+        "basis": "design INDEX labels 17–21 as external research prompts"
+      },
+      "body_sha256": "c6bb66d4226d57b5ae8f278676d5228c2c86a26f15c3611f7d86ed8950cd8cdd",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "API_EXPOSURE_DESIGN_R01",
+      "path": "novel-mvp/design/API_EXPOSURE_DESIGN_R01.md",
+      "family": "API_EXPOSURE_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "API 暴露层；仍是设计，不代表接口已经开放。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "4872f36e649facce8c01a4f30208cb7a59a15baf54f5aafb79c0f4e81d199d88",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "BOOK_DISSECT_MENU_DESIGN_R01",
+      "path": "novel-mvp/design/BOOK_DISSECT_MENU_DESIGN_R01.md",
+      "family": "BOOK_DISSECT_MENU_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "拆书菜单与只读分析入口。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "99d1964b42ac01675af298ff47572b77542bebdecedd2dd20635cd30cd4c82ce",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "CHAPTER_REVISION_DESIGN_R01",
+      "path": "novel-mvp/design/CHAPTER_REVISION_DESIGN_R01.md",
+      "family": "CHAPTER_REVISION_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "外来书稿改稿重导的版本与证据处理参考。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "12749d8668fabd5faafcb3edfdc942083d1d98e0eaf93559fe9130bace697a4a",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "CHAPTER_WORKBENCH_DESIGN_R01",
+      "path": "novel-mvp/design/CHAPTER_WORKBENCH_DESIGN_R01.md",
+      "family": "CHAPTER_WORKBENCH_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/CHAPTER_WORKBENCH_DESIGN_R02.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "e834c2a4b8a3d41d30d108727c8884572954205601efd1e337f77f573460d564",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "CHAPTER_WORKBENCH_DESIGN_R02",
+      "path": "novel-mvp/design/CHAPTER_WORKBENCH_DESIGN_R02.md",
+      "family": "CHAPTER_WORKBENCH_DESIGN",
+      "version": "R02",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "下一章工作台、选线和章级沙箱。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "609b9a559df624e0cc01517c648e8c4b467b04c898de7bfab5cd711d8ef7933d",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "CHARACTER_LEDGER_DESIGN_R01",
+      "path": "novel-mvp/design/CHARACTER_LEDGER_DESIGN_R01.md",
+      "family": "CHARACTER_LEDGER_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/CHARACTER_LEDGER_DESIGN_R02.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "91d0ede26cb72783075b266d8610fb559a934434bae98ff98b707d4d9e28b34e",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "CHARACTER_LEDGER_DESIGN_R02",
+      "path": "novel-mvp/design/CHARACTER_LEDGER_DESIGN_R02.md",
+      "family": "CHARACTER_LEDGER_DESIGN",
+      "version": "R02",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "人物账结构与作者可见操作参考。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "529cc0500bce1bc12addd8794a3de00ddfbbb342813fa3fef94c9fbad4b8b172",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "CONTEXT_PACKER_DESIGN_R01",
+      "path": "novel-mvp/design/CONTEXT_PACKER_DESIGN_R01.md",
+      "family": "CONTEXT_PACKER_DESIGN",
+      "version": "R01",
+      "status": "WAITING_REWRITE",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "R14_REWRITE_REQUIRED",
+        "note": "等待 M11→章事实稿、M11→章事实稿检查两根取件接缝改版。",
+        "basis": "R14 dual-lane/truth-layer correction and design INDEX annotation"
+      },
+      "body_sha256": "86206029f01177d5d32b00b180218c8a7ca4b458d9c0579fd77f20f3eeef1946",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "DAILY_LOOP_WALKTHROUGH_R01",
+      "path": "novel-mvp/design/DAILY_LOOP_WALKTHROUGH_R01.md",
+      "family": "DAILY_LOOP_WALKTHROUGH",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/DAILY_LOOP_WALKTHROUGH_R03.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "3e5e55907e89cf6aec9ef3247e76b016154dc1ceed23034c5ba203e7e3eadd3f",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "DAILY_LOOP_WALKTHROUGH_R02",
+      "path": "novel-mvp/design/DAILY_LOOP_WALKTHROUGH_R02.md",
+      "family": "DAILY_LOOP_WALKTHROUGH",
+      "version": "R02",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/DAILY_LOOP_WALKTHROUGH_R03.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "5f8d2bc48a0786a31f22c6161024e791333fd71e1a76fd32f632b90d598cca45",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "DAILY_LOOP_WALKTHROUGH_R03",
+      "path": "novel-mvp/design/DAILY_LOOP_WALKTHROUGH_R03.md",
+      "family": "DAILY_LOOP_WALKTHROUGH",
+      "version": "R03",
+      "status": "WAITING_REWRITE",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "R14_REWRITE_REQUIRED",
+        "note": "等待双车道改版；自产章回 M2／M3 的旧路线不得指导施工。",
+        "basis": "R14 dual-lane/truth-layer correction and design INDEX annotation"
+      },
+      "body_sha256": "292931b5d5fe8988bc657a81cd0cb842e58665770740c9188440758ebb9d9ec0",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "EXTRACTION_PIPELINE_DESIGN_R01",
+      "path": "novel-mvp/design/EXTRACTION_PIPELINE_DESIGN_R01.md",
+      "family": "EXTRACTION_PIPELINE_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "外来道六段抽取管线；ADD-021 的 R02 改版另排。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "a54b33775267b67482aae11b4ffe40609bbe617abd1b60a3f7344d6e6284b836",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "FIRST_SCREEN_SYSTEM_DESIGN_R01",
+      "path": "novel-mvp/design/FIRST_SCREEN_SYSTEM_DESIGN_R01.md",
+      "family": "FIRST_SCREEN_SYSTEM_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/FIRST_SCREEN_SYSTEM_DESIGN_R02.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "d4871a1da6697d4c95ed0eed276bb8b979414cdc3050b57e68b2e2cf70eca9d1",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "FIRST_SCREEN_SYSTEM_DESIGN_R02",
+      "path": "novel-mvp/design/FIRST_SCREEN_SYSTEM_DESIGN_R02.md",
+      "family": "FIRST_SCREEN_SYSTEM_DESIGN",
+      "version": "R02",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "打开项目第一屏、关章门和投影编辑。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "6961d287a6f1c7caa6a9e7f8ec94e8b12d34e3d4929102e08c9f6fd449022a5f",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "GENRE_RHYTHM_PACK_DESIGN_R01",
+      "path": "novel-mvp/design/GENRE_RHYTHM_PACK_DESIGN_R01.md",
+      "family": "GENRE_RHYTHM_PACK_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "体裁节奏包候选机制。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "36c78376274458b604ac8cd43532a2fbf40d44d990fcf90ae1cf70ef910446c7",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "GLOBAL_OUTLINE_DESIGN_R01",
+      "path": "novel-mvp/design/GLOBAL_OUTLINE_DESIGN_R01.md",
+      "family": "GLOBAL_OUTLINE_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "全书大纲引导。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "fc5fed029fb1ca445071bdc846fa98865d8dfeb68f0d01dbfc09470843b34f13",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "IDEA_LEDGER_DESIGN_R01",
+      "path": "novel-mvp/design/IDEA_LEDGER_DESIGN_R01.md",
+      "family": "IDEA_LEDGER_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/IDEA_LEDGER_DESIGN_R02.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "81ea064dd34730e94e53231c1d7a7c70a69db1133a1360a334fdf2b7e0003d27",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "IDEA_LEDGER_DESIGN_R02",
+      "path": "novel-mvp/design/IDEA_LEDGER_DESIGN_R02.md",
+      "family": "IDEA_LEDGER_DESIGN",
+      "version": "R02",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "EXPECTED_PR_C",
+        "path": "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
+        "present_on_main": false,
+        "reason": "R14 将独立灵感账并入长线账；十本账目录稿由工单 5 PR-C 引入。"
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "d8bfa498dbd0eab1afce4e4480b33101788ec8bf4a55748192d7ea1ecc365b23",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "INTAKE_SHELVES_DESIGN_R01",
+      "path": "novel-mvp/design/INTAKE_SHELVES_DESIGN_R01.md",
+      "family": "INTAKE_SHELVES_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/INTAKE_SHELVES_DESIGN_R03.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "95959aed9648152b4a5f3f0ed7434f015c3e0091241d9d92a72208b6ae971bf8",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "INTAKE_SHELVES_DESIGN_R02",
+      "path": "novel-mvp/design/INTAKE_SHELVES_DESIGN_R02.md",
+      "family": "INTAKE_SHELVES_DESIGN",
+      "version": "R02",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/INTAKE_SHELVES_DESIGN_R03.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "b018c4f2f1d419065968d44b988c4b15cca6c3bbad31be5af8ca442fac2cd627",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ],
+      "expected_pr_c_change": "HISTORICAL_DOCUMENT_PATCH"
+    },
+    {
+      "design_id": "INTAKE_SHELVES_DESIGN_R03",
+      "path": "novel-mvp/design/INTAKE_SHELVES_DESIGN_R03.md",
+      "family": "INTAKE_SHELVES_DESIGN",
+      "version": "R03",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "外来材料导入六架；章节架只收外来书稿。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "da31920338948c7aeae33cab868ae15e24e195e86b238aa96d71514e02575ba0",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "M8_PLANNING_DESIGN_R01",
+      "path": "novel-mvp/design/M8_PLANNING_DESIGN_R01.md",
+      "family": "M8_PLANNING_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/M8_PLANNING_DESIGN_R04.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "c86a19da907c8b4e0445138e15424308a0554806a6392c7457743b1235e08162",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "M8_PLANNING_DESIGN_R02",
+      "path": "novel-mvp/design/M8_PLANNING_DESIGN_R02.md",
+      "family": "M8_PLANNING_DESIGN",
+      "version": "R02",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/M8_PLANNING_DESIGN_R04.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "3e89ad6d642a24251ed6ca20913752dba625bf17568648a1fd148074cc204389",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "M8_PLANNING_DESIGN_R03",
+      "path": "novel-mvp/design/M8_PLANNING_DESIGN_R03.md",
+      "family": "M8_PLANNING_DESIGN",
+      "version": "R03",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/M8_PLANNING_DESIGN_R04.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "1781b71136caa2af6032f866a4484de8551333879faef7f05e5b37ad8562af8e",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "M8_PLANNING_DESIGN_R04",
+      "path": "novel-mvp/design/M8_PLANNING_DESIGN_R04.md",
+      "family": "M8_PLANNING_DESIGN",
+      "version": "R04",
+      "status": "WAITING_REWRITE",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "R14_REWRITE_REQUIRED",
+        "note": "等待边界改版；现行目标是只规划下一章并管理规划账／长线账。",
+        "basis": "R14 dual-lane/truth-layer correction and design INDEX annotation"
+      },
+      "body_sha256": "041adf1f333856df52b8417f8a5245c65321ad87c976331cc683b9d45a7499a9",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "MCP_INTERFACE_DESIGN_R01",
+      "path": "novel-mvp/design/MCP_INTERFACE_DESIGN_R01.md",
+      "family": "MCP_INTERFACE_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "MCP 只读与提案接口。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "660cf7228b575a1f5200a50461c278cb4346436d1f2247a19df6a38d735359cd",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "OUTLINE_STRUCTURE_DESIGN_R01",
+      "path": "novel-mvp/design/OUTLINE_STRUCTURE_DESIGN_R01.md",
+      "family": "OUTLINE_STRUCTURE_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/OUTLINE_STRUCTURE_DESIGN_R02.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "d38c1857c79283628f9821e627bde9dab9b5276011f9de9c83bb6f3f939934f8",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "OUTLINE_STRUCTURE_DESIGN_R02",
+      "path": "novel-mvp/design/OUTLINE_STRUCTURE_DESIGN_R02.md",
+      "family": "OUTLINE_STRUCTURE_DESIGN",
+      "version": "R02",
+      "status": "WAITING_REWRITE",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "R14_REWRITE_REQUIRED",
+        "note": "等待账本目录改版；事实账、长线账、规划账要按范围拆开。",
+        "basis": "R14 dual-lane/truth-layer correction and design INDEX annotation"
+      },
+      "body_sha256": "f4f17204bfad4898d3956f44f30ef034fec1066d863c364aa776dbf4653bd212",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "PLAN_LEDGER_STORAGE_DESIGN_R01",
+      "path": "novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R01.md",
+      "family": "PLAN_LEDGER_STORAGE_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R04.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "32ee5dc3b72e33358a7d9cab564668bc09c66bf5c585ec486dd8db320fbe2c86",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "PLAN_LEDGER_STORAGE_DESIGN_R02",
+      "path": "novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R02.md",
+      "family": "PLAN_LEDGER_STORAGE_DESIGN",
+      "version": "R02",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R04.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "ed0cd8c419ae2fee5994ad3250943bb4f0ffed0e5b110c8b4792e8b3d2b061f8",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "PLAN_LEDGER_STORAGE_DESIGN_R03",
+      "path": "novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R03.md",
+      "family": "PLAN_LEDGER_STORAGE_DESIGN",
+      "version": "R03",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R04.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "9cffb3253b92a9183c292493cc41d228a298d6143006a27b28c553de5d2946ad",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "PLAN_LEDGER_STORAGE_DESIGN_R04",
+      "path": "novel-mvp/design/PLAN_LEDGER_STORAGE_DESIGN_R04.md",
+      "family": "PLAN_LEDGER_STORAGE_DESIGN",
+      "version": "R04",
+      "status": "WAITING_REWRITE",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "R14_REWRITE_REQUIRED",
+        "note": "机械结构可查，但选择卡全文、独立长线账和十本账目录仍待改版。",
+        "basis": "R14 dual-lane/truth-layer correction and design INDEX annotation"
+      },
+      "body_sha256": "0e4af0ae7fdeaa21ee96a3055ae525c9c60f3dbf3c187717494d59033d841f55",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "PLUGIN_CONTENT_WORKORDER_R01",
+      "path": "novel-mvp/design/PLUGIN_CONTENT_WORKORDER_R01.md",
+      "family": "PLUGIN_CONTENT_WORKORDER",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "后续插件内容候选工单；27 个不是 V0 首发承诺。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "9a9b2d4ebf8823e8b495f58b7102ca04e718c38657f0eab49b6deeae837323d5",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "PLUGIN_SKILL_SYSTEM_DESIGN_R01",
+      "path": "novel-mvp/design/PLUGIN_SKILL_SYSTEM_DESIGN_R01.md",
+      "family": "PLUGIN_SKILL_SYSTEM_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/PLUGIN_SKILL_SYSTEM_DESIGN_R02.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "423e269ddd482e985bb5a284db797102269aa176d8bbe377465ee003895f8707",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "PLUGIN_SKILL_SYSTEM_DESIGN_R02",
+      "path": "novel-mvp/design/PLUGIN_SKILL_SYSTEM_DESIGN_R02.md",
+      "family": "PLUGIN_SKILL_SYSTEM_DESIGN",
+      "version": "R02",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "插件机制；V0 仍按 1 套件×8 组件×前三层。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "5a2f512b9ac144bc751ace64f832b35b3e0f5914db180135954856bab62b9a5e",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "REVERSE_PLOT_MAP_DESIGN_R01",
+      "path": "novel-mvp/design/REVERSE_PLOT_MAP_DESIGN_R01.md",
+      "family": "REVERSE_PLOT_MAP_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/REVERSE_PLOT_MAP_DESIGN_R02.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "90881a5b3a7e40f4c8fe1758d86dd86f4ba043938f235dafddf7961a18daad99",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "REVERSE_PLOT_MAP_DESIGN_R02",
+      "path": "novel-mvp/design/REVERSE_PLOT_MAP_DESIGN_R02.md",
+      "family": "REVERSE_PLOT_MAP_DESIGN",
+      "version": "R02",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "反向剧情投影；修改进入真值前仍需作者确认。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "0cdc38f7b5037b0942498393d8a9d48e5bafc943295e4e95b544c59b77008004",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "REVIEW_OVERVIEW_DESIGN_R01",
+      "path": "novel-mvp/design/REVIEW_OVERVIEW_DESIGN_R01.md",
+      "family": "REVIEW_OVERVIEW_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/REVIEW_OVERVIEW_DESIGN_R03.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "c89b83df975b35c59e8565a76817f320a25d1e20e77b37adae53f93be8086675",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "REVIEW_OVERVIEW_DESIGN_R02",
+      "path": "novel-mvp/design/REVIEW_OVERVIEW_DESIGN_R02.md",
+      "family": "REVIEW_OVERVIEW_DESIGN",
+      "version": "R02",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/REVIEW_OVERVIEW_DESIGN_R03.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "f9385ce33f7ff444955bd2be4a6d081760c0379d3f02387aed73501b74b817f9",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "REVIEW_OVERVIEW_DESIGN_R03",
+      "path": "novel-mvp/design/REVIEW_OVERVIEW_DESIGN_R03.md",
+      "family": "REVIEW_OVERVIEW_DESIGN",
+      "version": "R03",
+      "status": "WAITING_REWRITE",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "R14_REWRITE_REQUIRED",
+        "note": "等待驾驶舱改版；M9 只读算指标，M5 只做事实确认。",
+        "basis": "R14 dual-lane/truth-layer correction and design INDEX annotation"
+      },
+      "body_sha256": "48803eabb1d565b87fd0af713c476bc8b61aaae393d744489e218e5a5d24fdca",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "ROLE_POV_MODE_DESIGN_R01",
+      "path": "novel-mvp/design/ROLE_POV_MODE_DESIGN_R01.md",
+      "family": "ROLE_POV_MODE_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "角色视角模式。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "9868d9a91464a56ab6ebe26cfdcd7807e3d05d6928336816cf632b08d8eb6cd4",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "SCENE_CARD_EXPORT_DESIGN_R01",
+      "path": "novel-mvp/design/SCENE_CARD_EXPORT_DESIGN_R01.md",
+      "family": "SCENE_CARD_EXPORT_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "场景卡导出边界。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "babf9e389c77b4fedcb880f51208e6e1ec372f6d02da771b86ec71d89bbffe8a",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "STOP_POINT_REGISTRY_R01",
+      "path": "novel-mvp/design/STOP_POINT_REGISTRY_R01.md",
+      "family": "STOP_POINT_REGISTRY",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/STOP_POINT_REGISTRY_R03.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "1968c2830650186001772a11c8f0248da61ea98a5049d19e57c6b52e164bb450",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "STOP_POINT_REGISTRY_R02",
+      "path": "novel-mvp/design/STOP_POINT_REGISTRY_R02.md",
+      "family": "STOP_POINT_REGISTRY",
+      "version": "R02",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/STOP_POINT_REGISTRY_R03.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "5708625556bb9de85304b2a88958f388a20dd38ca4ef6cb3b71469c05887d858",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "STOP_POINT_REGISTRY_R03",
+      "path": "novel-mvp/design/STOP_POINT_REGISTRY_R03.md",
+      "family": "STOP_POINT_REGISTRY",
+      "version": "R03",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "停点登记；P3 不得自动搬剧情。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "8179100901516f7f4b9edb92f4185385e891cb34636a6c722912e4759a4b7ad3",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ],
+      "expected_pr_c_change": "CURRENT_DOCUMENT_PATCH"
+    },
+    {
+      "design_id": "TUTORIAL_SCRIPTS_DESIGN_R01",
+      "path": "novel-mvp/design/TUTORIAL_SCRIPTS_DESIGN_R01.md",
+      "family": "TUTORIAL_SCRIPTS_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/TUTORIAL_SCRIPTS_DESIGN_R02.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "88ece8a88c5b108a57610923b526e38234635449da14d915cbe4daddf6da5a11",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "TUTORIAL_SCRIPTS_DESIGN_R02",
+      "path": "novel-mvp/design/TUTORIAL_SCRIPTS_DESIGN_R02.md",
+      "family": "TUTORIAL_SCRIPTS_DESIGN",
+      "version": "R02",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "教程、激活口径与黄金三章独立台。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "888315e20e5b197aa9f383dcbc7ac9513533f6b66bc4d42b39bdbd41d05208ed",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "WEB_CANVAS_MVP_DESIGN_R01",
+      "path": "novel-mvp/design/WEB_CANVAS_MVP_DESIGN_R01.md",
+      "family": "WEB_CANVAS_MVP_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "RETAINED_CURRENT_UNDER_R14",
+        "note": "网页画布目标；完成与性能承诺仍需代码和结果票。",
+        "basis": "main INDEX current route reviewed against R14"
+      },
+      "body_sha256": "48403dd1643b60f07a2d2c7bbe1cf8f52540ec11f27a1205621c3499421edf47",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "WRITING_DESK_DESIGN_R01",
+      "path": "novel-mvp/design/WRITING_DESK_DESIGN_R01.md",
+      "family": "WRITING_DESK_DESIGN",
+      "version": "R01",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/WRITING_DESK_DESIGN_R04.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "3f726f1be85930c8b57bb94dd73930646dacd04e77548c40c9da0b98d9611472",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "WRITING_DESK_DESIGN_R02",
+      "path": "novel-mvp/design/WRITING_DESK_DESIGN_R02.md",
+      "family": "WRITING_DESK_DESIGN",
+      "version": "R02",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/WRITING_DESK_DESIGN_R04.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "2297e8fbaabfb3a2a03649e5fee1d12b5205d99069cdff91a017fcfca95b5575",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "WRITING_DESK_DESIGN_R03",
+      "path": "novel-mvp/design/WRITING_DESK_DESIGN_R03.md",
+      "family": "WRITING_DESK_DESIGN",
+      "version": "R03",
+      "status": "SUPERSEDED",
+      "default_route": false,
+      "superseded_by": {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/WRITING_DESK_DESIGN_R04.md",
+        "present_on_main": true
+      },
+      "r14_relation": {
+        "state": "NOT_CURRENT_REPLACED_OR_RETIRING",
+        "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
+        "basis": "design INDEX historical-version chain and R14 currentness review"
+      },
+      "body_sha256": "d1e534cb8edee59e2b557a6c9823299af226650404c77fd5904dff952613cb0b",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "WRITING_DESK_DESIGN_R04",
+      "path": "novel-mvp/design/WRITING_DESK_DESIGN_R04.md",
+      "family": "WRITING_DESK_DESIGN",
+      "version": "R04",
+      "status": "WAITING_REWRITE",
+      "default_route": false,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "R14_REWRITE_REQUIRED",
+        "note": "等待章事实稿改版；正文是可选出口，旧工作稿不能继续当产品名。",
+        "basis": "R14 dual-lane/truth-layer correction and design INDEX annotation"
+      },
+      "body_sha256": "1fb4a23089c3bf987cadec78a859d8c5f0a35888bc77fd8aec1e2efd1c590b1b",
+      "source_basis": [
+        "novel-mvp/design/INDEX.md@main-before-WO4",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    }
+  ]
+}
