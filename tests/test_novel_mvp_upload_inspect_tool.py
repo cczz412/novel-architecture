@@ -101,11 +101,12 @@ def _assert_safe_result(result: dict, raw_text: str = TEXT) -> None:
     [
         ("chapter.txt", TEXT.encode(), "txt", "txt"),
         ("chapter.md", TEXT.encode("gb18030"), "md", "md"),
+        ("table.csv", "人物,状态\r\n沈砚,失踪\r\n".encode(), "csv", "csv"),
         ("chapter.docx", _docx(TEXT), "docx", "docx_main_flow_text"),
         ("book.zip", _zip({"chapter-01.txt": TEXT.encode()}), "zip", "txt"),
     ],
 )
-def test_four_supported_formats_return_safe_inspection_without_truth_writes(
+def test_supported_formats_return_safe_inspection_without_truth_writes(
     name: str,
     payload: bytes,
     root_format: str,
@@ -131,6 +132,7 @@ def test_four_supported_formats_return_safe_inspection_without_truth_writes(
     [
         ("chapter.txt", TEXT.encode(), "txt", "chapter.txt", "txt"),
         ("chapter.md", TEXT.encode("gb18030"), "md", "chapter.md", "md"),
+        ("table.csv", "人物,状态\r\n沈砚,失踪\r\n".encode(), "csv", "table.csv", "csv"),
         (
             "chapter.docx",
             _docx(TEXT),
@@ -264,6 +266,54 @@ def test_zip_and_unknown_format_failures_use_current_router_blocks(
     assert "没有可继续导入的终端材料" in rendered
     assert f"[{block_type}]" in rendered
     assert "检查状态：✅ READY" not in rendered
+
+
+@pytest.mark.parametrize("suffix", ["xls", "xlsx", "xlsm"])
+def test_excel_workbook_gets_one_safe_conversion_block(suffix: str) -> None:
+    payload = _zip(
+        {
+            "[Content_Types].xml": b"<Types/>",
+            "xl/workbook.xml": b"<workbook/>",
+        }
+    )
+    name = f"人物表.{suffix}"
+
+    result = upload_inspect_tool.execute([UploadSource(name, payload)])
+    rendered = upload_inspect_tool.render_inspection([UploadSource(name, payload)])
+
+    assert result["status"] == "BLOCKED"
+    assert result["terminal_source_count"] == 0
+    assert result["uploads"][0]["format"] == "excel"
+    assert [row["type"] for row in result["blocks"]] == [
+        "unsupported_excel_workbook"
+    ]
+    assert "CSV UTF-8（逗号分隔）" in rendered
+    assert "本批没有导入任何 Excel 内容" in rendered
+    assert "xl/workbook.xml" not in _json_text(result)
+    assert "xl/workbook.xml" not in rendered
+
+
+def test_zip_with_excel_member_blocks_the_whole_container_without_unpacking_excel() -> None:
+    workbook = _zip(
+        {"[Content_Types].xml": b"<Types/>", "xl/workbook.xml": b"<workbook/>"}
+    )
+    payload = _zip(
+        {
+            "notes.csv": "名称,说明\n印册,不可焚毁\n".encode(),
+            "tables/人物表.xlsx": workbook,
+        }
+    )
+
+    result = upload_inspect_tool.execute([UploadSource("材料.zip", payload)])
+
+    assert result["status"] == "BLOCKED"
+    assert result["terminal_source_count"] == 1
+    assert any(
+        row["type"] == "unsupported_excel_workbook" for row in result["blocks"]
+    )
+    assert "材料.zip/tables/人物表.xlsx" in _json_text(result)
+    assert "xl/workbook.xml" not in _json_text(result)
+    _assert_safe_result(result, raw_text="名称,说明\n印册,不可焚毁\n")
 
 
 def test_unknown_filename_hint_stays_unknown_instead_of_guessing_identity() -> None:

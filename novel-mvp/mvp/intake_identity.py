@@ -22,7 +22,7 @@ from contracts.validate_c10_intake_material_identity import (
     c1_emission_eligible,
     validate_record,
 )
-from mvp import chapterize, store
+from mvp import chapterize, store, watermark_candidates
 
 
 SOURCE_STORAGE_VERSION = "INTAKE_PARENT_SOURCE_V1"
@@ -324,6 +324,51 @@ def _validate_batch_chapter_sequence(prepared: list[dict[str, Any]]) -> None:
             raise ValueError(f"跨文件章序必须连续递增，实际为：{numbers}")
 
 
+def _watermark_receipt(prepared: list[dict[str, Any]]) -> dict[str, Any]:
+    """只把已确认 Chapter 的切章结果交给候选检测器。"""
+    chapters: list[dict[str, Any]] = []
+    global_index = 0
+    for item in prepared:
+        records = {
+            record["material_unit_id"]: record for record in item["records"]
+        }
+        source = item["source"]
+        for receipt in item["projection_receipts"]:
+            material_unit_id = receipt["material_unit_id"]
+            record = records.get(material_unit_id)
+            if record is None:
+                raise ValueError("水印候选检测缺 C10 material unit")
+            revision_no = receipt["identity_revision_no"]
+            material_start = record["source_ref"]["start"]
+            for local_index, candidate in enumerate(
+                receipt["chapterization"]["candidates"], start=1
+            ):
+                global_index += 1
+                text = candidate["text"]
+                chapters.append(
+                    {
+                        "chapter_key": (
+                            f"{material_unit_id}@ir{revision_no}:chapter{local_index}"
+                        ),
+                        "source_id": source["source_id"],
+                        "source_name": source["source_name"],
+                        "source_sha256": source["source_sha256"],
+                        "material_unit_id": material_unit_id,
+                        "identity_revision_no": revision_no,
+                        "chapter_index": global_index,
+                        "source_body_start": (
+                            material_start + candidate["source_ref"]["body_start"]
+                        ),
+                        "source_body_end": (
+                            material_start + candidate["source_ref"]["body_end"]
+                        ),
+                        "text": text,
+                        "text_sha256": candidate["text_sha256"],
+                    }
+                )
+    return watermark_candidates.inspect(chapters)
+
+
 def ingest_explicit_material_batch(
     project: str,
     items: list[dict[str, Any]],
@@ -371,6 +416,7 @@ def ingest_explicit_material_batch(
         raise ValueError(f"C10 material_unit_id 已存在：{collisions}")
     if enforce_global_chapter_sequence:
         _validate_batch_chapter_sequence(prepared)
+    watermark_receipt = _watermark_receipt(prepared)
 
     pending: list[dict] = []
     receipts: list[dict] = []
@@ -384,6 +430,11 @@ def ingest_explicit_material_batch(
             receipt["pending_c1_end"] += offset
             receipts.append(receipt)
         warnings.extend(item["warnings"])
+    if watermark_receipt["candidate_count"]:
+        warnings.append(
+            f"发现 {watermark_receipt['candidate_count']} 组疑似水印；"
+            "原文已保留，只标候选，没有阻断导入或自动删除"
+        )
 
     for item in prepared:
         store.add_intake_source(project, item["source"])
@@ -405,6 +456,7 @@ def ingest_explicit_material_batch(
         "material_units": records,
         "chapters": chapters,
         "projection_receipts": projection_receipts,
+        "watermark_receipt": watermark_receipt,
         "warnings": warnings,
         "api_calls": 0,
         "automatic_retries": 0,
@@ -440,6 +492,7 @@ def ingest_explicit_materials(
         "material_units": batch["material_units"],
         "chapters": batch["chapters"],
         "projection_receipts": batch["projection_receipts"],
+        "watermark_receipt": batch["watermark_receipt"],
         "warnings": batch["warnings"],
         "api_calls": 0,
         "automatic_retries": 0,
@@ -475,6 +528,7 @@ def project_material_units_to_c1(
     pending: list[dict] = []
     receipts: list[dict] = []
     warnings: list[str] = []
+    watermark_prepared: list[dict[str, Any]] = []
     for record in eligible:
         ref = record["source_ref"]
         source = sources.get(ref["source_id"])
@@ -493,6 +547,19 @@ def project_material_units_to_c1(
         pending.extend(unit_pending)
         receipts.extend(unit_receipts)
         warnings.extend(unit_warnings)
+        watermark_prepared.append(
+            {
+                "source": source,
+                "records": [record],
+                "projection_receipts": unit_receipts,
+            }
+        )
+    watermark_receipt = _watermark_receipt(watermark_prepared)
+    if watermark_receipt["candidate_count"]:
+        warnings.append(
+            f"发现 {watermark_receipt['candidate_count']} 组疑似水印；"
+            "原文已保留，只标候选，没有阻断投影或自动删除"
+        )
     chapters = _persist_projection(project, pending, receipts)
     return {
         "chapters": chapters,
@@ -501,6 +568,7 @@ def project_material_units_to_c1(
             for item in store.intake_c1_projections(project)
             if item["material_unit_id"] in wanted
         ],
+        "watermark_receipt": watermark_receipt,
         "warnings": warnings,
         "api_calls": 0,
         "automatic_retries": 0,

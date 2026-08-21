@@ -12,9 +12,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_ROOT = ROOT / "novel-mvp"
-T03_ROOT = ROOT / "TEMP/t03_parallel_r13_m1_m2_20260815_r01"
-RECEIPT_ROOT = T03_ROOT / "t03_prod_02_safe_chapterization_20260817_r01"
-LOCK_PATH = RECEIPT_ROOT / "CHAPTERIZATION_FIXTURE_LOCK.json"
+FIXTURE_ROOT = ROOT / "tests/fixtures/novel_mvp/intake_regressions"
+LOCK_PATH = FIXTURE_ROOT / "chapterization_manifest.json"
 
 sys.path.insert(0, str(PRODUCT_ROOT))
 try:
@@ -32,6 +31,21 @@ def _lock() -> dict:
     return json.loads(LOCK_PATH.read_text(encoding="utf-8"))
 
 
+def _fixture_path(relative_path: str) -> Path:
+    relative = Path(relative_path)
+    assert not relative.is_absolute()
+    assert ".." not in relative.parts
+    path = (FIXTURE_ROOT / relative).resolve()
+    assert path.is_relative_to(FIXTURE_ROOT.resolve())
+    return path
+
+
+def _fixture(entry: dict) -> Path:
+    path = _fixture_path(entry["path"])
+    assert _sha256_bytes(path.read_bytes()) == entry["sha256"]
+    return path
+
+
 def _case(case_id: str) -> dict:
     return next(item for item in _lock()["cases"] if item["case_id"] == case_id)
 
@@ -42,11 +56,8 @@ def _materialize(case_id: str) -> str:
         text = case["text"]
     elif case["kind"] == "generated_text":
         text = case["pattern"] * case["repeat"]
-    elif case["kind"] == "ordered_concatenation_of_frozen_inputs":
-        directory = Path(case["directory"])
-        payloads = [(directory / name).read_bytes() for name in case["filenames"]]
-        assert [_sha256_bytes(value) for value in payloads] == case["source_file_sha256"]
-        text = b"".join(payloads).decode("utf-8")
+    elif case["kind"] == "file_text":
+        text = _fixture(case).read_text(encoding="utf-8")
     else:
         raise AssertionError(f"没有文本的夹具：{case_id}")
     assert len(text) == case.get("chars", case.get("combined_chars"))
@@ -303,33 +314,19 @@ def test_p_ch_08_real_cli_path_reaches_admission_then_fake_m3_without_api(
 
 
 def test_known_r01_r03_and_dht05_never_publish_known_wrong_splits() -> None:
-    s1a_lock = json.loads(
-        (T03_ROOT / "t03_s1a_fix_20260817_r01/S1A_BEFORE_LOCK.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    r01 = next(item for item in s1a_lock["cases"] if item["case_id"] == "S1A-R01")
-    r01_text = Path(r01["inputs"][0]["path"]).read_text(encoding="utf-8")
+    regressions = _lock()["regression_texts"]
+    r01_text = _fixture(regressions["s1a_r01"]).read_text(encoding="utf-8")
     r01_result = chapterize.chapterize_text(r01_text, default_title="R01")
     assert r01_result["status"] == "BLOCKED" or [
         item["chapter_no"] for item in r01_result["candidates"]
     ] == list(range(1, 11))
 
-    r03_baseline = json.loads(
-        (
-            T03_ROOT
-            / "t03_r03_double_heading_fix_20260817_r01/R03_DOUBLE_HEADING_BASELINE.json"
-        ).read_text(encoding="utf-8")
-    )
-    r03_text = Path(r03_baseline["source"]["path"]).read_text(encoding="utf-8")
+    r03_text = _fixture(regressions["r03"]).read_text(encoding="utf-8")
     r03_result = chapterize.chapterize_text(r03_text, default_title="R03")
     assert r03_result["status"] == "BLOCKED"
     assert r03_result["candidates"] == []
 
-    dht05_path = (
-        T03_ROOT
-        / "t03_r03_double_heading_fix_20260817_r01/fixtures/DHT-05_body_between_candidates.txt"
-    )
+    dht05_path = _fixture(regressions["dht05"])
     dht05_result = chapterize.chapterize_text(
         dht05_path.read_text(encoding="utf-8"), default_title="DHT-05"
     )
@@ -338,10 +335,8 @@ def test_known_r01_r03_and_dht05_never_publish_known_wrong_splits() -> None:
 
 
 def test_s1a_f09_ambiguous_compact_section_fails_closed_without_overreach() -> None:
-    fixture_root = T03_ROOT / "t03_s1a_fix_20260817_r01/fixtures"
-    f09_text = (fixture_root / "F09_ambiguous_compact_section_sentence.txt").read_text(
-        encoding="utf-8"
-    )
+    regressions = _lock()["regression_texts"]
+    f09_text = _fixture(regressions["f09"]).read_text(encoding="utf-8")
     f09_result = chapterize.chapterize_text(f09_text, default_title="F09")
     assert f09_result["status"] == "BLOCKED"
     assert f09_result["candidates"] == []
@@ -358,8 +353,11 @@ def test_s1a_f09_ambiguous_compact_section_fails_closed_without_overreach() -> N
     )
     assert general_result["status"] == "BLOCKED"
 
-    for case_id in ("F03_valid_bare_section_title", "F04_valid_section_title_with_name"):
-        text = (fixture_root / f"{case_id}.txt").read_text(encoding="utf-8")
+    for case_id, fixture_id in (
+        ("F03_valid_bare_section_title", "f03"),
+        ("F04_valid_section_title_with_name", "f04"),
+    ):
+        text = _fixture(regressions[fixture_id]).read_text(encoding="utf-8")
         result = chapterize.chapterize_text(text, default_title=case_id)
         assert result["status"] == "READY"
         assert len(result["candidates"]) == 1
@@ -369,10 +367,8 @@ def test_s1a_f09_ambiguous_compact_section_fails_closed_without_overreach() -> N
 
 
 def test_stable_double_heading_groups_collapse_without_relaxing_negative_controls() -> None:
-    fixture_root = T03_ROOT / "t03_r03_double_heading_fix_20260817_r01/fixtures"
-    stable_text = (fixture_root / "DHT-02_stable_double_heading.txt").read_text(
-        encoding="utf-8"
-    )
+    regressions = _lock()["regression_texts"]
+    stable_text = _fixture(regressions["dht02"]).read_text(encoding="utf-8")
     stable = chapterize.chapterize_text(stable_text, default_title="DHT-02")
     assert stable["status"] == "READY"
     assert [item["chapter_no"] for item in stable["candidates"]] == [1, 2]
@@ -382,28 +378,26 @@ def test_stable_double_heading_groups_collapse_without_relaxing_negative_control
     ]
     _assert_exact_coverage(stable_text, stable)
 
-    for name in ("DHT-05_body_between_candidates.txt", "DHT-10_isolated_ambiguous_pair.txt"):
-        text = (fixture_root / name).read_text(encoding="utf-8")
+    for name, fixture_id in (
+        ("DHT-05_body_between_candidates.txt", "dht05"),
+        ("DHT-10_isolated_ambiguous_pair.txt", "dht10"),
+    ):
+        text = _fixture(regressions[fixture_id]).read_text(encoding="utf-8")
         result = chapterize.chapterize_text(text, default_title=name)
         assert result["status"] == "BLOCKED"
         assert result["candidates"] == []
 
 
-def test_real_r03_unknown_preamble_plus_chapter_span_reaches_three_c1(
+def test_synthetic_r03_unknown_preamble_plus_chapter_span_reaches_three_c1(
     tmp_path, monkeypatch
 ) -> None:
     monkeypatch.setattr(product_cli.store, "DATA_ROOT", tmp_path / "data")
     product_cli.store.init_project("r03-explicit")
-    baseline = json.loads(
-        (
-            T03_ROOT
-            / "t03_r03_double_heading_fix_20260817_r01/R03_DOUBLE_HEADING_BASELINE.json"
-        ).read_text(encoding="utf-8")
-    )
-    source_path = Path(baseline["source"]["path"])
+    baseline = _lock()["regression_texts"]["r03"]
+    source_path = _fixture(baseline)
     text = source_path.read_text(encoding="utf-8")
     chapter_start = text.find("第1章")
-    assert chapter_start == 80
+    assert chapter_start == baseline["chapter_start"]
     declarations = [
         {
             "start": 0,
@@ -434,11 +428,7 @@ def test_real_r03_unknown_preamble_plus_chapter_span_reaches_three_c1(
 
     assert len(report["material_units"]) == 2
     assert len(report["chapters"]) == 3
-    assert [item["title"] for item in report["chapters"]] == [
-        "第1章绯红",
-        "第2章情况",
-        "第3章梅丽莎（第一更求推荐票）",
-    ]
+    assert [item["title"] for item in report["chapters"]] == baseline["expected_titles"]
     assert all(text[:chapter_start] not in item["text"] for item in report["chapters"])
     assert report["projection_receipts"][0]["chapter_ids"] == ["c01", "c02", "c03"]
 
