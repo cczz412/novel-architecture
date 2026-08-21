@@ -1,0 +1,38 @@
+name: WO5 PR-D shared-runtime analysis
+
+on:
+  push:
+    branches:
+      - chatgpt/wo5-pr-d-shared-runtime-20260821
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Clone candidate and fetch authorities
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git clone --branch "$BRANCH_NAME" --single-branch \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
+          cd repo
+          git fetch origin main:refs/remotes/origin/main
+          git fetch origin \
+            codex/module-runtime-foundation-20260819-r01:refs/remotes/origin/wo5-source
+          test "$(git rev-parse origin/main)" = \
+            "c533bbada4697bf9af2cf7f245bf4c08069e313f"
+          test "$(git rev-parse refs/remotes/origin/wo5-source)" = \
+            "cc793c4719fb6470946c70e744f463147989547b"
+
+      - name: Analyze source runtime graph and requirement owners
+        run: |
+          set -euo pipefail
+          cd repo
+          python -m py_compile .github/wo5_pr_d_analyze.py
+          python .github/wo5_pr_d_analyze.py
