@@ -260,6 +260,66 @@ def test_expected_version_and_sha_are_both_compared(tmp_path: Path) -> None:
     assert receipt["versions"]["state"] == 2
 
 
+def test_guarded_commit_checks_source_without_rewriting_it(tmp_path: Path) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "principal-a", "项目"
+    )
+    workspace.commit("op-draft", {"draft": {"text": "初稿"}}, {"draft": 0})
+    draft = workspace.read("draft")
+
+    receipt = workspace.commit_guarded(
+        "op-derived-state",
+        {"state": {"source": "draft-v1"}},
+        {"state": 0},
+        {"draft": {"version": draft["version"], "sha256": draft["sha256"]}},
+    )
+
+    assert receipt["versions"] == {"state": 1}
+    assert workspace.read("draft") == draft
+    assert workspace.read("state")["payload"] == {"source": "draft-v1"}
+
+
+def test_guarded_commit_rejects_stale_guard_without_partial_write(
+    tmp_path: Path,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "principal-a", "项目"
+    )
+    workspace.commit("op-draft-1", {"draft": {"text": "初稿"}}, {"draft": 0})
+    stale = workspace.read("draft")
+    workspace.commit("op-draft-2", {"draft": {"text": "新稿"}}, {"draft": 1})
+
+    with pytest.raises(VersionConflictError, match="VERSION_CONFLICT"):
+        workspace.commit_guarded(
+            "op-stale-derived-state",
+            {"state": {"source": "stale"}},
+            {"state": 0},
+            {"draft": {"version": stale["version"], "sha256": stale["sha256"]}},
+        )
+
+    assert workspace.read("state") is None
+    assert workspace.read("draft")["payload"] == {"text": "新稿"}
+
+
+def test_guarded_commit_rejects_guard_mutation_overlap(tmp_path: Path) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "principal-a", "项目"
+    )
+
+    with pytest.raises(
+        VersionConflictError,
+        match="GUARD_KEY_MUST_NOT_BE_MUTATED",
+    ):
+        workspace.commit_guarded(
+            "op-overlap",
+            {"draft": {"text": "初稿"}},
+            {"draft": 0},
+            {"draft": 0},
+        )
+
+    assert workspace.read("draft") is None
+
+
 def test_recover_after_prepare_exposes_none_of_multi_object_commit(
     tmp_path: Path,
 ) -> None:
