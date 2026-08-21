@@ -1393,13 +1393,17 @@
       "source_text": "CZ 2026-08-20 口述拍板（题材包选装）。",
       "source_paths": [],
       "input_contracts": [
-        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+        "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md"
       ],
       "output_contracts": [
-        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+        "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md"
       ],
       "design_refs": [
-        "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md"
+        "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
+        "work/ledger_content_contract_20260822_r01/00_DECIDED_DRAFT_R01.md",
+        "work/ledger_content_contract_20260822_r01/01_REVIEW_R01.md"
       ],
       "implementation_refs": [
         "novel-mvp/mvp/workspace.py",
@@ -1417,7 +1421,8 @@
         "tests/test_novel_mvp_chapter_workspace.py",
         "tests/test_novel_mvp_ledger_directory_tool.py",
         "tests/test_novel_mvp_ledger_directory_workspace.py",
-        "tests/test_novel_mvp_workspace.py"
+        "tests/test_novel_mvp_workspace.py",
+        "tests/test_novel_mvp_ledger_entry_envelope_contract.py"
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
@@ -1479,6 +1484,12 @@
       "review_identity": "CANDIDATE_REVIEWED",
       "decision_refs": [
         "governance/decision_records/DR-20260821-01.md"
+      ],
+      "contract_refs": [
+        "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md",
+        "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.schema.json",
+        "novel-mvp/contracts/validate_ledger_entry_envelope.py",
+        "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.fixtures.jsonl"
       ]
     },
     {
@@ -9075,16 +9086,20 @@
       "input_contracts": [
         "novel-mvp/contracts/C4_FACT_QUERY.md",
         "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md",
-        "novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md"
+        "novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md",
+        "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md"
       ],
       "output_contracts": [
         "novel-mvp/contracts/C4_FACT_QUERY.md",
         "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md",
-        "novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md"
+        "novel-mvp/contracts/CHAPTER_REVISION_COMMIT_ACTION.md",
+        "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md"
       ],
       "design_refs": [
         "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
-        "novel-mvp/ARCHITECTURE.md"
+        "novel-mvp/ARCHITECTURE.md",
+        "work/ledger_content_contract_20260822_r01/00_DECIDED_DRAFT_R01.md",
+        "work/ledger_content_contract_20260822_r01/01_REVIEW_R01.md"
       ],
       "implementation_refs": [
         "novel-mvp/mvp/factstore.py",
@@ -9100,7 +9115,8 @@
         "tests/test_novel_mvp_fact_handoff_adapter.py",
         "tests/test_novel_mvp_fact_revision_preflight_tool.py",
         "tests/test_novel_mvp_reconciliation_facts_admission.py",
-        "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json#M4-C01"
+        "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json#M4-C01",
+        "tests/test_novel_mvp_ledger_entry_envelope_contract.py"
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R01_FOR_R02",
       "blocked_by": [
@@ -9150,7 +9166,13 @@
       ],
       "local_evidence_status": "NOT_APPLICABLE",
       "priority_candidate": null,
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "contract_refs": [
+        "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md",
+        "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.schema.json",
+        "novel-mvp/contracts/validate_ledger_entry_envelope.py",
+        "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.fixtures.jsonl"
+      ]
     },
     {
       "requirement_id": "M4-C02",
