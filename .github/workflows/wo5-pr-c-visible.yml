@@ -114,6 +114,39 @@ jobs:
           print('PASS_PR_C_REGISTRY total=58 current=20 historical=5 superseded=26 waiting=7 defaults=20')
           PY
 
+      - name: Verify the one-function mechanical test closure
+        run: |
+          set -euo pipefail
+          cd repo
+          python - <<'PY'
+          import subprocess
+          from pathlib import Path
+
+          path = Path('tests/test_design_currentness.py')
+          current = path.read_text(encoding='utf-8')
+          base = subprocess.check_output(
+              ['git', 'show', 'origin/main:tests/test_design_currentness.py'],
+              text=True,
+          )
+          old = '''    assert report["summary"]["document_count"] == 57
+              assert report["summary"]["status_counts"] == {
+                  "CURRENT": 19,
+                  "HISTORICAL": 5,
+                  "SUPERSEDED": 26,
+                  "WAITING_REWRITE": 7,
+              }
+          '''
+          new = '''    assert report["summary"]["document_count"] == REGISTRY["inventory"]["document_count"]
+              assert report["summary"]["status_counts"] == REGISTRY["inventory"]["status_counts"]
+          '''
+          if base.count(old) != 1:
+              raise SystemExit('main test does not contain the expected fixed WO4 totals exactly once')
+          expected = base.replace(old, new, 1)
+          if current != expected:
+              raise SystemExit('tests/test_design_currentness.py changed beyond the one direct-consumer function')
+          print('PASS_NARROW_TEST_CLOSURE function=test_repository_design_currentness_passes literals_removed=57/19/5/26/7')
+          PY
+
       - name: Install locked runner
         run: python -m pip install --disable-pip-version-check uv
 
@@ -154,12 +187,13 @@ jobs:
           fi
           uv run --locked pytest -q -p no:cacheprovider
 
-      - name: Run Ruff on the changed validator
+      - name: Run Ruff on changed Python files
         run: |
           set -euo pipefail
           cd repo
           uv run --locked ruff check \
-            novel-mvp/contracts/validate_c11_chapter_revision_ledger.py
+            novel-mvp/contracts/validate_c11_chapter_revision_ledger.py \
+            tests/test_design_currentness.py
 
       - name: Remove temporary machinery and stage the candidate
         run: |
@@ -180,7 +214,8 @@ jobs:
             novel-mvp/design/INTAKE_SHELVES_DESIGN_R02.md \
             novel-mvp/contracts/C1_CHAPTER_DOC.md \
             novel-mvp/contracts/WORK_DRAFT_HANDOVER_ACTION.md \
-            novel-mvp/contracts/validate_c11_chapter_revision_ledger.py
+            novel-mvp/contracts/validate_c11_chapter_revision_ledger.py \
+            tests/test_design_currentness.py
 
       - name: Enforce the exact remote PR-C file set
         run: |
@@ -205,6 +240,7 @@ jobs:
               'novel-mvp/contracts/C1_CHAPTER_DOC.md',
               'novel-mvp/contracts/WORK_DRAFT_HANDOVER_ACTION.md',
               'novel-mvp/contracts/validate_c11_chapter_revision_ledger.py',
+              'tests/test_design_currentness.py',
           }
           if set(changed) != expected:
               raise SystemExit(
@@ -214,7 +250,6 @@ jobs:
           forbidden_prefixes = (
               '.github/',
               'novel-mvp/mvp/',
-              'tests/',
               'work/',
               'references/cloud-supervision/',
               'governance/',
