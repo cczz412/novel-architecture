@@ -4,9 +4,9 @@ set -euo pipefail
 # Reuse the original, fully reviewed runner body from the commit that introduced it,
 # then apply two narrow corrections discovered by the first remote run:
 # 1. include all current primary-owner rows for AUTHOR_WORKSPACE/STORAGE/ROUTER/SHARED_SERVICE;
-# 2. remove the pull-request trigger workflow from the final branch as well.
-ORIGINAL_COMMIT="3c6b6ff6a0e14832e347f04156b078f09d246f92"
-TMP_RUNNER="$(mktemp)"
+# 2. remove both final trigger workflows and the generated implementation helper.
+cd "$(dirname "$0")/.."
+TMP_RUNNER=".github/wo5_pr_d_runner_impl.sh"
 python - "$TMP_RUNNER" <<'PY'
 from __future__ import annotations
 import subprocess
@@ -36,13 +36,20 @@ new = '''expected = [
 if source.count(old) != 1:
     raise SystemExit("original requirement block not found exactly once")
 source = source.replace(old, new, 1)
-old_cleanup = '''  .github/workflows/wo5-pr-d-final.yml
+old_cleanup = '''  .github/wo5_pr_d_runner.sh \\
+  .github/workflows/wo5-pr-d-analyze.yml \\
+  .github/workflows/wo5-pr-d-compact.yml \\
+  .github/workflows/wo5-pr-d-final.yml
 '''
-new_cleanup = '''  .github/workflows/wo5-pr-d-final.yml \\
+new_cleanup = '''  .github/wo5_pr_d_runner.sh \\
+  .github/wo5_pr_d_runner_impl.sh \\
+  .github/workflows/wo5-pr-d-analyze.yml \\
+  .github/workflows/wo5-pr-d-compact.yml \\
+  .github/workflows/wo5-pr-d-final.yml \\
   .github/workflows/wo5-pr-d-final-pr.yml
 '''
 if source.count(old_cleanup) != 1:
-    raise SystemExit("original workflow cleanup line not found exactly once")
+    raise SystemExit("original cleanup block not found exactly once")
 source = source.replace(old_cleanup, new_cleanup, 1)
 with open(sys.argv[1], "w", encoding="utf-8") as handle:
     handle.write(source)
