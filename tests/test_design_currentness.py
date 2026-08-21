@@ -23,13 +23,8 @@ def test_repository_design_currentness_passes() -> None:
     report = MODULE.build_report(ROOT)
     assert report["status"] == "PASS"
     assert report["errors"] == []
-    assert report["summary"]["document_count"] == 57
-    assert report["summary"]["status_counts"] == {
-        "CURRENT": 19,
-        "HISTORICAL": 5,
-        "SUPERSEDED": 26,
-        "WAITING_REWRITE": 7,
-    }
+    assert report["summary"]["document_count"] == REGISTRY["inventory"]["document_count"]
+    assert report["summary"]["status_counts"] == REGISTRY["inventory"]["status_counts"]
 
 
 def test_duplicate_registry_path_is_error() -> None:

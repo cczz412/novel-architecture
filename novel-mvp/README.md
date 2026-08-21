@@ -1,5 +1,7 @@
 # novel-mvp · 产品试跑示例（不是现行产品）
 
+产品目标架构：[ARCHITECTURE.md](ARCHITECTURE.md)；现状与目标差距：[CURRENT_VS_TARGET_R01.md](CURRENT_VS_TARGET_R01.md)。
+
 🔥 这是测试阶段的示例代码和设计稿，**不是**已经上线的产品，也**不是**共同背景板。
 
 - 产品怎么想：回本仓 [共同背景板 R13](../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md)
