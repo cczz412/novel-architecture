@@ -1,31 +1,27 @@
 name: WO4 design currentness materialization and validation
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
-    types:
-      - opened
-      - synchronize
-      - reopened
+      - chatgpt/clean-baseline-wo4-design-currentness-20260821
 
 permissions:
   contents: write
 
 concurrency:
-  group: wo4-design-currentness-${{ github.event.pull_request.number }}
+  group: wo4-design-currentness
   cancel-in-progress: false
 
 jobs:
   apply-verify-clean:
-    if: ${{ github.event.pull_request.head.ref == 'chatgpt/clean-baseline-wo4-design-currentness-20260821' }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
       - name: Clone exact branch and pin latest main
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ github.ref_name }}
         run: |
           set -euo pipefail
           git clone --branch "$BRANCH_NAME" --single-branch \
@@ -188,7 +184,7 @@ jobs:
 
       - name: Commit verified result to the PR branch
         env:
-          BRANCH_NAME: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ github.ref_name }}
         run: |
           set -euo pipefail
           cd repo
