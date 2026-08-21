@@ -1,0 +1,184 @@
+name: WO4 canonical design currentness runner R2
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wo4-design-currentness-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  apply-verify-clean:
+    if: ${{ github.event.pull_request.head.ref == 'chatgpt/clean-baseline-wo4-design-currentness-20260821' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Clone exact branch and frozen module source
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          git clone --branch "$BRANCH_NAME" --single-branch \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
+          cd repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main:refs/remotes/origin/main
+          git fetch origin \
+            codex/module-runtime-foundation-20260819-r01:refs/remotes/origin/wo4-module-source
+          case "$(git rev-parse origin/main)" in
+            c79bd0a*) ;;
+            *) echo "main moved from c79bd0a" >&2; exit 1 ;;
+          esac
+          test "$(git rev-parse refs/remotes/origin/wo4-module-source)" = \
+            "cc793c4719fb6470946c70e744f463147989547b"
+
+      - name: Materialize work order 4
+        run: |
+          set -euo pipefail
+          cd repo
+          python -m py_compile .github/wo4_apply.py
+          python .github/wo4_apply.py
+          python -m json.tool novel-mvp/design/design_registry.json >/dev/null
+          python -m json.tool governance/current_pointers.json >/dev/null
+          python -m py_compile tools/check_design_currentness.py
+
+      - name: Install locked runner
+        run: python -m pip install --disable-pip-version-check uv
+
+      - name: Validate design currentness and current pointers
+        run: |
+          set -euo pipefail
+          cd repo
+          uv run --locked python tools/check_design_currentness.py \
+            --format both \
+            --json-out /tmp/wo4-design-report.json \
+            --check
+          uv run --locked python tools/check_current_freshness.py \
+            --format both \
+            --json-out /tmp/wo4-freshness-report.json \
+            --check
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          design = json.loads(Path('/tmp/wo4-design-report.json').read_text(encoding='utf-8'))
+          freshness = json.loads(Path('/tmp/wo4-freshness-report.json').read_text(encoding='utf-8'))
+          assert design['status'] == 'PASS'
+          assert design['errors'] == []
+          assert freshness['status'] == 'PASS'
+          assert freshness['errors'] == []
+          stale = [
+              item for item in freshness['warnings']
+              if item.get('code') == 'PLANNED_PATH_NOT_MATERIALIZED'
+              and item.get('path') == 'novel-mvp/design/design_registry.json'
+          ]
+          assert stale == []
+          stats = {
+              'design_count': design['summary']['design_count'],
+              'default_route_count': design['summary']['default_route_count'],
+              'status_counts': design['summary']['status_counts'],
+              'design_warning_count': design['summary']['warning_count'],
+              'freshness_warning_count': freshness['summary']['warning_count'],
+          }
+          print('WO4_STATS=' + json.dumps(stats, ensure_ascii=False, sort_keys=True))
+          PY
+
+      - name: Run focused tests and Ruff
+        run: |
+          set -euo pipefail
+          cd repo
+          uv run --locked pytest -q -p no:cacheprovider \
+            tests/test_design_currentness.py \
+            tests/test_current_freshness.py
+          uv run --locked ruff check \
+            tools/check_design_currentness.py \
+            tests/test_design_currentness.py
+
+      - name: Remove all branch-only bootstrap files and stage final result
+        run: |
+          set -euo pipefail
+          cd repo
+          mapfile -t BOOTSTRAP_FILES < <(
+            git diff --name-only --diff-filter=A origin/main -- \
+              .github sitecustomize.py usercustomize.py
+          )
+          if ((${#BOOTSTRAP_FILES[@]})); then
+            git rm -f -- "${BOOTSTRAP_FILES[@]}"
+          fi
+          rmdir .github/workflows .github 2>/dev/null || true
+          git add \
+            novel-mvp/design/design_registry.json \
+            novel-mvp/design/INDEX.md \
+            governance/current_pointers.json \
+            tools/check_design_currentness.py \
+            tests/test_design_currentness.py
+
+      - name: Enforce exact work order 4 scope
+        run: |
+          set -euo pipefail
+          cd repo
+          python - <<'PY'
+          import subprocess
+
+          changed = subprocess.check_output(
+              ['git', 'diff', '--cached', '--name-only', 'origin/main'], text=True
+          ).splitlines()
+          expected = {
+              'novel-mvp/design/design_registry.json',
+              'novel-mvp/design/INDEX.md',
+              'governance/current_pointers.json',
+              'tools/check_design_currentness.py',
+              'tests/test_design_currentness.py',
+          }
+          if set(changed) != expected:
+              raise SystemExit(
+                  f'WO4 exact scope mismatch: missing={sorted(expected - set(changed))}; '
+                  f'extra={sorted(set(changed) - expected)}'
+              )
+          forbidden_prefixes = (
+              '.github/',
+              'work/',
+              'references/cloud-supervision/',
+              'references/shared-context/',
+              'references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/',
+              'novel-mvp/mvp/',
+              'novel-mvp/contracts/',
+          )
+          forbidden = [path for path in changed if path.startswith(forbidden_prefixes)]
+          if forbidden:
+              raise SystemExit(f'WO4 forbidden paths: {forbidden}')
+          design_body_changes = [
+              path for path in changed
+              if path.startswith('novel-mvp/design/')
+              and path not in {
+                  'novel-mvp/design/INDEX.md',
+                  'novel-mvp/design/design_registry.json',
+              }
+          ]
+          if design_body_changes:
+              raise SystemExit(f'WO4 rewrote design bodies: {design_body_changes}')
+          print('PASS_WO4_SCOPE changed_files=5')
+          for path in changed:
+              print(path)
+          PY
+
+      - name: Commit verified result to the PR branch
+        env:
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          cd repo
+          git diff --cached --check
+          git commit -m "feat(design): register main design currentness [skip ci]"
+          git push origin "HEAD:${BRANCH_NAME}"
