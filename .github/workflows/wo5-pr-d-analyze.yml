@@ -1,22 +1,27 @@
 name: WO5 PR-D shared-runtime analysis
 
 on:
-  push:
+  pull_request:
     branches:
-      - chatgpt/wo5-pr-d-shared-runtime-20260821
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: read
 
 jobs:
   analyze:
+    if: ${{ github.event.pull_request.head.ref == 'chatgpt/wo5-pr-d-shared-runtime-20260821' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Clone candidate and fetch authorities
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: ${{ github.ref_name }}
+          BRANCH_NAME: ${{ github.head_ref }}
         run: |
           set -euo pipefail
           git clone --branch "$BRANCH_NAME" --single-branch \
