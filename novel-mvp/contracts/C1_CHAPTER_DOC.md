@@ -78,9 +78,10 @@
 
 1. 用 `work_ref + work_rev` 从写作区工作稿 owner 取得作者原文；
 2. 复核动作中的 `slot_ref`、`source_outline_ref` 与 current 工作稿一致；
-3. 首次入库经 C11 建 r1，再生成带 `chapter_revision_ref` 的 C1 v1 current view；
-4. 原文逐字进入 `text`，不得由接收端润色、补写或改标点；
-5. 成功返回合法 C1 `chapter_id` 与 current revision ref，供后续 planstore 交棒使用。
+3. 只接受 `WORK_DRAFT_HANDOVER_ACTION v2` 中作者明确确认的 `chapter_title`，不用文件名或 `slot.title_hint` 猜标题；
+4. 首次入库经 C11 建 r1，标题从此由 C11 current revision 长期持有，再生成带 `chapter_revision_ref` 的 C1 v1 current view；
+5. 原文逐字进入 `text`，不得由接收端润色、补写或改标点；
+6. 成功返回合法 C1 `chapter_id` 与 current revision ref，供后续 planstore 交棒使用。
 
 动作处于 `AWAITING_C1_ACCEPTANCE`、C1 校验失败或章节身份尚未产生时，planstore 不得先写 `handover_parts`。这段只增加接收顺序，不给 C1 增加 planstore、facts、actual、对账或关章权力，也不改变上面的 v0 字段表。
 

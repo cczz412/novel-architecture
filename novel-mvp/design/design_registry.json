@@ -3,8 +3,8 @@
   "registry_id": "NOVEL_MVP_DESIGN_CURRENTNESS_20260821_R01",
   "authority": "CURRENTNESS_ROUTING_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
   "review_status": "CANDIDATE_REVIEWED",
-  "updated_at": "2026-08-21T08:20:00+08:00",
-  "base_commit": "c79bd0af08b5424baf6e668e3d5dcd06e622a07a",
+  "updated_at": "2026-08-21T18:20:00+08:00",
+  "base_commit": "7eca07a64b31078d51eb7dd6f7b509ede967a704",
   "product_background": {
     "version": "R14",
     "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
@@ -28,45 +28,73 @@
     ]
   },
   "inventory": {
-    "document_count": 57,
+    "document_count": 58,
     "status_counts": {
-      "CURRENT": 19,
+      "CURRENT": 20,
       "HISTORICAL": 5,
       "SUPERSEDED": 26,
       "WAITING_REWRITE": 7
     },
-    "default_route_count": 19
+    "default_route_count": 20
   },
   "expected_work_order_5_pr_c_changes": {
     "source_branch": "codex/module-runtime-foundation-20260819-r01",
     "source_commit": "cc793c4719fb6470946c70e744f463147989547b",
-    "identity": "READ_ONLY_EXPECTED_SUCCESSORS_NOT_ADMITTED_BY_WO4",
+    "identity": "ADMITTED_BY_WORK_ORDER_5_PR_C",
     "changes": [
       {
         "path": "novel-mvp/design/INDEX.md",
         "change_kind": "ENTRY_REFRESH",
         "present_on_main": true,
-        "expected_successor": "WORK_ORDER_5_PR_C"
+        "expected_successor": "WORK_ORDER_5_PR_C",
+        "present_on_main_after_merge": true,
+        "applied_by": "WORK_ORDER_5_PR_C",
+        "source_commit": "cc793c4719fb6470946c70e744f463147989547b",
+        "status": "APPLIED_IN_CANDIDATE_PR",
+        "byte_identity": "SYNTHESIZED_ON_POST_WO4_INDEX"
       },
       {
         "path": "novel-mvp/design/INTAKE_SHELVES_DESIGN_R02.md",
         "change_kind": "HISTORICAL_DOCUMENT_PATCH",
         "present_on_main": true,
-        "expected_successor": "WORK_ORDER_5_PR_C"
+        "expected_successor": "WORK_ORDER_5_PR_C",
+        "present_on_main_after_merge": true,
+        "applied_by": "WORK_ORDER_5_PR_C",
+        "source_commit": "cc793c4719fb6470946c70e744f463147989547b",
+        "status": "APPLIED_IN_CANDIDATE_PR",
+        "body_sha256": "ef40fe5d9e840c86170d12a79d6831683df97714635df7a3089be8f23deb0c77",
+        "byte_identity": "FROZEN_SOURCE_EXACT"
       },
       {
         "path": "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
         "change_kind": "NEW_DESIGN",
         "present_on_main": false,
-        "expected_successor": "WORK_ORDER_5_PR_C"
+        "expected_successor": "WORK_ORDER_5_PR_C",
+        "present_on_main_after_merge": true,
+        "applied_by": "WORK_ORDER_5_PR_C",
+        "source_commit": "cc793c4719fb6470946c70e744f463147989547b",
+        "status": "APPLIED_IN_CANDIDATE_PR",
+        "body_sha256": "40b1dac414e017f69c2775ec2509024a37aa501f060fc1c23ede3fdb42a92f6e",
+        "byte_identity": "FROZEN_SOURCE_EXACT"
       },
       {
         "path": "novel-mvp/design/STOP_POINT_REGISTRY_R03.md",
         "change_kind": "CURRENT_DOCUMENT_PATCH",
         "present_on_main": true,
-        "expected_successor": "WORK_ORDER_5_PR_C"
+        "expected_successor": "WORK_ORDER_5_PR_C",
+        "present_on_main_after_merge": true,
+        "applied_by": "WORK_ORDER_5_PR_C",
+        "source_commit": "cc793c4719fb6470946c70e744f463147989547b",
+        "status": "APPLIED_IN_CANDIDATE_PR",
+        "body_sha256": "8acaa0ac4e7ced905ede476dc7379fa364758a7dbbca516bb1e86f4f2b234fb2",
+        "byte_identity": "FROZEN_SOURCE_EXACT"
       }
-    ]
+    ],
+    "admission": {
+      "base_commit": "7eca07a64b31078d51eb7dd6f7b509ede967a704",
+      "source_commit": "cc793c4719fb6470946c70e744f463147989547b",
+      "scope": "PRODUCT_ARCHITECTURE_DESIGN_AND_COUPLED_CONTRACTS_NO_RUNTIME"
+    }
   },
   "documents": [
     {
@@ -575,12 +603,18 @@
         "note": "旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。",
         "basis": "design INDEX historical-version chain and R14 currentness review"
       },
-      "body_sha256": "b018c4f2f1d419065968d44b988c4b15cca6c3bbad31be5af8ca442fac2cd627",
+      "body_sha256": "ef40fe5d9e840c86170d12a79d6831683df97714635df7a3089be8f23deb0c77",
       "source_basis": [
         "novel-mvp/design/INDEX.md@main-before-WO4",
-        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+        "cc793c4719fb6470946c70e744f463147989547b:novel-mvp/design/INTAKE_SHELVES_DESIGN_R02.md"
       ],
-      "expected_pr_c_change": "HISTORICAL_DOCUMENT_PATCH"
+      "expected_pr_c_change": "HISTORICAL_DOCUMENT_PATCH",
+      "last_body_refresh": {
+        "work_order": "WORK_ORDER_5_PR_C",
+        "source_commit": "cc793c4719fb6470946c70e744f463147989547b",
+        "status_preserved": "SUPERSEDED"
+      }
     },
     {
       "design_id": "INTAKE_SHELVES_DESIGN_R03",
@@ -599,6 +633,26 @@
       "source_basis": [
         "novel-mvp/design/INDEX.md@main-before-WO4",
         "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "LEDGER_DIRECTORY_DESIGN_R01",
+      "path": "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
+      "family": "LEDGER_DIRECTORY_DESIGN",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "ADMITTED_CURRENT_BY_WORK_ORDER_5_PR_C",
+        "note": "账本目录、10 本固定账、统一取件窗口、简装／精装和插件接法；不是 M12，也不证明 runtime 已接线。",
+        "basis": "cc793c4 product-architecture delta reviewed against R14 and admitted by PR-C"
+      },
+      "body_sha256": "40b1dac414e017f69c2775ec2509024a37aa501f060fc1c23ede3fdb42a92f6e",
+      "source_basis": [
+        "cc793c4719fb6470946c70e744f463147989547b:novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+        "novel-mvp/CURRENT_VS_TARGET_R01.md"
       ]
     },
     {
@@ -1103,12 +1157,18 @@
         "note": "停点登记；P3 不得自动搬剧情。",
         "basis": "main INDEX current route reviewed against R14"
       },
-      "body_sha256": "8179100901516f7f4b9edb92f4185385e891cb34636a6c722912e4759a4b7ad3",
+      "body_sha256": "8acaa0ac4e7ced905ede476dc7379fa364758a7dbbca516bb1e86f4f2b234fb2",
       "source_basis": [
         "novel-mvp/design/INDEX.md@main-before-WO4",
-        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+        "cc793c4719fb6470946c70e744f463147989547b:novel-mvp/design/STOP_POINT_REGISTRY_R03.md"
       ],
-      "expected_pr_c_change": "CURRENT_DOCUMENT_PATCH"
+      "expected_pr_c_change": "CURRENT_DOCUMENT_PATCH",
+      "last_body_refresh": {
+        "work_order": "WORK_ORDER_5_PR_C",
+        "source_commit": "cc793c4719fb6470946c70e744f463147989547b",
+        "status_preserved": "CURRENT"
+      }
     },
     {
       "design_id": "TUTORIAL_SCRIPTS_DESIGN_R01",
@@ -1259,5 +1319,10 @@
         "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
       ]
     }
-  ]
+  ],
+  "last_admission": {
+    "work_order": "WORK_ORDER_5_PR_C",
+    "source_commit": "cc793c4719fb6470946c70e744f463147989547b",
+    "note": "ARCHITECTURE and three design bodies were copied exactly; INDEX was synthesized to preserve the R14 registry format."
+  }
 }
