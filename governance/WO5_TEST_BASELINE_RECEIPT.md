@@ -142,7 +142,7 @@ D	tests/test_traceability.py	RULE_0_6_REVERSE_DIFFERENCE
 
 | 差异方向 | 条数 | 内容 | 原因 |
 |---|---:|---|---|
-| 复核机多 | 55 | `tests/test_experiment_artifact_retrieval.py`（43）＋ `tests/test_external_payload_validator.py`（12） | 依赖登记在外置登记册的本机外置对象，复核机不持有 |
+| 复核机多 | 55 | `tests/test_experiment_artifact_retrieval.py`（43）＋ `tests/test_external_payload_validator.py`（12） | ~~依赖本机外置对象~~ **归因修正（2026-08-22，经 Issue #31 指正后复核方实测查明）**：两份测试全部在 tmp_path 自建合成材料，不需要本机对象；真实根因是云端容器 overlayfs 设备号逐文件不一致（实测同目录树 0x27/0x28/0x29），触发取件／校验工具的同设备安全闸按设计 fail-closed（`tools/experiment_artifact_retrieval.py:352` `RETRIEVAL_POLICY_UNSAFE`）。安全闸不改；clean clone 普通文件系统上此两文件 70/70 通过 |
 | 复核机少 | 5 | DeepSeek key-loader（2）＋供应商通道部分条目（3） | 该机工作树／环境恰好满足这些检查 |
 | 两机一致 | 14 | 治理口径漂移、仓库布局、T5 状态、测试影响、tool registry 等 | 与上表登记的域分类吻合 |
 
@@ -150,6 +150,6 @@ D	tests/test_traceability.py	RULE_0_6_REVERSE_DIFFERENCE
 
 1. **novel_mvp 产品域**：两台机器均 `1574 passed` 全绿——产品域基线**环境无关**，这是本回执唯一跨机成立的单一数字。
 2. **非 novel_mvp 债面是环境相关集合**：任何单一失败总数（19 或 69）只对声明的跑机成立；跨机引用一律按「域分类＋环境身份」记账，禁止把某台机器的总数当全仓真值。
-3. 收口归属：外置对象类与密钥类失败归工单 6／本地 Codex 环境；治理口径漂移与 tool registry 归工单 7。
+3. 收口归属（2026-08-22 修正）：上表 55 条为 overlayfs 环境约束，**不归工单 6 外置盘**，是否给这两份测试加显式环境前置标记归工单 7（Issue #33）；密钥类失败归本地环境；治理口径漂移与 tool registry 归工单 7。
 
 来源：Cursor 云端复核方独立实测
