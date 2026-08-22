@@ -16,8 +16,8 @@
 
 ## 唯一入口
 
-- [上工共识页](START_HERE.md)
 - [机器当前状态](CURRENT_STATE.json)
+- [上工先读](START_HERE.md)
 - [当前版本与路径](current_pointers.json)
 - [人类接力](progress/current-progress.md)
 - [历史机器快照](CURRENT_STATE_HISTORY.json)
