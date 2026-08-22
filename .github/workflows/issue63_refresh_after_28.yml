@@ -1,0 +1,140 @@
+name: issue-63-baseline-refresh-after-28
+
+on:
+  push:
+    branches:
+      - codex/issue-63-refresh-after-28
+
+permissions:
+  contents: read
+
+jobs:
+  full-suite-three-rounds:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/issue63-venv
+      UV_CACHE_DIR: ${{ runner.temp }}/uv-cache
+      UV_PYTHON_INSTALL_DIR: ${{ runner.temp }}/uv-python
+      RESULT_DIR: ${{ runner.temp }}/issue63-results
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Install exact toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user uv==0.11.33
+          UV_BIN_DIR="$(python3 -m site --user-base)/bin"
+          echo "$UV_BIN_DIR" >> "$GITHUB_PATH"
+          export PATH="$UV_BIN_DIR:$PATH"
+          uv python install 3.12.12
+          uv sync --locked
+          uv run --locked python --version
+
+      - name: Run full suite three times
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RESULT_DIR"
+          echo "RECEIPT_PWD=$(pwd)"
+          echo "RECEIPT_HEAD=$(git rev-parse HEAD)"
+          echo "RECEIPT_ROOT=$(git rev-parse --show-toplevel)"
+          echo "RECEIPT_PYTHON=$(uv run --locked python --version 2>&1)"
+
+          for round in 1 2 3; do
+            git clean -fdx
+            log="$RESULT_DIR/pytest-round-${round}.log"
+            json="$RESULT_DIR/round-${round}.json"
+
+            set +e
+            cd "$(git rev-parse --show-toplevel)" && uv run --locked pytest -q 2>&1 | tee "$log"
+            code=${PIPESTATUS[0]}
+            set -e
+
+            python3 - "$log" "$json" "$code" "$round" <<'PY'
+import json
+import re
+import sys
+from pathlib import Path
+
+log_path = Path(sys.argv[1])
+json_path = Path(sys.argv[2])
+exit_code = int(sys.argv[3])
+round_number = int(sys.argv[4])
+failed = []
+errors = []
+pattern = re.compile(r"^(FAILED|ERROR) (.+?)(?: - .*)?$")
+for line in log_path.read_text(encoding="utf-8", errors="replace").splitlines():
+    match = pattern.match(line)
+    if not match:
+        continue
+    nodeid = match.group(2).strip()
+    (failed if match.group(1) == "FAILED" else errors).append(nodeid)
+observed = sorted(set(failed + errors))
+document = {
+    "round": round_number,
+    "exit_code": exit_code,
+    "failed_nodeids": observed,
+    "pytest_failed_nodeids": sorted(set(failed)),
+    "pytest_error_nodeids": sorted(set(errors)),
+}
+json_path.write_text(
+    json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+    encoding="utf-8",
+)
+print("ROUND_RESULT=" + json.dumps(document, ensure_ascii=False, sort_keys=True))
+PY
+
+            if [[ "$code" -gt 1 ]]; then
+              echo "pytest infrastructure/collection exit code: $code" >&2
+              exit "$code"
+            fi
+            if [[ -n "$(git status --short)" ]]; then
+              echo "worktree changed after round $round" >&2
+              git status --short
+              exit 20
+            fi
+          done
+
+          set +e
+          uv run --locked python tools/check_approved_failure_list.py check             --observed "$RESULT_DIR/round-1.json"             --observed "$RESULT_DIR/round-2.json"             --observed "$RESULT_DIR/round-3.json"             > "$RESULT_DIR/checker.json"
+          checker_code=$?
+          set -e
+          echo "CHECKER_EXIT=$checker_code"
+          echo "CHECKER_RESULT=$(tr -d '\n' < "$RESULT_DIR/checker.json")"
+
+          python3 - "$RESULT_DIR" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+rounds = [
+    json.loads((root / f"round-{index}.json").read_text(encoding="utf-8"))
+    for index in (1, 2, 3)
+]
+sets = [row["failed_nodeids"] for row in rounds]
+summary = {
+    "round_counts": [len(values) for values in sets],
+    "rounds_equal": sets[0] == sets[1] == sets[2],
+    "failed_nodeids": sets[0] if sets[0] == sets[1] == sets[2] else [],
+}
+(root / "summary.json").write_text(
+    json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+    encoding="utf-8",
+)
+print("THREE_ROUND_SUMMARY=" + json.dumps(summary, ensure_ascii=False, sort_keys=True))
+if not summary["rounds_equal"]:
+    raise SystemExit(21)
+PY
+
+      - name: Upload three-round receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: issue63-baseline-after-28
+          path: ${{ runner.temp }}/issue63-results
+          if-no-files-found: error
+          retention-days: 1
