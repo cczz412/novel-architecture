@@ -987,6 +987,13 @@ def test_live_registry_policy_covers_every_external_archive_object() -> None:
     validator._validate_policy_relations(policy, registry)
     assert len(policy["targets"]) == 41
     assert len(policy["exclusions"]) == 4
+    targets = {row["artifact_id"]: row for row in policy["targets"]}
+    for artifact_id in (
+        "t5-r04-v2-correction-segment-scan-batch08-20260803-v1",
+        "z76-phase2-semantic-inspector-pilot-runtime-20260721-v1",
+    ):
+        assert targets[artifact_id]["manifest_total_files_field"] == "file_count"
+        assert targets[artifact_id]["manifest_total_bytes_field"] == "total_bytes"
 
 
 @pytest.mark.parametrize(
