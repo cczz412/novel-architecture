@@ -10,7 +10,7 @@
 |---|---|---|
 | 作者定义 | 作者直接编辑地点卡 | 按共同信封记录作者签字 |
 | 候选提出 | M4／M5 已确认事实投影 | 只能产生候选或读取面 |
-| 唯一落盘 | 后续设定账统一 writer | 复用 planstore 原子提交和统一发号；L3 不实现 runtime |
+| 唯一落盘 | `settingstore` | 复用 planstore 原子提交和统一发号；见 [SETTING_LEDGER_STORAGE.md](SETTING_LEDGER_STORAGE.md) |
 | 读取 | M9、M10、M11 | 只读已确认内容、证据和故事时间锚 |
 
 真值来源：拍板页 5.2、复核页第三节、`LEDGER_ENTRY_ENVELOPE`、L2 人物账样板。冲突时复核注记优先。
@@ -51,7 +51,7 @@
 2. 禁止状态读取面成为第二事实库。
 3. 禁止状态缺证据或缺故事时间区间。
 4. 禁止拿最新状态回答更早时点。
-5. 禁止本合同冒充统一 writer 已实现。
+5. 禁止把内容合同当成落盘方；落盘只走 `settingstore`。
 6. 禁止在 L3 定义知情边、ADD-043、READER、新账申请、取件码、hardness 红灯或 handle 迁移。
 
 ## 6. 开放问题
@@ -60,4 +60,4 @@
 
 ## 7. 机器件与状态
 
-Schema、validator、fixtures 与定向测试同名配套。实现状态：`CONTRACT_ONLY__UNIFIED_WRITER_PENDING`。
+Schema、validator、fixtures 与定向测试同名配套。实现状态：`UNIFIED_WRITER_SETTINGSTORE_V1`。

@@ -10,7 +10,7 @@
 |---|---|---|
 | 作者定义 | 作者通过人物卡直接编辑 | 直接编辑按 `LEDGER_ENTRY_ENVELOPE` 记作 `AUTHOR_ATTESTATION`；这是作者签字，不是模型证据 |
 | 候选提出 | M4／M5 已确认事实后的投影、模型候选 | 只能提出候选或投影；不得绕过作者与统一 writer 改写真值 |
-| 唯一落盘 | 后续“设定账统一 writer” | 复用 planstore 的原子提交、`id_counters` 与恢复样式；本票不实现 runtime |
+| 唯一落盘 | `settingstore` | 复用 planstore 的原子提交、`id_counters` 与恢复样式；见 [SETTING_LEDGER_STORAGE.md](SETTING_LEDGER_STORAGE.md) |
 | 读取 | M7、M9、M10、M11 | 只读合同内已确认记录及其证据、故事时间锚 |
 | 跨账只读 | 事实账、规划账、章节版本账 | 只保存稳定 ID／revision ref，不复制对方真值 |
 | 禁止写入 | 查询页、上下文包、导出、检查报告 | 都是投影，不得反写人物账 |
@@ -22,7 +22,7 @@
 - `novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md`
 - `novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md`
 
-冲突时以复核注记优先。本合同只落合同层，不实现统一 writer、人物页或查询 runtime。
+冲突时以复核注记优先。本合同只定内容形状；落盘走 `settingstore`，人物页和 as-of 查询 runtime 仍待后续票。
 
 ## 2. 根对象与共同信封
 
@@ -196,7 +196,7 @@ created_at/updated_at/rev/note
 7. 禁止死亡／复活合并成一个覆盖式值，或省略作者单签。
 8. 禁止把非官方前缀或悬空的 `destiny_ref` 当合法引用（L5 起：前缀必须 `DESTINY-`＋数字；有命运目录时必须命中）。
 9. 禁止在本票定义知情边字段、READER 侧数据结构、新账申请流程或 ADD-043 拆条答案。
-10. 禁止本合同、validator 或 fixture 冒充统一 writer runtime 已实现。
+10. 禁止绕过 `settingstore` 直写人物账，或把内容合同、validator、fixture 当成落盘方。
 
 ## 10. 开放问题与后续接缝
 
@@ -205,7 +205,7 @@ created_at/updated_at/rev/note
 - READER 侧数据结构：只留位。
 - 新账申请流程：只留位。
 - ADD-043 规则／能力／例外拆条：与人物账无关，保持开放。
-- 统一设定账 writer、持久布局、权限和事务实现：后续 runtime 票。
+- 统一设定账 writer 已由 `settingstore` 承接；人物页、as-of 查询 runtime 仍待后续票。
 
 ## 11. 机器件
 
@@ -216,6 +216,6 @@ created_at/updated_at/rev/note
 
 ## 12. 实现状态
 
-`CONTRACT_ONLY__UNIFIED_WRITER_PENDING__DESTINY_EXISTENCE_CLOSED`
+`UNIFIED_WRITER_SETTINGSTORE_V1__DESTINY_EXISTENCE_CLOSED`
 
-通过本合同只证明人物内容形状、证据纪律、时间锚与查询边界已经冻结，且 `destiny_ref` 的前缀与存在性校验已随 L5 收口；不证明人物账已经可落盘、可在作者界面使用，或完整接入 M10/M11。
+通过本合同只证明人物内容形状、证据纪律、时间锚与查询边界已经冻结，且 `destiny_ref` 的前缀与存在性校验已随 L5 收口；落盘走 `settingstore`。不证明人物页、as-of 查询或完整接入 M10/M11。

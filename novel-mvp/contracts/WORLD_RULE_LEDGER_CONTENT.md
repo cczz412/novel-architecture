@@ -10,7 +10,7 @@
 |---|---|---|
 | 作者定义 | 作者直接编辑规则卡 | 可用 `AUTHOR_ATTESTATION` 签字 |
 | 候选提出 | M4／M5 已确认事实投影、模型建议 | 未确认只能停在 candidate |
-| 唯一落盘 | 后续设定账统一 writer | 复用 planstore 原子提交与统一发号；L4 不实现 runtime |
+| 唯一落盘 | `settingstore` | 复用 planstore 原子提交与统一发号；见 [SETTING_LEDGER_STORAGE.md](SETTING_LEDGER_STORAGE.md) |
 | 读取 | M7、M8、M11 | M7 只能把满足本合同资格的规则送入冲突判断 |
 
 真值来源：拍板页 5.6、题 6／题 8，复核页第三节六条施工注记，`LEDGER_ENTRY_ENVELOPE`。冲突时复核注记优先。
@@ -78,7 +78,7 @@ hardness=hard 且 confirm_status=confirmed
 5. 禁止 `rule_text` 使用空串、多行清单或缺主语的残句。
 6. 禁止把 `exceptions` 偷换成独立对象或能力对象。
 7. 禁止抢答 ADD-043 的拆条问题。
-8. 禁止本票实现 M7 runtime、统一 writer、取件码或 handle 迁移。
+8. 禁止本票实现 M7 runtime、取件码或 handle 迁移；落盘只走 `settingstore`。
 9. 禁止本票定义知情边、READER 结构或新账申请流程。
 
 ## 7. 开放问题
@@ -92,4 +92,4 @@ hardness=hard 且 confirm_status=confirmed
 - `WORLD_RULE_LEDGER_CONTENT.fixtures.jsonl`
 - `tests/test_novel_mvp_world_rule_ledger_content_contract.py`
 
-实现状态：`CONTRACT_ONLY__M7_RUNTIME_AND_UNIFIED_WRITER_PENDING`。
+实现状态：`UNIFIED_WRITER_SETTINGSTORE_V1__M7_RUNTIME_PENDING`。

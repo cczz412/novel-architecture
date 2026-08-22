@@ -61,7 +61,11 @@
       "name": "novel-mvp handover planstore writer",
       "pattern": "novel-mvp/mvp/planstore.py",
       "modules": ["M08"],
-      "tests": ["tests/test_novel_mvp_planstore_handover.py"],
+      "tests": [
+        "tests/test_novel_mvp_planstore_handover.py",
+        "tests/test_novel_mvp_planstore_r07.py",
+        "tests/test_novel_mvp_settingstore.py"
+      ],
       "full_chain": false
     },
     {
@@ -97,6 +101,70 @@
       "pattern": "tests/test_novel_mvp_fact_review_transaction.py",
       "modules": ["M04", "M05", "M08"],
       "tests": ["tests/test_novel_mvp_fact_review_transaction.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp settings ledger unified writer",
+      "pattern": "novel-mvp/mvp/settingstore.py",
+      "modules": ["M07", "M10"],
+      "tests": ["tests/test_novel_mvp_settingstore.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp settings ledger unified writer tests",
+      "pattern": "tests/test_novel_mvp_settingstore.py",
+      "modules": ["M07", "M10"],
+      "tests": ["tests/test_novel_mvp_settingstore.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp settings ledger storage contract",
+      "pattern": "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md",
+      "modules": ["M07", "M10"],
+      "tests": ["tests/test_novel_mvp_settingstore.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp setting ledger content contracts",
+      "pattern": "novel-mvp/contracts/*_LEDGER_CONTENT.md",
+      "modules": ["M07", "M10"],
+      "tests": [
+        "tests/test_novel_mvp_settingstore.py",
+        "tests/test_novel_mvp_character_ledger_content_contract.py",
+        "tests/test_novel_mvp_location_ledger_content_contract.py",
+        "tests/test_novel_mvp_item_ledger_content_contract.py",
+        "tests/test_novel_mvp_faction_ledger_content_contract.py",
+        "tests/test_novel_mvp_system_ledger_content_contract.py",
+        "tests/test_novel_mvp_world_rule_ledger_content_contract.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp ledger entry envelope contract",
+      "pattern": "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md",
+      "modules": ["M07", "M10"],
+      "tests": [
+        "tests/test_novel_mvp_ledger_entry_envelope_contract.py",
+        "tests/test_novel_mvp_settingstore.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp ledger entry envelope tests",
+      "pattern": "tests/test_novel_mvp_ledger_entry_envelope_contract.py",
+      "modules": ["M07", "M10"],
+      "tests": ["tests/test_novel_mvp_ledger_entry_envelope_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp plan ledger storage contract",
+      "pattern": "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+      "modules": ["M08"],
+      "tests": [
+        "tests/test_novel_mvp_planstore_handover.py",
+        "tests/test_novel_mvp_planstore_r07.py",
+        "tests/test_novel_mvp_settingstore.py"
+      ],
       "full_chain": false
     },
     {

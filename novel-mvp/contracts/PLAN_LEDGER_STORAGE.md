@@ -6,7 +6,7 @@
 
 | 方向 | 模块 |
 |---|---|
-| 唯一落盘 | planstore 事务协调器；handover 见 [mvp/planstore.py](../mvp/planstore.py)，对账见 [mvp/reconcile.py](../mvp/reconcile.py)，facts 变更统一入口见 [mvp/factstore.py](../mvp/factstore.py)；其他规划动作仍待施工 |
+| 唯一落盘 | planstore 事务协调器；handover 见 [mvp/planstore.py](../mvp/planstore.py)，对账见 [mvp/reconcile.py](../mvp/reconcile.py)，facts 变更统一入口见 [mvp/factstore.py](../mvp/factstore.py)；六本设定账经同一协调器、由 [mvp/settingstore.py](../mvp/settingstore.py) 写入，见 [SETTING_LEDGER_STORAGE.md](SETTING_LEDGER_STORAGE.md)；其他规划动作仍待施工 |
 | 读 | M8、M9、M11、对账、关章检查 |
 | 跨账只读 | C1 章节书稿 ID、C4 事实内部 ID |
 | 禁止写入 | C6、C7、C8、C9、概览卡、导出文件 |

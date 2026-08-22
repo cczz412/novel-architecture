@@ -81,7 +81,7 @@ def test_contract_text_carries_decisions_review_notes_and_open_boundaries() -> N
         "ADD-043 规则／能力／例外是否拆条",
         "READER 侧数据结构",
         "新账申请流程",
-        "CONTRACT_ONLY__UNIFIED_WRITER_PENDING",
+        "UNIFIED_WRITER_SETTINGSTORE_V1",
     ]
     for needle in required:
         assert needle in text
