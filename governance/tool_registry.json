@@ -4135,7 +4135,7 @@
       "primary_identity_label": "可复用组件",
       "status": "candidate_not_default",
       "status_label": "候选组件·当前表面只读新鲜度检查",
-      "purpose": "只读核对唯一 current、指针表 schema／不变量和入口一致性；不改 current、需求或合同。",
+      "purpose": "只读核对唯一 current、指针表 schema／不变量、入口一致性，以及 Git 仓库中 main 刷新时的 base 是否对照 origin/main；不改 current、需求或合同。",
       "human_command": "uv run --locked python tools/check_current_freshness.py --check",
       "inputs": [
         "governance/CURRENT_STATE.json",

@@ -1074,7 +1074,7 @@ class GovernanceIndexTests(unittest.TestCase):
             self.assertTrue(task[key].strip(), key)
         self.assertEqual(
             state["authority"]["external_truth"]["ledger_url"],
-            "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
+            "https://github.com/cczz412/novel-architecture/blob/main/governance/START_HERE.md",
         )
         self.assertEqual(
             state["authority"]["external_truth"]["legacy_frozen_ledger_url"],
@@ -1082,7 +1082,15 @@ class GovernanceIndexTests(unittest.TestCase):
         )
         self.assertEqual(
             state["authority"]["external_truth"]["queue_url"],
-            "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
+            "https://github.com/cczz412/novel-architecture/issues",
+        )
+        self.assertEqual(
+            control["source_authority"]["ledger_url"],
+            state["authority"]["external_truth"]["ledger_url"],
+        )
+        self.assertEqual(
+            control["source_authority"]["queue_url"],
+            state["authority"]["external_truth"]["queue_url"],
         )
         self.assertEqual(
             control["formal_gold_registry"]["path"],

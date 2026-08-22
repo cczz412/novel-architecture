@@ -3,13 +3,17 @@
 
 This checker does not choose product semantics and does not auto-fix files. It only
 verifies that the repository exposes one machine current, one pointer registry, a
-small root compatibility stub, and aligned human entry points.
+small root compatibility stub, and aligned human entry points. In a Git checkout it
+also compares the recorded main refresh_base SHA with origin/main (falling back to
+HEAD) so a live HEAD written as the current signpost cannot PASS.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -66,6 +70,10 @@ CURRENT_STATE_REL = "governance/CURRENT_STATE.json"
 ATOMIC_CURRENT_REL = "references/atomic-expectations/CURRENT.json"
 TEST_DESIGN_REL = "references/atomic-expectations/TEST_DESIGN_CURRENT.json"
 DESIGN_REGISTRY_REL = "novel-mvp/design/design_registry.json"
+REFRESH_BASE_KIND = "refresh_base"
+REFRESH_BASE_MARKERS = ("本页复核到", "刷新时的 base")
+MAIN_SHA_RE = re.compile(r"`([0-9a-f]{40})`")
+GIT_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 
 
 def load_json(path: Path) -> Any:
@@ -442,6 +450,195 @@ def _validate_active_current_row(
         _validate_external_report_row(root, row, errors)
 
 
+def _is_git_repo(root: Path) -> bool:
+    result = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "--is-inside-work-tree"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0 and result.stdout.strip() == "true"
+
+
+def _git_rev_parse(root: Path, ref: str) -> str | None:
+    result = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "--verify", ref],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return None
+    sha = result.stdout.strip().lower()
+    if GIT_SHA_RE.fullmatch(sha):
+        return sha
+    return None
+
+
+def _git_is_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
+    result = subprocess.run(
+        ["git", "-C", str(root), "merge-base", "--is-ancestor", ancestor, descendant],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0
+
+
+def _compared_git_sha(root: Path) -> tuple[str | None, str | None]:
+    for ref in ("origin/main", "HEAD"):
+        sha = _git_rev_parse(root, ref)
+        if sha is not None:
+            return sha, ref
+    return None, None
+
+
+def _main_snapshot(current: dict[str, Any]) -> dict[str, Any] | None:
+    refresh = current.get("refresh_metadata")
+    if not isinstance(refresh, dict):
+        return None
+    snapshots = refresh.get("source_snapshot")
+    if not isinstance(snapshots, list):
+        return None
+    for row in snapshots:
+        if isinstance(row, dict) and row.get("identity") == "main":
+            return row
+    return None
+
+
+def _sha_on_main_line(text: str) -> str | None:
+    for line in text.splitlines():
+        if "main" not in line.lower() and "`main`" not in line:
+            continue
+        if not any(token in line for token in ("基准", "刷新时的 base", "本页复核到")):
+            continue
+        match = MAIN_SHA_RE.search(line)
+        if match:
+            return match.group(1)
+    return None
+
+
+def _has_refresh_base_markers(text: str) -> bool:
+    return any(marker in text for marker in REFRESH_BASE_MARKERS)
+
+
+def _check_recorded_main_against_git(
+    root: Path,
+    current: dict[str, Any],
+    progress: str,
+    index_text: str,
+    errors: list[dict[str, Any]],
+    warnings: list[dict[str, Any]],
+) -> dict[str, Any]:
+    snapshot = _main_snapshot(current)
+    recorded = None
+    kind = None
+    if snapshot is not None:
+        kind = snapshot.get("kind")
+        commit = snapshot.get("commit")
+        if isinstance(commit, str) and GIT_SHA_RE.fullmatch(commit.lower()):
+            recorded = commit.lower()
+
+    summary = {
+        "git_head": None,
+        "git_head_ref": None,
+        "recorded_main_sha": recorded,
+        "recorded_main_kind": kind if isinstance(kind, str) else None,
+    }
+    if not _is_git_repo(root):
+        return summary
+
+    git_head, git_ref = _compared_git_sha(root)
+    summary["git_head"] = git_head
+    summary["git_head_ref"] = git_ref
+    if git_head is None:
+        errors.append(
+            _issue(
+                "ERROR",
+                "GIT_HEAD_UNREADABLE",
+                "git repository exists but origin/main and HEAD could not be read",
+                "governance/CURRENT_STATE.json",
+            )
+        )
+        return summary
+
+    if recorded is None:
+        errors.append(
+            _issue(
+                "ERROR",
+                "MISSING_MAIN_SNAPSHOT",
+                "CURRENT_STATE refresh_metadata.source_snapshot is missing a 40-char identity=main commit",
+                "governance/CURRENT_STATE.json",
+            )
+        )
+        return summary
+
+    progress_sha = _sha_on_main_line(progress)
+    if progress_sha is None:
+        errors.append(
+            _issue(
+                "ERROR",
+                "PROGRESS_MAIN_SHA_MISSING",
+                "progress page has no 40-char main refresh-base SHA",
+                "governance/progress/current-progress.md",
+            )
+        )
+    elif progress_sha != recorded:
+        errors.append(
+            _issue(
+                "ERROR",
+                "MAIN_SHA_SIGNPOST_MISMATCH",
+                "progress main SHA does not match CURRENT_STATE identity=main commit",
+                "governance/progress/current-progress.md",
+            )
+        )
+
+    index_sha = _sha_on_main_line(index_text)
+    if index_sha is not None and index_sha != recorded:
+        errors.append(
+            _issue(
+                "ERROR",
+                "INDEX_MAIN_SHA_MISMATCH",
+                "INDEX.md main SHA does not match CURRENT_STATE identity=main commit",
+                "governance/INDEX.md",
+            )
+        )
+
+    labeled = kind == REFRESH_BASE_KIND and _has_refresh_base_markers(progress)
+    if not labeled:
+        errors.append(
+            _issue(
+                "ERROR",
+                "MAIN_SHA_CLAIMED_AS_LIVE_HEAD",
+                "main SHA must be recorded as refresh_base / 本页复核到; writing a live HEAD that expires on the next merge cannot PASS",
+                "governance/CURRENT_STATE.json",
+            )
+        )
+        return summary
+
+    if recorded == git_head:
+        return summary
+    if _git_is_ancestor(root, recorded, git_head):
+        warnings.append(
+            _issue(
+                "WARNING",
+                "MAIN_SHA_BEHIND_HEAD",
+                f"refresh_base {recorded} is behind {git_ref} {git_head}; runtime HEAD is reported here, not in the signpost SHA",
+                "governance/CURRENT_STATE.json",
+            )
+        )
+        return summary
+    errors.append(
+        _issue(
+            "ERROR",
+            "MAIN_SHA_NOT_ANCESTOR_OF_HEAD",
+            f"refresh_base {recorded} is not an ancestor of {git_ref} {git_head}",
+            "governance/CURRENT_STATE.json",
+        )
+    )
+    return summary
+
+
 def _execute_invariants(
     root: Path,
     pointers: dict[str, Any],
@@ -647,6 +844,15 @@ def build_report(root: Path) -> dict[str, Any]:
                 errors.append(_issue("ERROR", "ACTIVE_POINTER_TARGET_MISSING", "active pointer target is missing", path))
 
     _execute_invariants(root, pointers, pointer_rows, errors)
+    index_text = (root / "governance/INDEX.md").read_text(encoding="utf-8")
+    git_summary = _check_recorded_main_against_git(
+        root,
+        current,
+        progress,
+        index_text,
+        errors,
+        warnings,
+    )
 
     status = "PASS" if not errors else "FAIL"
     return {
@@ -660,6 +866,7 @@ def build_report(root: Path) -> dict[str, Any]:
             "error_count": len(errors),
             "warning_count": len(warnings),
             "pointer_count": len(pointer_rows),
+            **git_summary,
         },
     }
 
@@ -673,6 +880,10 @@ def render_summary(report: dict[str, Any]) -> str:
         f"- errors: `{summary.get('error_count', len(report.get('errors', [])))}`",
         f"- warnings: `{summary.get('warning_count', len(report.get('warnings', [])))}`",
         f"- pointers: `{summary.get('pointer_count', 0)}`",
+        f"- git_head_ref: `{summary.get('git_head_ref')}`",
+        f"- git_head: `{summary.get('git_head')}`",
+        f"- recorded_main_sha: `{summary.get('recorded_main_sha')}`",
+        f"- recorded_main_kind: `{summary.get('recorded_main_kind')}`",
     ]
     if report.get("errors"):
         lines.extend(["", "## Errors"])

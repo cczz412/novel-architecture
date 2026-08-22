@@ -16,20 +16,21 @@
 
 ## 当前身份
 
-- 更新时间：`2026-08-22T21:30:00+08:00`
+- 更新时间：`2026-08-22T23:46:41+08:00`
 - 当前工作线：`CLEAN-BASELINE-M1-M11-INTEGRATION-20260821`
-- `main` 基准：`49533178945ce5a9a6df59e20b4d57eb18706acb`（Merge PR #54：Issue #27）
+- `main` 刷新时的 base（本页复核到）：`c91ecffa084dd8a5cb834a2789e8fb408c0229e3`（Merge PR #81：Issue #63）。运行时 HEAD 由 [`tools/check_current_freshness.py`](../../tools/check_current_freshness.py) 另报。
 - 模块候选分支：`codex/module-runtime-foundation-20260819-r01`
 - 候选 tip：`cc793c4719fb6470946c70e744f463147989547b`
 - 当前产品共同背景：`R14`，入口 [`00_READ_ME_FIRST.md`](../../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)
 - R13 与原子需求 R02：留 Git 作历史，已退出默认路由。R14／R03 已在 main，不要再开工单 2。
 - 工单 6 拍板：[`DR-20260822-01.md`](../decision_records/DR-20260822-01.md)
+- 工程真源拍板：[`DR-20260822-02.md`](../decision_records/DR-20260822-02.md)；上工入口 [`START_HERE.md`](../START_HERE.md)
 
 ## 现在做什么
 
-干净基线七张工单里，1～5 和 7 已经进 main。工单 6 已在 [Issue #32](https://github.com/mhchen1/novel-architecture/issues/32) 拍成精确施工票：31 个全部 target，只做只读核验。
+干净基线七张工单里，1～5 和 7 已经进 main。工单 6 只读核验已按 [Issue #32](https://github.com/cczz412/novel-architecture/issues/32) 回执结账：2026-08-22 06:24 复跑 25/25＋6/6 PASS at main@`3c387ca5336daadc001c85f253186259da4a6c68`。搬删仍禁止。
 
-产品：拍板题 3 六本设定账已共用落盘方 `settingstore`，施工票是 [Issue #59](https://github.com/mhchen1/novel-architecture/issues/59)。
+产品：拍板题 3 六本设定账已共用落盘方 `settingstore`，施工票是 [Issue #59](https://github.com/cczz412/novel-architecture/issues/59)，已经进 main。
 
 不要把「runtime 已按小票上 main」读成「作者能用的完整产品」。
 
@@ -40,11 +41,12 @@
 - 本线模型 API、训练、Gold、Notion 写入、生产和自动合并权限均为 0。
 - 精确分支与版本身份从 `governance/current_pointers.json` 读取；本页不得覆盖它。
 - 工单 6 本轮不得移动、删除、退出 Git、恢复写入或退休旧目录。T7 没挂上就是 `NOT_RUN`。
+- 工程队列只认 [GitHub Issues](https://github.com/cczz412/novel-architecture/issues)，不认 Notion 旧账序页。
 
 ## 下一步
 
-1. 产品：拍板题 3 设定账统一 writer 已落 `settingstore`（Issue #59）。等人「检查再合并」，不要再平行领同一张票；
-2. 工单 6：Git 补 31 个 target、嵌套合计、本机绑定和 T7 `NOT_RUN`；本地 Codex 在绑定后核 25 个旁仓对象，T7 挂上后再核 6 次；
+1. 施工入口是带 `status:ready` 的 GitHub Issues，先读 [`START_HERE.md`](../START_HERE.md)；
+2. 工单 6 只读核验已经结账，不要再当没做；搬删禁令仍在，不要把结账读成可以搬家；
 3. 不要回头领工单 1～5 或工单 7，那些已经在 main。
 
-来源：工单 6 只读核验拍板（DR-20260822-01）
+来源：[#64](https://github.com/cczz412/novel-architecture/issues/64) 档位 B 批尾刷新；工单 6 拍板 DR-20260822-01
