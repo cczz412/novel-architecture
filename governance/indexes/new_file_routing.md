@@ -20,6 +20,7 @@
 | 跨场景可复用程序 | `tools/<tool_id>.py` | 必须有稳定输入、失败方式、定向测试和工具登记。 | `reusable_programs` |
 | 机械测试 | `tests/test_<contract>.py` | 测试要说明保护的合同，夹具只保留最小可复现材料。 | `mechanical_verification` |
 | 未定型施工草稿 | `work/<work_id>` | 必须带归位条件，不能长期冒充正式落点。 | `undecided_construction` |
+| 新评测题集（落点待 CZ 拍板） | `work/<eval_set_id>` | 正式落点待 CZ 拍板。本条只占位，不发明新目录；拍板前未定型草稿可暂放 work/<eval_set_id>，不能冒充正式题集。 | `undecided_construction` |
 | 单试验程序 | `experiments/<experiment_id>/program` | 未证明跨场景复用前不得进入 tools 根层。 | `registered_experiment_workspaces` |
 | 实验结论卡的人看页 | `experiments/<experiment_id>/README.md` | 只由同目录机器卡确定性生成；大型运行现场按对象另行外置。 | `registered_experiment_workspaces` |
 | 实验轻量结论真源 | `experiments/<experiment_id>/result_card.json` | 只留目的、组装规则、短结论、质量裁决、证据边界、消费者和指针引用。 | `registered_experiment_workspaces` |
@@ -28,6 +29,7 @@
 | 外部原始材料 | `intake/<source_id>` | 保留来源、原始字节和收件边界。 | `external_source_intake` |
 | 非真源参考 | `references/<reference_id>` | 必须写明来源与真值边界。 | `non_authoritative_references` |
 | 历史纠错切窗批次状态页 | `history/T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md` | 只说明该批历史状态，不能替代当前微调域或全仓当前状态。 | `historical_context` |
+| 过期件归档（对象级须另开票） | `history/<archive_id>` | 过期件归档去 history/。新归档对象须 CZ 拍板后另开对象级工单；本条只占位，不发明新目录，不授权自行搬迁。 | `historical_context` |
 | 隔离运行工作区 | `runs/<run_id>/workspace` | 只复制白名单零件，运行过程不得回写正式源目录。 | `runtime_workspaces` |
 | 人看交件 | `reports/<handoff_id>` | 写清证据来源和权限边界，不把报告句子冒充机器状态。 | `human_handoff_evidence` |
 | 上传包 | `outbox/<package_id>` | 包内清单指向原真源，上传包本身不替代原件。 | `transport_packages` |

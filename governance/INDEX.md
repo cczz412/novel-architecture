@@ -25,6 +25,7 @@
 - [模块状态登记](module_registry.json)
 - [路线状态登记](route_registry.json)
 - [目录路由](directory_registry.json)
+- [仓库地图一页速查](ARCHITECTURE_MAP.md)
 - [工单 6 只读核验拍板](decision_records/DR-20260822-01.md)
 
 ## 下一件
