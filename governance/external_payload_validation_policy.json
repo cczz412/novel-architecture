@@ -123,6 +123,316 @@
       "manifest_total_bytes_field": "total_bytes",
       "exact_file_set": true,
       "boundary": "只核 R2 QEC 四模型终局记录包的 7 个原件；不把它写成原始输出重判包、当前默认、完整成本封签、平台账单对账或独立备份。"
+    },
+    {
+      "artifact_id": "repository-hygiene-w05-campaign-20260808-v1",
+      "manifest_sha256": "3de504a3ab7faafde3b705c0162f4060e29db48546f8a30e9c6f451af0283c62",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "side-track-st001-corpus-relabel-table-archive-20260808-v1",
+      "manifest_sha256": "9b509147f70752cd7e90b0d5fd80a8a16fb3bce5cd26b807ede73328e5308a9a",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "side-track-st002-prototype-borrow-legacy-tables-20260718-v1",
+      "manifest_sha256": "29a8d0f899a88436c4b6529cffc0a752cb7504ccaae597509c172d290fb0a6d7",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "survey-outline-to-ordered-facts-docx-20260721-v1",
+      "manifest_sha256": "51740d8ba70eb4ec684127cdd574b0334cc4fc192b80db17428bad8b14d1128c",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "survey-three-panel-delivery-20260721-v1",
+      "manifest_sha256": "4eb608c6d6a8ebd9d4a3803f6c2c7e4d6800cd6bd067cf7b76b5d263671a3059",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "survey-three-panel-notion-md-20260721-v1",
+      "manifest_sha256": "35816e15ca42cbeb005eb0ed40197774f9501df9d7b9a3e210ee05c4018a8f78",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-micro24-m0-t-r01-history-v1",
+      "manifest_sha256": "01a166f9f8b910e58f7ff6b64513d102d3ba849ad8e2f152f764790d0145f3ac",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-micro24-m0-t2-r01-history-v1",
+      "manifest_sha256": "3deb49d301654cc46547413bd518180bf05bd250e856419e95d228cdcd9a845a",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-micro24-m0-t3-lr3e5-r01-history-v1",
+      "manifest_sha256": "ccd3d1ce66949fd82527839312225bf35b0b329cb1144671c1686969630d6118",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-micro24-m1-r01-history-v1",
+      "manifest_sha256": "7b4c390e26cc4f498d7899dc8cd0f781fdd6cb8770a09fcfd79b994f7ca83889",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-micro24-set-b-r02-intake-history-v1",
+      "manifest_sha256": "c599afb55444729991ef7851a524b99882c99388d50997ff1a3831d4fee12cf4",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-micro24-set-b-r02-review-history-v1",
+      "manifest_sha256": "aa7593433e95b364ad78c76ad99e118eeda6b2cc028ae1e53ab2c46a73beff27",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-micro24-set-b-r03-history-v1",
+      "manifest_sha256": "1744fcdef0724a3e476faa0596492a06217fbebfd9b3a86ab4c7377d67ecece5",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-r04-read-context-round1-lora-demo-r01-history-v1",
+      "manifest_sha256": "08b2e5e3b5b4a40874b338fdc91e055a533151ff8d1fe70e3241293f72776e5a",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-r04-read1-low-dose-sentinel-20260809-r01-history-v1",
+      "manifest_sha256": "91b995a0326edb874c13fa2e85a926991b66beeed0532e850a85c75f516b66e9",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-r04-read1-train36-contract-sentinel-r01-history-v1",
+      "manifest_sha256": "8656ff1fb2d138cfe489523691da04f209c705f8b8886d149e4db088817929b3",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-r04-read1-train48-interleaved-sentinel-r01-history-v1",
+      "manifest_sha256": "da83f5bdccbd6c6341cc433ffdf8b31851fd57fe198585b0c9eaa8c5d51d5a8c",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-r04-read1-train48-mixed-sentinel-r01-history-v1",
+      "manifest_sha256": "de6920dae6d4ddd7ac580b25cfeb82bbdda9057b033c5c5c4abbe2d866309048",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-r04-short-fragment-scope-wo01-matched-lora-demo-r01-history-v1",
+      "manifest_sha256": "fb236554ca8565af4e3f31ba7dd620b8414c9685982c66151024af992f6348b9",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "t5-r04-v2-correction-segment-scan-batch08-20260803-v1",
+      "manifest_sha256": "6beba120495ae12ae2cbf3960f667a9d79dd0357f350a0d9c2e7d7eb4a49165b",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "w05-aa-batch-returns-20260717-v1",
+      "manifest_sha256": "623b84245be29e16029ba7b9e6116ee3f015dbbb0e3d22e526710daa09b3d9e4",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "w05-audit-ab-r01-history-v1",
+      "manifest_sha256": "d0617c32df690884b40aa274e6a649868bc272959d6c54fbec436d705f1ea6ae",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "w05-audit-b2-r01-history-v1",
+      "manifest_sha256": "b3e6fe1e0f4ae29f27e4bc6550e2dbbfb7b2fbbfdd71ac3044496fc2b99e42b6",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "w05-audit-c-r01-history-v1",
+      "manifest_sha256": "80444681d1ef57f1f1bc7b6dc2c27997dd89caa4d024e99fac7e0fc459886395",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "w05-audit-d-r01-history-v1",
+      "manifest_sha256": "30ca945cb3c7623fa0bbb3221984cd1ab449b0b07cb047b9165dc6b9d8504636",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "w05-audit-r01-history-v1",
+      "manifest_sha256": "797d0258b354c260066fcec934cc16fc1f5c12cc914b9f944f42c60e5f7326a0",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "w05-b01-complete-experiment-results-20260728-r10-v1",
+      "manifest_sha256": "c0c06e3c579d1e587a97c4de9a26856beafb789e69a7ad6f2eeb574f853e8749",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "w05-c14-chatgpt-pipeline-consultant-review-pack-20260726-v1",
+      "manifest_sha256": "669a6c5371c7934b70ddc69a751816179e3f7e781df9af538482753f94d3ac78",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "w05-r2-chatgpt-development-route-review-pack-20260727-v1",
+      "manifest_sha256": "b29c202e35cdc74ea4301b2f69a70ac5a71c9f6546648353269283b044431e1f",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "w05-r2-chatgpt-preconstruction-root-cause-review-pack-20260726-v1",
+      "manifest_sha256": "cc127f528a93dec628a33b875dc8ae4cf5ea3333a7a79be3d500ce27b6343ce4",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
+    },
+    {
+      "artifact_id": "z76-phase2-semantic-inspector-pilot-runtime-20260721-v1",
+      "manifest_sha256": "4b783c14759ff81f1178f1d5fb6d06724ea17b334db640f8e4dcd39ca53cc9fb",
+      "payload_root_relative_path": "payload",
+      "entry_size_field": "bytes",
+      "manifest_total_files_field": "total_files",
+      "manifest_total_bytes_field": "total_bytes",
+      "exact_file_set": true,
+      "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
     }
   ],
   "exclusions": [

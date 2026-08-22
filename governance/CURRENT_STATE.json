@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-state-v2",
-  "snapshot_at": "2026-08-22T12:00:00+08:00",
+  "snapshot_at": "2026-08-22T16:30:00+08:00",
   "authority": {
     "role": "本地唯一机器可读当前执行状态真源",
     "external_truth": {
@@ -22,15 +22,15 @@
     "task": {
       "task_id": "CLEAN-BASELINE-M1-M11-INTEGRATION-20260821",
       "label": "M1～M11 产品主线与干净基线重构",
-      "status": "clean_baseline_wo1_to_wo7_on_main_wo6_blocked",
-      "status_label": "工单 1～5、十本账 L1～L5、工单 7 已进 main。工单 6 仍等 CZ 拍外置对象。不得把 M1～M11 写成完整作者能力。"
+      "status": "clean_baseline_wo1_to_wo7_on_main_wo6_readonly",
+      "status_label": "工单 1～5、十本账 L1～L5、工单 7 已进 main。工单 6 已拍：31 个全部 target，只读核验。本轮不得移动、删除、退出 Git、恢复写入或退休旧目录。不得把 M1～M11 写成完整作者能力。"
     },
     "authorization": {
       "kind": "cz_explicit_clean_baseline_seven_work_orders",
-      "authority_time": "2026-08-22T12:00:00+08:00",
+      "authority_time": "2026-08-22T16:30:00+08:00",
       "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
       "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "scope": "干净基线工单 1～5、7 已合；工单 6 仍是 needs-cz，不得当施工票。产品下一张是拍板题 3：六本设定账统一落盘方。一张票一条分支一个 PR；不直写 main。"
+      "scope": "干净基线工单 1～5、7 已合。工单 6 按 DR-20260822-01 只授权只读核验：31 个全部 target，允许本机私有外置根绑定和 aggregate 嵌套字段兼容，T7 挂载后允许只读核验。本轮不授权移动、删除、退出 Git、恢复写入或退休旧目录。产品下一张是拍板题 3：六本设定账统一落盘方。一张票一条分支一个 PR；不直写 main。"
     },
     "run": {
       "run_id": null,
@@ -38,9 +38,9 @@
     },
     "controls": {
       "quality_boundary": "本状态只登记仓库身份、版本和施工顺序，不证明 M1～M11 已完成，也不证明真实小说语义质量。检查器绿灯 ≠ 852 条语义测试，也 ≠ 全仓 pytest 全绿。",
-      "evidence_boundary": "main=dd201deaee4cf60cf133eb7511ac94dd60bca2c7（Merge PR #53 工单 7）。超级候选仍钉 codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b，只作拆票来源身份，禁止整支再合。工单 5 的 PR-C～G 已按小票进 main。",
-      "stop_rule": "不得整体合并超级分支；不得直接写 main；不得宣称 M1～M11 已具备完整作者能力；工单 6 未获 CZ 对象许可前不得移动／删除／打包外置材料。",
-      "next_action": "产品下一张：六本设定账共用一个落盘方（拍板题 3，照 planstore 样式）。工单 6 仍等 CZ 在 Issue #32 拍对象。不要整支合并超级候选分支，也不要把 M1～M11 写成完整作者能力。"
+      "evidence_boundary": "main=49533178945ce5a9a6df59e20b4d57eb18706acb（Merge PR #54 Issue #27）。超级候选仍钉 codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b，只作拆票来源身份，禁止整支再合。工单 6 拍板见 governance/decision_records/DR-20260822-01.md；target 不是正式 PASS。",
+      "stop_rule": "不得整体合并超级分支；不得直接写 main；不得宣称 M1～M11 已具备完整作者能力；工单 6 本轮不得移动、删除、退出 Git、恢复写入或退休旧目录。",
+      "next_action": "产品下一张：六本设定账共用一个落盘方（拍板题 3，照 planstore 样式）。工单 6 按 Issue #32 做只读核验：Git 补政策／绑定／嵌套合计／T7 NOT_RUN／关系测试；本机 Codex 在绑定后核 25 个旁仓、挂载后核 T7 六个。不要整支合并超级候选分支，也不要把 M1～M11 写成完整作者能力。"
     },
     "candidate": {
       "branch": "codex/module-runtime-foundation-20260819-r01",
@@ -53,7 +53,7 @@
       "machine_receipt": null
     },
     "validation": {
-      "status": "CLEAN_BASELINE_POST_WO7_CURRENT_REFRESH",
+      "status": "CLEAN_BASELINE_WO6_READONLY_CZ_DECISION",
       "completed_checks": [
         "WO1_UNIQUE_CURRENT_ON_MAIN",
         "WO2_R14_AND_ATOMIC_R03_ON_MAIN",
@@ -62,10 +62,11 @@
         "WO5_PR_C_THROUGH_G_ON_MAIN",
         "LEDGER_L1_THROUGH_L5_ON_MAIN",
         "WO7_DRIFT_CHECK_SUITE_ON_MAIN",
-        "ISSUE_27_CURRENT_HANDOFF_REFRESH"
+        "ISSUE_27_CURRENT_HANDOFF_REFRESH",
+        "WO6_READONLY_CZ_DECISION"
       ],
       "pending_checks": [
-        "work order 6: external archive still needs CZ object decisions (Issue #32)",
+        "work order 6: read-only verification of 31 targets (no move/delete/exit-Git/restore-write/retire)",
         "product next: unified settings-ledger writer (拍板题 3)"
       ]
     },
@@ -94,8 +95,8 @@
         "route": "codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b"
       },
       {
-        "blocker_id": "WO6-EXTERNAL-ARCHIVE-NEEDS-CZ",
-        "summary": "工单 6 外置归档仍是 needs-cz：31 个对象未分配 target／exclusion，T7 未挂载，云端不能当施工票开干。",
+        "blocker_id": "WO6-NO-MOVE-DELETE-THIS-ROUND",
+        "summary": "工单 6 本轮只做只读核验。不授权移动、删除、退出 Git、恢复写入或退休旧目录。T7 未挂载仍是 NOT_RUN。",
         "route": "https://github.com/mhchen1/novel-architecture/issues/32"
       }
     ]
@@ -117,13 +118,13 @@
     "role": "HISTORICAL_ONLY_NO_CURRENT_AUTHORITY"
   },
   "refresh_metadata": {
-    "updated_at": "2026-08-22T12:00:00+08:00",
-    "mode": "issue_27_current_handoff_refresh",
-    "source_count": 6,
+    "updated_at": "2026-08-22T16:30:00+08:00",
+    "mode": "wo6_readonly_cz_decision",
+    "source_count": 7,
     "source_snapshot": [
       {
         "identity": "main",
-        "commit": "dd201deaee4cf60cf133eb7511ac94dd60bca2c7"
+        "commit": "49533178945ce5a9a6df59e20b4d57eb18706acb"
       },
       {
         "identity": "module_candidate",
@@ -145,6 +146,10 @@
       {
         "path": "governance/progress/current-progress.md",
         "role": "HUMAN_HANDOFF_ONLY"
+      },
+      {
+        "path": "governance/decision_records/DR-20260822-01.md",
+        "role": "WO6_READONLY_DECISION_RECORD"
       }
     ],
     "responsibility_boundary": {

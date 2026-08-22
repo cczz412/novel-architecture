@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-pointers-v1",
-  "updated_at": "2026-08-22T12:00:00+08:00",
+  "updated_at": "2026-08-22T16:30:00+08:00",
   "authority": {
     "role": "当前版本、路径、候选身份和后续登记的唯一机器索引",
     "does_not_replace": [
@@ -25,7 +25,7 @@
     {
       "pointer_id": "human_handoff",
       "status": "ACTIVE_CURRENT",
-      "version": "2026-08-22-ISSUE-27",
+      "version": "2026-08-22-WO6-DR",
       "path": "governance/progress/current-progress.md"
     },
     {

@@ -262,6 +262,7 @@ def _make_fixture(
     contract_relatives = (
         inventory.REGISTRY_SCHEMA_RELATIVE,
         inventory.MIGRATION_RECEIPT_SCHEMA_RELATIVE,
+        inventory.BINDING_SCHEMA_RELATIVE,
         validator.POLICY_SCHEMA_RELATIVE,
         validator.REPORT_SCHEMA_RELATIVE,
     )
@@ -838,3 +839,224 @@ def test_tar_representation_verifies_files_and_symlink_target(tmp_path: Path) ->
         match="ARCHIVE_CONTAINER_DIGEST_MISMATCH",
     ):
         validator._verify_tar_representation(fixture.external, row, manifest)
+
+
+def _write_aggregate_manifest(
+    fixture: PayloadFixture,
+    *,
+    files: dict[str, bytes],
+    member_count: int | None = None,
+    aggregate_bytes: int | None = None,
+    include_top_level: bool = False,
+    top_level_files: int | None = None,
+    top_level_bytes: int | None = None,
+) -> None:
+    entries = [
+        {
+            "path": relative,
+            "bytes": len(content),
+            "sha256": _sha256_bytes(content),
+        }
+        for relative, content in sorted(files.items())
+    ]
+    actual_files = len(entries)
+    actual_bytes = sum(entry["bytes"] for entry in entries)
+    manifest: dict = {
+        "aggregate": {
+            "member_count": actual_files if member_count is None else member_count,
+            "total_bytes": actual_bytes if aggregate_bytes is None else aggregate_bytes,
+        },
+        "files": entries,
+    }
+    if include_top_level:
+        manifest["total_files"] = (
+            actual_files if top_level_files is None else top_level_files
+        )
+        manifest["total_bytes"] = (
+            actual_bytes if top_level_bytes is None else top_level_bytes
+        )
+    _write_json(fixture.manifest_path, manifest)
+    _rebind_manifest(fixture)
+
+
+def _write_binding(fixture: PayloadFixture, absolute_directory: Path) -> Path:
+    binding = {
+        "contract_version": "external-root-binding-v1",
+        "bindings": [
+            {
+                "root_id": "repository_sibling_external_archive_v1",
+                "absolute_directory": str(absolute_directory),
+            }
+        ],
+    }
+    binding_path = fixture.repo / inventory.BINDING_RELATIVE
+    binding_path.parent.mkdir(parents=True, exist_ok=True)
+    _write_json(binding_path, binding)
+    return binding_path
+
+
+def test_nested_aggregate_totals_pass_without_top_level_fields(
+    tmp_path: Path,
+) -> None:
+    files = {"a.bin": b"aa", "b.bin": b"bbb"}
+    fixture = _make_fixture(tmp_path, files)
+    _write_aggregate_manifest(fixture, files=files)
+
+    report = validator.validate_payload(TARGET_ID, fixture.repo)
+    assert report["status"] == "PASS"
+    assert report["verification"]["file_count"] == 2
+    assert report["verification"]["total_bytes"] == 5
+    assert validator._resolve_manifest_total(
+        json.loads(fixture.manifest_path.read_text(encoding="utf-8")),
+        "aggregate.member_count",
+    ) == 2
+
+
+def test_nested_aggregate_totals_mismatch_entries(tmp_path: Path) -> None:
+    files = {"result.bin": b"fixture payload\n"}
+    fixture = _make_fixture(tmp_path, files)
+    _write_aggregate_manifest(fixture, files=files, member_count=99)
+
+    _expect_error(fixture, "PAYLOAD_MANIFEST_TOTAL_MISMATCH")
+
+
+def test_top_level_and_nested_totals_disagree(tmp_path: Path) -> None:
+    files = {"result.bin": b"fixture payload\n"}
+    fixture = _make_fixture(tmp_path, files)
+    _write_aggregate_manifest(
+        fixture,
+        files=files,
+        include_top_level=True,
+        member_count=99,
+    )
+
+    _expect_error(fixture, "PAYLOAD_MANIFEST_TOTAL_MISMATCH")
+
+
+def test_private_binding_resolves_missing_sibling_without_leaking_path(
+    tmp_path: Path,
+) -> None:
+    fixture = _make_fixture(tmp_path)
+    bound = tmp_path / "bound-archive"
+    fixture.external.rename(bound)
+    assert not fixture.external.exists()
+    binding_path = _write_binding(fixture, bound)
+
+    report = validator.validate_payload(TARGET_ID, fixture.repo)
+    serialized = validator._json_bytes(report)
+
+    assert report["status"] == "PASS"
+    assert str(bound).encode("utf-8") not in serialized
+    assert bound.as_posix().encode("utf-8") not in serialized
+    assert report["bindings"]["storage_root_binding_sha256"] == _sha256(binding_path)
+    assert report["bindings"][
+        "storage_root_device_fingerprint"
+    ] == inventory.storage_root_device_fingerprint(bound)
+
+
+def test_binding_symlink_is_rejected(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path)
+    real = tmp_path / "real-archive"
+    fixture.external.rename(real)
+    linked = tmp_path / "link-archive"
+    linked.symlink_to(real, target_is_directory=True)
+    _write_binding(fixture, linked)
+
+    _expect_error(fixture, "PAYLOAD_TARGET_ROOT_INVALID")
+
+    binding_path = fixture.repo / inventory.BINDING_RELATIVE
+    linked_binding = fixture.repo / ".local/linked_bindings.json"
+    binding_bytes = binding_path.read_bytes()
+    linked_binding.write_bytes(binding_bytes)
+    binding_path.unlink()
+    binding_path.symlink_to(linked_binding)
+    _expect_error(fixture, "PAYLOAD_TARGET_ROOT_INVALID")
+
+
+def test_live_registry_policy_covers_every_external_archive_object() -> None:
+    registry = json.loads(
+        (ROOT / "governance/external_archive_registry.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    policy = json.loads(
+        (ROOT / "governance/external_payload_validation_policy.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    validator._validate_policy_relations(policy, registry)
+    assert len(policy["targets"]) == 41
+    assert len(policy["exclusions"]) == 4
+
+
+@pytest.mark.parametrize(
+    "inventory_code",
+    [
+        "EXTERNAL_VOLUME_UUID_NOT_UNIQUE",
+        "EXTERNAL_VOLUME_DISCOVERY_FAILED",
+        "EXTERNAL_VOLUME_MOUNT_INVALID",
+    ],
+)
+def test_t7_unmounted_is_not_run(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    inventory_code: str,
+) -> None:
+    fixture = _make_fixture(tmp_path)
+    fixture.registry["storage_roots"].insert(
+        0,
+        {
+            "root_id": "physical_external_archive_t7_v1",
+            "locator": {
+                "kind": "external_volume_uuid",
+                "volume_uuid": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",
+                "expected_volume_name": "T7 Shield",
+                "relative_root": "archive/v1",
+            },
+            "role": "external_archive",
+            "required": True,
+            "failure_domain": "different_physical_device",
+            "boundary": "合成 T7 外置卷；本测试不挂载。",
+        },
+    )
+    target = next(
+        row for row in fixture.registry["objects"] if row["artifact_id"] == TARGET_ID
+    )
+    target["root_id"] = "physical_external_archive_t7_v1"
+    target["recoverability"] = "package_integrity_proven_different_physical_device"
+    target["representation"] = {
+        "kind": "tar_posix_tree_v1",
+        "original_tree_manifest_sha256": target["manifest"]["sha256"],
+        "original_aggregate_sha256": "a" * 64,
+        "container_relative_path": "payload.tar",
+        "container_sha256": "b" * 64,
+        "container_bytes": 1,
+        "restore_contract": {
+            "extract_to_posix_filesystem": True,
+            "verify_regular_file_sha": True,
+            "verify_symlink_target": True,
+            "verify_member_set": True,
+            "verify_total_logical_bytes": True,
+        },
+    }
+    _write_json(fixture.registry_path, fixture.registry)
+
+    def missing_volume(*_args: object, **_kwargs: object) -> Path:
+        raise inventory.InventoryError(inventory_code, "合成未挂载")
+
+    monkeypatch.setattr(
+        inventory,
+        "_resolve_external_volume_uuid",
+        missing_volume,
+    )
+
+    with pytest.raises(validator.PayloadValidationError) as caught:
+        validator.validate_payload(TARGET_ID, fixture.repo)
+    assert caught.value.code == validator.PAYLOAD_VOLUME_NOT_MOUNTED
+    assert str(caught.value).startswith(validator.NOT_RUN_VOLUME_NOT_MOUNTED)
+
+    monkeypatch.setattr(validator, "ROOT", fixture.repo)
+    assert validator.main(["check", "--artifact-id", TARGET_ID]) == 4
+    captured = capsys.readouterr()
+    assert captured.err.startswith(validator.NOT_RUN_VOLUME_NOT_MOUNTED)
