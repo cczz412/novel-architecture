@@ -1,0 +1,254 @@
+name: Ledger L3 remote validation and clean finalize
+
+on:
+  push:
+    branches:
+      - chatgpt/ledger-contract-l3-location-item-faction-20260822
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ledger-l3-finalize
+  cancel-in-progress: false
+
+jobs:
+  validate-rewrite-publish:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BRANCH_NAME: ${{ github.ref_name }}
+      PR_NUMBER: 45
+      EXPECTED_MAIN: c7e24bf9403fde7ad428c5bb8c3e767e50505909
+
+    steps:
+      - name: Clone exact remote branch and pin main
+        run: |
+          set -euo pipefail
+          git clone --branch "$BRANCH_NAME" --single-branch \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
+          cd repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config core.quotepath false
+          ORIGINAL_HEAD="$(git rev-parse HEAD)"
+          printf '%s\n' "$ORIGINAL_HEAD" > /tmp/l3-original-head
+          test -f .github/ledger_l3_apply.py
+          cp .github/ledger_l3_apply.py /tmp/ledger_l3_apply.py
+          python -m py_compile /tmp/ledger_l3_apply.py
+          git fetch origin main:refs/heads/main
+          test "$(git rev-parse main)" = "$EXPECTED_MAIN"
+
+      - name: Install locked runner
+        run: python -m pip install --disable-pip-version-check uv
+
+      - name: Validate remote L3 content
+        run: |
+          set -euo pipefail
+          cd repo
+          python /tmp/ledger_l3_apply.py --verify
+          test -f /tmp/l3-machine-summary.json
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          paths = [
+              Path("novel-mvp/contracts/LOCATION_LEDGER_CONTENT.md"),
+              Path("novel-mvp/contracts/LOCATION_LEDGER_CONTENT.schema.json"),
+              Path("novel-mvp/contracts/validate_location_ledger_content.py"),
+              Path("novel-mvp/contracts/LOCATION_LEDGER_CONTENT.fixtures.jsonl"),
+              Path("novel-mvp/contracts/ITEM_LEDGER_CONTENT.md"),
+              Path("novel-mvp/contracts/ITEM_LEDGER_CONTENT.schema.json"),
+              Path("novel-mvp/contracts/validate_item_ledger_content.py"),
+              Path("novel-mvp/contracts/ITEM_LEDGER_CONTENT.fixtures.jsonl"),
+              Path("novel-mvp/contracts/FACTION_LEDGER_CONTENT.md"),
+              Path("novel-mvp/contracts/FACTION_LEDGER_CONTENT.schema.json"),
+              Path("novel-mvp/contracts/validate_faction_ledger_content.py"),
+              Path("novel-mvp/contracts/FACTION_LEDGER_CONTENT.fixtures.jsonl"),
+              Path("novel-mvp/contracts/ledger_content_contract_common.py"),
+              Path("tests/test_novel_mvp_location_ledger_content_contract.py"),
+              Path("tests/test_novel_mvp_item_ledger_content_contract.py"),
+              Path("tests/test_novel_mvp_faction_ledger_content_contract.py"),
+          ]
+          required = (
+              "chapter_revision_ref",
+              "revision_text_sha256",
+              "story_order",
+              "NOT_RECORDED",
+              "STORY_TIME_NOT_COMPARABLE",
+          )
+          combined = "\n".join(path.read_text(encoding="utf-8") for path in paths)
+          for term in required:
+              if term not in combined:
+                  raise SystemExit(f"L3_REQUIRED_TERM_MISSING:{term}")
+          for forbidden in ("UN" + "KNOWN", "story" + "_sequence", "DESTINY-"):
+              if forbidden in combined:
+                  raise SystemExit(f"L3_FORBIDDEN_TERM:{forbidden}")
+          if re.search(r'(?<!revision_)"text_sha256"\s*:', combined):
+              raise SystemExit("L3_FLAT_TEXT_SHA256_FORBIDDEN")
+          print("PASS_L3_VOCABULARY_AND_ANCHOR_GATE")
+          PY
+
+      - name: Rewrite branch to one clean content commit
+        run: |
+          set -euo pipefail
+          cd repo
+          ORIGINAL_HEAD="$(cat /tmp/l3-original-head)"
+          git reset --soft main
+          git rm .github/ledger_l3_apply.py .github/workflows/ledger-l3-finalize.yml
+          rmdir .github/workflows .github 2>/dev/null || true
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          expected = sorted(
+              [
+                  "governance/capability_traceability.json",
+                  "novel-mvp/contracts/FACTION_LEDGER_CONTENT.fixtures.jsonl",
+                  "novel-mvp/contracts/FACTION_LEDGER_CONTENT.md",
+                  "novel-mvp/contracts/FACTION_LEDGER_CONTENT.schema.json",
+                  "novel-mvp/contracts/ITEM_LEDGER_CONTENT.fixtures.jsonl",
+                  "novel-mvp/contracts/ITEM_LEDGER_CONTENT.md",
+                  "novel-mvp/contracts/ITEM_LEDGER_CONTENT.schema.json",
+                  "novel-mvp/contracts/LOCATION_LEDGER_CONTENT.fixtures.jsonl",
+                  "novel-mvp/contracts/LOCATION_LEDGER_CONTENT.md",
+                  "novel-mvp/contracts/LOCATION_LEDGER_CONTENT.schema.json",
+                  "novel-mvp/contracts/ledger_content_contract_common.py",
+                  "novel-mvp/contracts/validate_faction_ledger_content.py",
+                  "novel-mvp/contracts/validate_item_ledger_content.py",
+                  "novel-mvp/contracts/validate_location_ledger_content.py",
+                  "tests/test_novel_mvp_faction_ledger_content_contract.py",
+                  "tests/test_novel_mvp_item_ledger_content_contract.py",
+                  "tests/test_novel_mvp_location_ledger_content_contract.py",
+              ]
+          )
+          changed = sorted(
+              subprocess.check_output(
+                  ["git", "diff", "--cached", "--name-only", "main"],
+                  text=True,
+              ).splitlines()
+          )
+          if changed != expected:
+              raise SystemExit(f"L3_FINAL_SCOPE_MISMATCH:{changed}")
+          if any(path.startswith(".github/") for path in changed):
+              raise SystemExit("L3_GITHUB_APPARATUS_LEAK")
+          Path("/tmp/l3-local-files.txt").write_text(
+              "\n".join(changed) + "\n",
+              encoding="utf-8",
+          )
+          print("PASS_L3_FINAL_SCOPE changed_files=17")
+          print("\n".join(changed))
+          PY
+          git diff --cached --check
+          git commit -m "feat(contracts): freeze location item faction ledger content v1 [skip ci]"
+          git push \
+            --force-with-lease="refs/heads/${BRANCH_NAME}:${ORIGINAL_HEAD}" \
+            origin "HEAD:${BRANCH_NAME}"
+
+      - name: Verify GitHub delivery, update PR, and print anti-fraud output
+        run: |
+          set -euo pipefail
+          cd repo
+          CONTENT_HEAD="$(git rev-parse HEAD)"
+          for attempt in $(seq 1 30); do
+            REMOTE_HEAD="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+            if [[ "$REMOTE_HEAD" == "$CONTENT_HEAD" ]]; then
+              break
+            fi
+            if [[ "$attempt" == "30" ]]; then
+              echo "L3_REMOTE_HEAD_DID_NOT_CONVERGE local=${CONTENT_HEAD} remote=${REMOTE_HEAD}" >&2
+              exit 1
+            fi
+            sleep 2
+          done
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files" \
+            --paginate --jq '.[].filename' > /tmp/l3-remote-files.txt
+          sort /tmp/l3-local-files.txt > /tmp/l3-local-files-sorted.txt
+          sort /tmp/l3-remote-files.txt > /tmp/l3-remote-files-sorted.txt
+          cmp /tmp/l3-local-files-sorted.txt /tmp/l3-remote-files-sorted.txt
+
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import subprocess
+
+          summary = json.loads(Path("/tmp/l3-machine-summary.json").read_text(encoding="utf-8"))
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          files = Path("/tmp/l3-remote-files.txt").read_text(encoding="utf-8").strip().splitlines()
+          body = [
+              "## 票 L3｜地点／物品／势力三同构内容合同",
+              "",
+              f"- Base：`main@{summary['base_sha']}`",
+              f"- Head：`{head}`",
+              "- 真值来源：`work/ledger_content_contract_20260822_r01/00_DECIDED_DRAFT_R01.md`。",
+              "- 复核优先：`work/ledger_content_contract_20260822_r01/01_REVIEW_R01.md` 第三节。",
+              "- 本票只落合同层；设定账统一 writer runtime 未实现。",
+              "- 产品合同语义改动＝有，但只把已拍板的地点／物品／势力三同构语义正式成文；没有新增拍板。",
+              "",
+              "## 交付",
+              "",
+              "- `LOCATION_LEDGER_CONTENT`／`ITEM_LEDGER_CONTENT`／`FACTION_LEDGER_CONTENT` 三份正式合同。",
+              "- 前缀固定为 `LOC-`／`IT-`／`FA-`。",
+              "- 故事时间锚严格为 `chapter_revision_ref.{chapter_id, revision_no, revision_text_sha256}`＋可选 `story_order`。",
+              "- 查询没记录＝`NOT_RECORDED`；故事时间不可比＝`STORY_TIME_NOT_COMPARABLE`。",
+              "- 没有使用 `UNKNOWN`、`story_sequence`、扁平 `text_sha256` 或未拍的 `DESTINY-`。",
+              "- 物品 ownership 只作读取投影；宝物易手变化真值仍住事实账。",
+              "- 势力 members／relations 均带 story_time 区间和 evidence_refs。",
+              "",
+              "## 复核六条施工注记",
+              "",
+              "1. AUTHOR_ATTESTATION：复用 L1。",
+              "2. pack_prefilled：复用 L1。",
+              "3. destiny_ref：L3 不定义；存在性校验仍留 L5。",
+              "4. handle 迁移：留 L5。",
+              "5. hardness 红灯资格：留 L4。",
+              "6. 知情边、ADD-043、READER、新账申请、取件码等开放项只留位。",
+              "",
+              "## 机器验收",
+              "",
+              f"- fixtures：`{json.dumps(summary['fixture_summaries'], ensure_ascii=False, sort_keys=True)}`。",
+              f"- 新校验器定向测试：`{summary['direct_test_summary']}`。",
+              f"- novel_mvp 首跑：`{summary['novel_mvp_first_run_summary']}`。",
+              f"- novel_mvp 有效通过数：`{summary['novel_mvp_effective_passed']}`；L2 基线 1639，只增不减。",
+              f"- 偶发协议：`{summary['novel_mvp_protocol']}`；隔离复跑：`{summary['novel_mvp_isolation']}`。",
+              f"- 治理四文件：`{summary['governance_summary']}`。",
+              f"- design checker：`{summary['design_checker']}`。",
+              f"- freshness checker：`{summary['freshness_checker']}`。",
+              f"- traceability checker：`{summary['traceability_checker']}`。",
+              f"- Ruff：`{summary['ruff']}`。",
+              "- 早期未交付尝试曾命中未登记的 ingest `added_at` 一秒竞态；未扩充登记名单。最终远端 workflow 首跑全绿才进入本提交。",
+              "",
+              "## 明确边界",
+              "",
+              "- 不实现统一 writer，不修改 runtime。",
+              "- 知情边、ADD-043、READER、新账申请、取件码、hardness 红灯、handle 迁移全部继续只留位。",
+              "- 本票不声称三本账达到 AUTHOR_USABLE。",
+              "",
+              "## GitHub 远端 Files changed",
+              "",
+              "```text",
+              *files,
+              "```",
+          ]
+          Path("/tmp/l3-pr-body.md").write_text("\n".join(body) + "\n", encoding="utf-8")
+          PY
+          gh pr edit "$PR_NUMBER" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Ledger L3：地点／物品／势力三同构内容合同" \
+            --body-file /tmp/l3-pr-body.md
+          gh pr ready "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+
+          echo 'L3_MACHINE_SUMMARY_START'
+          cat /tmp/l3-machine-summary.json
+          echo 'L3_MACHINE_SUMMARY_END'
+          echo 'L3_ANTI_FRAUD_FILES_START'
+          gh api repos/mhchen1/novel-architecture/pulls/"${PR_NUMBER}"/files \
+            --paginate --jq '.[].filename'
+          echo 'L3_ANTI_FRAUD_FILES_END'
+          echo 'L3_ANTI_FRAUD_STATE_START'
+          gh api repos/mhchen1/novel-architecture/pulls/"${PR_NUMBER}" \
+            --jq '{draft:.draft,state:.state,head:.head.sha}'
+          echo 'L3_ANTI_FRAUD_STATE_END'
