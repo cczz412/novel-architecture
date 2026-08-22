@@ -785,7 +785,7 @@ def test_tar_representation_verifies_files_and_symlink_target(tmp_path: Path) ->
     link_target = "target.bin"
     manifest = {
         "aggregate_sha256": "a" * 64,
-        "source_total_bytes": len(b"payload\n") + len(link_target.encode()),
+        "source_total_bytes": len(b"payload\n"),
         "files": [
             {
                 "path": "target.bin",
@@ -832,13 +832,58 @@ def test_tar_representation_verifies_files_and_symlink_target(tmp_path: Path) ->
     )
     assert summary == {
         "symlink_count": 1,
-        "total_bytes": manifest["source_total_bytes"],
+        "total_bytes": len(b"payload\n"),
     }
 
     row["representation"]["container_sha256"] = "0" * 64
     with pytest.raises(
         validator.PayloadValidationError,
         match="ARCHIVE_CONTAINER_DIGEST_MISMATCH",
+    ):
+        validator._verify_tar_representation(fixture.external, row, manifest)
+
+
+def test_tar_representation_rejects_wrong_manifest_source_total_bytes(
+    tmp_path: Path,
+) -> None:
+    fixture = _make_fixture(tmp_path, {"target.bin": b"payload\n"})
+    manifest = {
+        "aggregate_sha256": "a" * 64,
+        "source_total_bytes": 999,
+        "files": [
+            {
+                "path": "target.bin",
+                "bytes": len(b"payload\n"),
+                "sha256": _sha256_bytes(b"payload\n"),
+            }
+        ],
+        "symlinks": [],
+    }
+    container = fixture.object_root / "payload.tar"
+    source_tree = tmp_path / "source-tree"
+    source_tree.mkdir()
+    (source_tree / "target.bin").write_bytes(b"payload\n")
+    with tarfile.open(container, "w", format=tarfile.PAX_FORMAT) as archive:
+        archive.add(source_tree / "target.bin", arcname="target.bin", recursive=False)
+    row = fixture.registry["objects"][1]
+    row["representation"] = {
+        "kind": "tar_posix_tree_v1",
+        "original_tree_manifest_sha256": "b" * 64,
+        "original_aggregate_sha256": "a" * 64,
+        "container_relative_path": "payload.tar",
+        "container_sha256": _sha256(container),
+        "container_bytes": container.stat().st_size,
+        "restore_contract": {
+            "extract_to_posix_filesystem": True,
+            "verify_regular_file_sha": True,
+            "verify_symlink_target": True,
+            "verify_member_set": True,
+            "verify_total_logical_bytes": True,
+        },
+    }
+    with pytest.raises(
+        validator.PayloadValidationError,
+        match="TAR_TOTAL_BYTES_MISMATCH",
     ):
         validator._verify_tar_representation(fixture.external, row, manifest)
 
@@ -881,12 +926,17 @@ def _write_aggregate_manifest(
     _rebind_manifest(fixture)
 
 
-def _write_binding(fixture: PayloadFixture, absolute_directory: Path) -> Path:
+def _write_binding(
+    fixture: PayloadFixture,
+    absolute_directory: Path,
+    *,
+    root_id: str = "repository_sibling_external_archive_v1",
+) -> Path:
     binding = {
         "contract_version": "external-root-binding-v1",
         "bindings": [
             {
-                "root_id": "repository_sibling_external_archive_v1",
+                "root_id": root_id,
                 "absolute_directory": str(absolute_directory),
             }
         ],
@@ -950,7 +1000,11 @@ def test_private_binding_resolves_missing_sibling_without_leaking_path(
     assert report["status"] == "PASS"
     assert str(bound).encode("utf-8") not in serialized
     assert bound.as_posix().encode("utf-8") not in serialized
+    assert report["bindings"]["storage_root_binding_applied"] is True
     assert report["bindings"]["storage_root_binding_sha256"] == _sha256(binding_path)
+    assert report["bindings"]["storage_root_binding_schema_sha256"] == _sha256(
+        fixture.repo / inventory.BINDING_SCHEMA_RELATIVE
+    )
     assert report["bindings"][
         "storage_root_device_fingerprint"
     ] == inventory.storage_root_device_fingerprint(bound)
@@ -964,7 +1018,7 @@ def test_binding_symlink_is_rejected(tmp_path: Path) -> None:
     linked.symlink_to(real, target_is_directory=True)
     _write_binding(fixture, linked)
 
-    _expect_error(fixture, "PAYLOAD_TARGET_ROOT_INVALID")
+    _expect_error(fixture, "PAYLOAD_BINDING_INVALID")
 
     binding_path = fixture.repo / inventory.BINDING_RELATIVE
     linked_binding = fixture.repo / ".local/linked_bindings.json"
@@ -972,7 +1026,86 @@ def test_binding_symlink_is_rejected(tmp_path: Path) -> None:
     linked_binding.write_bytes(binding_bytes)
     binding_path.unlink()
     binding_path.symlink_to(linked_binding)
-    _expect_error(fixture, "PAYLOAD_TARGET_ROOT_INVALID")
+    _expect_error(fixture, "PAYLOAD_BINDING_INVALID")
+
+
+def test_binding_is_read_once_per_validate_payload(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fixture = _make_fixture(tmp_path)
+    bound = tmp_path / "bound-archive"
+    fixture.external.rename(bound)
+    _write_binding(fixture, bound)
+    calls = {"n": 0}
+    original = inventory.read_external_root_bindings
+
+    def counting_read(repo_root: Path) -> inventory.ExternalRootBindings | None:
+        calls["n"] += 1
+        return original(repo_root)
+
+    monkeypatch.setattr(inventory, "read_external_root_bindings", counting_read)
+    report = validator.validate_payload(TARGET_ID, fixture.repo)
+    assert calls["n"] == 1
+    assert report["bindings"]["storage_root_binding_applied"] is True
+
+
+def test_binding_swap_between_reads_is_rejected(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fixture = _make_fixture(tmp_path)
+    bound = tmp_path / "bound-archive"
+    fixture.external.rename(bound)
+    _write_binding(fixture, bound)
+    original = inventory._read_registered_file
+    reads = {"n": 0}
+
+    def flip_second_binding_read(
+        root: Path,
+        relative,
+        *,
+        code: str,
+    ) -> bytes:
+        raw = original(root, relative, code=code)
+        if relative.as_posix() == inventory.BINDING_RELATIVE.as_posix():
+            reads["n"] += 1
+            if reads["n"] == 2:
+                return raw[:-2] + b" \n"
+        return raw
+
+    monkeypatch.setattr(inventory, "_read_registered_file", flip_second_binding_read)
+    _expect_error(fixture, "PAYLOAD_BINDING_INVALID")
+
+
+def test_binding_unknown_root_id_is_rejected(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path)
+    bound = tmp_path / "bound-archive"
+    fixture.external.rename(bound)
+    _write_binding(fixture, bound, root_id="typo_sibling_archive_v1")
+    _expect_error(fixture, "PAYLOAD_BINDING_INVALID")
+
+
+def test_binding_typo_does_not_fall_back_to_sibling_guess(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path)
+    _write_binding(
+        fixture,
+        fixture.external,
+        root_id="repository_sibling_external_archve_v1",
+    )
+    _expect_error(fixture, "PAYLOAD_BINDING_INVALID")
+
+
+def test_binding_to_repository_root_is_rejected(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path)
+    _write_binding(fixture, fixture.repo)
+    _expect_error(fixture, "PAYLOAD_BINDING_INVALID")
+
+
+def test_binding_to_repository_subdirectory_is_rejected(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path)
+    _write_binding(fixture, fixture.repo / "tools")
+    _expect_error(fixture, "PAYLOAD_BINDING_INVALID")
 
 
 def test_live_registry_policy_covers_every_external_archive_object() -> None:
@@ -1091,6 +1224,16 @@ def test_t7_unmounted_is_not_run(
     assert payload["status"] == "NOT_RUN"
     assert payload["artifact_id"] == TARGET_ID
     assert payload["root_id"] == "physical_external_archive_t7_v1"
+    validator._validate_not_run_receipt(fixture.repo, payload)
+    schema = json.loads(
+        (ROOT / validator.REPORT_SCHEMA_RELATIVE).read_text(encoding="utf-8")
+    )
+    assert "PASS_WITH_STABLE_MAIN_EXISTING_NON_NOVEL_DEBT" in schema["properties"][
+        "status"
+    ]["description"]
+    assert schema["$defs"]["notRunReceipt"]["properties"]["code"]["const"] == (
+        "NOT_RUN_VOLUME_NOT_MOUNTED"
+    )
     assert str(fixture.repo) not in reported.out
     assert str(fixture.external) not in reported.out
 

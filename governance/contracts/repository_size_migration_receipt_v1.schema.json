@@ -85,7 +85,8 @@
           },
           "path": {
             "type": "string",
-            "pattern": "^experiments/[^/]+/(?:README\\.md|experiment\\.json)$"
+            "pattern": "^(?:experiments|foundation|references|finetuning|governance|config|analysis_library)/[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+            "description": "主仓内指针相对路径。允许 experiments 及 foundation／references／finetuning 等非实验对象落点；禁止绝对路径与 ..。"
           },
           "sha256": {
             "type": "string",

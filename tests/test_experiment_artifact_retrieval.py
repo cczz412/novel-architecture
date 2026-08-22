@@ -14,6 +14,7 @@ import pytest
 from jsonschema import Draft202012Validator
 
 from tools import experiment_artifact_retrieval as retrieval
+from tools import repo_slim_inventory as inventory
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1223,7 +1224,7 @@ def test_registered_tar_restore_preserves_file_and_symlink(
     (payload / "link.txt").symlink_to("a.txt")
     manifest = {
         "aggregate_sha256": "b" * 64,
-        "source_total_bytes": 6,
+        "source_total_bytes": 1,
         "files": [
             {"path": "a.txt", "bytes": 1, "sha256": _sha256_bytes(b"a")}
         ],
@@ -1285,6 +1286,96 @@ def test_registered_tar_restore_preserves_file_and_symlink(
     assert receipt["status"] == "RESTORE_VERIFIED"
     assert receipt["member_count"] == 2
     assert receipt["symlink_count"] == 1
+    assert receipt["total_logical_bytes"] == 1
     assert (destination / "a.txt").read_bytes() == b"a"
     assert (destination / "link.txt").is_symlink()
     assert os.readlink(destination / "link.txt") == "a.txt"
+
+
+def test_restore_rejects_wrong_manifest_source_total_bytes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fixture = _make_fixture(tmp_path)
+    artifact_id = ARTIFACT_IDS[0]
+    object_root = fixture.external / artifact_id
+    payload = tmp_path / "payload-mismatch"
+    payload.mkdir()
+    (payload / "a.txt").write_bytes(b"a")
+    manifest = {
+        "aggregate_sha256": "b" * 64,
+        "source_total_bytes": 999,
+        "files": [
+            {"path": "a.txt", "bytes": 1, "sha256": _sha256_bytes(b"a")}
+        ],
+        "symlinks": [],
+    }
+    _write_json(object_root / "MANIFEST.json", manifest)
+    container = object_root / "payload.tar"
+    with tarfile.open(container, "w", format=tarfile.PAX_FORMAT) as archive:
+        archive.add(payload / "a.txt", arcname="a.txt", recursive=False)
+    registry = _read_json(fixture.registry_path)
+    object_row = next(
+        row for row in registry["objects"] if row["artifact_id"] == artifact_id
+    )
+    manifest_sha = _sha256(object_root / "MANIFEST.json")
+    object_row["manifest"]["sha256"] = manifest_sha
+    object_row["manifest"]["expected_entry_count"] = 1
+    object_row["representation"] = {
+        "kind": "tar_posix_tree_v1",
+        "original_tree_manifest_sha256": manifest_sha,
+        "original_aggregate_sha256": "b" * 64,
+        "container_relative_path": "payload.tar",
+        "container_sha256": _sha256(container),
+        "container_bytes": container.stat().st_size,
+        "restore_contract": {
+            "extract_to_posix_filesystem": True,
+            "verify_regular_file_sha": True,
+            "verify_symlink_target": True,
+            "verify_member_set": True,
+            "verify_total_logical_bytes": True,
+        },
+    }
+    _write_json(fixture.registry_path, registry)
+    monkeypatch.setattr(
+        retrieval,
+        "_resolve_external_root",
+        lambda _repo, _registry, _root_id=retrieval.EXTERNAL_ROOT_ID: (
+            fixture.external,
+            {},
+        ),
+    )
+    destination = fixture.repo / "TEMP/restore/fixture-mismatch"
+    with pytest.raises(retrieval.RetrievalError, match="RESTORE_TOTAL_LOGICAL_BYTES_MISMATCH"):
+        retrieval.restore_registered_archive(
+            fixture.repo,
+            artifact_id,
+            destination,
+        )
+
+
+def test_resolve_external_root_rejects_unknown_binding_root_id(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path)
+    schema_dest = fixture.repo / inventory.BINDING_SCHEMA_RELATIVE
+    schema_dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(ROOT / inventory.BINDING_SCHEMA_RELATIVE, schema_dest)
+    binding_path = fixture.repo / inventory.BINDING_RELATIVE
+    binding_path.parent.mkdir(parents=True, exist_ok=True)
+    _write_json(
+        binding_path,
+        {
+            "contract_version": "external-root-binding-v1",
+            "bindings": [
+                {
+                    "root_id": "typo_sibling_archive_v1",
+                    "absolute_directory": str(fixture.external),
+                }
+            ],
+        },
+    )
+    registry = _read_json(fixture.registry_path)
+    with pytest.raises(
+        retrieval.RetrievalError,
+        match="EXTERNAL_ROOT_LOCATOR_INVALID",
+    ):
+        retrieval._resolve_external_root(fixture.repo, registry)

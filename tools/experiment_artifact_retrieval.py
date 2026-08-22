@@ -217,6 +217,13 @@ def _verify_restored_tree(root: Path, manifest: dict[str, Any]) -> dict[str, Any
         path = root.joinpath(*PurePosixPath(relative).parts)
         if path.stat().st_size != row["bytes"] or _sha256_file(path) != row["sha256"]:
             raise RetrievalError("RESTORE_FILE_IDENTITY_MISMATCH", relative)
+    actual_total = sum(
+        root.joinpath(*PurePosixPath(relative).parts).stat().st_size
+        for relative in expected_files
+    )
+    claimed_total = manifest.get("source_total_bytes")
+    if claimed_total != actual_total:
+        raise RetrievalError("RESTORE_TOTAL_LOGICAL_BYTES_MISMATCH")
     for relative, row in expected_links.items():
         path = root.joinpath(*PurePosixPath(relative).parts)
         expected_target = row.get("archive_link_target")
@@ -231,7 +238,7 @@ def _verify_restored_tree(root: Path, manifest: dict[str, Any]) -> dict[str, Any
         "member_count": len(expected_files) + len(expected_links),
         "regular_file_count": len(expected_files),
         "symlink_count": len(expected_links),
-        "total_logical_bytes": manifest.get("source_total_bytes"),
+        "total_logical_bytes": actual_total,
         "aggregate_sha256": manifest.get("aggregate_sha256"),
     }
 
@@ -1111,7 +1118,18 @@ def _resolve_external_root(
     if row.get("role") != "external_archive" or row.get("required") is not True:
         raise RetrievalError("EXTERNAL_ROOT_LOCATOR_INVALID")
     try:
-        root = inventory.resolve_storage_root(repo_root, row)
+        bindings = inventory.read_external_root_bindings(repo_root)
+        if bindings is not None:
+            inventory.validate_external_root_bindings(
+                repo_root,
+                registry,
+                bindings,
+            )
+        root = inventory.resolve_storage_root(
+            repo_root,
+            row,
+            bindings=bindings,
+        )
     except inventory.InventoryError as exc:
         raise RetrievalError("EXTERNAL_ROOT_LOCATOR_INVALID", exc.detail) from exc
     return root, row

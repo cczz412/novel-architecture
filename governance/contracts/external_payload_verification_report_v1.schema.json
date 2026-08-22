@@ -21,7 +21,8 @@
       "const": "external-payload-verification-report-v1"
     },
     "status": {
-      "const": "PASS"
+      "const": "PASS",
+      "description": "仅表示该外置对象 payload 字节核验通过。不是全仓 pytest 全绿，也不是 PASS_WITH_STABLE_MAIN_EXISTING_NON_NOVEL_DEBT（见 Issue #63 冻结批准清单）。未挂载外置卷不得使用本报告，改走 $defs.notRunReceipt（code=NOT_RUN_VOLUME_NOT_MOUNTED）。"
     },
     "policy_id": {
       "$ref": "#/$defs/nonEmptyString"
@@ -63,6 +64,12 @@
         },
         "storage_root_binding_sha256": {
           "$ref": "#/$defs/sha256"
+        },
+        "storage_root_binding_schema_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "storage_root_binding_applied": {
+          "type": "boolean"
         },
         "storage_root_device_fingerprint": {
           "$ref": "#/$defs/sha256"
@@ -186,6 +193,79 @@
     "sha256": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "notRunReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "code",
+        "artifact_id",
+        "root_id",
+        "expected_mount",
+        "detail"
+      ],
+      "properties": {
+        "status": {
+          "const": "NOT_RUN"
+        },
+        "code": {
+          "const": "NOT_RUN_VOLUME_NOT_MOUNTED"
+        },
+        "artifact_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "root_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "expected_mount": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "volume_uuid",
+            "expected_volume_name",
+            "relative_root"
+          ],
+          "properties": {
+            "kind": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volume_uuid": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "expected_volume_name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "relative_root": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
     }
   }
 }
