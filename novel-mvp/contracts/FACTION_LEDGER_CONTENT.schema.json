@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/FACTION_LEDGER_CONTENT.schema.json",
+  "title": "FACTION_LEDGER_CONTENT faction-ledger-content-v1",
+  "description": "Faction definition plus member and relation read projections.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "id",
+    "source_identity",
+    "confirm_status",
+    "evidence_refs",
+    "story_time",
+    "created_at",
+    "updated_at",
+    "rev",
+    "note",
+    "name",
+    "aliases",
+    "fac_type",
+    "members",
+    "relations",
+    "profile"
+  ],
+  "properties": {
+    "contract": {
+      "const": "FACTION_LEDGER_CONTENT"
+    },
+    "version": {
+      "const": "faction-ledger-content-v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^FA\\-[0-9]+$"
+    },
+    "source_identity": {
+      "enum": [
+        "author_declared",
+        "draft_inferred",
+        "model_suggested",
+        "pack_prefilled"
+      ]
+    },
+    "confirm_status": {
+      "enum": [
+        "candidate",
+        "confirmed",
+        "retired"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence_ref"
+      },
+      "uniqueItems": true
+    },
+    "story_time": {
+      "type": "null"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rev": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "note": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/alias_entry"
+      }
+    },
+    "fac_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/member_entry"
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/relation_entry"
+      }
+    },
+    "profile": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "evidence_ref": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^f[0-9]{3,}$"
+        },
+        {
+          "const": "AUTHOR_ATTESTATION"
+        }
+      ]
+    },
+    "evidence_refs_nonempty": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/evidence_ref"
+      },
+      "uniqueItems": true
+    },
+    "chapter_revision_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_id",
+        "revision_no",
+        "revision_text_sha256"
+      ],
+      "properties": {
+        "chapter_id": {
+          "type": "string",
+          "pattern": "^c[0-9]{2,}$"
+        },
+        "revision_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_text_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "story_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_revision_ref"
+      ],
+      "properties": {
+        "chapter_revision_ref": {
+          "$ref": "#/$defs/chapter_revision_ref"
+        },
+        "story_order": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "story_interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ],
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/story_anchor"
+        },
+        "end": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/story_anchor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "alias_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "story_time",
+        "evidence_refs"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "story_time": {
+          "$ref": "#/$defs/story_interval"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/evidence_refs_nonempty"
+        }
+      }
+    },
+    "member_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ch_ref",
+        "role",
+        "story_time",
+        "evidence_refs"
+      ],
+      "properties": {
+        "ch_ref": {
+          "type": "string",
+          "pattern": "^CH-[0-9]+$"
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "story_time": {
+          "$ref": "#/$defs/story_interval"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/evidence_refs_nonempty"
+        }
+      }
+    },
+    "relation_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_ref",
+        "kind",
+        "story_time",
+        "evidence_refs"
+      ],
+      "properties": {
+        "target_ref": {
+          "type": "string",
+          "pattern": "^FA-[0-9]+$"
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "story_time": {
+          "$ref": "#/$defs/story_interval"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/evidence_refs_nonempty"
+        }
+      }
+    }
+  }
+}
