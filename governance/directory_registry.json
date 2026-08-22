@@ -236,6 +236,12 @@
           "object_id": "undecided_draft",
           "rule": "必须带归位条件，不能长期冒充正式落点。",
           "target_pattern": "work/<work_id>"
+        },
+        {
+          "label": "新评测题集（落点待 CZ 拍板）",
+          "object_id": "evaluation_item_set_pending_cz",
+          "rule": "正式落点待 CZ 拍板。本条只占位，不发明新目录；拍板前未定型草稿可暂放 work/<eval_set_id>，不能冒充正式题集。",
+          "target_pattern": "work/<eval_set_id>"
         }
       ],
       "category": "construction",
@@ -257,7 +263,9 @@
       "lifecycle": "mutable",
       "load_policy": "task_scoped",
       "new_content_rule": "只收身份尚未定型的施工草稿；定型后回到 config、tools、schemas 或 experiments。",
-      "open_decisions": [],
+      "open_decisions": [
+        "新评测题集正式落点待 CZ 拍板；本条只占位，不发明新目录。"
+      ],
       "path": "work",
       "path_kind": "directory"
     },
@@ -457,6 +465,12 @@
           "object_id": "historical_correction_segment_scan_status",
           "rule": "只说明该批历史状态，不能替代当前微调域或全仓当前状态。",
           "target_pattern": "history/T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md"
+        },
+        {
+          "label": "过期件归档（对象级须另开票）",
+          "object_id": "historical_archive_pending_cz",
+          "rule": "过期件归档去 history/。新归档对象须 CZ 拍板后另开对象级工单；本条只占位，不发明新目录，不授权自行搬迁。",
+          "target_pattern": "history/<archive_id>"
         }
       ],
       "category": "history",
@@ -477,7 +491,9 @@
       "lifecycle": "historical",
       "load_policy": "source_only",
       "new_content_rule": "只保留历史上下文和指针，不替代 foundation 全文或当前治理真源。",
-      "open_decisions": [],
+      "open_decisions": [
+        "新过期件归档须 CZ 拍板后另开对象级工单；本条只占位，不发明新目录。"
+      ],
       "path": "history",
       "path_kind": "directory"
     },

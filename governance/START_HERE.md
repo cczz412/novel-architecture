@@ -17,6 +17,7 @@ Notion 工程镜像制度已取消，本地镜像也取消。Notion 旧监督页
 3. [`governance/CURRENT_STATE.json`](CURRENT_STATE.json)（机器当前执行状态）
 4. [`governance/progress/current-progress.md`](progress/current-progress.md)（人读接力，不能盖过机器状态）
 5. 开放工单：[GitHub Issues](https://github.com/cczz412/novel-architecture/issues)
+6. 找目录职责／「要加 X 去哪」：[ARCHITECTURE_MAP.md](ARCHITECTURE_MAP.md)
 
 版本、路径、候选身份仍只认 [`governance/current_pointers.json`](current_pointers.json)。产品语义仍回共同背景板 R14，不在本页重写。
 
