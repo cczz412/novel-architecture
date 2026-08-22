@@ -11,7 +11,7 @@
 | main 基准 | `49533178945ce5a9a6df59e20b4d57eb18706acb`（Merge PR #54 Issue #27） |
 | 模块候选 | `codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b`（超级分支，禁止整支再合；工单 5 已按 PR-C～G 拆票进 main） |
 | 产品共同背景 | `R14`；入口 [`00_READ_ME_FIRST.md`](../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)。R13 留 Git，已退出默认路由。 |
-| 原子需求 | `R03 / 142 条`已在 main；六例设计 CURRENT 仍只覆盖旧 127 条／762 例，不能冒充 852 已跑完。 |
+| 原子需求 | `R03 / 142 条`已在 main；六例设计 CURRENT 组合覆盖是 142 条／852 例（旧 127×6 加新增 15×6），不能冒充 852 已跑完。 |
 | 当前模型运行 | 无；本线 API、训练、Gold、生产权限均为 0 |
 
 ## 唯一入口

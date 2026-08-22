@@ -43,7 +43,11 @@ def _annotate(checker_id: str, items: list[dict[str, Any]]) -> list[dict[str, An
     return annotated
 
 
-def build_report(root: Path) -> dict[str, Any]:
+def build_report(
+    root: Path,
+    pr_body: str | None = None,
+    pr_body_path: str | None = None,
+) -> dict[str, Any]:
     root = root.resolve()
     reports: dict[str, Any] = {}
     errors: list[dict[str, Any]] = []
@@ -51,7 +55,14 @@ def build_report(root: Path) -> dict[str, Any]:
     failing: list[str] = []
     for checker_id, module_name, function_name in CHECKERS:
         module = _load(module_name)
-        report = getattr(module, function_name)(root)
+        if checker_id == "review_identity":
+            report = getattr(module, function_name)(
+                root,
+                pr_body=pr_body,
+                pr_body_path=pr_body_path,
+            )
+        else:
+            report = getattr(module, function_name)(root)
         reports[checker_id] = report
         errors.extend(_annotate(checker_id, list(report.get("errors") or [])))
         warnings.extend(_annotate(checker_id, list(report.get("warnings") or [])))
@@ -112,7 +123,12 @@ def render_summary(report: dict[str, Any]) -> str:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument("--format", choices=("summary", "json", "both"), default="summary")
+    parser.add_argument(
+        "--pr-body",
+        type=Path,
+        help="optional future PR body to check; historical PRs are never fetched",
+    )
+    parser.add_argument("--format", choices=("summary", "json", "both"), default="both")
     parser.add_argument("--json-out", type=Path)
     parser.add_argument("--summary-out", type=Path)
     parser.add_argument("--check", action="store_true")
@@ -121,7 +137,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    report = build_report(args.root)
+    pr_body = args.pr_body.read_text(encoding="utf-8") if args.pr_body else None
+    pr_body_path = str(args.pr_body) if args.pr_body else None
+    report = build_report(args.root, pr_body=pr_body, pr_body_path=pr_body_path)
     summary = render_summary(report)
     if args.json_out:
         args.json_out.parent.mkdir(parents=True, exist_ok=True)

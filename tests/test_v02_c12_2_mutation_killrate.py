@@ -143,27 +143,62 @@ def test_all_five_layer_denominators_remain_dynamic() -> None:
 )
 def test_forged_second_window_receipt_requires_external_trust_root(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    vote_dir = (
-        ROOT
-        / "experiments/extraction_redesign_v02_overnight_20260725"
-        / "V02_C7_6_7_ai_consensus_workspace/votes"
+    packets = [
+        {
+            "packet_id": f"P{index:02d}",
+            "choice_ids": [f"C{index:02d}-A", tally.NO_CORRESPONDENCE],
+        }
+        for index in range(26)
+    ]
+    manifest = {"packet_total": 26, "packets": packets}
+    manifest_path = tmp_path / "c7_7_packet_manifest.json"
+    manifest_path.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
     )
-    first_path = vote_dir / "terra_independent_window_1.json"
-    notion_path = vote_dir / "notion_independent_window_2.json"
-    if not first_path.is_file() or not notion_path.is_file():
-        pytest.skip("伪造第二窗口测试的输入前置未满足：本机独立窗口 vote JSON 不在当前工作树")
-    first = json.loads(first_path.read_text(encoding="utf-8"))
-    notion = json.loads(notion_path.read_text(encoding="utf-8"))
+    monkeypatch.setattr(tally, "PACKET_MANIFEST", manifest_path)
+    packet_ids = [row["packet_id"] for row in packets]
+    first = {
+        "voter_id": "terra_independent_window_1",
+        "model_family": "terra_window_model",
+        "votes": [
+            {
+                "packet_id": packet_id,
+                "selected_choice_ids": [tally.NO_CORRESPONDENCE],
+            }
+            for packet_id in packet_ids
+        ],
+    }
+    first_sha = tally.sha256_bytes(tally.canonical_bytes(first))
+    receipt = {
+        "schema_version": "v02-c7-7-independence-receipt.v1",
+        "authority": tally.NOTION_LEDGER_AUTHORITY,
+        "authority_page_url": tally.NOTION_LEDGER_PAGE_URL,
+        "source_vote_page_url": tally.NOTION_VOTE_PAGE_URL,
+        "identity_self_declared": True,
+        "first_ballot_canonical_sha256": first_sha,
+        "packet_manifest_sha256": tally.sha256_file(manifest_path),
+        "first_ballot_sealed_at": "2026-07-25T14:40:00+08:00",
+        "second_ballot_submitted_at": "2026-07-25T14:55:00+08:00",
+        "isolation_evidence": list(tally.REQUIRED_ISOLATION_EVIDENCE),
+        "child_page_total": 26,
+        "child_votes_match_parent_total": True,
+        "notion_version_history_directly_verified_by_connector": False,
+        "evidence_boundary": (
+            "accepted_by_notion_ledger;"
+            "version_history_not_exposed_to_connector"
+        ),
+    }
     forged = copy.deepcopy(first)
     forged["voter_id"] = "forged_independent_window_2"
     forged["model_family"] = "notion_platform_assistant"
-    forged["independence_receipt"] = notion["independence_receipt"]
+    forged["independence_receipt"] = receipt
+    first_path = tmp_path / "terra_independent_window_1.json"
     forged_path = tmp_path / "forged_vote.json"
-    forged_path.write_text(
-        json.dumps(forged, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    first_path.write_text(json.dumps(first, ensure_ascii=False), encoding="utf-8")
+    forged_path.write_text(json.dumps(forged, ensure_ascii=False), encoding="utf-8")
 
     with pytest.raises(tally.C7TallyError):
         tally.tally_votes([first_path, forged_path])
