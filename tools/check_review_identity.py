@@ -61,12 +61,15 @@ def _section_after(text: str, field: str) -> str:
 def _filled(text: str) -> bool:
     role_only = re.compile(r"^(承接|部分贡献|依赖|明确排除)[：:]?\s*$")
     heading_only = re.compile(r"^是否改产品语义[：:]?\s*(是\s*/\s*否)?\s*$")
+    bold_heading = re.compile(r"^\*\*([^*]+)\*\*[：:]\s*(.*)$")
     for raw in text.splitlines():
         line = raw.strip()
         if not line or line.startswith("<!--"):
             continue
-        line = line.lstrip("-* ").strip()
-        line = re.sub(r"^\*\*[^*]+\*\*[：:]\s*", "", line).strip()
+        line = re.sub(r"^[-*]\s+", "", line).strip()
+        matched = bold_heading.match(line)
+        if matched:
+            line = matched.group(2).strip()
         if not line or line in PLACEHOLDERS:
             continue
         if role_only.fullmatch(line) or heading_only.fullmatch(line):
