@@ -80,7 +80,7 @@
   - PR-G 外审证据归档（cloud-supervision TEMP 镜像、顾问回包）——走工单 6 的外置流程，**不与 runtime 同票**。
 - **每个 PR 必附**：base／head SHA、承接的需求 ID、动过的合同、精确测试清单、「是否改产品语义」明示、回滚方式。
 - **禁区**：不直接写 main；机械 PASS 不得写成语义 PASS。
-- **验收**：每票测试全绿；`check_traceability` 无新孤儿；合并后 main 测试基线不降。
+- **验收**：每票对照冻结批准失败清单（[approved_stable_failure_list.json](../../governance/approved_stable_failure_list.json)）。三轮失败 ID 与清单逐项相等，才许报 `PASS_WITH_STABLE_MAIN_EXISTING_NON_NOVEL_DEBT`。清单外失败只能报未批准发现，运行现场不得自批。`check_traceability` 无新孤儿。
 - **谁做**：云端 Agent 逐票做，CZ 在 PR 页复核合并。
 - **依赖**：工单 1～3；E5 另等 CZ 拍板第 1 件。
 

@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-08-22T12:00:00+08:00",
+  "updated_at": "2026-08-22T23:30:00+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 110,
-    "root_visible_python_entry_count": 111,
+    "root_entity_count": 111,
+    "root_visible_python_entry_count": 112,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -566,7 +566,7 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 22,
+    "reusable_component": 23,
     "batch_reproducer": 82,
     "active_entry": 3,
     "retired_compat": 3,
@@ -4533,6 +4533,46 @@
       "retirement_condition_and_compatibility_boundary": "不把无训练说明升级成版权许可。",
       "review_needed": false,
       "tool_id": "TOOL-110"
+    },
+    {
+      "path": "tools/check_approved_failure_list.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·冻结批准失败清单对账",
+      "purpose": "把已收集的 pytest 失败 ID 和 CZ 批准清单逐项对账；不跑测试、不改清单、现场不得自批。",
+      "human_command": "uv run --locked python tools/check_approved_failure_list.py check --observed <轮次JSON> --observed <轮次JSON> --observed <轮次JSON>",
+      "inputs": [
+        "governance/approved_stable_failure_list.json",
+        "governance/contracts/approved_stable_failure_list_v1.schema.json",
+        "观察失败 JSON（failed_nodeids）"
+      ],
+      "outputs": [
+        "对账 JSON",
+        "退出码 0/2/3"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地只读；不调用 pytest。"
+      },
+      "current_consumers": [
+        "tests/test_approved_failure_list.py",
+        "Issue #63"
+      ],
+      "consumer_evidence_rule": "三轮失败 ID 与批准清单逐项相等才许报 PASS_WITH_STABLE_MAIN_EXISTING_NON_NOVEL_DEBT；一轮匹配不是 PASS 谓词。",
+      "test_references": [
+        "tests/test_approved_failure_list.py"
+      ],
+      "last_use_clues": [
+        "governance/test_policy.json",
+        "GitHub Issue #63"
+      ],
+      "next_confirmed_consumer": "后续治理回执在报 PASS_WITH_STABLE_MAIN_EXISTING_NON_NOVEL_DEBT 前必须跑本检查器。",
+      "retirement_condition_and_compatibility_boundary": "只读对账；不得把观察失败自动写入批准清单。不并进工单 7 五件套。",
+      "review_needed": false,
+      "admitted_by": "ISSUE_63",
+      "tool_id": "TOOL-111"
     }
   ]
 }

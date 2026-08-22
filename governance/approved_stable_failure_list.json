@@ -1,0 +1,111 @@
+{
+  "approval": {
+    "issue": "63",
+    "note": "合并含本文件的 PR 即批准这份清单。运行现场无权增删。三轮失败 ID 必须与 failures[].id 逐项相等，才许报 PASS_WITH_STABLE_MAIN_EXISTING_NON_NOVEL_DEBT。",
+    "status": "EFFECTIVE_ON_MERGE"
+  },
+  "command": "uv run --locked pytest -q",
+  "contract_version": "approved-stable-failure-list-v1",
+  "environment": "cloud-agent clean clone after GitHub main merge of #61/#67; no zsh; no .local/finetuning/stores.local.json; no .workbuddy evidence. Three rounds 2026-08-22 each 19 failed / 3102 passed / 899 skipped / 40 deselected / 1 xfailed.",
+  "failure_count": 19,
+  "failures": [
+    {
+      "attribution": "tools/deepseek_official_key.sh 的 shebang 是 zsh；干净 Linux 云端没有 zsh，Python 把缺解释器报成缺脚本。钥匙串方案属 LEAD-Z34-001，#61 明确排除。不是新回归。",
+      "domain": "keychain_zsh",
+      "id": "tests/test_deepseek_official_config.py::test_deepseek_official_key_loader_help_is_zero_call"
+    },
+    {
+      "attribution": "tools/deepseek_official_key.sh 的 shebang 是 zsh；干净 Linux 云端没有 zsh，Python 把缺解释器报成缺脚本。钥匙串方案属 LEAD-Z34-001，#61 明确排除。不是新回归。",
+      "domain": "keychain_zsh",
+      "id": "tests/test_deepseek_official_config.py::test_deepseek_official_loader_denies_run_without_machine_execution_ack"
+    },
+    {
+      "attribution": "根 README 已写 uv run --locked pytest -q；测试仍要本机绝对路径 .venv/bin/python。路牌漂移，#61 归因表已列。",
+      "domain": "command_signpost",
+      "id": "tests/test_governance_index.py::GovernanceIndexTests::test_test_command_is_one_fixed_tests_only_command"
+    },
+    {
+      "attribution": "tools/provider_keychain.sh 同样是 zsh 脚本，干净云端没有 zsh。LEAD-Z34-001。",
+      "domain": "keychain_zsh",
+      "id": "tests/test_provider_channel_configs.py::test_agent_plan_is_rejected_by_project_keychain_loader"
+    },
+    {
+      "attribution": "Ant Ling 通道合同字段与测试钉的 Ling 3.0 Flash 登记不一致。预存合同漂移，#61 归因表已列，本票不改通道合同。",
+      "domain": "provider_contract",
+      "id": "tests/test_provider_channel_configs.py::test_ant_ling_channel_uses_exact_ling_3_flash_contract"
+    },
+    {
+      "attribution": "测试断言本机绝对路径 danmaku-psychology-workspace/.../longcat-env.zsh 存在。干净克隆没有这条盘。LEAD-Z34-001。",
+      "domain": "local_absolute_path",
+      "id": "tests/test_provider_channel_configs.py::test_longcat_channel_uses_external_key_pool_and_exact_model"
+    },
+    {
+      "attribution": "shared keychain 走 tools/provider_keychain.sh；干净云端没有 zsh。LEAD-Z34-001。",
+      "domain": "keychain_zsh",
+      "id": "tests/test_provider_channel_configs.py::test_shared_keychain_loader_is_zero_call_and_names_all_providers"
+    },
+    {
+      "attribution": "未知供应商拒绝路径同样要执行 zsh 钥匙串脚本。干净云端没有 zsh。LEAD-Z34-001。",
+      "domain": "keychain_zsh",
+      "id": "tests/test_provider_channel_configs.py::test_unknown_provider_is_rejected_before_any_keychain_read"
+    },
+    {
+      "attribution": "目录证据缺 .workbuddy/memory/2026-08-03.md。干净克隆预存，不是新回归。",
+      "domain": "layout_local_evidence",
+      "id": "tests/test_repository_layout.py::test_directory_registry_matches_schema_and_runtime_contract"
+    },
+    {
+      "attribution": "git 策略与现场不符（reports/ 未被 ignore 等）。干净克隆预存，#61 归因表已列。",
+      "domain": "layout_local_evidence",
+      "id": "tests/test_repository_layout.py::test_git_policy_matches_repository_facts_with_nul_safe_listing"
+    },
+    {
+      "attribution": "顶层多出 .github，未进目录登记。干净克隆预存。",
+      "domain": "layout_local_evidence",
+      "id": "tests/test_repository_layout.py::test_registered_top_level_scope_is_exact_and_creates_no_nvm_style_layers"
+    },
+    {
+      "attribution": "缺 reports/Z73 保护件。干净克隆预存。",
+      "domain": "layout_local_evidence",
+      "id": "tests/test_repository_layout.py::test_temporary_refresh_does_not_modify_current_state"
+    },
+    {
+      "attribution": "tests/README 已改 uv run --locked pytest；测试仍要旧 .venv/bin/python 绝对路径。路牌漂移。",
+      "domain": "command_signpost",
+      "id": "tests/test_repository_navigation.py::test_test_readme_uses_the_fixed_full_chain_command"
+    },
+    {
+      "attribution": "缺 .local/finetuning/stores.local.json。本机证据，干净克隆没有。",
+      "domain": "finetuning_local_store",
+      "id": "tests/test_t5_r04_route_registry.py::T5R04DerivedRouteTests::test_critical_historical_files_keep_expected_sha_and_counts"
+    },
+    {
+      "attribution": "派生路由重建同样要读 .local/finetuning/stores.local.json。本机证据。",
+      "domain": "finetuning_local_store",
+      "id": "tests/test_t5_r04_route_registry.py::T5R04DerivedRouteTests::test_derived_route_files_can_be_rebuilt_in_an_empty_directory"
+    },
+    {
+      "attribution": "governance/test_policy.json 的 full_chain_command 已是 uv run --locked pytest -q；测试仍断言以 .venv/bin/python -m pytest -q 结尾。本票不改这条已登记命令债。",
+      "domain": "command_signpost",
+      "id": "tests/test_test_debt_policy.py::test_governance_policy_names_one_default_and_one_replay_command"
+    },
+    {
+      "attribution": "计划命令已带 uv run --locked ruff check；测试仍要裸 ruff check。路牌漂移，#61 归因表已列。",
+      "domain": "lint_command_prefix",
+      "id": "tests/test_test_impact.py::TestImpactTests::test_available_local_module_with_unchanged_contract_uses_targeted_tests"
+    },
+    {
+      "attribution": "计划命令已带 uv run --locked ruff check tools/pipeline_inspector.py；测试仍要裸 ruff check。路牌漂移，#61 归因表已列。",
+      "domain": "lint_command_prefix",
+      "id": "tests/test_test_impact.py::TestImpactTests::test_existing_contract_change_runs_full_chain"
+    },
+    {
+      "attribution": "计划命令已带 uv run --locked ruff check tools/novel_pipeline.py；测试仍要裸 ruff check。路牌漂移，#61 归因表已列。",
+      "domain": "lint_command_prefix",
+      "id": "tests/test_test_impact.py::TestImpactTests::test_unified_entry_change_runs_full_chain"
+    }
+  ],
+  "main_sha": "cec82789322613f04af20e8233cef97c419ab571",
+  "payload_sha256": "dabc35557cd130e3c74be7675db94433295d93d2982c3f2514b4cd1351120147",
+  "predicate": "PASS_WITH_STABLE_MAIN_EXISTING_NON_NOVEL_DEBT"
+}
