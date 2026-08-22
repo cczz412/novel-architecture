@@ -38,7 +38,7 @@ python3 tools/novel_pipeline.py catalog --help
 
 工具身份只认 [`governance/tool_registry.json`](../governance/tool_registry.json)。测试存在、零引用、名字带旧道次，都不能单独作为删除／移动依据。
 
-本次盘点后，根层 98 个 Python 实体已经逐件登记；另有一个 `z60` 相对兼容软链，不重复算实体。统一目录实现放在 `pipeline_common/`，不另造根层入口。后续若新增根层 Python 却没同步登记，`tests/test_tool_registry.py` 会直接失败。
+根层 Python 实体已经逐件登记；另有一个 `z60` 相对兼容软链，不重复算实体。当前件数只认 [`governance/tool_registry.json`](../governance/tool_registry.json) 的 `root_entity_count`，不要把旧盘点数字（例如 98）当现行真值。统一目录实现放在 `pipeline_common/`，不另造根层入口。后续若新增根层 Python 却没同步登记，`tests/test_tool_registry.py` 会直接失败。
 
 ## 统一只读目录
 

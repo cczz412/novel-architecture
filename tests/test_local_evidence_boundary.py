@@ -97,6 +97,21 @@ def test_v02_portable_programs_keep_pure_tests_in_clean_clone() -> None:
     assert len(set(r2_group["nodeids"])) == 39
 
 
+def test_c13_skip_uses_exact_nodeids_not_whole_files() -> None:
+    document = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    group = next(row for row in document["groups"] if row["group_id"] == "V02-C13-LOCAL-EVIDENCE")
+    assert group["test_file_globs"] == []
+    assert group["nodeids"]
+    assert len(group["nodeids"]) == len(set(group["nodeids"]))
+    mechanical = {
+        "tests/test_v02_c13_downstream_consumer.py::test_task_a_rejects_unknown_fields_and_dangling_fact_ids",
+        "tests/test_v02_c13_provider_wire.py::test_generator_has_no_network_or_provider_sdk_imports",
+        "tests/test_v02_c13_signoff_floor_v2.py::test_generator_has_no_network_or_provider_sdk_imports",
+        "tests/test_v02_c13_execution_runner.py::test_runner_source_keeps_live_network_behind_ticket_gate",
+    }
+    assert mechanical.isdisjoint(set(group["nodeids"]))
+
+
 def test_local_evidence_roots_are_ignored_and_not_tracked() -> None:
     document = json.loads(REGISTRY.read_text(encoding="utf-8"))
     for row in document["groups"]:

@@ -33,7 +33,8 @@
       "status": "ACTIVE_CURRENT",
       "version": "v1",
       "path": "tools/check_current_freshness.py",
-      "registry_status": "PENDING_WORK_ORDER_7",
+      "registry_status": "REGISTERED",
+      "suite_entry": "tools/check_drift.py",
       "boundary": "只读检查；不自动改 current、需求、设计或合同。"
     },
     {
@@ -115,7 +116,8 @@
         "WAITING_REWRITE": 7
       },
       "checker_path": "tools/check_design_currentness.py",
-      "checker_registry_status": "PENDING_WORK_ORDER_7",
+      "checker_registry_status": "REGISTERED",
+      "suite_entry": "tools/check_drift.py",
       "authority": "CURRENTNESS_ROUTING_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
       "admitted_by_work_order": 4,
       "boundary": "CURRENT 只允许进入默认设计路由；不证明实现、语义质量或施工授权。"
@@ -128,7 +130,8 @@
       "record_count": 142,
       "unassigned_count": 0,
       "checker_path": "tools/check_traceability.py",
-      "checker_registry_status": "PENDING_WORK_ORDER_7",
+      "checker_registry_status": "REGISTERED",
+      "suite_entry": "tools/check_drift.py",
       "authority": "ADVISORY_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
       "boundary": "142/142 候选追踪已复核，不等于 142 条实现完成或产品拍板。",
       "admitted_by_work_order": 3

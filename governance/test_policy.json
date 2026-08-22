@@ -159,7 +159,18 @@
       "name": "治理机器合同",
       "pattern": "governance/*.json",
       "modules": ["M11"],
-      "tests": ["tests/test_governance_index.py", "tests/test_pipeline_inspector.py", "tests/test_test_impact.py"],
+      "tests": [
+        "tests/test_governance_index.py",
+        "tests/test_pipeline_inspector.py",
+        "tests/test_test_impact.py",
+        "tests/test_current_freshness.py",
+        "tests/test_design_currentness.py",
+        "tests/test_traceability.py",
+        "tests/test_tracked_temp.py",
+        "tests/test_review_identity.py",
+        "tests/test_drift.py",
+        "tests/test_tool_registry.py"
+      ],
       "full_chain": false
     },
     {
@@ -174,6 +185,20 @@
       "pattern": "tools/governance_index.py",
       "modules": ["M11"],
       "tests": ["tests/test_governance_index.py"],
+      "full_chain": false
+    },
+    {
+      "name": "防漂移检查器",
+      "pattern": "tools/check_*.py",
+      "modules": ["M11"],
+      "tests": [
+        "tests/test_current_freshness.py",
+        "tests/test_design_currentness.py",
+        "tests/test_traceability.py",
+        "tests/test_tracked_temp.py",
+        "tests/test_review_identity.py",
+        "tests/test_drift.py"
+      ],
       "full_chain": false
     },
     {

@@ -25,8 +25,8 @@
 
 - `WAITING_REWRITE`、`HISTORICAL`、`SUPERSEDED` 一律不能进入默认施工路由。
 - `CURRENT` 只表示可作默认设计参考；不能外推成代码完成、作者可用、真实语义通过或已获施工授权。
-- 机器检查：`uv run --locked python tools/check_design_currentness.py --check`。
-- 工具正式并入 `governance/tool_registry.json` 留到工单 7。
+- 机器检查：`uv run --locked python tools/check_drift.py --check`（设计一项也可单独跑 `tools/check_design_currentness.py --check`）。
+- 五个只读检查器已登记进 `governance/tool_registry.json`。
 
 ## 默认设计路由（只允许 CURRENT）
 

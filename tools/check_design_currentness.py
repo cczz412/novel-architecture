@@ -90,6 +90,11 @@ def build_report(
     product = registry.get("product_background", {})
     if product.get("version") != "R14":
         errors.append(issue("ERROR", "PRODUCT_BACKGROUND", "design registry must be reviewed against R14"))
+    product_path = product.get("path")
+    if not isinstance(product_path, str) or not product_path:
+        errors.append(issue("ERROR", "PRODUCT_BACKGROUND_PATH", "product_background.path is required"))
+    elif not (root / product_path).is_file():
+        errors.append(issue("ERROR", "PRODUCT_BACKGROUND_PATH_MISSING", "product background path is missing", product_path))
 
     rows = registry.get("documents")
     if not isinstance(rows, list):
@@ -128,6 +133,8 @@ def build_report(
                 errors.append(issue("ERROR", "SUCCESSOR_MISSING", "repository successor is missing", successor["path"]))
         elif successor is not None:
             errors.append(issue("ERROR", "NON_SUPERSEDED_HAS_SUCCESSOR", "only SUPERSEDED rows may set superseded_by", path))
+        if status == "SUPERSEDED" and isinstance(successor, dict) and successor.get("path") == path:
+            errors.append(issue("ERROR", "SUCCESSOR_SELF", "successor must not point at the same document", path))
         default_route = row.get("default_route")
         if not isinstance(default_route, bool):
             errors.append(issue("ERROR", "DEFAULT_ROUTE_FIELD", "default_route must be boolean", path))
@@ -177,6 +184,25 @@ def build_report(
         registry_status = {path: row.get("status") for path, row in by_path.items()}
         if index_status != registry_status:
             errors.append(issue("ERROR", "INDEX_REGISTRY_STATUS_MISMATCH", "INDEX status table and registry differ"))
+        successor_pattern = re.compile(
+            r"\]\(([^)]+\.md)\)\s*\|\s*`(CURRENT|WAITING_REWRITE|HISTORICAL|SUPERSEDED)`\s*\|\s*`([^`]+)`"
+        )
+        index_successors: dict[str, str | None] = {}
+        for filename, _status, shown in successor_pattern.findall(table_section):
+            index_successors[f"novel-mvp/design/{filename}"] = None if shown in {"—", "-"} else shown
+        for path, row in by_path.items():
+            successor = row.get("superseded_by")
+            expected = successor.get("path") if isinstance(successor, dict) else None
+            shown = index_successors.get(path)
+            if shown != expected:
+                errors.append(
+                    issue(
+                        "ERROR",
+                        "INDEX_SUCCESSOR_MISMATCH",
+                        f"INDEX successor {shown!r} != registry {expected!r}",
+                        path,
+                    )
+                )
 
     status_cell_pattern = re.compile(
         r"\]\(([^)]+\.md)\)\s*\|\s*`(CURRENT|WAITING_REWRITE|HISTORICAL|SUPERSEDED)`"
@@ -194,6 +220,36 @@ def build_report(
             )
 
     status_counts = Counter(row.get("status") for row in rows if isinstance(row, dict))
+    visited_cycles: set[str] = set()
+    for start, row in by_path.items():
+        if row.get("status") != "SUPERSEDED":
+            continue
+        seen: list[str] = []
+        current = start
+        while current in by_path and by_path[current].get("status") == "SUPERSEDED":
+            successor = by_path[current].get("superseded_by")
+            nxt = successor.get("path") if isinstance(successor, dict) else None
+            if not isinstance(nxt, str) or not nxt:
+                break
+            if nxt == current:
+                break
+            if nxt in seen:
+                cycle_members = tuple(sorted(set(seen + [current, nxt])))
+                marker = "|".join(cycle_members)
+                if marker not in visited_cycles:
+                    visited_cycles.add(marker)
+                    errors.append(
+                        issue(
+                            "ERROR",
+                            "SUCCESSOR_CYCLE",
+                            f"successor chain cycles through {list(cycle_members)}",
+                            start,
+                        )
+                    )
+                break
+            seen.append(current)
+            current = nxt
+
     inventory = registry.get("inventory", {})
     if inventory.get("document_count") != len(rows):
         errors.append(issue("ERROR", "INVENTORY_COUNT", "inventory document_count differs from rows"))
