@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/SYSTEM_LEDGER_CONTENT.schema.json",
+  "title": "SYSTEM_LEDGER_CONTENT system-ledger-content-v1",
+  "description": "System definition card with directed relations and pack provenance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "id",
+    "source_identity",
+    "confirm_status",
+    "evidence_refs",
+    "story_time",
+    "created_at",
+    "updated_at",
+    "rev",
+    "note",
+    "name",
+    "category",
+    "rank_order",
+    "relations",
+    "scope",
+    "pack_ref"
+  ],
+  "properties": {
+    "contract": {
+      "const": "SYSTEM_LEDGER_CONTENT"
+    },
+    "version": {
+      "const": "system-ledger-content-v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^SY-[0-9]+$"
+    },
+    "source_identity": {
+      "enum": [
+        "author_declared",
+        "draft_inferred",
+        "model_suggested",
+        "pack_prefilled"
+      ]
+    },
+    "confirm_status": {
+      "enum": [
+        "candidate",
+        "confirmed",
+        "retired"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence_ref"
+      },
+      "uniqueItems": true
+    },
+    "story_time": {
+      "type": "null"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rev": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "note": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rank_order": {
+      "oneOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/relation"
+      }
+    },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pack_ref": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "evidence_ref": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^f[0-9]{3,}$"
+        },
+        {
+          "const": "AUTHOR_ATTESTATION"
+        }
+      ]
+    },
+    "relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_ref",
+        "kind"
+      ],
+      "properties": {
+        "target_ref": {
+          "type": "string",
+          "pattern": "^SY-[0-9]+$"
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
