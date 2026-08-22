@@ -4,11 +4,11 @@ import hashlib
 import json
 import os
 import shutil
-import subprocess
 from pathlib import Path
 
 import pytest
 
+from isolation import run_git
 from tools import historical_test_replay as replay
 
 
@@ -28,12 +28,7 @@ def _sha256(path: Path) -> str:
 
 
 def _git(repo: Path, *args: str) -> str:
-    completed = subprocess.run(
-        ["git", "-C", str(repo), *args],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    completed = run_git(*args, cwd=repo, check=True, text=True)
     return completed.stdout.strip()
 
 

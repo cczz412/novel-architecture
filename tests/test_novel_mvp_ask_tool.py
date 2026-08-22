@@ -216,6 +216,7 @@ def test_cli_stdin_stdout_round_trip() -> None:
     payload = json.dumps(_request(_fact("f001")), ensure_ascii=False)
     environment = dict(os.environ)
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    environment["PYTHONIOENCODING"] = "utf-8"
 
     completed = subprocess.run(
         [sys.executable, str(ASK_TOOL_SCRIPT)],
@@ -223,11 +224,30 @@ def test_cli_stdin_stdout_round_trip() -> None:
         check=False,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         env=environment,
     )
 
     assert completed.returncode == 0, completed.stderr
     assert json.loads(completed.stdout)["matches"][0]["fact_id"] == "f001"
+
+
+def test_cli_stdin_ascii_encoding_cannot_carry_chinese_payload() -> None:
+    payload = json.dumps(_request(_fact("f001")), ensure_ascii=False)
+    environment = dict(os.environ)
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    environment.pop("PYTHONIOENCODING", None)
+
+    with pytest.raises(UnicodeEncodeError):
+        subprocess.run(
+            [sys.executable, str(ASK_TOOL_SCRIPT)],
+            input=payload,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="ascii",
+            env=environment,
+        )
 
 
 def test_atomic_write_failure_preserves_existing_output(

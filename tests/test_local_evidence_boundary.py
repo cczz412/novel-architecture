@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
-import subprocess
 from pathlib import Path
+
+from isolation import run_git
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -10,14 +11,7 @@ REGISTRY = ROOT / "tests/local_evidence_registry.json"
 
 
 def _git(*args: str) -> str:
-    result = subprocess.run(
-        ["git", *args],
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return result.stdout
+    return run_git(*args, cwd=ROOT, check=True, text=True).stdout
 
 
 def test_local_evidence_registry_is_complete_and_points_to_tests() -> None:
@@ -80,11 +74,7 @@ def test_v02_portable_programs_keep_pure_tests_in_clean_clone() -> None:
     )
     for relative in group["portable_program_paths"]:
         assert (ROOT / relative).is_file(), relative
-        result = subprocess.run(
-            ["git", "check-ignore", "-q", relative],
-            cwd=ROOT,
-            check=False,
-        )
+        result = run_git("check-ignore", "-q", relative, cwd=ROOT, check=False)
         assert result.returncode == 1, relative
 
     r2_group = next(
@@ -116,10 +106,6 @@ def test_local_evidence_roots_are_ignored_and_not_tracked() -> None:
     document = json.loads(REGISTRY.read_text(encoding="utf-8"))
     for row in document["groups"]:
         for relative in row["required_paths"]:
-            result = subprocess.run(
-                ["git", "check-ignore", "-q", relative],
-                cwd=ROOT,
-                check=False,
-            )
+            result = run_git("check-ignore", "-q", relative, cwd=ROOT, check=False)
             assert result.returncode == 0, relative
             assert _git("ls-files", "--", relative) == ""

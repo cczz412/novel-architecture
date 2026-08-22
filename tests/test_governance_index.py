@@ -3,13 +3,13 @@ from __future__ import annotations
 import copy
 import inspect
 import json
-import subprocess
 import tempfile
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
+from isolation import run_git
 from tools import governance_index
 from tools.pipeline_common.artifacts import read_json, verify_manifest
 
@@ -864,14 +864,7 @@ def _evaluate_s0_fixture(
 
 
 def _git(root: Path, *args: str) -> str:
-    return subprocess.run(
-        ["git", *args],
-        cwd=root,
-        check=True,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    ).stdout.strip()
+    return run_git(*args, cwd=root, check=True, text=True).stdout.strip()
 
 
 def _completion_v2_fixture(

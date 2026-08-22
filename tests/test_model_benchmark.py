@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from isolation import clear_vendor_api_keys
 from tools.pipeline_common import model_benchmark as benchmark
 
 
@@ -634,7 +635,10 @@ def test_official_deepseek_is_not_available_through_generic_slot() -> None:
         benchmark.load_provider("deepseek_official")
 
 
-def test_run_requires_key_before_claiming_single_sample(tmp_path: Path) -> None:
+def test_run_requires_key_before_claiming_single_sample(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    clear_vendor_api_keys(monkeypatch)
     root = tmp_path / "missing_key"
     prepare_qwen(root)
 
