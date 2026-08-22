@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-state-v2",
-  "snapshot_at": "2026-08-21T02:49:17+08:00",
+  "snapshot_at": "2026-08-22T12:00:00+08:00",
   "authority": {
     "role": "本地唯一机器可读当前执行状态真源",
     "external_truth": {
@@ -22,25 +22,25 @@
     "task": {
       "task_id": "CLEAN-BASELINE-M1-M11-INTEGRATION-20260821",
       "label": "M1～M11 产品主线与干净基线重构",
-      "status": "work_order_1_current_convergence_candidate",
-      "status_label": "main 正在收口唯一 current；模块候选分支尚未合并，不得冒充完成态。"
+      "status": "clean_baseline_wo1_to_wo7_on_main_wo6_blocked",
+      "status_label": "工单 1～5、十本账 L1～L5、工单 7 已进 main。工单 6 仍等 CZ 拍外置对象。不得把 M1～M11 写成完整作者能力。"
     },
     "authorization": {
       "kind": "cz_explicit_clean_baseline_seven_work_orders",
-      "authority_time": "2026-08-21T02:49:17+08:00",
+      "authority_time": "2026-08-22T12:00:00+08:00",
       "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
       "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "scope": "按 1→2→(3/4)→5→6→7 逐票执行；一张工单一条分支一个 PR；不直写 main。"
+      "scope": "干净基线工单 1～5、7 已合；工单 6 仍是 needs-cz，不得当施工票。产品下一张是拍板题 3：六本设定账统一落盘方。一张票一条分支一个 PR；不直写 main。"
     },
     "run": {
       "run_id": null,
       "run_directory": null
     },
     "controls": {
-      "quality_boundary": "本状态只登记仓库身份、版本和施工顺序，不证明 M1～M11 已完成，也不证明真实小说语义质量。",
-      "evidence_boundary": "main=f8680907f5be5c199479ba52510e9ab4f16eded7；candidate=codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b；工单 1 不修改产品语义、需求、设计、合同或 runtime。",
-      "stop_rule": "不得整体合并超级分支、不得直接写 main；R14/R03 必须等工单 2 的纯语义 PR。",
-      "next_action": "CZ 复核并合并工单 1 PR；随后从新 main 开工单 2。"
+      "quality_boundary": "本状态只登记仓库身份、版本和施工顺序，不证明 M1～M11 已完成，也不证明真实小说语义质量。检查器绿灯 ≠ 852 条语义测试，也 ≠ 全仓 pytest 全绿。",
+      "evidence_boundary": "main=dd201deaee4cf60cf133eb7511ac94dd60bca2c7（Merge PR #53 工单 7）。超级候选仍钉 codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b，只作拆票来源身份，禁止整支再合。工单 5 的 PR-C～G 已按小票进 main。",
+      "stop_rule": "不得整体合并超级分支；不得直接写 main；不得宣称 M1～M11 已具备完整作者能力；工单 6 未获 CZ 对象许可前不得移动／删除／打包外置材料。",
+      "next_action": "产品下一张：六本设定账共用一个落盘方（拍板题 3，照 planstore 样式）。工单 6 仍等 CZ 在 Issue #32 拍对象。不要整支合并超级候选分支，也不要把 M1～M11 写成完整作者能力。"
     },
     "candidate": {
       "branch": "codex/module-runtime-foundation-20260819-r01",
@@ -53,20 +53,20 @@
       "machine_receipt": null
     },
     "validation": {
-      "status": "CLEAN_BASELINE_WORK_ORDER_1_IN_PROGRESS",
+      "status": "CLEAN_BASELINE_POST_WO7_CURRENT_REFRESH",
       "completed_checks": [
-        "ROOT_CURRENT_RETIRED_TO_HISTORY",
-        "CURRENT_STATE_HISTORY_SEPARATED",
-        "CURRENT_POINTERS_MATERIALIZED",
-        "MAIN_R13_POINTERS_ALIGNED",
-        "CURRENT_FRESHNESS_CHECK_AVAILABLE"
+        "WO1_UNIQUE_CURRENT_ON_MAIN",
+        "WO2_R14_AND_ATOMIC_R03_ON_MAIN",
+        "WO3_CAPABILITY_TRACEABILITY_ON_MAIN",
+        "WO4_DESIGN_CURRENTNESS_ON_MAIN",
+        "WO5_PR_C_THROUGH_G_ON_MAIN",
+        "LEDGER_L1_THROUGH_L5_ON_MAIN",
+        "WO7_DRIFT_CHECK_SUITE_ON_MAIN",
+        "ISSUE_27_CURRENT_HANDOFF_REFRESH"
       ],
       "pending_checks": [
-        "work order 7: merge freshness checker into monolithic tool registry and five-check suite",
-        "CZ review and merge work order 1",
-        "work order 2: R14 and atomic R03 semantic layer",
-        "work order 3: capability traceability",
-        "work order 4: design currentness registry"
+        "work order 6: external archive still needs CZ object decisions (Issue #32)",
+        "product next: unified settings-ledger writer (拍板题 3)"
       ]
     },
     "usage": {
@@ -89,14 +89,14 @@
     },
     "blockers": [
       {
-        "blocker_id": "MODULE-BRANCH-NOT-MERGED",
-        "summary": "M1～M11 候选分支是超级集成分支，必须在工单 5 拆票后再合入 main。",
+        "blocker_id": "SUPER-BRANCH-MUST-NOT-MERGE-WHOLE",
+        "summary": "超级集成分支 codex/module-runtime-foundation-20260819-r01 禁止整支再合；工单 5 已按 PR-C～G 拆票进 main，剩余未拆内容不得当完成产品。",
         "route": "codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b"
       },
       {
-        "blocker_id": "SEMANTIC-BASELINE-WO2-PENDING",
-        "summary": "main 当前仍以 R13 为共同背景；R14 与原子需求 R03 等工单 2 纯语义 PR。",
-        "route": "governance/current_pointers.json"
+        "blocker_id": "WO6-EXTERNAL-ARCHIVE-NEEDS-CZ",
+        "summary": "工单 6 外置归档仍是 needs-cz：31 个对象未分配 target／exclusion，T7 未挂载，云端不能当施工票开干。",
+        "route": "https://github.com/mhchen1/novel-architecture/issues/32"
       }
     ]
   },
@@ -117,13 +117,13 @@
     "role": "HISTORICAL_ONLY_NO_CURRENT_AUTHORITY"
   },
   "refresh_metadata": {
-    "updated_at": "2026-08-21T02:49:17+08:00",
-    "mode": "clean_baseline_work_order_1_current_convergence",
+    "updated_at": "2026-08-22T12:00:00+08:00",
+    "mode": "issue_27_current_handoff_refresh",
     "source_count": 6,
     "source_snapshot": [
       {
         "identity": "main",
-        "commit": "f8680907f5be5c199479ba52510e9ab4f16eded7"
+        "commit": "dd201deaee4cf60cf133eb7511ac94dd60bca2c7"
       },
       {
         "identity": "module_candidate",
@@ -139,8 +139,8 @@
         "role": "CURRENT_VERSION_AND_PATH_REGISTRY"
       },
       {
-        "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
-        "role": "ACTIVE_PRODUCT_BACKGROUND_R13"
+        "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+        "role": "ACTIVE_PRODUCT_BACKGROUND_R14"
       },
       {
         "path": "governance/progress/current-progress.md",
@@ -151,7 +151,7 @@
       "repository_current": "governance/CURRENT_STATE.json",
       "repository_history": "governance/CURRENT_STATE_HISTORY.json",
       "current_pointers": "governance/current_pointers.json",
-      "product_background": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
+      "product_background": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
       "human_continuation": "governance/progress/current-progress.md",
       "finetuning_navigation": "finetuning/CURRENT.json"
     }

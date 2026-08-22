@@ -7,11 +7,11 @@
 | 项目 | 当前答案 |
 |---|---|
 | 当前工作线 | `CLEAN-BASELINE-M1-M11-INTEGRATION-20260821` |
-| 当前阶段 | 工单 1：唯一 current 收口；候选 PR 未合并前不得冒充 main 完成态 |
-| main 基准 | `f8680907f5be5c199479ba52510e9ab4f16eded7` |
-| 模块候选 | `codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b` |
-| 产品共同背景 | `R13`；工单 2 才允许升 `R14` |
-| 原子需求 | `R03 / 142 条`仍在候选分支；工单 2 才允许上 main |
+| 当前阶段 | 工单 1～5、十本账 L1～L5、工单 7 已进 `main`；工单 6 仍等 CZ 拍外置对象。不得把 M1～M11 写成完整作者能力。 |
+| main 基准 | `dd201deaee4cf60cf133eb7511ac94dd60bca2c7`（Merge PR #53 工单 7） |
+| 模块候选 | `codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b`（超级分支，禁止整支再合；工单 5 已按 PR-C～G 拆票进 main） |
+| 产品共同背景 | `R14`；入口 [`00_READ_ME_FIRST.md`](../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)。R13 留 Git，已退出默认路由。 |
+| 原子需求 | `R03 / 142 条`已在 main；六例设计 CURRENT 仍只覆盖旧 127 条／762 例，不能冒充 852 已跑完。 |
 | 当前模型运行 | 无；本线 API、训练、Gold、生产权限均为 0 |
 
 ## 唯一入口
@@ -27,8 +27,8 @@
 
 ## 下一件
 
-CZ 复核并合并工单 1 PR；随后从新 main 开工单 2，只引入 R14、原子需求 R03 和对应 CURRENT，不夹带 runtime 或 evidence。
+产品下一张：六本设定账共用一个落盘方（拍板题 3，照 planstore 样式）。工单 6 仍等 CZ 在 [Issue #32](https://github.com/mhchen1/novel-architecture/issues/32) 拍对象，不能当施工票开干。
 
-更新时间：`2026-08-21T02:49:17+08:00`
+更新时间：`2026-08-22T12:00:00+08:00`
 
-来源：ChatGPT（工单 1 云端候选）
+来源：Issue #27 路牌刷新（云端 Agent）
