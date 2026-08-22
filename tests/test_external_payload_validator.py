@@ -703,7 +703,9 @@ def test_report_is_lightweight_private_and_cannot_be_a_migration_receipt(
 
     assert str(fixture.repo).encode() not in serialized
     assert str(fixture.external).encode() not in serialized
-    assert Path.home().name.encode() not in serialized
+    home = Path.home()
+    assert str(home).encode() not in serialized
+    assert home.as_posix().encode() not in serialized
     assert secret.strip() not in serialized
     assert b'"files"' not in serialized
     assert report["claims"]["migration_performed"] is False
@@ -1062,8 +1064,128 @@ def test_t7_unmounted_is_not_run(
         validator.validate_payload(TARGET_ID, fixture.repo)
     assert caught.value.code == validator.PAYLOAD_VOLUME_NOT_MOUNTED
     assert str(caught.value).startswith(validator.NOT_RUN_VOLUME_NOT_MOUNTED)
+    assert f"artifact_id={TARGET_ID}" in str(caught.value)
+    assert "root_id=physical_external_archive_t7_v1" in str(caught.value)
+    assert "expected_volume_name=T7 Shield" in str(caught.value)
+    receipt = caught.value.as_not_run_receipt()
+    assert receipt["status"] == "NOT_RUN"
+    assert receipt["artifact_id"] == TARGET_ID
+    assert receipt["root_id"] == "physical_external_archive_t7_v1"
+    assert receipt["expected_mount"]["expected_volume_name"] == "T7 Shield"
+    assert receipt["expected_mount"]["volume_uuid"] == (
+        "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"
+    )
+    assert receipt["expected_mount"]["relative_root"] == "archive/v1"
 
     monkeypatch.setattr(validator, "ROOT", fixture.repo)
     assert validator.main(["check", "--artifact-id", TARGET_ID]) == 4
     captured = capsys.readouterr()
     assert captured.err.startswith(validator.NOT_RUN_VOLUME_NOT_MOUNTED)
+    assert f"artifact_id={TARGET_ID}" in captured.err
+    assert captured.out == ""
+
+    assert validator.main(["report", "--artifact-id", TARGET_ID]) == 4
+    reported = capsys.readouterr()
+    assert reported.err.startswith(validator.NOT_RUN_VOLUME_NOT_MOUNTED)
+    payload = json.loads(reported.out)
+    assert payload["status"] == "NOT_RUN"
+    assert payload["artifact_id"] == TARGET_ID
+    assert payload["root_id"] == "physical_external_archive_t7_v1"
+    assert str(fixture.repo) not in reported.out
+    assert str(fixture.external) not in reported.out
+
+
+@pytest.mark.parametrize(
+    "wrong_value",
+    ["2", True, 2.5, {"member_count": 1}],
+    ids=["string", "bool", "float", "object"],
+)
+def test_top_level_total_wrong_type_does_not_fall_back_to_aggregate(
+    tmp_path: Path,
+    wrong_value: object,
+) -> None:
+    files = {"a.bin": b"aa", "b.bin": b"bbb"}
+    fixture = _make_fixture(tmp_path, files)
+    _write_aggregate_manifest(
+        fixture,
+        files=files,
+        include_top_level=True,
+    )
+    manifest = json.loads(fixture.manifest_path.read_text(encoding="utf-8"))
+    manifest["total_files"] = wrong_value
+    _write_json(fixture.manifest_path, manifest)
+    _rebind_manifest(fixture)
+
+    _expect_error(fixture, "PAYLOAD_MANIFEST_TOTAL_TYPE_INVALID")
+
+
+def test_aggregate_wrong_type_is_rejected_instead_of_being_swallowed(
+    tmp_path: Path,
+) -> None:
+    files = {"result.bin": b"fixture payload\n"}
+    fixture = _make_fixture(tmp_path, files)
+    manifest = json.loads(fixture.manifest_path.read_text(encoding="utf-8"))
+    del manifest["total_files"]
+    del manifest["total_bytes"]
+    manifest["aggregate"] = "not-an-object"
+    _write_json(fixture.manifest_path, manifest)
+    _rebind_manifest(fixture)
+
+    _expect_error(fixture, "PAYLOAD_MANIFEST_TOTAL_TYPE_INVALID")
+
+
+def test_valid_top_level_total_still_rejects_wrong_typed_aggregate(
+    tmp_path: Path,
+) -> None:
+    files = {"result.bin": b"fixture payload\n"}
+    fixture = _make_fixture(tmp_path, files)
+    manifest = json.loads(fixture.manifest_path.read_text(encoding="utf-8"))
+    manifest["aggregate"] = "single-object-result"
+    _write_json(fixture.manifest_path, manifest)
+    _rebind_manifest(fixture)
+
+    _expect_error(fixture, "PAYLOAD_MANIFEST_TOTAL_TYPE_INVALID")
+
+
+def test_nested_aggregate_key_wrong_type_is_rejected(
+    tmp_path: Path,
+) -> None:
+    files = {"result.bin": b"fixture payload\n"}
+    fixture = _make_fixture(tmp_path, files)
+    _write_aggregate_manifest(fixture, files=files)
+    manifest = json.loads(fixture.manifest_path.read_text(encoding="utf-8"))
+    manifest["aggregate"]["member_count"] = "1"
+    _write_json(fixture.manifest_path, manifest)
+    _rebind_manifest(fixture)
+
+    _expect_error(fixture, "PAYLOAD_MANIFEST_TOTAL_TYPE_INVALID")
+
+
+def test_report_does_not_false_positive_when_home_name_is_root(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("HOME", "/root")
+    fixture = _make_fixture(tmp_path)
+    report = validator.validate_payload(TARGET_ID, fixture.repo)
+    serialized = validator._json_bytes(report)
+
+    assert report["status"] == "PASS"
+    assert b'"root_id"' in serialized
+    assert Path.home() == Path("/root")
+    assert str(Path.home()).encode() not in serialized
+    assert b"/root/" not in serialized
+
+
+def test_governance_readme_s06b_points_to_machine_policy_not_hardcoded_whitelist() -> None:
+    text = (ROOT / "governance/README.md").read_text(encoding="utf-8")
+    start = text.index("## S-06-B")
+    end = text.index("## S-06-C")
+    section = text[start:end]
+    assert "external_payload_validation_policy.json" in section
+    assert "当前白名单有 S-05-B 回放包" not in section
+    assert "86 个文件／1,664,821 字节" not in section
+    assert "S-07-G-A／G-B-A" not in section
+    assert "`targets`" in section
+    assert "`exclusions`" in section
+

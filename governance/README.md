@@ -259,8 +259,10 @@ payload 逐文件验证器真正核过路径存在性与内容 SHA；当前只�
 
 ## S-06-B 外置 payload 单件验证
 
-S-06-B 用独立工具读取外置 payload，不扩张 S-06-A 扫描器的能力。白名单真源是
-`external_payload_validation_policy.json`，一次命令只接一个 `artifact_id`：
+S-06-B 用独立工具读取外置 payload，不扩张 S-06-A 扫描器的能力。一次命令只接一个
+`artifact_id`。白名单、排除项和每个对象该读哪些合计字段，只认机器政策
+[external_payload_validation_policy.json](external_payload_validation_policy.json)；
+人读页不抄 target 名单，也不手写件数／字节数。
 
 ```bash
 uv run --locked python tools/external_payload_validator.py check \
@@ -269,14 +271,8 @@ uv run --locked python tools/external_payload_validator.py report \
   --artifact-id historical-test-replay-s05b-v2
 ```
 
-当前白名单有 S-05-B 回放包 v1／v2、S-07-B-A 的 5 轮零调用作废模型横评完整包、
-S-07-C-A 的 QEC 四模型终局证据包、S-07-D-A 的 LongCat r03 中断硬停完整包，以及
-S-07-E-A 的 LongCat r01 中断硬停完整包、S-07-F-A 的千问 r05 结构化候选包和 r06
-32K 思考候选包、S-07-G-A／G-B-A 的 Z66 三问法历史候选包。六份模型包分别有
-86 个文件／1,664,821 字节、7 个原件／11,424 字节、28 个文件／555,559 字节和
-28 个文件／550,603 字节、40 个文件／702,031 字节、41 个文件／714,081 字节；Z66 包
-另有 93 个文件／1,240,575 字节。三份 7 月 23 日旧清单缺逐项 SHA，旧 TEMP 外置根没有清单，
-政策会明确排除，工具不会顺着旧绝对路径猜位置。
+政策里标明排除的对象（缺逐项 SHA、旧 TEMP 外置根没有清单等）工具不会顺着旧绝对路径
+猜位置。目标数量和排除名单以该政策文件当时的 `targets`／`exclusions` 为准。
 
 PASS 只说明一个获准对象的 payload 文件集合、大小和内容 SHA 与固定清单一致。轻量报告
 只保留对象编号、登记／政策／清单／验证器／安全读取助手 SHA、文件数、总字节和整组摘要，
