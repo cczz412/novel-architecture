@@ -1041,10 +1041,12 @@
       "source_text": "CZ 2026-08-20 口述拍板（账本目录／户籍处）。",
       "source_paths": [],
       "input_contracts": [
-        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ],
       "output_contracts": [
-        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ],
       "design_refs": [
         "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md"
@@ -1056,7 +1058,8 @@
         "novel-mvp/mvp/ledger_directory_workspace.py",
         "novel-mvp/mvp/chapter_workspace.py",
         "novel-mvp/mvp/chapter_handover_workspace.py",
-        "novel-mvp/mvp/chapter_initial_admission_workspace.py"
+        "novel-mvp/mvp/chapter_initial_admission_workspace.py",
+        "novel-mvp/mvp/settingstore.py"
       ],
       "implementation_mapping_evidence": "GROUP_ROUTE_INFERENCE_ONLY",
       "test_refs": [
@@ -1065,7 +1068,8 @@
         "tests/test_novel_mvp_chapter_workspace.py",
         "tests/test_novel_mvp_ledger_directory_tool.py",
         "tests/test_novel_mvp_ledger_directory_workspace.py",
-        "tests/test_novel_mvp_workspace.py"
+        "tests/test_novel_mvp_workspace.py",
+        "tests/test_novel_mvp_settingstore.py"
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
@@ -1394,13 +1398,15 @@
       "source_paths": [],
       "input_contracts": [
         "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md",
-        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ],
       "output_contracts": [
         "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md",
         "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
         "novel-mvp/contracts/SYSTEM_LEDGER_CONTENT.md",
-        "novel-mvp/contracts/WORLD_RULE_LEDGER_CONTENT.md"
+        "novel-mvp/contracts/WORLD_RULE_LEDGER_CONTENT.md",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ],
       "design_refs": [
         "novel-mvp/design/LEDGER_DIRECTORY_DESIGN_R01.md",
@@ -1414,7 +1420,8 @@
         "novel-mvp/mvp/ledger_directory_workspace.py",
         "novel-mvp/mvp/chapter_workspace.py",
         "novel-mvp/mvp/chapter_handover_workspace.py",
-        "novel-mvp/mvp/chapter_initial_admission_workspace.py"
+        "novel-mvp/mvp/chapter_initial_admission_workspace.py",
+        "novel-mvp/mvp/settingstore.py"
       ],
       "implementation_mapping_evidence": "GROUP_ROUTE_INFERENCE_ONLY",
       "test_refs": [
@@ -1426,7 +1433,8 @@
         "tests/test_novel_mvp_ledger_entry_envelope_contract.py",
         "tests/test_novel_mvp_system_ledger_content_contract.py",
         "tests/test_novel_mvp_workspace.py",
-        "tests/test_novel_mvp_world_rule_ledger_content_contract.py"
+        "tests/test_novel_mvp_world_rule_ledger_content_contract.py",
+        "tests/test_novel_mvp_settingstore.py"
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
@@ -1497,7 +1505,8 @@
         "novel-mvp/contracts/SYSTEM_LEDGER_CONTENT.schema.json",
         "novel-mvp/contracts/WORLD_RULE_LEDGER_CONTENT.md",
         "novel-mvp/contracts/WORLD_RULE_LEDGER_CONTENT.schema.json",
-        "novel-mvp/contracts/validate_ledger_entry_envelope.py"
+        "novel-mvp/contracts/validate_ledger_entry_envelope.py",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ]
     },
     {
@@ -2577,7 +2586,8 @@
         "novel-mvp/contracts/ITEM_LEDGER_CONTENT.md",
         "novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.md",
         "novel-mvp/contracts/LOCATION_LEDGER_CONTENT.md",
-        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ],
       "output_contracts": [
         "novel-mvp/contracts/C7_PLOT_LAYER.md",
@@ -2585,7 +2595,8 @@
         "novel-mvp/contracts/FACTION_LEDGER_CONTENT.md",
         "novel-mvp/contracts/ITEM_LEDGER_CONTENT.md",
         "novel-mvp/contracts/LOCATION_LEDGER_CONTENT.md",
-        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ],
       "design_refs": [
         "novel-mvp/contracts/C11_CHAPTER_REVISION_LEDGER.md#5-revision-ref-与-anchor",
@@ -2604,7 +2615,8 @@
         "novel-mvp/mvp/scene_export_workspace.py",
         "novel-mvp/mvp/scene_export_bundle.py",
         "novel-mvp/mvp/scene_export_bundle_workspace.py",
-        "novel-mvp/mvp/scene_state_interval_resolver.py"
+        "novel-mvp/mvp/scene_state_interval_resolver.py",
+        "novel-mvp/mvp/settingstore.py"
       ],
       "implementation_mapping_evidence": "GROUP_ROUTE_INFERENCE_ONLY",
       "test_refs": [
@@ -2619,7 +2631,8 @@
         "tests/test_novel_mvp_scene_export.py",
         "tests/test_novel_mvp_scene_export_tool.py",
         "tests/test_novel_mvp_scene_export_workspace.py",
-        "tests/test_novel_mvp_scene_state_interval_resolver.py"
+        "tests/test_novel_mvp_scene_state_interval_resolver.py",
+        "tests/test_novel_mvp_settingstore.py"
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R03_ADDENDUM_CANDIDATE",
       "blocked_by": [
@@ -2692,7 +2705,8 @@
         "novel-mvp/contracts/ITEM_LEDGER_CONTENT.schema.json",
         "novel-mvp/contracts/LOCATION_LEDGER_CONTENT.md",
         "novel-mvp/contracts/LOCATION_LEDGER_CONTENT.schema.json",
-        "novel-mvp/contracts/validate_character_ledger_content.py"
+        "novel-mvp/contracts/validate_character_ledger_content.py",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ]
     },
     {
@@ -3212,13 +3226,15 @@
         "novel-mvp/contracts/LOCATION_LEDGER_CONTENT.md",
         "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
         "novel-mvp/contracts/SYSTEM_LEDGER_CONTENT.md",
-        "novel-mvp/contracts/WORLD_RULE_LEDGER_CONTENT.md"
+        "novel-mvp/contracts/WORLD_RULE_LEDGER_CONTENT.md",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ],
       "output_contracts": [
         "novel-mvp/contracts/FACTION_LEDGER_CONTENT.md",
         "novel-mvp/contracts/ITEM_LEDGER_CONTENT.md",
         "novel-mvp/contracts/LOCATION_LEDGER_CONTENT.md",
-        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md"
+        "novel-mvp/contracts/PLAN_LEDGER_STORAGE.md",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ],
       "design_refs": [
         "novel-mvp/design/CONTEXT_PACKER_DESIGN_R01.md",
@@ -3234,7 +3250,8 @@
         "novel-mvp/mvp/recall_handle_workspace.py",
         "novel-mvp/mvp/chapter_fact_material_bundle_tool.py",
         "novel-mvp/mvp/chapter_fact_material_bundle_workspace.py",
-        "novel-mvp/mvp/chapter_fact_supply_workspace.py"
+        "novel-mvp/mvp/chapter_fact_supply_workspace.py",
+        "novel-mvp/mvp/settingstore.py"
       ],
       "implementation_mapping_evidence": "GROUP_ROUTE_INFERENCE_ONLY",
       "test_refs": [
@@ -3249,7 +3266,8 @@
         "tests/test_novel_mvp_packer_tool.py",
         "tests/test_novel_mvp_recall_handle_workspace.py",
         "tests/test_novel_mvp_system_ledger_content_contract.py",
-        "tests/test_novel_mvp_world_rule_ledger_content_contract.py"
+        "tests/test_novel_mvp_world_rule_ledger_content_contract.py",
+        "tests/test_novel_mvp_settingstore.py"
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R01_FOR_R02",
       "blocked_by": [
@@ -3311,7 +3329,8 @@
         "novel-mvp/contracts/SYSTEM_LEDGER_CONTENT.md",
         "novel-mvp/contracts/SYSTEM_LEDGER_CONTENT.schema.json",
         "novel-mvp/contracts/WORLD_RULE_LEDGER_CONTENT.md",
-        "novel-mvp/contracts/WORLD_RULE_LEDGER_CONTENT.schema.json"
+        "novel-mvp/contracts/WORLD_RULE_LEDGER_CONTENT.schema.json",
+        "novel-mvp/contracts/SETTING_LEDGER_STORAGE.md"
       ]
     },
     {

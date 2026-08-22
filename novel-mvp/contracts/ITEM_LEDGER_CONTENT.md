@@ -10,7 +10,7 @@
 |---|---|---|
 | 作者定义 | 作者直接编辑物品卡 | 按共同信封记录作者签字 |
 | 候选提出 | M4／M5 已确认事实投影 | 易手、损毁等变化真值仍住事实账 |
-| 唯一落盘 | 后续设定账统一 writer | L3 不实现 runtime |
+| 唯一落盘 | `settingstore` | 见 [SETTING_LEDGER_STORAGE.md](SETTING_LEDGER_STORAGE.md) |
 | 读取 | M6、M7、M10、M11 | 只读定义、归属／状态投影、证据和锚 |
 
 ## 2. 字段表
@@ -44,7 +44,7 @@
 2. 禁止 owner_ref 使用 `CH-`／`FA-` 之外的未拍前缀。
 3. 禁止归属或状态条目缺证据、缺故事时间。
 4. 禁止拿最新归属冒充历史。
-5. 禁止本票实现 writer、取件码或 handle 迁移。
+5. 禁止把内容合同当成落盘方；落盘只走 `settingstore`。不在本票实现取件码或 handle 迁移。
 6. 禁止定义知情边、ADD-043、READER、新账申请或 hardness 红灯。
 
 ## 6. 开放问题
@@ -53,4 +53,4 @@
 
 ## 7. 机器件与状态
 
-Schema、validator、fixtures 与定向测试同名配套。实现状态：`CONTRACT_ONLY__UNIFIED_WRITER_PENDING`。
+Schema、validator、fixtures 与定向测试同名配套。实现状态：`UNIFIED_WRITER_SETTINGSTORE_V1`。

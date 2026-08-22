@@ -16,7 +16,7 @@
 
 ## 当前身份
 
-- 更新时间：`2026-08-22T16:30:00+08:00`
+- 更新时间：`2026-08-22T21:30:00+08:00`
 - 当前工作线：`CLEAN-BASELINE-M1-M11-INTEGRATION-20260821`
 - `main` 基准：`49533178945ce5a9a6df59e20b4d57eb18706acb`（Merge PR #54：Issue #27）
 - 模块候选分支：`codex/module-runtime-foundation-20260819-r01`
@@ -29,7 +29,7 @@
 
 干净基线七张工单里，1～5 和 7 已经进 main。工单 6 已在 [Issue #32](https://github.com/mhchen1/novel-architecture/issues/32) 拍成精确施工票：31 个全部 target，只做只读核验。
 
-产品下一张仍是拍板题 3：六本设定账共用一个落盘方，照规划账 `planstore` 那种原子提交来写。这张票还没切 GitHub 施工卡。
+产品：拍板题 3 六本设定账已共用落盘方 `settingstore`，施工票是 [Issue #59](https://github.com/mhchen1/novel-architecture/issues/59)。
 
 不要把「runtime 已按小票上 main」读成「作者能用的完整产品」。
 
@@ -43,7 +43,7 @@
 
 ## 下一步
 
-1. 产品：切「设定账统一 writer」施工票（拍板题 3）；
+1. 产品：拍板题 3 设定账统一 writer 已落 `settingstore`（Issue #59）。等人「检查再合并」，不要再平行领同一张票；
 2. 工单 6：Git 补 31 个 target、嵌套合计、本机绑定和 T7 `NOT_RUN`；本地 Codex 在绑定后核 25 个旁仓对象，T7 挂上后再核 6 次；
 3. 不要回头领工单 1～5 或工单 7，那些已经在 main。
 

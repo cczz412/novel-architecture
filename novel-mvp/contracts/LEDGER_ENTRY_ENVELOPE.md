@@ -2,7 +2,7 @@
 
 **正式版本：`ledger-entry-envelope-v1`**
 
-一句话用途：给人物、地点、物品、势力、体系、世界规则六本设定账及其后续长线对象提供同一套来源、确认、证据、时间与修订身份；它只冻结合同层，不实现落盘 writer。
+一句话用途：给人物、地点、物品、势力、体系、世界规则六本设定账及其后续长线对象提供同一套来源、确认、证据、时间与修订身份；落盘方是 `settingstore`，本合同只冻字段，不实现文件布局。
 
 ## 1. Owner 与边界
 
@@ -11,9 +11,9 @@
 | 合同 owner | `LEDGER_ENTRY_ENVELOPE` |
 | 适用范围 | 人物、地点、物品、势力、体系、世界规则六本设定账。L5 长线三对象（卷 `VOL-`／人物命运 `DESTINY-`／灵感 `INS-`）已登记：住规划账、复用规划账公共字段，另在各自合同内本地校验 `confirm_status`／`evidence_refs` 语义（`AUTHOR_ATTESTATION` 判定规则同本合同）；三前缀由 planstore `id_counters` 发号，不进本合同 §3 前缀表 |
 | 提出者 | 作者直接编辑、M4／M5 已确认事实后的投影、题材包预填、模型候选 |
-| 唯一落盘者 | 后续“设定账统一 writer”；必须复用 planstore 的事务、`id_counters` 与原子提交样式 |
+| 唯一落盘者 | `settingstore`；必须复用 planstore 的事务、`id_counters` 与原子提交样式，见 [SETTING_LEDGER_STORAGE.md](SETTING_LEDGER_STORAGE.md) |
 | 读取者 | L2～L5 内容合同、M7、M9、M10、M11 |
-| 本票不做 | 不新增 runtime writer，不改变 planstore，不定义六本账各自业务字段 |
+| 本票不做 | L1 当时不实现 runtime writer；落盘现由 `SETTING_LEDGER_STORAGE`／`settingstore` 承接。本合同仍不定义六本账各自业务字段 |
 
 来源真值：
 - `work/ledger_content_contract_20260822_r01/00_DECIDED_DRAFT_R01.md`
@@ -95,12 +95,12 @@ ID 形状为“前缀＋十进制数字”，例如 `CH-0001`、`LOC-12`。前�
 发号纪律：
 
 - 复用 planstore `id_counters` 的统一计数与同事务提交样式；
-- 新号必须由后续统一 writer 在同一次原子提交内读取、递增并落盘；
+- 新号必须由 `settingstore` 在同一次原子提交内读取、递增并落盘；
 - **不得由各模块私自发号**；
 - 失败事务不得消耗或重复使用已经对外承诺的 ID；
 - 已分配 ID 永不回收、永不改写、永不跨账复用。
 
-本票只冻结合同和校验规则，不实现统一 writer。
+L1 只冻结合同和校验规则；统一 writer 现由 `settingstore` 实现。
 
 ## 4. 真实示例
 
@@ -148,7 +148,7 @@ ID 形状为“前缀＋十进制数字”，例如 `CH-0001`、`LOC-12`。前�
 6. 禁止定义卡携带非空 `story_time`。
 7. 禁止把系统时间字段塞进 `story_time`，或把系统提交时间当故事时间。
 8. 禁止物理删除 `retired` 条目的历史身份。
-9. 禁止在本票顺手实现统一 writer、文件布局或模块业务字段。
+9. 禁止把信封合同当成落盘方；文件布局与原子提交只认 `SETTING_LEDGER_STORAGE`／`settingstore`。
 
 ## 6. 开放问题
 
@@ -168,6 +168,6 @@ ID 形状为“前缀＋十进制数字”，例如 `CH-0001`、`LOC-12`。前�
 
 ## 8. 实现状态
 
-`CONTRACT_ONLY__UNIFIED_WRITER_PENDING`
+`UNIFIED_WRITER_SETTINGSTORE_V1`
 
-本合同通过只证明字段与迁移规则已经冻结，不证明六本设定账已经有正式落盘方、作者界面或端到端主循环。
+本合同通过只证明字段与迁移规则已经冻结，并且六本设定账已有唯一落盘方 `settingstore`。不证明作者界面或端到端主循环已经能用。

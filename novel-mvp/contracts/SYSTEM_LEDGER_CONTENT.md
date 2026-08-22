@@ -10,7 +10,7 @@
 |---|---|---|
 | 作者定义 | 作者直接编辑体系卡 | 直接编辑按共同信封的 `AUTHOR_ATTESTATION` 处理 |
 | 预填提出 | 题材包／插件 | 只能写 `pack_prefilled + candidate + pack_ref` |
-| 唯一落盘 | 后续设定账统一 writer | 复用 planstore 原子提交与统一发号；L4 不实现 runtime |
+| 唯一落盘 | `settingstore` | 复用 planstore 原子提交与统一发号；见 [SETTING_LEDGER_STORAGE.md](SETTING_LEDGER_STORAGE.md) |
 | 读取 | 题材包、插件、M7、M11 | 只读已登记定义、方向和来源 |
 
 真值来源：拍板页 5.5、题 3／题 8，复核页第三节六条施工注记，`LEDGER_ENTRY_ENVELOPE`。冲突时复核注记优先。
@@ -79,7 +79,7 @@
 5. 禁止关系指向自己。
 6. 禁止给定义卡关系强加故事时间区间。
 7. 禁止把开放 category／kind 固化成封闭枚举。
-8. 禁止本票实现统一 writer、取件码或 handle 迁移。
+8. 禁止绕过 `settingstore` 私写体系账；不在本票实现取件码或 handle 迁移。
 9. 禁止本票定义知情边、ADD-043 拆条、READER 结构或新账申请流程。
 
 ## 7. 开放问题
@@ -93,4 +93,4 @@
 - `SYSTEM_LEDGER_CONTENT.fixtures.jsonl`
 - `tests/test_novel_mvp_system_ledger_content_contract.py`
 
-实现状态：`CONTRACT_ONLY__UNIFIED_WRITER_PENDING`。
+实现状态：`UNIFIED_WRITER_SETTINGSTORE_V1`。

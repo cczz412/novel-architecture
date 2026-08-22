@@ -1644,6 +1644,7 @@ def verify_storage(project_dir: str | Path) -> dict[str, Any]:
                 "reconciliation_fact_admission",
                 "reconciliation_stale",
                 "fact_review",
+                "setting_ledger_write",
             }:
                 continue
             op_history = [row for row in history if row.get("op") == op]
@@ -1699,6 +1700,17 @@ def verify_storage(project_dir: str | Path) -> dict[str, Any]:
         }
         if (root / "facts.json").exists():
             current_files["facts.json"] = _file_bytes(root / "facts.json")
+        for prepare in committed_prepares:
+            for file_entry in prepare.get("files") or []:
+                path_name = file_entry.get("path")
+                if (
+                    isinstance(path_name, str)
+                    and file_entry.get("append") is not True
+                    and file_entry.get("content_addressed") is not True
+                    and path_name not in current_files
+                    and (root / path_name).exists()
+                ):
+                    current_files[path_name] = _file_bytes(root / path_name)
         for path_name, current_bytes in current_files.items():
             candidates = [
                 (prepare.get("story_commit_seq"), file_entry)
