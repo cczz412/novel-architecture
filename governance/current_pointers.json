@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-pointers-v1",
-  "updated_at": "2026-08-22T16:30:00+08:00",
+  "updated_at": "2026-08-22T13:10:00+08:00",
   "authority": {
     "role": "当前版本、路径、候选身份和后续登记的唯一机器索引",
     "does_not_replace": [
@@ -108,9 +108,9 @@
       "version": "R01",
       "path": "novel-mvp/design/design_registry.json",
       "index_path": "novel-mvp/design/INDEX.md",
-      "document_count": 57,
+      "document_count": 58,
       "status_counts": {
-        "CURRENT": 19,
+        "CURRENT": 20,
         "HISTORICAL": 5,
         "SUPERSEDED": 26,
         "WAITING_REWRITE": 7
@@ -157,7 +157,7 @@
     "repository_current、product_background 与 atomic_expectations 各自只有一个 ACTIVE_CURRENT。",
     "产品共同背景现行只认 R14；R13 留 Git 作 SUPERSEDED_HISTORICAL。",
     "原子需求现行只认 R03／142 条唯一 ID；R02 留 Git 作 SUPERSEDED_HISTORICAL。",
-    "六例设计 CURRENT 仍只覆盖旧 127 条／762 例，不得冒充覆盖 R03 新增 15 条。",
+    "六例设计 CURRENT 的组合覆盖是 142 条／852 例（旧 127×6 加 R03 新增 15×6）；旧 127 套不得单独冒充全 R03。组合覆盖仍是设计，不是执行证明。",
     "候选分支、PLANNED 和 PENDING_WORK_ORDER 不得冒充 main current。",
     "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",
     "设计默认路由只能指向 design_registry 中的 CURRENT；其他状态一律不得指导施工。"

@@ -19,8 +19,17 @@ def dump(path: Path, value: object) -> None:
 def seed_repo(root: Path) -> None:
     product = (
         "references/shared-context/"
+        "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/"
+        "00_READ_ME_FIRST.md"
+    )
+    superseded = (
+        "references/shared-context/"
         "NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/"
         "00_READ_ME_FIRST.md"
+    )
+    atomic_entry = (
+        "references/atomic-expectations/"
+        "ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/00_READ_ME_FIRST.md"
     )
     text = "\n".join(
         [
@@ -36,7 +45,18 @@ def seed_repo(root: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
     (root / product).parent.mkdir(parents=True, exist_ok=True)
-    (root / product).write_text("R13", encoding="utf-8")
+    (root / product).write_text("R14", encoding="utf-8")
+    (root / superseded).parent.mkdir(parents=True, exist_ok=True)
+    (root / superseded).write_text("R13", encoding="utf-8")
+    (root / atomic_entry).parent.mkdir(parents=True, exist_ok=True)
+    (root / atomic_entry).write_text("R03", encoding="utf-8")
+    dump(
+        root / "references/atomic-expectations/CURRENT.json",
+        {
+            "current_version": "R03",
+            "entry_path": "ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/00_READ_ME_FIRST.md",
+        },
+    )
     (root / "governance/INDEX.md").write_text("index", encoding="utf-8")
     (root / "history").mkdir(parents=True, exist_ok=True)
     (root / "history/root_current_snapshot_20260720.md").write_text("old", encoding="utf-8")
@@ -67,11 +87,38 @@ def seed_repo(root: Path) -> None:
         root / "governance/current_pointers.json",
         {
             "schema_version": "governance-current-pointers-v1",
+            "invariants": list(MODULE.EXPECTED_INVARIANTS),
             "pointers": [
-                {"pointer_id": "repository_current", "status": "ACTIVE_CURRENT", "path": "governance/CURRENT_STATE.json"},
-                {"pointer_id": "product_background", "status": "ACTIVE_CURRENT", "path": product},
-                {"pointer_id": "design_registry", "status": "PLANNED", "path": "novel-mvp/design/design_registry.json"},
-            ]
+                {
+                    "pointer_id": "repository_current",
+                    "status": "ACTIVE_CURRENT",
+                    "path": "governance/CURRENT_STATE.json",
+                },
+                {
+                    "pointer_id": "product_background",
+                    "status": "ACTIVE_CURRENT",
+                    "version": "R14",
+                    "path": product,
+                    "supersedes": {
+                        "version": "R13",
+                        "path": superseded,
+                        "status": "SUPERSEDED_HISTORICAL",
+                    },
+                },
+                {
+                    "pointer_id": "atomic_expectations",
+                    "status": "ACTIVE_CURRENT",
+                    "version": "R03",
+                    "path": "references/atomic-expectations/CURRENT.json",
+                    "entry_path": atomic_entry,
+                    "record_count": 142,
+                },
+                {
+                    "pointer_id": "design_registry",
+                    "status": "PLANNED",
+                    "path": "novel-mvp/design/design_registry.json",
+                },
+            ],
         },
     )
     dump(root / "governance/tool_registry.json", {"tools": [{"path": "tools/check_current_freshness.py"}]})
@@ -137,3 +184,92 @@ def test_pointer_schema_mismatch_is_error(tmp_path: Path) -> None:
     dump(tmp_path / "governance/current_pointers.json", pointers)
     report = MODULE.build_report(tmp_path)
     assert "POINTER_SCHEMA" in {item["code"] for item in report["errors"]}
+
+
+def _pointers(root: Path) -> dict:
+    return json.loads((root / "governance/current_pointers.json").read_text(encoding="utf-8"))
+
+
+def test_second_active_product_background_different_pointer_id_is_error(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    pointers = _pointers(tmp_path)
+    product = next(row for row in pointers["pointers"] if row["pointer_id"] == "product_background")
+    extra = dict(product)
+    extra["pointer_id"] = "product_background_alias"
+    pointers["pointers"].append(extra)
+    dump(tmp_path / "governance/current_pointers.json", pointers)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "ROLE_CURRENT_NOT_UNIQUE" in {item["code"] for item in report["errors"]}
+
+
+def test_atomic_expectations_count_mismatch_is_error(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    pointers = _pointers(tmp_path)
+    atomic = next(row for row in pointers["pointers"] if row["pointer_id"] == "atomic_expectations")
+    atomic["record_count"] = 141
+    dump(tmp_path / "governance/current_pointers.json", pointers)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "ATOMIC_EXPECTATIONS_COUNT" in {item["code"] for item in report["errors"]}
+
+
+def test_legacy_127_suite_claiming_full_r03_is_error(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    dump(
+        tmp_path / "references/atomic-expectations/TEST_DESIGN_CURRENT.json",
+        {
+            "coverage": {
+                "requirements_total": 142,
+                "small_tests_total": 852,
+                "legacy_requirements": 127,
+                "r03_addendum_requirements": 15,
+            }
+        },
+    )
+    pointers = _pointers(tmp_path)
+    pointers["pointers"].append(
+        {
+            "pointer_id": "atomic_test_design",
+            "status": "ACTIVE_CURRENT",
+            "path": "references/atomic-expectations/TEST_DESIGN_CURRENT.json",
+            "covered_expectations": 142,
+            "designed_test_cases": 852,
+        }
+    )
+    dump(tmp_path / "governance/current_pointers.json", pointers)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "TEST_DESIGN_MASQUERADE" in {item["code"] for item in report["errors"]}
+
+
+def test_design_registry_declared_count_mismatch_is_error(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    dump(
+        tmp_path / "novel-mvp/design/design_registry.json",
+        {
+            "inventory": {
+                "document_count": 58,
+                "status_counts": {"CURRENT": 20, "HISTORICAL": 5, "SUPERSEDED": 26, "WAITING_REWRITE": 7},
+            }
+        },
+    )
+    pointers = _pointers(tmp_path)
+    planned = next(row for row in pointers["pointers"] if row["pointer_id"] == "design_registry")
+    planned["status"] = "ACTIVE_CURRENT"
+    planned["document_count"] = 57
+    planned["status_counts"] = {"CURRENT": 19, "HISTORICAL": 5, "SUPERSEDED": 26, "WAITING_REWRITE": 7}
+    dump(tmp_path / "governance/current_pointers.json", pointers)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "DESIGN_REGISTRY_COUNT_MISMATCH" in {item["code"] for item in report["errors"]}
+
+
+def test_invariant_set_drift_is_error(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    pointers = _pointers(tmp_path)
+    pointers["invariants"] = list(MODULE.EXPECTED_INVARIANTS[:-1])
+    dump(tmp_path / "governance/current_pointers.json", pointers)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "INVARIANT_SET_DRIFT" in {item["code"] for item in report["errors"]}

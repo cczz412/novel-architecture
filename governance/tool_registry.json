@@ -4357,7 +4357,7 @@
         "README.md",
         "tests/test_drift.py"
       ],
-      "consumer_evidence_rule": "套件 PASS 不等于 852 语义测试，也不等于全仓 pytest 全绿。",
+      "consumer_evidence_rule": "无 --pr-body 只验未来 PR 模板；有则验这一份未来 PR 正文。历史 PR 不回填、不拉取。套件 PASS 不等于 852 语义测试，也不等于全仓 pytest 全绿。",
       "test_references": [
         "tests/test_drift.py"
       ],

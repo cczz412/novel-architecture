@@ -45,6 +45,27 @@ DRIFT_CHECKERS = (
     "tools/check_review_identity.py",
     "tools/check_drift.py",
 )
+EXPECTED_INVARIANTS = (
+    "repository_current、product_background 与 atomic_expectations 各自只有一个 ACTIVE_CURRENT。",
+    "产品共同背景现行只认 R14；R13 留 Git 作 SUPERSEDED_HISTORICAL。",
+    "原子需求现行只认 R03／142 条唯一 ID；R02 留 Git 作 SUPERSEDED_HISTORICAL。",
+    "六例设计 CURRENT 的组合覆盖是 142 条／852 例（旧 127×6 加 R03 新增 15×6）；旧 127 套不得单独冒充全 R03。组合覆盖仍是设计，不是执行证明。",
+    "候选分支、PLANNED 和 PENDING_WORK_ORDER 不得冒充 main current。",
+    "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",
+    "设计默认路由只能指向 design_registry 中的 CURRENT；其他状态一律不得指导施工。",
+)
+ROLE_CURRENT_PATHS = {
+    "repository_current": "governance/CURRENT_STATE.json",
+    "product_background_suffix": "/00_READ_ME_FIRST.md",
+    "product_background_marker": "/shared-context/",
+    "atomic_expectations": "references/atomic-expectations/CURRENT.json",
+}
+SCORE_KEYS = ("score", "pass_rate", "kill_rate")
+MASQUERADE_STATUSES = {"CANDIDATE_BRANCH", "PLANNED", "PENDING_WORK_ORDER"}
+CURRENT_STATE_REL = "governance/CURRENT_STATE.json"
+ATOMIC_CURRENT_REL = "references/atomic-expectations/CURRENT.json"
+TEST_DESIGN_REL = "references/atomic-expectations/TEST_DESIGN_CURRENT.json"
+DESIGN_REGISTRY_REL = "novel-mvp/design/design_registry.json"
 
 
 def load_json(path: Path) -> Any:
@@ -57,6 +78,397 @@ def _issue(level: str, code: str, message: str, path: str | None = None) -> dict
     if path is not None:
         item["path"] = path
     return item
+
+
+def _posix(value: object) -> str | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    return Path(value).as_posix()
+
+
+def _is_plain_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _role_family(path: str) -> str | None:
+    posix = Path(path).as_posix()
+    if posix == ROLE_CURRENT_PATHS["repository_current"]:
+        return "repository_current"
+    if posix == ROLE_CURRENT_PATHS["atomic_expectations"]:
+        return "atomic_expectations"
+    if posix.endswith(ROLE_CURRENT_PATHS["product_background_suffix"]) and (
+        ROLE_CURRENT_PATHS["product_background_marker"] in posix
+    ):
+        return "product_background"
+    return None
+
+
+def _check_role_uniqueness(pointer_rows: list[Any], errors: list[dict[str, Any]]) -> None:
+    counts = {
+        "repository_current": 0,
+        "product_background": 0,
+        "atomic_expectations": 0,
+    }
+    for row in pointer_rows:
+        if not isinstance(row, dict) or row.get("status") != "ACTIVE_CURRENT":
+            continue
+        path = _posix(row.get("path"))
+        if path is None:
+            continue
+        family = _role_family(path)
+        if family is not None:
+            counts[family] += 1
+    for family, count in counts.items():
+        if count != 1:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "ROLE_CURRENT_NOT_UNIQUE",
+                    f"{family} must have exactly one ACTIVE_CURRENT path, found {count}",
+                    "governance/current_pointers.json",
+                )
+            )
+
+
+def _check_score_keys(row: dict[str, Any], errors: list[dict[str, Any]]) -> None:
+    hits = [key for key in SCORE_KEYS if key in row]
+    if hits:
+        errors.append(
+            _issue(
+                "ERROR",
+                "POINTER_SCORE_FORBIDDEN",
+                f"{row.get('pointer_id', 'pointer')} stores runtime score keys {hits}",
+                "governance/current_pointers.json",
+            )
+        )
+
+
+def _check_candidate_masquerade(row: dict[str, Any], errors: list[dict[str, Any]]) -> None:
+    if row.get("status") not in MASQUERADE_STATUSES:
+        return
+    path = _posix(row.get("path"))
+    if path is None:
+        return
+    if _role_family(path) is not None:
+        errors.append(
+            _issue(
+                "ERROR",
+                "CANDIDATE_MASQUERADES_CURRENT",
+                f"{row.get('pointer_id', 'pointer')} uses a current-role path with status {row.get('status')}",
+                path,
+            )
+        )
+
+
+def _validate_product_background_row(
+    root: Path,
+    row: dict[str, Any],
+    errors: list[dict[str, Any]],
+) -> None:
+    path = _posix(row.get("path"))
+    if row.get("version") != "R14" or path is None or "_R14/" not in path:
+        errors.append(
+            _issue(
+                "ERROR",
+                "PRODUCT_BACKGROUND_NOT_R14",
+                "active product background must be the R14 package",
+                path or "governance/current_pointers.json",
+            )
+        )
+    supersedes = row.get("supersedes")
+    if not isinstance(supersedes, dict) or supersedes.get("status") != "SUPERSEDED_HISTORICAL":
+        errors.append(
+            _issue(
+                "ERROR",
+                "PRODUCT_BACKGROUND_R13_NOT_SUPERSEDED",
+                "R13 may only remain as SUPERSEDED_HISTORICAL under product_background.supersedes",
+                "governance/current_pointers.json",
+            )
+        )
+        return
+    if supersedes.get("version") != "R13":
+        errors.append(
+            _issue(
+                "ERROR",
+                "PRODUCT_BACKGROUND_R13_NOT_SUPERSEDED",
+                "superseded product background version must be R13",
+                "governance/current_pointers.json",
+            )
+        )
+    superseded_path = _posix(supersedes.get("path"))
+    if superseded_path is None or "R13" not in superseded_path:
+        errors.append(
+            _issue(
+                "ERROR",
+                "PRODUCT_BACKGROUND_R13_NOT_SUPERSEDED",
+                "superseded product background path must remain the R13 package",
+                "governance/current_pointers.json",
+            )
+        )
+    elif not (root / superseded_path).is_file():
+        errors.append(
+            _issue(
+                "ERROR",
+                "ACTIVE_POINTER_TARGET_MISSING",
+                "superseded R13 entry is missing",
+                superseded_path,
+            )
+        )
+
+
+def _validate_atomic_expectations_row(
+    root: Path,
+    row: dict[str, Any],
+    errors: list[dict[str, Any]],
+) -> None:
+    path = _posix(row.get("path"))
+    if path is None:
+        return
+    target = root / path
+    if not target.is_file():
+        return
+    try:
+        document = load_json(target)
+    except (OSError, json.JSONDecodeError):
+        errors.append(_issue("ERROR", "ATOMIC_EXPECTATIONS_INVALID", "atomic CURRENT.json is not readable JSON", path))
+        return
+    if document.get("current_version") != "R03":
+        errors.append(
+            _issue(
+                "ERROR",
+                "ATOMIC_EXPECTATIONS_VERSION",
+                "atomic_expectations current_version must be R03",
+                path,
+            )
+        )
+    if row.get("version") != "R03" or row.get("record_count") != 142:
+        errors.append(
+            _issue(
+                "ERROR",
+                "ATOMIC_EXPECTATIONS_COUNT",
+                "atomic_expectations pointer must declare R03 and record_count 142",
+                "governance/current_pointers.json",
+            )
+        )
+    entry = _posix(row.get("entry_path")) or _posix(document.get("entry_path"))
+    if entry is None:
+        errors.append(
+            _issue(
+                "ERROR",
+                "ATOMIC_EXPECTATIONS_ENTRY_MISSING",
+                "atomic_expectations entry_path is missing",
+                "governance/current_pointers.json",
+            )
+        )
+        return
+    entry_path = Path(entry)
+    if not entry_path.is_absolute():
+        if path == ATOMIC_CURRENT_REL:
+            entry_path = root / "references/atomic-expectations" / entry
+        else:
+            entry_path = root / entry
+        if not entry_path.is_file():
+            entry_path = root / entry
+    if not entry_path.is_file():
+        errors.append(
+            _issue(
+                "ERROR",
+                "ATOMIC_EXPECTATIONS_ENTRY_MISSING",
+                "atomic_expectations entry_path is missing",
+                entry,
+            )
+        )
+
+
+def _validate_test_design_row(
+    root: Path,
+    row: dict[str, Any],
+    errors: list[dict[str, Any]],
+) -> None:
+    path = _posix(row.get("path"))
+    if path is None:
+        return
+    target = root / path
+    if not target.is_file():
+        return
+    try:
+        document = load_json(target)
+    except (OSError, json.JSONDecodeError):
+        errors.append(_issue("ERROR", "TEST_DESIGN_INVALID", "TEST_DESIGN_CURRENT.json is not readable JSON", path))
+        return
+    coverage = document.get("coverage")
+    if not isinstance(coverage, dict):
+        errors.append(_issue("ERROR", "TEST_DESIGN_INVALID", "TEST_DESIGN_CURRENT coverage is missing", path))
+        return
+    declared_requirements = row.get("covered_expectations")
+    declared_tests = row.get("designed_test_cases")
+    if declared_requirements != coverage.get("requirements_total") or declared_tests != coverage.get(
+        "small_tests_total"
+    ):
+        errors.append(
+            _issue(
+                "ERROR",
+                "TEST_DESIGN_COUNT_MISMATCH",
+                "atomic_test_design pointer counts must match TEST_DESIGN_CURRENT coverage",
+                "governance/current_pointers.json",
+            )
+        )
+    legacy = row.get("legacy_suite")
+    addendum = row.get("r03_addendum")
+    split_ok = (
+        isinstance(legacy, dict)
+        and isinstance(addendum, dict)
+        and _is_plain_int(legacy.get("requirements"))
+        and _is_plain_int(legacy.get("small_tests"))
+        and _is_plain_int(addendum.get("requirements"))
+        and _is_plain_int(addendum.get("small_tests"))
+        and legacy.get("requirements") + addendum.get("requirements") == coverage.get("requirements_total")
+        and legacy.get("small_tests") + addendum.get("small_tests") == coverage.get("small_tests_total")
+        and legacy.get("requirements") == coverage.get("legacy_requirements")
+        and addendum.get("requirements") == coverage.get("r03_addendum_requirements")
+    )
+    if not split_ok:
+        errors.append(
+            _issue(
+                "ERROR",
+                "TEST_DESIGN_MASQUERADE",
+                "old 127-suite counts may not claim full R03 coverage without split identity fields",
+                "governance/current_pointers.json",
+            )
+        )
+
+
+def _validate_design_registry_row(
+    root: Path,
+    row: dict[str, Any],
+    errors: list[dict[str, Any]],
+) -> None:
+    path = _posix(row.get("path"))
+    if path is None:
+        return
+    target = root / path
+    if not target.is_file():
+        return
+    try:
+        document = load_json(target)
+    except (OSError, json.JSONDecodeError):
+        errors.append(_issue("ERROR", "DESIGN_REGISTRY_INVALID", "design_registry.json is not readable JSON", path))
+        return
+    inventory = document.get("inventory")
+    if not isinstance(inventory, dict):
+        errors.append(_issue("ERROR", "DESIGN_REGISTRY_INVALID", "design_registry inventory is missing", path))
+        return
+    declared_counts = row.get("status_counts")
+    if row.get("document_count") != inventory.get("document_count") or declared_counts != inventory.get(
+        "status_counts"
+    ):
+        errors.append(
+            _issue(
+                "ERROR",
+                "DESIGN_REGISTRY_COUNT_MISMATCH",
+                "design_registry pointer inventory copy is stale",
+                "governance/current_pointers.json",
+            )
+        )
+
+
+def _validate_external_report_row(
+    root: Path,
+    row: dict[str, Any],
+    errors: list[dict[str, Any]],
+) -> None:
+    pointer = _posix(row.get("current_pointer"))
+    if pointer is None:
+        errors.append(
+            _issue(
+                "ERROR",
+                "EXTERNAL_REPORT_POINTER_MISSING",
+                "external_report_background must declare current_pointer",
+                "governance/current_pointers.json",
+            )
+        )
+        return
+    target = root / pointer
+    if not target.is_file():
+        errors.append(
+            _issue(
+                "ERROR",
+                "ACTIVE_POINTER_TARGET_MISSING",
+                "external report CURRENT.json is missing",
+                pointer,
+            )
+        )
+        return
+    try:
+        document = load_json(target)
+    except (OSError, json.JSONDecodeError):
+        errors.append(_issue("ERROR", "EXTERNAL_REPORT_INVALID", "external report CURRENT.json is not readable JSON", pointer))
+        return
+    if document.get("current_version") != "R01" or row.get("version") != "R01":
+        errors.append(
+            _issue(
+                "ERROR",
+                "EXTERNAL_REPORT_VERSION",
+                "external_report_background current_version must be R01",
+                pointer,
+            )
+        )
+
+
+def _validate_active_current_row(
+    root: Path,
+    row: dict[str, Any],
+    errors: list[dict[str, Any]],
+) -> None:
+    path = _posix(row.get("path"))
+    if path is None:
+        return
+    pointer_id = row.get("pointer_id")
+    if path == CURRENT_STATE_REL or pointer_id == "repository_current":
+        return
+    if path.endswith("/00_READ_ME_FIRST.md") and "/shared-context/" in path:
+        _validate_product_background_row(root, row, errors)
+        return
+    if path == ATOMIC_CURRENT_REL or pointer_id == "atomic_expectations":
+        _validate_atomic_expectations_row(root, row, errors)
+        return
+    if path == TEST_DESIGN_REL or pointer_id == "atomic_test_design":
+        _validate_test_design_row(root, row, errors)
+        return
+    if path == DESIGN_REGISTRY_REL or pointer_id == "design_registry":
+        _validate_design_registry_row(root, row, errors)
+        return
+    if pointer_id == "external_report_background":
+        _validate_external_report_row(root, row, errors)
+
+
+def _execute_invariants(
+    root: Path,
+    pointers: dict[str, Any],
+    pointer_rows: list[Any],
+    errors: list[dict[str, Any]],
+) -> None:
+    declared = pointers.get("invariants")
+    if not isinstance(declared, list) or [item for item in declared if isinstance(item, str)] != list(
+        EXPECTED_INVARIANTS
+    ):
+        errors.append(
+            _issue(
+                "ERROR",
+                "INVARIANT_SET_DRIFT",
+                "current_pointers invariants[] no longer match the frozen checker set",
+                "governance/current_pointers.json",
+            )
+        )
+        return
+    _check_role_uniqueness(pointer_rows, errors)
+    for row in pointer_rows:
+        if not isinstance(row, dict):
+            continue
+        _check_score_keys(row, errors)
+        _check_candidate_masquerade(row, errors)
+        if row.get("status") == "ACTIVE_CURRENT":
+            _validate_active_current_row(root, row, errors)
 
 
 def build_report(root: Path) -> dict[str, Any]:
@@ -233,6 +645,8 @@ def build_report(root: Path) -> dict[str, Any]:
                 warnings.append(_issue("WARNING", "PLANNED_PATH_NOT_MATERIALIZED", "planned or candidate pointer is not present on main yet", path))
             else:
                 errors.append(_issue("ERROR", "ACTIVE_POINTER_TARGET_MISSING", "active pointer target is missing", path))
+
+    _execute_invariants(root, pointers, pointer_rows, errors)
 
     status = "PASS" if not errors else "FAIL"
     return {
