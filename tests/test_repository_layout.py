@@ -107,7 +107,6 @@ def test_registered_top_level_scope_is_exact_and_creates_no_nvm_style_layers() -
         ".ruff_cache",
         ".venv",
         "TEMP",
-        "T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01",
         "analysis_library",
         "config",
         "corpus-downloads",

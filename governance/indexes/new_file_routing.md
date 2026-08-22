@@ -27,6 +27,7 @@
 | 实验命名取件组合 | `experiments/<experiment_id>/retrieval_profile.json` | 只登记精确文件或整份固定清单的复制组合；不提供任意路径、glob 或直接复制能力。 | `registered_experiment_workspaces` |
 | 外部原始材料 | `intake/<source_id>` | 保留来源、原始字节和收件边界。 | `external_source_intake` |
 | 非真源参考 | `references/<reference_id>` | 必须写明来源与真值边界。 | `non_authoritative_references` |
+| 历史纠错切窗批次状态页 | `history/T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md` | 只说明该批历史状态，不能替代当前微调域或全仓当前状态。 | `historical_context` |
 | 隔离运行工作区 | `runs/<run_id>/workspace` | 只复制白名单零件，运行过程不得回写正式源目录。 | `runtime_workspaces` |
 | 人看交件 | `reports/<handoff_id>` | 写清证据来源和权限边界，不把报告句子冒充机器状态。 | `human_handoff_evidence` |
 | 上传包 | `outbox/<package_id>` | 包内清单指向原真源，上传包本身不替代原件。 | `transport_packages` |
@@ -38,7 +39,6 @@
 | 仓库专用 Agent Skill | `.agents/skills/<skill_id>/SKILL.md` | 仅在任务语义命中时读取；Skill 不能扩大业务授权。 | `repository_agent_skills` |
 | 微调域当前实验指针 | `finetuning/CURRENT.json` | 只保存当前实验身份和必要机器引用，不保存训练进度或结论。 | `finetuning_control_plane` |
 | 单次微调实验控制记录 | `finetuning/experiments/<experiment_id>` | 只保存机器清单、合同、摘要和回执；重资产仍由逻辑仓位与本机绑定解析。 | `finetuning_control_plane` |
-| 历史纠错切窗批次状态页 | `T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md` | 只说明该批历史状态，不能替代当前微调域或全仓当前状态。 | `historical_correction_segment_scan_workspace` |
 | 产品试跑示例说明 | `novel-mvp/README.md` | 只说明这是测试阶段示例、代码偏旧、设计稿可参考；不得写成现行产品或共同背景板。 | `product_mvp_test_example` |
 | 产品试跑设计稿 | `novel-mvp/design/<design_id>` | 只收该示例的人读设计稿和已落合同；作者书稿与抽事实结果不得进 Git。 | `product_mvp_test_example` |
 | 产品试跑代码 | `novel-mvp/mvp/<module>.py` | 只收该示例的程序与合同；不接收 data/、temp/ 或密钥。 | `product_mvp_test_example` |
