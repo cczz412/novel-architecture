@@ -18,6 +18,7 @@
 - 新窗口接力先看 [`governance/progress/current-progress.md`](governance/progress/current-progress.md)，再读它点名的专题页。它只负责接力，不能覆盖 `CURRENT_STATE.json`、正式结果票或 CZ 指令；两者时间或结论冲突时停下校准。
 - 产品共同理解从 [共同背景板 R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) 开始。R13 仍留 Git 供追溯，但已经退出默认路由；旧 Notion 镜像不代表 R14。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
 - 外部论文、官方文档、行业材料和作者经验的可复用结论从[外部报告知识库当前入口](references/external-knowledge-base/README.md)开始；Notion 人读镜像在[报告背景 R01](https://app.notion.com/p/3be5cadc4d0f819eb8ebd02ca1b9b8e5)。它与产品共同背景板分开，只提供证据、反例和待核缺口。
+- CZ 口述想法、技术备选和暂未进入任务的便签从[便签收件箱](references/memo-inbox/README.md)进入。开工只按当前任务的选择题、主题和模块查相关小簇，不通读全部便签；便签及其 `ACCEPTED` 状态都不产生施工许可。
 - 原子需求与验收背景只认 [R03 CURRENT](references/atomic-expectations/CURRENT.json)：142 条唯一 ID；人读入口见 [README](references/atomic-expectations/README.md)。旧 R02 留 Git 作历史并退出默认路由；[六例测试设计 CURRENT](references/atomic-expectations/TEST_DESIGN_CURRENT.json) 仍只覆盖旧 127 条／762 例，不能冒充覆盖 R03 新增 15 条。
 - 路径职责与新文件落点只认 [`governance/directory_registry.json`](governance/directory_registry.json) 和生成的 [`governance/indexes/new_file_routing.md`](governance/indexes/new_file_routing.md)。
 
@@ -36,6 +37,7 @@
 | 查已吸收的外部证据、行业经验、冲突或研究缺口 | `references/external-knowledge-base/README.md` | 按主题页的 claim ID 追 `02_CLAIM_LEDGER.jsonl`、来源登记和原报告；不能替产品拍板 |
 | 查模块长期需求、测试配方或评分维度 | `references/atomic-expectations/CURRENT.json` | 人读看 `README.md`；机器内容看 R03 包；旧六例设计另看 `TEST_DESIGN_CURRENT.json` |
 | 查历史外部调查，避免同类问题重做 | `references/survey-inbox/INDEX.md` | 对应 `SI-*` 卡和 `packages/.../00_READ_ME_FIRST.md`；历史报告只作证据与候选先验，不产生执行权 |
+| 查 CZ 便签、技术备选及相互关系 | `references/memo-inbox/registry.json` | 只按本任务的 `decision_keys`／`topic_tags`／`area_tags` 查相关小簇，再读命中的 `MN-*` 卡；同时按登记的 `external_catalog` 查关联 `SI-*` |
 | 接仓库重构任务 | 当前 CZ 工单／本任务回执 | `governance/progress/current-progress.md`；没登记该线就停下，不靠搜索猜 |
 | 找历史外置对象 | `governance/external_archive_registry.json` | 对象登记的 manifest／恢复方式 |
 | 跑本机证据或历史测试 | `governance/test_policy.json` | `tests/local_evidence_registry.json`／`config/test_replay/historical_replays.json` |
@@ -51,6 +53,7 @@
 - 冻结合同、金标、历史票和本机 evidence 按各自登记册处理；目录名里的 `current`、`gold`、`official` 不能自动升级身份。
 - `runs/`、`reports/`、`outbox/`、`TEMP/` 是本机运行／运输区，默认不进 Git；正文库只通过 `references/corpus-pointers.md` 的本机指针访问，不复制进仓，也不整库扫读。
 - 来源互相冲突、消费者闭包不清或需要扩大正式写集时，先停下交 CZ，不靠补件或降级检查追绿。
+- 准备做产品设计、技术选型或施工时，若相关便签小簇命中尚未裁决的 `DUPLICATES`／`CONFLICTS_WITH`，或准备采用的便签已是 `SUPERSEDED`，就停对应写集交 CZ；不阻塞无关工作。相似度规则只能报可能相邻或同题待比较，不能自动宣布冲突、重复、替代或采用。
 
 ## 4. Minimum-sufficient execution
 

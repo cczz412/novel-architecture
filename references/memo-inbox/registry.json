@@ -1,0 +1,112 @@
+{
+  "schema_version": "memo-inbox-registry-v1",
+  "authority": "ADVISORY_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
+  "updated_on": "2026-08-22",
+  "external_catalog": "references/survey-inbox/catalog.csv",
+  "policy": {
+    "query_scope": "RELEVANT_CLUSTER_ONLY",
+    "construction_authority_value": "NONE",
+    "material_states": [
+      "UNVERIFIED",
+      "PARTIALLY_VERIFIED",
+      "VERIFIED",
+      "POSSIBLY_STALE"
+    ],
+    "decision_states": [
+      "UNDECIDED",
+      "NEEDS_CZ",
+      "ACCEPTED",
+      "REJECTED",
+      "SUPERSEDED"
+    ],
+    "relationship_types": [
+      "OVERLAPS",
+      "DUPLICATES",
+      "CONFLICTS_WITH",
+      "CONSOLIDATES",
+      "NOT_RELATED"
+    ],
+    "relationship_review_states": [
+      "AGENT_CANDIDATE",
+      "CZ_CONFIRMED",
+      "DISMISSED"
+    ],
+    "relationship_resolution_states": [
+      "OPEN",
+      "RESOLVED",
+      "NOT_APPLICABLE"
+    ],
+    "stop_on_open_relationship_types": [
+      "DUPLICATES",
+      "CONFLICTS_WITH"
+    ],
+    "stop_on_decision_states": [
+      "SUPERSEDED"
+    ],
+    "algorithm_version": "memo-overlap-hint-v1",
+    "broad_topic_tags": [
+      "产品架构",
+      "作者工作台",
+      "技术",
+      "候选"
+    ],
+    "minimum_shared_specific_tags": 2,
+    "minimum_text_jaccard": 0.2,
+    "candidate_outputs": [
+      "EXACT_DUPLICATE_CANDIDATE",
+      "POSSIBLE_OVERLAP",
+      "SAME_DECISION_REVIEW"
+    ],
+    "candidate_discovery_boundary": "Hints can only nominate items for joint review. They cannot infer DUPLICATES, CONFLICTS_WITH, CONSOLIDATES, supersession, acceptance, or construction authority."
+  },
+  "memos": [
+    {
+      "memo_id": "MN-0001",
+      "path": "references/memo-inbox/items/MN-0001_asr_tts_product_candidates.md",
+      "title": "ASR／TTS 产品集成技术备选",
+      "summary": "为作者口述输入和多角色台词试听保留一组未核验的 ASR／TTS 模型候选与选型前核验项。",
+      "topic_tags": [
+        "语音",
+        "ASR",
+        "TTS",
+        "语音识别",
+        "语音合成",
+        "多角色配音",
+        "音色克隆",
+        "本地部署",
+        "模型选型"
+      ],
+      "area_tags": [
+        "area:voice",
+        "area:author-input",
+        "area:media-output"
+      ],
+      "decision_keys": [
+        "voice.asr.product_candidate",
+        "voice.tts.product_candidate"
+      ],
+      "material_state": "UNVERIFIED",
+      "decision_state": "UNDECIDED",
+      "construction_authority": "NONE",
+      "source_kind": "CZ_CONVERSATION_PASTE",
+      "source_ref": "CZ_PASTE_2026-08-22_ASR_TTS_PRODUCT_CANDIDATES",
+      "issue_refs": [],
+      "superseded_by": null,
+      "decision_ref": null,
+      "body_sha256": "630e09888b6f50ddb8248a7b1176b7c194db058ca8c04dc93c0593447aac7e16",
+      "added_on": "2026-08-22"
+    }
+  ],
+  "relationships": [
+    {
+      "relation_id": "REL-MN-0001-SI-015-001",
+      "from_id": "MN-0001",
+      "to_id": "SI-015",
+      "type": "OVERLAPS",
+      "review_status": "AGENT_CANDIDATE",
+      "resolution_status": "NOT_APPLICABLE",
+      "note": "SI-015 includes external research on TTS workflow, platform licensing, and character-to-voice binding at references/survey-inbox/packages/EXTERNAL_KNOWLEDGE_RESEARCH_RETURNS_20260815_R01/returns/DR-BIZ-02.md. Review it with MN-0001 when the voice route is considered; this is not a duplicate, conflict, or adoption decision.",
+      "decision_ref": null
+    }
+  ]
+}
