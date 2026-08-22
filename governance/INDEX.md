@@ -7,8 +7,8 @@
 | 项目 | 当前答案 |
 |---|---|
 | 当前工作线 | `CLEAN-BASELINE-M1-M11-INTEGRATION-20260821` |
-| 当前阶段 | 工单 1～5、十本账 L1～L5、工单 7 已进 `main`；工单 6 仍等 CZ 拍外置对象。不得把 M1～M11 写成完整作者能力。 |
-| main 基准 | `dd201deaee4cf60cf133eb7511ac94dd60bca2c7`（Merge PR #53 工单 7） |
+| 当前阶段 | 工单 1～5、十本账 L1～L5、工单 7 已进 `main`。工单 6 已拍只读核验（31 个全部 target），本轮仍不许移动、删除、退出 Git、恢复写入或退休旧目录。不得把 M1～M11 写成完整作者能力。 |
+| main 基准 | `49533178945ce5a9a6df59e20b4d57eb18706acb`（Merge PR #54 Issue #27） |
 | 模块候选 | `codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b`（超级分支，禁止整支再合；工单 5 已按 PR-C～G 拆票进 main） |
 | 产品共同背景 | `R14`；入口 [`00_READ_ME_FIRST.md`](../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)。R13 留 Git，已退出默认路由。 |
 | 原子需求 | `R03 / 142 条`已在 main；六例设计 CURRENT 仍只覆盖旧 127 条／762 例，不能冒充 852 已跑完。 |
@@ -24,11 +24,12 @@
 - [模块状态登记](module_registry.json)
 - [路线状态登记](route_registry.json)
 - [目录路由](directory_registry.json)
+- [工单 6 只读核验拍板](decision_records/DR-20260822-01.md)
 
 ## 下一件
 
-产品下一张：六本设定账共用一个落盘方（拍板题 3，照 planstore 样式）。工单 6 仍等 CZ 在 [Issue #32](https://github.com/mhchen1/novel-architecture/issues/32) 拍对象，不能当施工票开干。
+产品下一张：六本设定账共用一个落盘方（拍板题 3，照 planstore 样式）。工单 6 按 [Issue #32](https://github.com/mhchen1/novel-architecture/issues/32) 做只读核验，不能当搬删票开干。
 
-更新时间：`2026-08-22T12:00:00+08:00`
+更新时间：`2026-08-22T16:30:00+08:00`
 
-来源：Issue #27 路牌刷新（云端 Agent）
+来源：工单 6 只读核验拍板（[DR-20260822-01](decision_records/DR-20260822-01.md)）

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/governance/contracts/external_root_binding_v1.schema.json",
+  "title": "External root binding v1",
+  "description": "本机私有外置根绑定。只绑定 repository_sibling_suffix 根；禁止绑定 T7 外置卷。文件位于仓库 .local/external_root_bindings.json，不得提交。示例路径只能写 /tmp/example-external-archive。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "bindings"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "external-root-binding-v1"
+    },
+    "bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "root_id",
+          "absolute_directory"
+        ],
+        "properties": {
+          "root_id": {
+            "$ref": "#/$defs/id"
+          },
+          "absolute_directory": {
+            "type": "string",
+            "minLength": 1,
+            "description": "本机绝对目录。Git 示例只能写 /tmp/example-external-archive。"
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "contract_version": "external-root-binding-v1",
+      "bindings": [
+        {
+          "root_id": "repository_sibling_external_archive_v1",
+          "absolute_directory": "/tmp/example-external-archive"
+        }
+      ]
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]+$"
+    }
+  }
+}

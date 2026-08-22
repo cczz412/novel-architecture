@@ -9,6 +9,7 @@ import plistlib
 import stat
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any, Sequence
 
@@ -27,6 +28,11 @@ REPORT_SCHEMA_RELATIVE = Path(
 MIGRATION_RECEIPT_SCHEMA_RELATIVE = Path(
     "governance/contracts/repository_size_migration_receipt_v1.schema.json"
 )
+BINDING_RELATIVE = Path(".local/external_root_bindings.json")
+BINDING_SCHEMA_RELATIVE = Path(
+    "governance/contracts/external_root_binding_v1.schema.json"
+)
+T7_ROOT_ID = "physical_external_archive_t7_v1"
 MAX_REGISTERED_FILE_BYTES = 5 * 1024 * 1024
 DISKUTIL = Path("/usr/sbin/diskutil")
 
@@ -233,6 +239,82 @@ def _resolve_external_volume_uuid(
     )
 
 
+@dataclass(frozen=True)
+class ExternalRootBindings:
+    raw: bytes
+    by_root_id: dict[str, Path]
+
+
+def read_external_root_bindings(repo_root: Path) -> ExternalRootBindings | None:
+    binding_path = repo_root / BINDING_RELATIVE
+    try:
+        info = binding_path.lstat()
+    except FileNotFoundError:
+        return None
+    if stat.S_ISLNK(info.st_mode):
+        raise InventoryError(
+            "EXTERNAL_ROOT_BINDING_INVALID",
+            "绑定文件不能是符号链接",
+        )
+    if not stat.S_ISREG(info.st_mode):
+        raise InventoryError(
+            "EXTERNAL_ROOT_BINDING_INVALID",
+            "绑定文件必须是普通文件",
+        )
+    raw = _read_registered_file(
+        repo_root,
+        PurePosixPath(BINDING_RELATIVE.as_posix()),
+        code="EXTERNAL_ROOT_BINDING_INVALID",
+    )
+    document = _read_json_object(raw, code="EXTERNAL_ROOT_BINDING_INVALID")
+    schema = _read_registered_json(
+        repo_root,
+        PurePosixPath(BINDING_SCHEMA_RELATIVE.as_posix()),
+        code="EXTERNAL_ROOT_BINDING_SCHEMA_INVALID",
+    )
+    _validate_schema(
+        document,
+        schema,
+        code="EXTERNAL_ROOT_BINDING_INVALID",
+    )
+    by_root_id: dict[str, Path] = {}
+    for row in document["bindings"]:
+        root_id = row["root_id"]
+        if root_id == T7_ROOT_ID:
+            raise InventoryError(
+                "EXTERNAL_ROOT_BINDING_INVALID",
+                "禁止用绑定文件定位 T7 外置卷",
+            )
+        if root_id in by_root_id:
+            raise InventoryError(
+                "EXTERNAL_ROOT_BINDING_INVALID",
+                "绑定含重复 root_id",
+            )
+        absolute = Path(row["absolute_directory"])
+        if not absolute.is_absolute():
+            raise InventoryError(
+                "EXTERNAL_ROOT_BINDING_INVALID",
+                "绑定路径必须是绝对目录",
+            )
+        by_root_id[root_id] = absolute
+    return ExternalRootBindings(raw=raw, by_root_id=by_root_id)
+
+
+def _read_json_object(raw: bytes, *, code: str) -> dict[str, Any]:
+    try:
+        value = json.loads(raw)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise InventoryError(code, "JSON 无法读取或解析") from exc
+    if not isinstance(value, dict):
+        raise InventoryError(code, "JSON 顶层必须是对象")
+    return value
+
+
+def storage_root_device_fingerprint(path: Path) -> str:
+    info = path.lstat()
+    return _sha256_bytes(f"{info.st_dev}:{info.st_ino}".encode("utf-8"))
+
+
 def resolve_storage_root(
     repo_root: Path,
     row: dict[str, Any],
@@ -250,7 +332,13 @@ def resolve_storage_root(
             or "\\" in suffix
         ):
             raise InventoryError("ROOT_LOCATOR_UNSAFE", row["root_id"])
-        path = repo_root.parent / f"{repo_root.name}{suffix}"
+        bindings = read_external_root_bindings(repo_root)
+        bound = None if bindings is None else bindings.by_root_id.get(row["root_id"])
+        if bound is not None:
+            _require_plain_directory(bound, code="STORAGE_ROOT_INVALID")
+            path = bound
+        else:
+            path = repo_root.parent / f"{repo_root.name}{suffix}"
     elif kind == "external_volume_uuid":
         path = _resolve_external_volume_uuid(repo_root, locator)
     else:

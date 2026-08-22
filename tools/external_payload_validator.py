@@ -33,9 +33,27 @@ MAX_DIRECTORY_DEPTH = 64
 Identity = tuple[int, int, int, int, int, int, int]
 
 
+VOLUME_NOT_MOUNTED_CODES = frozenset(
+    {
+        "EXTERNAL_VOLUME_UUID_NOT_UNIQUE",
+        "EXTERNAL_VOLUME_DISCOVERY_FAILED",
+        "EXTERNAL_VOLUME_MOUNT_INVALID",
+    }
+)
+PAYLOAD_VOLUME_NOT_MOUNTED = "PAYLOAD_VOLUME_NOT_MOUNTED"
+NOT_RUN_VOLUME_NOT_MOUNTED = "NOT_RUN_VOLUME_NOT_MOUNTED"
+
+
 class PayloadValidationError(RuntimeError):
     def __init__(self, code: str, detail: str = "") -> None:
-        message = code if not detail else f"{code}: {detail}"
+        if code == PAYLOAD_VOLUME_NOT_MOUNTED:
+            message = (
+                NOT_RUN_VOLUME_NOT_MOUNTED
+                if not detail
+                else f"{NOT_RUN_VOLUME_NOT_MOUNTED}: {detail}"
+            )
+        else:
+            message = code if not detail else f"{code}: {detail}"
         super().__init__(message)
         self.code = code
         self.detail = detail
@@ -520,9 +538,18 @@ def _resolve_target_root(
     root_id: str,
 ) -> Path:
     roots = {row["root_id"]: row for row in registry["storage_roots"]}
+    root_row = roots[root_id]
     try:
-        path = inventory.resolve_storage_root(repo_root, roots[root_id])
+        path = inventory.resolve_storage_root(repo_root, root_row)
     except inventory.InventoryError as exc:
+        if (
+            root_row["locator"]["kind"] == "external_volume_uuid"
+            and exc.code in VOLUME_NOT_MOUNTED_CODES
+        ):
+            raise PayloadValidationError(
+                PAYLOAD_VOLUME_NOT_MOUNTED,
+                exc.detail or exc.code,
+            ) from exc
         raise PayloadValidationError(
             "PAYLOAD_TARGET_ROOT_INVALID",
             exc.detail,
@@ -716,12 +743,12 @@ def _load_manifest_expectations(
     total_files_field = target["manifest_total_files_field"]
     total_bytes_field = target["manifest_total_bytes_field"]
     if (
-        manifest.get(total_files_field) != len(expected)
-        or manifest.get(total_bytes_field) != total_bytes
+        _resolve_manifest_total(manifest, total_files_field) != len(expected)
+        or _resolve_manifest_total(manifest, total_bytes_field) != total_bytes
     ):
         raise PayloadValidationError(
             "PAYLOAD_MANIFEST_TOTAL_MISMATCH",
-            "payload 清单顶层合计与逐项合计不一致",
+            "payload 清单合计与逐项合计不一致",
         )
     canonical_entries = [
         {
@@ -735,9 +762,56 @@ def _load_manifest_expectations(
     return raw, expected, entry_set_sha256, total_bytes
 
 
+def _is_plain_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _lookup_manifest_field(manifest: dict[str, Any], field: str) -> object:
+    if "." not in field:
+        return manifest.get(field)
+    current: object = manifest
+    for part in field.split("."):
+        if not part or not isinstance(current, dict) or part not in current:
+            return None
+        current = current[part]
+    return current
+
+
+def _nested_compat_total(manifest: dict[str, Any], field: str) -> object:
+    if "." in field:
+        return None
+    aggregate = manifest.get("aggregate")
+    if not isinstance(aggregate, dict):
+        return None
+    if field == "total_files":
+        return aggregate.get("member_count")
+    if field == "total_bytes":
+        return aggregate.get("total_bytes")
+    return None
+
+
+def _resolve_manifest_total(manifest: dict[str, Any], field: str) -> int | None:
+    configured = _lookup_manifest_field(manifest, field)
+    nested = _nested_compat_total(manifest, field)
+    configured_ok = _is_plain_int(configured)
+    nested_ok = _is_plain_int(nested)
+    if configured_ok and nested_ok and configured != nested:
+        raise PayloadValidationError(
+            "PAYLOAD_MANIFEST_TOTAL_MISMATCH",
+            "payload 清单顶层合计与 aggregate 合计不一致",
+        )
+    if configured_ok and isinstance(configured, int):
+        return configured
+    if nested_ok and isinstance(nested, int):
+        return nested
+    return None
+
+
 def _validate_report(
     repo_root: Path,
     report: dict[str, Any],
+    *,
+    bound_absolute_paths: Sequence[str] = (),
 ) -> None:
     expected_checks = [
         "policy_contract_valid",
@@ -770,6 +844,12 @@ def _validate_report(
             "PAYLOAD_REPORT_LEAK",
             "报告含主仓绝对路径",
         )
+    for bound in bound_absolute_paths:
+        if bound.encode("utf-8") in serialized:
+            raise PayloadValidationError(
+                "PAYLOAD_REPORT_LEAK",
+                "报告含外置根绝对路径",
+            )
 
 
 def validate_payload(
@@ -815,11 +895,19 @@ def validate_payload(
 
     objects = {row["artifact_id"]: row for row in registry["objects"]}
     object_row = objects[artifact_id]
+    roots = {row["root_id"]: row for row in registry["storage_roots"]}
+    root_row = roots[object_row["root_id"]]
     root = _resolve_target_root(
         repo_root,
         registry,
         object_row["root_id"],
     )
+    bindings = None
+    bound_absolute_path: Path | None = None
+    if root_row["locator"]["kind"] == "repository_sibling_suffix":
+        bindings = inventory.read_external_root_bindings(repo_root)
+        if bindings is not None:
+            bound_absolute_path = bindings.by_root_id.get(object_row["root_id"])
     manifest_raw, expected, entry_set_sha256, total_bytes = _load_manifest_expectations(
         root,
         object_row,
@@ -991,7 +1079,20 @@ def validate_payload(
             "readonly_capability_respected",
         ],
     }
-    _validate_report(repo_root, report)
+    if bound_absolute_path is not None and bindings is not None:
+        report["bindings"]["storage_root_binding_sha256"] = _sha256_bytes(
+            bindings.raw
+        )
+        report["bindings"]["storage_root_device_fingerprint"] = (
+            inventory.storage_root_device_fingerprint(root)
+        )
+    _validate_report(
+        repo_root,
+        report,
+        bound_absolute_paths=()
+        if bound_absolute_path is None
+        else (str(bound_absolute_path),),
+    )
     return report
 
 
@@ -1037,7 +1138,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         return int(args.handler(args))
-    except (PayloadValidationError, inventory.InventoryError) as exc:
+    except PayloadValidationError as exc:
+        print(str(exc), file=sys.stderr)
+        if exc.code == PAYLOAD_VOLUME_NOT_MOUNTED:
+            return 4
+        return 3
+    except inventory.InventoryError as exc:
         print(str(exc), file=sys.stderr)
         return 3
 

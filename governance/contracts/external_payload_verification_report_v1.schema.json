@@ -60,6 +60,12 @@
         },
         "inventory_helper_sha256": {
           "$ref": "#/$defs/sha256"
+        },
+        "storage_root_binding_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "storage_root_device_fingerprint": {
+          "$ref": "#/$defs/sha256"
         }
       }
     },
