@@ -31,6 +31,7 @@ ENVELOPE_KEYS = (
     "note",
 )
 ALIVE_VALUES = frozenset({"alive", "dead"})
+DESTINY_REF_PATTERN = "DESTINY-"
 
 
 class ContractError(ValueError):
@@ -135,7 +136,11 @@ def _nested_attestation_requires_author(record: dict[str, Any], evidence_refs: l
         )
 
 
-def validate_record(document: Any) -> dict[str, Any]:
+def validate_record(
+    document: Any,
+    *,
+    destiny_ids: frozenset[str] | set[str] | None = None,
+) -> dict[str, Any]:
     "Validate one complete character-ledger record."
 
     _validate_schema(document)
@@ -204,10 +209,20 @@ def validate_record(document: Any) -> dict[str, Any]:
             )
         relation_starts.add(identity)
 
-    # Review note 3: L2 validates only shape. No existence lookup is permitted.
+    # Review note 3 closed in L5: destiny_ref now has an official prefix
+    # (PLAN_DESTINY_CONTENT) and, when a destiny directory is supplied,
+    # a mandatory existence check.
     destiny_ref = document["destiny_ref"]
-    if destiny_ref is not None and not isinstance(destiny_ref, str):
-        raise ContractError("DESTINY_REF_SHAPE_INVALID")
+    if destiny_ref is not None:
+        if not isinstance(destiny_ref, str):
+            raise ContractError("DESTINY_REF_SHAPE_INVALID")
+        if not (
+            destiny_ref.startswith(DESTINY_REF_PATTERN)
+            and destiny_ref[len(DESTINY_REF_PATTERN):].isdigit()
+        ):
+            raise ContractError(f"DESTINY_REF_PREFIX_INVALID:{destiny_ref}")
+        if destiny_ids is not None and destiny_ref not in destiny_ids:
+            raise ContractError(f"DESTINY_REF_NOT_FOUND:{destiny_ref}")
 
     return document
 
@@ -312,8 +327,13 @@ def load_fixtures(path: Path = FIXTURE_PATH) -> list[dict[str, Any]]:
 
 
 def validate_fixture_case(case: dict[str, Any]) -> str | None:
+    destiny_ids = (
+        frozenset(case["known_destiny_ids"])
+        if "known_destiny_ids" in case
+        else None
+    )
     try:
-        validate_record(case.get("document"))
+        validate_record(case.get("document"), destiny_ids=destiny_ids)
     except ContractError as exc:
         return str(exc)
     return None

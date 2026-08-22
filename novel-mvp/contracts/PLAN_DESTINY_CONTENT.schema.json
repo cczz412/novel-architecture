@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/PLAN_DESTINY_CONTENT.schema.json",
+  "title": "PLAN_DESTINY_CONTENT destiny-plan-content-v1",
+  "description": "Plan-ledger character destiny entry; the target object of CHARACTER_LEDGER_CONTENT.destiny_ref.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "id",
+    "source_identity",
+    "confirm_status",
+    "evidence_refs",
+    "created_at",
+    "updated_at",
+    "rev",
+    "note",
+    "ch_ref",
+    "destiny_text",
+    "expected_at"
+  ],
+  "properties": {
+    "contract": {
+      "const": "PLAN_DESTINY_CONTENT"
+    },
+    "version": {
+      "const": "destiny-plan-content-v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^DESTINY-[0-9]+$"
+    },
+    "source_identity": {
+      "type": "string",
+      "enum": [
+        "author_declared",
+        "draft_inferred",
+        "model_suggested"
+      ]
+    },
+    "confirm_status": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "confirmed",
+        "retired"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence_ref"
+      },
+      "uniqueItems": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rev": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "note": {
+      "type": "string"
+    },
+    "ch_ref": {
+      "type": "string",
+      "pattern": "^CH-[0-9]+$"
+    },
+    "destiny_text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_at": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/expected_at"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "evidence_ref": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^f[0-9]{3,}$"
+        },
+        {
+          "const": "AUTHOR_ATTESTATION"
+        }
+      ]
+    },
+    "chapter_revision_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_id",
+        "revision_no",
+        "revision_text_sha256"
+      ],
+      "properties": {
+        "chapter_id": {
+          "type": "string",
+          "pattern": "^c[0-9]{2,}$"
+        },
+        "revision_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_text_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "story_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_revision_ref"
+      ],
+      "properties": {
+        "chapter_revision_ref": {
+          "$ref": "#/$defs/chapter_revision_ref"
+        },
+        "story_order": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "slot_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "slot_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "slot_anchor"
+        },
+        "slot_ref": {
+          "type": "string",
+          "pattern": "^S-[0-9]+$"
+        }
+      }
+    },
+    "story_time_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "anchor"
+      ],
+      "properties": {
+        "kind": {
+          "const": "story_time_anchor"
+        },
+        "anchor": {
+          "$ref": "#/$defs/story_anchor"
+        }
+      }
+    },
+    "fuzzy_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "scope"
+      ],
+      "properties": {
+        "kind": {
+          "const": "fuzzy_anchor"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "expected_at": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/slot_anchor"
+        },
+        {
+          "$ref": "#/$defs/story_time_anchor"
+        },
+        {
+          "$ref": "#/$defs/fuzzy_anchor"
+        }
+      ]
+    }
+  }
+}

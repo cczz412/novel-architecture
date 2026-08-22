@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/PLAN_VOLUME_CONTENT.schema.json",
+  "title": "PLAN_VOLUME_CONTENT volume-plan-content-v1",
+  "description": "Formal field table for the plan-ledger volume object (STORAGE R03 seven business fields).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "id",
+    "source_identity",
+    "confirm_status",
+    "evidence_refs",
+    "created_at",
+    "updated_at",
+    "rev",
+    "note",
+    "order",
+    "title",
+    "goal",
+    "main_conflict",
+    "entry_state",
+    "exit_state",
+    "summary"
+  ],
+  "properties": {
+    "contract": {
+      "const": "PLAN_VOLUME_CONTENT"
+    },
+    "version": {
+      "const": "volume-plan-content-v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^VOL-[0-9]+$"
+    },
+    "source_identity": {
+      "type": "string",
+      "enum": [
+        "author_declared",
+        "draft_inferred",
+        "model_suggested"
+      ]
+    },
+    "confirm_status": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "confirmed",
+        "retired"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence_ref"
+      },
+      "uniqueItems": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rev": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "note": {
+      "type": "string"
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "goal": {
+      "type": "string"
+    },
+    "main_conflict": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "entry_state": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "exit_state": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "summary": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "evidence_ref": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^f[0-9]{3,}$"
+        },
+        {
+          "const": "AUTHOR_ATTESTATION"
+        }
+      ]
+    }
+  }
+}

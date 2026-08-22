@@ -45,9 +45,9 @@ created_at/updated_at/rev/note
 | `role_tag` | str/null | 主角、男配等是开放值，不硬编码枚举 |
 | `profile` | str | 作者可编辑背景卡；帮助识别，不能替书稿补事实 |
 | `visibility` | enum | `AUTHOR`／`READER_RELEASED`；READER 侧完整数据结构仍开放 |
-| `destiny_ref` | str/null | 指向 L5 将定义的人物命运条目；L2 **只校验非空字符串或 null，不校验存在性** |
+| `destiny_ref` | str/null | 指向规划账人物命运条目 `PLAN_DESTINY_CONTENT`；非空时必须匹配官方前缀 `^DESTINY-[0-9]+$`，提供命运目录时必须命中已登记条目 |
 
-`destiny_ref` 的存在性校验必须随 L5 同票补齐。L2 不得因为引用对象尚未落合同就伪造前缀、索引或查询行为。
+存在性校验已随 L5 收口（复核注记 3）：校验器 `validate_record(..., destiny_ids=...)` 收到命运目录时，悬空 `destiny_ref` 必须失败（`DESTINY_REF_NOT_FOUND`）；非官方前缀无论有无目录都失败（`DESTINY_REF_PREFIX_INVALID`）。目标对象合同见 [PLAN_DESTINY_CONTENT.md](PLAN_DESTINY_CONTENT.md)。
 
 ## 4. 状态时间线五字段
 
@@ -194,13 +194,13 @@ created_at/updated_at/rev/note
 5. 禁止 `ch_ref` 指向根人物以外的 ID。
 6. 禁止拿最新状态回答较早的 `as-of` 查询。
 7. 禁止死亡／复活合并成一个覆盖式值，或省略作者单签。
-8. 禁止在 L2 对 `destiny_ref` 做存在性判断；该判断随 L5 补。
+8. 禁止把非官方前缀或悬空的 `destiny_ref` 当合法引用（L5 起：前缀必须 `DESTINY-`＋数字；有命运目录时必须命中）。
 9. 禁止在本票定义知情边字段、READER 侧数据结构、新账申请流程或 ADD-043 拆条答案。
 10. 禁止本合同、validator 或 fixture 冒充统一 writer runtime 已实现。
 
 ## 10. 开放问题与后续接缝
 
-- `destiny_ref` 的存在性与目标对象合同：L5。
+- `destiny_ref` 的存在性与目标对象合同：已随 L5 收口（`PLAN_DESTINY_CONTENT.md`）。
 - 知情边字段枚举（T3）：只留位。
 - READER 侧数据结构：只留位。
 - 新账申请流程：只留位。
@@ -216,6 +216,6 @@ created_at/updated_at/rev/note
 
 ## 12. 实现状态
 
-`CONTRACT_ONLY__UNIFIED_WRITER_AND_DESTINY_EXISTENCE_CHECK_PENDING`
+`CONTRACT_ONLY__UNIFIED_WRITER_PENDING__DESTINY_EXISTENCE_CLOSED`
 
-通过本合同只证明人物内容形状、证据纪律、时间锚与查询边界已经冻结；不证明人物账已经可落盘、可在作者界面使用，或完整接入 M10/M11。
+通过本合同只证明人物内容形状、证据纪律、时间锚与查询边界已经冻结，且 `destiny_ref` 的前缀与存在性校验已随 L5 收口；不证明人物账已经可落盘、可在作者界面使用，或完整接入 M10/M11。
