@@ -1,6 +1,6 @@
 # PLAN_LEDGER_STORAGE · 规划账存储
 
-**版本：`plan-v2-candidate-r07`**（r06 语义不变；补 C11 chapter revision 绑定与 revision commit stale 接缝；落盘中的 schema 仍为 `plan-v2`；通用 planstore 尚未完成）
+**版本：`plan-v2-candidate-r08`**（r07 语义不变；L5 冻结卷／人物命运／灵感三个长线对象的内容合同与 `expected_at` 三种锚；落盘中的 schema 仍为 `plan-v2`；planstore 对三对象的写动作仍未施工）
 
 一句话用途：保存作者未来准备怎样写，以及计划与书稿怎样对照。它不是事实账，不证明故事已经发生。
 
@@ -20,9 +20,9 @@
 ### 合同名与版本
 
 **合同名**：`PLAN_LEDGER_STORAGE`
-**版本**：`plan-v2-candidate-r07`
+**版本**：`plan-v2-candidate-r08`
 **落盘中的 schema 值**：`"plan-v2"`
-**状态**：r06 handover／对账／M5 统一 writer 产品接缝已实现；r07 chapter revision 接缝正式冻结、产品实现待下一票；通用 planstore 其他动作未完成
+**状态**：r06 handover／对账／M5 统一 writer 产品接缝已实现；r07 chapter revision 接缝正式冻结、产品实现待下一票；r08 卷／人物命运／灵感三对象合同层冻结（L5），planstore 写动作与长线视图投影待后续 runtime 票；通用 planstore 其他动作未完成
 
 ### 一句话用途
 
@@ -161,22 +161,33 @@ data/<项目>/
 
 ## 4. 卷 `volume`
 
-STORAGE R03 只给出字段名：
+字段表已由 L5 正式冻结，形状权威见 [PLAN_VOLUME_CONTENT.md](PLAN_VOLUME_CONTENT.md)（`volume-plan-content-v1`，前缀 `VOL-`，复用 `id_counters.VOL` 统一发号）。STORAGE R03 点名的七个业务字段全部收口：
 
-```text
-order / title / goal / main_conflict / entry_state / exit_state / summary
-```
+| 英文名 | 类型 | 必填 | 人话 | 来源 |
+|---|---|---|---|---|
+| `order` | int | 是 | 卷序，≥1 | STORAGE R03＋L5 |
+| `title` | str | 是 | 卷名，非空 | STORAGE R03＋L5 |
+| `goal` | str | 是 | 本卷目标；无内容写空串 | STORAGE R03＋L5 |
+| `main_conflict` | str\|null | 是 | 主冲突，未定写 null | STORAGE R03＋L5 |
+| `entry_state` | str\|null | 是 | 入卷状态，未定写 null | STORAGE R03＋L5 |
+| `exit_state` | str\|null | 是 | 出卷状态，未定写 null | STORAGE R03＋L5 |
+| `summary` | str | 是 | 卷摘要；无内容写空串，不省略 | STORAGE R03＋L5 |
 
-但当前包没有 R01，缺少字段类型、空值规则和完整示例。
+运行时边界（L5 不改 runtime）：
 
-**本候选合同的唯一合法读法：**
+- planstore 与长线视图 runtime 仍只接受 `volumes=[]`（现役硬停 `VOLUMES_NOT_SUPPORTED` 不动）；
+- `book.volumes_enabled=false` 时 `volumes=[]`，章槽 `volume_ref` 必须为 null；
+- `volumes_enabled=true` 的写路径挂后续 runtime 票；届时章槽 `volume_ref` 只能指已有 `VOL-` 或 null；
+- 卷纲只留节奏与骨架级约束，过细内容应下沉章计划或人物卡（M8-N02 语义，提示器不在合同层）。
 
-- `book.volumes_enabled=false` 时，`volumes=[]`；
-- `book.volumes_enabled=true` 尚不能施工；
-- 不得自行猜测上述字段的类型或必填性；
-- 补回 R01 或另出正式字段表后再升版。
+## 4b. 人物命运 `destiny` 与灵感 `inspiration`（L5 新对象）
 
-这不是删除卷层，只是拒绝伪造字段合同。
+长线真值全住规划账（题 1 已拍）；长线账是按长线视角取数的读取面，不是第二真源。L5 新增两个规划账对象，形状权威见各自合同：
+
+- 人物命运：[PLAN_DESTINY_CONTENT.md](PLAN_DESTINY_CONTENT.md)（`destiny-plan-content-v1`，前缀 `DESTINY-`，人物账 `destiny_ref` 的目标对象，存在性校验随 L5 收口）；
+- 灵感：[PLAN_INSPIRATION_CONTENT.md](PLAN_INSPIRATION_CONTENT.md)（`inspiration-plan-content-v1`，前缀 `INS-`，`placements[]` 多实例，录入零门槛）。
+
+两对象共用预计时机 `expected_at` 三种锚（章槽锚／故事时间锚／模糊锚）；模糊锚对账只提醒、不报警。条目永远住账不动窝，写章取料带走的是引用；兑现／未兑现／改挂由对账边推进。取件码扩十本见 [LEDGER_RECALL_CODE.md](LEDGER_RECALL_CODE.md)。planstore 对两对象的写动作、长线视图投影仍未施工。
 
 ------
 
@@ -1041,7 +1052,9 @@ handover writer 的公开运行状态只有：`NOT_HAPPENED`、`PENDING_RECOVERY
     "MC": 11,
     "OPT": 1,
     "MAP": 0,
-    "RE": 0
+    "RE": 0,
+    "DESTINY": 0,
+    "INS": 0
   }
 }
 ```

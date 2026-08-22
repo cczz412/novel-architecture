@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/LEDGER_RECALL_CODE.schema.json",
+  "title": "LEDGER_RECALL_CODE ledger-recall-code-v1",
+  "description": "Rev-pinned recall code covering all ten registered ledgers (C11 revision-ref family shape).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "ledger_name",
+    "entry_id",
+    "rev",
+    "sha",
+    "expires_at"
+  ],
+  "properties": {
+    "contract": {
+      "const": "LEDGER_RECALL_CODE"
+    },
+    "version": {
+      "const": "ledger-recall-code-v1"
+    },
+    "ledger_name": {
+      "type": "string",
+      "enum": [
+        "章节账",
+        "事实账",
+        "人物账",
+        "地点账",
+        "物品账",
+        "势力账",
+        "体系账",
+        "世界规则账",
+        "长线账",
+        "规划账"
+      ]
+    },
+    "entry_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rev": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "expires_at": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

@@ -153,12 +153,31 @@ def test_missing_story_order_does_not_guess_chapter_order() -> None:
     }
 
 
-def test_destiny_ref_is_shape_only_without_existence_lookup() -> None:
+def test_destiny_ref_requires_official_prefix() -> None:
     record = copy.deepcopy(
         next(case["document"] for case in CASES if case["case_id"] == "CL-002")
     )
-    assert record["destiny_ref"] == "DESTINY-DOES-NOT-EXIST"
+    assert record["destiny_ref"] == "DESTINY-0001"
     MODULE.validate_record(record)
+    record["destiny_ref"] = "DESTINY-DOES-NOT-EXIST"
+    with pytest.raises(MODULE.ContractError, match="DESTINY_REF_PREFIX_INVALID"):
+        MODULE.validate_record(record)
+    record["destiny_ref"] = "DY-0001"
+    with pytest.raises(MODULE.ContractError, match="DESTINY_REF_PREFIX_INVALID"):
+        MODULE.validate_record(record)
+
+
+def test_destiny_ref_existence_closes_in_l5() -> None:
+    record = copy.deepcopy(
+        next(case["document"] for case in CASES if case["case_id"] == "CL-002")
+    )
+    directory = frozenset({"DESTINY-0001", "DESTINY-0002"})
+    MODULE.validate_record(record, destiny_ids=directory)
+    record["destiny_ref"] = "DESTINY-0099"
+    with pytest.raises(MODULE.ContractError, match="DESTINY_REF_NOT_FOUND"):
+        MODULE.validate_record(record, destiny_ids=directory)
+    record["destiny_ref"] = None
+    MODULE.validate_record(record, destiny_ids=directory)
 
 
 def test_death_and_resurrection_remain_two_attested_timepoints() -> None:

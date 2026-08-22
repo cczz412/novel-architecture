@@ -3934,6 +3934,7 @@
         "references/atomic-expectations/ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01/01_ATOMIC_TEST_DESIGN.json#AE-M11-N01",
         "tests/test_novel_mvp_chapter_fact_material_bundle_tool.py",
         "tests/test_novel_mvp_chapter_fact_supply_workspace.py",
+        "tests/test_novel_mvp_ledger_recall_code_contract.py",
         "tests/test_novel_mvp_packer.py",
         "tests/test_novel_mvp_packer_fact_workspace.py",
         "tests/test_novel_mvp_packer_tool.py",
@@ -3999,6 +4000,10 @@
       "review_identity": "CANDIDATE_REVIEWED",
       "decision_refs": [
         "governance/decision_records/DR-20260821-01.md"
+      ],
+      "contract_refs": [
+        "novel-mvp/contracts/LEDGER_RECALL_CODE.md",
+        "novel-mvp/contracts/LEDGER_RECALL_CODE.schema.json"
       ]
     },
     {
@@ -14095,14 +14100,16 @@
       ],
       "implementation_mapping_evidence": "GROUP_ROUTE_INFERENCE_ONLY",
       "test_refs": [
+        "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json#M8-N01",
+        "tests/test_novel_mvp_chapter_slot_snapshot_tool.py",
+        "tests/test_novel_mvp_plan_destiny_content_contract.py",
+        "tests/test_novel_mvp_plan_inspiration_content_contract.py",
+        "tests/test_novel_mvp_plan_selection_target_tool.py",
         "tests/test_novel_mvp_plan_tool.py",
         "tests/test_novel_mvp_plan_workspace.py",
-        "tests/test_novel_mvp_planstore_handover.py",
-        "tests/test_novel_mvp_planstore_r07.py",
-        "tests/test_novel_mvp_plan_selection_target_tool.py",
         "tests/test_novel_mvp_planning_longline_view_tool.py",
-        "tests/test_novel_mvp_chapter_slot_snapshot_tool.py",
-        "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json#M8-N01"
+        "tests/test_novel_mvp_planstore_handover.py",
+        "tests/test_novel_mvp_planstore_r07.py"
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R01_FOR_R02",
       "blocked_by": [],
@@ -14147,7 +14154,13 @@
       ],
       "local_evidence_status": "NOT_APPLICABLE",
       "priority_candidate": null,
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "contract_refs": [
+        "novel-mvp/contracts/PLAN_DESTINY_CONTENT.md",
+        "novel-mvp/contracts/PLAN_DESTINY_CONTENT.schema.json",
+        "novel-mvp/contracts/PLAN_INSPIRATION_CONTENT.md",
+        "novel-mvp/contracts/PLAN_INSPIRATION_CONTENT.schema.json"
+      ]
     },
     {
       "requirement_id": "M8-N02",
@@ -14206,14 +14219,15 @@
       ],
       "implementation_mapping_evidence": "GROUP_ROUTE_INFERENCE_ONLY",
       "test_refs": [
-        "tests/test_novel_mvp_plan_tool.py",
-        "tests/test_novel_mvp_plan_workspace.py",
-        "tests/test_novel_mvp_planstore_handover.py",
-        "tests/test_novel_mvp_planstore_r07.py",
-        "tests/test_novel_mvp_plan_selection_target_tool.py",
-        "tests/test_novel_mvp_planning_longline_view_tool.py",
+        "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json#M8-N02",
         "tests/test_novel_mvp_chapter_slot_snapshot_tool.py",
-        "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json#M8-N02"
+        "tests/test_novel_mvp_plan_selection_target_tool.py",
+        "tests/test_novel_mvp_plan_tool.py",
+        "tests/test_novel_mvp_plan_volume_content_contract.py",
+        "tests/test_novel_mvp_plan_workspace.py",
+        "tests/test_novel_mvp_planning_longline_view_tool.py",
+        "tests/test_novel_mvp_planstore_handover.py",
+        "tests/test_novel_mvp_planstore_r07.py"
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R01_FOR_R02",
       "blocked_by": [],
@@ -14258,7 +14272,11 @@
       ],
       "local_evidence_status": "NOT_APPLICABLE",
       "priority_candidate": null,
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "contract_refs": [
+        "novel-mvp/contracts/PLAN_VOLUME_CONTENT.md",
+        "novel-mvp/contracts/PLAN_VOLUME_CONTENT.schema.json"
+      ]
     },
     {
       "requirement_id": "M8-N03",
@@ -14428,14 +14446,15 @@
       ],
       "implementation_mapping_evidence": "GROUP_ROUTE_INFERENCE_ONLY",
       "test_refs": [
+        "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json#M8-N04",
+        "tests/test_novel_mvp_chapter_slot_snapshot_tool.py",
+        "tests/test_novel_mvp_plan_inspiration_content_contract.py",
+        "tests/test_novel_mvp_plan_selection_target_tool.py",
         "tests/test_novel_mvp_plan_tool.py",
         "tests/test_novel_mvp_plan_workspace.py",
-        "tests/test_novel_mvp_planstore_handover.py",
-        "tests/test_novel_mvp_planstore_r07.py",
-        "tests/test_novel_mvp_plan_selection_target_tool.py",
         "tests/test_novel_mvp_planning_longline_view_tool.py",
-        "tests/test_novel_mvp_chapter_slot_snapshot_tool.py",
-        "references/atomic-expectations/ATOMIC_TEST_DESIGN_20260820_R01/01_ATOMIC_TEST_DESIGN.json#M8-N04"
+        "tests/test_novel_mvp_planstore_handover.py",
+        "tests/test_novel_mvp_planstore_r07.py"
       ],
       "test_design_status": "SIX_CASES_DESIGNED_R01_FOR_R02",
       "blocked_by": [],
@@ -14480,7 +14499,11 @@
       ],
       "local_evidence_status": "NOT_APPLICABLE",
       "priority_candidate": null,
-      "review_identity": "CANDIDATE_REVIEWED"
+      "review_identity": "CANDIDATE_REVIEWED",
+      "contract_refs": [
+        "novel-mvp/contracts/PLAN_INSPIRATION_CONTENT.md",
+        "novel-mvp/contracts/PLAN_INSPIRATION_CONTENT.schema.json"
+      ]
     },
     {
       "requirement_id": "M8-N05",
@@ -14670,8 +14693,11 @@
       "test_refs": [
         "references/atomic-expectations/ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01/01_ATOMIC_TEST_DESIGN.json#M8-N06",
         "tests/test_novel_mvp_chapter_slot_snapshot_tool.py",
+        "tests/test_novel_mvp_plan_destiny_content_contract.py",
+        "tests/test_novel_mvp_plan_inspiration_content_contract.py",
         "tests/test_novel_mvp_plan_selection_target_tool.py",
         "tests/test_novel_mvp_plan_tool.py",
+        "tests/test_novel_mvp_plan_volume_content_contract.py",
         "tests/test_novel_mvp_plan_workspace.py",
         "tests/test_novel_mvp_planning_longline_view_tool.py",
         "tests/test_novel_mvp_planstore_handover.py",
@@ -14738,6 +14764,14 @@
       "review_identity": "CANDIDATE_REVIEWED",
       "decision_refs": [
         "governance/decision_records/DR-20260821-01.md"
+      ],
+      "contract_refs": [
+        "novel-mvp/contracts/PLAN_DESTINY_CONTENT.md",
+        "novel-mvp/contracts/PLAN_DESTINY_CONTENT.schema.json",
+        "novel-mvp/contracts/PLAN_INSPIRATION_CONTENT.md",
+        "novel-mvp/contracts/PLAN_INSPIRATION_CONTENT.schema.json",
+        "novel-mvp/contracts/PLAN_VOLUME_CONTENT.md",
+        "novel-mvp/contracts/PLAN_VOLUME_CONTENT.schema.json"
       ]
     },
     {
