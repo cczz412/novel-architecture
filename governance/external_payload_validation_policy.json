@@ -319,7 +319,7 @@
       "manifest_sha256": "6beba120495ae12ae2cbf3960f667a9d79dd0357f350a0d9c2e7d7eb4a49165b",
       "payload_root_relative_path": "payload",
       "entry_size_field": "bytes",
-      "manifest_total_files_field": "total_files",
+      "manifest_total_files_field": "file_count",
       "manifest_total_bytes_field": "total_bytes",
       "exact_file_set": true,
       "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
@@ -429,7 +429,7 @@
       "manifest_sha256": "4b783c14759ff81f1178f1d5fb6d06724ea17b334db640f8e4dcd39ca53cc9fb",
       "payload_root_relative_path": "payload",
       "entry_size_field": "bytes",
-      "manifest_total_files_field": "total_files",
+      "manifest_total_files_field": "file_count",
       "manifest_total_bytes_field": "total_bytes",
       "exact_file_set": true,
       "boundary": "CZ 2026-08-22 拍为只读核验 target；不授权移动、删除、退出 Git、恢复写入或退休旧目录。"
