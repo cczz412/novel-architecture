@@ -2,8 +2,6 @@
 
 新窗口先读这一页。读完就该知道：真源在哪、先读什么、标签什么意思、纪律是什么、测试回执现在按哪套口径。
 
-⚠️ governance/progress/current-progress.md 与 governance/CURRENT_STATE.json 的 main 基准（4953317）已过期，阅读时以 origin/main 实际 HEAD 为准；#64 批尾刷新合并后删除本行。
-
 ## 唯一真源
 
 工程线唯一真源是本 GitHub 仓库 [`cczz412/novel-architecture`](https://github.com/cczz412/novel-architecture)。所有窗口（含本地 Agent）只在这里读、只在这里干活。
@@ -44,7 +42,7 @@ Notion 工程镜像制度已取消，本地镜像也取消。Notion 旧监督页
 
 ## 测试回执口径
 
-PASS 语义按 [#63](https://github.com/cczz412/novel-architecture/issues/63) 拍定的「冻结批准清单」制执行。未知失败只能报「未批准发现」，运行现场无权自批。checker 落地前，过渡期回执列出全部失败 ID 并逐项归因，不许用「全绿」一句话带过。
+PASS 语义按 [#63](https://github.com/cczz412/novel-architecture/issues/63) 拍定的「冻结批准清单」制执行。checker 已随 PR #81 进 main。未知失败只能报「未批准发现」，运行现场无权自批。不许用「全绿」一句话带过。
 
 ## 今晚这批怎么派
 

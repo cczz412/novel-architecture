@@ -4,6 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+from isolation import run_git
+
 MODULE_PATH = Path(__file__).resolve().parents[1] / "tools" / "check_current_freshness.py"
 SPEC = importlib.util.spec_from_file_location("check_current_freshness", MODULE_PATH)
 assert SPEC and SPEC.loader
@@ -273,3 +275,103 @@ def test_invariant_set_drift_is_error(tmp_path: Path) -> None:
     report = MODULE.build_report(tmp_path)
     assert report["status"] == "FAIL"
     assert "INVARIANT_SET_DRIFT" in {item["code"] for item in report["errors"]}
+
+
+def _git(root: Path, *args: str) -> str:
+    return run_git(*args, cwd=root, check=True, text=True).stdout.strip()
+
+
+def _init_git_with_origin_main(root: Path) -> str:
+    _git(root, "init", "-q", "-b", "main")
+    _git(root, "config", "user.email", "freshness@example.invalid")
+    _git(root, "config", "user.name", "Freshness Tests")
+    _git(root, "add", ".")
+    _git(root, "commit", "-qm", "seed")
+    sha = _git(root, "rev-parse", "HEAD")
+    _git(root, "update-ref", "refs/remotes/origin/main", sha)
+    return sha
+
+
+def _write_main_snapshot(root: Path, commit: str, kind: str | None) -> None:
+    state = json.loads((root / "governance/CURRENT_STATE.json").read_text(encoding="utf-8"))
+    row: dict = {"identity": "main", "commit": commit}
+    if kind is not None:
+        row["kind"] = kind
+    state["refresh_metadata"] = {"source_snapshot": [row]}
+    dump(root / "governance/CURRENT_STATE.json", state)
+
+
+def _append_main_line(root: Path, relative: str, commit: str, refresh_language: bool) -> None:
+    path = root / relative
+    if refresh_language:
+        line = f"- `main` 刷新时的 base（本页复核到）：`{commit}`。运行时 HEAD 由 check_current_freshness 另报。\n"
+    else:
+        line = f"- `main` 基准：`{commit}`\n"
+    path.write_text(path.read_text(encoding="utf-8") + line, encoding="utf-8")
+
+
+def _advance_origin_main(root: Path) -> str:
+    extra = root / "extra.txt"
+    extra.write_text("extra\n", encoding="utf-8")
+    _git(root, "add", "extra.txt")
+    _git(root, "commit", "-qm", "advance")
+    sha = _git(root, "rev-parse", "HEAD")
+    _git(root, "update-ref", "refs/remotes/origin/main", sha)
+    return sha
+
+
+def test_gitless_fixture_still_skips_head_check(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "PASS"
+    assert report["summary"]["git_head"] is None
+    assert report["summary"]["recorded_main_sha"] is None
+
+
+def test_unlabeled_live_head_sha_cannot_pass(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    sha = _init_git_with_origin_main(tmp_path)
+    _write_main_snapshot(tmp_path, sha, kind=None)
+    _append_main_line(tmp_path, "governance/progress/current-progress.md", sha, refresh_language=False)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "MAIN_SHA_CLAIMED_AS_LIVE_HEAD" in {item["code"] for item in report["errors"]}
+
+
+def test_refresh_base_matching_origin_main_passes(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    sha = _init_git_with_origin_main(tmp_path)
+    _write_main_snapshot(tmp_path, sha, kind="refresh_base")
+    _append_main_line(tmp_path, "governance/progress/current-progress.md", sha, refresh_language=True)
+    _append_main_line(tmp_path, "governance/INDEX.md", sha, refresh_language=True)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "PASS"
+    assert report["errors"] == []
+    assert report["summary"]["git_head"] == sha
+    assert report["summary"]["recorded_main_sha"] == sha
+    assert report["summary"]["recorded_main_kind"] == "refresh_base"
+
+
+def test_refresh_base_behind_origin_main_is_warning_not_error(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    base = _init_git_with_origin_main(tmp_path)
+    _write_main_snapshot(tmp_path, base, kind="refresh_base")
+    _append_main_line(tmp_path, "governance/progress/current-progress.md", base, refresh_language=True)
+    head = _advance_origin_main(tmp_path)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "PASS"
+    assert report["errors"] == []
+    assert report["summary"]["git_head"] == head
+    assert report["summary"]["recorded_main_sha"] == base
+    assert any(item["code"] == "MAIN_SHA_BEHIND_HEAD" for item in report["warnings"])
+
+
+def test_refresh_base_unrelated_sha_is_error(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    _init_git_with_origin_main(tmp_path)
+    foreign = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    _write_main_snapshot(tmp_path, foreign, kind="refresh_base")
+    _append_main_line(tmp_path, "governance/progress/current-progress.md", foreign, refresh_language=True)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "MAIN_SHA_NOT_ANCESTOR_OF_HEAD" in {item["code"] for item in report["errors"]}

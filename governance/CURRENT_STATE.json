@@ -1,13 +1,13 @@
 {
   "schema_version": "governance-current-state-v2",
-  "snapshot_at": "2026-08-22T21:30:00+08:00",
+  "snapshot_at": "2026-08-22T23:46:41+08:00",
   "authority": {
     "role": "本地唯一机器可读当前执行状态真源",
     "external_truth": {
-      "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
-      "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
+      "ledger_url": "https://github.com/cczz412/novel-architecture/blob/main/governance/START_HERE.md",
+      "queue_url": "https://github.com/cczz412/novel-architecture/issues",
       "legacy_frozen_ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-      "rule": "本文件只保存当前执行状态；旧大体量历史快照已移到 governance/CURRENT_STATE_HISTORY.json。产品拍板仍以 CZ 最新明确指令与 Notion 账序／队列为准。"
+      "rule": "本文件只保存当前执行状态；旧大体量历史快照已移到 governance/CURRENT_STATE_HISTORY.json。工程线真源是本 GitHub 仓库；上工入口为 governance/START_HERE.md，施工队列为 GitHub Issues。Notion 旧账序页只作历史。产品语义仍以 CZ 最新明确指令为准。"
     },
     "local_precedence": [
       "子运行 main/hard_stop.json",
@@ -23,14 +23,14 @@
       "task_id": "CLEAN-BASELINE-M1-M11-INTEGRATION-20260821",
       "label": "M1～M11 产品主线与干净基线重构",
       "status": "clean_baseline_wo1_to_wo7_on_main_wo6_readonly",
-      "status_label": "工单 1～5、十本账 L1～L5、工单 7 已进 main。拍板题 3 六本设定账已共用 settingstore。工单 6 已拍：31 个全部 target，只读核验。本轮不得移动、删除、退出 Git、恢复写入或退休旧目录。不得把 M1～M11 写成完整作者能力。"
+      "status_label": "工单 1～5、十本账 L1～L5、工单 7 已进 main。拍板题 3 六本设定账已共用 settingstore。工单 6 只读核验已按 Issue #32 回执结账（25/25＋6/6 PASS at main@3c387ca）；本轮仍不得移动、删除、退出 Git、恢复写入或退休旧目录。不得把 M1～M11 写成完整作者能力。"
     },
     "authorization": {
       "kind": "cz_explicit_clean_baseline_seven_work_orders",
       "authority_time": "2026-08-22T21:30:00+08:00",
-      "ledger_url": "https://app.notion.com/p/e1eb141272b24db3afd5cf95b5cfe2c6",
-      "queue_url": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc",
-      "scope": "干净基线工单 1～5、7 已合。拍板题 3 授权设定账统一 writer（Issue #59）：六本设定账共用 settingstore，照 planstore 原子提交。工单 6 按 DR-20260822-01 只授权只读核验。本轮不授权移动、删除、退出 Git、恢复写入或退休旧目录。一张票一条分支一个 PR；不直写 main。"
+      "ledger_url": "https://github.com/cczz412/novel-architecture/blob/main/governance/START_HERE.md",
+      "queue_url": "https://github.com/cczz412/novel-architecture/issues",
+      "scope": "干净基线工单 1～5、7 已合。拍板题 3 授权设定账统一 writer（Issue #59）：六本设定账共用 settingstore，照 planstore 原子提交。工单 6 按 DR-20260822-01 只授权只读核验，回执已结账。本轮不授权移动、删除、退出 Git、恢复写入或退休旧目录。一张票一条分支一个 PR；不直写 main。"
     },
     "run": {
       "run_id": null,
@@ -38,9 +38,9 @@
     },
     "controls": {
       "quality_boundary": "本状态只登记仓库身份、版本和施工顺序，不证明 M1～M11 已完成，也不证明真实小说语义质量。检查器绿灯 ≠ 852 条语义测试，也 ≠ 全仓 pytest 全绿。",
-      "evidence_boundary": "main=49533178945ce5a9a6df59e20b4d57eb18706acb（Merge PR #54 Issue #27）。超级候选仍钉 codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b，只作拆票来源身份，禁止整支再合。工单 6 拍板见 governance/decision_records/DR-20260822-01.md；target 不是正式 PASS。",
-      "stop_rule": "不得整体合并超级分支；不得直接写 main；不得宣称 M1～M11 已具备完整作者能力；工单 6 本轮不得移动、删除、退出 Git、恢复写入或退休旧目录。",
-      "next_action": "拍板题 3 设定账统一 writer 已由 settingstore 承接（Issue #59）。工单 6 按 Issue #32 做只读核验；本机 Codex 在绑定后核 25 个旁仓、挂载后核 T7 六个。不要整支合并超级候选分支，也不要把 M1～M11 写成完整作者能力。"
+      "evidence_boundary": "main 刷新时的 base（本页复核到）=c91ecffa084dd8a5cb834a2789e8fb408c0229e3（Merge PR #81 Issue #63）。运行时 HEAD 由 tools/check_current_freshness.py 另报。超级候选仍钉 codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b，只作拆票来源身份，禁止整支再合。工单 6 拍板见 governance/decision_records/DR-20260822-01.md；target 不是正式 PASS。",
+      "stop_rule": "不得整体合并超级候选分支；不得直接写 main；不得宣称 M1～M11 已具备完整作者能力；工单 6 本轮不得移动、删除、退出 Git、恢复写入或退休旧目录。",
+      "next_action": "工单 6 只读核验已按 Issue #32 回执结账（25/25＋6/6 PASS at main@3c387ca5336daadc001c85f253186259da4a6c68）。搬删仍禁止（blocker WO6-NO-MOVE-DELETE-THIS-ROUND）。施工入口是带 status:ready 的 GitHub Issues，上工先读 governance/START_HERE.md。不要整支合并超级候选分支，也不要把 M1～M11 写成完整作者能力。"
     },
     "candidate": {
       "branch": "codex/module-runtime-foundation-20260819-r01",
@@ -64,11 +64,10 @@
         "WO7_DRIFT_CHECK_SUITE_ON_MAIN",
         "ISSUE_27_CURRENT_HANDOFF_REFRESH",
         "WO6_READONLY_CZ_DECISION",
-        "SETTINGSTORE_UNIFIED_WRITER_ON_MAIN"
+        "SETTINGSTORE_UNIFIED_WRITER_ON_MAIN",
+        "WO6_READONLY_25_PLUS_6_AT_3c387ca"
       ],
-      "pending_checks": [
-        "work order 6: read-only verification of 31 targets (no move/delete/exit-Git/restore-write/retire)"
-      ]
+      "pending_checks": []
     },
     "usage": {
       "model_api_logical_samples": 0,
@@ -96,8 +95,8 @@
       },
       {
         "blocker_id": "WO6-NO-MOVE-DELETE-THIS-ROUND",
-        "summary": "工单 6 本轮只做只读核验。不授权移动、删除、退出 Git、恢复写入或退休旧目录。T7 未挂载仍是 NOT_RUN。",
-        "route": "https://github.com/mhchen1/novel-architecture/issues/32"
+        "summary": "工单 6 本轮只做只读核验。不授权移动、删除、退出 Git、恢复写入或退休旧目录。T7 未挂载仍是 NOT_RUN。只读核验回执已结账，搬删禁令仍在。",
+        "route": "https://github.com/cczz412/novel-architecture/issues/32"
       }
     ]
   },
@@ -118,13 +117,14 @@
     "role": "HISTORICAL_ONLY_NO_CURRENT_AUTHORITY"
   },
   "refresh_metadata": {
-    "updated_at": "2026-08-22T21:30:00+08:00",
-    "mode": "settings_ledger_unified_writer_wo",
-    "source_count": 7,
+    "updated_at": "2026-08-22T23:46:41+08:00",
+    "mode": "signpost_refresh_issue_64",
+    "source_count": 8,
     "source_snapshot": [
       {
         "identity": "main",
-        "commit": "49533178945ce5a9a6df59e20b4d57eb18706acb"
+        "kind": "refresh_base",
+        "commit": "c91ecffa084dd8a5cb834a2789e8fb408c0229e3"
       },
       {
         "identity": "module_candidate",
@@ -150,6 +150,10 @@
       {
         "path": "governance/decision_records/DR-20260822-01.md",
         "role": "WO6_READONLY_DECISION_RECORD"
+      },
+      {
+        "path": "governance/decision_records/DR-20260822-02.md",
+        "role": "GITHUB_UNIQUE_TRUTH_DECISION_RECORD"
       }
     ],
     "responsibility_boundary": {
