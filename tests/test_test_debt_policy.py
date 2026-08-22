@@ -208,7 +208,12 @@ def test_original_six_failures_have_one_explicit_disposition_each() -> None:
 
 def test_governance_policy_names_one_default_and_one_replay_command() -> None:
     policy = _read_json(ROOT / "governance/test_policy.json")
-    assert policy["full_chain_command"].endswith(".venv/bin/python -m pytest -q")
+    expected = (
+        'cd "$(git rev-parse --show-toplevel)" && '
+        "uv run --locked pytest -q"
+    )
+    assert policy["full_chain_command"] == expected
+    assert "/Users/" not in policy["full_chain_command"]
     assert policy["historical_replay_registry"] == (
         "config/test_replay/historical_replays.json"
     )

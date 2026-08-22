@@ -56,11 +56,14 @@ def test_root_readme_is_a_durable_one_hop_map() -> None:
 
 def test_test_readme_uses_the_fixed_full_chain_command() -> None:
     expected = (
-        "cd /Users/a1234/挣钱/小说架构 && "
-        "/Users/a1234/挣钱/小说架构/.venv/bin/python -m pytest -q"
+        'cd "$(git rev-parse --show-toplevel)" && '
+        "uv run --locked pytest -q"
     )
-    assert expected in _read("tests/README.md")
-    assert "uv run pytest" not in _read("tests/README.md")
+    text = _read("tests/README.md")
+    assert expected in text
+    assert "/Users/" not in text
+    assert ".venv/bin/python -m pytest -q" not in text
+    assert "uv run pytest" not in text
 
 
 def test_active_navigation_docs_do_not_route_back_to_retired_current_page() -> None:

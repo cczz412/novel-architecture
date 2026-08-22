@@ -1,6 +1,6 @@
 {
   "schema_version": "pipeline-test-policy-v1",
-  "full_chain_command": "cd /Users/a1234/挣钱/小说架构 && uv run --locked pytest -q",
+  "full_chain_command": "cd \"$(git rev-parse --show-toplevel)\" && uv run --locked pytest -q",
   "lint_command": "uv run --locked ruff check",
   "default_collection_root": "tests",
   "retired_collection_roots": ["TEMP", "runs", "reports", "outbox"],
