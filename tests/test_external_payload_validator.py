@@ -1134,6 +1134,33 @@ def test_aggregate_wrong_type_is_rejected_instead_of_being_swallowed(
     _expect_error(fixture, "PAYLOAD_MANIFEST_TOTAL_TYPE_INVALID")
 
 
+def test_valid_top_level_total_still_rejects_wrong_typed_aggregate(
+    tmp_path: Path,
+) -> None:
+    files = {"result.bin": b"fixture payload\n"}
+    fixture = _make_fixture(tmp_path, files)
+    manifest = json.loads(fixture.manifest_path.read_text(encoding="utf-8"))
+    manifest["aggregate"] = "single-object-result"
+    _write_json(fixture.manifest_path, manifest)
+    _rebind_manifest(fixture)
+
+    _expect_error(fixture, "PAYLOAD_MANIFEST_TOTAL_TYPE_INVALID")
+
+
+def test_nested_aggregate_key_wrong_type_is_rejected(
+    tmp_path: Path,
+) -> None:
+    files = {"result.bin": b"fixture payload\n"}
+    fixture = _make_fixture(tmp_path, files)
+    _write_aggregate_manifest(fixture, files=files)
+    manifest = json.loads(fixture.manifest_path.read_text(encoding="utf-8"))
+    manifest["aggregate"]["member_count"] = "1"
+    _write_json(fixture.manifest_path, manifest)
+    _rebind_manifest(fixture)
+
+    _expect_error(fixture, "PAYLOAD_MANIFEST_TOTAL_TYPE_INVALID")
+
+
 def test_report_does_not_false_positive_when_home_name_is_root(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
