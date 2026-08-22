@@ -451,7 +451,14 @@
       "path_kind": "directory"
     },
     {
-      "accepted_content": [],
+      "accepted_content": [
+        {
+          "label": "历史纠错切窗批次状态页",
+          "object_id": "historical_correction_segment_scan_status",
+          "rule": "只说明该批历史状态，不能替代当前微调域或全仓当前状态。",
+          "target_pattern": "history/T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md"
+        }
+      ],
       "category": "history",
       "consumers": [
         "historical_review"
@@ -460,7 +467,8 @@
       "directory_id": "DIR-HISTORY",
       "evidence_refs": [
         "AGENTS.md",
-        "history/上一轮做到哪.md"
+        "history/上一轮做到哪.md",
+        "history/T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md"
       ],
       "externalization": "prohibited",
       "git_policy": "tracked",
@@ -892,37 +900,6 @@
     {
       "accepted_content": [
         {
-          "label": "历史纠错切窗批次状态页",
-          "object_id": "historical_correction_segment_scan_status",
-          "rule": "只说明该批历史状态，不能替代当前微调域或全仓当前状态。",
-          "target_pattern": "T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md"
-        }
-      ],
-      "category": "history",
-      "consumers": [
-        "human_review"
-      ],
-      "container_authority": "historical",
-      "directory_id": "DIR-T5-R04-V2-CORRECTION-SEGMENT-SCAN",
-      "evidence_refs": [
-        "T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md"
-      ],
-      "externalization": "per_object_candidate",
-      "git_policy": "tracked",
-      "identity": "historical_correction_segment_scan_workspace",
-      "inherit_to_children": false,
-      "lifecycle": "historical",
-      "load_policy": "default_excluded",
-      "new_content_rule": "停止接收新内容；本轮只冻结身份，不继续在仓库顶层追加批次。",
-      "open_decisions": [
-        "消费者和权利边界核清前不移动、不删除；后续若迁移须另开对象级工单。"
-      ],
-      "path": "T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01",
-      "path_kind": "directory"
-    },
-    {
-      "accepted_content": [
-        {
           "label": "产品试跑示例说明",
           "object_id": "novel_mvp_example_readme",
           "rule": "只说明这是测试阶段示例、代码偏旧、设计稿可参考；不得写成现行产品或共同背景板。",
@@ -983,5 +960,5 @@
   "inherit_to_children_default": false,
   "registry_id": "REPOSITORY-DIRECTORIES-20260730",
   "schema_version": "directory-registry-v1",
-  "updated_at": "2026-08-15"
+  "updated_at": "2026-08-22"
 }

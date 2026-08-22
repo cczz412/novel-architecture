@@ -1320,7 +1320,7 @@
         "entry_sha256_field": "sha256"
       },
       "keep_in_repository": [
-        "T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md，追加外置对象身份和恢复说明"
+        "history/T5_R04_V2_CORRECTION_SEGMENT_SCAN_20260803_R01/STATUS.md，追加外置对象身份和恢复说明"
       ],
       "externalize_later": [],
       "consumers": [
