@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
-import subprocess
 from pathlib import Path
+
+from isolation import run_git
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "tools" / "check_tracked_temp.py"
 SPEC = importlib.util.spec_from_file_location("check_tracked_temp", MODULE_PATH)
@@ -13,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _git(root: Path, *args: str) -> None:
-    subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)
+    run_git(*args, cwd=root, check=True)
 
 
 def _seed_git(root: Path) -> None:

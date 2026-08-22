@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import re
-import subprocess
 from pathlib import Path
+
+from isolation import run_git
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -132,8 +133,10 @@ def test_corpus_pointer_is_machine_local_and_documented() -> None:
     assert pointer.is_symlink()
     assert pointer.readlink() == Path(".local/corpus-downloads")
     assert "/Users/" not in pointer.readlink().as_posix()
-    ignored = subprocess.run(
-        ["git", "check-ignore", "-q", ".local/corpus-downloads"],
+    ignored = run_git(
+        "check-ignore",
+        "-q",
+        ".local/corpus-downloads",
         cwd=ROOT,
         check=False,
     )

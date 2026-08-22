@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import hashlib
-import io
-import stat
 import sys
-import zipfile
 from pathlib import Path
 
 import pytest
+from isolation import frozen_zip_bytes
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,16 +23,7 @@ RECORDED_AT = "2026-08-19T02:30:00+08:00"
 
 
 def _zip(members: dict[str, bytes], *, symlink: str | None = None) -> bytes:
-    buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, "w") as archive:
-        for name, payload in members.items():
-            archive.writestr(name, payload)
-        if symlink is not None:
-            info = zipfile.ZipInfo(symlink)
-            info.create_system = 3
-            info.external_attr = (stat.S_IFLNK | 0o777) << 16
-            archive.writestr(info, "target.txt")
-    return buffer.getvalue()
+    return frozen_zip_bytes(members, symlink=symlink)
 
 
 def _docx(paragraphs: list[str]) -> bytes:
@@ -141,8 +130,16 @@ def test_upload_source_rejects_unsafe_logical_names(name: str) -> None:
 @pytest.mark.parametrize(
     ("payload", "block_type"),
     [
-        (_zip({"../evil.txt": b"evil", "c01.txt": "正文。".encode()}), "unsafe_archive_path"),
-        (_zip({"c01.txt": "正文。".encode()}, symlink="link.txt"), "archive_symlink"),
+        pytest.param(
+            _zip({"../evil.txt": b"evil", "c01.txt": "正文。".encode()}),
+            "unsafe_archive_path",
+            id="unsafe-path",
+        ),
+        pytest.param(
+            _zip({"c01.txt": "正文。".encode()}, symlink="link.txt"),
+            "archive_symlink",
+            id="symlink",
+        ),
     ],
 )
 def test_memory_zip_keeps_path_and_symlink_guards(payload: bytes, block_type: str) -> None:

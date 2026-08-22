@@ -14,12 +14,39 @@ for import_root in (ROOT, ROOT / "tools", ROOT / "tests"):
     if str(import_root) not in sys.path:
         sys.path.insert(0, str(import_root))
 
+from isolation import (  # noqa: E402
+    apply_isolated_git_environ,
+    clear_vendor_api_keys,
+    install_network_guard,
+)
 from tools.historical_test_replay import (  # noqa: E402
     ReplayError,
     historical_nodeids,
     load_registry,
     verify_materialization_receipt,
 )
+
+
+@pytest.fixture(autouse=True)
+def _clear_vendor_api_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+    clear_vendor_api_keys(monkeypatch)
+
+
+@pytest.fixture(autouse=True)
+def _isolate_git_config(monkeypatch: pytest.MonkeyPatch) -> None:
+    apply_isolated_git_environ(monkeypatch)
+
+
+@pytest.fixture(autouse=True)
+def _block_outbound_network(
+    request: pytest.FixtureRequest,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    if request.node.get_closest_marker("allow_network"):
+        yield
+        return
+    install_network_guard(monkeypatch)
+    yield
 
 
 @pytest.fixture(scope="session", autouse=True)

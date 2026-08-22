@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 
+from isolation import run_git
 from tools import governance_index
 
 
@@ -23,13 +24,7 @@ def _read_json(path: Path) -> dict:
 
 
 def _git(*args: str, check: bool = True) -> subprocess.CompletedProcess[bytes]:
-    return subprocess.run(
-        ["git", *args],
-        cwd=ROOT,
-        check=check,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    return run_git(*args, cwd=ROOT, check=check)
 
 
 def _tracked_paths() -> set[str]:

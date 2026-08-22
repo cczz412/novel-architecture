@@ -4,13 +4,12 @@ import inspect
 import io
 import json
 import os
-import stat
 import subprocess
 import sys
-import zipfile
 from pathlib import Path
 
 import pytest
+from isolation import frozen_zip_bytes
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,11 +27,7 @@ TEXT = "第一章\n甲推开门。\n"
 
 
 def _zip(entries: dict[str, bytes]) -> bytes:
-    buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, "w") as archive:
-        for name, payload in entries.items():
-            archive.writestr(name, payload)
-    return buffer.getvalue()
+    return frozen_zip_bytes(entries)
 
 
 def _docx(text: str) -> bytes:
@@ -51,13 +46,7 @@ def _docx(text: str) -> bytes:
 
 
 def _symlink_zip() -> bytes:
-    buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, "w") as archive:
-        info = zipfile.ZipInfo("link.txt")
-        info.create_system = 3
-        info.external_attr = (stat.S_IFLNK | 0o777) << 16
-        archive.writestr(info, b"target.txt")
-    return buffer.getvalue()
+    return frozen_zip_bytes({}, symlink="link.txt")
 
 
 def _crc_broken_zip() -> bytes:
@@ -99,11 +88,29 @@ def _assert_safe_result(result: dict, raw_text: str = TEXT) -> None:
 @pytest.mark.parametrize(
     ("name", "payload", "root_format", "terminal_format"),
     [
-        ("chapter.txt", TEXT.encode(), "txt", "txt"),
-        ("chapter.md", TEXT.encode("gb18030"), "md", "md"),
-        ("table.csv", "人物,状态\r\n沈砚,失踪\r\n".encode(), "csv", "csv"),
-        ("chapter.docx", _docx(TEXT), "docx", "docx_main_flow_text"),
-        ("book.zip", _zip({"chapter-01.txt": TEXT.encode()}), "zip", "txt"),
+        pytest.param("chapter.txt", TEXT.encode(), "txt", "txt", id="txt"),
+        pytest.param("chapter.md", TEXT.encode("gb18030"), "md", "md", id="md"),
+        pytest.param(
+            "table.csv",
+            "人物,状态\r\n沈砚,失踪\r\n".encode(),
+            "csv",
+            "csv",
+            id="csv",
+        ),
+        pytest.param(
+            "chapter.docx",
+            _docx(TEXT),
+            "docx",
+            "docx_main_flow_text",
+            id="docx",
+        ),
+        pytest.param(
+            "book.zip",
+            _zip({"chapter-01.txt": TEXT.encode()}),
+            "zip",
+            "txt",
+            id="zip",
+        ),
     ],
 )
 def test_supported_formats_return_safe_inspection_without_truth_writes(
@@ -130,22 +137,45 @@ def test_supported_formats_return_safe_inspection_without_truth_writes(
 @pytest.mark.parametrize(
     ("name", "payload", "root_format", "terminal_name", "terminal_format"),
     [
-        ("chapter.txt", TEXT.encode(), "txt", "chapter.txt", "txt"),
-        ("chapter.md", TEXT.encode("gb18030"), "md", "chapter.md", "md"),
-        ("table.csv", "人物,状态\r\n沈砚,失踪\r\n".encode(), "csv", "table.csv", "csv"),
-        (
+        pytest.param(
+            "chapter.txt",
+            TEXT.encode(),
+            "txt",
+            "chapter.txt",
+            "txt",
+            id="txt",
+        ),
+        pytest.param(
+            "chapter.md",
+            TEXT.encode("gb18030"),
+            "md",
+            "chapter.md",
+            "md",
+            id="md",
+        ),
+        pytest.param(
+            "table.csv",
+            "人物,状态\r\n沈砚,失踪\r\n".encode(),
+            "csv",
+            "table.csv",
+            "csv",
+            id="csv",
+        ),
+        pytest.param(
             "chapter.docx",
             _docx(TEXT),
             "docx",
             "chapter.docx#word/document.xml",
             "docx_main_flow_text",
+            id="docx",
         ),
-        (
+        pytest.param(
             "book.zip",
             _zip({"chapter-01.txt": TEXT.encode()}),
             "zip",
             "book.zip/chapter-01.txt",
             "txt",
+            id="zip",
         ),
     ],
 )
@@ -241,11 +271,36 @@ def test_batch_lists_every_original_upload_and_terminal_in_input_order() -> None
 @pytest.mark.parametrize(
     ("name", "payload", "block_type"),
     [
-        ("traversal.zip", _zip({"../escape.txt": TEXT.encode()}), "unsafe_archive_path"),
-        ("symlink.zip", _symlink_zip(), "archive_symlink"),
-        ("corrupted.zip", _crc_broken_zip(), "zip_crc_error"),
-        ("broken.zip", b"not-a-zip", "invalid_container"),
-        ("unknown.bin", b"opaque", "unsupported_format"),
+        pytest.param(
+            "traversal.zip",
+            _zip({"../escape.txt": TEXT.encode()}),
+            "unsafe_archive_path",
+            id="traversal",
+        ),
+        pytest.param(
+            "symlink.zip",
+            _symlink_zip(),
+            "archive_symlink",
+            id="symlink",
+        ),
+        pytest.param(
+            "corrupted.zip",
+            _crc_broken_zip(),
+            "zip_crc_error",
+            id="crc",
+        ),
+        pytest.param(
+            "broken.zip",
+            b"not-a-zip",
+            "invalid_container",
+            id="invalid",
+        ),
+        pytest.param(
+            "unknown.bin",
+            b"opaque",
+            "unsupported_format",
+            id="unknown",
+        ),
     ],
 )
 def test_zip_and_unknown_format_failures_use_current_router_blocks(
