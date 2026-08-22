@@ -2,6 +2,7 @@
 
 > 这是根路径兼容 stub，不保存当前进度、运行成绩或产品结论。
 
+- 上工先读：[`governance/START_HERE.md`](governance/START_HERE.md)
 - 人看当前仓库状态：[`governance/INDEX.md`](governance/INDEX.md)
 - 机器读取当前执行状态：[`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)
 - 当前版本、路径、候选分支与后续登记：[`governance/current_pointers.json`](governance/current_pointers.json)
