@@ -45,18 +45,50 @@ NOT_RUN_VOLUME_NOT_MOUNTED = "NOT_RUN_VOLUME_NOT_MOUNTED"
 
 
 class PayloadValidationError(RuntimeError):
-    def __init__(self, code: str, detail: str = "") -> None:
-        if code == PAYLOAD_VOLUME_NOT_MOUNTED:
-            message = (
-                NOT_RUN_VOLUME_NOT_MOUNTED
-                if not detail
-                else f"{NOT_RUN_VOLUME_NOT_MOUNTED}: {detail}"
-            )
-        else:
-            message = code if not detail else f"{code}: {detail}"
-        super().__init__(message)
+    def __init__(
+        self,
+        code: str,
+        detail: str = "",
+        *,
+        identity: dict[str, Any] | None = None,
+    ) -> None:
         self.code = code
         self.detail = detail
+        self.identity = dict(identity or {})
+        super().__init__(self._format_message())
+
+    def _format_message(self) -> str:
+        if self.code != PAYLOAD_VOLUME_NOT_MOUNTED:
+            return self.code if not self.detail else f"{self.code}: {self.detail}"
+        parts = [NOT_RUN_VOLUME_NOT_MOUNTED]
+        for key in (
+            "artifact_id",
+            "root_id",
+            "expected_volume_uuid",
+            "expected_volume_name",
+            "relative_root",
+        ):
+            value = self.identity.get(key)
+            if value:
+                parts.append(f"{key}={value}")
+        if self.detail:
+            parts.append(self.detail)
+        return ": ".join(parts) if len(parts) == 1 else f"{parts[0]}: {' '.join(parts[1:])}"
+
+    def as_not_run_receipt(self) -> dict[str, Any]:
+        return {
+            "status": "NOT_RUN",
+            "code": NOT_RUN_VOLUME_NOT_MOUNTED,
+            "artifact_id": self.identity.get("artifact_id"),
+            "root_id": self.identity.get("root_id"),
+            "expected_mount": {
+                "kind": self.identity.get("locator_kind"),
+                "volume_uuid": self.identity.get("expected_volume_uuid"),
+                "expected_volume_name": self.identity.get("expected_volume_name"),
+                "relative_root": self.identity.get("relative_root"),
+            },
+            "detail": self.detail,
+        }
 
 
 def _sha256_bytes(value: bytes) -> str:
@@ -536,9 +568,20 @@ def _resolve_target_root(
     repo_root: Path,
     registry: dict[str, Any],
     root_id: str,
+    *,
+    artifact_id: str,
 ) -> Path:
     roots = {row["root_id"]: row for row in registry["storage_roots"]}
     root_row = roots[root_id]
+    locator = root_row.get("locator") if isinstance(root_row.get("locator"), dict) else {}
+    identity = {
+        "artifact_id": artifact_id,
+        "root_id": root_id,
+        "locator_kind": locator.get("kind"),
+        "expected_volume_uuid": locator.get("volume_uuid"),
+        "expected_volume_name": locator.get("expected_volume_name"),
+        "relative_root": locator.get("relative_root"),
+    }
     try:
         path = inventory.resolve_storage_root(repo_root, root_row)
     except inventory.InventoryError as exc:
@@ -549,10 +592,12 @@ def _resolve_target_root(
             raise PayloadValidationError(
                 PAYLOAD_VOLUME_NOT_MOUNTED,
                 exc.detail or exc.code,
+                identity=identity,
             ) from exc
         raise PayloadValidationError(
             "PAYLOAD_TARGET_ROOT_INVALID",
             exc.detail,
+            identity=identity,
         ) from exc
     return path
 
@@ -766,44 +811,75 @@ def _is_plain_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
-def _lookup_manifest_field(manifest: dict[str, Any], field: str) -> object:
+def _lookup_manifest_field(manifest: dict[str, Any], field: str) -> tuple[bool, object]:
     if "." not in field:
-        return manifest.get(field)
+        if field not in manifest:
+            return False, None
+        return True, manifest[field]
     current: object = manifest
     for part in field.split("."):
         if not part or not isinstance(current, dict) or part not in current:
-            return None
+            return False, None
         current = current[part]
-    return current
+    return True, current
 
 
-def _nested_compat_total(manifest: dict[str, Any], field: str) -> object:
+def _nested_compat_total(manifest: dict[str, Any], field: str) -> tuple[bool, object]:
     if "." in field:
-        return None
-    aggregate = manifest.get("aggregate")
+        return False, None
+    if "aggregate" not in manifest:
+        return False, None
+    aggregate = manifest["aggregate"]
     if not isinstance(aggregate, dict):
-        return None
-    if field == "total_files":
-        return aggregate.get("member_count")
-    if field == "total_bytes":
-        return aggregate.get("total_bytes")
-    return None
+        raise PayloadValidationError(
+            "PAYLOAD_MANIFEST_TOTAL_TYPE_INVALID",
+            "aggregate 存在但不是对象合计",
+        )
+    nested_key = {
+        "total_files": "member_count",
+        "total_bytes": "total_bytes",
+    }.get(field)
+    if nested_key is None or nested_key not in aggregate:
+        return False, None
+    return True, aggregate[nested_key]
+
+
+def _require_plain_int_total(value: object, *, field_label: str) -> int:
+    if not _is_plain_int(value):
+        raise PayloadValidationError(
+            "PAYLOAD_MANIFEST_TOTAL_TYPE_INVALID",
+            f"{field_label} 存在但类型不是整数合计",
+        )
+    assert isinstance(value, int)
+    return value
 
 
 def _resolve_manifest_total(manifest: dict[str, Any], field: str) -> int | None:
-    configured = _lookup_manifest_field(manifest, field)
-    nested = _nested_compat_total(manifest, field)
-    configured_ok = _is_plain_int(configured)
-    nested_ok = _is_plain_int(nested)
-    if configured_ok and nested_ok and configured != nested:
+    configured_present, configured = _lookup_manifest_field(manifest, field)
+    nested_present, nested = _nested_compat_total(manifest, field)
+    configured_value = (
+        _require_plain_int_total(configured, field_label=field)
+        if configured_present
+        else None
+    )
+    nested_value = (
+        _require_plain_int_total(nested, field_label=f"aggregate.{field}")
+        if nested_present
+        else None
+    )
+    if (
+        configured_value is not None
+        and nested_value is not None
+        and configured_value != nested_value
+    ):
         raise PayloadValidationError(
             "PAYLOAD_MANIFEST_TOTAL_MISMATCH",
             "payload 清单顶层合计与 aggregate 合计不一致",
         )
-    if configured_ok and isinstance(configured, int):
-        return configured
-    if nested_ok and isinstance(nested, int):
-        return nested
+    if configured_value is not None:
+        return configured_value
+    if nested_value is not None:
+        return nested_value
     return None
 
 
@@ -901,6 +977,7 @@ def validate_payload(
         repo_root,
         registry,
         object_row["root_id"],
+        artifact_id=artifact_id,
     )
     bindings = None
     bound_absolute_path: Path | None = None
@@ -1141,6 +1218,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     except PayloadValidationError as exc:
         print(str(exc), file=sys.stderr)
         if exc.code == PAYLOAD_VOLUME_NOT_MOUNTED:
+            if args.command == "report":
+                sys.stdout.buffer.write(_json_bytes(exc.as_not_run_receipt()))
             return 4
         return 3
     except inventory.InventoryError as exc:
