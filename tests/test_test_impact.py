@@ -67,6 +67,18 @@ class TestImpactTests(unittest.TestCase):
         self.assertTrue(plan["full_chain"])
         self.assertEqual(plan["unknown_paths"], ["mystery/unknown.bin"])
 
+    def test_governance_json_change_schedules_live_root_checkers(self) -> None:
+        plan = test_impact.build_plan(
+            spec(["governance/current_pointers.json"]),
+            policy=self.policy,
+            registry=self.registry,
+        )
+        self.assertFalse(plan["full_chain"])
+        self.assertIn("tests/test_drift.py", plan["selected_tests"])
+        self.assertIn("tests/test_current_freshness.py", plan["selected_tests"])
+        self.assertIn("tests/test_design_currentness.py", plan["selected_tests"])
+        self.assertIn("tests/test_traceability.py", plan["selected_tests"])
+
 
 if __name__ == "__main__":
     unittest.main()

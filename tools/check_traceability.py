@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -69,7 +70,11 @@ def issue(level: str, code: str, requirement_id: str | None, message: str) -> di
     return value
 
 
-def build_report(root: Path, traceability: dict[str, Any] | None = None) -> dict[str, Any]:
+def build_report(
+    root: Path,
+    traceability: dict[str, Any] | None = None,
+    pointer_override: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     root = root.resolve()
     errors: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
@@ -167,16 +172,70 @@ def build_report(root: Path, traceability: dict[str, Any] | None = None) -> dict
     else:
         errors.append(issue("ERROR", "R03_MISSING", None, str(r03_path)))
 
-    if not pointer_path.is_file():
+    if pointer_override is not None:
+        pointer = pointer_override
+    elif not pointer_path.is_file():
         errors.append(issue("ERROR", "TEST_POINTER_MISSING", None, str(pointer_path)))
+        pointer = None
     else:
         pointer = load_json(pointer_path)
+    if pointer is not None:
         coverage = pointer.get("coverage", {})
         if coverage.get("requirements_total") != 142 or coverage.get("small_tests_total") != 852:
             errors.append(issue("ERROR", "TEST_POINTER_COVERAGE", None, str(coverage)))
         suites = pointer.get("suites", [])
         if len(suites) != 2:
             errors.append(issue("ERROR", "TEST_SUITE_COUNT", None, "current test registry must contain legacy base plus R03 addendum"))
+        if pointer.get("schema_version") != "atomic-test-design-current-registry-v2":
+            errors.append(issue("ERROR", "TEST_DESIGN_SCHEMA", None, str(pointer.get("schema_version"))))
+        if pointer.get("identity") != "ATOMIC_TEST_DESIGN_R03_COMPOSITE_CURRENT":
+            errors.append(issue("ERROR", "TEST_DESIGN_IDENTITY", None, str(pointer.get("identity"))))
+        suite_root = pointer_path.parent
+        for suite in suites:
+            if not isinstance(suite, dict):
+                errors.append(issue("ERROR", "TEST_SUITE_SCHEMA", None, "suite is not an object"))
+                continue
+            suite_id = suite.get("suite_id") if isinstance(suite.get("suite_id"), str) else None
+            for field, sha_field in (
+                ("entry", None),
+                ("design", "design_sha256"),
+                ("validation_receipt", "validation_receipt_sha256"),
+                ("manifest", "manifest_sha256"),
+            ):
+                rel = suite.get(field)
+                if not rel:
+                    continue
+                if not isinstance(rel, str):
+                    errors.append(issue("ERROR", "TEST_DESIGN_FILE_FIELD", suite_id, f"{field} must be a path"))
+                    continue
+                file_path = suite_root / rel
+                if not file_path.is_file():
+                    errors.append(issue("ERROR", "TEST_DESIGN_FILE_MISSING", suite_id, str(rel)))
+                    continue
+                expected = suite.get(sha_field) if sha_field else None
+                if isinstance(expected, str) and expected:
+                    digest = hashlib.sha256(file_path.read_bytes()).hexdigest()
+                    if digest != expected:
+                        errors.append(issue("ERROR", "TEST_DESIGN_SHA_DRIFT", suite_id, f"{field} sha256 drifted"))
+
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        req_id = row.get("requirement_id") if isinstance(row.get("requirement_id"), str) else None
+        for key, code in (
+            ("implementation_refs", "IMPLEMENTATION_REF_MISSING"),
+            ("test_refs", "TEST_REF_MISSING"),
+        ):
+            for ref in row.get(key) or []:
+                if not isinstance(ref, str) or not ref.strip():
+                    continue
+                rel = ref.split("#", 1)[0].strip()
+                if not rel or rel.endswith("/"):
+                    continue
+                if "/" not in rel and not rel.endswith((".py", ".md", ".json")):
+                    continue
+                if not (root / rel).exists():
+                    errors.append(issue("ERROR", code, req_id, rel))
 
     warning_counts: dict[str, int] = {}
     for item in warnings:

@@ -64,3 +64,19 @@ def test_checker_is_read_only() -> None:
     MODULE.build_report(ROOT)
     after = {path: path.read_bytes() for path in tracked}
     assert before == after
+
+
+def test_missing_implementation_ref_is_error() -> None:
+    value = copy.deepcopy(TRACE)
+    value["requirements"][0]["implementation_refs"] = ["does-not-exist/missing.py"]
+    report = MODULE.build_report(ROOT, value)
+    assert "IMPLEMENTATION_REF_MISSING" in error_codes(report)
+
+
+def test_test_design_sha_drift_is_error() -> None:
+    pointer = json.loads(
+        (ROOT / "references/atomic-expectations/TEST_DESIGN_CURRENT.json").read_text(encoding="utf-8")
+    )
+    pointer["suites"][0]["design_sha256"] = "0" * 64
+    report = MODULE.build_report(ROOT, copy.deepcopy(TRACE), pointer)
+    assert "TEST_DESIGN_SHA_DRIFT" in error_codes(report)

@@ -25,6 +25,26 @@ REQUIRED_FILES = (
     "README.md",
     "governance/tool_registry.json",
 )
+POINTER_SCHEMA = "governance-current-pointers-v1"
+REQUIRED_POINTER_FIELDS = ("pointer_id", "status", "path")
+POINTER_STATUSES = {
+    "ACTIVE_CURRENT",
+    "HISTORICAL_REFERENCE",
+    "CANDIDATE_REVIEWED",
+    "CANDIDATE_BRANCH",
+    "ACTIVE_DOMAIN_POINTER",
+    "PLANNED",
+    "PENDING_WORK_ORDER",
+    "SUPERSEDED_HISTORICAL",
+}
+DRIFT_CHECKERS = (
+    "tools/check_current_freshness.py",
+    "tools/check_design_currentness.py",
+    "tools/check_traceability.py",
+    "tools/check_tracked_temp.py",
+    "tools/check_review_identity.py",
+    "tools/check_drift.py",
+)
 
 
 def load_json(path: Path) -> Any:
@@ -93,6 +113,15 @@ def build_report(root: Path) -> dict[str, Any]:
         if rel not in stub:
             errors.append(_issue("ERROR", "ROOT_STUB_LINK_MISSING", f"root current stub does not link {rel}", "current.md"))
 
+    if pointers.get("schema_version") != POINTER_SCHEMA:
+        errors.append(
+            _issue(
+                "ERROR",
+                "POINTER_SCHEMA",
+                f"current_pointers schema_version must be {POINTER_SCHEMA}",
+                "governance/current_pointers.json",
+            )
+        )
     pointer_rows = pointers.get("pointers")
     if not isinstance(pointer_rows, list):
         errors.append(_issue("ERROR", "POINTER_ROWS_INVALID", "pointers must be a list", "governance/current_pointers.json"))
@@ -100,6 +129,37 @@ def build_report(root: Path) -> dict[str, Any]:
     ids = [row.get("pointer_id") for row in pointer_rows if isinstance(row, dict)]
     if len(ids) != len(set(ids)):
         errors.append(_issue("ERROR", "POINTER_ID_DUPLICATE", "pointer_id values must be unique", "governance/current_pointers.json"))
+    for position, row in enumerate(pointer_rows):
+        if not isinstance(row, dict):
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "POINTER_ROW_SCHEMA",
+                    f"pointer row {position} is not an object",
+                    "governance/current_pointers.json",
+                )
+            )
+            continue
+        missing = [field for field in REQUIRED_POINTER_FIELDS if not isinstance(row.get(field), str) or not str(row.get(field)).strip()]
+        if missing:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "POINTER_ROW_MISSING_FIELDS",
+                    f"{row.get('pointer_id', f'row {position}')} missing {missing}",
+                    "governance/current_pointers.json",
+                )
+            )
+        status = row.get("status")
+        if isinstance(status, str) and status not in POINTER_STATUSES:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "POINTER_STATUS_ENUM",
+                    f"{row.get('pointer_id', f'row {position}')} has invalid status {status!r}",
+                    "governance/current_pointers.json",
+                )
+            )
 
     by_id = {row.get("pointer_id"): row for row in pointer_rows if isinstance(row, dict)}
     for pointer_id in ("repository_current", "product_background"):
@@ -151,15 +211,17 @@ def build_report(root: Path) -> dict[str, Any]:
             errors.append(_issue("ERROR", "PROGRESS_IDENTITY_MISSING", f"progress does not contain {expected}", "governance/progress/current-progress.md"))
 
     tools = registry.get("tools", [])
-    if not any(isinstance(row, dict) and row.get("path") == "tools/check_current_freshness.py" for row in tools):
-        warnings.append(
-            _issue(
-                "WARNING",
-                "CHECKER_REGISTRY_ENTRY_PENDING",
-                "freshness checker is usable and routed from README/current pointers, but the monolithic tool registry entry is deferred to the drift-check consolidation ticket",
-                "governance/tool_registry.json",
+    registered_paths = {row.get("path") for row in tools if isinstance(row, dict)}
+    for rel in DRIFT_CHECKERS:
+        if (root / rel).is_file() and rel not in registered_paths:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "CHECKER_REGISTRY_MISSING",
+                    f"{rel} exists but is not registered in tool_registry",
+                    "governance/tool_registry.json",
+                )
             )
-        )
 
     for row in pointer_rows:
         if not isinstance(row, dict):

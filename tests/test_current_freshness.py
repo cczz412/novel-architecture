@@ -66,6 +66,7 @@ def seed_repo(root: Path) -> None:
     dump(
         root / "governance/current_pointers.json",
         {
+            "schema_version": "governance-current-pointers-v1",
             "pointers": [
                 {"pointer_id": "repository_current", "status": "ACTIVE_CURRENT", "path": "governance/CURRENT_STATE.json"},
                 {"pointer_id": "product_background", "status": "ACTIVE_CURRENT", "path": product},
@@ -109,3 +110,30 @@ def test_checker_is_read_only_without_output_paths(tmp_path: Path) -> None:
         if path.is_file()
     }
     assert before == after
+
+
+def test_live_repository_current_freshness_passes() -> None:
+    root = Path(__file__).resolve().parents[1]
+    report = MODULE.build_report(root)
+    assert report["status"] == "PASS"
+    assert report["errors"] == []
+    assert report["schema_version"] == "current-freshness-report-v1"
+
+
+def test_duplicate_pointer_id_is_error(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    pointers = json.loads((tmp_path / "governance/current_pointers.json").read_text(encoding="utf-8"))
+    pointers["pointers"].append(dict(pointers["pointers"][0]))
+    dump(tmp_path / "governance/current_pointers.json", pointers)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "POINTER_ID_DUPLICATE" in {item["code"] for item in report["errors"]}
+
+
+def test_pointer_schema_mismatch_is_error(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    pointers = json.loads((tmp_path / "governance/current_pointers.json").read_text(encoding="utf-8"))
+    pointers["schema_version"] = "wrong"
+    dump(tmp_path / "governance/current_pointers.json", pointers)
+    report = MODULE.build_report(tmp_path)
+    assert "POINTER_SCHEMA" in {item["code"] for item in report["errors"]}

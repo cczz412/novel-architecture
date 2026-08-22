@@ -83,3 +83,33 @@ def test_checker_is_read_only() -> None:
     MODULE.build_report(ROOT)
     after = {path: path.read_bytes() for path in tracked}
     assert before == after
+
+
+def test_successor_self_reference_is_error() -> None:
+    value = copy.deepcopy(REGISTRY)
+    row = next(item for item in value["documents"] if item["status"] == "SUPERSEDED")
+    row["superseded_by"] = {"kind": "REPOSITORY_PATH", "path": row["path"]}
+    report = MODULE.build_report(ROOT, value, INDEX)
+    assert "SUCCESSOR_SELF" in codes(report)
+
+
+def test_successor_cycle_is_error() -> None:
+    value = copy.deepcopy(REGISTRY)
+    superseded = [item for item in value["documents"] if item["status"] == "SUPERSEDED"]
+    first, second = superseded[0], superseded[1]
+    first["superseded_by"] = {"kind": "REPOSITORY_PATH", "path": second["path"]}
+    second["superseded_by"] = {"kind": "REPOSITORY_PATH", "path": first["path"]}
+    report = MODULE.build_report(ROOT, value, INDEX)
+    assert "SUCCESSOR_CYCLE" in codes(report)
+
+
+def test_index_successor_mismatch_is_error() -> None:
+    superseded = next(row for row in REGISTRY["documents"] if row["status"] == "SUPERSEDED")
+    filename = Path(superseded["path"]).name
+    broken = INDEX.replace(
+        f"]({filename}) | `SUPERSEDED` | `{superseded['superseded_by']['path']}` |",
+        f"]({filename}) | `SUPERSEDED` | `{superseded['path']}` |",
+        1,
+    )
+    report = MODULE.build_report(ROOT, copy.deepcopy(REGISTRY), broken)
+    assert "INDEX_SUCCESSOR_MISMATCH" in codes(report)

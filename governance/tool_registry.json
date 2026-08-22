@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-08-15T02:40:42+08:00",
+  "updated_at": "2026-08-22T12:00:00+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 99,
-    "root_visible_python_entry_count": 100,
+    "root_entity_count": 110,
+    "root_visible_python_entry_count": 111,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -414,6 +414,46 @@
         "violation": "C13 的 90 节点专用执行器放在 tools/ 根层，不符合批次脚本优先进入 experiments/ 的位置门槛。",
         "current_disposition": "随 r06 窄提交补登记，不搬动、不删除、不接默认链。",
         "follow_up": "后续获批目录治理时迁入 C13 experiments 目录或由统一执行入口承接；本条出生记录永久保留。"
+      },
+      {
+        "detected_at": "2026-08-22T12:00:00+08:00",
+        "task_id": "WORK-ORDER-7",
+        "path": "tools/finetuning_control.py",
+        "violation": "根层 Python 已存在但单体 tool_registry 未同步登记；工单 7 收口时只补登记、不搬动、不删除。",
+        "current_disposition": "只补登记、不搬动、不删除；继续由对应定向测试或批次边界约束。",
+        "follow_up": "出生违规事实永久保留。"
+      },
+      {
+        "detected_at": "2026-08-22T12:00:00+08:00",
+        "task_id": "WORK-ORDER-7",
+        "path": "tools/finetuning_domain.py",
+        "violation": "根层 Python 已存在但单体 tool_registry 未同步登记；工单 7 收口时只补登记、不搬动、不删除。",
+        "current_disposition": "只补登记、不搬动、不删除；继续由对应定向测试或批次边界约束。",
+        "follow_up": "出生违规事实永久保留。"
+      },
+      {
+        "detected_at": "2026-08-22T12:00:00+08:00",
+        "task_id": "WORK-ORDER-7",
+        "path": "tools/validate_novel_fact_v2.py",
+        "violation": "根层 Python 已存在但单体 tool_registry 未同步登记；工单 7 收口时只补登记、不搬动、不删除。",
+        "current_disposition": "只补登记、不搬动、不删除；继续由对应定向测试或批次边界约束。",
+        "follow_up": "出生违规事实永久保留。"
+      },
+      {
+        "detected_at": "2026-08-22T12:00:00+08:00",
+        "task_id": "WORK-ORDER-7",
+        "path": "tools/cplus_stage1_runner.py",
+        "violation": "根层 Python 已存在但单体 tool_registry 未同步登记；工单 7 收口时只补登记、不搬动、不删除。",
+        "current_disposition": "只补登记、不搬动、不删除；继续由对应定向测试或批次边界约束。",
+        "follow_up": "出生违规事实永久保留。"
+      },
+      {
+        "detected_at": "2026-08-22T12:00:00+08:00",
+        "task_id": "WORK-ORDER-7",
+        "path": "tools/build_p2_production_prerequisites.py",
+        "violation": "根层 Python 已存在但单体 tool_registry 未同步登记；工单 7 收口时只补登记、不搬动、不删除。",
+        "current_disposition": "只补登记、不搬动、不删除；继续由对应定向测试或批次边界约束。",
+        "follow_up": "出生违规事实永久保留。"
       }
     ]
   },
@@ -522,13 +562,13 @@
       "target": "_retired/z60_b_semantic_audit.py",
       "identity": "retired_compat",
       "status": "relative_symlink_only",
-      "registration_rule": "软链不是根层实体，不重复计入 47 件；目标原件由 tools/_retired/MANIFEST.json 管。"
+      "registration_rule": "软链不是根层实体，不重复计入根层实体；目标原件由 tools/_retired/MANIFEST.json 管。"
     }
   ],
   "identity_summary": {
-    "reusable_component": 14,
-    "batch_reproducer": 80,
-    "active_entry": 2,
+    "reusable_component": 22,
+    "batch_reproducer": 82,
+    "active_entry": 3,
     "retired_compat": 3,
     "pending": 0
   },
@@ -4088,6 +4128,411 @@
       "next_confirmed_consumer": "CZ 后续在 ChatGPT、Codex、Notion 或其他 Agent 的平铺读取环境中反复上传或解压使用当前三块背景。",
       "retirement_condition_and_compatibility_boundary": "只生成无权限的运输副本；拒绝符号链接、入口漂移、清单漂移、平铺重名、TEMP 外输出和同名异字节覆盖。背景板升版由各自正式入口决定，工具不替它们转正。",
       "review_needed": false
+    },
+    {
+      "path": "tools/check_current_freshness.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·当前表面只读新鲜度检查",
+      "purpose": "只读核对唯一 current、指针表 schema／不变量和入口一致性；不改 current、需求或合同。",
+      "human_command": "uv run --locked python tools/check_current_freshness.py --check",
+      "inputs": [
+        "governance/CURRENT_STATE.json",
+        "governance/current_pointers.json",
+        "governance/tool_registry.json",
+        "AGENTS.md",
+        "README.md"
+      ],
+      "outputs": [
+        "current-freshness-report-v1 JSON",
+        "一页摘要",
+        "退出码"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地只读。"
+      },
+      "current_consumers": [
+        "tools/check_drift.py",
+        "tests/test_current_freshness.py"
+      ],
+      "consumer_evidence_rule": "只证明当前表面与指针表机械一致；PASS 不等于产品语义已完成。",
+      "test_references": [
+        "tests/test_current_freshness.py",
+        "tests/test_drift.py"
+      ],
+      "last_use_clues": [
+        "governance/current_pointers.json",
+        "README.md"
+      ],
+      "next_confirmed_consumer": "工单 7 五件套统一入口 tools/check_drift.py",
+      "retirement_condition_and_compatibility_boundary": "只读；不自动改 current、指针或产品语义。",
+      "review_needed": false,
+      "admitted_by": "WORK_ORDER_7",
+      "tool_id": "TOOL-100"
+    },
+    {
+      "path": "tools/check_design_currentness.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·设计 currentness 只读检查",
+      "purpose": "只读核对 design registry、默认路由、后继自指／环和 INDEX 后继对齐。",
+      "human_command": "uv run --locked python tools/check_design_currentness.py --check",
+      "inputs": [
+        "novel-mvp/design/design_registry.json",
+        "novel-mvp/design/INDEX.md"
+      ],
+      "outputs": [
+        "design-currentness-check-report-v1 JSON",
+        "一页摘要",
+        "退出码"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地只读。"
+      },
+      "current_consumers": [
+        "tools/check_drift.py",
+        "tests/test_design_currentness.py"
+      ],
+      "consumer_evidence_rule": "CURRENT 只表示可作默认设计参考；不证明实现或施工授权。",
+      "test_references": [
+        "tests/test_design_currentness.py",
+        "tests/test_drift.py"
+      ],
+      "last_use_clues": [
+        "novel-mvp/design/INDEX.md"
+      ],
+      "next_confirmed_consumer": "工单 7 五件套统一入口 tools/check_drift.py",
+      "retirement_condition_and_compatibility_boundary": "只读；不重写设计稿正文。",
+      "review_needed": false,
+      "admitted_by": "WORK_ORDER_7",
+      "tool_id": "TOOL-101"
+    },
+    {
+      "path": "tools/check_traceability.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·能力追踪只读检查",
+      "purpose": "只读核对 142 条需求 ID、测试设计身份／SHA 以及声明过的实现／测试路径存在。",
+      "human_command": "uv run --locked python tools/check_traceability.py --check",
+      "inputs": [
+        "governance/capability_traceability.json",
+        "references/atomic-expectations/TEST_DESIGN_CURRENT.json"
+      ],
+      "outputs": [
+        "traceability-check-report-v1 JSON",
+        "一页摘要",
+        "退出码"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地只读。"
+      },
+      "current_consumers": [
+        "tools/check_drift.py",
+        "tests/test_traceability.py"
+      ],
+      "consumer_evidence_rule": "PASS 不等于 852 条语义测试已执行。",
+      "test_references": [
+        "tests/test_traceability.py",
+        "tests/test_drift.py"
+      ],
+      "last_use_clues": [
+        "governance/capability_traceability.json"
+      ],
+      "next_confirmed_consumer": "工单 7 五件套统一入口 tools/check_drift.py",
+      "retirement_condition_and_compatibility_boundary": "只读；不改需求正文或合同。",
+      "review_needed": false,
+      "admitted_by": "WORK_ORDER_7",
+      "tool_id": "TOOL-102"
+    },
+    {
+      "path": "tools/check_tracked_temp.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·tracked TEMP 只读扫描",
+      "purpose": "NUL 安全扫描 Git 跟踪路径：路径组件恰好为 TEMP 且无冻结 manifest 则 ERROR；runs／reports／outbox 进 tracked 则 WARNING。",
+      "human_command": "uv run --locked python tools/check_tracked_temp.py --check",
+      "inputs": [
+        "当前 Git 索引"
+      ],
+      "outputs": [
+        "tracked-temp-check-report-v1 JSON",
+        "一页摘要",
+        "退出码"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "只读 git ls-files -z；不 grep 正文 TEMP 字样。"
+      },
+      "current_consumers": [
+        "tools/check_drift.py",
+        "tests/test_tracked_temp.py"
+      ],
+      "consumer_evidence_rule": "只证明 Git 跟踪路径卫生；不授权删除或外置。",
+      "test_references": [
+        "tests/test_tracked_temp.py",
+        "tests/test_drift.py"
+      ],
+      "last_use_clues": [
+        "Issue #33"
+      ],
+      "next_confirmed_consumer": "工单 7 五件套统一入口 tools/check_drift.py",
+      "retirement_condition_and_compatibility_boundary": "只读；不移动、不删除 tracked 文件。",
+      "review_needed": false,
+      "admitted_by": "WORK_ORDER_7",
+      "tool_id": "TOOL-103"
+    },
+    {
+      "path": "tools/check_review_identity.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·未来 PR 身份只读检查",
+      "purpose": "只读检查未来 PR 模板六项身份字段；不回填历史已合并 PR。",
+      "human_command": "uv run --locked python tools/check_review_identity.py --check [--pr-body <file>]",
+      "inputs": [
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        "可选的未来 PR 正文"
+      ],
+      "outputs": [
+        "review-identity-check-report-v1 JSON",
+        "一页摘要",
+        "退出码"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "不访问 GitHub 历史 PR。"
+      },
+      "current_consumers": [
+        "tools/check_drift.py",
+        "tests/test_review_identity.py"
+      ],
+      "consumer_evidence_rule": "默认只证明模板字段在；真正的 PR 正文要用 --pr-body 另查。",
+      "test_references": [
+        "tests/test_review_identity.py",
+        "tests/test_drift.py"
+      ],
+      "last_use_clues": [
+        ".github/PULL_REQUEST_TEMPLATE.md"
+      ],
+      "next_confirmed_consumer": "工单 7 五件套统一入口 tools/check_drift.py",
+      "retirement_condition_and_compatibility_boundary": "不改历史 PR；不自动填字段。",
+      "review_needed": false,
+      "admitted_by": "WORK_ORDER_7",
+      "tool_id": "TOOL-104"
+    },
+    {
+      "path": "tools/check_drift.py",
+      "primary_identity": "active_entry",
+      "primary_identity_label": "现役总入口",
+      "status": "candidate_not_default",
+      "status_label": "候选入口·防漂移五件套",
+      "purpose": "一条命令串跑五个只读检查，汇总 JSON、摘要和退出码。",
+      "human_command": "uv run --locked python tools/check_drift.py --check",
+      "inputs": [
+        "五个只读检查器"
+      ],
+      "outputs": [
+        "drift-check-report-v1 JSON",
+        "一页摘要",
+        "退出码"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地只读。"
+      },
+      "current_consumers": [
+        "README.md",
+        "tests/test_drift.py"
+      ],
+      "consumer_evidence_rule": "套件 PASS 不等于 852 语义测试，也不等于全仓 pytest 全绿。",
+      "test_references": [
+        "tests/test_drift.py"
+      ],
+      "last_use_clues": [
+        "README.md",
+        "Issue #33"
+      ],
+      "next_confirmed_consumer": "后续治理 json 变更的影响计划显式跑 live-root checker。",
+      "retirement_condition_and_compatibility_boundary": "只读；不自动改 current、需求、合同或产品语义。",
+      "review_needed": false,
+      "admitted_by": "WORK_ORDER_7",
+      "tool_id": "TOOL-105"
+    },
+    {
+      "path": "tools/finetuning_control.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·微调域控制面",
+      "purpose": "微调域注册、封版、切换当前与兼容路牌。",
+      "human_command": "uv run --locked python tools/finetuning_control.py --help",
+      "inputs": [
+        "finetuning/CURRENT.json",
+        "references/t5-r04/"
+      ],
+      "outputs": [
+        "控制面回执"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "不授权训练。"
+      },
+      "current_consumers": [
+        "tests/test_finetuning_control.py"
+      ],
+      "consumer_evidence_rule": "登记身份不等于训练许可。",
+      "test_references": [
+        "tests/test_finetuning_control.py"
+      ],
+      "last_use_clues": [
+        "finetuning/CURRENT.json"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "不授权训练或晋升。",
+      "review_needed": false,
+      "tool_id": "TOOL-106"
+    },
+    {
+      "path": "tools/finetuning_domain.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·微调域机械索引",
+      "purpose": "微调域机械索引与外审包等价复建。",
+      "human_command": "uv run --locked python tools/finetuning_domain.py --help",
+      "inputs": [
+        "finetuning/",
+        ".local/finetuning/stores.local.json"
+      ],
+      "outputs": [
+        "索引／复建回执"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "纯本地机械处理。"
+      },
+      "current_consumers": [
+        "tools/finetuning_control.py",
+        "tests/test_finetuning_domain.py"
+      ],
+      "consumer_evidence_rule": "静态登记；不证明最近真实执行。",
+      "test_references": [
+        "tests/test_finetuning_domain.py"
+      ],
+      "last_use_clues": [
+        "finetuning/CURRENT.json"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "不授权训练。",
+      "review_needed": false,
+      "tool_id": "TOOL-107"
+    },
+    {
+      "path": "tools/validate_novel_fact_v2.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·事实抽取 v2 离线校验",
+      "purpose": "离线校验小说事实抽取 v2.1 回件，并组装与真实请求同形的训练消息。",
+      "human_command": "uv run --locked python tools/validate_novel_fact_v2.py --help",
+      "inputs": [
+        "config/contracts/novel_fact_extraction_v2.schema.json"
+      ],
+      "outputs": [
+        "校验报告／训练消息"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "离线校验，不发网。"
+      },
+      "current_consumers": [
+        "tests/test_validate_novel_fact_v2.py"
+      ],
+      "consumer_evidence_rule": "只证明回件形状；不证明语义正确。",
+      "test_references": [
+        "tests/test_validate_novel_fact_v2.py"
+      ],
+      "last_use_clues": [
+        "config/contracts/novel_fact_extraction_v2.schema.json"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "不调用模型。",
+      "review_needed": false,
+      "tool_id": "TOOL-108"
+    },
+    {
+      "path": "tools/cplus_stage1_runner.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "T5 R04 C+ 阶段 1 三个零训练单变量根因证伪。",
+      "human_command": "uv run --locked python tools/cplus_stage1_runner.py --help",
+      "inputs": [
+        "T5 R04 C+ 阶段规格"
+      ],
+      "outputs": [
+        "阶段 1 运行件"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "provider_api",
+        "note": "批次复现器；本登记不授权新训练。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "无定向测试；只补登记。",
+      "test_references": [],
+      "last_use_clues": [
+        "finetuning/experiments/"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "批次专用；不得当通用训练入口。",
+      "review_needed": false,
+      "tool_id": "TOOL-109"
+    },
+    {
+      "path": "tools/build_p2_production_prerequisites.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "historical_replay_only",
+      "status_label": "历史复现",
+      "purpose": "在不训练的前提下汇编 P2 生产前置账。",
+      "human_command": "uv run --locked python tools/build_p2_production_prerequisites.py --help",
+      "inputs": [
+        "冻结源窗口"
+      ],
+      "outputs": [
+        "P2 前置账"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "不训练。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "无定向测试；只补登记。",
+      "test_references": [],
+      "last_use_clues": [],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "不把无训练说明升级成版权许可。",
+      "review_needed": false,
+      "tool_id": "TOOL-110"
     }
   ]
 }

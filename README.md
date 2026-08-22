@@ -64,6 +64,9 @@ uv run --locked python tools/governance_index.py --check
 # 检查唯一 current、版本路径和入口一致性（不写仓库）
 uv run --locked python tools/check_current_freshness.py --check
 
+# 一条命令跑完全套防漂移检查（current / 设计 / 追踪 / tracked-temp / PR 身份）
+uv run --locked python tools/check_drift.py --check
+
 # 全仓唯一测试命令（固定工作路径、固定 Python，只收集 tests/）
 cd <repo-root> && uv run --locked pytest -q
 
