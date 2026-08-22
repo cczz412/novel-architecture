@@ -1,0 +1,4 @@
+{
+  "name": "novel-architecture",
+  "install": "bash .cursor/install.sh"
+}

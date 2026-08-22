@@ -93,6 +93,8 @@ uv run --locked ruff check ...
 
 不要把裸 `python3`、`pytest`、`ruff` 当默认入口，也不要向系统 Python 临时补依赖。
 
+云端 Agent 没有本机正文库、外置仓和 API 密钥。环境只保证 `uv run --locked` 能用、Python 是 3.12.12。安装由 [environment.json](.cursor/environment.json) 在 Build 时跑 [install.sh](.cursor/install.sh)。系统自带的 `python3` 不是 3.12.12，不要用。缺本机证据的测试会 skip，这是正常的。不要跟踪 `corpus-downloads/` 去读小说正文。模型 API、训练、Gold、Notion 写入、生产合并：没有 CZ 明确授权就不要做。
+
 ## 6. Nested AGENTS precedence
 
 - 进入子目录时，离目标文件最近的 `AGENTS.md` 优先；根规则只补它没说的部分。
