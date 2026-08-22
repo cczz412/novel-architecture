@@ -16,6 +16,8 @@ from typing import Any, Sequence
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import SchemaError, ValidationError
 
+_BINDINGS_UNSET = object()
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_RELATIVE = Path("governance/external_archive_registry.json")
@@ -243,6 +245,19 @@ def _resolve_external_volume_uuid(
 class ExternalRootBindings:
     raw: bytes
     by_root_id: dict[str, Path]
+    schema_sha256: str
+
+
+def _is_repository_or_inside(path: Path, repo_root: Path) -> bool:
+    resolved = path.resolve(strict=False)
+    repo = repo_root.resolve(strict=False)
+    if resolved == repo:
+        return True
+    try:
+        resolved.relative_to(repo)
+    except ValueError:
+        return False
+    return True
 
 
 def read_external_root_bindings(repo_root: Path) -> ExternalRootBindings | None:
@@ -261,15 +276,21 @@ def read_external_root_bindings(repo_root: Path) -> ExternalRootBindings | None:
             "EXTERNAL_ROOT_BINDING_INVALID",
             "绑定文件必须是普通文件",
         )
+    binding_relative = PurePosixPath(BINDING_RELATIVE.as_posix())
+    schema_relative = PurePosixPath(BINDING_SCHEMA_RELATIVE.as_posix())
     raw = _read_registered_file(
         repo_root,
-        PurePosixPath(BINDING_RELATIVE.as_posix()),
+        binding_relative,
         code="EXTERNAL_ROOT_BINDING_INVALID",
     )
-    document = _read_json_object(raw, code="EXTERNAL_ROOT_BINDING_INVALID")
-    schema = _read_registered_json(
+    schema_raw = _read_registered_file(
         repo_root,
-        PurePosixPath(BINDING_SCHEMA_RELATIVE.as_posix()),
+        schema_relative,
+        code="EXTERNAL_ROOT_BINDING_SCHEMA_INVALID",
+    )
+    document = _read_json_object(raw, code="EXTERNAL_ROOT_BINDING_INVALID")
+    schema = _read_json_object(
+        schema_raw,
         code="EXTERNAL_ROOT_BINDING_SCHEMA_INVALID",
     )
     _validate_schema(
@@ -297,7 +318,45 @@ def read_external_root_bindings(repo_root: Path) -> ExternalRootBindings | None:
                 "绑定路径必须是绝对目录",
             )
         by_root_id[root_id] = absolute
-    return ExternalRootBindings(raw=raw, by_root_id=by_root_id)
+    reread = _read_registered_file(
+        repo_root,
+        binding_relative,
+        code="EXTERNAL_ROOT_BINDING_INVALID",
+    )
+    if reread != raw:
+        raise InventoryError(
+            "EXTERNAL_ROOT_BINDING_INVALID",
+            "绑定文件两次读取字节不一致",
+        )
+    return ExternalRootBindings(
+        raw=raw,
+        by_root_id=by_root_id,
+        schema_sha256=_sha256_bytes(schema_raw),
+    )
+
+
+def validate_external_root_bindings(
+    repo_root: Path,
+    registry: dict[str, Any],
+    bindings: ExternalRootBindings,
+) -> None:
+    allowed = {
+        row["root_id"]: row
+        for row in registry["storage_roots"]
+        if row["locator"]["kind"] == "repository_sibling_suffix"
+    }
+    for root_id, absolute in bindings.by_root_id.items():
+        if root_id not in allowed:
+            raise InventoryError(
+                "EXTERNAL_ROOT_BINDING_INVALID",
+                f"{root_id} 不在 sibling 根白名单",
+            )
+        _require_plain_directory(absolute, code="EXTERNAL_ROOT_BINDING_INVALID")
+        if _is_repository_or_inside(absolute, repo_root):
+            raise InventoryError(
+                "EXTERNAL_ROOT_BINDING_INVALID",
+                "禁止绑定到主仓或其子目录",
+            )
 
 
 def _read_json_object(raw: bytes, *, code: str) -> dict[str, Any]:
@@ -318,6 +377,8 @@ def storage_root_device_fingerprint(path: Path) -> str:
 def resolve_storage_root(
     repo_root: Path,
     row: dict[str, Any],
+    *,
+    bindings: ExternalRootBindings | None | object = _BINDINGS_UNSET,
 ) -> Path:
     locator = row["locator"]
     kind = locator["kind"]
@@ -332,7 +393,8 @@ def resolve_storage_root(
             or "\\" in suffix
         ):
             raise InventoryError("ROOT_LOCATOR_UNSAFE", row["root_id"])
-        bindings = read_external_root_bindings(repo_root)
+        if bindings is _BINDINGS_UNSET:
+            bindings = read_external_root_bindings(repo_root)
         bound = None if bindings is None else bindings.by_root_id.get(row["root_id"])
         if bound is not None:
             _require_plain_directory(bound, code="STORAGE_ROOT_INVALID")
@@ -618,9 +680,16 @@ def _resolve_roots(
     registry: dict[str, Any],
 ) -> dict[str, Path]:
     _require_plain_directory(repo_root, code="REPOSITORY_ROOT_INVALID")
+    bindings = read_external_root_bindings(repo_root)
+    if bindings is not None:
+        validate_external_root_bindings(repo_root, registry, bindings)
     resolved: dict[str, Path] = {}
     for row in registry["storage_roots"]:
-        resolved[row["root_id"]] = resolve_storage_root(repo_root, row)
+        resolved[row["root_id"]] = resolve_storage_root(
+            repo_root,
+            row,
+            bindings=bindings,
+        )
     return resolved
 
 
@@ -715,8 +784,7 @@ def _verify_activation_receipt(
         row = objects_by_id[artifact_id]
         root = roots_by_id[row["root_id"]]
         if (
-            row["category"] != "repository_experiment"
-            or root["role"] != "external_archive"
+            root["role"] != "external_archive"
             or row["externalization"] != "already_external"
             or row["consumer_closure"] != "verified"
             or row["status"] not in {"frozen", "sealed"}

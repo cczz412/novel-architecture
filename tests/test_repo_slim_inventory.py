@@ -8,6 +8,9 @@ from pathlib import Path
 
 import pytest
 
+from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError
+
 from isolation import run_git
 from tools import repo_slim_inventory as inventory
 
@@ -190,6 +193,9 @@ def _prepare_hard_limit_fixture(
     registry: dict,
     *,
     seal_object: bool,
+    category: str = "repository_experiment",
+    pointer_path: str = "experiments/fixture-archive/README.md",
+    hard_limit_activation: str = "blocked_in_s06a_until_separate_payload_validator",
 ) -> None:
     payload = external / "batch/payload/result.json"
     _write_json(
@@ -209,7 +215,7 @@ def _prepare_hard_limit_fixture(
     if seal_object:
         object_row.update(
             {
-                "category": "repository_experiment",
+                "category": category,
                 "status": "sealed",
                 "lifecycle": "frozen",
                 "consumer_closure": "verified",
@@ -217,8 +223,8 @@ def _prepare_hard_limit_fixture(
             }
         )
 
-    pointer = repo / "experiments/fixture-archive/README.md"
-    pointer.parent.mkdir(parents=True)
+    pointer = repo / pointer_path
+    pointer.parent.mkdir(parents=True, exist_ok=True)
     pointer.write_text("fixture external pointer\n", encoding="utf-8")
     receipt = repo / "governance/receipts/migration.json"
     receipt_value = {
@@ -237,7 +243,7 @@ def _prepare_hard_limit_fixture(
         "repository_pointers": [
             {
                 "artifact_id": "fixture-archive",
-                "path": "experiments/fixture-archive/README.md",
+                "path": pointer_path,
                 "sha256": _sha256(pointer),
             }
         ],
@@ -248,6 +254,7 @@ def _prepare_hard_limit_fixture(
             "mode": "hard_limit",
             "active_limit_bytes": 10_000_000,
             "hard_limit_bytes": 10_000_000,
+            "hard_limit_activation": hard_limit_activation,
             "activation_receipt": {
                 "path": "governance/receipts/migration.json",
                 "sha256": "0" * 64,
@@ -262,7 +269,7 @@ def _prepare_hard_limit_fixture(
             repo,
             "add",
             inventory.REGISTRY_RELATIVE.as_posix(),
-            "experiments/fixture-archive/README.md",
+            pointer_path,
             "governance/receipts/migration.json",
         )
         _count, tracked_bytes = inventory.measure_git_index(repo)
@@ -710,6 +717,43 @@ def test_migration_receipt_schema_rejects_semantically_empty_receipt() -> None:
             schema,
             code="HARD_LIMIT_ACTIVATION_INVALID",
         )
+
+
+def test_migration_receipt_schema_accepts_non_experiment_pointer_path() -> None:
+    schema = json.loads(
+        (ROOT / inventory.MIGRATION_RECEIPT_SCHEMA_RELATIVE).read_text(encoding="utf-8")
+    )
+    pointer_schema = schema["properties"]["repository_pointers"]["items"]["properties"][
+        "path"
+    ]
+    validator = Draft202012Validator({"type": "string", "pattern": pointer_schema["pattern"]})
+    validator.validate("references/survey-inbox/packages/fixture/00_READ_ME_FIRST.md")
+    validator.validate("foundation/example/README.md")
+    validator.validate("experiments/fixture-archive/README.md")
+    with pytest.raises(ValidationError):
+        validator.validate("tmp/outside.md")
+    with pytest.raises(ValidationError):
+        validator.validate("/tmp/outside.md")
+    with pytest.raises(ValidationError):
+        validator.validate("../foundation/README.md")
+
+
+def test_migration_receipt_accepts_non_experiment_pointer(tmp_path: Path) -> None:
+    repo, external, manifest, registry = _make_fixture(tmp_path)
+    _prepare_hard_limit_fixture(
+        repo,
+        external,
+        manifest,
+        registry,
+        seal_object=True,
+        category="historical_test_replay_package",
+        pointer_path="references/survey-inbox/packages/fixture/00_READ_ME_FIRST.md",
+        hard_limit_activation="receipt_test_unlocked",
+    )
+    value = inventory._verify_activation_receipt(repo, registry)
+    assert value is not None
+    assert value["repository_pointers"][0]["path"].startswith("references/")
+    assert registry["objects"][0]["category"] == "historical_test_replay_package"
 
 
 def test_scan_does_not_mutate_registry_or_manifest(tmp_path: Path) -> None:

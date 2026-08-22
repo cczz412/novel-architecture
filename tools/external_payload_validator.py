@@ -570,6 +570,7 @@ def _resolve_target_root(
     root_id: str,
     *,
     artifact_id: str,
+    bindings: inventory.ExternalRootBindings | None | object = inventory._BINDINGS_UNSET,
 ) -> Path:
     roots = {row["root_id"]: row for row in registry["storage_roots"]}
     root_row = roots[root_id]
@@ -583,7 +584,11 @@ def _resolve_target_root(
         "relative_root": locator.get("relative_root"),
     }
     try:
-        path = inventory.resolve_storage_root(repo_root, root_row)
+        path = inventory.resolve_storage_root(
+            repo_root,
+            root_row,
+            bindings=bindings,
+        )
     except inventory.InventoryError as exc:
         if (
             root_row["locator"]["kind"] == "external_volume_uuid"
@@ -698,9 +703,16 @@ def _verify_tar_representation(
         for name, expected in expected_links.items():
             if actual_links[name].linkname != expected.get("archive_link_target"):
                 raise PayloadValidationError("TAR_SYMLINK_TARGET_MISMATCH", name)
+        actual_total = sum(member.size for member in actual_files.values())
+        claimed_total = manifest.get("source_total_bytes")
+        if claimed_total is not None and claimed_total != actual_total:
+            raise PayloadValidationError(
+                "TAR_TOTAL_BYTES_MISMATCH",
+                "tar 实算总字节与清单 source_total_bytes 不一致",
+            )
     return {
         "symlink_count": len(expected_links),
-        "total_bytes": manifest.get("source_total_bytes"),
+        "total_bytes": actual_total,
     }
 
 
@@ -928,6 +940,25 @@ def _validate_report(
             )
 
 
+def _validate_not_run_receipt(repo_root: Path, receipt: dict[str, Any]) -> None:
+    schema = inventory._read_registered_json(
+        repo_root,
+        PurePosixPath(REPORT_SCHEMA_RELATIVE.as_posix()),
+        code="PAYLOAD_REPORT_SCHEMA_INVALID",
+    )
+    not_run_schema = schema.get("$defs", {}).get("notRunReceipt")
+    if not isinstance(not_run_schema, dict):
+        raise PayloadValidationError(
+            "PAYLOAD_REPORT_SCHEMA_INVALID",
+            "报告合同缺少 NOT_RUN 回执定义",
+        )
+    inventory._validate_schema(
+        receipt,
+        not_run_schema,
+        code="PAYLOAD_NOT_RUN_RECEIPT_INVALID",
+    )
+
+
 def validate_payload(
     artifact_id: str,
     repo_root: Path = ROOT,
@@ -973,18 +1004,32 @@ def validate_payload(
     object_row = objects[artifact_id]
     roots = {row["root_id"]: row for row in registry["storage_roots"]}
     root_row = roots[object_row["root_id"]]
+    try:
+        bindings = inventory.read_external_root_bindings(repo_root)
+        if bindings is not None:
+            inventory.validate_external_root_bindings(
+                repo_root,
+                registry,
+                bindings,
+            )
+    except inventory.InventoryError as exc:
+        raise PayloadValidationError(
+            "PAYLOAD_BINDING_INVALID",
+            exc.detail or exc.code,
+        ) from exc
     root = _resolve_target_root(
         repo_root,
         registry,
         object_row["root_id"],
         artifact_id=artifact_id,
+        bindings=bindings,
     )
-    bindings = None
     bound_absolute_path: Path | None = None
-    if root_row["locator"]["kind"] == "repository_sibling_suffix":
-        bindings = inventory.read_external_root_bindings(repo_root)
-        if bindings is not None:
-            bound_absolute_path = bindings.by_root_id.get(object_row["root_id"])
+    if (
+        root_row["locator"]["kind"] == "repository_sibling_suffix"
+        and bindings is not None
+    ):
+        bound_absolute_path = bindings.by_root_id.get(object_row["root_id"])
     manifest_raw, expected, entry_set_sha256, total_bytes = _load_manifest_expectations(
         root,
         object_row,
@@ -1156,6 +1201,13 @@ def validate_payload(
             "readonly_capability_respected",
         ],
     }
+    if bindings is not None:
+        report["bindings"]["storage_root_binding_schema_sha256"] = (
+            bindings.schema_sha256
+        )
+        report["bindings"]["storage_root_binding_applied"] = (
+            bound_absolute_path is not None
+        )
     if bound_absolute_path is not None and bindings is not None:
         report["bindings"]["storage_root_binding_sha256"] = _sha256_bytes(
             bindings.raw
@@ -1219,7 +1271,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(str(exc), file=sys.stderr)
         if exc.code == PAYLOAD_VOLUME_NOT_MOUNTED:
             if args.command == "report":
-                sys.stdout.buffer.write(_json_bytes(exc.as_not_run_receipt()))
+                receipt = exc.as_not_run_receipt()
+                _validate_not_run_receipt(ROOT, receipt)
+                sys.stdout.buffer.write(_json_bytes(receipt))
             return 4
         return 3
     except inventory.InventoryError as exc:

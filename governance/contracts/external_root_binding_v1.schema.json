@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://local.invalid/governance/contracts/external_root_binding_v1.schema.json",
   "title": "External root binding v1",
-  "description": "本机私有外置根绑定。只绑定 repository_sibling_suffix 根；禁止绑定 T7 外置卷。文件位于仓库 .local/external_root_bindings.json，不得提交。示例路径只能写 /tmp/example-external-archive。",
+  "description": "本机私有外置根绑定。只绑定登记册里 repository_sibling_suffix 根；禁止绑定 T7、主仓及其子目录。未知或拼错的 root_id 硬失败，不得退回同级目录猜测。文件位于仓库 .local/external_root_bindings.json，不得提交。示例路径只能写 /tmp/example-external-archive。",
   "type": "object",
   "additionalProperties": false,
   "required": [
