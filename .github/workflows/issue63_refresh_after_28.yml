@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - codex/issue-63-refresh-after-28
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -18,8 +21,10 @@ jobs:
       UV_PYTHON_INSTALL_DIR: ${{ runner.temp }}/uv-python
       RESULT_DIR: ${{ runner.temp }}/issue63-results
     steps:
-      - name: Checkout exact commit
+      - name: Checkout exact main commit
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 3a67bc64d5e0008ba42b894215024a349b696626
 
       - name: Install exact toolchain
         shell: bash
