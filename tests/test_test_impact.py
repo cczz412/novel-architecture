@@ -65,6 +65,10 @@ class TestImpactTests(unittest.TestCase):
             spec(["mystery/unknown.bin"]), policy=self.policy, registry=self.registry
         )
         self.assertTrue(plan["full_chain"])
+        self.assertEqual(
+            plan["commands"][0], test_impact.PORTABLE_FULL_CHAIN_COMMAND
+        )
+        self.assertNotIn("/Users/", plan["commands"][0])
         self.assertEqual(plan["unknown_paths"], ["mystery/unknown.bin"])
 
     def test_governance_json_change_schedules_live_root_checkers(self) -> None:

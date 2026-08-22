@@ -18,7 +18,7 @@
 唯一全仓测试命令：
 
 ```bash
-cd /Users/a1234/挣钱/小说架构 && uv run --locked pytest -q
+cd "$(git rev-parse --show-toplevel)" && uv run --locked pytest -q
 ```
 
 默认只收集 `tests/`，不会进入 `TEMP/`、`runs/`、`reports/`、`outbox/`。S-05-B

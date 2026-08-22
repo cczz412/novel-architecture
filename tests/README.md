@@ -5,11 +5,11 @@
 ## 怎么跑
 
 ```bash
-cd /Users/a1234/挣钱/小说架构 && uv run --locked pytest -q
+cd "$(git rev-parse --show-toplevel)" && uv run --locked pytest -q
 ```
 
-这是日常全仓验收命令：固定工作路径、固定 Python 3.12.12。`uv sync --locked`
-可以重建环境，但不另造一条验收口径。S-05-B 登记的 40 个历史回放节点会明确显示
+这是日常全仓验收命令：运行时从当前 Git 仓库定位根目录，Python 固定为 3.12.12；
+不会跳回某台电脑的旧目录。`uv sync --locked` 可以重建环境，但不另造一条验收口径。S-05-B 登记的 40 个历史回放节点会明确显示
 为 `deselected`，它们不计入日常验收。
 
 `pytest.ini` 只收集 `tests/`，不会把 `TEMP/`、`runs/`、`reports/` 或 `outbox/` 里的历史脚本误当现役测试。
@@ -157,7 +157,7 @@ uv run --locked pytest -q \
 定向检查命令：
 
 ```bash
-cd /Users/a1234/挣钱/小说架构 && \
+cd "$(git rev-parse --show-toplevel)" && \
   uv run --locked pytest -q tests/test_model_call_profiles.py
 ```
 
@@ -173,7 +173,7 @@ cd /Users/a1234/挣钱/小说架构 && \
 定向检查命令：
 
 ```bash
-cd /Users/a1234/挣钱/小说架构 && \
+cd "$(git rev-parse --show-toplevel)" && \
   uv run --locked pytest -q \
   tests/test_experiment_workspace.py \
   tests/test_experiment_workspace_security.py

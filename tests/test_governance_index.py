@@ -1447,12 +1447,19 @@ class GovernanceIndexTests(unittest.TestCase):
     def test_test_command_is_one_fixed_tests_only_command(self) -> None:
         policy = read_json(ROOT / "governance/test_policy.json")
         expected = (
-            "cd /Users/a1234/挣钱/小说架构 && "
+            'cd "$(git rev-parse --show-toplevel)" && '
             "uv run --locked pytest -q"
         )
         self.assertEqual(policy["full_chain_command"], expected)
-        self.assertIn(expected, (ROOT / "README.md").read_text(encoding="utf-8"))
-        self.assertIn(expected, (ROOT / "governance/README.md").read_text(encoding="utf-8"))
+        self.assertIn(
+            "cd <repo-root> && uv run --locked pytest -q",
+            (ROOT / "README.md").read_text(encoding="utf-8"),
+        )
+        self.assertIn(
+            expected,
+            (ROOT / "governance/README.md").read_text(encoding="utf-8"),
+        )
+        self.assertNotIn("/Users/", policy["full_chain_command"])
 
     def test_restructure_baseline_passes_without_authorizing_a_wave(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

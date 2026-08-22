@@ -22,6 +22,9 @@ DEFAULT_POLICY = ROOT / "governance/test_policy.json"
 DEFAULT_REGISTRY = ROOT / "governance/module_registry.json"
 SPEC_CONTRACT = "pipeline-change-spec-v1"
 PLAN_CONTRACT = "pipeline-test-plan-v1"
+PORTABLE_FULL_CHAIN_COMMAND = (
+    'cd "$(git rev-parse --show-toplevel)" && uv run --locked pytest -q'
+)
 
 
 class TestImpactError(RuntimeError):
@@ -53,6 +56,10 @@ def load_policy(path: Path = DEFAULT_POLICY) -> dict[str, Any]:
     raw = _mapping(read_json(path), "测试纪律")
     if raw.get("schema_version") != "pipeline-test-policy-v1":
         raise TestImpactError("测试纪律版本不符")
+    if raw.get("full_chain_command") != PORTABLE_FULL_CHAIN_COMMAND:
+        raise TestImpactError(
+            "full_chain_command 必须从当前 Git 仓库根运行，不能写死本机路径"
+        )
     if not _list(raw.get("path_rules"), "path_rules"):
         raise TestImpactError("测试纪律缺 path_rules")
     return raw
