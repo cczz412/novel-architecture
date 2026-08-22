@@ -46,7 +46,7 @@
 
 ## 顶层目录
 
-下面按 [directory_registry.json](directory_registry.json) 的登记名单。一句话来自各目录的 `new_content_rule`，详情回身份图：[directory_map.md](indexes/directory_map.md)。
+下面先列 [directory_registry.json](directory_registry.json) 的登记名单；main 实际存在但尚未登记的顶层目录也会单列异常，不替它发明职责。一句话来自各目录的 `new_content_rule`，详情回身份图：[directory_map.md](indexes/directory_map.md)。
 
 | 目录 | 一句话职责 | 详情 |
 |---|---|---|
@@ -78,6 +78,7 @@
 | [.workbuddy/](../.workbuddy/) | 旧 WorkBuddy 记忆，停止收新内容 | 同上 |
 | [finetuning/](../finetuning/) | 微调身份、机器清单、合同和指针 | [finetuning/CURRENT.json](../finetuning/CURRENT.json) |
 | [novel-mvp/](../novel-mvp/) | 测试阶段产品示例；代码偏旧，不是已上线产品 | [novel-mvp/README.md](../novel-mvp/README.md) |
+| [.github/](../.github/) | **main 实际存在，但 directory_registry 尚未登记；职责待 CZ 拍板，本页只记录存在性。** | #63 冻结清单中的顶层异常；不在本票改判职责 |
 
 根上还有文件，不是目录： [AGENTS.md](../AGENTS.md)（Agent 入口）、[README.md](../README.md)、[current.md](../current.md)、[decisions.md](../decisions.md)、`pyproject.toml` / `pytest.ini` / `uv.lock`。
 
