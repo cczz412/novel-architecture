@@ -10,6 +10,9 @@
   "historical_replay_command": "uv run --locked python tools/historical_test_replay.py run --commit <完整40位提交号> --run-id <新运行号>",
   "legacy_debt_migration_pointer": "tests/test_debt_registry.json",
   "old_failure_disposition": "tests/old_failure_disposition.json",
+  "approved_stable_failure_list": "governance/approved_stable_failure_list.json",
+  "approved_stable_failure_list_schema": "governance/contracts/approved_stable_failure_list_v1.schema.json",
+  "approved_stable_failure_list_checker": "tools/check_approved_failure_list.py",
   "documentation_commands": [
     "uv run --locked python tools/governance_index.py --check",
     "uv run --locked python tools/historical_test_replay.py validate"
@@ -253,6 +256,34 @@
       "pattern": "tools/governance_index.py",
       "modules": ["M11"],
       "tests": ["tests/test_governance_index.py"],
+      "full_chain": false
+    },
+    {
+      "name": "冻结批准失败清单",
+      "pattern": "governance/approved_stable_failure_list.json",
+      "modules": ["M11"],
+      "tests": ["tests/test_approved_failure_list.py"],
+      "full_chain": false
+    },
+    {
+      "name": "冻结批准失败清单合同",
+      "pattern": "governance/contracts/approved_stable_failure_list_v1.schema.json",
+      "modules": ["M11"],
+      "tests": ["tests/test_approved_failure_list.py"],
+      "full_chain": false
+    },
+    {
+      "name": "冻结批准失败清单检查器",
+      "pattern": "tools/check_approved_failure_list.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_approved_failure_list.py"],
+      "full_chain": false
+    },
+    {
+      "name": "冻结批准失败清单测试",
+      "pattern": "tests/test_approved_failure_list.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_approved_failure_list.py"],
       "full_chain": false
     },
     {
