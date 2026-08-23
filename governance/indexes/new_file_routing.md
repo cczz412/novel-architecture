@@ -39,6 +39,7 @@
 | 语义分析轻量验收摘要 | `analysis_library/pilot_batch_01/acceptance/<approved-lightweight-summary>` | 只保留读结论所需的验收报告、书级汇总和缺口清单；逐文件票据与复算材料留在仓外。 | `lightweight_semantic_analysis_index` |
 | 语义分析仓外指针 | `analysis_library/pilot_batch_01/EXTERNAL_POINTER.json` | 必须钉住外置对象、清单 SHA 和包内相对路径，不得把同盘完整包写成独立备份。 | `lightweight_semantic_analysis_index` |
 | 仓库专用 Agent Skill | `.agents/skills/<skill_id>/SKILL.md` | 仅在任务语义命中时读取；Skill 不能扩大业务授权。 | `repository_agent_skills` |
+| 未来 PR 身份模板 | `.github/PULL_REQUEST_TEMPLATE.md` | 只保存未来 PR 六字段身份模板；不回填历史 PR，也不保存业务真值或运行报告。 | `github_repository_metadata` |
 | 微调域当前实验指针 | `finetuning/CURRENT.json` | 只保存当前实验身份和必要机器引用，不保存训练进度或结论。 | `finetuning_control_plane` |
 | 单次微调实验控制记录 | `finetuning/experiments/<experiment_id>` | 只保存机器清单、合同、摘要和回执；重资产仍由逻辑仓位与本机绑定解析。 | `finetuning_control_plane` |
 | 产品试跑示例说明 | `novel-mvp/README.md` | 只说明这是测试阶段示例、代码偏旧、设计稿可参考；不得写成现行产品或共同背景板。 | `product_mvp_test_example` |

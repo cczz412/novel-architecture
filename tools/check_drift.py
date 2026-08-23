@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import sys
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -43,6 +44,33 @@ def _annotate(checker_id: str, items: list[dict[str, Any]]) -> list[dict[str, An
     return annotated
 
 
+def _checker_failure(root: Path, checker_id: str, exc: Exception) -> dict[str, Any]:
+    return {
+        "schema_version": "drift-child-error-v1",
+        "root": str(root),
+        "status": "FAIL",
+        "errors": [
+            {
+                "level": "ERROR",
+                "code": "CHECKER_EXCEPTION",
+                "message": f"{type(exc).__name__}: {exc}",
+            }
+        ],
+        "warnings": [],
+        "summary": {"error_count": 1, "warning_count": 0, "checker": checker_id},
+    }
+
+
+def _validated_report(value: object) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise TypeError("checker report must be an object")
+    for field in ("errors", "warnings"):
+        items = value.get(field) or []
+        if not isinstance(items, list) or any(not isinstance(item, dict) for item in items):
+            raise TypeError(f"checker report {field} must be a list of objects")
+    return value
+
+
 def build_report(
     root: Path,
     pr_body: str | None = None,
@@ -54,19 +82,24 @@ def build_report(
     warnings: list[dict[str, Any]] = []
     failing: list[str] = []
     for checker_id, module_name, function_name in CHECKERS:
-        module = _load(module_name)
-        if checker_id == "review_identity":
-            report = getattr(module, function_name)(
-                root,
-                pr_body=pr_body,
-                pr_body_path=pr_body_path,
-            )
-        else:
-            report = getattr(module, function_name)(root)
+        try:
+            module = _load(module_name)
+            if checker_id == "review_identity":
+                raw_report = getattr(module, function_name)(
+                    root,
+                    pr_body=pr_body,
+                    pr_body_path=pr_body_path,
+                )
+            else:
+                raw_report = getattr(module, function_name)(root)
+            report = _validated_report(raw_report)
+        except Exception as exc:
+            report = _checker_failure(root, checker_id, exc)
         reports[checker_id] = report
-        errors.extend(_annotate(checker_id, list(report.get("errors") or [])))
+        checker_errors = list(report.get("errors") or [])
+        errors.extend(_annotate(checker_id, checker_errors))
         warnings.extend(_annotate(checker_id, list(report.get("warnings") or [])))
-        if report.get("status") != "PASS":
+        if report.get("status") != "PASS" or checker_errors:
             failing.append(checker_id)
     status = "PASS" if not failing else "FAIL"
     return {
@@ -104,14 +137,16 @@ def render_summary(report: dict[str, Any]) -> str:
         lines.extend(["", "## Errors"])
         for item in report["errors"]:
             lines.append(
-                f"- `{item.get('checker', '-')}` `{item['code']}` {item['message']} "
+                f"- `{item.get('checker', '-')}` `{item.get('code', 'UNKNOWN_ERROR')}` "
+                f"{item.get('message', 'checker reported an error')} "
                 f"({item.get('path') or item.get('requirement_id') or '-'})"
             )
     if report.get("warnings"):
         lines.extend(["", "## Warnings"])
         for item in report["warnings"][:20]:
             lines.append(
-                f"- `{item.get('checker', '-')}` `{item['code']}` {item['message']} "
+                f"- `{item.get('checker', '-')}` `{item.get('code', 'UNKNOWN_WARNING')}` "
+                f"{item.get('message', 'checker reported a warning')} "
                 f"({item.get('path') or item.get('requirement_id') or '-'})"
             )
         extra = len(report["warnings"]) - 20
@@ -137,9 +172,8 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    pr_body = args.pr_body.read_text(encoding="utf-8") if args.pr_body else None
     pr_body_path = str(args.pr_body) if args.pr_body else None
-    report = build_report(args.root, pr_body=pr_body, pr_body_path=pr_body_path)
+    report = build_report(args.root, pr_body_path=pr_body_path)
     summary = render_summary(report)
     if args.json_out:
         args.json_out.parent.mkdir(parents=True, exist_ok=True)
@@ -149,12 +183,15 @@ def main() -> int:
         args.summary_out.write_text(summary, encoding="utf-8")
     if args.format in {"json", "both"}:
         print(json.dumps(report, ensure_ascii=False, indent=2))
-    if args.format in {"summary", "both"}:
+    if args.format == "summary":
         print(summary, end="")
+    elif args.format == "both":
+        print(summary, end="", file=sys.stderr)
     if args.check:
         print(
             f"{'PASS_DRIFT' if report['status'] == 'PASS' else 'FAIL_DRIFT'} "
-            f"errors={len(report.get('errors', []))} warnings={len(report.get('warnings', []))}"
+            f"errors={len(report.get('errors', []))} warnings={len(report.get('warnings', []))}",
+            file=sys.stderr,
         )
     return 0 if report["status"] == "PASS" else 1
 

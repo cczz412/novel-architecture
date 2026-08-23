@@ -101,6 +101,7 @@ def test_registered_top_level_scope_is_exact_and_creates_no_nvm_style_layers() -
     assert registered == {
         ".agents",
         ".cursor",
+        ".github",
         ".local",
         ".workbuddy",
         ".pytest_cache",

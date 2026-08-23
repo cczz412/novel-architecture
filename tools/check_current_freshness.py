@@ -70,6 +70,23 @@ CURRENT_STATE_REL = "governance/CURRENT_STATE.json"
 ATOMIC_CURRENT_REL = "references/atomic-expectations/CURRENT.json"
 TEST_DESIGN_REL = "references/atomic-expectations/TEST_DESIGN_CURRENT.json"
 DESIGN_REGISTRY_REL = "novel-mvp/design/design_registry.json"
+HUMAN_HANDOFF_REL = "governance/progress/current-progress.md"
+CURRENT_FRESHNESS_CHECKER_REL = "tools/check_current_freshness.py"
+DRIFT_SUITE_REL = "tools/check_drift.py"
+EXTERNAL_REPORT_BACKGROUND_REL = "references/external-knowledge-base/README.md"
+EXTERNAL_REPORT_CURRENT_REL = "references/external-knowledge-base/CURRENT.json"
+ACTIVE_CURRENT_POINTER_IDS = frozenset(
+    {
+        "repository_current",
+        "human_handoff",
+        "current_freshness_checker",
+        "product_background",
+        "external_report_background",
+        "atomic_expectations",
+        "atomic_test_design",
+        "design_registry",
+    }
+)
 REFRESH_BASE_KIND = "refresh_base"
 REFRESH_BASE_MARKERS = ("本页复核到", "刷新时的 base")
 MAIN_SHA_RE = re.compile(r"`([0-9a-f]{40})`")
@@ -296,6 +313,15 @@ def _validate_test_design_row(
     path = _posix(row.get("path"))
     if path is None:
         return
+    if path != TEST_DESIGN_REL or row.get("version") != "R03_COMPOSITE_127_PLUS_15":
+        errors.append(
+            _issue(
+                "ERROR",
+                "TEST_DESIGN_POINTER_IDENTITY",
+                "atomic_test_design must bind the R03 composite TEST_DESIGN_CURRENT registry",
+                "governance/current_pointers.json",
+            )
+        )
     target = root / path
     if not target.is_file():
         return
@@ -354,6 +380,22 @@ def _validate_design_registry_row(
     path = _posix(row.get("path"))
     if path is None:
         return
+    if (
+        path != DESIGN_REGISTRY_REL
+        or row.get("version") != "R01"
+        or row.get("index_path") != "novel-mvp/design/INDEX.md"
+        or row.get("checker_path") != "tools/check_design_currentness.py"
+        or row.get("checker_registry_status") != "REGISTERED"
+        or row.get("suite_entry") != DRIFT_SUITE_REL
+    ):
+        errors.append(
+            _issue(
+                "ERROR",
+                "DESIGN_REGISTRY_POINTER_IDENTITY",
+                "design_registry ACTIVE_CURRENT identity or checker binding drifted",
+                "governance/current_pointers.json",
+            )
+        )
     target = root / path
     if not target.is_file():
         return
@@ -385,16 +427,18 @@ def _validate_external_report_row(
     row: dict[str, Any],
     errors: list[dict[str, Any]],
 ) -> None:
+    path = _posix(row.get("path"))
     pointer = _posix(row.get("current_pointer"))
-    if pointer is None:
+    if path != EXTERNAL_REPORT_BACKGROUND_REL or pointer != EXTERNAL_REPORT_CURRENT_REL:
         errors.append(
             _issue(
                 "ERROR",
-                "EXTERNAL_REPORT_POINTER_MISSING",
-                "external_report_background must declare current_pointer",
+                "EXTERNAL_REPORT_POINTER_IDENTITY",
+                "external_report_background must bind its registered README and CURRENT.json",
                 "governance/current_pointers.json",
             )
         )
+    if pointer is None:
         return
     target = root / pointer
     if not target.is_file():
@@ -432,18 +476,76 @@ def _validate_active_current_row(
     if path is None:
         return
     pointer_id = row.get("pointer_id")
-    if path == CURRENT_STATE_REL or pointer_id == "repository_current":
+    if pointer_id not in ACTIVE_CURRENT_POINTER_IDS:
+        errors.append(
+            _issue(
+                "ERROR",
+                "ACTIVE_CURRENT_UNVALIDATED",
+                f"ACTIVE_CURRENT row {pointer_id!r} has no explicit validator",
+                "governance/current_pointers.json",
+            )
+        )
         return
-    if path.endswith("/00_READ_ME_FIRST.md") and "/shared-context/" in path:
+    version = row.get("version")
+    if not isinstance(version, str) or not version.strip():
+        errors.append(
+            _issue(
+                "ERROR",
+                "ACTIVE_CURRENT_VERSION_MISSING",
+                f"ACTIVE_CURRENT row {pointer_id} must declare a non-empty version",
+                "governance/current_pointers.json",
+            )
+        )
+
+    if pointer_id == "repository_current":
+        if path != CURRENT_STATE_REL or version != "governance-current-state-v2":
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "REPOSITORY_CURRENT_IDENTITY",
+                    "repository_current must bind CURRENT_STATE.json at governance-current-state-v2",
+                    "governance/current_pointers.json",
+                )
+            )
+        return
+    if pointer_id == "human_handoff":
+        if path != HUMAN_HANDOFF_REL:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "HUMAN_HANDOFF_IDENTITY",
+                    f"human_handoff must point to {HUMAN_HANDOFF_REL}",
+                    "governance/current_pointers.json",
+                )
+            )
+        return
+    if pointer_id == "current_freshness_checker":
+        if (
+            path != CURRENT_FRESHNESS_CHECKER_REL
+            or version != "v1"
+            or row.get("registry_status") != "REGISTERED"
+            or row.get("suite_entry") != DRIFT_SUITE_REL
+            or not (root / DRIFT_SUITE_REL).is_file()
+        ):
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "CURRENT_CHECKER_IDENTITY",
+                    "current_freshness_checker must stay registered at v1 and bind the drift-suite entry",
+                    "governance/current_pointers.json",
+                )
+            )
+        return
+    if pointer_id == "product_background":
         _validate_product_background_row(root, row, errors)
         return
-    if path == ATOMIC_CURRENT_REL or pointer_id == "atomic_expectations":
+    if pointer_id == "atomic_expectations":
         _validate_atomic_expectations_row(root, row, errors)
         return
-    if path == TEST_DESIGN_REL or pointer_id == "atomic_test_design":
+    if pointer_id == "atomic_test_design":
         _validate_test_design_row(root, row, errors)
         return
-    if path == DESIGN_REGISTRY_REL or pointer_id == "design_registry":
+    if pointer_id == "design_registry":
         _validate_design_registry_row(root, row, errors)
         return
     if pointer_id == "external_report_background":

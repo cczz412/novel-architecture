@@ -94,6 +94,7 @@ def seed_repo(root: Path) -> None:
                 {
                     "pointer_id": "repository_current",
                     "status": "ACTIVE_CURRENT",
+                    "version": "governance-current-state-v2",
                     "path": "governance/CURRENT_STATE.json",
                 },
                 {
@@ -275,6 +276,26 @@ def test_invariant_set_drift_is_error(tmp_path: Path) -> None:
     report = MODULE.build_report(tmp_path)
     assert report["status"] == "FAIL"
     assert "INVARIANT_SET_DRIFT" in {item["code"] for item in report["errors"]}
+
+
+def test_unknown_active_current_row_cannot_escape_validation(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    extra = tmp_path / "references/unknown-current.md"
+    extra.parent.mkdir(parents=True, exist_ok=True)
+    extra.write_text("unknown\n", encoding="utf-8")
+    pointers = _pointers(tmp_path)
+    pointers["pointers"].append(
+        {
+            "pointer_id": "unknown_current",
+            "status": "ACTIVE_CURRENT",
+            "version": "v1",
+            "path": "references/unknown-current.md",
+        }
+    )
+    dump(tmp_path / "governance/current_pointers.json", pointers)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "ACTIVE_CURRENT_UNVALIDATED" in {item["code"] for item in report["errors"]}
 
 
 def _git(root: Path, *args: str) -> str:

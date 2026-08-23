@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 FREEZE_MANIFEST_NAMES = frozenset(
@@ -37,14 +37,31 @@ def _git_ls_files(root: Path) -> list[str]:
         capture_output=True,
     )
     if result.returncode != 0:
-        return []
+        detail = result.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError(f"git ls-files failed with exit {result.returncode}: {detail}")
     payload = result.stdout.split(b"\0")
     paths: list[str] = []
     for raw in payload:
         if not raw:
             continue
-        paths.append(raw.decode("utf-8"))
+        paths.append(raw.decode("utf-8", errors="strict"))
     return paths
+
+
+def _tracked_list_problem(paths: object) -> str | None:
+    if not isinstance(paths, list):
+        return "git ls-files result is not a list"
+    if not paths:
+        return "git ls-files returned an empty tracked-path list"
+    if any(not isinstance(path, str) or not path for path in paths):
+        return "git ls-files returned a non-string or empty path"
+    if len(paths) != len(set(paths)):
+        return "git ls-files returned duplicate paths"
+    for path in paths:
+        pure = PurePosixPath(path)
+        if pure.is_absolute() or any(part in {"", ".", ".."} for part in pure.parts):
+            return f"git ls-files returned an unsafe path: {path!r}"
+    return None
 
 
 def _is_git_repo(root: Path) -> bool:
@@ -83,8 +100,21 @@ def build_report(root: Path) -> dict[str, Any]:
     root = root.resolve()
     errors: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
-    if not _is_git_repo(root):
-        errors.append(_issue("ERROR", "NOT_A_GIT_REPO", "tracked-temp check requires a Git work tree", str(root)))
+    try:
+        is_git_repo = _is_git_repo(root)
+    except OSError as exc:
+        errors.append(_issue("ERROR", "GIT_PROBE_FAILED", f"cannot run Git repository probe: {exc}", str(root)))
+        is_git_repo = False
+    if not is_git_repo:
+        if not errors:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "NOT_A_GIT_REPO",
+                    "tracked-temp check requires a Git work tree",
+                    str(root),
+                )
+            )
         return {
             "schema_version": "tracked-temp-check-report-v1",
             "root": str(root),
@@ -100,7 +130,28 @@ def build_report(root: Path) -> dict[str, Any]:
             },
         }
 
-    tracked_paths = _git_ls_files(root)
+    try:
+        tracked_paths = _git_ls_files(root)
+    except (OSError, RuntimeError, UnicodeDecodeError) as exc:
+        errors.append(_issue("ERROR", "GIT_LS_FILES_FAILED", str(exc), str(root)))
+        tracked_paths = []
+    if not errors and (problem := _tracked_list_problem(tracked_paths)) is not None:
+        errors.append(_issue("ERROR", "TRACKED_LIST_INVALID", problem, str(root)))
+    if errors:
+        return {
+            "schema_version": "tracked-temp-check-report-v1",
+            "root": str(root),
+            "status": "FAIL",
+            "errors": errors,
+            "warnings": warnings,
+            "summary": {
+                "tracked_count": len(tracked_paths),
+                "temp_error_count": 0,
+                "lane_warning_count": 0,
+                "error_count": len(errors),
+                "warning_count": 0,
+            },
+        }
     tracked = set(tracked_paths)
     temp_hits: list[str] = []
     lane_hits: list[str] = []

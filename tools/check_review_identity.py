@@ -24,6 +24,12 @@ FIELD_MARKERS = (
     "review_identity:rollback",
 )
 REQUIREMENT_ROLES = ("承接", "部分贡献", "依赖", "明确排除")
+VALUE_FIELDS = (
+    "review_identity:contract_delta",
+    "review_identity:exact_tests",
+    "review_identity:rollback",
+)
+SHA_RE = re.compile(r"(?<![0-9a-f])[0-9a-f]{40}(?![0-9a-f])")
 PLACEHOLDERS = {
     "",
     "_待填_",
@@ -78,6 +84,32 @@ def _filled(text: str) -> bool:
     return False
 
 
+def _requirement_roles(text: str) -> dict[str, str]:
+    values: dict[str, str] = {}
+    for raw in text.splitlines():
+        line = raw.strip()
+        line = re.sub(r"^[-*]\s+", "", line).replace("**", "").strip()
+        for role in REQUIREMENT_ROLES:
+            matched = re.fullmatch(rf"{re.escape(role)}[：:]\s*(.*)", line)
+            if matched:
+                values[role] = matched.group(1).strip()
+                break
+    return values
+
+
+def _valid_sha(text: str) -> str | None:
+    matches = SHA_RE.findall(text)
+    if len(matches) != 1 or len(set(matches[0])) == 1:
+        return None
+    return matches[0]
+
+
+def _semantic_choice(text: str) -> str | None:
+    plain = text.replace("**", "")
+    matched = re.search(r"是否改产品语义[：:]\s*(是|否)\s*$", plain, flags=re.MULTILINE)
+    return matched.group(1) if matched else None
+
+
 def _check_document(text: str, path: str, *, require_values: bool) -> tuple[list[dict[str, Any]], list[str]]:
     errors: list[dict[str, Any]] = []
     present: list[str] = []
@@ -86,7 +118,7 @@ def _check_document(text: str, path: str, *, require_values: bool) -> tuple[list
             errors.append(_issue("ERROR", "REVIEW_IDENTITY_FIELD_MISSING", f"missing {field}", path))
             continue
         present.append(field)
-        if require_values and not _filled(_section_after(text, field)):
+        if require_values and field in VALUE_FIELDS and not _filled(_section_after(text, field)):
             errors.append(
                 _issue(
                     "ERROR",
@@ -95,7 +127,8 @@ def _check_document(text: str, path: str, *, require_values: bool) -> tuple[list
                     path,
                 )
             )
-    missing_roles = [role for role in REQUIREMENT_ROLES if role not in text]
+    roles = _requirement_roles(_section_after(text, "review_identity:requirement_ids"))
+    missing_roles = [role for role in REQUIREMENT_ROLES if role not in roles]
     if missing_roles:
         errors.append(
             _issue(
@@ -105,6 +138,50 @@ def _check_document(text: str, path: str, *, require_values: bool) -> tuple[list
                 path,
             )
         )
+    elif require_values:
+        empty_roles = [role for role, value in roles.items() if not value or value in PLACEHOLDERS]
+        if empty_roles:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "REQUIREMENT_ROLE_EMPTY",
+                    f"requirement ID roles must be explicit; use 无 when a role has no IDs: {empty_roles}",
+                    path,
+                )
+            )
+
+    if require_values:
+        base_sha = _valid_sha(_section_after(text, "review_identity:base_sha"))
+        head_sha = _valid_sha(_section_after(text, "review_identity:head_sha"))
+        if base_sha is None:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "BASE_SHA_INVALID",
+                    "base SHA must be one non-placeholder lowercase 40-character Git SHA",
+                    path,
+                )
+            )
+        if head_sha is None:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "HEAD_SHA_INVALID",
+                    "head SHA must be one non-placeholder lowercase 40-character Git SHA",
+                    path,
+                )
+            )
+        if base_sha is not None and head_sha is not None and base_sha == head_sha:
+            errors.append(_issue("ERROR", "BASE_HEAD_SHA_EQUAL", "base and head SHA must differ", path))
+        if _semantic_choice(_section_after(text, "review_identity:semantic_change")) is None:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "SEMANTIC_CHANGE_INVALID",
+                    "semantic change must choose exactly 是 or 否",
+                    path,
+                )
+            )
     return errors, present
 
 
