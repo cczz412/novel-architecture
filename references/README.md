@@ -9,6 +9,7 @@
 | `shared-context/` | **现行共同背景板 R14**（产品怎么想）；旧印刷版已退出本 Git | [夹层说明](shared-context/README.md) · [R14 入口](shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) |
 | `book-meta/` | 书目元数据、语料重标等 | [book-meta/README.md](book-meta/README.md) · [INDEX.md](book-meta/INDEX.md) |
 | `survey-inbox/` | 调查角度收件箱（GitHub／短视频讲法） | [survey-inbox/README.md](survey-inbox/README.md) |
+| `agent-playbook/` | 施工情景问答（遇到什么／对／错）；不是执行票 | [agent-playbook/README.md](agent-playbook/README.md) · [目录](agent-playbook/INDEX.md) |
 | `external-knowledge-base/` | 已从调查报告拆出的短背景、结论、来源、冲突和研究缺口 | [external-knowledge-base/README.md](external-knowledge-base/README.md) |
 | `atomic-expectations/` | 跨平台共用的原子需求、验收配方、共同质量家规和作者使用情境 | [atomic-expectations/README.md](atomic-expectations/README.md) |
 | `diagnostic-returns/` | 外部诊断回包归档（候选材料） | [diagnostic-returns/README.md](diagnostic-returns/README.md) |
