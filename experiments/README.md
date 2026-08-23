@@ -83,4 +83,14 @@ experiments/<experiment_id>/
 但只有政策明确开放的卡片与命名组合才有取件资格。输出不显示某台机器的仓外绝对路径，
 也不读取仓外 payload；这不代表已经复制、恢复或迁移。
 
-来源：Codex
+## 暂留的早期候选（Z96／Z97）
+
+这两套不是现行产品，是 2026-07-24 的程序件。CZ 2026-08-23 说先留着，把人话说明补上：
+
+- [Z96 r01](Z96_anchor_layer_evidence_closure_20260724/README.md)：一句主张能不能用锚点证据判过／不过
+- [Z96 r02](Z96_anchor_layer_evidence_closure_r02_20260724/README.md)：先冻住召回，再离线评分
+- [Z97](Z97_rfu_ucr_ledger_20260724/README.md)：人判语义，程序只算分
+
+测试还直接 import 这些目录里的程序，所以不能只留指针。
+
+来源：Codex；Z96／Z97 人话说明 #99

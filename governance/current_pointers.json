@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-pointers-v1",
-  "updated_at": "2026-08-22T13:10:00+08:00",
+  "updated_at": "2026-08-23T12:00:00+08:00",
   "authority": {
     "role": "当前版本、路径、候选身份和后续登记的唯一机器索引",
     "does_not_replace": [
@@ -50,7 +50,8 @@
       "supersedes": {
         "version": "R13",
         "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
-        "status": "SUPERSEDED_HISTORICAL"
+        "status": "SUPERSEDED_HISTORICAL",
+        "retention": "local_backup_not_in_this_git"
       }
     },
     {
@@ -76,7 +77,8 @@
       "supersedes": {
         "version": "R02",
         "path": "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/00_READ_ME_FIRST.md",
-        "status": "SUPERSEDED_HISTORICAL"
+        "status": "SUPERSEDED_HISTORICAL",
+        "retention": "local_backup_not_in_this_git"
       }
     },
     {
@@ -150,13 +152,13 @@
       "status": "ACTIVE_DOMAIN_POINTER",
       "version": null,
       "path": "finetuning/CURRENT.json",
-      "boundary": "不授权训练或晋升。"
+      "boundary": "正线已放弃；CURRENT 只指向此路不通落点，不授权训练或晋升。"
     }
   ],
   "invariants": [
     "repository_current、product_background 与 atomic_expectations 各自只有一个 ACTIVE_CURRENT。",
-    "产品共同背景现行只认 R14；R13 留 Git 作 SUPERSEDED_HISTORICAL。",
-    "原子需求现行只认 R03／142 条唯一 ID；R02 留 Git 作 SUPERSEDED_HISTORICAL。",
+    "产品共同背景现行只认 R14；R13 及更早印刷版已退出本 Git，本机备份，身份仍记为 SUPERSEDED_HISTORICAL。",
+    "原子需求现行只认 R03／142 条唯一 ID；R02 及更早已退出本 Git，本机备份，身份仍记为 SUPERSEDED_HISTORICAL。",
     "六例设计 CURRENT 的组合覆盖是 142 条／852 例（旧 127×6 加 R03 新增 15×6）；旧 127 套不得单独冒充全 R03。组合覆盖仍是设计，不是执行证明。",
     "候选分支、PLANNED 和 PENDING_WORK_ORDER 不得冒充 main current。",
     "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",

@@ -1,26 +1,21 @@
-# 第96道候选程序
+# Z96（r01）｜一句话主张，能不能用锚点证据判过／不过
 
-这套代码只用来证明两件事：
+说白了：系统抽出一句「这件事发生了」，程序要在正文里找到够用的锚点（可回指的原文位置），才能判 **过** 或 **不过**。找不到就不过。不让程序偷偷补锚、也不改现役数据。
 
-1. 原子主张可以经过“候选锚召回 → 主张级承托 → 最小完整锚集 → 渲染反查”得到可审计的 `PASS`／`REJECT`。
-2. 局部证据闭包可以在不塞全章全文的情况下覆盖冻结必要跨度。
+这不是上线功能，是 2026-07-24 的候选程序。
 
-它没有接进现役运行器，也不会自动修改事件或补锚。语义承托答案来自独立冻结人工夹具；程序只做集合、正文跨度、清单和硬闸运算。`endpoint_span_pattern` 在本候选里是硬拒绝，不沿用旧设计的纯诊断口径。
+- 0 模型 API，0 联网
+- 人已经写好的夹具当「这句话到底对不对」的答案；程序只做集合、跨度、清单和硬闸
+- 测试在 [tests/test_z96_anchor_evidence_candidate.py](../../tests/test_z96_anchor_evidence_candidate.py)
+- 下一版把「先冻住召回、再离线评分」拆开，见 [r02](../Z96_anchor_layer_evidence_closure_r02_20260724/README.md)
 
-运行生成器：
+CZ 2026-08-23：内容暂时留着，测试还 import 这里的程序。不要当现行产品能力。
+
+本地跑生成器（输出目录必须是还不存在的隔离路径）：
 
 ```bash
-.venv/bin/python -m experiments.Z96_anchor_layer_evidence_closure_20260724.generate_replay \
+uv run --locked python -m experiments.Z96_anchor_layer_evidence_closure_20260724.generate_replay \
   --output /绝对路径/到一个不存在的隔离目录
 ```
 
-正式状态：
-
-- 候选银标
-- 0 模型 API
-- 0 网络请求
-- 未接运行器
-- 不计算 UCR
-- 不改现役件
-
-来源：Codex
+来源：Codex；人话说明 #99

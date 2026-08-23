@@ -51,8 +51,8 @@ DRIFT_CHECKERS = (
 )
 EXPECTED_INVARIANTS = (
     "repository_current、product_background 与 atomic_expectations 各自只有一个 ACTIVE_CURRENT。",
-    "产品共同背景现行只认 R14；R13 留 Git 作 SUPERSEDED_HISTORICAL。",
-    "原子需求现行只认 R03／142 条唯一 ID；R02 留 Git 作 SUPERSEDED_HISTORICAL。",
+    "产品共同背景现行只认 R14；R13 及更早印刷版已退出本 Git，本机备份，身份仍记为 SUPERSEDED_HISTORICAL。",
+    "原子需求现行只认 R03／142 条唯一 ID；R02 及更早已退出本 Git，本机备份，身份仍记为 SUPERSEDED_HISTORICAL。",
     "六例设计 CURRENT 的组合覆盖是 142 条／852 例（旧 127×6 加 R03 新增 15×6）；旧 127 套不得单独冒充全 R03。组合覆盖仍是设计，不是执行证明。",
     "候选分支、PLANNED 和 PENDING_WORK_ORDER 不得冒充 main current。",
     "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",
@@ -221,6 +221,18 @@ def _validate_product_background_row(
             )
         )
     superseded_path = _posix(supersedes.get("path"))
+    retention = supersedes.get("retention")
+    if retention == "local_backup_not_in_this_git":
+        if superseded_path is not None and "R13" not in superseded_path:
+            errors.append(
+                _issue(
+                    "ERROR",
+                    "PRODUCT_BACKGROUND_R13_NOT_SUPERSEDED",
+                    "superseded product background path must remain the R13 package",
+                    "governance/current_pointers.json",
+                )
+            )
+        return
     if superseded_path is None or "R13" not in superseded_path:
         errors.append(
             _issue(

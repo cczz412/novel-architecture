@@ -1,84 +1,22 @@
-# 微调域入口
+# 微调这条路，放弃了
 
-这个目录只做微调工作的控制面，不保存小说正文、私有金标、模型权重、训练日志或原始答卷。
+✅ 结论：本仓 **不再做微调训练**。Git 里不再留训练集、考卷、权重、正线实验包。本地另有保底仓，真要翻旧件去那里。
 
-日常找路只走两步：
+你可以直接理解成：试了很久「把小模型微调成抽事实的专才」，这条线停了。当前指针只指向一个空落点，任何训练、晋升授权都是关的。
 
-1. `CURRENT.json`：当前要看的实验是谁；
-2. `experiments/<experiment_id>/MANIFEST.json`：这轮实验实际用了什么、产出了什么、原件在哪。
+## 现在 Git 里还留什么
 
-`CURRENT.json` 只是一根指针，不保存训练进度、实验结论或全仓任务状态。全仓正在做什么仍看 `governance/CURRENT_STATE.json`；两者不是竞争真源。
+1. **此路不通的落点**：[CURRENT.json](CURRENT.json) 指向 [T5_R04_LINE_ABANDONED_20260823_R01](experiments/T5_R04_LINE_ABANDONED_20260823_R01/)。里面没有教材、没有权重，就是一块路牌。
+2. **试过不行的结果票**：Prompt 这样写好还是那样写好、剂量加一点会不会复读。这些主要是本机 **Qwen 3 4B（MLX）** 跑出来的，不是 Deepseek，也不是豆包当考官。清单见 [experiments/README.md](experiments/README.md)。
+3. **中间桥工具包**：初筛、预飞、认分器。暂时留着给别的实验借用，后期要整顿。同样写在 experiments 的 README 里。
+4. **豆包停在这儿**：P0 只写过生产路牌，没有当过这批 Prompt 对照的考官。原件还在 experiments 里，不当现行训练入口。
 
-## 权威关系
+❌ 不要从本目录再开训练。没有明确许可就是不能训练。
 
-```text
-真实文件字节
-    ↓ 机械读取
-单次实验 MANIFEST.json
-    ↓ 派生
-实验摘要 / 训练说明 / 评测说明
+## 日常怎么认
 
-MANIFEST + 某次外审选材规则
-    ↓
-PACKAGE_MANIFEST / Prompt / Scope / Receipt
+- 人看结论：本页。
+- 机器认当前实验：[CURRENT.json](CURRENT.json)。
+- 兼容旧路牌：[references/t5-r04/README.md](../references/t5-r04/README.md)（派生视图，删了能重建；历史目录还在 `route_catalog.json` 里指路，原件多半已不在本 Git）。
 
-CZ / 正式流程
-    ↓
-DECISION.md
-```
-
-`MANIFEST.json` 只是单次实验机器事实的总账，不替代全仓治理、Notion 拍板、资产目录或真实文件本身。
-
-## 三个仓位
-
-- `MAIN_REPO`：索引、规则、可复用工具和少量关键证据；
-- `LAB`：正在训练、考试或诊断的重资产；
-- `ARCHIVE`：已经冷下来的历史重资产。
-
-正式文件只登记逻辑仓位。本机 `/Users/...` 路径写在 `.local/finetuning/stores.local.json`，不进 Git。
-
-## 硬规则
-
-- 封版 MANIFEST 不原地覆盖；真实文件变化必须新建实验 revision。
-- 缺文件、SHA 不符、JSONL 解析失败或关键分母对不上，一律硬停。
-- 同一份实物连续构建两次，稳定 MANIFEST 必须逐字节一致；时间戳只进运行回执。
-- `SUMMARY.md` 是机器事实的人话视图；`DECISION.md` 才允许写人工判断，并绑定所依据的 MANIFEST SHA。
-- 外审包的 source 数量属于某次打包，不进入实验 MANIFEST。
-- 当前训练集、考卷、正文和私有金标只登记身份、SHA 与统计，不抄进本目录。
-- 复制到外置仓不等于允许删除；删除仍须另行取得授权。
-
-R01 只给现有事实加机械索引，不移动、不删除、不改旧路由、不写 Notion，也不重解释历史。
-
-## 后续实验怎么接入
-
-新实验走三个分开的动作：
-
-```bash
-python3 tools/finetuning_control.py register --spec /path/to/SPEC.json
-python3 tools/finetuning_control.py build --experiment-id EXPERIMENT_ID
-python3 tools/finetuning_control.py switch-current --experiment-id EXPERIMENT_ID
-```
-
-- `register`：只登记实验，不生成 MANIFEST，也不切换当前；
-- `build`：从真实文件构建并封版 MANIFEST，仍不切换当前；
-- `switch-current`：重新核验 Schema、全部工件 SHA 和 SPEC 规定的验收票，全部通过后才切换。
-
-新实验使用 `finetuning-experiment-spec-v2`。所有行数、事实数和运行参数通过 `measurements` 从实物读取，通过 `assertions` 对账；源码不写死某一轮 R04 的目录和分母。
-
-可复制的起步模板：`finetuning/templates/experiment-spec-v2.example.json`。模板只演示合同，不代表已经注册的实验。
-
-## 旧 T5 R04 路牌怎么认
-
-- `references/t5-r04/route_catalog.json`：只保存历史材料的导航身份，不定义当前实验；
-- `references/t5-r04/route_registry.json`：由历史目录、CURRENT 和当前 MANIFEST 生成的兼容视图；
-- `references/t5-r04/README.md`：同样是可删除重建的派生说明。
-
-重建命令：
-
-```bash
-python3 tools/finetuning_control.py routes build
-```
-
-不要再人工修“C 未生成”“哪个 A 最新”一类旧摘要。当前实验变化后，重新生成派生视图即可。
-
-来源：Codex
+来源：CZ 2026-08-23 拍板；#99
