@@ -9,4 +9,4 @@
 - 新窗口接力：[`governance/progress/current-progress.md`](governance/progress/current-progress.md)
 - 本文件原来的 2026-07-20 进度全文：[`history/root_current_snapshot_20260720.md`](history/root_current_snapshot_20260720.md)
 
-任何入口冲突时，先以 `governance/CURRENT_STATE.json` 的机器身份和 `governance/current_pointers.json` 的版本路径停下校准；产品拍板仍以 CZ 最新明确指令为准；工程队列见 GitHub Issues，上工入口见 `governance/START_HERE.md`。
+任何入口冲突时，先以 `governance/CURRENT_STATE.json` 的机器身份和 `governance/current_pointers.json` 的版本路径停下校准；产品拍板仍以 CZ 最新明确指令为准；正式施工仍以 GitHub Issues 为准；规划／过程票见 Linear（见 [`governance/COLLAB_GITHUB_LINEAR_SLACK.md`](governance/COLLAB_GITHUB_LINEAR_SLACK.md)）。上工入口见 `governance/START_HERE.md`。

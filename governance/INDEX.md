@@ -1,6 +1,6 @@
 # 小说架构仓库治理索引
 
-> 本页是人读 current。机器当前执行状态只认 [`CURRENT_STATE.json`](CURRENT_STATE.json)；版本、路径和候选身份只认 [`current_pointers.json`](current_pointers.json)。产品拍板仍以 CZ 最新明确指令为准；工程队列见 [GitHub Issues](https://github.com/cczz412/novel-architecture/issues)，上工入口见 [START_HERE.md](START_HERE.md)。
+> 本页是人读 current。机器当前执行状态只认 [`CURRENT_STATE.json`](CURRENT_STATE.json)；版本、路径和候选身份只认 [`current_pointers.json`](current_pointers.json)。产品拍板仍以 CZ 最新明确指令为准；正式施工仍以 [GitHub Issues](https://github.com/cczz412/novel-architecture/issues) 为准；规划／过程票见 Linear（见 [协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)）。上工入口见 [START_HERE.md](START_HERE.md)。
 
 ## 当前主线
 
@@ -18,6 +18,7 @@
 
 - [机器当前状态](CURRENT_STATE.json)
 - [上工先读](START_HERE.md)
+- [GitHub / Linear / Slack 协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)
 - [当前版本与路径](current_pointers.json)
 - [人类接力](progress/current-progress.md)
 - [历史机器快照](CURRENT_STATE_HISTORY.json)
@@ -35,4 +36,4 @@
 
 更新时间：`2026-08-23T08:58:00+08:00`
 
-来源：[#64](https://github.com/cczz412/novel-architecture/issues/64) 档位 B 批尾刷新；工单 6 拍板（[DR-20260822-01](decision_records/DR-20260822-01.md)）；中文语感对齐入口（[#103](https://github.com/cczz412/novel-architecture/issues/103)）
+来源：[#64](https://github.com/cczz412/novel-architecture/issues/64) 档位 B 批尾刷新；工单 6 拍板（[DR-20260822-01](decision_records/DR-20260822-01.md)）；中文语感对齐入口（[#103](https://github.com/cczz412/novel-architecture/issues/103)）；GitHub／Linear／Slack 协作约定见 [COLLAB_GITHUB_LINEAR_SLACK.md](COLLAB_GITHUB_LINEAR_SLACK.md)
