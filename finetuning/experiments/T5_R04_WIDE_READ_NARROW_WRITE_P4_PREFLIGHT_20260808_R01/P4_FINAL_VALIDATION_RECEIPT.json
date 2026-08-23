@@ -26,9 +26,9 @@
     "reason": "REAL_CHAPTER_DIAG12_ELIGIBLE_COUNT_BELOW_12"
   },
   "output_manifest": {
-    "member_count": 31,
+    "member_count": 29,
     "path": "P4_OUTPUT_MANIFEST.json",
-    "sha256": "b58cccfad6cda6a957ca42324068c874f71722d4d170cac616ddd5988bdbe53e"
+    "sha256": "ca9633387866d89aba023a522f1eae8a159c0f1bfaf99914590f0249a44cec00"
   },
   "preregistered": {
     "all_gold_fixed_denominator": true,

@@ -103,7 +103,7 @@
       "result": "HARD_STOP_ASSERTION_ERROR_P4_LOCAL_AGENTS",
       "transient_byte_change": false,
       "current_bytes_match_registered_sha": true,
-      "current_receipt_sha256": "d472ab0dd3b7ab1346621ed5850dd1832647f296dd90a367a9654f503bcc592e",
+      "current_receipt_sha256": "cd88d821623b3dcf4bb2055aa21ca8093147a66c6745f70b18185321041616a7",
       "rerun_during_corrective_revision": false
     },
     {

@@ -63,7 +63,7 @@
       "authority": "P4_FINAL",
       "bytes": 2766,
       "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_FINAL_VALIDATION_RECEIPT.json",
-      "sha256": "d472ab0dd3b7ab1346621ed5850dd1832647f296dd90a367a9654f503bcc592e"
+      "sha256": "cd88d821623b3dcf4bb2055aa21ca8093147a66c6745f70b18185321041616a7"
     },
     "p4_import_schema": {
       "authority": "P4_FROZEN_IMPORT_CONTRACT",
@@ -79,9 +79,9 @@
     },
     "p4_output_manifest": {
       "authority": "P4_FINAL",
-      "bytes": 5424,
+      "bytes": 5032,
       "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_OUTPUT_MANIFEST.json",
-      "sha256": "b58cccfad6cda6a957ca42324068c874f71722d4d170cac616ddd5988bdbe53e"
+      "sha256": "ca9633387866d89aba023a522f1eae8a159c0f1bfaf99914590f0249a44cec00"
     },
     "p4_preflight_ticket": {
       "authority": "P4_PREFLIGHT",

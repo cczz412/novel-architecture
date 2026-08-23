@@ -280,7 +280,7 @@
     {
       "source_id": "P4-FINAL-RECEIPT",
       "path": "finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P4_PREFLIGHT_20260808_R01/P4_FINAL_VALIDATION_RECEIPT.json",
-      "sha256": "d472ab0dd3b7ab1346621ed5850dd1832647f296dd90a367a9654f503bcc592e",
+      "sha256": "cd88d821623b3dcf4bb2055aa21ca8093147a66c6745f70b18185321041616a7",
       "use": "P4 交件后复验刷新后的当前 receipt。",
       "disposition": "FROZEN_HISTORICAL_P4_RECEIPT_NOT_CURRENT_RECURSIVE_CLOSURE"
     },
@@ -315,21 +315,21 @@
     {
       "source_id": "S02-SOURCE-BINDING",
       "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/SOURCE_BINDING.json",
-      "sha256": "1ff76ab8d8956155eaacbbb0b0ffb08aac1ccbec885ad0d9d582043e0f88aad5",
+      "sha256": "9998274454782230496849b393b1777f2cf05c17503d7e450b83bf0a4c407257",
       "use": "S-02 与 P3/P4 冻结模板的来源绑定。",
       "disposition": "SOURCE_IDENTITY_ONLY"
     },
     {
       "source_id": "S02-OUTPUT-MANIFEST",
       "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/OUTPUT_MANIFEST.json",
-      "sha256": "a6ea83bba0ed488b1d1c7c1c9828cb87634c0b9b4e50bcd874ff7bbdf57f9c70",
+      "sha256": "125e36b0c9ef4022317cdacc756e91d40fc4feb24b8d31234a8906226ebec30a",
       "use": "S-02 交付成员身份。",
       "disposition": "CANDIDATE_MANIFEST"
     },
     {
       "source_id": "S02-FINAL-RECEIPT",
       "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/FINAL_VALIDATION_RECEIPT.json",
-      "sha256": "1fc19f75e994aa21920e7715c769af8d4a976433e08e0177df5c1b67a2a2f1fb",
+      "sha256": "7637386dca1a8ff1b60f05f048849a311c214dd74bd18487df145f97fd556c47",
       "use": "S-02 机械验收；不改变原 RIGHTS_UNKNOWN 证据账。",
       "disposition": "CANDIDATE_PENDING_CZ_CONFIRMATION"
     }

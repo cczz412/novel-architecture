@@ -8,7 +8,7 @@
     {"path": "00_READ_ME_FIRST.md", "bytes": 4079, "sha256": "c5a15ecbcd29d5fcfd3fc14f2d7f4cd56ac2b17be85bad807283a7f4450e4bb6"},
     {"path": "ARM_REGISTRY.json", "bytes": 70957, "sha256": "f9e1d3b864e383fe0d7c23462a5445e224352b6003047038483444429795b7d8"},
     {"path": "NAME_COLLISION_MAP.md", "bytes": 3121, "sha256": "081a4f952e45fcf7b53adc6de4c2b4f438363f704b49671a0bca93306b5155fa"},
-    {"path": "SOURCE_MAP.json", "bytes": 19144, "sha256": "53a9bb9a75d1facb6fd0ce632613ca9e11ee64694b3cfe3b299fcbff719c8017"},
+    {"path": "SOURCE_MAP.json", "bytes": 19144, "sha256": "74e739763b96b718c866071e9b1b0cc067fbf2866054275d1034b1ec3b388ba4"},
     {"path": "DATA_POOL_PLAN.md", "bytes": 2954, "sha256": "ad19d3c4c050b756c7b0c9fa9d9ba2e25f8ed86c17932c86eb5d0730154e3c61"},
     {"path": "EXECUTION_QUEUE.md", "bytes": 5912, "sha256": "077d0a222e0e28ea9cbe504a00ae82a5abd65cbd8559e61693bf65f0f152488e"},
     {"path": "UPDATE_PROTOCOL.md", "bytes": 2245, "sha256": "4b4aa8c3b1b8eceb6c8b282fb6385386dac789736270818f45a6d883da79189c"},
