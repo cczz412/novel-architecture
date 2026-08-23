@@ -4,7 +4,7 @@
 
 | 地方 | 干什么 |
 |---|---|
-| Slack | 说话、通知 |
+| Slack | 短通知（干完／卡住＋链接）进 #施工；不当看板，不写长过程账 |
 | Linear | 想清楚、过程账／依赖 |
 | GitHub | 正式施工合同 + PR 合流 |
 
@@ -22,6 +22,14 @@ CZ 指定去哪领就去哪领。
 只做 GitHub → Linear 单向、定期同步。Linear 上只有过程记录的票，不必镜像回 GitHub。能交货的活还是走 PR。
 
 Linear 可以放详细处理笔记、评论、附件。代码和 review 留在 GitHub PR。
+
+## Slack 短通知
+
+短通知只进 [#施工](https://novel-architecture.slack.com/archives/C0BRYSBUJKX)（id `C0BRYSBUJKX`）。
+
+- 发什么：一两句＋Issue／Linear／PR 链接。干完或卡住就报一声。
+- 不发什么：长思考、完整过程账。那些去 Linear，或写在 GitHub 施工票上。
+- 为啥：Slack 是按时间往下刷的时间线；过程账按票记在 Linear。别把 Slack 当看板。
 
 ## 不要删已关闭的 GitHub Issues
 
