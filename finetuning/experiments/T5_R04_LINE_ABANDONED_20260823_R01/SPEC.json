@@ -1,0 +1,7 @@
+{
+  "experiment_id": "T5_R04_LINE_ABANDONED_20260823_R01",
+  "schema_version": "finetuning-experiment-abandoned-v1",
+  "manifest_revision": "r01",
+  "state": "line_abandoned_no_training",
+  "summary": "微调正线已放弃。本包只作 CURRENT 指针落点，不授权训练。"
+}

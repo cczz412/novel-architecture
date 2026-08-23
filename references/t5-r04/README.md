@@ -4,13 +4,13 @@
 
 ## 当前实验
 
-- experiment_id：`T5_R04_CPLUS_20260807_R01`
+- experiment_id：`T5_R04_LINE_ABANDONED_20260823_R01`
 - MANIFEST revision：`r01`
-- MANIFEST SHA：`7f5818391b9988be2ddeb0d5ac89fe49363c0d0e245a7d02660cf649cab08216`
-- 每臂母集：398 行
-- 每臂训练：350 行
-- 当前考卷：每臂 41 题
-- 当前金标：每臂 355 条
+- MANIFEST SHA：`9b72a76c9b14230fb20b71ad380ab7e5201458edff4be34977fc1617e817d1e9`
+- 每臂母集：0 行
+- 每臂训练：0 行
+- 当前考卷：每臂 0 题
+- 当前金标：每臂 0 条
 
 当前实验身份只认 [微调域入口](../../finetuning/CURRENT.json) 和它绑定的 MANIFEST。本目录不再人工维护“C 未生成”或“哪个候选最新”一类当前状态。
 

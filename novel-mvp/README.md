@@ -4,7 +4,7 @@
 
 🔥 这是测试阶段的示例代码和设计稿，**不是**已经上线的产品，也**不是**共同背景板。
 
-- 产品怎么想：回本仓 [共同背景板 R13](../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md)
+- 产品怎么想：回本仓 [共同背景板 R14](../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)
 - 这里真正有用的： [design/INDEX.md](design/INDEX.md) 和 [contracts/](contracts/)
 - 大部分代码偏旧，不能当成现行产品；其中 T03-A 已把 M1 常用入口收到 C10-first，并完成 M1/M2 本地机械收口，仍不等于 Production Ready。`mvp/planstore.py` 已补出 handover／跨文件恢复护栏，`mvp/reconcile.py` 已接通六态观察与作者 facts 准入，`mvp/factstore.py` 已把旧 M5 确认／改判写入口收进同一事务链；这些仍不等于通用 planstore 或完整主循环。
 

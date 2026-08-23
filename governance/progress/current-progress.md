@@ -8,7 +8,7 @@
 
 ## 当前焦点支线
 
-- 微调支线不是本轮产品主线；旧状态页只保留恢复协议兼容入口：[`branches/finetuning/STATUS.md`](branches/finetuning/STATUS.md)
+- 微调正线已放弃（CZ 2026-08-23）。Git 只留[此路不通](../../finetuning/README.md)；旧状态页改成收口说明：[`branches/finetuning/STATUS.md`](branches/finetuning/STATUS.md)
 
 ## 已关闭历史
 
@@ -22,7 +22,7 @@
 - 模块候选分支：`codex/module-runtime-foundation-20260819-r01`
 - 候选 tip：`cc793c4719fb6470946c70e744f463147989547b`
 - 当前产品共同背景：`R14`，入口 [`00_READ_ME_FIRST.md`](../../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)
-- R13 与原子需求 R02：留 Git 作历史，已退出默认路由。R14／R03 已在 main，不要再开工单 2。
+- R13 与原子需求 R02：已退出本 Git，本机备份。后续改板从现行 R14／R03 接着做。不要再开工单 2。
 - 工单 6 拍板：[`DR-20260822-01.md`](../decision_records/DR-20260822-01.md)
 - 工程真源拍板：[`DR-20260822-02.md`](../decision_records/DR-20260822-02.md)；上工入口 [`START_HERE.md`](../START_HERE.md)
 

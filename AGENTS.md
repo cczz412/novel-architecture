@@ -4,7 +4,7 @@
 
 | 名字 | 打开哪里 | 别当成 |
 |---|---|---|
-| **共同背景板（现行）** | [R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) | R13 已标为 superseded 并留在 Git；旧 Notion 镜像不冒充 R14 |
+| **共同背景板（现行）** | [R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) | R13 及更早印刷版已退出本 Git，本机备份；旧 Notion 镜像不冒充 R14 |
 | **外部报告背景板** | [当前入口](references/external-knowledge-base/README.md) | 只提供证据、反例和未知，不能替产品拍板 |
 | **原子需求与验收背景板** | [R03 CURRENT](references/atomic-expectations/CURRENT.json) · [人读入口](references/atomic-expectations/README.md) | 142 条需求；六例设计 CURRENT 组合覆盖 142／852，仍不是执行证明 |
 | **P3 背景卡** | `references/novel_fact_extraction_contract_v2.md` | 抽事实的五条小抄，不是设计理念 |
@@ -16,9 +16,9 @@
 - 人看全仓治理状态：[治理索引](governance/INDEX.md)；机器读取当前执行状态只认 [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)。CZ 拍板仍以当前明确指令和 GitHub Issues 工程队列为准；上工入口见 [`governance/START_HERE.md`](governance/START_HERE.md)。
 - 当前版本、路径、候选分支与后续工单只认 [`governance/current_pointers.json`](governance/current_pointers.json)；它不保存运行成绩，也不替产品或领域 CURRENT 拍板。
 - 新窗口接力先看 [`governance/progress/current-progress.md`](governance/progress/current-progress.md)，再读它点名的专题页。它只负责接力，不能覆盖 `CURRENT_STATE.json`、正式结果票或 CZ 指令；两者时间或结论冲突时停下校准。
-- 产品共同理解从 [共同背景板 R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) 开始。R13 仍留 Git 供追溯，但已经退出默认路由；旧 Notion 镜像不代表 R14。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
+- 产品共同理解从 [共同背景板 R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) 开始。R13 及更早印刷版已退出本 Git，本机备份；旧 Notion 镜像不代表 R14。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
 - 外部论文、官方文档、行业材料和作者经验的可复用结论从[外部报告知识库当前入口](references/external-knowledge-base/README.md)开始；Notion 人读镜像在[报告背景 R01](https://app.notion.com/p/3be5cadc4d0f819eb8ebd02ca1b9b8e5)。它与产品共同背景板分开，只提供证据、反例和待核缺口。
-- 原子需求与验收背景只认 [R03 CURRENT](references/atomic-expectations/CURRENT.json)：142 条唯一 ID；人读入口见 [README](references/atomic-expectations/README.md)。旧 R02 留 Git 作历史并退出默认路由；[六例测试设计 CURRENT](references/atomic-expectations/TEST_DESIGN_CURRENT.json) 组合覆盖 142 条／852 例（旧 127×6 加新增 15×6），不能冒充已经跑完，旧 127 套也不能单独冒充全 R03。
+- 原子需求与验收背景只认 [R03 CURRENT](references/atomic-expectations/CURRENT.json)：142 条唯一 ID；人读入口见 [README](references/atomic-expectations/README.md)。旧 R02 及更早已退出本 Git，本机备份；[六例测试设计 CURRENT](references/atomic-expectations/TEST_DESIGN_CURRENT.json) 组合覆盖 142 条／852 例（旧 127×6 加新增 15×6），不能冒充已经跑完，旧 127 套也不能单独冒充全 R03。
 - 路径职责与新文件落点只认 [`governance/directory_registry.json`](governance/directory_registry.json) 和生成的 [`governance/indexes/new_file_routing.md`](governance/indexes/new_file_routing.md)。
 
 ## 2. Task routing
@@ -29,8 +29,8 @@
 | 查当前版本、路径、候选分支与后续工单 | `governance/current_pointers.json` | 执行状态仍回 `governance/CURRENT_STATE.json`；产品语义仍回当前背景板 |
 | 理解创作／记忆流程 | `references/shared-context/.../03_CREATION_AND_MEMORY_PIPELINES.md` | 无 |
 | 看产品试跑示例（代码偏旧，不是现行产品） | `novel-mvp/README.md` | `novel-mvp/design/INDEX.md` |
-| 看当前微调实验 | `finetuning/CURRENT.json` | 它指向实验的 `MANIFEST.json`／结果票 |
-| 判断能否训练 | `finetuning/CURRENT.json` 的授权字段 | 当前实验的路线图／执行锁；没有明确许可就是不能训练 |
+| 看微调结论 | [finetuning/README.md](finetuning/README.md) | 正线已放弃；CURRENT 只是空落点 |
+| 判断能否训练 | `finetuning/CURRENT.json` 的授权字段 | 没有明确许可就是不能训练；正线已关 |
 | 查抽取研究 | `governance/route_registry.json` | 对应实验结果票；产品解释再看 R04 第 04 页 |
 | 查已验证的工程结论、技术选型或管线骨架 | `references/engineering-ledger/00_READ_ME_FIRST.md` | 按账内指针回正式结果票／冻结合同核对；当前执行状态仍看 `governance/CURRENT_STATE.json` |
 | 查已吸收的外部证据、行业经验、冲突或研究缺口 | `references/external-knowledge-base/README.md` | 按主题页的 claim ID 追 `02_CLAIM_LEDGER.jsonl`、来源登记和原报告；不能替产品拍板 |

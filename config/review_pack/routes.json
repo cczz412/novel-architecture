@@ -2857,24 +2857,24 @@
             {
               "root_id": "r13_shared_context",
               "required": true,
-              "authority": "local_current_product_shared_context_r13",
+              "authority": "local_current_product_shared_context_r14",
               "status": "product_semantics_not_execution_ticket",
-              "description": "R13 共同背景板当前本地包；只提供产品语义和边界。",
+              "description": "R14 共同背景板当前本地包；只提供产品语义和边界。",
               "globs": [
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/01_PRODUCT_NORTH_STAR.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/03_CREATION_AND_MEMORY_PIPELINES.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/06_SYNC_AND_CHANGE_PROTOCOL.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/07_GLOSSARY.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/08_VALIDATION_MARKET_AND_RISK_REGISTER.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/PRODUCT_SEMANTIC_DEBT_REGISTER.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/REFERENCE_PROJECT_INTEGRATION.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/USER_DATA_RIGHTS_AND_SECURITY_POLICY.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/CORE_MATERIALS_MANIFEST.json",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/BUILD_RECEIPT.json"
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/01_PRODUCT_NORTH_STAR.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/06_SYNC_AND_CHANGE_PROTOCOL.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/07_GLOSSARY.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/08_VALIDATION_MARKET_AND_RISK_REGISTER.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/PRODUCT_SEMANTIC_DEBT_REGISTER.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/REFERENCE_PROJECT_INTEGRATION.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/USER_DATA_RIGHTS_AND_SECURITY_POLICY.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/CORE_MATERIALS_MANIFEST.json",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/BUILD_RECEIPT.json"
               ]
             },
             {
@@ -3200,24 +3200,24 @@
             {
               "root_id": "r13_shared_context",
               "required": true,
-              "authority": "local_current_product_shared_context_r13",
+              "authority": "local_current_product_shared_context_r14",
               "status": "product_semantics_not_execution_ticket",
-              "description": "R13 共同背景板当前本地包；Pro 需要辨别其中哪些表述仍有效、哪些已被现行正式字节取代。",
+              "description": "R14 共同背景板当前本地包；Pro 需要辨别其中哪些表述仍有效、哪些已被现行正式字节取代。",
               "globs": [
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/01_PRODUCT_NORTH_STAR.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/03_CREATION_AND_MEMORY_PIPELINES.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/06_SYNC_AND_CHANGE_PROTOCOL.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/07_GLOSSARY.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/08_VALIDATION_MARKET_AND_RISK_REGISTER.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/PRODUCT_SEMANTIC_DEBT_REGISTER.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/REFERENCE_PROJECT_INTEGRATION.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/USER_DATA_RIGHTS_AND_SECURITY_POLICY.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/CORE_MATERIALS_MANIFEST.json",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/BUILD_RECEIPT.json"
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/01_PRODUCT_NORTH_STAR.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/05_CURRENT_DECISIONS_AND_OPEN_QUESTIONS.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/06_SYNC_AND_CHANGE_PROTOCOL.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/07_GLOSSARY.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/08_VALIDATION_MARKET_AND_RISK_REGISTER.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/PRODUCT_SEMANTIC_DEBT_REGISTER.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/REFERENCE_PROJECT_INTEGRATION.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/USER_DATA_RIGHTS_AND_SECURITY_POLICY.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/CORE_MATERIALS_MANIFEST.json",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/BUILD_RECEIPT.json"
               ]
             },
             {
@@ -3408,9 +3408,9 @@
               "status": "read_only_product_semantics_not_construction_ticket",
               "description": "只取产品北星、系统真值分层、创作与记忆管线三份最小背景。",
               "globs": [
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/01_PRODUCT_NORTH_STAR.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/03_CREATION_AND_MEMORY_PIPELINES.md"
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/01_PRODUCT_NORTH_STAR.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md"
               ]
             },
             {
@@ -3676,10 +3676,10 @@
               "status": "read_only_product_semantics_not_execution_ticket",
               "description": "产品北星、真值分层、创作与记忆管线；不携带运行账和窗口历史。",
               "globs": [
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/01_PRODUCT_NORTH_STAR.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/03_CREATION_AND_MEMORY_PIPELINES.md"
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/01_PRODUCT_NORTH_STAR.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md"
               ]
             },
             {
@@ -3689,7 +3689,7 @@
               "status": "127_expectations__not_contract_or_completion_proof",
               "description": "稳定原子需求、人读说明、机器快照、变更规则、全局验收和作者使用场景。",
               "globs": [
-                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/**"
+                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/**"
               ]
             },
             {
@@ -3917,10 +3917,10 @@
               "status": "read_only_product_semantics_not_test_result",
               "description": "产品北星、真值分层和创作记忆流程。",
               "globs": [
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/01_PRODUCT_NORTH_STAR.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/03_CREATION_AND_MEMORY_PIPELINES.md"
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/01_PRODUCT_NORTH_STAR.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md"
               ]
             },
             {
@@ -3930,7 +3930,7 @@
               "status": "127_expectations_and_scenarios__not_current_quality_score",
               "description": "原子预期、机器快照、全局验收和作者使用场景。",
               "globs": [
-                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/**"
+                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/**"
               ]
             },
             {
@@ -4233,10 +4233,10 @@
               "status": "read_only_product_semantics_not_construction_ticket",
               "description": "产品北星、真值分层与创作记忆流程。",
               "globs": [
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/01_PRODUCT_NORTH_STAR.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
-                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/03_CREATION_AND_MEMORY_PIPELINES.md"
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/01_PRODUCT_NORTH_STAR.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md",
+                "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md"
               ]
             },
             {
@@ -4246,7 +4246,7 @@
               "status": "127_expectations__not_contract_or_current_score",
               "description": "原子预期、机器快照、验收规则和作者场景。",
               "globs": [
-                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/**"
+                "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/**"
               ]
             }
           ]

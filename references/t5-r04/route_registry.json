@@ -8,26 +8,19 @@
   },
   "current_experiment": {
     "derived_facts": {
-      "current_exam_rows_arm_c": 41,
-      "current_exam_rows_each_arm": 41,
-      "current_gold_facts_arm_c": 355,
-      "current_gold_facts_each_arm": 355,
-      "evaluator_sha256": "8a390af537919943ff477ccb98e99deb16ea614af18fa617ab2760c76a029603",
-      "full_rows_arm_c": 398,
-      "full_rows_each_arm": 398,
-      "old_frozen_exam_rows_arm_c": 48,
-      "old_frozen_exam_rows_each_arm": 48,
-      "raw_answer_records_total": 82,
-      "training_rows_each_arm": 350,
-      "upstream_manifest_sha256": "a1729b5492170da493be51e5e745f7607c1f60b11bd16acef8ce36934569b80d"
+      "current_exam_rows_each_arm": 0,
+      "current_gold_facts_each_arm": 0,
+      "full_rows_each_arm": 0,
+      "line_status": "abandoned",
+      "training_rows_each_arm": 0
     },
-    "experiment_id": "T5_R04_CPLUS_20260807_R01",
+    "experiment_id": "T5_R04_LINE_ABANDONED_20260823_R01",
     "manifest_revision": "r01",
-    "manifest_sha256": "7f5818391b9988be2ddeb0d5ac89fe49363c0d0e245a7d02660cf649cab08216"
+    "manifest_sha256": "9b72a76c9b14230fb20b71ad380ab7e5201458edff4be34977fc1617e817d1e9"
   },
   "generated_from": {
-    "current_pointer_sha256": "5abaa79b952532881dfc5e147e7da190471baba386aac263474b51edd414f8dd",
-    "manifest_sha256": "7f5818391b9988be2ddeb0d5ac89fe49363c0d0e245a7d02660cf649cab08216",
+    "current_pointer_sha256": "38b0678ade5df91597c48851e4802fbf0f89d5bfa7556953fb8a29120d8a3ee6",
+    "manifest_sha256": "9b72a76c9b14230fb20b71ad380ab7e5201458edff4be34977fc1617e817d1e9",
     "route_catalog_sha256": "da688d61aa46e07308040a3b7f5f8f7e68e2ee2494c62b8a074b75eb88123533"
   },
   "historical_routes": [

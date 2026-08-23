@@ -1,0 +1,29 @@
+{
+  "schema_version": "finetuning-experiment-manifest-v1",
+  "experiment_id": "T5_R04_LINE_ABANDONED_20260823_R01",
+  "manifest_revision": "r01",
+  "spec_sha256": "d76407e1081b6321aabe1159d140fa36b5470db2ab65c330a9b1fd4950b5f6a5",
+  "state": {
+    "lifecycle": "abandoned",
+    "promotion_state": "not_promoted",
+    "storage_state": "readme_only"
+  },
+  "source_root": {
+    "store_id": "MAIN_REPO",
+    "relative_path": "finetuning/experiments/T5_R04_LINE_ABANDONED_20260823_R01"
+  },
+  "artifacts": [],
+  "derived_facts": {
+    "full_rows_each_arm": 0,
+    "training_rows_each_arm": 0,
+    "current_exam_rows_each_arm": 0,
+    "current_gold_facts_each_arm": 0,
+    "line_status": "abandoned"
+  },
+  "boundaries": {
+    "may_authorize_training": false,
+    "may_authorize_promotion": false,
+    "may_modify_frozen_evidence": false,
+    "may_move_or_delete_assets": false
+  }
+}
