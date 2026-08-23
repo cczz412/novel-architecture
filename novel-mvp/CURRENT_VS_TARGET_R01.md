@@ -1,7 +1,7 @@
 # novel-mvp 当前与目标差距 R01
 
 > 身份：`CURRENT_VS_TARGET`。本页防止把 [ARCHITECTURE.md](ARCHITECTURE.md) 的产品目标图误读成当前完成态；不替代合同、代码、测试结果或 CZ 拍板。
-> 种子：[`current_runtime_gap_review_r01/`](../work/advisory_returns_20260820_r01/current_runtime_gap_review_r01/) 的登记册仍是 2026-08-20 的分层快照（`BACKGROUND_TARGET_ONLY=36／CURRENT_CODE_CONTRADICTS_TARGET=2／DIRECT_CODE_EVIDENCE=61／PARTIAL_DIRECT_CODE_EVIDENCE=43`）。它不是工单 5 收线后的新审计。
+> 种子：[`CURRENT_RUNTIME_GAP_REGISTER_R01.json`](../governance/capability_traceability_sources_r01/CURRENT_RUNTIME_GAP_REGISTER_R01.json) 仍是 2026-08-20 的分层快照（`BACKGROUND_TARGET_ONLY=36／CURRENT_CODE_CONTRADICTS_TARGET=2／DIRECT_CODE_EVIDENCE=61／PARTIAL_DIRECT_CODE_EVIDENCE=43`）。它不是工单 5 收线后的新审计。
 
 ## 工单 5 小票落地（main）
 

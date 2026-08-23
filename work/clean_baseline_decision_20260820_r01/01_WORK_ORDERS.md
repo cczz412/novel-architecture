@@ -47,7 +47,7 @@
 
 - **目标**：需求 → 模块 → 合同 → 代码 → 测试这条链变成机器可查。
 - **做什么**：
-  1. [pro_review_seed/08_CAPABILITY_TRACEABILITY.json](pro_review_seed/08_CAPABILITY_TRACEABILITY.json) 以候选身份落 `governance/capability_traceability.json`（schema 见 [07_REQUIREMENT_SCHEMA_CANDIDATE.json](pro_review_seed/07_REQUIREMENT_SCHEMA_CANDIDATE.json)）；
+  1. [08_CAPABILITY_TRACEABILITY.json](../../governance/capability_traceability_sources_r01/08_CAPABILITY_TRACEABILITY.json) 以候选身份落 `governance/capability_traceability.json`（schema 见 [07_REQUIREMENT_SCHEMA_CANDIDATE.json](../../governance/capability_traceability_sources_r01/07_REQUIREMENT_SCHEMA_CANDIDATE.json)）；
   2. 逐条复核推断字段（尤其 primary_owner／shared_owners），复核完把身份从 ADVISORY 转正式；
   3. 新建 `tools/check_traceability.py`：查 ID 唯一、每条有 owner 或显式 UNASSIGNED、三类孤儿（需求无人承、实现无来源、测试无出处）；
   4. 15 条新需求按 CZ 拍的优先级落库，补 90 个六例测试设计；`M3-B03` 无来源前挂显式豁免；

@@ -15,8 +15,8 @@
   "legacy_external_lane_only_test_count": 42,
   "priority_pending_cz": 15,
   "source_advisory_sha256": "7b03c462f1a1f164df25798ee3d4b85fe68681c495a12031ca225eddcaddb367",
-  "design_sha256": "1f6ba19738a03512fe64bb0df2b34440586049240f26bdc0d65be3f73cc6f776",
-  "manifest_sha256": "d681b983199b556abfc6c10a52c2c7647c9cef4eab16de06681fe40ec9633a17",
+  "design_sha256": "a4813555e9aa63bb9a535bc5d2ac8c2f5d05841a54faabb56701ca548bcb2d26",
+  "manifest_sha256": "5c19b7b4deabd13d859715a11261f98cd845beedbc1a6336d8294f67809dfc72",
   "checks": [
     "AT5_IDS_90_UNIQUE",
     "REQUIREMENTS_15_EACH_SIX_CASES",

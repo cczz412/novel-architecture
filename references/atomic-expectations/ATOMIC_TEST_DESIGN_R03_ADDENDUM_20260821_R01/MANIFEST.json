@@ -4,13 +4,28 @@
   "files": [
     {
       "path": "00_READ_ME_FIRST.md",
-      "bytes": 1225,
-      "sha256": "0d59220eed65aeda0d8a7efc8cd3d240c6963322a9d10c67999b5b045d30de3c"
+      "bytes": 1297,
+      "sha256": "b8b966802518c565a277e63e885902e82c22c2fdb6dc73bcbb462ac108658ed1"
     },
     {
       "path": "01_ATOMIC_TEST_DESIGN.json",
-      "bytes": 614128,
-      "sha256": "1f6ba19738a03512fe64bb0df2b34440586049240f26bdc0d65be3f73cc6f776"
+      "bytes": 614816,
+      "sha256": "a4813555e9aa63bb9a535bc5d2ac8c2f5d05841a54faabb56701ca548bcb2d26"
+    },
+    {
+      "path": "source/ATOMIC_TEST_DESIGN_R03_ADDENDUM.json",
+      "bytes": 535490,
+      "sha256": "7b03c462f1a1f164df25798ee3d4b85fe68681c495a12031ca225eddcaddb367"
+    },
+    {
+      "path": "source/ATOMIC_TEST_DESIGN_R03_ADDENDUM.md",
+      "bytes": 305180,
+      "sha256": "ed809fd1b2f292c4f2296ab6a9b8577b2bae31eef9a6bfd8bdbd4fa2360f962c"
+    },
+    {
+      "path": "source/README.md",
+      "bytes": 481,
+      "sha256": "a9dd7dce5bcd415234cc2bab0d182cb69a8f43b208ded9c1d3291325da2ff3ae"
     },
     {
       "path": "MANIFEST.json",

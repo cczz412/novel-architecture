@@ -385,20 +385,20 @@ D	tools/check_current_freshness.py
 D	tools/check_design_currentness.py
 D	tools/check_traceability.py
 D	work/advisory_returns_20260820_r01/00_INDEX.md
-D	work/advisory_returns_20260820_r01/atomic_test_design_r03_addendum/ATOMIC_TEST_DESIGN_R03_ADDENDUM.json
-D	work/advisory_returns_20260820_r01/atomic_test_design_r03_addendum/ATOMIC_TEST_DESIGN_R03_ADDENDUM.md
-D	work/advisory_returns_20260820_r01/current_runtime_gap_review_r01/CURRENT_RUNTIME_CAPABILITY_AND_GAP_REVIEW_R01.md
-D	work/advisory_returns_20260820_r01/current_runtime_gap_review_r01/CURRENT_RUNTIME_GAP_REGISTER_R01.json
+D	references/atomic-expectations/ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01/source/ATOMIC_TEST_DESIGN_R03_ADDENDUM.json
+D	references/atomic-expectations/ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01/source/ATOMIC_TEST_DESIGN_R03_ADDENDUM.md
+D	governance/capability_traceability_sources_r01/CURRENT_RUNTIME_CAPABILITY_AND_GAP_REVIEW_R01.md
+D	governance/capability_traceability_sources_r01/CURRENT_RUNTIME_GAP_REGISTER_R01.json
 D	work/advisory_returns_20260820_r01/dual_lane_ledger_handover_r01/DUAL_LANE_LEDGER_AND_HANDOVER_DESIGN_R01.md
 D	work/advisory_returns_20260820_r01/dual_lane_ledger_handover_r01/DUAL_LANE_LEDGER_TASK_CARDS_R01.json
 D	work/advisory_returns_20260820_r01/multi_form_creative_intake_r01/MULTI_FORM_CREATIVE_INTAKE_DESIGN_R01.md
 D	work/advisory_returns_20260820_r01/multi_form_creative_intake_r01/MULTI_FORM_CREATIVE_INTAKE_TASK_CARDS_R01.json
 D	work/clean_baseline_decision_20260820_r01/00_DECISION.md
 D	work/clean_baseline_decision_20260820_r01/01_WORK_ORDERS.md
-D	work/clean_baseline_decision_20260820_r01/pro_review_seed/07_REQUIREMENT_SCHEMA_CANDIDATE.json
-D	work/clean_baseline_decision_20260820_r01/pro_review_seed/08_CAPABILITY_TRACEABILITY.json
+D	governance/capability_traceability_sources_r01/07_REQUIREMENT_SCHEMA_CANDIDATE.json
+D	governance/capability_traceability_sources_r01/08_CAPABILITY_TRACEABILITY.json
 D	work/clean_baseline_decision_20260820_r01/pro_review_seed/15_ARCHIVE_CANDIDATES.json
-D	work/clean_baseline_decision_20260820_r01/pro_review_seed/PROVENANCE.md
+D	governance/capability_traceability_sources_r01/PROVENANCE.md
 ```
 
 ### 逐项归属
@@ -653,20 +653,20 @@ D	work/clean_baseline_decision_20260820_r01/pro_review_seed/PROVENANCE.md
 | 246 | `D` | `tools/check_design_currentness.py` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `PR-B` | `WO5_PRIOR_TICKET_PATH` | `MAIN_ONLY_REVERSE_DIFFERENCE__KEEP_MAIN` | `PR-B` |
 | 247 | `D` | `tools/check_traceability.py` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `TOOLS-OWNER` | `REPOSITORY_TOOLING` | `TOOLS_OWNER__NO_G_CHANGE` | `—` |
 | 248 | `D` | `work/advisory_returns_20260820_r01/00_INDEX.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
-| 249 | `D` | `work/advisory_returns_20260820_r01/atomic_test_design_r03_addendum/ATOMIC_TEST_DESIGN_R03_ADDENDUM.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
-| 250 | `D` | `work/advisory_returns_20260820_r01/atomic_test_design_r03_addendum/ATOMIC_TEST_DESIGN_R03_ADDENDUM.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
-| 251 | `D` | `work/advisory_returns_20260820_r01/current_runtime_gap_review_r01/CURRENT_RUNTIME_CAPABILITY_AND_GAP_REVIEW_R01.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
-| 252 | `D` | `work/advisory_returns_20260820_r01/current_runtime_gap_review_r01/CURRENT_RUNTIME_GAP_REGISTER_R01.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
+| 249 | `D` | `references/atomic-expectations/ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01/source/ATOMIC_TEST_DESIGN_R03_ADDENDUM.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
+| 250 | `D` | `references/atomic-expectations/ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01/source/ATOMIC_TEST_DESIGN_R03_ADDENDUM.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
+| 251 | `D` | `governance/capability_traceability_sources_r01/CURRENT_RUNTIME_CAPABILITY_AND_GAP_REVIEW_R01.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
+| 252 | `D` | `governance/capability_traceability_sources_r01/CURRENT_RUNTIME_GAP_REGISTER_R01.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
 | 253 | `D` | `work/advisory_returns_20260820_r01/dual_lane_ledger_handover_r01/DUAL_LANE_LEDGER_AND_HANDOVER_DESIGN_R01.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
 | 254 | `D` | `work/advisory_returns_20260820_r01/dual_lane_ledger_handover_r01/DUAL_LANE_LEDGER_TASK_CARDS_R01.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
 | 255 | `D` | `work/advisory_returns_20260820_r01/multi_form_creative_intake_r01/MULTI_FORM_CREATIVE_INTAKE_DESIGN_R01.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
 | 256 | `D` | `work/advisory_returns_20260820_r01/multi_form_creative_intake_r01/MULTI_FORM_CREATIVE_INTAKE_TASK_CARDS_R01.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-ADVISORY-RETURNS` | `ADVISORY_RETURN_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
 | 257 | `D` | `work/clean_baseline_decision_20260820_r01/00_DECISION.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-CLEAN-BASELINE` | `CLEAN_BASELINE_DECISION_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
 | 258 | `D` | `work/clean_baseline_decision_20260820_r01/01_WORK_ORDERS.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-CLEAN-BASELINE` | `CLEAN_BASELINE_DECISION_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
-| 259 | `D` | `work/clean_baseline_decision_20260820_r01/pro_review_seed/07_REQUIREMENT_SCHEMA_CANDIDATE.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-CLEAN-BASELINE` | `CLEAN_BASELINE_DECISION_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
-| 260 | `D` | `work/clean_baseline_decision_20260820_r01/pro_review_seed/08_CAPABILITY_TRACEABILITY.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-CLEAN-BASELINE` | `CLEAN_BASELINE_DECISION_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
+| 259 | `D` | `governance/capability_traceability_sources_r01/07_REQUIREMENT_SCHEMA_CANDIDATE.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-CLEAN-BASELINE` | `CLEAN_BASELINE_DECISION_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
+| 260 | `D` | `governance/capability_traceability_sources_r01/08_CAPABILITY_TRACEABILITY.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-CLEAN-BASELINE` | `CLEAN_BASELINE_DECISION_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
 | 261 | `D` | `work/clean_baseline_decision_20260820_r01/pro_review_seed/15_ARCHIVE_CANDIDATES.json` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-CLEAN-BASELINE` | `CLEAN_BASELINE_DECISION_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
-| 262 | `D` | `work/clean_baseline_decision_20260820_r01/pro_review_seed/PROVENANCE.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-CLEAN-BASELINE` | `CLEAN_BASELINE_DECISION_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
+| 262 | `D` | `governance/capability_traceability_sources_r01/PROVENANCE.md` | `MAIN_HAS_PATH_FROZEN_DOES_NOT` | `WORK-CLEAN-BASELINE` | `CLEAN_BASELINE_DECISION_WORKSPACE` | `WORK_OWNER__NO_G_CHANGE` | `—` |
 
 ## 归属计数
 

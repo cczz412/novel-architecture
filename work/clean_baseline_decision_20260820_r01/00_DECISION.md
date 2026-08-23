@@ -4,7 +4,7 @@
 
 - 本件身份：work 区施工方案稿。归位条件：CZ 过目后按工单执行；每张工单落地时把对应内容转进正式件，全部做完本目录整体归档退役。
 - 依据：ChatGPT Pro 总审包 `NOVEL_ARCH_CLEAN_BASELINE_AND_TRACEABILITY_REVIEW_20260820_R01.zip`（SHA256 `d357f41e0f978bdea8581bf8374a9074baed417c3b632cb01996344f5343047c`，两次上传件哈希一致）＋ 我在 Git 上的独立复核。Pro 的判词我逐条对过仓库实况；采纳的、改判的、留给你拍的，下面都分开写。
-- 三份后续工单要用的机器种子（追踪表、需求 schema、归档候选）已随本包收进 [pro_review_seed/](pro_review_seed/)，来历见 [PROVENANCE.md](pro_review_seed/PROVENANCE.md)。
+- 三份后续工单要用的机器种子：追踪表／需求 schema 已迁到 [capability_traceability_sources_r01/](../../governance/capability_traceability_sources_r01/)，来历见那边的 [PROVENANCE.md](../../governance/capability_traceability_sources_r01/PROVENANCE.md)；归档候选仍在 [pro_review_seed/15_ARCHIVE_CANDIDATES.json](pro_review_seed/15_ARCHIVE_CANDIDATES.json)。
 
 ## 总决定（一句话）
 
@@ -47,7 +47,7 @@ Pro 把「CURRENT_STATE 拆不拆成 repository／product 两份」留给你。�
 
 - 现在 142 条（78 核心／64 附加／83 硬门）不是不够细，是缺分类和追踪。**停止拆细。**
 - 给每条补五个轴：用户旅程位置、能力 owner、能力类型、真值写入级别、验收成熟度。owner 允许写共享服务（工作区／存储／路由／安全），不硬塞进 M1～M11。
-- Pro 已把 142/142 的候选追踪表做完（见 [pro_review_seed/08_CAPABILITY_TRACEABILITY.json](pro_review_seed/08_CAPABILITY_TRACEABILITY.json)），以**候选**身份落进 `governance/capability_traceability.json`，owner 等推断字段逐条复核后才转正式。⚠️ 142/142 mapped 是「追踪关系建好了」，不是「都实现了」。
+- Pro 已把 142/142 的候选追踪表做完（种子见 [08_CAPABILITY_TRACEABILITY.json](../../governance/capability_traceability_sources_r01/08_CAPABILITY_TRACEABILITY.json)），以**候选**身份落进 `governance/capability_traceability.json`，owner 等推断字段逐条复核后才转正式。⚠️ 142/142 mapped 是「追踪关系建好了」，不是「都实现了」。
 - 缺口按序补：15 条新需求先定优先级（见「必须你拍的」第 4 条），再补 90 个六例测试设计；`M3-B03` 缺来源，补上前该条挂显式豁免。
 
 ### 决定 5｜设计稿：不集中重写，谁开工谁先补
