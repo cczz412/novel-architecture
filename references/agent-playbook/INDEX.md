@@ -61,7 +61,7 @@ CZ 2026-08-24 同意收进。字段名、组件数、市场数字、晋江阉割
 | 遇到什么 | 身份 | 卡片 |
 |---|---|---|
 | 五份日常循环稿状态互相打架，准备各自施工 | 已拍加固 | [先统一一条日常状态流，再把稿发给开发](cards/one-daily-flow-before-build.md) |
-| P01 建议全部未决，或高影响暗稿准备批量放行 | 设计审查风险 | [暗稿能默认，小事和大事不能一锅勾](cards/dark-draft-high-impact-needs-single-sign.md) |
+| P01 建议全部未决，或高影响暗稿准备批量放行 | 已拍加固 | [暗稿能默认，小事和大事不能一锅勾](cards/dark-draft-high-impact-needs-single-sign.md) |
 | 无书稿点了收工，准备记成写完并关章 | 已拍加固 | [收工不是关章，无书稿不算写完一章](cards/finish-is-not-close.md) |
 | 收工检查散成弹窗，容量和欠账准备自动改剧情 | 已拍加固 | [收口只合并异常，不替作者改剧情](cards/close-with-anomalies-not-autopilot.md) |
 | 插件更新后准备让旧项目静默读取最新版 | 已拍加固 | [插件升级不能改写旧结果](cards/pin-plugin-version.md) |
