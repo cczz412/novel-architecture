@@ -13,7 +13,7 @@ Notion 工程镜像制度已取消，本地镜像也取消。Notion 旧监督页
 ## 先读顺序
 
 1. 本页 [`governance/START_HERE.md`](START_HERE.md)
-2. 三边怎么分工：[GitHub / Linear / Slack 协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)（正式施工仍以 GitHub Issues 为准；规划／过程票见 Linear）
+2. 三边怎么分工：[GitHub / Linear / Slack 协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)（正式施工仍以 GitHub Issues 为准；规划／过程票见 Linear；短通知进 Slack #施工）
 3. [`current.md`](../current.md) 与 [`governance/INDEX.md`](INDEX.md)
 4. [`governance/CURRENT_STATE.json`](CURRENT_STATE.json)（机器当前执行状态）
 5. [`governance/progress/current-progress.md`](progress/current-progress.md)（人读接力，不能盖过机器状态）
