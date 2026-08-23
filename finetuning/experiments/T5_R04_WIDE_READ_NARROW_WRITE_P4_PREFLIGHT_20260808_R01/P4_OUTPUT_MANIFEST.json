@@ -1,5 +1,5 @@
 {
-  "member_count": 31,
+  "member_count": 29,
   "members": [
     {
       "bytes": 321692,
@@ -72,9 +72,9 @@
       "sha256": "3d70ab8a026a92ae60525ef691e5e34a300db8cfc3c71f1eb2baebebedd50eda"
     },
     {
-      "bytes": 2573,
+      "bytes": 2744,
       "path": "construction_history/P4_SPLITTER_R01_INVALIDATION_TICKET.md",
-      "sha256": "480ec54b931588128ecce7e79aacfb2bd937a5eaa8d0626f80d3763927aeb1e8"
+      "sha256": "0e14295ce5314b70cdc769f9dcbbc320f49ee4843dcf257aeae9862c3aeb3d3f"
     },
     {
       "bytes": 146772,
@@ -130,16 +130,6 @@
       "bytes": 2506,
       "path": "tools/verify_p4_two_runs.py",
       "sha256": "df3d91a6f48cfa19fdf391c5a2aea94e65b1902214f755eb62cfea42f1e690dc"
-    },
-    {
-      "bytes": 21763,
-      "path": "toy_validation/INVALIDATED_R01/run_1/TOY_SPLITTER_BUILD.json",
-      "sha256": "f6e29a328fe4b1dc7cb3c01c9c2d751b90da01c36faa6234a66381e818aff06d"
-    },
-    {
-      "bytes": 21763,
-      "path": "toy_validation/INVALIDATED_R01/run_2/TOY_SPLITTER_BUILD.json",
-      "sha256": "f6e29a328fe4b1dc7cb3c01c9c2d751b90da01c36faa6234a66381e818aff06d"
     },
     {
       "bytes": 668,

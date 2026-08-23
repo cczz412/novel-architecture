@@ -31,7 +31,7 @@
     "bytes": 1946,
     "listed_member_count": 9,
     "path": "finetuning/experiments/T5_R04_A_V2_7_RIGHTS_EXCLUSION_CANDIDATE_20260808_R01/OUTPUT_MANIFEST.json",
-    "sha256": "a6ea83bba0ed488b1d1c7c1c9828cb87634c0b9b4e50bcd874ff7bbdf57f9c70"
+    "sha256": "125e36b0c9ef4022317cdacc756e91d40fc4feb24b8d31234a8906226ebec30a"
   },
   "next_gate": "WAIT_CZ_CONFIRM_GENERATED_CANDIDATE_SHA",
   "schema_version": "t5-r04-a-v2-7-rights-exclusion-final-validation-v1",

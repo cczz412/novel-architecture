@@ -33,7 +33,7 @@
 - 74 行决定输入 SHA：`761c74ad71bab07e38951998130283da0bc3238b8c5add54e9440c5a8346006a`
 - 74 行派生候选 SHA：`6baa0ace33d96505d04e046a80ca087bd9011b635410b986a1b706c55d1dce5b`
 - P4 实时候选导入回执 SHA：`5a013eaa4a96aa00cad1dc04688d509e3f79a7860220d5178b5198a867ace796`
-- 来源绑定 SHA：`1ff76ab8d8956155eaacbbb0b0ffb08aac1ccbec885ad0d9d582043e0f88aad5`
+- 来源绑定 SHA：`9998274454782230496849b393b1777f2cf05c17503d7e450b83bf0a4c407257`
 - 两次决定构建：逐字一致；
 - 两次 `REALTIME_CANDIDATE` 导入：候选逐字一致；
 - 实时时钟只在导入回执 sidecar 中登记，没有写入稳定决定输入。

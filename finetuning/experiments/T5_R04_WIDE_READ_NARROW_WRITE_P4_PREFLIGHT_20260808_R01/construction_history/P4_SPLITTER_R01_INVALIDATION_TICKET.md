@@ -27,7 +27,9 @@ uv run --locked pytest -q finetuning/experiments/T5_R04_WIDE_READ_NARROW_WRITE_P
 | `P4_ZERO_TRAINING_PREREG.md` | `c8d3de9c4cead8e55c111b0117ef9dd511aa1014894d3143089bf4c661b74f7b` |
 | R01 玩具双跑共同输出 | `f6e29a328fe4b1dc7cb3c01c9c2d751b90da01c36faa6234a66381e818aff06d` |
 
-原 R01 双跑输出封存在 `toy_validation/INVALIDATED_R01/run_1/` 和 `toy_validation/INVALIDATED_R01/run_2/`，只作施工痕迹。修正版另写 `toy_validation/r02/`，不覆盖 R01。
+原 R01 双跑输出曾封存在 `toy_validation/INVALIDATED_R01/run_1/` 和 `toy_validation/INVALIDATED_R01/run_2/`，只作施工痕迹。修正版另写 `toy_validation/r02/`，不覆盖 R01。
+
+#99 清洁（2026-08-23）：作废版 `INVALIDATED_R01` 原件已从 Git 工作树删除。作废结论仍以本票为准；修正版 `toy_validation/r02/` 保留。
 
 R02 已补：原始 bytes／strict UTF-8／CRLF 与中文多字节坐标、模型可见与审计 sidecar 分离、LOCAL/FULL 仅阅读文本不同、单 span 跨界与多 span 分区、共同可抽交集与整章 all-gold 两套固定分母，以及 72 个原子真实走到 10／20／30 区的覆盖测试。
 
