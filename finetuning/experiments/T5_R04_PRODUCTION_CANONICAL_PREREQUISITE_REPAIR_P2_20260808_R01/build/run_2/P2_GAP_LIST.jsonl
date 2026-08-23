@@ -1,5 +1,0 @@
-{"area":"rights","finding":"A v2.7 的 314 行没有逐来源训练授权；候选施工授权还明确禁止直接训练。","gap_id":"P2-GAP-001","impact":"2,783 条普通事实全部不能进入本轮 eligible pool。","next_action":"补充可回指到书/来源的训练权利票，再新建 P2 revision；不得从历史训练倒推。","severity":"P0","status":"OPEN"}
-{"area":"identity","finding":"特殊卷仍有 6 行无法从本地材料唯一确认作者。","gap_id":"P2-GAP-002","impact":"这些行无法进入作者级 split。","next_action":"仅补本地可信作者来源；未获网络授权前保持隔离。","severity":"P0","status":"OPEN","titles":["1985文艺时代","1998从尖峰时刻开始","三国：从平原县令开始称霸天下","冒牌领主","龙门战神"]}
-{"area":"provenance","finding":"特殊卷有 1 条重复位置歧义、0 条未定位。","gap_id":"P2-GAP-003","impact":"按穷尽式 SFT 合同，包含歧义事实的整行隔离。","next_action":"恢复权威旧位置后才能重新纳入；禁止默认第一次 occurrence。","severity":"P0","status":"OPEN"}
-{"area":"data_balance","finding":"本轮 eligible pool 没有 ordinary 行，只有通过资格门的 special 行。","gap_id":"P2-GAP-004","impact":"即使作者 split 无重叠，也不能把该池当成完整生产训练集。","next_action":"先补 A 普通卷的逐来源权利；不要用特殊卷单独开训。","severity":"P0","status":"OPEN"}
-{"area":"canonical_gate","finding":"Production Canonical V1 的全部前置门没有同时通过。","gap_id":"P2-GAP-005","impact":"本轮不得生成 PRODUCTION_CANONICAL_V1_CANDIDATE_R01。","next_action":"只修开放缺口并新建 revision；现有输出保持审计证据。","severity":"P0","status":"HARD_STOP"}
