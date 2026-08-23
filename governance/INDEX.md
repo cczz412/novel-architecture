@@ -26,12 +26,13 @@
 - [路线状态登记](route_registry.json)
 - [目录路由](directory_registry.json)
 - [仓库地图一页速查](ARCHITECTURE_MAP.md)
+- [中文语感对齐（人读中文输出规矩）](chinese_language_style_alignment.md)
 - [工单 6 只读核验拍板](decision_records/DR-20260822-01.md)
 
 ## 下一件
 
 工单 6 只读核验已按 [Issue #32](https://github.com/cczz412/novel-architecture/issues/32) 回执结账。搬删仍禁止。施工入口是带 `status:ready` 的 GitHub Issues，先读 [START_HERE.md](START_HERE.md)。
 
-更新时间：`2026-08-22T23:46:41+08:00`
+更新时间：`2026-08-23T08:58:00+08:00`
 
-来源：[#64](https://github.com/cczz412/novel-architecture/issues/64) 档位 B 批尾刷新；工单 6 拍板（[DR-20260822-01](decision_records/DR-20260822-01.md)）
+来源：[#64](https://github.com/cczz412/novel-architecture/issues/64) 档位 B 批尾刷新；工单 6 拍板（[DR-20260822-01](decision_records/DR-20260822-01.md)）；中文语感对齐入口（[#103](https://github.com/cczz412/novel-architecture/issues/103)）
