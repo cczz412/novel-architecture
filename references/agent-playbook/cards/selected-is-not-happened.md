@@ -10,11 +10,13 @@
 
 「消化」与「实际发生」是两层。选项消化清单只管「安排进了章计划」；「实际发生」只能由六态对账边或作者签字推进。作者选中计划写成「已兑现」是走样；选定即消化这个机制本身不动。
 
-Agent 这轮说完 ≠ 工件好了 ≠ 作者确认了 ≠ 章关了。关章只认作者关章事件（SI-008 与已拍同向）。
+## 加固形状（SI-008，还不是合同）
+
+完成要拆开：Agent 这轮说完 ≠ 工件好了 ≠ 作者确认了 ≠ 章关了。关章只认作者关章事件。
 
 ## 设计审查里还踩过的坑（P02，不是现行已炸）
 
-当时候选稿还把选中写成已发生／已揭示／已兑现（B01），并用单文件 rename 冒充跨账原子提交（B03）。P02 另建议拆成五条正交轴，那是修法候选，不是 R14 已拍字段。
+当时候选稿还把选中写成已发生／已揭示／已兑现（B01），并用单文件 rename 冒充跨账原子提交（B03）。P02 另建议拆成五条正交轴、换库、`story_commit_seq`，那是修法候选，不是 R14 已拍字段，也不是「现行产品已经炸了」。正文见 [SI-007 包入口](../../survey-inbox/packages/DESIGN_REVIEW_AND_TECH_RESEARCH_RETURNS_20260813_R01/00_READ_ME_FIRST.md)（P02）。
 
 ## 错的做法
 
@@ -23,7 +25,7 @@ Agent 这轮说完 ≠ 工件好了 ≠ 作者确认了 ≠ 章关了。关章�
 ## 出处
 
 - [R14 ADD-030](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md)（消化 vs 实际发生）
-- [SI-007 P02](../../survey-inbox/packages/DESIGN_REVIEW_AND_TECH_RESEARCH_RETURNS_20260813_R01/returns/P02_账本体系架构审查.md)（B01、B03）
+- [SI-007 包入口](../../survey-inbox/packages/DESIGN_REVIEW_AND_TECH_RESEARCH_RETURNS_20260813_R01/00_READ_ME_FIRST.md)（P02：B01、B03）
 - [SI-008 消化](../../survey-inbox/packages/AGENT_TOOLS_PIPELINE_RESEARCH_RETURNS_20260814_R01/02_RETURNS_DIGEST.md)（完成要拆开）
 
 来源：#115
