@@ -132,6 +132,31 @@ def build_report(
             errors.append(issue("ERROR", "TRUTH_WRITE_LEVEL", req_id, str(row.get("truth_write_level"))))
         if row.get("maturity") not in MATURITY:
             errors.append(issue("ERROR", "MATURITY", req_id, str(row.get("maturity"))))
+        maturity_evidence = row.get("maturity_evidence")
+        evidence_fields = ("classification", "raw_classification", "source", "boundary")
+        if not isinstance(maturity_evidence, dict) or any(
+            not isinstance(maturity_evidence.get(field), str) or not maturity_evidence[field].strip()
+            for field in evidence_fields
+        ):
+            errors.append(
+                issue(
+                    "ERROR",
+                    "MATURITY_EVIDENCE",
+                    req_id,
+                    "maturity_evidence must contain non-empty classification, raw_classification, source, and boundary",
+                )
+            )
+        else:
+            evidence_ref = maturity_evidence["source"].split("#", 1)[0].strip()
+            if not evidence_ref or not (root / evidence_ref).is_file():
+                errors.append(
+                    issue(
+                        "ERROR",
+                        "MATURITY_EVIDENCE_SOURCE_MISSING",
+                        req_id,
+                        maturity_evidence["source"],
+                    )
+                )
         if row.get("review_identity") != "CANDIDATE_REVIEWED":
             errors.append(issue("ERROR", "ROW_REVIEW_IDENTITY", req_id, str(row.get("review_identity"))))
         authorities = row.get("source_authority")

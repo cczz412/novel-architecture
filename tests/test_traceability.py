@@ -73,6 +73,20 @@ def test_missing_implementation_ref_is_error() -> None:
     assert "IMPLEMENTATION_REF_MISSING" in error_codes(report)
 
 
+def test_missing_test_ref_is_error() -> None:
+    value = copy.deepcopy(TRACE)
+    value["requirements"][0]["test_refs"] = ["does-not-exist/missing-test.py"]
+    report = MODULE.build_report(ROOT, value)
+    assert "TEST_REF_MISSING" in error_codes(report)
+
+
+def test_maturity_without_evidence_is_error() -> None:
+    value = copy.deepcopy(TRACE)
+    value["requirements"][0].pop("maturity_evidence")
+    report = MODULE.build_report(ROOT, value)
+    assert "MATURITY_EVIDENCE" in error_codes(report)
+
+
 def test_test_design_sha_drift_is_error() -> None:
     pointer = json.loads(
         (ROOT / "references/atomic-expectations/TEST_DESIGN_CURRENT.json").read_text(encoding="utf-8")

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -73,3 +75,48 @@ def test_parse_args_default_format_is_both(monkeypatch: pytest.MonkeyPatch) -> N
     args = MODULE.parse_args()
     assert args.format == "both"
     assert args.pr_body is None
+
+
+def test_child_exception_is_structured_without_traceback(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(MODULE, "CHECKERS", (("broken", "broken", "build_report"),))
+
+    def fail_load(_name: str) -> None:
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(MODULE, "_load", fail_load)
+    report = MODULE.build_report(ROOT)
+    assert report["status"] == "FAIL"
+    assert report["summary"]["failing_checkers"] == ["broken"]
+    assert report["errors"][0]["code"] == "CHECKER_EXCEPTION"
+    assert "Traceback" not in MODULE.render_summary(report)
+
+
+def test_child_error_cannot_hide_behind_pass_status(monkeypatch: pytest.MonkeyPatch) -> None:
+    child = {
+        "status": "PASS",
+        "errors": [{"level": "ERROR", "code": "HIDDEN", "message": "must fail"}],
+        "warnings": [],
+    }
+    module = SimpleNamespace(build_report=lambda _root: child)
+    monkeypatch.setattr(MODULE, "CHECKERS", (("inconsistent", "inconsistent", "build_report"),))
+    monkeypatch.setattr(MODULE, "_load", lambda _name: module)
+    report = MODULE.build_report(ROOT)
+    assert report["status"] == "FAIL"
+    assert report["summary"]["failing_checkers"] == ["inconsistent"]
+    assert report["errors"][0]["code"] == "HIDDEN"
+
+
+@pytest.mark.parametrize("output_format", ["json", "both"])
+def test_json_stdout_is_one_document_with_check_status_on_stderr(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    output_format: str,
+) -> None:
+    monkeypatch.setattr(sys, "argv", ["check_drift.py", "--format", output_format, "--check"])
+    assert MODULE.main() == 0
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["status"] == "PASS"
+    assert "PASS_DRIFT" in captured.err
+    if output_format == "both":
+        assert "# Drift check suite" in captured.err

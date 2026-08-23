@@ -850,6 +850,39 @@
       "path_kind": "directory"
     },
     {
+      "accepted_content": [
+        {
+          "label": "未来 PR 身份模板",
+          "object_id": "pull_request_identity_template",
+          "rule": "只保存未来 PR 六字段身份模板；不回填历史 PR，也不保存业务真值或运行报告。",
+          "target_pattern": ".github/PULL_REQUEST_TEMPLATE.md"
+        }
+      ],
+      "category": "governance",
+      "consumers": [
+        "GitHub",
+        "Codex",
+        "tools/check_review_identity.py",
+        "tools/check_drift.py"
+      ],
+      "container_authority": "current",
+      "directory_id": "DIR-GITHUB",
+      "evidence_refs": [
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        "governance/START_HERE.md"
+      ],
+      "externalization": "prohibited",
+      "git_policy": "tracked",
+      "identity": "github_repository_metadata",
+      "inherit_to_children": false,
+      "lifecycle": "mutable",
+      "load_policy": "task_scoped",
+      "new_content_rule": "只收仓库级 GitHub 元数据；不得把业务真值或运行报告放入。",
+      "open_decisions": [],
+      "path": ".github",
+      "path_kind": "directory"
+    },
+    {
       "accepted_content": [],
       "category": "history",
       "consumers": [
@@ -976,5 +1009,5 @@
   "inherit_to_children_default": false,
   "registry_id": "REPOSITORY-DIRECTORIES-20260730",
   "schema_version": "directory-registry-v1",
-  "updated_at": "2026-08-22"
+  "updated_at": "2026-08-23"
 }

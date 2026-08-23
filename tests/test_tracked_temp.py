@@ -3,6 +3,8 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
+import pytest
+
 from isolation import run_git
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "tools" / "check_tracked_temp.py"
@@ -79,3 +81,23 @@ def test_template_filename_is_not_a_temp_hit(tmp_path: Path) -> None:
     report = MODULE.build_report(tmp_path)
     assert report["status"] == "PASS"
     assert report["errors"] == []
+
+
+def test_git_listing_failure_cannot_pass(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _seed_git(tmp_path)
+
+    def fail_listing(_root: Path) -> list[str]:
+        raise RuntimeError("simulated git failure")
+
+    monkeypatch.setattr(MODULE, "_git_ls_files", fail_listing)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "GIT_LS_FILES_FAILED" in {item["code"] for item in report["errors"]}
+
+
+def test_empty_fake_tracked_list_cannot_pass(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _seed_git(tmp_path)
+    monkeypatch.setattr(MODULE, "_git_ls_files", lambda _root: [])
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert "TRACKED_LIST_INVALID" in {item["code"] for item in report["errors"]}

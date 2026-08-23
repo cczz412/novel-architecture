@@ -49,6 +49,24 @@ def test_invalid_status_is_error() -> None:
     assert "STATUS_ENUM" in codes(report)
 
 
+def test_missing_product_background_path_is_error() -> None:
+    value = copy.deepcopy(REGISTRY)
+    value["product_background"]["path"] = "references/shared-context/missing-r14/00_READ_ME_FIRST.md"
+    report = MODULE.build_report(ROOT, value, INDEX)
+    assert "PRODUCT_BACKGROUND_PATH_MISSING" in codes(report)
+
+
+def test_missing_repository_successor_is_error() -> None:
+    value = copy.deepcopy(REGISTRY)
+    row = next(item for item in value["documents"] if item["status"] == "SUPERSEDED")
+    row["superseded_by"] = {
+        "kind": "REPOSITORY_PATH",
+        "path": "novel-mvp/design/does-not-exist.md",
+    }
+    report = MODULE.build_report(ROOT, value, INDEX)
+    assert "SUCCESSOR_MISSING" in codes(report)
+
+
 def test_index_default_route_to_waiting_is_error() -> None:
     waiting = next(row for row in REGISTRY["documents"] if row["status"] == "WAITING_REWRITE")
     filename = Path(waiting["path"]).name

@@ -29,6 +29,7 @@
 | `.ruff_cache` | `local_ruff_cache` | `local_dependency` | `local_only` | `default_excluded` | `local_active` | `ignored` | 只由 Ruff 自动生成，不存项目材料。 |
 | `.venv` | `local_python_environment` | `local_dependency` | `local_only` | `default_excluded` | `local_active` | `ignored` | 只由环境管理器生成，不手工存项目材料。 |
 | `.agents` | `repository_agent_skills` | `configuration` | `current` | `task_scoped` | `mutable` | `tracked` | 只收仓库专用 Agent Skill；不得保存当前任务、模型拍板或业务真值。 |
+| `.github` | `github_repository_metadata` | `governance` | `current` | `task_scoped` | `mutable` | `tracked` | 只收仓库级 GitHub 元数据；不得把业务真值或运行报告放入。 |
 | `.workbuddy` | `legacy_workbuddy_memory` | `history` | `historical` | `default_excluded` | `historical` | `ignored` | 停止接收新内容；旧 WorkBuddy 记忆只留本机，不进入 Git，也不能作为 Codex 当前状态或决定真源。 |
 | `finetuning` | `finetuning_control_plane` | `experiment` | `current` | `task_scoped` | `mutable` | `tracked` | 只收微调身份、机器清单、派生摘要、合同和指针；正文、私有金标、权重、训练日志和原始答卷不得进入。 |
 | `novel-mvp` | `product_mvp_test_example` | `construction` | `candidate` | `task_scoped` | `candidate` | `mixed` | 只收测试阶段产品示例的代码、设计稿和合同；作者项目数据、草稿和密钥不得进入。 |
