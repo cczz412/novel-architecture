@@ -14,7 +14,7 @@
 
 ## 1. Repository entry / authority
 
-- 人看全仓治理状态：[治理索引](governance/INDEX.md)；机器读取当前执行状态只认 [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)。CZ 拍板仍以当前明确指令和 GitHub Issues 工程队列为准；上工入口见 [`governance/START_HERE.md`](governance/START_HERE.md)。
+- 人看全仓治理状态：[治理索引](governance/INDEX.md)；机器读取当前执行状态只认 [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)。CZ 拍板仍以当前明确指令为准。正式施工仍以 GitHub Issues 为准；规划／过程票见 Linear（见 [协作约定](governance/COLLAB_GITHUB_LINEAR_SLACK.md)）。上工入口见 [`governance/START_HERE.md`](governance/START_HERE.md)。
 - 当前版本、路径、候选分支与后续工单只认 [`governance/current_pointers.json`](governance/current_pointers.json)；它不保存运行成绩，也不替产品或领域 CURRENT 拍板。
 - 新窗口接力先看 [`governance/progress/current-progress.md`](governance/progress/current-progress.md)，再读它点名的专题页。它只负责接力，不能覆盖 `CURRENT_STATE.json`、正式结果票或 CZ 指令；两者时间或结论冲突时停下校准。
 - 产品共同理解从 [共同背景板 R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) 开始。R13 及更早印刷版已退出本 Git，本机备份；旧 Notion 镜像不代表 R14。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。

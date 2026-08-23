@@ -13,12 +13,13 @@ Notion 工程镜像制度已取消，本地镜像也取消。Notion 旧监督页
 ## 先读顺序
 
 1. 本页 [`governance/START_HERE.md`](START_HERE.md)
-2. [`current.md`](../current.md) 与 [`governance/INDEX.md`](INDEX.md)
-3. [`governance/CURRENT_STATE.json`](CURRENT_STATE.json)（机器当前执行状态）
-4. [`governance/progress/current-progress.md`](progress/current-progress.md)（人读接力，不能盖过机器状态）
-5. 开放工单：[GitHub Issues](https://github.com/cczz412/novel-architecture/issues)
-6. 找目录职责／「要加 X 去哪」：[ARCHITECTURE_MAP.md](ARCHITECTURE_MAP.md)
-7. 写任何给人读的中文之前：[中文语感对齐](chinese_language_style_alignment.md)（去 AI 腔、不啯嗦，全 Agent 通用）
+2. 三边怎么分工：[GitHub / Linear / Slack 协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)（正式施工仍以 GitHub Issues 为准；规划／过程票见 Linear）
+3. [`current.md`](../current.md) 与 [`governance/INDEX.md`](INDEX.md)
+4. [`governance/CURRENT_STATE.json`](CURRENT_STATE.json)（机器当前执行状态）
+5. [`governance/progress/current-progress.md`](progress/current-progress.md)（人读接力，不能盖过机器状态）
+6. 开放工单：[GitHub Issues](https://github.com/cczz412/novel-architecture/issues)
+7. 找目录职责／「要加 X 去哪」：[ARCHITECTURE_MAP.md](ARCHITECTURE_MAP.md)
+8. 写任何给人读的中文之前：[中文语感对齐](chinese_language_style_alignment.md)（去 AI 腔、不啯嗦，全 Agent 通用）
 
 版本、路径、候选身份仍只认 [`governance/current_pointers.json`](current_pointers.json)。产品语义仍回共同背景板 R14，不在本页重写。
 
