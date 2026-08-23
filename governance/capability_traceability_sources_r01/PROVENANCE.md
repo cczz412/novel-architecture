@@ -2,6 +2,8 @@
 
 这三份 JSON 摘自 ChatGPT Pro 总审包 `NOVEL_ARCH_CLEAN_BASELINE_AND_TRACEABILITY_REVIEW_20260820_R01.zip`（整包 SHA256 `d357f41e0f978bdea8581bf8374a9074baed417c3b632cb01996344f5343047c`，原件由 CZ 保管，未整包入仓——完整包里的 markdown 分析属于一次性外审证据，不进现役树）。
 
+07／08 已跟现行 [capability_traceability.json](../capability_traceability.json) 放在本夹；15 仍留在 `work/clean_baseline_decision_20260820_r01/pro_review_seed/`（归档候选，不是追踪正史）。
+
 只收后续工单要直接消费的三件机器文件：
 
 | 文件 | 给哪张工单用 | SHA256 |
