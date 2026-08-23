@@ -26,6 +26,8 @@
 
 包括名字里带 `SCREEN`、`PREFLIGHT`、认分／fair scoring 的包，以及 WO01 的 runner／scorer 预飞。P4 那份宽读窄写预飞也先放着，性质一样。
 
+2026-08-23 第四批已删两坨没人再引用的 vendor 预飞：`SAMPLE_MEAN_LOSS`、`TOKEN_WEIGHTED_GRAD_ACCUM`（各约 1.40 MiB）。本机保底仓还在。
+
 ## 3. 豆包路牌（不是这批对照实验）
 
 [PRODUCTION_MODEL_MIGRATION_P0](T5_R04_PRODUCTION_MODEL_MIGRATION_P0_20260808_R01/) 讲豆包 Mini／Lite 以后怎么迁。它停在「还没开跑」的路牌，不能拿来回答「Prompt 这样好还是那样好」。
