@@ -4,6 +4,7 @@
 
 - 工单：[issue #110](https://github.com/cczz412/novel-architecture/issues/110)
 - 清单正文：[CANDIDATE_LIST.md](CANDIDATE_LIST.md)
+- 续跑备忘（对照表 v0.1＋报告背景板已摘）：[CHECKPOINT_20260823.md](CHECKPOINT_20260823.md)
 - 本页只搜集登记，不改 `novel-mvp/contracts/`，不施工。
 - 正式 Git 路径就是本目录 `work/issue110_lost_design_inventory_20260823/`。TEMP 那份只是起草现场，以这里为准。
 - 归位条件：#110 过目、对照表开写，或并入正式评测材料之后，本目录退出 `work/`。不冒充 contracts。
