@@ -89,4 +89,23 @@ CZ 2026-08-24 同意收进。SI-016 是当时候选合同审查，不是现行�
 | 书稿一保存就准备自动改规划；或没交棒就不允许对账 | 已拍加固 | [保存、对照、交棒是三件事](cards/save-compare-handover-are-separate.md) |
 | 想用一个 `status`／`closed`／`completed` 包办审核、交棒、收工和关章 | 已拍加固 | [一个状态字段只能管一条轴](cards/status-belongs-to-one-axis.md) |
 
+## TEMP 剩料缺口（批次 E）
+
+CZ 2026-08-24 同意收进。Deep Search 原 URL 打不开的部分只标外部先验。切片 PASS 是历史审查，不是现行故障。格式 V1.1 未迁。
+
+| 遇到什么 | 身份 | 卡片 |
+|---|---|---|
+| 检索命中、材料入包、模型使用准备合成一个“证据已用” | 外部先验 | [找到、装进、真正用到是三道证据](cards/found-loaded-used-are-different.md) |
+| 合同递增版本号后准备直接宣称兼容 | 外部先验 | [版本号不是兼容证明](cards/version-number-is-not-compatibility.md) |
+| 作者处置过的问题在后续版本里永久消失或反复轰炸 | 已拍加固 | [问题可以还在，处置不能失忆](cards/handled-issue-needs-reopen.md) |
+| 本地最新稿准备冒充读者实际看过的线上版本 | 外部先验 | [本地最新稿不等于读者看过的版本](cards/published-view-is-not-current-draft.md) |
+| 局部修改后准备盲用全部旧结果，或默认全书重跑 | 已拍加固 | [局部复核要说明旧结果为什么还能用](cards/local-recheck-needs-freshness-proof.md) |
+| 计划与书稿准备做成段落级一对一映射 | 外部先验 | [一条计划不只对应一段书稿](cards/outline-prose-is-many-to-many.md) |
+| 局部文风修改准备越过选区并改变故事含义 | 外部先验 | [改句子不能顺手改故事](cards/style-patch-cannot-change-story.md) |
+| 作者一句方向准备被 Agent 改写成全局永久偏好 | 外部先验 | [作者原话和产品理解要并存](cards/author-words-and-interpretation-coexist.md) |
+| 作者抱怨准备被直接翻译成不存在的配置项 | 外部先验 | [作者抱怨不是配置命令](cards/complaint-is-not-setting-command.md) |
+| “只看核心”准备同时减少分析、抽取、证据和展示 | 已拍加固 | [少看一点，不等于少分析一点](cards/less-display-is-not-less-analysis.md) |
+| 识别到产品意见后准备自动外发聊天和书稿 | 已拍加固 | [识别到产品反馈，不等于同意外发](cards/feedback-needs-separate-consent.md) |
+| TEMP 中某个切片或测试包通过后准备宣称整模块完成 | 设计审查风险 | [一个切片通过，不等于整个模块完成](cards/slice-pass-is-not-module-complete.md) |
+
 来源：#115
