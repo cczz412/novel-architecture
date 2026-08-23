@@ -73,4 +73,20 @@ CZ 2026-08-24 同意收进。字段名、组件数、市场数字、晋江阉割
 | 产品不代写正文，准备显示平台“安全发布” | 已拍加固 | [不代写，不等于平台一定合规](cards/no-prose-is-not-compliance.md) |
 | 人格标签准备直接驱动行为或触发硬冲突 | 已拍加固 | [人格标签只能提醒，不能替角色做决定](cards/psych-labels-are-soft.md) |
 
+## 规划账合同（批次 D）
+
+CZ 2026-08-24 同意收进。SI-016 是当时候选合同审查，不是现行代码故障。`plan-v2-candidate` 字段表、空数组收窄、C5 候选、具体 ID 格式没有写成已拍。格式 V1.1 未迁。
+
+| 遇到什么 | 身份 | 卡片 |
+|---|---|---|
+| 目录写着“已对齐”，准备跳过现行合同直接施工 | 设计审查风险 | [“已对齐”只是状态说明，不是施工放行票](cards/aligned-label-is-not-release.md) |
+| 下游要读完整规划，准备把一次 C7 出题快照当整本规划账 | 设计审查风险 | [一次出题快照不能冒充完整规划账](cards/snapshot-is-not-ledger.md) |
+| 导入时准备把大纲条目和章节书稿排进同一个章节数组 | 已拍加固 | [大纲原稿不能占章节序号](cards/outline-is-not-chapter.md) |
+| 准备把黄金三章做成三章上限、付费额度或 C1 类型 | 已拍加固 | [黄金三章是独立工作台，不是三章上限](cards/golden-three-is-workspace.md) |
+| 准备把 `truth_bearing`、P 号和内部模块名直接放到作者界面 | 已拍加固 | [作者看人话，合同字段留在内部](cards/schema-names-stay-internal.md) |
+| 概览、体检或快照只有生成时间，准备据此判断仍然有效 | 已拍加固 | [投影必须知道自己基于哪一版](cards/projection-needs-source-version.md) |
+| 跨账引用遇到 `f001`／`F-0001` 两种写法，准备随便选一种落库 | 已拍加固 | [跨账引用认稳定 ID，不认界面编号](cards/store-internal-id-render-display-id.md) |
+| 书稿一保存就准备自动改规划；或没交棒就不允许对账 | 已拍加固 | [保存、对照、交棒是三件事](cards/save-compare-handover-are-separate.md) |
+| 想用一个 `status`／`closed`／`completed` 包办审核、交棒、收工和关章 | 已拍加固 | [一个状态字段只能管一条轴](cards/status-belongs-to-one-axis.md) |
+
 来源：#115
