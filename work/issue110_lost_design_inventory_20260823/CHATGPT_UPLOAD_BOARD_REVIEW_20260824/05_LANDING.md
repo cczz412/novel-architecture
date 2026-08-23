@@ -12,7 +12,6 @@
 | 内审全文 | [chatgpt_pro_internal_20260823.md](chatgpt_pro_internal_20260823.md) | ChatGPT Pro，只读 PACK_00–03 |
 | 外调全文（旧） | [deep_research_external_20260823.md](deep_research_external_20260823.md) | Deep Research；**文末 16 行看错题，当废页** |
 | 外调全文（现役） | [chatgpt_pro_web_external_20260824.md](chatgpt_pro_web_external_20260824.md) | ChatGPT Pro＋网搜；16 行写对了，外调以这份为准 |
-| 外审拍板全文 | [chatgpt_pro_board_review_20260824.md](chatgpt_pro_board_review_20260824.md) | 四道拍板＋中文网文漏结构＋卷／长线形态；推荐 **B／A／A／A**，仍是候选 |
 
 ❌ 不进 `novel-mvp/contracts/`  
 ❌ 不进 R14、不进 `external-knowledge-base` 现役包  
@@ -23,7 +22,7 @@
 
 ✅ **可以挂，但只挂短登记，不贴全文。**
 
-几份加起来太长，GitHub 评论也不该当正文库。票上只要：
+两份加起来太长，GitHub 评论也不该当正文库。票上只要：
 
 - 回包已进本目录
 - 仍是候选，不是拍板
@@ -65,40 +64,9 @@
 
 外调多出来、备忘里没有这么写过的：World Anvil Secrets、BDI／知情差学术先例、Re3／DOC 生成后再抽查、Plottr 章×剧情线场景卡、Kanka 字段可空、没有「按章定额」的公开惯例。这些只作外部参考。
 
-## 拍板外审咬合｜2026-08-24
-
-全文：[chatgpt_pro_board_review_20260824.md](chatgpt_pro_board_review_20260824.md)。和 16 行外调不是同一份：这份回答四道拍板＋中文网文漏结构＋卷／长线形态。
-
-✅ 灯没动。NWM 标 U，不当四道题主证据。B／A／A／A 只是候选。
-✅ 四问和内审开口对得上：知情边销冲突、`dark_draft` 两句话打架、读者承诺 A-lite、稀章零条合法。
-✅ `VOL-` 七字段已有、runtime 硬停 `VOLUMES_NOT_SUPPORTED`：合同对得上，没有把「没接线」写成「没设计」。
-✅ 「130 条没写出的计划句」来自 R14 制度页举例，不是某本现货书的实计数。
-
-抽查过几处硬出处（外部参考，无产品或执行权威）：
-
-- [Character Beliefs in Story Generation](https://ojs.aaai.org/index.php/AIIDE/article/view/12990)（2017）：人物信念常缺失或只被临时处理，世界状态和人物信念要分开更新。
-- [HeadSpace](https://ojs.aaai.org/index.php/AIIDE/article/view/21961)（2022）：误信可以驱动会失败的行动，不是「没查到真相」。
-- [World Anvil Secrets 教程](https://www.worldanvil.com/learn/beginner-tutorials/get-started-secrets)：角色知情、读者防剧透、资料权限并列，不能一个 `visibility` 包办。
-- [Label Studio 允许提交空标注](https://api.labelstud.io/api-reference/api-reference/projects/create)：空标注和跳过任务是两套设置。
-
-⚠️ 选 B 不等于现在已经有知情边。人物合同仍拒绝 `knowledge_edges`。B 仍要改合同，只是不开一本新的物理账。
-⚠️ 选 A 处理 `dark_draft`，会改规划账现行口径：现在明文是「已发生、仍是事实，但继续住规划账、不发 F 号」。
-⚠️ 中国作家网那篇男频综述页在，但「文类与读者的基本契约」这句没有在可见摘录里对上原文，当旁证，别当硬句。
-⚠️ 知情边宿主、误信内容形态、升级到 A 的门槛、里程对象 owner，稿末 14 条仍要你拍。
-
-这份相对内审／16 行外调的新货：
-
-1. 知情边 B 的最低形状：误信必须有 `belief_content`；无记录＝未追踪，不等于不知道；v1 只做一阶信念。
-2. 读者承诺 A-lite 最薄字段＋改口留历史。
-3. 稀章五种空不能压成同一个空数组；连续零只做抽取器探针，不补写事实。
-4. 中文网文常讲的东西压成一句：真缺的是知情／追求与目标结果／极薄承诺／故事线里程，不是再开爽点账。
-5. VOL 七字段沿用；`storyline_refs`／`milestone_refs` 只是可选引用格，禁止空字段倒逼对象。
-
-重复、不算新发现：知情边打架、`must_carry` 不是读者承诺、暗稿第三条打架、VOL／DESTINY／INS 缺 writer、长线是读取面、钩子与伏笔要拆开。
-
 ## 还没做
 
-- [ ] 你拍那四个问题（外审推荐 B／A／A／A，仍是候选）
+- [ ] 你拍那四个问题
 - [ ] 票上短评（等你说登票）
 - [ ] 知情边从 D-COORD-001 变成合同禁止，对到哪次 commit（备忘里的旧债）
-- [ ] 把外调／外审消化进背景板／survey-inbox——这轮不做
+- [ ] 把外调消化进背景板／survey-inbox——这轮不做

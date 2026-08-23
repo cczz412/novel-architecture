@@ -6,7 +6,7 @@
 - 清单正文：[CANDIDATE_LIST.md](CANDIDATE_LIST.md)
 - 续跑备忘（对照表 v0.1＋报告背景板已摘）：[CHECKPOINT_20260823.md](CHECKPOINT_20260823.md)
 - 调查包：[SURVEY_PACK/](SURVEY_PACK/)
-- 回包（候选，待拍）：[returns/00_LANDING.md](returns/00_LANDING.md)（外调现役＝ChatGPT Pro＋网搜那份）
+- 回包（候选，待拍）：[returns/00_LANDING.md](returns/00_LANDING.md)（外调现役＝ChatGPT Pro＋网搜那份；拍板外审＝[chatgpt_pro_board_review_20260824.md](returns/chatgpt_pro_board_review_20260824.md)）
 - 本页只搜集登记，不改 `novel-mvp/contracts/`，不施工。
 - 正式 Git 路径就是本目录 `work/issue110_lost_design_inventory_20260823/`。TEMP 那份只是起草现场，以这里为准。
 - 归位条件：#110 过目、对照表开写，或并入正式评测材料之后，本目录退出 `work/`。不冒充 contracts。
