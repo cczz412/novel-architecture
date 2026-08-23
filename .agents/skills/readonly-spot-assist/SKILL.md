@@ -1,6 +1,6 @@
 ---
 name: readonly-spot-assist
-description: 主窗口把探路摸仓库、搜文档、收尾点检这三类只读杂活派给 Grok 4.5 非 Fast 子 Agent，把主窗口上下文留给真正拍板和改写集。Use when 当前窗口已经在干正事，需要另开只读子 Agent 去摸路径、搜文档、或对容易出错处做一次点检。Do not use for写仓库、开 PR、训练、模型 API、搬删、Gold、生产晋升，也不要把子 Agent 当成持续巡检或第二个主窗口。
+description: 主窗口把探路摸仓库、搜文档、收尾点检这三类只读杂活派给 inherit 子 Agent（跟主窗口同一款模型），把主窗口上下文留给真正拍板和改写集。Use when 当前窗口已经在干正事，需要另开只读子 Agent 去摸路径、搜文档、或对容易出错处做一次点检。Do not use for写仓库、开 PR、训练、模型 API、搬删、Gold、生产晋升，也不要把子 Agent 当成持续巡检或第二个主窗口。
 ---
 
 # 只读点检协助
@@ -23,11 +23,11 @@ description: 主窗口把探路摸仓库、搜文档、收尾点检这三类只�
 - 要改代码、改治理页、提交、开 PR、合并。
 - 训练、模型 API、Gold、搬删、退出 Git、生产晋升。
 - 想「全程挂着盯着别犯错」：不要开循环点检。
-- 想用 Grok 4.6、Fast、或其他名单外型号顶这个位置。
+- 想给子 Agent 另指定 Grok 4.5、Fast 或其他型号：不要。本 Skill 只走 inherit。
 
 ## 子 Agent 固定配方
 
-- 模型：Grok 4.5 非 Fast。Task 的 `model` 只填 `cursor-grok-4.5-high`。不要 `inherit`，不要 `cursor-grok-4.5-high-fast`。
+- 模型：`inherit`（跟主窗口同一款；不填 model 也行，默认就是 inherit）。2026-08-23 实测：主窗口为 Grok 4.6 xhigh 非 Fast 时，子 Agent 回报身份为 Cursor Grok 4.6。禁止改填 Fast 或任何其他 slug。
 - 权限：只读。禁止改工作区、禁止 `git` 写、禁止开 PR、禁止调会花钱的模型 API。
 - 回报：几段人话 + 可点的仓内相对路径。不要把长日志糊回主窗口。
 
@@ -41,7 +41,7 @@ description: 主窗口把探路摸仓库、搜文档、收尾点检这三类只�
 
 ## 怎么派
 
-主窗口写清：要查什么、已知路径、不要碰什么。子 Agent 找不到就报「没找到」，不要扩大成全仓扫描，也不要替主窗口拍板。
+主窗口写清：要查什么、已知路径、不要碰什么。Task 的 `model` 填 `inherit` 或不填。子 Agent 找不到就报「没找到」，不要扩大成全仓扫描，也不要替主窗口拍板。
 
 收尾点检只覆盖点名的风险。主窗口没说的条目，不要自己加一轮「更放心」的检查。
 
