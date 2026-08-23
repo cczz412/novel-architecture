@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 from pathlib import Path
 
@@ -330,6 +331,21 @@ def test_report_is_byte_reproducible_for_same_inputs(tmp_path: Path) -> None:
     assert first == second
 
 
+def _username_leaked_as_json_string_or_path_segment(raw: str, username: str) -> bool:
+    """Catch a leaked username without tripping on identifier substrings.
+
+    Container user ``root`` is a substring of report tokens such as
+    ``root_locator_safe`` and ``root_id``. Those field names are not a leak.
+    """
+
+    if not username:
+        return False
+    if json.dumps(username, ensure_ascii=False) in raw:
+        return True
+    pattern = re.compile(rf"[/\\]{re.escape(username)}(?:[/\\]|$)")
+    return pattern.search(raw) is not None
+
+
 def test_report_never_serializes_absolute_roots_or_username(
     tmp_path: Path,
 ) -> None:
@@ -337,7 +353,8 @@ def test_report_never_serializes_absolute_roots_or_username(
     raw = inventory._json_bytes(inventory.scan(repo)).decode("utf-8")
     assert str(repo) not in raw
     assert str(external) not in raw
-    assert Path.home().name not in raw
+    for username in {Path.home().name, "root"}:
+        assert not _username_leaked_as_json_string_or_path_segment(raw, username)
 
 
 def test_git_metric_counts_same_blob_once_per_tracked_path(
