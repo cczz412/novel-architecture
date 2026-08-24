@@ -64,6 +64,15 @@ AUTHOR_ID_RE = re.compile(r"a_[0-9a-f]{32}\Z")
 GENERATION_ID_RE = re.compile(r"g_[0-9a-f]{64}\Z")
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
 OPERATION_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\Z")
+PROJECT_CREATED_AT_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\Z")
+PROJECT_METADATA_SCHEMA_VERSION = "author-workspace-project-v1"
+PROJECT_METADATA_KEYS = {
+    "schema_version",
+    "project_id",
+    "author_id",
+    "display_name",
+    "created_at",
+}
 
 
 class WorkspaceError(RuntimeError):
@@ -154,6 +163,53 @@ def _validate_project_id(project_id: Any) -> str:
     if not isinstance(project_id, str) or PROJECT_ID_RE.fullmatch(project_id) is None:
         raise ProjectNotFoundError("PROJECT_NOT_FOUND")
     return project_id
+
+
+def _validate_project_metadata(
+    metadata: Any,
+    *,
+    expected_author_id: str,
+    expected_project_id: str,
+) -> dict[str, str]:
+    if (
+        not isinstance(metadata, dict)
+        or set(metadata) != PROJECT_METADATA_KEYS
+        or metadata.get("schema_version") != PROJECT_METADATA_SCHEMA_VERSION
+    ):
+        raise IntegrityError("PROJECT_METADATA_INVALID")
+    if metadata.get("project_id") != expected_project_id:
+        raise IntegrityError("PROJECT_ID_BINDING_MISMATCH")
+    if metadata.get("author_id") != expected_author_id:
+        raise IntegrityError("PROJECT_AUTHOR_BINDING_MISMATCH")
+
+    display_name = metadata.get("display_name")
+    if (
+        not isinstance(display_name, str)
+        or not display_name
+        or display_name != display_name.strip()
+        or len(display_name) > 200
+        or "\x00" in display_name
+    ):
+        raise IntegrityError("PROJECT_METADATA_INVALID")
+
+    created_at = metadata.get("created_at")
+    if (
+        not isinstance(created_at, str)
+        or PROJECT_CREATED_AT_RE.fullmatch(created_at) is None
+    ):
+        raise IntegrityError("PROJECT_METADATA_INVALID")
+    try:
+        datetime.strptime(created_at, "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError as exc:
+        raise IntegrityError("PROJECT_METADATA_INVALID") from exc
+
+    return {
+        "schema_version": PROJECT_METADATA_SCHEMA_VERSION,
+        "project_id": expected_project_id,
+        "author_id": expected_author_id,
+        "display_name": display_name,
+        "created_at": created_at,
+    }
 
 
 def _validate_logical_key(logical_key: Any) -> str:
@@ -390,7 +446,7 @@ class _LocalFilesystemBackend:
             os.chmod(project_dir, 0o700, follow_symlinks=False)
             self._fsync_directory(projects_dir)
             metadata = {
-                "schema_version": "author-workspace-project-v1",
+                "schema_version": PROJECT_METADATA_SCHEMA_VERSION,
                 "project_id": project_id,
                 "author_id": author_id,
                 "display_name": display_name,
@@ -400,7 +456,11 @@ class _LocalFilesystemBackend:
             return self._issue_workspace(author_id, project_id)
         raise WorkspaceError("PROJECT_ID_ALLOCATION_FAILED")
 
-    def _require_project(self, author_id: str, project_id: str) -> Path:
+    def _require_project_and_metadata(
+        self,
+        author_id: str,
+        project_id: str,
+    ) -> tuple[Path, dict[str, str]]:
         project_id = _validate_project_id(project_id)
         project_dir = self._project_dir(author_id, project_id)
         self._assert_safe_path(project_dir)
@@ -408,27 +468,36 @@ class _LocalFilesystemBackend:
         self._assert_safe_path(metadata_path)
         if not project_dir.is_dir() or not metadata_path.exists():
             raise ProjectNotFoundError("PROJECT_NOT_FOUND")
-        metadata = self._read_json(metadata_path)
-        if (
-            not isinstance(metadata, dict)
-            or metadata.get("project_id") != project_id
-            or metadata.get("author_id") != author_id
-        ):
-            raise ProjectNotFoundError("PROJECT_NOT_FOUND")
+        try:
+            metadata = self._read_json(metadata_path)
+        except UnicodeDecodeError as exc:
+            raise IntegrityError("PROJECT_METADATA_INVALID") from exc
+        except IntegrityError as exc:
+            if exc.code != "INVALID_WORKSPACE_JSON":
+                raise
+            raise IntegrityError("PROJECT_METADATA_INVALID") from exc
+        return project_dir, _validate_project_metadata(
+            metadata,
+            expected_author_id=author_id,
+            expected_project_id=project_id,
+        )
+
+    def _require_project(self, author_id: str, project_id: str) -> Path:
+        project_dir, _ = self._require_project_and_metadata(author_id, project_id)
         return project_dir
 
     def open_project(self, author_id: str, project_id: str) -> "AuthorWorkspace":
         self._require_project(author_id, project_id)
         return self._issue_workspace(author_id, project_id)
 
-    def list_projects(self, author_id: str) -> list[dict[str, Any]]:
+    def list_projects(self, author_id: str) -> list[dict[str, str]]:
         projects_dir = self._author_dir(author_id) / "projects"
         self._assert_safe_path(projects_dir)
         if not projects_dir.exists():
             return []
         if not projects_dir.is_dir():
             raise UnsafePathError("DIRECTORY_REQUIRED")
-        projects: list[dict[str, Any]] = []
+        projects: list[dict[str, str]] = []
         with os.scandir(projects_dir) as entries:
             for entry in entries:
                 if entry.is_symlink():
@@ -442,16 +511,15 @@ class _LocalFilesystemBackend:
                 self._assert_safe_path(metadata_path)
                 if not metadata_path.exists():
                     continue
-                metadata = self._read_json(metadata_path)
-                if not isinstance(metadata, dict):
-                    raise IntegrityError("PROJECT_METADATA_INVALID")
-                if metadata.get("author_id") != author_id:
-                    raise IntegrityError("PROJECT_AUTHOR_BINDING_MISMATCH")
+                _, metadata = self._require_project_and_metadata(
+                    author_id,
+                    entry.name,
+                )
                 projects.append(
                     {
-                        "project_id": entry.name,
-                        "display_name": metadata.get("display_name"),
-                        "created_at": metadata.get("created_at"),
+                        "project_id": metadata["project_id"],
+                        "display_name": metadata["display_name"],
+                        "created_at": metadata["created_at"],
                     }
                 )
         return sorted(projects, key=lambda item: item["project_id"])
@@ -1175,6 +1243,6 @@ class WorkspaceRouter:
     def list_projects(
         self,
         authenticated_principal: str,
-    ) -> list[dict[str, Any]]:
+    ) -> list[dict[str, str]]:
         author_id = _authenticated_author_id(authenticated_principal)
         return self._backend.list_projects(author_id)
