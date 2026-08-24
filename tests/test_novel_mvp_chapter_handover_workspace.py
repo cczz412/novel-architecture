@@ -119,7 +119,8 @@ def _handover_action() -> dict:
 
 def _setup(tmp_path: Path):
     runtime = tmp_path / "runtime"
-    workspace = WorkspaceRouter(runtime).create_project("author:alice", "作者项目")
+    router = WorkspaceRouter(runtime)
+    workspace = router.create_project("author:alice", "作者项目")
     plan_workspace.save_plan(workspace, "op-plan-seed", _plan(), 0)
     work_draft_workspace.save_current_work_draft(
         workspace,
@@ -137,7 +138,7 @@ def _setup(tmp_path: Path):
         _handover_action(),
         ADMITTED_AT,
     )
-    return runtime, workspace
+    return runtime, router, workspace
 
 
 def _tree_bytes(root: Path) -> dict[str, bytes]:
@@ -149,7 +150,7 @@ def _tree_bytes(root: Path) -> dict[str, bytes]:
 
 
 def test_pending_chapter_is_mapped_without_creating_a_second_c1(tmp_path: Path) -> None:
-    runtime, workspace = _setup(tmp_path)
+    runtime, _, workspace = _setup(tmp_path)
     chapters_before = copy.deepcopy(workspace.read("chapters"))
     ledger_before = copy.deepcopy(workspace.read("chapter_revisions"))
 
@@ -215,7 +216,7 @@ def test_pending_chapter_is_mapped_without_creating_a_second_c1(tmp_path: Path) 
 
 
 def test_exact_replay_after_restart_is_zero_write(tmp_path: Path) -> None:
-    runtime, workspace = _setup(tmp_path)
+    runtime, _, workspace = _setup(tmp_path)
     first = chapter_handover_workspace.complete_pending_handover(
         workspace, ADMISSION_ID, PLAN_OPERATION_ID, HANDED_AT
     )
@@ -248,7 +249,7 @@ def test_exact_replay_after_restart_is_zero_write(tmp_path: Path) -> None:
 def test_outline_change_keeps_formal_chapter_and_pending_marker(
     tmp_path: Path,
 ) -> None:
-    _, workspace = _setup(tmp_path)
+    _, _, workspace = _setup(tmp_path)
     plan_workspace.save_plan(workspace, "op-outline-r3", _plan(outline_rev=3), 1)
     chapter_before = copy.deepcopy(workspace.read("chapters"))
     operations_before = copy.deepcopy(
@@ -274,7 +275,7 @@ def test_plan_race_rejects_without_completing_pending_operation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    _, workspace = _setup(tmp_path)
+    _, _, workspace = _setup(tmp_path)
     original = workspace.commit_guarded
 
     def race(operation_id, mutations, expected_versions, guard_versions):
@@ -306,13 +307,13 @@ def test_plan_race_rejects_without_completing_pending_operation(
 def test_crash_after_pointer_is_recovered_as_one_complete_handover(
     tmp_path: Path,
 ) -> None:
-    _, workspace = _setup(tmp_path)
+    _, router, workspace = _setup(tmp_path)
 
     def fail(point: str) -> None:
         if point == "after_pointer_swap":
             raise InjectedWorkspaceCrash(point)
 
-    workspace._backend._failure_hook = fail
+    router._set_failure_hook_for_testing(fail)
     with pytest.raises(InjectedWorkspaceCrash, match="after_pointer_swap"):
         chapter_handover_workspace.complete_pending_handover(
             workspace, ADMISSION_ID, PLAN_OPERATION_ID, HANDED_AT
@@ -322,7 +323,7 @@ def test_crash_after_pointer_is_recovered_as_one_complete_handover(
     ][ADMISSION_ID]["stage"] == "HANDOVER_COMPLETE"
     assert len(workspace.read("plan")["payload"]["slot_mappings"]) == 1
 
-    workspace._backend._failure_hook = None
+    router._set_failure_hook_for_testing(None)
     replay = chapter_handover_workspace.complete_pending_handover(
         workspace, ADMISSION_ID, PLAN_OPERATION_ID, HANDED_AT
     )
@@ -381,7 +382,7 @@ def test_missing_plan_bad_ids_and_path_impostor_fail_closed(tmp_path: Path) -> N
 
 
 def test_plan_sha_marker_matches_exact_committed_payload(tmp_path: Path) -> None:
-    _, workspace = _setup(tmp_path)
+    _, _, workspace = _setup(tmp_path)
     result = chapter_handover_workspace.complete_pending_handover(
         workspace, ADMISSION_ID, PLAN_OPERATION_ID, HANDED_AT
     )

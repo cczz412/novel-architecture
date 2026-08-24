@@ -347,22 +347,21 @@ def test_draft_change_at_commit_guard_rejects_all_admission_keys(
 def test_crash_before_pointer_recovers_with_no_partial_admission(
     tmp_path: Path,
 ) -> None:
-    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
-        "author:alice", "项目"
-    )
+    router = WorkspaceRouter(tmp_path / "runtime")
+    workspace = router.create_project("author:alice", "项目")
     _save_draft(workspace)
 
     def fail(point: str) -> None:
         if point == "after_prepare":
             raise InjectedWorkspaceCrash(point)
 
-    workspace._backend._failure_hook = fail
+    router._set_failure_hook_for_testing(fail)
     with pytest.raises(InjectedWorkspaceCrash, match="after_prepare"):
         chapter_initial_admission_workspace.commit_initial_work_draft(
             workspace, _handover(), COMMITTED_AT
         )
     assert all(workspace.read(key) is None for key in STATE_KEYS)
-    workspace._backend._failure_hook = None
+    router._set_failure_hook_for_testing(None)
     assert workspace.recover()["status"] == "ROLLED_BACK"
     assert all(workspace.read(key) is None for key in STATE_KEYS)
 

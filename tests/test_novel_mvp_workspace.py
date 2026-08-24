@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import copy
 import inspect
 import json
 import os
+import pickle
 import stat
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -17,6 +19,7 @@ PRODUCT_ROOT = ROOT / "novel-mvp"
 sys.path.insert(0, str(PRODUCT_ROOT))
 try:
     from mvp.workspace import (
+        AuthorWorkspace,
         AuthenticationError,
         InjectedWorkspaceCrash,
         IntegrityError,
@@ -168,6 +171,75 @@ def test_same_display_name_isolated_by_authenticated_principal_and_guess_is_hidd
     assert not hasattr(alice, "open_path")
     assert not hasattr(alice, "glob")
     assert not hasattr(router, "search_projects")
+
+
+@pytest.mark.parametrize("attribute", ["author_id", "project_id", "_backend"])
+def test_author_workspace_public_binding_cannot_be_reassigned(
+    tmp_path: Path,
+    attribute: str,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "auth:alice",
+        "项目",
+    )
+
+    with pytest.raises(
+        AuthenticationError,
+        match="AUTHOR_WORKSPACE_BINDING_IMMUTABLE",
+    ):
+        setattr(workspace, attribute, "changed")
+
+    assert workspace.read("state") is None
+
+
+def test_author_workspace_exposes_no_backend_router_or_runtime_root(
+    tmp_path: Path,
+) -> None:
+    router = WorkspaceRouter(tmp_path / "runtime")
+    alice = router.create_project("auth:alice", "甲")
+    attributes = set(dir(alice))
+
+    assert "_backend" not in attributes
+    assert "_bound" not in attributes
+    assert "runtime_root" not in attributes
+    assert "router" not in attributes
+    assert vars(alice) == {}
+    assert alice.author_id.startswith("a_")
+    assert alice.project_id.startswith("p_")
+
+
+def test_unissued_author_workspace_cannot_read_or_write(
+    tmp_path: Path,
+) -> None:
+    issued = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "auth:bob",
+        "项目",
+    )
+    forged = object.__new__(AuthorWorkspace)
+
+    with pytest.raises(AuthenticationError, match="AUTHOR_WORKSPACE_ROUTER_REQUIRED"):
+        AuthorWorkspace()
+    with pytest.raises(AuthenticationError, match="AUTHOR_WORKSPACE_BINDING_INVALID"):
+        forged.read("state")
+
+    assert issued.read("state") is None
+
+
+@pytest.mark.parametrize("copier", [copy.copy, copy.deepcopy, pickle.dumps])
+def test_author_workspace_cannot_be_copied_or_serialized(
+    tmp_path: Path,
+    copier,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "auth:alice",
+        "项目",
+    )
+
+    with pytest.raises(
+        AuthenticationError,
+        match="AUTHOR_WORKSPACE_SERIALIZATION_FORBIDDEN",
+    ):
+        copier(workspace)
 
 
 @pytest.mark.parametrize(
@@ -323,15 +395,14 @@ def test_guarded_commit_rejects_guard_mutation_overlap(tmp_path: Path) -> None:
 def test_recover_after_prepare_exposes_none_of_multi_object_commit(
     tmp_path: Path,
 ) -> None:
-    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
-        "principal-a", "项目"
-    )
+    router = WorkspaceRouter(tmp_path / "runtime")
+    workspace = router.create_project("principal-a", "项目")
 
     def fail_after_prepare(point: str) -> None:
         if point == "after_prepare":
             raise InjectedWorkspaceCrash(point)
 
-    workspace._backend._failure_hook = fail_after_prepare
+    router._set_failure_hook_for_testing(fail_after_prepare)
     with pytest.raises(InjectedWorkspaceCrash, match="after_prepare"):
         workspace.commit(
             "op-crash-before-pointer",
@@ -341,7 +412,7 @@ def test_recover_after_prepare_exposes_none_of_multi_object_commit(
 
     assert workspace.read("state") is None
     assert workspace.read("plan") is None
-    workspace._backend._failure_hook = None
+    router._set_failure_hook_for_testing(None)
     assert workspace.recover() == {
         "status": "ROLLED_BACK",
         "operation_id": "op-crash-before-pointer",
@@ -354,13 +425,14 @@ def test_recover_after_pointer_exposes_all_and_finishes_receipt(
     tmp_path: Path,
 ) -> None:
     runtime_root = tmp_path / "runtime"
-    workspace = WorkspaceRouter(runtime_root).create_project("principal-a", "项目")
+    router = WorkspaceRouter(runtime_root)
+    workspace = router.create_project("principal-a", "项目")
 
     def fail_after_pointer(point: str) -> None:
         if point == "after_pointer_swap":
             raise InjectedWorkspaceCrash(point)
 
-    workspace._backend._failure_hook = fail_after_pointer
+    router._set_failure_hook_for_testing(fail_after_pointer)
     with pytest.raises(InjectedWorkspaceCrash, match="after_pointer_swap"):
         workspace.commit(
             "op-crash-after-pointer",
@@ -370,7 +442,7 @@ def test_recover_after_pointer_exposes_all_and_finishes_receipt(
 
     assert workspace.read("state")["payload"] == {"n": 1}
     assert workspace.read("plan")["payload"] == {"n": 1}
-    workspace._backend._failure_hook = None
+    router._set_failure_hook_for_testing(None)
     recovery = workspace.recover()
     assert recovery["status"] == "COMMIT_COMPLETED"
     assert recovery["operation_id"] == "op-crash-after-pointer"

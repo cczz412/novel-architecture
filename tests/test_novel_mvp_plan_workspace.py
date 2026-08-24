@@ -242,17 +242,18 @@ def test_crash_recovery_exposes_whole_plan_or_no_plan(
     visible: bool,
 ) -> None:
     runtime_root = tmp_path / fault_point
-    workspace = WorkspaceRouter(runtime_root).create_project("auth:alice", "恢复项目")
+    router = WorkspaceRouter(runtime_root)
+    workspace = router.create_project("auth:alice", "恢复项目")
     plan = _plan()
 
     def crash(point: str) -> None:
         if point == fault_point:
             raise InjectedWorkspaceCrash(point)
 
-    workspace._backend._failure_hook = crash
+    router._set_failure_hook_for_testing(crash)
     with pytest.raises(InjectedWorkspaceCrash, match=fault_point):
         plan_workspace.save_plan(workspace, f"op-{fault_point}", plan, 0)
-    workspace._backend._failure_hook = None
+    router._set_failure_hook_for_testing(None)
 
     recovery = workspace.recover()
     assert recovery["status"] == recovery_status
