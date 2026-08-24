@@ -173,6 +173,78 @@ def test_same_display_name_isolated_by_authenticated_principal_and_guess_is_hidd
     assert not hasattr(router, "search_projects")
 
 
+@pytest.mark.parametrize(
+    ("field", "value", "expected_code"),
+    [
+        ("schema_version", "author-workspace-project-v2", "PROJECT_METADATA_INVALID"),
+        ("project_id", "p_" + "0" * 32, "PROJECT_ID_BINDING_MISMATCH"),
+        ("author_id", "a_" + "0" * 32, "PROJECT_AUTHOR_BINDING_MISMATCH"),
+        ("display_name", None, "PROJECT_METADATA_INVALID"),
+        ("created_at", "2026-02-30T00:00:00Z", "PROJECT_METADATA_INVALID"),
+        ("remove:created_at", None, "PROJECT_METADATA_INVALID"),
+        ("unexpected", "extra", "PROJECT_METADATA_INVALID"),
+    ],
+)
+def test_list_and_open_share_strict_project_metadata_validation(
+    tmp_path: Path,
+    field: str,
+    value: object,
+    expected_code: str,
+) -> None:
+    runtime_root = tmp_path / "runtime"
+    router = WorkspaceRouter(runtime_root)
+    workspace = router.create_project("auth:alice", "项目")
+    metadata_path = _project_dir(runtime_root, workspace) / "project.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    if field.startswith("remove:"):
+        metadata.pop(field.removeprefix("remove:"))
+    else:
+        metadata[field] = value
+    metadata_path.write_text(
+        json.dumps(metadata, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(IntegrityError) as listed:
+        router.list_projects("auth:alice")
+    with pytest.raises(IntegrityError) as opened:
+        router.open_project("auth:alice", workspace.project_id)
+
+    assert listed.value.code == opened.value.code == expected_code
+
+
+def test_list_and_open_normalize_broken_project_json_to_one_metadata_error(
+    tmp_path: Path,
+) -> None:
+    runtime_root = tmp_path / "runtime"
+    router = WorkspaceRouter(runtime_root)
+    workspace = router.create_project("auth:alice", "项目")
+    metadata_path = _project_dir(runtime_root, workspace) / "project.json"
+    metadata_path.write_text("{", encoding="utf-8")
+
+    with pytest.raises(IntegrityError) as listed:
+        router.list_projects("auth:alice")
+    with pytest.raises(IntegrityError) as opened:
+        router.open_project("auth:alice", workspace.project_id)
+
+    assert listed.value.code == opened.value.code == "PROJECT_METADATA_INVALID"
+
+
+def test_list_omits_project_missing_metadata_without_repairing_it(
+    tmp_path: Path,
+) -> None:
+    runtime_root = tmp_path / "runtime"
+    router = WorkspaceRouter(runtime_root)
+    workspace = router.create_project("auth:alice", "项目")
+    metadata_path = _project_dir(runtime_root, workspace) / "project.json"
+    metadata_path.unlink()
+
+    assert router.list_projects("auth:alice") == []
+    with pytest.raises(ProjectNotFoundError, match="PROJECT_NOT_FOUND"):
+        router.open_project("auth:alice", workspace.project_id)
+    assert not metadata_path.exists()
+
+
 @pytest.mark.parametrize("attribute", ["author_id", "project_id", "_backend"])
 def test_author_workspace_public_binding_cannot_be_reassigned(
     tmp_path: Path,

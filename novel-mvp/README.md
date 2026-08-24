@@ -23,6 +23,22 @@ uv run --locked python novel-mvp/cli.py ask 我的第一本书 陈平
 uv run --locked python novel-mvp/cli.py status 我的第一本书
 ```
 
+### 新版作者项目入口（只读）
+
+旧 `cli.py` 仍走项目名和 `data/`，本票不改它。新版入口只解决一件事：让已经认证的作者列出自己的新版项目，再按项目号打开其中一本。
+
+这是给上层应用调用的 Python 入口：
+
+```python
+from mvp.author_project_entry import AuthorProjectEntry
+
+entry = AuthorProjectEntry("/absolute/runtime/root")
+projects = entry.list("authenticated-principal")
+workspace = entry.open("authenticated-principal", projects[0]["project_id"])
+```
+
+`list` 只返回项目号、显示名和创建时间，不带正文、物理路径或存储后端。`open` 返回绑定当前作者和项目的 `AuthorWorkspace` 句柄。两者都是纯读取：目录不存在或项目 metadata 不完整时，不会顺手创建、修复或迁移内容。创建项目、旧项目迁移和继续写作入口不在这里。
+
 `ingest` 不填 `--material-role` 时不会猜正文，整份按 Unknown 保存且不生成 C1。整份明确材料可选 `chapter / intro / setting / title / tags / unknown`；同一 source 内混合多种材料时用 `--declarations <JSON>` 提供精确 spans。TXT、MD、DOCX、ZIP 共用这一入口；DOCX 有未覆盖区域，或 ZIP 任一成员失败、没有有效材料时，都会整批强停，不留下半套 C1。`extract`、`refine` 和外部 `candidates` 都要先通过同一套 Pre-M3 准入门。
 
 发现问题记 [ISSUES.md](ISSUES.md)。默认只记问题、不改核心代码，除非 CZ 点名。
