@@ -9,16 +9,18 @@ from __future__ import annotations
 import copy
 import fcntl
 import hashlib
+import hmac
 import json
 import os
 import re
 import secrets
 import stat
 import tempfile
+import weakref
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterator, Mapping
+from typing import Any, Iterator, Mapping, NamedTuple
 
 
 LOGICAL_KEY_FILES = {
@@ -196,7 +198,42 @@ class _LocalFilesystemBackend:
             self._reject_symlink(current)
         self.runtime_root = runtime_root
         self._failure_hook = None
+        self._handle_secret = secrets.token_bytes(32)
         self._assert_safe_path(runtime_root)
+
+    def _handle_binding_token(self, author_id: str, project_id: str) -> bytes:
+        return hmac.digest(
+            self._handle_secret,
+            f"{author_id}\0{project_id}".encode("utf-8"),
+            "sha256",
+        )
+
+    def _verify_handle_binding(
+        self,
+        author_id: str,
+        project_id: str,
+        binding_token: object,
+    ) -> None:
+        expected = self._handle_binding_token(author_id, project_id)
+        if not isinstance(binding_token, bytes) or not hmac.compare_digest(
+            binding_token,
+            expected,
+        ):
+            raise AuthenticationError("AUTHOR_WORKSPACE_BINDING_INVALID")
+
+    def _issue_workspace(
+        self,
+        author_id: str,
+        project_id: str,
+    ) -> "AuthorWorkspace":
+        handle = object.__new__(AuthorWorkspace)
+        _AUTHOR_WORKSPACE_BINDINGS[handle] = _AuthorWorkspaceBinding(
+            backend=self,
+            author_id=author_id,
+            project_id=project_id,
+            binding_token=self._handle_binding_token(author_id, project_id),
+        )
+        return handle
 
     def _assert_safe_path(self, path: Path) -> None:
         try:
@@ -360,7 +397,7 @@ class _LocalFilesystemBackend:
                 "created_at": _now(),
             }
             self._atomic_write(project_dir / "project.json", _canonical_bytes(metadata))
-            return AuthorWorkspace(self, author_id, project_id)
+            return self._issue_workspace(author_id, project_id)
         raise WorkspaceError("PROJECT_ID_ALLOCATION_FAILED")
 
     def _require_project(self, author_id: str, project_id: str) -> Path:
@@ -382,7 +419,7 @@ class _LocalFilesystemBackend:
 
     def open_project(self, author_id: str, project_id: str) -> "AuthorWorkspace":
         self._require_project(author_id, project_id)
-        return AuthorWorkspace(self, author_id, project_id)
+        return self._issue_workspace(author_id, project_id)
 
     def list_projects(self, author_id: str) -> list[dict[str, Any]]:
         projects_dir = self._author_dir(author_id) / "projects"
@@ -964,21 +1001,82 @@ class _LocalFilesystemBackend:
         }
 
 
+class _AuthorWorkspaceBinding(NamedTuple):
+    backend: _LocalFilesystemBackend
+    author_id: str
+    project_id: str
+    binding_token: bytes
+
+
+_AUTHOR_WORKSPACE_BINDINGS: weakref.WeakKeyDictionary[
+    object,
+    _AuthorWorkspaceBinding,
+] = weakref.WeakKeyDictionary()
+
+
+def _author_workspace_binding(
+    workspace: "AuthorWorkspace",
+) -> _AuthorWorkspaceBinding:
+    try:
+        binding = _AUTHOR_WORKSPACE_BINDINGS[workspace]
+    except KeyError as exc:
+        raise AuthenticationError("AUTHOR_WORKSPACE_BINDING_INVALID") from exc
+    binding.backend._verify_handle_binding(
+        binding.author_id,
+        binding.project_id,
+        binding.binding_token,
+    )
+    return binding
+
+
 class AuthorWorkspace:
     """只绑定一个已认证作者和一个项目的能力句柄。"""
 
-    def __init__(
-        self,
-        backend: _LocalFilesystemBackend,
-        author_id: str,
-        project_id: str,
-    ):
-        self._backend = backend
-        self.author_id = author_id
-        self.project_id = project_id
+    __slots__ = ("__dict__", "__weakref__")
+
+    def __init__(self, *args: object, **kwargs: object):
+        del args, kwargs
+        raise AuthenticationError("AUTHOR_WORKSPACE_ROUTER_REQUIRED")
+
+    def __setattr__(self, name: str, value: object) -> None:
+        if name in {"_backend", "author_id", "project_id"}:
+            raise AuthenticationError("AUTHOR_WORKSPACE_BINDING_IMMUTABLE")
+        object.__setattr__(self, name, value)
+
+    def __delattr__(self, name: str) -> None:
+        if name in {"_backend", "author_id", "project_id"}:
+            raise AuthenticationError("AUTHOR_WORKSPACE_BINDING_IMMUTABLE")
+        object.__delattr__(self, name)
+
+    def __copy__(self) -> "AuthorWorkspace":
+        raise AuthenticationError("AUTHOR_WORKSPACE_SERIALIZATION_FORBIDDEN")
+
+    def __deepcopy__(self, memo: dict[int, object]) -> "AuthorWorkspace":
+        del memo
+        raise AuthenticationError("AUTHOR_WORKSPACE_SERIALIZATION_FORBIDDEN")
+
+    def __reduce__(self) -> object:
+        raise AuthenticationError("AUTHOR_WORKSPACE_SERIALIZATION_FORBIDDEN")
+
+    def __reduce_ex__(self, protocol: int) -> object:
+        del protocol
+        raise AuthenticationError("AUTHOR_WORKSPACE_SERIALIZATION_FORBIDDEN")
+
+    @property
+    def author_id(self) -> str:
+        return _author_workspace_binding(self).author_id
+
+    @property
+    def project_id(self) -> str:
+        return _author_workspace_binding(self).project_id
 
     def read(self, logical_key: str) -> dict[str, Any] | None:
-        return self._backend.read(self.author_id, self.project_id, logical_key)
+        binding = _author_workspace_binding(self)
+        return binding.backend.read(
+            binding.author_id,
+            binding.project_id,
+            logical_key,
+        )
 
     def commit(
         self,
@@ -986,9 +1084,10 @@ class AuthorWorkspace:
         mutations: Mapping[str, Any],
         expected_versions: Mapping[str, Any],
     ) -> dict[str, Any]:
-        return self._backend.commit(
-            self.author_id,
-            self.project_id,
+        binding = _author_workspace_binding(self)
+        return binding.backend.commit(
+            binding.author_id,
+            binding.project_id,
             operation_id,
             mutations,
             expected_versions,
@@ -1002,9 +1101,10 @@ class AuthorWorkspace:
         guard_versions: Mapping[str, Any],
     ) -> dict[str, Any]:
         """提交业务状态，并在同一把锁内确认只读来源仍是调用方所见版本。"""
-        return self._backend.commit_guarded(
-            self.author_id,
-            self.project_id,
+        binding = _author_workspace_binding(self)
+        return binding.backend.commit_guarded(
+            binding.author_id,
+            binding.project_id,
             operation_id,
             mutations,
             expected_versions,
@@ -1017,23 +1117,29 @@ class AuthorWorkspace:
         payload: bytes,
         metadata: Mapping[str, Any],
     ) -> dict[str, Any]:
-        return self._backend.store_immutable(
-            self.author_id,
-            self.project_id,
+        binding = _author_workspace_binding(self)
+        return binding.backend.store_immutable(
+            binding.author_id,
+            binding.project_id,
             kind,
             payload,
             metadata,
         )
 
     def read_immutable(self, receipt: Mapping[str, Any]) -> dict[str, Any]:
-        return self._backend.read_immutable(
-            self.author_id,
-            self.project_id,
+        binding = _author_workspace_binding(self)
+        return binding.backend.read_immutable(
+            binding.author_id,
+            binding.project_id,
             receipt,
         )
 
     def recover(self) -> dict[str, Any]:
-        return self._backend.recover(self.author_id, self.project_id)
+        binding = _author_workspace_binding(self)
+        return binding.backend.recover(
+            binding.author_id,
+            binding.project_id,
+        )
 
 
 class WorkspaceRouter:
@@ -1043,6 +1149,9 @@ class WorkspaceRouter:
         root = Path(os.path.abspath(os.fspath(runtime_root)))
         # CLOUD_SWAP_POINT: 未来只在这里替换后端绑定；本票不建设云服务。
         self._backend = _LocalFilesystemBackend(root)
+
+    def _set_failure_hook_for_testing(self, hook: object) -> None:
+        self._backend._failure_hook = hook
 
     def create_project(
         self,
