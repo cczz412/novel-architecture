@@ -393,10 +393,16 @@ def execute_and_save(
         ),
         "m7": _validate_c6_report(generated["m7"]),
     }
-    receipt = handle.commit(
+    receipt = handle.commit_guarded(
         operation_id,
         {HEALTH_REPORT_LOGICAL_KEY: payload},
         {HEALTH_REPORT_LOGICAL_KEY: expected_report_version},
+        {
+            FACTS_LOGICAL_KEY: copy.deepcopy(payload["facts_snapshot"]),
+            CHAPTER_INDEX_LOGICAL_KEY: copy.deepcopy(
+                payload["chapter_index_snapshot"]
+            ),
+        },
     )
     return {
         "receipt": receipt,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import inspect
 import json
@@ -823,6 +824,75 @@ def test_provider_or_source_failure_does_not_overwrite_saved_report(
     assert _canonical_bytes(stored["payload"]["m7"]) == _canonical_bytes(
         original["m7"]
     )
+
+
+@pytest.mark.parametrize("changed_key", ["facts", "chapter_index"])
+def test_guarded_save_rejects_source_change_at_commit_without_report_growth(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    changed_key: str,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / changed_key).create_project(
+        ALICE, "M7 提交窗口竞态"
+    )
+    fact_a, fact_b = _facts()
+    source_receipt = _commit_facts(workspace, [fact_a, fact_b])
+    check_workspace.execute_and_save(
+        workspace,
+        "op-save-before-commit-race",
+        _config(),
+        _provider(_finding()),
+        0,
+    )
+    original_commit = workspace.commit_guarded
+    guarded_sources: list[dict] = []
+
+    def race(operation_id, mutations, expected_versions, guard_versions):
+        guarded_sources.append(copy.deepcopy(guard_versions))
+        current = workspace.read(changed_key)
+        workspace.commit(
+            f"op-race-{changed_key}",
+            {changed_key: current["payload"]},
+            {
+                changed_key: {
+                    "version": current["version"],
+                    "sha256": current["sha256"],
+                }
+            },
+        )
+        return original_commit(
+            operation_id,
+            mutations,
+            expected_versions,
+            guard_versions,
+        )
+
+    monkeypatch.setattr(workspace, "commit_guarded", race)
+    changed_config = _config()
+    changed_config["generated_at"] = "2026-08-19 19:31:00"
+    with pytest.raises(VersionConflictError, match="VERSION_CONFLICT"):
+        check_workspace.execute_and_save(
+            workspace,
+            f"op-save-race-{changed_key}",
+            changed_config,
+            _provider(_finding()),
+            1,
+        )
+
+    assert guarded_sources == [
+        {
+            "facts": {
+                "version": source_receipt["versions"]["facts"],
+                "sha256": source_receipt["payload_sha256"]["facts"],
+            },
+            "chapter_index": {
+                "version": source_receipt["versions"]["chapter_index"],
+                "sha256": source_receipt["payload_sha256"]["chapter_index"],
+            },
+        }
+    ]
+    assert workspace.read("health_report")["version"] == 1
+    assert workspace.read(changed_key)["version"] == 2
 
 
 def test_read_rejects_same_version_sha_conflict_without_writing(
