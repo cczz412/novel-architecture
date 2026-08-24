@@ -377,7 +377,6 @@
         "tests/test_model_benchmark.py::test_tencent_thinking_profiles_use_local_json_gate[hy3-thinking_high_structured_json-high]",
         "tests/test_model_benchmark.py::test_tencent_thinking_profiles_use_local_json_gate[glm-5.2-thinking_structured_json-None]",
         "tests/test_model_benchmark.py::test_tencent_deepseek_v4_pro_uses_nested_medium_contract",
-        "tests/test_model_benchmark.py::test_longcat_thinking_profile_uses_only_official_parameters",
         "tests/test_model_benchmark.py::test_ant_ling_profile_uses_official_thinking_and_json_contract",
         "tests/test_model_benchmark.py::test_prepare_is_zero_call_repeatable_and_uses_fixed_layout",
         "tests/test_model_benchmark.py::test_run_requires_key_before_claiming_single_sample",

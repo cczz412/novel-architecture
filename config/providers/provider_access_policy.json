@@ -43,13 +43,6 @@
       "may_replace_default_chain": false,
       "require_live_model_catalog_check": true
     },
-    "longcat_platform": {
-      "default_action": "deny_until_explicit_model_run_order",
-      "status": "isolated_benchmark_only",
-      "may_replace_default_chain": false,
-      "require_live_model_catalog_check": true,
-      "key_source": "external_api_pool"
-    },
     "ant_ling": {
       "default_action": "deny_until_explicit_model_run_order",
       "status": "isolated_configuration_only",

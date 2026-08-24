@@ -1,13 +1,13 @@
 {
   "approval": {
     "issue": "63",
-    "note": "合并含本文件的 PR 即批准这份清单。运行现场无权增删。三轮失败 ID 必须与 failures[].id 逐项相等，才许报 PASS_WITH_STABLE_MAIN_EXISTING_NON_NOVEL_DEBT。",
+    "note": "合并含本文件的 PR 即批准这份清单。#121 按 CZ 明确决定撤除一个供应商通道及其测试，余下失败 ID 仍须逐项相等，才许报 PASS_WITH_STABLE_MAIN_EXISTING_NON_NOVEL_DEBT。运行现场无权自行增删。",
     "status": "EFFECTIVE_ON_MERGE"
   },
   "command": "uv run --locked pytest -q",
   "contract_version": "approved-stable-failure-list-v1",
-  "environment": "cloud-agent clean clone after GitHub main merge of #61/#67; no zsh; no .local/finetuning/stores.local.json; no .workbuddy evidence. Three rounds 2026-08-22 each 19 failed / 3102 passed / 899 skipped / 40 deselected / 1 xfailed.",
-  "failure_count": 19,
+  "environment": "GitHub main d251deca5975a85b6f4785bed9681eb7d6d3ee69 before #121. The 2026-08-22 historical observation had 19 failures; #121 removes one retired-provider test, leaving 18 approved existing IDs for the next exact-main comparison. This sentence is not a new full-suite run claim.",
+  "failure_count": 18,
   "failures": [
     {
       "attribution": "tools/deepseek_official_key.sh 的 shebang 是 zsh；干净 Linux 云端没有 zsh，Python 把缺解释器报成缺脚本。钥匙串方案属 LEAD-Z34-001，#61 明确排除。不是新回归。",
@@ -33,11 +33,6 @@
       "attribution": "Ant Ling 通道合同字段与测试钉的 Ling 3.0 Flash 登记不一致。预存合同漂移，#61 归因表已列，本票不改通道合同。",
       "domain": "provider_contract",
       "id": "tests/test_provider_channel_configs.py::test_ant_ling_channel_uses_exact_ling_3_flash_contract"
-    },
-    {
-      "attribution": "测试断言本机绝对路径 danmaku-psychology-workspace/.../longcat-env.zsh 存在。干净克隆没有这条盘。LEAD-Z34-001。",
-      "domain": "local_absolute_path",
-      "id": "tests/test_provider_channel_configs.py::test_longcat_channel_uses_external_key_pool_and_exact_model"
     },
     {
       "attribution": "shared keychain 走 tools/provider_keychain.sh；干净云端没有 zsh。LEAD-Z34-001。",
@@ -105,7 +100,7 @@
       "id": "tests/test_test_impact.py::TestImpactTests::test_unified_entry_change_runs_full_chain"
     }
   ],
-  "main_sha": "cec82789322613f04af20e8233cef97c419ab571",
-  "payload_sha256": "dabc35557cd130e3c74be7675db94433295d93d2982c3f2514b4cd1351120147",
+  "main_sha": "d251deca5975a85b6f4785bed9681eb7d6d3ee69",
+  "payload_sha256": "a96f10cd1a79af869e8ab71e1bc9459360b3e612da2de526b13a6872865c6bec",
   "predicate": "PASS_WITH_STABLE_MAIN_EXISTING_NON_NOVEL_DEBT"
 }

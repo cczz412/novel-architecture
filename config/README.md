@@ -12,7 +12,7 @@
 - `batches/`：某一批测哪本书、多少章、用哪版提示词、最多允许多少次调用。
 - `test_replay/`：退出日常验收的历史测试节点、取件范围和外置回放包封签。
 
-⚠️ 不要把 API Key 写进 JSON。现役默认链只认进程环境里的 `SENSENOVA_API_KEY`；普通火山按量、千问与腾讯候选通道分别使用 `ARK_API_KEY`、`DASHSCOPE_API_KEY` 与 `TENCENT_TOKENHUB_API_KEY`，只从本仓钥匙串加载器临时注入。Agent Plan 只认 ArkCLI 的 `agent-plan_cn-beijing_personal` profile，不再从项目钥匙串重复注入另一把 Key。LongCat 继续由同级公共 API 池临时加载，不复制密钥进本仓。
+⚠️ 不要把 API Key 写进 JSON。现役默认链只认进程环境里的 `SENSENOVA_API_KEY`；普通火山按量、千问与腾讯候选通道分别使用 `ARK_API_KEY`、`DASHSCOPE_API_KEY` 与 `TENCENT_TOKENHUB_API_KEY`，只从本仓钥匙串加载器临时注入。Agent Plan 只认 ArkCLI 的 `agent-plan_cn-beijing_personal` profile，不再从项目钥匙串重复注入另一把 Key。
 
 当前正式接口只用 `config/providers/sensenova_modular_v1.json`：模型钉死为
 `deepseek-v4-flash`，不允许运行时切到其他模型。
@@ -32,7 +32,7 @@ tools/sensenova_deepseek_key.sh run python3 tools/你的运行器.py
 
 `run` 后面只接本仓可信运行器；被运行的命令及其子进程会在本次执行期间看到密钥环境变量。
 
-现役默认链的密钥入口只有 `tools/sensenova_deepseek_key.sh`。共享环境加载脚本和外部项目加载器不得给现役默认链开跑；LongCat 独立横评是隔离例外，只读取同级公共 API 池的专用加载器，不接现役链。
+现役默认链的密钥入口只有 `tools/sensenova_deepseek_key.sh`。共享环境加载脚本和外部项目加载器不得给现役默认链开跑。
 
 CZ 自 2026-08-01 起已对 DeepSeek 官方 API 给出**长期授权**。今后当前任务明确要求运行 DeepSeek 官方模型时，不再逐次询问 CZ；但每条命令仍要带机器执行票，防止脚本误调。官方通道不得自动调用、不得扩大题目或次数、不得作为失败回退路线，也不得改掉默认链。机器规则在 `providers/provider_access_policy.json`。
 
@@ -50,7 +50,6 @@ tools/deepseek_official_key.sh check
 - `providers/volcengine_agent_plan.json`：火山方舟 Agent Plan 独立通道，凭证只由 ArkCLI 的 `agent-plan_cn-beijing_personal` profile 管理；每次必须明确指定精确模型，禁用 `auto`，调用前清掉 `ARK_API_KEY` 等环境覆盖。
 - `providers/qianwen_platform_multi_model.json`：千问 AI 平台标准按量接口，环境变量 `DASHSCOPE_API_KEY`。
 - `providers/tencent_tokenhub_multi_model.json`：腾讯云 TokenHub 标准在线推理接口，环境变量 `TENCENT_TOKENHUB_API_KEY`。
-- `providers/longcat_platform.json`：LongCat API 开放平台，环境变量 `LONGCAT_API_KEY`，密钥继续放在同级公共 API 池。
 
 普通火山按量、千问、腾讯三把钥匙共用一个本地弹框入口，但各自存在不同的 macOS 钥匙串项目里：
 
@@ -74,8 +73,6 @@ Agent Plan 不走上面的项目钥匙串，它由 ArkCLI profile 自己同步�
 arkcli profile keys refresh --profile agent-plan_cn-beijing_personal
 arkcli profile keys list --profile agent-plan_cn-beijing_personal --format json
 ```
-
-LongCat 不重复存进本仓钥匙串，加载入口固定为 `/Users/a1234/挣钱/danmaku-psychology-workspace/06_operations/api-pool/scripts/longcat-env.zsh`。
 
 千问的 Token Plan Key 通常以 `sk-sp-` 开头，端点与标准按量接口不同；当前弹框会拒绝把这类钥匙误存进标准配置。腾讯这里配置的是 `https://tokenhub.tencentmaas.com/v1` 标准在线推理接口，不是 `api.lkeap.cloud.tencent.com/plan/v3` Token Plan。四套隔离配置都没有默认模型，也没有接入现役链，只有明确指定平台和模型的任务才能调用。
 

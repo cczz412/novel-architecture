@@ -155,43 +155,6 @@ def test_tencent_tokenhub_channel_and_requested_models_are_exact() -> None:
     assert "structured_output" not in models["minimax-m2.7"]["capabilities"]
 
 
-def test_longcat_channel_uses_external_key_pool_and_exact_model() -> None:
-    provider = load_provider("longcat_platform.json")
-    assert provider["base_url"] == "https://api.longcat.chat/openai/v1"
-    assert provider["endpoint"] == "/chat/completions"
-    assert provider["model_catalog_endpoint"] == "/models"
-    assert provider["model_catalog_check_required_before_run"] is True
-    assert provider["model_catalog_status_policy"] == "presence_only"
-    assert provider["api_key_env"] == "LONGCAT_API_KEY"
-    assert provider["enabled_by_default"] is False
-    assert provider["default_model"] is None
-    assert provider["status"] == "configured_catalog_verified_benchmark_transport_hard_stopped"
-    structured = provider["structured_output_contract"]
-    assert structured["status"] == "not_documented_by_provider"
-    assert structured["do_not_send"] == [
-        "response_format",
-        "json_object",
-        "json_schema",
-    ]
-    assert structured["tool_calling_is_not_structured_output"] is True
-    assert provider["models"] == [
-        {
-            "requested_name": "LongCat-2.0",
-            "model_id": "LongCat-2.0",
-            "call_ready": True,
-            "capabilities": ["thinking", "function_calling"],
-            "context_tokens": 1048576,
-            "max_output_tokens": 131072,
-        }
-    ]
-    loader = Path(provider["external_key_loader"])
-    assert loader == Path(
-        "/Users/a1234/挣钱/danmaku-psychology-workspace/06_operations/api-pool/"
-        "scripts/longcat-env.zsh"
-    )
-    assert loader.is_file()
-
-
 def test_ant_ling_channel_uses_exact_ling_3_flash_contract() -> None:
     provider = load_provider("ant_ling.json")
     assert provider["provider"] == "ant_ling"
@@ -236,15 +199,6 @@ def test_tencent_tokenhub_policy_stays_isolated_and_catalog_gated() -> None:
     assert tencent["default_action"] == "deny_until_explicit_model_run_order"
     assert tencent["may_replace_default_chain"] is False
     assert tencent["require_live_model_catalog_check"] is True
-
-
-def test_longcat_policy_stays_isolated_and_catalog_gated() -> None:
-    policy = load_provider("provider_access_policy.json")
-    longcat = policy["providers"]["longcat_platform"]
-    assert longcat["default_action"] == "deny_until_explicit_model_run_order"
-    assert longcat["may_replace_default_chain"] is False
-    assert longcat["require_live_model_catalog_check"] is True
-    assert longcat["key_source"] == "external_api_pool"
 
 
 def test_ant_ling_policy_stays_isolated_from_default_chain() -> None:

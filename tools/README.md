@@ -306,8 +306,7 @@ v1 包在提交 `ed0dddcd2428fae8daf726ca2985571843df263d` 上实际得到 38 �
   绝对路径或内容。
 
 当前白名单含 S-05-B 回放包 v1／v2、S-07-B-A 的模型横评零调用作废包、
-S-07-C-A 的 QEC 四模型终局证据包、S-07-D-A 的 LongCat r03 中断硬停包，以及
-S-07-E-A 的 LongCat r01 中断硬停包、S-07-F-A／F-B-A 的千问 r05 结构化候选包和 r06
+S-07-C-A 的 QEC 四模型终局证据包、S-07-F-A／F-B-A 的千问 r05 结构化候选包和 r06
 32K 思考候选包、S-07-G-A／G-B-A 的 Z66 三问法历史候选包，以及 analysis_library 首批
 分析材料完整包。常用的人看命令是：
 
@@ -316,10 +315,6 @@ S-07-E-A 的 LongCat r01 中断硬停包、S-07-F-A／F-B-A 的千问 r05 结构
   --artifact-id model-benchmark-superseded-zero-call-s07ba-v1
 .venv/bin/python tools/external_payload_validator.py check \
   --artifact-id r2-qec-four-model-score-sources-s07ca-v1
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id model-benchmark-longcat-r03-interrupted-s07da-v1
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id model-benchmark-longcat-r01-interrupted-s07ea-v1
 .venv/bin/python tools/external_payload_validator.py check \
   --artifact-id model-benchmark-qwen-r05-structured-scored-candidate-s07fa-v1
 .venv/bin/python tools/external_payload_validator.py check \

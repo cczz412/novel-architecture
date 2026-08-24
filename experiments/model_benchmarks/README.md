@@ -63,42 +63,6 @@ diff -qr \
 需要历史审计时，先从外置对象复制完整现场。作废票里“旧目录原样留档”的句子记录的是
 2026-07-23 开票时的动作；S-07-B-B 之后的当前存放事实，以本页和外置对象登记册为准。
 
-## LongCat r03 中断硬停轮怎么找
-
-S-07-D-A 已从固定提交 `62d942e6cf05c7722826c1648436a2eb15708563` 把 r03 的完整
-现场复制到外置对象 `model-benchmark-longcat-r03-interrupted-s07da-v1`。包内有 28 个
-普通文件、555,559 字节，清单 SHA-256 是
-`6921fd3c28b3719846592cd076198685221ea48f279494d2b9026c86e945e68e`：
-
-```bash
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id model-benchmark-longcat-r03-interrupted-s07da-v1
-```
-
-这轮不是“零调用作废轮”。正式采样在写入首次尝试占用票后异常终止；本地模型回答是 0，
-但网络结果未知，也没有 usage 或质量分。S-07-D-A 只建立副本；S-07-D-B 在验包、完整
-取回和消费者复核通过后，从主仓移除 24 个重件、552,370 字节。当前目录只留
-`benchmark.json`、`state.json`、两份硬停证据和 `summary.md`，不能在原地执行。
-
-## LongCat r01 中断硬停轮怎么找
-
-S-07-E-A 从固定提交 `0550e45c9c4cafbda905e8d436f883d04c5e818b` 复制 r01 的完整
-现场到外置对象 `model-benchmark-longcat-r01-interrupted-s07ea-v1`。包内有 28 个
-普通文件、550,603 字节，清单 SHA-256 是
-`f20195d1684447eac8361af86d7b420c1333c35aa9bada7548e28957436b5a10`：
-
-```bash
-.venv/bin/python tools/external_payload_validator.py check \
-  --artifact-id model-benchmark-longcat-r01-interrupted-s07ea-v1
-```
-
-r01 也在首次尝试占用票后异常终止：本地回答数是 0，网络和用量未知，没有质量分，也不
-允许重跑。S-07-E-A 只复制，不删除主仓文件。S-07-E-B-A 又把旧合同测试需要的
-`neutral_extract.py` 原字节复制到 `tests/fixtures/z57_frozen_neutral_extract_20260723/`，
-测试不再借用 r01 目录。S-07-E-B-B 在验包、完整取回和消费者复核通过后，从主仓移除
-24 个重件、547,439 字节。当前目录只留 `benchmark.json`、`state.json`、两份硬停证据
-和 `summary.md`，不能在原地执行。
-
 ## 千问 r05／r06 有分候选怎么找
 
 S-07-F-A 从固定提交 `1d919759f11b481a69eab1bdb1b7bfac5f4e0851` 分别复制两轮
@@ -262,24 +226,6 @@ tools/provider_keychain.sh check tencent_tokenhub
 ```
 
 这两条只保存或检查钥匙，不调模型，也不改现役默认链。
-
-## LongCat-2.0 怎么试
-
-LongCat 只接官方 OpenAI 兼容端点，精确模型名是 `LongCat-2.0`。发网前会先访问 `/models`，只确认当前钥匙下存在这个精确 ID；官方目录不提供 `online` 状态，所以不能套用腾讯的状态闸。
-
-兼容档 `thinking_prompt_json` 显式打开 `thinking.type=enabled`，沿用温度 0.2 与输出上限 32K。官方参数表没有 `reasoning_effort`、`response_format`、`json_schema` 和 `n`，因此都不发送；文档里的 JSON 只表示 HTTP 请求体与响应信封，不等于模型正文有硬 JSON 保证。冻结 Prompt 已明确要求只输出一个 JSON 对象，回来后必须直接通过本地严格解析、Schema 和证据锚检查。一次采样由请求只发一次和响应必须只有一个 `choice` 两道程序闸保证。
-
-官方模型详情虽列出工具调用能力，但这不等于结构化输出合同。本横评不借工具调用包一层 JSON；若以后要测 `response_format` 或工具调用兼容性，应另开参数探针，不能混进质量样张。
-
-密钥不复制进本仓，继续从同级公共 API 池加载：
-
-```bash
-source /Users/a1234/挣钱/danmaku-psychology-workspace/06_operations/api-pool/scripts/longcat-env.zsh
-env PYTHONPATH=.:tools python3 tools/novel_pipeline.py model-benchmark run \
-  --benchmark-id <LongCat新编号>
-```
-
-这条命令只给当前子进程临时带入 `LONGCAT_API_KEY`；请求件、回包和 Git 都不得出现密钥。
 
 ## 模型版本怎么认
 

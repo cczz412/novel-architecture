@@ -1120,7 +1120,7 @@ def test_live_registry_policy_covers_every_external_archive_object() -> None:
         )
     )
     validator._validate_policy_relations(policy, registry)
-    assert len(policy["targets"]) == 41
+    assert len(policy["targets"]) == 39
     assert len(policy["exclusions"]) == 4
     targets = {row["artifact_id"]: row for row in policy["targets"]}
     for artifact_id in (
@@ -1331,4 +1331,3 @@ def test_governance_readme_s06b_points_to_machine_policy_not_hardcoded_whitelist
     assert "S-07-G-A／G-B-A" not in section
     assert "`targets`" in section
     assert "`exclusions`" in section
-

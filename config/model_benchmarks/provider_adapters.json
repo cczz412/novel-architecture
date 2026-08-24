@@ -203,42 +203,6 @@
         }
       }
     },
-    "longcat_platform": {
-      "provider_config": "config/providers/longcat_platform.json",
-      "transport": "openai_chat_completions",
-      "key_loader": "source /Users/a1234/挣钱/danmaku-psychology-workspace/06_operations/api-pool/scripts/longcat-env.zsh",
-      "profiles": {
-        "thinking_prompt_json": {
-          "purpose": "显式开启 LongCat-2.0 思考，最终正文由本地 JSON、Schema 与证据锚机械闸验收",
-          "validated_model_ids": [
-            "LongCat-2.0"
-          ],
-          "drop_fields": [
-            "reasoning_effort",
-            "response_format",
-            "n"
-          ],
-          "set_fields": {
-            "thinking": {
-              "type": "enabled"
-            }
-          },
-          "require_nonempty_reasoning_content": true,
-          "single_sample_via_response_gate": true,
-          "keep_fields": [
-            "messages",
-            "temperature",
-            "max_tokens"
-          ],
-          "compatibility_notes": [
-            "LongCat 官方合同只给 thinking.type=enabled/disabled，不发送 reasoning_effort 或自造思考档位。",
-            "官方参数表未列 response_format 与 n；请求依靠冻结 Prompt 要求 JSON，最终正文由本地机械闸验收。",
-            "max_tokens=32000 与本阶段基线相同，低于 LongCat-2.0 官方 131072 上限。",
-            "钥匙继续由同级公共 API 池加载，不复制进本仓。"
-          ]
-        }
-      }
-    },
     "ant_ling": {
       "provider_config": "config/providers/ant_ling.json",
       "transport": "openai_chat_completions",
