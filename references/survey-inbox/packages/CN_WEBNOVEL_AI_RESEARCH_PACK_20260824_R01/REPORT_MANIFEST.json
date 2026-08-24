@@ -1,0 +1,122 @@
+{
+  "package_id": "CN_WEBNOVEL_AI_RESEARCH_PACK_20260824_R01",
+  "created_on": "2026-08-24",
+  "source_batch_date": "2026-08-24",
+  "status": "historical_external_research_candidate_prior_only",
+  "source_provider": "ChatGPT",
+  "source_download_dir": "/Users/a1234/Downloads/中文网文AI研究资料包_2026-08-24",
+  "github_issue": 128,
+  "survey_inbox_id": "SI-018",
+  "authorizations": {
+    "may_create_product_decision": false,
+    "may_authorize_execution": false,
+    "may_authorize_training": false,
+    "may_authorize_model_api": false,
+    "may_authorize_notion_write": false,
+    "may_authorize_git": false,
+    "may_authorize_external_send": false,
+    "may_authorize_production_promotion": false,
+    "may_override_current_truth": false
+  },
+  "decision_boundary": "Candidate prior only. Does not replace R14, ten ledgers, #118 trial-split, or #110 four decisions. Playbook cards are a separate future issue.",
+  "files": [
+    {
+      "ascii_path": "reports/README.md",
+      "original_filename": "README.md",
+      "bytes": 4103,
+      "lines": 54,
+      "sha256": "34916a5b792b8252c5127ccecbd4c39c5816f48a32137e15dbb28f245603401a"
+    },
+    {
+      "ascii_path": "reports/00_research_overview.md",
+      "original_filename": "00_研究总览与阅读路线.md",
+      "bytes": 9037,
+      "lines": 180,
+      "sha256": "a7474ed501f7dcf9f5080b9f27c448b20fbb47b3856f9628c3d47031329839da"
+    },
+    {
+      "ascii_path": "reports/01_author_needs_and_objects.md",
+      "original_filename": "01_中文网文作者需求与产品操作对象.md",
+      "bytes": 14983,
+      "lines": 380,
+      "sha256": "c1878dd184c8637a6618f18c526c1bbd06d9a307d641032536d42fd42afcec18"
+    },
+    {
+      "ascii_path": "reports/02_narrative_structure.md",
+      "original_filename": "02_中文网文叙事结构_超越Story-Scene-Beat-Event.md",
+      "bytes": 12614,
+      "lines": 409,
+      "sha256": "bb23f5b10d91dc3c67e8d479680a58166538e76c9572e02a333ec1189a248042"
+    },
+    {
+      "ascii_path": "reports/03_dynamic_planning.md",
+      "original_filename": "03_动态长篇规划_边写边改与日更连载.md",
+      "bytes": 12021,
+      "lines": 392,
+      "sha256": "7dc77ab320e74b0112c2f42eebc05dec7338bcd113e0a4cd56bbebe01daa7d30"
+    },
+    {
+      "ascii_path": "reports/04_story_memory.md",
+      "original_filename": "04_故事记忆系统_快照-索引-链路-版本.md",
+      "bytes": 12949,
+      "lines": 478,
+      "sha256": "f1cae5d030c99a63ceadecbe0b0f2f4877fd74f81c5f700d0957f886b41e172f"
+    },
+    {
+      "ascii_path": "reports/05_next_chapter_context.md",
+      "original_filename": "05_下一章上下文组装_按需检索与跨线切换.md",
+      "bytes": 11250,
+      "lines": 388,
+      "sha256": "f27c4d2c2f9f23e81efd65b205307906e0c888d024867dd41ab10ac2958d06dd"
+    },
+    {
+      "ascii_path": "reports/06_continuity_and_time.md",
+      "original_filename": "06_吃书与故事时间冲突检测.md",
+      "bytes": 10513,
+      "lines": 357,
+      "sha256": "a7d11c573ade4e99316f0ec50c5740042075b9cbbd9e86603785eb731776d7e2"
+    },
+    {
+      "ascii_path": "reports/07_hard_check_and_soft_eval.md",
+      "original_filename": "07_硬检查与软评价_优秀样本如何使用.md",
+      "bytes": 11736,
+      "lines": 368,
+      "sha256": "92b33afb996496c195926accb12d7942a62c5242d9cebc03c87e455f557028c6"
+    },
+    {
+      "ascii_path": "reports/08_extra_findings.md",
+      "original_filename": "08_额外重要发现_从论文与代码工程得到的启示.md",
+      "bytes": 9772,
+      "lines": 267,
+      "sha256": "e76ad82e439e13937f79977ae4911a3a49f7f3b61fbafa2e37330cd320466755"
+    },
+    {
+      "ascii_path": "reports/09_source_table.md",
+      "original_filename": "09_论文与网页资料总表.md",
+      "bytes": 30247,
+      "lines": 117,
+      "sha256": "9b0b025101411aabab02d21140dc07490900c98dff463ed7969d81f3dfba6065"
+    },
+    {
+      "ascii_path": "reports/10_candidate_architecture.md",
+      "original_filename": "10_候选产品架构与验证实验.md",
+      "bytes": 10214,
+      "lines": 453,
+      "sha256": "e0a58203f176d3fb9657754cf9c1f23e1b7306c8a1fe4b0cff64cbeb2cba2901"
+    },
+    {
+      "ascii_path": "reports/11_original_33_papers.md",
+      "original_filename": "11_原始33篇论文清单_用户提供.md",
+      "bytes": 31747,
+      "lines": 790,
+      "sha256": "d6543811f3924660801d5ec343de8f1c4767d6596b500173a26261a1090ac580"
+    },
+    {
+      "ascii_path": "reports/12_next_research_questions.md",
+      "original_filename": "12_下一轮研究问题清单.md",
+      "bytes": 6009,
+      "lines": 150,
+      "sha256": "86f250010153422e70bf196a571748607065d3f62ccbc8fd74f2c9818ecb9672"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # survey-inbox｜总览
 
-更新：2026-08-23
+更新：2026-08-24
 入口说明：[README.md](README.md)｜大表：[catalog.csv](catalog.csv)
 
 | ID | 短标题 | 形态 | 讲什么（标签） | 产品角度 | 状态 | 卡片 |
@@ -21,3 +21,4 @@
 | SI-014 | R13 对照审 novel-mvp 设计稿回包（原件已退出 Git） | other | 设计审查／激活／关章／第一屏／投影／扫描 | 作者工作台／产品架构 | tagged | [卡片](items/SI-014_r13_design_review.md) |
 | SI-015 | 30 份外部知识库调查回包 | other | 中国网文／写作技法／作者工作流／长篇记忆／抽取评测／Agent／合规商业化／知识治理 | 作者工作台／产品架构／试验示范／需求验证／商业化 | used | [卡片](items/SI-015_external_knowledge_research_returns.md) |
 | SI-016 | 规划账合同审查回包 | other | 合同／规划账／交棒／投影／关章 | 作者工作台／产品架构 | tagged | [卡片](items/SI-016_plan_contract_review.md) |
+| SI-018 | 中文网文 AI 研究资料包 | other | 中文网文／作者工作流／叙事结构／动态规划／故事记忆／下一章取材／吃书／硬检查 | 作者工作台／产品架构 | inbox | [卡片](items/SI-018_cn_webnovel_ai_research_pack.md) |
