@@ -470,6 +470,8 @@ class _LocalFilesystemBackend:
             raise ProjectNotFoundError("PROJECT_NOT_FOUND")
         try:
             metadata = self._read_json(metadata_path)
+        except UnicodeDecodeError as exc:
+            raise IntegrityError("PROJECT_METADATA_INVALID") from exc
         except IntegrityError as exc:
             if exc.code != "INVALID_WORKSPACE_JSON":
                 raise

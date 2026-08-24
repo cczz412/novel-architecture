@@ -230,6 +230,23 @@ def test_list_and_open_normalize_broken_project_json_to_one_metadata_error(
     assert listed.value.code == opened.value.code == "PROJECT_METADATA_INVALID"
 
 
+def test_list_and_open_normalize_invalid_project_metadata_utf8(
+    tmp_path: Path,
+) -> None:
+    runtime_root = tmp_path / "runtime"
+    router = WorkspaceRouter(runtime_root)
+    workspace = router.create_project("auth:alice", "项目")
+    metadata_path = _project_dir(runtime_root, workspace) / "project.json"
+    metadata_path.write_bytes(b"\xff")
+
+    with pytest.raises(IntegrityError) as listed:
+        router.list_projects("auth:alice")
+    with pytest.raises(IntegrityError) as opened:
+        router.open_project("auth:alice", workspace.project_id)
+
+    assert listed.value.code == opened.value.code == "PROJECT_METADATA_INVALID"
+
+
 def test_list_omits_project_missing_metadata_without_repairing_it(
     tmp_path: Path,
 ) -> None:
