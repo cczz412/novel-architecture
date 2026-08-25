@@ -337,8 +337,8 @@
         "tests/test_extraction_method_ab.py::ExtractionMethodABTests::test_z01e_uses_audit_only_segments_without_prompt_payload",
         "tests/test_governance_index.py::GovernanceIndexTests::test_current_state_and_route_registry_are_single_machine_sources",
         "tests/test_governance_index.py::GovernanceIndexTests::test_current_state_rejects_status_that_disagrees_with_hard_stop_ticket",
-        "tests/test_governance_index.py::GovernanceIndexTests::test_generated_current_pages_do_not_render_historical_context",
-        "tests/test_governance_index.py::GovernanceIndexTests::test_index_answers_four_questions_and_demotes_old_routes",
+        "tests/test_governance_index.py::GovernanceIndexTests::test_generated_index_does_not_render_task_or_historical_context",
+        "tests/test_governance_index.py::GovernanceIndexTests::test_index_routes_task_progress_external_and_demotes_old_routes",
         "tests/test_governance_index.py::GovernanceIndexTests::test_refresh_is_reproducible_and_manifest_verifies",
         "tests/test_governance_index.py::GovernanceIndexTests::test_registry_has_all_modules_and_only_three_states",
         "tests/test_governance_index.py::GovernanceIndexTests::test_v2_layers_current_execution_and_rejects_legacy_top_level_aliases",
@@ -739,7 +739,7 @@
         "collected_nodeid_count": 235,
         "preexisting_exact_nodeid_count": 173,
         "merged_exact_nodeid_count": 408,
-        "merged_exact_nodeids_sha256": "84c7116df1bc9689cff7663f3f3be4c1a681209ec6cc3f7ba278e0fb611bf2db",
+        "merged_exact_nodeids_sha256": "ceb708c67dff03e945d5ca5b27f0ef9c8d53e38aea31c3c6b973b9a9c6074dfd",
         "hash_contract": "将唯一 nodeid 按字典序排列，每项以 LF 结尾，按 UTF-8 字节计算 SHA-256",
         "note": "本组从当前 main 现场收集原整文件规则，并与已有精确节点合并去重；这些数字只记录本次迁移，不是未来固定总数，也不补回已退出 main 的节点。"
       }

@@ -1388,11 +1388,11 @@
         "entry_sha256_field": "sha256"
       },
       "keep_in_repository": [
-        "governance/progress/r2-chatgpt-review-cycle.md 中的一跳历史导航"
+        "references/engineering-ledger/PROVEN_FINDINGS_LEDGER.md 的 E-13 历史边界与一跳身份导航"
       ],
       "externalize_later": [],
       "consumers": [
-        "governance/progress/r2-chatgpt-review-cycle.md"
+        "references/engineering-ledger/PROVEN_FINDINGS_LEDGER.md"
       ],
       "boundary": "外置副本和从外置 payload 独立恢复均已逐文件验证；原 TEMP 重现场按 W05-B2 收口。同级外置仓与主仓同盘，只是存储分层，不构成独立备份。"
     },

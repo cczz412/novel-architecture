@@ -2,12 +2,14 @@
   "schema_version": "governance-current-state-v2",
   "snapshot_at": "2026-08-22T23:46:41+08:00",
   "authority": {
-    "role": "本地唯一机器可读当前执行状态真源",
+    "role": "2026-08-22 技术兼容／控制快照；保留旧工具需要的机器字段，不保存当前全局任务进度",
     "external_truth": {
       "ledger_url": "https://github.com/cczz412/novel-architecture/blob/main/governance/START_HERE.md",
       "queue_url": "https://github.com/cczz412/novel-architecture/issues",
+      "planning_url": "https://linear.app/ccz/project/novel-architecture-e0f2a433c335",
+      "dependency_index_url": "https://linear.app/ccz/issue/CCZ-77",
       "legacy_frozen_ledger_url": "https://app.notion.com/p/4a46597cd80242f385f15209ebe9170c",
-      "rule": "本文件只保存当前执行状态；旧大体量历史快照已移到 governance/CURRENT_STATE_HISTORY.json。工程线真源是本 GitHub 仓库；上工入口为 governance/START_HERE.md，施工队列为 GitHub Issues。Notion 旧账序页只作历史。产品语义仍以 CZ 最新明确指令为准。"
+      "rule": "本文件是带日期的技术兼容／控制快照，不回答当前主线、支线、领票、依赖、阻塞或下一张票。整体任务关系现场读取 Linear，工程 Issue／PR／检查／合并现场读取 GitHub；上工入口为 governance/START_HERE.md。Notion 旧账序页只作历史。产品语义仍以 CZ 最新明确指令为准。"
     },
     "local_precedence": [
       "子运行 main/hard_stop.json",
@@ -21,9 +23,9 @@
   "current_execution": {
     "task": {
       "task_id": "CLEAN-BASELINE-M1-M11-INTEGRATION-20260821",
-      "label": "M1～M11 产品主线与干净基线重构",
-      "status": "clean_baseline_wo1_to_wo7_on_main_wo6_readonly",
-      "status_label": "工单 1～5、十本账 L1～L5、工单 7 已进 main。拍板题 3 六本设定账已共用 settingstore。工单 6 只读核验已按 Issue #32 回执结账（25/25＋6/6 PASS at main@3c387ca）；本轮仍不得移动、删除、退出 Git、恢复写入或退休旧目录。不得把 M1～M11 写成完整作者能力。"
+      "label": "2026-08-22 M1～M11 干净基线技术快照（非当前任务）",
+      "status": "dated_technical_control_snapshot_not_task_progress",
+      "status_label": "以下字段只保留 2026-08-22 技术控制身份，不能据此判断今天的任务、领票、阻塞或下一动作；当前票态必须现场读取 Linear 与 GitHub。"
     },
     "authorization": {
       "kind": "cz_explicit_clean_baseline_seven_work_orders",
@@ -40,7 +42,7 @@
       "quality_boundary": "本状态只登记仓库身份、版本和施工顺序，不证明 M1～M11 已完成，也不证明真实小说语义质量。检查器绿灯 ≠ 852 条语义测试，也 ≠ 全仓 pytest 全绿。",
       "evidence_boundary": "main 刷新时的 base（本页复核到）=c91ecffa084dd8a5cb834a2789e8fb408c0229e3（Merge PR #81 Issue #63）。运行时 HEAD 由 tools/check_current_freshness.py 另报。超级候选仍钉 codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b，只作拆票来源身份，禁止整支再合。工单 6 拍板见 governance/decision_records/DR-20260822-01.md；target 不是正式 PASS。",
       "stop_rule": "不得整体合并超级候选分支；不得直接写 main；不得宣称 M1～M11 已具备完整作者能力；工单 6 本轮不得移动、删除、退出 Git、恢复写入或退休旧目录。",
-      "next_action": "工单 6 只读核验已按 Issue #32 回执结账（25/25＋6/6 PASS at main@3c387ca5336daadc001c85f253186259da4a6c68）。搬删仍禁止（blocker WO6-NO-MOVE-DELETE-THIS-ROUND）。施工入口是带 status:ready 的 GitHub Issues，上工先读 governance/START_HERE.md。不要整支合并超级候选分支，也不要把 M1～M11 写成完整作者能力。"
+      "next_action": "本快照不再提供当前下一动作。整体任务与依赖现场读取 Linear，工程施工与 PR／合并现场读取 GitHub；旧安全边界只作历史技术证据。"
     },
     "candidate": {
       "branch": "codex/module-runtime-foundation-20260819-r01",
@@ -76,7 +78,7 @@
       "novel_body_read_count": 0
     },
     "protection": {
-      "current_state_role_changed": false,
+      "current_state_role_changed": true,
       "current_state_schema_changed": false,
       "product_semantics_modified": false,
       "requirements_modified": false,
@@ -90,12 +92,12 @@
     "blockers": [
       {
         "blocker_id": "SUPER-BRANCH-MUST-NOT-MERGE-WHOLE",
-        "summary": "超级集成分支 codex/module-runtime-foundation-20260819-r01 禁止整支再合；工单 5 已按 PR-C～G 拆票进 main，剩余未拆内容不得当完成产品。",
+        "summary": "2026-08-22 技术快照保留：超级集成分支 codex/module-runtime-foundation-20260819-r01 禁止整支再合；这不是当前票态。",
         "route": "codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b"
       },
       {
         "blocker_id": "WO6-NO-MOVE-DELETE-THIS-ROUND",
-        "summary": "工单 6 本轮只做只读核验。不授权移动、删除、退出 Git、恢复写入或退休旧目录。T7 未挂载仍是 NOT_RUN。只读核验回执已结账，搬删禁令仍在。",
+        "summary": "2026-08-22 工单 6 只读核验边界的历史技术快照；后续是否可搬删只认新的 CZ 指令与正式 GitHub 施工票，不能由本条裁定。",
         "route": "https://github.com/cczz412/novel-architecture/issues/32"
       }
     ]
@@ -106,7 +108,6 @@
       "label": "T5 R04 微调域",
       "status": "navigation_current_training_locked",
       "navigation": "finetuning/CURRENT.json",
-      "human_handoff": "governance/progress/t5-r04-production-canonical-p2.md",
       "boundary": "只在领域 CURRENT 和正式结果票中展开；may_authorize_training=false，may_authorize_promotion=false。"
     }
   ],
@@ -119,7 +120,7 @@
   "refresh_metadata": {
     "updated_at": "2026-08-22T23:46:41+08:00",
     "mode": "signpost_refresh_issue_64",
-    "source_count": 8,
+    "source_count": 7,
     "source_snapshot": [
       {
         "identity": "main",
@@ -144,10 +145,6 @@
         "role": "ACTIVE_PRODUCT_BACKGROUND_R14"
       },
       {
-        "path": "governance/progress/current-progress.md",
-        "role": "HUMAN_HANDOFF_ONLY"
-      },
-      {
         "path": "governance/decision_records/DR-20260822-01.md",
         "role": "WO6_READONLY_DECISION_RECORD"
       },
@@ -161,7 +158,6 @@
       "repository_history": "governance/CURRENT_STATE_HISTORY.json",
       "current_pointers": "governance/current_pointers.json",
       "product_background": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
-      "human_continuation": "governance/progress/current-progress.md",
       "finetuning_navigation": "finetuning/CURRENT.json"
     }
   }

@@ -1,13 +1,13 @@
 {
   "generator": {
     "path": "tools/governance_index.py",
-    "sha256": "6cc1be2ff6c8ccb6b3f916fbcceb635cdb698f99bd70b7f4ff2eb2a89f2b69e6"
+    "sha256": "29d67c5555c0c17b7c2902c9b1bcb4491e4f0c6255ddb528a1e9354bab954277"
   },
   "inputs": [
     {
-      "bytes": 6824,
+      "bytes": 8315,
       "path": "governance/CURRENT_STATE.json",
-      "sha256": "e441986f6091c8c512aad9ff5334488c9b9e37048e0d852c8702ad2a016f3e5a"
+      "sha256": "0a48270c9b109e4a5b8bf3bc46cf7508a0de41ade478c389ef01aea40ad06c6c"
     },
     {
       "bytes": 7262,
@@ -42,14 +42,9 @@
       "sha256": "81e8ba12b69164f24ed271e853640070142ef3762ac1417f96c69654d2f41d99"
     },
     {
-      "bytes": 1582,
+      "bytes": 2694,
       "path": "governance/INDEX.md",
-      "sha256": "5dc694c48ef42918ab6fd5dfb6126be67ebd8e2155a203100becb304f3562a1e"
-    },
-    {
-      "bytes": 471,
-      "path": "governance/current_run.md",
-      "sha256": "05dd0958bf56b49b6bc112daf576ca4d4dbebaa4e517042e61b323a5d0a320e4"
+      "sha256": "c42c93e5659999e203211bff627dc74540d79dc2b28c5b8a12512ec54dea30a1"
     },
     {
       "bytes": 1235,
@@ -99,7 +94,7 @@
   ],
   "schema_version": "governance-index-manifest-v1",
   "verification": {
-    "checked": 12,
+    "checked": 11,
     "errors": [],
     "passed": true
   }

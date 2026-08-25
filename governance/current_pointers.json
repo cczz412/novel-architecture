@@ -1,11 +1,11 @@
 {
   "schema_version": "governance-current-pointers-v1",
-  "updated_at": "2026-08-23T12:00:00+08:00",
+  "updated_at": "2026-08-25T16:50:00+08:00",
   "authority": {
-    "role": "当前版本、路径、候选身份和后续登记的唯一机器索引",
+    "role": "当前版本、路径和候选身份的唯一机器索引；不保存整体任务进度",
     "does_not_replace": [
       "governance/CURRENT_STATE.json",
-      "CZ 最新明确指令与 Notion 账序／队列",
+      "CZ 最新明确指令、Linear 当前规划／依赖与 GitHub 当前施工状态",
       "领域 CURRENT、冻结合同与正式结果票"
     ]
   },
@@ -14,19 +14,14 @@
       "pointer_id": "repository_current",
       "status": "ACTIVE_CURRENT",
       "version": "governance-current-state-v2",
-      "path": "governance/CURRENT_STATE.json"
+      "path": "governance/CURRENT_STATE.json",
+      "boundary": "带日期的技术兼容／控制快照，不是全局任务地图；领票、依赖、阻塞、PR 和合并必须现场读取 Linear／GitHub。"
     },
     {
       "pointer_id": "repository_history",
       "status": "HISTORICAL_REFERENCE",
       "version": "2026-08-08T20:21:22+08:00",
       "path": "governance/CURRENT_STATE_HISTORY.json"
-    },
-    {
-      "pointer_id": "human_handoff",
-      "status": "ACTIVE_CURRENT",
-      "version": "2026-08-22-WO6-DR",
-      "path": "governance/progress/current-progress.md"
     },
     {
       "pointer_id": "current_freshness_checker",
@@ -162,6 +157,7 @@
     "六例设计 CURRENT 的组合覆盖是 142 条／852 例（旧 127×6 加 R03 新增 15×6）；旧 127 套不得单独冒充全 R03。组合覆盖仍是设计，不是执行证明。",
     "候选分支、PLANNED 和 PENDING_WORK_ORDER 不得冒充 main current。",
     "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",
+    "本表不保存整体任务进度、领票、依赖、阻塞、PR 或合并状态；这些信息现场读取 Linear 与 GitHub。",
     "设计默认路由只能指向 design_registry 中的 CURRENT；其他状态一律不得指导施工。"
   ]
 }

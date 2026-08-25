@@ -1375,12 +1375,11 @@ class GovernanceIndexTests(unittest.TestCase):
         self.assertIn("两份相互独立的证据给出同一结论就停", governance_readme)
         self.assertIn("同时运行的子任务最多 3 个", governance_readme)
 
-    def test_index_answers_four_questions_and_demotes_old_routes(self) -> None:
+    def test_index_routes_task_progress_external_and_demotes_old_routes(self) -> None:
         control = read_json(ROOT / governance_index.CONTROL_PATH)
         current_state = read_json(ROOT / governance_index.CURRENT_STATE_PATH)
         route_registry = read_json(ROOT / governance_index.ROUTE_REGISTRY_PATH)
-        source = read_json(ROOT / governance_index.REGISTRY_SOURCE_PATH)
-        registry = governance_index.materialize_registry(ROOT, source)
+        registry = read_json(ROOT / "governance/module_registry.json")
         directory_registry = read_json(
             ROOT / governance_index.DIRECTORY_REGISTRY_PATH
         )
@@ -1393,35 +1392,40 @@ class GovernanceIndexTests(unittest.TestCase):
             directory_registry,
         )
         index = documents["governance/INDEX.md"]
-        for phrase in ("现在跑到哪道", "金标哪版哪指针", "各模块什么状态", "银标候选在哪"):
+        for phrase in (
+            "整体任务、主支线、领票、父子、硬前置、阻塞、并行线",
+            "工程施工、PR、检查、合并",
+            "技术兼容／控制字段",
+            "$linear-github-task-map",
+        ):
             self.assertIn(phrase, index)
         current, _history = governance_index.state_layers(current_state)
-        self.assertIn(current["task"]["label"], index)
-        self.assertIn(current["task"]["status_label"], index)
-        self.assertIn(current["controls"]["next_action"], index)
+        self.assertNotIn(current["task"]["label"], index)
+        self.assertNotIn(current["task"]["status_label"], index)
+        self.assertNotIn(current["controls"]["next_action"], index)
+        self.assertNotIn("governance/current_run.md", documents)
         self.assertNotIn("retry01 第3章 HTTP 200", index)
         route = documents["governance/indexes/route_health.md"]
         self.assertIn("current.md", route)
         self.assertIn("governance/INDEX.md", route)
         self.assertIn("tools/zbatch_modules/README.md", route)
 
-    def test_generated_current_pages_do_not_render_historical_context(self) -> None:
+    def test_generated_index_does_not_render_task_or_historical_context(self) -> None:
         control = read_json(ROOT / governance_index.CONTROL_PATH)
         current_state = _as_v2(read_json(ROOT / governance_index.CURRENT_STATE_PATH))
         routes = read_json(ROOT / governance_index.ROUTE_REGISTRY_PATH)
-        source = read_json(ROOT / governance_index.REGISTRY_SOURCE_PATH)
-        registry = governance_index.materialize_registry(ROOT, source)
+        registry = read_json(ROOT / "governance/module_registry.json")
         directory_registry = read_json(
             ROOT / governance_index.DIRECTORY_REGISTRY_PATH
         )
         current_state["current_execution"]["task"]["label"] = "V2当前任务唯一标记"
         current_state["current_execution"]["controls"]["next_action"] = "V2当前下一动作唯一标记"
-        current_state["historical_context"]["legacy_mainline"][
-            "label"
-        ] = "禁止出现在路牌的历史标记"
-        current_state["historical_context"]["issue_ledger"][0][
-            "summary"
-        ] = "禁止出现在路牌的历史问题标记"
+        current_state["historical_context"]["legacy_mainline"] = {
+            "label": "禁止出现在路牌的历史标记"
+        }
+        current_state["historical_context"]["issue_ledger"] = [
+            {"summary": "禁止出现在路牌的历史问题标记"}
+        ]
         control["recent_score"]["path"] = "禁止出现在当前页的历史成绩标记"
 
         documents = governance_index.build_documents(
@@ -1432,13 +1436,13 @@ class GovernanceIndexTests(unittest.TestCase):
             registry,
             directory_registry,
         )
-        for relative in ("governance/INDEX.md", "governance/current_run.md"):
-            text = documents[relative]
-            self.assertIn("V2当前任务唯一标记", text)
-            self.assertIn("V2当前下一动作唯一标记", text)
-            self.assertNotIn("禁止出现在路牌的历史标记", text)
-            self.assertNotIn("禁止出现在路牌的历史问题标记", text)
-            self.assertNotIn("禁止出现在当前页的历史成绩标记", text)
+        text = documents["governance/INDEX.md"]
+        self.assertNotIn("V2当前任务唯一标记", text)
+        self.assertNotIn("V2当前下一动作唯一标记", text)
+        self.assertNotIn("禁止出现在路牌的历史标记", text)
+        self.assertNotIn("禁止出现在路牌的历史问题标记", text)
+        self.assertNotIn("禁止出现在当前页的历史成绩标记", text)
+        self.assertNotIn("governance/current_run.md", documents)
 
     def test_root_readme_has_one_hop_governance_route(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")

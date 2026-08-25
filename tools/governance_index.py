@@ -47,7 +47,6 @@ DIRECTORY_REGISTRY_SCHEMA_PATH = (
 
 GENERATED_PATHS = [
     "governance/INDEX.md",
-    "governance/current_run.md",
     "governance/module_registry.json",
     "governance/dependency_map.json",
     "governance/indexes/gold_current.md",
@@ -2054,54 +2053,27 @@ def build_documents(
         formal_registry.get("entries"),
         "formal_gold_registry.entries",
     )
-    current, _history = state_layers(current_state)
-    task = current["task"]
-    authorization = current["authorization"]
-    run = current["run"]
-    controls = current["controls"]
-    artifacts = current["artifacts"]
-    usage = current["usage"]
-    blockers = current["blockers"]
     status_counts = registry["status_counts"]
     route_counts = {
         status: sum(1 for row in route_registry["routes"] if row["status"] == status)
         for status in ROUTE_STATUS_VALUES
     }
-    run_label = (
-        f"`{run['run_id']}`（`{run['run_directory']}`）"
-        if run.get("run_id")
-        else "无独立模型运行"
-    )
-    blocker_label = (
-        f"{len(blockers)} 项：{'；'.join(row['summary'] for row in blockers)}"
-        if blockers
-        else "0 项"
-    )
-    report_label = (
-        f"`{artifacts['report_directory']}`"
-        if artifacts.get("report_directory")
-        else "尚未登记"
-    )
-    receipt_label = (
-        f"`{artifacts['local_stop_receipt']}`"
-        if artifacts.get("local_stop_receipt")
-        else "尚未登记"
-    )
-
     index = f"""# 小说流水线治理索引
 
-> 本页由 `tools/governance_index.py` 从 `governance/CURRENT_STATE.json` 生成。人从这里看，机器读取当前任务／运行状态只认这份真源；模块与实验路线各看自己的登记册；Notion 账序和队列仍是最终真源。根 `current.md` 与模块 README 只作历史上下文。
+> 本页由 `tools/governance_index.py` 从仓库登记册生成，只负责稳定寻路，不保存整体任务进度。主线、支线、领票、依赖和阻塞现场读取 Linear；工程 Issue、PR、检查和合并现场读取 GitHub。`CURRENT_STATE.json` 只是带日期的技术兼容／控制快照。
 
-## 一页回答关键问题
+## 去哪里看
 
-| 问题 | 当前答案 |
-|---|---|
-| 现在跑到哪道 | **{task['label']}**（`{task['task_id']}`）；状态＝**{task['status_label']}**；当前运行＝{run_label}；授权时间＝`{authorization['authority_time']}` |
-| 金标哪版哪指针 | 正式金标共 {len(formal_gold_entries)} 个入口：X01 第3章 **{gold['version']}**＋五本 v1.3；统一登记 `{formal_registry_control['path']}` |
-| 各模块什么状态 | 可用 {status_counts['可用']} 个版本／在改 {status_counts['在改']} 个版本／试验 {status_counts['试验']} 个版本；见 [模块状态登记](module_registry.json) |
-| 银标候选在哪 | 五本底稿、正反例候选、第75道样张及沙箱观察均在 [银标候选索引](indexes/silver_candidates.md)；正式件不从候选标题自动推断 |
-| 实验路线能不能再开 | 在试 {route_counts['in_trial']} 条／失败 {route_counts['failed']} 条／退役 {route_counts['retired']} 条／当前允许重开 {route_counts['allowed_to_reopen']} 条；见 [路线状态登记](route_registry.json) |
-| 当前任务有什么阻断 | {blocker_label} |
+| 要看什么 | 入口 | 边界 |
+|---|---|---|
+| 整体任务、主支线、领票、父子、硬前置、阻塞、并行线 | [Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)，推荐 `$linear-github-task-map` | 必须现场读取，不从仓库静态页复原 |
+| 工程施工、PR、检查、合并 | [GitHub](https://github.com/cczz412/novel-architecture) | GitHub 是工程线真值 |
+| 上工规矩 | [START_HERE](START_HERE.md) 与 [三边协作约定](COLLAB_GITHUB_LINEAR_SLACK.md) | CZ 最新明确指令仍优先 |
+| 版本、路径、候选身份 | [current pointers](current_pointers.json) | 不保存领票、依赖或运行成绩 |
+| 技术兼容／控制字段 | [CURRENT_STATE](CURRENT_STATE.json) | 带日期快照，不是全局任务地图 |
+| 金标入口 | 正式金标共 {len(formal_gold_entries)} 个入口：X01 第3章 **{gold['version']}**＋五本 v1.3；统一登记 `{formal_registry_control['path']}` | 只认正式登记，不从文件名猜 |
+| 模块登记 | 可用 {status_counts['可用']} 个版本／在改 {status_counts['在改']} 个版本／试验 {status_counts['试验']} 个版本；见 [模块状态登记](module_registry.json) | 模块登记不是施工票 |
+| 实验路线登记 | 在试 {route_counts['in_trial']} 条／失败 {route_counts['failed']} 条／退役 {route_counts['retired']} 条／允许重开 {route_counts['allowed_to_reopen']} 条；见 [路线状态登记](route_registry.json) | 路线身份不等于当前开工 |
 
 ## 当前正式入口
 
@@ -2113,8 +2085,8 @@ def build_documents(
 
 ## 快速入口
 
-- [当前停点](current_run.md)
-- [机器当前状态](CURRENT_STATE.json)
+- [技术兼容／控制快照](CURRENT_STATE.json)
+- [当前版本、路径和候选身份](current_pointers.json)
 - [实验路线状态](route_registry.json)
 - [正式金标](indexes/gold_current.md)
 - [银标候选](indexes/silver_candidates.md)
@@ -2125,36 +2097,7 @@ def build_documents(
 - [合同说明](contracts/README.md)
 - [试验专区](../experiments/INDEX.md)
 
-## 下一件
-
-{controls['next_action']}
-
-来源：Cursor（仓库治理窗）
-"""
-
-    current = f"""# 当前运行与停点
-
-- 当前任务：{task['label']}
-- 任务编号：`{task['task_id']}`
-- 状态：{task['status_label']}
-- 授权：{authorization['kind']}，时间 `{authorization['authority_time']}`
-- 当前运行：{run_label}
-- 质量边界：{controls['quality_boundary']}
-- 当前停点：{controls['stop_rule']}
-- 下一动作：{controls['next_action']}
-- 当前阻断：{blocker_label}
-- 模型调用账：逻辑样本 {usage['model_api_logical_samples']}／网络尝试 {usage['model_api_network_attempts']}／token {usage['model_api_usage_tokens']}
-- 报告目录：{report_label}
-- 本地停点回执：{receipt_label}
-- 默认链：`{default['path']}`（{default['version']}）
-- 当前金标：`{gold['pointer_path']}` → `{gold['artifact_path']}`
-- 正式金标登记：`{formal_registry_control['path']}`，共 {len(formal_gold_entries)} 个独立 current 入口。
-- 真源账序：{authorization['ledger_url']}
-- 真源队列：{authorization['queue_url']}
-
-本页由生成器维护，不再向根 `current.md` 手抄整段进度。
-
-来源：Cursor（仓库治理窗）
+来源：Codex
 """
 
     gold_rows = [
@@ -2253,7 +2196,6 @@ def build_documents(
 
     return {
         "governance/INDEX.md": index,
-        "governance/current_run.md": current,
         "governance/indexes/gold_current.md": gold_page,
         "governance/indexes/silver_candidates.md": "\n".join(silver_lines),
         "governance/indexes/runs_and_reports.md": "\n".join(runs_lines),

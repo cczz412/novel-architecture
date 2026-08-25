@@ -470,7 +470,7 @@ uv run --locked python tools/external_payload_validator.py check \
 ## 当前状态分层与新工件身份（九项第二道写入）
 
 - 当前执行页只读 `CURRENT_STATE.json.current_execution`：任务、授权、运行、停点、下一动作、调用账和保护面。
-- 历史任务、封存运行、旧问题与收口规则只放 `historical_context`。历史不删，但不会再挤进 `INDEX.md`／`current_run.md`。
+- 历史任务、封存运行、旧问题与收口规则只放 `historical_context`。`INDEX.md` 只做稳定寻路；整体任务进度现场读取 Linear／GitHub，不再生成 `current_run.md`。
 - 新生成工件的身份统一写仓库相对 POSIX 路径。主机本地绝对路径若确需留作排障，只能单放 `*_host_local` 字段，不能当身份、不能参与跨机器 SHA 清单。
 - 本规则从九项第二道起生效；Notion 登记的旧账 `198处／36文件` 只作授权基线，不回改，也不把本轮不同范围的扫描数冒充成该母数。
 

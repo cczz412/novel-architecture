@@ -70,9 +70,7 @@
                 "AGENTS.md",
                 "governance/INDEX.md",
                 "governance/CURRENT_STATE.json",
-                "governance/progress/README.md",
-                "governance/progress/current-progress.md",
-                "governance/progress/r2-chatgpt-review-cycle.md",
+                "references/engineering-ledger/PROVEN_FINDINGS_LEDGER.md",
                 "config/providers/provider_access_policy.json",
                 ".python-version",
                 "pyproject.toml",
@@ -2882,11 +2880,11 @@
               "required": true,
               "authority": "local_governance_and_current_cz_boundary",
               "status": "current_state_stale_read_only_boundary",
-              "description": "仓库入口、旧机器镜像和当前进度路由；CURRENT_STATE 明确是旧镜像，不能覆盖本包停点。",
+              "description": "仓库入口、旧技术快照和工程结论；CURRENT_STATE 明确是带日期的兼容快照，不能覆盖本包停点或 Linear／GitHub 当前票态。",
               "globs": [
                 "AGENTS.md",
                 "governance/CURRENT_STATE.json",
-                "governance/progress/current-progress.md",
+                "references/engineering-ledger/PROVEN_FINDINGS_LEDGER.md",
                 "config/review_pack/CHATGPT_REVIEW_SOP.md"
               ]
             },

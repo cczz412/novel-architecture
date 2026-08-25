@@ -32,7 +32,8 @@ def _read(relative: str) -> str:
 def test_root_readme_is_a_durable_one_hop_map() -> None:
     text = _read("README.md")
     assert "[治理索引](governance/INDEX.md)" in text
-    assert "[当前状态真源](governance/CURRENT_STATE.json)" in text
+    assert "[技术兼容快照](governance/CURRENT_STATE.json)" in text
+    assert "$linear-github-task-map" in text
     for path in (
         "governance/",
         "foundation/",
