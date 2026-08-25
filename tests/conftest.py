@@ -139,6 +139,22 @@ def _reject_registry_overlap(
         raise pytest.UsageError(f"历史回放与本地证据节点重叠：{sorted(overlap)[0]}")
 
 
+def _matching_local_evidence_items(
+    group: dict,
+    items: list[pytest.Item],
+) -> list[pytest.Item]:
+    patterns = tuple(str(pattern) for pattern in group.get("test_file_globs", []))
+    nodeids = set(str(nodeid) for nodeid in group.get("nodeids", []))
+    matched: list[pytest.Item] = []
+    for item in items:
+        test_name = Path(str(item.fspath)).name
+        file_matches = any(Path(test_name).match(pattern) for pattern in patterns)
+        if file_matches or item.nodeid in nodeids:
+            matched.append(item)
+    return matched
+
+
+@pytest.hookimpl(trylast=True)
 def pytest_collection_modifyitems(
     config: pytest.Config,
     items: list[pytest.Item],
@@ -168,28 +184,32 @@ def pytest_collection_modifyitems(
             items[:] = [item for item in items if id(item) not in replay_ids]
             config.hook.pytest_deselected(items=replay_items)
 
-    run_without_local_evidence_guard = (
+    require_complete_local_evidence = (
         os.environ.get("NOVEL_RUN_LOCAL_EVIDENCE_TESTS") == "1"
     )
     for group in local_evidence_registry["groups"]:
+        matched_items = _matching_local_evidence_items(group, items)
+        if not matched_items:
+            continue
         missing = [
             path for path in group["required_paths"] if not (ROOT / path).is_file()
         ]
-        if not missing or run_without_local_evidence_guard:
+        if not missing:
             continue
-        patterns = tuple(str(pattern) for pattern in group.get("test_file_globs", []))
-        nodeids = set(str(nodeid) for nodeid in group.get("nodeids", []))
-        for item in items:
-            test_name = Path(str(item.fspath)).name
-            file_matches = any(Path(test_name).match(pattern) for pattern in patterns)
-            if not file_matches and item.nodeid not in nodeids:
-                continue
+        if require_complete_local_evidence:
+            raise pytest.UsageError(
+                "本机证据专线材料不完整："
+                f"group_id={group['group_id']}；missing={','.join(missing)}。"
+                "required_paths 是该分组的登记材料边界，不代表历史文件的全部材料清单。"
+            )
+        for item in matched_items:
             item.add_marker(pytest.mark.local_evidence)
             item.add_marker(
                 pytest.mark.skip(
                     reason=(
                         f"{group['reason']}；缺失={','.join(missing)}；"
-                        "需要本地证据时设置 NOVEL_RUN_LOCAL_EVIDENCE_TESTS=1"
+                        "本机证据专线必须先补齐登记材料，再设置 "
+                        "NOVEL_RUN_LOCAL_EVIDENCE_TESTS=1"
                     )
                 )
             )
