@@ -39,7 +39,7 @@ Cursor 要以 **本仓库根**（GitHub clone 的 `novel-architecture/`）为工
 
 能用脚本做完的计数、格式、一致性检查，先在本地做。
 
-机械工作先问自己：审计员团／Read／grep／普通网页搜索能不能核清。能核清就标 `继续本地`。CZ 点名 ChatGPT Deep Research 时，仍准备那条 Prompt，不要偷偷改成 Parallel 自动研究。
+机械工作先问自己：便宜助手／Read／grep／普通网页搜索能不能核清。能核清就标 `继续本地`。CZ 点名 ChatGPT Deep Research 时，仍准备那条 Prompt，不要偷偷改成 Parallel 自动研究。
 
 闸门结论只能是：`继续本地` / `ChatGPT Pro` / `Deep Research` / `两边拆批` / `先问 CZ`。
 

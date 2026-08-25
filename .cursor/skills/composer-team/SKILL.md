@@ -418,7 +418,7 @@ W2 全部返回后，主 agent 做**两件事**：
 
 - 固定身份持续对话（旧 `role-switch`）已停用，不再提供
 - 本 skill 专门解决：**当前主会话（Composer / Cursor Grok 等）如何用同模型子阵 + 穿插综合提升质量**；不另建 grok skill
-- 跑腿取证走 `aux-crew`；动手护栏走 `scout-check`；外发走 `external-handoff`
+- 跑腿取证走 `cheap-helpers`（便宜助手）；动手护栏走 `scout-check`；外发走 `external-handoff`
 
 ## 不做的事
 
