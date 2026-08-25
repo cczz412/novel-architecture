@@ -340,10 +340,38 @@ def _username_leaked_as_json_string_or_path_segment(raw: str, username: str) -> 
 
     if not username:
         return False
-    if json.dumps(username, ensure_ascii=False) in raw:
-        return True
-    pattern = re.compile(rf"[/\\]{re.escape(username)}(?:[/\\]|$)")
-    return pattern.search(raw) is not None
+    pattern = re.compile(
+        rf"(?:^|[/\\]){re.escape(username)}(?:$|[/\\])"
+    )
+    pending: list[object] = [json.loads(raw)]
+    while pending:
+        value = pending.pop()
+        if isinstance(value, dict):
+            pending.extend(value.keys())
+            pending.extend(value.values())
+        elif isinstance(value, list):
+            pending.extend(value)
+        elif isinstance(value, str) and pattern.search(value):
+            return True
+    return False
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["root", "/root", "/root/file", "root/file", "cache/root"],
+)
+def test_username_leak_detector_rejects_real_path_segments(value: str) -> None:
+    raw = json.dumps({"value": value}, ensure_ascii=False)
+    assert _username_leaked_as_json_string_or_path_segment(raw, "root")
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["root_locator_safe", "root_id", "uprooted", "/rooted/file"],
+)
+def test_username_leak_detector_allows_identifier_substrings(value: str) -> None:
+    raw = json.dumps({value: value}, ensure_ascii=False)
+    assert not _username_leaked_as_json_string_or_path_segment(raw, "root")
 
 
 def test_report_never_serializes_absolute_roots_or_username(
