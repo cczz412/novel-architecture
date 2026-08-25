@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 from pathlib import Path
 
@@ -330,6 +331,49 @@ def test_report_is_byte_reproducible_for_same_inputs(tmp_path: Path) -> None:
     assert first == second
 
 
+def _username_leaked_as_json_string_or_path_segment(raw: str, username: str) -> bool:
+    """Catch a leaked username without tripping on identifier substrings.
+
+    Container user ``root`` is a substring of report tokens such as
+    ``root_locator_safe`` and ``root_id``. Those field names are not a leak.
+    """
+
+    if not username:
+        return False
+    pattern = re.compile(
+        rf"(?:^|[/\\]){re.escape(username)}(?:$|[/\\])"
+    )
+    pending: list[object] = [json.loads(raw)]
+    while pending:
+        value = pending.pop()
+        if isinstance(value, dict):
+            pending.extend(value.keys())
+            pending.extend(value.values())
+        elif isinstance(value, list):
+            pending.extend(value)
+        elif isinstance(value, str) and pattern.search(value):
+            return True
+    return False
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["root", "/root", "/root/file", "root/file", "cache/root"],
+)
+def test_username_leak_detector_rejects_real_path_segments(value: str) -> None:
+    raw = json.dumps({"value": value}, ensure_ascii=False)
+    assert _username_leaked_as_json_string_or_path_segment(raw, "root")
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["root_locator_safe", "root_id", "uprooted", "/rooted/file"],
+)
+def test_username_leak_detector_allows_identifier_substrings(value: str) -> None:
+    raw = json.dumps({value: value}, ensure_ascii=False)
+    assert not _username_leaked_as_json_string_or_path_segment(raw, "root")
+
+
 def test_report_never_serializes_absolute_roots_or_username(
     tmp_path: Path,
 ) -> None:
@@ -337,7 +381,8 @@ def test_report_never_serializes_absolute_roots_or_username(
     raw = inventory._json_bytes(inventory.scan(repo)).decode("utf-8")
     assert str(repo) not in raw
     assert str(external) not in raw
-    assert Path.home().name not in raw
+    for username in {Path.home().name, "root"}:
+        assert not _username_leaked_as_json_string_or_path_segment(raw, username)
 
 
 def test_git_metric_counts_same_blob_once_per_tracked_path(
