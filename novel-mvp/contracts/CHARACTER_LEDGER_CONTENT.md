@@ -7,7 +7,7 @@
 变更记录：
 
 - `character-ledger-content-v1`：L2 人物卡＋状态时间线＋轻量关系。
-- `character-ledger-content-v1.1`（[CCZ-109](https://linear.app/ccz/issue/CCZ-109)）：新增 `desire_seq`／`ordeal_seq`／`intent_seq`／`choice_seq`。拍板出处：[CCZ-65](https://linear.app/ccz/issue/CCZ-65) 评论 `60f3fdb8`（三格子字段骨架与状态机）；[GH#110](https://github.com/cczz412/novel-architecture/issues/110#issuecomment-5387771590)（抉择：面临什么／选了什么／代价）。硬约束：每条条目必须有来源 `source_fact_ref`，无事实号不得建条目。计划格子只收书内人物计划。本票不改 runtime、不执行待入位转正。
+- `character-ledger-content-v1.1`（[CCZ-109](https://linear.app/ccz/issue/CCZ-109)）：新增 `desire_seq`／`ordeal_seq`／`intent_seq`／`choice_seq`。拍板出处：[CCZ-65](https://linear.app/ccz/issue/CCZ-65) 评论 `60f3fdb8`（三格子字段骨架与状态机）；[GH#110](https://github.com/cczz412/novel-architecture/issues/110#issuecomment-5387771590)（抉择：面临什么／选了什么／代价）。硬约束：每条条目必须有来源 `source_fact_ref`，无事实号不得建条目。计划格子只收书内人物计划。不执行待入位转正。settingstore 人物写入只补四个空序列和版本号，让旧调用过 v1.1 校验；不新增业务写动作。
 
 ## 1. Owner、发／收模块与边界
 
