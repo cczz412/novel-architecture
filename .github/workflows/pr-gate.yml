@@ -1,0 +1,384 @@
+name: PR 基础门禁
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-gate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-gate:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/pr-gate-venv
+      UV_CACHE_DIR: ${{ runner.temp }}/uv-cache
+      UV_PYTHON_INSTALL_DIR: ${{ runner.temp }}/uv-python
+      PR_GATE_RECEIPT_DIR: ${{ runner.temp }}/pr-test-gate
+    steps:
+      - name: 初始化门禁回执
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$PR_GATE_RECEIPT_DIR"
+          printf '%s\n' 'PR test gate job started.' > "$PR_GATE_RECEIPT_DIR/job-started.txt"
+
+      - name: 检出 PR 的准确提交
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: 安装锁定的 uv 与 Python
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.3"
+          python-version: "3.12.12"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: 按 lock 文件重建环境
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv sync --locked
+          uv run --locked python --version
+
+      - name: 读取 PR diff 并生成测试计划
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CHANGE_ID: PR-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PR_GATE_RECEIPT_DIR"
+
+          uv run --locked python - "$BASE_SHA" "$HEAD_SHA" "$CHANGE_ID" "$PR_GATE_RECEIPT_DIR/selection-input.json" <<'PY'
+          from __future__ import annotations
+
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          from tools.pipeline_common.artifacts import write_json_atomic
+
+
+          base_sha, head_sha, change_id, output_raw = sys.argv[1:]
+          output = Path(output_raw)
+          error_output = output.parent / "planning-error.json"
+
+          try:
+              sha_pattern = re.compile(r"[0-9a-f]{40}")
+              for label, value in (("base_sha", base_sha), ("head_sha", head_sha)):
+                  if sha_pattern.fullmatch(value) is None:
+                      raise RuntimeError(f"{label} 必须是完整 40 位小写 Git SHA")
+                  subprocess.run(
+                      ["git", "cat-file", "-e", f"{value}^{{commit}}"],
+                      check=True,
+                      capture_output=True,
+                  )
+
+              completed = subprocess.run(
+                  [
+                      "git",
+                      "diff",
+                      "--name-status",
+                      "-z",
+                      "--find-renames",
+                      "--diff-filter=ACDMRTUXB",
+                      f"{base_sha}...{head_sha}",
+                      "--",
+                  ],
+                  check=True,
+                  capture_output=True,
+              )
+              tokens = completed.stdout.split(b"\0")
+              if tokens and not tokens[-1]:
+                  tokens.pop()
+
+              def decode(value: bytes) -> str:
+                  try:
+                      result = value.decode("utf-8")
+                  except UnicodeDecodeError as exc:
+                      raise RuntimeError(
+                          "PR diff 含非 UTF-8 路径，无法安全生成计划"
+                      ) from exc
+                  if not result:
+                      raise RuntimeError("PR diff 含空路径")
+                  return result
+
+              changed_paths: set[str] = set()
+              head_paths: set[str] = set()
+              path_changes: list[dict[str, str]] = []
+              index = 0
+              while index < len(tokens):
+                  status_raw = decode(tokens[index])
+                  index += 1
+                  if not (
+                      re.fullmatch(r"[ACDMTUXB]", status_raw)
+                      or re.fullmatch(r"[RC][0-9]{1,3}", status_raw)
+                  ):
+                      raise RuntimeError(f"PR diff 状态不受支持：{status_raw}")
+                  status = status_raw[0]
+                  if status in {"R", "C"}:
+                      if index + 1 >= len(tokens):
+                          raise RuntimeError(f"PR diff 的 {status_raw} 路径不完整")
+                      previous_path = decode(tokens[index])
+                      path = decode(tokens[index + 1])
+                      index += 2
+                      path_changes.append(
+                          {
+                              "status": status,
+                              "score": status_raw[1:],
+                              "previous_path": previous_path,
+                              "path": path,
+                          }
+                      )
+                      if status == "R":
+                          changed_paths.add(previous_path)
+                      changed_paths.add(path)
+                      head_paths.add(path)
+                  else:
+                      if index >= len(tokens):
+                          raise RuntimeError(f"PR diff 的 {status_raw} 路径不完整")
+                      path = decode(tokens[index])
+                      index += 1
+                      path_changes.append({"status": status, "path": path})
+                      changed_paths.add(path)
+                      if status != "D":
+                          head_paths.add(path)
+              if not changed_paths:
+                  raise RuntimeError("PR diff 为空，拒绝报告门禁通过")
+
+              non_downgradable = {
+                  "governance/test_policy.json",
+                  "tools/test_impact.py",
+              }
+              forced_full_chain_paths = sorted(changed_paths.intersection(non_downgradable))
+
+              write_json_atomic(
+                  output,
+                  {
+                      "contract_version": "pipeline-change-spec-v1",
+                      "change_id": change_id,
+                      "changed_paths": sorted(changed_paths),
+                      "head_paths": sorted(head_paths),
+                      "path_changes": path_changes,
+                      "forced_full_chain_paths": forced_full_chain_paths,
+                      "flags": [],
+                      "contract_changes": [],
+                      "source": {
+                          "kind": "pull_request_git_diff",
+                          "base_sha": base_sha,
+                          "head_sha": head_sha,
+                          "diff_mode": "merge_base_to_head",
+                      },
+                  },
+              )
+          except Exception as exc:
+              write_json_atomic(
+                  error_output,
+                  {
+                      "contract_version": "pr-test-gate-planning-error-v1",
+                      "status": "failed",
+                      "error_type": type(exc).__name__,
+                      "reason": str(exc),
+                  },
+              )
+              print(f"PR_GATE_DIFF_FAILED: {exc}", file=sys.stderr)
+              raise SystemExit(2)
+          PY
+
+          set +e
+          uv run --locked python tools/test_impact.py --spec "$PR_GATE_RECEIPT_DIR/selection-input.json" --output "$PR_GATE_RECEIPT_DIR/test-plan.json" 2>&1 | tee "$PR_GATE_RECEIPT_DIR/plan.log"
+          plan_code=${PIPESTATUS[0]}
+          set -e
+          if [[ "$plan_code" -ne 0 ]]; then
+            uv run --locked python - "$plan_code" "$PR_GATE_RECEIPT_DIR/execution-result.json" <<'PY'
+          from __future__ import annotations
+
+          import sys
+          from pathlib import Path
+
+          from tools.pipeline_common.artifacts import write_json_atomic
+
+
+          write_json_atomic(
+              Path(sys.argv[2]),
+              {
+                  "contract_version": "pr-test-gate-execution-v1",
+                  "status": "planning_failed",
+                  "exit_code": int(sys.argv[1]),
+              },
+          )
+          PY
+            exit "$plan_code"
+          fi
+
+      - name: 按结构化参数执行测试计划
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --locked python - "$PR_GATE_RECEIPT_DIR/selection-input.json" "$PR_GATE_RECEIPT_DIR/test-plan.json" "$PR_GATE_RECEIPT_DIR/execution-result.json" "$PR_GATE_RECEIPT_DIR/logs" <<'PY'
+          from __future__ import annotations
+
+          import json
+          import re
+          import subprocess
+          import sys
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          from tools.pipeline_common.artifacts import (
+              read_json,
+              sha256_file,
+              write_json_atomic,
+          )
+
+
+          input_path, plan_path, result_path, log_dir = map(Path, sys.argv[1:])
+          root = Path.cwd().resolve()
+          log_dir.mkdir(parents=True, exist_ok=True)
+          selection = read_json(input_path)
+          plan = read_json(plan_path)
+          steps = plan.get("execution_steps")
+          result = {
+              "contract_version": "pr-test-gate-execution-v1",
+              "status": "running",
+              "selection_input_sha256": sha256_file(input_path),
+              "test_plan_sha256": sha256_file(plan_path),
+              "plan_contract": plan.get("contract_version"),
+              "scope": plan.get("scope"),
+              "steps": [],
+          }
+          write_json_atomic(result_path, result)
+
+          try:
+              if not isinstance(steps, list) or not steps:
+                  raise RuntimeError("测试计划缺少 execution_steps")
+              non_downgradable = {
+                  "governance/test_policy.json",
+                  "tools/test_impact.py",
+              }
+              changed_paths = selection.get("changed_paths")
+              if not isinstance(changed_paths, list) or not all(
+                  isinstance(value, str) and value for value in changed_paths
+              ):
+                  raise RuntimeError("选择输入缺少 changed_paths")
+              forced_full_chain_paths = sorted(
+                  set(changed_paths).intersection(non_downgradable)
+              )
+              if selection.get("forced_full_chain_paths") != forced_full_chain_paths:
+                  raise RuntimeError("不可降级的选测核心文件记录不一致")
+              if forced_full_chain_paths:
+                  first_argv = steps[0].get("argv") if isinstance(steps[0], dict) else None
+                  if (
+                      plan.get("full_chain") is not True
+                      or plan.get("scope") != "full_chain"
+                      or first_argv != ["uv", "run", "--locked", "pytest", "-q"]
+                  ):
+                      raise RuntimeError(
+                          "不可降级的选测核心文件没有生成便携全量步骤"
+                      )
+              for index, step in enumerate(steps, start=1):
+                  if not isinstance(step, dict):
+                      raise RuntimeError("execution_steps 只能放对象")
+                  step_id = step.get("step_id")
+                  argv = step.get("argv")
+                  if not isinstance(step_id, str) or re.fullmatch(
+                      r"[a-z0-9][a-z0-9-]*", step_id
+                  ) is None:
+                      raise RuntimeError("执行步骤编号不安全")
+                  if (
+                      not isinstance(argv, list)
+                      or not argv
+                      or not all(isinstance(value, str) and value for value in argv)
+                  ):
+                      raise RuntimeError(f"{step_id} 缺少结构化 argv")
+                  if argv[:3] != ["uv", "run", "--locked"]:
+                      raise RuntimeError(f"{step_id} 绕开 uv run --locked")
+                  if step.get("cwd") != "repo_root":
+                      raise RuntimeError(f"{step_id} 只能从仓库根运行")
+
+                  log_name = f"{index:02d}-{step_id}.log"
+                  log_path = log_dir / log_name
+                  started_at = datetime.now(UTC).isoformat()
+                  print(
+                      "PR_GATE_STEP="
+                      + json.dumps(
+                          {"step_id": step_id, "argv": argv},
+                          ensure_ascii=False,
+                          sort_keys=True,
+                      )
+                  )
+                  with log_path.open("w", encoding="utf-8") as log_handle:
+                      process = subprocess.Popen(
+                          argv,
+                          cwd=root,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.STDOUT,
+                          text=True,
+                          encoding="utf-8",
+                          errors="replace",
+                          bufsize=1,
+                      )
+                      assert process.stdout is not None
+                      for line in process.stdout:
+                          print(line, end="")
+                          log_handle.write(line)
+                      return_code = process.wait()
+                  finished_at = datetime.now(UTC).isoformat()
+                  result["steps"].append(
+                      {
+                          "step_id": step_id,
+                          "argv": argv,
+                          "return_code": return_code,
+                          "started_at": started_at,
+                          "finished_at": finished_at,
+                          "log_path": f"logs/{log_name}",
+                          "log_sha256": sha256_file(log_path),
+                      }
+                  )
+                  if return_code != 0:
+                      result["status"] = "failed"
+                      result["failed_step"] = step_id
+                      result["exit_code"] = return_code
+                      write_json_atomic(result_path, result)
+                      raise SystemExit(return_code if 0 < return_code < 126 else 1)
+                  write_json_atomic(result_path, result)
+              result["status"] = "passed"
+              result["exit_code"] = 0
+              write_json_atomic(result_path, result)
+          except SystemExit:
+              raise
+          except Exception as exc:
+              result["status"] = "gate_error"
+              result["exit_code"] = 2
+              result["error_type"] = type(exc).__name__
+              result["reason"] = str(exc)
+              write_json_atomic(result_path, result)
+              print(f"PR_GATE_EXECUTION_FAILED: {exc}", file=sys.stderr)
+              raise SystemExit(2)
+          PY
+
+      - name: 上传选择、计划和结果回执
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pr-test-gate-${{ github.event.pull_request.number }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pr-test-gate
+          if-no-files-found: error
+          retention-days: 30
