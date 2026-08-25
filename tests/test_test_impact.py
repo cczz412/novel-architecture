@@ -36,7 +36,10 @@ class TestImpactTests(unittest.TestCase):
         self.assertFalse(plan["full_chain"])
         self.assertIn("M10", plan["affected_modules"])
         self.assertIn("tests/test_z75_multidirection_score.py", plan["selected_tests"])
-        self.assertIn("ruff check tools/demo_score_helper.py", plan["commands"])
+        self.assertIn(
+            "uv run --locked ruff check tools/demo_score_helper.py",
+            plan["commands"],
+        )
 
     def test_existing_contract_change_runs_full_chain(self) -> None:
         plan = test_impact.build_plan(
@@ -48,7 +51,10 @@ class TestImpactTests(unittest.TestCase):
             registry=self.registry,
         )
         self.assertTrue(plan["full_chain"])
-        self.assertIn("ruff check tools/pipeline_inspector.py", plan["commands"])
+        self.assertIn(
+            "uv run --locked ruff check tools/pipeline_inspector.py",
+            plan["commands"],
+        )
         self.assertEqual(plan["scope"], "full_chain")
 
     def test_unified_entry_change_runs_full_chain(self) -> None:
@@ -58,7 +64,10 @@ class TestImpactTests(unittest.TestCase):
             registry=self.registry,
         )
         self.assertTrue(plan["full_chain"])
-        self.assertIn("ruff check tools/novel_pipeline.py", plan["commands"])
+        self.assertIn(
+            "uv run --locked ruff check tools/novel_pipeline.py",
+            plan["commands"],
+        )
 
     def test_unknown_path_fails_safe_to_full_chain(self) -> None:
         plan = test_impact.build_plan(

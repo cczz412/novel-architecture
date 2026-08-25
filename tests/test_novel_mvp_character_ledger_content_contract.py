@@ -213,6 +213,16 @@ def test_contract_keeps_knowledge_edge_fields_open() -> None:
     assert error.startswith("SCHEMA_INVALID")
 
 
+def test_four_sequences_require_source_fact_ref() -> None:
+    contract = CONTRACT_PATH.read_text(encoding="utf-8")
+    assert "source_fact_ref" in contract
+    assert "60f3fdb8" in contract
+    assert "in_book_character" in contract
+    ok = next(case["document"] for case in CASES if case["case_id"] == "CL-301")
+    MODULE.validate_record(ok)
+    assert ok["desire_seq"][0]["source_fact_ref"].startswith("f")
+
+
 def test_validator_is_read_only() -> None:
     tracked = [VALIDATOR_PATH, FIXTURE_PATH, CONTRACT_PATH]
     before = {path: path.read_bytes() for path in tracked}

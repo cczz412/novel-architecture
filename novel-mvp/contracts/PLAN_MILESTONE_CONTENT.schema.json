@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/PLAN_MILESTONE_CONTENT.schema.json",
+  "title": "PLAN_MILESTONE_CONTENT milestone-plan-content-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "id",
+    "source_identity",
+    "confirm_status",
+    "evidence_refs",
+    "created_at",
+    "updated_at",
+    "rev",
+    "note",
+    "owner_storyline_ref",
+    "title",
+    "status",
+    "construction_order",
+    "storyline_refs",
+    "milestone_refs",
+    "planning_dependency_edges"
+  ],
+  "properties": {
+    "contract": {
+      "const": "PLAN_MILESTONE_CONTENT"
+    },
+    "version": {
+      "const": "milestone-plan-content-v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^MS-[0-9]+$"
+    },
+    "source_identity": {
+      "type": "string",
+      "enum": [
+        "author_declared",
+        "draft_inferred",
+        "model_suggested"
+      ]
+    },
+    "confirm_status": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "confirmed",
+        "retired"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^f[0-9]{3,}$"
+          },
+          {
+            "const": "AUTHOR_ATTESTATION"
+          }
+        ]
+      },
+      "uniqueItems": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rev": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "note": {
+      "type": "string"
+    },
+    "owner_storyline_ref": {
+      "type": "string",
+      "pattern": "^L-[0-9]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "未开工",
+        "进行中",
+        "已达成",
+        "已废弃"
+      ]
+    },
+    "construction_order": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "storyline_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^L-[0-9]+$"
+      },
+      "uniqueItems": true
+    },
+    "milestone_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^MS-[0-9]+$"
+      },
+      "uniqueItems": true
+    },
+    "planning_dependency_edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from_ref",
+          "to_ref",
+          "fulfillment_fact_ref"
+        ],
+        "properties": {
+          "from_ref": {
+            "type": "string",
+            "pattern": "^(MS|PE)-[0-9]+$"
+          },
+          "to_ref": {
+            "type": "string",
+            "pattern": "^(MS|PE)-[0-9]+$"
+          },
+          "fulfillment_fact_ref": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^f[0-9]{3,}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

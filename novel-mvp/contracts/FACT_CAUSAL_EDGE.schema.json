@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/FACT_CAUSAL_EDGE.schema.json",
+  "title": "FACT_CAUSAL_EDGE fact-causal-edge-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "id",
+    "source_identity",
+    "confirm_status",
+    "evidence_refs",
+    "created_at",
+    "updated_at",
+    "rev",
+    "note",
+    "from_fact_ref",
+    "to_fact_ref",
+    "span"
+  ],
+  "properties": {
+    "contract": {
+      "const": "FACT_CAUSAL_EDGE"
+    },
+    "version": {
+      "const": "fact-causal-edge-v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^CE-[0-9]+$"
+    },
+    "source_identity": {
+      "type": "string",
+      "enum": [
+        "author_declared",
+        "draft_inferred",
+        "model_suggested"
+      ]
+    },
+    "confirm_status": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "confirmed",
+        "retired"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^f[0-9]{3,}$"
+          },
+          {
+            "const": "AUTHOR_ATTESTATION"
+          }
+        ]
+      },
+      "uniqueItems": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rev": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "note": {
+      "type": "string"
+    },
+    "from_fact_ref": {
+      "type": "string",
+      "pattern": "^f[0-9]{3,}$"
+    },
+    "to_fact_ref": {
+      "type": "string",
+      "pattern": "^f[0-9]{3,}$"
+    },
+    "span": {
+      "type": "string",
+      "enum": [
+        "直接",
+        "长程"
+      ]
+    }
+  }
+}

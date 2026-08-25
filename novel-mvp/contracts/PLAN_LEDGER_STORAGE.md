@@ -1,6 +1,6 @@
 # PLAN_LEDGER_STORAGE · 规划账存储
 
-**版本：`plan-v2-candidate-r08`**（r07 语义不变；L5 冻结卷／人物命运／灵感三个长线对象的内容合同与 `expected_at` 三种锚；落盘中的 schema 仍为 `plan-v2`；planstore 对三对象的写动作仍未施工）
+**版本：`plan-v2-candidate-r09`**（`plan-v2-candidate-r07`／r08 语义不变；r09 增加里程对象与长线盒子索引指针，见 §4c；落盘中的 schema 仍为 `plan-v2`；planstore 写动作仍未施工）
 
 一句话用途：保存作者未来准备怎样写，以及计划与书稿怎样对照。它不是事实账，不证明故事已经发生。
 
@@ -20,9 +20,9 @@
 ### 合同名与版本
 
 **合同名**：`PLAN_LEDGER_STORAGE`
-**版本**：`plan-v2-candidate-r08`
+**版本**：`plan-v2-candidate-r09`
 **落盘中的 schema 值**：`"plan-v2"`
-**状态**：r06 handover／对账／M5 统一 writer 产品接缝已实现；r07 chapter revision 接缝正式冻结、产品实现待下一票；r08 卷／人物命运／灵感三对象合同层冻结（L5），planstore 写动作与长线视图投影待后续 runtime 票；通用 planstore 其他动作未完成
+**状态**：r06 handover／对账／M5 统一 writer 产品接缝已实现；r07 chapter revision 接缝正式冻结、产品实现待下一票；r08 卷／人物命运／灵感三对象合同层冻结（L5）；r09 里程对象与长线盒子索引合同层冻结（[CCZ-109](https://linear.app/ccz/issue/CCZ-109)），planstore 写动作与长线视图投影待后续 runtime 票；通用 planstore 其他动作未完成
 
 ### 一句话用途
 
@@ -188,6 +188,15 @@ data/<项目>/
 - 灵感：[PLAN_INSPIRATION_CONTENT.md](PLAN_INSPIRATION_CONTENT.md)（`inspiration-plan-content-v1`，前缀 `INS-`，`placements[]` 多实例，录入零门槛）。
 
 两对象共用预计时机 `expected_at` 三种锚（章槽锚／故事时间锚／模糊锚）；模糊锚对账只提醒、不报警。条目永远住账不动窝，写章取料带走的是引用；兑现／未兑现／改挂由对账边推进。取件码扩十本见 [LEDGER_RECALL_CODE.md](LEDGER_RECALL_CODE.md)。planstore 对两对象的写动作、长线视图投影仍未施工。
+
+## 4c. 里程 `milestone` 与长线盒子索引（r09／CCZ-109）
+
+长线真值仍全住规划账。r09 只冻结两个合同层对象，不改 `plan-v2` 落盘 schema，也不改 planstore runtime：
+
+- 里程：[PLAN_MILESTONE_CONTENT.md](PLAN_MILESTONE_CONTENT.md)（`milestone-plan-content-v1`，前缀 `MS-`）。外审细目 12／13／14（`storyline_refs`／`milestone_refs`／owner＋`construction_order`）落在本对象上。规划依赖边端点只允许 `MS-`／`PE-`；兑现时用 `fulfillment_fact_ref` 引用事实号，不把事实因果边写进规划账。拍板：[CCZ-41](https://linear.app/ccz/issue/CCZ-41) 评论 `8240167c`。
+- 长线外层盒子索引：[PLAN_LONGLINE_BOX_INDEX.md](PLAN_LONGLINE_BOX_INDEX.md)（`longline-box-index-v1`，前缀 `BOX-`）。这是读取面，不是第二真源；外层四样封顶。灯从里程 `status` 编译，禁止手写。
+
+已发生事实之间的因果边不在本账，见 [FACT_CAUSAL_EDGE.md](FACT_CAUSAL_EDGE.md)。本票不执行待入位转正（A4）。
 
 ------
 

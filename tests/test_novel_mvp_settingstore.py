@@ -69,6 +69,10 @@ def _character_payload(**overrides) -> dict:
         "destiny_ref": None,
         "state_timeline": [],
         "relationships": [],
+        "desire_seq": [],
+        "ordeal_seq": [],
+        "intent_seq": [],
+        "choice_seq": [],
         "source_identity": "author_declared",
         "confirm_status": "confirmed",
         "evidence_refs": ["AUTHOR_ATTESTATION"],
@@ -469,6 +473,53 @@ def test_caller_chosen_id_and_invalid_payload_are_rejected_before_prepare(
     assert _read_jsonl(root / "commit_log.jsonl") == []
     assert planstore.operation_status(root, "op-private-id")["state"] == "NOT_HAPPENED"
     assert planstore.operation_status(root, "op-invalid-payload")["state"] == "NOT_HAPPENED"
+
+
+def test_character_write_fills_omitted_v11_sequences(tmp_path: Path) -> None:
+    root = tmp_path / "book"
+    _init(root)
+    payload = _character_payload()
+    for key in ("desire_seq", "ordeal_seq", "intent_seq", "choice_seq"):
+        payload.pop(key)
+    settingstore.write_setting_record(
+        root,
+        ledger="character",
+        operation_id="op-setting-omit-seq",
+        record=payload,
+        timestamp=NOW,
+    )
+    saved = settingstore.read_setting_records(root, "character")[0]
+    assert saved["version"] == "character-ledger-content-v1.1"
+    assert saved["desire_seq"] == []
+    assert saved["ordeal_seq"] == []
+    assert saved["intent_seq"] == []
+    assert saved["choice_seq"] == []
+
+
+def test_character_write_rejects_desire_missing_source_fact_ref(tmp_path: Path) -> None:
+    root = tmp_path / "book"
+    _init(root)
+    payload = _character_payload()
+    payload["desire_seq"] = [
+        {
+            "id": "DESIRE-0001",
+            "subject_ref": "CH-0001",
+            "content": "想亲手拆开北城禁门。",
+            "status": "活跃",
+            "achieved_fact_ref": None,
+            "next_desire_ref": None,
+        }
+    ]
+    with pytest.raises(settingstore.SettingstoreError, match="SETTING_CONTRACT_INVALID"):
+        settingstore.write_setting_record(
+            root,
+            ledger="character",
+            operation_id="op-setting-desire-no-source",
+            record=payload,
+            timestamp=NOW,
+        )
+    assert settingstore.read_setting_records(root, "character") == []
+    assert planstore.operation_status(root, "op-setting-desire-no-source")["state"] == "NOT_HAPPENED"
 
 
 @pytest.mark.parametrize("ledger", ["longline", "plan", "fact", "chapter"])

@@ -1,8 +1,13 @@
 # CHARACTER_LEDGER_CONTENT · 人物账内容合同
 
-**正式版本：`character-ledger-content-v1`**
+**正式版本：`character-ledger-content-v1.1`**
 
-一句话用途：用一张可直接编辑的人物定义卡，配一组有证据、有故事时间锚的状态与轻量关系读取面，回答“这个人是谁、在某个故事时点是什么状态”；没有记录时必须明说，不能拿最新状态冒充历史。
+一句话用途：用一张可直接编辑的人物定义卡，配一组有证据、有故事时间锚的状态与轻量关系读取面，回答“这个人是谁、在某个故事时点是什么状态”；没有记录时必须明说，不能拿最新状态冒充历史。v1.1 在人物卡上冻结四条可收起子对象序列：渴望／困境／计划／抉择。
+
+变更记录：
+
+- `character-ledger-content-v1`：L2 人物卡＋状态时间线＋轻量关系。
+- `character-ledger-content-v1.1`（[CCZ-109](https://linear.app/ccz/issue/CCZ-109)）：新增 `desire_seq`／`ordeal_seq`／`intent_seq`／`choice_seq`。拍板出处：[CCZ-65](https://linear.app/ccz/issue/CCZ-65) 评论 `60f3fdb8`（三格子字段骨架与状态机）；[GH#110](https://github.com/cczz412/novel-architecture/issues/110#issuecomment-5387771590)（抉择：面临什么／选了什么／代价）。硬约束：每条条目必须有来源 `source_fact_ref`，无事实号不得建条目。计划格子只收书内人物计划。不执行待入位转正。settingstore 人物写入只补四个空序列和版本号，让旧调用过 v1.1 校验；不新增业务写动作。
 
 ## 1. Owner、发／收模块与边界
 
@@ -46,6 +51,10 @@ created_at/updated_at/rev/note
 | `profile` | str | 作者可编辑背景卡；帮助识别，不能替书稿补事实 |
 | `visibility` | enum | `AUTHOR`／`READER_RELEASED`；READER 侧完整数据结构仍开放 |
 | `destiny_ref` | str/null | 指向规划账人物命运条目 `PLAN_DESTINY_CONTENT`；非空时必须匹配官方前缀 `^DESTINY-[0-9]+$`，提供命运目录时必须命中已登记条目 |
+| `desire_seq` | list[obj] | 渴望序列，可空；字段见 §5b |
+| `ordeal_seq` | list[obj] | 困境序列，可空 |
+| `intent_seq` | list[obj] | 书内人物计划序列，可空；作者侧规划禁止入此格 |
+| `choice_seq` | list[obj] | 人物抉择序列，可空；不得拿规划账作者选择记录冒充 |
 
 存在性校验已随 L5 收口（复核注记 3）：校验器 `validate_record(..., destiny_ids=...)` 收到命运目录时，悬空 `destiny_ref` 必须失败（`DESTINY_REF_NOT_FOUND`）；非官方前缀无论有无目录都失败（`DESTINY_REF_PREFIX_INVALID`）。目标对象合同见 [PLAN_DESTINY_CONTENT.md](PLAN_DESTINY_CONTENT.md)。
 
@@ -78,7 +87,38 @@ created_at/updated_at/rev/note
 
 重要、不对称、需要独立历史的关系以后可以升独立对象；L2 不提前定义升级协议。
 
-**知情边（知道／怀疑／误信／不知）只留位，不定义字段、枚举或对象形状。** `knowledge_edges` 等未拍字段在 v1 中必须被拒绝。
+**知情边（知道／怀疑／误信／不知）只留位，不定义字段、枚举或对象形状。** `knowledge_edges` 等未拍字段在 v1.1 中必须被拒绝。
+
+## 5b. 四条子对象序列（v1.1）
+
+四个序列都住**这张人物卡**，每人物单独可收起；事实账不复制内容，只由 `source_fact_ref`／兑现类 fact_ref 单向引用。条目 `subject_ref` 必须等于根人物 `id`。
+
+**无 `source_fact_ref` 不得建条目**（堵死「AI 为填账故意生成」）。`source_fact_ref` 只允许 `f001` 形事实内部号，不允许 `AUTHOR_ATTESTATION`。
+
+| 序列 | 字段（不增不减） | 状态机 |
+|---|---|---|
+| 渴望 `desire_seq` | `id`（`DESIRE-`）＋主体＋一句话内容＋状态＋来源 fact_ref＋达成 fact_ref＋新渴望链指针 | 活跃／达成／放弃／转化 |
+| 困境 `ordeal_seq` | `id`（`ORDEAL-`）＋主体＋内容＋状态＋来源 fact_ref＋解除 fact_ref | 持续／恶化／解除 |
+| 计划 `intent_seq` | `id`（`INTENT-`）＋主体＋未来内容＋状态＋`scope=in_book_character`＋来源 fact_ref＋兑现 fact_ref | 未执行／执行中／兑现／落空／放弃 |
+| 抉择 `choice_seq` | `id`（`CHOICE-`）＋主体＋面临什么＋选了什么＋代价（无代价写空串）＋来源 fact_ref | 已发生选择，不另设状态机 |
+
+机器字段名：
+
+| 人话 | 字段 |
+|---|---|
+| 主体 | `subject_ref` |
+| 一句话内容／未来内容 | `content` |
+| 状态 | `status` |
+| 来源 fact_ref | `source_fact_ref` |
+| 达成 fact_ref | `achieved_fact_ref`（可 null；状态为「达成」时必填） |
+| 新渴望链指针 | `next_desire_ref`（可 null；非空时必须是本卡 `desire_seq` 里另一条 `DESIRE-`） |
+| 解除 fact_ref | `resolved_fact_ref`（可 null；状态为「解除」时必填） |
+| 兑现 fact_ref | `fulfilled_fact_ref`（可 null；状态为「兑现」时必填） |
+| 面临什么 | `faced` |
+| 选了什么 | `chosen` |
+| 代价 | `cost` |
+
+「目的达没达成」只用渴望的 `status`；「达成后新渴望」只用 `next_desire_ref`，不另设概念。
 
 ## 6. 故事时间锚
 
@@ -113,7 +153,7 @@ created_at/updated_at/rev/note
 ```json
 {
   "contract": "CHARACTER_LEDGER_CONTENT",
-  "version": "character-ledger-content-v1",
+  "version": "character-ledger-content-v1.1",
   "id": "CH-0001",
   "source_identity": "author_declared",
   "confirm_status": "confirmed",
@@ -181,7 +221,21 @@ created_at/updated_at/rev/note
       },
       "evidence_refs": ["f008"]
     }
-  ]
+  ],
+  "desire_seq": [
+    {
+      "id": "DESIRE-0001",
+      "subject_ref": "CH-0001",
+      "content": "想亲手拆开北城禁门。",
+      "status": "活跃",
+      "source_fact_ref": "f040",
+      "achieved_fact_ref": null,
+      "next_desire_ref": null
+    }
+  ],
+  "ordeal_seq": [],
+  "intent_seq": [],
+  "choice_seq": []
 }
 ```
 
@@ -197,6 +251,9 @@ created_at/updated_at/rev/note
 8. 禁止把非官方前缀或悬空的 `destiny_ref` 当合法引用（L5 起：前缀必须 `DESTINY-`＋数字；有命运目录时必须命中）。
 9. 禁止在本票定义知情边字段、READER 侧数据结构、新账申请流程或 ADD-043 拆条答案。
 10. 禁止绕过 `settingstore` 直写人物账，或把内容合同、validator、fixture 当成落盘方。
+11. 禁止渴望／困境／计划／抉择条目缺少 `source_fact_ref`，或用 `AUTHOR_ATTESTATION` 冒充来源事实号。
+12. 禁止把作者侧规划写入 `intent_seq`（`scope` 只能是 `in_book_character`）。
+13. 禁止拿规划账选择记录冒充 `choice_seq`。
 
 ## 10. 开放问题与后续接缝
 
@@ -216,6 +273,6 @@ created_at/updated_at/rev/note
 
 ## 12. 实现状态
 
-`UNIFIED_WRITER_SETTINGSTORE_V1__DESTINY_EXISTENCE_CLOSED`
+`UNIFIED_WRITER_SETTINGSTORE_V1__DESIRE_ORDEAL_INTENT_CHOICE_SEQ_V1_1`
 
-通过本合同只证明人物内容形状、证据纪律、时间锚与查询边界已经冻结，且 `destiny_ref` 的前缀与存在性校验已随 L5 收口；落盘走 `settingstore`。不证明人物页、as-of 查询或完整接入 M10/M11。
+通过本合同只证明人物内容形状、证据纪律、时间锚、查询边界，以及四条子对象序列已经冻结；落盘走 `settingstore`。不证明人物页、as-of 查询、完整接入 M10/M11，也不证明「待入位」行已经转正。

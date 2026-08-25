@@ -73,7 +73,7 @@ LEDGERS: dict[str, LedgerSpec] = {
         "CH",
         "characters.json",
         "CHARACTER_LEDGER_CONTENT",
-        "character-ledger-content-v1",
+        "character-ledger-content-v1.1",
         "validate_character_ledger_content.py",
     ),
     "location": LedgerSpec(
@@ -237,6 +237,9 @@ def _fill_record(
     record["contract"] = spec.contract
     record["version"] = spec.version
     record["id"] = entry_id
+    if spec.name == "character":
+        for key in ("desire_seq", "ordeal_seq", "intent_seq", "choice_seq"):
+            record.setdefault(key, [])
     record["created_at"] = created_at
     record["updated_at"] = updated_at
     record["rev"] = rev
