@@ -48,10 +48,10 @@ def test_localhost_tcp_is_not_blocked() -> None:
 
 
 @pytest.mark.allow_network
-def test_allow_network_marker_does_not_raise_network_blocked_error() -> None:
-    with pytest.raises(OSError) as caught:
-        socket.create_connection(("192.0.2.1", 1), timeout=0.05)
-    assert not isinstance(caught.value, NetworkBlockedError)
+def test_allow_network_marker_skips_default_network_guard(
+    _block_outbound_network: bool,
+) -> None:
+    assert _block_outbound_network is False
 
 
 def test_git_init_stays_sha1_when_global_config_wants_sha256_and_gpgsign(

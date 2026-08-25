@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -41,12 +42,12 @@ def _isolate_git_config(monkeypatch: pytest.MonkeyPatch) -> None:
 def _block_outbound_network(
     request: pytest.FixtureRequest,
     monkeypatch: pytest.MonkeyPatch,
-) -> None:
+) -> Iterator[bool]:
     if request.node.get_closest_marker("allow_network"):
-        yield
+        yield False
         return
     install_network_guard(monkeypatch)
-    yield
+    yield True
 
 
 @pytest.fixture(scope="session", autouse=True)
