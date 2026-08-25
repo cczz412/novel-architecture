@@ -69,7 +69,7 @@
 | [TEMP/](../TEMP/) | 可重建的临时拼装（默认不进 Git） | 同上 |
 | [analysis_library/](../analysis_library/) | 语义分析轻量摘要和仓外指针 | 同上 |
 | [corpus-downloads/](../corpus-downloads/) | 指向本机正文库的仓内指针，正文不进 Git | [corpus-pointers.md](../references/corpus-pointers.md) |
-| [.cursor/](../.cursor/) | Cursor 窗口兼容规则 | [directory_map.md](indexes/directory_map.md) |
+| [.cursor/](../.cursor/) | Cursor 窗口兼容规则和 Cursor Agent Skill | [directory_map.md](indexes/directory_map.md) |
 | [.local/](../.local/) | 本机路径绑定，不进 Git | 同上 |
 | [.pytest_cache/](../.pytest_cache/) | pytest 自动缓存 | 同上 |
 | [.ruff_cache/](../.ruff_cache/) | Ruff 自动缓存 | 同上 |

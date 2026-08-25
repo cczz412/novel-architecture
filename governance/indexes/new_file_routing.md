@@ -38,6 +38,7 @@
 | 语义分析轻量结论 | `analysis_library/pilot_batch_01/summaries/**` | 只留便于快速阅读的候选摘要；需要原始输入、映射或重算证据时按同批仓外指针取件。 | `lightweight_semantic_analysis_index` |
 | 语义分析轻量验收摘要 | `analysis_library/pilot_batch_01/acceptance/<approved-lightweight-summary>` | 只保留读结论所需的验收报告、书级汇总和缺口清单；逐文件票据与复算材料留在仓外。 | `lightweight_semantic_analysis_index` |
 | 语义分析仓外指针 | `analysis_library/pilot_batch_01/EXTERNAL_POINTER.json` | 必须钉住外置对象、清单 SHA 和包内相对路径，不得把同盘完整包写成独立备份。 | `lightweight_semantic_analysis_index` |
+| Cursor Agent Skill | `.cursor/skills/<skill_id>/SKILL.md` | 仅供 Cursor 窗口在任务命中时读取；不能扩大业务授权，不替代 Codex 用户 Skill，也不写入 .agents/skills。 | `cursor_compatibility_configuration` |
 | 仓库专用 Agent Skill | `.agents/skills/<skill_id>/SKILL.md` | 仅在任务语义命中时读取；Skill 不能扩大业务授权。 | `repository_agent_skills` |
 | 未来 PR 身份模板 | `.github/PULL_REQUEST_TEMPLATE.md` | 只保存未来 PR 六字段身份模板；不回填历史 PR，也不保存业务真值或运行报告。 | `github_repository_metadata` |
 | 微调域当前实验指针 | `finetuning/CURRENT.json` | 只保存当前实验身份和必要机器引用，不保存训练进度或结论。 | `finetuning_control_plane` |
