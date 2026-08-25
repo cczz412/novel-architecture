@@ -20,18 +20,20 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
     timeout-minutes: 45
-    env:
-      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/pr-gate-venv
-      UV_CACHE_DIR: ${{ runner.temp }}/uv-cache
-      UV_PYTHON_INSTALL_DIR: ${{ runner.temp }}/uv-python
-      PR_GATE_RECEIPT_DIR: ${{ runner.temp }}/pr-test-gate
     steps:
       - name: 初始化门禁回执
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$PR_GATE_RECEIPT_DIR"
-          printf '%s\n' 'PR test gate job started.' > "$PR_GATE_RECEIPT_DIR/job-started.txt"
+          receipt_dir="$RUNNER_TEMP/pr-test-gate"
+          {
+            printf '%s\n' "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/pr-gate-venv"
+            printf '%s\n' "UV_CACHE_DIR=$RUNNER_TEMP/uv-cache"
+            printf '%s\n' "UV_PYTHON_INSTALL_DIR=$RUNNER_TEMP/uv-python"
+            printf '%s\n' "PR_GATE_RECEIPT_DIR=$receipt_dir"
+          } >> "$GITHUB_ENV"
+          mkdir -p "$receipt_dir"
+          printf '%s\n' 'PR test gate job started.' > "$receipt_dir/job-started.txt"
 
       - name: 检出 PR 的准确提交
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
