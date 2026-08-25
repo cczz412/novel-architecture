@@ -16,7 +16,7 @@ SPEC.loader.exec_module(MODULE)
 BRAND_NEW = (
     "tests/test_brand_new_regression.py::test_author_export_is_not_corrupted"
 )
-MAIN_SHA = "cec82789322613f04af20e8233cef97c419ab571"
+MAIN_SHA = "d251deca5975a85b6f4785bed9681eb7d6d3ee69"
 
 
 def _dump(path: Path, value: object) -> None:
@@ -79,7 +79,7 @@ def test_live_list_has_four_piece_seal_and_sorted_unique_ids() -> None:
     assert document["approval"]["status"] == "EFFECTIVE_ON_MERGE"
     assert document["predicate"] == MODULE.PASS_PREDICATE
     assert document["main_sha"] == MAIN_SHA
-    assert document["failure_count"] == 19 == len(ids)
+    assert document["failure_count"] == 18 == len(ids)
     assert ids == sorted(set(ids))
     assert document["payload_sha256"] == MODULE.payload_sha256(document)
     assert BRAND_NEW not in ids

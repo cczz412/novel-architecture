@@ -41,7 +41,7 @@ uv run --locked pytest tests/ -q
 | `tests/test_governance_index.py::GovernanceIndexTests::test_test_command_is_one_fixed_tests_only_command` | `GOVERNANCE_TEST_COMMAND_POLICY` | `GOVERNANCE／TEST_POLICY` | `YES` | `3/3` | 现行文档／治理派生页与历史固定测试命令字符串不一致。 |
 | `tests/test_provider_channel_configs.py::test_agent_plan_is_rejected_by_project_keychain_loader` | `PROVIDER_CHANNEL_CONFIG` | `CONFIG／PROVIDER` | `YES` | `3/3` | 云端缺本地 provider key-loader／外置环境文件，且部分配置词汇与测试期待存在既有漂移。 |
 | `tests/test_provider_channel_configs.py::test_ant_ling_channel_uses_exact_ling_3_flash_contract` | `PROVIDER_CHANNEL_CONFIG` | `CONFIG／PROVIDER` | `YES` | `3/3` | 云端缺本地 provider key-loader／外置环境文件，且部分配置词汇与测试期待存在既有漂移。 |
-| `tests/test_provider_channel_configs.py::test_longcat_channel_uses_external_key_pool_and_exact_model` | `PROVIDER_CHANNEL_CONFIG` | `CONFIG／PROVIDER` | `YES` | `3/3` | 云端缺本地 provider key-loader／外置环境文件，且部分配置词汇与测试期待存在既有漂移。 |
+| 已撤除供应商通道的历史配置测试（原测试随 #121 删除） | `PROVIDER_CHANNEL_CONFIG` | `CONFIG／PROVIDER` | `YES` | `3/3` | 这是当时 19 条历史失败中的一条；当前仓库不再保留对应配置、测试或入口。 |
 | `tests/test_provider_channel_configs.py::test_shared_keychain_loader_is_zero_call_and_names_all_providers` | `PROVIDER_CHANNEL_CONFIG` | `CONFIG／PROVIDER` | `YES` | `3/3` | 云端缺本地 provider key-loader／外置环境文件，且部分配置词汇与测试期待存在既有漂移。 |
 | `tests/test_provider_channel_configs.py::test_unknown_provider_is_rejected_before_any_keychain_read` | `PROVIDER_CHANNEL_CONFIG` | `CONFIG／PROVIDER` | `YES` | `3/3` | 云端缺本地 provider key-loader／外置环境文件，且部分配置词汇与测试期待存在既有漂移。 |
 | `tests/test_repository_layout.py::test_directory_registry_matches_schema_and_runtime_contract` | `REPOSITORY_LAYOUT_LOCAL_EVIDENCE` | `GOVERNANCE／LOCAL_ENV` | `YES` | `3/3` | 测试依赖本机报告、memory、gitignore 或目录现场；云端 exact-main 不具备这些本地对象。 |

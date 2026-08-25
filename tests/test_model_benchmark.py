@@ -213,28 +213,6 @@ def test_tencent_deepseek_v4_pro_uses_nested_medium_contract() -> None:
     assert diff["messages_byte_equal"] is True
 
 
-def test_longcat_thinking_profile_uses_only_official_parameters() -> None:
-    stage = benchmark.load_stage("neutral_extract_x01_ch0003_v3_t02")
-    provider, adapter, _ = benchmark.load_provider("longcat_platform")
-    profile = benchmark.resolve_profile(
-        adapter, "thinking_prompt_json", "LongCat-2.0", provider=provider
-    )
-
-    body, diff = benchmark.build_body(stage, provider, "LongCat-2.0", profile)
-
-    assert body["model"] == "LongCat-2.0"
-    assert body["temperature"] == 0.2
-    assert body["max_tokens"] == 32000
-    assert body["thinking"] == {"type": "enabled"}
-    assert "reasoning_effort" not in body
-    assert "response_format" not in body
-    assert "n" not in body
-    assert profile["single_sample_via_response_gate"] is True
-    assert diff["messages_byte_equal"] is True
-    assert diff["gold_or_answer_hits"] == []
-    assert profile["require_nonempty_reasoning_content"] is True
-
-
 def test_ant_ling_profile_uses_official_thinking_and_json_contract() -> None:
     stage = benchmark.load_stage("neutral_extract_x01_ch0003_v3_t02")
     provider, adapter, _ = benchmark.load_provider("ant_ling")
@@ -413,12 +391,6 @@ def test_list_only_exposes_verified_runnable_pairs() -> None:
         "minimax-m2.7",
     ]
 
-    longcat = options["providers"]["longcat_platform"]
-    assert longcat["runnable_pairs"] == [
-        {"model": "LongCat-2.0", "profile": "thinking_prompt_json"}
-    ]
-    assert longcat["registered_models_without_validated_profile"] == []
-
     ant_ling = options["providers"]["ant_ling"]
     assert ant_ling["runnable_pairs"] == [
         {"model": "Ling-3.0-flash", "profile": "ling_flash_thinking_json"}
@@ -508,48 +480,6 @@ def test_tencent_model_catalog_audit_rejects_receipt_tampering(
 
     with pytest.raises(benchmark.ZBatchError, match="不能由原始响应重建"):
         benchmark.audit_provider_model_catalog(tmp_path, provider, "hy3")
-
-
-def test_longcat_model_catalog_requires_exact_presence_without_status(
-    tmp_path: Path,
-) -> None:
-    provider, _, _ = benchmark.load_provider("longcat_platform")
-    requests = []
-
-    def opener(request, timeout):
-        requests.append(request)
-        assert timeout == 60
-        assert request.full_url == "https://api.longcat.chat/openai/v1/models"
-        return FakeResponse(
-            {
-                "object": "list",
-                "data": [
-                    {
-                        "id": "LongCat-2.0",
-                        "object": "model",
-                        "owned_by": "LongCat",
-                    }
-                ],
-            }
-        )
-
-    receipt = benchmark.verify_provider_model_catalog(
-        tmp_path,
-        provider,
-        "LongCat-2.0",
-        "catalog-test-key",
-        opener=opener,
-    )
-
-    assert len(requests) == 1
-    assert receipt is not None
-    assert receipt["status"] == "pass_exact_model_present"
-    assert receipt["selected_model"]["id"] == "LongCat-2.0"
-    assert "status" not in receipt["selected_model"]
-    audit = benchmark.audit_provider_model_catalog(
-        tmp_path, provider, "LongCat-2.0"
-    )
-    assert audit is not None
 
 
 def test_prepare_is_zero_call_repeatable_and_uses_fixed_layout(tmp_path: Path) -> None:

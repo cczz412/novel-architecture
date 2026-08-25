@@ -494,68 +494,6 @@
       "boundary": "机器回执记录 3 次真实调用，根 README 仍写 0 次；冲突未裁决前以回执作更强运行证据，但不改写旧说明。"
     },
     {
-      "artifact_id": "model-benchmark-longcat-r01-interrupted-s07ea-v1",
-      "root_id": "repository_sibling_external_archive_v1",
-      "relative_path": "model_benchmark_longcat_r01_interrupted_s07ea_20260731_v1",
-      "category": "external_archive_batch",
-      "status": "sealed",
-      "record_kind": "archive_batch",
-      "lifecycle": "frozen",
-      "consumer_closure": "verified",
-      "verification_level": "cryptographically_sealed",
-      "recoverability": "package_integrity_proven_same_failure_domain",
-      "externalization": "already_external",
-      "purpose_summary": "S-07-E-A 保存 LongCat r01 中断硬停轮在固定 Git 提交中的完整现场，共 28 个文件、550603 字节。",
-      "identity_anchors": [],
-      "manifest": {
-        "relative_path": "MANIFEST.json",
-        "sha256": "f20195d1684447eac8361af86d7b420c1333c35aa9bada7548e28957436b5a10",
-        "expected_entry_count": 28,
-        "entries_field": "files",
-        "entry_path_field": "path",
-        "entry_sha256_field": "sha256"
-      },
-      "keep_in_repository": [
-        "r01 的 benchmark.json、state.json、transport/hard_stop.json、transport/interruption_forensics.json、summary.md、总索引和本登记册指针"
-      ],
-      "externalize_later": [],
-      "consumers": [
-        "tools/external_payload_validator.py"
-      ],
-      "boundary": "完整副本来自固定提交 0550e45c9c4cafbda905e8d436f883d04c5e818b、目录 tree 130d9cda5b73041ab83453ca639d3eb8c1ae2a1b；28 个普通文件、550603 字节逐项验 SHA，并完成一次全量取回逐字节比对。原运行在尝试占用票后中止，回答数为 0，网络未知、用量未知且无质量分。S-07-E-B-A 把测试依赖的 8465 字节 neutral_extract.py 原字节复制到专用夹具并保持 SHA f567ebef481dc33775ba7974c09744d185d6b8fa2b7b5e947e0be89f145dd7a7；tests、tools、config 对 r01 目录的运行时消费者归零，夹具 README 只保留来源指针。S-07-E-B-B 从主仓移除 24 个已封存重件、547439 字节，保留 5 件轻量入口；同盘完整性不等于独立备份。"
-    },
-    {
-      "artifact_id": "model-benchmark-longcat-r03-interrupted-s07da-v1",
-      "root_id": "repository_sibling_external_archive_v1",
-      "relative_path": "model_benchmark_longcat_r03_interrupted_s07da_20260731_v1",
-      "category": "external_archive_batch",
-      "status": "sealed",
-      "record_kind": "archive_batch",
-      "lifecycle": "frozen",
-      "consumer_closure": "verified",
-      "verification_level": "cryptographically_sealed",
-      "recoverability": "package_integrity_proven_same_failure_domain",
-      "externalization": "already_external",
-      "purpose_summary": "S-07-D-A 保存 LongCat r03 中断硬停轮在固定 Git 提交中的完整现场，共 28 个文件、555559 字节。",
-      "identity_anchors": [],
-      "manifest": {
-        "relative_path": "MANIFEST.json",
-        "sha256": "6921fd3c28b3719846592cd076198685221ea48f279494d2b9026c86e945e68e",
-        "expected_entry_count": 28,
-        "entries_field": "files",
-        "entry_path_field": "path",
-        "entry_sha256_field": "sha256"
-      },
-      "keep_in_repository": [
-        "r03 的 benchmark.json、state.json、transport/hard_stop.json、transport/interruption_forensics.json、summary.md、总索引和本登记册指针"
-      ],
-      "externalize_later": [],
-      "consumers": [
-        "tools/external_payload_validator.py"
-      ],
-      "boundary": "完整副本来自固定提交 62d942e6cf05c7722826c1648436a2eb15708563、目录 tree 0b005bfed980cf0e30210d1690bdcb2d0be67bb7；28 个普通文件、555559 字节逐项验 SHA，并完成一次全量取回逐字节比对。原运行在尝试占用票后中止，回答数为 0，网络未知、用量未知且无质量分。S-07-D-B 核明 tests、tools、config 精确消费者为 0，从主仓移除 24 个已封存重件、552370 字节，保留 5 件轻量入口；同盘完整性不等于独立备份。"
-    },
-    {
       "artifact_id": "model-benchmark-qwen-r05-structured-scored-candidate-s07fa-v1",
       "root_id": "repository_sibling_external_archive_v1",
       "relative_path": "model_benchmark_qwen_r05_structured_scored_candidate_s07fa_20260731_v1",
