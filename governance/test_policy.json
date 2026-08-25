@@ -166,8 +166,94 @@
       "tests": [
         "tests/test_novel_mvp_planstore_handover.py",
         "tests/test_novel_mvp_planstore_r07.py",
-        "tests/test_novel_mvp_settingstore.py"
+        "tests/test_novel_mvp_settingstore.py",
+        "tests/test_novel_mvp_plan_milestone_content_contract.py",
+        "tests/test_novel_mvp_plan_longline_box_index_contract.py"
       ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp character ledger content files",
+      "pattern": "novel-mvp/contracts/CHARACTER_LEDGER_CONTENT.*",
+      "modules": ["M07", "M10"],
+      "tests": ["tests/test_novel_mvp_character_ledger_content_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp character ledger content validator",
+      "pattern": "novel-mvp/contracts/validate_character_ledger_content.py",
+      "modules": ["M07", "M10"],
+      "tests": ["tests/test_novel_mvp_character_ledger_content_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp character ledger content tests",
+      "pattern": "tests/test_novel_mvp_character_ledger_content_contract.py",
+      "modules": ["M07", "M10"],
+      "tests": ["tests/test_novel_mvp_character_ledger_content_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp fact causal edge contract",
+      "pattern": "novel-mvp/contracts/FACT_CAUSAL_EDGE.*",
+      "modules": ["M04"],
+      "tests": ["tests/test_novel_mvp_fact_causal_edge_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp fact causal edge validator",
+      "pattern": "novel-mvp/contracts/validate_fact_causal_edge.py",
+      "modules": ["M04"],
+      "tests": ["tests/test_novel_mvp_fact_causal_edge_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp fact causal edge tests",
+      "pattern": "tests/test_novel_mvp_fact_causal_edge_contract.py",
+      "modules": ["M04"],
+      "tests": ["tests/test_novel_mvp_fact_causal_edge_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp plan milestone content contract",
+      "pattern": "novel-mvp/contracts/PLAN_MILESTONE_CONTENT.*",
+      "modules": ["M08"],
+      "tests": ["tests/test_novel_mvp_plan_milestone_content_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp plan milestone content validator",
+      "pattern": "novel-mvp/contracts/validate_plan_milestone_content.py",
+      "modules": ["M08"],
+      "tests": ["tests/test_novel_mvp_plan_milestone_content_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp plan milestone content tests",
+      "pattern": "tests/test_novel_mvp_plan_milestone_content_contract.py",
+      "modules": ["M08"],
+      "tests": ["tests/test_novel_mvp_plan_milestone_content_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp plan longline box index contract",
+      "pattern": "novel-mvp/contracts/PLAN_LONGLINE_BOX_INDEX.*",
+      "modules": ["M08"],
+      "tests": ["tests/test_novel_mvp_plan_longline_box_index_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp plan longline box index validator",
+      "pattern": "novel-mvp/contracts/validate_plan_longline_box_index.py",
+      "modules": ["M08"],
+      "tests": ["tests/test_novel_mvp_plan_longline_box_index_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp plan longline box index tests",
+      "pattern": "tests/test_novel_mvp_plan_longline_box_index_contract.py",
+      "modules": ["M08"],
+      "tests": ["tests/test_novel_mvp_plan_longline_box_index_contract.py"],
       "full_chain": false
     },
     {

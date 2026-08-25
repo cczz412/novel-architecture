@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/PLAN_LONGLINE_BOX_INDEX.schema.json",
+  "title": "PLAN_LONGLINE_BOX_INDEX longline-box-index-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "box_id",
+    "title",
+    "status_light",
+    "next_milestone_ref",
+    "compiled_from_plan_rev",
+    "compiled_status"
+  ],
+  "properties": {
+    "contract": {
+      "const": "PLAN_LONGLINE_BOX_INDEX"
+    },
+    "version": {
+      "const": "longline-box-index-v1"
+    },
+    "box_id": {
+      "type": "string",
+      "pattern": "^BOX-[0-9]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status_light": {
+      "type": "string",
+      "enum": [
+        "未开工",
+        "进行中",
+        "已达成",
+        "已废弃"
+      ]
+    },
+    "next_milestone_ref": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^MS-[0-9]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "compiled_from_plan_rev": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "compiled_status": {
+      "type": "string",
+      "enum": [
+        "未开工",
+        "进行中",
+        "已达成",
+        "已废弃"
+      ]
+    }
+  }
+}

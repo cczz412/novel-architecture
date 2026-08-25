@@ -18,7 +18,7 @@ FIXTURE_PATH = CONTRACTS_DIR / "CHARACTER_LEDGER_CONTENT.fixtures.jsonl"
 ENVELOPE_VALIDATOR_PATH = CONTRACTS_DIR / "validate_ledger_entry_envelope.py"
 
 CONTRACT_NAME = "CHARACTER_LEDGER_CONTENT"
-CONTRACT_VERSION = "character-ledger-content-v1"
+CONTRACT_VERSION = "character-ledger-content-v1.1"
 ENVELOPE_KEYS = (
     "id",
     "source_identity",
@@ -224,7 +224,58 @@ def validate_record(
         if destiny_ids is not None and destiny_ref not in destiny_ids:
             raise ContractError(f"DESTINY_REF_NOT_FOUND:{destiny_ref}")
 
+    _validate_sequences(document)
+
     return document
+
+
+def _validate_sequences(document: dict[str, Any]) -> None:
+    character_id = document["id"]
+    desire_ids: set[str] = set()
+    for index, item in enumerate(document["desire_seq"]):
+        if item["subject_ref"] != character_id:
+            raise ContractError(f"SEQ_SUBJECT_MUST_MATCH_CHARACTER:desire_seq:{index}")
+        if item["id"] in desire_ids:
+            raise ContractError(f"SEQ_ID_DUPLICATE:{item['id']}")
+        desire_ids.add(item["id"])
+        if item["status"] == "达成" and not item["achieved_fact_ref"]:
+            raise ContractError(f"ACHIEVED_REQUIRES_FACT_REF:{index}")
+    for index, item in enumerate(document["desire_seq"]):
+        nxt = item["next_desire_ref"]
+        if nxt is None:
+            continue
+        if nxt == item["id"]:
+            raise ContractError(f"NEXT_DESIRE_SELF_FORBIDDEN:{index}")
+        if nxt not in desire_ids:
+            raise ContractError(f"NEXT_DESIRE_REF_NOT_FOUND:{nxt}")
+
+    ordeal_ids: set[str] = set()
+    for index, item in enumerate(document["ordeal_seq"]):
+        if item["subject_ref"] != character_id:
+            raise ContractError(f"SEQ_SUBJECT_MUST_MATCH_CHARACTER:ordeal_seq:{index}")
+        if item["id"] in ordeal_ids:
+            raise ContractError(f"SEQ_ID_DUPLICATE:{item['id']}")
+        ordeal_ids.add(item["id"])
+        if item["status"] == "解除" and not item["resolved_fact_ref"]:
+            raise ContractError(f"RESOLVED_REQUIRES_FACT_REF:{index}")
+
+    intent_ids: set[str] = set()
+    for index, item in enumerate(document["intent_seq"]):
+        if item["subject_ref"] != character_id:
+            raise ContractError(f"SEQ_SUBJECT_MUST_MATCH_CHARACTER:intent_seq:{index}")
+        if item["id"] in intent_ids:
+            raise ContractError(f"SEQ_ID_DUPLICATE:{item['id']}")
+        intent_ids.add(item["id"])
+        if item["status"] == "兑现" and not item["fulfilled_fact_ref"]:
+            raise ContractError(f"FULFILLED_REQUIRES_FACT_REF:{index}")
+
+    choice_ids: set[str] = set()
+    for index, item in enumerate(document["choice_seq"]):
+        if item["subject_ref"] != character_id:
+            raise ContractError(f"SEQ_SUBJECT_MUST_MATCH_CHARACTER:choice_seq:{index}")
+        if item["id"] in choice_ids:
+            raise ContractError(f"SEQ_ID_DUPLICATE:{item['id']}")
+        choice_ids.add(item["id"])
 
 
 def _exact_ref_match(left: dict[str, Any], right: dict[str, Any]) -> bool:

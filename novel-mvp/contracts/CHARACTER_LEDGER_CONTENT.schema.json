@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://local.novel-mvp/contracts/CHARACTER_LEDGER_CONTENT.schema.json",
-  "title": "CHARACTER_LEDGER_CONTENT character-ledger-content-v1",
-  "description": "Character definition card plus evidence-bound state and lightweight relationship read projections.",
+  "title": "CHARACTER_LEDGER_CONTENT character-ledger-content-v1.1",
+  "description": "Character definition card plus evidence-bound state, relationships, and four collapsible in-book sequences (desire/ordeal/intent/choice).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -24,14 +24,18 @@
     "visibility",
     "destiny_ref",
     "state_timeline",
-    "relationships"
+    "relationships",
+    "desire_seq",
+    "ordeal_seq",
+    "intent_seq",
+    "choice_seq"
   ],
   "properties": {
     "contract": {
       "const": "CHARACTER_LEDGER_CONTENT"
     },
     "version": {
-      "const": "character-ledger-content-v1"
+      "const": "character-ledger-content-v1.1"
     },
     "id": {
       "type": "string",
@@ -132,6 +136,30 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/relationship_entry"
+      }
+    },
+    "desire_seq": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/desire_entry"
+      }
+    },
+    "ordeal_seq": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ordeal_entry"
+      }
+    },
+    "intent_seq": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/intent_entry"
+      }
+    },
+    "choice_seq": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/choice_entry"
       }
     }
   },
@@ -292,6 +320,195 @@
         },
         "evidence_refs": {
           "$ref": "#/$defs/evidence_refs_nonempty"
+        }
+      }
+    },
+    "fact_ref": {
+      "type": "string",
+      "pattern": "^f[0-9]{3,}$"
+    },
+    "nullable_fact_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/fact_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "desire_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "subject_ref",
+        "content",
+        "status",
+        "source_fact_ref",
+        "achieved_fact_ref",
+        "next_desire_ref"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^DESIRE-[0-9]+$"
+        },
+        "subject_ref": {
+          "type": "string",
+          "pattern": "^CH-[0-9]+$"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "活跃",
+            "达成",
+            "放弃",
+            "转化"
+          ]
+        },
+        "source_fact_ref": {
+          "$ref": "#/$defs/fact_ref"
+        },
+        "achieved_fact_ref": {
+          "$ref": "#/$defs/nullable_fact_ref"
+        },
+        "next_desire_ref": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^DESIRE-[0-9]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ordeal_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "subject_ref",
+        "content",
+        "status",
+        "source_fact_ref",
+        "resolved_fact_ref"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^ORDEAL-[0-9]+$"
+        },
+        "subject_ref": {
+          "type": "string",
+          "pattern": "^CH-[0-9]+$"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "持续",
+            "恶化",
+            "解除"
+          ]
+        },
+        "source_fact_ref": {
+          "$ref": "#/$defs/fact_ref"
+        },
+        "resolved_fact_ref": {
+          "$ref": "#/$defs/nullable_fact_ref"
+        }
+      }
+    },
+    "intent_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "subject_ref",
+        "content",
+        "status",
+        "scope",
+        "source_fact_ref",
+        "fulfilled_fact_ref"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^INTENT-[0-9]+$"
+        },
+        "subject_ref": {
+          "type": "string",
+          "pattern": "^CH-[0-9]+$"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "未执行",
+            "执行中",
+            "兑现",
+            "落空",
+            "放弃"
+          ]
+        },
+        "scope": {
+          "const": "in_book_character"
+        },
+        "source_fact_ref": {
+          "$ref": "#/$defs/fact_ref"
+        },
+        "fulfilled_fact_ref": {
+          "$ref": "#/$defs/nullable_fact_ref"
+        }
+      }
+    },
+    "choice_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "subject_ref",
+        "faced",
+        "chosen",
+        "cost",
+        "source_fact_ref"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^CHOICE-[0-9]+$"
+        },
+        "subject_ref": {
+          "type": "string",
+          "pattern": "^CH-[0-9]+$"
+        },
+        "faced": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chosen": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cost": {
+          "type": "string"
+        },
+        "source_fact_ref": {
+          "$ref": "#/$defs/fact_ref"
         }
       }
     }
