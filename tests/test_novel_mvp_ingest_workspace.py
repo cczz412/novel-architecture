@@ -551,6 +551,7 @@ def test_list_declarations_survive_restart_and_repeat_same_chapter_handling(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
+    monkeypatch.setattr(store, "_now", lambda: "2030-01-01 00:00:01")
     result, raw = _m1_result(tmp_path, monkeypatch, "list-declarations")
     runtime_root = tmp_path / "runtime-list-declarations"
     workspace = WorkspaceRouter(runtime_root).create_project(
@@ -573,9 +574,22 @@ def test_list_declarations_survive_restart_and_repeat_same_chapter_handling(
     assert len(loaded) == 1
     assert loaded[0].raw_bytes == raw
     assert loaded[0].declarations == expected_declarations
+    monkeypatch.setattr(store, "_now", lambda: "2030-01-01 00:00:03")
     store.init_project("m1-rehydrated-list")
     repeated = ingest.ingest_uploads("m1-rehydrated-list", loaded)
-    assert repeated["chapters"] == result["chapters"]
+    assert [chapter["added_at"] for chapter in result["chapters"]] == [
+        "2030-01-01 00:00:01"
+    ]
+    assert [chapter["added_at"] for chapter in repeated["chapters"]] == [
+        "2030-01-01 00:00:03"
+    ]
+    assert [
+        {key: value for key, value in chapter.items() if key != "added_at"}
+        for chapter in repeated["chapters"]
+    ] == [
+        {key: value for key, value in chapter.items() if key != "added_at"}
+        for chapter in result["chapters"]
+    ]
     assert repeated["material_units"][0]["identity_revisions"][-1]["role"] == (
         "CHAPTER"
     )
