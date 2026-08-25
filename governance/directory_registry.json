@@ -716,7 +716,10 @@
       "evidence_refs": [
         "AGENTS.md",
         ".cursor/rules/chinese-voice.mdc",
-        ".cursor/skills/external-handoff/SKILL.md"
+        ".cursor/skills/external-handoff/SKILL.md",
+        ".cursor/skills/aux-crew/SKILL.md",
+        ".cursor/skills/composer-team/SKILL.md",
+        ".cursor/skills/scout-check/SKILL.md"
       ],
       "externalization": "prohibited",
       "git_policy": "tracked",
