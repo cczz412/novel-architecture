@@ -23,7 +23,7 @@
 | `TEMP` | `temporary_assembly` | `temporary` | `derived` | `default_excluded` | `mutable` | `ignored` | 只收可重建的临时拼装、预演和机器票；不能提升成长期真源。 |
 | `analysis_library` | `lightweight_semantic_analysis_index` | `source` | `candidate` | `source_only` | `candidate` | `mixed` | 仓内只收能快速判断用途和结论的轻量摘要、验收摘要与仓外指针；原始 ZIP、解包内容、映射和重算证据必须进入已登记外置对象，不能重新塞回 Git。 |
 | `corpus-downloads` | `active_corpus_pointer` | `source` | `current` | `source_only` | `local_active` | `tracked_pointer` | 只保留指向 .local/corpus-downloads 的仓库内指针，不把正文复制进仓。 |
-| `.cursor` | `cursor_compatibility_configuration` | `configuration` | `current` | `default_excluded` | `mutable` | `tracked` | 只收 Cursor 窗口兼容规则；Codex 团队不读取这里决定角色或模型。 |
+| `.cursor` | `cursor_compatibility_configuration` | `configuration` | `current` | `default_excluded` | `mutable` | `tracked` | 只收 Cursor 窗口兼容规则和 Cursor Agent Skill；Codex 团队不读取这里决定角色或模型，也不把这里当 Codex Skill 真源。 |
 | `.local` | `local_machine_bindings` | `local_dependency` | `local_only` | `default_excluded` | `local_active` | `ignored` | 只收本机路径绑定和不进 Git 的本地依赖，不存可移植真源。 |
 | `.pytest_cache` | `local_pytest_cache` | `local_dependency` | `local_only` | `default_excluded` | `local_active` | `ignored` | 只由 pytest 自动生成，不存项目材料。 |
 | `.ruff_cache` | `local_ruff_cache` | `local_dependency` | `local_only` | `default_excluded` | `local_active` | `ignored` | 只由 Ruff 自动生成，不存项目材料。 |

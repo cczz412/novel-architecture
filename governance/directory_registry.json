@@ -699,7 +699,14 @@
       "path_kind": "symlink"
     },
     {
-      "accepted_content": [],
+      "accepted_content": [
+        {
+          "object_id": "cursor_agent_skill",
+          "label": "Cursor Agent Skill",
+          "target_pattern": ".cursor/skills/<skill_id>/SKILL.md",
+          "rule": "仅供 Cursor 窗口在任务命中时读取；不能扩大业务授权，不替代 Codex 用户 Skill，也不写入 .agents/skills。"
+        }
+      ],
       "category": "configuration",
       "consumers": [
         "Cursor"
@@ -708,7 +715,8 @@
       "directory_id": "DIR-CURSOR",
       "evidence_refs": [
         "AGENTS.md",
-        ".cursor/rules/chinese-voice.mdc"
+        ".cursor/rules/chinese-voice.mdc",
+        ".cursor/skills/external-handoff/SKILL.md"
       ],
       "externalization": "prohibited",
       "git_policy": "tracked",
@@ -716,7 +724,7 @@
       "inherit_to_children": false,
       "lifecycle": "mutable",
       "load_policy": "default_excluded",
-      "new_content_rule": "只收 Cursor 窗口兼容规则；Codex 团队不读取这里决定角色或模型。",
+      "new_content_rule": "只收 Cursor 窗口兼容规则和 Cursor Agent Skill；Codex 团队不读取这里决定角色或模型，也不把这里当 Codex Skill 真源。",
       "open_decisions": [],
       "path": ".cursor",
       "path_kind": "directory"
