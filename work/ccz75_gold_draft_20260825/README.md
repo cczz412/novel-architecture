@@ -2,28 +2,32 @@
 
 身份：**草稿／候选**。不是金标 v1.0。不要合并进 `main`，本票也不标 Done。
 
-Linear：[CCZ-75](https://linear.app/ccz/issue/CCZ-75/评测前置-b脱敏样章第一份金标答卷)。规程：票面评论 `184e7df0`。CZ 已点名推荐章；停点二＝删改后表态批准，才能冻结。
+Linear：[CCZ-75](https://linear.app/ccz/issue/CCZ-75/评测前置-b脱敏样章第一份金标答卷)。规程：`184e7df0`。处置清单：`5bb2bd97`。等 CZ 复审 13 条闭环后说「冻」，才升 v1.0。
 
 本夹按目录账放在 `work/`：评测题集正式落点还没拍，草稿不能冒充正式题集。
+
+**评测只发 [EXAM_STEM.md](EXAM_STEM.md)。** 其余三份（答卷、来源指针、已处置对照表）是审计材料，不随题面发给考生。
 
 ## 人读从哪看
 
 | 文件 | 干什么 |
 |---|---|
-| [EXAM_STEM.md](EXAM_STEM.md) | 题面：P3 背景卡＋脱敏章节。不含原书人名 |
-| [GOLD_ANSWER.md](GOLD_ANSWER.md) | 答卷候选＋判分。用脱敏名 |
-| [SOURCE_POINTERS.md](SOURCE_POINTERS.md) | 原文路径和 SHA，不含正文 |
-| [KNOWN_ISSUES.md](KNOWN_ISSUES.md) | 红队已打穿、上传前未改的洞。审的时候对着看 |
+| [EXAM_STEM.md](EXAM_STEM.md) | 题面：P3 背景卡＋脱敏章节。评测只发这份 |
+| [GOLD_ANSWER.md](GOLD_ANSWER.md) | 答卷候选＋判分。审计材料 |
+| [SOURCE_POINTERS.md](SOURCE_POINTERS.md) | 原文路径和 SHA，不含正文。审计材料 |
+| [KNOWN_ISSUES.md](KNOWN_ISSUES.md) | 13 条已处置对照表。审计材料 |
 
-人名／专名替换表只留本机，不进 Git、不贴 Linear。原文没进仓。
+人名／专名替换表只留本机，不进 Git、不贴 Linear。原文没进仓。章前落位切片只留本机。
 
-SHA-256（与本机交件一致）：
+SHA-256：
 
-- 题面 `824bb358a489088034c259917b70eae697398456061091ed99a523afb70843e7`
-- 答卷 `a91e65295cc1f5bdb1bac8d6eee0b970160a983b93f1992f4b7fd26283dc54eb`
+- 题面 `216a8d86e7b4ad6c42d0518ada89dcf5016ccf0d4fc100de2ad6fdc97d32db64`
+- 答卷 `041ab8356eb59d6bf5d4e2ae48cabe042d36e3d80d2f2365674096126354fa9d`
+- 章前切片（本机，ch01–11） `3b85e211e41bc6318c149b8ab7358868e2cce9832e25a4048ac03ddbdd727c99`
 
 ## 口径
 
-- 落位真源：本机 CCZ-103 表（zip SHA-256 `f5af01620cf3f03ed01330d70ca2efd8e9a84687ebb1879f4567f76ea308ba29`）
+- 判分唯一真源：CCZ-103 冻结落位表（zip SHA-256 `f5af01620cf3f03ed01330d70ca2efd8e9a84687ebb1879f4567f76ea308ba29`）
+- 兑现＝计划动词短语的结果已发生；目的从句不参与判定
 - 人物账对外用 A4 后正式名：渴望／困境／计划／抉择序列
-- 因果边合同：只收已发生事实两端，不与知情边混
+- 因果边：`CE-` 只收已发生事实两端；果在知情用 `KE-`
