@@ -22,7 +22,7 @@ Linear：[CCZ-75](https://linear.app/ccz/issue/CCZ-75/评测前置-b脱敏样章
 SHA-256：
 
 - 题面 `216a8d86e7b4ad6c42d0518ada89dcf5016ccf0d4fc100de2ad6fdc97d32db64`
-- 答卷 `041ab8356eb59d6bf5d4e2ae48cabe042d36e3d80d2f2365674096126354fa9d`
+- 答卷 `65b990624471277bbec16628a893fbcdaff2faab95645f94dfd31c288fd2f10f`
 - 章前切片（本机，ch01–11） `3b85e211e41bc6318c149b8ab7358868e2cce9832e25a4048ac03ddbdd727c99`
 
 ## 口径

@@ -18,6 +18,6 @@
 | 因果边 | GitHub `main` `novel-mvp/contracts/FACT_CAUSAL_EDGE.md` |
 | P3 形状 | GitHub `main` `references/novel_fact_extraction_contract_v2.md` ＋ `config/context_recipes/novel_fact_p3_context_card_v1.schema.json` |
 | 题面 SHA-256 | `216a8d86e7b4ad6c42d0518ada89dcf5016ccf0d4fc100de2ad6fdc97d32db64`（`EXAM_STEM.md`） |
-| 答卷 SHA-256 | `041ab8356eb59d6bf5d4e2ae48cabe042d36e3d80d2f2365674096126354fa9d`（`GOLD_ANSWER.md`） |
+| 答卷 SHA-256 | `65b990624471277bbec16628a893fbcdaff2faab95645f94dfd31c288fd2f10f`（`GOLD_ANSWER.md`） |
 
 16 个旧书 CSV（凡人／知否／诡秘／无限 × 落位／章末／抉择／因果）本轮未改。
