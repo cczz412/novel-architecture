@@ -716,6 +716,7 @@
       "evidence_refs": [
         "AGENTS.md",
         ".cursor/rules/chinese-voice.mdc",
+        ".cursor/rules/clickable-local-links.mdc",
         ".cursor/skills/external-handoff/SKILL.md",
         ".cursor/skills/cheap-helpers/SKILL.md",
         ".cursor/rules/cheap-helpers-latch.mdc",
