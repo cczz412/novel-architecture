@@ -1,13 +1,13 @@
 # 题面｜样章A·第12章（脱敏）
 
-身份：评测题面候选。不含原书人名。P3 卡只用第 12 章**之前**已核对材料，不把本章揭晓写进卡。
+身份：金标 v1.0 评测题面。不含原书人名。P3 卡只用第 12 章**之前**已核对材料，不把本章揭晓写进卡。
 
 ## P3 背景卡
 
 ```json
 {
   "schema_version": "novel-fact-p3-context-card-v1",
-  "sample_id": "ccz75-gold-ch12-v0",
+  "sample_id": "ccz75-gold-ch12-v1.0",
   "source_file": "EXAM_STEM.md",
   "story_type": {
     "status": "confirmed",
