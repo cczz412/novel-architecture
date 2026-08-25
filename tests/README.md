@@ -23,6 +23,41 @@ cd "$(git rev-parse --show-toplevel)" && uv run --locked pytest -q
 - 哪些回放测试依赖本机证据、干净副本为何跳过：`tests/local_evidence_registry.json`
 - 模块是否可免重验：`governance/module_registry.json`
 
+## PR 基础门禁会留下什么
+
+`.github/workflows/pr-gate.yml` 在非草稿 PR 打开、更新、重开或转为可审查时运行。
+它只读 PR 的 base／head 提交和 Git diff，不读取 API Key、macOS Keychain 或本机小说正文。
+
+门禁启动后会先建立 `job-started.txt`。进入规划阶段后，它会把当时已经产生的证据放进
+`pr-test-gate-*` GitHub Actions 工件；中途失败也上传已有回执，不会假装后续文件已经生成：
+
+- `selection-input.json`：这次实际看到了哪些变更路径；
+- `test-plan.json`：每条路径命中了什么规则、为什么定向或升级全量；
+- `execution-result.json` 和 `logs/`：每一步的结构化参数、退出码和完整日志。
+
+普通改动运行登记的定向测试；未知路径、测试政策、影响规划器或门禁工作流自身的改动
+会升级到便携全量。所有 Python、pytest 和 Ruff 步骤都从仓库根通过 `uv run --locked`
+运行。结构化参数直接交给进程，不用 `eval`，PR 文件名不能变成另一条 shell 命令。
+已经删除的 Python 路径仍参与影响判断，但不会再交给 Ruff；重命名只检查新路径。
+
+测试政策和影响规划器另有一层不依赖路径规则的硬检查，不能通过修改政策把自己降成
+定向测试。门禁工作流自身的正常改动也会按规则要求全量，但工作流不能阻止同一个 PR
+删除或削弱自己；当前私有仓库又没有可用的必需检查或规则集，所以这类改动仍须人工审查，
+不能写成已经被机器强制拦住。
+
+门禁不会把 `main` 已有失败自动改成绿灯，也不会顺手改“批准失败清单”。只要本次选中的
+测试仍有失败，PR 就保持红灯；选择、计划和运行日志用来区分旧失败与这次新增的问题。
+
+下载门禁工件后，可以用同一份输入重新生成计划：
+
+```bash
+uv run --locked python tools/test_impact.py \
+  --spec <门禁工件目录>/selection-input.json \
+  --output <复核目录>/test-plan.json
+```
+
+这条 PR 门禁不代替后续的 `main` 全量、macOS、本机材料或历史回放专线。
+
 ## 固定历史程序夹具怎么用
 
 `tests/fixtures/z57_frozen_neutral_extract_20260723/` 只保存 Z57 旧合同回放需要的一份

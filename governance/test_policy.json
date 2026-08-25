@@ -293,11 +293,29 @@
       "full_chain": false
     },
     {
+      "name": "PR 基础门禁工作流",
+      "pattern": ".github/workflows/pr-gate.yml",
+      "modules": ["M11"],
+      "tests": ["tests/test_test_impact.py"],
+      "full_chain": true
+    },
+    {
       "name": "测试影响规划器",
       "pattern": "tools/test_impact.py",
       "modules": ["M11"],
       "tests": ["tests/test_test_impact.py"],
-      "full_chain": false
+      "full_chain": true
+    },
+    {
+      "name": "测试纪律本体",
+      "pattern": "governance/test_policy.json",
+      "modules": ["M11"],
+      "tests": [
+        "tests/test_test_impact.py",
+        "tests/test_test_debt_policy.py",
+        "tests/test_local_evidence_boundary.py"
+      ],
+      "full_chain": true
     },
     {
       "name": "目录身份与新文件落点",

@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import fnmatch
 import json
+import shlex
 import sys
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable, Mapping
@@ -25,10 +26,40 @@ PLAN_CONTRACT = "pipeline-test-plan-v1"
 PORTABLE_FULL_CHAIN_COMMAND = (
     'cd "$(git rev-parse --show-toplevel)" && uv run --locked pytest -q'
 )
+LOCKED_COMMAND_PREFIX = ["uv", "run", "--locked"]
+PORTABLE_FULL_CHAIN_ARGV = [*LOCKED_COMMAND_PREFIX, "pytest", "-q"]
+NON_DOWNGRADABLE_PLANNER_PATHS = frozenset(
+    {
+        "governance/test_policy.json",
+        "tools/test_impact.py",
+    }
+)
 
 
 class TestImpactError(RuntimeError):
     """变更说明或测试纪律无法安全判定。"""
+
+
+def _locked_command_argv(command: str, label: str) -> list[str]:
+    try:
+        argv = shlex.split(command)
+    except ValueError as exc:
+        raise TestImpactError(f"{label} 不是有效命令") from exc
+    if argv[:3] != LOCKED_COMMAND_PREFIX:
+        raise TestImpactError(f"{label} 必须以 uv run --locked 开头")
+    if any(value in {"&&", "||", ";", "|", ">", "<"} for value in argv):
+        raise TestImpactError(f"{label} 不能包含 shell 控制符")
+    return argv
+
+
+def _execution_step(step_id: str, argv: list[str]) -> dict[str, Any]:
+    if argv[:3] != LOCKED_COMMAND_PREFIX:
+        raise TestImpactError(f"执行步骤 {step_id} 绕开了 uv run --locked")
+    return {
+        "step_id": step_id,
+        "argv": list(argv),
+        "cwd": "repo_root",
+    }
 
 
 def _mapping(value: Any, label: str) -> dict[str, Any]:
@@ -62,6 +93,13 @@ def load_policy(path: Path = DEFAULT_POLICY) -> dict[str, Any]:
         )
     if not _list(raw.get("path_rules"), "path_rules"):
         raise TestImpactError("测试纪律缺 path_rules")
+    lint_argv = _locked_command_argv(str(raw.get("lint_command", "")), "lint_command")
+    if lint_argv != [*LOCKED_COMMAND_PREFIX, "ruff", "check"]:
+        raise TestImpactError("lint_command 必须固定为 uv run --locked ruff check")
+    for index, command in enumerate(
+        _list(raw.get("documentation_commands"), "documentation_commands"), start=1
+    ):
+        _locked_command_argv(str(command), f"documentation_commands[{index}]")
     return raw
 
 
@@ -99,15 +137,39 @@ def build_plan(
     change_id = str(spec.get("change_id") or "").strip()
     if not change_id:
         raise TestImpactError("change_id 不能为空")
-    paths = sorted(set(_normalize_path(value) for value in _list(spec.get("changed_paths"), "changed_paths")))
+    paths = sorted(
+        set(
+            _normalize_path(value)
+            for value in _list(spec.get("changed_paths"), "changed_paths")
+        )
+    )
     if not paths:
         raise TestImpactError("changed_paths 不能为空")
+    if "head_paths" in spec:
+        head_paths = sorted(
+            set(
+                _normalize_path(value)
+                for value in _list(spec.get("head_paths"), "head_paths")
+            )
+        )
+        paths_not_in_change = sorted(set(head_paths) - set(paths))
+        if paths_not_in_change:
+            raise TestImpactError(
+                "head_paths 只能放本次变更后仍存在的路径："
+                + ", ".join(paths_not_in_change)
+            )
+    else:
+        # 旧版变更说明没有文件状态；保持原有行为。PR 门禁会显式传 head_paths，
+        # 因而能把删除路径留在影响判断里，同时不把它交给 Ruff。
+        head_paths = list(paths)
     active_policy = dict(policy or load_policy())
     active_registry = dict(registry or _mapping(read_json(DEFAULT_REGISTRY), "module_registry"))
     flags = {str(value) for value in _list(spec.get("flags", []), "flags")}
     contract_changes = _list(spec.get("contract_changes", []), "contract_changes")
 
     full_reasons: list[str] = []
+    for path in sorted(set(paths).intersection(NON_DOWNGRADABLE_PLANNER_PATHS)):
+        full_reasons.append(f"{path} 属于不可降级的选测核心文件")
     configured_full_flags = set(str(value) for value in active_policy["full_chain_flags"])
     for flag in sorted(flags.intersection(configured_full_flags)):
         full_reasons.append(f"命中全链触发旗标：{flag}")
@@ -151,21 +213,36 @@ def build_plan(
         selected_tests.update(active_policy.get("module_tests", {}).get(module_id, []))
 
     full_chain = bool(full_reasons)
-    python_paths = [path for path in paths if path.endswith(".py")]
-    lint_command = str(active_policy["lint_command"])
+    python_paths = [path for path in head_paths if path.endswith(".py")]
+    lint_argv = _locked_command_argv(
+        str(active_policy["lint_command"]), "lint_command"
+    )
     if python_paths:
-        lint_command = f"{lint_command} {' '.join(python_paths)}"
+        lint_argv.extend(["--", *python_paths])
+        lint_command = shlex.join(lint_argv)
     else:
         lint_command = ""
+        lint_argv = []
     if full_chain:
         scope = "full_chain"
         commands = [str(active_policy["full_chain_command"])]
+        execution_steps = [
+            _execution_step("pytest-full", PORTABLE_FULL_CHAIN_ARGV)
+        ]
         if lint_command:
             commands.append(lint_command)
+            execution_steps.append(_execution_step("ruff", lint_argv))
         exempt: list[str] = []
     elif docs_only:
         scope = "documentation_only"
         commands = [str(value) for value in active_policy["documentation_commands"]]
+        execution_steps = [
+            _execution_step(
+                f"documentation-{index}",
+                _locked_command_argv(command, f"documentation_commands[{index}]"),
+            )
+            for index, command in enumerate(commands, start=1)
+        ]
         exempt = sorted(available)
     else:
         scope = "targeted"
@@ -174,14 +251,25 @@ def build_plan(
             scope = "full_chain"
             full_reasons.append("局部变更没有登记测试，无法证明安全范围")
             commands = [str(active_policy["full_chain_command"])]
+            execution_steps = [
+                _execution_step("pytest-full", PORTABLE_FULL_CHAIN_ARGV)
+            ]
             if lint_command:
                 commands.append(lint_command)
+                execution_steps.append(_execution_step("ruff", lint_argv))
             exempt = []
         else:
-            test_paths = " ".join(sorted(selected_tests))
-            commands = [f"PYTHONPATH=. pytest -q {test_paths}"]
+            pytest_argv = [
+                *LOCKED_COMMAND_PREFIX,
+                "pytest",
+                "-q",
+                *sorted(selected_tests),
+            ]
+            commands = [shlex.join(pytest_argv)]
+            execution_steps = [_execution_step("pytest-targeted", pytest_argv)]
             if lint_command:
                 commands.append(lint_command)
+                execution_steps.append(_execution_step("ruff", lint_argv))
             exempt = sorted(available - affected - downstream)
 
     return {
@@ -190,6 +278,8 @@ def build_plan(
         "scope": scope,
         "full_chain": full_chain,
         "changed_paths": paths,
+        "head_paths": head_paths,
+        "linted_python_paths": python_paths,
         "matched_paths": matched_paths,
         "unknown_paths": unknown,
         "affected_modules": sorted(affected),
@@ -197,6 +287,7 @@ def build_plan(
         "exempt_available_modules": exempt,
         "selected_tests": sorted(selected_tests),
         "commands": commands,
+        "execution_steps": execution_steps,
         "full_chain_reasons": full_reasons,
         "discipline": {
             "available_unchanged_contract": "局部验票后免全链重验",
