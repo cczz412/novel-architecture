@@ -14,13 +14,14 @@ Notion 工程镜像制度已取消，本地镜像也取消。Notion 旧监督页
 
 1. 本页 [`governance/START_HERE.md`](START_HERE.md)
 2. 三边怎么分工：[GitHub / Linear / Slack 协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)（正式施工仍以 GitHub Issues 为准；规划／过程票见 Linear；短通知进 Slack #施工）
-3. 整体看任务：先读 Linear 的[建票、拆票与依赖规则](https://linear.app/ccz/document/00agent-必读linear-建票拆票与依赖规则codex-aea4df7ecca6)，再看项目最新 Update 和 [CCZ-77 路线入口](https://linear.app/ccz/issue/CCZ-77)；推荐用 `$linear-github-task-map` 输出图和表。
-4. 工程施工：[GitHub Issues](https://github.com/cczz412/novel-architecture/issues) 与 [Pull requests](https://github.com/cczz412/novel-architecture/pulls)。
-5. 仓库寻路：[`current.md`](../current.md) 与 [`governance/INDEX.md`](INDEX.md)。
-6. 只有现有工具需要旧技术控制字段时，才读带日期的 [`governance/CURRENT_STATE.json`](CURRENT_STATE.json)；它不回答领票、并行线或最新阻塞。
-7. 找当前版本、路径和候选身份：[`governance/current_pointers.json`](current_pointers.json)。
-8. 找目录职责／「要加 X 去哪」：[ARCHITECTURE_MAP.md](ARCHITECTURE_MAP.md)。
-9. 写任何给人读的中文之前：[中文语感对齐](chinese_language_style_alignment.md)（去 AI 腔、不啯嗦，全 Agent 通用）。
+3. 建票／拆票／依赖：[Agent 必读：建票、拆票与依赖规则](agent_ticket_rules.md)（R1–R5；查依赖先读 [CCZ-77](https://linear.app/ccz/issue/CCZ-77)）
+4. 整体看任务：先读 Linear 的[建票、拆票与依赖规则](https://linear.app/ccz/document/00agent-必读linear-建票拆票与依赖规则codex-aea4df7ecca6)，再看项目最新 Update 和 [CCZ-77 路线入口](https://linear.app/ccz/issue/CCZ-77)；推荐用 `$linear-github-task-map` 输出图和表。
+5. 工程施工：[GitHub Issues](https://github.com/cczz412/novel-architecture/issues) 与 [Pull requests](https://github.com/cczz412/novel-architecture/pulls)。
+6. 仓库寻路：[`current.md`](../current.md) 与 [`governance/INDEX.md`](INDEX.md)。
+7. 只有现有工具需要旧技术控制字段时，才读带日期的 [`governance/CURRENT_STATE.json`](CURRENT_STATE.json)；它不回答领票、并行线或最新阻塞。
+8. 找当前版本、路径和候选身份：[`governance/current_pointers.json`](current_pointers.json)。
+9. 找目录职责／「要加 X 去哪」：[ARCHITECTURE_MAP.md](ARCHITECTURE_MAP.md)。
+10. 写任何给人读的中文之前：[中文语感对齐](chinese_language_style_alignment.md)（去 AI 腔、不啯嗦，全 Agent 通用）。
 
 版本、路径、候选身份仍只认 [`governance/current_pointers.json`](current_pointers.json)。产品语义仍回共同背景板 R14，不在本页重写。整体任务图不得从仓库旧快照复原。
 
@@ -40,6 +41,7 @@ Notion 工程镜像制度已取消，本地镜像也取消。Notion 旧监督页
 
 - **工单即合同。** 写集之外不许动；禁区按票面执行。
 - **一张票一条分支一个 PR**，等人检查再合并。不直写 `main`。
+- **拍板要三要素。** `needs-cz` 不得自拍；落账必须带拍板人＋时间＋出处，见 [agent_ticket_rules.md](agent_ticket_rules.md) R1。
 - **上报 ≠ 开工。** 侦察票、父票、广播票都不能当施工许可。
 - **回执要可复核：** 命令＋输出＋SHA。嘴上说绿不算。
 - **派工不固定指派。** CZ 人肉外派。文档和工单里不得写死派给哪一家窗口。

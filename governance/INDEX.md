@@ -8,7 +8,7 @@
 |---|---|---|
 | 整体任务、主支线、领票、父子、硬前置、阻塞、并行线 | [Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)，推荐 `$linear-github-task-map` | 必须现场读取，不从仓库静态页复原 |
 | 工程施工、PR、检查、合并 | [GitHub](https://github.com/cczz412/novel-architecture) | GitHub 是工程线真值 |
-| 上工规矩 | [START_HERE](START_HERE.md) 与 [三边协作约定](COLLAB_GITHUB_LINEAR_SLACK.md) | CZ 最新明确指令仍优先 |
+| 上工规矩 | [START_HERE](START_HERE.md)、[Agent 必读：建票、拆票与依赖规则](agent_ticket_rules.md)与[三边协作约定](COLLAB_GITHUB_LINEAR_SLACK.md) | CZ 最新明确指令仍优先 |
 | 版本、路径、候选身份 | [current pointers](current_pointers.json) | 不保存领票、依赖或运行成绩 |
 | 技术兼容／控制字段 | [CURRENT_STATE](CURRENT_STATE.json) | 带日期快照，不是全局任务地图 |
 | 金标入口 | 正式金标共 6 个入口：X01 第3章 **v1.2**＋五本 v1.3；统一登记 `config/gold/formal_gold_registry.json` | 只认正式登记，不从文件名猜 |
@@ -25,6 +25,7 @@
 
 ## 快速入口
 
+- [Agent 必读：建票、拆票与依赖规则](agent_ticket_rules.md)
 - [技术兼容／控制快照](CURRENT_STATE.json)
 - [当前版本、路径和候选身份](current_pointers.json)
 - [实验路线状态](route_registry.json)
