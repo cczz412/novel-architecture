@@ -43,7 +43,7 @@
 | 跑本机证据或历史测试 | `governance/test_policy.json` | `tests/local_evidence_registry.json`／`config/test_replay/historical_replays.json` |
 | 做 Repo Bridge 交接／外审 | `experiments/repo_bridge_v1_prototype_20260807/README.md` | 当前任务的 handoff／review 包 |
 | 做 ChatGPT 外发包 | `config/review_pack/README.md` | `config/review_pack/routes.json` |
-| Cursor 窗口 Skill（团队／审计员团／探路／外发） | `.cursor/skills/` | 外发打包仍回 `config/review_pack/README.md` |
+| Cursor 窗口 Skill（团队／便宜助手／探路／外发） | `.cursor/skills/` | 外发打包仍回 `config/review_pack/README.md` |
 | 看当前执行状态 | `governance/CURRENT_STATE.json#current_execution` | 对应正式结果票 |
 | 决定新文件放哪 | `governance/indexes/new_file_routing.md` | `governance/directory_registry.json` |
 
