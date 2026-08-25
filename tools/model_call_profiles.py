@@ -35,6 +35,8 @@ CONTEXT_RECIPE_SCHEMA_PATH = ROOT / "config/context_recipes/context_recipe.schem
 
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 SAFE_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{0,119}$")
+ASCII_CONTROL_PATTERN = re.compile(r"[\x00-\x1f\x7f]")
+MAX_REGISTERED_FILE_BYTES = 5 * 1024 * 1024
 REFERENCE_KEYS = {"path", "sha256"}
 MATERIALIZE_ITEM_KEYS = {"destination", "role", "sha256", "source"}
 RULE_BUNDLE_ROW_KEYS = {
@@ -56,6 +58,12 @@ REGISTRY_KEYS = {
     "rule_bundles",
     "schema_version",
     "status",
+}
+FROZEN_PREFERRED_PROFILES_V1 = {
+    "qwen3.7-flash": "qianwen_qwen3_7_flash_thinking_prompt_json",
+    "deepseek-v4-flash": "agent_plan_deepseek_v4_flash_high_json_object",
+    "deepseek-v4-pro": "agent_plan_deepseek_v4_pro_high_json_object",
+    "minimax-m3": "agent_plan_minimax_m3_thinking_json_object",
 }
 MATERIALIZE_DESTINATION_ROOTS = dict(_SHARED_DESTINATION_ROOTS)
 RESOLVED_CAPABILITY_LIMITS = {
@@ -185,6 +193,10 @@ def _fixed_validation_schema_paths() -> dict[str, Path]:
         "profile": PROFILE_SCHEMA_PATH,
         "prompt_manifest": PROMPT_MANIFEST_SCHEMA_PATH,
     }
+
+
+def _provider_access_policy_path() -> Path:
+    return ROOT / "config/providers/provider_access_policy.json"
 
 
 RULE_BUNDLE_ROW_SCHEMA: dict[str, Any] = {
@@ -364,12 +376,19 @@ def _read_registered_bytes(relative_path: str) -> bytes:
         flags = os.O_RDONLY
         if hasattr(os, "O_NOFOLLOW"):
             flags |= os.O_NOFOLLOW
+        if hasattr(os, "O_NONBLOCK"):
+            flags |= os.O_NONBLOCK
         descriptor = os.open(relative.name, flags, dir_fd=directory_descriptor)
         opened_before = os.fstat(descriptor)
         if not stat.S_ISREG(opened_before.st_mode):
             raise ProfileError(f"登记文件必须是普通文件：{relative_path}")
         if opened_before.st_nlink != 1:
             raise ProfileError(f"登记文件不得是硬链接：{relative_path}")
+        if opened_before.st_size > MAX_REGISTERED_FILE_BYTES:
+            raise ProfileError(
+                f"登记文件超过 {MAX_REGISTERED_FILE_BYTES} 字节上限："
+                f"{relative_path}"
+            )
         if (
             visible_before.st_dev,
             visible_before.st_ino,
@@ -380,10 +399,17 @@ def _read_registered_bytes(relative_path: str) -> bytes:
             raise ProfileError(f"登记文件打开前被替换：{relative_path}")
 
         chunks: list[bytes] = []
+        total = 0
         while True:
             chunk = os.read(descriptor, 1024 * 1024)
             if not chunk:
                 break
+            total += len(chunk)
+            if total > MAX_REGISTERED_FILE_BYTES:
+                raise ProfileError(
+                    f"登记文件读取期间超过 "
+                    f"{MAX_REGISTERED_FILE_BYTES} 字节上限：{relative_path}"
+                )
             chunks.append(chunk)
 
         opened_after = os.fstat(descriptor)
@@ -441,10 +467,47 @@ def _sha256_bytes(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
-class _BundleReader:
+class _ConfigSnapshot:
+    """A per-command, path-keyed snapshot of safely opened config bytes."""
+
     def __init__(self) -> None:
         self._bytes: dict[str, bytes] = {}
         self._digests: dict[str, str] = {}
+
+    def read_path(self, path: Path, *, label: str) -> bytes:
+        return self.read(_constant_repo_relative(path, label=label))
+
+    def read(self, relative_path: str) -> bytes:
+        if relative_path not in self._bytes:
+            raw = _read_registered_bytes(relative_path)
+            self._bytes[relative_path] = raw
+            self._digests[relative_path] = _sha256_bytes(raw)
+        return self._bytes[relative_path]
+
+    def read_json_path(self, path: Path, *, label: str) -> dict[str, Any]:
+        relative = _constant_repo_relative(path, label=label)
+        return self.read_json(relative, label=label)
+
+    def read_json(self, relative_path: str, *, label: str) -> dict[str, Any]:
+        return _decode_json_object(self.read(relative_path), label=label)
+
+    def bytes_for(self, path: str) -> bytes:
+        try:
+            return self._bytes[path]
+        except KeyError as exc:
+            raise ProfileError(f"登记来源尚未安全读取：{path}") from exc
+
+    def track(self, path: str, raw: bytes) -> None:
+        if path in self._bytes and self._bytes[path] != raw:
+            raise ProfileError(f"登记文件快照冲突：{path}")
+        self._bytes[path] = raw
+        self._digests[path] = _sha256_bytes(raw)
+
+
+class _BundleReader:
+    def __init__(self, snapshot: _ConfigSnapshot | None = None) -> None:
+        self._snapshot = snapshot or _ConfigSnapshot()
+        self._paths: set[str] = set()
 
     def read(self, reference: dict[str, Any], *, label: str) -> bytes:
         reference = _require_exact_keys(
@@ -459,13 +522,11 @@ class _BundleReader:
         if not isinstance(digest, str) or SHA256_PATTERN.fullmatch(digest) is None:
             raise ProfileError(f"{label}.sha256 不是 64 位小写 SHA-256")
         assert isinstance(path, str)
-        if path not in self._bytes:
-            raw = _read_registered_bytes(path)
-            self._bytes[path] = raw
-            self._digests[path] = _sha256_bytes(raw)
-        if self._digests[path] != digest:
+        raw = self._snapshot.read(path)
+        self._paths.add(path)
+        if _sha256_bytes(raw) != digest:
             raise ProfileError(f"{label} 的 SHA-256 漂移：{path}")
-        return self._bytes[path]
+        return raw
 
     def read_json(
         self,
@@ -477,21 +538,17 @@ class _BundleReader:
         return _decode_json_object(raw, label=reference["path"])
 
     def bytes_for(self, path: str) -> bytes:
-        try:
-            return self._bytes[path]
-        except KeyError as exc:
-            raise ProfileError(f"登记来源尚未安全读取：{path}") from exc
+        return self._snapshot.bytes_for(path)
 
     def track_snapshot(self, path: str, raw: bytes) -> None:
-        if path in self._bytes and self._bytes[path] != raw:
-            raise ProfileError(f"登记文件快照冲突：{path}")
-        self._bytes[path] = raw
-        self._digests[path] = _sha256_bytes(raw)
+        self._snapshot.track(path, raw)
+        self._paths.add(path)
 
     def verify_unchanged(self) -> None:
-        for path in sorted(self._bytes):
+        for path in sorted(self._paths):
             raw = _read_registered_bytes(path)
-            if raw != self._bytes[path] or _sha256_bytes(raw) != self._digests[path]:
+            snapshot = self._snapshot.bytes_for(path)
+            if raw != snapshot or _sha256_bytes(raw) != _sha256_bytes(snapshot):
                 raise ProfileError(f"登记文件在规则包解析期间发生变化：{path}")
 
 
@@ -507,21 +564,29 @@ def read_json(path: Path) -> dict[str, Any]:
     return value
 
 
-def load_registry() -> dict[str, Any]:
-    return read_json(REGISTRY_PATH)
+def load_registry(snapshot: _ConfigSnapshot | None = None) -> dict[str, Any]:
+    snapshot = snapshot or _ConfigSnapshot()
+    return snapshot.read_json_path(REGISTRY_PATH, label="模型调用登记表")
 
 
-def registry_rows() -> list[dict[str, Any]]:
-    registry = load_registry()
+def registry_rows(
+    registry: dict[str, Any] | None = None,
+    *,
+    snapshot: _ConfigSnapshot | None = None,
+) -> list[dict[str, Any]]:
+    registry = registry or load_registry(snapshot)
     rows = registry.get("profiles")
     if not isinstance(rows, list):
         raise ProfileError("registry.json 的 profiles 必须是数组")
     return rows
 
 
-def _load_registry_secure_snapshot() -> tuple[dict[str, Any], str, bytes]:
+def _load_registry_secure_snapshot(
+    snapshot: _ConfigSnapshot | None = None,
+) -> tuple[dict[str, Any], str, bytes]:
+    snapshot = snapshot or _ConfigSnapshot()
     relative = _constant_repo_relative(REGISTRY_PATH, label="模型调用登记表")
-    raw = _read_registered_bytes(relative)
+    raw = snapshot.read(relative)
     return _decode_json_object(raw, label=relative), relative, raw
 
 
@@ -734,8 +799,14 @@ def _validate_registry_document(registry: dict[str, Any]) -> None:
             or not path.endswith(".json")
         ):
             raise ProfileError(f"{label}.path 不在调用档目录内")
-        if not isinstance(row["role"], str) or not row["role"]:
-            raise ProfileError(f"{label}.role 必须是非空字符串")
+        if (
+            not isinstance(row["role"], str)
+            or not row["role"]
+            or ASCII_CONTROL_PATTERN.search(row["role"]) is not None
+        ):
+            raise ProfileError(
+                f"{label}.role 必须是不含 ASCII 控制字符的非空字符串"
+            )
         profile_ids.append(profile_id)
         profile_paths.append(path)
     if len(profile_ids) != len(set(profile_ids)):
@@ -746,6 +817,8 @@ def _validate_registry_document(registry: dict[str, Any]) -> None:
     preferred = registry["preferred_profiles"]
     if not isinstance(preferred, dict):
         raise ProfileError("registry.json 的 preferred_profiles 必须是对象")
+    if preferred != FROZEN_PREFERRED_PROFILES_V1:
+        raise ProfileError("registry.json v1 的 preferred_profiles 与冻结推荐映射不一致")
     for model_name, profile_id in preferred.items():
         if (
             not isinstance(model_name, str)
@@ -1756,10 +1829,12 @@ def _validate_context_sources(
 def _load_and_validate_rule_bundle(
     registry: dict[str, Any],
     row: dict[str, Any],
+    *,
+    snapshot: _ConfigSnapshot | None = None,
 ) -> tuple[dict[str, Any], _BundleReader]:
     bundle_id = row["bundle_id"]
     label = f"rule_bundles[{bundle_id}]"
-    reader = _BundleReader()
+    reader = _BundleReader(snapshot)
     items_by_source = {item["source"]: item for item in row["materialize_items"]}
     closure: dict[str, str] = {}
 
@@ -2163,11 +2238,14 @@ def _load_and_validate_rule_bundle(
     return row, reader
 
 
-def _validated_rule_bundles() -> list[tuple[dict[str, Any], _BundleReader]]:
-    registry, registry_path, registry_raw = _load_registry_secure_snapshot()
+def _validated_rule_bundles(
+    snapshot: _ConfigSnapshot | None = None,
+) -> list[tuple[dict[str, Any], _BundleReader]]:
+    snapshot = snapshot or _ConfigSnapshot()
+    registry, registry_path, registry_raw = _load_registry_secure_snapshot(snapshot)
     _validate_registry_document(registry)
     validated = [
-        _load_and_validate_rule_bundle(registry, row)
+        _load_and_validate_rule_bundle(registry, row, snapshot=snapshot)
         for row in sorted(
             registry["rule_bundles"],
             key=lambda item: item["bundle_id"],
@@ -2240,23 +2318,24 @@ def resolve_rule_bundle(bundle_id: str) -> dict[str, Any]:
     }
 
 
-def profile_paths() -> list[Path]:
-    paths: list[Path] = []
-    for row in registry_rows():
-        raw_path = row.get("path")
-        if not isinstance(raw_path, str) or not raw_path:
-            raise ProfileError("registry.json 中存在空的 profile path")
-        path = (ROOT / raw_path).resolve()
-        if not path.is_relative_to(CONFIG_ROOT.resolve()):
-            raise ProfileError(f"配置路径越出 model_call_profiles：{raw_path}")
-        paths.append(path)
-    return paths
+def profile_paths(registry: dict[str, Any] | None = None) -> list[Path]:
+    registry = registry or load_registry()
+    _validate_registry_document(registry)
+    return [ROOT / row["path"] for row in registry["profiles"]]
 
 
-def load_profile(profile_id: str) -> dict[str, Any]:
-    for row, path in zip(registry_rows(), profile_paths(), strict=True):
+def load_profile(
+    profile_id: str,
+    *,
+    snapshot: _ConfigSnapshot | None = None,
+    registry: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    snapshot = snapshot or _ConfigSnapshot()
+    registry = registry or load_registry(snapshot)
+    _validate_registry_document(registry)
+    for row in registry["profiles"]:
         if row.get("profile_id") == profile_id:
-            profile = read_json(path)
+            profile = snapshot.read_json(row["path"], label=row["path"])
             if profile.get("profile_id") != profile_id:
                 raise ProfileError(
                     f"登记 ID 与文件内 ID 不一致：{profile_id} / "
@@ -2266,13 +2345,20 @@ def load_profile(profile_id: str) -> dict[str, Any]:
     raise ProfileError(f"找不到模型调用档：{profile_id}")
 
 
-def load_provider(profile: dict[str, Any]) -> dict[str, Any]:
+def load_provider(
+    profile: dict[str, Any],
+    *,
+    snapshot: _ConfigSnapshot | None = None,
+) -> dict[str, Any]:
+    snapshot = snapshot or _ConfigSnapshot()
     raw_path = profile["provider_config"]
-    path = (ROOT / raw_path).resolve()
-    providers_root = (ROOT / "config/providers").resolve()
-    if not path.is_relative_to(providers_root):
+    if (
+        not _registered_source_path_is_allowed(raw_path)
+        or not _path_is_below(raw_path, "config/providers")
+        or not raw_path.endswith(".json")
+    ):
         raise ProfileError(f"供应商配置路径越界：{raw_path}")
-    provider = read_json(path)
+    provider = snapshot.read_json(raw_path, label=raw_path)
     if provider.get("provider") != profile.get("provider"):
         raise ProfileError(f"{profile['profile_id']} 的供应商名与 {raw_path} 不一致")
     return provider
@@ -2298,20 +2384,28 @@ def find_provider_model(
     return matches[0]
 
 
-def _validate_registry() -> list[str]:
+def _validate_registry(registry: dict[str, Any]) -> list[str]:
+    try:
+        _validate_registry_document(registry)
+    except ProfileError as exc:
+        return [str(exc)]
+    return []
+
+
+def _profile_schema_errors(
+    profile: dict[str, Any],
+    schema: dict[str, Any],
+    *,
+    label: str,
+) -> list[str]:
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
     errors: list[str] = []
-    registry = load_registry()
-    rows = registry.get("profiles", [])
-    ids = [row.get("profile_id") for row in rows if isinstance(row, dict)]
-    if len(ids) != len(set(ids)):
-        errors.append("registry.json 存在重复 profile_id")
-    preferred = registry.get("preferred_profiles", {})
-    if not isinstance(preferred, dict):
-        errors.append("registry.json 的 preferred_profiles 必须是对象")
-    else:
-        for model_name, profile_id in preferred.items():
-            if profile_id not in ids:
-                errors.append(f"{model_name} 指向不存在的配置档 {profile_id}")
+    for error in sorted(
+        validator.iter_errors(profile),
+        key=lambda item: list(item.path),
+    ):
+        location = ".".join(str(part) for part in error.path) or "$"
+        errors.append(f"{label}: {location}: {error.message}")
     return errors
 
 
@@ -2319,22 +2413,38 @@ def validate_profile(
     profile: dict[str, Any],
     *,
     path: Path | None = None,
+    snapshot: _ConfigSnapshot | None = None,
+    provider: dict[str, Any] | None = None,
+    schema: dict[str, Any] | None = None,
+    provider_policy: dict[str, Any] | None = None,
 ) -> list[str]:
-    errors: list[str] = []
+    snapshot = snapshot or _ConfigSnapshot()
     label = str(path or profile.get("profile_id") or "<unknown>")
-    schema = read_json(PROFILE_SCHEMA_PATH)
-    validator = Draft202012Validator(schema, format_checker=FormatChecker())
-    for error in sorted(
-        validator.iter_errors(profile),
-        key=lambda item: list(item.path),
-    ):
-        location = ".".join(str(part) for part in error.path) or "$"
-        errors.append(f"{label}: {location}: {error.message}")
+    schema = schema or snapshot.read_json_path(
+        PROFILE_SCHEMA_PATH,
+        label="模型调用档 Schema",
+    )
+    errors = _profile_schema_errors(profile, schema, label=label)
     if errors:
         return errors
 
     try:
-        provider = load_provider(profile)
+        provider = provider or load_provider(profile, snapshot=snapshot)
+        provider_policy = provider_policy or snapshot.read_json_path(
+            _provider_access_policy_path(),
+            label="供应商访问策略",
+        )
+        _reject_inline_credentials(profile, label=f"{label}.profile")
+        _reject_inline_credentials(provider, label=f"{label}.provider_config")
+        _reject_inline_credentials(
+            provider_policy,
+            label=f"{label}.provider_access_policy",
+        )
+        _validate_provider_policy(
+            provider_policy,
+            selected_provider=profile["provider"],
+            label=f"{label}.provider_access_policy",
+        )
         binding = profile["model_binding"]
         provider_model = find_provider_model(provider, binding["request_model_id"])
     except ProfileError as exc:
@@ -2364,6 +2474,17 @@ def validate_profile(
         )
     if sampling["output_token_limit"]["send_parameter"] is not False:
         errors.append(f"{label}: 当前配置不得发送客户端输出 token 上限")
+    budget = thinking["budget_tokens"]
+    parameter_budget = provider_parameters.get("thinking_budget")
+    if budget is None and "thinking_budget" in provider_parameters:
+        errors.append(f"{label}: 思考预算为 null 时不得发送 thinking_budget")
+    elif budget is not None and parameter_budget != budget:
+        errors.append(f"{label}: sampling 思考预算与 thinking_budget 不一致")
+    if (
+        profile["streaming"]["enabled"] is True
+        and profile["streaming"]["response_assembly"] == "single_json_response"
+    ):
+        errors.append(f"{label}: 流式返回不得声明为 single_json_response")
 
     if profile["provider"] == "qianwen_platform":
         if profile["transport"] != "openai_chat_completions":
@@ -2449,14 +2570,40 @@ def validate_profile(
 
 
 def validate_all_profiles() -> list[str]:
-    errors = _validate_registry()
-    for path in profile_paths():
+    snapshot = _ConfigSnapshot()
+    try:
+        registry = load_registry(snapshot)
+    except ProfileError as exc:
+        return [str(exc)]
+    errors = _validate_registry(registry)
+    if errors:
+        return errors
+    schema = snapshot.read_json_path(PROFILE_SCHEMA_PATH, label="模型调用档 Schema")
+    provider_policy = snapshot.read_json_path(
+        _provider_access_policy_path(),
+        label="供应商访问策略",
+    )
+    for row in registry["profiles"]:
+        path = ROOT / row["path"]
         try:
-            profile = read_json(path)
+            profile = snapshot.read_json(row["path"], label=row["path"])
+            if profile.get("profile_id") != row["profile_id"]:
+                raise ProfileError(
+                    f"登记 ID 与文件内 ID 不一致：{row['profile_id']} / "
+                    f"{profile.get('profile_id')}"
+                )
         except ProfileError as exc:
             errors.append(str(exc))
             continue
-        errors.extend(validate_profile(profile, path=path))
+        errors.extend(
+            validate_profile(
+                profile,
+                path=path,
+                snapshot=snapshot,
+                schema=schema,
+                provider_policy=provider_policy,
+            )
+        )
     return errors
 
 
@@ -2467,6 +2614,8 @@ def _contains_json_word(value: Any) -> bool:
 def render_qianwen_request(
     profile: dict[str, Any],
     messages: list[dict[str, Any]],
+    *,
+    provider: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if profile["provider"] != "qianwen_platform":
         raise ProfileError("这不是千问调用档")
@@ -2476,7 +2625,7 @@ def render_qianwen_request(
         messages
     ):
         raise ProfileError("Prompt 必须明确包含 JSON 一词")
-    provider = load_provider(profile)
+    provider = provider or load_provider(profile)
     body: dict[str, Any] = {
         "model": profile["model_binding"]["request_model_id"],
         "messages": deepcopy(messages),
@@ -2504,6 +2653,7 @@ def render_agent_plan_command(
     *,
     prompt: str,
     instructions: str | None = None,
+    provider: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if profile["provider"] != "volcengine_agent_plan":
         raise ProfileError("这不是 Agent Plan 调用档")
@@ -2514,7 +2664,7 @@ def render_agent_plan_command(
         prompt_scope
     ):
         raise ProfileError("Prompt 或 instructions 必须明确包含 JSON 一词")
-    provider = load_provider(profile)
+    provider = provider or load_provider(profile)
     arkcli = profile["arkcli"]
     unset_environment = list(arkcli["unset_environment"])
     unset_arguments = [
@@ -2559,51 +2709,144 @@ def render_agent_plan_command(
     }
 
 
-def render(profile: dict[str, Any], input_payload: dict[str, Any]) -> dict[str, Any]:
-    errors = validate_profile(profile)
+def _validated_render_provider(
+    profile: dict[str, Any],
+    snapshot: _ConfigSnapshot,
+) -> dict[str, Any]:
+    label = str(profile.get("profile_id") or "<unknown>")
+    schema = snapshot.read_json_path(
+        PROFILE_SCHEMA_PATH,
+        label="模型调用档 Schema",
+    )
+    schema_errors = _profile_schema_errors(profile, schema, label=label)
+    if schema_errors:
+        raise ProfileError("\n".join(schema_errors))
+    provider = load_provider(profile, snapshot=snapshot)
+    errors = validate_profile(
+        profile,
+        snapshot=snapshot,
+        provider=provider,
+        schema=schema,
+    )
     if errors:
         raise ProfileError("\n".join(errors))
+    return provider
+
+
+def render(profile: dict[str, Any], input_payload: dict[str, Any]) -> dict[str, Any]:
+    snapshot = _ConfigSnapshot()
+    provider = _validated_render_provider(profile, snapshot)
     if profile["provider"] == "qianwen_platform":
-        return render_qianwen_request(profile, input_payload.get("messages"))
+        return render_qianwen_request(
+            profile,
+            input_payload.get("messages"),
+            provider=provider,
+        )
     return render_agent_plan_command(
         profile,
         prompt=str(input_payload.get("prompt", "")),
         instructions=input_payload.get("instructions"),
+        provider=provider,
     )
 
 
 def command_validate(_: argparse.Namespace) -> int:
-    errors = [*validate_all_profiles(), *validate_all_rule_bundles()]
+    snapshot = _ConfigSnapshot()
+    try:
+        registry = load_registry(snapshot)
+        profile_errors = _validate_registry(registry)
+        if not profile_errors:
+            schema = snapshot.read_json_path(
+                PROFILE_SCHEMA_PATH,
+                label="模型调用档 Schema",
+            )
+            provider_policy = snapshot.read_json_path(
+                _provider_access_policy_path(),
+                label="供应商访问策略",
+            )
+            for row in registry["profiles"]:
+                profile = snapshot.read_json(row["path"], label=row["path"])
+                if profile.get("profile_id") != row["profile_id"]:
+                    profile_errors.append(
+                        f"登记 ID 与文件内 ID 不一致：{row['profile_id']} / "
+                        f"{profile.get('profile_id')}"
+                    )
+                    continue
+                profile_errors.extend(
+                    validate_profile(
+                        profile,
+                        path=ROOT / row["path"],
+                        snapshot=snapshot,
+                        schema=schema,
+                        provider_policy=provider_policy,
+                    )
+                )
+        bundle_errors = []
+        try:
+            bundles = _validated_rule_bundles(snapshot)
+        except ProfileError as exc:
+            bundles = []
+            bundle_errors.append(str(exc))
+        errors = [*profile_errors, *bundle_errors]
+    except ProfileError as exc:
+        registry = {"profiles": []}
+        bundles = []
+        errors = [str(exc)]
     if errors:
         for error in errors:
             print(f"FAIL {error}", file=sys.stderr)
         return 1
     print(
-        f"PASS 已校验 {len(profile_paths())} 个模型调用档和 "
-        f"{len(rule_bundle_rows())} 个规则包；"
+        f"PASS 已校验 {len(registry['profiles'])} 个模型调用档和 "
+        f"{len(bundles)} 个规则包；"
         "全程离线，未读取凭证，未发模型请求。"
     )
     return 0
 
 
 def command_list(_: argparse.Namespace) -> int:
-    registry = load_registry()
+    snapshot = _ConfigSnapshot()
+    registry = load_registry(snapshot)
+    _validate_registry_document(registry)
     preferred = set(registry.get("preferred_profiles", {}).values())
-    for row in registry_rows():
+    for row in registry_rows(registry):
         marker = "推荐" if row["profile_id"] in preferred else "对照"
         print(f"{marker}\t{row['profile_id']}\t{row['role']}")
     return 0
 
 
 def command_show(args: argparse.Namespace) -> int:
-    print(json.dumps(load_profile(args.profile_id), ensure_ascii=False, indent=2))
+    snapshot = _ConfigSnapshot()
+    registry = load_registry(snapshot)
+    print(
+        json.dumps(
+            load_profile(args.profile_id, snapshot=snapshot, registry=registry),
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
     return 0
 
 
 def command_render(args: argparse.Namespace) -> int:
-    profile = load_profile(args.profile_id)
+    snapshot = _ConfigSnapshot()
+    registry = load_registry(snapshot)
+    profile = load_profile(args.profile_id, snapshot=snapshot, registry=registry)
     input_payload = read_json(Path(args.input).expanduser().resolve())
-    result = render(profile, input_payload)
+    provider = _validated_render_provider(profile, snapshot)
+    if profile["provider"] == "qianwen_platform":
+        result = render_qianwen_request(
+            profile,
+            input_payload.get("messages"),
+            provider=provider,
+        )
+    else:
+        result = render_agent_plan_command(
+            profile,
+            prompt=str(input_payload.get("prompt", "")),
+            instructions=input_payload.get("instructions"),
+            provider=provider,
+        )
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
