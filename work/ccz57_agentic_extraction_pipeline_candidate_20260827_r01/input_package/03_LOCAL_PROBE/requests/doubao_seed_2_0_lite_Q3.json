@@ -1,0 +1,46 @@
+{
+  "item_id": "Q3",
+  "slot": "lite",
+  "request_model_name": "doubao-seed-2-0-lite-260215",
+  "expected_response_model": "doubao-seed-2-0-lite-260215",
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "input_material_sha256": "537d8f1735f3a610b92bbc8180e18be525f834d96737954bc1963693f9e94ad0",
+  "user_message_sha256": "514d0d82468e60aebe486778e9cbf130bb3e75913c3e91cbbde8c27bc96445c1",
+  "retries": 0,
+  "argv": [
+    "arkcli",
+    "+chat",
+    "--profile",
+    "agent-plan_cn-beijing_personal",
+    "--model",
+    "doubao-seed-2-0-lite-260215",
+    "--instructions",
+    "<system_prompt sha256=57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b bytes=4965>",
+    "--temperature",
+    "0",
+    "--max-output-tokens",
+    "4096",
+    "--thinking",
+    "disabled",
+    "--text-format",
+    "json_object",
+    "--no-progress",
+    "--format",
+    "json",
+    "<user_message sha256=514d0d82468e60aebe486778e9cbf130bb3e75913c3e91cbbde8c27bc96445c1 bytes=1727>"
+  ],
+  "env_overrides_unset": [
+    "ARK_API_KEY",
+    "ARK_BASE_URL",
+    "ARK_REGION",
+    "ARK_PROFILE",
+    "VOLCENGINE_AGENT_PLAN_API_KEY"
+  ],
+  "transport": "arkcli +chat",
+  "sampling": {
+    "temperature": 0,
+    "thinking": "disabled",
+    "text_format": "json_object",
+    "max_output_tokens": 4096
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "item_id": "Q4",
+  "lane": "glm53flash_thinking_low",
+  "request_model_name": "z-ai/glm-5.3-flash",
+  "response_model_name": "z-ai/glm-5.3-flash",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "error_type": null,
+  "error_message": null,
+  "started_at": "2026-08-27T00:48:58.557+08:00",
+  "ended_at": "2026-08-27T00:49:04.051+08:00",
+  "elapsed_ms": 5494,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1628,
+    "completion_tokens": 239,
+    "total_tokens": 1867,
+    "cost": 9.353e-05,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 1472,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 9.353e-05,
+      "upstream_inference_prompt_cost": 3.378e-05,
+      "upstream_inference_completions_cost": 5.975e-05
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 3,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "thinking": {
+    "reasoning_tokens": 3,
+    "nonempty_reasoning_field": "reasoning",
+    "thinking_appears_on": true,
+    "reasoning_chars": 14
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 6,
+      "fact_count": 6
+    },
+    "facts_preview": [
+      "冷库的温控器在午前跳闸",
+      "整箱荔枝开始渗水",
+      "仓管裴小棠把这批货从“待发”改成“报损”",
+      "裴小棠通知司机取消下午去港东批发市场的车",
+      "司机回复“知道了”，把已经发动的货车熄了火",
+      "渗出水顺着托盘流到地面，裴小棠去拿拖把"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "496b604b0bc363e39386c5381cc3f8f6f8d965437cf9a6a6145451ee087051a8"
+}

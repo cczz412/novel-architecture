@@ -1,0 +1,58 @@
+{
+  "item_id": "Q3",
+  "lane": "deepseek_thinking_low",
+  "request_model_name": "deepseek-v4-flash",
+  "response_model_name": "deepseek-v4-flash",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "started_at": "2026-08-27T01:07:03.162+08:00",
+  "ended_at": "2026-08-27T01:07:06.025+08:00",
+  "elapsed_ms": 2863,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1570,
+    "completion_tokens": 372,
+    "total_tokens": 1942,
+    "prompt_tokens_details": {
+      "cached_tokens": 1536
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 86
+    },
+    "prompt_cache_hit_tokens": 1536,
+    "prompt_cache_miss_tokens": 34
+  },
+  "thinking": {
+    "reasoning_tokens": 86,
+    "nonempty_reasoning_field": "reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 124
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": false,
+    "schema": {
+      "schema_legal": false,
+      "error_count": 6,
+      "first_error": "'' should be non-empty",
+      "empty_speaker": 6,
+      "omitted_speaker": 0,
+      "fact_count": 7
+    },
+    "facts_preview": [
+      "乔米把工牌从工位夹上摘下来，塞进褚衡摊开的掌心",
+      "乔米说从今天起不再给褚衡做助理",
+      "褚衡没有把工牌还回去，只把卡片翻过去",
+      "褚衡伸手把两人中间那条一直共用的抽屉锁上",
+      "乔米站在原处看了褚衡两秒",
+      "乔米把桌上那支共用的红笔推进抽屉缝",
+      "乔米转身走了"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "3582fd9a305eae061162482838df2243fa17d27044da431ebd56b2ecd80446c7"
+}

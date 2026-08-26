@@ -1,0 +1,58 @@
+{
+  "item_id": "Q2",
+  "lane": "qwen_nonthinking",
+  "request_model_name": "qwen3.8-max",
+  "response_model_name": "qwen3.8-max",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "error_type": null,
+  "error_message": null,
+  "started_at": "2026-08-27T00:48:32.260+08:00",
+  "ended_at": "2026-08-27T00:48:35.352+08:00",
+  "elapsed_ms": 3092,
+  "retries": 0,
+  "usage": {
+    "completion_tokens": 259,
+    "prompt_tokens": 1588,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024,
+      "text_tokens": 1588
+    },
+    "total_tokens": 1847
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": null,
+    "thinking_appears_on": false,
+    "reasoning_chars": 0
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 9,
+      "fact_count": 9
+    },
+    "facts_preview": [
+      "对讲机里传来“货已经卸完”的消息",
+      "沈北川原本站得笔直",
+      "沈北川的肩膀一下子塌下去",
+      "沈北川手里的登记板差点掉进泥里",
+      "沈北川顺着厢车门沿坐到地上",
+      "沈北川喉结滚动两下后松开一直咬紧的牙",
+      "沈北川的呼吸变长",
+      "泥水渗进沈北川的裤脚",
+      "沈北川没有立刻站起来"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "f16597f5ffcedd91c621fc26e4447bde38e4184eb5adf43a616f194b9125b963"
+}

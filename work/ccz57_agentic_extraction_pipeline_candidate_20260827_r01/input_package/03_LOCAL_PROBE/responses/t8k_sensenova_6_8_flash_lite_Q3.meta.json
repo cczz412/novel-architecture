@@ -1,0 +1,58 @@
+{
+  "item_id": "Q3",
+  "lane": "sensenova_thinking_low",
+  "request_model_name": "sensenova-6.8-flash-lite",
+  "response_model_name": "sensenova-6.8-flash-lite",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "started_at": "2026-08-27T01:06:47.276+08:00",
+  "ended_at": "2026-08-27T01:06:51.463+08:00",
+  "elapsed_ms": 4187,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1595,
+    "completion_tokens": 560,
+    "total_tokens": 2155,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "thinking": {
+    "reasoning_tokens": 0,
+    "nonempty_reasoning_field": "reasoning",
+    "thinking_appears_on": true,
+    "reasoning_chars": 789
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 7,
+      "fact_count": 8
+    },
+    "facts_preview": [
+      "乔米把工牌从工位夹上摘下来，塞进褚衡摊开的掌心",
+      "乔米对褚衡说从今天起不再给他做助理",
+      "褚衡没有把工牌还回去",
+      "褚衡把工牌卡片翻过去",
+      "褚衡伸手把两人中间那条一直共用的抽屉锁上",
+      "乔米站在原处看了褚衡两秒",
+      "乔米把桌上那支共用的红笔推进抽屉缝",
+      "乔米转身离开"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "8bd096cd246759f5c2bba4736cccb7c7664407478eaeeda71dce444a2c1f7575"
+}

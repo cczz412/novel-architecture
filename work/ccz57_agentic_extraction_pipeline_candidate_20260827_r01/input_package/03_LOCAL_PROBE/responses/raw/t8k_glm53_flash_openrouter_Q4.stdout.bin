@@ -1,0 +1,17 @@
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+{"id":"gen-1787764198-ru0GColKuCKDcjJcTDEI","object":"chat.completion","created":1787764198,"model":"z-ai/glm-5.3-flash","provider":"Z.AI","system_fingerprint":null,"service_tier":null,"choices":[{"index":0,"logprobs":null,"finish_reason":"stop","native_finish_reason":"stop","message":{"role":"assistant","content":"{\"facts\":[{\"fact\":\"冷库的温控器在午前跳闸，整箱荔枝开始渗水。\",\"status\":\"已发生\",\"evidence\":\"冷库的温控器在午前跳闸，整箱荔枝很快开始渗水。\"},{\"fact\":\"仓管裴小棠把这批货从“待发”改成“报损”。\",\"status\":\"已发生\",\"evidence\":\"仓管裴小棠把这批货从“待发”改成“报损”\"},{\"fact\":\"裴小棠通知司机取消下午去港东批发市场的车。\",\"status\":\"已发生\",\"evidence\":\"并通知司机取消下午那趟去港东批发市场的车\"},{\"fact\":\"司机回复“知道了”，把已经发动的货车熄了火。\",\"status\":\"已发生\",\"evidence\":\"司机回了一句“知道了”，便把已经发动的货车熄了火。\"},{\"fact\":\"渗出的水顺着托盘流到地面，裴小棠去拿拖把。\",\"status\":\"已发生\",\"evidence\":\"渗出水顺着托盘流到地面，裴小棠又去拿拖把。\"}]}","refusal":null,"reasoning":null}}],"usage":{"prompt_tokens":1628,"completion_tokens":234,"total_tokens":1862,"cost":0.0000846,"is_byok":false,"prompt_tokens_details":{"cached_tokens":1600,"cache_write_tokens":0,"audio_tokens":0,"video_tokens":0},"cost_details":{"upstream_inference_cost":0.0000846,"upstream_inference_prompt_cost":0.0000261,"upstream_inference_completions_cost":0.0000585},"completion_tokens_details":{"reasoning_tokens":0,"image_tokens":0,"audio_tokens":0}}}

@@ -1,0 +1,51 @@
+{
+  "item_id": "Q2",
+  "lane": "agent_plan_thinking_low",
+  "request_model_name": "minimax-m3-modelhub",
+  "response_model_name": "minimax-m3",
+  "identity_drift": false,
+  "arkcli_exit_code": 0,
+  "started_at": "2026-08-27T01:16:22.722+08:00",
+  "ended_at": "2026-08-27T01:17:18.296+08:00",
+  "elapsed_ms": 55574,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1615,
+    "completion_tokens": 7728,
+    "total_tokens": 9343
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": "envelope.reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 22128
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 9,
+      "fact_count": 10
+    },
+    "facts_preview": [
+      "对讲机里传来一句「货已经卸完」",
+      "沈北川原本站得笔直",
+      "沈北川肩膀一下子塌下去",
+      "沈北川手里的登记板差点掉进泥里",
+      "沈北川顺着厢车门沿坐到地上",
+      "沈北川喉结滚动两下",
+      "沈北川把一直咬紧的牙松开",
+      "沈北川呼吸变长",
+      "泥水渗进沈北川裤脚",
+      "沈北川没有立刻站起来"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "4574de6ee8463957fa8c61c91d34952650b3cea493f3d020ecb49d8c5dfaed02"
+}

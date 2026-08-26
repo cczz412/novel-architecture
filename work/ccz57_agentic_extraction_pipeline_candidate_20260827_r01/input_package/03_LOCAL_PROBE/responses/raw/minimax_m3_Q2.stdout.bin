@@ -1,0 +1,21 @@
+{
+  "id": "resp_021787761139629e47635ed4409d744027d1eb06218e83635a40d",
+  "model": "minimax-m3",
+  "content": "{\"facts\":[{\"fact\":\"对讲机里传来一句“货已经卸完”。\",\"status\":\"已发生\",\"evidence\":\"对讲机里忽然传来一句“货已经卸完”。\"},{\"fact\":\"听到“货已经卸完”后，沈北川原本挺直的肩膀一下子塌了下去。\",\"status\":\"已发生\",\"evidence\":\"沈北川原本站得笔直，肩膀一下子塌下去\"},{\"fact\":\"沈北川手中的登记板差点掉进泥里。\",\"status\":\"已发生\",\"evidence\":\"手里的登记板差点掉进泥里。\"},{\"fact\":\"沈北川顺着厢车门沿坐到地上。\",\"status\":\"已发生\",\"evidence\":\"他顺着厢车门沿坐到地上\"},{\"fact\":\"沈北川喉结滚动两下，随后松开了原本咬紧的牙，呼吸也跟着变长。\",\"status\":\"已发生\",\"evidence\":\"喉结滚动两下，这才把一直咬紧的牙松开，呼吸也跟着变长。\"},{\"fact\":\"沈北川坐在地上时，泥水渗进了他的裤脚。\",\"status\":\"已发生\",\"evidence\":\"泥水渗进裤脚\"},{\"fact\":\"沈北川在泥水渗进裤脚后没有立刻站起来。\",\"status\":\"已发生\",\"evidence\":\"他没有立刻站起来。\"}]}",
+  "usage": {
+    "prompt_tokens": 1602,
+    "completion_tokens": 253,
+    "total_tokens": 1855
+  },
+  "object": "response",
+  "status": "completed",
+  "created_at": 1787761141,
+  "store": false,
+  "caching": {
+    "type": "disabled"
+  },
+  "thinking": {
+    "type": "disabled"
+  },
+  "text_format": "json_object"
+}

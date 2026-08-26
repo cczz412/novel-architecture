@@ -1,0 +1,17 @@
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+{"id":"gen-1787764180-M1rWZw4ZCUlQq8tlkC0Z","object":"chat.completion","created":1787764180,"model":"z-ai/glm-5.3-flash","provider":"Z.AI","system_fingerprint":null,"service_tier":null,"choices":[{"index":0,"logprobs":null,"finish_reason":"stop","native_finish_reason":"stop","message":{"role":"assistant","content":"{\"facts\":[{\"fact\":\"傍晚顾晚晴回到楼里，把还在滴水的折叠伞倒挂到门廊铁钩上。\",\"status\":\"已发生\",\"evidence\":\"傍晚回楼，顾晚晴先把还在滴水的折叠伞倒挂到门廊铁钩上\"},{\"fact\":\"顾晚晴蹲下去用鞋尖把门口那滩雨水刮进地漏。\",\"status\":\"已发生\",\"evidence\":\"又蹲下去，用鞋尖把门口那滩雨水一点点刮进地漏。\"},{\"fact\":\"顾晚晴按墙上开关后灯没有亮。\",\"status\":\"已发生\",\"evidence\":\"她伸手去按墙上的开关，灯没有亮。\"},{\"fact\":\"顾晚晴没有再按第二次开关。\",\"status\":\"否定\",\"evidence\":\"她没有再按第二次\"},{\"fact\":\"顾晚晴走到走廊尽头拧开应急手电，把光对准鞋架底下左右扫了两遍。\",\"status\":\"已发生\",\"evidence\":\"而是走到走廊尽头，拧开应急手电，把光对准鞋架底下，左右扫了两遍。\"}]}","refusal":null,"reasoning":"Extract facts.","reasoning_details":[{"type":"reasoning.text","text":"Extract facts.","format":"unknown","index":0}]}}],"usage":{"prompt_tokens":1623,"completion_tokens":233,"total_tokens":1856,"cost":0.000083975,"is_byok":false,"prompt_tokens_details":{"cached_tokens":1600,"cache_write_tokens":0,"audio_tokens":0,"video_tokens":0},"cost_details":{"upstream_inference_cost":0.000083975,"upstream_inference_prompt_cost":0.000025725,"upstream_inference_completions_cost":0.00005825},"completion_tokens_details":{"reasoning_tokens":3,"image_tokens":0,"audio_tokens":0}}}

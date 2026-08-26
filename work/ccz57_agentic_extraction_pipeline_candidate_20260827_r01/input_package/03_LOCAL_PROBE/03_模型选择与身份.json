@@ -1,0 +1,79 @@
+{
+  "schema_version": "ccz57-l1-model-selection-v1",
+  "cz_instruction": "本轮模型就是 Agent Plan 火山里的 doubao2.1turbo 和 deepseekv4flash",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "selection_status": "FROZEN_AFTER_LIVE_CATALOG",
+  "live_catalog_status": "CHECKED_20260826T2338+08",
+  "models": [
+    {
+      "slot": 1,
+      "human_name": "Doubao-Seed-2.1-Turbo",
+      "profile_id": null,
+      "profile_note": "调用档案 registry 没有独立档；登记在 Agent Plan 供应商名单，并且是 novel-mvp/config.json 的 CZ 2026-08-13 临时默认抽取模型。",
+      "provider": "volcengine_agent_plan",
+      "request_model_id": "doubao-seed-2-1-turbo-260628",
+      "expected_response_model": "doubao-seed-2-1-turbo-260628",
+      "sampling_source": "novel-mvp/config.json",
+      "sampling": {
+        "temperature": 0,
+        "thinking": "disabled",
+        "text_format": "json_object",
+        "max_output_tokens": 4096,
+        "automatic_retries": 0
+      },
+      "live_catalog_present": true,
+      "live_output_name": "doubao-seed-2-1-turbo-260628",
+      "invocable": true,
+      "run_status": "RAN_4_OF_4",
+      "response_model_names_observed": [
+        "doubao-seed-2-1-turbo-260628",
+        "doubao-seed-2-1-turbo-260628",
+        "doubao-seed-2-1-turbo-260628",
+        "doubao-seed-2-1-turbo-260628"
+      ]
+    },
+    {
+      "slot": 2,
+      "human_name": "DeepSeek-V4-Flash",
+      "profile_id": "agent_plan_deepseek_v4_flash_high_json_object",
+      "profile_path": "config/model_call_profiles/profiles/agent_plan_deepseek_v4_flash_high_json_object.json",
+      "profile_sha256": "7ae9cd29ef2f1a51526cf305fb9fd71785e50006aeb9a9ee3744cd9dd4d52064",
+      "provider": "volcengine_agent_plan",
+      "request_model_id": "deepseek-v4-flash-modelhub",
+      "expected_response_model": "deepseek-v4-flash-260425",
+      "sampling_source": "registered model_call_profile",
+      "sampling": {
+        "temperature": 0.2,
+        "thinking": "enabled",
+        "reasoning_effort": "high",
+        "text_format": "json_object",
+        "send_max_output_tokens": false,
+        "automatic_retries": 0
+      },
+      "live_catalog_present": false,
+      "live_nearest_row": {
+        "model_id": "deepseek-v4-flash-260801",
+        "output_name": "deepseek-v4-flash-ga-260731",
+        "resources_list_id": "deepseek-v4-flash-ga-260731"
+      },
+      "run_status": "STOPPED_BEFORE_SAMPLING_IDENTITY_MISMATCH",
+      "stop_reason": "冻结档案请求名 deepseek-v4-flash-modelhub、期望响应 deepseek-v4-flash-260425；实时目录已无该请求名。未切换到 deepseek-v4-flash-260801 / deepseek-v4-flash-ga-260731。"
+    }
+  ],
+  "rejected_this_round": [
+    "DeepSeek V4 Pro（登记为强模型）",
+    "MiniMax M3 / Qwen3.7 Flash（已登记，但本轮 CZ 点名不是它们）",
+    "SenseNova 现役默认链（本轮不切默认链）",
+    "Codex / ChatGPT 高级模型"
+  ],
+  "live_catalog": {
+    "command": "arkcli plans model-list --plan agent-plan --profile agent-plan_cn-beijing_personal --format json",
+    "path": "frozen/live_catalog_plans_model_list.json",
+    "sha256": "1976ce672586d0c60ba7ceb6a47915d44dd0f4687647c37fd829743ba2fafc9e",
+    "resources_list_path": "frozen/live_resources_text.json",
+    "resources_list_sha256": "2983a36657b0247a79fef6094d48513869d1ff6f4b3069fbbd2bb8a9e6f234da",
+    "selected_model_id_in_catalog": "doubao-seed-2-0-mini-260215",
+    "note": "未使用 catalog 的 selected/auto；每次显式传入冻结请求模型名。"
+  },
+  "identity_stop_applied": true
+}

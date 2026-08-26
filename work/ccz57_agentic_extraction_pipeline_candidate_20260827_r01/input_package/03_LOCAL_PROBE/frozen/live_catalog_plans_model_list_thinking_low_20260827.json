@@ -1,0 +1,21 @@
+{
+  "fetched_at_start": "2026-08-27T01:06:17.441+08:00",
+  "fetched_at_end": "2026-08-27T01:06:18.115+08:00",
+  "exit_code": 0,
+  "model_ids": [
+    "auto",
+    "doubao-seed-evolving-latest-version",
+    "doubao-seed-2-1-turbo-260628",
+    "doubao-seed-2-0-lite-260215",
+    "doubao-seed-2-0-mini-260215",
+    "glm-5-3-260801",
+    "deepseek-v4-pro-ga-260813",
+    "deepseek-v4-flash-260801",
+    "kimi-k3-260701",
+    "glm-5-2-260601",
+    "kimi-k2-7-code-260601",
+    "minimax-m3-modelhub"
+  ],
+  "raw_sha256": "1976ce672586d0c60ba7ceb6a47915d44dd0f4687647c37fd829743ba2fafc9e",
+  "stderr_bytes": 120
+}

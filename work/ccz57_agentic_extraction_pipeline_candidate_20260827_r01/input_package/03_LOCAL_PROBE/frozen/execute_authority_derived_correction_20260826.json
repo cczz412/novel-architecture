@@ -1,0 +1,128 @@
+{
+  "schema_version": "ccz57-l1-derived-correction-receipt-v1",
+  "role": "DERIVED_CORRECTION_DOES_NOT_REPLACE_ORIGINALS",
+  "written_at": "2026-08-26T23:59:03+08:00",
+  "identity": "Codex",
+  "api_calls_this_document": 0,
+  "originals_not_overwritten": [
+    "frozen/execute_authority.json",
+    "05_运行回执.json",
+    "MANIFEST.sha256",
+    "responses/raw/",
+    "requests/",
+    "01_合成题面.json",
+    "02_冻结Prompt.md",
+    "frozen/system_prompt_novel_fact_extraction_v2.md"
+  ],
+  "original_sha256": {
+    "frozen/execute_authority.json": "d085f0097d78f41621cf228e664a25a3ee93258b515ab7dd37fe63e5fca0825f",
+    "05_运行回执.json": "43f310a946631ad15fe5fded255d1ddd0024b25e4791dfc54a7b958b6007a152",
+    "MANIFEST.sha256": "9c9a4e68d91ad06a97f49f1b0a266067faea91a9f41fd9e9803e54ed06900565",
+    "frozen/live_catalog_plans_model_list.json": "1976ce672586d0c60ba7ceb6a47915d44dd0f4687647c37fd829743ba2fafc9e",
+    "frozen/live_resources_text.json": "2983a36657b0247a79fef6094d48513869d1ff6f4b3069fbbd2bb8a9e6f234da",
+    "frozen/novel_fact_extraction_v2.schema.json": "aa73696981b3b75717202db117ffac4df7584aad1dd3a086084f1c33a1f08352",
+    "frozen/system_prompt_novel_fact_extraction_v2.md": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b"
+  },
+  "gap_being_corrected": {
+    "stale_file": "frozen/execute_authority.json",
+    "stale_status": "WAITING_LIVE_CATALOG",
+    "already_true_in": "05_运行回执.json",
+    "already_true_status": "COMPLETED_WITH_ONE_MODEL_STOPPED_AT_CATALOG",
+    "note": "原 execute_authority 是发网前冻结的资格票，写完后没有回写。本文件补状态转换，不改原票。"
+  },
+  "live_catalog": {
+    "checked": true,
+    "plans_model_list": {
+      "command": "arkcli plans model-list --plan agent-plan --profile agent-plan_cn-beijing_personal --format json",
+      "completed_at": "2026-08-26T23:37:53+08:00",
+      "path": "frozen/live_catalog_plans_model_list.json",
+      "sha256": "1976ce672586d0c60ba7ceb6a47915d44dd0f4687647c37fd829743ba2fafc9e"
+    },
+    "resources_list": {
+      "command": "arkcli resources list --modality text --profile agent-plan_cn-beijing_personal --format json",
+      "completed_at": "2026-08-26T23:38:37+08:00",
+      "path": "frozen/live_resources_text.json",
+      "sha256": "2983a36657b0247a79fef6094d48513869d1ff6f4b3069fbbd2bb8a9e6f234da"
+    },
+    "before_first_sampling_call": "2026-08-26T23:39:31.833+08:00"
+  },
+  "doubao_admission": {
+    "request_model_id": "doubao-seed-2-1-turbo-260628",
+    "expected_response_model": "doubao-seed-2-1-turbo-260628",
+    "admitted": true,
+    "why": [
+      "CZ 本轮点名 Agent Plan 的 Doubao 2.1 Turbo",
+      "GitHub main 供应商名单 config/providers/volcengine_agent_plan.json 已登记该精确 ID",
+      "novel-mvp/config.json 把它记为 CZ 2026-08-13 临时默认抽取模型",
+      "实时目录 model_id 与 output_name 都是 doubao-seed-2-1-turbo-260628",
+      "resources list 显示该 ID invocable=true",
+      "未使用 catalog 里的 auto 或 selected_model_id=doubao-seed-2-0-mini-260215"
+    ],
+    "sampling_calls": 4,
+    "response_model_matched_all_four": true,
+    "retries": 0
+  },
+  "deepseek_stop": {
+    "frozen_request_model_id": "deepseek-v4-flash-modelhub",
+    "frozen_expected_response_model": "deepseek-v4-flash-260425",
+    "admitted": false,
+    "sampling_calls": 0,
+    "stopped_before_network_sampling": true,
+    "why": [
+      "实时目录里没有 deepseek-v4-flash-modelhub",
+      "实时目录最近一行是 model_id=deepseek-v4-flash-260801，output_name=deepseek-v4-flash-ga-260731",
+      "resources list 可调用 ID 是 deepseek-v4-flash-ga-260731，不是冻结请求名",
+      "停损：模型身份与冻结档案不一致则停止该模型，不允许自动换号"
+    ],
+    "not_done": "没有把调用改到 deepseek-v4-flash-260801 或 deepseek-v4-flash-ga-260731"
+  },
+  "schema_recheck": {
+    "schema_id": "novel-fact-extraction-v2.1",
+    "schema_path": "frozen/novel_fact_extraction_v2.schema.json",
+    "schema_sha256": "aa73696981b3b75717202db117ffac4df7584aad1dd3a086084f1c33a1f08352",
+    "engine": "jsonschema.Draft202012Validator",
+    "raw_responses_not_modified": true,
+    "items": [
+      {
+        "item_id": "Q1",
+        "json_parseable": true,
+        "schema_valid": false,
+        "judgment": "JSON_PARSEABLE_BUT_SCHEMA_INVALID",
+        "empty_speaker_count": 9,
+        "schema_error_count": 9,
+        "schema_error_kind": "speaker minLength：空字符串"
+      },
+      {
+        "item_id": "Q2",
+        "json_parseable": true,
+        "schema_valid": false,
+        "judgment": "JSON_PARSEABLE_BUT_SCHEMA_INVALID",
+        "empty_speaker_count": 11,
+        "nonempty_speaker_count": 1,
+        "nonempty_speaker_value": "来源不明",
+        "schema_error_count": 11,
+        "schema_error_kind": "speaker minLength：空字符串"
+      },
+      {
+        "item_id": "Q3",
+        "json_parseable": true,
+        "schema_valid": true,
+        "judgment": "JSON_PARSEABLE_AND_SCHEMA_VALID",
+        "empty_speaker_count": 0
+      },
+      {
+        "item_id": "Q4",
+        "json_parseable": true,
+        "schema_valid": true,
+        "judgment": "JSON_PARSEABLE_AND_SCHEMA_VALID",
+        "empty_speaker_count": 0,
+        "semantic_note_not_schema": "因果两端事件抽出，但没有单独写成因果命题；这不是 Schema FAIL"
+      }
+    ]
+  },
+  "status_now": {
+    "execute_authority_original_still": "WAITING_LIVE_CATALOG",
+    "derived_authority_status": "CATALOG_CHECKED_DOUBAO_ADMITTED_DEEPSEEK_STOPPED_SAMPLING_COMPLETE",
+    "run_receipt_original_still": "COMPLETED_WITH_ONE_MODEL_STOPPED_AT_CATALOG"
+  }
+}

@@ -1,0 +1,23 @@
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+{"id":"gen-1787762935-8PMR0w0Ez0myZR18djB1","object":"chat.completion","created":1787762935,"model":"z-ai/glm-5.3-flash","provider":"Z.AI","system_fingerprint":null,"service_tier":null,"choices":[{"index":0,"logprobs":null,"finish_reason":"stop","native_finish_reason":"stop","message":{"role":"assistant","content":"{\"facts\":[{\"fact\":\"乔米把工牌从工位夹上摘下来，塞进褚衡摊开的掌心。\",\"status\":\"已发生\",\"evidence\":\"乔米把工牌从工位夹上摘下来，塞进褚衡摊开的掌心\"},{\"fact\":\"乔米对褚衡说从今天起不再给他做助理。\",\"status\":\"已发生\",\"evidence\":\"说：“从今天起，我不再给你做助理。”\",\"speaker\":\"乔米\"},{\"fact\":\"褚衡没有把工牌还回去，只把卡片翻过去。\",\"status\":\"已发生\",\"evidence\":\"褚衡没有把工牌还回去，只把卡片翻过去\"},{\"fact\":\"褚衡伸手把两人中间那条一直共用的抽屉锁上。\",\"status\":\"已发生\",\"evidence\":\"伸手把两人中间那条一直共用的抽屉锁上\"},{\"fact\":\"乔米站在原处看了褚衡两秒。\",\"status\":\"已发生\",\"evidence\":\"乔米站在原处看了他两秒\"},{\"fact\":\"乔米把桌上那支共用的红笔推进抽屉缝。\",\"status\":\"已发生\",\"evidence\":\"把桌上那支共用的红笔也推进抽屉缝\"},{\"fact\":\"乔米转身走了。\",\"status\":\"已发生\",\"evidence\":\"转身走了\"}]}","refusal":null,"reasoning":"Extract facts.","reasoning_details":[{"type":"reasoning.text","text":"Extract facts.","format":"unknown","index":0}]}}],"usage":{"prompt_tokens":1630,"completion_tokens":278,"total_tokens":1908,"cost":0.00010343,"is_byok":false,"prompt_tokens_details":{"cached_tokens":1472,"cache_write_tokens":0,"audio_tokens":0,"video_tokens":0},"cost_details":{"upstream_inference_cost":0.00010343,"upstream_inference_prompt_cost":0.00003393,"upstream_inference_completions_cost":0.0000695},"completion_tokens_details":{"reasoning_tokens":3,"image_tokens":0,"audio_tokens":0}}}

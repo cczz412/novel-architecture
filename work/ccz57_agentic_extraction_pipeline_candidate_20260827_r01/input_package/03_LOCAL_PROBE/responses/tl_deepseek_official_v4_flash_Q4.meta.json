@@ -1,0 +1,59 @@
+{
+  "item_id": "Q4",
+  "lane": "deepseek_thinking_low",
+  "request_model_name": "deepseek-v4-flash",
+  "response_model_name": "deepseek-v4-flash",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "started_at": "2026-08-27T00:43:41.693+08:00",
+  "ended_at": "2026-08-27T00:43:59.456+08:00",
+  "elapsed_ms": 17763,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1568,
+    "completion_tokens": 2055,
+    "total_tokens": 3623,
+    "prompt_tokens_details": {
+      "cached_tokens": 1536
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1785
+    },
+    "prompt_cache_hit_tokens": 1536,
+    "prompt_cache_miss_tokens": 32
+  },
+  "thinking": {
+    "reasoning_tokens": 1785,
+    "nonempty_reasoning_field": "reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 2897
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 7,
+      "fact_count": 8
+    },
+    "facts_preview": [
+      "冷库的温控器在午前跳闸。",
+      "整箱荔枝很快开始渗水。",
+      "裴小棠把这批货从“待发”改成“报损”。",
+      "裴小棠通知司机取消下午那趟去港东批发市场的车。",
+      "司机回了一句“知道了”。",
+      "司机把已经发动的货车熄了火。",
+      "渗出水顺着托盘流到地面。",
+      "裴小棠又去拿拖把。"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "8f6c863ea602180b86890e6af792ccb8c332c4537aadb99fbb03bc0bfb456a69"
+}

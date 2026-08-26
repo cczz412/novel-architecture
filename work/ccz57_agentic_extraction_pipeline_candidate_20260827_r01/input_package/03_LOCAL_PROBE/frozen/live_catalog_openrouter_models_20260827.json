@@ -1,0 +1,34 @@
+{
+  "http_status": 200,
+  "n": 417,
+  "raw_sha256": "c679ac8db115e19cd08a9deeeffc51d9a0f9399f2648157efbe234e145a811ca",
+  "glm53_rows": [
+    {
+      "id": "z-ai/glm-5.3-flash",
+      "reasoning": {
+        "mandatory": true,
+        "default_enabled": true,
+        "supported_efforts": [
+          "max",
+          "high",
+          "low"
+        ],
+        "default_effort": "max"
+      }
+    },
+    {
+      "id": "z-ai/glm-5.3",
+      "reasoning": {
+        "mandatory": true,
+        "default_enabled": true,
+        "supported_efforts": [
+          "max",
+          "high",
+          "low"
+        ],
+        "default_effort": "max"
+      }
+    }
+  ],
+  "has_z-ai/glm-5.3-flash": true
+}

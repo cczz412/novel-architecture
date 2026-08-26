@@ -1,0 +1,86 @@
+{
+  "schema_version": "ccz57-l1-probe-execute-authority-v1",
+  "authority_id": "qwen38_max_and_glm53_flash_thinking_ab_20260827",
+  "not_a_c13_ticket": true,
+  "does_not_overwrite": [
+    "frozen/execute_authority.json",
+    "05_运行回执.json",
+    "07_官方Flash非思考运行回执.json",
+    "09_AgentPlan第二批运行回执.json",
+    "11_sensenova68_ling30_run.json",
+    "MANIFEST.sha256"
+  ],
+  "authorized_by": "CZ 2026-08-27: 千问 qwen3.8-max 和 GLM 5.3 Flash 也要试。思考、非思考都要试；刚才提到的这些模型里两边都要试。已完成的 32 次非思考不重跑。",
+  "git_head_github_main": "8872887690fd018474a69979016b428f2c2faf56",
+  "identity": "Cursor Grok 4.6",
+  "linear_relation": "CCZ-57 exploratory only; no Linear/GitHub/Slack/Notion writes",
+  "models": [
+    {
+      "slot": "qwen3.8-max",
+      "channel": "qianwen_platform_dashscope_beijing",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "request_model_id": "qwen3.8-max",
+      "expected_response_model": "qwen3.8-max",
+      "nonthinking": {
+        "enable_thinking": false,
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "thinking_low": {
+        "enable_thinking": true,
+        "reasoning_effort": "low",
+        "note": "qwen3.8-max efforts low/medium/xhigh; default xhigh; do not send thinking_budget together; json_object omitted because Qwen thinking+json_object is a documented conflict on this family"
+      }
+    },
+    {
+      "slot": "glm-5.3-flash",
+      "channel": "openrouter",
+      "base_url": "https://openrouter.ai/api/v1",
+      "request_model_id": "z-ai/glm-5.3-flash",
+      "expected_response_model": "z-ai/glm-5.3-flash",
+      "catalog_reasoning": {
+        "mandatory": true,
+        "supported_efforts": [
+          "max",
+          "high",
+          "low"
+        ],
+        "default_effort": "max"
+      },
+      "nonthinking": {
+        "reasoning": {
+          "effort": "none"
+        },
+        "note": "catalog says mandatory; Q1 disable attempt, stop remaining NT if HTTP!=200"
+      },
+      "thinking_low": {
+        "reasoning": {
+          "effort": "low",
+          "enabled": true
+        },
+        "note": "lowest ON is low; not max"
+      }
+    }
+  ],
+  "sampling": {
+    "temperature": 0,
+    "max_tokens": 4096,
+    "automatic_retries": 0,
+    "human_retries": 0
+  },
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "schema_sha256": "aa73696981b3b75717202db117ffac4df7584aad1dd3a086084f1c33a1f08352",
+  "items": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "do_not_rerun_completed_nonthinking_of_other_models": true,
+  "do_not_edit_prompt": true,
+  "live_catalog_required_before_sampling": true,
+  "status": "COMPLETED_AFTER_LIVE_CATALOG",
+  "created_at": "2026-08-27T00:48:10+08:00",
+  "completed_at": "2026-08-27T00:58:01+08:00"
+}

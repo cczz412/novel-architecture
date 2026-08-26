@@ -1,0 +1,47 @@
+{
+  "item_id": "Q3",
+  "lane": "agent_plan_thinking_low",
+  "request_model_name": "glm-5-2-260601",
+  "response_model_name": "glm-5-2-260617",
+  "identity_drift": false,
+  "arkcli_exit_code": 0,
+  "started_at": "2026-08-27T01:22:16.725+08:00",
+  "ended_at": "2026-08-27T01:22:40.309+08:00",
+  "elapsed_ms": 23584,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1568,
+    "completion_tokens": 1820,
+    "total_tokens": 3388
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": "envelope.reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 3265
+  },
+  "analysis": {
+    "direct_json": false,
+    "fenced_json": true,
+    "schema_legal": false,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 5,
+      "fact_count": 6
+    },
+    "facts_preview": [
+      "乔米把工牌从工位夹上摘下来塞进褚衡掌心",
+      "乔米声明从今天起不再给褚衡做助理",
+      "褚衡没有把工牌还给乔米",
+      "褚衡把两人一直共用的抽屉锁上",
+      "乔米把桌上共用的红笔推进抽屉缝",
+      "乔米转身离开"
+    ],
+    "q4_causal_hits": [],
+    "task_err": "JSONDecodeError"
+  },
+  "raw_sha256": "602a2e2444e2bfb84044c7a585f3aadcb7b55800b8041f4e3ee83e90c84220b2"
+}

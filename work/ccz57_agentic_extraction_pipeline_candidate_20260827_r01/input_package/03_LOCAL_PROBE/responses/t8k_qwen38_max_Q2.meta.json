@@ -1,0 +1,45 @@
+{
+  "item_id": "Q2",
+  "lane": "qwen_thinking_low",
+  "request_model_name": "qwen3.8-max",
+  "response_model_name": "qwen3.8-max",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "error_type": null,
+  "error_message": null,
+  "started_at": "2026-08-27T01:07:36.415+08:00",
+  "ended_at": "2026-08-27T01:08:01.204+08:00",
+  "elapsed_ms": 24789,
+  "retries": 0,
+  "usage": {
+    "completion_tokens": 1135,
+    "completion_tokens_details": {
+      "reasoning_tokens": 999,
+      "text_tokens": 1135
+    },
+    "prompt_tokens": 1610,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024,
+      "text_tokens": 1610
+    },
+    "total_tokens": 2745
+  },
+  "thinking": {
+    "reasoning_tokens": 999,
+    "nonempty_reasoning_field": "reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 3241
+  },
+  "analysis": {
+    "direct_json": false,
+    "fenced_json": false,
+    "schema_legal": false,
+    "schema": null,
+    "facts_preview": [],
+    "q4_causal_hits": [],
+    "task_err": "JSONDecodeError"
+  },
+  "raw_sha256": "c4d2b5d019068b275b0bd1e573a962a6f26529bf47837fce453bf1c880c98553"
+}

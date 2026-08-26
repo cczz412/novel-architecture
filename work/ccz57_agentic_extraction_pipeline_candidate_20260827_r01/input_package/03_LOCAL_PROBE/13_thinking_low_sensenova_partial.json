@@ -1,0 +1,233 @@
+{
+  "lane": "sensenova_thinking_low",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "request_model_id": "sensenova-6.8-flash-lite",
+  "expected_response_model": "sensenova-6.8-flash-lite",
+  "effort_note": "Token Plan 6.8 Flash Lite: none/low/medium/high; lowest ON is low",
+  "calls": 4,
+  "stop_reason": null,
+  "status": "COMPLETED",
+  "items": {
+    "Q1": {
+      "item_id": "Q1",
+      "lane": "sensenova_thinking_low",
+      "request_model_name": "sensenova-6.8-flash-lite",
+      "response_model_name": "sensenova-6.8-flash-lite",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T00:42:58.716+08:00",
+      "ended_at": "2026-08-27T00:43:07.938+08:00",
+      "elapsed_ms": 9222,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1590,
+        "completion_tokens": 1087,
+        "total_tokens": 2677,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "thinking": {
+        "reasoning_tokens": 0,
+        "nonempty_reasoning_field": "reasoning",
+        "thinking_appears_on": true,
+        "reasoning_chars": 1334
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 9,
+          "fact_count": 9
+        },
+        "facts_preview": [
+          "傍晚时分顾晚晴回到楼上",
+          "顾晚晴把还在滴水的折叠伞倒挂到门廊铁钩上",
+          "顾晚晴蹲下去用鞋尖把门口那滩雨水刮进地漏",
+          "顾晚晴伸手按墙上的开关",
+          "灯没有亮",
+          "顾晚晴没有再按第二次开关",
+          "顾晚晴走到走廊尽头",
+          "顾晚晴拧开应急手电",
+          "顾晚晴把光对准鞋架底下左右扫了两遍"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "b03077fe4a76032e64f436f95325fec5ddf8352c1db6f0b26eed8f211e83df54"
+    },
+    "Q2": {
+      "item_id": "Q2",
+      "lane": "sensenova_thinking_low",
+      "request_model_name": "sensenova-6.8-flash-lite",
+      "response_model_name": "sensenova-6.8-flash-lite",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T00:43:07.940+08:00",
+      "ended_at": "2026-08-27T00:43:21.020+08:00",
+      "elapsed_ms": 13080,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1584,
+        "completion_tokens": 1319,
+        "total_tokens": 2903,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "thinking": {
+        "reasoning_tokens": 0,
+        "nonempty_reasoning_field": "reasoning",
+        "thinking_appears_on": true,
+        "reasoning_chars": 1590
+      },
+      "analysis": {
+        "direct_json": false,
+        "fenced_json": false,
+        "schema_legal": false,
+        "schema": null,
+        "facts_preview": [],
+        "q4_causal_hits": [],
+        "task_err": "JSONDecodeError"
+      },
+      "raw_sha256": "84ad645c0a26de7a3f662392582016b836f80446d1e9628f53f530fa5d887be6"
+    },
+    "Q3": {
+      "item_id": "Q3",
+      "lane": "sensenova_thinking_low",
+      "request_model_name": "sensenova-6.8-flash-lite",
+      "response_model_name": "sensenova-6.8-flash-lite",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T00:43:21.021+08:00",
+      "ended_at": "2026-08-27T00:43:28.306+08:00",
+      "elapsed_ms": 7285,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1595,
+        "completion_tokens": 1120,
+        "total_tokens": 2715,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "thinking": {
+        "reasoning_tokens": 0,
+        "nonempty_reasoning_field": "reasoning",
+        "thinking_appears_on": true,
+        "reasoning_chars": 1934
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 9,
+          "fact_count": 10
+        },
+        "facts_preview": [
+          "乔米把工牌从工位夹上摘下来",
+          "褚衡摊开掌心准备接工牌",
+          "乔米把工牌塞进褚衡摊开的掌心",
+          "乔米对褚衡说从今天起不再给他做助理",
+          "褚衡没有把工牌还回去",
+          "褚衡把工牌卡片翻过去",
+          "褚衡把两人中间一直共用的抽屉锁上",
+          "乔米站在原处看了褚衡两秒",
+          "乔米把桌上共用的红笔推进抽屉缝",
+          "乔米转身离开"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "d325f82dd878b4df9806eeaa27ae86582519cadbdc9c0277f2025dd5817a97b4"
+    },
+    "Q4": {
+      "item_id": "Q4",
+      "lane": "sensenova_thinking_low",
+      "request_model_name": "sensenova-6.8-flash-lite",
+      "response_model_name": "sensenova-6.8-flash-lite",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T00:43:28.308+08:00",
+      "ended_at": "2026-08-27T00:43:35.314+08:00",
+      "elapsed_ms": 7006,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1593,
+        "completion_tokens": 704,
+        "total_tokens": 2297,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "thinking": {
+        "reasoning_tokens": 0,
+        "nonempty_reasoning_field": "reasoning",
+        "thinking_appears_on": true,
+        "reasoning_chars": 1303
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 9,
+          "fact_count": 9
+        },
+        "facts_preview": [
+          "冷库的温控器在午前跳闸",
+          "整箱荔枝很快开始渗水",
+          "裴小棠是仓管",
+          "裴小棠把这批货从“待发”改成“报损”",
+          "裴小棠通知司机取消下午去港东批发市场的车",
+          "司机回了一句“知道了”",
+          "司机把已经发动的货车熄了火",
+          "渗出水顺着托盘流到地面",
+          "裴小棠去拿拖把"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "9445fc8099bb33c947cce8076af8991419ee3ce277fd2d10faf099d2830ee5c8"
+    }
+  },
+  "retries": 0
+}

@@ -1,0 +1,38 @@
+{
+  "item_id": "Q4",
+  "lane": "ling_thinking_low",
+  "request_model_name": "Ling-3.0-flash",
+  "response_model_name": "Ling-3.0-flash",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "length",
+  "started_at": "2026-08-27T00:43:43.909+08:00",
+  "ended_at": "2026-08-27T00:43:59.847+08:00",
+  "elapsed_ms": 15938,
+  "retries": 0,
+  "usage": {
+    "completion_tokens": 4096,
+    "prompt_tokens": 1536,
+    "total_tokens": 5632,
+    "prompt_tokens_details": {
+      "cached_tokens": 1408
+    }
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": null,
+    "thinking_appears_on": false,
+    "reasoning_chars": 0
+  },
+  "analysis": {
+    "direct_json": false,
+    "fenced_json": false,
+    "schema_legal": false,
+    "schema": null,
+    "facts_preview": [],
+    "q4_causal_hits": [],
+    "task_err": "JSONDecodeError"
+  },
+  "raw_sha256": "3b1a738f399c9a715b9afc6d85984204154b1b08186d883be8026075520e2d76"
+}

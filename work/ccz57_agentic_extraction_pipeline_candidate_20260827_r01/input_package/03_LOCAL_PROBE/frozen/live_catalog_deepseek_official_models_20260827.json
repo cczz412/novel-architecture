@@ -1,0 +1,36 @@
+{
+  "fetched_at_start": "2026-08-27T00:08:24.441+08:00",
+  "fetched_at_end": "2026-08-27T00:08:24.848+08:00",
+  "http_status": 200,
+  "timed_out": false,
+  "headers": {
+    "Content-Type": "application/json",
+    "Date": "Wed, 26 Aug 2026 16:08:26 GMT"
+  },
+  "model_ids": [
+    "deepseek-v4-flash",
+    "deepseek-v4-pro",
+    "deepseek-v4-flash-vision-exp"
+  ],
+  "raw": {
+    "object": "list",
+    "data": [
+      {
+        "id": "deepseek-v4-flash",
+        "object": "model",
+        "owned_by": "deepseek"
+      },
+      {
+        "id": "deepseek-v4-pro",
+        "object": "model",
+        "owned_by": "deepseek"
+      },
+      {
+        "id": "deepseek-v4-flash-vision-exp",
+        "object": "model",
+        "owned_by": "deepseek"
+      }
+    ]
+  },
+  "sha256": "f20df3afd1dc080689aa1ba4e5bda383488d6d624797e46cb28abe0447f29acd"
+}

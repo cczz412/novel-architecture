@@ -1,0 +1,33 @@
+{
+  "item_id": "Q4",
+  "lane": "agent_plan_thinking_low",
+  "request_model_name": "glm-5-2-260601",
+  "response_model_name": "glm-5-2-260617",
+  "identity_drift": false,
+  "arkcli_exit_code": 0,
+  "started_at": "2026-08-27T00:54:30.805+08:00",
+  "ended_at": "2026-08-27T00:54:42.120+08:00",
+  "elapsed_ms": 11315,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1566,
+    "completion_tokens": 603,
+    "total_tokens": 2169
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": "envelope.reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 400
+  },
+  "analysis": {
+    "direct_json": false,
+    "fenced_json": false,
+    "schema_legal": false,
+    "schema": null,
+    "facts_preview": [],
+    "q4_causal_hits": [],
+    "task_err": "JSONDecodeError"
+  },
+  "raw_sha256": "695cf8ef50f143e7f1b663637cf1be99c36a14142ea907b30afc37066519dd3f"
+}

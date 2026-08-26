@@ -1,0 +1,111 @@
+{
+  "schema_version": "ccz57-l1-probe-execute-authority-v1",
+  "authority_id": "thinking_low_ab_20260827",
+  "not_a_c13_ticket": true,
+  "c13_schema_not_used": "v02-c13-execute-ticket.v1",
+  "does_not_overwrite": [
+    "frozen/execute_authority.json",
+    "05_运行回执.json",
+    "07_官方Flash非思考运行回执.json",
+    "09_AgentPlan第二批运行回执.json",
+    "11_sensenova68_ling30_run.json",
+    "MANIFEST.sha256"
+  ],
+  "authorized_by": "CZ 2026-08-27: 已经测过的模型全部开最低思考再试。不要上来就最高档。不改冻结 Prompt。不重跑已完成的非思考 32 次。",
+  "git_head_github_main": "8872887690fd018474a69979016b428f2c2faf56",
+  "identity": "Cursor Grok 4.6",
+  "linear_relation": "CCZ-57 exploratory only; no Linear/GitHub/Slack/Notion writes",
+  "design_note": "Same 4 frozen items. Lowest thinking ON per vendor. Not a 6-item new probe. Compare against existing non-thinking results.",
+  "models": [
+    {
+      "slot": "turbo",
+      "request_model_id": "doubao-seed-2-1-turbo-260628",
+      "channel": "agent_plan",
+      "thinking": "enabled",
+      "reasoning_effort": "low",
+      "note": "Volcengine minimal=no thinking; lowest ON is low"
+    },
+    {
+      "slot": "mini",
+      "request_model_id": "doubao-seed-2-0-mini-260215",
+      "channel": "agent_plan",
+      "thinking": "enabled",
+      "reasoning_effort": "low"
+    },
+    {
+      "slot": "lite",
+      "request_model_id": "doubao-seed-2-0-lite-260215",
+      "channel": "agent_plan",
+      "thinking": "enabled",
+      "reasoning_effort": "low"
+    },
+    {
+      "slot": "minimax_m3",
+      "request_model_id": "minimax-m3-modelhub",
+      "expected_response_model": "minimax-m3",
+      "channel": "agent_plan",
+      "thinking": "enabled",
+      "reasoning_effort": null,
+      "note": "lowest ON is enabled; do not send effort"
+    },
+    {
+      "slot": "glm_5_2",
+      "request_model_id": "glm-5-2-260601",
+      "expected_response_model": "glm-5-2-260617",
+      "channel": "agent_plan",
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "note": "no low; unset defaults to max; lowest ON is high"
+    },
+    {
+      "slot": "official_flash",
+      "request_model_id": "deepseek-v4-flash",
+      "channel": "deepseek_official",
+      "thinking": {
+        "type": "enabled"
+      },
+      "reasoning_effort": "low",
+      "note": "current official docs: low maps to low"
+    },
+    {
+      "slot": "sensenova_68_flash_lite",
+      "request_model_id": "sensenova-6.8-flash-lite",
+      "channel": "sensenova_token_plan",
+      "reasoning_effort": "low",
+      "note": "none is OFF; lowest ON is low"
+    },
+    {
+      "slot": "ling_30_flash",
+      "request_model_id": "Ling-3.0-flash",
+      "channel": "ant_ling",
+      "thinking": {
+        "type": "enabled"
+      },
+      "note": "no effort ladder; lowest ON is enabled"
+    }
+  ],
+  "sampling": {
+    "temperature": 0,
+    "response_format": {
+      "type": "json_object"
+    },
+    "max_tokens": 4096,
+    "automatic_retries": 0,
+    "human_retries": 0,
+    "max_sampling_calls": 32
+  },
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "schema_sha256": "aa73696981b3b75717202db117ffac4df7584aad1dd3a086084f1c33a1f08352",
+  "items": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "do_not_rerun_completed_nonthinking": true,
+  "do_not_edit_prompt": true,
+  "live_catalog_required_before_sampling": true,
+  "status": "COMPLETED_AFTER_LIVE_CATALOG",
+  "created_at": "2026-08-27T00:42:30+08:00",
+  "completed_at": "2026-08-27T00:58:01+08:00"
+}

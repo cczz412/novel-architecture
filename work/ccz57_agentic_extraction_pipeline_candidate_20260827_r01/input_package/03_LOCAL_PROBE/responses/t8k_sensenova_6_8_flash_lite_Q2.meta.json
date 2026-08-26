@@ -1,0 +1,42 @@
+{
+  "item_id": "Q2",
+  "lane": "sensenova_thinking_low",
+  "request_model_name": "sensenova-6.8-flash-lite",
+  "response_model_name": "sensenova-6.8-flash-lite",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "started_at": "2026-08-27T01:06:34.230+08:00",
+  "ended_at": "2026-08-27T01:06:47.274+08:00",
+  "elapsed_ms": 13044,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1584,
+    "completion_tokens": 2005,
+    "total_tokens": 3589,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "thinking": {
+    "reasoning_tokens": 0,
+    "nonempty_reasoning_field": "reasoning",
+    "thinking_appears_on": true,
+    "reasoning_chars": 2905
+  },
+  "analysis": {
+    "direct_json": false,
+    "fenced_json": false,
+    "schema_legal": false,
+    "schema": null,
+    "facts_preview": [],
+    "q4_causal_hits": [],
+    "task_err": "JSONDecodeError"
+  },
+  "raw_sha256": "e152568c410f4ef3eb58435cde55b1095c0cd94834d1b026805e511e8540dd40"
+}

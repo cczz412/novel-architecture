@@ -1,0 +1,252 @@
+{
+  "lane": "deepseek_thinking_low",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "request_model_id": "deepseek-v4-flash",
+  "expected_response_model": "deepseek-v4-flash",
+  "effort_note": "official docs: low maps to low; this is lowest ON, not max/high",
+  "calls": 4,
+  "stop_reason": null,
+  "status": "COMPLETED",
+  "items": {
+    "Q1": {
+      "item_id": "Q1",
+      "lane": "deepseek_thinking_low",
+      "request_model_name": "deepseek-v4-flash",
+      "response_model_name": "deepseek-v4-flash",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T00:42:55.791+08:00",
+      "ended_at": "2026-08-27T00:43:00.195+08:00",
+      "elapsed_ms": 4404,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1563,
+        "completion_tokens": 650,
+        "total_tokens": 2213,
+        "prompt_tokens_details": {
+          "cached_tokens": 1536
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 389
+        },
+        "prompt_cache_hit_tokens": 1536,
+        "prompt_cache_miss_tokens": 27
+      },
+      "thinking": {
+        "reasoning_tokens": 389,
+        "nonempty_reasoning_field": "reasoning_content",
+        "thinking_appears_on": true,
+        "reasoning_chars": 553
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 8,
+          "fact_count": 8
+        },
+        "facts_preview": [
+          "顾晚晴傍晚回楼",
+          "顾晚晴把还在滴水的折叠伞倒挂到门廊铁钩上",
+          "顾晚晴蹲下去，用鞋尖把门口那滩雨水一点点刮进地漏",
+          "顾晚晴伸手去按墙上的开关，灯没有亮",
+          "顾晚晴没有再按第二次开关",
+          "顾晚晴走到走廊尽头",
+          "顾晚晴拧开应急手电",
+          "顾晚晴把光对准鞋架底下，左右扫了两遍"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "42302b8fd8c9672508d9aa1cacdd06333909d8d59fcc535905d64d2b6ce73af7"
+    },
+    "Q2": {
+      "item_id": "Q2",
+      "lane": "deepseek_thinking_low",
+      "request_model_name": "deepseek-v4-flash",
+      "response_model_name": "deepseek-v4-flash",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T00:43:00.197+08:00",
+      "ended_at": "2026-08-27T00:43:16.276+08:00",
+      "elapsed_ms": 16079,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1558,
+        "completion_tokens": 1727,
+        "total_tokens": 3285,
+        "prompt_tokens_details": {
+          "cached_tokens": 1536
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1439
+        },
+        "prompt_cache_hit_tokens": 1536,
+        "prompt_cache_miss_tokens": 22
+      },
+      "thinking": {
+        "reasoning_tokens": 1439,
+        "nonempty_reasoning_field": "reasoning_content",
+        "thinking_appears_on": true,
+        "reasoning_chars": 2252
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 10,
+          "fact_count": 10
+        },
+        "facts_preview": [
+          "对讲机里传来一句“货已经卸完”",
+          "沈北川原本站得笔直",
+          "沈北川的肩膀一下子塌下去",
+          "沈北川手里的登记板没有掉进泥里",
+          "沈北川顺着厢车门沿坐到地上",
+          "沈北川的喉结滚动两下",
+          "沈北川把一直咬紧的牙松开",
+          "沈北川的呼吸变长",
+          "泥水渗进沈北川的裤脚",
+          "沈北川没有立刻站起来"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "4585fd924e3cd25fc43b4caea868734101f329f4ddc9b1244262deb4afc71f43"
+    },
+    "Q3": {
+      "item_id": "Q3",
+      "lane": "deepseek_thinking_low",
+      "request_model_name": "deepseek-v4-flash",
+      "response_model_name": "deepseek-v4-flash",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T00:43:16.278+08:00",
+      "ended_at": "2026-08-27T00:43:41.691+08:00",
+      "elapsed_ms": 25413,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1570,
+        "completion_tokens": 3152,
+        "total_tokens": 4722,
+        "prompt_tokens_details": {
+          "cached_tokens": 1536
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2862
+        },
+        "prompt_cache_hit_tokens": 1536,
+        "prompt_cache_miss_tokens": 34
+      },
+      "thinking": {
+        "reasoning_tokens": 2862,
+        "nonempty_reasoning_field": "reasoning_content",
+        "thinking_appears_on": true,
+        "reasoning_chars": 4118
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 8,
+          "fact_count": 9
+        },
+        "facts_preview": [
+          "乔米把工牌从工位夹上摘下来",
+          "乔米把工牌塞进褚衡摊开的掌心",
+          "乔米说“从今天起，我不再给你做助理。”",
+          "褚衡没有把工牌还回去",
+          "褚衡把工牌卡片翻过去",
+          "褚衡伸手把两人中间那条一直共用的抽屉锁上",
+          "乔米站在原处看了他两秒",
+          "乔米把桌上那支共用的红笔推进抽屉缝",
+          "乔米转身走了"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "174f6d8acf18c762f9723a37f466da0f4754924c9605dafa6d0d9769d6a90521"
+    },
+    "Q4": {
+      "item_id": "Q4",
+      "lane": "deepseek_thinking_low",
+      "request_model_name": "deepseek-v4-flash",
+      "response_model_name": "deepseek-v4-flash",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T00:43:41.693+08:00",
+      "ended_at": "2026-08-27T00:43:59.456+08:00",
+      "elapsed_ms": 17763,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1568,
+        "completion_tokens": 2055,
+        "total_tokens": 3623,
+        "prompt_tokens_details": {
+          "cached_tokens": 1536
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1785
+        },
+        "prompt_cache_hit_tokens": 1536,
+        "prompt_cache_miss_tokens": 32
+      },
+      "thinking": {
+        "reasoning_tokens": 1785,
+        "nonempty_reasoning_field": "reasoning_content",
+        "thinking_appears_on": true,
+        "reasoning_chars": 2897
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 7,
+          "fact_count": 8
+        },
+        "facts_preview": [
+          "冷库的温控器在午前跳闸。",
+          "整箱荔枝很快开始渗水。",
+          "裴小棠把这批货从“待发”改成“报损”。",
+          "裴小棠通知司机取消下午那趟去港东批发市场的车。",
+          "司机回了一句“知道了”。",
+          "司机把已经发动的货车熄了火。",
+          "渗出水顺着托盘流到地面。",
+          "裴小棠又去拿拖把。"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "8f6c863ea602180b86890e6af792ccb8c332c4537aadb99fbb03bc0bfb456a69"
+    }
+  },
+  "retries": 0
+}

@@ -1,0 +1,187 @@
+{
+  "schema_version": "ccz57-l1-run-receipt-v1",
+  "status": "COMPLETED_WITH_ONE_MODEL_STOPPED_AT_CATALOG",
+  "identity": "Codex",
+  "linear_relation": "CCZ-57 exploratory only; no Linear/GitHub/Slack/Notion writes",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "worktree": "wt-ccz57-l1-probe",
+  "worktree_modified": false,
+  "planned_calls": 8,
+  "actual_sampling_calls": 4,
+  "retries": 0,
+  "automatic_retries": 0,
+  "human_retries": 0,
+  "models_selected": [
+    {
+      "request_model_id": "doubao-seed-2-1-turbo-260628",
+      "expected_response_model": "doubao-seed-2-1-turbo-260628",
+      "calls": 4,
+      "stopped": false
+    },
+    {
+      "request_model_id": "deepseek-v4-flash-modelhub",
+      "expected_response_model": "deepseek-v4-flash-260425",
+      "calls": 0,
+      "stopped": true,
+      "stop_reason": "live catalog identity mismatch; no fallback"
+    }
+  ],
+  "gates": {
+    "c13_execute_ticket_used": false,
+    "c13_execute_ticket_forged": false,
+    "agent_plan_live_catalog_checked": true,
+    "live_catalog_sha256": "1976ce672586d0c60ba7ceb6a47915d44dd0f4687647c37fd829743ba2fafc9e",
+    "arkcli_profile": "agent-plan_cn-beijing_personal",
+    "env_key_overrides_unset": true,
+    "transport": "arkcli +chat"
+  },
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "input_material_sha256": {
+    "Q1": "e8bdbb3db916f2170225f906e8d0ca78268b0f05b018338aa694aa4d62785e72",
+    "Q2": "f3793e9dbbfd7d01b1515beac438185ea57902b7038f6bd925d2c88461ac5d1b",
+    "Q3": "537d8f1735f3a610b92bbc8180e18be525f834d96737954bc1963693f9e94ad0",
+    "Q4": "4673ac4abe647ef475d0007c25b4f4f5eae1ea04c80091610dca02936bfc8c33"
+  },
+  "calls": [
+    {
+      "item_id": "Q1",
+      "request_model_name": "doubao-seed-2-1-turbo-260628",
+      "response_model_name": "doubao-seed-2-1-turbo-260628",
+      "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+      "input_material_sha256": "e8bdbb3db916f2170225f906e8d0ca78268b0f05b018338aa694aa4d62785e72",
+      "raw_response_sha256": "45f22f2a5b4c2634880cfccfba348532d6df9178cd8a1c37346ee9ce9bfcbefb",
+      "started_at": "2026-08-26T23:39:31.833+08:00",
+      "ended_at": "2026-08-26T23:39:42.105+08:00",
+      "elapsed_ms": 10271,
+      "http_or_interface_status": {
+        "arkcli_exit_code": 0,
+        "timed_out": false,
+        "send_status": "sent_completed"
+      },
+      "legal_envelope_json": true,
+      "legal_task_json": true,
+      "truncated": false,
+      "timeout": false,
+      "auth_failure": false,
+      "identity_drift": false,
+      "send_status": "sent_completed",
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1653,
+        "completion_tokens": 374,
+        "total_tokens": 2027
+      },
+      "fact_count": 9,
+      "request_path": "requests/doubao_seed_2_1_turbo_Q1.json",
+      "stdout_path": "responses/raw/doubao_seed_2_1_turbo_Q1.stdout.bin"
+    },
+    {
+      "item_id": "Q2",
+      "request_model_name": "doubao-seed-2-1-turbo-260628",
+      "response_model_name": "doubao-seed-2-1-turbo-260628",
+      "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+      "input_material_sha256": "f3793e9dbbfd7d01b1515beac438185ea57902b7038f6bd925d2c88461ac5d1b",
+      "raw_response_sha256": "8b536d4bbb8c0ee404d1a943fcb4d21e853b67872330c13dbae812dd453a0fc6",
+      "started_at": "2026-08-26T23:40:34.636+08:00",
+      "ended_at": "2026-08-26T23:40:46.983+08:00",
+      "elapsed_ms": 12347,
+      "http_or_interface_status": {
+        "arkcli_exit_code": 0,
+        "timed_out": false,
+        "send_status": "sent_completed"
+      },
+      "legal_envelope_json": true,
+      "legal_task_json": true,
+      "truncated": false,
+      "timeout": false,
+      "auth_failure": false,
+      "identity_drift": false,
+      "send_status": "sent_completed",
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1645,
+        "completion_tokens": 543,
+        "total_tokens": 2188
+      },
+      "fact_count": 12,
+      "request_path": "requests/doubao_seed_2_1_turbo_Q2.json",
+      "stdout_path": "responses/raw/doubao_seed_2_1_turbo_Q2.stdout.bin"
+    },
+    {
+      "item_id": "Q3",
+      "request_model_name": "doubao-seed-2-1-turbo-260628",
+      "response_model_name": "doubao-seed-2-1-turbo-260628",
+      "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+      "input_material_sha256": "537d8f1735f3a610b92bbc8180e18be525f834d96737954bc1963693f9e94ad0",
+      "raw_response_sha256": "bc31a02bd4a3ffee70bda346503e578a7666778a8b5b2a88130ce1e9b3b25dc6",
+      "started_at": "2026-08-26T23:40:46.985+08:00",
+      "ended_at": "2026-08-26T23:40:56.737+08:00",
+      "elapsed_ms": 9752,
+      "http_or_interface_status": {
+        "arkcli_exit_code": 0,
+        "timed_out": false,
+        "send_status": "sent_completed"
+      },
+      "legal_envelope_json": true,
+      "legal_task_json": true,
+      "truncated": false,
+      "timeout": false,
+      "auth_failure": false,
+      "identity_drift": false,
+      "send_status": "sent_completed",
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1664,
+        "completion_tokens": 418,
+        "total_tokens": 2082
+      },
+      "fact_count": 9,
+      "request_path": "requests/doubao_seed_2_1_turbo_Q3.json",
+      "stdout_path": "responses/raw/doubao_seed_2_1_turbo_Q3.stdout.bin"
+    },
+    {
+      "item_id": "Q4",
+      "request_model_name": "doubao-seed-2-1-turbo-260628",
+      "response_model_name": "doubao-seed-2-1-turbo-260628",
+      "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+      "input_material_sha256": "4673ac4abe647ef475d0007c25b4f4f5eae1ea04c80091610dca02936bfc8c33",
+      "raw_response_sha256": "53fc5852b143f402da79b12d234eb0a5572c99d193a99ed3ec39e3f62f182335",
+      "started_at": "2026-08-26T23:40:56.739+08:00",
+      "ended_at": "2026-08-26T23:41:08.928+08:00",
+      "elapsed_ms": 12188,
+      "http_or_interface_status": {
+        "arkcli_exit_code": 0,
+        "timed_out": false,
+        "send_status": "sent_completed"
+      },
+      "legal_envelope_json": true,
+      "legal_task_json": true,
+      "truncated": false,
+      "timeout": false,
+      "auth_failure": false,
+      "identity_drift": false,
+      "send_status": "sent_completed",
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1658,
+        "completion_tokens": 464,
+        "total_tokens": 2122
+      },
+      "fact_count": 9,
+      "request_path": "requests/doubao_seed_2_1_turbo_Q4.json",
+      "stdout_path": "responses/raw/doubao_seed_2_1_turbo_Q4.stdout.bin"
+    }
+  ],
+  "not_claimed": [
+    "accuracy",
+    "total_score",
+    "ranking",
+    "model_pass_fail",
+    "model_generally_usable",
+    "stability_proven",
+    "gold_candidate",
+    "CCZ-57 complete",
+    "CCZ-84 replaced"
+  ],
+  "completed_at": "2026-08-26T23:43:43+08:00"
+}

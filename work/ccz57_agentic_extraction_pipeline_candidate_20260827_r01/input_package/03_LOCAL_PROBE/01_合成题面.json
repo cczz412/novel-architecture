@@ -1,0 +1,80 @@
+{
+  "schema_version": "ccz57-l1-synthetic-items-v1",
+  "authority": "本窗口 2026-08-26 全新人工编写；不是 Gold，不是 CCZ-84 题面，不是真实小说正文。",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "shared_context_card_sha256": "0c3b85ea6e1799de7ac6db85e2c0342d3a695f0f7aad88e8da2dac1d9365c205",
+  "system_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "user_template_sha256": "f80d8967b6ad75770d746d5ce307dafaf23bd76383c627e53813a386420e257b",
+  "items": [
+    {
+      "item_id": "Q1",
+      "target": "人物动作",
+      "source_file": "synthetic_q1_action.txt",
+      "text": "傍晚回楼，顾晚晴先把还在滴水的折叠伞倒挂到门廊铁钩上，又蹲下去，用鞋尖把门口那滩雨水一点点刮进地漏。她伸手去按墙上的开关，灯没有亮。她没有再按第二次，而是走到走廊尽头，拧开应急手电，把光对准鞋架底下，左右扫了两遍。",
+      "intended_facts_for_observer_only": [
+        "顾晚晴把滴水的折叠伞倒挂到门廊铁钩上",
+        "顾晚晴用鞋尖把门口雨水刮进地漏",
+        "顾晚晴按墙上开关",
+        "灯没有亮",
+        "顾晚晴拧开应急手电并把光照向鞋架底下扫了两遍"
+      ],
+      "not_given_to_model": true,
+      "han_count": 96,
+      "char_count_including_punctuation": 107,
+      "input_sha256": "e8bdbb3db916f2170225f906e8d0ca78268b0f05b018338aa694aa4d62785e72",
+      "user_message_sha256": "a44a5696ac4e5d6579e16abb58ea39e874e74d8281fd2137c7495270ade27313"
+    },
+    {
+      "item_id": "Q2",
+      "target": "人物状态变化",
+      "source_file": "synthetic_q2_state.txt",
+      "text": "对讲机里忽然传来一句“货已经卸完”。沈北川原本站得笔直，肩膀一下子塌下去，手里的登记板差点掉进泥里。他顺着厢车门沿坐到地上，喉结滚动两下，这才把一直咬紧的牙松开，呼吸也跟着变长。泥水渗进裤脚，他没有立刻站起来。",
+      "intended_facts_for_observer_only": [
+        "沈北川原本站得笔直",
+        "听到货已卸完后肩膀塌下去",
+        "沈北川坐到地上",
+        "沈北川松开咬紧的牙，呼吸变长",
+        "他没有立刻站起来"
+      ],
+      "not_given_to_model": true,
+      "han_count": 93,
+      "char_count_including_punctuation": 105,
+      "input_sha256": "f3793e9dbbfd7d01b1515beac438185ea57902b7038f6bd925d2c88461ac5d1b",
+      "user_message_sha256": "261916a394434a876f13764f9452ee6764a87bbaf16bf4400b4e9db049c5a600"
+    },
+    {
+      "item_id": "Q3",
+      "target": "人物关系变化",
+      "source_file": "synthetic_q3_relation.txt",
+      "text": "乔米把工牌从工位夹上摘下来，塞进褚衡摊开的掌心，说：“从今天起，我不再给你做助理。”褚衡没有把工牌还回去，只把卡片翻过去，伸手把两人中间那条一直共用的抽屉锁上。乔米站在原处看了他两秒，把桌上那支共用的红笔也推进抽屉缝，转身走了。",
+      "intended_facts_for_observer_only": [
+        "乔米把工牌交给褚衡",
+        "乔米声明不再给褚衡做助理",
+        "褚衡锁上两人共用的抽屉",
+        "乔米把共用红笔推进抽屉缝后离开"
+      ],
+      "not_given_to_model": true,
+      "han_count": 101,
+      "char_count_including_punctuation": 114,
+      "input_sha256": "537d8f1735f3a610b92bbc8180e18be525f834d96737954bc1963693f9e94ad0",
+      "user_message_sha256": "514d0d82468e60aebe486778e9cbf130bb3e75913c3e91cbbde8c27bc96445c1"
+    },
+    {
+      "item_id": "Q4",
+      "target": "明确因果链",
+      "source_file": "synthetic_q4_cause.txt",
+      "text": "冷库的温控器在午前跳闸，整箱荔枝很快开始渗水。仓管裴小棠把这批货从“待发”改成“报损”，并通知司机取消下午那趟去港东批发市场的车。司机回了一句“知道了”，便把已经发动的货车熄了火。渗出水顺着托盘流到地面，裴小棠又去拿拖把。",
+      "intended_facts_for_observer_only": [
+        "温控器午前跳闸导致荔枝渗水",
+        "裴小棠因此把货从待发放成报损",
+        "裴小棠通知取消去港东批发市场的车",
+        "司机因此熄火"
+      ],
+      "not_given_to_model": true,
+      "han_count": 97,
+      "char_count_including_punctuation": 111,
+      "input_sha256": "4673ac4abe647ef475d0007c25b4f4f5eae1ea04c80091610dca02936bfc8c33",
+      "user_message_sha256": "70e345c4cd7aaf3dbec59b67c6ff1b2685ecc8701b45700d97d1ad878fd58682"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "item_id": "Q1",
+  "lane": "deepseek_thinking_low",
+  "request_model_name": "deepseek-v4-flash",
+  "response_model_name": "deepseek-v4-flash",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "started_at": "2026-08-27T00:42:55.791+08:00",
+  "ended_at": "2026-08-27T00:43:00.195+08:00",
+  "elapsed_ms": 4404,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1563,
+    "completion_tokens": 650,
+    "total_tokens": 2213,
+    "prompt_tokens_details": {
+      "cached_tokens": 1536
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 389
+    },
+    "prompt_cache_hit_tokens": 1536,
+    "prompt_cache_miss_tokens": 27
+  },
+  "thinking": {
+    "reasoning_tokens": 389,
+    "nonempty_reasoning_field": "reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 553
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 8,
+      "fact_count": 8
+    },
+    "facts_preview": [
+      "顾晚晴傍晚回楼",
+      "顾晚晴把还在滴水的折叠伞倒挂到门廊铁钩上",
+      "顾晚晴蹲下去，用鞋尖把门口那滩雨水一点点刮进地漏",
+      "顾晚晴伸手去按墙上的开关，灯没有亮",
+      "顾晚晴没有再按第二次开关",
+      "顾晚晴走到走廊尽头",
+      "顾晚晴拧开应急手电",
+      "顾晚晴把光对准鞋架底下，左右扫了两遍"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "42302b8fd8c9672508d9aa1cacdd06333909d8d59fcc535905d64d2b6ce73af7"
+}

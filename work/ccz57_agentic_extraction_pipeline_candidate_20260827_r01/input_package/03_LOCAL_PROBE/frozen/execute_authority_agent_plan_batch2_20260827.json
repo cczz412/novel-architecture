@@ -1,0 +1,66 @@
+{
+  "schema_version": "ccz57-l1-probe-execute-authority-v1",
+  "authority_id": "agent_plan_batch2_nonthinking_20260827",
+  "not_a_c13_ticket": true,
+  "authorized_by": "CZ 2026-08-27: 再测几个模型；Agent Plan 里的模型都可以试。统一非思考。Prompt 与四题冻结不改。不重跑 Doubao、不重跑官方 Flash。",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "provider": "volcengine_agent_plan",
+  "arkcli_profile": "agent-plan_cn-beijing_personal",
+  "transport": "arkcli +chat",
+  "sampling": {
+    "thinking": "disabled",
+    "temperature": 0,
+    "text_format": "json_object",
+    "max_output_tokens": 4096,
+    "automatic_retries": 0,
+    "human_retries": 0
+  },
+  "skip": {
+    "auto": "forbidden",
+    "doubao-seed-2-1-turbo-260628": "already sampled this probe",
+    "official deepseek-v4-flash": "already sampled on official API; this batch is Agent Plan only"
+  },
+  "models": [
+    {
+      "slot": "mini",
+      "request_model_id": "doubao-seed-2-0-mini-260215",
+      "expected_response_model": "doubao-seed-2-0-mini-260215"
+    },
+    {
+      "slot": "lite",
+      "request_model_id": "doubao-seed-2-0-lite-260215",
+      "expected_response_model": "doubao-seed-2-0-lite-260215"
+    },
+    {
+      "slot": "minimax_m3",
+      "request_model_id": "minimax-m3-modelhub",
+      "expected_response_model": "minimax-m3"
+    },
+    {
+      "slot": "glm_5_2",
+      "request_model_id": "glm-5-2-260601",
+      "expected_response_model": "glm-5-2-260617"
+    }
+  ],
+  "not_in_this_batch": [
+    "doubao-seed-evolving-latest-version",
+    "glm-5-3-260801",
+    "deepseek-v4-pro-ga-260813",
+    "deepseek-v4-flash-260801",
+    "kimi-k3-260701",
+    "kimi-k2-7-code-260601"
+  ],
+  "catalog_path": "frozen/live_catalog_plans_model_list_20260827.json",
+  "catalog_sha256": "1976ce672586d0c60ba7ceb6a47915d44dd0f4687647c37fd829743ba2fafc9e",
+  "resources_path": "frozen/live_resources_text_20260827.json",
+  "resources_sha256": "2983a36657b0247a79fef6094d48513869d1ff6f4b3069fbbd2bb8a9e6f234da",
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "items": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "max_sampling_calls": 16,
+  "status": "READY_AFTER_LIVE_CATALOG"
+}

@@ -1,0 +1,206 @@
+{
+  "schema_version": "ccz57-l1-sensenova68-ling30-receipt-v1",
+  "status": "COMPLETED_8_OF_8",
+  "identity": "Cursor Grok",
+  "linear_relation": "CCZ-57 exploratory only; no Linear/GitHub/Slack/Notion writes",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "authorized_by": "CZ 2026-08-27: sensenova的6.8flash 和ling3.0flash 要试一下。统一非思考。不改 Prompt，不重跑已完成模型。",
+  "sampling": {
+    "temperature": 0,
+    "text_format": "json_object",
+    "max_tokens": 4096,
+    "retries": 0,
+    "sensenova_thinking": {
+      "reasoning_effort": "none"
+    },
+    "ant_ling_thinking": {
+      "type": "disabled"
+    }
+  },
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "schema_id": "novel-fact-extraction-v2.1",
+  "schema_sha256": "aa73696981b3b75717202db117ffac4df7584aad1dd3a086084f1c33a1f08352",
+  "schema_recheck_engine": "jsonschema.Draft202012Validator",
+  "planned_calls": 8,
+  "actual_sampling_calls": 8,
+  "retries": 0,
+  "not_run_this_round": [
+    "qwen3.8-max",
+    "z-ai/glm-5.3-flash"
+  ],
+  "models": [
+    {
+      "slot": "sensenova_6_8_flash",
+      "provider": "sensenova",
+      "cz_name": "6.8flash",
+      "request_model_id": "sensenova-6.8-flash-lite",
+      "expected_response_model": "sensenova-6.8-flash-lite",
+      "model_selection_note": "CZ said 6.8flash; official Token Plan 6.8 Flash product currently is Flash Lite; stronger 6.8 Flash listed as coming soon; not a 6.7 swap",
+      "catalog_path": "frozen/live_catalog_sensenova_models_20260827.json",
+      "catalog_sha256": "c6f2bdb7747a2a95571056e905a3b191f9b6822be512d1c87eea423dc12a3268",
+      "catalog_http_status": 200,
+      "live_catalog_ids": [
+        "sensenova-6.7-flash-lite",
+        "deepseek-v4-flash",
+        "glm-5.2",
+        "sensenova-u1-fast",
+        "sensenova-6.8-flash-lite",
+        "sensenova-u1.5-lite"
+      ],
+      "github_allowed_models_missing_6_8": true,
+      "calls": 4,
+      "identity_drift": false,
+      "stop_reason": null,
+      "status": "COMPLETED",
+      "items": {
+        "Q1": {
+          "http_status": 200,
+          "direct_json": true,
+          "fenced_json": false,
+          "schema_legal": true,
+          "empty_speaker": 0,
+          "omitted_speaker": 9,
+          "fact_count": 9,
+          "q4_causal_written_as_one": false,
+          "thinking_appears_on": false,
+          "reasoning_tokens": 0,
+          "response_model": "sensenova-6.8-flash-lite",
+          "identity_drift": false,
+          "finish_reason": "stop"
+        },
+        "Q2": {
+          "http_status": 200,
+          "direct_json": true,
+          "fenced_json": false,
+          "schema_legal": true,
+          "empty_speaker": 0,
+          "omitted_speaker": 7,
+          "fact_count": 7,
+          "q4_causal_written_as_one": false,
+          "thinking_appears_on": false,
+          "reasoning_tokens": 0,
+          "response_model": "sensenova-6.8-flash-lite",
+          "identity_drift": false,
+          "finish_reason": "stop"
+        },
+        "Q3": {
+          "http_status": 200,
+          "direct_json": true,
+          "fenced_json": false,
+          "schema_legal": true,
+          "empty_speaker": 0,
+          "omitted_speaker": 7,
+          "fact_count": 8,
+          "q4_causal_written_as_one": false,
+          "thinking_appears_on": false,
+          "reasoning_tokens": 0,
+          "response_model": "sensenova-6.8-flash-lite",
+          "identity_drift": false,
+          "finish_reason": "stop"
+        },
+        "Q4": {
+          "http_status": 200,
+          "direct_json": true,
+          "fenced_json": false,
+          "schema_legal": true,
+          "empty_speaker": 0,
+          "omitted_speaker": 8,
+          "fact_count": 8,
+          "q4_causal_written_as_one": false,
+          "thinking_appears_on": false,
+          "reasoning_tokens": 0,
+          "response_model": "sensenova-6.8-flash-lite",
+          "identity_drift": false,
+          "finish_reason": "stop"
+        }
+      }
+    },
+    {
+      "slot": "ling_3_0_flash",
+      "provider": "ant_ling",
+      "cz_name": "ling3.0flash",
+      "request_model_id": "Ling-3.0-flash",
+      "expected_response_model": "Ling-3.0-flash",
+      "model_selection_note": "live_catalog_exact",
+      "catalog_path": "frozen/live_catalog_ant_ling_models_20260827.json",
+      "catalog_sha256": "b702fbfe9de0dde2466a8b20367bc0ddc5766f18525fed2343130f2f934201b6",
+      "catalog_http_status": 200,
+      "live_catalog_ids": [
+        "AntAngelMed",
+        "Ling-2.5-1T",
+        "Ling-2.6-1T",
+        "Ling-2.6-flash",
+        "Ling-3.0-flash",
+        "Ling-3.0-tiny",
+        "Ring-2.5-1T",
+        "Ring-2.6-1T"
+      ],
+      "calls": 4,
+      "identity_drift": false,
+      "stop_reason": null,
+      "status": "COMPLETED",
+      "items": {
+        "Q1": {
+          "http_status": 200,
+          "direct_json": true,
+          "fenced_json": false,
+          "schema_legal": true,
+          "empty_speaker": 0,
+          "omitted_speaker": 5,
+          "fact_count": 5,
+          "q4_causal_written_as_one": false,
+          "thinking_appears_on": false,
+          "reasoning_tokens": null,
+          "response_model": "Ling-3.0-flash",
+          "identity_drift": false,
+          "finish_reason": "stop"
+        },
+        "Q2": {
+          "http_status": 200,
+          "direct_json": true,
+          "fenced_json": false,
+          "schema_legal": true,
+          "empty_speaker": 0,
+          "omitted_speaker": 0,
+          "fact_count": 10,
+          "q4_causal_written_as_one": false,
+          "thinking_appears_on": false,
+          "reasoning_tokens": null,
+          "response_model": "Ling-3.0-flash",
+          "identity_drift": false,
+          "finish_reason": "stop"
+        },
+        "Q3": {
+          "http_status": 200,
+          "direct_json": true,
+          "fenced_json": false,
+          "schema_legal": true,
+          "empty_speaker": 0,
+          "omitted_speaker": 8,
+          "fact_count": 8,
+          "q4_causal_written_as_one": false,
+          "thinking_appears_on": false,
+          "reasoning_tokens": null,
+          "response_model": "Ling-3.0-flash",
+          "identity_drift": false,
+          "finish_reason": "stop"
+        },
+        "Q4": {
+          "http_status": 200,
+          "direct_json": true,
+          "fenced_json": false,
+          "schema_legal": true,
+          "empty_speaker": 0,
+          "omitted_speaker": 8,
+          "fact_count": 8,
+          "q4_causal_written_as_one": false,
+          "thinking_appears_on": false,
+          "reasoning_tokens": null,
+          "response_model": "Ling-3.0-flash",
+          "identity_drift": false,
+          "finish_reason": "stop"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "resp_021787761113644d3a5eaea6011fe6a16a81478091c729335fccb",
+  "model": "doubao-seed-2-0-lite-260215",
+  "content": "{\"facts\":[{\"fact\":\"傍晚顾晚晴回到楼里\",\"status\":\"已发生\",\"evidence\":\"傍晚回楼，顾晚晴先把还在滴水的折叠伞倒挂到门廊铁钩上\"},{\"fact\":\"顾晚晴把还在滴水的折叠伞倒挂到门廊铁钩上\",\"status\":\"已发生\",\"evidence\":\"顾晚晴先把还在滴水的折叠伞倒挂到门廊铁钩上\"},{\"fact\":\"顾晚晴蹲下去用鞋尖把门口那滩雨水一点点刮进地漏\",\"status\":\"已发生\",\"evidence\":\"又蹲下去，用鞋尖把门口那滩雨水一点点刮进地漏\"},{\"fact\":\"顾晚晴伸手去按墙上的开关\",\"status\":\"已发生\",\"evidence\":\"她伸手去按墙上的开关，灯没有亮\"},{\"fact\":\"顾晚晴按开关后灯没有亮\",\"status\":\"否定\",\"evidence\":\"她伸手去按墙上的开关，灯没有亮\"},{\"fact\":\"顾晚晴没有再按第二次开关\",\"status\":\"否定\",\"evidence\":\"她没有再按第二次\"},{\"fact\":\"顾晚晴走到走廊尽头\",\"status\":\"已发生\",\"evidence\":\"而是走到走廊尽头，拧开应急手电\"},{\"fact\":\"顾晚晴拧开了应急手电\",\"status\":\"已发生\",\"evidence\":\"而是走到走廊尽头，拧开应急手电\"},{\"fact\":\"顾晚晴把应急手电的光对准鞋架底下左右扫了两遍\",\"status\":\"已发生\",\"evidence\":\"把光对准鞋架底下，左右扫了两遍\"}]}",
+  "usage": {
+    "prompt_tokens": 1653,
+    "completion_tokens": 318,
+    "total_tokens": 1971
+  },
+  "object": "response",
+  "status": "completed",
+  "created_at": 1787761114,
+  "store": false,
+  "caching": {
+    "type": "disabled"
+  },
+  "thinking": {
+    "type": "disabled"
+  },
+  "text_format": "json_object"
+}

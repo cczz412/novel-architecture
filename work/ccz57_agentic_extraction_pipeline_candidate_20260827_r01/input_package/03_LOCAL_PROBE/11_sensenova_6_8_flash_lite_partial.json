@@ -1,0 +1,183 @@
+{
+  "provider": "sensenova",
+  "status": "COMPLETED",
+  "request_model_id": "sensenova-6.8-flash-lite",
+  "expected_response_model": "sensenova-6.8-flash-lite",
+  "model_selection_note": "CZ said 6.8flash; official Token Plan 6.8 Flash product currently is Flash Lite; stronger 6.8 Flash listed as coming soon; not a 6.7 swap",
+  "catalog_path": "frozen/live_catalog_sensenova_models_20260827.json",
+  "catalog_model_count": 6,
+  "calls_made": 4,
+  "max_calls": 4,
+  "retries": 0,
+  "stop_reason": null,
+  "items": {
+    "Q1": {
+      "http_status": 200,
+      "direct_json": true,
+      "fenced_json": false,
+      "schema_legal": true,
+      "schema_legal_after_fence": false,
+      "schema_direct": {
+        "schema_legal": true,
+        "error_count": 0,
+        "first_error": null,
+        "empty_speaker": 0,
+        "omitted_speaker": 9,
+        "fact_count": 9
+      },
+      "schema_fenced": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 9,
+      "fact_count": 9,
+      "facts_preview": [
+        "顾晚晴傍晚回楼",
+        "顾晚晴把还在滴水的折叠伞倒挂到门廊铁钩上",
+        "顾晚晴蹲下去用鞋尖把门口那滩雨水一点点刮进地漏",
+        "顾晚晴伸手去按墙上的开关",
+        "墙上的开关按下去后灯没有亮",
+        "顾晚晴没有再按第二次开关",
+        "顾晚晴走到走廊尽头",
+        "顾晚晴拧开应急手电",
+        "顾晚晴把应急手电的光对准鞋架底下左右扫了两遍"
+      ],
+      "q4_causal_hits": [],
+      "thinking": {
+        "checked": true,
+        "reasoning_tokens": 0,
+        "nonempty_reasoning_field": null,
+        "thinking_appears_on": false
+      },
+      "response_model": "sensenova-6.8-flash-lite",
+      "finish_reason": "stop",
+      "identity_drift": false,
+      "truncated": false,
+      "timeout": false,
+      "task_json_parse_error": null
+    },
+    "Q2": {
+      "http_status": 200,
+      "direct_json": true,
+      "fenced_json": false,
+      "schema_legal": true,
+      "schema_legal_after_fence": false,
+      "schema_direct": {
+        "schema_legal": true,
+        "error_count": 0,
+        "first_error": null,
+        "empty_speaker": 0,
+        "omitted_speaker": 7,
+        "fact_count": 7
+      },
+      "schema_fenced": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 7,
+      "fact_count": 7,
+      "facts_preview": [
+        "对讲机里传来一句“货已经卸完”。",
+        "沈北川原本站得笔直，听到消息后肩膀一下子塌下去。",
+        "沈北川手里的登记板差点掉进泥里。",
+        "沈北川顺着厢车门沿坐到地上。",
+        "沈北川把一直咬紧的牙松开，呼吸变长。",
+        "泥水渗进沈北川的裤脚。",
+        "沈北川没有立刻站起来。"
+      ],
+      "q4_causal_hits": [],
+      "thinking": {
+        "checked": true,
+        "reasoning_tokens": 0,
+        "nonempty_reasoning_field": null,
+        "thinking_appears_on": false
+      },
+      "response_model": "sensenova-6.8-flash-lite",
+      "finish_reason": "stop",
+      "identity_drift": false,
+      "truncated": false,
+      "timeout": false,
+      "task_json_parse_error": null
+    },
+    "Q3": {
+      "http_status": 200,
+      "direct_json": true,
+      "fenced_json": false,
+      "schema_legal": true,
+      "schema_legal_after_fence": false,
+      "schema_direct": {
+        "schema_legal": true,
+        "error_count": 0,
+        "first_error": null,
+        "empty_speaker": 0,
+        "omitted_speaker": 7,
+        "fact_count": 8
+      },
+      "schema_fenced": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 7,
+      "fact_count": 8,
+      "facts_preview": [
+        "乔米把工牌从工位夹上摘下来，塞进褚衡摊开的掌心。",
+        "乔米对褚衡表示从今天起不再给他做助理。",
+        "褚衡没有把工牌还回去。",
+        "褚衡把工牌翻过去。",
+        "褚衡锁上了两人中间那条一直共用的抽屉。",
+        "乔米站在原处看了褚衡两秒。",
+        "乔米把桌上那支共用的红笔推进抽屉缝。",
+        "乔米转身走了。"
+      ],
+      "q4_causal_hits": [],
+      "thinking": {
+        "checked": true,
+        "reasoning_tokens": 0,
+        "nonempty_reasoning_field": null,
+        "thinking_appears_on": false
+      },
+      "response_model": "sensenova-6.8-flash-lite",
+      "finish_reason": "stop",
+      "identity_drift": false,
+      "truncated": false,
+      "timeout": false,
+      "task_json_parse_error": null
+    },
+    "Q4": {
+      "http_status": 200,
+      "direct_json": true,
+      "fenced_json": false,
+      "schema_legal": true,
+      "schema_legal_after_fence": false,
+      "schema_direct": {
+        "schema_legal": true,
+        "error_count": 0,
+        "first_error": null,
+        "empty_speaker": 0,
+        "omitted_speaker": 8,
+        "fact_count": 8
+      },
+      "schema_fenced": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 8,
+      "fact_count": 8,
+      "facts_preview": [
+        "冷库的温控器在午前跳闸",
+        "整箱荔枝很快开始渗水",
+        "仓管裴小棠把这批货从“待发”改成“报损”",
+        "裴小棠通知司机取消下午那趟去港东批发市场的车",
+        "司机回了一句“知道了”",
+        "司机把已经发动的货车熄了火",
+        "渗出水顺着托盘流到地面",
+        "裴小棠去拿拖把"
+      ],
+      "q4_causal_hits": [],
+      "thinking": {
+        "checked": true,
+        "reasoning_tokens": 0,
+        "nonempty_reasoning_field": null,
+        "thinking_appears_on": false
+      },
+      "response_model": "sensenova-6.8-flash-lite",
+      "finish_reason": "stop",
+      "identity_drift": false,
+      "truncated": false,
+      "timeout": false,
+      "task_json_parse_error": null
+    }
+  }
+}

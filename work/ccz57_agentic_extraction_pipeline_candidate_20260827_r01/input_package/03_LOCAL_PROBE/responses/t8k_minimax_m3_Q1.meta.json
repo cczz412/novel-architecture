@@ -1,0 +1,33 @@
+{
+  "item_id": "Q1",
+  "lane": "agent_plan_thinking_low",
+  "request_model_name": "minimax-m3-modelhub",
+  "response_model_name": "minimax-m3",
+  "identity_drift": false,
+  "arkcli_exit_code": 0,
+  "started_at": "2026-08-27T01:15:10.568+08:00",
+  "ended_at": "2026-08-27T01:16:22.720+08:00",
+  "elapsed_ms": 72152,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1618,
+    "completion_tokens": 8192,
+    "total_tokens": 9810
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": "envelope.reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 25860
+  },
+  "analysis": {
+    "direct_json": false,
+    "fenced_json": false,
+    "schema_legal": false,
+    "schema": null,
+    "facts_preview": [],
+    "q4_causal_hits": [],
+    "task_err": "empty_or_non_string_content"
+  },
+  "raw_sha256": "3050d50d6ee92a62e33723d3e9c76e57c4a6bab146e383fa275383df9058c299"
+}
