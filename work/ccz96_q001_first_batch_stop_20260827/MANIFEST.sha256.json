@@ -1,0 +1,44 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "feb88521cd9cca0dc75366617c39dc02b3495b53407f9eaa95fc09b5b3d65442",
+      "bytes": 1374
+    },
+    {
+      "path": "independent_spot_check.json",
+      "sha256": "fca3d5acbd4f40f9d0766b755b7b5118d1c5920fdbd62915a84dc840408d8c31",
+      "bytes": 16066
+    },
+    {
+      "path": "pairs/doubao_glm52_continue_or_stop.json",
+      "sha256": "ec96347fac6342ea82eb54d1450a31f9136728c945dcfdb262f7f1787b381fca",
+      "bytes": 9560
+    },
+    {
+      "path": "pairs/pro_doubao_continue_or_stop.json",
+      "sha256": "0a21606ab56523c6b2dbedb6a96adf6d23e3fca35a46cf9015b36863a0052eec",
+      "bytes": 9453
+    },
+    {
+      "path": "pairs/pro_glm53_continue_or_stop.json",
+      "sha256": "50f7b6bc4a047180b2d0cfce41220feb9f684ed373b0773c5b8ebfe9e4925229",
+      "bytes": 9520
+    },
+    {
+      "path": "pairs/pro_qwen_continue_or_stop.json",
+      "sha256": "e1ea1b60f5398e5e51f2fb5dab3cb2b340816fe282c968be99a5872067880cf3",
+      "bytes": 9542
+    },
+    {
+      "path": "result_card.json",
+      "sha256": "60a821bfacb0b379b4947a200e9b651d319953efd8b33d2a30a7715112f657c8",
+      "bytes": 2208
+    },
+    {
+      "path": "ticket_continue_or_stop.json",
+      "sha256": "9fe33006ac6d2365550500eb84616082467deb82b903e631baaffba4ab8fce3b",
+      "bytes": 2140
+    }
+  ]
+}

@@ -1,0 +1,393 @@
+{
+  "agent": "independent_spot_check",
+  "checked_at": "2026-08-26T18:32:03Z",
+  "checks": [
+    {
+      "evidence": {
+        "actual_tree_sha256": "c6189085bcc78f050fe4335c7f0f77f0e8d5bc9f5bfc2d4ebaa4f842001c8abd",
+        "all_entries_STATIC_NOT_DISPATCHED": true,
+        "delivered_envelope_sha256_all_null": true,
+        "dispatch_registry_sha256": "62c48f48bf7ebcffeb8257a8bca3bb61ebb270b41d7700b35f204d03598ba6e1",
+        "entry_count": 16,
+        "entry_dispatch_status_values": [
+          "STATIC_NOT_DISPATCHED"
+        ],
+        "expected_tree_sha256": "c6189085bcc78f050fe4335c7f0f77f0e8d5bc9f5bfc2d4ebaa4f842001c8abd",
+        "frozen_bytes_not_used_as_live_registry": true,
+        "package_file_count": 73,
+        "pair_live_registry_status": {
+          "doubao_glm52": [
+            "DISPATCHED"
+          ],
+          "pro_doubao": [
+            "DISPATCHED"
+          ],
+          "pro_glm53": [
+            "DISPATCHED"
+          ],
+          "pro_qwen": [
+            "DISPATCHED"
+          ]
+        },
+        "registry_role": "static_template_not_a_runtime_receipt",
+        "skipped": [
+          "HASHES.sha256",
+          "private/final_audit_receipt.json",
+          "tools/__pycache__/merge_verdicts.cpython-312.pyc",
+          "tools/__pycache__/build_first_batch.cpython-312.pyc",
+          "tools/__pycache__/compare_anonymous_duplicates.cpython-312.pyc",
+          "tools/__pycache__/merge_and_consume.cpython-312.pyc"
+        ],
+        "slot_consumed_all_false": true
+      },
+      "id": 1,
+      "name": "STATIC tree SHA and frozen dispatch_registry",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "all_ids_have_RUN_prefix": true,
+        "bakeoff_planned_run_count": 96,
+        "baseline_planned_run_count": 32,
+        "formal_count_field": 128,
+        "formal_runs_len": 128,
+        "formal_unique": 128,
+        "overlap_with_bakeoff": [],
+        "overlap_with_baseline": []
+      },
+      "id": 2,
+      "name": "128 unique formal RUN- ids with zero baseline/bakeoff overlap",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "envelope_sha_failure_count": 0,
+        "envelope_sha_failures": [],
+        "envelope_sha_matches": 128,
+        "j2_binding_failure_count": 0,
+        "j2_binding_failures": [],
+        "j2_envelopes_parsed": 64,
+        "missing_envelopes": [],
+        "pair_slot_counts": {
+          "doubao_glm52": {
+            "J1": 16,
+            "J2": 16,
+            "n": 32
+          },
+          "pro_doubao": {
+            "J1": 16,
+            "J2": 16,
+            "n": 32
+          },
+          "pro_glm53": {
+            "J1": 16,
+            "J2": 16,
+            "n": 32
+          },
+          "pro_qwen": {
+            "J1": 16,
+            "J2": 16,
+            "n": 32
+          }
+        }
+      },
+      "id": 3,
+      "name": "Per-pair 16 J1 + 16 J2; J2 envelope binding; envelope SHA matches planned",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "extra_run_dirs": [],
+        "missing_run_dirs": [],
+        "missing_verdict": [],
+        "planned_runs": 128,
+        "run_dirs_on_disk": 128,
+        "sample": [
+          {
+            "arbiter_slot": "J1",
+            "disk_envelope_sha256": "befaf8e2e468532a9671c8d76442b5d2619c3118e47fd1286638ecae955da12f",
+            "envelope_sha_match": true,
+            "pair_id": "pro_doubao",
+            "planned_envelope_sha256": "befaf8e2e468532a9671c8d76442b5d2619c3118e47fd1286638ecae955da12f",
+            "receipt_present": true,
+            "receipt_run_id": "RUN-1b920dc94617",
+            "receipt_run_id_match": true,
+            "run_id": "RUN-1b920dc94617",
+            "verdict_bytes": 559,
+            "verdict_present": true
+          },
+          {
+            "arbiter_slot": "J2",
+            "disk_envelope_sha256": "8599a48406494ed2af3043c795fefdef3a74e161fc3a5d381fe5e26cc3a1af0e",
+            "envelope_sha_match": true,
+            "pair_id": "doubao_glm52",
+            "planned_envelope_sha256": "8599a48406494ed2af3043c795fefdef3a74e161fc3a5d381fe5e26cc3a1af0e",
+            "receipt_present": true,
+            "receipt_run_id": "RUN-3c489f4b9300",
+            "receipt_run_id_match": true,
+            "run_id": "RUN-3c489f4b9300",
+            "verdict_bytes": 922,
+            "verdict_present": true
+          },
+          {
+            "arbiter_slot": "J2",
+            "disk_envelope_sha256": "8ada9b50459b19d95f2ea939ce31ce1f6302c07c1a89f02d2a65cd3db5014066",
+            "envelope_sha_match": true,
+            "pair_id": "doubao_glm52",
+            "planned_envelope_sha256": "8ada9b50459b19d95f2ea939ce31ce1f6302c07c1a89f02d2a65cd3db5014066",
+            "receipt_present": true,
+            "receipt_run_id": "RUN-4e9e9013e376",
+            "receipt_run_id_match": true,
+            "run_id": "RUN-4e9e9013e376",
+            "verdict_bytes": 894,
+            "verdict_present": true
+          },
+          {
+            "arbiter_slot": "J2",
+            "disk_envelope_sha256": "bbdd928fe069040a191e28ff5e2821050f8682bf1b57f5d5ec27dfa5201bc7b4",
+            "envelope_sha_match": true,
+            "pair_id": "pro_doubao",
+            "planned_envelope_sha256": "bbdd928fe069040a191e28ff5e2821050f8682bf1b57f5d5ec27dfa5201bc7b4",
+            "receipt_present": true,
+            "receipt_run_id": "RUN-593070ca1faf",
+            "receipt_run_id_match": true,
+            "run_id": "RUN-593070ca1faf",
+            "verdict_bytes": 640,
+            "verdict_present": true
+          },
+          {
+            "arbiter_slot": "J2",
+            "disk_envelope_sha256": "5a1fbed3cb9f87d867d3e58ff7de37883f0dfd334ca69856a1966db03500b1c3",
+            "envelope_sha_match": true,
+            "pair_id": "doubao_glm52",
+            "planned_envelope_sha256": "5a1fbed3cb9f87d867d3e58ff7de37883f0dfd334ca69856a1966db03500b1c3",
+            "receipt_present": true,
+            "receipt_run_id": "RUN-7a34cd091e14",
+            "receipt_run_id_match": true,
+            "run_id": "RUN-7a34cd091e14",
+            "verdict_bytes": 910,
+            "verdict_present": true
+          },
+          {
+            "arbiter_slot": "J1",
+            "disk_envelope_sha256": "3ca007eab64edc2028a793897f969806f3305ad5b558dc9f4e8ac092dbcfac6a",
+            "envelope_sha_match": true,
+            "pair_id": "pro_qwen",
+            "planned_envelope_sha256": "3ca007eab64edc2028a793897f969806f3305ad5b558dc9f4e8ac092dbcfac6a",
+            "receipt_present": true,
+            "receipt_run_id": "RUN-85f28d2abcd9",
+            "receipt_run_id_match": true,
+            "run_id": "RUN-85f28d2abcd9",
+            "verdict_bytes": 601,
+            "verdict_present": true
+          },
+          {
+            "arbiter_slot": "J2",
+            "disk_envelope_sha256": "3bf9915950ab9b92769718b2fba717bdb3b80f20f60d78fdf1dc5f95e0feb7e3",
+            "envelope_sha_match": true,
+            "pair_id": "pro_qwen",
+            "planned_envelope_sha256": "3bf9915950ab9b92769718b2fba717bdb3b80f20f60d78fdf1dc5f95e0feb7e3",
+            "receipt_present": true,
+            "receipt_run_id": "RUN-9a8cd85ca197",
+            "receipt_run_id_match": true,
+            "run_id": "RUN-9a8cd85ca197",
+            "verdict_bytes": 1048,
+            "verdict_present": true
+          },
+          {
+            "arbiter_slot": "J2",
+            "disk_envelope_sha256": "c2b23d99573db6ea074da598d87d43579514607d0f72e5692c4c6973b486d595",
+            "envelope_sha_match": true,
+            "pair_id": "pro_qwen",
+            "planned_envelope_sha256": "c2b23d99573db6ea074da598d87d43579514607d0f72e5692c4c6973b486d595",
+            "receipt_present": true,
+            "receipt_run_id": "RUN-c9a030172cea",
+            "receipt_run_id_match": true,
+            "run_id": "RUN-c9a030172cea",
+            "verdict_bytes": 830,
+            "verdict_present": true
+          }
+        ],
+        "sample_failures": [],
+        "sample_run_ids": [
+          "RUN-1b920dc94617",
+          "RUN-3c489f4b9300",
+          "RUN-4e9e9013e376",
+          "RUN-593070ca1faf",
+          "RUN-7a34cd091e14",
+          "RUN-85f28d2abcd9",
+          "RUN-9a8cd85ca197",
+          "RUN-c9a030172cea"
+        ],
+        "sample_seed_hex16": "258b5968033ef2ac"
+      },
+      "id": 4,
+      "name": "Every run has verdict.json; 8-run envelope/receipt/verdict sample",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "failed_pairs": [],
+        "pairs": {
+          "doubao_glm52": {
+            "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+            "ccz84_unlocked": false,
+            "ccz96_marked_done": false,
+            "duplicate_comparison_present": true,
+            "duplicate_comparison_state_in_file": "PASS",
+            "duplicate_comparison_state_in_receipt": "PASS",
+            "not_a_score": true,
+            "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND",
+            "receipt_present": true
+          },
+          "pro_doubao": {
+            "batch_status": "CCZ96_MECHANICAL_OR_CONTAMINATED_STOP",
+            "ccz84_unlocked": false,
+            "ccz96_marked_done": false,
+            "duplicate_comparison_present": true,
+            "duplicate_comparison_state_in_file": "PASS",
+            "duplicate_comparison_state_in_receipt": "PASS",
+            "not_a_score": true,
+            "q001_same_chapter_retest": "STOP",
+            "receipt_present": true
+          },
+          "pro_glm53": {
+            "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+            "ccz84_unlocked": false,
+            "ccz96_marked_done": false,
+            "duplicate_comparison_present": true,
+            "duplicate_comparison_state_in_file": "PASS",
+            "duplicate_comparison_state_in_receipt": "PASS",
+            "not_a_score": true,
+            "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND",
+            "receipt_present": true
+          },
+          "pro_qwen": {
+            "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+            "ccz84_unlocked": false,
+            "ccz96_marked_done": false,
+            "duplicate_comparison_present": true,
+            "duplicate_comparison_state_in_file": "PASS",
+            "duplicate_comparison_state_in_receipt": "PASS",
+            "not_a_score": true,
+            "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND",
+            "receipt_present": true
+          }
+        }
+      },
+      "id": 5,
+      "name": "Each pair continue_or_stop_receipt flags and duplicate comparison",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "ccz84_unlocked": false,
+        "ccz96_marked_done": false,
+        "exists": true,
+        "not_a_score": true,
+        "sha256": "9fe33006ac6d2365550500eb84616082467deb82b903e631baaffba4ab8fce3b",
+        "ticket_status": "CCZ96_ALL_CONSUMED_NONE_CLEAN_MATCH"
+      },
+      "id": 6,
+      "name": "ROOT ticket_continue_or_stop.json Done/unlock false",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "consume_pair_MERGE_constant": true,
+        "consume_pair_subprocess_consume": true,
+        "controller_version": "ccz120-merge-and-consume-v2",
+        "merge_and_consume_exists": true,
+        "merge_and_consume_sha256": "1dbe085c941223db9ab713b5a80a775bf7e0e510c17794a2432248e2756fd22e",
+        "merge_receipt_status_counts": {
+          "MERGED_AND_CONSUMED": 63,
+          "mechanical_not_consumed": 1
+        },
+        "merge_receipt_version_counts": {
+          "UNKNOWN": 1,
+          "ccz120-merge-consumption-receipt-v2": 63
+        },
+        "pair_SEM_merge_receipt_count": 64,
+        "re_ran_consume": false,
+        "transaction_version": "ccz120-consumption-transaction-v2"
+      },
+      "id": 7,
+      "name": "Merge used STATIC/tools/merge_and_consume.py (source read only)",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "baseline_is_disabled_flash": false,
+        "baseline_thinking_snapshot": [
+          "{\"model\": \"deepseek-v4-flash\", \"official_thinking_body\": {\"type\": \"disabled\"}, \"thinking\": \"disabled\", \"thinking_mode\": \"non_thinking\"}",
+          "{\"model\": \"doubao-seed-2-1-turbo-260628\", \"official_thinking_body\": null, \"thinking\": \"disabled\", \"thinking_mode\": \"non_thinking\"}"
+        ],
+        "disabled_or_non_thinking_run_ids": [],
+        "flash_models_in_formal": [],
+        "formal_models": [
+          "deepseek-v4-pro-ga-260813",
+          "doubao-seed-2-1-pro-260628",
+          "glm-5-2-260617",
+          "glm-5.3",
+          "qwen3.8-max"
+        ],
+        "planned_runs_thinking_field": "low",
+        "run_thinking_mode_counts": {
+          "enabled+reasoning_effort=low": 112,
+          "enabled+thinking_budget=2048": 16
+        },
+        "run_thinking_variants": [
+          "{\"mode\": \"enabled\", \"reasoning_effort\": \"low\"}",
+          "{\"mode\": \"enabled\", \"thinking_budget\": 2048}"
+        ]
+      },
+      "id": 8,
+      "name": "Planned thinking is low, not disabled Flash baseline",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "mismatched_pairs": [],
+        "per_pair_from_continue_or_stop_receipt": {
+          "doubao_glm52": {
+            "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+            "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND",
+            "source": "private/pairs/doubao_glm52/continue_or_stop_receipt.json"
+          },
+          "pro_doubao": {
+            "batch_status": "CCZ96_MECHANICAL_OR_CONTAMINATED_STOP",
+            "q001_same_chapter_retest": "STOP",
+            "source": "private/pairs/pro_doubao/continue_or_stop_receipt.json"
+          },
+          "pro_glm53": {
+            "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+            "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND",
+            "source": "private/pairs/pro_glm53/continue_or_stop_receipt.json"
+          },
+          "pro_qwen": {
+            "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+            "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND",
+            "source": "private/pairs/pro_qwen/continue_or_stop_receipt.json"
+          }
+        },
+        "scoring_performed_by_this_check": false,
+        "ticket_pair_fields_match_pair_receipts": true,
+        "ticket_q001_same_chapter_retest": "STOP_DO_NOT_EXPAND"
+      },
+      "id": 9,
+      "name": "List batch_status and q001_same_chapter_retest per pair from receipts",
+      "status": "PASS"
+    }
+  ],
+  "linear_github_slack_notion_writes": 0,
+  "model_calls": 0,
+  "roots": {
+    "BAKEOFF": "<local-path-redacted>",
+    "BASELINE": "<local-path-redacted>",
+    "ROOT": "<local-path-redacted>",
+    "STATIC": "<local-path-redacted>"
+  },
+  "scoring_performed": false,
+  "status": "PASS",
+  "summary": "独立抽查结果是PASS：冻结静态包树哈希对得上（c6189085bcc78f050fe4335c7f0f77f0e8d5bc9f5bfc2d4ebaa4f842001c8abd），STATIC 的 dispatch_registry 仍全是 STATIC_NOT_DISPATCHED，活登记在各 pair 目录里；正式 planned_runs 正好 128 个不重复的 RUN- 号，和关思考 Flash 基准 32 条、bakeoff 96 条都没有撞号；四对每对都是 16 条 J1 + 16 条 J2，64 份 J2 信封里的 arbiter_slot 都是 J2 且 run_id 对得上，128 份信封 SHA 也和计划表一致；128 个 run 目录都有 verdict.json，按独立种子抽了 8 条核对信封 SHA、回执 run_id 和 verdict；四对 continue_or_stop 回执以及票级 ticket_continue_or_stop.json 都是 ccz96_marked_done=false、ccz84_unlocked=false、not_a_score=true，重复对照都是 PASS；合并脚本 consume_pair.py 调的是 STATIC/tools/merge_and_consume.py，没有重跑 consume；计划表 thinking 是 low（启用低思考），不是基准那套 disabled Flash。回执原文：pro_doubao 的 batch_status=CCZ96_MECHANICAL_OR_CONTAMINATED_STOP、q001_same_chapter_retest=STOP；pro_glm53 / pro_qwen / doubao_glm52 都是 batch_status=CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED、q001_same_chapter_retest=STOP_DO_NOT_EXPAND。以上只转写回执字段，没有打分。"
+}

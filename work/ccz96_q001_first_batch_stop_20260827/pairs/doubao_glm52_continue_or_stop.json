@@ -1,0 +1,325 @@
+{
+  "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+  "candidates": [
+    {
+      "frozen_direction_not_gold": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "internal_case_id": "P04-B",
+      "j1": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "j2": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_ACCEPTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-232c71f96f7b"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "MULTIPLE_CORE_ASSERTIONS"
+      },
+      "internal_case_id": "P07-B",
+      "j1": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "j2": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "matches_frozen_direction": false,
+      "merged_state": "AI_ACCEPTED",
+      "pair_status": "FROZEN_DIRECTION_MISS",
+      "semantic_input_id": "SEM-28ae6c005fbb"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "internal_case_id": "P05-A",
+      "j1": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "j2": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_REJECTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-358caa7331c8"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "internal_case_id": "P04-A",
+      "j1": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "j2": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_REJECTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-62383d530a28"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "internal_case_id": "P06-A",
+      "j1": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "j2": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_ACCEPTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-6d9927a29026"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "internal_case_id": "P08-B",
+      "j1": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "j2": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_ACCEPTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-738583be656e"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "internal_case_id": "P02-A",
+      "j1": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "j2": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "SPEAKER_OR_SOURCE_MISMATCH"
+      },
+      "matches_frozen_direction": false,
+      "merged_state": "AI_DISPUTED",
+      "pair_status": "J1_J2_DIVERGED",
+      "semantic_input_id": "SEM-74f4322dfb64"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "STATUS_MISMATCH"
+      },
+      "internal_case_id": "P01-B",
+      "j1": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "j2": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "matches_frozen_direction": false,
+      "merged_state": "AI_ACCEPTED",
+      "pair_status": "FROZEN_DIRECTION_MISS",
+      "semantic_input_id": "SEM-9945be828821"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "internal_case_id": "P03-B",
+      "j1": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "j2": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_ACCEPTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-a52478d022c2"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "internal_case_id": "P01-A",
+      "j1": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "j2": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_ACCEPTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-a8a42c548d0a"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "internal_case_id": "P07-A",
+      "j1": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "j2": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_ACCEPTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-abe00e2ca1e2"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "SPEAKER_OR_SOURCE_MISMATCH"
+      },
+      "internal_case_id": "P06-B",
+      "j1": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "SPEAKER_OR_SOURCE_MISMATCH"
+      },
+      "j2": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "SPEAKER_OR_SOURCE_MISMATCH"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_REJECTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-cf0c259545da"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "internal_case_id": "P02-B",
+      "j1": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "j2": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_ACCEPTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-d806ae9ac03c"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "internal_case_id": "P03-A",
+      "j1": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "j2": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_REJECTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-f9494e948d45"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "internal_case_id": "P05-B",
+      "j1": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "j2": {
+        "decision": "SUPPORT_AS_WRITTEN",
+        "reason_code": "NONE"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_ACCEPTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-fc7d20898d91"
+    },
+    {
+      "frozen_direction_not_gold": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "internal_case_id": "P08-A",
+      "j1": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "j2": {
+        "decision": "REJECT_UNSUPPORTED",
+        "reason_code": "EVIDENCE_NOT_SELF_SUFFICIENT"
+      },
+      "matches_frozen_direction": true,
+      "merged_state": "AI_REJECTED",
+      "pair_status": "FROZEN_DIRECTION_MATCH",
+      "semantic_input_id": "SEM-fe058c8467f5"
+    }
+  ],
+  "ccz84_unlocked": false,
+  "ccz96_marked_done": false,
+  "diverged_count": 1,
+  "duplicate_comparison_state": "PASS",
+  "github_writes": 0,
+  "matched_count": 13,
+  "mechanical_count": 0,
+  "missed_count": 2,
+  "not_a_score": true,
+  "not_gold": true,
+  "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND",
+  "receipt_version": "ccz96-first-batch-continue-or-stop-v1",
+  "runtime_isolation_externally_attested": false,
+  "scoring_performed": false,
+  "synthetic_selftest": false,
+  "why": "有规则方向没对上、两名裁判有分歧，或匿名重复组不一致。不扩书、不加第三票。"
+}
