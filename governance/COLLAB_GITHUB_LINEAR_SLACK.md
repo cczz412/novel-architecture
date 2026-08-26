@@ -8,6 +8,24 @@
 | Linear | 想清楚、过程账／依赖 |
 | GitHub | 正式施工合同 + PR 合流 |
 
+## 整体看项目时怎么读
+
+整体查看和单票干活是两种动作：
+
+- 整体查看：用 `$linear-github-task-map`。它先读 Linear 的强制规则、最新 Project Update、CCZ-77 和所有活动票，再核对 GitHub Issue／PR／合并，输出 Mermaid 图、完整状态表和完整关系表。
+- 单票干活：直接用 Linear 或 GitHub 插件打开目标票，不必先生成全局图。
+- 仓库不保存第二份长期任务看板。`CURRENT_STATE.json` 只是现有工具仍会读取的带日期技术兼容／控制快照，不能用来判断当前领票和依赖。
+
+Linear 整体读取顺序：
+
+1. [Agent 必读：Linear 建票、拆票与依赖规则](https://linear.app/ccz/document/00agent-必读linear-建票拆票与依赖规则codex-aea4df7ecca6)
+2. novel-architecture 项目最新 Project Update
+3. [CCZ-77 路线入口](https://linear.app/ccz/issue/CCZ-77)
+4. 活动票的父子关系、硬前置、相关关系、领票证据和当前施工评论
+5. GitHub 的开放 Issue、PR、检查与合并状态
+
+父子关系只说明拆分，不自动表示先后；Linear 原生“被阻塞于”才算硬前置；相关关系只补背景，不能冒充依赖。没有负责人、代理人或明确领取评论时，不得猜成“正在做”。
+
 ## 去哪领票
 
 CZ 指定去哪领就去哪领。

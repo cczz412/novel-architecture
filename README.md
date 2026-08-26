@@ -1,24 +1,24 @@
 # 小说架构实验仓
 
-> 人看当前状态只走 [治理索引](governance/INDEX.md)，机器读取当前任务／运行状态只走 [当前状态真源](governance/CURRENT_STATE.json)，当前版本、路径与候选身份只走 [current pointers](governance/current_pointers.json)；拍板以 Notion 账序和队列为准。根 README 只讲长期不变的寻路规则，不抄当前道次、模型或成绩。
+> 整体任务进度现场读取 [Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335) 与 [GitHub](https://github.com/cczz412/novel-architecture)；仓库的[治理索引](governance/INDEX.md)只负责稳定寻路，[技术兼容快照](governance/CURRENT_STATE.json)只供现有工具读取带日期的控制字段，当前版本、路径与候选身份只走 [current pointers](governance/current_pointers.json)。根 README 不抄当前票态、领票、模型或成绩。
 
 ✅ 你可以直接理解成：这个仓库一边打磨“大纲中枢”，一边把设计放进真实小说里做可回放的实验。
 
 ## 30 秒冷启动
 
-1. 想知道现在做到哪：打开 [治理索引](governance/INDEX.md)。
-2. 程序要读当前状态：只读 [当前状态真源](governance/CURRENT_STATE.json)。
-3. 想知道当前背景、候选分支、后续设计登记和追踪表在哪：只读 [current pointers](governance/current_pointers.json)。
-4. 想一次看清有哪些入口：运行 `uv run --locked python tools/novel_pipeline.py catalog menu`。它是即时导航，不是第二份状态真源。
-5. 想找某条实验：先看 [试验专区说明](experiments/README.md)，再看该实验自己的 README／manifest；不要按“最新文件夹”猜。
-6. 想找正式金标、候选、运行或材料：从治理索引里的固定入口进入。
-7. 本地路牌和 Notion 尾条冲突：以 Notion 为准，先停下回读，不手工改生成页凑一致。
+1. 想知道现在做到哪、谁在做、被什么拦住：用 `$linear-github-task-map` 现场读取 Linear＋GitHub；不要从仓库静态页猜。
+2. 想直接干某张票：规划／过程票用 Linear 插件，工程施工和 PR 用 GitHub 插件。
+3. 程序要读取旧技术控制字段：只读带日期的[技术兼容快照](governance/CURRENT_STATE.json)，不能把它当全局任务地图。
+4. 想知道当前背景、候选分支和正式登记在哪：只读 [current pointers](governance/current_pointers.json)。
+5. 想一次看清有哪些仓库入口：运行 `uv run --locked python tools/novel_pipeline.py catalog menu`。它是即时导航，不是第二份任务看板。
+6. 想找某条实验：先看 [试验专区说明](experiments/README.md)，再看该实验自己的 README／manifest；不要按“最新文件夹”猜。
+7. 想找正式金标、候选、运行或材料：从治理索引里的固定入口进入。
 
 ## 目录怎么认
 
 | 路径 | 这里放什么 | 真值／继续入口 | Git 口径 |
 |---|---|---|---|
-| `governance/` | 当前状态、正式指针、模块／路线／工具登记 | [治理索引](governance/INDEX.md) | 长期件，生成页不要手改 |
+| `governance/` | 稳定治理入口、技术兼容快照、正式指针、模块／路线／工具登记 | [治理索引](governance/INDEX.md) | 长期件；不保存 Linear／GitHub 的整体任务进度，生成页不要手改 |
 | `foundation/` | 04 批全文根基 | 原件自身；时效冲突回 Notion | 长期真源，禁止摘要替代 |
 | `intake/` | 新材料、外部回包的来源与 SHA 登记 | [收件说明](intake/README.md) | 长期件 |
 | `config/` | 批次、合同、默认指针、供应商配置；不含密钥 | [配置说明](config/README.md) | 长期件 |
@@ -55,7 +55,7 @@ uv run --locked python tools/novel_pipeline.py --help
 uv run --locked python tools/novel_pipeline.py catalog menu
 uv run --locked python tools/novel_pipeline.py catalog all
 
-# 只读当前治理状态
+# 只读带日期的技术兼容／控制快照
 uv run --locked python tools/novel_pipeline.py governance status
 
 # 检查生成路牌有没有漂移（不写仓库）
@@ -96,7 +96,7 @@ uv run --locked python tools/chatgpt_review_pack.py --dry-run
 ## 不要这样做
 
 - 不从“文件夹名最新”推断当前任务。
-- 不手改 `governance/INDEX.md`、`current_run.md` 等生成页。
+- 不手改 `governance/INDEX.md` 等生成页。
 - 不因文件零引用、名字旧或内容重复就直接删除；先查工具／路线／归档登记。
 - 不用 `git add -A` 混入另一个窗口的施工件。
 - 不把 `runs/`、`reports/`、`TEMP/` 重新强行加进 Git。

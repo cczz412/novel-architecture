@@ -14,9 +14,9 @@
 
 ## 1. Repository entry / authority
 
-- 人看全仓治理状态：[治理索引](governance/INDEX.md)；机器读取当前执行状态只认 [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)。CZ 拍板仍以当前明确指令为准。正式施工仍以 GitHub Issues 为准；规划／过程票见 Linear（见 [协作约定](governance/COLLAB_GITHUB_LINEAR_SLACK.md)）。上工入口见 [`governance/START_HERE.md`](governance/START_HERE.md)。
-- 当前版本、路径、候选分支与后续工单只认 [`governance/current_pointers.json`](governance/current_pointers.json)；它不保存运行成绩，也不替产品或领域 CURRENT 拍板。
-- 新窗口接力先看 [`governance/progress/current-progress.md`](governance/progress/current-progress.md)，再读它点名的专题页。它只负责接力，不能覆盖 `CURRENT_STATE.json`、正式结果票或 CZ 指令；两者时间或结论冲突时停下校准。
+- 仓库里的[治理索引](governance/INDEX.md)只负责稳定寻路，不保存整体任务进度。查看主线、支线、领票、父子关系、硬前置、阻塞和可并行工作时，现场读取 [Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)；查看施工 Issue、PR、检查和合并时，现场读取 [GitHub](https://github.com/cczz412/novel-architecture)。整体查看优先用个人 Skill `$linear-github-task-map`，单票施工直接用 Linear／GitHub 插件。细则见[协作约定](governance/COLLAB_GITHUB_LINEAR_SLACK.md)。
+- [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json) 是带日期的技术兼容／控制快照，供现有工具读取旧机器字段；它不是全局任务地图，不能据此判断当前谁在做、哪些票被领、最新阻塞或下一张票。
+- 当前版本、路径和候选身份只认 [`governance/current_pointers.json`](governance/current_pointers.json)；它不保存全局任务进度、运行成绩或领票状态，也不替产品或领域 CURRENT 拍板。
 - 产品共同理解从 [共同背景板 R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) 开始。R13 及更早印刷版已退出本 Git，本机备份；旧 Notion 镜像不代表 R14。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
 - 外部论文、官方文档、行业材料和作者经验的可复用结论从[外部报告知识库当前入口](references/external-knowledge-base/README.md)开始；Notion 人读镜像在[报告背景 R01](https://app.notion.com/p/3be5cadc4d0f819eb8ebd02ca1b9b8e5)。它与产品共同背景板分开，只提供证据、反例和待核缺口。
 - 原子需求与验收背景只认 [R03 CURRENT](references/atomic-expectations/CURRENT.json)：142 条唯一 ID；人读入口见 [README](references/atomic-expectations/README.md)。旧 R02 及更早已退出本 Git，本机备份；[六例测试设计 CURRENT](references/atomic-expectations/TEST_DESIGN_CURRENT.json) 组合覆盖 142 条／852 例（旧 127×6 加新增 15×6），不能冒充已经跑完，旧 127 套也不能单独冒充全 R03。
@@ -27,24 +27,24 @@
 | 你要做什么 | 第一站 | 需要时的第二站 |
 |---|---|---|
 | 理解产品目标 | `references/shared-context/.../01_PRODUCT_NORTH_STAR.md` | `02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md` |
-| 查当前版本、路径、候选分支与后续工单 | `governance/current_pointers.json` | 执行状态仍回 `governance/CURRENT_STATE.json`；产品语义仍回当前背景板 |
+| 查当前版本、路径和候选分支 | `governance/current_pointers.json` | 技术兼容快照才看 `governance/CURRENT_STATE.json`；任务进度不从仓库读取 |
 | 理解创作／记忆流程 | `references/shared-context/.../03_CREATION_AND_MEMORY_PIPELINES.md` | 无 |
 | 看产品试跑示例（代码偏旧，不是现行产品） | `novel-mvp/README.md` | `novel-mvp/design/INDEX.md` |
 | 看微调结论 | [finetuning/README.md](finetuning/README.md) | 正线已放弃；CURRENT 只是空落点 |
 | 判断能否训练 | `finetuning/CURRENT.json` 的授权字段 | 没有明确许可就是不能训练；正线已关 |
 | 查抽取研究 | `governance/route_registry.json` | 对应实验结果票；产品解释再看 R04 第 04 页 |
-| 查已验证的工程结论、技术选型或管线骨架 | `references/engineering-ledger/00_READ_ME_FIRST.md` | 按账内指针回正式结果票／冻结合同核对；当前执行状态仍看 `governance/CURRENT_STATE.json` |
+| 查已验证的工程结论、技术选型或管线骨架 | `references/engineering-ledger/00_READ_ME_FIRST.md` | 按账内指针回正式结果票／冻结合同核对；当前任务状态仍现场读取 Linear／GitHub |
 | 查已吸收的外部证据、行业经验、冲突或研究缺口 | `references/external-knowledge-base/README.md` | 按主题页的 claim ID 追 `02_CLAIM_LEDGER.jsonl`、来源登记和原报告；不能替产品拍板 |
 | 拿不准账本／工具／执行包／权限，或抽取／评测／记忆、需求／产品形态、日常循环／插件／画布／平台／人格标签、规划账／保存对照交棒／状态轴、局部复核／反馈外发／切片验收会不会做歪 | [情景问答](references/agent-playbook/README.md) | [卡片目录](references/agent-playbook/INDEX.md)。只打开对得上的那一张。不当执行票或训练许可，不代替 R14。禁止通读调查包，禁止把 `work/` 当知识库 |
 | 查模块长期需求、测试配方或评分维度 | `references/atomic-expectations/CURRENT.json` | 人读看 `README.md`；机器内容看 R03 包；旧六例设计另看 `TEST_DESIGN_CURRENT.json` |
 | 查历史外部调查，避免同类问题重做 | `references/survey-inbox/INDEX.md` | 先对情景问答；仍要对原文时才打开对应 `SI-*` 卡和那一份消化稿。历史报告只作证据与候选先验，不产生执行权 |
-| 接仓库重构任务 | 当前 CZ 工单／本任务回执 | `governance/progress/current-progress.md`；没登记该线就停下，不靠搜索猜 |
+| 接仓库重构任务 | 当前 GitHub 施工 Issue | 回 Linear 核对父子、硬前置、领票和停点；没有明确票与授权就停下 |
 | 找历史外置对象 | `governance/external_archive_registry.json` | 对象登记的 manifest／恢复方式 |
 | 跑本机证据或历史测试 | `governance/test_policy.json` | `tests/local_evidence_registry.json`／`config/test_replay/historical_replays.json` |
 | 做 Repo Bridge 交接／外审 | `experiments/repo_bridge_v1_prototype_20260807/README.md` | 当前任务的 handoff／review 包 |
 | 做 ChatGPT 外发包 | `config/review_pack/README.md` | `config/review_pack/routes.json` |
 | Cursor 窗口 Skill（团队／便宜助手／探路／外发） | `.cursor/skills/` | 外发打包仍回 `config/review_pack/README.md` |
-| 看当前执行状态 | `governance/CURRENT_STATE.json#current_execution` | 对应正式结果票 |
+| 看整体任务进度 | 现场读取 Linear | 再现场读取 GitHub Issue／PR／合并；不从仓库静态页猜 |
 | 决定新文件放哪 | `governance/indexes/new_file_routing.md` | `governance/directory_registry.json` |
 
 情景问答：**什么时候用**＝施工时怕账本／工具／执行包／权限，或抽取／评测／记忆、需求／产品形态、规划账／状态轴、局部复核／反馈外发做歪，先打开一张对得上的卡。**什么时候不用**＝当执行票、训练许可、已拍清单，或代替 R14；也不许拿它当理由通读 `survey-inbox/packages/` 或把 `work/` 当知识库。
@@ -75,7 +75,7 @@
 | 档 | 什么任务 | 允许的流程 |
 |---|---|---|
 | 轻 | 个人 Skill、工具脚本、草稿、TEMP／work 内可逆施工（文件可回退、不碰真实数据、不花额度） | 做完自测一遍就交付启用。**禁止**：独立复审、冻结 SHA、退修票、staging 隔离、多轮新鲜复审 |
-| 中 | 仓库正式件、登记册、progress、合同文本、索引 | 一轮机械自查＋一轮复核，过了就落盘；不开第二路复审 |
+| 中 | 仓库正式件、登记册、治理入口、合同文本、索引 | 一轮机械自查＋一轮复核，过了就落盘；不开第二路复审 |
 | 重 | API 调用、训练、金标／Gold、盲审与密封数据、权限系统、生产晋升、删除外置对象 | 维持全套：执行票、独立复审、冻结 SHA、失败留档，一分不减 |
 
 - 轻档任务要的是**结果**，不是可复用制度；测试完就会扔的东西不配基础设施。

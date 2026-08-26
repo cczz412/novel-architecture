@@ -1,39 +1,40 @@
-# 小说架构仓库治理索引
+# 小说流水线治理索引
 
-> 本页是人读 current。机器当前执行状态只认 [`CURRENT_STATE.json`](CURRENT_STATE.json)；版本、路径和候选身份只认 [`current_pointers.json`](current_pointers.json)。产品拍板仍以 CZ 最新明确指令为准；正式施工仍以 [GitHub Issues](https://github.com/cczz412/novel-architecture/issues) 为准；规划／过程票见 Linear（见 [协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)）。上工入口见 [START_HERE.md](START_HERE.md)。
+> 本页由 `tools/governance_index.py` 从仓库登记册生成，只负责稳定寻路，不保存整体任务进度。主线、支线、领票、依赖和阻塞现场读取 Linear；工程 Issue、PR、检查和合并现场读取 GitHub。`CURRENT_STATE.json` 只是带日期的技术兼容／控制快照。
 
-## 当前主线
+## 去哪里看
 
-| 项目 | 当前答案 |
-|---|---|
-| 当前工作线 | `CLEAN-BASELINE-M1-M11-INTEGRATION-20260821` |
-| 当前阶段 | 工单 1～5、十本账 L1～L5、工单 7 已进 `main`。工单 6 只读核验已按 Issue #32 回执结账。本轮仍不许移动、删除、退出 Git、恢复写入或退休旧目录。不得把 M1～M11 写成完整作者能力。 |
-| main 刷新时的 base（本页复核到） | `c91ecffa084dd8a5cb834a2789e8fb408c0229e3`（Merge PR #81 Issue #63）。运行时 HEAD 由 `tools/check_current_freshness.py` 另报。 |
-| 模块候选 | `codex/module-runtime-foundation-20260819-r01@cc793c4719fb6470946c70e744f463147989547b`（超级分支，禁止整支再合；工单 5 已按 PR-C～G 拆票进 main） |
-| 产品共同背景 | `R14`；入口 [`00_READ_ME_FIRST.md`](../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)。R13 及更早印刷版已退出本 Git，本机备份。 |
-| 原子需求 | `R03 / 142 条`已在 main；六例设计 CURRENT 组合覆盖是 142 条／852 例（旧 127×6 加新增 15×6），不能冒充 852 已跑完。 |
-| 当前模型运行 | 无；本线 API、训练、Gold、生产权限均为 0 |
+| 要看什么 | 入口 | 边界 |
+|---|---|---|
+| 整体任务、主支线、领票、父子、硬前置、阻塞、并行线 | [Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)，推荐 `$linear-github-task-map` | 必须现场读取，不从仓库静态页复原 |
+| 工程施工、PR、检查、合并 | [GitHub](https://github.com/cczz412/novel-architecture) | GitHub 是工程线真值 |
+| 上工规矩 | [START_HERE](START_HERE.md) 与 [三边协作约定](COLLAB_GITHUB_LINEAR_SLACK.md) | CZ 最新明确指令仍优先 |
+| 版本、路径、候选身份 | [current pointers](current_pointers.json) | 不保存领票、依赖或运行成绩 |
+| 技术兼容／控制字段 | [CURRENT_STATE](CURRENT_STATE.json) | 带日期快照，不是全局任务地图 |
+| 金标入口 | 正式金标共 6 个入口：X01 第3章 **v1.2**＋五本 v1.3；统一登记 `config/gold/formal_gold_registry.json` | 只认正式登记，不从文件名猜 |
+| 模块登记 | 可用 10 个版本／在改 5 个版本／试验 2 个版本；见 [模块状态登记](module_registry.json) | 模块登记不是施工票 |
+| 实验路线登记 | 在试 2 条／失败 0 条／退役 3 条／允许重开 0 条；见 [路线状态登记](route_registry.json) | 路线身份不等于当前开工 |
 
-## 唯一入口
+## 当前正式入口
 
-- [机器当前状态](CURRENT_STATE.json)
-- [上工先读](START_HERE.md)
-- [GitHub / Linear / Slack 协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)
-- [当前版本与路径](current_pointers.json)
-- [人类接力](progress/current-progress.md)
-- [历史机器快照](CURRENT_STATE_HISTORY.json)
-- [根旧进度全文](../history/root_current_snapshot_20260720.md)
-- [模块状态登记](module_registry.json)
-- [路线状态登记](route_registry.json)
-- [目录路由](directory_registry.json)
-- [仓库地图一页速查](ARCHITECTURE_MAP.md)
-- [中文语感对齐（人读中文输出规矩）](chinese_language_style_alignment.md)
-- [工单 6 只读核验拍板](decision_records/DR-20260822-01.md)
+- 默认链：`config/defaults/zbatch_v1.2_full_chain.json`，版本 `v1.2`。
+- 旧运行入口：`tools/zbatch.py`，继续保留。
+- 新统一薄入口：`tools/novel_pipeline.py`；现役命令原样转发给旧入口，不复制运行逻辑。
+- 密钥加载入口：只用 `tools/sensenova_deepseek_key.sh`；共享环境和外部项目加载器已退役。
+- 试验专区：`experiments/`；旧试验原件不搬，新试验从这里起。
 
-## 下一件
+## 快速入口
 
-工单 6 只读核验已按 [Issue #32](https://github.com/cczz412/novel-architecture/issues/32) 回执结账。搬删仍禁止。施工入口是带 `status:ready` 的 GitHub Issues，先读 [START_HERE.md](START_HERE.md)。
+- [技术兼容／控制快照](CURRENT_STATE.json)
+- [当前版本、路径和候选身份](current_pointers.json)
+- [实验路线状态](route_registry.json)
+- [正式金标](indexes/gold_current.md)
+- [银标候选](indexes/silver_candidates.md)
+- [运行与回包](indexes/runs_and_reports.md)
+- [材料与参考](indexes/source_registry.md)
+- [旧路牌健康检查](indexes/route_health.md)
+- [模块依赖图](dependency_map.json)
+- [合同说明](contracts/README.md)
+- [试验专区](../experiments/INDEX.md)
 
-更新时间：`2026-08-23T08:58:00+08:00`
-
-来源：[#64](https://github.com/cczz412/novel-architecture/issues/64) 档位 B 批尾刷新；工单 6 拍板（[DR-20260822-01](decision_records/DR-20260822-01.md)）；中文语感对齐入口（[#103](https://github.com/cczz412/novel-architecture/issues/103)）；GitHub／Linear／Slack 协作约定见 [COLLAB_GITHUB_LINEAR_SLACK.md](COLLAB_GITHUB_LINEAR_SLACK.md)
+来源：Codex

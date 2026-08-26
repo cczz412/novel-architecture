@@ -3,7 +3,7 @@
   "registry_id": "NOVEL_MVP_DESIGN_CURRENTNESS_20260821_R01",
   "authority": "CURRENTNESS_ROUTING_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
   "review_status": "CANDIDATE_REVIEWED",
-  "updated_at": "2026-08-21T18:20:00+08:00",
+  "updated_at": "2026-08-25T17:15:00+08:00",
   "base_commit": "7eca07a64b31078d51eb7dd6f7b509ede967a704",
   "product_background": {
     "version": "R14",
@@ -430,10 +430,11 @@
         "note": "外来道六段抽取管线；ADD-021 的 R02 改版另排。",
         "basis": "main INDEX current route reviewed against R14"
       },
-      "body_sha256": "a54b33775267b67482aae11b4ffe40609bbe617abd1b60a3f7344d6e6284b836",
+      "body_sha256": "4a72d78f76b84e3618e7b48a828e04503267d470c0724246d6df57ffc49987fb",
       "source_basis": [
         "novel-mvp/design/INDEX.md@main-before-WO4",
-        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+        "CCZ-107 and GitHub #135 local-progress retirement pointer correction"
       ]
     },
     {

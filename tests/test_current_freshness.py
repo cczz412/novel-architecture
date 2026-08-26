@@ -42,7 +42,7 @@ def seed_repo(root: Path) -> None:
             "cc793c4719fb6470946c70e744f463147989547b",
         ]
     )
-    for rel in ("AGENTS.md", "README.md", "governance/progress/current-progress.md"):
+    for rel in ("AGENTS.md", "README.md"):
         path = root / rel
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
@@ -59,6 +59,7 @@ def seed_repo(root: Path) -> None:
             "entry_path": "ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/00_READ_ME_FIRST.md",
         },
     )
+    (root / "governance").mkdir(parents=True, exist_ok=True)
     (root / "governance/INDEX.md").write_text("index", encoding="utf-8")
     (root / "history").mkdir(parents=True, exist_ok=True)
     (root / "history/root_current_snapshot_20260720.md").write_text("old", encoding="utf-8")
@@ -66,7 +67,7 @@ def seed_repo(root: Path) -> None:
         "governance/INDEX.md\n"
         "governance/CURRENT_STATE.json\n"
         "governance/current_pointers.json\n"
-        "governance/progress/current-progress.md\n"
+        "governance/START_HERE.md\n"
         "history/root_current_snapshot_20260720.md\n",
         encoding="utf-8",
     )
@@ -322,15 +323,6 @@ def _write_main_snapshot(root: Path, commit: str, kind: str | None) -> None:
     dump(root / "governance/CURRENT_STATE.json", state)
 
 
-def _append_main_line(root: Path, relative: str, commit: str, refresh_language: bool) -> None:
-    path = root / relative
-    if refresh_language:
-        line = f"- `main` 刷新时的 base（本页复核到）：`{commit}`。运行时 HEAD 由 check_current_freshness 另报。\n"
-    else:
-        line = f"- `main` 基准：`{commit}`\n"
-    path.write_text(path.read_text(encoding="utf-8") + line, encoding="utf-8")
-
-
 def _advance_origin_main(root: Path) -> str:
     extra = root / "extra.txt"
     extra.write_text("extra\n", encoding="utf-8")
@@ -353,7 +345,6 @@ def test_unlabeled_live_head_sha_cannot_pass(tmp_path: Path) -> None:
     seed_repo(tmp_path)
     sha = _init_git_with_origin_main(tmp_path)
     _write_main_snapshot(tmp_path, sha, kind=None)
-    _append_main_line(tmp_path, "governance/progress/current-progress.md", sha, refresh_language=False)
     report = MODULE.build_report(tmp_path)
     assert report["status"] == "FAIL"
     assert "MAIN_SHA_CLAIMED_AS_LIVE_HEAD" in {item["code"] for item in report["errors"]}
@@ -363,8 +354,6 @@ def test_refresh_base_matching_origin_main_passes(tmp_path: Path) -> None:
     seed_repo(tmp_path)
     sha = _init_git_with_origin_main(tmp_path)
     _write_main_snapshot(tmp_path, sha, kind="refresh_base")
-    _append_main_line(tmp_path, "governance/progress/current-progress.md", sha, refresh_language=True)
-    _append_main_line(tmp_path, "governance/INDEX.md", sha, refresh_language=True)
     report = MODULE.build_report(tmp_path)
     assert report["status"] == "PASS"
     assert report["errors"] == []
@@ -377,7 +366,6 @@ def test_refresh_base_behind_origin_main_is_warning_not_error(tmp_path: Path) ->
     seed_repo(tmp_path)
     base = _init_git_with_origin_main(tmp_path)
     _write_main_snapshot(tmp_path, base, kind="refresh_base")
-    _append_main_line(tmp_path, "governance/progress/current-progress.md", base, refresh_language=True)
     head = _advance_origin_main(tmp_path)
     report = MODULE.build_report(tmp_path)
     assert report["status"] == "PASS"
@@ -392,7 +380,6 @@ def test_refresh_base_unrelated_sha_is_error(tmp_path: Path) -> None:
     _init_git_with_origin_main(tmp_path)
     foreign = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     _write_main_snapshot(tmp_path, foreign, kind="refresh_base")
-    _append_main_line(tmp_path, "governance/progress/current-progress.md", foreign, refresh_language=True)
     report = MODULE.build_report(tmp_path)
     assert report["status"] == "FAIL"
     assert "MAIN_SHA_NOT_ANCESTOR_OF_HEAD" in {item["code"] for item in report["errors"]}

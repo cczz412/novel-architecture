@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Read-only current-surface freshness checker.
+"""Read-only technical-snapshot and pointer freshness checker.
 
 This checker does not choose product semantics and does not auto-fix files. It only
-verifies that the repository exposes one machine current, one pointer registry, a
-small root compatibility stub, and aligned human entry points. In a Git checkout it
-also compares the recorded main refresh_base SHA with origin/main (falling back to
-HEAD) so a live HEAD written as the current signpost cannot PASS.
+verifies that the repository exposes one dated technical snapshot, one pointer
+registry, a small root compatibility stub, and aligned durable entry points. Project
+progress, ownership, dependencies, pull requests, and merge state live in Linear and
+GitHub, not in this repository checker. In a Git checkout it also compares the
+recorded main refresh_base SHA with origin/main (falling back to HEAD).
 """
 
 from __future__ import annotations
@@ -24,7 +25,6 @@ REQUIRED_FILES = (
     "governance/CURRENT_STATE.json",
     "governance/CURRENT_STATE_HISTORY.json",
     "governance/current_pointers.json",
-    "governance/progress/current-progress.md",
     "AGENTS.md",
     "README.md",
     "governance/tool_registry.json",
@@ -56,6 +56,7 @@ EXPECTED_INVARIANTS = (
     "六例设计 CURRENT 的组合覆盖是 142 条／852 例（旧 127×6 加 R03 新增 15×6）；旧 127 套不得单独冒充全 R03。组合覆盖仍是设计，不是执行证明。",
     "候选分支、PLANNED 和 PENDING_WORK_ORDER 不得冒充 main current。",
     "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",
+    "本表不保存整体任务进度、领票、依赖、阻塞、PR 或合并状态；这些信息现场读取 Linear 与 GitHub。",
     "设计默认路由只能指向 design_registry 中的 CURRENT；其他状态一律不得指导施工。",
 )
 ROLE_CURRENT_PATHS = {
@@ -70,7 +71,6 @@ CURRENT_STATE_REL = "governance/CURRENT_STATE.json"
 ATOMIC_CURRENT_REL = "references/atomic-expectations/CURRENT.json"
 TEST_DESIGN_REL = "references/atomic-expectations/TEST_DESIGN_CURRENT.json"
 DESIGN_REGISTRY_REL = "novel-mvp/design/design_registry.json"
-HUMAN_HANDOFF_REL = "governance/progress/current-progress.md"
 CURRENT_FRESHNESS_CHECKER_REL = "tools/check_current_freshness.py"
 DRIFT_SUITE_REL = "tools/check_drift.py"
 EXTERNAL_REPORT_BACKGROUND_REL = "references/external-knowledge-base/README.md"
@@ -78,7 +78,6 @@ EXTERNAL_REPORT_CURRENT_REL = "references/external-knowledge-base/CURRENT.json"
 ACTIVE_CURRENT_POINTER_IDS = frozenset(
     {
         "repository_current",
-        "human_handoff",
         "current_freshness_checker",
         "product_background",
         "external_report_background",
@@ -88,8 +87,6 @@ ACTIVE_CURRENT_POINTER_IDS = frozenset(
     }
 )
 REFRESH_BASE_KIND = "refresh_base"
-REFRESH_BASE_MARKERS = ("本页复核到", "刷新时的 base")
-MAIN_SHA_RE = re.compile(r"`([0-9a-f]{40})`")
 GIT_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 
 
@@ -520,17 +517,6 @@ def _validate_active_current_row(
                 )
             )
         return
-    if pointer_id == "human_handoff":
-        if path != HUMAN_HANDOFF_REL:
-            errors.append(
-                _issue(
-                    "ERROR",
-                    "HUMAN_HANDOFF_IDENTITY",
-                    f"human_handoff must point to {HUMAN_HANDOFF_REL}",
-                    "governance/current_pointers.json",
-                )
-            )
-        return
     if pointer_id == "current_freshness_checker":
         if (
             path != CURRENT_FRESHNESS_CHECKER_REL
@@ -620,27 +606,9 @@ def _main_snapshot(current: dict[str, Any]) -> dict[str, Any] | None:
     return None
 
 
-def _sha_on_main_line(text: str) -> str | None:
-    for line in text.splitlines():
-        if "main" not in line.lower() and "`main`" not in line:
-            continue
-        if not any(token in line for token in ("基准", "刷新时的 base", "本页复核到")):
-            continue
-        match = MAIN_SHA_RE.search(line)
-        if match:
-            return match.group(1)
-    return None
-
-
-def _has_refresh_base_markers(text: str) -> bool:
-    return any(marker in text for marker in REFRESH_BASE_MARKERS)
-
-
 def _check_recorded_main_against_git(
     root: Path,
     current: dict[str, Any],
-    progress: str,
-    index_text: str,
     errors: list[dict[str, Any]],
     warnings: list[dict[str, Any]],
 ) -> dict[str, Any]:
@@ -687,44 +655,12 @@ def _check_recorded_main_against_git(
         )
         return summary
 
-    progress_sha = _sha_on_main_line(progress)
-    if progress_sha is None:
-        errors.append(
-            _issue(
-                "ERROR",
-                "PROGRESS_MAIN_SHA_MISSING",
-                "progress page has no 40-char main refresh-base SHA",
-                "governance/progress/current-progress.md",
-            )
-        )
-    elif progress_sha != recorded:
-        errors.append(
-            _issue(
-                "ERROR",
-                "MAIN_SHA_SIGNPOST_MISMATCH",
-                "progress main SHA does not match CURRENT_STATE identity=main commit",
-                "governance/progress/current-progress.md",
-            )
-        )
-
-    index_sha = _sha_on_main_line(index_text)
-    if index_sha is not None and index_sha != recorded:
-        errors.append(
-            _issue(
-                "ERROR",
-                "INDEX_MAIN_SHA_MISMATCH",
-                "INDEX.md main SHA does not match CURRENT_STATE identity=main commit",
-                "governance/INDEX.md",
-            )
-        )
-
-    labeled = kind == REFRESH_BASE_KIND and _has_refresh_base_markers(progress)
-    if not labeled:
+    if kind != REFRESH_BASE_KIND:
         errors.append(
             _issue(
                 "ERROR",
                 "MAIN_SHA_CLAIMED_AS_LIVE_HEAD",
-                "main SHA must be recorded as refresh_base / 本页复核到; writing a live HEAD that expires on the next merge cannot PASS",
+                "main SHA must be recorded as refresh_base; writing a live HEAD that expires on the next merge cannot PASS",
                 "governance/CURRENT_STATE.json",
             )
         )
@@ -811,7 +747,6 @@ def build_report(root: Path) -> dict[str, Any]:
     stub = (root / "current.md").read_text(encoding="utf-8")
     agents = (root / "AGENTS.md").read_text(encoding="utf-8")
     readme = (root / "README.md").read_text(encoding="utf-8")
-    progress = (root / "governance/progress/current-progress.md").read_text(encoding="utf-8")
 
     if current.get("schema_version") != "governance-current-state-v2":
         errors.append(_issue("ERROR", "CURRENT_SCHEMA", "CURRENT_STATE schema must remain v2", "governance/CURRENT_STATE.json"))
@@ -829,7 +764,7 @@ def build_report(root: Path) -> dict[str, Any]:
         "governance/INDEX.md",
         "governance/CURRENT_STATE.json",
         "governance/current_pointers.json",
-        "governance/progress/current-progress.md",
+        "governance/START_HERE.md",
         "history/root_current_snapshot_20260720.md",
     }
     for rel in sorted(required_stub_links):
@@ -918,10 +853,6 @@ def build_report(root: Path) -> dict[str, Any]:
             if required not in content:
                 errors.append(_issue("ERROR", "ENTRYPOINT_MISMATCH", f"{label} does not name {required}", entry_path))
 
-    for required in ("governance/CURRENT_STATE.json", "governance/current_pointers.json"):
-        if required not in progress:
-            errors.append(_issue("ERROR", "ENTRYPOINT_MISMATCH", f"progress does not name {required}", "governance/progress/current-progress.md"))
-
     current_blob = json.dumps(current, ensure_ascii=False, sort_keys=True)
     for expected in (
         "CLEAN-BASELINE-M1-M11-INTEGRATION-20260821",
@@ -930,8 +861,6 @@ def build_report(root: Path) -> dict[str, Any]:
     ):
         if expected not in current_blob:
             errors.append(_issue("ERROR", "CURRENT_IDENTITY_MISSING", f"CURRENT_STATE does not contain {expected}", "governance/CURRENT_STATE.json"))
-        if expected not in progress and expected != "CLEAN-BASELINE-M1-M11-INTEGRATION-20260821":
-            errors.append(_issue("ERROR", "PROGRESS_IDENTITY_MISSING", f"progress does not contain {expected}", "governance/progress/current-progress.md"))
 
     tools = registry.get("tools", [])
     registered_paths = {row.get("path") for row in tools if isinstance(row, dict)}
@@ -958,12 +887,9 @@ def build_report(root: Path) -> dict[str, Any]:
                 errors.append(_issue("ERROR", "ACTIVE_POINTER_TARGET_MISSING", "active pointer target is missing", path))
 
     _execute_invariants(root, pointers, pointer_rows, errors)
-    index_text = (root / "governance/INDEX.md").read_text(encoding="utf-8")
     git_summary = _check_recorded_main_against_git(
         root,
         current,
-        progress,
-        index_text,
         errors,
         warnings,
     )
