@@ -1,0 +1,24 @@
+[
+  {
+    "comparison_id": "syn.cmp.1",
+    "j1_ref": "syn.run.j1/syn.att.j1",
+    "j2_ref": "syn.run.j2/syn.att.j2",
+    "comparison_state": "MECHANICAL_STOP",
+    "semantic_result": "NOT_EVALUATED",
+    "shared_deviation": null,
+    "frozen_direction_version": "v1",
+    "eligibility": "INELIGIBLE",
+    "reason_code": null
+  },
+  {
+    "comparison_id": "syn.cmp.2",
+    "j1_ref": "syn.run.a/syn.att.a",
+    "j2_ref": "syn.run.b/syn.att.b",
+    "comparison_state": "COMPARISON_PASS",
+    "semantic_result": "REJECTED",
+    "shared_deviation": false,
+    "frozen_direction_version": "v1",
+    "eligibility": "ELIGIBLE",
+    "reason_code": "SYN_STRUCT"
+  }
+]

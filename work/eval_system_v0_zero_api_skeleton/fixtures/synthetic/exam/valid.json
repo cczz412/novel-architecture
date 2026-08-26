@@ -1,0 +1,51 @@
+{
+  "items": [
+    {
+      "item_id": "syn.item.01",
+      "item_version": "v1",
+      "task_kind": "SHORT_DIAGNOSIS",
+      "leakage_group_uid": "syn.lg.alpha",
+      "split": "PUBLIC_DIAG",
+      "reference_status": "CANDIDATE",
+      "rights_status": "LOCAL_SYNTHETIC",
+      "split_assigned_at": "2026-08-01T00:00:00Z",
+      "sampled_at": "2026-08-02T00:00:00Z",
+      "unreviewed": false
+    },
+    {
+      "item_id": "syn.item.02",
+      "item_version": "v1",
+      "task_kind": "FULL_CHAPTER",
+      "leakage_group_uid": "syn.lg.beta",
+      "split": "HELD_OUT",
+      "reference_status": "NONE",
+      "rights_status": "LOCAL_SYNTHETIC",
+      "split_assigned_at": "2026-08-01T00:00:00Z",
+      "sampled_at": "2026-08-02T00:00:00Z",
+      "unreviewed": true
+    }
+  ],
+  "exposures": [
+    {
+      "item_id": "syn.item.01",
+      "leakage_group_uid": "syn.lg.alpha",
+      "exposure_kind": "SHORT_DIAGNOSIS",
+      "exposed_at": "2026-08-03T00:00:00Z"
+    }
+  ],
+  "claimed_unseen_groups": [
+    "syn.lg.beta"
+  ],
+  "public_manifest": [
+    {
+      "item_id": "syn.item.01",
+      "item_version": "v1",
+      "task_kind": "SHORT_DIAGNOSIS",
+      "split": "PUBLIC_DIAG",
+      "leakage_group_uid": "syn.lg.alpha",
+      "reference_status": "CANDIDATE",
+      "rights_status": "LOCAL_SYNTHETIC",
+      "unreviewed": false
+    }
+  ]
+}

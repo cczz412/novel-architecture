@@ -1,0 +1,18 @@
+{
+  "pair_id": "rc_02",
+  "candidate_code": "SYN_NOT_STATEMENT",
+  "candidate_status": "CANDIDATE",
+  "not_calibrated": true,
+  "calibrated": false,
+  "single_primary_reason": true,
+  "positive": {
+    "text": "合成句：他今天出门了吗。"
+  },
+  "negative_minimal": {
+    "text": "合成句：他今天出门了。"
+  },
+  "surface_rewrite": {
+    "text": "合成句：他是不是今天出门了。"
+  },
+  "pair_hash": "33287066a49d3a1f4a26dbf00c25718c0efd33e72c6c171a1dae876829ce5a8e"
+}

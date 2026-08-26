@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://novel-architecture.local/v0_skeleton_contract",
+  "title": "V0_SKELETON_CONTRACT",
+  "description": "Empty-skeleton checker schema only. Not a production API. Formal verdict and reason-code enumerations are CANDIDATE and are not enum-validated here.",
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "version_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "record_version", "record_hash", "access"],
+      "properties": {
+        "record_id": { "type": "string", "minLength": 1 },
+        "record_version": { "type": "string", "minLength": 1 },
+        "record_hash": { "$ref": "#/$defs/sha256" },
+        "access": { "const": "READ_ONLY" }
+      }
+    },
+    "foreign_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ledger",
+        "record_type",
+        "record_id",
+        "record_version",
+        "record_hash",
+        "access"
+      ],
+      "properties": {
+        "ledger": { "type": "string", "minLength": 1 },
+        "record_type": { "type": "string", "minLength": 1 },
+        "record_id": { "type": "string", "minLength": 1 },
+        "record_version": { "type": "string", "minLength": 1 },
+        "record_hash": { "$ref": "#/$defs/sha256" },
+        "access": { "const": "READ_ONLY" }
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "ledger",
+        "purpose",
+        "item_ref",
+        "rule_ref",
+        "prompt_ref",
+        "schema_ref",
+        "frozen_direction_ref",
+        "run_config_id"
+      ],
+      "properties": {
+        "run_id": { "type": "string", "minLength": 1 },
+        "ledger": {
+          "type": "string",
+          "enum": ["EVIDENCE_GATE", "EXAM", "API_EVAL"]
+        },
+        "purpose": { "type": "string", "minLength": 1 },
+        "item_ref": { "$ref": "#/$defs/version_ref" },
+        "rule_ref": { "$ref": "#/$defs/version_ref" },
+        "prompt_ref": { "$ref": "#/$defs/version_ref" },
+        "schema_ref": { "$ref": "#/$defs/version_ref" },
+        "frozen_direction_ref": { "$ref": "#/$defs/version_ref" },
+        "run_config_id": { "type": "string", "minLength": 1 },
+        "source_result_ref": { "$ref": "#/$defs/foreign_ref" },
+        "experiment_factors": { "$ref": "#/$defs/experiment_factors" }
+      }
+    },
+    "experiment_factors": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requested_model": { "type": "string" },
+        "returned_identity": { "type": "string" },
+        "thinking_tier": { "type": "string" },
+        "temperature": { "type": "number" },
+        "max_output_tokens": { "type": "integer" },
+        "output_mode": { "type": "string" },
+        "strict_schema_enabled": { "type": "boolean" },
+        "strict_schema_version": { "type": "string" },
+        "prompt_version": { "type": "string" },
+        "timeout_s": { "type": "number" },
+        "retry_policy": { "type": "string" }
+      }
+    },
+    "attempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempt_id", "run_id", "attempt_role"],
+      "properties": {
+        "attempt_id": { "type": "string", "minLength": 1 },
+        "run_id": { "type": "string", "minLength": 1 },
+        "attempt_role": {
+          "type": "string",
+          "enum": ["J1", "J2", "PRIMARY", "RETRY"]
+        },
+        "retry_of_attempt_id": { "type": ["string", "null"] }
+      }
+    },
+    "raw_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "attempt_id",
+        "artifact_kind",
+        "sha256",
+        "immutable"
+      ],
+      "properties": {
+        "artifact_id": { "type": "string", "minLength": 1 },
+        "attempt_id": { "type": "string", "minLength": 1 },
+        "artifact_kind": { "const": "RAW" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "immutable": { "const": true }
+      }
+    },
+    "repair_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repair_id",
+        "derived_from_raw_sha256",
+        "primary_eval_eligible"
+      ],
+      "properties": {
+        "repair_id": { "type": "string", "minLength": 1 },
+        "derived_from_raw_sha256": { "$ref": "#/$defs/sha256" },
+        "primary_eval_eligible": { "const": false }
+      }
+    },
+    "mechanical_assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assessment_id",
+        "attempt_id",
+        "transport_ok",
+        "parse_ok",
+        "schema_ok",
+        "mechanical_status",
+        "failure_stage",
+        "failure_code",
+        "semantic_gate_eligible"
+      ],
+      "properties": {
+        "assessment_id": { "type": "string", "minLength": 1 },
+        "attempt_id": { "type": "string", "minLength": 1 },
+        "transport_ok": { "type": "boolean" },
+        "parse_ok": { "type": "boolean" },
+        "schema_ok": { "type": "boolean" },
+        "mechanical_status": { "type": "string", "enum": ["PASS", "FAIL"] },
+        "failure_stage": {
+          "type": ["string", "null"],
+          "enum": ["TRANSPORT", "PARSE", "SCHEMA", null]
+        },
+        "failure_code": { "type": ["string", "null"] },
+        "semantic_gate_eligible": { "type": "boolean" }
+      }
+    },
+    "pair_comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "comparison_id",
+        "j1_run_id",
+        "j1_attempt_id",
+        "j2_run_id",
+        "j2_attempt_id",
+        "comparison_state",
+        "verdict_match",
+        "reason_code_match",
+        "semantic_result",
+        "assessment_source"
+      ],
+      "properties": {
+        "comparison_id": { "type": "string", "minLength": 1 },
+        "j1_run_id": { "type": "string", "minLength": 1 },
+        "j1_attempt_id": { "type": "string", "minLength": 1 },
+        "j2_run_id": { "type": "string", "minLength": 1 },
+        "j2_attempt_id": { "type": "string", "minLength": 1 },
+        "comparison_state": {
+          "type": "string",
+          "enum": ["MECHANICAL_STOP", "COMPARISON_PASS", "DISPUTE_STOP"]
+        },
+        "verdict_match": { "type": ["boolean", "null"] },
+        "reason_code_match": { "type": ["boolean", "null"] },
+        "semantic_result": { "type": "string", "minLength": 1 },
+        "assessment_source": {
+          "type": "string",
+          "enum": ["PAIR_COMPARISON", "NOT_EVALUATED"]
+        },
+        "shared_deviation": { "type": ["boolean", "null"] },
+        "frozen_direction_version": { "type": "string" },
+        "eligibility": { "$ref": "#/$defs/eligibility" }
+      }
+    },
+    "eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eligibility", "ineligibility_reason", "policy_version"],
+      "properties": {
+        "eligibility": {
+          "type": "string",
+          "enum": ["ELIGIBLE", "INELIGIBLE"]
+        },
+        "ineligibility_reason": { "type": ["string", "null"] },
+        "policy_version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "review_opinion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_id",
+        "subject_ref",
+        "suggested_layer",
+        "audit_cause_code",
+        "revision_recommended",
+        "mutates_model_json"
+      ],
+      "properties": {
+        "review_id": { "type": "string", "minLength": 1 },
+        "subject_ref": { "$ref": "#/$defs/version_ref" },
+        "suggested_layer": { "type": "string", "minLength": 1 },
+        "audit_cause_code": { "type": "string", "minLength": 1 },
+        "revision_recommended": { "type": "boolean" },
+        "mutates_model_json": { "const": false }
+      }
+    },
+    "exam_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "item_version",
+        "item_version_hash",
+        "task_kind",
+        "leakage_group_uid",
+        "split",
+        "reference_status",
+        "rights_status",
+        "split_assigned_at"
+      ],
+      "properties": {
+        "item_id": { "type": "string", "minLength": 1 },
+        "item_version": { "type": "string", "minLength": 1 },
+        "item_version_hash": { "$ref": "#/$defs/sha256" },
+        "task_kind": {
+          "type": "string",
+          "enum": ["SHORT_DIAGNOSIS", "FULL_CHAPTER"]
+        },
+        "leakage_group_uid": { "type": "string", "minLength": 1 },
+        "split": {
+          "type": "string",
+          "enum": ["HELD_OUT", "DEV", "PUBLIC_DIAG", "UNASSIGNED"]
+        },
+        "reference_status": {
+          "type": "string",
+          "enum": ["NONE", "CANDIDATE", "PROVISIONAL"]
+        },
+        "rights_status": {
+          "type": "string",
+          "enum": ["UNKNOWN", "LOCAL_SYNTHETIC"]
+        },
+        "split_assigned_at": { "type": "string", "minLength": 1 },
+        "unreviewed": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "label": "hash62",
+    "def": "raw_artifact",
+    "instance": {
+      "artifact_id": "syn.art.raw.bad",
+      "attempt_id": "syn.att.j1",
+      "artifact_kind": "RAW",
+      "sha256": "ee4bf9751aacaf1013b80b102d1476cc68fa0c2dd913f74d9ef9825f358949",
+      "immutable": true
+    }
+  },
+  {
+    "label": "gold",
+    "def": "exam_item",
+    "instance": {
+      "item_id": "syn.item.gold",
+      "item_version": "v1",
+      "item_version_hash": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+      "task_kind": "SHORT_DIAGNOSIS",
+      "leakage_group_uid": "syn.lg.alpha",
+      "split": "HELD_OUT",
+      "reference_status": "GOLD",
+      "rights_status": "LOCAL_SYNTHETIC",
+      "split_assigned_at": "2026-08-01T00:00:00Z"
+    }
+  },
+  {
+    "label": "repair_primary",
+    "def": "repair_artifact",
+    "instance": {
+      "repair_id": "syn.repair.bad",
+      "derived_from_raw_sha256": "ffd2193c6886d1f8ec66e9c8a2c5d41266ed968bff2bf9bac12244baa60aadd5",
+      "primary_eval_eligible": true
+    }
+  },
+  {
+    "label": "write_access",
+    "def": "foreign_ref",
+    "instance": {
+      "ledger": "EXTRACTION_CORRECTION",
+      "record_type": "ResultVersion",
+      "record_id": "syn.rv.1",
+      "record_version": "v1",
+      "record_hash": "90950ba6046cff3232e77d47a87af94a9a8226d5c872128f3a68ceb11cb943e4",
+      "access": "WRITE"
+    }
+  },
+  {
+    "label": "review_mutates",
+    "def": "review_opinion",
+    "instance": {
+      "review_id": "syn.rev.bad",
+      "subject_ref": {
+        "record_id": "syn.cmp.1",
+        "record_version": "v1",
+        "record_hash": "d36a9a6177333db73585db9e5acfc9ccf65469f5903ba475a186167ecebb67ea",
+        "access": "READ_ONLY"
+      },
+      "suggested_layer": "PATCH_JSON",
+      "audit_cause_code": "SYN_HUMAN_NOTE",
+      "revision_recommended": true,
+      "mutates_model_json": true
+    }
+  }
+]
