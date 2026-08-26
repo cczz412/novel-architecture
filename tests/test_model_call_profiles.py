@@ -619,6 +619,362 @@ def test_registry_keeps_legacy_preferred_profiles_and_cli_shape(
     assert parsed.command == "render"
 
 
+@pytest.mark.parametrize("command", ["list", "show", "render", "validate"])
+def test_profile_cli_commands_reject_symlinked_registry(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    command: str,
+) -> None:
+    root = _install_bundle_fixture(tmp_path, monkeypatch)
+    registry_path = root / "config/model_call_profiles/registry.json"
+    target = registry_path.with_name("registry-real.json")
+    registry_path.rename(target)
+    registry_path.symlink_to(target.name)
+    payload = tmp_path / "payload.json"
+    _write_json(payload, {"messages": [{"role": "user", "content": "JSON"}]})
+    args = {
+        "list": SimpleNamespace(),
+        "show": SimpleNamespace(
+            profile_id="qianwen_qwen3_7_flash_thinking_prompt_json"
+        ),
+        "render": SimpleNamespace(
+            profile_id="qianwen_qwen3_7_flash_thinking_prompt_json",
+            input=str(payload),
+        ),
+        "validate": SimpleNamespace(),
+    }[command]
+    function = {
+        "list": profiles.command_list,
+        "show": profiles.command_show,
+        "render": profiles.command_render,
+        "validate": profiles.command_validate,
+    }[command]
+    if command == "validate":
+        assert function(args) == 1
+    else:
+        with pytest.raises(profiles.ProfileError, match="软链"):
+            function(args)
+
+
+@pytest.mark.parametrize("link_kind", ["hardlink", "fifo", "directory"])
+def test_registry_rejects_nonregular_or_linked_file_types(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    link_kind: str,
+) -> None:
+    root = _install_bundle_fixture(tmp_path, monkeypatch)
+    registry_path = root / "config/model_call_profiles/registry.json"
+    backup = registry_path.with_name("registry-backup.json")
+    registry_path.rename(backup)
+    if link_kind == "hardlink":
+        os.link(backup, registry_path)
+    elif link_kind == "fifo":
+        os.mkfifo(registry_path)
+    else:
+        registry_path.mkdir()
+    with pytest.raises(profiles.ProfileError):
+        profiles.load_registry()
+
+
+def test_oversized_registered_regular_file_is_rejected(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _install_bundle_fixture(tmp_path, monkeypatch)
+    registry_path = root / "config/model_call_profiles/registry.json"
+    with registry_path.open("wb") as handle:
+        handle.truncate(profiles.MAX_REGISTERED_FILE_BYTES + 1)
+    with pytest.raises(profiles.ProfileError, match="字节上限"):
+        profiles.load_registry()
+
+
+def test_registered_file_growth_during_read_is_rejected(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _install_bundle_fixture(tmp_path, monkeypatch)
+    chunk = b"x" * (1024 * 1024)
+    reads = 0
+
+    def growing_read(_: int, __: int) -> bytes:
+        nonlocal reads
+        reads += 1
+        return chunk
+
+    monkeypatch.setattr(profiles.os, "read", growing_read)
+    with pytest.raises(profiles.ProfileError, match="读取期间超过"):
+        profiles.load_registry()
+    assert reads == 6
+
+
+def test_registry_fifo_swap_after_lstat_is_nonblocking_and_rejected(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _install_bundle_fixture(tmp_path, monkeypatch)
+    registry_path = root / "config/model_call_profiles/registry.json"
+    backup = registry_path.with_name("registry-before-fifo.json")
+    original_open = profiles.os.open
+    swapped = False
+
+    def swap_before_final_open(
+        path: str | bytes,
+        flags: int,
+        mode: int = 0o777,
+        *,
+        dir_fd: int | None = None,
+    ) -> int:
+        nonlocal swapped
+        if path == registry_path.name and dir_fd is not None and not swapped:
+            swapped = True
+            registry_path.rename(backup)
+            os.mkfifo(registry_path)
+            assert flags & os.O_NONBLOCK
+        return original_open(path, flags, mode, dir_fd=dir_fd)
+
+    monkeypatch.setattr(profiles.os, "open", swap_before_final_open)
+    with pytest.raises(profiles.ProfileError, match="普通文件"):
+        profiles.load_registry()
+    assert swapped is True
+
+
+def test_unbundled_agent_plan_profile_symlink_is_rejected(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _install_bundle_fixture(tmp_path, monkeypatch)
+    profile_path = root / (
+        "config/model_call_profiles/profiles/"
+        "agent_plan_deepseek_v4_pro_high_json_object.json"
+    )
+    target = profile_path.with_name("agent-plan-real.json")
+    profile_path.rename(target)
+    profile_path.symlink_to(target.name)
+    with pytest.raises(profiles.ProfileError, match="软链"):
+        profiles.load_profile("agent_plan_deepseek_v4_pro_high_json_object")
+
+
+@pytest.mark.parametrize("link_kind", ["symlink", "hardlink", "fifo", "directory"])
+def test_unbundled_provider_rejects_links_and_nonregular_files(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    link_kind: str,
+) -> None:
+    root = _install_bundle_fixture(tmp_path, monkeypatch)
+    profile = profiles.load_profile("agent_plan_deepseek_v4_pro_high_json_object")
+    provider_path = root / profile["provider_config"]
+    backup = provider_path.with_name("agent-plan-provider-backup.json")
+    provider_path.rename(backup)
+    if link_kind == "symlink":
+        provider_path.symlink_to(backup.name)
+    elif link_kind == "hardlink":
+        os.link(backup, provider_path)
+    elif link_kind == "fifo":
+        os.mkfifo(provider_path)
+    else:
+        provider_path.mkdir()
+    with pytest.raises(profiles.ProfileError):
+        profiles.load_provider(profile)
+
+
+def test_render_reuses_the_validated_provider_snapshot(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    profile = profiles.load_profile(
+        "qianwen_qwen3_7_flash_json_object_no_thinking"
+    )
+    provider_path = profile["provider_config"]
+    original_read = profiles._read_registered_bytes
+    provider_reads = 0
+
+    def changed_on_second_read(path: str) -> bytes:
+        nonlocal provider_reads
+        raw = original_read(path)
+        if path == provider_path:
+            provider_reads += 1
+            if provider_reads > 1:
+                value = json.loads(raw)
+                value["base_url"] = "https://changed.invalid"
+                return json.dumps(value).encode("utf-8")
+        return raw
+
+    monkeypatch.setattr(profiles, "_read_registered_bytes", changed_on_second_read)
+    preview = profiles.render(
+        profile,
+        {"messages": [{"role": "user", "content": "只返回 JSON。"}]},
+    )
+    assert provider_reads == 1
+    assert preview["url"].startswith("https://dashscope.aliyuncs.com/")
+
+
+def test_public_render_rejects_missing_provider_config_as_profile_error() -> None:
+    profile = profiles.load_profile(
+        "qianwen_qwen3_7_flash_json_object_no_thinking"
+    )
+    del profile["provider_config"]
+    with pytest.raises(profiles.ProfileError, match="provider_config"):
+        profiles.render(
+            profile,
+            {"messages": [{"role": "user", "content": "只返回 JSON。"}]},
+        )
+
+
+def test_render_cli_rejects_missing_provider_config_without_traceback(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    root = _install_bundle_fixture(tmp_path, monkeypatch)
+    registry = _fixture_registry(root)
+    row = registry["profiles"][1]
+    profile_path = root / row["path"]
+    profile = _read_json(profile_path)
+    del profile["provider_config"]
+    _write_json(profile_path, profile)
+    payload = tmp_path / "payload.json"
+    _write_json(payload, {"messages": [{"role": "user", "content": "JSON"}]})
+    monkeypatch.setattr(
+        profiles.sys,
+        "argv",
+        [
+            "model_call_profiles.py",
+            "render",
+            row["profile_id"],
+            "--input",
+            str(payload),
+        ],
+    )
+    assert profiles.main() == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "FAIL " in captured.err
+    assert "provider_config" in captured.err
+    assert "Traceback" not in captured.err
+    assert "KeyError" not in captured.err
+
+
+def test_profile_validation_reads_each_config_path_once(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original_read = profiles._read_registered_bytes
+    counts: dict[str, int] = {}
+
+    def counted_read(path: str) -> bytes:
+        counts[path] = counts.get(path, 0) + 1
+        return original_read(path)
+
+    monkeypatch.setattr(profiles, "_read_registered_bytes", counted_read)
+    assert profiles.validate_all_profiles() == []
+    assert counts
+    assert max(counts.values()) == 1
+
+
+@pytest.mark.parametrize(
+    ("budget", "parameter_budget"),
+    [(32768, 16384), (None, 32768)],
+)
+def test_thinking_budget_must_match_provider_parameters(
+    budget: int | None,
+    parameter_budget: int,
+) -> None:
+    profile = profiles.load_profile(
+        "qianwen_qwen3_7_flash_thinking_prompt_json"
+    )
+    profile["sampling"]["thinking"]["budget_tokens"] = budget
+    profile["json_output"]["provider_parameters"]["thinking_budget"] = (
+        parameter_budget
+    )
+    assert any("thinking_budget" in error for error in profiles.validate_profile(profile))
+
+
+def test_streaming_profile_cannot_claim_single_json_response() -> None:
+    profile = profiles.load_profile(
+        "qianwen_qwen3_7_flash_thinking_prompt_json"
+    )
+    profile["streaming"]["response_assembly"] = "single_json_response"
+    assert any(
+        "single_json_response" in error for error in profiles.validate_profile(profile)
+    )
+
+
+def test_unbundled_provider_rejects_inline_api_key() -> None:
+    profile = profiles.load_profile("agent_plan_deepseek_v4_pro_high_json_object")
+    provider = profiles.load_provider(profile)
+    provider["api_key"] = "must-not-be-inline"
+    errors = profiles.validate_profile(profile, provider=provider)
+    assert any("凭证" in error and "api_key" in error for error in errors)
+
+
+def test_registry_profile_id_must_match_file_id(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _install_bundle_fixture(tmp_path, monkeypatch)
+    registry = _fixture_registry(root)
+    profile_path = root / registry["profiles"][1]["path"]
+    profile = _read_json(profile_path)
+    profile["profile_id"] = "renamed_profile"
+    _write_json(profile_path, profile)
+    assert any("登记 ID 与文件内 ID" in error for error in profiles.validate_all_profiles())
+
+
+def test_registry_v1_rejects_preferred_profile_semantic_drift(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _install_bundle_fixture(tmp_path, monkeypatch)
+    registry = _fixture_registry(root)
+    registry["preferred_profiles"]["qwen3.7-flash"] = (
+        "qianwen_qwen3_7_flash_json_object_no_thinking"
+    )
+    _save_fixture_registry(root, registry)
+    assert profiles.command_validate(SimpleNamespace()) == 1
+
+
+@pytest.mark.parametrize("control", ["\n", "\r", "\t", "\x01", "\x7f"])
+def test_registry_role_rejects_ascii_control_injection(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    control: str,
+) -> None:
+    root = _install_bundle_fixture(tmp_path, monkeypatch)
+    registry = _fixture_registry(root)
+    registry["profiles"][0]["role"] += control + "injected"
+    _save_fixture_registry(root, registry)
+    with pytest.raises(profiles.ProfileError, match="ASCII 控制字符"):
+        profiles.command_list(SimpleNamespace())
+
+
+def test_all_five_profiles_validate_provider_access_policy(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    selected: list[str] = []
+    original_validate = profiles._validate_provider_policy
+
+    def record_policy(
+        policy: dict[str, Any],
+        *,
+        selected_provider: str,
+        label: str,
+    ) -> None:
+        selected.append(selected_provider)
+        original_validate(
+            policy,
+            selected_provider=selected_provider,
+            label=label,
+        )
+
+    monkeypatch.setattr(profiles, "_validate_provider_policy", record_policy)
+    assert profiles.validate_all_profiles() == []
+    assert selected == [
+        "qianwen_platform",
+        "qianwen_platform",
+        "volcengine_agent_plan",
+        "volcengine_agent_plan",
+        "volcengine_agent_plan",
+    ]
+
+
 def test_generic_schemas_accept_current_data_and_contain_no_route_constants() -> None:
     registry = profiles.load_registry()
     row = _bundle_row(registry)
