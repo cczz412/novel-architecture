@@ -28,7 +28,7 @@
       "max_output_tokens": null,
       "thinking_contract": {
         "field": "thinking.type",
-        "default": "enable",
+        "default": "enabled",
         "allowed_values": [
           "enabled",
           "disabled"

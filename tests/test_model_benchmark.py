@@ -230,7 +230,7 @@ def test_ant_ling_profile_uses_official_thinking_and_json_contract() -> None:
     assert body["model"] == "Ling-3.0-flash"
     assert body["temperature"] == 0.2
     assert body["max_tokens"] == 32000
-    assert body["thinking"] == {"type": "enable"}
+    assert body["thinking"] == {"type": "enabled"}
     assert body["response_format"] == {"type": "json_object"}
     assert "reasoning_effort" not in body
     assert "n" not in body

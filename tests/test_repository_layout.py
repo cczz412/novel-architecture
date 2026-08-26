@@ -203,12 +203,18 @@ def test_git_policy_matches_repository_facts_with_nul_safe_listing() -> None:
         path = row["path"]
         policy = row["git_policy"]
         is_tracked = _has_tracked_path(tracked, path)
-        ignored = _git("check-ignore", "--quiet", "--", path, check=False).returncode == 0
-
         if policy == "tracked":
             assert is_tracked, path
         elif policy == "ignored":
-            assert ignored, path
+            probe = f"{path}/.gitignore-policy-probe"
+            assert _git(
+                "check-ignore",
+                "--quiet",
+                "--no-index",
+                "--",
+                probe,
+                check=False,
+            ).returncode == 0, probe
             assert not is_tracked, path
         elif policy == "mixed":
             assert is_tracked, path
@@ -223,7 +229,13 @@ def test_git_policy_matches_repository_facts_with_nul_safe_listing() -> None:
             ).returncode == 0, probe
         elif policy == "local_untracked":
             assert not is_tracked, path
-            assert not ignored, path
+            assert _git(
+                "check-ignore",
+                "--quiet",
+                "--",
+                path,
+                check=False,
+            ).returncode != 0, path
         elif policy == "tracked_pointer":
             assert path in tracked
             assert (ROOT / path).is_symlink()
