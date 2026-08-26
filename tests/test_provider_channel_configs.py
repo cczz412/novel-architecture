@@ -178,8 +178,8 @@ def test_ant_ling_channel_uses_exact_ling_3_flash_contract() -> None:
             "max_output_tokens": None,
             "thinking_contract": {
                 "field": "thinking.type",
-                "default": "enable",
-                "allowed_values": ["enable", "disable"],
+                "default": "enabled",
+                "allowed_values": ["enabled", "disabled"],
             },
             "structured_output_contract": {
                 "json_object": True,
@@ -191,6 +191,15 @@ def test_ant_ling_channel_uses_exact_ling_3_flash_contract() -> None:
             ),
         }
     ]
+    adapters = json.loads(
+        (ROOT / "config/model_benchmarks/provider_adapters.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    profile = adapters["providers"]["ant_ling"]["profiles"][
+        "ling_flash_thinking_json"
+    ]
+    assert profile["set_fields"]["thinking"] == {"type": "enabled"}
 
 
 def test_tencent_tokenhub_policy_stays_isolated_and_catalog_gated() -> None:
