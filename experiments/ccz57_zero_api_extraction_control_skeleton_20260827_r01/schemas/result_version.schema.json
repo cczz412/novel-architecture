@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cczz412/novel-architecture/experiments/ccz57-zero-api/result-version-v1",
+  "title": "CCZ-57 0 API 候选版本",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "version_id",
+    "run_id",
+    "parent_version_id",
+    "base_attempt_id",
+    "applied_patch_ids",
+    "content_ref",
+    "facts",
+    "relation_candidate_ids",
+    "derivation",
+    "diff_summary",
+    "scope_status",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {"const": "ccz57-zero-api-result-version-v1"},
+    "version_id": {"type": "string", "pattern": "^ver_[0-9a-f]{24}$"},
+    "run_id": {"type": "string", "minLength": 1},
+    "parent_version_id": {
+      "oneOf": [
+        {"type": "string", "pattern": "^ver_[0-9a-f]{24}$"},
+        {"type": "null"}
+      ]
+    },
+    "base_attempt_id": {"type": "string", "pattern": "^att_[0-9a-f]{24}$"},
+    "applied_patch_ids": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^patch_[0-9a-f]{24}$"},
+      "uniqueItems": true
+    },
+    "content_ref": {"$ref": "#/$defs/file_ref"},
+    "facts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/fact"}
+    },
+    "relation_candidate_ids": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^relcand_[0-9a-f]{24}$"},
+      "uniqueItems": true
+    },
+    "derivation": {
+      "type": "object",
+      "required": ["kind", "source_content_sha256", "leaf_values_unchanged", "key_values_unchanged", "array_order_unchanged"],
+      "properties": {
+        "kind": {"enum": ["BASELINE_IMPORT", "STRIP_BOM", "TRIM_OUTER_WHITESPACE", "STRIP_SINGLE_OUTER_FENCE", "APPLY_VERIFIED_PATCH"]},
+        "source_content_sha256": {"$ref": "#/$defs/sha256"},
+        "leaf_values_unchanged": {"type": ["boolean", "null"]},
+        "key_values_unchanged": {"type": ["boolean", "null"]},
+        "array_order_unchanged": {"type": ["boolean", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "diff_summary": {
+      "type": "object",
+      "required": ["touched_fact_ids", "touched_fields", "added_facts", "removed_facts", "untouched_fields_changed"],
+      "properties": {
+        "touched_fact_ids": {"type": "array", "items": {"type": "string", "pattern": "^fact_[0-9a-f]{24}$"}, "uniqueItems": true},
+        "touched_fields": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "added_facts": {"type": "integer", "minimum": 0},
+        "removed_facts": {"type": "integer", "minimum": 0},
+        "untouched_fields_changed": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "scope_status": {"$ref": "#/$defs/scope_status"},
+    "created_by": {"enum": ["BASELINE_IMPORTER", "SAFE_FORMAT_DERIVER", "MERGE_GATE"]}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "file_ref": {
+      "type": "object",
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^(?!/)(?!.*\\.\\./).+$"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "fact": {
+      "type": "object",
+      "required": ["fact_id", "parent_fact_id", "source_order", "fact", "status", "evidence", "speaker", "active"],
+      "properties": {
+        "fact_id": {"type": "string", "pattern": "^fact_[0-9a-f]{24}$"},
+        "parent_fact_id": {
+          "oneOf": [
+            {"type": "string", "pattern": "^fact_[0-9a-f]{24}$"},
+            {"type": "null"}
+          ]
+        },
+        "source_order": {"type": "integer", "minimum": 0},
+        "fact": {"type": "string", "minLength": 1},
+        "status": {"type": "string", "minLength": 1},
+        "evidence": {"type": "string", "minLength": 1},
+        "speaker": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "null"}
+          ]
+        },
+        "active": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "axis_state": {"enum": ["PASS", "FAIL", "NOT_CHECKED", "HUMAN_REQUIRED"]},
+    "scope_status": {
+      "type": "object",
+      "required": [
+        "transport",
+        "identity",
+        "json",
+        "schema",
+        "evidence_location",
+        "value_semantics",
+        "speaker",
+        "causal",
+        "coverage",
+        "regression"
+      ],
+      "properties": {
+        "transport": {"$ref": "#/$defs/axis_state"},
+        "identity": {"$ref": "#/$defs/axis_state"},
+        "json": {"$ref": "#/$defs/axis_state"},
+        "schema": {"$ref": "#/$defs/axis_state"},
+        "evidence_location": {"$ref": "#/$defs/axis_state"},
+        "value_semantics": {"$ref": "#/$defs/axis_state"},
+        "speaker": {"$ref": "#/$defs/axis_state"},
+        "causal": {"$ref": "#/$defs/axis_state"},
+        "coverage": {"$ref": "#/$defs/axis_state"},
+        "regression": {"$ref": "#/$defs/axis_state"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cczz412/novel-architecture/experiments/ccz57-zero-api/controller-state-v1",
+  "title": "CCZ-57 0 API 控制器状态",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "controller_state_id",
+    "run_id",
+    "current_state",
+    "limits",
+    "consumed",
+    "error_signature_history",
+    "version_hash_history",
+    "progress_vectors",
+    "no_progress",
+    "oscillation",
+    "regression",
+    "next_action",
+    "stop_reason"
+  ],
+  "properties": {
+    "schema_version": {"const": "ccz57-zero-api-controller-state-v1"},
+    "controller_state_id": {"type": "string", "pattern": "^ctrl_[0-9a-f]{24}$"},
+    "run_id": {"type": "string", "minLength": 1},
+    "current_state": {
+      "enum": [
+        "PLANNED",
+        "ATTEMPT_IMPORTED",
+        "SOURCE_VERIFIED",
+        "TRANSPORT_CHECKED",
+        "IDENTITY_CHECKED",
+        "RAW_JSON_CHECKED",
+        "DERIVED_FORMAT_CREATED",
+        "SCHEMA_CHECKED",
+        "EVIDENCE_LOCATED",
+        "DIAGNOSED",
+        "PATCH_PROPOSED",
+        "PATCH_VERIFIED",
+        "VERSION_CREATED",
+        "READY_FOR_HUMAN",
+        "HUMAN_PENDING",
+        "STOPPED"
+      ]
+    },
+    "limits": {
+      "type": "object",
+      "required": ["max_network_requests", "max_model_calls", "max_tokens", "max_patch_count"],
+      "properties": {
+        "max_network_requests": {"const": 0},
+        "max_model_calls": {"const": 0},
+        "max_tokens": {"const": 0},
+        "max_patch_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "consumed": {
+      "type": "object",
+      "required": ["network_requests", "model_calls", "tokens", "patch_count", "version_count"],
+      "properties": {
+        "network_requests": {"const": 0},
+        "model_calls": {"const": 0},
+        "tokens": {"const": 0},
+        "patch_count": {"type": "integer", "minimum": 0},
+        "version_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "error_signature_history": {"type": "array", "items": {"$ref": "#/$defs/sha256"}},
+    "version_hash_history": {"type": "array", "items": {"$ref": "#/$defs/sha256"}},
+    "progress_vectors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["version_id", "blockers", "json_errors", "schema_errors", "evidence_errors", "regressions", "accepted_fixes"],
+        "properties": {
+          "version_id": {
+            "oneOf": [
+              {"type": "string", "pattern": "^ver_[0-9a-f]{24}$"},
+              {"type": "null"}
+            ]
+          },
+          "blockers": {"type": "integer", "minimum": 0},
+          "json_errors": {"type": "integer", "minimum": 0},
+          "schema_errors": {"type": "integer", "minimum": 0},
+          "evidence_errors": {"type": "integer", "minimum": 0},
+          "regressions": {"type": "integer", "minimum": 0},
+          "accepted_fixes": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": false
+      }
+    },
+    "no_progress": {"type": "boolean"},
+    "oscillation": {"type": "boolean"},
+    "regression": {"type": "boolean"},
+    "next_action": {"enum": ["IMPORT", "CHECK", "DERIVE_SAFE_FORMAT", "PROPOSE_PATCH", "VERIFY_PATCH", "CREATE_VERSION", "READY_FOR_HUMAN", "STOP"]},
+    "stop_reason": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "STOP_SOURCE_MISSING",
+        "STOP_SOURCE_DRIFT",
+        "STOP_EMPTY_RESPONSE",
+        "STOP_TRUNCATED",
+        "STOP_IDENTITY_MISMATCH",
+        "STOP_UNSAFE_JSON",
+        "STOP_UNSAFE_DERIVATION",
+        "STOP_EVIDENCE_NOT_FOUND",
+        "STOP_HUMAN_REQUIRED",
+        "STOP_BASE_HASH_MISMATCH",
+        "STOP_PATCH_SCOPE_VIOLATION",
+        "STOP_REGRESSION",
+        "STOP_NO_PROGRESS",
+        "STOP_OSCILLATION",
+        "STOP_ZERO_API_BOUNDARY"
+      ]
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}

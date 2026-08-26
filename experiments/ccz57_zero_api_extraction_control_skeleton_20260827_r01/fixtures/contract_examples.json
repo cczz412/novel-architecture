@@ -1,0 +1,295 @@
+{
+  "schema_version": "ccz57-zero-api-contract-examples-v1",
+  "identity": "SCHEMA_SHAPE_ONLY__PATHS_AND_HASHES_ARE_PLACEHOLDERS",
+  "examples": {
+    "input_snapshot": {
+      "schema_version": "ccz57-zero-api-input-snapshot-v1",
+      "input_snapshot_id": "input_121212121212121212121212",
+      "run_id": "replay_design_example",
+      "source_document": {
+        "path": "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/example_source.md",
+        "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+        "bytes": 1
+      },
+      "background_card": null,
+      "prompt": {
+        "path": "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/example_prompt.md",
+        "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "bytes": 1
+      },
+      "schema": {
+        "path": "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/example_schema.json",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "bytes": 1
+      },
+      "model_catalog_refs": [],
+      "authorization_ref": "GitHub Issue #165 design replay only",
+      "source_kind": "REPLAY_ONLY_EXISTING_ARTIFACTS",
+      "network_allowed": false,
+      "model_calls_allowed": false
+    },
+    "attempt": {
+      "schema_version": "ccz57-zero-api-attempt-v1",
+      "attempt_id": "att_aaaaaaaaaaaaaaaaaaaaaaaa",
+      "run_id": "replay_design_example",
+      "input_snapshot_id": "input_121212121212121212121212",
+      "source_refs": [
+        {
+          "path": "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/example.json",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "bytes": 1
+        }
+      ],
+      "retry_index": 0,
+      "request": {
+        "provider": "example_provider",
+        "requested_model": "example_model",
+        "expected_response_model": "example_model",
+        "thinking": "disabled",
+        "reasoning_effort": "none",
+        "temperature": 0,
+        "max_output_tokens": 4096,
+        "prompt_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "schema_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "input_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+        "request_body": {
+          "path": "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/example_request.json",
+          "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+          "bytes": 1
+        }
+      },
+      "transport": {
+        "imported_without_network": true,
+        "http_status": 200,
+        "timed_out": false,
+        "finish_reason": "stop",
+        "incomplete_reason": null,
+        "response_model": "example_model",
+        "identity_match": true
+      },
+      "usage": {
+        "prompt_tokens": 10,
+        "completion_tokens": 5,
+        "reasoning_tokens": 0,
+        "total_tokens": 15,
+        "elapsed_ms": 100
+      },
+      "raw_response": {
+        "stdout": {
+          "path": "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/example.stdout.bin",
+          "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+          "bytes": 1
+        },
+        "stderr": null
+      },
+      "outcome": {
+        "truncated": false,
+        "envelope_json_state": "PARSE_OK",
+        "content_json_state": "PARSE_OK",
+        "schema_state": "PASS",
+        "candidate_version_id": "ver_dddddddddddddddddddddddd"
+      }
+    },
+    "diagnostic": {
+      "schema_version": "ccz57-zero-api-diagnostic-v1",
+      "diagnostic_id": "diag_bbbbbbbbbbbbbbbbbbbbbbbb",
+      "run_id": "replay_design_example",
+      "attempt_id": "att_aaaaaaaaaaaaaaaaaaaaaaaa",
+      "version_id": "ver_dddddddddddddddddddddddd",
+      "axis": "SCHEMA",
+      "code": "SCHEMA.EMPTY_OPTIONAL",
+      "severity": "ERROR",
+      "stable_target_ids": ["fact_eeeeeeeeeeeeeeeeeeeeeeee"],
+      "target_fields": ["speaker"],
+      "observed": "speaker is empty string",
+      "expected": "speaker omitted or non-empty",
+      "evidence_refs": ["span_example_1"],
+      "checker": {
+        "type": "program",
+        "name": "jsonschema",
+        "version": "design-example"
+      },
+      "scope_checked": ["schema.speaker.minLength"],
+      "scope_not_checked": ["speaker.correctness", "whole_chapter.coverage"],
+      "error_signature": "6666666666666666666666666666666666666666666666666666666666666666",
+      "resolution": "HUMAN_REQUIRED"
+    },
+    "patch_proposal": {
+      "schema_version": "ccz57-zero-api-patch-proposal-v1",
+      "patch_id": "patch_cccccccccccccccccccccccc",
+      "run_id": "replay_design_example",
+      "base_version_id": "ver_dddddddddddddddddddddddd",
+      "base_content_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+      "producer_type": "human_fixture",
+      "handler": "HUMAN_AUTHORED_FIXTURE",
+      "trigger_diagnostic_ids": ["diag_bbbbbbbbbbbbbbbbbbbbbbbb"],
+      "allowed_targets": [
+        {
+          "fact_id": "fact_eeeeeeeeeeeeeeeeeeeeeeee",
+          "field": "speaker"
+        }
+      ],
+      "operations": [
+        {
+          "op": "test",
+          "fact_id": "fact_eeeeeeeeeeeeeeeeeeeeeeee",
+          "field": "speaker",
+          "value": ""
+        },
+        {
+          "op": "remove",
+          "fact_id": "fact_eeeeeeeeeeeeeeeeeeeeeeee",
+          "field": "speaker"
+        }
+      ],
+      "validation_requirements": [
+        "BASE_HASH_MATCH",
+        "TARGETS_WITHIN_ALLOWED_SCOPE",
+        "SCHEMA_AFTER",
+        "UNTOUCHED_FIELDS_UNCHANGED",
+        "EVIDENCE_RECHECK"
+      ],
+      "network_requests": 0,
+      "model_calls": 0,
+      "patch_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+      "status": "PROPOSED"
+    },
+    "result_version": {
+      "schema_version": "ccz57-zero-api-result-version-v1",
+      "version_id": "ver_dddddddddddddddddddddddd",
+      "run_id": "replay_design_example",
+      "parent_version_id": null,
+      "base_attempt_id": "att_aaaaaaaaaaaaaaaaaaaaaaaa",
+      "applied_patch_ids": [],
+      "content_ref": {
+        "path": "experiments/ccz57_zero_api_extraction_control_skeleton_20260827_r01/replay/example_version.json",
+        "sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+        "bytes": 1
+      },
+      "facts": [
+        {
+          "fact_id": "fact_eeeeeeeeeeeeeeeeeeeeeeee",
+          "parent_fact_id": null,
+          "source_order": 0,
+          "fact": "示例事实",
+          "status": "已发生",
+          "evidence": "示例证据",
+          "speaker": null,
+          "active": true
+        }
+      ],
+      "relation_candidate_ids": [],
+      "derivation": {
+        "kind": "BASELINE_IMPORT",
+        "source_content_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+        "leaf_values_unchanged": null,
+        "key_values_unchanged": null,
+        "array_order_unchanged": null
+      },
+      "diff_summary": {
+        "touched_fact_ids": [],
+        "touched_fields": [],
+        "added_facts": 0,
+        "removed_facts": 0,
+        "untouched_fields_changed": 0
+      },
+      "scope_status": {
+        "transport": "PASS",
+        "identity": "PASS",
+        "json": "PASS",
+        "schema": "PASS",
+        "evidence_location": "PASS",
+        "value_semantics": "NOT_CHECKED",
+        "speaker": "NOT_CHECKED",
+        "causal": "NOT_CHECKED",
+        "coverage": "NOT_CHECKED",
+        "regression": "NOT_CHECKED"
+      },
+      "created_by": "BASELINE_IMPORTER"
+    },
+    "relation_candidate": {
+      "schema_version": "ccz57-zero-api-relation-candidate-v1",
+      "relation_candidate_id": "relcand_999999999999999999999999",
+      "run_id": "replay_design_example",
+      "base_version_id": "ver_dddddddddddddddddddddddd",
+      "relation_type": "CAUSES",
+      "from_fact_id": "fact_eeeeeeeeeeeeeeeeeeeeeeee",
+      "to_fact_id": "fact_ffffffffffffffffffffffff",
+      "evidence_refs": ["span_example_1"],
+      "trigger_diagnostic_ids": ["diag_bbbbbbbbbbbbbbbbbbbbbbbb"],
+      "status": "PROPOSED_FOR_HUMAN",
+      "may_write_v21_facts": false,
+      "semantic_claim_allowed": false
+    },
+    "replay_report": {
+      "schema_version": "ccz57-zero-api-replay-report-v1",
+      "experiment_id": "CCZ57_ZERO_API_EXTRACTION_CONTROL_SKELETON_20260827_R01",
+      "run_id": "replay_design_example",
+      "mechanical_replay_status": "PASS",
+      "network_requests": 0,
+      "model_calls": 0,
+      "tokens_consumed": 0,
+      "semantic_scoring_performed": false,
+      "source_hashes_unchanged": true,
+      "case_results": [
+        {
+          "case_id": "R08_DOUBAO_TURBO_MECHANICAL_CONTROL_Q3",
+          "expected_diagnostic_codes": [],
+          "actual_diagnostic_codes": [],
+          "expected_terminal": "READY_FOR_HUMAN",
+          "actual_terminal": "READY_FOR_HUMAN",
+          "result": "PASS",
+          "attempt_id": "att_aaaaaaaaaaaaaaaaaaaaaaaa",
+          "produced_version_ids": ["ver_dddddddddddddddddddddddd"],
+          "produced_relation_candidate_ids": [],
+          "assertions": {
+            "source_hash_unchanged": true,
+            "leaf_values_unchanged": null,
+            "key_values_unchanged": null,
+            "array_order_unchanged": null,
+            "unauthorized_write_count": 0
+          }
+        }
+      ],
+      "scope_checked": ["transport", "identity", "json", "schema", "evidence_location"],
+      "scope_not_checked": ["value_semantics", "speaker", "causal", "coverage"]
+    },
+    "controller_state": {
+      "schema_version": "ccz57-zero-api-controller-state-v1",
+      "controller_state_id": "ctrl_abababababababababababab",
+      "run_id": "replay_design_example",
+      "current_state": "READY_FOR_HUMAN",
+      "limits": {
+        "max_network_requests": 0,
+        "max_model_calls": 0,
+        "max_tokens": 0,
+        "max_patch_count": 1
+      },
+      "consumed": {
+        "network_requests": 0,
+        "model_calls": 0,
+        "tokens": 0,
+        "patch_count": 0,
+        "version_count": 1
+      },
+      "error_signature_history": [],
+      "version_hash_history": ["7777777777777777777777777777777777777777777777777777777777777777"],
+      "progress_vectors": [
+        {
+          "version_id": "ver_dddddddddddddddddddddddd",
+          "blockers": 0,
+          "json_errors": 0,
+          "schema_errors": 0,
+          "evidence_errors": 0,
+          "regressions": 0,
+          "accepted_fixes": 0
+        }
+      ],
+      "no_progress": false,
+      "oscillation": false,
+      "regression": false,
+      "next_action": "READY_FOR_HUMAN",
+      "stop_reason": null
+    }
+  }
+}

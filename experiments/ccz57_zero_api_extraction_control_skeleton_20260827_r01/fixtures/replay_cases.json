@@ -1,0 +1,113 @@
+{
+  "schema_version": "ccz57-zero-api-replay-cases-v1",
+  "experiment_id": "CCZ57_ZERO_API_EXTRACTION_CONTROL_SKELETON_20260827_R01",
+  "network_requests_expected": 0,
+  "model_calls_expected": 0,
+  "semantic_scoring_authorized": false,
+  "cases": [
+    {
+      "case_id": "R01_GLM52_OUTER_FENCE_Q1",
+      "source_kind": "REAL_API_RETURN",
+      "source_refs": [
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/responses/raw/glm_5_2_Q1.stdout.bin",
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/frozen/user_message_Q1.md"
+      ],
+      "expected_diagnostic_codes": ["JSON.OUTER_FENCE"],
+      "allowed_derivation": "STRIP_SINGLE_OUTER_FENCE",
+      "expected_terminal": "READY_FOR_HUMAN",
+      "semantic_claim_allowed": false
+    },
+    {
+      "case_id": "R02_DOUBAO_MINI_DUPLICATE_STATUS_Q2",
+      "source_kind": "REAL_API_RETURN",
+      "source_refs": [
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/responses/raw/doubao_seed_2_0_mini_Q2.stdout.bin"
+      ],
+      "expected_diagnostic_codes": ["JSON.DUPLICATE_KEY"],
+      "allowed_derivation": "NONE",
+      "expected_terminal": "STOP_UNSAFE_JSON",
+      "semantic_claim_allowed": false
+    },
+    {
+      "case_id": "R03_DOUBAO_TURBO_EMPTY_SPEAKER_Q1",
+      "source_kind": "REAL_API_RETURN",
+      "source_refs": [
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/responses/raw/doubao_seed_2_1_turbo_Q1.stdout.bin"
+      ],
+      "expected_diagnostic_codes": ["SCHEMA.EMPTY_OPTIONAL"],
+      "allowed_derivation": "NONE",
+      "expected_terminal": "STOP_HUMAN_REQUIRED",
+      "semantic_claim_allowed": false
+    },
+    {
+      "case_id": "R04_DOUBAO_LITE_BROKEN_JSON_Q2",
+      "source_kind": "REAL_API_RETURN",
+      "source_refs": [
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/responses/raw/doubao_seed_2_0_lite_Q2.stdout.bin"
+      ],
+      "expected_diagnostic_codes": ["JSON.PARSE_ERROR"],
+      "allowed_derivation": "NONE",
+      "expected_terminal": "STOP_UNSAFE_JSON",
+      "semantic_claim_allowed": false
+    },
+    {
+      "case_id": "R05_MINIMAX_THINKING_TRUNCATED_Q1",
+      "source_kind": "REAL_API_RETURN",
+      "source_refs": [
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/responses/raw/tl_minimax_m3_Q1.stdout.bin",
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/responses/tl_minimax_m3_Q1.meta.json"
+      ],
+      "expected_diagnostic_codes": ["TRANSPORT.TRUNCATED"],
+      "allowed_derivation": "NONE",
+      "expected_terminal": "STOP_TRUNCATED",
+      "semantic_claim_allowed": false
+    },
+    {
+      "case_id": "R06_DEEPSEEK_OLD_ID_MISSING",
+      "source_kind": "RECORDED_IDENTITY_STOP",
+      "source_refs": [
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/03_模型选择与身份.json",
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/06_派生纠正回执.md"
+      ],
+      "expected_diagnostic_codes": ["IDENTITY.REQUEST_MODEL_MISSING"],
+      "allowed_derivation": "NONE",
+      "expected_terminal": "STOP_IDENTITY_MISMATCH",
+      "semantic_claim_allowed": false
+    },
+    {
+      "case_id": "R07_DOUBAO_TURBO_CAUSAL_REVIEW_Q4",
+      "source_kind": "REAL_API_RETURN",
+      "source_refs": [
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/responses/raw/doubao_seed_2_1_turbo_Q4.stdout.bin",
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/frozen/user_message_Q4.md"
+      ],
+      "expected_diagnostic_codes": ["CAUSAL.REVIEW_CANDIDATE"],
+      "allowed_derivation": "NONE",
+      "expected_terminal": "STOP_HUMAN_REQUIRED",
+      "semantic_claim_allowed": false
+    },
+    {
+      "case_id": "R08_DOUBAO_TURBO_MECHANICAL_CONTROL_Q3",
+      "source_kind": "REAL_API_RETURN",
+      "source_refs": [
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/responses/raw/doubao_seed_2_1_turbo_Q3.stdout.bin",
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/frozen/user_message_Q3.md"
+      ],
+      "expected_diagnostic_codes": [],
+      "allowed_derivation": "NONE",
+      "expected_terminal": "READY_FOR_HUMAN",
+      "semantic_claim_allowed": false
+    },
+    {
+      "case_id": "R09_EVIDENCE_NOT_FOUND_SYNTHETIC_NEGATIVE",
+      "source_kind": "SYNTHETIC_NEGATIVE_FIXTURE",
+      "source_refs": [
+        "work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/input_package/03_LOCAL_PROBE/frozen/user_message_Q1.md"
+      ],
+      "expected_diagnostic_codes": ["EVIDENCE.NOT_FOUND"],
+      "allowed_derivation": "NONE",
+      "expected_terminal": "STOP_EVIDENCE_NOT_FOUND",
+      "semantic_claim_allowed": false
+    }
+  ]
+}

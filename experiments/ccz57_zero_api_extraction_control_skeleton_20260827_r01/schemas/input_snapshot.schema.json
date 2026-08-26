@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cczz412/novel-architecture/experiments/ccz57-zero-api/input-snapshot-v1",
+  "title": "CCZ-57 0 API 输入快照",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "input_snapshot_id",
+    "run_id",
+    "source_document",
+    "background_card",
+    "prompt",
+    "schema",
+    "model_catalog_refs",
+    "authorization_ref",
+    "source_kind",
+    "network_allowed",
+    "model_calls_allowed"
+  ],
+  "properties": {
+    "schema_version": {"const": "ccz57-zero-api-input-snapshot-v1"},
+    "input_snapshot_id": {"type": "string", "pattern": "^input_[0-9a-f]{24}$"},
+    "run_id": {"type": "string", "minLength": 1},
+    "source_document": {"$ref": "#/$defs/file_ref"},
+    "background_card": {
+      "oneOf": [
+        {"$ref": "#/$defs/file_ref"},
+        {"type": "null"}
+      ]
+    },
+    "prompt": {"$ref": "#/$defs/file_ref"},
+    "schema": {"$ref": "#/$defs/file_ref"},
+    "model_catalog_refs": {"type": "array", "items": {"$ref": "#/$defs/file_ref"}},
+    "authorization_ref": {"type": "string", "minLength": 1},
+    "source_kind": {"const": "REPLAY_ONLY_EXISTING_ARTIFACTS"},
+    "network_allowed": {"const": false},
+    "model_calls_allowed": {"const": false}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "file_ref": {
+      "type": "object",
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^(?!/)(?!.*\\.\\./).+$"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

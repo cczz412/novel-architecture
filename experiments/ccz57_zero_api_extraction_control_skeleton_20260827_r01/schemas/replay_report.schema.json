@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cczz412/novel-architecture/experiments/ccz57-zero-api/replay-report-v1",
+  "title": "CCZ-57 0 API 机械重放报告",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "run_id",
+    "mechanical_replay_status",
+    "network_requests",
+    "model_calls",
+    "tokens_consumed",
+    "semantic_scoring_performed",
+    "source_hashes_unchanged",
+    "case_results",
+    "scope_checked",
+    "scope_not_checked"
+  ],
+  "properties": {
+    "schema_version": {"const": "ccz57-zero-api-replay-report-v1"},
+    "experiment_id": {"const": "CCZ57_ZERO_API_EXTRACTION_CONTROL_SKELETON_20260827_R01"},
+    "run_id": {"type": "string", "minLength": 1},
+    "mechanical_replay_status": {"enum": ["PASS", "FAIL"]},
+    "network_requests": {"const": 0},
+    "model_calls": {"const": 0},
+    "tokens_consumed": {"const": 0},
+    "semantic_scoring_performed": {"const": false},
+    "source_hashes_unchanged": {"type": "boolean"},
+    "case_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/case_result"}
+    },
+    "scope_checked": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "scope_not_checked": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  },
+  "$defs": {
+    "case_result": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "expected_diagnostic_codes",
+        "actual_diagnostic_codes",
+        "expected_terminal",
+        "actual_terminal",
+        "result",
+        "attempt_id",
+        "produced_version_ids",
+        "produced_relation_candidate_ids",
+        "assertions"
+      ],
+      "properties": {
+        "case_id": {"type": "string", "pattern": "^R[0-9]{2}_[A-Z0-9_]+$"},
+        "expected_diagnostic_codes": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "actual_diagnostic_codes": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "expected_terminal": {"type": "string", "minLength": 1},
+        "actual_terminal": {"type": "string", "minLength": 1},
+        "result": {"enum": ["PASS", "FAIL"]},
+        "attempt_id": {
+          "oneOf": [
+            {"type": "string", "pattern": "^att_[0-9a-f]{24}$"},
+            {"type": "null"}
+          ]
+        },
+        "produced_version_ids": {"type": "array", "items": {"type": "string", "pattern": "^ver_[0-9a-f]{24}$"}, "uniqueItems": true},
+        "produced_relation_candidate_ids": {"type": "array", "items": {"type": "string", "pattern": "^relcand_[0-9a-f]{24}$"}, "uniqueItems": true},
+        "assertions": {
+          "type": "object",
+          "required": ["source_hash_unchanged", "leaf_values_unchanged", "key_values_unchanged", "array_order_unchanged", "unauthorized_write_count"],
+          "properties": {
+            "source_hash_unchanged": {"type": "boolean"},
+            "leaf_values_unchanged": {"type": ["boolean", "null"]},
+            "key_values_unchanged": {"type": ["boolean", "null"]},
+            "array_order_unchanged": {"type": ["boolean", "null"]},
+            "unauthorized_write_count": {"const": 0}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

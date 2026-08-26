@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cczz412/novel-architecture/experiments/ccz57-zero-api/replay-cases-v1",
+  "title": "CCZ-57 0 API 预注册重放案例",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "network_requests_expected",
+    "model_calls_expected",
+    "semantic_scoring_authorized",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {"const": "ccz57-zero-api-replay-cases-v1"},
+    "experiment_id": {"const": "CCZ57_ZERO_API_EXTRACTION_CONTROL_SKELETON_20260827_R01"},
+    "network_requests_expected": {"const": 0},
+    "model_calls_expected": {"const": 0},
+    "semantic_scoring_authorized": {"const": false},
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/replay_case"}
+    }
+  },
+  "$defs": {
+    "replay_case": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "source_kind",
+        "source_refs",
+        "expected_diagnostic_codes",
+        "allowed_derivation",
+        "expected_terminal",
+        "semantic_claim_allowed"
+      ],
+      "properties": {
+        "case_id": {"type": "string", "pattern": "^R[0-9]{2}_[A-Z0-9_]+$"},
+        "source_kind": {"enum": ["REAL_API_RETURN", "RECORDED_IDENTITY_STOP", "SYNTHETIC_NEGATIVE_FIXTURE"]},
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "pattern": "^work/ccz57_agentic_extraction_pipeline_candidate_20260827_r01/.+$"},
+          "uniqueItems": true
+        },
+        "expected_diagnostic_codes": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[A-Z_]+\\.[A-Z0-9_]+$"},
+          "uniqueItems": true
+        },
+        "allowed_derivation": {"enum": ["NONE", "STRIP_SINGLE_OUTER_FENCE", "RELATION_CANDIDATE_ONLY"]},
+        "expected_terminal": {
+          "enum": [
+            "READY_FOR_HUMAN",
+            "STOP_UNSAFE_JSON",
+            "STOP_HUMAN_REQUIRED",
+            "STOP_TRUNCATED",
+            "STOP_IDENTITY_MISMATCH",
+            "STOP_EVIDENCE_NOT_FOUND"
+          ]
+        },
+        "semantic_claim_allowed": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

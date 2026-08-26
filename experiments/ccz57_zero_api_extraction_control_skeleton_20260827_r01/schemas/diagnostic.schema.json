@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cczz412/novel-architecture/experiments/ccz57-zero-api/diagnostic-v1",
+  "title": "CCZ-57 0 API 分轴诊断",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "diagnostic_id",
+    "run_id",
+    "attempt_id",
+    "version_id",
+    "axis",
+    "code",
+    "severity",
+    "stable_target_ids",
+    "target_fields",
+    "observed",
+    "expected",
+    "evidence_refs",
+    "checker",
+    "scope_checked",
+    "scope_not_checked",
+    "error_signature",
+    "resolution"
+  ],
+  "properties": {
+    "schema_version": {"const": "ccz57-zero-api-diagnostic-v1"},
+    "diagnostic_id": {"type": "string", "pattern": "^diag_[0-9a-f]{24}$"},
+    "run_id": {"type": "string", "minLength": 1},
+    "attempt_id": {
+      "oneOf": [
+        {"type": "string", "pattern": "^att_[0-9a-f]{24}$"},
+        {"type": "null"}
+      ]
+    },
+    "version_id": {
+      "oneOf": [
+        {"type": "string", "pattern": "^ver_[0-9a-f]{24}$"},
+        {"type": "null"}
+      ]
+    },
+    "axis": {
+      "enum": [
+        "SOURCE",
+        "TRANSPORT",
+        "IDENTITY",
+        "JSON",
+        "SCHEMA",
+        "EVIDENCE",
+        "VALUE",
+        "SPEAKER",
+        "CAUSAL",
+        "COVERAGE",
+        "PATCH",
+        "REGRESSION",
+        "CONTROL"
+      ]
+    },
+    "code": {"type": "string", "pattern": "^[A-Z_]+\\.[A-Z0-9_]+$"},
+    "severity": {"enum": ["INFO", "WARN", "ERROR", "BLOCKER"]},
+    "stable_target_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "target_fields": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "observed": {"type": "string"},
+    "expected": {"type": "string"},
+    "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "checker": {
+      "type": "object",
+      "required": ["type", "name", "version"],
+      "properties": {
+        "type": {"enum": ["program", "human"]},
+        "name": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "scope_checked": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "scope_not_checked": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "error_signature": {"$ref": "#/$defs/sha256"},
+    "resolution": {"enum": ["OPEN", "PATCHED", "WAIVED", "REJECTED", "HUMAN_REQUIRED"]}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}

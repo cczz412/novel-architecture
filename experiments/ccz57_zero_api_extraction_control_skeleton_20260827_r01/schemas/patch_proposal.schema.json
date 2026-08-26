@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cczz412/novel-architecture/experiments/ccz57-zero-api/patch-proposal-v1",
+  "title": "CCZ-57 0 API 局部修改单",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "patch_id",
+    "run_id",
+    "base_version_id",
+    "base_content_sha256",
+    "producer_type",
+    "handler",
+    "trigger_diagnostic_ids",
+    "allowed_targets",
+    "operations",
+    "validation_requirements",
+    "network_requests",
+    "model_calls",
+    "patch_sha256",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {"const": "ccz57-zero-api-patch-proposal-v1"},
+    "patch_id": {"type": "string", "pattern": "^patch_[0-9a-f]{24}$"},
+    "run_id": {"type": "string", "minLength": 1},
+    "base_version_id": {"type": "string", "pattern": "^ver_[0-9a-f]{24}$"},
+    "base_content_sha256": {"$ref": "#/$defs/sha256"},
+    "producer_type": {"const": "human_fixture"},
+    "handler": {"const": "HUMAN_AUTHORED_FIXTURE"},
+    "trigger_diagnostic_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "pattern": "^diag_[0-9a-f]{24}$"},
+      "uniqueItems": true
+    },
+    "allowed_targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/target"},
+      "uniqueItems": true
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/operation"}
+    },
+    "validation_requirements": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "enum": [
+          "BASE_HASH_MATCH",
+          "TARGETS_WITHIN_ALLOWED_SCOPE",
+          "SCHEMA_AFTER",
+          "UNTOUCHED_FIELDS_UNCHANGED",
+          "EVIDENCE_RECHECK",
+          "NO_NEW_DUPLICATES",
+          "NO_NEW_CONTRADICTIONS"
+        ]
+      },
+      "uniqueItems": true,
+      "allOf": [
+        {"contains": {"const": "BASE_HASH_MATCH"}},
+        {"contains": {"const": "TARGETS_WITHIN_ALLOWED_SCOPE"}},
+        {"contains": {"const": "SCHEMA_AFTER"}},
+        {"contains": {"const": "UNTOUCHED_FIELDS_UNCHANGED"}},
+        {"contains": {"const": "EVIDENCE_RECHECK"}}
+      ]
+    },
+    "network_requests": {"const": 0},
+    "model_calls": {"const": 0},
+    "patch_sha256": {"$ref": "#/$defs/sha256"},
+    "status": {"enum": ["PROPOSED", "VERIFIED", "REJECTED", "MERGED", "SUPERSEDED"]}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target": {
+      "type": "object",
+      "required": ["fact_id", "field"],
+      "properties": {
+        "fact_id": {"type": "string", "pattern": "^fact_[0-9a-f]{24}$"},
+        "field": {"enum": ["fact", "status", "evidence", "speaker", "active"]}
+      },
+      "additionalProperties": false
+    },
+    "operation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["op", "fact_id", "field", "value"],
+          "properties": {
+            "op": {"enum": ["test", "add", "replace"]},
+            "fact_id": {"type": "string", "pattern": "^fact_[0-9a-f]{24}$"},
+            "field": {"enum": ["fact", "status", "evidence", "speaker", "active"]},
+            "value": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["op", "fact_id", "field"],
+          "properties": {
+            "op": {"const": "remove"},
+            "fact_id": {"type": "string", "pattern": "^fact_[0-9a-f]{24}$"},
+            "field": {"enum": ["speaker"]}
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}
