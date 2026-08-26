@@ -1,0 +1,35 @@
+{
+  "schema": "ccz57-agentic-extraction-pro-snapshot-v1",
+  "package_purpose": "ChatGPT Pro independent advisory for agentic extraction pipeline design",
+  "snapshot_at": "2026-08-27T01:49:02+08:00",
+  "material_mode": "FILES_ONLY",
+  "probe_source": "TEMP/ccz57_l1_api_decomposability_probe_20260826",
+  "probe_source_file_count": 488,
+  "probe_included_file_count_before_generated_docs": 484,
+  "probe_exclusions": [
+    "__pycache__/**",
+    "*.pyc"
+  ],
+  "probe_redactions": [
+    {
+      "path": "03_LOCAL_PROBE/requests/doubao_seed_2_1_turbo_Q1.json",
+      "field": "env_present_sanitized.HOME",
+      "original_value_class": "local_absolute_home_path",
+      "replacement": "<LOCAL_HOME_REDACTED>"
+    }
+  ],
+  "deep_research_raw_count": 5,
+  "deep_research_status": "RAW_SAVED_SOURCE_TRACEABILITY_PARTIAL",
+  "deep_research_source_limitation": "Downloaded Markdown preserves ChatGPT internal citation ids but no external URLs or DOIs.",
+  "deep_research_outbound_sanitizations": [
+    {
+      "path": "02_RESEARCH/RAW/03_一次生成与多轮自修的论文实证__RAW.md",
+      "change": "Replaced one unavailable attachment protocol image link with an explicit textual placeholder; report prose otherwise remains present.",
+      "local_raw_sha256": "247a3929959e80c3d9ba606f128f3b561a01d3404137fed73415fc850cb3b1aa"
+    }
+  ],
+  "not_gold": true,
+  "not_formal_ccz57_delivery": true,
+  "not_ccz84_replacement": true,
+  "no_external_send_by_codex": true
+}

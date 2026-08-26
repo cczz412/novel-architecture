@@ -1,0 +1,231 @@
+{
+  "lane": "ling_thinking_low",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "request_model_id": "Ling-3.0-flash",
+  "expected_response_model": "Ling-3.0-flash",
+  "effort_note": "Ling only has enabled/disabled; lowest ON is enabled; no reasoning_effort",
+  "calls": 4,
+  "stop_reason": null,
+  "status": "COMPLETED",
+  "items": {
+    "Q1": {
+      "item_id": "Q1",
+      "lane": "ling_thinking_low",
+      "request_model_name": "Ling-3.0-flash",
+      "response_model_name": "Ling-3.0-flash",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T01:06:22.192+08:00",
+      "ended_at": "2026-08-27T01:06:37.690+08:00",
+      "elapsed_ms": 15498,
+      "retries": 0,
+      "usage": {
+        "completion_tokens": 3939,
+        "prompt_tokens": 1525,
+        "total_tokens": 5464,
+        "prompt_tokens_details": {
+          "cached_tokens": 1408
+        }
+      },
+      "thinking": {
+        "reasoning_tokens": null,
+        "nonempty_reasoning_field": "reasoning_content",
+        "thinking_appears_on": true,
+        "reasoning_chars": 10081
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 8,
+          "fact_count": 8
+        },
+        "facts_preview": [
+          "顾晚晴傍晚回楼",
+          "顾晚晴把还在滴水的折叠伞倒挂到门廊铁钩上",
+          "顾晚晴蹲下去，用鞋尖把门口那滩雨水一点点刮进地漏",
+          "她伸手去按墙上的开关",
+          "灯没有亮",
+          "她没有再按第二次",
+          "她走到走廊尽头，拧开应急手电",
+          "她把光对准鞋架底下，左右扫了两遍"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "04d4560a45d642caad343d688c7b86351ab3e9e13eb79dfe77b14c594646e981"
+    },
+    "Q2": {
+      "item_id": "Q2",
+      "lane": "ling_thinking_low",
+      "request_model_name": "Ling-3.0-flash",
+      "response_model_name": "Ling-3.0-flash",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T01:06:37.693+08:00",
+      "ended_at": "2026-08-27T01:06:52.220+08:00",
+      "elapsed_ms": 14527,
+      "retries": 0,
+      "usage": {
+        "completion_tokens": 3802,
+        "prompt_tokens": 1524,
+        "total_tokens": 5326,
+        "prompt_tokens_details": {
+          "cached_tokens": 1408
+        }
+      },
+      "thinking": {
+        "reasoning_tokens": null,
+        "nonempty_reasoning_field": "reasoning_content",
+        "thinking_appears_on": true,
+        "reasoning_chars": 8979
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 8,
+          "fact_count": 9
+        },
+        "facts_preview": [
+          "对讲机里传来“货已经卸完”这句话。",
+          "沈北川的肩膀一下子塌下去。",
+          "沈北川手里的登记板差点掉进泥里。",
+          "沈北川顺着厢车门沿坐到地上。",
+          "沈北川喉结滚动两下。",
+          "沈北川把一直咬紧的牙松开了。",
+          "沈北川的呼吸变长。",
+          "泥水渗进沈北川的裤脚。",
+          "沈北川没有立刻站起来。"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "7927a246a55a7dd959d472d01e0b8170d046d9044154d9193b1302dbe308035f"
+    },
+    "Q3": {
+      "item_id": "Q3",
+      "lane": "ling_thinking_low",
+      "request_model_name": "Ling-3.0-flash",
+      "response_model_name": "Ling-3.0-flash",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T01:06:52.221+08:00",
+      "ended_at": "2026-08-27T01:06:59.753+08:00",
+      "elapsed_ms": 7532,
+      "retries": 0,
+      "usage": {
+        "completion_tokens": 1784,
+        "prompt_tokens": 1534,
+        "total_tokens": 3318,
+        "prompt_tokens_details": {
+          "cached_tokens": 1472
+        }
+      },
+      "thinking": {
+        "reasoning_tokens": null,
+        "nonempty_reasoning_field": "reasoning_content",
+        "thinking_appears_on": true,
+        "reasoning_chars": 2503
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 9,
+          "fact_count": 9
+        },
+        "facts_preview": [
+          "乔米把工牌从工位夹上摘下来",
+          "乔米把工牌塞进褚衡摊开的掌心",
+          "乔米说“从今天起，我不再给你做助理”",
+          "褚衡没有把工牌还回去",
+          "褚衡把卡片翻过去",
+          "褚衡伸手把两人中间那条一直共用的抽屉锁上",
+          "乔米站在原处看了他两秒",
+          "乔米把桌上那支共用的红笔推进抽屉缝",
+          "乔米转身走了"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "5a76bb4aaf1acf38dc0ac205a1cf8402d86c24b2c31cf2a623afe9a653ff7a81"
+    },
+    "Q4": {
+      "item_id": "Q4",
+      "lane": "ling_thinking_low",
+      "request_model_name": "Ling-3.0-flash",
+      "response_model_name": "Ling-3.0-flash",
+      "identity_drift": false,
+      "http_status": 200,
+      "timed_out": false,
+      "finish_reason": "stop",
+      "started_at": "2026-08-27T01:06:59.755+08:00",
+      "ended_at": "2026-08-27T01:07:24.527+08:00",
+      "elapsed_ms": 24772,
+      "retries": 0,
+      "usage": {
+        "completion_tokens": 6621,
+        "prompt_tokens": 1536,
+        "total_tokens": 8157,
+        "prompt_tokens_details": {
+          "cached_tokens": 1408
+        }
+      },
+      "thinking": {
+        "reasoning_tokens": null,
+        "nonempty_reasoning_field": "reasoning_content",
+        "thinking_appears_on": true,
+        "reasoning_chars": 11378
+      },
+      "analysis": {
+        "direct_json": true,
+        "fenced_json": false,
+        "schema_legal": true,
+        "schema": {
+          "schema_legal": true,
+          "error_count": 0,
+          "first_error": null,
+          "empty_speaker": 0,
+          "omitted_speaker": 7,
+          "fact_count": 8
+        },
+        "facts_preview": [
+          "冷库的温控器在午前跳闸",
+          "整箱荔枝很快开始渗水",
+          "仓管裴小棠把这批货从“待发”改成“报损”",
+          "裴小棠通知司机取消下午那趟去港东批发市场的车",
+          "司机回了一句“知道了”",
+          "司机把已经发动的货车熄了火",
+          "渗出水顺着托盘流到地面",
+          "裴小棠去拿拖把"
+        ],
+        "q4_causal_hits": [],
+        "task_err": null
+      },
+      "raw_sha256": "98bb9927c8ba99a801769492ad711e50819dd7b80eed58b4e1969e087cfb08d6"
+    }
+  },
+  "retries": 0
+}

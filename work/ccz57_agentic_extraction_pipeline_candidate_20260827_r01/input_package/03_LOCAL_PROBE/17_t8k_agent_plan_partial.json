@@ -1,0 +1,367 @@
+{
+  "lane": "agent_plan_thinking_low",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "models": [
+    {
+      "slot": "turbo",
+      "request_model_id": "doubao-seed-2-1-turbo-260628",
+      "expected_response_model": "doubao-seed-2-1-turbo-260628",
+      "effort": "low",
+      "effort_note": "Volcengine lowest real thinking is low; minimal means no thinking",
+      "calls": 4,
+      "stop_reason": null,
+      "status": "COMPLETED",
+      "items": {
+        "Q1": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1656,
+            "completion_tokens": 2959,
+            "total_tokens": 4615
+          },
+          "elapsed_ms": 53975
+        },
+        "Q2": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1648,
+            "completion_tokens": 8048,
+            "total_tokens": 9696
+          },
+          "elapsed_ms": 140041
+        },
+        "Q3": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1667,
+            "completion_tokens": 5091,
+            "total_tokens": 6758
+          },
+          "elapsed_ms": 89641
+        },
+        "Q4": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": false,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1661,
+            "completion_tokens": 3598,
+            "total_tokens": 5259
+          },
+          "elapsed_ms": 62560
+        }
+      }
+    },
+    {
+      "slot": "mini",
+      "request_model_id": "doubao-seed-2-0-mini-260215",
+      "expected_response_model": "doubao-seed-2-0-mini-260215",
+      "effort": "low",
+      "effort_note": "Volcengine lowest real thinking is low; minimal means no thinking",
+      "calls": 4,
+      "stop_reason": null,
+      "status": "COMPLETED",
+      "items": {
+        "Q1": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1656,
+            "completion_tokens": 5770,
+            "total_tokens": 7426
+          },
+          "elapsed_ms": 38708
+        },
+        "Q2": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1648,
+            "completion_tokens": 4545,
+            "total_tokens": 6193
+          },
+          "elapsed_ms": 31698
+        },
+        "Q3": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1667,
+            "completion_tokens": 5513,
+            "total_tokens": 7180
+          },
+          "elapsed_ms": 37812
+        },
+        "Q4": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": false,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1661,
+            "completion_tokens": 3955,
+            "total_tokens": 5616
+          },
+          "elapsed_ms": 27197
+        }
+      }
+    },
+    {
+      "slot": "lite",
+      "request_model_id": "doubao-seed-2-0-lite-260215",
+      "expected_response_model": "doubao-seed-2-0-lite-260215",
+      "effort": "low",
+      "effort_note": "Volcengine lowest real thinking is low; minimal means no thinking",
+      "calls": 4,
+      "stop_reason": null,
+      "status": "COMPLETED",
+      "items": {
+        "Q1": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1656,
+            "completion_tokens": 1837,
+            "total_tokens": 3493
+          },
+          "elapsed_ms": 15723
+        },
+        "Q2": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1648,
+            "completion_tokens": 1745,
+            "total_tokens": 3393
+          },
+          "elapsed_ms": 14626
+        },
+        "Q3": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1667,
+            "completion_tokens": 1426,
+            "total_tokens": 3093
+          },
+          "elapsed_ms": 11960
+        },
+        "Q4": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": false,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1661,
+            "completion_tokens": 1000,
+            "total_tokens": 2661
+          },
+          "elapsed_ms": 8480
+        }
+      }
+    },
+    {
+      "slot": "minimax_m3",
+      "request_model_id": "minimax-m3-modelhub",
+      "expected_response_model": "minimax-m3",
+      "effort": null,
+      "effort_note": "M3 has enabled/adaptive/disabled only; lowest ON is enabled; do not send reasoning_effort",
+      "calls": 4,
+      "stop_reason": null,
+      "status": "COMPLETED",
+      "items": {
+        "Q1": {
+          "direct_json": false,
+          "schema_legal": false,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": null,
+          "usage": {
+            "prompt_tokens": 1618,
+            "completion_tokens": 8192,
+            "total_tokens": 9810
+          },
+          "elapsed_ms": 72152
+        },
+        "Q2": {
+          "direct_json": true,
+          "schema_legal": true,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1615,
+            "completion_tokens": 7728,
+            "total_tokens": 9343
+          },
+          "elapsed_ms": 55574
+        },
+        "Q3": {
+          "direct_json": false,
+          "schema_legal": false,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": null,
+          "usage": {
+            "prompt_tokens": 1624,
+            "completion_tokens": 8192,
+            "total_tokens": 9816
+          },
+          "elapsed_ms": 69332
+        },
+        "Q4": {
+          "direct_json": false,
+          "schema_legal": false,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": false,
+          "empty_speaker": null,
+          "usage": {
+            "prompt_tokens": 1629,
+            "completion_tokens": 6178,
+            "total_tokens": 7807
+          },
+          "elapsed_ms": 51183
+        }
+      }
+    },
+    {
+      "slot": "glm_5_2",
+      "request_model_id": "glm-5-2-260601",
+      "expected_response_model": "glm-5-2-260617",
+      "effort": "high",
+      "effort_note": "GLM-5.2 official ON levels are high and max; unset defaults to max; lowest ON is explicit high",
+      "calls": 4,
+      "stop_reason": null,
+      "status": "COMPLETED",
+      "items": {
+        "Q1": {
+          "direct_json": false,
+          "schema_legal": false,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1561,
+            "completion_tokens": 5703,
+            "total_tokens": 7264
+          },
+          "elapsed_ms": 86991
+        },
+        "Q2": {
+          "direct_json": false,
+          "schema_legal": false,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": null,
+          "usage": {
+            "prompt_tokens": 1557,
+            "completion_tokens": 6058,
+            "total_tokens": 7615
+          },
+          "elapsed_ms": 90912
+        },
+        "Q3": {
+          "direct_json": false,
+          "schema_legal": false,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": null,
+          "empty_speaker": 0,
+          "usage": {
+            "prompt_tokens": 1568,
+            "completion_tokens": 1820,
+            "total_tokens": 3388
+          },
+          "elapsed_ms": 23584
+        },
+        "Q4": {
+          "direct_json": false,
+          "schema_legal": false,
+          "thinking_appears_on": true,
+          "reasoning_tokens": null,
+          "identity_drift": false,
+          "q4_causal": false,
+          "empty_speaker": null,
+          "usage": {
+            "prompt_tokens": 1566,
+            "completion_tokens": 587,
+            "total_tokens": 2153
+          },
+          "elapsed_ms": 9236
+        }
+      }
+    }
+  ],
+  "retries": 0
+}

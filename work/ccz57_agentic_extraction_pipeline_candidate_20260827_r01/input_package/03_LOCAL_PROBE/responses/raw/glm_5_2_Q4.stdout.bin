@@ -1,0 +1,21 @@
+{
+  "id": "resp_0217877611684874b8de4e4bcc885b4197a5e365ab4902cd95be3",
+  "model": "glm-5-2-260617",
+  "content": "{\n  \"facts\": [\n    {\n      \"fact\": \"冷库的温控器在午前跳闸。\",\n      \"status\": \"已发生\",\n      \"evidence\": \"冷库的温控器在午前跳闸\"\n    },\n    {\n      \"fact\": \"整箱荔枝在温控器跳闸后很快开始渗水。\",\n      \"status\": \"已发生\",\n      \"evidence\": \"整箱荔枝很快开始渗水\"\n    },\n    {\n      \"fact\": \"裴小棠是仓管。\",\n      \"status\": \"已发生\",\n      \"evidence\": \"仓管裴小棠把这批货从“待发”改成“报损”\"\n    },\n    {\n      \"fact\": \"裴小棠把这批货从“待发”改成“报损”。\",\n      \"status\": \"已发生\",\n      \"evidence\": \"仓管裴小棠把这批货从“待发”改成“报损”\"\n    },\n    {\n      \"fact\": \"裴小棠通知司机取消下午去港东批发市场的车。\",\n      \"status\": \"已发生\",\n      \"evidence\": \"并通知司机取消下午那趟去港东批发市场的车。\"\n    },\n    {\n      \"fact\": \"司机回复了一句“知道了”。\",\n      \"status\": \"已发生\",\n      \"evidence\": \"司机回了一句“知道了”\"\n    },\n    {\n      \"fact\": \"司机把已经发动的货车熄了火。\",\n      \"status\": \"已发生\",\n      \"evidence\": \"便把已经发动的货车熄了火\"\n    },\n    {\n      \"fact\": \"渗出水顺着托盘流到地面。\",\n      \"status\": \"已发生\",\n      \"evidence\": \"渗出水顺着托盘流到地面\"\n    },\n    {\n      \"fact\": \"裴小棠去拿拖把。\",\n      \"status\": \"已发生\",\n      \"evidence\": \"裴小棠又去拿拖把。\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 1560,
+    "completion_tokens": 425,
+    "total_tokens": 1985
+  },
+  "object": "response",
+  "status": "completed",
+  "created_at": 1787761169,
+  "store": false,
+  "caching": {
+    "type": "disabled"
+  },
+  "thinking": {
+    "type": "disabled"
+  },
+  "text_format": "json_object"
+}

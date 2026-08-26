@@ -1,0 +1,35 @@
+{
+  "fetched_at_start": "2026-08-27T00:33:08.170+08:00",
+  "fetched_at_end": "2026-08-27T00:33:08.457+08:00",
+  "http_status": 200,
+  "timed_out": false,
+  "headers": {
+    "Date": "Wed, 26 Aug 2026 16:33:10 GMT",
+    "Content-Type": "application/json"
+  },
+  "model_ids": [
+    "AntAngelMed",
+    "Ling-2.5-1T",
+    "Ling-2.6-1T",
+    "Ling-2.6-flash",
+    "Ling-3.0-flash",
+    "Ling-3.0-tiny",
+    "Ring-2.5-1T",
+    "Ring-2.6-1T"
+  ],
+  "raw_sha256": "b702fbfe9de0dde2466a8b20367bc0ddc5766f18525fed2343130f2f934201b6",
+  "raw_bytes": 674,
+  "summary": {
+    "model_ids_only": true,
+    "ids": [
+      "AntAngelMed",
+      "Ling-2.5-1T",
+      "Ling-2.6-1T",
+      "Ling-2.6-flash",
+      "Ling-3.0-flash",
+      "Ling-3.0-tiny",
+      "Ring-2.5-1T",
+      "Ring-2.6-1T"
+    ]
+  }
+}

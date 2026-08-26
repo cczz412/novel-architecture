@@ -1,0 +1,50 @@
+{
+  "item_id": "Q1",
+  "lane": "agent_plan_thinking_low",
+  "request_model_name": "doubao-seed-2-0-lite-260215",
+  "response_model_name": "doubao-seed-2-0-lite-260215",
+  "identity_drift": false,
+  "arkcli_exit_code": 0,
+  "started_at": "2026-08-27T00:49:14.966+08:00",
+  "ended_at": "2026-08-27T00:49:28.048+08:00",
+  "elapsed_ms": 13082,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1656,
+    "completion_tokens": 1367,
+    "total_tokens": 3023
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": "envelope.reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 1807
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 9,
+      "fact_count": 9
+    },
+    "facts_preview": [
+      "傍晚顾晚晴回到楼内",
+      "顾晚晴将还在滴水的折叠伞倒挂到门廊铁钩上",
+      "顾晚晴蹲下去用鞋尖把门口那滩雨水一点点刮进地漏",
+      "顾晚晴伸手去按墙上的开关",
+      "顾晚晴按开关后灯没有亮",
+      "顾晚晴没有第二次按开关",
+      "顾晚晴走到走廊尽头",
+      "顾晚晴拧开了应急手电",
+      "顾晚晴将手电光对准鞋架底下左右扫了两遍"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "3fa6a7730fa61a2619f0cf771fd4355e03afd19a7d4cac65bb14e0bd831329fc"
+}

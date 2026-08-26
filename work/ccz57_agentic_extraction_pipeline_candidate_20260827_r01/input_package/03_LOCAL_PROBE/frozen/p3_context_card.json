@@ -1,0 +1,35 @@
+{
+  "schema_version": "novel-fact-p3-context-card-v1",
+  "sample_id": "ccz57-l1-synthetic-batch",
+  "source_file": "synthetic_batch_shared_card.json",
+  "story_type": {
+    "status": "unknown",
+    "value": null,
+    "basis": "none_available"
+  },
+  "story_subtypes": {
+    "status": "unknown",
+    "values": [],
+    "basis": "none_available"
+  },
+  "protagonist": {
+    "status": "unknown",
+    "canonical_name": null,
+    "aliases": [],
+    "basis": "none_available"
+  },
+  "cheat_mechanic": {
+    "status": "unknown",
+    "name": null,
+    "summary": null,
+    "rules": [],
+    "basis": "none_available"
+  },
+  "source_refs": [],
+  "boundary": {
+    "only_alias_and_rule_resolution": true,
+    "may_replace_chapter_evidence": false,
+    "may_add_unstated_fact": false,
+    "target_chapter_as_sole_source_allowed": false
+  }
+}

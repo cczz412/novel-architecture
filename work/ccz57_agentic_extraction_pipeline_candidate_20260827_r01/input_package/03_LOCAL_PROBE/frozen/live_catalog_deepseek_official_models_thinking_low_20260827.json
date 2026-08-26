@@ -1,0 +1,11 @@
+{
+  "http_status": 200,
+  "timed_out": false,
+  "model_ids": [
+    "deepseek-v4-flash",
+    "deepseek-v4-pro",
+    "deepseek-v4-flash-vision-exp"
+  ],
+  "raw_sha256": "f20df3afd1dc080689aa1ba4e5bda383488d6d624797e46cb28abe0447f29acd",
+  "raw_bytes": 233
+}

@@ -1,0 +1,85 @@
+{
+  "schema_version": "chatgpt-pro-return-intake-v1",
+  "status": "RETURN_INTEGRITY_VALIDATED__ADVISORY_NOT_ADOPTED",
+  "intake_time": "2026-08-27T02:31:34+08:00",
+  "identity": {
+    "requested_route": "ChatGPT Pro",
+    "claim_source": "user_return_message",
+    "ui_model_evidence": "not_provided",
+    "verification": "USER_STATED_CHATGPT_PRO__NOT_INDEPENDENTLY_VERIFIED"
+  },
+  "input_binding": {
+    "package_id": "CCZ57_AGENTIC_EXTRACTION_PIPELINE_PRO_REVIEW_20260827_R01",
+    "input_zip_path": "<LOCAL_REVIEW_RELEASE>/ccz57_agentic_extraction_pipeline_pro_review_20260827_r01.zip",
+    "input_zip_sha256": "ab6dcb951bc79c8de302182d24062ccacf96e246b91f73d81eddf7c0741b13c7",
+    "input_zip_bytes": 994977,
+    "frozen_prompt_path": "../input_package/01_PROMPT_CHATGPT_PRO.md",
+    "frozen_prompt_sha256": "88e5c57ab313fc15e8416a1991b0bd6e160781ed43e039b6be99528c99f210ae",
+    "frozen_prompt_bytes": 6401
+  },
+  "return_archive": {
+    "source_path": "<LOCAL_DOWNLOADS>/ccz57_agentic_extraction_pipeline_design_20260827_r01.zip",
+    "preserved_path": "<LOCAL_RETURN_ARCHIVE>/ccz57_agentic_extraction_pipeline_design_20260827_r01.zip",
+    "extracted_path": "../pro_return",
+    "sha256": "49dab17111f3da2a1b6c0dcb6594a625d47a582b46baa9e5e28591abb5b65d4e",
+    "bytes": 55228,
+    "member_count": 4
+  },
+  "members": [
+    {
+      "name": "AGENTIC_EXTRACTION_PIPELINE_DESIGN.md",
+      "sha256": "ac4e7f17f5702726e915c81dfb4187114c97232db238a0f98471c8e1d5b1f44b",
+      "bytes": 45582,
+      "lines": 825
+    },
+    {
+      "name": "ERROR_ROUTING_AND_STATE_MODEL.md",
+      "sha256": "351366535041bb4c0dc7cb2b3a3a3d61d942531771ddbe94d7942f87a952b838",
+      "bytes": 33315,
+      "lines": 773
+    },
+    {
+      "name": "MINIMAL_ABLATION_PLAN.md",
+      "sha256": "f6776127f0408f76b6baffd887f8573fddf8e9636bd3680581477d9b6da35c47",
+      "bytes": 28769,
+      "lines": 881
+    },
+    {
+      "name": "EVIDENCE_AND_UNCERTAINTY.md",
+      "sha256": "5dc8307425f3be7281ce39becd559d9378cabc231cb9afb97b0a481cf6339520",
+      "bytes": 28147,
+      "lines": 589
+    }
+  ],
+  "archive_checks": {
+    "regular_single_link_source": "PASS",
+    "zip_crc": "PASS",
+    "expected_root_markdown_members": "PASS",
+    "duplicate_member_names": "PASS_NONE_FOUND",
+    "absolute_or_traversal_paths": "PASS_NONE_FOUND",
+    "nested_archives": "PASS_NONE_FOUND",
+    "empty_markdown_members": "PASS_NONE_FOUND"
+  },
+  "local_claim_checks": {
+    "manifest_entries": 504,
+    "package_files_including_manifest": 505,
+    "manifest_count_interpretation": "PASS_MANIFEST_EXCLUDES_ITSELF",
+    "token_limit_pair_count": 40,
+    "token_limit_pair_normalized_mismatches": 0,
+    "token_limit_pair_claim": "PASS_ONLY_4096_8192_VALUES_DIFFER",
+    "duplicate_status_key_example": "PASS_CONFIRMED_IN_DOUBAO_MINI_Q2_CONTENT_STRING"
+  },
+  "authorization_boundary": {
+    "advisory_only": true,
+    "product_contract_changed": false,
+    "linear_changed": false,
+    "github_changed": false,
+    "new_api_calls_authorized": false,
+    "automatic_semantic_repair_authorized": false
+  },
+  "repository_copy": {
+    "host_paths_redacted": true,
+    "evidence_hashes_changed": false,
+    "note": "Only local host paths were replaced by repository-relative paths or explicit placeholders."
+  }
+}

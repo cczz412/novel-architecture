@@ -1,0 +1,58 @@
+{
+  "item_id": "Q1",
+  "lane": "qwen_nonthinking",
+  "request_model_name": "qwen3.8-max",
+  "response_model_name": "qwen3.8-max",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "error_type": null,
+  "error_message": null,
+  "started_at": "2026-08-27T00:48:29.237+08:00",
+  "ended_at": "2026-08-27T00:48:32.259+08:00",
+  "elapsed_ms": 3022,
+  "retries": 0,
+  "usage": {
+    "completion_tokens": 271,
+    "prompt_tokens": 1594,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "text_tokens": 1594
+    },
+    "total_tokens": 1865
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": null,
+    "thinking_appears_on": false,
+    "reasoning_chars": 0
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 9,
+      "fact_count": 9
+    },
+    "facts_preview": [
+      "顾晚晴在傍晚回到楼里",
+      "顾晚晴把还在滴水的折叠伞倒挂到门廊铁钩上",
+      "顾晚晴蹲下去用鞋尖把门口那滩雨水一点点刮进地漏",
+      "顾晚晴伸手去按墙上的开关",
+      "灯没有亮",
+      "顾晚晴没有再按第二次开关",
+      "顾晚晴走到走廊尽头",
+      "顾晚晴拧开应急手电",
+      "顾晚晴把手电光对准鞋架底下左右扫了两遍"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "7bc5b516eb55da2b1ac60486f7569c526677e1a9a50ed4a5315c8d83b345e53c"
+}

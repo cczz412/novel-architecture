@@ -1,0 +1,48 @@
+{
+  "schema_version": "ccz57-l1-probe-execute-authority-v1",
+  "authority_id": "official_flash_nonthinking_20260827",
+  "not_a_c13_ticket": true,
+  "c13_schema_not_used": "v02-c13-execute-ticket.v1",
+  "does_not_overwrite": [
+    "frozen/execute_authority.json",
+    "05_运行回执.json",
+    "requests/doubao_seed_2_1_turbo_Q1.json",
+    "requests/doubao_seed_2_1_turbo_Q2.json",
+    "requests/doubao_seed_2_1_turbo_Q3.json",
+    "requests/doubao_seed_2_1_turbo_Q4.json"
+  ],
+  "authorized_by": "CZ 2026-08-27: 用官方网站的 deepseekv4flash 试；统一用非思考模式。Prompt 与四题冻结不改字。不重跑 Doubao。",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "provider": "deepseek_official",
+  "not_provider": "volcengine_agent_plan",
+  "transport": "https://api.deepseek.com/chat/completions",
+  "credential_source": "tools/deepseek_official_key.sh + macOS keychain",
+  "api_key_env": "DEEPSEEK_API_KEY",
+  "loader_ack_env": "CZ_DEEPSEEK_OFFICIAL_API_APPROVAL",
+  "loader_ack_exact_value": "USE_OFFICIAL_DEEPSEEK_API_ONCE",
+  "standing_authorized_at": "2026-08-01",
+  "model": {
+    "request_model_id": "deepseek-v4-flash",
+    "expected_response_model": "deepseek-v4-flash",
+    "official_docs_model_version_label": "DeepSeek-V4-Flash-0731",
+    "note": "官方 API 请求名是 deepseek-v4-flash，不是 Agent Plan 的 deepseek-v4-flash-modelhub / deepseek-v4-flash-260801。GitHub 供应商档 allowed_models 目前只写了 deepseek-v4-pro；本轮按 CZ 点名 Flash 发网，不改该档。"
+  },
+  "sampling": {
+    "thinking": {"type": "disabled"},
+    "temperature": 0,
+    "response_format": {"type": "json_object"},
+    "max_tokens": 4096,
+    "alignment": "match Doubao L1 probe non-thinking: temperature 0, thinking disabled, json_object, 4096 output budget"
+  },
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "schema_sha256": "aa73696981b3b75717202db117ffac4df7584aad1dd3a086084f1c33a1f08352",
+  "items": ["Q1", "Q2", "Q3", "Q4"],
+  "max_sampling_calls": 4,
+  "automatic_retries": 0,
+  "human_retries": 0,
+  "do_not_rerun_doubao": true,
+  "do_not_edit_prompt": true,
+  "live_catalog_required_before_sampling": true,
+  "catalog_endpoint": "GET https://api.deepseek.com/models",
+  "status": "WAITING_LIVE_CATALOG"
+}

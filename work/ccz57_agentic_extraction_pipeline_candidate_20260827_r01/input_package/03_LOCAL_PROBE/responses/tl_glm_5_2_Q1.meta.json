@@ -1,0 +1,48 @@
+{
+  "item_id": "Q1",
+  "lane": "agent_plan_thinking_low",
+  "request_model_name": "glm-5-2-260601",
+  "response_model_name": "glm-5-2-260617",
+  "identity_drift": false,
+  "arkcli_exit_code": 0,
+  "started_at": "2026-08-27T00:52:22.484+08:00",
+  "ended_at": "2026-08-27T00:52:31.510+08:00",
+  "elapsed_ms": 9026,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1561,
+    "completion_tokens": 575,
+    "total_tokens": 2136
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": "envelope.reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 940
+  },
+  "analysis": {
+    "direct_json": false,
+    "fenced_json": true,
+    "schema_legal": false,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 7,
+      "fact_count": 7
+    },
+    "facts_preview": [
+      "傍晚顾晚晴回到楼里",
+      "顾晚晴把还在滴水的折叠伞倒挂到门廊铁钩上",
+      "顾晚晴蹲下去用鞋尖把门口的雨水刮进地漏",
+      "顾晚晴按墙上的开关后灯没有亮",
+      "顾晚晴没有再按第二次开关",
+      "顾晚晴走到走廊尽头拧开应急手电",
+      "顾晚晴把手电光对准鞋架底下左右扫了两遍"
+    ],
+    "q4_causal_hits": [],
+    "task_err": "JSONDecodeError"
+  },
+  "raw_sha256": "df8f43166484c9900a563d7d7001f3179848dee2c7c171c93a7c0ac8b7dc389e"
+}

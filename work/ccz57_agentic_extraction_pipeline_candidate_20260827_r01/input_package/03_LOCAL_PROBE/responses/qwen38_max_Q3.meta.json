@@ -1,0 +1,58 @@
+{
+  "item_id": "Q3",
+  "lane": "qwen_nonthinking",
+  "request_model_name": "qwen3.8-max",
+  "response_model_name": "qwen3.8-max",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "error_type": null,
+  "error_message": null,
+  "started_at": "2026-08-27T00:48:35.353+08:00",
+  "ended_at": "2026-08-27T00:48:38.389+08:00",
+  "elapsed_ms": 3036,
+  "retries": 0,
+  "usage": {
+    "completion_tokens": 276,
+    "prompt_tokens": 1599,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024,
+      "text_tokens": 1599
+    },
+    "total_tokens": 1875
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": null,
+    "thinking_appears_on": false,
+    "reasoning_chars": 0
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 9,
+      "fact_count": 9
+    },
+    "facts_preview": [
+      "乔米把工牌从工位夹上摘下来",
+      "乔米把工牌塞进褚衡摊开的掌心",
+      "乔米对褚衡说从今天起不再给他做助理",
+      "褚衡没有把工牌还回去",
+      "褚衡把卡片翻过去",
+      "褚衡伸手把两人中间那条一直共用的抽屉锁上",
+      "乔米站在原处看了褚衡两秒",
+      "乔米把桌上那支共用的红笔推进抽屉缝",
+      "乔米转身走了"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "dbca3f480ecde3888fa2884971f34157e2d0f50e85e7ddc98ee2be11716b1c8d"
+}

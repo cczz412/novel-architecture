@@ -1,0 +1,76 @@
+{
+  "item_id": "Q4",
+  "provider": "sensenova",
+  "request_model_name": "sensenova-6.8-flash-lite",
+  "response_model_name": "sensenova-6.8-flash-lite",
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "input_material_sha256": "4673ac4abe647ef475d0007c25b4f4f5eae1ea04c80091610dca02936bfc8c33",
+  "user_message_sha256": "70e345c4cd7aaf3dbec59b67c6ff1b2685ecc8701b45700d97d1ad878fd58682",
+  "raw_response_sha256": "3b2eab53f577afc677ac8da78edea25db1c6ea456d916d90baa02e4d09d04738",
+  "started_at": "2026-08-27T00:32:52.292+08:00",
+  "ended_at": "2026-08-27T00:32:58.777+08:00",
+  "elapsed_ms": 6485,
+  "http_or_interface_status": {
+    "http_status": 200,
+    "timed_out": false,
+    "send_status": "sent_completed",
+    "finish_reason": "stop",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Date": "Wed, 26 Aug 2026 16:33:00 GMT",
+      "X-Request-Id": "5c035e63-c0d6-490f-9711-b2c6c71ae5f2"
+    }
+  },
+  "legal_envelope_json": true,
+  "legal_task_json": true,
+  "envelope_parse_error": null,
+  "task_json_parse_error": null,
+  "truncated": false,
+  "timeout": false,
+  "auth_failure": false,
+  "identity_drift": false,
+  "retries": 0,
+  "secret_redacted": false,
+  "stdout_bytes": 1925,
+  "request_path": "requests/sensenova_6_8_flash_lite_Q4.json",
+  "stdout_path": "responses/raw/sensenova_6_8_flash_lite_Q4.stdout.bin",
+  "usage": {
+    "prompt_tokens": 1595,
+    "completion_tokens": 339,
+    "total_tokens": 1934,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "schema": {
+    "schema_legal": true,
+    "error_count": 0,
+    "first_error": null,
+    "empty_speaker": 0,
+    "omitted_speaker": 8,
+    "fact_count": 8
+  },
+  "fenced_json": false,
+  "thinking": {
+    "checked": true,
+    "reasoning_tokens": 0,
+    "nonempty_reasoning_field": null,
+    "thinking_appears_on": false
+  },
+  "facts_preview": [
+    "冷库的温控器在午前跳闸",
+    "整箱荔枝很快开始渗水",
+    "仓管裴小棠把这批货从“待发”改成“报损”",
+    "裴小棠通知司机取消下午那趟去港东批发市场的车",
+    "司机回了一句“知道了”",
+    "司机把已经发动的货车熄了火",
+    "渗出水顺着托盘流到地面",
+    "裴小棠去拿拖把"
+  ],
+  "q4_causal_hits": [],
+  "call_number": 4
+}

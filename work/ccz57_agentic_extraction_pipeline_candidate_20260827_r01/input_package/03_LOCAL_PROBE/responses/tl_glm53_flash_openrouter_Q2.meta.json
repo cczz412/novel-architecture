@@ -1,0 +1,67 @@
+{
+  "item_id": "Q2",
+  "lane": "glm53flash_thinking_low",
+  "request_model_name": "z-ai/glm-5.3-flash",
+  "response_model_name": "z-ai/glm-5.3-flash",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "error_type": null,
+  "error_message": null,
+  "started_at": "2026-08-27T00:48:45.836+08:00",
+  "ended_at": "2026-08-27T00:48:52.651+08:00",
+  "elapsed_ms": 6815,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1619,
+    "completion_tokens": 205,
+    "total_tokens": 1824,
+    "cost": 0.000172675,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.000172675,
+      "upstream_inference_prompt_cost": 0.000121425,
+      "upstream_inference_completions_cost": 5.125e-05
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 3,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "thinking": {
+    "reasoning_tokens": 3,
+    "nonempty_reasoning_field": "reasoning",
+    "thinking_appears_on": true,
+    "reasoning_chars": 14
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 3,
+      "fact_count": 4
+    },
+    "facts_preview": [
+      "对讲机里传来一句“货已经卸完”。",
+      "沈北川原本站得笔直，听到消息后肩膀塌了下去。",
+      "沈北川手里的登记板差点掉进泥里。",
+      "沈北川顺着厢车门沿坐到地上，松开咬紧的牙，呼吸变长，没有立刻站起来。"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "3cfb00e86000cc8cfdbb2a31ab7e38227cb82e7fb17709e3d2f48033e0b16b0c"
+}

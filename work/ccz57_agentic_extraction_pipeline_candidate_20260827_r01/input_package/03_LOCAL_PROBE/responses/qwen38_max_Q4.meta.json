@@ -1,0 +1,58 @@
+{
+  "item_id": "Q4",
+  "lane": "qwen_nonthinking",
+  "request_model_name": "qwen3.8-max",
+  "response_model_name": "qwen3.8-max",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "error_type": null,
+  "error_message": null,
+  "started_at": "2026-08-27T00:48:38.391+08:00",
+  "ended_at": "2026-08-27T00:48:41.527+08:00",
+  "elapsed_ms": 3136,
+  "retries": 0,
+  "usage": {
+    "completion_tokens": 282,
+    "prompt_tokens": 1597,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024,
+      "text_tokens": 1597
+    },
+    "total_tokens": 1879
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": null,
+    "thinking_appears_on": false,
+    "reasoning_chars": 0
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 9,
+      "fact_count": 9
+    },
+    "facts_preview": [
+      "冷库的温控器在午前跳闸",
+      "整箱荔枝很快开始渗水",
+      "裴小棠是仓管",
+      "裴小棠把这批货的状态从“待发”改成“报损”",
+      "裴小棠通知司机取消下午去港东批发市场的车",
+      "司机回复“知道了”",
+      "司机把已经发动的货车熄了火",
+      "渗出水顺着托盘流到地面",
+      "裴小棠去拿拖把"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "385b5b328f72bb4a97315fdbbfd44e96ebc6014a606947ff887cd59f559a5e2c"
+}

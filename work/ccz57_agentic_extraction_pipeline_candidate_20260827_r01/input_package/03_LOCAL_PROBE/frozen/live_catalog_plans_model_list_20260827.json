@@ -1,0 +1,83 @@
+{
+  "plan": "agent-plan",
+  "selected_model_id": "doubao-seed-2-0-mini-260215",
+  "models": [
+    {
+      "model_id": "auto",
+      "model_name": "auto",
+      "output_name": "auto",
+      "description": "智能调度模型，基于「效果 + 速度」双维度智能匹配最优算力与模型组合，有机会优先尝鲜字节跳动及生态的最新模型能力。"
+    },
+    {
+      "model_id": "doubao-seed-evolving-latest-version",
+      "output_name": "doubao-seed-evolving",
+      "description": "evolving",
+      "enabled_thinking": true
+    },
+    {
+      "model_id": "doubao-seed-2-1-turbo-260628",
+      "model_name": "doubao-seed-2-1-turbo",
+      "output_name": "doubao-seed-2-1-turbo-260628",
+      "description": "效果与成本均衡，全面升级 Coding、Agent 与多模态能力，以更强的自主规划、长链路执行和动态修复能力，胜任企业真实复杂任务。",
+      "enabled_thinking": true
+    },
+    {
+      "model_id": "doubao-seed-2-0-lite-260215",
+      "model_name": "doubao-seed-2-0-lite",
+      "output_name": "doubao-seed-2-0-lite-260215",
+      "description": "兼顾生成质量与响应速度，适合作为通用生产级模型，胜任非结构化信息处理、内容创作、搜索推荐、数据分析等生产型工作。",
+      "enabled_thinking": true
+    },
+    {
+      "model_id": "doubao-seed-2-0-mini-260215",
+      "model_name": "doubao-seed-2-0-mini",
+      "output_name": "doubao-seed-2-0-mini-260215",
+      "description": "面向低时延、高并发与成本敏感场景，提供极致的模型推理速度，适合成本和速度优先的轻量级任务。",
+      "enabled_thinking": true,
+      "selected": true
+    },
+    {
+      "model_id": "glm-5-3-260801",
+      "output_name": "glm-5.3",
+      "description": "【尝鲜版】智谱最新旗舰模型，支持 1M 上下文窗口，长任务稳定可用, Coding能力开源SOTA",
+      "enabled_thinking": true
+    },
+    {
+      "model_id": "deepseek-v4-pro-ga-260813",
+      "model_name": "deepseek-v4-pro-ga",
+      "output_name": "deepseek-v4-pro-ga-260813",
+      "description": "【尝鲜版】deepseek-v4-pro正式版已上线",
+      "enabled_thinking": true
+    },
+    {
+      "model_id": "deepseek-v4-flash-260801",
+      "output_name": "deepseek-v4-flash-ga-260731",
+      "description": "【尝鲜版】deepseek-v4-flash正式版已上线，Agent 能力大幅增强，基准测试远超 V4-Pro-Preview",
+      "enabled_thinking": true
+    },
+    {
+      "model_id": "kimi-k3-260701",
+      "output_name": "kimi-k3",
+      "description": "Kimi 最新旗舰模型，原生支持视觉理解，并拥有 100 万 token 上下文窗口，面向软件工程、知识工作和深度推理等前沿智能场景而设计",
+      "enabled_thinking": true
+    },
+    {
+      "model_id": "glm-5-2-260601",
+      "output_name": "glm-5-2-260617",
+      "description": "【尝鲜版】智谱最新旗舰模型，支持 1M 上下文窗口，长程任务效果表现突出，多项权威评测榜单成绩稳居前列。",
+      "enabled_thinking": true
+    },
+    {
+      "model_id": "kimi-k2-7-code-260601",
+      "output_name": "kimi-k2.7-code",
+      "description": "【尝鲜版】Kimi 最新 Coding 模型，在长上下文中更可靠地遵循指令，能以更高的成功率完成编程任务，同时支持文本、图片与视频输入，思考模式，对话与 Agent 任务。",
+      "enabled_thinking": true
+    },
+    {
+      "model_id": "minimax-m3-modelhub",
+      "output_name": "minimax-m3",
+      "description": "新一代 M 系列语言模型，在编码与智能体评测中达到行业顶尖水平，适用于 Agent 推理、工具调用、代码和长上下文任务",
+      "enabled_thinking": true
+    }
+  ]
+}

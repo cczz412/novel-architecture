@@ -1,0 +1,149 @@
+{
+  "schema_version": "ccz57-l1-agent-plan-batch2-receipt-v1",
+  "status": "COMPLETED_16_OF_16",
+  "identity": "Cursor Grok",
+  "linear_relation": "CCZ-57 exploratory only; no Linear/GitHub/Slack/Notion writes",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "authorized_by": "CZ 2026-08-27: 再测几个模型；Agent Plan 都可以试。统一非思考。不改 Prompt，不重跑 Doubao / 官方 Flash。",
+  "provider": "volcengine_agent_plan",
+  "arkcli_profile": "agent-plan_cn-beijing_personal",
+  "transport": "arkcli +chat",
+  "sampling": {
+    "thinking": "disabled",
+    "temperature": 0,
+    "text_format": "json_object",
+    "max_output_tokens": 4096,
+    "retries": 0
+  },
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "schema_id": "novel-fact-extraction-v2.1",
+  "schema_sha256": "aa73696981b3b75717202db117ffac4df7584aad1dd3a086084f1c33a1f08352",
+  "catalog_sha256": "1976ce672586d0c60ba7ceb6a47915d44dd0f4687647c37fd829743ba2fafc9e",
+  "catalog_note": "2026-08-27 凌晨实时目录 SHA 与 2026-08-26 晚间目录相同",
+  "planned_calls": 16,
+  "actual_sampling_calls": 16,
+  "retries": 0,
+  "skipped_this_batch": [
+    "auto",
+    "doubao-seed-2-1-turbo-260628"
+  ],
+  "schema_recheck_engine": "jsonschema.Draft202012Validator",
+  "models": [
+    {
+      "slot": "mini",
+      "request_model_id": "doubao-seed-2-0-mini-260215",
+      "expected_response_model": "doubao-seed-2-0-mini-260215",
+      "calls": 4,
+      "identity_drift": false,
+      "items": {
+        "Q1": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法"
+        },
+        "Q2": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法；省略 speaker，没有空串"
+        },
+        "Q3": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法"
+        },
+        "Q4": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法；有一条用「因」写出跳闸→渗水"
+        }
+      }
+    },
+    {
+      "slot": "lite",
+      "request_model_id": "doubao-seed-2-0-lite-260215",
+      "expected_response_model": "doubao-seed-2-0-lite-260215",
+      "calls": 4,
+      "identity_drift": false,
+      "items": {
+        "Q1": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法"
+        },
+        "Q2": {
+          "direct_json": false,
+          "schema_legal": false,
+          "note": "回包完成，但任务 JSON 不合法：facts 数组写完第一条后结构散掉"
+        },
+        "Q3": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法"
+        },
+        "Q4": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法；有一条明确「因为温控器跳闸」"
+        }
+      }
+    },
+    {
+      "slot": "minimax_m3",
+      "request_model_id": "minimax-m3-modelhub",
+      "expected_response_model": "minimax-m3",
+      "calls": 4,
+      "identity_drift": false,
+      "items": {
+        "Q1": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法"
+        },
+        "Q2": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法"
+        },
+        "Q3": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法"
+        },
+        "Q4": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法；事件并列，fact 里没有因为/所以"
+        }
+      }
+    },
+    {
+      "slot": "glm_5_2",
+      "request_model_id": "glm-5-2-260601",
+      "expected_response_model": "glm-5-2-260617",
+      "calls": 4,
+      "identity_drift": false,
+      "items": {
+        "Q1": {
+          "direct_json": false,
+          "schema_legal_if_strip_fence": true,
+          "note": "外层套了 markdown 代码围栏，直接 json.loads 失败；去掉围栏后 Schema 合法"
+        },
+        "Q2": {
+          "direct_json": false,
+          "schema_legal_if_strip_fence": true,
+          "note": "同样套了代码围栏；去掉围栏后 Schema 合法"
+        },
+        "Q3": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法"
+        },
+        "Q4": {
+          "direct_json": true,
+          "schema_legal": true,
+          "note": "JSON 可解析且 Schema 合法；事件并列，没有明确因果命题"
+        }
+      }
+    }
+  ]
+}

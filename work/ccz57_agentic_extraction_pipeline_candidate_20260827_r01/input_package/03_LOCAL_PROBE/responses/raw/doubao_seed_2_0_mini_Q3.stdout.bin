@@ -1,0 +1,21 @@
+{
+  "id": "resp_02178776110685268a4d5226e4976fceebdcfa7e5c0e72268c61f",
+  "model": "doubao-seed-2-0-mini-260215",
+  "content": "{\"facts\":[{\"fact\":\"乔米将工牌从工位夹上摘下，塞进褚衡摊开的掌心\",\"status\":\"已发生\",\"evidence\":\"乔米把工牌从工位夹上摘下来，塞进褚衡摊开的掌心\"},{\"fact\":\"乔米对褚衡说“从今天起，我不再给你做助理”\",\"status\":\"已发生\",\"evidence\":\"说：“从今天起，我不再给你做助理。”\",\"speaker\":\"乔米\"},{\"fact\":\"褚衡没有把工牌还回去\",\"status\":\"已发生\",\"evidence\":\"褚衡没有把工牌还回去\"},{\"fact\":\"褚衡将两人中间一直共用的抽屉锁上\",\"status\":\"已发生\",\"evidence\":\"只把卡片翻过去，伸手把两人中间那条一直共用的抽屉锁上\"},{\"fact\":\"乔米站在原处看了褚衡两秒\",\"status\":\"已发生\",\"evidence\":\"乔米站在原处看了他两秒\"},{\"fact\":\"乔米将桌上那支共用的红笔推进抽屉缝\",\"status\":\"已发生\",\"evidence\":\"把桌上那支共用的红笔也推进抽屉缝\"},{\"fact\":\"乔米转身走了\",\"status\":\"已发生\",\"evidence\":\"转身走了\"}]}",
+  "usage": {
+    "prompt_tokens": 1664,
+    "completion_tokens": 260,
+    "total_tokens": 1924
+  },
+  "object": "response",
+  "status": "completed",
+  "created_at": 1787761107,
+  "store": false,
+  "caching": {
+    "type": "disabled"
+  },
+  "thinking": {
+    "type": "disabled"
+  },
+  "text_format": "json_object"
+}

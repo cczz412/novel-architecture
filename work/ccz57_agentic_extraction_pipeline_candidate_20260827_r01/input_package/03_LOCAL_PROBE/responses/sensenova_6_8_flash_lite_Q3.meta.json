@@ -1,0 +1,76 @@
+{
+  "item_id": "Q3",
+  "provider": "sensenova",
+  "request_model_name": "sensenova-6.8-flash-lite",
+  "response_model_name": "sensenova-6.8-flash-lite",
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "input_material_sha256": "537d8f1735f3a610b92bbc8180e18be525f834d96737954bc1963693f9e94ad0",
+  "user_message_sha256": "514d0d82468e60aebe486778e9cbf130bb3e75913c3e91cbbde8c27bc96445c1",
+  "raw_response_sha256": "70fcc7db6c2bb3cba21a9b78fda561d2f6eec94a37ecfdc7fdd0b46e6a30b021",
+  "started_at": "2026-08-27T00:32:46.616+08:00",
+  "ended_at": "2026-08-27T00:32:52.290+08:00",
+  "elapsed_ms": 5674,
+  "http_or_interface_status": {
+    "http_status": 200,
+    "timed_out": false,
+    "send_status": "sent_completed",
+    "finish_reason": "stop",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Date": "Wed, 26 Aug 2026 16:32:54 GMT",
+      "X-Request-Id": "3823f8ba-135f-48e4-a9ce-731e0b3e5354"
+    }
+  },
+  "legal_envelope_json": true,
+  "legal_task_json": true,
+  "envelope_parse_error": null,
+  "task_json_parse_error": null,
+  "truncated": false,
+  "timeout": false,
+  "auth_failure": false,
+  "identity_drift": false,
+  "retries": 0,
+  "secret_redacted": false,
+  "stdout_bytes": 2155,
+  "request_path": "requests/sensenova_6_8_flash_lite_Q3.json",
+  "stdout_path": "responses/raw/sensenova_6_8_flash_lite_Q3.stdout.bin",
+  "usage": {
+    "prompt_tokens": 1597,
+    "completion_tokens": 399,
+    "total_tokens": 1996,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "schema": {
+    "schema_legal": true,
+    "error_count": 0,
+    "first_error": null,
+    "empty_speaker": 0,
+    "omitted_speaker": 7,
+    "fact_count": 8
+  },
+  "fenced_json": false,
+  "thinking": {
+    "checked": true,
+    "reasoning_tokens": 0,
+    "nonempty_reasoning_field": null,
+    "thinking_appears_on": false
+  },
+  "facts_preview": [
+    "乔米把工牌从工位夹上摘下来，塞进褚衡摊开的掌心。",
+    "乔米对褚衡表示从今天起不再给他做助理。",
+    "褚衡没有把工牌还回去。",
+    "褚衡把工牌翻过去。",
+    "褚衡锁上了两人中间那条一直共用的抽屉。",
+    "乔米站在原处看了褚衡两秒。",
+    "乔米把桌上那支共用的红笔推进抽屉缝。",
+    "乔米转身走了。"
+  ],
+  "q4_causal_hits": [],
+  "call_number": 3
+}

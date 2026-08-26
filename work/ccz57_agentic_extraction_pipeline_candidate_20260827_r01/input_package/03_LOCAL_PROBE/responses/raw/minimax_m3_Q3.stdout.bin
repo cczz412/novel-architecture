@@ -1,0 +1,21 @@
+{
+  "id": "resp_0217877611469000730b6660d857180baac0c56a1cd6448141b39",
+  "model": "minimax-m3",
+  "content": "{\"facts\":[{\"fact\":\"乔米把工牌从工位夹上摘下来，塞进褚衡摊开的掌心。\",\"status\":\"已发生\",\"evidence\":\"乔米把工牌从工位夹上摘下来，塞进褚衡摊开的掌心\"},{\"fact\":\"乔米对褚衡说：“从今天起，我不再给你做助理。”\",\"status\":\"已发生\",\"evidence\":\"说：“从今天起，我不再给你做助理。”\",\"speaker\":\"乔米\"},{\"fact\":\"褚衡没有把工牌还回去。\",\"status\":\"已发生\",\"evidence\":\"褚衡没有把工牌还回去\"},{\"fact\":\"褚衡把工牌卡片翻过去。\",\"status\":\"已发生\",\"evidence\":\"只把卡片翻过去\"},{\"fact\":\"褚衡伸手把两人中间那条一直共用的抽屉锁上。\",\"status\":\"已发生\",\"evidence\":\"伸手把两人中间那条一直共用的抽屉锁上\"},{\"fact\":\"两人中间存在一条一直共用的抽屉。\",\"status\":\"已发生\",\"evidence\":\"两人中间那条一直共用的抽屉\"},{\"fact\":\"乔米在原处看了褚衡两秒。\",\"status\":\"已发生\",\"evidence\":\"乔米站在原处看了他两秒\"},{\"fact\":\"乔米把桌上那支共用的红笔推进抽屉缝。\",\"status\":\"已发生\",\"evidence\":\"把桌上那支共用的红笔也推进抽屉缝\"},{\"fact\":\"桌上存在一支两人共用的红笔。\",\"status\":\"已发生\",\"evidence\":\"桌上那支共用的红笔\"},{\"fact\":\"乔米转身离开。\",\"status\":\"已发生\",\"evidence\":\"转身走了\"}]}",
+  "usage": {
+    "prompt_tokens": 1611,
+    "completion_tokens": 326,
+    "total_tokens": 1937
+  },
+  "object": "response",
+  "status": "completed",
+  "created_at": 1787761147,
+  "store": false,
+  "caching": {
+    "type": "disabled"
+  },
+  "thinking": {
+    "type": "disabled"
+  },
+  "text_format": "json_object"
+}

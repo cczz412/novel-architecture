@@ -1,0 +1,39 @@
+{
+  "item_id": "Q4",
+  "profile_id": null,
+  "request_model_name": "doubao-seed-2-1-turbo-260628",
+  "response_model_name": "doubao-seed-2-1-turbo-260628",
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "input_material_sha256": "4673ac4abe647ef475d0007c25b4f4f5eae1ea04c80091610dca02936bfc8c33",
+  "user_message_sha256": "70e345c4cd7aaf3dbec59b67c6ff1b2685ecc8701b45700d97d1ad878fd58682",
+  "raw_response_sha256": "53fc5852b143f402da79b12d234eb0a5572c99d193a99ed3ec39e3f62f182335",
+  "stderr_sha256": "cb001fc5cdd7e1773acab44b58b79f9410082a77b85d68659bbc31f72ad761c8",
+  "started_at": "2026-08-26T23:40:56.739+08:00",
+  "ended_at": "2026-08-26T23:41:08.928+08:00",
+  "elapsed_ms": 12188,
+  "http_or_interface_status": {
+    "arkcli_exit_code": 0,
+    "timed_out": false,
+    "send_status": "sent_completed"
+  },
+  "legal_envelope_json": true,
+  "legal_task_json": true,
+  "envelope_parse_error": null,
+  "task_json_parse_error": null,
+  "truncated": false,
+  "timeout": false,
+  "auth_failure": false,
+  "identity_drift": false,
+  "retries": 0,
+  "secret_redacted": false,
+  "stdout_bytes": 2218,
+  "stderr_bytes": 120,
+  "usage": {
+    "prompt_tokens": 1658,
+    "completion_tokens": 464,
+    "total_tokens": 2122
+  },
+  "request_path": "requests/doubao_seed_2_1_turbo_Q4.json",
+  "stdout_path": "responses/raw/doubao_seed_2_1_turbo_Q4.stdout.bin",
+  "stderr_path": "responses/raw/doubao_seed_2_1_turbo_Q4.stderr.bin"
+}

@@ -1,0 +1,97 @@
+{
+  "lane": "qwen_nonthinking",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "request_model_id": "qwen3.8-max",
+  "expected_response_model": "qwen3.8-max",
+  "effort_note": "enable_thinking=false + json_object",
+  "calls": 4,
+  "stop_reason": null,
+  "status": "COMPLETED",
+  "items": {
+    "Q1": {
+      "direct_json": true,
+      "schema_legal": true,
+      "thinking_appears_on": false,
+      "reasoning_tokens": null,
+      "identity_drift": false,
+      "http_status": 200,
+      "q4_causal": null,
+      "empty_speaker": 0,
+      "usage": {
+        "completion_tokens": 271,
+        "prompt_tokens": 1594,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 1594
+        },
+        "total_tokens": 1865
+      },
+      "elapsed_ms": 3022,
+      "error_message": null
+    },
+    "Q2": {
+      "direct_json": true,
+      "schema_legal": true,
+      "thinking_appears_on": false,
+      "reasoning_tokens": null,
+      "identity_drift": false,
+      "http_status": 200,
+      "q4_causal": null,
+      "empty_speaker": 0,
+      "usage": {
+        "completion_tokens": 259,
+        "prompt_tokens": 1588,
+        "prompt_tokens_details": {
+          "cached_tokens": 1024,
+          "text_tokens": 1588
+        },
+        "total_tokens": 1847
+      },
+      "elapsed_ms": 3092,
+      "error_message": null
+    },
+    "Q3": {
+      "direct_json": true,
+      "schema_legal": true,
+      "thinking_appears_on": false,
+      "reasoning_tokens": null,
+      "identity_drift": false,
+      "http_status": 200,
+      "q4_causal": null,
+      "empty_speaker": 0,
+      "usage": {
+        "completion_tokens": 276,
+        "prompt_tokens": 1599,
+        "prompt_tokens_details": {
+          "cached_tokens": 1024,
+          "text_tokens": 1599
+        },
+        "total_tokens": 1875
+      },
+      "elapsed_ms": 3036,
+      "error_message": null
+    },
+    "Q4": {
+      "direct_json": true,
+      "schema_legal": true,
+      "thinking_appears_on": false,
+      "reasoning_tokens": null,
+      "identity_drift": false,
+      "http_status": 200,
+      "q4_causal": false,
+      "empty_speaker": 0,
+      "usage": {
+        "completion_tokens": 282,
+        "prompt_tokens": 1597,
+        "prompt_tokens_details": {
+          "cached_tokens": 1024,
+          "text_tokens": 1597
+        },
+        "total_tokens": 1879
+      },
+      "elapsed_ms": 3136,
+      "error_message": null
+    }
+  },
+  "retries": 0
+}

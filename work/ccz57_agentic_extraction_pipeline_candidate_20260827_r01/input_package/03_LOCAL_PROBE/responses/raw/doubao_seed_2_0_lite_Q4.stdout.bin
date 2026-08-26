@@ -1,0 +1,21 @@
+{
+  "id": "resp_0217877611274924de2cf568a9a04a3957d59acb492788b3eb43a",
+  "model": "doubao-seed-2-0-lite-260215",
+  "content": "{\"facts\":[{\"fact\":\"冷库的温控器在午前跳闸\",\"status\":\"已发生\",\"evidence\":\"冷库的温控器在午前跳闸\"},{\"fact\":\"整箱荔枝因为温控器跳闸很快开始渗水\",\"status\":\"已发生\",\"evidence\":\"整箱荔枝很快开始渗水\"},{\"fact\":\"仓管裴小棠把这批荔枝货从“待发”改成“报损”\",\"status\":\"已发生\",\"evidence\":\"仓管裴小棠把这批货从“待发”改成“报损”\"},{\"fact\":\"裴小棠通知司机取消下午那趟去港东批发市场的车\",\"status\":\"已发生\",\"evidence\":\"并通知司机取消下午那趟去港东批发市场的车\"},{\"fact\":\"司机回复裴小棠“知道了”\",\"status\":\"已发生\",\"evidence\":\"司机回了一句“知道了”\"},{\"fact\":\"司机把已经发动的货车熄了火\",\"status\":\"已发生\",\"evidence\":\"便把已经发动的货车熄了火\"},{\"fact\":\"渗出来的水顺着托盘流到地面\",\"status\":\"已发生\",\"evidence\":\"渗出水顺着托盘流到地面\"},{\"fact\":\"裴小棠又去拿拖把\",\"status\":\"已发生\",\"evidence\":\"裴小棠又去拿拖把\"}]}",
+  "usage": {
+    "prompt_tokens": 1658,
+    "completion_tokens": 261,
+    "total_tokens": 1919
+  },
+  "object": "response",
+  "status": "completed",
+  "created_at": 1787761127,
+  "store": false,
+  "caching": {
+    "type": "disabled"
+  },
+  "thinking": {
+    "type": "disabled"
+  },
+  "text_format": "json_object"
+}

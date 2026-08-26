@@ -1,0 +1,17 @@
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+
+         
+{"id":"gen-1787762929-x2tCU6CUD4S6OR2SucV0","object":"chat.completion","created":1787762929,"model":"z-ai/glm-5.3-flash","provider":"Z.AI","system_fingerprint":null,"service_tier":null,"choices":[{"index":0,"logprobs":null,"finish_reason":"stop","native_finish_reason":"stop","message":{"role":"assistant","content":"{\"facts\":[{\"fact\":\"对讲机里传来一句“货已经卸完”。\",\"status\":\"已发生\",\"evidence\":\"对讲机里忽然传来一句“货已经卸完”。\",\"speaker\":\"来源不明\"},{\"fact\":\"沈北川原本站得笔直，听到消息后肩膀塌了下去。\",\"status\":\"已发生\",\"evidence\":\"沈北川原本站得笔直，肩膀一下子塌下去\"},{\"fact\":\"沈北川手里的登记板差点掉进泥里。\",\"status\":\"已发生\",\"evidence\":\"手里的登记板差点掉进泥里\"},{\"fact\":\"沈北川顺着厢车门沿坐到地上，松开咬紧的牙，呼吸变长，没有立刻站起来。\",\"status\":\"已发生\",\"evidence\":\"他顺着厢车门沿坐到地上，喉结滚动两下，这才把一直咬紧的牙松开，呼吸也跟着变长。泥水渗进裤脚，他没有立刻站起来。\"}]}","refusal":null,"reasoning":"Extract facts.","reasoning_details":[{"type":"reasoning.text","text":"Extract facts.","format":"unknown","index":0}]}}],"usage":{"prompt_tokens":1619,"completion_tokens":205,"total_tokens":1824,"cost":0.000172675,"is_byok":false,"prompt_tokens_details":{"cached_tokens":0,"cache_write_tokens":0,"audio_tokens":0,"video_tokens":0},"cost_details":{"upstream_inference_cost":0.000172675,"upstream_inference_prompt_cost":0.000121425,"upstream_inference_completions_cost":0.00005125},"completion_tokens_details":{"reasoning_tokens":3,"image_tokens":0,"audio_tokens":0}}}

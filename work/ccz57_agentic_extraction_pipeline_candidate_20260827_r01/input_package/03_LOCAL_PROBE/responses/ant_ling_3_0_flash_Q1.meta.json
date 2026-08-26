@@ -1,0 +1,65 @@
+{
+  "item_id": "Q1",
+  "provider": "ant_ling",
+  "request_model_name": "Ling-3.0-flash",
+  "response_model_name": "Ling-3.0-flash",
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "input_material_sha256": "e8bdbb3db916f2170225f906e8d0ca78268b0f05b018338aa694aa4d62785e72",
+  "user_message_sha256": "a44a5696ac4e5d6579e16abb58ea39e874e74d8281fd2137c7495270ade27313",
+  "raw_response_sha256": "f2f79b8f92f2c20d809a966905b0e9e79b15796586415a19fdf7aba6a9d6e9e3",
+  "started_at": "2026-08-27T00:33:08.459+08:00",
+  "ended_at": "2026-08-27T00:33:10.131+08:00",
+  "elapsed_ms": 1672,
+  "http_or_interface_status": {
+    "http_status": 200,
+    "timed_out": false,
+    "send_status": "sent_completed",
+    "finish_reason": "stop",
+    "headers": {
+      "Date": "Wed, 26 Aug 2026 16:33:12 GMT",
+      "Content-Type": "application/json"
+    }
+  },
+  "legal_envelope_json": true,
+  "legal_task_json": true,
+  "envelope_parse_error": null,
+  "task_json_parse_error": null,
+  "truncated": false,
+  "timeout": false,
+  "auth_failure": false,
+  "identity_drift": false,
+  "retries": 0,
+  "secret_redacted": false,
+  "stdout_bytes": 1218,
+  "request_path": "requests/ant_ling_3_0_flash_Q1.json",
+  "stdout_path": "responses/raw/ant_ling_3_0_flash_Q1.stdout.bin",
+  "usage": {
+    "completion_tokens": 205,
+    "prompt_tokens": 1526,
+    "total_tokens": 1731
+  },
+  "schema": {
+    "schema_legal": true,
+    "error_count": 0,
+    "first_error": null,
+    "empty_speaker": 0,
+    "omitted_speaker": 5,
+    "fact_count": 5
+  },
+  "fenced_json": false,
+  "thinking": {
+    "checked": true,
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": null,
+    "thinking_appears_on": false
+  },
+  "facts_preview": [
+    "顾晚晴把还在滴水的折叠伞倒挂到门廊铁钩上",
+    "顾晚晴蹲下去用鞋尖把门口那滩雨水一点点刮进地漏",
+    "顾晚晴伸手去按墙上的开关，灯没有亮",
+    "顾晚晴没有再按第二次开关",
+    "顾晚晴走到走廊尽头，拧开应急手电，把光对准鞋架底下，左右扫了两遍"
+  ],
+  "q4_causal_hits": [],
+  "call_number": 1
+}

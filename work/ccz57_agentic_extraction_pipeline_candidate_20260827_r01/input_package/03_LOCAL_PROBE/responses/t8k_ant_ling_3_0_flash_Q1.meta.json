@@ -1,0 +1,54 @@
+{
+  "item_id": "Q1",
+  "lane": "ling_thinking_low",
+  "request_model_name": "Ling-3.0-flash",
+  "response_model_name": "Ling-3.0-flash",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "started_at": "2026-08-27T01:06:22.192+08:00",
+  "ended_at": "2026-08-27T01:06:37.690+08:00",
+  "elapsed_ms": 15498,
+  "retries": 0,
+  "usage": {
+    "completion_tokens": 3939,
+    "prompt_tokens": 1525,
+    "total_tokens": 5464,
+    "prompt_tokens_details": {
+      "cached_tokens": 1408
+    }
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": "reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 10081
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 8,
+      "fact_count": 8
+    },
+    "facts_preview": [
+      "顾晚晴傍晚回楼",
+      "顾晚晴把还在滴水的折叠伞倒挂到门廊铁钩上",
+      "顾晚晴蹲下去，用鞋尖把门口那滩雨水一点点刮进地漏",
+      "她伸手去按墙上的开关",
+      "灯没有亮",
+      "她没有再按第二次",
+      "她走到走廊尽头，拧开应急手电",
+      "她把光对准鞋架底下，左右扫了两遍"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "04d4560a45d642caad343d688c7b86351ab3e9e13eb79dfe77b14c594646e981"
+}

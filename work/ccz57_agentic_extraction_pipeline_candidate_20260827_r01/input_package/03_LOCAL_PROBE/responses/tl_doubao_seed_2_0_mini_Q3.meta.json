@@ -1,0 +1,48 @@
+{
+  "item_id": "Q3",
+  "lane": "agent_plan_thinking_low",
+  "request_model_name": "doubao-seed-2-0-mini-260215",
+  "response_model_name": "doubao-seed-2-0-mini-260215",
+  "identity_drift": false,
+  "arkcli_exit_code": 0,
+  "started_at": "2026-08-27T00:48:25.261+08:00",
+  "ended_at": "2026-08-27T00:48:48.893+08:00",
+  "elapsed_ms": 23632,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1667,
+    "completion_tokens": 3671,
+    "total_tokens": 5338
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": "envelope.reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 5677
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 6,
+      "fact_count": 7
+    },
+    "facts_preview": [
+      "乔米将工牌从工位夹上摘下并塞进褚衡摊开的掌心",
+      "乔米对褚衡说“从今天起，我不再给你做助理”",
+      "褚衡没有将工牌还给乔米",
+      "褚衡将工牌翻过去，并伸手锁上两人中间一直共用的抽屉",
+      "乔米站在原处看了褚衡两秒",
+      "乔米将桌上那支共用的红笔推进抽屉缝",
+      "乔米转身离开了"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "365844380c62f4e355c250af062255198b1d37392812a6c2071d50a6289336f5"
+}

@@ -1,0 +1,35 @@
+{
+  "item_id": "Q1",
+  "lane": "ling_thinking_low",
+  "request_model_name": "Ling-3.0-flash",
+  "response_model_name": "Ling-3.0-flash",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "length",
+  "started_at": "2026-08-27T00:42:55.962+08:00",
+  "ended_at": "2026-08-27T00:43:13.916+08:00",
+  "elapsed_ms": 17954,
+  "retries": 0,
+  "usage": {
+    "completion_tokens": 4096,
+    "prompt_tokens": 1525,
+    "total_tokens": 5621
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": null,
+    "thinking_appears_on": false,
+    "reasoning_chars": 0
+  },
+  "analysis": {
+    "direct_json": false,
+    "fenced_json": false,
+    "schema_legal": false,
+    "schema": null,
+    "facts_preview": [],
+    "q4_causal_hits": [],
+    "task_err": "JSONDecodeError"
+  },
+  "raw_sha256": "a5ed61ac048c154a10d4a931acf2c2b06180291ae53d62a948570903a922be32"
+}

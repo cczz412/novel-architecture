@@ -1,0 +1,75 @@
+{
+  "item_id": "Q2",
+  "provider": "sensenova",
+  "request_model_name": "sensenova-6.8-flash-lite",
+  "response_model_name": "sensenova-6.8-flash-lite",
+  "frozen_prompt_sha256": "57ab1d68a4ebe3ee4bc7c57693247e9fa7bc1879252b57254ff25b0220bd2a2b",
+  "input_material_sha256": "f3793e9dbbfd7d01b1515beac438185ea57902b7038f6bd925d2c88461ac5d1b",
+  "user_message_sha256": "261916a394434a876f13764f9452ee6764a87bbaf16bf4400b4e9db049c5a600",
+  "raw_response_sha256": "bf1a5f2d7d7f02a3b1eb643988fbd265c5a7170b651c448fef7f1e015867fc98",
+  "started_at": "2026-08-27T00:32:39.619+08:00",
+  "ended_at": "2026-08-27T00:32:46.614+08:00",
+  "elapsed_ms": 6995,
+  "http_or_interface_status": {
+    "http_status": 200,
+    "timed_out": false,
+    "send_status": "sent_completed",
+    "finish_reason": "stop",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Date": "Wed, 26 Aug 2026 16:32:48 GMT",
+      "X-Request-Id": "90988c5c-3266-4949-b21f-fd9ecf4f0ee1"
+    }
+  },
+  "legal_envelope_json": true,
+  "legal_task_json": true,
+  "envelope_parse_error": null,
+  "task_json_parse_error": null,
+  "truncated": false,
+  "timeout": false,
+  "auth_failure": false,
+  "identity_drift": false,
+  "retries": 0,
+  "secret_redacted": false,
+  "stdout_bytes": 1791,
+  "request_path": "requests/sensenova_6_8_flash_lite_Q2.json",
+  "stdout_path": "responses/raw/sensenova_6_8_flash_lite_Q2.stdout.bin",
+  "usage": {
+    "prompt_tokens": 1586,
+    "completion_tokens": 305,
+    "total_tokens": 1891,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "schema": {
+    "schema_legal": true,
+    "error_count": 0,
+    "first_error": null,
+    "empty_speaker": 0,
+    "omitted_speaker": 7,
+    "fact_count": 7
+  },
+  "fenced_json": false,
+  "thinking": {
+    "checked": true,
+    "reasoning_tokens": 0,
+    "nonempty_reasoning_field": null,
+    "thinking_appears_on": false
+  },
+  "facts_preview": [
+    "对讲机里传来一句“货已经卸完”。",
+    "沈北川原本站得笔直，听到消息后肩膀一下子塌下去。",
+    "沈北川手里的登记板差点掉进泥里。",
+    "沈北川顺着厢车门沿坐到地上。",
+    "沈北川把一直咬紧的牙松开，呼吸变长。",
+    "泥水渗进沈北川的裤脚。",
+    "沈北川没有立刻站起来。"
+  ],
+  "q4_causal_hits": [],
+  "call_number": 2
+}

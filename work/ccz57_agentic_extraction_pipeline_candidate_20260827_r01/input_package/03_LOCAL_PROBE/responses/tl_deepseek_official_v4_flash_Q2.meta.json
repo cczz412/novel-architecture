@@ -1,0 +1,61 @@
+{
+  "item_id": "Q2",
+  "lane": "deepseek_thinking_low",
+  "request_model_name": "deepseek-v4-flash",
+  "response_model_name": "deepseek-v4-flash",
+  "identity_drift": false,
+  "http_status": 200,
+  "timed_out": false,
+  "finish_reason": "stop",
+  "started_at": "2026-08-27T00:43:00.197+08:00",
+  "ended_at": "2026-08-27T00:43:16.276+08:00",
+  "elapsed_ms": 16079,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1558,
+    "completion_tokens": 1727,
+    "total_tokens": 3285,
+    "prompt_tokens_details": {
+      "cached_tokens": 1536
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1439
+    },
+    "prompt_cache_hit_tokens": 1536,
+    "prompt_cache_miss_tokens": 22
+  },
+  "thinking": {
+    "reasoning_tokens": 1439,
+    "nonempty_reasoning_field": "reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 2252
+  },
+  "analysis": {
+    "direct_json": true,
+    "fenced_json": false,
+    "schema_legal": true,
+    "schema": {
+      "schema_legal": true,
+      "error_count": 0,
+      "first_error": null,
+      "empty_speaker": 0,
+      "omitted_speaker": 10,
+      "fact_count": 10
+    },
+    "facts_preview": [
+      "对讲机里传来一句“货已经卸完”",
+      "沈北川原本站得笔直",
+      "沈北川的肩膀一下子塌下去",
+      "沈北川手里的登记板没有掉进泥里",
+      "沈北川顺着厢车门沿坐到地上",
+      "沈北川的喉结滚动两下",
+      "沈北川把一直咬紧的牙松开",
+      "沈北川的呼吸变长",
+      "泥水渗进沈北川的裤脚",
+      "沈北川没有立刻站起来"
+    ],
+    "q4_causal_hits": [],
+    "task_err": null
+  },
+  "raw_sha256": "4585fd924e3cd25fc43b4caea868734101f329f4ddc9b1244262deb4afc71f43"
+}

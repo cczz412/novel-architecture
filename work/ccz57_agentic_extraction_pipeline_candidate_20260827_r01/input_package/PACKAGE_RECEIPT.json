@@ -1,0 +1,38 @@
+{
+  "checks": {
+    "content_freeze": "PASS",
+    "forbidden_members": "PASS",
+    "markdown_internal_links": "PASS",
+    "member_list": "PASS",
+    "package_directory_byte_readback": "PASS__ATOMIC_RELEASE_GATED",
+    "secret_or_host_paths": "PASS",
+    "sha_sidecars": "PASS__ATOMIC_RELEASE_GATED",
+    "source_bindings": "PASS",
+    "standalone_prompt_identity": "PASS__ATOMIC_RELEASE_GATED",
+    "zip_crc_and_byte_readback": "PASS__ATOMIC_RELEASE_GATED"
+  },
+  "content_freeze_sha256": "c30aa217ec1518706d0c9b2808192c3ca16f05a9825c09a08cdf9d34b0480349",
+  "content_snapshot_sha256": "62c65a26fd39360c2b148e17c0ff43c90cc74da02991b930bb728b41b66f23a0",
+  "expected_final_member_count": 505,
+  "manifest_contract": "MANIFEST.sha256 hashes every final member except itself",
+  "material_mode": "FILES_ONLY",
+  "package_class": "INDEPENDENT_ADVISORY_DOSSIER",
+  "package_id": "ccz57_agentic_extraction_pipeline_pro_review_20260827_r01",
+  "project_route": {
+    "route_id": null,
+    "status": "NO_COMPATIBLE_ROUTE"
+  },
+  "prompt_member": "01_PROMPT_CHATGPT_PRO.md",
+  "release_gate": "The release directory is published atomically only after the final ZIP, package directory, standalone Prompt, SHA sidecars, CRC, members and bytes pass readback",
+  "schema": "chatgpt-independent-review-package-receipt-v1",
+  "side_effects": {
+    "browser_actions": 0,
+    "external_product_writes": 0,
+    "model_calls": 0,
+    "sends": 0,
+    "uploads": 0
+  },
+  "status": "PACKAGE_PREPARED_LOCAL_ONLY__NOT_SENT",
+  "task_id": "CCZ-57-L1-PRO-ADVISORY",
+  "version": "R01"
+}

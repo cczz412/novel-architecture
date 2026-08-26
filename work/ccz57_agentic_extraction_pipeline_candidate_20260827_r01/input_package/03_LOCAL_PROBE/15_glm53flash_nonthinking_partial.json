@@ -1,0 +1,32 @@
+{
+  "lane": "glm53flash_nonthinking",
+  "git_head": "8872887690fd018474a69979016b428f2c2faf56",
+  "request_model_id": "z-ai/glm-5.3-flash",
+  "expected_response_model": "z-ai/glm-5.3-flash",
+  "effort_note": "OpenRouter reasoning.effort=none; catalog says mandatory=true",
+  "calls": 1,
+  "stop_reason": {
+    "item_id": "Q1",
+    "identity_drift": true,
+    "timeout": false,
+    "http_status": 400,
+    "error_message": "Reasoning is mandatory for this endpoint and cannot be disabled."
+  },
+  "status": "STOPPED",
+  "items": {
+    "Q1": {
+      "direct_json": false,
+      "schema_legal": false,
+      "thinking_appears_on": false,
+      "reasoning_tokens": null,
+      "identity_drift": true,
+      "http_status": 400,
+      "q4_causal": null,
+      "empty_speaker": null,
+      "usage": {},
+      "elapsed_ms": 2068,
+      "error_message": "Reasoning is mandatory for this endpoint and cannot be disabled."
+    }
+  },
+  "retries": 0
+}

@@ -1,0 +1,33 @@
+{
+  "item_id": "Q1",
+  "lane": "agent_plan_thinking_low",
+  "request_model_name": "doubao-seed-2-1-turbo-260628",
+  "response_model_name": "doubao-seed-2-1-turbo-260628",
+  "identity_drift": false,
+  "arkcli_exit_code": 0,
+  "started_at": "2026-08-27T00:42:53.823+08:00",
+  "ended_at": "2026-08-27T00:44:28.972+08:00",
+  "elapsed_ms": 95149,
+  "retries": 0,
+  "usage": {
+    "prompt_tokens": 1656,
+    "completion_tokens": 4096,
+    "total_tokens": 5752
+  },
+  "thinking": {
+    "reasoning_tokens": null,
+    "nonempty_reasoning_field": "envelope.reasoning_content",
+    "thinking_appears_on": true,
+    "reasoning_chars": 1019
+  },
+  "analysis": {
+    "direct_json": false,
+    "fenced_json": false,
+    "schema_legal": false,
+    "schema": null,
+    "facts_preview": [],
+    "q4_causal_hits": [],
+    "task_err": "empty_or_non_string_content"
+  },
+  "raw_sha256": "8d87d198141b667be8edbc40ab2db7cb51cb252997b714b6118970e5087b3cf1"
+}

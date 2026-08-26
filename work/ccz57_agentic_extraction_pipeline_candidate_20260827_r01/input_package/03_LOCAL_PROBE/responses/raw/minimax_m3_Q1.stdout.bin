@@ -1,0 +1,21 @@
+{
+  "id": "resp_021787761130676a33e1c11db957129a03bedef34588f57975b7d",
+  "model": "minimax-m3",
+  "content": "{\"facts\":[{\"fact\":\"顾晚晴傍晚回到住处，把还在滴水的折叠伞倒挂到门廊铁钩上\",\"status\":\"已发生\",\"evidence\":\"傍晚回楼，顾晚晴先把还在滴水的折叠伞倒挂到门廊铁钩上\"},{\"fact\":\"顾晚晴蹲在门口，用鞋尖把门口那滩雨水一点点刮进地漏\",\"status\":\"已发生\",\"evidence\":\"又蹲下去，用鞋尖把门口那滩雨水一点点刮进地漏\"},{\"fact\":\"顾晚晴伸手去按墙上的开关，灯没有亮\",\"status\":\"已发生\",\"evidence\":\"她伸手去按墙上的开关，灯没有亮\"},{\"fact\":\"顾晚晴在开关未亮后没有再按第二次开关\",\"status\":\"已发生\",\"evidence\":\"她没有再按第二次\"},{\"fact\":\"顾晚晴走到走廊尽头，拧开应急手电\",\"status\":\"已发生\",\"evidence\":\"而是走到走廊尽头，拧开应急手电\"},{\"fact\":\"顾晚晴用手电光对准鞋架底下，左右扫了两遍\",\"status\":\"已发生\",\"evidence\":\"把光对准鞋架底下，左右扫了两遍\"}]}",
+  "usage": {
+    "prompt_tokens": 1605,
+    "completion_tokens": 233,
+    "total_tokens": 1838
+  },
+  "object": "response",
+  "status": "completed",
+  "created_at": 1787761132,
+  "store": false,
+  "caching": {
+    "type": "disabled"
+  },
+  "thinking": {
+    "type": "disabled"
+  },
+  "text_format": "json_object"
+}
