@@ -1,0 +1,67 @@
+{
+  "ccz84_unlocked": false,
+  "ccz96_marked_done": false,
+  "frozen_static_tree_sha256": "c6189085bcc78f050fe4335c7f0f77f0e8d5bc9f5bfc2d4ebaa4f842001c8abd",
+  "github_writes": 0,
+  "missing_verdict_count": 0,
+  "not_a_score": true,
+  "not_gold": true,
+  "pair_batch_status": {
+    "doubao_glm52": {
+      "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+      "diverged_count": 1,
+      "duplicate_comparison_state": "PASS",
+      "matched_count": 13,
+      "mechanical_count": 0,
+      "missed_count": 2,
+      "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND"
+    },
+    "pro_doubao": {
+      "batch_status": "CCZ96_MECHANICAL_OR_CONTAMINATED_STOP",
+      "diverged_count": 3,
+      "duplicate_comparison_state": "PASS",
+      "matched_count": 10,
+      "mechanical_count": 1,
+      "missed_count": 2,
+      "q001_same_chapter_retest": "STOP"
+    },
+    "pro_glm53": {
+      "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+      "diverged_count": 3,
+      "duplicate_comparison_state": "PASS",
+      "matched_count": 11,
+      "mechanical_count": 0,
+      "missed_count": 2,
+      "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND"
+    },
+    "pro_qwen": {
+      "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+      "diverged_count": 3,
+      "duplicate_comparison_state": "PASS",
+      "matched_count": 10,
+      "mechanical_count": 0,
+      "missed_count": 3,
+      "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND"
+    }
+  },
+  "pairs_consumed": [
+    "doubao_glm52",
+    "pro_doubao",
+    "pro_glm53",
+    "pro_qwen"
+  ],
+  "pairs_requested": [
+    "pro_doubao",
+    "pro_glm53",
+    "pro_qwen",
+    "doubao_glm52"
+  ],
+  "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND",
+  "receipt_version": "ccz96-four-formal-pairs-low-thinking-v1",
+  "run_id_overlap_bakeoff": [],
+  "run_id_overlap_baseline": [],
+  "scoring_performed": false,
+  "thinking": "low",
+  "ticket_status": "CCZ96_ALL_CONSUMED_NONE_CLEAN_MATCH",
+  "why": "四对都按正式 J1×J2 低思考跑完并合并。哪一对算票面那一轮仍要 CZ 认。本回执不把对照或关思考基准改写成正式验收。"
+}

@@ -1,0 +1,69 @@
+{
+  "authorized_at": "2026-08-27T02:41:00+08:00",
+  "authorizer": "CZ",
+  "ccz84_unlocked": false,
+  "ccz96_marked_done_at_runtime": false,
+  "consumers": [
+    "Linear CCZ-96 close-out",
+    "CCZ-84 remains not authorized to expand samples"
+  ],
+  "cz_also_authorized": "提交推送合并",
+  "cz_stop_phrase": "整票停在这",
+  "executor": "Cursor (Grok 4.6)",
+  "experiment_id": "ccz96_q001_first_batch_stop_20260827",
+  "frozen_static_tree_sha256": "c6189085bcc78f050fe4335c7f0f77f0e8d5bc9f5bfc2d4ebaa4f842001c8abd",
+  "linear_issue": "CCZ-96",
+  "local_runtime_kept_out_of_git": [
+    "128 envelopes and verdict bytes",
+    "model raw responses",
+    "provider keys",
+    "canonical chapter/claim inputs"
+  ],
+  "not_a_score": true,
+  "not_gold": true,
+  "pair_batch_status": {
+    "doubao_glm52": {
+      "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+      "diverged_count": 1,
+      "duplicate_comparison_state": "PASS",
+      "matched_count": 13,
+      "mechanical_count": 0,
+      "missed_count": 2,
+      "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND"
+    },
+    "pro_doubao": {
+      "batch_status": "CCZ96_MECHANICAL_OR_CONTAMINATED_STOP",
+      "diverged_count": 3,
+      "duplicate_comparison_state": "PASS",
+      "matched_count": 10,
+      "mechanical_count": 1,
+      "missed_count": 2,
+      "q001_same_chapter_retest": "STOP"
+    },
+    "pro_glm53": {
+      "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+      "diverged_count": 3,
+      "duplicate_comparison_state": "PASS",
+      "matched_count": 11,
+      "mechanical_count": 0,
+      "missed_count": 2,
+      "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND"
+    },
+    "pro_qwen": {
+      "batch_status": "CCZ96_CALIBRATION_DISPUTED__RUNTIME_UNATTESTED",
+      "diverged_count": 3,
+      "duplicate_comparison_state": "PASS",
+      "matched_count": 10,
+      "mechanical_count": 0,
+      "missed_count": 3,
+      "q001_same_chapter_retest": "STOP_DO_NOT_EXPAND"
+    }
+  },
+  "pairs": 4,
+  "parent_issue": "CCZ-84",
+  "q001_same_chapter_retest": "STOP",
+  "runs": 128,
+  "source": "Cursor chat, CCZ-96 window",
+  "thinking": "low",
+  "ticket_status": "CCZ96_ALL_CONSUMED_NONE_CLEAN_MATCH"
+}
