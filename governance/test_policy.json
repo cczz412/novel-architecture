@@ -56,8 +56,10 @@
       "tests/test_pipeline_inspector.py",
       "tests/test_test_impact.py",
       "tests/test_test_debt_policy.py",
+      "tests/test_isolation.py",
       "tests/test_local_evidence_boundary.py",
-      "tests/test_historical_test_replay.py"
+      "tests/test_historical_test_replay.py",
+      "tests/test_ci_lanes.py"
     ]
   },
   "path_rules": [
@@ -300,6 +302,27 @@
       "full_chain": true
     },
     {
+      "name": "main 可移植全量工作流",
+      "pattern": ".github/workflows/main-portable-full.yml",
+      "modules": ["M11"],
+      "tests": ["tests/test_ci_lanes.py"],
+      "full_chain": true
+    },
+    {
+      "name": "四条 CI 测试线合同",
+      "pattern": "governance/ci_lanes.json",
+      "modules": ["M11"],
+      "tests": ["tests/test_ci_lanes.py"],
+      "full_chain": true
+    },
+    {
+      "name": "CI 测试线派发器",
+      "pattern": "tools/ci_lanes.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_ci_lanes.py", "tests/test_tool_registry.py"],
+      "full_chain": true
+    },
+    {
       "name": "测试影响规划器",
       "pattern": "tools/test_impact.py",
       "modules": ["M11"],
@@ -313,7 +336,8 @@
       "tests": [
         "tests/test_test_impact.py",
         "tests/test_test_debt_policy.py",
-        "tests/test_local_evidence_boundary.py"
+        "tests/test_local_evidence_boundary.py",
+        "tests/test_ci_lanes.py"
       ],
       "full_chain": true
     },
@@ -451,10 +475,17 @@
       "full_chain": false
     },
     {
+      "name": "pytest 网络与凭据隔离自测",
+      "pattern": "tests/test_isolation.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_isolation.py", "tests/test_ci_lanes.py"],
+      "full_chain": true
+    },
+    {
       "name": "仓库目录合同测试",
       "pattern": "tests/test_repository_layout.py",
       "modules": ["M11"],
-      "tests": ["tests/test_repository_layout.py"],
+      "tests": ["tests/test_repository_layout.py", "tests/test_ci_lanes.py"],
       "full_chain": true
     },
     {
@@ -467,6 +498,13 @@
         "tests/test_historical_test_replay.py"
       ],
       "full_chain": false
+    },
+    {
+      "name": "CI 测试线合同测试",
+      "pattern": "tests/test_ci_lanes.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_ci_lanes.py"],
+      "full_chain": true
     },
     {
       "name": "历史测试回放工具",
@@ -494,7 +532,8 @@
       "modules": ["M11"],
       "tests": [
         "tests/test_local_evidence_boundary.py",
-        "tests/test_test_debt_policy.py"
+        "tests/test_test_debt_policy.py",
+        "tests/test_ci_lanes.py"
       ],
       "full_chain": true
     },
@@ -505,7 +544,8 @@
       "tests": [
         "tests/test_local_evidence_boundary.py",
         "tests/test_historical_test_replay.py",
-        "tests/test_test_debt_policy.py"
+        "tests/test_test_debt_policy.py",
+        "tests/test_ci_lanes.py"
       ],
       "full_chain": true
     },

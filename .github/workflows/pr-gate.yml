@@ -315,20 +315,30 @@ jobs:
                   if step.get("cwd") != "repo_root":
                       raise RuntimeError(f"{step_id} 只能从仓库根运行")
 
+                  executed_argv = list(argv)
+                  if step_id == "pytest-full" and argv == [
+                      "uv",
+                      "run",
+                      "--locked",
+                      "pytest",
+                      "-q",
+                  ]:
+                      executed_argv.extend(["--ci-lane", "main-portable"])
+
                   log_name = f"{index:02d}-{step_id}.log"
                   log_path = log_dir / log_name
                   started_at = datetime.now(UTC).isoformat()
                   print(
                       "PR_GATE_STEP="
                       + json.dumps(
-                          {"step_id": step_id, "argv": argv},
+                          {"step_id": step_id, "argv": executed_argv},
                           ensure_ascii=False,
                           sort_keys=True,
                       )
                   )
                   with log_path.open("w", encoding="utf-8") as log_handle:
                       process = subprocess.Popen(
-                          argv,
+                          executed_argv,
                           cwd=root,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT,
@@ -346,7 +356,7 @@ jobs:
                   result["steps"].append(
                       {
                           "step_id": step_id,
-                          "argv": argv,
+                          "argv": executed_argv,
                           "return_code": return_code,
                           "started_at": started_at,
                           "finished_at": finished_at,

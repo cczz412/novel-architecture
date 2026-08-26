@@ -58,6 +58,72 @@ uv run --locked python tools/test_impact.py \
 
 这条 PR 门禁不代替后续的 `main` 全量、macOS、本机材料或历史回放专线。
 
+## 四条测试线怎么分
+
+测试线可以直接理解成：只把运行前提相同的测试放在一起，不再拿一个总退出码混着解释。
+机器合同在 `governance/ci_lanes.json`，统一入口是 `tools/ci_lanes.py`。
+
+入口只接受四个固定名称：
+
+- `main-portable`：main 合并后的便携全量；不读取 Keychain、本机材料或历史包；
+- `macos-keychain`：macOS 钥匙串安全检查和零调用合同测试；
+- `local-evidence`：只运行 `tests/local_evidence_registry.json` 登记的本机材料节点；
+- `historical-replay`：复用既有隔离工具，从固定提交回放登记的 40 个历史节点。
+
+`main-portable` 对所有选中节点强制安装断网护栏；即使测试带有 `allow_network`
+标记，这条线也不会撤掉护栏。
+
+先检查前置，不运行测试：
+
+```bash
+uv run --locked python tools/ci_lanes.py check --lane main-portable
+```
+
+main 可移植全量由 `.github/workflows/main-portable-full.yml` 在 `main` 更新后运行；手工
+复核可以写到一个新的本地回执目录：
+
+```bash
+uv run --locked python tools/ci_lanes.py run \
+  --lane main-portable \
+  --receipt-dir TEMP/ci-lane-main-<新运行号>
+```
+
+macOS Keychain 线必须明确点名要检查的钥匙。可用目标只有
+`volcengine_ark`、`qianwen_platform`、`tencent_tokenhub`、`ant_ling` 和
+`deepseek_official`。检查只回答“是否存在”，不显示内容，也不调用模型：
+
+```bash
+uv run --locked python tools/ci_lanes.py run \
+  --lane macos-keychain \
+  --keychain-target volcengine_ark \
+  --receipt-dir TEMP/ci-lane-keychain-<新运行号>
+```
+
+本机材料线可以跑全部登记组，也可以重复使用 `--group` 只点名部分组。缺少任一登记路径
+时，入口会写 `NOT_DISPATCHED` 并停止，不会用大量 skip 冒充这条线成功：
+
+```bash
+uv run --locked python tools/ci_lanes.py run \
+  --lane local-evidence \
+  --group <登记分组ID> \
+  --receipt-dir TEMP/ci-lane-local-<新运行号>
+```
+
+历史回放仍要求完整 40 位提交号、新运行号和已封签外置包：
+
+```bash
+uv run --locked python tools/ci_lanes.py run \
+  --lane historical-replay \
+  --commit <完整40位提交号> \
+  --run-id <新运行号> \
+  --receipt-dir TEMP/ci-lane-history-<新运行号>
+```
+
+回执状态只有 `READY`、`NOT_DISPATCHED`、`DISPATCHED`、`PASSED`、`FAILED` 和
+`HARD_STOP`。`receipt.json` 只记录测试线、提交、时间、固定命令身份和退出码；不保存
+子进程原始输出、环境变量、绝对路径、密钥或正文。GitHub Actions 只上传 main 便携线的
+这个轻量回执，不上传本机材料线或历史回放线的材料与日志。
+
 ## 固定历史程序夹具怎么用
 
 `tests/fixtures/z57_frozen_neutral_extract_20260723/` 只保存 Z57 旧合同回放需要的一份

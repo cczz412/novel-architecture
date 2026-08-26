@@ -171,12 +171,14 @@ def test_local_evidence_changes_route_through_m11_and_full_chain() -> None:
     assert registry_rule["tests"] == [
         "tests/test_local_evidence_boundary.py",
         "tests/test_test_debt_policy.py",
+        "tests/test_ci_lanes.py",
     ]
 
     conftest_rule = next(
         row for row in policy["path_rules"] if row["pattern"] == "tests/conftest.py"
     )
     assert "tests/test_local_evidence_boundary.py" in conftest_rule["tests"]
+    assert "tests/test_ci_lanes.py" in conftest_rule["tests"]
 
 
 def test_v02_portable_programs_keep_pure_tests_in_clean_clone() -> None:

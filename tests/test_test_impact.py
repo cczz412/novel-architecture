@@ -222,6 +222,8 @@ class TestImpactTests(unittest.TestCase):
         self.assertIn("uv sync --locked", text)
         self.assertIn("uv run --locked python tools/test_impact.py", text)
         self.assertIn("execution_steps", text)
+        self.assertIn('executed_argv.extend(["--ci-lane", "main-portable"])', text)
+        self.assertIn('step_id == "pytest-full"', text)
         self.assertIn("if: always()", text)
         self.assertIn("selection-input.json", text)
         self.assertIn("test-plan.json", text)
