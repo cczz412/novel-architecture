@@ -1397,6 +1397,7 @@ class GovernanceIndexTests(unittest.TestCase):
             "工程施工、PR、检查、合并",
             "技术兼容／控制字段",
             "$linear-github-task-map",
+            "agent_ticket_rules.md",
         ):
             self.assertIn(phrase, index)
         current, _history = governance_index.state_layers(current_state)
