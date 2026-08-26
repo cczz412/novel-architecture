@@ -49,8 +49,17 @@ def test_localhost_tcp_is_not_blocked() -> None:
 
 @pytest.mark.allow_network
 def test_allow_network_marker_skips_default_network_guard(
+    request: pytest.FixtureRequest,
     _block_outbound_network: bool,
 ) -> None:
+    if request.config.getoption("--ci-lane") == "main-portable":
+        assert _block_outbound_network is True
+        with pytest.raises(
+            NetworkBlockedError,
+            match="pytest default network is blocked",
+        ):
+            socket.create_connection(("1.1.1.1", 443), timeout=1)
+        return
     assert _block_outbound_network is False
 
 

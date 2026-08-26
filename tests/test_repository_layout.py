@@ -17,6 +17,7 @@ from tools import governance_index
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = ROOT / governance_index.DIRECTORY_REGISTRY_PATH
 SCHEMA_PATH = ROOT / governance_index.DIRECTORY_REGISTRY_SCHEMA_PATH
+LOCAL_DIRECTORY_EVIDENCE_REFS = {".workbuddy/memory/2026-08-03.md"}
 
 
 def _read_json(path: Path) -> dict:
@@ -40,6 +41,45 @@ def _has_tracked_path(tracked: set[str], path: str) -> bool:
     return path in tracked or any(item.startswith(f"{path}/") for item in tracked)
 
 
+def _portable_directory_contract_root(tmp_path: Path, registry: dict) -> Path:
+    contract_root = tmp_path / "portable-directory-contract"
+    schema_target = contract_root / governance_index.DIRECTORY_REGISTRY_SCHEMA_PATH
+    schema_target.parent.mkdir(parents=True)
+    schema_target.write_bytes(SCHEMA_PATH.read_bytes())
+
+    for row in registry["directories"]:
+        for relative in row["evidence_refs"]:
+            source = ROOT / relative
+            if relative not in LOCAL_DIRECTORY_EVIDENCE_REFS:
+                assert source.is_file(), relative
+            target = contract_root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("portable evidence placeholder\n", encoding="utf-8")
+    return contract_root
+
+
+def _assert_temporary_refresh_does_not_modify_current_state() -> None:
+    current_state = ROOT / governance_index.CURRENT_STATE_PATH
+    before = current_state.read_bytes()
+    before_sha = hashlib.sha256(before).hexdigest()
+
+    with tempfile.TemporaryDirectory() as temporary:
+        manifest = governance_index.refresh(ROOT, Path(temporary))
+
+    after = current_state.read_bytes()
+    assert hashlib.sha256(after).hexdigest() == before_sha
+    assert after == before
+    assert governance_index.DIRECTORY_REGISTRY_PATH in {
+        item["path"] for item in manifest["inputs"]
+    }
+    assert governance_index.DIRECTORY_REGISTRY_SCHEMA_PATH in {
+        item["path"] for item in manifest["inputs"]
+    }
+    outputs = {item["path"] for item in manifest["outputs"]}
+    assert "governance/indexes/directory_map.md" in outputs
+    assert "governance/indexes/new_file_routing.md" in outputs
+
+
 def test_directory_registry_matches_schema_and_runtime_contract() -> None:
     schema = _read_json(SCHEMA_PATH)
     registry = _read_json(REGISTRY_PATH)
@@ -50,6 +90,15 @@ def test_directory_registry_matches_schema_and_runtime_contract() -> None:
         format_checker=FormatChecker(),
     ).validate(registry)
     governance_index.validate_directory_registry(ROOT, registry)
+
+
+def test_directory_registry_portable_contract_survives_missing_local_evidence(
+    tmp_path: Path,
+) -> None:
+    registry = _read_json(REGISTRY_PATH)
+    contract_root = _portable_directory_contract_root(tmp_path, registry)
+
+    governance_index.validate_directory_registry(contract_root, registry)
 
 
 def test_directory_registry_rejects_unknown_business_state_fields() -> None:
@@ -246,16 +295,68 @@ def test_directory_views_are_generated_only_from_registry() -> None:
 
 
 def test_temporary_refresh_does_not_modify_current_state() -> None:
-    current_state = ROOT / governance_index.CURRENT_STATE_PATH
+    _assert_temporary_refresh_does_not_modify_current_state()
+
+
+def test_temporary_refresh_portable_path_does_not_modify_current_state(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    synthetic_root = tmp_path / "repo"
+    output_root = tmp_path / "output"
+    inputs = (
+        governance_index.CONTROL_PATH,
+        governance_index.CURRENT_STATE_PATH,
+        governance_index.ROUTE_REGISTRY_PATH,
+        governance_index.REGISTRY_SOURCE_PATH,
+        governance_index.DIRECTORY_REGISTRY_PATH,
+        governance_index.DIRECTORY_REGISTRY_SCHEMA_PATH,
+        "tools/governance_index.py",
+    )
+    for relative in inputs:
+        target = synthetic_root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('{"sentinel":"keep"}\n', encoding="utf-8")
+
+    current_state = synthetic_root / governance_index.CURRENT_STATE_PATH
     before = current_state.read_bytes()
-    before_sha = hashlib.sha256(before).hexdigest()
+    for name in (
+        "validate_control_plane",
+        "validate_current_state",
+        "validate_route_registry",
+        "validate_directory_registry",
+    ):
+        monkeypatch.setattr(governance_index, name, lambda *_args: None)
+    registry = {
+        "modules": [{"module_id": f"M{index:02d}"} for index in range(12)]
+    }
+    monkeypatch.setattr(
+        governance_index,
+        "materialize_registry",
+        lambda *_args: registry,
+    )
+    monkeypatch.setattr(
+        governance_index,
+        "build_documents",
+        lambda *_args: {
+            "governance/indexes/directory_map.md": "map\n",
+            "governance/indexes/new_file_routing.md": "routing\n",
+        },
+    )
+    monkeypatch.setattr(
+        governance_index,
+        "build_manifest",
+        lambda _root, paths: [{"path": path} for path in paths],
+    )
+    monkeypatch.setattr(
+        governance_index,
+        "verify_manifest",
+        lambda *_args: {"status": "PASS"},
+    )
 
-    with tempfile.TemporaryDirectory() as temporary:
-        manifest = governance_index.refresh(ROOT, Path(temporary))
+    manifest = governance_index.refresh(synthetic_root, output_root)
 
-    after = current_state.read_bytes()
-    assert hashlib.sha256(after).hexdigest() == before_sha
-    assert after == before
+    assert current_state.read_bytes() == before
     assert governance_index.DIRECTORY_REGISTRY_PATH in {
         item["path"] for item in manifest["inputs"]
     }

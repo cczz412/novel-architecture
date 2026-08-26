@@ -1,0 +1,172 @@
+{
+  "schema_version": "ci-test-lanes-v1",
+  "lanes": {
+    "main-portable": {
+      "lane_id": "main-portable",
+      "name": "主仓可移植测试",
+      "trigger": "push_main_or_explicit_run",
+      "platform": "linux_or_macos",
+      "prerequisites": {
+        "credentials": [],
+        "materials": []
+      },
+      "execution": {
+        "command_label": "pytest-main-portable-v1",
+        "network_guard": "force_for_all_selected_nodes",
+        "argv": [
+          "uv",
+          "run",
+          "--locked",
+          "pytest",
+          "-q",
+          "--ci-lane",
+          "main-portable"
+        ],
+        "non_portable_exclusions": [
+          "tests/local_evidence_registry.json",
+          "config/test_replay/historical_replays.json",
+          "macos-keychain.pytest_nodeids"
+        ]
+      },
+      "receipt_boundary": {
+        "stores_subprocess_output": false,
+        "stores_absolute_paths": false,
+        "stores_credentials_or_material_text": false
+      },
+      "network": false,
+      "model_api": false
+    },
+    "macos-keychain": {
+      "lane_id": "macos-keychain",
+      "name": "macOS 钥匙串安全复验",
+      "trigger": "explicit_local_run",
+      "platform": "darwin_only",
+      "prerequisites": {
+        "credentials": [
+          "one_or_more_named_keychain_targets"
+        ],
+        "materials": []
+      },
+      "allowed_keychain_targets": [
+        "volcengine_ark",
+        "qianwen_platform",
+        "tencent_tokenhub",
+        "ant_ling",
+        "deepseek_official"
+      ],
+      "pytest_nodeids": [
+        "tests/test_deepseek_official_config.py::test_deepseek_official_key_loader_help_is_zero_call",
+        "tests/test_deepseek_official_config.py::test_deepseek_official_loader_denies_run_without_machine_execution_ack",
+        "tests/test_provider_channel_configs.py::test_shared_keychain_loader_is_zero_call_and_names_all_providers",
+        "tests/test_provider_channel_configs.py::test_agent_plan_is_rejected_by_project_keychain_loader",
+        "tests/test_provider_channel_configs.py::test_unknown_provider_is_rejected_before_any_keychain_read"
+      ],
+      "execution": {
+        "command_label": "pytest-macos-keychain-v1",
+        "argv": [
+          "uv",
+          "run",
+          "--locked",
+          "pytest",
+          "-q",
+          "--ci-lane",
+          "macos-keychain"
+        ],
+        "keychain_checks": {
+          "shared": [
+            "tools/provider_keychain.sh",
+            "check",
+            "<allowed-target>"
+          ],
+          "deepseek_official": [
+            "tools/deepseek_official_key.sh",
+            "check"
+          ],
+          "discard_check_output": true
+        }
+      },
+      "receipt_boundary": {
+        "stores_subprocess_output": false,
+        "stores_absolute_paths": false,
+        "stores_credentials_or_material_text": false
+      },
+      "network": false,
+      "model_api": false
+    },
+    "local-evidence": {
+      "lane_id": "local-evidence",
+      "name": "本机材料证据复验",
+      "trigger": "explicit_local_run",
+      "platform": "local_machine",
+      "prerequisites": {
+        "credentials": [],
+        "materials": [
+          "tests/local_evidence_registry.json#groups.required_paths"
+        ]
+      },
+      "execution": {
+        "command_label": "pytest-local-evidence-v1",
+        "registry": "tests/local_evidence_registry.json",
+        "argv_prefix": [
+          "uv",
+          "run",
+          "--locked",
+          "pytest",
+          "-q",
+          "--ci-lane",
+          "local-evidence"
+        ],
+        "group_argument": "--local-evidence-group"
+      },
+      "receipt_boundary": {
+        "stores_group_ids": true,
+        "stores_repo_relative_missing_paths": true,
+        "stores_subprocess_output": false,
+        "stores_absolute_paths": false,
+        "stores_credentials_or_material_text": false
+      },
+      "network": false,
+      "model_api": false
+    },
+    "historical-replay": {
+      "lane_id": "historical-replay",
+      "name": "冻结历史测试回放",
+      "trigger": "explicit_local_run",
+      "platform": "local_machine",
+      "prerequisites": {
+        "credentials": [],
+        "materials": [
+          "sealed_historical_replay_package"
+        ],
+        "commit": "full_40_char_lowercase_sha",
+        "run_id": "new_run_id"
+      },
+      "execution": {
+        "command_label": "historical-replay-v1",
+        "validate_argv": [
+          "uv",
+          "run",
+          "--locked",
+          "python",
+          "tools/historical_test_replay.py",
+          "validate"
+        ],
+        "run_argv_prefix": [
+          "uv",
+          "run",
+          "--locked",
+          "python",
+          "tools/historical_test_replay.py",
+          "run"
+        ]
+      },
+      "receipt_boundary": {
+        "stores_subprocess_output": false,
+        "stores_absolute_paths": false,
+        "stores_credentials_or_material_text": false
+      },
+      "network": false,
+      "model_api": false
+    }
+  }
+}

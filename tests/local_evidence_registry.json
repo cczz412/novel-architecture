@@ -756,6 +756,30 @@
         ".local/finetuning/stores.local.json"
       ],
       "reason": "真实 T5 R04 历史材料核验依赖不进 Git 的本机仓位绑定；默认节点改用合成 binding，这两条只保留精确本机复核"
+    },
+    {
+      "group_id": "REPOSITORY-LAYOUT-WORKBUDDY-LOCAL-EVIDENCE",
+      "test_file_globs": [],
+      "nodeids": [
+        "tests/test_repository_layout.py::test_directory_registry_matches_schema_and_runtime_contract"
+      ],
+      "portable_program_paths": [],
+      "required_paths": [
+        ".workbuddy/memory/2026-08-03.md"
+      ],
+      "reason": "目录登记的 WorkBuddy 证据是被 Git 忽略的本机记忆文件；干净副本只把这一条精确核验分到本机材料线"
+    },
+    {
+      "group_id": "REPOSITORY-LAYOUT-Z73-LOCAL-EVIDENCE",
+      "test_file_globs": [],
+      "nodeids": [
+        "tests/test_repository_layout.py::test_temporary_refresh_does_not_modify_current_state"
+      ],
+      "portable_program_paths": [],
+      "required_paths": [
+        "reports/Z73_第3章金标v1.2定稿转正_20260721/第3章结构层金标v1.2.json"
+      ],
+      "reason": "治理索引临时刷新会核对被 Git 忽略的 Z73 本机保护件；干净副本只把这一条精确核验分到本机材料线"
     }
   ]
 }

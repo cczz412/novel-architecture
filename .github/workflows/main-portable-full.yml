@@ -1,0 +1,79 @@
+name: main 可移植全量
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-portable-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  main-portable:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: 初始化测试线回执
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt_root="$RUNNER_TEMP/main-portable-full"
+          {
+            printf '%s\n' "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/main-portable-venv"
+            printf '%s\n' "UV_CACHE_DIR=$RUNNER_TEMP/uv-cache"
+            printf '%s\n' "UV_PYTHON_INSTALL_DIR=$RUNNER_TEMP/uv-python"
+            printf '%s\n' "CI_LANE_RECEIPT_ROOT=$receipt_root"
+          } >> "$GITHUB_ENV"
+          mkdir -p "$receipt_root"
+          printf '%s\n' 'main portable lane job started.' > "$receipt_root/job-started.txt"
+
+      - name: 检出 main 的准确提交
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: 安装锁定的 uv 与 Python
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.3"
+          python-version: "3.12.12"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: 按 lock 文件重建环境
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv sync --locked
+          uv run --locked python --version
+
+      - name: 检查 main 可移植测试线合同
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --locked python tools/ci_lanes.py check --lane main-portable
+
+      - name: 运行 main 可移植全量
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --locked python tools/ci_lanes.py run \
+            --lane main-portable \
+            --receipt-dir "$CI_LANE_RECEIPT_ROOT/run"
+
+      - name: 上传测试线回执
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: main-portable-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/main-portable-full
+          if-no-files-found: error
+          retention-days: 30
