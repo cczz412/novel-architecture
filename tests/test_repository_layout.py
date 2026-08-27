@@ -378,3 +378,87 @@ def test_temporary_refresh_portable_path_does_not_modify_current_state(
     outputs = {item["path"] for item in manifest["outputs"]}
     assert "governance/indexes/directory_map.md" in outputs
     assert "governance/indexes/new_file_routing.md" in outputs
+
+
+def _portable_protected_refs(tmp_path: Path) -> tuple[Path, list[dict]]:
+    root = tmp_path / "portable-protected-refs"
+    pointer_relative = "config/gold/current.json"
+    artifact_relative = "reports/Z73/formal.json"
+    artifact_sha = hashlib.sha256(b"formal gold fixture\n").hexdigest()
+    pointer_path = root / pointer_relative
+    pointer_path.parent.mkdir(parents=True)
+    pointer_path.write_text(
+        json.dumps(
+            {
+                "active_gold": {
+                    "path": artifact_relative,
+                    "sha256": artifact_sha,
+                }
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    refs = [
+        {
+            "path": pointer_relative,
+            "sha256": hashlib.sha256(pointer_path.read_bytes()).hexdigest(),
+        },
+        {
+            "path": artifact_relative,
+            "sha256": artifact_sha,
+            "portable_binding": {
+                "schema_version": governance_index.PORTABLE_PROTECTED_BINDING_V1,
+                "pointer_path": pointer_relative,
+                "object_key": "active_gold",
+            },
+        },
+    ]
+    return root, refs
+
+
+def test_missing_z73_artifact_accepts_only_exact_protected_pointer_binding(
+    tmp_path: Path,
+) -> None:
+    root, refs = _portable_protected_refs(tmp_path)
+
+    governance_index._validate_protected_refs(root, refs)
+
+    broken = copy.deepcopy(refs)
+    broken[1]["sha256"] = "0" * 64
+    with pytest.raises(
+        governance_index.ArtifactError,
+        match="可移植保护绑定与目标不一致",
+    ):
+        governance_index._validate_protected_refs(root, broken)
+
+
+def test_current_z73_binding_matches_the_protected_gold_pointer() -> None:
+    control = _read_json(ROOT / governance_index.CONTROL_PATH)
+    protected = {
+        item["path"]: item
+        for item in control["protected_refs"]
+    }
+    z73 = protected[control["current_gold"]["artifact_path"]]
+    pointer = protected[z73["portable_binding"]["pointer_path"]]
+
+    governance_index._validate_protected_refs(ROOT, [pointer, z73])
+
+
+def test_missing_unbound_protected_ref_and_present_drift_still_fail(
+    tmp_path: Path,
+) -> None:
+    root, refs = _portable_protected_refs(tmp_path)
+    artifact = root / refs[1]["path"]
+
+    unbound = copy.deepcopy(refs)
+    del unbound[1]["portable_binding"]
+    with pytest.raises(governance_index.ArtifactError, match="保护件不存在"):
+        governance_index._validate_protected_refs(root, unbound)
+
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text("drifted formal gold fixture\n", encoding="utf-8")
+    with pytest.raises(governance_index.ArtifactError, match="保护件漂移"):
+        governance_index._validate_protected_refs(root, refs)

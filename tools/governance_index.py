@@ -44,6 +44,7 @@ DIRECTORY_REGISTRY_PATH = "governance/directory_registry.json"
 DIRECTORY_REGISTRY_SCHEMA_PATH = (
     "governance/contracts/directory_registry_v1.schema.json"
 )
+PORTABLE_PROTECTED_BINDING_V1 = "protected-ref-portable-json-binding-v1"
 
 GENERATED_PATHS = [
     "governance/INDEX.md",
@@ -1372,6 +1373,80 @@ def _path_status(root: Path, relative: str) -> dict[str, Any]:
     }
 
 
+def _validate_portable_protected_binding(
+    root: Path,
+    item: dict[str, Any],
+    protected_by_path: dict[str, dict[str, Any]],
+) -> None:
+    relative = _must_nonempty_string(item.get("path"), "protected_ref.path")
+    expected_sha = _must_nonempty_string(
+        item.get("sha256"),
+        f"protected_ref[{relative}].sha256",
+    )
+    binding = _must_dict(
+        item.get("portable_binding"),
+        f"protected_ref[{relative}].portable_binding",
+    )
+    if binding.get("schema_version") != PORTABLE_PROTECTED_BINDING_V1:
+        raise ArtifactError(
+            f"可移植保护绑定版本不支持：{relative}：{binding.get('schema_version')}"
+        )
+    pointer_relative = _must_nonempty_string(
+        binding.get("pointer_path"),
+        f"protected_ref[{relative}].portable_binding.pointer_path",
+    )
+    object_key = _must_nonempty_string(
+        binding.get("object_key"),
+        f"protected_ref[{relative}].portable_binding.object_key",
+    )
+    pointer_ref = protected_by_path.get(pointer_relative)
+    if pointer_ref is None:
+        raise ArtifactError(f"可移植保护绑定没有受保护指针：{pointer_relative}")
+    pointer_path = resolve_repo_path(root, pointer_relative)
+    if not pointer_path.is_file():
+        raise ArtifactError(f"可移植保护绑定指针不存在：{pointer_relative}")
+    pointer_sha = sha256_file(pointer_path)
+    if pointer_sha != pointer_ref.get("sha256"):
+        raise ArtifactError(f"可移植保护绑定指针漂移：{pointer_relative}：{pointer_sha}")
+    pointer = _must_dict(read_json(pointer_path), f"portable_pointer[{pointer_relative}]")
+    bound = _must_dict(
+        pointer.get(object_key),
+        f"portable_pointer[{pointer_relative}].{object_key}",
+    )
+    if bound.get("path") != relative or bound.get("sha256") != expected_sha:
+        raise ArtifactError(f"可移植保护绑定与目标不一致：{relative}")
+
+
+def _validate_protected_refs(root: Path, protected: list[Any]) -> None:
+    items: list[dict[str, Any]] = []
+    protected_by_path: dict[str, dict[str, Any]] = {}
+    for row in protected:
+        item = _must_dict(row, "protected_ref")
+        relative = _must_nonempty_string(item.get("path"), "protected_ref.path")
+        if relative in protected_by_path:
+            raise ArtifactError(f"保护件路径重复：{relative}")
+        protected_by_path[relative] = item
+        items.append(item)
+
+    for item in items:
+        relative = _must_nonempty_string(item.get("path"), "protected_ref.path")
+        expected_sha = _must_nonempty_string(
+            item.get("sha256"),
+            f"protected_ref[{relative}].sha256",
+        )
+        portable_binding = item.get("portable_binding")
+        if portable_binding is not None:
+            _validate_portable_protected_binding(root, item, protected_by_path)
+        path = resolve_repo_path(root, relative)
+        if not path.is_file():
+            if portable_binding is not None:
+                continue
+            raise ArtifactError(f"保护件不存在：{relative}")
+        actual = sha256_file(path)
+        if actual != expected_sha:
+            raise ArtifactError(f"保护件漂移：{relative}：{actual}")
+
+
 def validate_control_plane(root: Path, control: dict[str, Any]) -> None:
     for key in (
         "source_authority",
@@ -1389,14 +1464,7 @@ def validate_control_plane(root: Path, control: dict[str, Any]) -> None:
     for key in ("silver_candidates", "run_report_pairs", "source_roots"):
         _must_list(control.get(key), key)
     protected = _must_list(control.get("protected_refs"), "protected_refs")
-    for row in protected:
-        item = _must_dict(row, "protected_ref")
-        path = resolve_repo_path(root, str(item.get("path", "")))
-        if not path.is_file():
-            raise ArtifactError(f"保护件不存在：{item.get('path')}")
-        actual = sha256_file(path)
-        if actual != item.get("sha256"):
-            raise ArtifactError(f"保护件漂移：{item.get('path')}：{actual}")
+    _validate_protected_refs(root, protected)
     for group_name in ("silver_candidates", "run_report_pairs"):
         for row in control[group_name]:
             item = _must_dict(row, group_name)
