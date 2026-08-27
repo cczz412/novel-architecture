@@ -1,0 +1,22 @@
+[
+  {
+    "case_id": "syn.case.1",
+    "case_version": "v1",
+    "mechanical_column": "FAIL",
+    "semantic_main_column": "NOT_EVALUATED",
+    "auxiliary_column": null,
+    "experiment_factors": "thinking=off",
+    "comparable": false,
+    "unreviewed": false
+  },
+  {
+    "case_id": "syn.case.2",
+    "case_version": "v1",
+    "mechanical_column": "PASS",
+    "semantic_main_column": null,
+    "auxiliary_column": null,
+    "experiment_factors": "thinking=off",
+    "comparable": true,
+    "unreviewed": true
+  }
+]

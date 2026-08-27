@@ -1,0 +1,26 @@
+[
+  {
+    "run_id": "syn.run.j1",
+    "attempt_id": "syn.att.j1",
+    "raw_sha256": "ffd2193c6886d1f8ec66e9c8a2c5d41266ed968bff2bf9bac12244baa60aadd5",
+    "transport_ok": true,
+    "parse_ok": true,
+    "schema_ok": true,
+    "failure_stage": null,
+    "failure_code": null,
+    "verdict": "REJECTED",
+    "reason_code": "SYN_STRUCT"
+  },
+  {
+    "run_id": "syn.run.j2",
+    "attempt_id": "syn.att.j2",
+    "raw_sha256": "a499068b8f456a03adaf1064efe8fb54c8f0fd204468f27e168642eab19d883b",
+    "transport_ok": false,
+    "parse_ok": false,
+    "schema_ok": false,
+    "failure_stage": "TRANSPORT",
+    "failure_code": "GENERATION_INCOMPLETE",
+    "verdict": null,
+    "reason_code": null
+  }
+]

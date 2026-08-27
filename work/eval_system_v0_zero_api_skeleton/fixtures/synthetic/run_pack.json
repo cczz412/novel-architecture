@@ -1,0 +1,96 @@
+{
+  "attempts": [
+    {
+      "run_id": "syn.run.j1",
+      "attempt_id": "syn.att.j1",
+      "raw_sha256": "ffd2193c6886d1f8ec66e9c8a2c5d41266ed968bff2bf9bac12244baa60aadd5",
+      "transport_ok": true,
+      "parse_ok": true,
+      "schema_ok": true,
+      "failure_stage": null,
+      "failure_code": null,
+      "verdict": "REJECTED",
+      "reason_code": "SYN_STRUCT"
+    },
+    {
+      "run_id": "syn.run.j2",
+      "attempt_id": "syn.att.j2",
+      "raw_sha256": "a499068b8f456a03adaf1064efe8fb54c8f0fd204468f27e168642eab19d883b",
+      "transport_ok": false,
+      "parse_ok": false,
+      "schema_ok": false,
+      "failure_stage": "TRANSPORT",
+      "failure_code": "GENERATION_INCOMPLETE",
+      "verdict": null,
+      "reason_code": null
+    }
+  ],
+  "pairs": [
+    {
+      "comparison_id": "syn.cmp.1",
+      "j1_ref": "syn.run.j1/syn.att.j1",
+      "j2_ref": "syn.run.j2/syn.att.j2",
+      "comparison_state": "MECHANICAL_STOP",
+      "semantic_result": "NOT_EVALUATED",
+      "shared_deviation": null,
+      "frozen_direction_version": "v1",
+      "eligibility": "INELIGIBLE",
+      "reason_code": null
+    },
+    {
+      "comparison_id": "syn.cmp.2",
+      "j1_ref": "syn.run.a/syn.att.a",
+      "j2_ref": "syn.run.b/syn.att.b",
+      "comparison_state": "COMPARISON_PASS",
+      "semantic_result": "REJECTED",
+      "shared_deviation": false,
+      "frozen_direction_version": "v1",
+      "eligibility": "ELIGIBLE",
+      "reason_code": "SYN_STRUCT"
+    }
+  ],
+  "exam": [
+    {
+      "item_id": "syn.item.01",
+      "item_version": "v1",
+      "task_kind": "SHORT_DIAGNOSIS",
+      "split": "PUBLIC_DIAG",
+      "leakage_group_uid": "syn.lg.alpha",
+      "exposure_kind": "SHORT_DIAGNOSIS",
+      "reference_status": "CANDIDATE",
+      "unreviewed": false
+    },
+    {
+      "item_id": "syn.item.02",
+      "item_version": "v1",
+      "task_kind": "FULL_CHAPTER",
+      "split": "HELD_OUT",
+      "leakage_group_uid": "syn.lg.beta",
+      "exposure_kind": null,
+      "reference_status": "NONE",
+      "unreviewed": true
+    }
+  ],
+  "api_cases": [
+    {
+      "case_id": "syn.case.1",
+      "case_version": "v1",
+      "mechanical_column": "FAIL",
+      "semantic_main_column": "NOT_EVALUATED",
+      "auxiliary_column": null,
+      "experiment_factors": "thinking=off",
+      "comparable": false,
+      "unreviewed": false
+    },
+    {
+      "case_id": "syn.case.2",
+      "case_version": "v1",
+      "mechanical_column": "PASS",
+      "semantic_main_column": null,
+      "auxiliary_column": null,
+      "experiment_factors": "thinking=off",
+      "comparable": true,
+      "unreviewed": true
+    }
+  ]
+}

@@ -1,0 +1,285 @@
+{
+  "root": "work/eval_system_v0_zero_api_skeleton",
+  "issue": 168,
+  "api_calls": 0,
+  "total": 55,
+  "passed": 55,
+  "failed": [],
+  "results": [
+    {
+      "name": "step1_tree",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step2_schema_valid_records",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step2_contract_allows_unfrozen_task_kind",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step2_fixture_profile_valid_records",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step2_schema_illegal_records",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step3_env_ok_rejected",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"PASS\", \"failure_stage\": null, \"failure_code\": null, \"semantic_gate_eligible\": true, \"transport_ok\": true, \"parse_ok\": true, \"schema_ok\": true, \"parsed\": {\"verdict\": \"REJECTED\", \"reason_code\": \"SYN_STRUCT\", \"request_nonce\": \"n1\"}, \"detail\": \"ok\"}"
+    },
+    {
+      "name": "step3_env_ok_hash64",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"PASS\", \"failure_stage\": null, \"failure_code\": null, \"semantic_gate_eligible\": true, \"transport_ok\": true, \"parse_ok\": true, \"schema_ok\": true, \"parsed\": {\"verdict\": \"REJECTED\", \"reason_code\": \"SYN_STRUCT\", \"request_nonce\": \"n1\", \"candidate_identity_hash\": \"ee4bf9751aacaf1013b80b102d1476cc68fa0c2dd913f74d9ef9825f35894948\"}, \"detail\": \"ok\"}"
+    },
+    {
+      "name": "step3_env_reasoning_only",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"PARSE\", \"failure_code\": \"FINAL_MISSING\", \"semantic_gate_eligible\": false, \"transport_ok\": true, \"parse_ok\": false, \"schema_ok\": false, \"parsed\": null, \"detail\": \"final channel empty; reasoning is not a fallback\"}"
+    },
+    {
+      "name": "step3_env_fenced",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"PARSE\", \"failure_code\": \"FENCED_JSON\", \"semantic_gate_eligible\": false, \"transport_ok\": true, \"parse_ok\": false, \"schema_ok\": false, \"parsed\": null, \"detail\": \"final channel is fenced; checker does not unfence\"}"
+    },
+    {
+      "name": "step3_env_trailing",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"PARSE\", \"failure_code\": \"TRAILING_PROSE\", \"semantic_gate_eligible\": false, \"transport_ok\": true, \"parse_ok\": false, \"schema_ok\": false, \"parsed\": null, \"detail\": \"non-empty trailing content after JSON\"}"
+    },
+    {
+      "name": "step3_env_dup_key",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"PARSE\", \"failure_code\": \"DUPLICATE_KEY\", \"semantic_gate_eligible\": false, \"transport_ok\": true, \"parse_ok\": false, \"schema_ok\": false, \"parsed\": null, \"detail\": \"duplicate key verdict\"}"
+    },
+    {
+      "name": "step3_env_truncated",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"PARSE\", \"failure_code\": \"TRUNCATED\", \"semantic_gate_eligible\": false, \"transport_ok\": true, \"parse_ok\": false, \"schema_ok\": false, \"parsed\": null, \"detail\": \"Expecting value: line 1 column 37 (char 36)\"}"
+    },
+    {
+      "name": "step3_env_root_array",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"PARSE\", \"failure_code\": \"ROOT_NOT_OBJECT\", \"semantic_gate_eligible\": false, \"transport_ok\": true, \"parse_ok\": false, \"schema_ok\": false, \"parsed\": null, \"detail\": \"root type=list\"}"
+    },
+    {
+      "name": "step3_env_hash62",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"SCHEMA\", \"failure_code\": \"HASH_NOT_64_HEX\", \"semantic_gate_eligible\": false, \"transport_ok\": true, \"parse_ok\": true, \"schema_ok\": false, \"parsed\": null, \"detail\": \"candidate_identity_hash must be 64 lowercase hex; 62-char values are not padded\"}"
+    },
+    {
+      "name": "step3_env_nonce",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"SCHEMA\", \"failure_code\": \"NONCE_MISMATCH\", \"semantic_gate_eligible\": false, \"transport_ok\": true, \"parse_ok\": true, \"schema_ok\": false, \"parsed\": null, \"detail\": \"request_nonce does not match expected_nonce\"}"
+    },
+    {
+      "name": "step3_env_missing_verdict",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"SCHEMA\", \"failure_code\": \"MISSING_FIELD\", \"semantic_gate_eligible\": false, \"transport_ok\": true, \"parse_ok\": true, \"schema_ok\": false, \"parsed\": null, \"detail\": \"missing ['verdict']\"}"
+    },
+    {
+      "name": "step3_env_gen_incomplete",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"TRANSPORT\", \"failure_code\": \"GENERATION_INCOMPLETE\", \"semantic_gate_eligible\": false, \"transport_ok\": false, \"parse_ok\": false, \"schema_ok\": false, \"parsed\": null, \"detail\": \"generation_complete is not true\"}"
+    },
+    {
+      "name": "step3_env_http",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"TRANSPORT\", \"failure_code\": \"HTTP_ERROR\", \"semantic_gate_eligible\": false, \"transport_ok\": false, \"parse_ok\": false, \"schema_ok\": false, \"parsed\": null, \"detail\": \"http_status=500\"}"
+    },
+    {
+      "name": "step3_env_incomplete",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"TRANSPORT\", \"failure_code\": \"INCOMPLETE\", \"semantic_gate_eligible\": false, \"transport_ok\": false, \"parse_ok\": false, \"schema_ok\": false, \"parsed\": null, \"detail\": \"transport.complete is not true\"}"
+    },
+    {
+      "name": "step3_env_ok_no_nonce",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"PASS\", \"failure_stage\": null, \"failure_code\": null, \"semantic_gate_eligible\": true, \"transport_ok\": true, \"parse_ok\": true, \"schema_ok\": true, \"parsed\": {\"verdict\": \"REJECTED\"}, \"detail\": \"ok\"}"
+    },
+    {
+      "name": "step3_env_ok_no_reason_key",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"PASS\", \"failure_stage\": null, \"failure_code\": null, \"semantic_gate_eligible\": true, \"transport_ok\": true, \"parse_ok\": true, \"schema_ok\": true, \"parsed\": {\"verdict\": \"SUPPORTED\"}, \"detail\": \"ok\"}"
+    },
+    {
+      "name": "step4_both_rejected_same_code",
+      "ok": true,
+      "detail": "{\"comparison_state\": \"COMPARISON_PASS\", \"semantic_result\": \"REJECTED\", \"verdict_match\": true, \"reason_code_match\": true, \"shared_deviation\": true, \"assessment_source\": \"PAIR_COMPARISON\", \"eligibility\": {\"eligibility\": \"ELIGIBLE\", \"ineligibility_reason\": null, \"policy_version\": \"v0-skeleton\"}}"
+    },
+    {
+      "name": "step4_both_supported_frozen_rejected",
+      "ok": true,
+      "detail": "{\"comparison_state\": \"COMPARISON_PASS\", \"semantic_result\": \"SUPPORTED\", \"verdict_match\": true, \"reason_code_match\": true, \"shared_deviation\": true, \"assessment_source\": \"PAIR_COMPARISON\", \"eligibility\": {\"eligibility\": \"ELIGIBLE\", \"ineligibility_reason\": null, \"policy_version\": \"v0-skeleton\"}}"
+    },
+    {
+      "name": "step4_mechanical_null_matches",
+      "ok": true,
+      "detail": "{\"comparison_state\": \"MECHANICAL_STOP\", \"semantic_result\": \"NOT_EVALUATED\", \"verdict_match\": null, \"reason_code_match\": null, \"shared_deviation\": null, \"assessment_source\": \"NOT_EVALUATED\", \"eligibility\": {\"eligibility\": \"INELIGIBLE\", \"ineligibility_reason\": \"MECHANICAL_FAILURE\", \"policy_version\": \"v0-skeleton\"}}"
+    },
+    {
+      "name": "step4_dispute_verdict",
+      "ok": true,
+      "detail": "{\"comparison_state\": \"DISPUTE_STOP\", \"semantic_result\": \"UNRESOLVED_DISPUTE\", \"verdict_match\": false, \"reason_code_match\": false, \"shared_deviation\": null, \"assessment_source\": \"PAIR_COMPARISON\", \"eligibility\": {\"eligibility\": \"INELIGIBLE\", \"ineligibility_reason\": \"UNRESOLVED_DISPUTE\", \"policy_version\": \"v0-skeleton\"}}"
+    },
+    {
+      "name": "step4_dispute_reason",
+      "ok": true,
+      "detail": "{\"comparison_state\": \"DISPUTE_STOP\", \"semantic_result\": \"UNRESOLVED_DISPUTE\", \"verdict_match\": true, \"reason_code_match\": false, \"shared_deviation\": null, \"assessment_source\": \"PAIR_COMPARISON\", \"eligibility\": {\"eligibility\": \"INELIGIBLE\", \"ineligibility_reason\": \"UNRESOLVED_DISPUTE\", \"policy_version\": \"v0-skeleton\"}}"
+    },
+    {
+      "name": "step4_illegal_third_judge",
+      "ok": true,
+      "detail": "THIRD_JUDGE_FORBIDDEN"
+    },
+    {
+      "name": "step4_illegal_half_score",
+      "ok": true,
+      "detail": "HALF_SCORE_FORBIDDEN"
+    },
+    {
+      "name": "step4_illegal_mech_to_rejected",
+      "ok": true,
+      "detail": "MECHANICAL_STOP_CANNOT_MAP_TO_SEMANTIC_VERDICT"
+    },
+    {
+      "name": "step4_illegal_pass_is_not_supported",
+      "ok": true,
+      "detail": "COMPARISON_PASS_IS_NOT_SEMANTIC_PASS"
+    },
+    {
+      "name": "step4_illegal_unreviewed_auto_fail",
+      "ok": true,
+      "detail": "UNREVIEWED_AUTO_FAIL_FORBIDDEN"
+    },
+    {
+      "name": "step4_illegal_child_stop_parent_done",
+      "ok": true,
+      "detail": "CHILD_STOP_IS_NOT_PARENT_DONE"
+    },
+    {
+      "name": "step5_valid_rc_01",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step5_valid_rc_02",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step5_illegal_pass_speaker",
+      "ok": true,
+      "detail": "FILENAME_LEAKS_DIRECTION:pass_speaker.json"
+    },
+    {
+      "name": "step5_illegal_rc_calibrated",
+      "ok": true,
+      "detail": "MUST_NOT_CLAIM_CALIBRATED"
+    },
+    {
+      "name": "step6_exposed_unseen",
+      "ok": true,
+      "detail": "EXPOSED_GROUP_CANNOT_BE_UNSEEN:syn.lg.alpha"
+    },
+    {
+      "name": "step6_gold",
+      "ok": true,
+      "detail": "GOLD_FORBIDDEN:syn.item.01"
+    },
+    {
+      "name": "step6_public_body",
+      "ok": true,
+      "detail": "PUBLIC_MANIFEST_EXTRA_KEYS:['body']"
+    },
+    {
+      "name": "step6_public_value_hash",
+      "ok": true,
+      "detail": "PUBLIC_MANIFEST_FORBIDDEN_VALUE:NAKED_HASH:item_version"
+    },
+    {
+      "name": "step6_public_value_path",
+      "ok": true,
+      "detail": "PUBLIC_MANIFEST_FORBIDDEN_VALUE:PATH:item_version"
+    },
+    {
+      "name": "step6_public_value_prose",
+      "ok": true,
+      "detail": "PUBLIC_MANIFEST_FORBIDDEN_VALUE:PROSE:item_version"
+    },
+    {
+      "name": "step6_sample_before_split",
+      "ok": true,
+      "detail": "SAMPLE_BEFORE_SPLIT:syn.item.01"
+    },
+    {
+      "name": "step6_unreviewed_auto_fail",
+      "ok": true,
+      "detail": "UNREVIEWED_AUTO_FAIL:syn.item.02"
+    },
+    {
+      "name": "step6_valid",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step7_reports",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step8_hash_mismatch",
+      "ok": true,
+      "detail": "PREP_STOP_HASH_MISMATCH:syn.165.rv.1"
+    },
+    {
+      "name": "step8_patch_type",
+      "ok": true,
+      "detail": "EVAL_CANNOT_WRITE_165:Patch"
+    },
+    {
+      "name": "step8_raw_mutate",
+      "ok": true,
+      "detail": "RAW_SHA256_UPDATE_FORBIDDEN:syn.art.raw.1"
+    },
+    {
+      "name": "step8_repair_unknown_raw",
+      "ok": true,
+      "detail": "REPAIR_DERIVED_FROM_UNKNOWN_RAW:syn.repair.1"
+    },
+    {
+      "name": "step8_repair_wash",
+      "ok": true,
+      "detail": "REPAIR_CANNOT_WASH_RAW:syn.repair.1"
+    },
+    {
+      "name": "step8_retry_replace",
+      "ok": true,
+      "detail": "RETRY_CANNOT_REPLACE_PRIMARY:syn.att.retry"
+    },
+    {
+      "name": "step8_review_mutate",
+      "ok": true,
+      "detail": "REVIEW_CANNOT_MUTATE_MODEL_JSON:syn.rev.bad"
+    },
+    {
+      "name": "step8_valid",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step8_write_patch",
+      "ok": true,
+      "detail": "EVAL_CANNOT_WRITE_PATCH"
+    }
+  ]
+}

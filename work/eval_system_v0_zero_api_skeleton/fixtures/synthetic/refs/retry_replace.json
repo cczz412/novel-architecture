@@ -1,0 +1,46 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "syn.art.raw.1",
+      "artifact_kind": "RAW",
+      "sha256": "ffd2193c6886d1f8ec66e9c8a2c5d41266ed968bff2bf9bac12244baa60aadd5",
+      "payload_utf8": "synthetic-envelope-ok-1",
+      "immutable": true
+    }
+  ],
+  "repairs": [
+    {
+      "repair_id": "syn.repair.1",
+      "derived_from_raw_sha256": "ffd2193c6886d1f8ec66e9c8a2c5d41266ed968bff2bf9bac12244baa60aadd5",
+      "primary_eval_eligible": false
+    }
+  ],
+  "attempts": [
+    {
+      "attempt_id": "syn.att.retry",
+      "attempt_role": "RETRY",
+      "retry_of_attempt_id": "syn.att.j1",
+      "replaces_primary": true
+    }
+  ],
+  "foreign_refs": [
+    {
+      "ledger": "EXTRACTION_CORRECTION",
+      "record_type": "ResultVersion",
+      "record_id": "syn.165.rv.1",
+      "record_version": "v1",
+      "record_hash": "2f1ac6fb5370597e0bd1d24caa3a473ffba5caa98812e00d268d38580493996e",
+      "source_hash": "2f1ac6fb5370597e0bd1d24caa3a473ffba5caa98812e00d268d38580493996e",
+      "access": "READ_ONLY",
+      "requested_fields": [
+        "record_id",
+        "record_version",
+        "record_hash",
+        "status"
+      ],
+      "write_patch": false,
+      "drift_to_new_source_version": false
+    }
+  ],
+  "expect_error": "RETRY_CANNOT_REPLACE_PRIMARY:syn.att.retry"
+}

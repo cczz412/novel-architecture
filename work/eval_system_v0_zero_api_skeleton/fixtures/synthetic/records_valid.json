@@ -1,0 +1,146 @@
+{
+  "version_ref": {
+    "record_id": "syn.item.1",
+    "record_version": "v1",
+    "record_hash": "59908df50572502ceeabbcc669a28bcc5343d7564a581b9c9648479580f5b773",
+    "access": "READ_ONLY"
+  },
+  "foreign_ref": {
+    "ledger": "EXTRACTION_CORRECTION",
+    "record_type": "ResultVersion",
+    "record_id": "syn.rv.1",
+    "record_version": "v1",
+    "record_hash": "90950ba6046cff3232e77d47a87af94a9a8226d5c872128f3a68ceb11cb943e4",
+    "access": "READ_ONLY"
+  },
+  "run": {
+    "run_id": "syn.run.j1",
+    "ledger": "EVIDENCE_GATE",
+    "purpose": "skeleton-self-check",
+    "item_ref": {
+      "record_id": "syn.item.1",
+      "record_version": "v1",
+      "record_hash": "59908df50572502ceeabbcc669a28bcc5343d7564a581b9c9648479580f5b773",
+      "access": "READ_ONLY"
+    },
+    "rule_ref": {
+      "record_id": "syn.rule.1",
+      "record_version": "v1",
+      "record_hash": "dc1c69af7701c40b1a27bea97721d86d824edc8ba6de9ce7eee6dcd27043dcbb",
+      "access": "READ_ONLY"
+    },
+    "prompt_ref": {
+      "record_id": "syn.prompt.1",
+      "record_version": "v1",
+      "record_hash": "7ed65932e8020d4d9f9f6a3685dd16ea62b9bd0477726edcf734750de827e343",
+      "access": "READ_ONLY"
+    },
+    "schema_ref": {
+      "record_id": "syn.schema.1",
+      "record_version": "v1",
+      "record_hash": "6f6150d77e1e6d8c6360638e4761edebbd140830e7d4dbce46c32ec3568b9e6e",
+      "access": "READ_ONLY"
+    },
+    "frozen_direction_ref": {
+      "record_id": "syn.frozen.1",
+      "record_version": "v1",
+      "record_hash": "46cfc68ba4f8f1e708f3d1c93bb75e8fe86f8ce14de19067cb0c6c33954ca2a5",
+      "access": "READ_ONLY"
+    },
+    "run_config_id": "syn.cfg.1",
+    "source_result_ref": {
+      "ledger": "EXTRACTION_CORRECTION",
+      "record_type": "Attempt",
+      "record_id": "syn.165.attempt.1",
+      "record_version": "v1",
+      "record_hash": "c1fd99457feae391d777a07c961ba32bc0936df34f925ba26c6b799a0ac8bb18",
+      "access": "READ_ONLY"
+    },
+    "experiment_factors": {
+      "requested_model": "synthetic-judge",
+      "returned_identity": "synthetic-judge",
+      "thinking_tier": "off",
+      "temperature": 0,
+      "max_output_tokens": 256,
+      "output_mode": "json",
+      "strict_schema_enabled": true,
+      "strict_schema_version": "v0-skeleton",
+      "prompt_version": "v1",
+      "timeout_s": 1,
+      "retry_policy": "none"
+    }
+  },
+  "attempt": {
+    "attempt_id": "syn.att.j1",
+    "run_id": "syn.run.j1",
+    "attempt_role": "J1",
+    "retry_of_attempt_id": null
+  },
+  "raw_artifact": {
+    "artifact_id": "syn.art.raw.1",
+    "attempt_id": "syn.att.j1",
+    "artifact_kind": "RAW",
+    "sha256": "ffd2193c6886d1f8ec66e9c8a2c5d41266ed968bff2bf9bac12244baa60aadd5",
+    "immutable": true
+  },
+  "repair_artifact": {
+    "repair_id": "syn.repair.1",
+    "derived_from_raw_sha256": "ffd2193c6886d1f8ec66e9c8a2c5d41266ed968bff2bf9bac12244baa60aadd5",
+    "primary_eval_eligible": false
+  },
+  "mechanical_assessment": {
+    "assessment_id": "syn.mech.1",
+    "attempt_id": "syn.att.j1",
+    "transport_ok": true,
+    "parse_ok": true,
+    "schema_ok": true,
+    "mechanical_status": "PASS",
+    "failure_stage": null,
+    "failure_code": null,
+    "semantic_gate_eligible": true
+  },
+  "pair_comparison": {
+    "comparison_id": "syn.cmp.1",
+    "j1_run_id": "syn.run.j1",
+    "j1_attempt_id": "syn.att.j1",
+    "j2_run_id": "syn.run.j2",
+    "j2_attempt_id": "syn.att.j2",
+    "comparison_state": "COMPARISON_PASS",
+    "verdict_match": true,
+    "reason_code_match": true,
+    "semantic_result": "REJECTED",
+    "assessment_source": "PAIR_COMPARISON",
+    "shared_deviation": false,
+    "frozen_direction_version": "v1",
+    "eligibility": {
+      "eligibility": "ELIGIBLE",
+      "ineligibility_reason": null,
+      "policy_version": "v0-skeleton"
+    }
+  },
+  "review_opinion": {
+    "review_id": "syn.rev.1",
+    "subject_ref": {
+      "record_id": "syn.cmp.1",
+      "record_version": "v1",
+      "record_hash": "d36a9a6177333db73585db9e5acfc9ccf65469f5903ba475a186167ecebb67ea",
+      "access": "READ_ONLY"
+    },
+    "suggested_layer": "NEW_VERSION",
+    "audit_cause_code": "SYN_HUMAN_NOTE",
+    "revision_recommended": true,
+    "mutates_model_json": false
+  },
+  "exam_item": {
+    "item_id": "syn.item.01",
+    "item_version": "v1",
+    "item_version_hash": "9b04bc67606d0426ad183bb41d4116044461e37b15626f39bece9bc4e7ae6a39",
+    "task_kind": "SHORT_DIAGNOSIS",
+    "leakage_group_uid": "syn.lg.alpha",
+    "split": "HELD_OUT",
+    "reference_status": "CANDIDATE",
+    "rights_status": "LOCAL_SYNTHETIC",
+    "split_assigned_at": "2026-08-01T00:00:00Z",
+    "unreviewed": false
+  }
+}

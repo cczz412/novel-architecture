@@ -1,0 +1,17 @@
+{
+  "pair_id": "rc_x1",
+  "candidate_code": "SYN_SPEAKER_UNBOUND",
+  "candidate_status": "CANDIDATE",
+  "not_calibrated": false,
+    "calibrated": true,
+    "positive": {
+    "text": "合成句：门口那人说天气不错。"
+  },
+  "negative_minimal": {
+    "text": "合成句：门口张三说天气不错。"
+  },
+  "surface_rewrite": {
+    "text": "合成句：站在门口的那人讲天气不错。"
+  },
+  "pair_hash": "e49f0946b055288777d2634c422e0b1d36605465d96823d993a5b25c25a3fab0"
+}
