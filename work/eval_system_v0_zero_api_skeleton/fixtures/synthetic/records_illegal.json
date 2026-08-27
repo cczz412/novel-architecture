@@ -45,22 +45,5 @@
       "record_hash": "90950ba6046cff3232e77d47a87af94a9a8226d5c872128f3a68ceb11cb943e4",
       "access": "WRITE"
     }
-  },
-  {
-    "label": "review_mutates",
-    "def": "review_opinion",
-    "instance": {
-      "review_id": "syn.rev.bad",
-      "subject_ref": {
-        "record_id": "syn.cmp.1",
-        "record_version": "v1",
-        "record_hash": "d36a9a6177333db73585db9e5acfc9ccf65469f5903ba475a186167ecebb67ea",
-        "access": "READ_ONLY"
-      },
-      "suggested_layer": "PATCH_JSON",
-      "audit_cause_code": "SYN_HUMAN_NOTE",
-      "revision_recommended": true,
-      "mutates_model_json": true
-    }
   }
 ]

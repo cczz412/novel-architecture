@@ -3,9 +3,8 @@
   "candidate_code": "SYN_SPEAKER_UNBOUND",
   "candidate_status": "CANDIDATE",
   "not_calibrated": true,
-  "calibrated": false,
-  "single_primary_reason": true,
-  "positive": {
+    "calibrated": false,
+    "positive": {
     "text": "合成句：门口那人说天气不错。"
   },
   "negative_minimal": {

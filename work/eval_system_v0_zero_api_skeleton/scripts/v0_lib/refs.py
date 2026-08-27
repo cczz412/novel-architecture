@@ -40,13 +40,21 @@ def refs_error(pack: dict[str, Any]) -> str | None:
             if art.get("update_sha256"):
                 return f"RAW_SHA256_UPDATE_FORBIDDEN:{artifact_id}"
 
+    raw_hashes = set(seen_raw.values())
     for repair in pack.get("repairs") or []:
         if "derived_from_raw_sha256" not in repair:
             return f"REPAIR_MISSING_DERIVED_FROM:{repair.get('repair_id')}"
+        derived = repair.get("derived_from_raw_sha256")
+        if derived not in raw_hashes:
+            return f"REPAIR_DERIVED_FROM_UNKNOWN_RAW:{repair.get('repair_id')}"
         if repair.get("primary_eval_eligible") is not False:
             return f"REPAIR_CANNOT_BE_PRIMARY:{repair.get('repair_id')}"
         if repair.get("washes_raw_mechanical") is True:
             return f"REPAIR_CANNOT_WASH_RAW:{repair.get('repair_id')}"
+
+    for review in pack.get("reviews") or []:
+        if review.get("mutates_model_json") is True or review.get("rewrites_model_json") is True:
+            return f"REVIEW_CANNOT_MUTATE_MODEL_JSON:{review.get('review_id')}"
 
     for attempt in pack.get("attempts") or []:
         if attempt.get("attempt_role") == "RETRY" and attempt.get("replaces_primary") is True:

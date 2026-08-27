@@ -46,7 +46,7 @@ def main() -> int:
     tree = tree_error(ROOT)
     add(results, "step1_tree", tree is None, tree or "ok")
 
-    schema = load_schema()
+    schema = load_schema(profile="contract")
     records = load_json(FIXTURES / "records_valid.json")
     schema_ok = True
     schema_detail = "ok"
@@ -57,6 +57,27 @@ def main() -> int:
         schema_ok = False
         schema_detail = str(exc)
     add(results, "step2_schema_valid_records", schema_ok, schema_detail)
+
+    extra_item = load_json(FIXTURES / "records_contract_allows.json")["exam_item"]
+    extra_ok = True
+    extra_detail = "ok"
+    try:
+        validate_def("exam_item", extra_item, schema)
+    except Exception as exc:  # noqa: BLE001
+        extra_ok = False
+        extra_detail = str(exc)
+    add(results, "step2_contract_allows_unfrozen_task_kind", extra_ok, extra_detail)
+
+    fixture_schema = load_schema(profile="fixture")
+    fixture_ok = True
+    fixture_detail = "ok"
+    try:
+        for def_name, instance in records.items():
+            validate_def(def_name, instance, fixture_schema, profile="fixture")
+    except Exception as exc:  # noqa: BLE001
+        fixture_ok = False
+        fixture_detail = str(exc)
+    add(results, "step2_fixture_profile_valid_records", fixture_ok, fixture_detail)
 
     illegal_records = load_json(FIXTURES / "records_illegal.json")
     illegal_schema_ok = True
@@ -125,9 +146,17 @@ def main() -> int:
     titles = {
         "evidence_gate_attempt_mechanical": "证据门 · Attempt 机械明细",
         "evidence_gate_pair_comparison": "证据门 · Pair 对照明细",
-        "exam_split_exposure_unreviewed": "考卷 · split / exposure / UNREVIEWED",
+        "exam_short_diagnosis": "考卷 · 短诊断",
+        "exam_full_chapter": "考卷 · 整章主卷",
         "api_eval_three_columns": "接口评测 · 三栏",
     }
+    for stale_name in (
+        "exam_split_exposure_unreviewed.md",
+        "exam_split_exposure_unreviewed.json",
+    ):
+        stale = generated / stale_name
+        if stale.exists():
+            stale.unlink()
     for name, rows in tables.items():
         (generated / f"{name}.json").write_text(
             json.dumps(rows, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

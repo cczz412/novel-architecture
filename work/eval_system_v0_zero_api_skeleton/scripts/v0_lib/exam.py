@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
 PUBLIC_MANIFEST_ALLOWLIST = {
@@ -13,14 +14,28 @@ PUBLIC_MANIFEST_ALLOWLIST = {
     "unreviewed",
 }
 
-PUBLIC_MANIFEST_FORBIDDEN_FRAGMENTS = (
-    "body",
-    "text",
-    "path",
-    "sha256",
-    "absolute",
-    "chapter_text",
-)
+NAKED_SHA256 = re.compile(r"^[0-9a-f]{64}$")
+
+
+def _leaky_public_value(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if NAKED_SHA256.fullmatch(text):
+        return "NAKED_HASH"
+    lowered = text.lower()
+    if (
+        text.startswith("/")
+        or text.startswith("work/")
+        or text.startswith("./")
+        or "\\" in text
+        or "/users/" in lowered
+        or ":\\" in text
+    ):
+        return "PATH"
+    if "合成句" in text or "chapter_text" in lowered:
+        return "PROSE"
+    return None
 
 
 def exam_error(pack: dict[str, Any]) -> str | None:
@@ -61,15 +76,13 @@ def exam_error(pack: dict[str, Any]) -> str | None:
             return f"UNREVIEWED_AUTO_FAIL:{item.get('item_id')}"
 
     for row in public_manifest:
-        keys = set(row)
-        extra = keys - PUBLIC_MANIFEST_ALLOWLIST
+        extra = set(row) - PUBLIC_MANIFEST_ALLOWLIST
         if extra:
             return f"PUBLIC_MANIFEST_EXTRA_KEYS:{sorted(extra)}"
-        lowered = " ".join(str(v).lower() for v in row.values())
-        for fragment in PUBLIC_MANIFEST_FORBIDDEN_FRAGMENTS:
-            if fragment in row or fragment in lowered:
-                if fragment in row:
-                    return f"PUBLIC_MANIFEST_FORBIDDEN_FIELD:{fragment}"
+        for key, value in row.items():
+            leak = _leaky_public_value(value)
+            if leak:
+                return f"PUBLIC_MANIFEST_FORBIDDEN_VALUE:{leak}:{key}"
 
     return None
 

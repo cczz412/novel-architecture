@@ -60,16 +60,23 @@ def build_reports(pack: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
     pairs = []
     for row in pack.get("pairs") or []:
         pairs.append({key: row.get(key) for key in PAIR_COLUMNS})
-    exam_rows = []
+    short_rows: list[dict[str, Any]] = []
+    full_rows: list[dict[str, Any]] = []
     for row in pack.get("exam") or []:
-        exam_rows.append({key: row.get(key) for key in EXAM_COLUMNS})
+        projected = {key: row.get(key) for key in EXAM_COLUMNS}
+        kind = row.get("task_kind")
+        if kind == "SHORT_DIAGNOSIS":
+            short_rows.append(projected)
+        elif kind == "FULL_CHAPTER":
+            full_rows.append(projected)
     api_rows = []
     for row in pack.get("api_cases") or []:
         api_rows.append({key: row.get(key) for key in API_COLUMNS})
     return {
         "evidence_gate_attempt_mechanical": attempts,
         "evidence_gate_pair_comparison": pairs,
-        "exam_split_exposure_unreviewed": exam_rows,
+        "exam_short_diagnosis": short_rows,
+        "exam_full_chapter": full_rows,
         "api_eval_three_columns": api_rows,
     }
 
@@ -78,9 +85,12 @@ def reports_error(tables: dict[str, list[dict[str, Any]]]) -> str | None:
     required = {
         "evidence_gate_attempt_mechanical": ATTEMPT_COLUMNS,
         "evidence_gate_pair_comparison": PAIR_COLUMNS,
-        "exam_split_exposure_unreviewed": EXAM_COLUMNS,
+        "exam_short_diagnosis": EXAM_COLUMNS,
+        "exam_full_chapter": EXAM_COLUMNS,
         "api_eval_three_columns": API_COLUMNS,
     }
+    if "exam_split_exposure_unreviewed" in tables:
+        return "MIXED_EXAM_REPORT_FORBIDDEN"
     if set(tables) != set(required):
         return f"REPORT_TABLES_MISMATCH:{sorted(tables)}"
     for name, columns in required.items():
@@ -93,9 +103,10 @@ def reports_error(tables: dict[str, list[dict[str, Any]]]) -> str | None:
             missing = [col for col in columns if col not in row]
             if missing:
                 return f"REPORT_MISSING_COLUMNS:{name}:{missing}"
-    exam_kinds = {row.get("task_kind") for row in tables["exam_split_exposure_unreviewed"]}
-    if not {"SHORT_DIAGNOSIS", "FULL_CHAPTER"} <= exam_kinds:
-        return "SHORT_AND_FULL_MUST_BE_SEPARATE_ROWS"
+    if any(row.get("task_kind") != "SHORT_DIAGNOSIS" for row in tables["exam_short_diagnosis"]):
+        return "SHORT_REPORT_MUST_NOT_MIX_FULL_CHAPTER"
+    if any(row.get("task_kind") != "FULL_CHAPTER" for row in tables["exam_full_chapter"]):
+        return "FULL_REPORT_MUST_NOT_MIX_SHORT_DIAGNOSIS"
     for row in tables["api_eval_three_columns"]:
         if row.get("mechanical_column") == "FAIL" and row.get("semantic_main_column") not in {
             "NOT_EVALUATED",

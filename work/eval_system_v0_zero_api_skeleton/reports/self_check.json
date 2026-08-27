@@ -2,8 +2,8 @@
   "root": "work/eval_system_v0_zero_api_skeleton",
   "issue": 168,
   "api_calls": 0,
-  "total": 46,
-  "passed": 46,
+  "total": 55,
+  "passed": 55,
   "failed": [],
   "results": [
     {
@@ -13,6 +13,16 @@
     },
     {
       "name": "step2_schema_valid_records",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step2_contract_allows_unfrozen_task_kind",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "step2_fixture_profile_valid_records",
       "ok": true,
       "detail": "ok"
     },
@@ -90,6 +100,16 @@
       "name": "step3_env_incomplete",
       "ok": true,
       "detail": "{\"mechanical_status\": \"FAIL\", \"failure_stage\": \"TRANSPORT\", \"failure_code\": \"INCOMPLETE\", \"semantic_gate_eligible\": false, \"transport_ok\": false, \"parse_ok\": false, \"schema_ok\": false, \"parsed\": null, \"detail\": \"transport.complete is not true\"}"
+    },
+    {
+      "name": "step3_env_ok_no_nonce",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"PASS\", \"failure_stage\": null, \"failure_code\": null, \"semantic_gate_eligible\": true, \"transport_ok\": true, \"parse_ok\": true, \"schema_ok\": true, \"parsed\": {\"verdict\": \"REJECTED\"}, \"detail\": \"ok\"}"
+    },
+    {
+      "name": "step3_env_ok_no_reason_key",
+      "ok": true,
+      "detail": "{\"mechanical_status\": \"PASS\", \"failure_stage\": null, \"failure_code\": null, \"semantic_gate_eligible\": true, \"transport_ok\": true, \"parse_ok\": true, \"schema_ok\": true, \"parsed\": {\"verdict\": \"SUPPORTED\"}, \"detail\": \"ok\"}"
     },
     {
       "name": "step4_both_rejected_same_code",
@@ -182,6 +202,21 @@
       "detail": "PUBLIC_MANIFEST_EXTRA_KEYS:['body']"
     },
     {
+      "name": "step6_public_value_hash",
+      "ok": true,
+      "detail": "PUBLIC_MANIFEST_FORBIDDEN_VALUE:NAKED_HASH:item_version"
+    },
+    {
+      "name": "step6_public_value_path",
+      "ok": true,
+      "detail": "PUBLIC_MANIFEST_FORBIDDEN_VALUE:PATH:item_version"
+    },
+    {
+      "name": "step6_public_value_prose",
+      "ok": true,
+      "detail": "PUBLIC_MANIFEST_FORBIDDEN_VALUE:PROSE:item_version"
+    },
+    {
       "name": "step6_sample_before_split",
       "ok": true,
       "detail": "SAMPLE_BEFORE_SPLIT:syn.item.01"
@@ -217,6 +252,11 @@
       "detail": "RAW_SHA256_UPDATE_FORBIDDEN:syn.art.raw.1"
     },
     {
+      "name": "step8_repair_unknown_raw",
+      "ok": true,
+      "detail": "REPAIR_DERIVED_FROM_UNKNOWN_RAW:syn.repair.1"
+    },
+    {
       "name": "step8_repair_wash",
       "ok": true,
       "detail": "REPAIR_CANNOT_WASH_RAW:syn.repair.1"
@@ -225,6 +265,11 @@
       "name": "step8_retry_replace",
       "ok": true,
       "detail": "RETRY_CANNOT_REPLACE_PRIMARY:syn.att.retry"
+    },
+    {
+      "name": "step8_review_mutate",
+      "ok": true,
+      "detail": "REVIEW_CANNOT_MUTATE_MODEL_JSON:syn.rev.bad"
     },
     {
       "name": "step8_valid",

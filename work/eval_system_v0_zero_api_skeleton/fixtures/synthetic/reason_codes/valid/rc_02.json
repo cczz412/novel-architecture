@@ -3,9 +3,8 @@
   "candidate_code": "SYN_NOT_STATEMENT",
   "candidate_status": "CANDIDATE",
   "not_calibrated": true,
-  "calibrated": false,
-  "single_primary_reason": true,
-  "positive": {
+    "calibrated": false,
+    "positive": {
     "text": "合成句：他今天出门了吗。"
   },
   "negative_minimal": {

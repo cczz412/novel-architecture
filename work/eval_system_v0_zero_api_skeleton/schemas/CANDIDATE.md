@@ -10,6 +10,8 @@
 - HMAC、近重复阈值、真实作品权利
 - `CONTRACT_GAP` / `UNKNOWN` 若出现，只是 v0 候选
 
-夹具里的 `SYN_*` 原因码是自编短句标签，状态是 `CANDIDATE`。
+夹具里的 `SYN_*` 原因码是自编短句标签，状态是 `CANDIDATE`。不得强制 `single_primary_reason`。
+
+更严的夹具形状只放在 [`v0_synthetic_fixture_profile.schema.json`](v0_synthetic_fixture_profile.schema.json)，不能倒过来改 `V0_SKELETON_CONTRACT`。
 
 来源：GitHub #167

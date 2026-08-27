@@ -37,7 +37,7 @@ uv run --locked python work/eval_system_v0_zero_api_skeleton/scripts/run_v0_chec
 - `transport.complete` / `transport.http_status` / `transport.generation_complete`
 - `final_raw`：指定 final 槽的原始字节（字符串）。机械解析只看这一槽。
 - `reasoning_raw`：思考栏。检查器**读了也不会拿来当 JSON**。
-- `expected_nonce`：跟解析后的 `request_nonce` 对。
+- `expected_nonce`：只在夹具声明 `check_nonce=true` 时，才跟解析后的 `request_nonce` 对。不是每份 final 的通用必填。
 
 三道机械门：运输 → 解析 → Schema。别的都是失败码，不另开顶层主状态。
 
@@ -45,18 +45,15 @@ uv run --locked python work/eval_system_v0_zero_api_skeleton/scripts/run_v0_chec
 |---|---|---|
 | 传输没完、HTTP 非 2xx、`generation_complete=false` | 运输 | `INCOMPLETE` / `HTTP_ERROR` / `GENERATION_INCOMPLETE` |
 | `final` 空、围栏、尾随散文、重复键、截断、根不是对象 | 解析 | `FINAL_MISSING` 等 |
-| 缺字段、nonce 不符、哈希不是 64 位小写 hex | Schema | `MISSING_FIELD` / `NONCE_MISMATCH` / `HASH_NOT_64_HEX` |
+| 缺字段、哈希不是 64 位小写 hex | Schema | `MISSING_FIELD` / `HASH_NOT_64_HEX` |
+| 夹具启用了 nonce 检查且对不上 | Schema | `NONCE_MISMATCH` |
 
 62 位哈希直接拒，不要左补成 64。机械失败时 `verdict_match`、`reason_code_match` 必须是 `null`。
 
-## 本骨架操作枚举（不是产品合同）
+## 本骨架操作枚举（夹具 profile，不是产品合同）
 
-下面这组只为了让空跑检查器有的判，标在 `V0_SKELETON_CONTRACT` 里。正式产品枚举仍是 `CANDIDATE`，见 [`schemas/CANDIDATE.md`](schemas/CANDIDATE.md)。
-
-- `task_kind`：`SHORT_DIAGNOSIS` / `FULL_CHAPTER`
-- `split`：`HELD_OUT` / `DEV` / `PUBLIC_DIAG` / `UNASSIGNED`
-- `reference_status`：`NONE` / `CANDIDATE` / `PROVISIONAL`（**禁止 `GOLD`**）
-- `rights_status`：`UNKNOWN` / `LOCAL_SYNTHETIC`
+合成夹具自己用的取值，写在 [`schemas/v0_synthetic_fixture_profile.schema.json`](schemas/v0_synthetic_fixture_profile.schema.json)。  
+[`schemas/v0_skeleton_contract.schema.json`](schemas/v0_skeleton_contract.schema.json) 只强制 #167 已冻关系；其他 `task_kind`／`split` 取值不能被合同 Schema 判非法。禁止 `GOLD` 仍是硬边界。
 
 ## 硬不变量（不得自行改写）
 
@@ -67,6 +64,8 @@ uv run --locked python work/eval_system_v0_zero_api_skeleton/scripts/run_v0_chec
 - 评测账对 #165 只有 `READ_ONLY`，不能写 Patch、不能改句
 - 禁止第三票、0.5、改已落盘 JSON、从思考栏捞 JSON、子任务 STOP 变父任务 DONE、`UNREVIEWED` 自动变错
 
-原因码夹具是合成短句结构检查，**不宣布正式枚举，不说已校准**。
+原因码夹具是合成短句结构检查，**不宣布正式枚举，不说已校准，也不强制单一主原因**。
+
+考卷短诊断和整章主卷分成两份报表，不能一张表两行充数。
 
 来源：Cursor；GitHub #167／#168

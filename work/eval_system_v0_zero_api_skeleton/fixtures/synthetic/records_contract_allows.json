@@ -1,0 +1,13 @@
+{
+  "exam_item": {
+    "item_id": "syn.item.other-kind",
+    "item_version": "v1",
+    "item_version_hash": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+    "task_kind": "OTHER_DIAG",
+    "leakage_group_uid": "syn.lg.alpha",
+    "split": "CUSTOM_SPLIT",
+    "reference_status": "CANDIDATE",
+    "rights_status": "LOCAL_SYNTHETIC",
+    "note": "Unfrozen values must still pass V0_SKELETON_CONTRACT."
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "item_id": "syn.item.02",
+    "item_version": "v1",
+    "task_kind": "FULL_CHAPTER",
+    "split": "HELD_OUT",
+    "leakage_group_uid": "syn.lg.beta",
+    "exposure_kind": null,
+    "reference_status": "NONE",
+    "unreviewed": true
+  }
+]

@@ -16,8 +16,6 @@ def reason_pair_error(pair: dict[str, Any], *, filename: str) -> str | None:
         return "REASON_CODE_NOT_CANDIDATE"
     if pair.get("calibrated") is True or pair.get("not_calibrated") is not True:
         return "MUST_NOT_CLAIM_CALIBRATED"
-    if pair.get("single_primary_reason") is not True:
-        return "ONE_PRIMARY_REASON_REQUIRED"
     for key in ("positive", "negative_minimal", "surface_rewrite"):
         blob = pair.get(key) or {}
         text = blob.get("text")

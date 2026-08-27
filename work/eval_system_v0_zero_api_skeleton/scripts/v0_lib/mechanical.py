@@ -8,7 +8,7 @@ from typing import Any
 from .jsonutil import DuplicateKeyError, raw_decode_object
 
 SHA256_64 = re.compile(r"^[0-9a-f]{64}$")
-REQUIRED_FINAL_FIELDS = ("verdict", "reason_code", "request_nonce")
+REQUIRED_FINAL_FIELDS = ("verdict",)
 
 
 @dataclass(frozen=True)
@@ -163,27 +163,29 @@ def assess_envelope(case: dict[str, Any]) -> MechanicalResult:
             parse_ok=True,
             schema_ok=False,
         )
-    reason_code = parsed.get("reason_code")
-    if reason_code is not None and not isinstance(reason_code, str):
-        return _fail(
-            "SCHEMA",
-            "MISSING_FIELD",
-            "reason_code must be string or null",
-            transport_ok=True,
-            parse_ok=True,
-            schema_ok=False,
-        )
-    nonce = parsed.get("request_nonce")
-    expected_nonce = case.get("expected_nonce")
-    if not isinstance(nonce, str) or nonce != expected_nonce:
-        return _fail(
-            "SCHEMA",
-            "NONCE_MISMATCH",
-            "request_nonce does not match expected_nonce",
-            transport_ok=True,
-            parse_ok=True,
-            schema_ok=False,
-        )
+    if "reason_code" in parsed:
+        reason_code = parsed.get("reason_code")
+        if reason_code is not None and not isinstance(reason_code, str):
+            return _fail(
+                "SCHEMA",
+                "MISSING_FIELD",
+                "reason_code must be string or null when present",
+                transport_ok=True,
+                parse_ok=True,
+                schema_ok=False,
+            )
+    if case.get("check_nonce") is True:
+        nonce = parsed.get("request_nonce")
+        expected_nonce = case.get("expected_nonce")
+        if not isinstance(nonce, str) or nonce != expected_nonce:
+            return _fail(
+                "SCHEMA",
+                "NONCE_MISMATCH",
+                "request_nonce does not match expected_nonce",
+                transport_ok=True,
+                parse_ok=True,
+                schema_ok=False,
+            )
     identity_hash = parsed.get("candidate_identity_hash")
     if identity_hash is not None:
         if not isinstance(identity_hash, str) or SHA256_64.fullmatch(identity_hash) is None:
