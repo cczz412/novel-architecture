@@ -513,3 +513,187 @@ def test_author_scope_signatures_and_unknown_key_guard_remain(
     assert list(
         inspect.signature(extract_workspace.read_current_fact_candidates).parameters
     ) == ["workspace"]
+
+
+def _logical_snapshot(workspace, *keys: str) -> dict:
+    return {key: copy.deepcopy(workspace.read(key)) for key in keys}
+
+
+def test_submitted_batch_six_field_ref_roundtrip(tmp_path: Path) -> None:
+    workspace = WorkspaceRouter(tmp_path / "ref").create_project(
+        "principal-a", "引用项目"
+    )
+    _setup_sources(workspace)
+    receipt = _persist(workspace, "op-m3", _responses(workspace), 0)
+    envelope = workspace.read("fact_candidates")
+    before = _logical_snapshot(
+        workspace, "fact_candidates", "fact_candidate_runs", "facts"
+    )
+
+    ref = extract_workspace.current_fact_candidates_foreign_ref(workspace)
+    assert ref == {
+        "record_type": "C3_FACT_CANDIDATE_SNAPSHOT",
+        "record_id": "fact_candidates",
+        "record_version": envelope["version"],
+        "record_hash": envelope["sha256"],
+        "access": "READ_ONLY",
+        "source_module": "novel-mvp/M3",
+    }
+    assert isinstance(ref["record_version"], int)
+    assert ref["record_version"] == receipt["versions"]["fact_candidates"]
+    assert ref["record_hash"] == receipt["payload_sha256"]["fact_candidates"]
+
+    payload = extract_workspace.read_fact_candidates_by_foreign_ref(workspace, ref)
+    assert payload == extract_workspace.read_current_complete_fact_candidates(
+        workspace
+    )
+    extra = dict(ref)
+    extra["note"] = "compatible extra field"
+    assert (
+        extract_workspace.read_fact_candidates_by_foreign_ref(workspace, extra)
+        == payload
+    )
+    assert _logical_snapshot(
+        workspace, "fact_candidates", "fact_candidate_runs", "facts"
+    ) == before
+
+
+def test_uncommitted_six_field_ref_rejects_without_empty_view(
+    tmp_path: Path,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "empty").create_project(
+        "principal-a", "空项目"
+    )
+    synthetic = {
+        "record_type": "C3_FACT_CANDIDATE_SNAPSHOT",
+        "record_id": "fact_candidates",
+        "record_version": 1,
+        "record_hash": "a" * 64,
+        "access": "READ_ONLY",
+        "source_module": "novel-mvp/M3",
+    }
+
+    with pytest.raises(
+        extract_workspace.ExtractWorkspaceError,
+        match="FACT_CANDIDATES_STATE_MISSING",
+    ):
+        extract_workspace.current_fact_candidates_foreign_ref(workspace)
+    with pytest.raises(
+        extract_workspace.ExtractWorkspaceError,
+        match="FACT_CANDIDATES_STATE_MISSING",
+    ):
+        extract_workspace.read_fact_candidates_by_foreign_ref(workspace, synthetic)
+
+    assert workspace.read("fact_candidates") is None
+    assert workspace.read("facts") is None
+
+
+def test_stale_source_rejects_old_six_field_ref_without_write(
+    tmp_path: Path,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "stale").create_project(
+        "principal-a", "过期来源"
+    )
+    _setup_sources(workspace)
+    _persist(workspace, "op-m3", _responses(workspace), 0)
+    ref = extract_workspace.current_fact_candidates_foreign_ref(workspace)
+    before = _logical_snapshot(
+        workspace, "fact_candidates", "fact_candidate_runs", "facts"
+    )
+    source_state = workspace.read("segments")
+    workspace.commit(
+        "op-segments-v2",
+        {"segments": source_state["payload"]},
+        {"segments": source_state["version"]},
+    )
+
+    with pytest.raises(
+        extract_workspace.FactCandidatesStaleError,
+        match="FACT_CANDIDATES_STALE",
+    ):
+        extract_workspace.read_fact_candidates_by_foreign_ref(workspace, ref)
+
+    after = _logical_snapshot(
+        workspace, "fact_candidates", "fact_candidate_runs", "facts"
+    )
+    assert after["fact_candidates"] == before["fact_candidates"]
+    assert after["fact_candidate_runs"] == before["fact_candidate_runs"]
+    assert after["facts"] is None
+
+
+def test_six_field_ref_mismatch_and_bad_shape_reject_zero_write(
+    tmp_path: Path,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "mismatch").create_project(
+        "principal-a", "对不上"
+    )
+    _setup_sources(workspace)
+    _persist(workspace, "op-m3", _responses(workspace), 0)
+    ref = extract_workspace.current_fact_candidates_foreign_ref(workspace)
+    before = _logical_snapshot(
+        workspace, "fact_candidates", "fact_candidate_runs", "facts"
+    )
+
+    cases = [
+        ({**ref, "record_hash": "b" * 64}, "FACT_CANDIDATES_REF_HASH_MISMATCH"),
+        (
+            {**ref, "record_version": ref["record_version"] + 1},
+            "FACT_CANDIDATES_REF_VERSION_MISMATCH",
+        ),
+        ({**ref, "record_version": 0}, "FACT_CANDIDATES_REF_VERSION_INVALID"),
+        ({**ref, "access": "WRITE"}, "FACT_CANDIDATES_REF_ACCESS_INVALID"),
+        (
+            {**ref, "record_type": "C3_FACT_CANDIDATE"},
+            "FACT_CANDIDATES_REF_TYPE_INVALID",
+        ),
+        ({**ref, "record_id": "f001"}, "FACT_CANDIDATES_REF_ID_INVALID"),
+        (
+            {**ref, "source_module": "novel-mvp/M4"},
+            "FACT_CANDIDATES_REF_SOURCE_MODULE_INVALID",
+        ),
+        ("not-a-mapping", "FACT_CANDIDATES_REF_INVALID"),
+    ]
+    for bad, code in cases:
+        with pytest.raises(extract_workspace.ExtractWorkspaceError, match=code):
+            extract_workspace.read_fact_candidates_by_foreign_ref(workspace, bad)
+
+    assert _logical_snapshot(
+        workspace, "fact_candidates", "fact_candidate_runs", "facts"
+    ) == before
+
+
+def test_six_field_ref_requires_complete_receipt(tmp_path: Path) -> None:
+    source_workspace = WorkspaceRouter(tmp_path / "source").create_project(
+        "principal-a", "source"
+    )
+    _setup_sources(source_workspace)
+    _persist(source_workspace, "op-source-c3", _responses(source_workspace), 0)
+    payload = source_workspace.read("fact_candidates")["payload"]
+
+    target = WorkspaceRouter(tmp_path / "target").create_project(
+        "principal-a", "target"
+    )
+    _setup_sources(target)
+    target.commit(
+        "op-legacy-c3-without-receipt",
+        {"fact_candidates": payload},
+        {"fact_candidates": 0},
+    )
+    synthetic = {
+        "record_type": "C3_FACT_CANDIDATE_SNAPSHOT",
+        "record_id": "fact_candidates",
+        "record_version": target.read("fact_candidates")["version"],
+        "record_hash": target.read("fact_candidates")["sha256"],
+        "access": "READ_ONLY",
+        "source_module": "novel-mvp/M3",
+    }
+    before = copy.deepcopy(target.read("fact_candidates"))
+
+    with pytest.raises(
+        extract_workspace.ExtractWorkspaceError,
+        match="FACT_CANDIDATES_COMPLETE_RECEIPT_MISSING",
+    ):
+        extract_workspace.read_fact_candidates_by_foreign_ref(target, synthetic)
+
+    assert target.read("fact_candidates") == before
+    assert target.read("facts") is None
