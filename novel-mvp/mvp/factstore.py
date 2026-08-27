@@ -11,11 +11,12 @@ import hashlib
 import json
 import re
 import uuid
+from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
 
 try:
     from . import planstore
@@ -43,6 +44,7 @@ DECISIONS = {"confirm", "reject", "edit", "edit_and_confirm"}
 FAULT_POINTS = {
     "after_prepare",
     "after_facts",
+    "after_fact_causal_edges",
     "after_plan",
     "after_blob",
     "during_history",
@@ -51,14 +53,36 @@ FAULT_POINTS = {
     "after_commit",
 }
 FACT_ID_RE = re.compile(r"f(\d+)$")
+CAUSAL_EDGE_ID_RE = re.compile(r"CE-(\d+)$")
+CAUSAL_EDGE_FILENAME = "fact_causal_edges.json"
+CAUSAL_EDGE_CONTRACT = "FACT_CAUSAL_EDGE"
+CAUSAL_EDGE_VERSION = "fact-causal-edge-v1"
+CAUSAL_EDGE_STATUSES = {"candidate", "confirmed", "retired"}
+CAUSAL_EDGE_SOURCES = {
+    "author_declared",
+    "draft_inferred",
+    "model_suggested",
+}
+CAUSAL_EDGE_SPANS = {"直接", "长程"}
+CAUSAL_EDGE_REVIEW_DECISIONS = {"confirm", "retire", "defer"}
+CAUSAL_EDGE_CANDIDATE_REQUIRED_KEYS = {
+    "source_identity",
+    "from_fact_ref",
+    "to_fact_ref",
+    "span",
+}
+CAUSAL_EDGE_CANDIDATE_OPTIONAL_KEYS = {"evidence_refs", "note"}
 C11_SCHEMA_PATH = (
     Path(__file__).resolve().parent.parent
     / "contracts"
     / "C11_CHAPTER_REVISION_LEDGER.schema.json"
 )
-ANCHOR_COORDINATE_BASIS = (
-    "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN"
+CAUSAL_EDGE_SCHEMA_PATH = (
+    Path(__file__).resolve().parent.parent
+    / "contracts"
+    / "FACT_CAUSAL_EDGE.schema.json"
 )
+ANCHOR_COORDINATE_BASIS = "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN"
 
 
 class FactstoreError(planstore.PlanstoreError):
@@ -99,12 +123,16 @@ def _c11_validator() -> Draft202012Validator:
     return Draft202012Validator(schema)
 
 
-def _validate_c11_object(value: Any, contract: str, version: str = "v1") -> dict[str, Any]:
+def _validate_c11_object(
+    value: Any, contract: str, version: str = "v1"
+) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise FactstoreError(f"{contract}_NOT_OBJECT")
     if value.get("contract") != contract or value.get("version") != version:
         raise FactstoreError(f"{contract}_IDENTITY_INVALID")
-    errors = sorted(_c11_validator().iter_errors(value), key=lambda item: list(item.path))
+    errors = sorted(
+        _c11_validator().iter_errors(value), key=lambda item: list(item.path)
+    )
     if errors:
         first = errors[0]
         path = "/".join(map(str, first.path)) or "$"
@@ -117,8 +145,7 @@ def validate_c4_v1_snapshot(value: Any) -> list[dict[str, Any]]:
     if not isinstance(value, list):
         raise FactstoreError("C4_V1_SNAPSHOT_NOT_LIST")
     facts = [
-        copy.deepcopy(_validate_c11_object(fact, "C4_FACT_QUERY"))
-        for fact in value
+        copy.deepcopy(_validate_c11_object(fact, "C4_FACT_QUERY")) for fact in value
     ]
     fact_refs = [fact["id"] for fact in facts]
     if len(fact_refs) != len(set(fact_refs)):
@@ -142,6 +169,118 @@ def validate_c4_v1_snapshot(value: Any) -> list[dict[str, Any]]:
         if anchor["slice_sha256"] != quote_sha:
             raise FactstoreError("C4_ANCHOR_QUOTE_SHA_MISMATCH")
     return facts
+
+
+@lru_cache(maxsize=1)
+def _causal_edge_validator() -> Draft202012Validator:
+    schema = json.loads(CAUSAL_EDGE_SCHEMA_PATH.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    return Draft202012Validator(schema, format_checker=FormatChecker())
+
+
+def _parse_causal_edge_timestamp(value: Any, label: str) -> datetime:
+    if not isinstance(value, str):
+        raise FactstoreError(f"{label}_INVALID")
+    normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError as exc:
+        raise FactstoreError(f"{label}_INVALID") from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise FactstoreError(f"{label}_TIMEZONE_REQUIRED")
+    return parsed
+
+
+def validate_fact_causal_edge_record(value: Any) -> dict[str, Any]:
+    """校验并复制一条正式因果边，不授予确认权限。"""
+    if not isinstance(value, dict):
+        raise FactstoreError("FACT_CAUSAL_EDGE_NOT_OBJECT")
+    errors = sorted(
+        _causal_edge_validator().iter_errors(value),
+        key=lambda item: (list(item.absolute_path), item.message),
+    )
+    if errors:
+        first = errors[0]
+        path = "/".join(map(str, first.absolute_path)) or "$"
+        raise FactstoreError(
+            f"FACT_CAUSAL_EDGE_SCHEMA_INVALID:{path}:{first.validator}"
+        )
+    if (
+        value.get("contract") != CAUSAL_EDGE_CONTRACT
+        or value.get("version") != CAUSAL_EDGE_VERSION
+    ):
+        raise FactstoreError("FACT_CAUSAL_EDGE_IDENTITY_INVALID")
+    created = _parse_causal_edge_timestamp(
+        value["created_at"], "CAUSAL_EDGE_CREATED_AT"
+    )
+    updated = _parse_causal_edge_timestamp(
+        value["updated_at"], "CAUSAL_EDGE_UPDATED_AT"
+    )
+    if updated < created:
+        raise FactstoreError("CAUSAL_EDGE_UPDATED_AT_BEFORE_CREATED_AT")
+    if value["confirm_status"] == "confirmed" and not value["evidence_refs"]:
+        raise FactstoreError("CAUSAL_EDGE_CONFIRMED_REQUIRES_EVIDENCE")
+    if value["from_fact_ref"] == value["to_fact_ref"]:
+        raise FactstoreError("CAUSAL_EDGE_SELF_LOOP_FORBIDDEN")
+    return copy.deepcopy(value)
+
+
+def validate_fact_causal_edge_snapshot(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        raise FactstoreError("FACT_CAUSAL_EDGE_SNAPSHOT_NOT_LIST")
+    edges = [validate_fact_causal_edge_record(item) for item in value]
+    edge_refs = [item["id"] for item in edges]
+    if len(edge_refs) != len(set(edge_refs)):
+        raise FactstoreError("FACT_CAUSAL_EDGE_ID_DUPLICATE")
+    return edges
+
+
+def _load_fact_causal_edges(root: Path) -> list[dict[str, Any]]:
+    path = root / CAUSAL_EDGE_FILENAME
+    if not path.exists() or not path.read_bytes():
+        return []
+    return validate_fact_causal_edge_snapshot(planstore._read_json(path))
+
+
+def read_fact_causal_edges(project_dir: str | Path) -> list[dict[str, Any]]:
+    """读回全部 current 因果边，包含候选与已退役记录。"""
+    return copy.deepcopy(_load_fact_causal_edges(Path(project_dir)))
+
+
+def read_confirmed_fact_causal_edges(project_dir: str | Path) -> list[dict[str, Any]]:
+    """给 M6/M8/评测的只读面只暴露已确认边。"""
+    return [
+        item
+        for item in read_fact_causal_edges(project_dir)
+        if item["confirm_status"] == "confirmed"
+    ]
+
+
+def allocate_fact_causal_edge_ids(edges: list[dict[str, Any]], count: int) -> list[str]:
+    """从现存最大 CE 号顺延；退役记录仍占号。"""
+    if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+        raise FactstoreError("FACT_CAUSAL_EDGE_ID_COUNT_INVALID")
+    validated = validate_fact_causal_edge_snapshot(edges)
+    used = {item["id"] for item in validated}
+    numbers = [
+        int(match.group(1))
+        for item in validated
+        for match in [CAUSAL_EDGE_ID_RE.fullmatch(item["id"])]
+        if match is not None
+    ]
+    next_number = max(numbers, default=0) + 1
+    result: list[str] = []
+    while len(result) < count:
+        edge_ref = f"CE-{next_number:04d}"
+        if edge_ref not in used:
+            result.append(edge_ref)
+            used.add(edge_ref)
+        next_number += 1
+    return result
+
+
+def fact_causal_edge_sha256(edge: dict[str, Any]) -> str:
+    return planstore._sha256_json(validate_fact_causal_edge_record(edge))
 
 
 def _normalized_text_with_raw_positions(raw_text: str) -> tuple[str, list[int]]:
@@ -222,7 +361,10 @@ def build_extracted_c4_snapshot(
             raise FactstoreError("C2_SEGMENT_RANGE_LENGTH_MISMATCH")
         if normalized_text[start:end] != segment["text"]:
             raise FactstoreError("C2_SEGMENT_TEXT_RANGE_MISMATCH")
-        if any(start < other_end and other_start < end for other_start, other_end in occupied_ranges):
+        if any(
+            start < other_end and other_start < end
+            for other_start, other_end in occupied_ranges
+        ):
             raise FactstoreError("C2_SEGMENT_RANGE_OVERLAP")
         occupied_ranges.append((start, end))
         segments_by_no[segment["seg"]] = segment
@@ -290,9 +432,7 @@ def build_extracted_c4_snapshot(
             "anchor_state": "VERIFIED",
             "recheck": None,
         }
-        new_records.append(
-            copy.deepcopy(_validate_c11_object(record, "C4_FACT_QUERY"))
-        )
+        new_records.append(copy.deepcopy(_validate_c11_object(record, "C4_FACT_QUERY")))
     return [*facts_before, *new_records], new_ids
 
 
@@ -312,7 +452,9 @@ def _validate_facts(facts: Any) -> list[dict[str, Any]]:
     if not isinstance(facts, list) or any(not isinstance(item, dict) for item in facts):
         raise FactstoreError("C4_FACTS_NOT_LIST")
     refs = [item.get("id") for item in facts]
-    if any(not isinstance(ref, str) or FACT_ID_RE.fullmatch(ref) is None for ref in refs):
+    if any(
+        not isinstance(ref, str) or FACT_ID_RE.fullmatch(ref) is None for ref in refs
+    ):
         raise FactstoreError("C4_FACT_ID_INVALID")
     if len(refs) != len(set(refs)):
         raise FactstoreError("C4_FACT_ID_DUPLICATE")
@@ -329,7 +471,10 @@ def _validate_review_action(action: Any) -> None:
     if action.get("actor") != "author":
         raise FactstoreError("FACT_REVIEW_AUTHOR_REQUIRED")
     planstore._validate_operation_id(action.get("operation_id"))
-    if not isinstance(action.get("fact_ref"), str) or FACT_ID_RE.fullmatch(action["fact_ref"]) is None:
+    if (
+        not isinstance(action.get("fact_ref"), str)
+        or FACT_ID_RE.fullmatch(action["fact_ref"]) is None
+    ):
         raise FactstoreError("FACT_REVIEW_FACT_REF_INVALID")
     if action.get("expected_status") not in FACT_STATUSES:
         raise FactstoreError("FACT_REVIEW_EXPECTED_STATUS_INVALID")
@@ -511,8 +656,383 @@ def _replayed_receipt(root: Path, operation_id: str) -> dict[str, Any]:
         None,
     )
     if prepare is None or not isinstance(prepare.get("receipt"), dict):
-        raise FactstoreError("COMMITTED_FACT_REVIEW_RECEIPT_UNRESOLVABLE")
-    return {**copy.deepcopy(prepare["receipt"]), "story_commit_seq": prepare["story_commit_seq"], "replayed": True}
+        raise FactstoreError("COMMITTED_FACTSTORE_RECEIPT_UNRESOLVABLE")
+    return {
+        **copy.deepcopy(prepare["receipt"]),
+        "story_commit_seq": prepare["story_commit_seq"],
+        "replayed": True,
+    }
+
+
+def _validate_causal_edge_fact_refs(
+    edge: dict[str, Any],
+    facts_by_ref: dict[str, dict[str, Any]],
+    *,
+    require_confirmed_endpoints: bool,
+) -> None:
+    endpoints = {edge["from_fact_ref"], edge["to_fact_ref"]}
+    if not endpoints.issubset(facts_by_ref):
+        raise FactstoreError("FACT_CAUSAL_EDGE_ENDPOINT_NOT_FOUND")
+    evidence_fact_refs = {
+        ref for ref in edge["evidence_refs"] if ref != "AUTHOR_ATTESTATION"
+    }
+    if not evidence_fact_refs.issubset(facts_by_ref):
+        raise FactstoreError("FACT_CAUSAL_EDGE_EVIDENCE_NOT_FOUND")
+    if require_confirmed_endpoints and any(
+        facts_by_ref[ref]["status"] != STATUS_CONFIRMED for ref in endpoints
+    ):
+        raise FactstoreError("FACT_CAUSAL_EDGE_ENDPOINT_NOT_CONFIRMED")
+
+
+def _causal_edge_history_row(
+    *,
+    operation_id: str,
+    actor: str,
+    action_name: str,
+    before: dict[str, Any],
+    after: dict[str, Any],
+    timestamp: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    content_hash, blob = planstore._blob_record(before)
+    return (
+        {
+            "ts": timestamp,
+            "op": operation_id,
+            "actor": actor,
+            "action": action_name,
+            "object_id": after["id"],
+            "rev": after["rev"],
+            "changes": {
+                "fact_causal_edge": [copy.deepcopy(before), copy.deepcopy(after)]
+            },
+            "content_hash": content_hash,
+            "note": "FACT_CAUSAL_EDGE writer",
+        },
+        blob,
+    )
+
+
+def _commit_fact_causal_edges_locked(
+    root: Path,
+    *,
+    operation_id: str,
+    action_name: str,
+    request_sha256: str,
+    edges_after: list[dict[str, Any]],
+    history_rows: list[dict[str, Any]],
+    blobs: list[dict[str, Any]],
+    receipt: dict[str, Any],
+    timestamp: str,
+    fault_at: str | None,
+) -> dict[str, Any]:
+    edges_after = validate_fact_causal_edge_snapshot(edges_after)
+    return planstore._commit_generic_transaction_locked(
+        root,
+        operation_id=operation_id,
+        action_name=action_name,
+        request_sha256=request_sha256,
+        replacements={
+            CAUSAL_EDGE_FILENAME: planstore._canonical_bytes(edges_after),
+        },
+        appends={
+            "plan_history.jsonl": b"".join(
+                planstore._canonical_bytes(row) for row in history_rows
+            )
+        },
+        blobs=blobs,
+        receipt=receipt,
+        timestamp=timestamp,
+        fault_at=fault_at,
+    )
+
+
+def _build_fact_causal_edge_candidate(
+    *,
+    item: Any,
+    edge_ref: str,
+    timestamp: str,
+    actor: str,
+) -> dict[str, Any]:
+    if not isinstance(item, dict):
+        raise FactstoreError("FACT_CAUSAL_EDGE_CANDIDATE_NOT_OBJECT")
+    keys = set(item)
+    if not CAUSAL_EDGE_CANDIDATE_REQUIRED_KEYS.issubset(keys) or not keys.issubset(
+        CAUSAL_EDGE_CANDIDATE_REQUIRED_KEYS | CAUSAL_EDGE_CANDIDATE_OPTIONAL_KEYS
+    ):
+        raise FactstoreError("FACT_CAUSAL_EDGE_CANDIDATE_SCHEMA_MISMATCH")
+    source_identity = item.get("source_identity")
+    if source_identity not in CAUSAL_EDGE_SOURCES:
+        raise FactstoreError("FACT_CAUSAL_EDGE_SOURCE_INVALID")
+    if actor == "machine" and source_identity == "author_declared":
+        raise FactstoreError("FACT_CAUSAL_EDGE_AUTHOR_SOURCE_REQUIRED")
+    evidence_refs = item.get("evidence_refs", [])
+    if not isinstance(evidence_refs, list):
+        raise FactstoreError("FACT_CAUSAL_EDGE_EVIDENCE_INVALID")
+    if "AUTHOR_ATTESTATION" in evidence_refs and actor != "author":
+        raise FactstoreError("FACT_CAUSAL_EDGE_AUTHOR_ATTESTATION_REQUIRED")
+    return validate_fact_causal_edge_record(
+        {
+            "contract": CAUSAL_EDGE_CONTRACT,
+            "version": CAUSAL_EDGE_VERSION,
+            "id": edge_ref,
+            "source_identity": source_identity,
+            "confirm_status": "candidate",
+            "evidence_refs": copy.deepcopy(evidence_refs),
+            "created_at": timestamp,
+            "updated_at": timestamp,
+            "rev": 1,
+            "note": item.get("note", ""),
+            "from_fact_ref": item.get("from_fact_ref"),
+            "to_fact_ref": item.get("to_fact_ref"),
+            "span": item.get("span"),
+        }
+    )
+
+
+def add_fact_causal_edge_candidates(
+    project_dir: str | Path,
+    *,
+    items: list[dict[str, Any]],
+    actor: str,
+    timestamp: str,
+    operation_id: str | None = None,
+    fault_at: str | None = None,
+) -> dict[str, Any]:
+    """为候选因果边发 CE 号并写入事实账；任何来源都只能得到 candidate。"""
+    if not isinstance(items, list) or not items:
+        raise FactstoreError("FACT_CAUSAL_EDGE_CANDIDATES_REQUIRED")
+    if actor not in {"author", "machine"}:
+        raise FactstoreError("FACT_CAUSAL_EDGE_ACTOR_INVALID")
+    _parse_causal_edge_timestamp(timestamp, "CAUSAL_EDGE_TIMESTAMP")
+    if fault_at is not None and fault_at not in FAULT_POINTS:
+        raise FactstoreError("UNKNOWN_FACT_CAUSAL_EDGE_FAULT_POINT")
+    operation_id = operation_id or new_operation_id("op-m4-causal-edge-add")
+    planstore._validate_operation_id(operation_id)
+    for index, item in enumerate(items, start=1):
+        _build_fact_causal_edge_candidate(
+            item=item,
+            edge_ref=f"CE-{index:04d}",
+            timestamp=timestamp,
+            actor=actor,
+        )
+    request_sha = planstore._sha256_json(
+        {
+            "items": items,
+            "actor": actor,
+            "timestamp": timestamp,
+        }
+    )
+    root = Path(project_dir)
+    with planstore._exclusive_lock(root):
+        planstore._recover_pending_locked(root, timestamp=timestamp)
+        status = planstore._operation_status_unlocked(root, operation_id)
+        if status["state"] == "COMMITTED":
+            if status["request_sha256"] != request_sha:
+                raise FactstoreError("OPERATION_ID_PAYLOAD_CONFLICT")
+            return _replayed_receipt(root, operation_id)
+        if status["terminal_phase"] == "rolled_back":
+            raise FactstoreError("OPERATION_ROLLED_BACK_REQUIRES_NEW_ID")
+        if status["state"] == "NEEDS_MANUAL_RECOVERY":
+            raise FactstoreError("OPERATION_NEEDS_MANUAL_RECOVERY")
+
+        facts = _validate_facts(planstore._read_json(root / "facts.json"))
+        facts_by_ref = {item["id"]: item for item in facts}
+        edges_before = _load_fact_causal_edges(root)
+        new_ids = allocate_fact_causal_edge_ids(edges_before, len(items))
+        new_edges = [
+            _build_fact_causal_edge_candidate(
+                item=item,
+                edge_ref=edge_ref,
+                timestamp=timestamp,
+                actor=actor,
+            )
+            for item, edge_ref in zip(items, new_ids)
+        ]
+        for edge in new_edges:
+            _validate_causal_edge_fact_refs(
+                edge, facts_by_ref, require_confirmed_endpoints=False
+            )
+        edges_after = [*edges_before, *new_edges]
+        history_rows: list[dict[str, Any]] = []
+        blobs: list[dict[str, Any]] = []
+        for edge in new_edges:
+            row, blob = _causal_edge_history_row(
+                operation_id=operation_id,
+                actor=actor,
+                action_name="fact_causal_edge_candidate_add",
+                before={"id": edge["id"], "rev": 0, "state": "absent"},
+                after=edge,
+                timestamp=timestamp,
+            )
+            history_rows.append(row)
+            blobs.append(blob)
+        return _commit_fact_causal_edges_locked(
+            root,
+            operation_id=operation_id,
+            action_name="fact_causal_edge_candidate_add",
+            request_sha256=request_sha,
+            edges_after=edges_after,
+            history_rows=history_rows,
+            blobs=blobs,
+            receipt={
+                "operation_id": operation_id,
+                "status": "COMMITTED",
+                "new_ce_ids": new_ids,
+                "candidate_count": len(new_edges),
+                "confirmed_writes": 0,
+            },
+            timestamp=timestamp,
+            fault_at=fault_at,
+        )
+
+
+def review_fact_causal_edge(
+    project_dir: str | Path,
+    *,
+    edge_ref: str,
+    expected_status: str,
+    expected_edge_sha256: str,
+    decision: str,
+    actor: str,
+    operation_id: str,
+    timestamp: str,
+    evidence_refs: list[str] | None = None,
+    note: str | None = None,
+    fault_at: str | None = None,
+) -> dict[str, Any]:
+    """作者确认、退役或暂缓一条因果边；不创建长期 action 对象。"""
+    if actor != "author":
+        raise FactstoreError("FACT_CAUSAL_EDGE_REVIEW_AUTHOR_REQUIRED")
+    if not isinstance(edge_ref, str) or CAUSAL_EDGE_ID_RE.fullmatch(edge_ref) is None:
+        raise FactstoreError("FACT_CAUSAL_EDGE_REVIEW_REF_INVALID")
+    if expected_status not in CAUSAL_EDGE_STATUSES:
+        raise FactstoreError("FACT_CAUSAL_EDGE_REVIEW_EXPECTED_STATUS_INVALID")
+    if (
+        not isinstance(expected_edge_sha256, str)
+        or planstore.SHA256_RE.fullmatch(expected_edge_sha256) is None
+    ):
+        raise FactstoreError("FACT_CAUSAL_EDGE_REVIEW_EXPECTED_SHA_INVALID")
+    if decision not in CAUSAL_EDGE_REVIEW_DECISIONS:
+        raise FactstoreError("FACT_CAUSAL_EDGE_REVIEW_DECISION_INVALID")
+    if evidence_refs is not None and not isinstance(evidence_refs, list):
+        raise FactstoreError("FACT_CAUSAL_EDGE_REVIEW_EVIDENCE_INVALID")
+    if note is not None and not isinstance(note, str):
+        raise FactstoreError("FACT_CAUSAL_EDGE_REVIEW_NOTE_INVALID")
+    if decision in {"retire", "defer"} and evidence_refs is not None:
+        raise FactstoreError("FACT_CAUSAL_EDGE_REVIEW_EVIDENCE_FORBIDDEN")
+    if decision == "defer" and note not in {None, ""}:
+        raise FactstoreError("FACT_CAUSAL_EDGE_DEFER_PAYLOAD_FORBIDDEN")
+    if fault_at is not None and fault_at not in FAULT_POINTS:
+        raise FactstoreError("UNKNOWN_FACT_CAUSAL_EDGE_FAULT_POINT")
+    planstore._validate_operation_id(operation_id)
+    _parse_causal_edge_timestamp(timestamp, "CAUSAL_EDGE_TIMESTAMP")
+    request_sha = planstore._sha256_json(
+        {
+            "edge_ref": edge_ref,
+            "expected_status": expected_status,
+            "expected_edge_sha256": expected_edge_sha256,
+            "decision": decision,
+            "actor": actor,
+            "operation_id": operation_id,
+            "timestamp": timestamp,
+            "evidence_refs": evidence_refs,
+            "note": note,
+        }
+    )
+    root = Path(project_dir)
+    with planstore._exclusive_lock(root):
+        planstore._recover_pending_locked(root, timestamp=timestamp)
+        status = planstore._operation_status_unlocked(root, operation_id)
+        if status["state"] == "COMMITTED":
+            if status["request_sha256"] != request_sha:
+                raise FactstoreError("OPERATION_ID_PAYLOAD_CONFLICT")
+            return _replayed_receipt(root, operation_id)
+        if status["terminal_phase"] == "rolled_back":
+            raise FactstoreError("OPERATION_ROLLED_BACK_REQUIRES_NEW_ID")
+        if status["state"] == "NEEDS_MANUAL_RECOVERY":
+            raise FactstoreError("OPERATION_NEEDS_MANUAL_RECOVERY")
+
+        edges_before = _load_fact_causal_edges(root)
+        matches = [item for item in edges_before if item["id"] == edge_ref]
+        if len(matches) != 1:
+            raise FactstoreError("FACT_CAUSAL_EDGE_REVIEW_TARGET_NOT_FOUND")
+        edge_before = matches[0]
+        if (
+            edge_before["confirm_status"] != expected_status
+            or fact_causal_edge_sha256(edge_before) != expected_edge_sha256
+        ):
+            raise FactstoreError("STALE_FACT_CAUSAL_EDGE_REVISION")
+        if decision == "defer":
+            return {
+                "operation_id": operation_id,
+                "status": "NO_CHANGE",
+                "decision": "defer",
+                "edge_ref": edge_ref,
+                "confirm_status": edge_before["confirm_status"],
+                "rev": edge_before["rev"],
+                "edge_sha256": fact_causal_edge_sha256(edge_before),
+                "story_commit_seq": planstore._latest_committed_story_seq(root),
+                "replayed": False,
+            }
+
+        if decision == "confirm" and edge_before["confirm_status"] != "candidate":
+            raise FactstoreError("FACT_CAUSAL_EDGE_CONFIRM_TRANSITION_INVALID")
+        if decision == "retire" and edge_before["confirm_status"] == "retired":
+            raise FactstoreError("FACT_CAUSAL_EDGE_RETIRE_TRANSITION_INVALID")
+
+        edge_after = copy.deepcopy(edge_before)
+        if decision == "confirm":
+            if evidence_refs is not None:
+                edge_after["evidence_refs"] = copy.deepcopy(evidence_refs)
+            edge_after["confirm_status"] = "confirmed"
+        else:
+            edge_after["confirm_status"] = "retired"
+        if note is not None:
+            edge_after["note"] = note
+        edge_after["updated_at"] = timestamp
+        edge_after["rev"] += 1
+        edge_after = validate_fact_causal_edge_record(edge_after)
+
+        facts = _validate_facts(planstore._read_json(root / "facts.json"))
+        _validate_causal_edge_fact_refs(
+            edge_after,
+            {item["id"]: item for item in facts},
+            require_confirmed_endpoints=decision == "confirm",
+        )
+        edges_after = [
+            edge_after if item["id"] == edge_ref else item for item in edges_before
+        ]
+        row, blob = _causal_edge_history_row(
+            operation_id=operation_id,
+            actor="author",
+            action_name="fact_causal_edge_review",
+            before=edge_before,
+            after=edge_after,
+            timestamp=timestamp,
+        )
+        return _commit_fact_causal_edges_locked(
+            root,
+            operation_id=operation_id,
+            action_name="fact_causal_edge_review",
+            request_sha256=request_sha,
+            edges_after=edges_after,
+            history_rows=[row],
+            blobs=[blob],
+            receipt={
+                "operation_id": operation_id,
+                "status": "COMMITTED",
+                "decision": decision,
+                "edge_ref": edge_ref,
+                "before_status": edge_before["confirm_status"],
+                "after_status": edge_after["confirm_status"],
+                "before_edge_sha256": fact_causal_edge_sha256(edge_before),
+                "after_edge_sha256": fact_causal_edge_sha256(edge_after),
+                "rev": edge_after["rev"],
+                "fact_causal_edge_writes": 1,
+            },
+            timestamp=timestamp,
+            fault_at=fault_at,
+        )
 
 
 def add_fact_candidates(
@@ -533,7 +1053,9 @@ def add_fact_candidates(
     valid = [
         item
         for item in items
-        if isinstance(item, dict) and isinstance(item.get("text"), str) and item["text"].strip()
+        if isinstance(item, dict)
+        and isinstance(item.get("text"), str)
+        and item["text"].strip()
     ]
     request_sha = planstore._sha256_json(
         {
@@ -688,7 +1210,9 @@ def repair_duplicate_fact_ids(
             blobs=[],
             receipt={**report, "operation_id": operation_id, "status": "COMMITTED"},
             timestamp=timestamp,
-            extra_replacements={"repair_ids_report.json": planstore._canonical_bytes(report)},
+            extra_replacements={
+                "repair_ids_report.json": planstore._canonical_bytes(report)
+            },
         )
 
 
@@ -730,7 +1254,9 @@ def review_fact(
             raise FactstoreError("STALE_FACT_REVISION")
 
         facts_after = copy.deepcopy(facts_before)
-        fact_after = next(item for item in facts_after if item["id"] == action["fact_ref"])
+        fact_after = next(
+            item for item in facts_after if item["id"] == action["fact_ref"]
+        )
         before_status = fact_after["status"]
         before_sha = fact_sha256(fact_after)
         decision = action["decision"]
@@ -758,7 +1284,10 @@ def review_fact(
             plan_after = copy.deepcopy(planstore._read_json(plan_path))
             planstore._validate_plan(plan_after)
             for edge in plan_after["reconciliation_edges"]:
-                if edge["edge_status"] != "active" or action["fact_ref"] not in edge["actual_fact_refs"]:
+                if (
+                    edge["edge_status"] != "active"
+                    or action["fact_ref"] not in edge["actual_fact_refs"]
+                ):
                     continue
                 edge_before = copy.deepcopy(edge)
                 edge["edge_status"] = "stale"

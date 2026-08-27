@@ -13,7 +13,7 @@
 | `extract.py`（M3a） | 主抽：责任段→事实句候选；arkcli 调用的共用底层通道 `call_json` 也在这里。截断判据：JSON 解析失败且 output≥上限 95% 判 `TruncatedOutput`，`extract_segment` 自动降密度重试一次（I-009） | `extract_segment` / `call_json` / `load_config` | store 入账；refine、check 借 `call_json` 调模型 |
 | `refine.py`（M3b） | 抽取质检管线：引文回填→补漏→验真→去噪→去重。质检用另一家模型（双 API 纪律）。分账规则：needs_review 待审条去噪不得剔，意见挂 `denoise_flag`（I-020）；去重带数值句守门，属性词不同不判重（I-021） | `run_pipeline` / `format_receipt` / `dedup` | cli 存 refine 报告；候选回 store |
 | `store.py`（M4 兼容面） | 项目/材料/C1/事实读取；旧事实写调用保持原名字，但不得裸写 facts | `facts` / `add_fact_candidates` / `set_status` / `edit_fact_text` / `review_fact` / `repair_ids` | facts 写动作全部转给 factstore；其他模块继续读它 |
-| `factstore.py`（M4/M5 writer） | C3 候选、作者确认／驳回／改判、改写后采纳与修号共用一把文件锁；被改事实的旧 RE 同事务 stale | `add_fact_candidates` / `review_fact` / `repair_duplicate_fact_ids` / `commit_facts_transaction_locked` | 唯一允许替换 `facts.json` 的运行时入口；底层交 planstore 恢复事务 |
+| `factstore.py`（M4/M5 writer） | C3 候选、作者确认／驳回／改判、改写后采纳、修号与事实因果边共用一把文件锁；被改事实的旧 RE 同事务 stale | `add_fact_candidates` / `review_fact` / `repair_duplicate_fact_ids` / `add_fact_causal_edge_candidates` / `review_fact_causal_edge` / `read_confirmed_fact_causal_edges` | 唯一允许替换 `facts.json` 与 `fact_causal_edges.json` 的运行时入口；底层交 planstore 恢复事务；机器只能写因果候选，确认只认作者 |
 | `check.py`（M7） | 一致性体检：机械分组＋打包调模型扫矛盾，含账本完整性预检（重复号只认首条、单独报） | `run_check` / `format_plan` / `format_report` / `save_report` | cli 存 health_report |
 | `ask.py` | 取证问答：关键词查已确认事实（带原文依据） | `search_confirmed` | cli 打印 |
 | `plan.py`（M8） | 续写规划最小出题：目的挂卡＋选项／前置卡＋冲突爆出＋写作指导副产品；计划不入事实账 | `run_plan` / `format_plan` / `save_plan` | cli 存 plan_latest.json |
