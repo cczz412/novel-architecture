@@ -2,6 +2,7 @@
 
 本适配器只接受已绑定的能力句柄和冻结离线响应映射。它不接路径或身份字符串，
 不调用模型，也不把候选晋升为 C4 或写进 ``facts``。
+已提交的整批 ``fact_candidates`` 快照可映射为六字段只读引用；按引用取回失败时零写入。
 """
 
 from __future__ import annotations
@@ -23,6 +24,17 @@ from mvp.workspace import (
 
 FACT_CANDIDATE_RUNS_KEY = "fact_candidate_runs"
 FACT_CANDIDATES_KEY = "fact_candidates"
+FACT_CANDIDATES_RECORD_TYPE = "C3_FACT_CANDIDATE_SNAPSHOT"
+FACT_CANDIDATES_ACCESS = "READ_ONLY"
+FACT_CANDIDATES_SOURCE_MODULE = "novel-mvp/M3"
+FACT_CANDIDATES_FOREIGN_REF_KEYS = (
+    "record_type",
+    "record_id",
+    "record_version",
+    "record_hash",
+    "access",
+    "source_module",
+)
 STATE_KEYS = {"items", "source_identity", "responses_identity"}
 SOURCE_KEYS = {"segments", "chapter_index"}
 IDENTITY_KEYS = {"version", "sha256"}
@@ -536,10 +548,10 @@ def read_current_fact_candidates(workspace: AuthorWorkspace) -> dict[str, Any]:
     return payload
 
 
-def read_current_complete_fact_candidates(
+def _read_current_complete_fact_candidates_state(
     workspace: AuthorWorkspace,
-) -> dict[str, Any]:
-    """只返回被 current ``COMPLETE`` 回执精确绑定的 C3。"""
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """同一活读窗口：current C3 payload + 信封 version／sha256。"""
     workspace = _validate_workspace(workspace)
     candidates_before = workspace.read(FACT_CANDIDATES_KEY)
     runs_before = workspace.read(FACT_CANDIDATE_RUNS_KEY)
@@ -592,4 +604,77 @@ def read_current_complete_fact_candidates(
     ]
     if len(matching) != 1:
         raise ExtractWorkspaceError("FACT_CANDIDATES_COMPLETE_RECEIPT_MISSING")
+    return payload, {
+        "version": candidates_after["version"],
+        "sha256": candidates_after["sha256"],
+    }
+
+
+def read_current_complete_fact_candidates(
+    workspace: AuthorWorkspace,
+) -> dict[str, Any]:
+    """只返回被 current ``COMPLETE`` 回执精确绑定的 C3。"""
+    payload, _identity = _read_current_complete_fact_candidates_state(workspace)
     return payload
+
+
+def _fact_candidates_foreign_ref(identity: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "record_type": FACT_CANDIDATES_RECORD_TYPE,
+        "record_id": FACT_CANDIDATES_KEY,
+        "record_version": identity["version"],
+        "record_hash": identity["sha256"],
+        "access": FACT_CANDIDATES_ACCESS,
+        "source_module": FACT_CANDIDATES_SOURCE_MODULE,
+    }
+
+
+def _require_fact_candidates_foreign_ref(value: object) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        raise ExtractWorkspaceError("FACT_CANDIDATES_REF_INVALID")
+    if any(key not in value for key in FACT_CANDIDATES_FOREIGN_REF_KEYS):
+        raise ExtractWorkspaceError("FACT_CANDIDATES_REF_INVALID")
+    if value.get("record_type") != FACT_CANDIDATES_RECORD_TYPE:
+        raise ExtractWorkspaceError("FACT_CANDIDATES_REF_TYPE_INVALID")
+    if value.get("record_id") != FACT_CANDIDATES_KEY:
+        raise ExtractWorkspaceError("FACT_CANDIDATES_REF_ID_INVALID")
+    if value.get("access") != FACT_CANDIDATES_ACCESS:
+        raise ExtractWorkspaceError("FACT_CANDIDATES_REF_ACCESS_INVALID")
+    if value.get("source_module") != FACT_CANDIDATES_SOURCE_MODULE:
+        raise ExtractWorkspaceError("FACT_CANDIDATES_REF_SOURCE_MODULE_INVALID")
+    version = value.get("record_version")
+    if isinstance(version, bool) or not isinstance(version, int) or version < 1:
+        raise ExtractWorkspaceError("FACT_CANDIDATES_REF_VERSION_INVALID")
+    record_hash = value.get("record_hash")
+    if not isinstance(record_hash, str) or SHA256_RE.fullmatch(record_hash) is None:
+        raise ExtractWorkspaceError("FACT_CANDIDATES_REF_HASH_INVALID")
+    return {
+        "record_type": FACT_CANDIDATES_RECORD_TYPE,
+        "record_id": FACT_CANDIDATES_KEY,
+        "record_version": version,
+        "record_hash": record_hash,
+        "access": FACT_CANDIDATES_ACCESS,
+        "source_module": FACT_CANDIDATES_SOURCE_MODULE,
+    }
+
+
+def current_fact_candidates_foreign_ref(
+    workspace: AuthorWorkspace,
+) -> dict[str, Any]:
+    """映射当前已提交、仍 current 且有 COMPLETE 回执的整批 C3 六字段引用。"""
+    _payload, identity = _read_current_complete_fact_candidates_state(workspace)
+    return _fact_candidates_foreign_ref(identity)
+
+
+def read_fact_candidates_by_foreign_ref(
+    workspace: AuthorWorkspace,
+    ref: object,
+) -> dict[str, Any]:
+    """按六字段引用取回当前整批 C3；失败明确拒绝且零写入。"""
+    expected = _require_fact_candidates_foreign_ref(ref)
+    payload, identity = _read_current_complete_fact_candidates_state(workspace)
+    if expected["record_version"] != identity["version"]:
+        raise ExtractWorkspaceError("FACT_CANDIDATES_REF_VERSION_MISMATCH")
+    if expected["record_hash"] != identity["sha256"]:
+        raise ExtractWorkspaceError("FACT_CANDIDATES_REF_HASH_MISMATCH")
+    return copy.deepcopy(payload)

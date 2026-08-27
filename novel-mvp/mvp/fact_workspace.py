@@ -2,6 +2,7 @@
 
 只使用 AuthorWorkspace 的逻辑键 ``facts``；不接路径、作者 ID、项目 ID，
 不调用 legacy facts.json writer，也不做 M5 作者确认。
+可按六字段只读解析已提交的整批 C3 快照；不改物化落账。
 """
 
 from __future__ import annotations
@@ -375,6 +376,27 @@ def read_snapshot(workspace: AuthorWorkspace) -> dict[str, Any]:
         "sha256": current["sha256"],
         "facts": copy.deepcopy(facts),
     }
+
+
+def current_fact_candidates_ref(workspace: AuthorWorkspace) -> dict[str, Any]:
+    """读取当前已提交 C3 批次的六字段只读引用；不写 facts。"""
+    workspace = _require_workspace(workspace)
+    try:
+        return extract_workspace.current_fact_candidates_foreign_ref(workspace)
+    except extract_workspace.ExtractWorkspaceError as exc:
+        raise FactWorkspaceError(f"M4_FACT_CANDIDATES_REF_REJECTED:{exc}") from exc
+
+
+def read_fact_candidates_by_ref(
+    workspace: AuthorWorkspace,
+    ref: object,
+) -> dict[str, Any]:
+    """M4 按六字段引用只读取回整批 C3；失败零写入，不物化。"""
+    workspace = _require_workspace(workspace)
+    try:
+        return extract_workspace.read_fact_candidates_by_foreign_ref(workspace, ref)
+    except extract_workspace.ExtractWorkspaceError as exc:
+        raise FactWorkspaceError(f"M4_FACT_CANDIDATES_REF_REJECTED:{exc}") from exc
 
 
 def _read_current_fact_view_source(

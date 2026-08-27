@@ -1203,3 +1203,51 @@ def test_current_view_restart_is_byte_stable_and_workspace_binding_is_enforced(
     ):
         fact_workspace.read_current_snapshot(caller_path)  # type: ignore[arg-type]
     assert not caller_path.exists()
+
+
+def test_m4_reads_submitted_c3_batch_by_six_field_ref_without_materializing(
+    tmp_path: Path,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "m4-ref").create_project(
+        PRINCIPAL, "M4引用"
+    )
+    _prepare_current_c1_c2_c3(workspace)
+    before_facts = workspace.read("facts")
+    before_candidates = copy.deepcopy(workspace.read("fact_candidates"))
+
+    ref = fact_workspace.current_fact_candidates_ref(workspace)
+    payload = fact_workspace.read_fact_candidates_by_ref(workspace, ref)
+
+    assert payload == extract_workspace.read_current_complete_fact_candidates(
+        workspace
+    )
+    assert ref["record_type"] == "C3_FACT_CANDIDATE_SNAPSHOT"
+    assert ref["record_id"] == "fact_candidates"
+    assert ref["access"] == "READ_ONLY"
+    assert ref["source_module"] == "novel-mvp/M3"
+    assert workspace.read("facts") == before_facts
+    assert workspace.read("fact_candidates") == before_candidates
+
+
+def test_m4_six_field_ref_reject_does_not_write_facts(tmp_path: Path) -> None:
+    workspace = WorkspaceRouter(tmp_path / "m4-reject").create_project(
+        PRINCIPAL, "M4拒绝"
+    )
+    _prepare_current_c1_c2_c3(workspace)
+    ref = fact_workspace.current_fact_candidates_ref(workspace)
+    before_candidates = copy.deepcopy(workspace.read("fact_candidates"))
+    segments = workspace.read("segments")
+    workspace.commit(
+        "op-segments-v2",
+        {"segments": segments["payload"]},
+        {"segments": segments["version"]},
+    )
+
+    with pytest.raises(
+        fact_workspace.FactWorkspaceError,
+        match="FACT_CANDIDATES_STALE",
+    ):
+        fact_workspace.read_fact_candidates_by_ref(workspace, ref)
+
+    assert workspace.read("facts") is None
+    assert workspace.read("fact_candidates") == before_candidates
