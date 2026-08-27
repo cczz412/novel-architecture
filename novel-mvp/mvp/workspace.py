@@ -35,6 +35,7 @@ LOGICAL_KEY_FILES = {
     "fact_candidate_runs": "fact_candidate_runs.json",
     "fact_candidates": "fact_candidates.json",
     "fact_materialization_runs": "fact_materialization_runs.json",
+    "fact_review_runs": "fact_review_runs.json",
     "facts": "facts.json",
     "health_report": "health_report.json",
     "input_manifest": "input_manifest.json",
