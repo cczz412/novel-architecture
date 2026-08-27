@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-pointers-v1",
-  "updated_at": "2026-08-25T16:50:00+08:00",
+  "updated_at": "2026-08-28T01:32:25+08:00",
   "authority": {
     "role": "当前版本、路径和候选身份的唯一机器索引；不保存整体任务进度",
     "does_not_replace": [
@@ -105,9 +105,9 @@
       "version": "R01",
       "path": "novel-mvp/design/design_registry.json",
       "index_path": "novel-mvp/design/INDEX.md",
-      "document_count": 58,
+      "document_count": 60,
       "status_counts": {
-        "CURRENT": 20,
+        "CURRENT": 22,
         "HISTORICAL": 5,
         "SUPERSEDED": 26,
         "WAITING_REWRITE": 7

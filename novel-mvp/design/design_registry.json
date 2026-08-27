@@ -3,7 +3,7 @@
   "registry_id": "NOVEL_MVP_DESIGN_CURRENTNESS_20260821_R01",
   "authority": "CURRENTNESS_ROUTING_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
   "review_status": "CANDIDATE_REVIEWED",
-  "updated_at": "2026-08-25T17:15:00+08:00",
+  "updated_at": "2026-08-28T01:32:25+08:00",
   "base_commit": "7eca07a64b31078d51eb7dd6f7b509ede967a704",
   "product_background": {
     "version": "R14",
@@ -28,14 +28,14 @@
     ]
   },
   "inventory": {
-    "document_count": 58,
+    "document_count": 60,
     "status_counts": {
-      "CURRENT": 20,
+      "CURRENT": 22,
       "HISTORICAL": 5,
       "SUPERSEDED": 26,
       "WAITING_REWRITE": 7
     },
-    "default_route_count": 20
+    "default_route_count": 22
   },
   "expected_work_order_5_pr_c_changes": {
     "source_branch": "codex/module-runtime-foundation-20260819-r01",
@@ -228,6 +228,49 @@
       "source_basis": [
         "novel-mvp/design/INDEX.md@main-before-WO4",
         "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md"
+      ]
+    },
+    {
+      "design_id": "CAPABILITY_DIRECTORY_AUTHOR_R01",
+      "path": "novel-mvp/design/CAPABILITY_DIRECTORY_AUTHOR_R01.md",
+      "family": "CAPABILITY_DIRECTORY_AUTHOR",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "ADMITTED_CURRENT_BY_S3_GITHUB_182",
+        "note": "作者日常使用路牌；只引用同编号能力，不另立权限真源，也不证明 UI 或工具调用层已经接通。",
+        "basis": "GitHub #182 contract, CCZ-67 Q1 and S3 review inputs"
+      },
+      "body_sha256": "896f45d63f0f184fc3484b4e8916f6da9dab2cbc066e45207cb82acf4023c375",
+      "source_basis": [
+        "GitHub #182",
+        "Linear CCZ-67 comments bceee0eb and 065f8809",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+        "novel-mvp/design/CAPABILITY_DIRECTORY_ENGINEERING_R01.md"
+      ]
+    },
+    {
+      "design_id": "CAPABILITY_DIRECTORY_ENGINEERING_R01",
+      "path": "novel-mvp/design/CAPABILITY_DIRECTORY_ENGINEERING_R01.md",
+      "family": "CAPABILITY_DIRECTORY_ENGINEERING",
+      "version": "R01",
+      "status": "CURRENT",
+      "default_route": true,
+      "superseded_by": null,
+      "r14_relation": {
+        "state": "ADMITTED_CURRENT_BY_S3_GITHUB_182",
+        "note": "23 项能力卡的详细真源；记录当前资格和停点，不授予主 AI、卡片 AI、插件或 MCP 新权限。",
+        "basis": "GitHub #182 contract, CCZ-67 S3 decisions, PR #178 and PR #180 accepted evidence"
+      },
+      "body_sha256": "316cca1d29d3a4376328d9ffc57b32585d753c73792261ca74fb7a36c92bb4db",
+      "source_basis": [
+        "GitHub #182",
+        "Linear CCZ-67 comments bceee0eb and 065f8809",
+        "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
+        "GitHub PR #178 review receipt 5440710823",
+        "GitHub PR #180 review receipt 5442444993"
       ]
     },
     {
