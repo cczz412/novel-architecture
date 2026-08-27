@@ -1,7 +1,7 @@
 {
   "generator": {
     "path": "tools/governance_index.py",
-    "sha256": "24c3ef3559092a876f84be114438709ccf5dde5e0662d1866ef7df525167dfdf"
+    "sha256": "913667530f9a46b3887ef790f8185e2c652a6c97eac7d8e25e1dfdc59d66b3e5"
   },
   "inputs": [
     {
@@ -15,14 +15,14 @@
       "sha256": "bfc0b7b70114b2a480cd570710024a1bb3d972ab47992edaa33615da10be7059"
     },
     {
-      "bytes": 12660,
+      "bytes": 13004,
       "path": "governance/control_plane.json",
-      "sha256": "e2e11cce842a1539b834632b7f2095265bdf2fe312c2fd1132db3c54db98d779"
+      "sha256": "f53b84fb68cce90bd0db712e1939fd80fb398b3b2b611aa6f86975922f8c377c"
     },
     {
-      "bytes": 35535,
+      "bytes": 37443,
       "path": "governance/directory_registry.json",
-      "sha256": "ee88f39d6fcc4b9990345b650edfbec011556c4796635b89a5b11ca8db4c9398"
+      "sha256": "8fc020f01b6999ac8335d26f708f2b2921e81d7139a76e6e695e9daa03c6efc6"
     },
     {
       "bytes": 14298,
@@ -52,9 +52,9 @@
       "sha256": "24aadd57ef2b733599abecbecb877293ba996a3a37d47874caadf5ee053ea894"
     },
     {
-      "bytes": 7080,
+      "bytes": 7070,
       "path": "governance/indexes/directory_map.md",
-      "sha256": "7e512848e871577a5707296c5381b61f57fc0e02a660cebc715cc719aff47e1c"
+      "sha256": "34880b44e87c1ee6318e3f3488a8a296daffb9819b422a4228f38bde12c4040e"
     },
     {
       "bytes": 2219,
@@ -62,9 +62,9 @@
       "sha256": "fd131e9b28e40358c890222a0ac6c8f89d3dcd18a67fa86960d35f5af7ea88c3"
     },
     {
-      "bytes": 7493,
+      "bytes": 8411,
       "path": "governance/indexes/new_file_routing.md",
-      "sha256": "e0946196b56905d8988d8e8588d52c22cf3d8a9cdb8c59887d2dc784c231cacc"
+      "sha256": "e29651b49e6f6f0ac44529d62eaa300d596c6bbeb141a390e69f99482eb00586"
     },
     {
       "bytes": 503,

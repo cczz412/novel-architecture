@@ -46,7 +46,12 @@
     },
     {
       "path": "reports/Z73_第3章金标v1.2定稿转正_20260721/第3章结构层金标v1.2.json",
-      "sha256": "0df08ede4fa1a33f4bd9e1aea3e45387c8d77131ce79ff1496fe1320fa48a10e"
+      "sha256": "0df08ede4fa1a33f4bd9e1aea3e45387c8d77131ce79ff1496fe1320fa48a10e",
+      "portable_binding": {
+        "schema_version": "protected-ref-portable-json-binding-v1",
+        "pointer_path": "config/gold/X01_ch0003_structure_gold_current.json",
+        "object_key": "active_gold"
+      }
     },
     {
       "path": "runs/Z36_X01_E0130补锚与v1.2默认升版_20章_v1.0_20260719/02_verify/valid_records.json",

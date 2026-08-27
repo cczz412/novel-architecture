@@ -169,6 +169,12 @@ def test_main_portable_keeps_equivalent_repository_layout_guards() -> None:
         "test_directory_registry_portable_contract_survives_missing_local_evidence",
         "tests/test_repository_layout.py::"
         "test_temporary_refresh_portable_path_does_not_modify_current_state",
+        "tests/test_repository_layout.py::"
+        "test_missing_z73_artifact_accepts_only_exact_protected_pointer_binding",
+        "tests/test_repository_layout.py::"
+        "test_current_z73_binding_matches_the_protected_gold_pointer",
+        "tests/test_repository_layout.py::"
+        "test_missing_unbound_protected_ref_and_present_drift_still_fail",
     } <= portable
     assert (
         "tests/test_isolation.py::"
