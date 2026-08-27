@@ -1,14 +1,16 @@
-# 设计稿总索引｜R14 currentness 登记 R02（PR-C 产品架构＋账本目录）
+# 设计稿总索引｜R14 currentness 登记 R03（S3 正式能力目录）
 
-> 更新：2026-08-21。产品语义只认背景板 **R14**。本页与 `design_registry.json` 是同一份 currentness 登记的两种视图；设计稿不是产品完成态，也不是施工放行票。
-> 工单 5 PR-C 已接入产品目标架构、账本目录和三个冻结设计正文；INDEX 继续沿用工单 4 的 R14 currentness 格式，不用旧分支 INDEX 整页覆盖。
+> 更新：2026-08-28。产品语义只认背景板 **R14**。本页与 `design_registry.json` 是同一份 currentness 登记的两种视图；设计稿不是产品完成态，也不是施工放行票。
+> 工单 5 PR-C 已接入产品目标架构、账本目录和三个冻结设计正文；S3 GitHub #182 新增工程能力目录和作者速查。INDEX 继续沿用工单 4 的 R14 currentness 格式，不用旧分支 INDEX 整页覆盖。
 
-## 产品架构与账本目录入口
+## 产品架构、账本与能力目录入口
 
 | 入口 | 管什么 | 怎么读 |
 |---|---|---|
 | [ARCHITECTURE.md](../ARCHITECTURE.md) | 双车道总管线、M1～M11 新定位、当前和目标的分界 | **产品目标图，不是完成图**；runtime 状态看 [CURRENT_VS_TARGET_R01.md](../CURRENT_VS_TARGET_R01.md) |
 | [LEDGER_DIRECTORY_DESIGN_R01.md](LEDGER_DIRECTORY_DESIGN_R01.md) | 账本目录、10 本固定账、统一取件、简装／精装和插件接法 | `CURRENT` 设计；不是 M12，也不是 runtime 完成票 |
+| [CAPABILITY_DIRECTORY_ENGINEERING_R01.md](CAPABILITY_DIRECTORY_ENGINEERING_R01.md) | 23 项能力卡的详细输入、输出、权限和停点 | **详细真源**；目录条目不等于工具已接通或新增权限 |
+| [CAPABILITY_DIRECTORY_AUTHOR_R01.md](CAPABILITY_DIRECTORY_AUTHOR_R01.md) | 作者按日常流程查看同一批能力编号 | 速查视图；不另写一套权限口径 |
 
 旧设计稿里出现“工作稿”“故事稿件”“自产章回 M2／M3”或把 T14 当模块时，以产品目标架构和账本目录纠正。正式合同中的旧机器名暂时保留，只表示兼容迁移尚未结束。
 
@@ -35,6 +37,8 @@
 |---|---|---|
 | [API_EXPOSURE_DESIGN_R01.md](API_EXPOSURE_DESIGN_R01.md) | `CURRENT` | API 暴露层；仍是设计，不代表接口已经开放。 |
 | [BOOK_DISSECT_MENU_DESIGN_R01.md](BOOK_DISSECT_MENU_DESIGN_R01.md) | `CURRENT` | 拆书菜单与只读分析入口。 |
+| [CAPABILITY_DIRECTORY_AUTHOR_R01.md](CAPABILITY_DIRECTORY_AUTHOR_R01.md) | `CURRENT` | 作者日常使用路牌；只引用同编号能力，不另立权限真源，也不证明 UI 或工具调用层已经接通。 |
+| [CAPABILITY_DIRECTORY_ENGINEERING_R01.md](CAPABILITY_DIRECTORY_ENGINEERING_R01.md) | `CURRENT` | 23 项能力卡的详细真源；记录当前资格和停点，不授予主 AI、卡片 AI、插件或 MCP 新权限。 |
 | [CHAPTER_REVISION_DESIGN_R01.md](CHAPTER_REVISION_DESIGN_R01.md) | `CURRENT` | 外来书稿改稿重导的版本与证据处理参考。 |
 | [CHAPTER_WORKBENCH_DESIGN_R02.md](CHAPTER_WORKBENCH_DESIGN_R02.md) | `CURRENT` | 下一章工作台、选线和章级沙箱。 |
 | [CHARACTER_LEDGER_DESIGN_R02.md](CHARACTER_LEDGER_DESIGN_R02.md) | `CURRENT` | 人物账结构与作者可见操作参考。 |
@@ -77,7 +81,7 @@
 | `novel-mvp/design/STOP_POINT_REGISTRY_R03.md` | 与 `cc793c4` 逐字节一致，正文 SHA 已刷新 | `CURRENT`，原身份保留 |
 ## 全量机器登记镜像
 
-下表覆盖当前 `novel-mvp/design/` 下全部 57 份设计／调查文档，不含本索引和 registry 自身。状态和 `superseded_by` 必须与 JSON 一致。
+下表覆盖当前 `novel-mvp/design/` 下全部 60 份设计／调查文档，不含本索引和 registry 自身。状态和 `superseded_by` 必须与 JSON 一致。
 
 <!-- DESIGN_STATUS_TABLE_START -->
 | 设计稿 | status | superseded_by | R14 relation |
@@ -89,6 +93,8 @@
 | [21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md](21_EXTERNAL_PROMPT_R10_INTERNAL_SCAN_20260814_R01.md) | `HISTORICAL` | `—` | 外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。 |
 | [API_EXPOSURE_DESIGN_R01.md](API_EXPOSURE_DESIGN_R01.md) | `CURRENT` | `—` | API 暴露层；仍是设计，不代表接口已经开放。 |
 | [BOOK_DISSECT_MENU_DESIGN_R01.md](BOOK_DISSECT_MENU_DESIGN_R01.md) | `CURRENT` | `—` | 拆书菜单与只读分析入口。 |
+| [CAPABILITY_DIRECTORY_AUTHOR_R01.md](CAPABILITY_DIRECTORY_AUTHOR_R01.md) | `CURRENT` | `—` | 作者日常使用路牌；只引用同编号能力，不另立权限真源，也不证明 UI 或工具调用层已经接通。 |
+| [CAPABILITY_DIRECTORY_ENGINEERING_R01.md](CAPABILITY_DIRECTORY_ENGINEERING_R01.md) | `CURRENT` | `—` | 23 项能力卡的详细真源；记录当前资格和停点，不授予主 AI、卡片 AI、插件或 MCP 新权限。 |
 | [CHAPTER_REVISION_DESIGN_R01.md](CHAPTER_REVISION_DESIGN_R01.md) | `CURRENT` | `—` | 外来书稿改稿重导的版本与证据处理参考。 |
 | [CHAPTER_WORKBENCH_DESIGN_R01.md](CHAPTER_WORKBENCH_DESIGN_R01.md) | `SUPERSEDED` | `novel-mvp/design/CHAPTER_WORKBENCH_DESIGN_R02.md` | 旧版本保留追溯，但不得进入默认施工路由；按 superseded_by 回当前或预期后继。 |
 | [CHAPTER_WORKBENCH_DESIGN_R02.md](CHAPTER_WORKBENCH_DESIGN_R02.md) | `CURRENT` | `—` | 下一章工作台、选线和章级沙箱。 |
