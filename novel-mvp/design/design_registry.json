@@ -264,7 +264,7 @@
         "note": "23 项能力卡的详细真源；记录当前资格和停点，不授予主 AI、卡片 AI、插件或 MCP 新权限。",
         "basis": "GitHub #182 contract, CCZ-67 S3 decisions, PR #178 and PR #180 accepted evidence"
       },
-      "body_sha256": "316cca1d29d3a4376328d9ffc57b32585d753c73792261ca74fb7a36c92bb4db",
+      "body_sha256": "895e27b57eb9f3195253eb82c5fe143c8e30fc71b07345c4372c1a97694f242f",
       "source_basis": [
         "GitHub #182",
         "Linear CCZ-67 comments bceee0eb and 065f8809",
