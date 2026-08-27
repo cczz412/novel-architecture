@@ -27,6 +27,7 @@ from zero_api_shell import (
     NetworkAuditGuard,
     RawAttemptStore,
     canonical_json_bytes,
+    freeze_run_identity,
     normalize_ark,
     normalize_openrouter,
     pack_tool_bundle,
@@ -207,6 +208,19 @@ def test_fixed_negative_replay_set_is_complete() -> None:
     assert report["attempt"]["identity_tamper_negative"]["code"] == (
         "RAW_HASH_OR_SIZE_MISMATCH"
     )
+    expected_usage_receipt = {
+        "layer": "provider_envelope",
+        "code": "BAD_USAGE",
+        "detail": "",
+        "parent_code": "PROVIDER_ENVELOPE_REJECTED",
+    }
+    for key in ("openrouter_null_usage", "ark_null_usage"):
+        assert report["negative_gates"][key] == expected_usage_receipt
+    for evidence in report["attempt"]["credential_prewrite_negatives"].values():
+        assert evidence["failure_receipt"]["code"] == (
+            "REQUEST_CONTAINS_CREDENTIAL_MATERIAL"
+        )
+        assert evidence["run_directory_absent"] is True
 
 
 def test_network_guard_mechanically_blocks_network_capable_events() -> None:
@@ -400,22 +414,121 @@ def test_request_binding_receipt_is_hash_only_and_blocks_credentials() -> None:
         )
 
 
-def test_attempt_store_rejects_credentials_before_writing_request_raw(tmp_path) -> None:
+@pytest.mark.parametrize(
+    "sensitive_key",
+    (
+        "token",
+        "Access_Token",
+        "Refresh-Token",
+        "ID Token",
+        "Client.Secret",
+        "API Key",
+        "AUTHORIZATION",
+        "Cookie",
+        "Proxy Authorization",
+        "credential",
+        "Pass-Word",
+    ),
+)
+@pytest.mark.parametrize("location", ("top_level", "nested"))
+def test_attempt_store_rejects_normalized_sensitive_request_keys_before_writing(
+    tmp_path, sensitive_key, location
+) -> None:
     store = RawAttemptStore(tmp_path)
-    request_with_secret = _mutated_raw(
-        OPENROUTER_REQUEST,
-        lambda body: body.__setitem__("headers", {"Authorization": "secret"}),
-    )
-    with pytest.raises(MechanicalGateError, match="REQUEST_CONTAINS_CREDENTIAL_MATERIAL"):
+    request_body = json.loads(OPENROUTER_REQUEST)
+    if location == "top_level":
+        request_body[sensitive_key] = "synthetic-credential-placeholder"
+    else:
+        request_body["messages"][0]["metadata"] = {
+            sensitive_key: "synthetic-credential-placeholder"
+        }
+    run_id = f"request-credential-{location}"
+    with pytest.raises(
+        MechanicalGateError, match="REQUEST_CONTAINS_CREDENTIAL_MATERIAL"
+    ) as caught:
         store.append(
-            run_id="credential-run",
+            run_id=run_id,
             attempt_no=1,
             http_status=200,
-            request=request_with_secret,
+            request=canonical_json_bytes(request_body),
             response=OPENROUTER_TOOL,
-            run_identity={**OPENROUTER_RUN_IDENTITY, "run_id": "credential-run"},
+            run_identity={**OPENROUTER_RUN_IDENTITY, "run_id": run_id},
         )
-    assert not (tmp_path / "credential-run").exists()
+    assert caught.value.layer == "request_storage"
+    assert caught.value.code == "REQUEST_CONTAINS_CREDENTIAL_MATERIAL"
+    assert not (tmp_path / run_id).exists()
+
+
+@pytest.mark.parametrize(
+    ("section", "sensitive_key"),
+    (
+        ("config", "token"),
+        ("config", "Access_Token"),
+        ("config", "Refresh-Token"),
+        ("reasoning", "ID Token"),
+        ("reasoning", "Client.Secret"),
+        ("upstream_identity", "API Key"),
+        ("upstream_identity", "AUTHORIZATION"),
+        ("config", "Cookie"),
+        ("reasoning", "Proxy Authorization"),
+        ("config", "credential"),
+        ("config", "Pass-Word"),
+    ),
+)
+def test_freeze_and_attempt_store_reject_sensitive_run_identity_before_writing(
+    tmp_path, section, sensitive_key
+) -> None:
+    run_id = f"run-identity-credential-{section}"
+    identity = copy.deepcopy(OPENROUTER_RUN_IDENTITY)
+    identity["run_id"] = run_id
+    identity[section][sensitive_key] = "synthetic-credential-placeholder"
+
+    with pytest.raises(
+        MechanicalGateError, match="REQUEST_CONTAINS_CREDENTIAL_MATERIAL"
+    ) as freeze_error:
+        freeze_run_identity(identity)
+    assert freeze_error.value.layer == "run_identity"
+
+    store = RawAttemptStore(tmp_path)
+    with pytest.raises(
+        MechanicalGateError, match="REQUEST_CONTAINS_CREDENTIAL_MATERIAL"
+    ) as store_error:
+        store.append(
+            run_id=run_id,
+            attempt_no=1,
+            http_status=200,
+            request=OPENROUTER_REQUEST,
+            response=OPENROUTER_TOOL,
+            run_identity=identity,
+        )
+    assert store_error.value.layer == "run_identity"
+    assert not (tmp_path / run_id).exists()
+
+
+def test_sensitive_key_matching_does_not_misclassify_max_tokens() -> None:
+    frozen = freeze_run_identity(OPENROUTER_RUN_IDENTITY)
+    assert frozen["identity"]["config"]["max_tokens"] == 256
+    assert validate_saved_request_binding(
+        OPENROUTER_REQUEST, OPENROUTER_RUN_IDENTITY
+    )["binding_pass"] is True
+
+
+def test_sensitive_words_in_prompt_values_are_not_misclassified(tmp_path) -> None:
+    request_body = json.loads(OPENROUTER_REQUEST)
+    request_body["messages"][0]["content"] = (
+        "synthetic prose mentioning token, client_secret, and password"
+    )
+    run_id = "safe-prompt-words"
+    store = RawAttemptStore(tmp_path)
+    store.append(
+        run_id=run_id,
+        attempt_no=1,
+        http_status=200,
+        request=canonical_json_bytes(request_body),
+        response=OPENROUTER_TOOL,
+        run_identity={**OPENROUTER_RUN_IDENTITY, "run_id": run_id},
+    )
+    assert (tmp_path / run_id / "attempt-0001" / "request.raw").is_file()
 
 
 def test_native_and_legacy_share_the_saved_request_binding_gate(tmp_path) -> None:
@@ -505,7 +618,7 @@ def test_openrouter_tool_type_and_finish_consistency_fail_closed() -> None:
         normalize_openrouter(canonical_json_bytes(empty_with_tool_finish))
 
 
-@pytest.mark.parametrize("usage", ("", [], 0, False))
+@pytest.mark.parametrize("usage", (None, "", [], 0, False))
 def test_provider_bad_usage_types_fail(usage) -> None:
     for raw, normalizer in (
         (OPENROUTER_TOOL, normalize_openrouter),
@@ -517,17 +630,6 @@ def test_provider_bad_usage_types_fail(usage) -> None:
             normalizer(canonical_json_bytes(response))
 
 
-@pytest.mark.parametrize("usage_value", (pytest.param(None, id="null"),))
-def test_provider_null_usage_is_legal_empty(usage_value) -> None:
-    for raw, normalizer in (
-        (OPENROUTER_TOOL, normalize_openrouter),
-        (ARK_TOOL, normalize_ark),
-    ):
-        response = json.loads(raw)
-        response["usage"] = usage_value
-        assert normalizer(canonical_json_bytes(response))["usage"] == {}
-
-
 def test_provider_missing_usage_is_legal_empty() -> None:
     for raw, normalizer in (
         (OPENROUTER_TOOL, normalize_openrouter),
@@ -536,6 +638,54 @@ def test_provider_missing_usage_is_legal_empty() -> None:
         response = json.loads(raw)
         response.pop("usage", None)
         assert normalizer(canonical_json_bytes(response))["usage"] == {}
+
+
+@pytest.mark.parametrize(
+    ("run_id", "request_raw", "response_raw", "base_identity"),
+    (
+        pytest.param(
+            "openrouter-null-usage",
+            OPENROUTER_REQUEST,
+            OPENROUTER_TOOL,
+            OPENROUTER_RUN_IDENTITY,
+            id="openrouter",
+        ),
+        pytest.param(
+            "ark-null-usage",
+            ARK_REQUEST,
+            ARK_TOOL,
+            ARK_RUN_IDENTITY,
+            id="ark",
+        ),
+    ),
+)
+def test_saved_provider_turn_rejects_explicit_null_usage_with_parent_code(
+    tmp_path, run_id, request_raw, response_raw, base_identity
+) -> None:
+    response = json.loads(response_raw)
+    response["usage"] = None
+    identity = {**base_identity, "run_id": run_id}
+    store = RawAttemptStore(tmp_path)
+    store.append(
+        run_id=run_id,
+        attempt_no=1,
+        http_status=200,
+        request=request_raw,
+        response=canonical_json_bytes(response),
+        run_identity=identity,
+    )
+
+    with pytest.raises(MechanicalGateError, match="BAD_USAGE") as caught:
+        validate_saved_provider_turn(
+            tmp_path / run_id / "attempt-0001",
+            current_revision_ref=REVISION,
+        )
+    assert caught.value.receipt() == {
+        "layer": "provider_envelope",
+        "code": "BAD_USAGE",
+        "detail": "",
+        "parent_code": "PROVIDER_ENVELOPE_REJECTED",
+    }
 
 
 @pytest.mark.parametrize("bad_content", ("", {}, 0, False))

@@ -12,6 +12,24 @@
       "run_identity_sha256": "ce07634bb65f37385f3a6521121f4904918c944c62564df5c81adeb22f02efff",
       "schema_version": "m3-zero-api-shell-r01"
     },
+    "credential_prewrite_negatives": {
+      "request_body": {
+        "failure_receipt": {
+          "code": "REQUEST_CONTAINS_CREDENTIAL_MATERIAL",
+          "detail": "Refresh Token",
+          "layer": "request_storage"
+        },
+        "run_directory_absent": true
+      },
+      "run_identity": {
+        "failure_receipt": {
+          "code": "REQUEST_CONTAINS_CREDENTIAL_MATERIAL",
+          "detail": "Client Secret",
+          "layer": "run_identity"
+        },
+        "run_directory_absent": true
+      }
+    },
     "identity_tamper_negative": {
       "code": "RAW_HASH_OR_SIZE_MISMATCH",
       "detail": "run_identity.json",
@@ -140,7 +158,7 @@
       "layer": "provider_envelope",
       "parent_code": "PROVIDER_ENVELOPE_REJECTED"
     },
-    "ark_bad_usage": {
+    "ark_null_usage": {
       "code": "BAD_USAGE",
       "detail": "",
       "layer": "provider_envelope",
@@ -200,14 +218,14 @@
       "layer": "provider_envelope",
       "parent_code": "PROVIDER_ENVELOPE_REJECTED"
     },
-    "openrouter_bad_usage": {
-      "code": "BAD_USAGE",
+    "openrouter_finish_tool_mismatch": {
+      "code": "FINISH_TOOL_CALL_MISMATCH",
       "detail": "",
       "layer": "provider_envelope",
       "parent_code": "PROVIDER_ENVELOPE_REJECTED"
     },
-    "openrouter_finish_tool_mismatch": {
-      "code": "FINISH_TOOL_CALL_MISMATCH",
+    "openrouter_null_usage": {
+      "code": "BAD_USAGE",
       "detail": "",
       "layer": "provider_envelope",
       "parent_code": "PROVIDER_ENVELOPE_REJECTED"
@@ -312,7 +330,7 @@
     "checked_files": [
       {
         "file": "zero_api_shell.py",
-        "sha256": "4c02120bce78d11c8f6be3329a4901f1d84c60e9992f126c2932075bc9edcd11"
+        "sha256": "a9e9aeafb3ee0b4034cf4137ee8a4c0cf865294c22cc29bb7defe00f11497125"
       },
       {
         "file": "fixtures.py",
@@ -320,7 +338,7 @@
       },
       {
         "file": "self_check.py",
-        "sha256": "2f122a6c4c197bb751149ac8034990b5b635d52d12bcb4db82cae0e70d35536a"
+        "sha256": "f4702c814d7571553c22c83e9d149cad2812aa6d5ad14700ec5e5e25f9d06e3d"
       }
     ],
     "findings": [],

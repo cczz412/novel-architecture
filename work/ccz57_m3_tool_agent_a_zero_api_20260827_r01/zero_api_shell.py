@@ -51,19 +51,26 @@ TOOL_IDENTITY_CONFIG_KEYS = frozenset(
         "tool_internal_schema_sha256",
     }
 )
+# Exact fingerprints after case-folding and separator removal. Do not use
+# substring matching: ordinary controls such as max_tokens must stay legal.
 SENSITIVE_REQUEST_KEYS = frozenset(
     {
         "authorization",
         "headers",
-        "api_key",
-        "api-key",
         "apikey",
-        "access_token",
+        "accesstoken",
+        "refreshtoken",
+        "idtoken",
+        "clientsecret",
         "secret",
         "cookie",
-        "set-cookie",
-        "x-api-key",
-        "proxy-authorization",
+        "setcookie",
+        "xapikey",
+        "proxyauthorization",
+        "token",
+        "credential",
+        "credentials",
+        "password",
     }
 )
 C3_KEYS = frozenset(
@@ -171,12 +178,17 @@ def strict_json_loads(raw: str | bytes, *, layer: str) -> Any:
 def _reject_sensitive_request_keys(value: object, *, layer: str) -> None:
     if isinstance(value, dict):
         for key, child in value.items():
-            if isinstance(key, str) and key.lower() in SENSITIVE_REQUEST_KEYS:
+            normalized_key = (
+                "".join(char for char in key.casefold() if char.isalnum())
+                if isinstance(key, str)
+                else ""
+            )
+            if normalized_key in SENSITIVE_REQUEST_KEYS:
                 raise MechanicalGateError(
                     layer, "REQUEST_CONTAINS_CREDENTIAL_MATERIAL", key
                 )
             _reject_sensitive_request_keys(child, layer=layer)
-    elif isinstance(value, list):
+    elif isinstance(value, (list, tuple)):
         for child in value:
             _reject_sensitive_request_keys(child, layer=layer)
 
@@ -230,6 +242,7 @@ def validate_revision_ref(value: object, *, layer: str = "revision") -> dict:
 
 
 def freeze_run_identity(value: object) -> dict:
+    _reject_sensitive_request_keys(value, layer="run_identity")
     identity = _require_exact_keys(value, RUN_IDENTITY_KEYS, layer="run_identity")
     for key in ("run_id", "model"):
         if not isinstance(identity[key], str) or not identity[key].strip():
@@ -649,9 +662,7 @@ def normalize_openrouter(response_raw: bytes) -> dict:
         raise MechanicalGateError(
             "provider_envelope", "FINISH_TOOL_CALL_MISMATCH"
         )
-    usage = response.get("usage")
-    if usage is None:
-        usage = {}
+    usage = response.get("usage", {})
     if not isinstance(usage, dict):
         raise MechanicalGateError("provider_envelope", "BAD_USAGE")
     return _provider_turn(
@@ -703,9 +714,7 @@ def normalize_ark(response_raw: bytes) -> dict:
                 text_parts.append(part["text"])
         else:
             raise MechanicalGateError("provider_envelope", "UNKNOWN_ARK_OUTPUT_TYPE")
-    usage = response.get("usage")
-    if usage is None:
-        usage = {}
+    usage = response.get("usage", {})
     if not isinstance(usage, dict):
         raise MechanicalGateError("provider_envelope", "BAD_USAGE")
     return _provider_turn(

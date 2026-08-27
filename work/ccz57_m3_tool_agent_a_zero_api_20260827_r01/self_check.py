@@ -148,6 +148,55 @@ def _run_guarded() -> dict:
         )
         return receipt, root / run_id / "attempt-0001", identity
 
+    request_credential_run_id = "negative-request-credential-prewrite"
+    request_with_credential = json.loads(OPENROUTER_REQUEST)
+    request_with_credential["messages"][0]["metadata"] = {
+        "Refresh Token": "synthetic-credential-placeholder"
+    }
+    request_credential_error = expect_error(
+        "REQUEST_CONTAINS_CREDENTIAL_MATERIAL",
+        lambda: store.append(
+            run_id=request_credential_run_id,
+            attempt_no=1,
+            http_status=200,
+            request=canonical_json_bytes(request_with_credential),
+            response=OPENROUTER_TOOL,
+            run_identity={
+                **OPENROUTER_RUN_IDENTITY,
+                "run_id": request_credential_run_id,
+            },
+        ),
+    )
+    request_credential_run_directory_absent = not (
+        root / request_credential_run_id
+    ).exists()
+    assert request_credential_run_directory_absent
+
+    identity_credential_run_id = "negative-identity-credential-prewrite"
+    identity_with_credential = {
+        **OPENROUTER_RUN_IDENTITY,
+        "run_id": identity_credential_run_id,
+        "config": {
+            **OPENROUTER_RUN_IDENTITY["config"],
+            "Client Secret": "synthetic-credential-placeholder",
+        },
+    }
+    identity_credential_error = expect_error(
+        "REQUEST_CONTAINS_CREDENTIAL_MATERIAL",
+        lambda: store.append(
+            run_id=identity_credential_run_id,
+            attempt_no=1,
+            http_status=200,
+            request=OPENROUTER_REQUEST,
+            response=OPENROUTER_TOOL,
+            run_identity=identity_with_credential,
+        ),
+    )
+    identity_credential_run_directory_absent = not (
+        root / identity_credential_run_id
+    ).exists()
+    assert identity_credential_run_directory_absent
+
     receipt, attempt_path, _ = save_case("synthetic-run", OPENROUTER_TOOL)
     verified = verify_raw_attempt(attempt_path)
     stored_openrouter_identity = load_verified_run_identity(attempt_path)
@@ -235,16 +284,16 @@ def _run_guarded() -> dict:
     bad_tool_type["choices"][0]["message"]["tool_calls"][0]["type"] = "custom"
     finish_tool_mismatch = json.loads(OPENROUTER_TOOL)
     finish_tool_mismatch["choices"][0]["finish_reason"] = "stop"
-    bad_openrouter_usage = json.loads(OPENROUTER_TOOL)
-    bad_openrouter_usage["usage"] = []
+    openrouter_null_usage = json.loads(OPENROUTER_TOOL)
+    openrouter_null_usage["usage"] = None
     bad_ark_output = json.loads(ARK_TOOL)
     bad_ark_output["output"] = [{"type": "unknown"}]
     bad_ark_content = json.loads(ARK_TOOL)
     bad_ark_content["output"] = [{"type": "message", "content": {}}]
     bad_ark_call_id = json.loads(ARK_TOOL)
     bad_ark_call_id["output"][0]["call_id"] = None
-    bad_ark_usage = json.loads(ARK_TOOL)
-    bad_ark_usage["usage"] = 0
+    ark_null_usage = json.loads(ARK_TOOL)
+    ark_null_usage["usage"] = None
 
     _unused, bad_outer_path, _unused_identity = save_case(
         "negative-bad-outer", OPENROUTER_BAD_OUTER
@@ -290,11 +339,15 @@ def _run_guarded() -> dict:
         ("negative-bad-tool-calls", bad_tool_calls, OPENROUTER_RUN_IDENTITY),
         ("negative-bad-tool-type", bad_tool_type, OPENROUTER_RUN_IDENTITY),
         ("negative-finish-tool-mismatch", finish_tool_mismatch, OPENROUTER_RUN_IDENTITY),
-        ("negative-openrouter-usage", bad_openrouter_usage, OPENROUTER_RUN_IDENTITY),
+        (
+            "negative-openrouter-null-usage",
+            openrouter_null_usage,
+            OPENROUTER_RUN_IDENTITY,
+        ),
         ("negative-ark-output", bad_ark_output, ARK_RUN_IDENTITY),
         ("negative-ark-content", bad_ark_content, ARK_RUN_IDENTITY),
         ("negative-ark-call-id", bad_ark_call_id, ARK_RUN_IDENTITY),
-        ("negative-ark-usage", bad_ark_usage, ARK_RUN_IDENTITY),
+        ("negative-ark-null-usage", ark_null_usage, ARK_RUN_IDENTITY),
     ):
         _unused, path, _unused_identity = save_case(
             run_id, canonical_json_bytes(response), base_identity=base_identity
@@ -404,10 +457,10 @@ def _run_guarded() -> dict:
                 current_revision_ref=REVISION,
             ),
         ),
-        "openrouter_bad_usage": expect_error(
+        "openrouter_null_usage": expect_error(
             "BAD_USAGE",
             lambda: validate_saved_provider_turn(
-                envelope_paths["negative-openrouter-usage"],
+                envelope_paths["negative-openrouter-null-usage"],
                 current_revision_ref=REVISION,
             ),
         ),
@@ -429,13 +482,21 @@ def _run_guarded() -> dict:
                 envelope_paths["negative-ark-call-id"], current_revision_ref=REVISION
             ),
         ),
-        "ark_bad_usage": expect_error(
+        "ark_null_usage": expect_error(
             "BAD_USAGE",
             lambda: validate_saved_provider_turn(
-                envelope_paths["negative-ark-usage"], current_revision_ref=REVISION
+                envelope_paths["negative-ark-null-usage"],
+                current_revision_ref=REVISION,
             ),
         ),
     }
+    for key in ("openrouter_null_usage", "ark_null_usage"):
+        assert negative[key] == {
+            "layer": "provider_envelope",
+            "code": "BAD_USAGE",
+            "detail": "",
+            "parent_code": "PROVIDER_ENVELOPE_REJECTED",
+        }
 
     _tamper_receipt, tamper_path, _tamper_identity = save_case(
         "negative-identity-tamper", OPENROUTER_TOOL
@@ -479,6 +540,16 @@ def _run_guarded() -> dict:
             "immutability_negative": immutable_error,
             "run_identity_drift_negative": run_identity_drift_error,
             "identity_tamper_negative": identity_tamper_error,
+            "credential_prewrite_negatives": {
+                "request_body": {
+                    "failure_receipt": request_credential_error,
+                    "run_directory_absent": request_credential_run_directory_absent,
+                },
+                "run_identity": {
+                    "failure_receipt": identity_credential_error,
+                    "run_directory_absent": identity_credential_run_directory_absent,
+                },
+            },
             "request_binding_receipts": {
                 "openrouter": openrouter_saved["request_binding_receipt"],
                 "ark": ark_saved["request_binding_receipt"],
