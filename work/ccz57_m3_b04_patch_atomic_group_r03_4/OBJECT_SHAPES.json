@@ -1,0 +1,1136 @@
+{
+  "catalog_identity": "CCZ57_M3_B04_OBJECT_SHAPES_R02",
+  "b03_record_ref_catalog": {
+    "fixture_contract": "CCZ57_M3_B03_R02_RECORD_REF_CATALOG",
+    "refs": {
+      "M3_SOURCE_READ_REQUEST": {
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.3-candidate",
+        "record_type": "M3_SOURCE_READ_REQUEST",
+        "record_id": "srr:2bbd13ce03e2c02e0f50313ee1291fab88be5eb675033c7492333962f731af5d",
+        "record_version": 1,
+        "record_contract_version": "r03.3-candidate",
+        "record_hash": "6774394fc61ff377d4241278043908a0102e84797dcd5d1c304aafbfdd275f73",
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "source_module": "M3"
+      },
+      "M3_SOURCE_READ_CONSENT": {
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.3-candidate",
+        "record_type": "M3_SOURCE_READ_CONSENT",
+        "record_id": "src:ffb358aa01e8728aca99a928f87372f3be09c594a135ce1712d47c4cc55af187",
+        "record_version": 1,
+        "record_contract_version": "r03.3-candidate",
+        "record_hash": "cdc4721d1c5fe68e87c73b89502fdd019a184c6bc315b6614969686d1f7dc78d",
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "source_module": "M3_CONSENT_FIXTURE"
+      },
+      "M3_SOURCE_READ_CONSENT_LIFECYCLE_RECEIPT": {
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.3-candidate",
+        "record_type": "M3_SOURCE_READ_CONSENT_LIFECYCLE_RECEIPT",
+        "record_id": "srcl:5c905b3fe9c3d097add24043f1e812d6192fce82c48d012db24963f6fddc037b",
+        "record_version": 1,
+        "record_contract_version": "r03.3-candidate",
+        "record_hash": "0da279d807edd29465cddd672459916518476c2799d19c27fb97b239b7bac1ce",
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "source_module": "M3"
+      },
+      "M3_SOURCE_READ_AUTHORIZATION": {
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.3-candidate",
+        "record_type": "M3_SOURCE_READ_AUTHORIZATION",
+        "record_id": "sra:e00f832371646aae5c58b658918979d3cf9c6e1c312855d8fd5dba603aa8b845",
+        "record_version": 1,
+        "record_contract_version": "r03.3-candidate",
+        "record_hash": "7da14778fdb011c48378a900110d23ef853fd4054d74869ef49362dc2f817c6d",
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "source_module": "M3"
+      },
+      "M3_SOURCE_READ_AUTHORIZATION_LIFECYCLE_RECEIPT": {
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.3-candidate",
+        "record_type": "M3_SOURCE_READ_AUTHORIZATION_LIFECYCLE_RECEIPT",
+        "record_id": "sral:289f4f4a41044cd911e8a633bf0ae2e56b14809a98e9a12fd6dba4e9f2e6c061",
+        "record_version": 1,
+        "record_contract_version": "r03.3-candidate",
+        "record_hash": "d691b3011d9eddc249511c91885eb6407648ca634daf4fbca879fcad9682fce5",
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "source_module": "M3"
+      },
+      "M3_AUTHORIZED_SOURCE_SLICE": {
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.3-candidate",
+        "record_type": "M3_AUTHORIZED_SOURCE_SLICE",
+        "record_id": "srs:93232f086794dd8c60982f938952f8d5556601bc0e644b1729ba584534dc293a",
+        "record_version": 1,
+        "record_contract_version": "r03.3-candidate",
+        "record_hash": "9f276749fd199c87da4e227d38f05b6572b9c5f7e6f2811f647ebe1f2a2a9929",
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "source_module": "M3"
+      },
+      "M3_SOURCE_SLICE_RETENTION_RECEIPT": {
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.3-candidate",
+        "record_type": "M3_SOURCE_SLICE_RETENTION_RECEIPT",
+        "record_id": "srrt:335dbb446e02debadab08e5dca6f5f87d31c2dcd6df6375178bcc58cd1d58b11",
+        "record_version": 1,
+        "record_contract_version": "r03.3-candidate",
+        "record_hash": "a4f029b0e83ebbad5b10af800d12a13d67fd3e25e6170358dfc69dcf4071dd31",
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "source_module": "M3"
+      }
+    }
+  },
+  "fixed_vectors": {
+    "fixture_contract": "CCZ57_M3_B04_R02_EXACT_FIXED_VECTOR_CATALOG",
+    "fixture_version": "2026-08-29-r02",
+    "canonical_contract_version": "r03.3-candidate",
+    "shared_unaffected": {
+      "protection_set_record": {
+        "contract": "M3_IMMUTABLE_RECORD",
+        "contract_version": "r03.3-candidate",
+        "record_type": "M3_CANDIDATE_PROTECTION_SET",
+        "record_id": "protect_fixture_001",
+        "record_version": 1,
+        "record_contract_version": "r03.3-candidate",
+        "record_hash": "0cb3c39e0c2473fd3ea11a6948dfe69ae949d45997ee95fd420951c17a42ea0d",
+        "source_module": "M3",
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "retention_class": "CORE_IMMUTABLE_AUDIT",
+        "created_at": "2026-08-28T07:30:00Z",
+        "payload": {
+          "base_candidate_version_ref": {
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_type": "M3_CANDIDATE_VERSION",
+            "record_id": "cv_fixture_parent",
+            "record_version": 3,
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "source_module": "M3"
+          },
+          "protection_policy_ref": {
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_type": "M3_PROTECTION_POLICY",
+            "record_id": "protection_policy_fixture_001",
+            "record_version": 1,
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "4921b413800d148200aefd9ad6cebbe80dfd9dacea539655bd843f361e8d3346",
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "source_module": "POLICY_FIXTURE_REGISTRY"
+          },
+          "chapter_revision_ref": {
+            "chapter_id": "fixture-c01",
+            "revision_no": 2,
+            "revision_text_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "protected_entries": [
+            {
+              "lineage_locator": {
+                "contract": "M3_LINEAGE_LOCATOR",
+                "contract_version": "r03.3-candidate",
+                "candidate_version_ref": {
+                  "contract": "M3_RECORD_REF",
+                  "contract_version": "r03.3-candidate",
+                  "record_type": "M3_CANDIDATE_VERSION",
+                  "record_id": "cv_fixture_parent",
+                  "record_version": 3,
+                  "record_contract_version": "r03.3-candidate",
+                  "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+                  "access": "POLICY_FIXTURE_READ_ONLY",
+                  "source_module": "M3"
+                },
+                "lineage_id": "lin_fact_002",
+                "json_pointer": "/items/1",
+                "item_hash": "5fab26a641f3e8788268ff01ebfcf5f584e113b95d13cf0521b346a916580547",
+                "locator_hash": "febc1b3b6e2b01b137548526ecac80f39471334b27c74c211a7d918799d06451"
+              },
+              "json_pointer": "/items/1/text",
+              "value_hash": "ea73125d6a3d19f83d96ce0bedce344d176b6cb237b8adac74f5f76723ac4266",
+              "reason": "UNTOUCHED_ACCEPTED_CORRECT_ITEM"
+            }
+          ]
+        }
+      },
+      "protection_set_ref": {
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.3-candidate",
+        "record_type": "M3_CANDIDATE_PROTECTION_SET",
+        "record_id": "protect_fixture_001",
+        "record_version": 1,
+        "record_contract_version": "r03.3-candidate",
+        "record_hash": "0cb3c39e0c2473fd3ea11a6948dfe69ae949d45997ee95fd420951c17a42ea0d",
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "source_module": "M3"
+      },
+      "atomic_groups": [
+        {
+          "atomic_group_id": "ag_fact_state_001",
+          "purpose": "CLARIFY_COMPLETED_STATE",
+          "operations": [
+            {
+              "operation_kind": "REPLACE_FIELD",
+              "target": {
+                "contract": "M3_LINEAGE_LOCATOR",
+                "contract_version": "r03.3-candidate",
+                "candidate_version_ref": {
+                  "contract": "M3_RECORD_REF",
+                  "contract_version": "r03.3-candidate",
+                  "record_type": "M3_CANDIDATE_VERSION",
+                  "record_id": "cv_fixture_parent",
+                  "record_version": 3,
+                  "record_contract_version": "r03.3-candidate",
+                  "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+                  "access": "POLICY_FIXTURE_READ_ONLY",
+                  "source_module": "M3"
+                },
+                "lineage_id": "lin_fact_001",
+                "json_pointer": "/items/0",
+                "item_hash": "4e3b0c357533bf3384927e89eef01268ec99cef732643bd4d854636c9dac8ea6",
+                "locator_hash": "f43f65f5435f6b7cedb4ddcc3078e9437fbf58d17a8885e3b2427e2793a0180d"
+              },
+              "json_pointer": "/items/0/text",
+              "expected_old_value_hash": "00ce62580b2fc802cb53eec54151c211e6465d378f7902393b302f0d4ae8a5c5",
+              "new_value": "角色甲已经进入北塔。"
+            }
+          ],
+          "group_payload_hash": "5bd53561c4cc6f18f10674cd9942f708a9c518833b664dd608849a27285d15be"
+        },
+        {
+          "atomic_group_id": "ag_missing_fact_002",
+          "purpose": "ADD_UNCOVERED_FACT",
+          "operations": [
+            {
+              "operation_kind": "ADD_CANDIDATE_ITEM",
+              "target_collection_pointer": "/items",
+              "new_item": {
+                "lineage_id": "lin_fact_003",
+                "text": "角色乙在塔外等待。"
+              }
+            }
+          ],
+          "group_payload_hash": "4e8505701b6e8e2ddeb648137796f0149c83168e9cc2697b8207eabeb3e559b9"
+        }
+      ],
+      "expected": {
+        "protection_set": {
+          "payload_canonical_bytes": 1759,
+          "payload_sha256": "fc0c724ea0b3c753316fbd3782f608a5122f3ddbae2a7c28e612de4e0d02b2ac",
+          "record_id": "protect_fixture_001",
+          "record_preimage_canonical_bytes": 2116,
+          "record_hash": "0cb3c39e0c2473fd3ea11a6948dfe69ae949d45997ee95fd420951c17a42ea0d",
+          "full_record_canonical_bytes": 2197,
+          "record_ref_canonical_bytes": 344,
+          "record_ref_sha256": "a0fe53dd2ecf5c62451c2cae78ed9f95df04b975f0c7aa25840d7da38b9913f3"
+        },
+        "atomic_groups": [
+          {
+            "atomic_group_id": "ag_fact_state_001",
+            "group_preimage_canonical_bytes": 949,
+            "group_payload_hash": "5bd53561c4cc6f18f10674cd9942f708a9c518833b664dd608849a27285d15be",
+            "operation_fingerprints": [
+              {
+                "canonical_bytes": 858,
+                "sha256": "b31d385a4e21a96f50b58f11dcdc3538ae227a5f583488e33ce4de00d57e653f"
+              }
+            ]
+          },
+          {
+            "atomic_group_id": "ag_missing_fact_002",
+            "group_preimage_canonical_bytes": 242,
+            "group_payload_hash": "4e8505701b6e8e2ddeb648137796f0149c83168e9cc2697b8207eabeb3e559b9",
+            "operation_fingerprints": [
+              {
+                "canonical_bytes": 154,
+                "sha256": "9169bd1f7c7a5a58b45e97b8d86faa0e24b1440ad919c67a7c0c8837c3f961ef"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "routes": {
+      "NO_SOURCE_SLICE": {
+        "ticket_level_source_slice_ref": null,
+        "causal_hint_proposal_record": {
+          "contract": "M3_IMMUTABLE_RECORD",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+          "record_id": "causal-hint-proposal:6820d899ad6904aa78310e66cd0fa1e59bfd1ed78dac5be6ce960f5b1c1d501e",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "ca865e5539c6266c5948fdd2fd5cc23887938e52e8b6cd2b73da06b6c61c5249",
+          "source_module": "M3",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "retention_class": "CORE_IMMUTABLE_AUDIT",
+          "created_at": "2026-08-28T07:30:00Z",
+          "payload": {
+            "from_lineage_locator": {
+              "contract": "M3_LINEAGE_LOCATOR",
+              "contract_version": "r03.3-candidate",
+              "candidate_version_ref": {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_CANDIDATE_VERSION",
+                "record_id": "cv_fixture_parent",
+                "record_version": 3,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              },
+              "lineage_id": "lin_fact_001",
+              "json_pointer": "/items/0",
+              "item_hash": "4e3b0c357533bf3384927e89eef01268ec99cef732643bd4d854636c9dac8ea6",
+              "locator_hash": "f43f65f5435f6b7cedb4ddcc3078e9437fbf58d17a8885e3b2427e2793a0180d"
+            },
+            "to_lineage_locator": {
+              "contract": "M3_LINEAGE_LOCATOR",
+              "contract_version": "r03.3-candidate",
+              "candidate_version_ref": {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_CANDIDATE_VERSION",
+                "record_id": "cv_fixture_parent",
+                "record_version": 3,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              },
+              "lineage_id": "lin_fact_002",
+              "json_pointer": "/items/1",
+              "item_hash": "5fab26a641f3e8788268ff01ebfcf5f584e113b95d13cf0521b346a916580547",
+              "locator_hash": "febc1b3b6e2b01b137548526ecac80f39471334b27c74c211a7d918799d06451"
+            },
+            "evidence_refs": [],
+            "diagnostic_refs": [
+              {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_DIAGNOSTIC",
+                "record_id": "diag_fixture_001",
+                "record_version": 1,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "04d20c2cb2bf866a96e4bd35ef06b1629e60a3a39c05d32ab0a87254690ca0bc",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              }
+            ],
+            "hint_kind": "DIRECT_POSSIBLE_CAUSE",
+            "expiry_request_seconds": 600,
+            "noncommittable": true,
+            "chapter_revision_ref": {
+              "chapter_id": "fixture-c01",
+              "revision_no": 2,
+              "revision_text_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+            }
+          }
+        },
+        "causal_hint_proposal_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+          "record_id": "causal-hint-proposal:6820d899ad6904aa78310e66cd0fa1e59bfd1ed78dac5be6ce960f5b1c1d501e",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "ca865e5539c6266c5948fdd2fd5cc23887938e52e8b6cd2b73da06b6c61c5249",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "patch_proposal_record": {
+          "contract": "M3_IMMUTABLE_RECORD",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_id": "patch-proposal:b9d707237851604d0b22010cac43821af8333a1897396a9f57a5b84e25dbb279",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "9d3aa674a4d5d8bdda905372855528b52fce3e789995b703004d1caa37919895",
+          "source_module": "M3",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "retention_class": "CORE_IMMUTABLE_AUDIT",
+          "created_at": "2026-08-28T07:30:00Z",
+          "payload": {
+            "base_candidate_version_ref": {
+              "contract": "M3_RECORD_REF",
+              "contract_version": "r03.3-candidate",
+              "record_type": "M3_CANDIDATE_VERSION",
+              "record_id": "cv_fixture_parent",
+              "record_version": 3,
+              "record_contract_version": "r03.3-candidate",
+              "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+              "access": "POLICY_FIXTURE_READ_ONLY",
+              "source_module": "M3"
+            },
+            "diagnostic_refs": [
+              {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_DIAGNOSTIC",
+                "record_id": "diag_fixture_001",
+                "record_version": 1,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "04d20c2cb2bf866a96e4bd35ef06b1629e60a3a39c05d32ab0a87254690ca0bc",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              }
+            ],
+            "authorized_source_slice_refs": [],
+            "protection_set_ref": {
+              "contract": "M3_RECORD_REF",
+              "contract_version": "r03.3-candidate",
+              "record_type": "M3_CANDIDATE_PROTECTION_SET",
+              "record_id": "protect_fixture_001",
+              "record_version": 1,
+              "record_contract_version": "r03.3-candidate",
+              "record_hash": "0cb3c39e0c2473fd3ea11a6948dfe69ae949d45997ee95fd420951c17a42ea0d",
+              "access": "POLICY_FIXTURE_READ_ONLY",
+              "source_module": "M3"
+            },
+            "chapter_revision_ref": {
+              "chapter_id": "fixture-c01",
+              "revision_no": 2,
+              "revision_text_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+            },
+            "atomic_groups": [
+              {
+                "atomic_group_id": "ag_fact_state_001",
+                "purpose": "CLARIFY_COMPLETED_STATE",
+                "operations": [
+                  {
+                    "operation_kind": "REPLACE_FIELD",
+                    "target": {
+                      "contract": "M3_LINEAGE_LOCATOR",
+                      "contract_version": "r03.3-candidate",
+                      "candidate_version_ref": {
+                        "contract": "M3_RECORD_REF",
+                        "contract_version": "r03.3-candidate",
+                        "record_type": "M3_CANDIDATE_VERSION",
+                        "record_id": "cv_fixture_parent",
+                        "record_version": 3,
+                        "record_contract_version": "r03.3-candidate",
+                        "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+                        "access": "POLICY_FIXTURE_READ_ONLY",
+                        "source_module": "M3"
+                      },
+                      "lineage_id": "lin_fact_001",
+                      "json_pointer": "/items/0",
+                      "item_hash": "4e3b0c357533bf3384927e89eef01268ec99cef732643bd4d854636c9dac8ea6",
+                      "locator_hash": "f43f65f5435f6b7cedb4ddcc3078e9437fbf58d17a8885e3b2427e2793a0180d"
+                    },
+                    "json_pointer": "/items/0/text",
+                    "expected_old_value_hash": "00ce62580b2fc802cb53eec54151c211e6465d378f7902393b302f0d4ae8a5c5",
+                    "new_value": "角色甲已经进入北塔。"
+                  }
+                ],
+                "group_payload_hash": "5bd53561c4cc6f18f10674cd9942f708a9c518833b664dd608849a27285d15be"
+              },
+              {
+                "atomic_group_id": "ag_missing_fact_002",
+                "purpose": "ADD_UNCOVERED_FACT",
+                "operations": [
+                  {
+                    "operation_kind": "ADD_CANDIDATE_ITEM",
+                    "target_collection_pointer": "/items",
+                    "new_item": {
+                      "lineage_id": "lin_fact_003",
+                      "text": "角色乙在塔外等待。"
+                    }
+                  }
+                ],
+                "group_payload_hash": "4e8505701b6e8e2ddeb648137796f0149c83168e9cc2697b8207eabeb3e559b9"
+              }
+            ],
+            "sidecar_proposal_refs": [
+              {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+                "record_id": "causal-hint-proposal:6820d899ad6904aa78310e66cd0fa1e59bfd1ed78dac5be6ce960f5b1c1d501e",
+                "record_version": 1,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "ca865e5539c6266c5948fdd2fd5cc23887938e52e8b6cd2b73da06b6c61c5249",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              }
+            ]
+          }
+        },
+        "patch_proposal_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_id": "patch-proposal:b9d707237851604d0b22010cac43821af8333a1897396a9f57a5b84e25dbb279",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "9d3aa674a4d5d8bdda905372855528b52fce3e789995b703004d1caa37919895",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "patch_preview": {
+          "view_type": "DERIVED_RECOMPUTABLE",
+          "projector": "PatchPreviewProjector",
+          "base_candidate_version_ref": {
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_type": "M3_CANDIDATE_VERSION",
+            "record_id": "cv_fixture_parent",
+            "record_version": 3,
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "source_module": "M3"
+          },
+          "protection_set_ref": {
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_type": "M3_CANDIDATE_PROTECTION_SET",
+            "record_id": "protect_fixture_001",
+            "record_version": 1,
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "0cb3c39e0c2473fd3ea11a6948dfe69ae949d45997ee95fd420951c17a42ea0d",
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "source_module": "M3"
+          },
+          "patch_ref": {
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_type": "M3_PATCH_PROPOSAL",
+            "record_id": "patch-proposal:b9d707237851604d0b22010cac43821af8333a1897396a9f57a5b84e25dbb279",
+            "record_version": 1,
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "9d3aa674a4d5d8bdda905372855528b52fce3e789995b703004d1caa37919895",
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "source_module": "M3"
+          },
+          "causal_hint_proposal_refs": [
+            {
+              "contract": "M3_RECORD_REF",
+              "contract_version": "r03.3-candidate",
+              "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+              "record_id": "causal-hint-proposal:6820d899ad6904aa78310e66cd0fa1e59bfd1ed78dac5be6ce960f5b1c1d501e",
+              "record_version": 1,
+              "record_contract_version": "r03.3-candidate",
+              "record_hash": "ca865e5539c6266c5948fdd2fd5cc23887938e52e8b6cd2b73da06b6c61c5249",
+              "access": "POLICY_FIXTURE_READ_ONLY",
+              "source_module": "M3"
+            }
+          ],
+          "atomic_group_previews": [
+            {
+              "atomic_group_id": "ag_fact_state_001",
+              "purpose": "CLARIFY_COMPLETED_STATE",
+              "proposed_changes": [
+                {
+                  "json_pointer": "/items/0/text",
+                  "old_value_summary": "角色甲进入北塔。",
+                  "old_value_hash": "00ce62580b2fc802cb53eec54151c211e6465d378f7902393b302f0d4ae8a5c5",
+                  "new_value_summary": "角色甲已经进入北塔。"
+                }
+              ],
+              "evidence_refs": [
+                {
+                  "contract": "M3_RECORD_REF",
+                  "contract_version": "r03.3-candidate",
+                  "record_type": "M3_DIAGNOSTIC",
+                  "record_id": "diag_fixture_001",
+                  "record_version": 1,
+                  "record_contract_version": "r03.3-candidate",
+                  "record_hash": "04d20c2cb2bf866a96e4bd35ef06b1629e60a3a39c05d32ab0a87254690ca0bc",
+                  "access": "POLICY_FIXTURE_READ_ONLY",
+                  "source_module": "M3"
+                }
+              ],
+              "protected_item_summaries": [
+                {
+                  "json_pointer": "/items/1/text",
+                  "value_hash": "ea73125d6a3d19f83d96ce0bedce344d176b6cb237b8adac74f5f76723ac4266",
+                  "reason": "UNTOUCHED_ACCEPTED_CORRECT_ITEM"
+                }
+              ]
+            },
+            {
+              "atomic_group_id": "ag_missing_fact_002",
+              "purpose": "ADD_UNCOVERED_FACT",
+              "proposed_changes": [
+                {
+                  "json_pointer": "/items/-",
+                  "old_value_summary": null,
+                  "old_value_hash": null,
+                  "new_value_summary": "角色乙在塔外等待。"
+                }
+              ],
+              "evidence_refs": [
+                {
+                  "contract": "M3_RECORD_REF",
+                  "contract_version": "r03.3-candidate",
+                  "record_type": "M3_DIAGNOSTIC",
+                  "record_id": "diag_fixture_001",
+                  "record_version": 1,
+                  "record_contract_version": "r03.3-candidate",
+                  "record_hash": "04d20c2cb2bf866a96e4bd35ef06b1629e60a3a39c05d32ab0a87254690ca0bc",
+                  "access": "POLICY_FIXTURE_READ_ONLY",
+                  "source_module": "M3"
+                }
+              ],
+              "protected_item_summaries": []
+            }
+          ],
+          "noncommittable_sidecar_proposals": [
+            {
+              "proposal_ref": {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+                "record_id": "causal-hint-proposal:6820d899ad6904aa78310e66cd0fa1e59bfd1ed78dac5be6ce960f5b1c1d501e",
+                "record_version": 1,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "ca865e5539c6266c5948fdd2fd5cc23887938e52e8b6cd2b73da06b6c61c5249",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              },
+              "display_summary": "角色甲进入北塔，可能与铜钥匙状态有关。",
+              "committable": false
+            }
+          ],
+          "forbidden_b05_record_types_present": []
+        },
+        "expected": {
+          "causal_hint_proposal": {
+            "payload_canonical_bytes": 1949,
+            "payload_sha256": "6820d899ad6904aa78310e66cd0fa1e59bfd1ed78dac5be6ce960f5b1c1d501e",
+            "record_id": "causal-hint-proposal:6820d899ad6904aa78310e66cd0fa1e59bfd1ed78dac5be6ce960f5b1c1d501e",
+            "record_preimage_canonical_bytes": 2368,
+            "record_hash": "ca865e5539c6266c5948fdd2fd5cc23887938e52e8b6cd2b73da06b6c61c5249",
+            "full_record_canonical_bytes": 2449,
+            "record_ref_canonical_bytes": 406,
+            "record_ref_sha256": "1c140699b3634bb28aaf5feabb8fa4d15aa19188bcdf704fbe1ffbd1aa02d7ba"
+          },
+          "patch_proposal": {
+            "payload_canonical_bytes": 3092,
+            "payload_sha256": "b9d707237851604d0b22010cac43821af8333a1897396a9f57a5b84e25dbb279",
+            "record_id": "patch-proposal:b9d707237851604d0b22010cac43821af8333a1897396a9f57a5b84e25dbb279",
+            "record_preimage_canonical_bytes": 3499,
+            "record_hash": "9d3aa674a4d5d8bdda905372855528b52fce3e789995b703004d1caa37919895",
+            "full_record_canonical_bytes": 3580,
+            "record_ref_canonical_bytes": 394,
+            "record_ref_sha256": "2534b5eb5937b9be25578be9d8d606c2d564ad4638448730d9759e4088781dd2"
+          },
+          "patch_preview": {
+            "canonical_bytes": 3712,
+            "projection_sha256": "bd1fb2bb52d4f08d0a92815cafcd7b1d8fc45194d772437eb9a86bd0fee4c9d5"
+          }
+        }
+      },
+      "B03_R02_SOURCE_SLICE": {
+        "ticket_level_source_slice_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_AUTHORIZED_SOURCE_SLICE",
+          "record_id": "srs:93232f086794dd8c60982f938952f8d5556601bc0e644b1729ba584534dc293a",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "9f276749fd199c87da4e227d38f05b6572b9c5f7e6f2811f647ebe1f2a2a9929",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "causal_hint_proposal_record": {
+          "contract": "M3_IMMUTABLE_RECORD",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+          "record_id": "causal-hint-proposal:fe694cfcf32c0c7a2dde5cb035b355f0ea5c0d714479482920635b7635898be3",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "724fc48a091603c0f31521a4831eec7673118b3c55e16ee1deca383184e8bc6d",
+          "source_module": "M3",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "retention_class": "CORE_IMMUTABLE_AUDIT",
+          "created_at": "2026-08-28T07:30:00Z",
+          "payload": {
+            "from_lineage_locator": {
+              "contract": "M3_LINEAGE_LOCATOR",
+              "contract_version": "r03.3-candidate",
+              "candidate_version_ref": {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_CANDIDATE_VERSION",
+                "record_id": "cv_fixture_parent",
+                "record_version": 3,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              },
+              "lineage_id": "lin_fact_001",
+              "json_pointer": "/items/0",
+              "item_hash": "4e3b0c357533bf3384927e89eef01268ec99cef732643bd4d854636c9dac8ea6",
+              "locator_hash": "f43f65f5435f6b7cedb4ddcc3078e9437fbf58d17a8885e3b2427e2793a0180d"
+            },
+            "to_lineage_locator": {
+              "contract": "M3_LINEAGE_LOCATOR",
+              "contract_version": "r03.3-candidate",
+              "candidate_version_ref": {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_CANDIDATE_VERSION",
+                "record_id": "cv_fixture_parent",
+                "record_version": 3,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              },
+              "lineage_id": "lin_fact_002",
+              "json_pointer": "/items/1",
+              "item_hash": "5fab26a641f3e8788268ff01ebfcf5f584e113b95d13cf0521b346a916580547",
+              "locator_hash": "febc1b3b6e2b01b137548526ecac80f39471334b27c74c211a7d918799d06451"
+            },
+            "evidence_refs": [
+              {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_AUTHORIZED_SOURCE_SLICE",
+                "record_id": "srs:93232f086794dd8c60982f938952f8d5556601bc0e644b1729ba584534dc293a",
+                "record_version": 1,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "9f276749fd199c87da4e227d38f05b6572b9c5f7e6f2811f647ebe1f2a2a9929",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              }
+            ],
+            "diagnostic_refs": [
+              {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_DIAGNOSTIC",
+                "record_id": "diag_fixture_001",
+                "record_version": 1,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "04d20c2cb2bf866a96e4bd35ef06b1629e60a3a39c05d32ab0a87254690ca0bc",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              }
+            ],
+            "hint_kind": "DIRECT_POSSIBLE_CAUSE",
+            "expiry_request_seconds": 600,
+            "noncommittable": true,
+            "chapter_revision_ref": {
+              "chapter_id": "fixture-c01",
+              "revision_no": 2,
+              "revision_text_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+            }
+          }
+        },
+        "causal_hint_proposal_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+          "record_id": "causal-hint-proposal:fe694cfcf32c0c7a2dde5cb035b355f0ea5c0d714479482920635b7635898be3",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "724fc48a091603c0f31521a4831eec7673118b3c55e16ee1deca383184e8bc6d",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "patch_proposal_record": {
+          "contract": "M3_IMMUTABLE_RECORD",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_id": "patch-proposal:675684fa4e0c34682cda0f0e06c52ffcc224028efa3980a1bf6f53c41942f210",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "6eee94b49ed318b8119eb1baeb21f0e6d2f0653a4a22e00bad1fda7723bed265",
+          "source_module": "M3",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "retention_class": "CORE_IMMUTABLE_AUDIT",
+          "created_at": "2026-08-28T07:30:00Z",
+          "payload": {
+            "base_candidate_version_ref": {
+              "contract": "M3_RECORD_REF",
+              "contract_version": "r03.3-candidate",
+              "record_type": "M3_CANDIDATE_VERSION",
+              "record_id": "cv_fixture_parent",
+              "record_version": 3,
+              "record_contract_version": "r03.3-candidate",
+              "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+              "access": "POLICY_FIXTURE_READ_ONLY",
+              "source_module": "M3"
+            },
+            "diagnostic_refs": [
+              {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_DIAGNOSTIC",
+                "record_id": "diag_fixture_001",
+                "record_version": 1,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "04d20c2cb2bf866a96e4bd35ef06b1629e60a3a39c05d32ab0a87254690ca0bc",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              }
+            ],
+            "authorized_source_slice_refs": [
+              {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_AUTHORIZED_SOURCE_SLICE",
+                "record_id": "srs:93232f086794dd8c60982f938952f8d5556601bc0e644b1729ba584534dc293a",
+                "record_version": 1,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "9f276749fd199c87da4e227d38f05b6572b9c5f7e6f2811f647ebe1f2a2a9929",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              }
+            ],
+            "protection_set_ref": {
+              "contract": "M3_RECORD_REF",
+              "contract_version": "r03.3-candidate",
+              "record_type": "M3_CANDIDATE_PROTECTION_SET",
+              "record_id": "protect_fixture_001",
+              "record_version": 1,
+              "record_contract_version": "r03.3-candidate",
+              "record_hash": "0cb3c39e0c2473fd3ea11a6948dfe69ae949d45997ee95fd420951c17a42ea0d",
+              "access": "POLICY_FIXTURE_READ_ONLY",
+              "source_module": "M3"
+            },
+            "chapter_revision_ref": {
+              "chapter_id": "fixture-c01",
+              "revision_no": 2,
+              "revision_text_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+            },
+            "atomic_groups": [
+              {
+                "atomic_group_id": "ag_fact_state_001",
+                "purpose": "CLARIFY_COMPLETED_STATE",
+                "operations": [
+                  {
+                    "operation_kind": "REPLACE_FIELD",
+                    "target": {
+                      "contract": "M3_LINEAGE_LOCATOR",
+                      "contract_version": "r03.3-candidate",
+                      "candidate_version_ref": {
+                        "contract": "M3_RECORD_REF",
+                        "contract_version": "r03.3-candidate",
+                        "record_type": "M3_CANDIDATE_VERSION",
+                        "record_id": "cv_fixture_parent",
+                        "record_version": 3,
+                        "record_contract_version": "r03.3-candidate",
+                        "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+                        "access": "POLICY_FIXTURE_READ_ONLY",
+                        "source_module": "M3"
+                      },
+                      "lineage_id": "lin_fact_001",
+                      "json_pointer": "/items/0",
+                      "item_hash": "4e3b0c357533bf3384927e89eef01268ec99cef732643bd4d854636c9dac8ea6",
+                      "locator_hash": "f43f65f5435f6b7cedb4ddcc3078e9437fbf58d17a8885e3b2427e2793a0180d"
+                    },
+                    "json_pointer": "/items/0/text",
+                    "expected_old_value_hash": "00ce62580b2fc802cb53eec54151c211e6465d378f7902393b302f0d4ae8a5c5",
+                    "new_value": "角色甲已经进入北塔。"
+                  }
+                ],
+                "group_payload_hash": "5bd53561c4cc6f18f10674cd9942f708a9c518833b664dd608849a27285d15be"
+              },
+              {
+                "atomic_group_id": "ag_missing_fact_002",
+                "purpose": "ADD_UNCOVERED_FACT",
+                "operations": [
+                  {
+                    "operation_kind": "ADD_CANDIDATE_ITEM",
+                    "target_collection_pointer": "/items",
+                    "new_item": {
+                      "lineage_id": "lin_fact_003",
+                      "text": "角色乙在塔外等待。"
+                    }
+                  }
+                ],
+                "group_payload_hash": "4e8505701b6e8e2ddeb648137796f0149c83168e9cc2697b8207eabeb3e559b9"
+              }
+            ],
+            "sidecar_proposal_refs": [
+              {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+                "record_id": "causal-hint-proposal:fe694cfcf32c0c7a2dde5cb035b355f0ea5c0d714479482920635b7635898be3",
+                "record_version": 1,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "724fc48a091603c0f31521a4831eec7673118b3c55e16ee1deca383184e8bc6d",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              }
+            ]
+          }
+        },
+        "patch_proposal_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_id": "patch-proposal:675684fa4e0c34682cda0f0e06c52ffcc224028efa3980a1bf6f53c41942f210",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "6eee94b49ed318b8119eb1baeb21f0e6d2f0653a4a22e00bad1fda7723bed265",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "patch_preview": {
+          "view_type": "DERIVED_RECOMPUTABLE",
+          "projector": "PatchPreviewProjector",
+          "base_candidate_version_ref": {
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_type": "M3_CANDIDATE_VERSION",
+            "record_id": "cv_fixture_parent",
+            "record_version": 3,
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "64405e245bd4e1d758f3848984e318acfd7912c48558f81e3aee1318eeb88f26",
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "source_module": "M3"
+          },
+          "protection_set_ref": {
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_type": "M3_CANDIDATE_PROTECTION_SET",
+            "record_id": "protect_fixture_001",
+            "record_version": 1,
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "0cb3c39e0c2473fd3ea11a6948dfe69ae949d45997ee95fd420951c17a42ea0d",
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "source_module": "M3"
+          },
+          "patch_ref": {
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_type": "M3_PATCH_PROPOSAL",
+            "record_id": "patch-proposal:675684fa4e0c34682cda0f0e06c52ffcc224028efa3980a1bf6f53c41942f210",
+            "record_version": 1,
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "6eee94b49ed318b8119eb1baeb21f0e6d2f0653a4a22e00bad1fda7723bed265",
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "source_module": "M3"
+          },
+          "causal_hint_proposal_refs": [
+            {
+              "contract": "M3_RECORD_REF",
+              "contract_version": "r03.3-candidate",
+              "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+              "record_id": "causal-hint-proposal:fe694cfcf32c0c7a2dde5cb035b355f0ea5c0d714479482920635b7635898be3",
+              "record_version": 1,
+              "record_contract_version": "r03.3-candidate",
+              "record_hash": "724fc48a091603c0f31521a4831eec7673118b3c55e16ee1deca383184e8bc6d",
+              "access": "POLICY_FIXTURE_READ_ONLY",
+              "source_module": "M3"
+            }
+          ],
+          "atomic_group_previews": [
+            {
+              "atomic_group_id": "ag_fact_state_001",
+              "purpose": "CLARIFY_COMPLETED_STATE",
+              "proposed_changes": [
+                {
+                  "json_pointer": "/items/0/text",
+                  "old_value_summary": "角色甲进入北塔。",
+                  "old_value_hash": "00ce62580b2fc802cb53eec54151c211e6465d378f7902393b302f0d4ae8a5c5",
+                  "new_value_summary": "角色甲已经进入北塔。"
+                }
+              ],
+              "evidence_refs": [
+                {
+                  "contract": "M3_RECORD_REF",
+                  "contract_version": "r03.3-candidate",
+                  "record_type": "M3_AUTHORIZED_SOURCE_SLICE",
+                  "record_id": "srs:93232f086794dd8c60982f938952f8d5556601bc0e644b1729ba584534dc293a",
+                  "record_version": 1,
+                  "record_contract_version": "r03.3-candidate",
+                  "record_hash": "9f276749fd199c87da4e227d38f05b6572b9c5f7e6f2811f647ebe1f2a2a9929",
+                  "access": "POLICY_FIXTURE_READ_ONLY",
+                  "source_module": "M3"
+                }
+              ],
+              "protected_item_summaries": [
+                {
+                  "json_pointer": "/items/1/text",
+                  "value_hash": "ea73125d6a3d19f83d96ce0bedce344d176b6cb237b8adac74f5f76723ac4266",
+                  "reason": "UNTOUCHED_ACCEPTED_CORRECT_ITEM"
+                }
+              ]
+            },
+            {
+              "atomic_group_id": "ag_missing_fact_002",
+              "purpose": "ADD_UNCOVERED_FACT",
+              "proposed_changes": [
+                {
+                  "json_pointer": "/items/-",
+                  "old_value_summary": null,
+                  "old_value_hash": null,
+                  "new_value_summary": "角色乙在塔外等待。"
+                }
+              ],
+              "evidence_refs": [
+                {
+                  "contract": "M3_RECORD_REF",
+                  "contract_version": "r03.3-candidate",
+                  "record_type": "M3_AUTHORIZED_SOURCE_SLICE",
+                  "record_id": "srs:93232f086794dd8c60982f938952f8d5556601bc0e644b1729ba584534dc293a",
+                  "record_version": 1,
+                  "record_contract_version": "r03.3-candidate",
+                  "record_hash": "9f276749fd199c87da4e227d38f05b6572b9c5f7e6f2811f647ebe1f2a2a9929",
+                  "access": "POLICY_FIXTURE_READ_ONLY",
+                  "source_module": "M3"
+                }
+              ],
+              "protected_item_summaries": []
+            }
+          ],
+          "noncommittable_sidecar_proposals": [
+            {
+              "proposal_ref": {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.3-candidate",
+                "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+                "record_id": "causal-hint-proposal:fe694cfcf32c0c7a2dde5cb035b355f0ea5c0d714479482920635b7635898be3",
+                "record_version": 1,
+                "record_contract_version": "r03.3-candidate",
+                "record_hash": "724fc48a091603c0f31521a4831eec7673118b3c55e16ee1deca383184e8bc6d",
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3"
+              },
+              "display_summary": "角色甲进入北塔，可能与铜钥匙状态有关。",
+              "committable": false
+            }
+          ],
+          "forbidden_b05_record_types_present": []
+        },
+        "expected": {
+          "causal_hint_proposal": {
+            "payload_canonical_bytes": 2341,
+            "payload_sha256": "fe694cfcf32c0c7a2dde5cb035b355f0ea5c0d714479482920635b7635898be3",
+            "record_id": "causal-hint-proposal:fe694cfcf32c0c7a2dde5cb035b355f0ea5c0d714479482920635b7635898be3",
+            "record_preimage_canonical_bytes": 2760,
+            "record_hash": "724fc48a091603c0f31521a4831eec7673118b3c55e16ee1deca383184e8bc6d",
+            "full_record_canonical_bytes": 2841,
+            "record_ref_canonical_bytes": 406,
+            "record_ref_sha256": "cf038e6e8f0a7d45669048ed4d0855795a2eb11804b9d6574a5c5b336d730673"
+          },
+          "patch_proposal": {
+            "payload_canonical_bytes": 3484,
+            "payload_sha256": "675684fa4e0c34682cda0f0e06c52ffcc224028efa3980a1bf6f53c41942f210",
+            "record_id": "patch-proposal:675684fa4e0c34682cda0f0e06c52ffcc224028efa3980a1bf6f53c41942f210",
+            "record_preimage_canonical_bytes": 3891,
+            "record_hash": "6eee94b49ed318b8119eb1baeb21f0e6d2f0653a4a22e00bad1fda7723bed265",
+            "full_record_canonical_bytes": 3972,
+            "record_ref_canonical_bytes": 394,
+            "record_ref_sha256": "571d043bff61c181dd99e2b9954305bf0ad166d73829afe8ea75bb809ee38171"
+          },
+          "patch_preview": {
+            "canonical_bytes": 3842,
+            "projection_sha256": "4b15d4ebc180f10226fb6fe8e16bef882a07f8073278a5508142cfaa18a138ff"
+          }
+        }
+      }
+    }
+  },
+  "negative_source_slice_fixtures": {
+    "fixture_contract": "CCZ57_M3_B04_R02_SOURCE_SLICE_NEGATIVE_FIXTURE_CATALOG",
+    "base_exact_ref": {
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.3-candidate",
+      "record_type": "M3_AUTHORIZED_SOURCE_SLICE",
+      "record_id": "srs:93232f086794dd8c60982f938952f8d5556601bc0e644b1729ba584534dc293a",
+      "record_version": 1,
+      "record_contract_version": "r03.3-candidate",
+      "record_hash": "9f276749fd199c87da4e227d38f05b6572b9c5f7e6f2811f647ebe1f2a2a9929",
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "source_module": "M3"
+    },
+    "fixtures": {
+      "F-25": {
+        "input_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_AUTHORIZED_SOURCE_SLICE",
+          "record_id": "slice_fixture_001",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "1afdc3c1167b7f5bc11981915d55c4e19eda67154deee7870486fe7cb15825e2",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "expected_error": "STALE_SOURCE_SLICE_REF"
+      },
+      "F-26": {
+        "input_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_AUTHORIZED_SOURCE_SLICE",
+          "record_id": "slice_fixture_001",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "9f276749fd199c87da4e227d38f05b6572b9c5f7e6f2811f647ebe1f2a2a9929",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "expected_error": "SOURCE_SLICE_RECORD_REF_MISMATCH"
+      },
+      "F-27": {
+        "mutation_mode": "ONE_FIELD_AT_A_TIME",
+        "mutations": {
+          "contract": "M3_RECORD_REF_DRIFT",
+          "contract_version": "r03.3-candidate-drift",
+          "record_type": "M3_AUTHORIZED_SOURCE_SLICE_DRIFT",
+          "record_id": "srs:93232f086794dd8c60982f938952f8d5556601bc0e644b1729ba584534dc293a-drift",
+          "record_version": 2,
+          "record_contract_version": "r03.3-candidate-drift",
+          "record_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "access": "RUN_INTERNAL_READ_ONLY",
+          "source_module": "M3_DRIFT"
+        },
+        "expected_error": "SOURCE_SLICE_RECORD_REF_MISMATCH"
+      },
+      "F-28": {
+        "input_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_AUTHORIZED_SOURCE_SLICE",
+          "record_id": "srs:93232f086794dd8c60982f938952f8d5556601bc0e644b1729ba584534dc293a",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "9f276749fd199c87da4e227d38f05b6572b9c5f7e6f2811f647ebe1f2a2a9929",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "base_revision": {
+          "chapter_id": "fixture-c01",
+          "revision_no": 2,
+          "revision_text_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "resolved_source_slice_revision": {
+          "chapter_id": "fixture-c01",
+          "revision_no": 3,
+          "revision_text_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "expected_error": "SOURCE_SLICE_REVISION_MISMATCH"
+      },
+      "F-29": {
+        "executions": [
+          {
+            "id": "F-29.writer_call",
+            "attempt": "CALL_B03_WRITER",
+            "expected_error": "B03_WRITER_CALL_FORBIDDEN"
+          },
+          {
+            "id": "F-29.content_read",
+            "attempt": "READ_SOURCE_SLICE_PAYLOAD_CONTENT",
+            "expected_error": "SOURCE_SLICE_CONTENT_READ_FORBIDDEN"
+          }
+        ]
+      }
+    },
+    "expected_visible_writes": 0,
+    "expected_file_snapshot_changed": false,
+    "expected_object_snapshot_changed": false
+  }
+}

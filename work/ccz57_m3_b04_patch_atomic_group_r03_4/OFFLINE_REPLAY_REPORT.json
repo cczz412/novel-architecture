@@ -1,0 +1,206 @@
+{
+  "report_type": "CCZ57_M3_B04_OFFLINE_REPLAY_REPORT",
+  "report_version": 1,
+  "contract_document": "CCZ57-M3-B04-R02-CANDIDATE",
+  "mechanical_pass": true,
+  "construction_gate": {
+    "current_main_sha": "2307831d7b62eb57992d3be368a3a635ebb8b7b7",
+    "a_receipt_file_sha256": "5d326296d2028f87772f1f24836b4885bfe395909a7e74aa331870d5023aa7c0",
+    "b01_receipt_file_sha256": "98ab63f1b8ff34844ba346839cb7471aeb784d400282f12c3d4fb686a5183138",
+    "b02_receipt_file_sha256": "8244b608b412c2dbb4f31c5ea4a926a4c9cd4cff47fda87786dd79efb2adbdb2",
+    "b02_receipt_hash": "e19e8b40d529fa62ae0f6f43bb5ad10fcaa1ddc1211fe711f5290c91c44993c4",
+    "b02_git_tree": "1a8d5100602dfdbeb5f8bfe811b7377172a62c42",
+    "pass": true
+  },
+  "catalogs": {
+    "b03_catalog_canonical_bytes": 3110,
+    "b03_catalog_sha256": "955bad28eb36ec70eb827b400640e00c5825041042e0d879960101d992761b93",
+    "b03_record_ref_passed": 7,
+    "b03_record_ref_total": 7,
+    "stale_ref_normal_occurrences": 0,
+    "stale_ref_failure_occurrences": 1
+  },
+  "fixture_counts": {
+    "normal_fixture_definitions": 10,
+    "normal_executions": 10,
+    "failure_fixture_definitions": 29,
+    "failure_executions": 38
+  },
+  "fixed_vector_replay": {
+    "routes": {
+      "NO_SOURCE_SLICE": {
+        "protection_set_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_CANDIDATE_PROTECTION_SET",
+          "record_id": "protect_fixture_001",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "0cb3c39e0c2473fd3ea11a6948dfe69ae949d45997ee95fd420951c17a42ea0d",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "causal_hint_proposal_refs": [
+          {
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+            "record_id": "causal-hint-proposal:6820d899ad6904aa78310e66cd0fa1e59bfd1ed78dac5be6ce960f5b1c1d501e",
+            "record_version": 1,
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "ca865e5539c6266c5948fdd2fd5cc23887938e52e8b6cd2b73da06b6c61c5249",
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "source_module": "M3"
+          }
+        ],
+        "patch_proposal_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_id": "patch-proposal:b9d707237851604d0b22010cac43821af8333a1897396a9f57a5b84e25dbb279",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "9d3aa674a4d5d8bdda905372855528b52fce3e789995b703004d1caa37919895",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "preview_canonical_bytes": 3712,
+        "preview_projection_sha256": "bd1fb2bb52d4f08d0a92815cafcd7b1d8fc45194d772437eb9a86bd0fee4c9d5"
+      },
+      "B03_R02_SOURCE_SLICE": {
+        "protection_set_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_CANDIDATE_PROTECTION_SET",
+          "record_id": "protect_fixture_001",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "0cb3c39e0c2473fd3ea11a6948dfe69ae949d45997ee95fd420951c17a42ea0d",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "causal_hint_proposal_refs": [
+          {
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+            "record_id": "causal-hint-proposal:fe694cfcf32c0c7a2dde5cb035b355f0ea5c0d714479482920635b7635898be3",
+            "record_version": 1,
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "724fc48a091603c0f31521a4831eec7673118b3c55e16ee1deca383184e8bc6d",
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "source_module": "M3"
+          }
+        ],
+        "patch_proposal_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_id": "patch-proposal:675684fa4e0c34682cda0f0e06c52ffcc224028efa3980a1bf6f53c41942f210",
+          "record_version": 1,
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "6eee94b49ed318b8119eb1baeb21f0e6d2f0653a4a22e00bad1fda7723bed265",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "preview_canonical_bytes": 3842,
+        "preview_projection_sha256": "4b15d4ebc180f10226fb6fe8e16bef882a07f8073278a5508142cfaa18a138ff"
+      }
+    },
+    "persisted_record_count": 5,
+    "record_hash_passed": 5,
+    "record_hash_total": 5,
+    "record_ref_passed": 35,
+    "record_ref_total": 35,
+    "lineage_locator_passed": 7,
+    "lineage_locator_total": 7,
+    "reference_cycle_count": 0,
+    "persisted_derived_view_count": 0,
+    "unexpected_persisted_type_count": 0,
+    "b05_record_type_reference_counts": {
+      "M3_PATCH_DECISION": 0,
+      "M3_PATCH_ELIGIBILITY_RECEIPT": 0,
+      "M3_PATCH_LIFECYCLE_RECEIPT": 0,
+      "M3_PATCH_VALIDATION_RECEIPT": 0
+    }
+  },
+  "static_audit": {
+    "files": [
+      {
+        "file": "b04_contracts.py",
+        "sha256": "e60f997e61bfdd33b1497a1c6b4ae4d60278529d10e47ac2c48b41e17c01a844",
+        "findings": []
+      },
+      {
+        "file": "b04_store.py",
+        "sha256": "eb565fc76db4491356ca1bc5753222a0e8eacc20352cf9a37f37c30299c26888",
+        "findings": []
+      },
+      {
+        "file": "patch_preview_projection.py",
+        "sha256": "5aa75135f78d288f6165f3d55e6a9fbf59a73432f9dab978f95b5698f4c0e9ad",
+        "findings": []
+      },
+      {
+        "file": "fixtures.py",
+        "sha256": "3ea23de6b7c9e36f701b06a38e6ccd23507790dcc3c739d1eebec46d5085dcda",
+        "findings": []
+      },
+      {
+        "file": "self_check.py",
+        "sha256": "930cfa2d65e03ca90eb1f1c403bca9abaefe4d458b7f551ec225adab3ee4e919",
+        "findings": []
+      },
+      {
+        "file": "test_b04_patch_atomic_group.py",
+        "sha256": "03a9c8f73b6d3c4424bd65fd7c3f47ccc29fd74cb3cf6cd91e3905728e160b2d",
+        "findings": []
+      }
+    ],
+    "totals": {},
+    "writer_class_counts": {
+      "CausalHintProposalRecorder": 1,
+      "PatchRecorder": 1,
+      "ProtectionSetBuilder": 1
+    },
+    "unique_writer_conflict_count": 0,
+    "pass": true
+  },
+  "runtime_event_ledger": {
+    "events": [
+      {
+        "event": "atomic_publish",
+        "transaction_id": "c79a53eb6334e719abbfa040f515bfa6d0e8abb3f7cd1fe000af808d825680fc"
+      },
+      {
+        "event": "atomic_publish",
+        "transaction_id": "d0dedae93c37943aeb2329d5f512bc177d81b8c49c92d6750189c32c0f345530"
+      }
+    ],
+    "summary": {
+      "model_api_calls": 0,
+      "network_calls": 0,
+      "socket_events": 0,
+      "http_events": 0,
+      "dns_events": 0,
+      "subprocess_events": 0,
+      "real_novel_reads": 0,
+      "forbidden_source_reads": 0,
+      "writes_outside_allowed_root": 0,
+      "b03_writer_calls": 0,
+      "b05_writer_calls": 0,
+      "b06_writer_calls": 0,
+      "b09_writer_calls": 0,
+      "candidate_version_writes": 0,
+      "persisted_patch_preview_count": 0
+    }
+  },
+  "writer_map": {
+    "M3_CANDIDATE_PROTECTION_SET": "ProtectionSetBuilder",
+    "M3_PATCH_PROPOSAL": "PatchRecorder",
+    "M3_CAUSAL_HINT_PROPOSAL": "CausalHintProposalRecorder"
+  },
+  "unique_writer_conflict_count": 0,
+  "report_hash_algorithm": "sha256(canonical_json(report_without_report_hash))",
+  "report_hash": "7db4545b32756a3b5279d6b6e9c8de9c13163672fc417110edbfeafb58291a02"
+}
