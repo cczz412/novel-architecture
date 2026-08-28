@@ -1280,11 +1280,18 @@ class SegmentIndexSnapshotWriter:
     @staticmethod
     def stage(state: dict[str, Any], record: dict[str, Any]) -> dict[str, Any]:
         validate_segment_index_snapshot(record)
-        return _stage_immutable_record(
-            state,
-            record,
-            collision_code="B01_SEGMENT_INDEX_IDENTITY_COLLISION",
-        )
+        key = _record_storage_key(record)
+        existing = state["records"].get(key)
+        if existing is None:
+            return _stage_immutable_record(
+                state,
+                record,
+                collision_code="B01_SEGMENT_INDEX_IDENTITY_COLLISION",
+            )
+        validate_segment_index_snapshot(existing)
+        if canonical_bytes(existing["payload"]) != canonical_bytes(record["payload"]):
+            _fail("B01_SEGMENT_INDEX_IDENTITY_COLLISION", key)
+        return record_ref(existing)
 
 
 class CandidateVersionStore:
@@ -1495,18 +1502,6 @@ class B01Service:
             candidate_record,
             reference_records=reference_records,
         )
-        pointer_record = CandidatePointerSnapshotWriter.build(
-            project_scope_id=project_scope_id,
-            author_workspace_logical_key=author_workspace_logical_key,
-            chapter_revision_ref=chapter_revision_ref,
-            seg=seg,
-            candidate_ref=record_ref(candidate_record),
-            operation_id=operation_id,
-            created_at=created_at,
-        )
-        all_input_records = [*reference_records, segment_record, candidate_record]
-        validate_pointer_snapshot(pointer_record, records=all_input_records)
-        request_hash = pointer_record["payload"]["snapshot_request_hash"]
         state = self.store.read()
         verify_state(state, reference_records=reference_records)
         staged = deepcopy(state)
@@ -1517,20 +1512,67 @@ class B01Service:
             author_workspace_logical_key=author_workspace_logical_key,
             reference_records=reference_records,
         )
+        pointer_record = CandidatePointerSnapshotWriter.build(
+            project_scope_id=project_scope_id,
+            author_workspace_logical_key=author_workspace_logical_key,
+            chapter_revision_ref=chapter_revision_ref,
+            seg=seg,
+            candidate_ref=candidate_ref,
+            operation_id=operation_id,
+            created_at=created_at,
+        )
+        all_staged_records = [*reference_records, *staged["records"].values()]
+        validate_pointer_snapshot(pointer_record, records=all_staged_records)
+        request_hash = pointer_record["payload"]["snapshot_request_hash"]
+        pointer_key = pointer_record["payload"]["logical_pointer_key"]
         prior_operation = state["operations"].get(operation_id)
         if prior_operation is not None:
             if prior_operation["request_hash"] != request_hash:
                 _fail("B01_OPERATION_CONFLICT")
-            expected_result = {
-                "segment_index_snapshot_ref": segment_ref,
-                "candidate_version_ref": candidate_ref,
-                "candidate_pointer_snapshot_ref": record_ref(pointer_record),
-                "logical_pointer_key": pointer_record["payload"]["logical_pointer_key"],
-            }
-            if prior_operation["result"] != expected_result or staged != state:
+            prior_result = prior_operation["result"]
+            _exact_keys(
+                prior_result,
+                {
+                    "segment_index_snapshot_ref",
+                    "candidate_version_ref",
+                    "candidate_pointer_snapshot_ref",
+                    "logical_pointer_key",
+                },
+                "B01_REFERENCE_INTEGRITY_FAILED",
+            )
+            if (
+                prior_result["segment_index_snapshot_ref"] != segment_ref
+                or prior_result["candidate_version_ref"] != candidate_ref
+                or prior_result["logical_pointer_key"] != pointer_key
+            ):
+                _fail("B01_REFERENCE_INTEGRITY_FAILED", "operation replay result")
+            prior_snapshot_ref = prior_result["candidate_pointer_snapshot_ref"]
+            validate_record_ref(
+                prior_snapshot_ref,
+                code="B01_REFERENCE_INTEGRITY_FAILED",
+                records=list(state["records"].values()),
+                expected_type="M3_CANDIDATE_POINTER_SNAPSHOT",
+                expected_access=FIXTURE_ACCESS,
+                expected_source_module=SOURCE_MODULE,
+            )
+            prior_snapshots = [
+                existing
+                for existing in state["records"].values()
+                if record_ref(existing) == prior_snapshot_ref
+            ]
+            if len(prior_snapshots) != 1:
+                _fail("B01_REFERENCE_INTEGRITY_FAILED", "operation snapshot")
+            prior_payload = prior_snapshots[0]["payload"]
+            if (
+                prior_payload["snapshot_request_hash"] != request_hash
+                or prior_payload["snapshot_operation_id"] != operation_id
+                or prior_payload["logical_pointer_key"] != pointer_key
+                or prior_payload["current_candidate_version_ref"] != candidate_ref
+            ):
+                _fail("B01_REFERENCE_INTEGRITY_FAILED", "operation snapshot drift")
+            if staged != state:
                 _fail("B01_REFERENCE_INTEGRITY_FAILED", "operation replay state")
-            return deepcopy(prior_operation["result"])
-        pointer_key = pointer_record["payload"]["logical_pointer_key"]
+            return deepcopy(prior_result)
         if pointer_key in state["pointers"]:
             _fail("B01_POINTER_ALREADY_INITIALIZED")
         live_pointer = build_live_pointer(

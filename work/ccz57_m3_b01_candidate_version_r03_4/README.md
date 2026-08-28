@@ -39,6 +39,8 @@
 - live pointer 保存项目、工作区、章节版本、段号、generation 和当前候选引用，不能缩成单独一条 CandidateVersion 引用。
 - generation 1 pointer 只能指向 `record_version=1`、无 parent、无 CommitIntent 的 root baseline；只读 child fixture 不能进入 pointer。
 - CandidateVersion 的幂等查找按当前 AuthorWorkspace 的 record identity 收窄；相同 payload 出现在不同工作区时必须保存为两个独立对象。
+- SegmentIndex 的幂等身份只由 stable ID 和 canonical payload 决定；合法重放会返回已有 ref，不会因新的 `created_at` 误报冲突。
+- 同 operation 重放会先取回 SegmentIndex 和 CandidateVersion 的已有 ref，再核对 pointer request hash 和原 snapshot；新的 `created_at` 不会改变结果或状态字节。
 - LineageLocator 会实际解析 `/items/{n}` 并读取目标 item；VersionDiff 会拒绝 child 替换已有 lineage。
 - `VersionDiff` 只能重算，不能保存成第二份真源或 receipt。
 - 三条不可变记录和一条 fixture pointer 在同一次原子提交里发布。提交前任何失败都保持 0 写入；N08 用两个独立的本地 Python 测试进程分别完成“提交后中断”和“新进程重开＋同 operation 重放”，并要求状态文件逐字节不变、generation 仍为 1。

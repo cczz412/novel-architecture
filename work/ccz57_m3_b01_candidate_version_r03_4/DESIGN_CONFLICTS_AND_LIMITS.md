@@ -16,7 +16,7 @@ B-01 只能发布 `record_version=1`、父引用为空、commit intent 为空的
 
 这张票的 pointer 只允许 `FIXTURE_ONLY` 命名空间，只允许从不存在推进到 generation 1。任何产品命名空间、第二次初始化或冲突操作都会在提交前失败。
 
-live pointer 不是不可变记录，但必须保存完整 scope。pointer snapshot、live pointer 和 CandidateVersion 的章节版本与段号会互相核对；重放时也会重新解析三份记录和全部引用，不能只返回缓存结果。
+live pointer 不是不可变记录，但必须保存完整 scope。pointer snapshot、live pointer 和 CandidateVersion 的章节版本与段号会互相核对；重放时也会重新解析三份记录和全部引用，不能只返回缓存结果。SegmentIndex 重放按 stable ID＋canonical payload 判断身份；同 operation 重放要先将 SegmentIndex 与 CandidateVersion 归一到已保存 ref，再核对 pointer request hash，不将新调用的 `created_at` 当成语义变化。
 
 ### 派生差异不能变成第二份真源
 

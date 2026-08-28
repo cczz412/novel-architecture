@@ -274,6 +274,45 @@ def test_segment_identity_collision_never_overwrites_first_record(
     assert (tmp_path / "state.json").read_bytes() == before
 
 
+def test_segment_payload_idempotency_ignores_created_at(tmp_path: Path) -> None:
+    first = B01Service(FixtureStore(tmp_path)).initialize_root_baseline(
+        **base_request()
+    )
+    second_request = base_request(raw_items=[])
+    second_request["seg"] = 2
+    second_request["operation_id"] = "fixture-operation-002"
+    second_request["created_at"] = "2026-08-28T12:01:00Z"
+    second = B01Service(FixtureStore(tmp_path)).initialize_root_baseline(
+        **second_request
+    )
+    assert first["segment_index_snapshot_ref"] == second[
+        "segment_index_snapshot_ref"
+    ]
+    state = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
+    segment_records = [
+        record
+        for record in state["records"].values()
+        if record["record_type"] == "M3_SEGMENT_INDEX_SNAPSHOT"
+    ]
+    assert len(segment_records) == 1
+    assert segment_records[0]["created_at"] == "2026-08-28T12:00:00Z"
+    assert state_counts(tmp_path / "state.json") == (5, 2, 2)
+
+
+def test_operation_replay_ignores_new_created_at_and_keeps_state_bytes(
+    tmp_path: Path,
+) -> None:
+    service = B01Service(FixtureStore(tmp_path))
+    first = service.initialize_root_baseline(**base_request())
+    before = (tmp_path / "state.json").read_bytes()
+    replay = base_request()
+    replay["created_at"] = "2026-08-28T12:01:00Z"
+    second = service.initialize_root_baseline(**replay)
+    assert second == first
+    assert (tmp_path / "state.json").read_bytes() == before
+    assert state_counts(tmp_path / "state.json") == (3, 1, 1)
+
+
 def test_corrupt_operation_replay_fails_reference_integrity(tmp_path: Path) -> None:
     B01Service(FixtureStore(tmp_path)).initialize_root_baseline(**base_request())
     state_path = tmp_path / "state.json"

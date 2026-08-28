@@ -29,6 +29,7 @@ from b01_contract import (
 )
 
 CREATED_AT = "2026-08-28T12:00:00Z"
+REPLAY_CREATED_AT = "2026-08-28T12:01:00Z"
 ADMISSION_CREATED_AT = "2026-08-28T03:26:14Z"
 REVIEWED_HEAD_SHA = "9eafdac71f412be3f7b8ad5fd81ffc84c3de3a26"
 MERGE_COMMIT_SHA = "019df751641533c7de4d56aa38f50747fb564036"
@@ -280,7 +281,7 @@ def n02_empty_baseline(root: Path) -> dict[str, Any]:
 def n03_segment_index_replay(root: Path) -> dict[str, Any]:
     first = _initialize(root)
     before = directory_snapshot(root)
-    second = _initialize(root)
+    second = _initialize(root, created_at=REPLAY_CREATED_AT)
     if first["segment_index_snapshot_ref"] != second["segment_index_snapshot_ref"]:
         raise AssertionError("segment index ref drifted")
     if directory_snapshot(root) != before or state_counts(root / "state.json") != (
@@ -306,7 +307,7 @@ def n04_pointer_initialization(root: Path) -> dict[str, Any]:
 def n05_operation_idempotent_replay(root: Path) -> dict[str, Any]:
     first = _initialize(root)
     before = directory_snapshot(root)
-    second = _initialize(root)
+    second = _initialize(root, created_at=REPLAY_CREATED_AT)
     if first != second or directory_snapshot(root) != before:
         raise AssertionError("same operation replay was not idempotent")
     if next(iter(_load_state(root)["pointers"].values()))["generation"] != 1:
