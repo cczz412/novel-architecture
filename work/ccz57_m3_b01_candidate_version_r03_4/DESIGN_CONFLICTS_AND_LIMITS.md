@@ -4,7 +4,7 @@
 
 ### A 的 Python 类型不能冒充 B 的 `RecordRef`
 
-A 阶段已经有 `RawAttemptReceipt` 机械外壳，但它不是 R03.4 的九字段 `RecordRef`。B-01 不直接复用 A 的 Python dataclass，也不偷偷改 A 的文件；它只接受通过 GLOBAL-A 接口清单约束的上游引用夹具。
+A 阶段已经有 `RawAttemptReceipt` 机械外壳，但它不是 R03.4 的九字段 `RecordRef`。B-01 不直接复用 A 的 Python dataclass，也不偷偷改 A 的文件；它只接受 `A_RAW_ATTEMPT_RECEIPT` 适配原件生成的 `M3_RECORD_REF`。每条引用都必须找到唯一原件，并重新核对类型、版本、hash、access 和 source module。
 
 ### root baseline 和后续 child 不能混在一张票
 
@@ -14,9 +14,15 @@ B-01 只能发布 `record_version=1`、父引用为空、commit intent 为空的
 
 这张票的 pointer 只允许 `FIXTURE_ONLY` 命名空间，只允许从不存在推进到 generation 1。任何产品命名空间、第二次初始化或冲突操作都会在提交前失败。
 
+live pointer 不是不可变记录，但必须保存完整 scope。pointer snapshot、live pointer 和 CandidateVersion 的章节版本与段号会互相核对；重放时也会重新解析三份记录和全部引用，不能只返回缓存结果。
+
 ### 派生差异不能变成第二份真源
 
 `VersionDiff` 每次从父子候选版本重算。它没有不可变记录外壳、没有持久 writer，也不能伪装成 receipt。
+
+### 0 API 不能靠手写零值
+
+静态检查会逐文件记录 SHA、禁止 import／call、凭证路径、真实小说路径和后续票 writer 命中。运行时另装 audit hook，任何 socket、DNS、fork、exec 或 subprocess 事件都会立即让机械检查失败。离线报告中的 0 是这两套检查算出来的结果。
 
 ## 小说辅助产品目前还缺什么
 

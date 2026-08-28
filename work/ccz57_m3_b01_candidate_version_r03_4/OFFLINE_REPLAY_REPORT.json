@@ -1,6 +1,36 @@
 {
   "a_interface_admission_record_hash": "91257566a8c4fc662b5735ce1a1abebd905bf148b23ad594dfcf21b8410c65af",
   "a_merge_commit_sha": "019df751641533c7de4d56aa38f50747fb564036",
+  "b01_fixed_vectors": {
+    "candidate_record_hash": {
+      "actual": "09e4a6f59c35d7a9694976e6fb5bf3f41690dd322deb2f57aa7e9969a9c187cf",
+      "expected": "09e4a6f59c35d7a9694976e6fb5bf3f41690dd322deb2f57aa7e9969a9c187cf"
+    },
+    "candidate_version_payload_hash": {
+      "actual": "4436d087de901f60aa12d8d212cbd33d8423830c34fe4d400f2132ac44a41d5d",
+      "expected": "4436d087de901f60aa12d8d212cbd33d8423830c34fe4d400f2132ac44a41d5d"
+    },
+    "lineage_locator_hash": {
+      "actual": "5827eec5c9e33ff5243277d10272287ba6e33764a3b4e893829ac7100154701c",
+      "expected": "5827eec5c9e33ff5243277d10272287ba6e33764a3b4e893829ac7100154701c"
+    },
+    "pointer_record_hash": {
+      "actual": "3af914b64c930282f3fd11e05c70ee7b101e74b943e7d60fff1bbceb5c0a5bb5",
+      "expected": "3af914b64c930282f3fd11e05c70ee7b101e74b943e7d60fff1bbceb5c0a5bb5"
+    },
+    "pointer_snapshot_request_hash": {
+      "actual": "e59977ed10b47405f0b8abefb3aa98b930c8947db855cffa834942a7b9a6ac24",
+      "expected": "e59977ed10b47405f0b8abefb3aa98b930c8947db855cffa834942a7b9a6ac24"
+    },
+    "segment_record_hash": {
+      "actual": "a8e993d61ec35d849a580d3179e56e8104807f13241f3845f78d86b6c7170d6b",
+      "expected": "a8e993d61ec35d849a580d3179e56e8104807f13241f3845f78d86b6c7170d6b"
+    },
+    "version_diff_detached_hash": {
+      "actual": "abd23eb183a4a8173787e2fa81eabae264a28be35e79d7d1bd899aaee502a3ce",
+      "expected": "abd23eb183a4a8173787e2fa81eabae264a28be35e79d7d1bd899aaee502a3ce"
+    }
+  },
   "b02_writers_called": 0,
   "blueprint_self_check_sha256": "c3203ef73c9d0fc23f843673df0325b95d4d6c52cb752e8c9b543c80dc1151b0",
   "blueprint_sha256": "8db5f9acb8ada30e929af4e710790bb36c6058023928de513757465a0fa43cd2",
@@ -11,19 +41,19 @@
   "contract": "CCZ57_M3_B01_OFFLINE_REPLAY_REPORT",
   "contract_version": "r03.3-candidate",
   "failure_fixture_families": {
-    "F01_A_ADMISSION_MISSING": [
+    "F01_ADMISSION_MISSING": [
       "B01_A_ADMISSION_REQUIRED"
     ],
-    "F02_A_HEAD_MISMATCH": [
+    "F02_REVIEWED_HEAD_MERGE_HEAD_MISMATCH": [
       "B01_A_ADMISSION_HEAD_MISMATCH"
     ],
-    "F03_A_MAIN_READBACK_INVALID": [
+    "F03_MAIN_READBACK_INVALID": [
       "B01_A_ADMISSION_READBACK_INVALID"
     ],
-    "F04_A_INTERFACE_MANIFEST_DRIFT": [
+    "F04_A_MANIFEST_DRIFT": [
       "B01_A_INTERFACE_DRIFT"
     ],
-    "F05_ATTEMPT_REF_INVALID": [
+    "F05_A_ATTEMPT_REF_INVALID": [
       "B01_ATTEMPT_REF_INVALID"
     ],
     "F06_SEGMENT_SOURCE_MISMATCH": [
@@ -35,7 +65,7 @@
     "F08_SEGMENT_RANGE_INVALID": [
       "B01_SEGMENT_INDEX_INVALID"
     ],
-    "F09_SEGMENT_TEXT_HASH_MISMATCH": [
+    "F09_RESPONSIBILITY_HASH_INVALID": [
       "B01_SEGMENT_TEXT_HASH_MISMATCH"
     ],
     "F10_CANDIDATE_FIELDS_INVALID": [
@@ -44,7 +74,7 @@
     "F11_ITEM_HASH_MISMATCH": [
       "B01_ITEM_HASH_MISMATCH"
     ],
-    "F12_DUPLICATE_LINEAGE_ID": [
+    "F12_DUPLICATE_LINEAGE": [
       "B01_DUPLICATE_LINEAGE_ID"
     ],
     "F13_LINEAGE_INDEX_INVALID": [
@@ -53,7 +83,7 @@
     "F14_EMPTY_BASELINE_INCONSISTENT": [
       "B01_EMPTY_BASELINE_INVALID"
     ],
-    "F15_CHILD_CREATION_OUT_OF_SCOPE": [
+    "F15_CHILD_CREATION_REQUESTED": [
       "B01_CHILD_CREATION_OUT_OF_SCOPE"
     ],
     "F16_POINTER_SCOPE_MISMATCH": [
@@ -65,18 +95,30 @@
     "F18_OPERATION_CONFLICT": [
       "B01_OPERATION_CONFLICT"
     ],
-    "F19_VERSION_DIFF_INVALID_OR_PERSISTED": [
+    "F19_VERSION_DIFF_INVALID": [
       "B01_VERSION_DIFF_INVALID",
       "B01_DERIVED_VIEW_PERSIST_FORBIDDEN"
     ],
-    "F20_WRITE_SET_OR_RUNTIME_BOUNDARY": [
+    "F20_BOUNDARY_ESCAPE": [
       "B01_WRITE_SET_ESCAPE",
       "B01_NETWORK_OR_PROCESS_EVENT"
     ]
   },
-  "fixture_pointer_writes": 9,
-  "github_writes": 0,
-  "linear_writes": 0,
+  "fixture_pointer_writes": 8,
+  "inherited_fixed_vectors": {
+    "empty_version_payload_hash": {
+      "actual": "1e60cd9513280b78f7cbf9c4bf54f5f2a932a40bfcc88a0adc990c140ea74823",
+      "expected": "1e60cd9513280b78f7cbf9c4bf54f5f2a932a40bfcc88a0adc990c140ea74823"
+    },
+    "lineage_locator_hash": {
+      "actual": "f43f65f5435f6b7cedb4ddcc3078e9437fbf58d17a8885e3b2427e2793a0180d",
+      "expected": "f43f65f5435f6b7cedb4ddcc3078e9437fbf58d17a8885e3b2427e2793a0180d"
+    },
+    "parent_version_payload_hash": {
+      "actual": "27495dc404c3448063651be0672487332700c1624c14338a1e1712b995a0da7f",
+      "expected": "27495dc404c3448063651be0672487332700c1624c14338a1e1712b995a0da7f"
+    }
+  },
   "mechanical_pass": true,
   "model_api_calls": 0,
   "network_calls": 0,
@@ -90,39 +132,95 @@
     "N07_PARENT_CHILD_READ_ONLY_DIFF": "PASS",
     "N08_RESTART_READBACK": "PASS"
   },
-  "notion_writes": 0,
+  "object_shapes": {
+    "catalog_sha256": "90ea6b165f4e509ff3e267f494afc83ddad408c54abb6a006be0c15decad1ccd",
+    "immutable_records": 3,
+    "record_hashes_verified": 3
+  },
   "product_pointer_writes": 0,
   "real_novel_reads": 0,
   "reference_integrity": {
-    "immutable_record_count": 27,
+    "immutable_record_count": 24,
     "persisted_derived_views": 0,
     "record_hash_failed": 0,
-    "record_hash_passed": 27,
-    "record_ref_count": 81,
+    "record_hash_passed": 24,
+    "record_ref_count": 48,
     "record_ref_failed": 0,
-    "record_ref_passed": 81,
+    "record_ref_passed": 48,
     "reference_cycles": 0,
     "unique_writer_conflicts": 0,
     "unresolved_refs": 0
   },
-  "report_hash": "bd7008c711e70eb016379b822f8d2a9570a3d8ed8c783734308a021c6e97d3a2",
+  "report_hash": "fbfa9a1b19d2d803e1844b8243f16feb6e7ed464d9faabec3df8d0101da9db2d",
   "runtime_event_evidence": {
-    "allowed_event_count": 18,
-    "forbidden_event_count": 0
+    "allowed_event_counts": {
+      "open": 69,
+      "os.mkdir": 16,
+      "os.remove": 1,
+      "os.rename": 11
+    },
+    "forbidden_events": [],
+    "real_novel_events": []
   },
   "semantic_pass": null,
-  "slack_writes": 0,
   "source_hashes": {
-    "b01_contract.py": "cbb9a0b569ac4a4a16f0543d6df60bca29ba210dc875ae062b4781912a4c77bb",
-    "fixtures.py": "e44e9e22dfc787875339501356ccaa0e8434cc2ffe9909e60d1f30d60cf4e6b2",
-    "self_check.py": "f8f0a65c9e5ae0f4f788d579479fb1f852406646f7b965e0c48ce958b0eaeffa",
-    "test_b01_contract.py": "33879e43616b846cc229e96cf6ab799672ae184ead368e7c062b14b30d7361e5"
+    "b01_contract.py": "d6fb40667224dad1b8ac6bed18ea6b74f275c02a4f80097f5cc788119117de79",
+    "fixtures.py": "64e4faf13d2f5b35a4108878b37f9a3408ee8e5ddf13c0255f9172c2a00c197b",
+    "self_check.py": "76739b9a4886b49581ffad788f405aa5adc656366ff5427614be211715ce200d",
+    "test_b01_contract.py": "f05ffc968231a57f39cbaed1c80bc9bffb8b57f7c025fce255a195da80eff898"
   },
   "static_audit": {
-    "runtime_sources": [
-      "b01_contract.py",
-      "fixtures.py"
+    "files": [
+      {
+        "credential_path_hits": 0,
+        "file": "b01_contract.py",
+        "findings": [],
+        "forbidden_call_hits": 0,
+        "forbidden_import_hits": 0,
+        "real_novel_path_hits": 0,
+        "scope_escape_names": [],
+        "sha256": "d6fb40667224dad1b8ac6bed18ea6b74f275c02a4f80097f5cc788119117de79"
+      },
+      {
+        "credential_path_hits": 0,
+        "file": "fixtures.py",
+        "findings": [],
+        "forbidden_call_hits": 0,
+        "forbidden_import_hits": 0,
+        "real_novel_path_hits": 0,
+        "scope_escape_names": [],
+        "sha256": "64e4faf13d2f5b35a4108878b37f9a3408ee8e5ddf13c0255f9172c2a00c197b"
+      }
     ],
-    "violations": []
+    "totals": {
+      "credential_path_hits": 0,
+      "forbidden_call_hits": 0,
+      "forbidden_import_hits": 0,
+      "http_or_socket_path_hits": 0,
+      "model_client_path_hits": 0,
+      "real_novel_path_hits": 0,
+      "scope_escape_name_hits": 0
+    }
+  },
+  "writer_audit": {
+    "lineage_locator_constructor_classes": [
+      "CandidateVersionStore"
+    ],
+    "persisting_writer_classes": [
+      "CandidatePointerSnapshotWriter",
+      "CandidateVersionStore",
+      "SegmentIndexSnapshotWriter"
+    ],
+    "unique_writer_conflicts": 0,
+    "version_diff_projector_classes": [
+      "VersionDiffProjector"
+    ]
+  },
+  "zero_call_derivation": {
+    "credential_path_hits": 0,
+    "http_or_socket_path_hits": 0,
+    "model_client_path_hits": 0,
+    "runtime_forbidden_events": 0,
+    "runtime_real_novel_events": 0
   }
 }

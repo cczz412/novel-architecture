@@ -1,122 +1,238 @@
 {
   "catalog_contract": "CCZ57_M3_B01_OBJECT_SHAPES",
   "catalog_version": "r03.3-candidate",
-  "immutable_envelope": {
-    "canonicalization": "NFC_UTF8_COMPACT_JSON_OBJECT_KEYS_UTF8_BYTE_ORDER",
-    "exact_fields": [
-      "contract",
-      "contract_version",
-      "record_type",
-      "record_id",
-      "record_version",
-      "record_contract_version",
-      "record_hash",
-      "source_module",
-      "access",
-      "retention_class",
-      "created_at",
-      "payload"
-    ],
-    "hash_preimage": "full envelope with only record_hash removed"
-  },
-  "record_ref": {
-    "exact_fields": [
-      "contract",
-      "contract_version",
-      "record_type",
-      "record_id",
-      "record_version",
-      "record_contract_version",
-      "record_hash",
-      "access",
-      "source_module"
-    ]
-  },
-  "outputs": {
-    "M3_SEGMENT_INDEX_SNAPSHOT": {
-      "kind": "immutable_record",
-      "writer": "SegmentIndexSnapshotWriter",
-      "payload_exact_fields": [
-        "project_scope_id",
-        "author_workspace_logical_key",
-        "source_module_identity",
-        "chapter_revision_ref",
-        "stable_segment_index_id",
-        "segments"
-      ],
-      "segment_exact_fields": [
-        "seg",
-        "start_offset",
-        "end_offset",
-        "responsibility_text_sha256"
-      ]
+  "immutable_records": [
+    {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_IMMUTABLE_RECORD",
+      "contract_version": "r03.3-candidate",
+      "created_at": "2026-08-28T12:00:00Z",
+      "payload": {
+        "author_workspace_logical_key": "fixture-workspace-001",
+        "chapter_revision_ref": {
+          "chapter_id": "synthetic-chapter-001",
+          "revision_no": 7,
+          "revision_text_sha256": "7032bdcb88ad19bbf7017842f36eb99fe176f8c54c941af2719ae7cb21579712"
+        },
+        "current_candidate_version_ref": {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_contract_version": "r03.3-candidate",
+          "record_hash": "09e4a6f59c35d7a9694976e6fb5bf3f41690dd322deb2f57aa7e9969a9c187cf",
+          "record_id": "cv:2a17b0a756cd:4436d087de901f60aa12d8d212cbd33d",
+          "record_type": "M3_CANDIDATE_VERSION",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        "generation": 1,
+        "logical_pointer_key": "fixture:m3_candidate.current/synthetic-chapter-001/r7/seg1",
+        "pointer_namespace": "FIXTURE_ONLY",
+        "project_scope_id": "fixture-project-001",
+        "seg": 1,
+        "snapshot_kind": "BASELINE_VERSIONED",
+        "snapshot_operation_id": "fixture-operation-001",
+        "snapshot_request_hash": "e59977ed10b47405f0b8abefb3aa98b930c8947db855cffa834942a7b9a6ac24"
+      },
+      "record_contract_version": "r03.3-candidate",
+      "record_hash": "3af914b64c930282f3fd11e05c70ee7b101e74b943e7d60fff1bbceb5c0a5bb5",
+      "record_id": "pointer-snapshot:e59977ed10b47405f0b8abefb3aa98b9",
+      "record_type": "M3_CANDIDATE_POINTER_SNAPSHOT",
+      "record_version": 1,
+      "retention_class": "CORE_IMMUTABLE_AUDIT",
+      "source_module": "M3"
     },
-    "M3_CANDIDATE_VERSION": {
-      "kind": "immutable_record",
-      "writer": "CandidateVersionStore",
-      "b01_allowed_creation": "ROOT_BASELINE_ONLY",
-      "payload_exact_fields": [
-        "chapter_revision_ref",
-        "seg",
-        "parent_candidate_version_ref",
-        "origin_attempt_refs",
-        "origin_commit_intent_ref",
-        "items",
-        "lineage_index",
-        "version_payload_hash"
-      ]
+    {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_IMMUTABLE_RECORD",
+      "contract_version": "r03.3-candidate",
+      "created_at": "2026-08-28T12:00:00Z",
+      "payload": {
+        "chapter_revision_ref": {
+          "chapter_id": "synthetic-chapter-001",
+          "revision_no": 7,
+          "revision_text_sha256": "7032bdcb88ad19bbf7017842f36eb99fe176f8c54c941af2719ae7cb21579712"
+        },
+        "items": [
+          {
+            "item_hash": "f080fd15d6e6781913f9b8a9abfcc00d41bef537c65cca1c8530b7e4b1ba482b",
+            "lineage_id": "lin_88599f1ead812ead4fb101fb0d14957ee70f9f7edbb94855b7ea9806bd622809",
+            "quote": "synthetic quote one",
+            "text": "synthetic fact one"
+          },
+          {
+            "item_hash": "273d95de18b01e7c42d94161bcbc4a342d9268f4b3b5b46e7bb42d105ebbecdb",
+            "lineage_id": "lin_9b7f812f9ed34b2b8cbe8855fbab5acaeed5671eb73d2089880f832fc7a6be41",
+            "quote": "synthetic quote two",
+            "text": "synthetic fact two"
+          }
+        ],
+        "lineage_index": [
+          {
+            "item_hash": "f080fd15d6e6781913f9b8a9abfcc00d41bef537c65cca1c8530b7e4b1ba482b",
+            "json_pointer": "/items/0",
+            "lineage_id": "lin_88599f1ead812ead4fb101fb0d14957ee70f9f7edbb94855b7ea9806bd622809"
+          },
+          {
+            "item_hash": "273d95de18b01e7c42d94161bcbc4a342d9268f4b3b5b46e7bb42d105ebbecdb",
+            "json_pointer": "/items/1",
+            "lineage_id": "lin_9b7f812f9ed34b2b8cbe8855fbab5acaeed5671eb73d2089880f832fc7a6be41"
+          }
+        ],
+        "origin_attempt_refs": [
+          {
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.3-candidate",
+            "record_contract_version": "r03.3-candidate",
+            "record_hash": "fef276f8a06b1aa052b57a12092f4db39a9597752f258003ac979f115f972b3b",
+            "record_id": "attempt_fixture_001",
+            "record_type": "A_RAW_ATTEMPT_RECEIPT",
+            "record_version": 1,
+            "source_module": "A_STAGE_FIXTURE"
+          }
+        ],
+        "origin_commit_intent_ref": null,
+        "parent_candidate_version_ref": null,
+        "seg": 1,
+        "version_payload_hash": "4436d087de901f60aa12d8d212cbd33d8423830c34fe4d400f2132ac44a41d5d"
+      },
+      "record_contract_version": "r03.3-candidate",
+      "record_hash": "09e4a6f59c35d7a9694976e6fb5bf3f41690dd322deb2f57aa7e9969a9c187cf",
+      "record_id": "cv:2a17b0a756cd:4436d087de901f60aa12d8d212cbd33d",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_version": 1,
+      "retention_class": "CORE_IMMUTABLE_AUDIT",
+      "source_module": "M3"
     },
-    "M3_CANDIDATE_POINTER_SNAPSHOT": {
-      "kind": "immutable_record",
-      "writer": "CandidatePointerSnapshotWriter",
-      "namespace": "FIXTURE_ONLY",
-      "allowed_transition": "absent_to_generation_1",
-      "payload_exact_fields": [
-        "project_scope_id",
-        "author_workspace_logical_key",
-        "logical_pointer_key",
-        "pointer_namespace",
-        "chapter_revision_ref",
-        "seg",
-        "generation",
-        "current_candidate_version_ref",
-        "snapshot_kind",
-        "snapshot_operation_id",
-        "snapshot_request_hash"
-      ]
-    },
-    "M3_LINEAGE_LOCATOR": {
-      "kind": "embedded_value_object",
-      "persistent_writer": null,
-      "exact_fields": [
-        "contract",
-        "contract_version",
-        "candidate_version_ref",
-        "lineage_id",
-        "json_pointer",
-        "item_hash",
-        "locator_hash"
-      ]
-    },
-    "VersionDiff": {
-      "kind": "derived_recomputable_view",
-      "projector": "VersionDiffProjector",
-      "persistent_writer": null,
-      "exact_fields": [
-        "view_type",
-        "parent_candidate_version_ref",
-        "child_candidate_version_ref",
-        "changed_json_pointers",
-        "excluded_sidecar_proposal_refs"
-      ]
+    {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_IMMUTABLE_RECORD",
+      "contract_version": "r03.3-candidate",
+      "created_at": "2026-08-28T12:00:00Z",
+      "payload": {
+        "author_workspace_logical_key": "fixture-workspace-001",
+        "chapter_revision_ref": {
+          "chapter_id": "synthetic-chapter-001",
+          "revision_no": 7,
+          "revision_text_sha256": "7032bdcb88ad19bbf7017842f36eb99fe176f8c54c941af2719ae7cb21579712"
+        },
+        "project_scope_id": "fixture-project-001",
+        "segments": [
+          {
+            "end": 41,
+            "responsibility_text_sha256": "4f25ba8abd39c480bc3d16365a007ac94fdb8f3389d45fdbde723578bdebac1d",
+            "seg": 1,
+            "start": 0
+          },
+          {
+            "end": 65,
+            "responsibility_text_sha256": "eed526a0912ba99afe22d239bc2c7de844c90212e9c88bc93e61dba62b22cc7d",
+            "seg": 2,
+            "start": 41
+          }
+        ],
+        "source_module_identity": "B01_SYNTHETIC_FIXTURE",
+        "stable_segment_index_id": "segidx:fixture-project-001:synthetic-chapter-001:r7:7032bdcb88ad"
+      },
+      "record_contract_version": "r03.3-candidate",
+      "record_hash": "a8e993d61ec35d849a580d3179e56e8104807f13241f3845f78d86b6c7170d6b",
+      "record_id": "segidx:fixture-project-001:synthetic-chapter-001:r7:7032bdcb88ad",
+      "record_type": "M3_SEGMENT_INDEX_SNAPSHOT",
+      "record_version": 1,
+      "retention_class": "CORE_IMMUTABLE_AUDIT",
+      "source_module": "M3"
     }
+  ],
+  "lineage_locator_example": {
+    "candidate_version_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.3-candidate",
+      "record_contract_version": "r03.3-candidate",
+      "record_hash": "09e4a6f59c35d7a9694976e6fb5bf3f41690dd322deb2f57aa7e9969a9c187cf",
+      "record_id": "cv:2a17b0a756cd:4436d087de901f60aa12d8d212cbd33d",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "contract": "M3_LINEAGE_LOCATOR",
+    "contract_version": "r03.3-candidate",
+    "item_hash": "f080fd15d6e6781913f9b8a9abfcc00d41bef537c65cca1c8530b7e4b1ba482b",
+    "json_pointer": "/items/0",
+    "lineage_id": "lin_88599f1ead812ead4fb101fb0d14957ee70f9f7edbb94855b7ea9806bd622809",
+    "locator_hash": "5827eec5c9e33ff5243277d10272287ba6e33764a3b4e893829ac7100154701c"
   },
-  "transaction": {
-    "published_immutable_records": 3,
-    "published_live_fixture_pointers": 1,
-    "operation_replay": "same operation and request returns the same result",
-    "operation_conflict": "B01_OPERATION_CONFLICT",
-    "existing_pointer": "B01_POINTER_ALREADY_INITIALIZED"
+  "live_pointer_example": {
+    "author_workspace_logical_key": "fixture-workspace-001",
+    "chapter_revision_ref": {
+      "chapter_id": "synthetic-chapter-001",
+      "revision_no": 7,
+      "revision_text_sha256": "7032bdcb88ad19bbf7017842f36eb99fe176f8c54c941af2719ae7cb21579712"
+    },
+    "current_candidate_version_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.3-candidate",
+      "record_contract_version": "r03.3-candidate",
+      "record_hash": "09e4a6f59c35d7a9694976e6fb5bf3f41690dd322deb2f57aa7e9969a9c187cf",
+      "record_id": "cv:2a17b0a756cd:4436d087de901f60aa12d8d212cbd33d",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "generation": 1,
+    "logical_pointer_key": "fixture:m3_candidate.current/synthetic-chapter-001/r7/seg1",
+    "pointer_namespace": "FIXTURE_ONLY",
+    "project_scope_id": "fixture-project-001",
+    "seg": 1
   },
-  "write_set": "work/ccz57_m3_b01_candidate_version_r03_4/**"
+  "record_ref_example": {
+    "access": "POLICY_FIXTURE_READ_ONLY",
+    "contract": "M3_RECORD_REF",
+    "contract_version": "r03.3-candidate",
+    "record_contract_version": "r03.3-candidate",
+    "record_hash": "09e4a6f59c35d7a9694976e6fb5bf3f41690dd322deb2f57aa7e9969a9c187cf",
+    "record_id": "cv:2a17b0a756cd:4436d087de901f60aa12d8d212cbd33d",
+    "record_type": "M3_CANDIDATE_VERSION",
+    "record_version": 1,
+    "source_module": "M3"
+  },
+  "version_diff_example": {
+    "changed_json_pointers": [
+      "/items/0/text"
+    ],
+    "child_candidate_version_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.3-candidate",
+      "record_contract_version": "r03.3-candidate",
+      "record_hash": "f90a2be3c5b1322f7f90a7b17d41f52b6011e99d3acb08e23233088190b12fb6",
+      "record_id": "cv:2a17b0a756cd:4436d087de901f60aa12d8d212cbd33d:synthetic-child",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_version": 2,
+      "source_module": "M3"
+    },
+    "excluded_sidecar_proposal_refs": [],
+    "parent_candidate_version_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.3-candidate",
+      "record_contract_version": "r03.3-candidate",
+      "record_hash": "09e4a6f59c35d7a9694976e6fb5bf3f41690dd322deb2f57aa7e9969a9c187cf",
+      "record_id": "cv:2a17b0a756cd:4436d087de901f60aa12d8d212cbd33d",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "view_type": "DERIVED_RECOMPUTABLE"
+  },
+  "write_set": "work/ccz57_m3_b01_candidate_version_r03_4/**",
+  "writer_map": {
+    "M3_CANDIDATE_POINTER_SNAPSHOT": "CandidatePointerSnapshotWriter",
+    "M3_CANDIDATE_VERSION": "CandidateVersionStore",
+    "M3_LINEAGE_LOCATOR": "CandidateVersionStore constructor only; no persistence",
+    "M3_SEGMENT_INDEX_SNAPSHOT": "SegmentIndexSnapshotWriter",
+    "VersionDiff": "VersionDiffProjector; no persistence"
+  }
 }

@@ -6,20 +6,30 @@ import argparse
 import ast
 import hashlib
 import json
+import sys
 import tempfile
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
 from b01_contract import (
+    B01ContractError,
     RECORD_REF_KEYS,
     canonical_bytes,
+    validate_candidate_version,
+    validate_lineage_locator,
+    validate_pointer_snapshot,
     validate_record,
     validate_record_ref,
+    verify_state,
 )
 from fixtures import (
     FAILURE_SCENARIOS,
     NORMAL_SCENARIOS,
+    b01_fixed_vectors,
     canonical_fixture_vector,
+    inherited_fixed_vectors,
+    reference_records,
     run_failure_scenario,
     run_normal_scenario,
 )
@@ -27,6 +37,7 @@ from fixtures import (
 ROOT = Path(__file__).resolve().parent
 REPORT_PATH = ROOT / "OFFLINE_REPLAY_REPORT.json"
 MANIFEST_PATH = ROOT / "MANIFEST.sha256"
+OBJECT_SHAPES_PATH = ROOT / "OBJECT_SHAPES.json"
 EXPECTED_FILES = {
     "README.md",
     "b01_contract.py",
@@ -46,71 +57,278 @@ HASHED_SOURCES = (
     "test_b01_contract.py",
 )
 FORBIDDEN_IMPORTS = {
+    "aiohttp",
     "anthropic",
     "boto3",
+    "dotenv",
     "httpx",
+    "importlib",
     "openai",
     "requests",
     "socket",
     "subprocess",
     "urllib",
 }
-FORBIDDEN_CALLS = {"__import__", "compile", "eval", "exec"}
+MODEL_IMPORTS = {"anthropic", "boto3", "openai"}
+HTTP_IMPORTS = {"aiohttp", "httpx", "requests", "socket", "urllib"}
+FORBIDDEN_NAME_CALLS = {"__import__", "compile", "eval", "exec"}
+FORBIDDEN_OS_CALLS = {
+    "execv",
+    "execve",
+    "execvp",
+    "execvpe",
+    "fork",
+    "forkpty",
+    "posix_spawn",
+    "posix_spawnp",
+    "spawnl",
+    "spawnle",
+    "spawnlp",
+    "spawnlpe",
+    "spawnv",
+    "spawnve",
+    "spawnvp",
+    "spawnvpe",
+    "system",
+}
+FORBIDDEN_SCOPE_NAMES = {
+    "DiagnosticRecorder",
+    "CoverageRecorder",
+    "SourceReadRequestWriter",
+    "RestrictedSourceReader",
+    "ProtectionSetBuilder",
+    "PatchRecorder",
+    "PatchValidator",
+    "EligibilityProjector",
+    "AuthorDecisionAdapter",
+    "PatchLifecycleWriter",
+    "RunController",
+    "C3Projector",
+    "M4EvidenceGate",
+    "HintRecorder",
+    "ChapterAggregator",
+    "SupportPackageExporter",
+}
+EXPECTED_WRITER_CLASSES = {
+    "SegmentIndexSnapshotWriter",
+    "CandidateVersionStore",
+    "CandidatePointerSnapshotWriter",
+}
 
 
 def file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def static_audit() -> list[dict[str, Any]]:
-    violations: list[dict[str, Any]] = []
+class RuntimeAuditGuard:
+    """Fail closed on network, DNS, fork, exec, or subprocess audit events."""
+
+    FORBIDDEN_EXACT = {
+        "os.exec",
+        "os.fork",
+        "os.forkpty",
+        "os.posix_spawn",
+        "os.spawn",
+        "subprocess.Popen",
+    }
+    FORBIDDEN_PREFIXES = ("socket.",)
+    OBSERVED_ALLOWED = {
+        "open",
+        "os.mkdir",
+        "os.remove",
+        "os.rename",
+        "os.rmdir",
+    }
+
+    def __init__(self) -> None:
+        self.allowed_counts: Counter[str] = Counter()
+        self.forbidden_events: list[str] = []
+        self.real_novel_events: list[str] = []
+
+    def audit(self, event: str, _args: tuple[Any, ...]) -> None:
+        if event == "open" and _args and isinstance(_args[0], (str, bytes)):
+            path_text = str(_args[0])
+            if any(
+                marker in path_text
+                for marker in (
+                    "/local/",
+                    "trial_seven_books",
+                    "newbook_unseen_by_models",
+                )
+            ):
+                self.real_novel_events.append(path_text)
+                raise B01ContractError("B01_SCOPE_ESCAPE", "real novel read")
+        forbidden = event in self.FORBIDDEN_EXACT or event.startswith(
+            self.FORBIDDEN_PREFIXES
+        )
+        if forbidden:
+            self.forbidden_events.append(event)
+            raise B01ContractError("B01_NETWORK_OR_PROCESS_EVENT", event)
+        if event in self.OBSERVED_ALLOWED:
+            self.allowed_counts[event] += 1
+
+    def install(self) -> None:
+        sys.addaudithook(self.audit)
+
+
+def static_audit() -> dict[str, Any]:
+    file_results: list[dict[str, Any]] = []
+    totals: Counter[str] = Counter()
     for name in RUNTIME_SOURCES:
         path = ROOT / name
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=name)
+        source = path.read_text(encoding="utf-8")
+        tree = ast.parse(source, filename=name)
+        findings: list[dict[str, Any]] = []
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     root_name = alias.name.split(".")[0]
                     if root_name in FORBIDDEN_IMPORTS:
-                        violations.append(
+                        findings.append(
                             {
-                                "file": name,
                                 "line": node.lineno,
                                 "kind": "forbidden_import",
                                 "value": alias.name,
                             }
                         )
+                        totals["forbidden_import_hits"] += 1
+                        if root_name in MODEL_IMPORTS:
+                            totals["model_client_path_hits"] += 1
+                        if root_name in HTTP_IMPORTS:
+                            totals["http_or_socket_path_hits"] += 1
             elif isinstance(node, ast.ImportFrom) and node.module:
                 root_name = node.module.split(".")[0]
-                if root_name in FORBIDDEN_IMPORTS or root_name == "importlib":
-                    violations.append(
+                if root_name in FORBIDDEN_IMPORTS:
+                    findings.append(
                         {
-                            "file": name,
                             "line": node.lineno,
                             "kind": "forbidden_import",
                             "value": node.module,
                         }
                     )
-            elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-                if node.func.id in FORBIDDEN_CALLS:
-                    violations.append(
+                    totals["forbidden_import_hits"] += 1
+                    if root_name in MODEL_IMPORTS:
+                        totals["model_client_path_hits"] += 1
+                    if root_name in HTTP_IMPORTS:
+                        totals["http_or_socket_path_hits"] += 1
+            elif isinstance(node, ast.Call):
+                if (
+                    isinstance(node.func, ast.Name)
+                    and node.func.id in FORBIDDEN_NAME_CALLS
+                ):
+                    findings.append(
                         {
-                            "file": name,
                             "line": node.lineno,
                             "kind": "forbidden_call",
                             "value": node.func.id,
                         }
                     )
-            elif isinstance(node, ast.Attribute) and node.attr in {"environ", "getenv"}:
-                violations.append(
+                    totals["forbidden_call_hits"] += 1
+                elif (
+                    isinstance(node.func, ast.Attribute)
+                    and isinstance(node.func.value, ast.Name)
+                    and node.func.value.id == "os"
+                    and node.func.attr in FORBIDDEN_OS_CALLS
+                ):
+                    findings.append(
+                        {
+                            "line": node.lineno,
+                            "kind": "forbidden_os_call",
+                            "value": node.func.attr,
+                        }
+                    )
+                    totals["forbidden_call_hits"] += 1
+            if isinstance(node, ast.Attribute) and node.attr in {"environ", "getenv"}:
+                findings.append(
                     {
-                        "file": name,
                         "line": node.lineno,
                         "kind": "credential_path",
                         "value": node.attr,
                     }
                 )
-    return violations
+                totals["credential_path_hits"] += 1
+        scope_hits = [name for name in sorted(FORBIDDEN_SCOPE_NAMES) if name in source]
+        totals["scope_escape_name_hits"] += len(scope_hits)
+        real_novel_path_hits = source.count("local/") + source.count(
+            "trial_seven_books"
+        )
+        totals["real_novel_path_hits"] += real_novel_path_hits
+        file_results.append(
+            {
+                "file": name,
+                "sha256": file_sha256(path),
+                "forbidden_import_hits": sum(
+                    item["kind"] == "forbidden_import" for item in findings
+                ),
+                "forbidden_call_hits": sum(
+                    item["kind"] in {"forbidden_call", "forbidden_os_call"}
+                    for item in findings
+                ),
+                "credential_path_hits": sum(
+                    item["kind"] == "credential_path" for item in findings
+                ),
+                "scope_escape_names": scope_hits,
+                "real_novel_path_hits": real_novel_path_hits,
+                "findings": findings,
+            }
+        )
+    for key in (
+        "forbidden_import_hits",
+        "forbidden_call_hits",
+        "credential_path_hits",
+        "model_client_path_hits",
+        "http_or_socket_path_hits",
+        "scope_escape_name_hits",
+        "real_novel_path_hits",
+    ):
+        totals[key] += 0
+    return {"files": file_results, "totals": dict(sorted(totals.items()))}
+
+
+class _WriterVisitor(ast.NodeVisitor):
+    def __init__(self) -> None:
+        self.class_name: str | None = None
+        self.stage_call_classes: list[str | None] = []
+        self.locator_call_classes: list[str | None] = []
+        self.diff_call_classes: list[str | None] = []
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        previous = self.class_name
+        self.class_name = node.name
+        self.generic_visit(node)
+        self.class_name = previous
+
+    def visit_Call(self, node: ast.Call) -> None:
+        if isinstance(node.func, ast.Name):
+            if node.func.id == "_stage_immutable_record":
+                self.stage_call_classes.append(self.class_name)
+            elif node.func.id == "_make_lineage_locator":
+                self.locator_call_classes.append(self.class_name)
+            elif node.func.id == "_project_version_diff":
+                self.diff_call_classes.append(self.class_name)
+        self.generic_visit(node)
+
+
+def writer_audit() -> dict[str, Any]:
+    tree = ast.parse((ROOT / "b01_contract.py").read_text(encoding="utf-8"))
+    visitor = _WriterVisitor()
+    visitor.visit(tree)
+    stage_classes = set(visitor.stage_call_classes)
+    conflicts = 0
+    if stage_classes != EXPECTED_WRITER_CLASSES:
+        conflicts += 1
+    if visitor.locator_call_classes != ["CandidateVersionStore"]:
+        conflicts += 1
+    if visitor.diff_call_classes != ["VersionDiffProjector"]:
+        conflicts += 1
+    return {
+        "persisting_writer_classes": sorted(
+            item for item in stage_classes if item is not None
+        ),
+        "lineage_locator_constructor_classes": visitor.locator_call_classes,
+        "version_diff_projector_classes": visitor.diff_call_classes,
+        "unique_writer_conflicts": conflicts,
+    }
 
 
 def _walk_refs(value: Any) -> list[dict[str, Any]]:
@@ -150,45 +368,47 @@ def _cycle_count(graph: dict[str, set[str]]) -> int:
     return cycles
 
 
-def reference_integrity(state_paths: list[Path]) -> dict[str, int]:
+def reference_integrity(
+    state_paths: list[Path], *, unique_writer_conflicts: int
+) -> dict[str, int]:
     immutable_records: list[dict[str, Any]] = []
     refs: list[dict[str, Any]] = []
+    record_hash_passed = 0
+    record_hash_failed = 0
+    ref_passed = 0
+    ref_failed = 0
+    unresolved = 0
+    persisted_derived_views = 0
+    external = reference_records()
     for state_path in state_paths:
         state = json.loads(state_path.read_text(encoding="utf-8"))
         records = list(state["records"].values())
+        all_records = [*external, *records]
+        try:
+            verify_state(state, reference_records=external)
+        except B01ContractError:
+            record_hash_failed += len(records)
         immutable_records.extend(records)
-        refs.extend(_walk_refs(records))
-        refs.extend(_walk_refs(state["pointers"]))
-        refs.extend(_walk_refs(state["operations"]))
-    record_hash_passed = 0
-    record_hash_failed = 0
-    persisted_derived_views = 0
-    for record in immutable_records:
-        try:
-            validate_record(record)
-        except ValueError:
-            record_hash_failed += 1
-        else:
-            record_hash_passed += 1
-        if record["record_type"] == "VersionDiff":
-            persisted_derived_views += 1
-    ref_passed = 0
-    ref_failed = 0
-    for ref in refs:
-        try:
-            validate_record_ref(ref)
-        except ValueError:
-            ref_failed += 1
-        else:
-            ref_passed += 1
+        state_refs = _walk_refs(state)
+        refs.extend(state_refs)
+        for record in records:
+            try:
+                validate_record(record)
+            except B01ContractError:
+                record_hash_failed += 1
+            else:
+                record_hash_passed += 1
+            if record["record_type"] == "VersionDiff":
+                persisted_derived_views += 1
+        for ref in state_refs:
+            try:
+                validate_record_ref(ref, records=all_records)
+            except B01ContractError:
+                ref_failed += 1
+                unresolved += 1
+            else:
+                ref_passed += 1
     local_hashes = {record["record_hash"] for record in immutable_records}
-    external_types = {"CHAPTER_REVISION", "RAW_ATTEMPT_RECEIPT"}
-    unresolved = sum(
-        1
-        for ref in refs
-        if ref["record_hash"] not in local_hashes
-        and ref["record_type"] not in external_types
-    )
     graph: dict[str, set[str]] = {}
     for record in immutable_records:
         graph.setdefault(record["record_hash"], set()).update(
@@ -205,15 +425,54 @@ def reference_integrity(state_paths: list[Path]) -> dict[str, int]:
         "record_ref_failed": ref_failed,
         "unresolved_refs": unresolved,
         "reference_cycles": _cycle_count(graph),
-        "unique_writer_conflicts": 0,
+        "unique_writer_conflicts": unique_writer_conflicts,
         "persisted_derived_views": persisted_derived_views,
     }
 
 
+def verify_object_shapes() -> dict[str, Any]:
+    catalog = json.loads(OBJECT_SHAPES_PATH.read_text(encoding="utf-8"))
+    records = catalog["immutable_records"]
+    for record in records:
+        validate_record(record)
+    candidate = next(
+        record for record in records if record["record_type"] == "M3_CANDIDATE_VERSION"
+    )
+    validate_candidate_version(candidate)
+    pointer = next(
+        record
+        for record in records
+        if record["record_type"] == "M3_CANDIDATE_POINTER_SNAPSHOT"
+    )
+    validate_pointer_snapshot(pointer, records=records)
+    validate_record_ref(catalog["record_ref_example"], records=records)
+    validate_lineage_locator(
+        catalog["lineage_locator_example"], candidate_version=candidate
+    )
+    if catalog["version_diff_example"]["view_type"] != "DERIVED_RECOMPUTABLE":
+        raise AssertionError("VersionDiff shape is not derived")
+    if catalog["version_diff_example"]["excluded_sidecar_proposal_refs"]:
+        raise AssertionError("B-01 VersionDiff sidecar refs must be empty")
+    expected_map = {
+        "M3_SEGMENT_INDEX_SNAPSHOT": "SegmentIndexSnapshotWriter",
+        "M3_CANDIDATE_VERSION": "CandidateVersionStore",
+        "M3_CANDIDATE_POINTER_SNAPSHOT": "CandidatePointerSnapshotWriter",
+        "M3_LINEAGE_LOCATOR": "CandidateVersionStore constructor only; no persistence",
+        "VersionDiff": "VersionDiffProjector; no persistence",
+    }
+    if catalog["writer_map"] != expected_map:
+        raise AssertionError("OBJECT_SHAPES writer map drift")
+    return {
+        "immutable_records": len(records),
+        "record_hashes_verified": len(records),
+        "catalog_sha256": file_sha256(OBJECT_SHAPES_PATH),
+    }
+
+
 def verify_manifest(*, allow_missing: bool) -> None:
+    if allow_missing:
+        return
     if not MANIFEST_PATH.exists():
-        if allow_missing:
-            return
         raise AssertionError("MANIFEST.sha256 is required")
     entries: dict[str, str] = {}
     for line in MANIFEST_PATH.read_text(encoding="utf-8").splitlines():
@@ -228,10 +487,15 @@ def verify_manifest(*, allow_missing: bool) -> None:
             raise AssertionError(f"manifest hash mismatch: {name}")
 
 
+def _vectors_pass(vectors: dict[str, dict[str, str]]) -> bool:
+    return all(item["actual"] == item["expected"] for item in vectors.values())
+
+
 def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
+    guard = RuntimeAuditGuard()
+    guard.install()
     normal_results: dict[str, str] = {}
     failure_results: dict[str, list[str]] = {}
-    runtime_events: list[str] = []
     with tempfile.TemporaryDirectory(prefix="ccz57-b01-self-check-") as temporary:
         temporary_root = Path(temporary)
         normal_root = temporary_root / "normal"
@@ -241,13 +505,39 @@ def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
         for name in sorted(FAILURE_SCENARIOS):
             codes = run_failure_scenario(name, temporary_root / "failure" / name)
             failure_results[name] = list(codes)
+        writer_result = writer_audit()
         state_paths = sorted(normal_root.rglob("state.json"))
-        integrity = reference_integrity(state_paths)
-        for state_path in state_paths:
-            runtime_events.extend(
-                ["fixture_storage_read", "fixture_storage_atomic_replace"]
-            )
-    violations = static_audit()
+        integrity = reference_integrity(
+            state_paths,
+            unique_writer_conflicts=writer_result["unique_writer_conflicts"],
+        )
+        inherited_vectors = inherited_fixed_vectors()
+        own_vectors = b01_fixed_vectors(temporary_root / "fixed-vectors")
+        runtime_ledger = {
+            "allowed_event_counts": dict(sorted(guard.allowed_counts.items())),
+            "forbidden_events": list(guard.forbidden_events),
+            "real_novel_events": list(guard.real_novel_events),
+        }
+        (temporary_root / "runtime_event_ledger.json").write_text(
+            json.dumps(runtime_ledger, sort_keys=True), encoding="utf-8"
+        )
+        fixture_pointer_writes = sum(
+            len(json.loads(path.read_text(encoding="utf-8"))["pointers"])
+            for path in state_paths
+        )
+        product_pointer_writes = sum(
+            pointer["pointer_namespace"] != "FIXTURE_ONLY"
+            for path in state_paths
+            for pointer in json.loads(path.read_text(encoding="utf-8"))[
+                "pointers"
+            ].values()
+        )
+    static_result = static_audit()
+    object_shape_result = verify_object_shapes()
+    totals = static_result["totals"]
+    static_pass = all(value == 0 for value in totals.values())
+    runtime_pass = not guard.forbidden_events and not guard.real_novel_events
+    vectors_pass = _vectors_pass(inherited_vectors) and _vectors_pass(own_vectors)
     integrity_pass = all(
         integrity[key] == 0
         for key in (
@@ -259,6 +549,15 @@ def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
             "persisted_derived_views",
         )
     )
+    network_calls = sum(event.startswith("socket.") for event in guard.forbidden_events)
+    model_api_calls = (
+        totals["model_client_path_hits"]
+        + totals["http_or_socket_path_hits"]
+        + totals["credential_path_hits"]
+        + len(guard.forbidden_events)
+    )
+    real_novel_reads = totals["real_novel_path_hits"] + len(guard.real_novel_events)
+    b02_writers_called = totals["scope_escape_name_hits"]
     report = {
         "contract": "CCZ57_M3_B01_OFFLINE_REPLAY_REPORT",
         "contract_version": "r03.3-candidate",
@@ -269,33 +568,38 @@ def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
         "mechanical_pass": (
             len(normal_results) == 8
             and len(failure_results) == 20
-            and not violations
+            and static_pass
+            and runtime_pass
+            and vectors_pass
             and integrity_pass
+            and product_pointer_writes == 0
+            and b02_writers_called == 0
         ),
         "semantic_pass": None,
         "normal_fixture_families": normal_results,
         "failure_fixture_families": failure_results,
         "reference_integrity": integrity,
         "canonical_fixture_vector": canonical_fixture_vector(),
+        "inherited_fixed_vectors": inherited_vectors,
+        "b01_fixed_vectors": own_vectors,
+        "object_shapes": object_shape_result,
+        "writer_audit": writer_result,
         "source_hashes": {name: file_sha256(ROOT / name) for name in HASHED_SOURCES},
-        "static_audit": {
-            "runtime_sources": list(RUNTIME_SOURCES),
-            "violations": violations,
+        "static_audit": static_result,
+        "runtime_event_evidence": runtime_ledger,
+        "zero_call_derivation": {
+            "model_client_path_hits": totals["model_client_path_hits"],
+            "http_or_socket_path_hits": totals["http_or_socket_path_hits"],
+            "credential_path_hits": totals["credential_path_hits"],
+            "runtime_forbidden_events": len(guard.forbidden_events),
+            "runtime_real_novel_events": len(guard.real_novel_events),
         },
-        "runtime_event_evidence": {
-            "allowed_event_count": len(runtime_events),
-            "forbidden_event_count": 0,
-        },
-        "network_calls": 0,
-        "model_api_calls": 0,
-        "real_novel_reads": 0,
-        "product_pointer_writes": 0,
-        "fixture_pointer_writes": 9,
-        "b02_writers_called": 0,
-        "github_writes": 0,
-        "linear_writes": 0,
-        "notion_writes": 0,
-        "slack_writes": 0,
+        "network_calls": network_calls,
+        "model_api_calls": model_api_calls,
+        "real_novel_reads": real_novel_reads,
+        "product_pointer_writes": product_pointer_writes,
+        "fixture_pointer_writes": fixture_pointer_writes,
+        "b02_writers_called": b02_writers_called,
         "report_hash": "",
     }
     report["report_hash"] = hashlib.sha256(
@@ -318,7 +622,7 @@ def main() -> None:
     parser.add_argument(
         "--bootstrap-report",
         action="store_true",
-        help="write the first report before MANIFEST.sha256 exists",
+        help="write the first report before MANIFEST.sha256 is refreshed",
     )
     args = parser.parse_args()
     report = run_self_check(allow_missing_manifest=args.bootstrap_report)

@@ -10,7 +10,7 @@
 
 - A 阶段 PR #186 已合并；受审 head 是 `9eafdac71f412be3f7b8ad5fd81ffc84c3de3a26`。
 - A 阶段 merge commit 是 `019df751641533c7de4d56aa38f50747fb564036`。
-- 合并后准入回执的记录哈希是 `91257566a8c4fc662b5735ce1a1abebd905bf148b23ad594dfcf21b8410c65af`。
+- 合并后准入回执的记录编号是 `a_admission_pr186_019df751_20260828`，记录哈希是 `91257566a8c4fc662b5735ce1a1abebd905bf148b23ad594dfcf21b8410c65af`。合成夹具会重建这份完整原件、评审原件和接口清单原件，再逐项解析引用，不只比较裸哈希。
 - B 候选蓝图 R03.4 的文件哈希是 `8db5f9acb8ada30e929af4e710790bb36c6058023928de513757465a0fa43cd2`。
 - R03.4 的文档自校验哈希是 `c3203ef73c9d0fc23f843673df0325b95d4d6c52cb752e8c9b543c80dc1151b0`。
 - B-01 施工合同候选 R01 的文件哈希是 `c6f41e6116ae8d87289ad0a7d9541d59750566eee3b63a50b873845e808c3b33`。
@@ -35,9 +35,12 @@
 - B-01 只允许创建 root baseline，也就是某一段的第一版候选。
 - 真实 child 版本、后续 pointer 推进和回退属于 B-06；这里不会顺手做。
 - pointer 的命名空间只能是 `FIXTURE_ONLY`。产品 pointer 写入会被拒绝。
+- live pointer 保存项目、工作区、章节版本、段号、generation 和当前候选引用，不能缩成单独一条 CandidateVersion 引用。
 - `VersionDiff` 只能重算，不能保存成第二份真源或 receipt。
 - 三条不可变记录和一条 fixture pointer 在同一次原子提交里发布。提交前任何失败都保持 0 写入；提交后即使进程中断，重新打开也必须看到完整结果。
 - 失败时不能先写半成品再删除。测试会比较失败前后的对象数、pointer 数和文件哈希。
+- 运行期禁网不是手填 0：`self_check.py` 会安装 Python audit hook，拦截 socket、DNS、fork、exec 和 subprocess；静态检查还会查模型客户端、HTTP 客户端、凭证读取和后续票 writer。
+- `OBJECT_SHAPES.json` 保存三份完整不可变对象、完整 RecordRef、live pointer、LineageLocator 和 VersionDiff 样例，每个哈希都能独立重算。
 
 ## 怎么复验
 
