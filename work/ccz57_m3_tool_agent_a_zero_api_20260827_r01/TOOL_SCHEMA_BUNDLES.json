@@ -1,0 +1,644 @@
+{
+  "ark_responses": {
+    "bundle_contract": "M3_TOOL_SCHEMA_BUNDLE",
+    "bundle_version": "r01.1",
+    "canonical_internal_schema": [
+      {
+        "description": "读取当前唯一 C2 责任段。",
+        "name": "read_current_c2_segment",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "expected_revision_ref": {
+              "additionalProperties": false,
+              "properties": {
+                "chapter_id": {
+                  "pattern": "^c[0-9]{2,}$",
+                  "type": "string"
+                },
+                "revision_no": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "revision_text_sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "chapter_id",
+                "revision_no",
+                "revision_text_sha256"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "expected_revision_ref"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "description": "提交一次 baseline 事实候选，不做修补。",
+        "name": "submit_baseline_candidate",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "expected_revision_ref": {
+              "additionalProperties": false,
+              "properties": {
+                "chapter_id": {
+                  "pattern": "^c[0-9]{2,}$",
+                  "type": "string"
+                },
+                "revision_no": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "revision_text_sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "chapter_id",
+                "revision_no",
+                "revision_text_sha256"
+              ],
+              "type": "object"
+            },
+            "facts": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "quote": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "expected_revision_ref",
+            "facts"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "description": "因明确歧义或合同冲突请求人工处理。",
+        "name": "request_human_review",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "reason": {
+              "enum": [
+                "AMBIGUOUS_SOURCE",
+                "CONTRACT_CONFLICT",
+                "OTHER"
+              ],
+              "type": "string"
+            },
+            "summary": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "reason",
+            "summary"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "description": "结构化声明无法继续。",
+        "name": "declare_no_progress",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "error_codes": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "summary": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "error_codes",
+            "summary"
+          ],
+          "type": "object"
+        }
+      }
+    ],
+    "canonical_internal_schema_sha256": "d5e75c8a5f7d1ed00a60c02fa75e64e95f75e835a1caf459f68dc9825cf247d7",
+    "compatibility_transform_version": "inline-basic-v1",
+    "exact_model_identity": {
+      "endpoint": "ep-synthetic",
+      "model": "synthetic-model"
+    },
+    "provider_payload": [
+      {
+        "description": "读取当前唯一 C2 责任段。",
+        "name": "read_current_c2_segment",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "expected_revision_ref": {
+              "additionalProperties": false,
+              "properties": {
+                "chapter_id": {
+                  "pattern": "^c[0-9]{2,}$",
+                  "type": "string"
+                },
+                "revision_no": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "revision_text_sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "chapter_id",
+                "revision_no",
+                "revision_text_sha256"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "expected_revision_ref"
+          ],
+          "type": "object"
+        },
+        "type": "function"
+      },
+      {
+        "description": "提交一次 baseline 事实候选，不做修补。",
+        "name": "submit_baseline_candidate",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "expected_revision_ref": {
+              "additionalProperties": false,
+              "properties": {
+                "chapter_id": {
+                  "pattern": "^c[0-9]{2,}$",
+                  "type": "string"
+                },
+                "revision_no": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "revision_text_sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "chapter_id",
+                "revision_no",
+                "revision_text_sha256"
+              ],
+              "type": "object"
+            },
+            "facts": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "quote": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "expected_revision_ref",
+            "facts"
+          ],
+          "type": "object"
+        },
+        "type": "function"
+      },
+      {
+        "description": "因明确歧义或合同冲突请求人工处理。",
+        "name": "request_human_review",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "reason": {
+              "enum": [
+                "AMBIGUOUS_SOURCE",
+                "CONTRACT_CONFLICT",
+                "OTHER"
+              ],
+              "type": "string"
+            },
+            "summary": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "reason",
+            "summary"
+          ],
+          "type": "object"
+        },
+        "type": "function"
+      },
+      {
+        "description": "结构化声明无法继续。",
+        "name": "declare_no_progress",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "error_codes": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "summary": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "error_codes",
+            "summary"
+          ],
+          "type": "object"
+        },
+        "type": "function"
+      }
+    ],
+    "provider_payload_sha256": "ee67663dcf8edc426390230b05fccd4f9bf7c220f8c8a7fa4a1ebce717606fb9",
+    "provider_protocol": "ark_responses",
+    "tool_bundle_id": "baseline-r01.1",
+    "tool_names": [
+      "read_current_c2_segment",
+      "submit_baseline_candidate",
+      "request_human_review",
+      "declare_no_progress"
+    ]
+  },
+  "openrouter_chat_completions": {
+    "bundle_contract": "M3_TOOL_SCHEMA_BUNDLE",
+    "bundle_version": "r01.1",
+    "canonical_internal_schema": [
+      {
+        "description": "读取当前唯一 C2 责任段。",
+        "name": "read_current_c2_segment",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "expected_revision_ref": {
+              "additionalProperties": false,
+              "properties": {
+                "chapter_id": {
+                  "pattern": "^c[0-9]{2,}$",
+                  "type": "string"
+                },
+                "revision_no": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "revision_text_sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "chapter_id",
+                "revision_no",
+                "revision_text_sha256"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "expected_revision_ref"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "description": "提交一次 baseline 事实候选，不做修补。",
+        "name": "submit_baseline_candidate",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "expected_revision_ref": {
+              "additionalProperties": false,
+              "properties": {
+                "chapter_id": {
+                  "pattern": "^c[0-9]{2,}$",
+                  "type": "string"
+                },
+                "revision_no": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "revision_text_sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "chapter_id",
+                "revision_no",
+                "revision_text_sha256"
+              ],
+              "type": "object"
+            },
+            "facts": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "quote": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "expected_revision_ref",
+            "facts"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "description": "因明确歧义或合同冲突请求人工处理。",
+        "name": "request_human_review",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "reason": {
+              "enum": [
+                "AMBIGUOUS_SOURCE",
+                "CONTRACT_CONFLICT",
+                "OTHER"
+              ],
+              "type": "string"
+            },
+            "summary": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "reason",
+            "summary"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "description": "结构化声明无法继续。",
+        "name": "declare_no_progress",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "error_codes": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "summary": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "error_codes",
+            "summary"
+          ],
+          "type": "object"
+        }
+      }
+    ],
+    "canonical_internal_schema_sha256": "d5e75c8a5f7d1ed00a60c02fa75e64e95f75e835a1caf459f68dc9825cf247d7",
+    "compatibility_transform_version": "inline-basic-v1",
+    "exact_model_identity": {
+      "model": "synthetic/model",
+      "provider": "synthetic-provider"
+    },
+    "provider_payload": [
+      {
+        "function": {
+          "description": "读取当前唯一 C2 责任段。",
+          "name": "read_current_c2_segment",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "expected_revision_ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "chapter_id": {
+                    "pattern": "^c[0-9]{2,}$",
+                    "type": "string"
+                  },
+                  "revision_no": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "revision_text_sha256": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "chapter_id",
+                  "revision_no",
+                  "revision_text_sha256"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "expected_revision_ref"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "提交一次 baseline 事实候选，不做修补。",
+          "name": "submit_baseline_candidate",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "expected_revision_ref": {
+                "additionalProperties": false,
+                "properties": {
+                  "chapter_id": {
+                    "pattern": "^c[0-9]{2,}$",
+                    "type": "string"
+                  },
+                  "revision_no": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "revision_text_sha256": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "chapter_id",
+                  "revision_no",
+                  "revision_text_sha256"
+                ],
+                "type": "object"
+              },
+              "facts": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "quote": {
+                      "type": "string"
+                    },
+                    "text": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "text"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "expected_revision_ref",
+              "facts"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "因明确歧义或合同冲突请求人工处理。",
+          "name": "request_human_review",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "reason": {
+                "enum": [
+                  "AMBIGUOUS_SOURCE",
+                  "CONTRACT_CONFLICT",
+                  "OTHER"
+                ],
+                "type": "string"
+              },
+              "summary": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "reason",
+              "summary"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "结构化声明无法继续。",
+          "name": "declare_no_progress",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "error_codes": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array",
+                "uniqueItems": true
+              },
+              "summary": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "error_codes",
+              "summary"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ],
+    "provider_payload_sha256": "472d0cb4cb10f4c08553c040da5e91c96dd9727319272d0727ec74162f94c5d4",
+    "provider_protocol": "openrouter_chat_completions",
+    "tool_bundle_id": "baseline-r01.1",
+    "tool_names": [
+      "read_current_c2_segment",
+      "submit_baseline_candidate",
+      "request_human_review",
+      "declare_no_progress"
+    ]
+  }
+}

@@ -1,0 +1,347 @@
+{
+  "attempt": {
+    "ark_receipt": {
+      "attempt_no": 1,
+      "http_status": 200,
+      "request_bytes": 2168,
+      "request_sha256": "775de94818e1f1b712a9a530ea7dea0775ece79098b7c189b65e748b276c2ed4",
+      "response_bytes": 420,
+      "response_sha256": "bfec8a27176c600b2abf8acd2632348225853d70515a0157393c35634fa82465",
+      "run_id": "synthetic-ark-run",
+      "run_identity_bytes": 452,
+      "run_identity_sha256": "ce07634bb65f37385f3a6521121f4904918c944c62564df5c81adeb22f02efff",
+      "schema_version": "m3-zero-api-shell-r01"
+    },
+    "credential_prewrite_negatives": {
+      "request_body": {
+        "failure_receipt": {
+          "code": "REQUEST_CONTAINS_CREDENTIAL_MATERIAL",
+          "detail": "Refresh Token",
+          "layer": "request_storage"
+        },
+        "run_directory_absent": true
+      },
+      "run_identity": {
+        "failure_receipt": {
+          "code": "REQUEST_CONTAINS_CREDENTIAL_MATERIAL",
+          "detail": "Client Secret",
+          "layer": "run_identity"
+        },
+        "run_directory_absent": true
+      }
+    },
+    "identity_tamper_negative": {
+      "code": "RAW_HASH_OR_SIZE_MISMATCH",
+      "detail": "run_identity.json",
+      "layer": "attempt"
+    },
+    "immutability_negative": {
+      "code": "IMMUTABLE_ALREADY_EXISTS",
+      "detail": "",
+      "layer": "attempt"
+    },
+    "openrouter_receipt": {
+      "attempt_no": 1,
+      "http_status": 200,
+      "request_bytes": 2258,
+      "request_sha256": "12f1c9db1865d2d04278d07e0895e1bce2a17c073276b1b02db15afbb3a1a868",
+      "response_bytes": 556,
+      "response_sha256": "4c20826d3455d38d57c8490dd6ff9f36ff9c672947c25a7508bef56f20482781",
+      "run_id": "synthetic-run",
+      "run_identity_bytes": 461,
+      "run_identity_sha256": "81703aaddd4b7bec2222d805ef5479804030ef9fd8479243ad9d4903bdbcc700",
+      "schema_version": "m3-zero-api-shell-r01"
+    },
+    "request_binding_receipts": {
+      "ark": {
+        "binding_pass": true,
+        "config_sha256": "3148012db7e7eb5c3b9816bc4a08423577d1c68ffced37e16a17b05b776a9a8d",
+        "provider_protocol": "ark_responses",
+        "reasoning_sha256": "6c06a1a382dca2f1a59beb09fc431ee46c2d0508229bc1a83f54e0b618464bb3",
+        "request_bytes": 2168,
+        "request_sha256": "775de94818e1f1b712a9a530ea7dea0775ece79098b7c189b65e748b276c2ed4",
+        "run_identity_sha256": "ce07634bb65f37385f3a6521121f4904918c944c62564df5c81adeb22f02efff",
+        "schema_version": "m3-request-binding-v1",
+        "tool_bundle_id": "baseline-r01.1",
+        "tool_internal_schema_sha256": "d5e75c8a5f7d1ed00a60c02fa75e64e95f75e835a1caf459f68dc9825cf247d7",
+        "tool_provider_payload_sha256": "ee67663dcf8edc426390230b05fccd4f9bf7c220f8c8a7fa4a1ebce717606fb9",
+        "upstream_identity_sha256": "1d6ffae42ecd1a1421fc3959aa1227eee5a98c91a029990af2adc3087eb06b4d"
+      },
+      "legacy": {
+        "binding_pass": true,
+        "config_sha256": "b779b17d306d67fbd5b415e6b2e82d89e0dc2c4f2e35c57901f7114d3bbd0562",
+        "provider_protocol": "openrouter_chat_completions",
+        "reasoning_sha256": "6c06a1a382dca2f1a59beb09fc431ee46c2d0508229bc1a83f54e0b618464bb3",
+        "request_bytes": 2258,
+        "request_sha256": "12f1c9db1865d2d04278d07e0895e1bce2a17c073276b1b02db15afbb3a1a868",
+        "run_identity_sha256": "0705702b72757234f9042c22813080584e5a05935561dd9da2854a96d911477a",
+        "schema_version": "m3-request-binding-v1",
+        "tool_bundle_id": "baseline-r01.1",
+        "tool_internal_schema_sha256": "d5e75c8a5f7d1ed00a60c02fa75e64e95f75e835a1caf459f68dc9825cf247d7",
+        "tool_provider_payload_sha256": "472d0cb4cb10f4c08553c040da5e91c96dd9727319272d0727ec74162f94c5d4",
+        "upstream_identity_sha256": "00998ac70892dc6de0d476737cdebb803eb545c65ed2a3e9744ac6fff0b1a2e4"
+      },
+      "openrouter": {
+        "binding_pass": true,
+        "config_sha256": "b779b17d306d67fbd5b415e6b2e82d89e0dc2c4f2e35c57901f7114d3bbd0562",
+        "provider_protocol": "openrouter_chat_completions",
+        "reasoning_sha256": "6c06a1a382dca2f1a59beb09fc431ee46c2d0508229bc1a83f54e0b618464bb3",
+        "request_bytes": 2258,
+        "request_sha256": "12f1c9db1865d2d04278d07e0895e1bce2a17c073276b1b02db15afbb3a1a868",
+        "run_identity_sha256": "81703aaddd4b7bec2222d805ef5479804030ef9fd8479243ad9d4903bdbcc700",
+        "schema_version": "m3-request-binding-v1",
+        "tool_bundle_id": "baseline-r01.1",
+        "tool_internal_schema_sha256": "d5e75c8a5f7d1ed00a60c02fa75e64e95f75e835a1caf459f68dc9825cf247d7",
+        "tool_provider_payload_sha256": "472d0cb4cb10f4c08553c040da5e91c96dd9727319272d0727ec74162f94c5d4",
+        "upstream_identity_sha256": "00998ac70892dc6de0d476737cdebb803eb545c65ed2a3e9744ac6fff0b1a2e4"
+      }
+    },
+    "run_identity_drift_negative": {
+      "code": "RUN_IDENTITY_DRIFT",
+      "detail": "",
+      "layer": "attempt"
+    },
+    "verified_equal": true
+  },
+  "bundle_hashes": {
+    "ark_responses": {
+      "internal": "d5e75c8a5f7d1ed00a60c02fa75e64e95f75e835a1caf459f68dc9825cf247d7",
+      "provider_payload": "ee67663dcf8edc426390230b05fccd4f9bf7c220f8c8a7fa4a1ebce717606fb9"
+    },
+    "openrouter_chat_completions": {
+      "internal": "d5e75c8a5f7d1ed00a60c02fa75e64e95f75e835a1caf459f68dc9825cf247d7",
+      "provider_payload": "472d0cb4cb10f4c08553c040da5e91c96dd9727319272d0727ec74162f94c5d4"
+    }
+  },
+  "c3_preview": [
+    {
+      "chapter_revision_ref": {
+        "chapter_id": "c01",
+        "revision_no": 2,
+        "revision_text_sha256": "a2e284bd8ac1905f98c4c33b142002ac2a07934aee307184f69d8372fd4a6094"
+      },
+      "contract": "C3_FACT_CANDIDATE",
+      "quote": "林澈关上窗。",
+      "seg": 1,
+      "text": "林澈关上窗。",
+      "version": "v1"
+    }
+  ],
+  "fixture_sha256": {
+    "ark_tool": "bfec8a27176c600b2abf8acd2632348225853d70515a0157393c35634fa82465",
+    "openrouter_legacy": "dc1aab7f2e38b0207f56672db32f5e71c3bd0906cd4e286aa88d9ff1172dfb2e",
+    "openrouter_tool": "4c20826d3455d38d57c8490dd6ff9f36ff9c672947c25a7508bef56f20482781"
+  },
+  "input_contracts": {
+    "c1": {
+      "contract": "C1_CHAPTER_DOC",
+      "version": "v1"
+    },
+    "c2": {
+      "contract": "C2_SEGMENT",
+      "version": "v1"
+    },
+    "revision_match": true
+  },
+  "mechanical_pass": true,
+  "model_api_calls": 0,
+  "negative_gates": {
+    "ark_bad_call_id": {
+      "code": "BAD_ARK_CALL_ID",
+      "detail": "",
+      "layer": "provider_envelope",
+      "parent_code": "PROVIDER_ENVELOPE_REJECTED"
+    },
+    "ark_bad_content": {
+      "code": "BAD_ARK_CONTENT",
+      "detail": "",
+      "layer": "provider_envelope",
+      "parent_code": "PROVIDER_ENVELOPE_REJECTED"
+    },
+    "ark_null_usage": {
+      "code": "BAD_USAGE",
+      "detail": "",
+      "layer": "provider_envelope",
+      "parent_code": "PROVIDER_ENVELOPE_REJECTED"
+    },
+    "ark_unknown_output_type": {
+      "code": "UNKNOWN_ARK_OUTPUT_TYPE",
+      "detail": "",
+      "layer": "provider_envelope",
+      "parent_code": "PROVIDER_ENVELOPE_REJECTED"
+    },
+    "bad_content_json": {
+      "code": "INVALID_JSON",
+      "detail": "Expecting value: line 1 column 11 (char 10)",
+      "layer": "legacy_content"
+    },
+    "bad_evidence": {
+      "code": "QUOTE_NOT_IN_RESPONSIBILITY_TEXT",
+      "detail": "0",
+      "layer": "evidence"
+    },
+    "bad_outer_json": {
+      "code": "INVALID_JSON",
+      "detail": "Expecting ',' delimiter: line 1 column 15 (char 14)",
+      "layer": "provider_envelope",
+      "parent_code": "PROVIDER_ENVELOPE_REJECTED"
+    },
+    "duplicate_arguments": {
+      "code": "DUPLICATE_JSON_KEY",
+      "detail": "facts",
+      "layer": "tool_arguments"
+    },
+    "http_failure": {
+      "code": "HTTP_NOT_SUCCESS",
+      "detail": "503",
+      "layer": "transport"
+    },
+    "legacy_identity_drift": {
+      "code": "EXACT_MODEL_MISMATCH",
+      "detail": "",
+      "layer": "identity"
+    },
+    "legacy_truncation": {
+      "code": "TRUNCATED",
+      "detail": "length",
+      "layer": "completion"
+    },
+    "openrouter_bad_tool_calls": {
+      "code": "BAD_TOOL_CALLS",
+      "detail": "",
+      "layer": "provider_envelope",
+      "parent_code": "PROVIDER_ENVELOPE_REJECTED"
+    },
+    "openrouter_bad_tool_type": {
+      "code": "BAD_TOOL_CALL_TYPE",
+      "detail": "",
+      "layer": "provider_envelope",
+      "parent_code": "PROVIDER_ENVELOPE_REJECTED"
+    },
+    "openrouter_finish_tool_mismatch": {
+      "code": "FINISH_TOOL_CALL_MISMATCH",
+      "detail": "",
+      "layer": "provider_envelope",
+      "parent_code": "PROVIDER_ENVELOPE_REJECTED"
+    },
+    "openrouter_null_usage": {
+      "code": "BAD_USAGE",
+      "detail": "",
+      "layer": "provider_envelope",
+      "parent_code": "PROVIDER_ENVELOPE_REJECTED"
+    },
+    "request_fallback_enabled": {
+      "code": "REQUEST_FALLBACK_NOT_ALLOWED",
+      "detail": "",
+      "layer": "request_binding",
+      "parent_code": "REQUEST_IDENTITY_MISMATCH"
+    },
+    "request_model_drift": {
+      "code": "REQUEST_MODEL_MISMATCH",
+      "detail": "",
+      "layer": "request_binding",
+      "parent_code": "REQUEST_IDENTITY_MISMATCH"
+    },
+    "request_tool_bundle_drift": {
+      "code": "REQUEST_TOOL_BUNDLE_MISMATCH",
+      "detail": "",
+      "layer": "request_binding",
+      "parent_code": "REQUEST_IDENTITY_MISMATCH"
+    },
+    "schema_failure": {
+      "code": "BAD_FACT_FIELDS",
+      "detail": "0",
+      "layer": "c3_preview"
+    },
+    "stale_revision": {
+      "code": "STALE_OR_MISMATCH",
+      "detail": "",
+      "layer": "current_revision"
+    },
+    "truncation": {
+      "code": "TRUNCATED",
+      "detail": "length",
+      "layer": "completion"
+    }
+  },
+  "network_calls": 0,
+  "network_guard": {
+    "active_during_replay": true,
+    "blocked_events": [],
+    "mechanism": "python_audit_hook_socket_and_child_process_fail_closed",
+    "observed_network_calls": 0
+  },
+  "report_contract": "M3_A_OFFLINE_REPLAY_REPORT",
+  "routes": {
+    "ark_action": "read_current_c2_segment",
+    "legacy": "legacy_content",
+    "openrouter_action": "submit_baseline_candidate"
+  },
+  "run_identity_freeze": {
+    "ark": {
+      "canonical_bytes": 452,
+      "canonical_sha256": "ce07634bb65f37385f3a6521121f4904918c944c62564df5c81adeb22f02efff",
+      "identity": {
+        "config": {
+          "max_output_tokens": 256,
+          "temperature": 0,
+          "tool_bundle_id": "baseline-r01.1",
+          "tool_internal_schema_sha256": "d5e75c8a5f7d1ed00a60c02fa75e64e95f75e835a1caf459f68dc9825cf247d7",
+          "tool_provider_payload_sha256": "ee67663dcf8edc426390230b05fccd4f9bf7c220f8c8a7fa4a1ebce717606fb9"
+        },
+        "model": "synthetic-model",
+        "provider_protocol": "ark_responses",
+        "reasoning": {
+          "mode": "disabled"
+        },
+        "run_id": "synthetic-ark-run",
+        "upstream_identity": {
+          "endpoint": "ep-synthetic"
+        }
+      }
+    },
+    "openrouter": {
+      "canonical_bytes": 461,
+      "canonical_sha256": "81703aaddd4b7bec2222d805ef5479804030ef9fd8479243ad9d4903bdbcc700",
+      "identity": {
+        "config": {
+          "max_tokens": 256,
+          "temperature": 0,
+          "tool_bundle_id": "baseline-r01.1",
+          "tool_internal_schema_sha256": "d5e75c8a5f7d1ed00a60c02fa75e64e95f75e835a1caf459f68dc9825cf247d7",
+          "tool_provider_payload_sha256": "472d0cb4cb10f4c08553c040da5e91c96dd9727319272d0727ec74162f94c5d4"
+        },
+        "model": "synthetic/model",
+        "provider_protocol": "openrouter_chat_completions",
+        "reasoning": {
+          "mode": "disabled"
+        },
+        "run_id": "synthetic-run",
+        "upstream_identity": {
+          "provider": "synthetic-provider"
+        }
+      }
+    }
+  },
+  "semantic_pass": null,
+  "version": "r01",
+  "zero_api_derivation": "runtime socket/process events = 0 and runtime sources contain no network, model-client, child-process, or dynamic-import path",
+  "zero_api_source_audit": {
+    "checked_files": [
+      {
+        "file": "zero_api_shell.py",
+        "sha256": "a9e9aeafb3ee0b4034cf4137ee8a4c0cf865294c22cc29bb7defe00f11497125"
+      },
+      {
+        "file": "fixtures.py",
+        "sha256": "e36c365f8b6d5e9c9e8985a52331e7e2fec8d5c394fafed0ee77ac128f4e873b"
+      },
+      {
+        "file": "self_check.py",
+        "sha256": "f4702c814d7571553c22c83e9d149cad2812aa6d5ad14700ec5e5e25f9d06e3d"
+      }
+    ],
+    "findings": [],
+    "mechanism": "python_ast_forbidden_import_and_dynamic_call_audit"
+  }
+}
