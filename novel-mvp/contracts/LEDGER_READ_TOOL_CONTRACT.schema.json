@@ -1,0 +1,535 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/LEDGER_READ_TOOL_CONTRACT.schema.json",
+  "title": "LEDGER_READ_TOOL_CONTRACT ledger-read-tool-contract-v1",
+  "description": "Storage-independent request, response, provenance, capability snapshot, and failure semantics for the ten-ledger read surface.",
+  "oneOf": [
+    {"$ref": "#/$defs/request"},
+    {"$ref": "#/$defs/response"},
+    {"$ref": "#/$defs/capability_snapshot"}
+  ],
+  "$defs": {
+    "ledger_name": {
+      "type": "string",
+      "enum": [
+        "章节账",
+        "事实账",
+        "人物账",
+        "地点账",
+        "物品账",
+        "势力账",
+        "体系账",
+        "世界规则账",
+        "长线账",
+        "规划账"
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "chapter_revision_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chapter_id", "revision_no", "revision_text_sha256"],
+      "properties": {
+        "chapter_id": {"type": "string", "pattern": "^c[0-9]{2,}$"},
+        "revision_no": {"type": "integer", "minimum": 1},
+        "revision_text_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "story_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chapter_revision_ref"],
+      "properties": {
+        "chapter_revision_ref": {"$ref": "#/$defs/chapter_revision_ref"},
+        "story_order": {"type": "integer", "minimum": 0}
+      }
+    },
+    "recall_code": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "ledger_name", "entry_id", "rev", "sha", "expires_at"],
+      "properties": {
+        "contract": {"const": "LEDGER_RECALL_CODE"},
+        "version": {"const": "ledger-recall-code-v1"},
+        "ledger_name": {"$ref": "#/$defs/ledger_name"},
+        "entry_id": {"type": "string", "minLength": 1},
+        "rev": {"type": "integer", "minimum": 1},
+        "sha": {"$ref": "#/$defs/sha256"},
+        "expires_at": {
+          "oneOf": [
+            {"type": "string", "format": "date-time"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "execution_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "request_id",
+        "caller_id",
+        "author_id",
+        "project_id",
+        "permission_profile",
+        "permission_policy_version"
+      ],
+      "properties": {
+        "request_id": {"type": "string", "pattern": "^REQ-[A-Za-z0-9._:-]+$"},
+        "caller_id": {"type": "string", "minLength": 1},
+        "author_id": {"type": "string", "minLength": 1},
+        "project_id": {"type": "string", "minLength": 1},
+        "permission_profile": {"type": "string", "minLength": 1},
+        "permission_policy_version": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_contract",
+        "source_contract_version",
+        "logical_ledger_name",
+        "object_type",
+        "stable_id",
+        "revision",
+        "logical_content_sha256",
+        "role",
+        "binding_mode",
+        "retired_notice",
+        "compiler_version",
+        "input_basis_sha256"
+      ],
+      "properties": {
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "ledger_entry",
+            "chapter_revision",
+            "projection",
+            "directory_capability_snapshot"
+          ]
+        },
+        "source_contract": {"type": "string", "minLength": 1},
+        "source_contract_version": {"type": "string", "minLength": 1},
+        "logical_ledger_name": {
+          "oneOf": [
+            {"$ref": "#/$defs/ledger_name"},
+            {"type": "null"}
+          ]
+        },
+        "object_type": {"type": "string", "minLength": 1},
+        "stable_id": {"type": "string", "minLength": 1},
+        "revision": {
+          "oneOf": [
+            {"type": "integer", "minimum": 1},
+            {"type": "string", "minLength": 1}
+          ]
+        },
+        "logical_content_sha256": {"$ref": "#/$defs/sha256"},
+        "role": {"type": "string", "minLength": 1},
+        "binding_mode": {
+          "type": "string",
+          "enum": ["recorded_pin", "resolved_at_read"]
+        },
+        "retired_notice": {"type": "boolean"},
+        "compiler_version": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "null"}
+          ]
+        },
+        "input_basis_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "source_manifest": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/source_item"}
+    },
+    "basis_current": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {"mode": {"const": "current_at_start"}}
+    },
+    "basis_pinned": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "source_manifest"],
+      "properties": {
+        "mode": {"const": "pinned_manifest"},
+        "source_manifest": {
+          "allOf": [
+            {"$ref": "#/$defs/source_manifest"},
+            {"minItems": 1}
+          ]
+        }
+      }
+    },
+    "selector_directory": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 0
+    },
+    "selector_chapter_current": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chapter_id", "include_chapter_text"],
+      "properties": {
+        "chapter_id": {"type": "string", "pattern": "^c[0-9]{2,}$"},
+        "include_chapter_text": {"type": "boolean"}
+      }
+    },
+    "selector_chapter_pinned": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chapter_revision_ref", "include_chapter_text"],
+      "properties": {
+        "chapter_revision_ref": {"$ref": "#/$defs/chapter_revision_ref"},
+        "include_chapter_text": {"type": "boolean"}
+      }
+    },
+    "selector_character": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["character_ref", "as_of", "sections", "state_keys"],
+      "properties": {
+        "character_ref": {"type": "string", "pattern": "^CH-[0-9]+$"},
+        "as_of": {"$ref": "#/$defs/story_anchor"},
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "aliases_with_story_time",
+              "state_timeline",
+              "relationships_with_story_time"
+            ]
+          }
+        },
+        "state_keys": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "selector_entries_current": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledger_name", "read_profile", "refs"],
+      "properties": {
+        "ledger_name": {"$ref": "#/$defs/ledger_name"},
+        "read_profile": {"$ref": "#/$defs/read_profile"},
+        "refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "selector_entries_pinned": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledger_name", "read_profile", "recall_codes"],
+      "properties": {
+        "ledger_name": {"$ref": "#/$defs/ledger_name"},
+        "read_profile": {"$ref": "#/$defs/read_profile"},
+        "recall_codes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {"$ref": "#/$defs/recall_code"}
+        }
+      }
+    },
+    "selector_box": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["box_ref"],
+      "properties": {
+        "box_ref": {"type": "string", "pattern": "^BOX-[0-9]+$"}
+      }
+    },
+    "selector_knowledge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observer_ref", "as_of", "fact_refs"],
+      "properties": {
+        "observer_ref": {"type": "string", "pattern": "^CH-[0-9]+$"},
+        "as_of": {"$ref": "#/$defs/story_anchor"},
+        "fact_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^f[0-9]{3,}$"}
+        }
+      }
+    },
+    "read_profile": {
+      "type": "string",
+      "enum": [
+        "chapter_metadata",
+        "fact_record",
+        "character_definition",
+        "location_definition",
+        "item_definition",
+        "faction_definition",
+        "system_definition",
+        "world_rule_definition"
+      ]
+    },
+    "selector": {
+      "oneOf": [
+        {"$ref": "#/$defs/selector_directory"},
+        {"$ref": "#/$defs/selector_chapter_current"},
+        {"$ref": "#/$defs/selector_chapter_pinned"},
+        {"$ref": "#/$defs/selector_character"},
+        {"$ref": "#/$defs/selector_entries_current"},
+        {"$ref": "#/$defs/selector_entries_pinned"},
+        {"$ref": "#/$defs/selector_box"},
+        {"$ref": "#/$defs/selector_knowledge"}
+      ]
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "execution_context", "tool", "basis", "selector"],
+      "properties": {
+        "contract": {"const": "LEDGER_READ_REQUEST"},
+        "version": {"const": "ledger-read-tool-contract-v1"},
+        "execution_context": {"$ref": "#/$defs/execution_context"},
+        "tool": {
+          "type": "string",
+          "enum": [
+            "get_ledger_directory",
+            "get_chapter_evidence_slice",
+            "get_character_state_as_of",
+            "get_ledger_entries_by_ref",
+            "get_longline_box_status",
+            "get_character_knowledge_edges_as_of"
+          ]
+        },
+        "basis": {
+          "oneOf": [
+            {"$ref": "#/$defs/basis_current"},
+            {"$ref": "#/$defs/basis_pinned"}
+          ]
+        },
+        "selector": {"$ref": "#/$defs/selector"}
+      }
+    },
+    "reason_code": {
+      "type": "string",
+      "enum": [
+        "UNAUTHORIZED",
+        "INVALID_SELECTOR",
+        "INVALID_PIN_SET",
+        "CURRENT_ADVANCED",
+        "ENTRY_NOT_FOUND",
+        "REVISION_NOT_FOUND",
+        "SHA_MISMATCH",
+        "REGISTERED_EMPTY",
+        "NO_MATCHING_ENTRIES",
+        "NOT_RECORDED",
+        "CAPABILITY_UNAVAILABLE",
+        "READ_PROFILE_NOT_FROZEN",
+        "SOURCE_VERSION_UNSUPPORTED",
+        "STORY_TIME_NOT_COMPARABLE",
+        "PROJECTION_NOT_AVAILABLE",
+        "FORMAL_CONTRACT_NOT_AVAILABLE",
+        "RESULT_TOO_LARGE",
+        "DIRECTORY_NOT_INITIALIZED",
+        "SOURCE_CORRUPTED",
+        "INTERNAL_ERROR"
+      ]
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "author_id",
+        "project_id",
+        "permission_policy_version",
+        "tool_contract_version",
+        "storage_generation",
+        "capability_snapshot_id",
+        "source_manifest",
+        "basis_sha256"
+      ],
+      "properties": {
+        "author_id": {"type": "string", "minLength": 1},
+        "project_id": {"type": "string", "minLength": 1},
+        "permission_policy_version": {"type": "string", "minLength": 1},
+        "tool_contract_version": {"const": "ledger-read-tool-contract-v1"},
+        "storage_generation": {"type": "string", "minLength": 1},
+        "capability_snapshot_id": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "null"}
+          ]
+        },
+        "source_manifest": {"$ref": "#/$defs/source_manifest"},
+        "basis_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_version", "business_items", "response_bytes", "truncated"],
+      "properties": {
+        "policy_version": {"const": "limit-policy-v1"},
+        "business_items": {"type": "integer", "minimum": 0, "maximum": 100},
+        "response_bytes": {"type": "integer", "minimum": 0, "maximum": 262144},
+        "truncated": {"const": false}
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "status",
+        "reason_code",
+        "message",
+        "request_id",
+        "tool",
+        "basis_mode",
+        "data",
+        "empty_scope",
+        "receipt",
+        "limits"
+      ],
+      "properties": {
+        "contract": {"const": "LEDGER_READ_RESPONSE"},
+        "version": {"const": "ledger-read-tool-contract-v1"},
+        "status": {"type": "string", "enum": ["OK", "EMPTY", "REJECTED", "ERROR"]},
+        "reason_code": {
+          "oneOf": [
+            {"$ref": "#/$defs/reason_code"},
+            {"type": "null"}
+          ]
+        },
+        "message": {"type": "string"},
+        "request_id": {"type": "string", "pattern": "^REQ-[A-Za-z0-9._:-]+$"},
+        "tool": {
+          "type": "string",
+          "enum": [
+            "get_ledger_directory",
+            "get_chapter_evidence_slice",
+            "get_character_state_as_of",
+            "get_ledger_entries_by_ref",
+            "get_longline_box_status",
+            "get_character_knowledge_edges_as_of"
+          ]
+        },
+        "basis_mode": {"type": "string", "enum": ["current_at_start", "pinned_manifest"]},
+        "data": {
+          "oneOf": [
+            {"type": "object"},
+            {"type": "array"},
+            {"type": "null"}
+          ]
+        },
+        "empty_scope": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "null"}
+          ]
+        },
+        "receipt": {"$ref": "#/$defs/receipt"},
+        "limits": {"$ref": "#/$defs/limits"}
+      }
+    },
+    "capability_ledger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ledger_name",
+        "runtime_status",
+        "content_status",
+        "visibility",
+        "reason_code",
+        "source_watermark"
+      ],
+      "properties": {
+        "ledger_name": {"$ref": "#/$defs/ledger_name"},
+        "runtime_status": {"type": "string", "enum": ["AVAILABLE", "UNAVAILABLE", "UNKNOWN"]},
+        "content_status": {"type": "string", "enum": ["PRESENT", "EMPTY", "UNKNOWN"]},
+        "visibility": {"type": "string", "enum": ["FULL", "MASKED"]},
+        "reason_code": {
+          "oneOf": [
+            {"$ref": "#/$defs/reason_code"},
+            {"type": "null"}
+          ]
+        },
+        "source_watermark": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "directory_registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "version", "sha256"],
+      "properties": {
+        "identity": {"const": "AUTHOR_LEDGER_DIRECTORY_REGISTRATION_R01"},
+        "version": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "capability_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "snapshot_id",
+        "author_id",
+        "project_id",
+        "permission_profile",
+        "permission_policy_version",
+        "tool_contract_version",
+        "storage_generation",
+        "directory_registration",
+        "generated_at",
+        "ledgers"
+      ],
+      "properties": {
+        "contract": {"const": "LEDGER_CAPABILITY_SNAPSHOT"},
+        "version": {"const": "ledger-read-tool-contract-v1"},
+        "snapshot_id": {"type": "string", "minLength": 1},
+        "author_id": {"type": "string", "minLength": 1},
+        "project_id": {"type": "string", "minLength": 1},
+        "permission_profile": {"type": "string", "minLength": 1},
+        "permission_policy_version": {"type": "string", "minLength": 1},
+        "tool_contract_version": {"const": "ledger-read-tool-contract-v1"},
+        "storage_generation": {"type": "string", "minLength": 1},
+        "directory_registration": {"$ref": "#/$defs/directory_registration"},
+        "generated_at": {"type": "string", "format": "date-time"},
+        "ledgers": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": {"$ref": "#/$defs/capability_ledger"}
+        }
+      }
+    }
+  }
+}
