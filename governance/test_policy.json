@@ -239,6 +239,27 @@
       "full_chain": false
     },
     {
+      "name": "novel-mvp knowledge edge contract",
+      "pattern": "novel-mvp/contracts/KNOWLEDGE_EDGE.*",
+      "modules": ["M04", "M07", "M10", "M11"],
+      "tests": ["tests/test_novel_mvp_knowledge_edge_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp knowledge edge validator",
+      "pattern": "novel-mvp/contracts/validate_knowledge_edge.py",
+      "modules": ["M04", "M07", "M10", "M11"],
+      "tests": ["tests/test_novel_mvp_knowledge_edge_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp knowledge edge tests",
+      "pattern": "tests/test_novel_mvp_knowledge_edge_contract.py",
+      "modules": ["M04", "M07", "M10", "M11"],
+      "tests": ["tests/test_novel_mvp_knowledge_edge_contract.py"],
+      "full_chain": false
+    },
+    {
       "name": "novel-mvp plan milestone content contract",
       "pattern": "novel-mvp/contracts/PLAN_MILESTONE_CONTENT.*",
       "modules": ["M08"],

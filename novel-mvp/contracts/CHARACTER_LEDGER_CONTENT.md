@@ -87,7 +87,7 @@ created_at/updated_at/rev/note
 
 重要、不对称、需要独立历史的关系以后可以升独立对象；L2 不提前定义升级协议。
 
-**知情边（知道／怀疑／误信／不知）只留位，不定义字段、枚举或对象形状。** `knowledge_edges` 等未拍字段在 v1.1 中必须被拒绝。
+知情边已经由 [KNOWLEDGE_EDGE.md](KNOWLEDGE_EDGE.md) 冻结为项目级独立稀疏对象集合。它不住人物账本体，也不取得第十一本账户籍；本合同的 `knowledge_edges` 字段继续被 v1.1 Schema 拒绝。
 
 ## 5b. 四条子对象序列（v1.1）
 
