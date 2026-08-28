@@ -1,0 +1,122 @@
+{
+  "catalog_contract": "CCZ57_M3_B01_OBJECT_SHAPES",
+  "catalog_version": "r03.3-candidate",
+  "immutable_envelope": {
+    "canonicalization": "NFC_UTF8_COMPACT_JSON_OBJECT_KEYS_UTF8_BYTE_ORDER",
+    "exact_fields": [
+      "contract",
+      "contract_version",
+      "record_type",
+      "record_id",
+      "record_version",
+      "record_contract_version",
+      "record_hash",
+      "source_module",
+      "access",
+      "retention_class",
+      "created_at",
+      "payload"
+    ],
+    "hash_preimage": "full envelope with only record_hash removed"
+  },
+  "record_ref": {
+    "exact_fields": [
+      "contract",
+      "contract_version",
+      "record_type",
+      "record_id",
+      "record_version",
+      "record_contract_version",
+      "record_hash",
+      "access",
+      "source_module"
+    ]
+  },
+  "outputs": {
+    "M3_SEGMENT_INDEX_SNAPSHOT": {
+      "kind": "immutable_record",
+      "writer": "SegmentIndexSnapshotWriter",
+      "payload_exact_fields": [
+        "project_scope_id",
+        "author_workspace_logical_key",
+        "source_module_identity",
+        "chapter_revision_ref",
+        "stable_segment_index_id",
+        "segments"
+      ],
+      "segment_exact_fields": [
+        "seg",
+        "start_offset",
+        "end_offset",
+        "responsibility_text_sha256"
+      ]
+    },
+    "M3_CANDIDATE_VERSION": {
+      "kind": "immutable_record",
+      "writer": "CandidateVersionStore",
+      "b01_allowed_creation": "ROOT_BASELINE_ONLY",
+      "payload_exact_fields": [
+        "chapter_revision_ref",
+        "seg",
+        "parent_candidate_version_ref",
+        "origin_attempt_refs",
+        "origin_commit_intent_ref",
+        "items",
+        "lineage_index",
+        "version_payload_hash"
+      ]
+    },
+    "M3_CANDIDATE_POINTER_SNAPSHOT": {
+      "kind": "immutable_record",
+      "writer": "CandidatePointerSnapshotWriter",
+      "namespace": "FIXTURE_ONLY",
+      "allowed_transition": "absent_to_generation_1",
+      "payload_exact_fields": [
+        "project_scope_id",
+        "author_workspace_logical_key",
+        "logical_pointer_key",
+        "pointer_namespace",
+        "chapter_revision_ref",
+        "seg",
+        "generation",
+        "current_candidate_version_ref",
+        "snapshot_kind",
+        "snapshot_operation_id",
+        "snapshot_request_hash"
+      ]
+    },
+    "M3_LINEAGE_LOCATOR": {
+      "kind": "embedded_value_object",
+      "persistent_writer": null,
+      "exact_fields": [
+        "contract",
+        "contract_version",
+        "candidate_version_ref",
+        "lineage_id",
+        "json_pointer",
+        "item_hash",
+        "locator_hash"
+      ]
+    },
+    "VersionDiff": {
+      "kind": "derived_recomputable_view",
+      "projector": "VersionDiffProjector",
+      "persistent_writer": null,
+      "exact_fields": [
+        "view_type",
+        "parent_candidate_version_ref",
+        "child_candidate_version_ref",
+        "changed_json_pointers",
+        "excluded_sidecar_proposal_refs"
+      ]
+    }
+  },
+  "transaction": {
+    "published_immutable_records": 3,
+    "published_live_fixture_pointers": 1,
+    "operation_replay": "same operation and request returns the same result",
+    "operation_conflict": "B01_OPERATION_CONFLICT",
+    "existing_pointer": "B01_POINTER_ALREADY_INITIALIZED"
+  },
+  "write_set": "work/ccz57_m3_b01_candidate_version_r03_4/**"
+}

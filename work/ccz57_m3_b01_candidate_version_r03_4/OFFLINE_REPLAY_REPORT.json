@@ -1,0 +1,128 @@
+{
+  "a_interface_admission_record_hash": "91257566a8c4fc662b5735ce1a1abebd905bf148b23ad594dfcf21b8410c65af",
+  "a_merge_commit_sha": "019df751641533c7de4d56aa38f50747fb564036",
+  "b02_writers_called": 0,
+  "blueprint_self_check_sha256": "c3203ef73c9d0fc23f843673df0325b95d4d6c52cb752e8c9b543c80dc1151b0",
+  "blueprint_sha256": "8db5f9acb8ada30e929af4e710790bb36c6058023928de513757465a0fa43cd2",
+  "canonical_fixture_vector": {
+    "canonical_utf8_hex": "7b2261223a5b332c747275652c6e756c6c2c2273796e746865746963225d2c227a223a22c3a9227d",
+    "sha256": "35b5fbdfd6fdb751b5c96b1a74a84f6cee5ff787cbedccacfd8649901909ab3a"
+  },
+  "contract": "CCZ57_M3_B01_OFFLINE_REPLAY_REPORT",
+  "contract_version": "r03.3-candidate",
+  "failure_fixture_families": {
+    "F01_A_ADMISSION_MISSING": [
+      "B01_A_ADMISSION_REQUIRED"
+    ],
+    "F02_A_HEAD_MISMATCH": [
+      "B01_A_ADMISSION_HEAD_MISMATCH"
+    ],
+    "F03_A_MAIN_READBACK_INVALID": [
+      "B01_A_ADMISSION_READBACK_INVALID"
+    ],
+    "F04_A_INTERFACE_MANIFEST_DRIFT": [
+      "B01_A_INTERFACE_DRIFT"
+    ],
+    "F05_ATTEMPT_REF_INVALID": [
+      "B01_ATTEMPT_REF_INVALID"
+    ],
+    "F06_SEGMENT_SOURCE_MISMATCH": [
+      "B01_SEGMENT_SOURCE_MISMATCH"
+    ],
+    "F07_SEGMENT_NUMBER_INVALID": [
+      "B01_SEGMENT_INDEX_INVALID"
+    ],
+    "F08_SEGMENT_RANGE_INVALID": [
+      "B01_SEGMENT_INDEX_INVALID"
+    ],
+    "F09_SEGMENT_TEXT_HASH_MISMATCH": [
+      "B01_SEGMENT_TEXT_HASH_MISMATCH"
+    ],
+    "F10_CANDIDATE_FIELDS_INVALID": [
+      "B01_CANDIDATE_VERSION_INVALID"
+    ],
+    "F11_ITEM_HASH_MISMATCH": [
+      "B01_ITEM_HASH_MISMATCH"
+    ],
+    "F12_DUPLICATE_LINEAGE_ID": [
+      "B01_DUPLICATE_LINEAGE_ID"
+    ],
+    "F13_LINEAGE_INDEX_INVALID": [
+      "B01_LINEAGE_INDEX_INVALID"
+    ],
+    "F14_EMPTY_BASELINE_INCONSISTENT": [
+      "B01_EMPTY_BASELINE_INVALID"
+    ],
+    "F15_CHILD_CREATION_OUT_OF_SCOPE": [
+      "B01_CHILD_CREATION_OUT_OF_SCOPE"
+    ],
+    "F16_POINTER_SCOPE_MISMATCH": [
+      "B01_POINTER_SCOPE_MISMATCH"
+    ],
+    "F17_POINTER_ALREADY_INITIALIZED": [
+      "B01_POINTER_ALREADY_INITIALIZED"
+    ],
+    "F18_OPERATION_CONFLICT": [
+      "B01_OPERATION_CONFLICT"
+    ],
+    "F19_VERSION_DIFF_INVALID_OR_PERSISTED": [
+      "B01_VERSION_DIFF_INVALID",
+      "B01_DERIVED_VIEW_PERSIST_FORBIDDEN"
+    ],
+    "F20_WRITE_SET_OR_RUNTIME_BOUNDARY": [
+      "B01_WRITE_SET_ESCAPE",
+      "B01_NETWORK_OR_PROCESS_EVENT"
+    ]
+  },
+  "fixture_pointer_writes": 9,
+  "github_writes": 0,
+  "linear_writes": 0,
+  "mechanical_pass": true,
+  "model_api_calls": 0,
+  "network_calls": 0,
+  "normal_fixture_families": {
+    "N01_NONEMPTY_BASELINE": "PASS",
+    "N02_EMPTY_BASELINE": "PASS",
+    "N03_SEGMENT_INDEX_REPLAY": "PASS",
+    "N04_POINTER_INITIALIZATION": "PASS",
+    "N05_OPERATION_IDEMPOTENT_REPLAY": "PASS",
+    "N06_LINEAGE_LOCATOR_RESOLUTION": "PASS",
+    "N07_PARENT_CHILD_READ_ONLY_DIFF": "PASS",
+    "N08_RESTART_READBACK": "PASS"
+  },
+  "notion_writes": 0,
+  "product_pointer_writes": 0,
+  "real_novel_reads": 0,
+  "reference_integrity": {
+    "immutable_record_count": 27,
+    "persisted_derived_views": 0,
+    "record_hash_failed": 0,
+    "record_hash_passed": 27,
+    "record_ref_count": 81,
+    "record_ref_failed": 0,
+    "record_ref_passed": 81,
+    "reference_cycles": 0,
+    "unique_writer_conflicts": 0,
+    "unresolved_refs": 0
+  },
+  "report_hash": "bd7008c711e70eb016379b822f8d2a9570a3d8ed8c783734308a021c6e97d3a2",
+  "runtime_event_evidence": {
+    "allowed_event_count": 18,
+    "forbidden_event_count": 0
+  },
+  "semantic_pass": null,
+  "slack_writes": 0,
+  "source_hashes": {
+    "b01_contract.py": "cbb9a0b569ac4a4a16f0543d6df60bca29ba210dc875ae062b4781912a4c77bb",
+    "fixtures.py": "e44e9e22dfc787875339501356ccaa0e8434cc2ffe9909e60d1f30d60cf4e6b2",
+    "self_check.py": "f8f0a65c9e5ae0f4f788d579479fb1f852406646f7b965e0c48ce958b0eaeffa",
+    "test_b01_contract.py": "33879e43616b846cc229e96cf6ab799672ae184ead368e7c062b14b30d7361e5"
+  },
+  "static_audit": {
+    "runtime_sources": [
+      "b01_contract.py",
+      "fixtures.py"
+    ],
+    "violations": []
+  }
+}
