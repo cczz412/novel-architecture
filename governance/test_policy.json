@@ -218,6 +218,27 @@
       "full_chain": false
     },
     {
+      "name": "novel-mvp ledger read tool contract",
+      "pattern": "novel-mvp/contracts/LEDGER_READ_TOOL_CONTRACT.*",
+      "modules": ["M04", "M07", "M08", "M10", "M11"],
+      "tests": ["tests/test_novel_mvp_ledger_read_tool_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp ledger read tool validator",
+      "pattern": "novel-mvp/contracts/validate_ledger_read_tool_contract.py",
+      "modules": ["M04", "M07", "M08", "M10", "M11"],
+      "tests": ["tests/test_novel_mvp_ledger_read_tool_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp ledger read tool tests",
+      "pattern": "tests/test_novel_mvp_ledger_read_tool_contract.py",
+      "modules": ["M04", "M07", "M08", "M10", "M11"],
+      "tests": ["tests/test_novel_mvp_ledger_read_tool_contract.py"],
+      "full_chain": false
+    },
+    {
       "name": "novel-mvp plan milestone content contract",
       "pattern": "novel-mvp/contracts/PLAN_MILESTONE_CONTENT.*",
       "modules": ["M08"],
