@@ -1,0 +1,151 @@
+{
+  "receipt_type": "B01_MERGE_READBACK_RECEIPT",
+  "receipt_version": 1,
+  "receipt_scope": "CONSTRUCTION_EVIDENCE_ONLY_NOT_M3_PRODUCT_RECORD",
+  "generated_at": "2026-08-28T11:50:43Z",
+  "repository": "cczz412/novel-architecture",
+  "pr": {
+    "number": 190,
+    "url": "https://github.com/cczz412/novel-architecture/pull/190",
+    "base_before_merge": "019df751641533c7de4d56aa38f50747fb564036",
+    "reviewed_head": "24a89a4a705138308f2db5a9f94dc09e74bb4c28",
+    "merged": true,
+    "merged_at": "2026-08-28T11:40:43Z",
+    "merge_commit": "905346f56cd51259c15a9517ead1517227c1719a",
+    "actual_file_count": 10,
+    "all_files_within_b01_write_set": true,
+    "b01_write_set": "work/ccz57_m3_b01_candidate_version_r03_4/**"
+  },
+  "exact_head_review": {
+    "file_name": "ccz57_m3_b01_exact_head_review_20260828_r02.md",
+    "file_sha256": "cb0625ec0a8302f006c07231ff9d229c032714539805e3aac7f3649981145b35",
+    "line_count": 479,
+    "byte_count": 19223,
+    "conclusion": "PASS",
+    "scope": "EXACT_HEAD_MECHANICAL_REVIEW_ONLY"
+  },
+  "ready_gate": {
+    "workflow": "pr-gate",
+    "run_id": 33167593776,
+    "job_id": 98836611626,
+    "head_sha": "24a89a4a705138308f2db5a9f94dc09e74bb4c28",
+    "conclusion": "success"
+  },
+  "current_main_readback": {
+    "sha": "905346f56cd51259c15a9517ead1517227c1719a",
+    "equals_merge_commit": true,
+    "merge_commit_reachable_from_current_main": true
+  },
+  "github_issue": {
+    "number": 189,
+    "url": "https://github.com/cczz412/novel-architecture/issues/189",
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "closed_at": "2026-08-28T11:40:45Z"
+  },
+  "global_a_admission": {
+    "a_pr_number": 186,
+    "a_reviewed_head": "9eafdac71f412be3f7b8ad5fd81ffc84c3de3a26",
+    "a_merge_commit": "019df751641533c7de4d56aa38f50747fb564036",
+    "record_hash": "91257566a8c4fc662b5735ce1a1abebd905bf148b23ad594dfcf21b8410c65af",
+    "receipt_file_sha256": "5d326296d2028f87772f1f24836b4885bfe395909a7e74aa331870d5023aa7c0"
+  },
+  "merged_b01_artifacts": {
+    "object_catalog": {
+      "path": "work/ccz57_m3_b01_candidate_version_r03_4/OBJECT_SHAPES.json",
+      "file_sha256": "90ea6b165f4e509ff3e267f494afc83ddad408c54abb6a006be0c15decad1ccd"
+    },
+    "offline_replay_report": {
+      "path": "work/ccz57_m3_b01_candidate_version_r03_4/OFFLINE_REPLAY_REPORT.json",
+      "file_sha256": "5a1b52916381117e8a6c41fc8af8bb33868c450df40cf357723cd5519b45a9d0",
+      "report_hash": "53fefddc4bac66fa626d5f71e5b98d024f84275553aa9ab51887d746117df9aa",
+      "mechanical_pass": true,
+      "record_hash_passed": 24,
+      "record_hash_total": 24,
+      "record_ref_passed": 48,
+      "record_ref_total": 48,
+      "reference_cycle_count": 0
+    },
+    "manifest": {
+      "path": "work/ccz57_m3_b01_candidate_version_r03_4/MANIFEST.sha256",
+      "file_sha256": "b799da20565260507212ed81afc51f1e7bb71195087a9ccdbad7469002c99b40"
+    }
+  },
+  "b02_admissible_fixture_inputs": {
+    "fixture_only": true,
+    "segment_index_ref": {
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.3-candidate",
+      "record_contract_version": "r03.3-candidate",
+      "record_type": "M3_SEGMENT_INDEX_SNAPSHOT",
+      "record_id": "segidx:fixture-project-001:synthetic-chapter-001:r7:7032bdcb88ad",
+      "record_version": 1,
+      "record_hash": "a8e993d61ec35d849a580d3179e56e8104807f13241f3845f78d86b6c7170d6b",
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "source_module": "M3"
+    },
+    "candidate_version_ref": {
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.3-candidate",
+      "record_contract_version": "r03.3-candidate",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_id": "cv:2a17b0a756cd:4436d087de901f60aa12d8d212cbd33d",
+      "record_version": 1,
+      "record_hash": "09e4a6f59c35d7a9694976e6fb5bf3f41690dd322deb2f57aa7e9969a9c187cf",
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "source_module": "M3"
+    },
+    "allowed_lineage_locators": [
+      {
+        "contract": "M3_LINEAGE_LOCATOR",
+        "contract_version": "r03.3-candidate",
+        "candidate_version_ref": {
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.3-candidate",
+          "record_contract_version": "r03.3-candidate",
+          "record_type": "M3_CANDIDATE_VERSION",
+          "record_id": "cv:2a17b0a756cd:4436d087de901f60aa12d8d212cbd33d",
+          "record_version": 1,
+          "record_hash": "09e4a6f59c35d7a9694976e6fb5bf3f41690dd322deb2f57aa7e9969a9c187cf",
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "source_module": "M3"
+        },
+        "lineage_id": "lin_88599f1ead812ead4fb101fb0d14957ee70f9f7edbb94855b7ea9806bd622809",
+        "json_pointer": "/items/0",
+        "item_hash": "f080fd15d6e6781913f9b8a9abfcc00d41bef537c65cca1c8530b7e4b1ba482b",
+        "locator_hash": "5827eec5c9e33ff5243277d10272287ba6e33764a3b4e893829ac7100154701c"
+      }
+    ],
+    "origin_attempt_refs": [
+      {
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.3-candidate",
+        "record_contract_version": "r03.3-candidate",
+        "record_type": "A_RAW_ATTEMPT_RECEIPT",
+        "record_id": "attempt_fixture_001",
+        "record_version": 1,
+        "record_hash": "fef276f8a06b1aa052b57a12092f4db39a9597752f258003ac979f115f972b3b",
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "source_module": "A_STAGE_FIXTURE"
+      }
+    ]
+  },
+  "execution_boundary": {
+    "model_api_calls": 0,
+    "network_calls_during_b01_fixture_replay": 0,
+    "real_novel_reads": 0,
+    "gold_generated": false,
+    "product_runtime_proven": false,
+    "author_validation_proven": false
+  },
+  "contract_boundary": {
+    "is_m3_immutable_record": false,
+    "is_record_ref": false,
+    "adds_product_object_type": false,
+    "adds_product_writer": false,
+    "adds_dependency_edge": false,
+    "b02_may_use_only_as_construction_gate_evidence": true
+  },
+  "receipt_hash_algorithm": "sha256(canonical_json(receipt_without_receipt_hash))",
+  "receipt_hash": "81544ef084908480acd3466bbd167f577cdd700de7e70967e782204fc67974a6"
+}

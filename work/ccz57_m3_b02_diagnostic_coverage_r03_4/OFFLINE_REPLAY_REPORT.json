@@ -1,0 +1,161 @@
+{
+  "a_admission_record_hash": "91257566a8c4fc662b5735ce1a1abebd905bf148b23ad594dfcf21b8410c65af",
+  "a_merge_sha": "019df751641533c7de4d56aa38f50747fb564036",
+  "author_validation_proven": false,
+  "b01_merge_receipt_file_sha256": "98ab63f1b8ff34844ba346839cb7471aeb784d400282f12c3d4fb686a5183138",
+  "b01_merge_sha": "905346f56cd51259c15a9517ead1517227c1719a",
+  "b02_contract_sha256": "189a225fc2484309696cbf4cd81c596548b8b815c33a803c644279ea756a62c7",
+  "blueprint_self_check_sha256": "c3203ef73c9d0fc23f843673df0325b95d4d6c52cb752e8c9b543c80dc1151b0",
+  "blueprint_sha256": "8db5f9acb8ada30e929af4e710790bb36c6058023928de513757465a0fa43cd2",
+  "contract": "CCZ57_M3_B02_OFFLINE_REPLAY_REPORT",
+  "document_identity": "CCZ57-M3-B02-R02-CANDIDATE",
+  "extraction_accuracy_proven": false,
+  "failure_fixture_families": {
+    "F-01": "PASS_ZERO_VISIBLE_WRITE",
+    "F-02": "PASS_ZERO_VISIBLE_WRITE",
+    "F-03": "PASS_ZERO_VISIBLE_WRITE",
+    "F-04": "PASS_ZERO_VISIBLE_WRITE",
+    "F-05": "PASS_ZERO_VISIBLE_WRITE",
+    "F-06": "PASS_ZERO_VISIBLE_WRITE",
+    "F-07": "PASS_ZERO_VISIBLE_WRITE",
+    "F-08": "PASS_ZERO_VISIBLE_WRITE",
+    "F-09": "PASS_ZERO_VISIBLE_WRITE",
+    "F-10": "PASS_ZERO_VISIBLE_WRITE",
+    "F-11": "PASS_ZERO_VISIBLE_WRITE",
+    "F-12": "PASS_ZERO_VISIBLE_WRITE",
+    "F-13": "PASS_ZERO_VISIBLE_WRITE",
+    "F-14": "PASS_ZERO_VISIBLE_WRITE",
+    "F-15": "PASS_ZERO_VISIBLE_WRITE",
+    "F-16": "PASS_ZERO_VISIBLE_WRITE",
+    "F-17": "PASS_ZERO_VISIBLE_WRITE",
+    "F-18": "PASS_ZERO_VISIBLE_WRITE"
+  },
+  "gold_generated": false,
+  "manifest": {
+    "checked": true,
+    "members": 12,
+    "passed": true
+  },
+  "mechanical_pass": true,
+  "normal_fixture_families": {
+    "N-01": "PASS",
+    "N-02": "PASS",
+    "N-03": "PASS",
+    "N-04": "PASS",
+    "N-05": "PASS",
+    "N-06": "PASS",
+    "N-07": "PASS",
+    "N-08": "PASS",
+    "N-09": "PASS"
+  },
+  "object_contract_version": "r03.3-candidate",
+  "real_api_proven": false,
+  "reference_integrity": {
+    "b01_encapsulated_external_refs": 48,
+    "candidate_version_writes": 0,
+    "immutable_record_count": 48,
+    "persisted_derived_views": 0,
+    "record_hash_failed": 0,
+    "record_hash_passed": 48,
+    "record_ref_count": 74,
+    "record_ref_failed": 0,
+    "record_ref_passed": 74,
+    "reference_cycles": 0,
+    "unexpected_persisted_types": 0,
+    "unresolved_refs": 0
+  },
+  "report_hash": "951a0e3a43725763194be1256b5fd51834c44b516053d56f9107dcf72baf53cf",
+  "runtime_event_evidence": {
+    "allowed_write_event_counts": {
+      "open": 51,
+      "os.mkdir": 196,
+      "os.rename": 49
+    },
+    "candidate_version_writes": 0,
+    "dns_events": 0,
+    "forbidden_writer_calls": 0,
+    "http_events": 0,
+    "model_api_calls": 0,
+    "network_calls": 0,
+    "real_novel_reads": 0,
+    "socket_events": 0,
+    "subprocess_events": 0,
+    "writes_outside_allowed_root": 0
+  },
+  "semantic_pass": null,
+  "source_hashes": {
+    "A_INTERFACE_ADMISSION_RECEIPT.fixture.json": "5d326296d2028f87772f1f24836b4885bfe395909a7e74aa331870d5023aa7c0",
+    "B01_MERGE_READBACK_RECEIPT.fixture.json": "98ab63f1b8ff34844ba346839cb7471aeb784d400282f12c3d4fb686a5183138",
+    "b02_contracts.py": "447bc25c69a2bab93e54024215c1ce004e1fb4a1df5dd9e87beacbebe3143a3f",
+    "b02_store.py": "0f61c382351eb6e4878eb505c52023ef8c13983bf86ffa6296f559434dace409",
+    "fixtures.py": "16b61f34831a2b20d1b05df37f78c9fcfacb0cf1b484f998a33d5c52c0f1af58",
+    "open_issue_projection.py": "3865b773dbca783dabe2bd08b6119afd3da9c0af8aa1df4fffff0f0016f5431d",
+    "self_check.py": "a4290845b789c4bc1a763923cea6aa5b871556baaeefca2d403a4e596484f537",
+    "test_b02_diagnostic_coverage.py": "7faf2c23325a8b229e7d45ae6e102336b6240892929148d8f4d187fe74ce13aa"
+  },
+  "static_audit": {
+    "files": [
+      {
+        "file": "b02_contracts.py",
+        "findings": [],
+        "sha256": "447bc25c69a2bab93e54024215c1ce004e1fb4a1df5dd9e87beacbebe3143a3f"
+      },
+      {
+        "file": "b02_store.py",
+        "findings": [],
+        "sha256": "0f61c382351eb6e4878eb505c52023ef8c13983bf86ffa6296f559434dace409"
+      },
+      {
+        "file": "open_issue_projection.py",
+        "findings": [],
+        "sha256": "3865b773dbca783dabe2bd08b6119afd3da9c0af8aa1df4fffff0f0016f5431d"
+      },
+      {
+        "file": "fixtures.py",
+        "findings": [],
+        "sha256": "16b61f34831a2b20d1b05df37f78c9fcfacb0cf1b484f998a33d5c52c0f1af58"
+      },
+      {
+        "file": "self_check.py",
+        "findings": [],
+        "sha256": "a4290845b789c4bc1a763923cea6aa5b871556baaeefca2d403a4e596484f537"
+      },
+      {
+        "file": "test_b02_diagnostic_coverage.py",
+        "findings": [],
+        "sha256": "7faf2c23325a8b229e7d45ae6e102336b6240892929148d8f4d187fe74ce13aa"
+      }
+    ],
+    "totals": {
+      "credential_path_hits": 0,
+      "forbidden_call_hits": 0,
+      "forbidden_import_hits": 0,
+      "forbidden_writer_calls": 0,
+      "http_or_socket_path_hits": 0,
+      "model_client_path_hits": 0
+    }
+  },
+  "writer_audit": {
+    "expected_writer_classes": [
+      "CoverageRecorder",
+      "DiagnosticLifecycleWriter",
+      "DiagnosticRecorder",
+      "DiagnosticRecorderIdentityRegistry"
+    ],
+    "open_issue_projection_persistence_calls": [],
+    "open_issue_projection_persistent_writers": 0,
+    "persisting_writer_classes": [
+      "CoverageRecorder",
+      "DiagnosticLifecycleWriter",
+      "DiagnosticRecorder",
+      "DiagnosticRecorderIdentityRegistry"
+    ],
+    "unique_writer_conflicts": 0,
+    "writer_map": {
+      "M3_COVERAGE_OBSERVATION": "CoverageRecorder",
+      "M3_DIAGNOSTIC": "DiagnosticRecorder",
+      "M3_DIAGNOSTIC_LIFECYCLE_RECEIPT": "DiagnosticLifecycleWriter",
+      "M3_DIAGNOSTIC_RECORDER_IDENTITY": "DiagnosticRecorderIdentityRegistry"
+    }
+  }
+}
