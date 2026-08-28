@@ -151,12 +151,47 @@
     "unique_writer_conflicts": 0,
     "unresolved_refs": 0
   },
-  "report_hash": "fbfa9a1b19d2d803e1844b8243f16feb6e7ed464d9faabec3df8d0101da9db2d",
+  "report_hash": "7435a9868650cd70693f4c813ec9f1a975502d513a739a43f1df4c3d1a098343",
+  "restart_process_evidence": {
+    "distinct_child_processes": true,
+    "harness_process_calls": 2,
+    "parent_process_reused": false,
+    "prepare": {
+      "generation": 1,
+      "phase": "prepare",
+      "result_hash": "e4fce3b64e36fd8287325dbf1e4a336dc688cbed88ebd798fa0629aad2696a46",
+      "runtime_event_evidence": {
+        "allowed_event_counts": {
+          "open": 5,
+          "os.mkdir": 1,
+          "os.remove": 1,
+          "os.rename": 1
+        },
+        "forbidden_events": [],
+        "real_novel_events": []
+      },
+      "state_file_hash": "4bd7a8234389486f4ed1aff05f88a386ce8ed5c1b0229cd6e4e8dc9fef5dbf8f"
+    },
+    "readback": {
+      "generation": 1,
+      "phase": "readback",
+      "result_hash": "e4fce3b64e36fd8287325dbf1e4a336dc688cbed88ebd798fa0629aad2696a46",
+      "runtime_event_evidence": {
+        "allowed_event_counts": {
+          "open": 8,
+          "os.remove": 1
+        },
+        "forbidden_events": [],
+        "real_novel_events": []
+      },
+      "state_file_hash": "4bd7a8234389486f4ed1aff05f88a386ce8ed5c1b0229cd6e4e8dc9fef5dbf8f"
+    }
+  },
   "runtime_event_evidence": {
     "allowed_event_counts": {
-      "open": 69,
-      "os.mkdir": 16,
-      "os.remove": 1,
+      "open": 78,
+      "os.mkdir": 13,
+      "os.remove": 2,
       "os.rename": 11
     },
     "forbidden_events": [],
@@ -164,10 +199,10 @@
   },
   "semantic_pass": null,
   "source_hashes": {
-    "b01_contract.py": "d6fb40667224dad1b8ac6bed18ea6b74f275c02a4f80097f5cc788119117de79",
-    "fixtures.py": "64e4faf13d2f5b35a4108878b37f9a3408ee8e5ddf13c0255f9172c2a00c197b",
-    "self_check.py": "76739b9a4886b49581ffad788f405aa5adc656366ff5427614be211715ce200d",
-    "test_b01_contract.py": "f05ffc968231a57f39cbaed1c80bc9bffb8b57f7c025fce255a195da80eff898"
+    "b01_contract.py": "90893d587335c637a1a393b1874733e3c749fbdda83240878631f6fc093a0a7c",
+    "fixtures.py": "814862fbb93c5a536a74a6acd9b1640b9822356b384c6ed234598dbc22c0ce61",
+    "self_check.py": "176296f7fae16c99806f19a5202e876af506426419e14793c521a3a5b9843f49",
+    "test_b01_contract.py": "d8f59c7b3d77821ffb864101a552fd7582b54e09aef83eac4cf24212c5e7fb1e"
   },
   "static_audit": {
     "files": [
@@ -179,7 +214,7 @@
         "forbidden_import_hits": 0,
         "real_novel_path_hits": 0,
         "scope_escape_names": [],
-        "sha256": "d6fb40667224dad1b8ac6bed18ea6b74f275c02a4f80097f5cc788119117de79"
+        "sha256": "90893d587335c637a1a393b1874733e3c749fbdda83240878631f6fc093a0a7c"
       },
       {
         "credential_path_hits": 0,
@@ -189,7 +224,7 @@
         "forbidden_import_hits": 0,
         "real_novel_path_hits": 0,
         "scope_escape_names": [],
-        "sha256": "64e4faf13d2f5b35a4108878b37f9a3408ee8e5ddf13c0255f9172c2a00c197b"
+        "sha256": "814862fbb93c5a536a74a6acd9b1640b9822356b384c6ed234598dbc22c0ce61"
       }
     ],
     "totals": {

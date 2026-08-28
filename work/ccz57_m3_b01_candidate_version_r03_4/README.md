@@ -33,13 +33,18 @@
 ## 最重要的边界
 
 - B-01 只允许创建 root baseline，也就是某一段的第一版候选。
+- GLOBAL-A 只接受已生成准入原件的固定记录编号、时间和 record hash；复制同一组声明后重新签一份记录也会被拒绝。
 - 真实 child 版本、后续 pointer 推进和回退属于 B-06；这里不会顺手做。
 - pointer 的命名空间只能是 `FIXTURE_ONLY`。产品 pointer 写入会被拒绝。
 - live pointer 保存项目、工作区、章节版本、段号、generation 和当前候选引用，不能缩成单独一条 CandidateVersion 引用。
+- generation 1 pointer 只能指向 `record_version=1`、无 parent、无 CommitIntent 的 root baseline；只读 child fixture 不能进入 pointer。
+- CandidateVersion 的幂等查找按当前 AuthorWorkspace 的 record identity 收窄；相同 payload 出现在不同工作区时必须保存为两个独立对象。
+- LineageLocator 会实际解析 `/items/{n}` 并读取目标 item；VersionDiff 会拒绝 child 替换已有 lineage。
 - `VersionDiff` 只能重算，不能保存成第二份真源或 receipt。
-- 三条不可变记录和一条 fixture pointer 在同一次原子提交里发布。提交前任何失败都保持 0 写入；提交后即使进程中断，重新打开也必须看到完整结果。
+- 三条不可变记录和一条 fixture pointer 在同一次原子提交里发布。提交前任何失败都保持 0 写入；N08 用两个独立的本地 Python 测试进程分别完成“提交后中断”和“新进程重开＋同 operation 重放”，并要求状态文件逐字节不变、generation 仍为 1。
 - 失败时不能先写半成品再删除。测试会比较失败前后的对象数、pointer 数和文件哈希。
 - 运行期禁网不是手填 0：`self_check.py` 会安装 Python audit hook，拦截 socket、DNS、fork、exec 和 subprocess；静态检查还会查模型客户端、HTTP 客户端、凭证读取和后续票 writer。
+- 上一条约束的是 B-01 产品／fixture 路径。离线测试工具会在父进程安装 audit hook 前启动两个最小本地 Python 子进程来证明 N08 真重启；两个子进程各自安装相同 audit hook，报告单列 `harness_process_calls=2`，不会把测试工具进程冒充成产品调用 0。
 - `OBJECT_SHAPES.json` 保存三份完整不可变对象、完整 RecordRef、live pointer、LineageLocator 和 VersionDiff 样例，每个哈希都能独立重算。
 
 ## 怎么复验

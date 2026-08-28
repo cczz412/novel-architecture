@@ -6,6 +6,8 @@ import argparse
 import ast
 import hashlib
 import json
+import os
+import subprocess
 import sys
 import tempfile
 from collections import Counter
@@ -29,6 +31,8 @@ from fixtures import (
     b01_fixed_vectors,
     canonical_fixture_vector,
     inherited_fixed_vectors,
+    n08_prepare_committed_crash,
+    n08_restart_readback,
     reference_records,
     run_failure_scenario,
     run_normal_scenario,
@@ -491,15 +495,123 @@ def _vectors_pass(vectors: dict[str, dict[str, str]]) -> bool:
     return all(item["actual"] == item["expected"] for item in vectors.values())
 
 
-def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
+def _phase_runtime_evidence(guard: RuntimeAuditGuard) -> dict[str, Any]:
+    return {
+        "allowed_event_counts": dict(sorted(guard.allowed_counts.items())),
+        "forbidden_events": list(guard.forbidden_events),
+        "real_novel_events": list(guard.real_novel_events),
+    }
+
+
+def run_restart_probe_phase(*, phase: str, root: Path) -> dict[str, Any]:
+    """Run one audited N08 product phase inside its own Python process."""
     guard = RuntimeAuditGuard()
     guard.install()
+    if phase == "prepare":
+        result = n08_prepare_committed_crash(root)
+    elif phase == "readback":
+        result = n08_restart_readback(root)
+    else:
+        raise AssertionError(f"unknown restart probe phase: {phase}")
+    return {
+        "phase": phase,
+        "pid": os.getpid(),
+        "state_file_hash": result["state_file_hash"],
+        "result_hash": hashlib.sha256(canonical_bytes(result["result"])).hexdigest(),
+        "generation": result.get("generation", 1),
+        "runtime_event_evidence": _phase_runtime_evidence(guard),
+    }
+
+
+def run_restart_process_probe(root: Path) -> dict[str, Any]:
+    """Launch two local harness processes and compare their N08 receipts."""
+    root.mkdir(parents=True, exist_ok=True)
+    receipts: dict[str, dict[str, Any]] = {}
+    child_env = {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONIOENCODING": "utf-8",
+        "TMPDIR": tempfile.gettempdir(),
+    }
+    for phase in ("prepare", "readback"):
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "self_check.py"),
+                "--restart-probe-phase",
+                phase,
+                "--restart-probe-root",
+                str(root),
+            ],
+            cwd=ROOT,
+            env=child_env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if completed.returncode != 0:
+            raise AssertionError(
+                f"N08 {phase} process failed: {completed.stderr.strip()}"
+            )
+        receipts[phase] = json.loads(completed.stdout)
+    prepare = receipts["prepare"]
+    readback = receipts["readback"]
+    if prepare["pid"] == readback["pid"] or prepare["pid"] == os.getpid():
+        raise AssertionError("N08 phases did not run in distinct child processes")
+    if readback["pid"] == os.getpid():
+        raise AssertionError("N08 readback reused the harness process")
+    if prepare["state_file_hash"] != readback["state_file_hash"]:
+        raise AssertionError("N08 restart changed committed state bytes")
+    if prepare["result_hash"] != readback["result_hash"]:
+        raise AssertionError("N08 restart replay changed the operation result")
+    if readback["generation"] != 1:
+        raise AssertionError("N08 restart replay advanced pointer generation")
+    for receipt in receipts.values():
+        evidence = receipt["runtime_event_evidence"]
+        if evidence["forbidden_events"] or evidence["real_novel_events"]:
+            raise AssertionError("N08 child process crossed a runtime boundary")
+    return {
+        "harness_process_calls": 2,
+        "prepare": prepare,
+        "readback": readback,
+    }
+
+
+def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
     normal_results: dict[str, str] = {}
     failure_results: dict[str, list[str]] = {}
     with tempfile.TemporaryDirectory(prefix="ccz57-b01-self-check-") as temporary:
         temporary_root = Path(temporary)
+        restart_process_evidence = run_restart_process_probe(
+            temporary_root / "normal" / "N08_RESTART_READBACK"
+        )
+        restart_report_evidence = {
+            "harness_process_calls": restart_process_evidence[
+                "harness_process_calls"
+            ],
+            "distinct_child_processes": (
+                restart_process_evidence["prepare"]["pid"]
+                != restart_process_evidence["readback"]["pid"]
+            ),
+            "parent_process_reused": False,
+            "prepare": {
+                key: value
+                for key, value in restart_process_evidence["prepare"].items()
+                if key != "pid"
+            },
+            "readback": {
+                key: value
+                for key, value in restart_process_evidence["readback"].items()
+                if key != "pid"
+            },
+        }
+        normal_results["N08_RESTART_READBACK"] = "PASS"
+        guard = RuntimeAuditGuard()
+        guard.install()
         normal_root = temporary_root / "normal"
         for name in sorted(NORMAL_SCENARIOS):
+            if name == "N08_RESTART_READBACK":
+                continue
             run_normal_scenario(name, normal_root / name)
             normal_results[name] = "PASS"
         for name in sorted(FAILURE_SCENARIOS):
@@ -513,10 +625,20 @@ def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
         )
         inherited_vectors = inherited_fixed_vectors()
         own_vectors = b01_fixed_vectors(temporary_root / "fixed-vectors")
+        combined_allowed = Counter(guard.allowed_counts)
+        combined_forbidden = list(guard.forbidden_events)
+        combined_real_novel = list(guard.real_novel_events)
+        for phase in ("prepare", "readback"):
+            phase_evidence = restart_process_evidence[phase][
+                "runtime_event_evidence"
+            ]
+            combined_allowed.update(phase_evidence["allowed_event_counts"])
+            combined_forbidden.extend(phase_evidence["forbidden_events"])
+            combined_real_novel.extend(phase_evidence["real_novel_events"])
         runtime_ledger = {
-            "allowed_event_counts": dict(sorted(guard.allowed_counts.items())),
-            "forbidden_events": list(guard.forbidden_events),
-            "real_novel_events": list(guard.real_novel_events),
+            "allowed_event_counts": dict(sorted(combined_allowed.items())),
+            "forbidden_events": combined_forbidden,
+            "real_novel_events": combined_real_novel,
         }
         (temporary_root / "runtime_event_ledger.json").write_text(
             json.dumps(runtime_ledger, sort_keys=True), encoding="utf-8"
@@ -536,7 +658,7 @@ def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
     object_shape_result = verify_object_shapes()
     totals = static_result["totals"]
     static_pass = all(value == 0 for value in totals.values())
-    runtime_pass = not guard.forbidden_events and not guard.real_novel_events
+    runtime_pass = not combined_forbidden and not combined_real_novel
     vectors_pass = _vectors_pass(inherited_vectors) and _vectors_pass(own_vectors)
     integrity_pass = all(
         integrity[key] == 0
@@ -549,14 +671,14 @@ def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
             "persisted_derived_views",
         )
     )
-    network_calls = sum(event.startswith("socket.") for event in guard.forbidden_events)
+    network_calls = sum(event.startswith("socket.") for event in combined_forbidden)
     model_api_calls = (
         totals["model_client_path_hits"]
         + totals["http_or_socket_path_hits"]
         + totals["credential_path_hits"]
-        + len(guard.forbidden_events)
+        + len(combined_forbidden)
     )
-    real_novel_reads = totals["real_novel_path_hits"] + len(guard.real_novel_events)
+    real_novel_reads = totals["real_novel_path_hits"] + len(combined_real_novel)
     b02_writers_called = totals["scope_escape_name_hits"]
     report = {
         "contract": "CCZ57_M3_B01_OFFLINE_REPLAY_REPORT",
@@ -587,12 +709,13 @@ def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
         "source_hashes": {name: file_sha256(ROOT / name) for name in HASHED_SOURCES},
         "static_audit": static_result,
         "runtime_event_evidence": runtime_ledger,
+        "restart_process_evidence": restart_report_evidence,
         "zero_call_derivation": {
             "model_client_path_hits": totals["model_client_path_hits"],
             "http_or_socket_path_hits": totals["http_or_socket_path_hits"],
             "credential_path_hits": totals["credential_path_hits"],
-            "runtime_forbidden_events": len(guard.forbidden_events),
-            "runtime_real_novel_events": len(guard.real_novel_events),
+            "runtime_forbidden_events": len(combined_forbidden),
+            "runtime_real_novel_events": len(combined_real_novel),
         },
         "network_calls": network_calls,
         "model_api_calls": model_api_calls,
@@ -624,7 +747,31 @@ def main() -> None:
         action="store_true",
         help="write the first report before MANIFEST.sha256 is refreshed",
     )
+    parser.add_argument(
+        "--restart-probe-phase",
+        choices=("prepare", "readback"),
+        help="internal two-process N08 phase",
+    )
+    parser.add_argument(
+        "--restart-probe-root",
+        type=Path,
+        help="fixture root shared by the two N08 child processes",
+    )
     args = parser.parse_args()
+    if args.restart_probe_phase:
+        if args.restart_probe_root is None:
+            parser.error("--restart-probe-root is required for a restart probe")
+        print(
+            json.dumps(
+                run_restart_probe_phase(
+                    phase=args.restart_probe_phase,
+                    root=args.restart_probe_root,
+                ),
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+        )
+        return
     report = run_self_check(allow_missing_manifest=args.bootstrap_report)
     print(
         json.dumps(

@@ -10,6 +10,8 @@
 | A interface manifest record | ID `a_interface_manifest_main_019df751_20260828`；record hash `80751b702a335e1b733e975ac3905512ac54ec9f8f47922e2f975564542aeaa7`；payload hash `50c5c74c67678565693dd86c27dab20319a0d107bb9d196b21d23643843ca860` | A 接口清单原件和 payload 没有漂移 |
 | `M3_A_INTERFACE_ADMISSION_RECEIPT` | ID `a_admission_pr186_019df751_20260828`；record hash `91257566a8c4fc662b5735ce1a1abebd905bf148b23ad594dfcf21b8410c65af` | B 的 GLOBAL-A 准入原件；夹具完整重建并解析两条上游引用 |
 
+B-01 校验器锁定上表 admission 的 ID、生成时间和 record hash；重新签发的同声明记录不是原件，会失败关闭。
+
 ## B 设计与施工范围
 
 | 依据 | SHA-256 | 用途 |

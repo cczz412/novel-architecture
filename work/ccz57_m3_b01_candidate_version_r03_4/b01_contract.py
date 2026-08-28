@@ -95,6 +95,11 @@ EXPECTED_A_MERGE_COMMIT = "019df751641533c7de4d56aa38f50747fb564036"
 EXPECTED_A_INTERFACE_PAYLOAD_HASH = (
     "50c5c74c67678565693dd86c27dab20319a0d107bb9d196b21d23643843ca860"
 )
+EXPECTED_A_ADMISSION_ID = "a_admission_pr186_019df751_20260828"
+EXPECTED_A_ADMISSION_HASH = (
+    "91257566a8c4fc662b5735ce1a1abebd905bf148b23ad594dfcf21b8410c65af"
+)
+EXPECTED_A_ADMISSION_CREATED_AT = "2026-08-28T03:26:14Z"
 _SEGMENT_WRITER_TOKEN = object()
 _CANDIDATE_WRITER_TOKEN = object()
 _POINTER_WRITER_TOKEN = object()
@@ -323,6 +328,7 @@ def validate_admission(
     if (
         payload["admission_result"] != "PASS"
         or payload["b_code_start_authorized"] is not True
+        or payload["admission_mode"] != "MERGED_CURRENT_MAIN_EXACT_HEAD"
     ):
         _fail("B01_A_ADMISSION_REQUIRED", "admission result")
     if payload["reviewed_pr_head_sha"] != payload["pr_head_sha_at_merge"]:
@@ -384,6 +390,13 @@ def validate_admission(
         _fail("B01_A_INTERFACE_DRIFT", "manifest payload")
     if payload["a_interface_manifest_sha256"] != EXPECTED_A_INTERFACE_PAYLOAD_HASH:
         _fail("B01_A_INTERFACE_DRIFT", "unexpected manifest hash")
+    if (
+        admission["record_id"] != EXPECTED_A_ADMISSION_ID
+        or admission["record_version"] != 1
+        or admission["record_hash"] != EXPECTED_A_ADMISSION_HASH
+        or admission["created_at"] != EXPECTED_A_ADMISSION_CREATED_AT
+    ):
+        _fail("B01_A_ADMISSION_REQUIRED", "admission original")
 
 
 def validate_chapter_revision_ref(ref: dict[str, Any]) -> None:
@@ -844,6 +857,32 @@ def _build_pointer_snapshot(
     )
 
 
+def _validate_pointer_root_candidate(
+    candidate: dict[str, Any],
+    *,
+    author_workspace_logical_key: str,
+    code: str,
+) -> None:
+    validate_candidate_version(
+        candidate,
+        allow_child=True,
+        reference_records=None,
+    )
+    payload = candidate["payload"]
+    if (
+        candidate["record_version"] != 1
+        or payload["parent_candidate_version_ref"] is not None
+        or payload["origin_commit_intent_ref"] is not None
+    ):
+        _fail(code, "pointer target is not a root baseline")
+    expected_record_id = (
+        f"cv:{sha256_value(author_workspace_logical_key)[:12]}:"
+        f"{payload['version_payload_hash'][:32]}"
+    )
+    if candidate["record_id"] != expected_record_id:
+        _fail(code, "candidate workspace")
+
+
 def validate_pointer_snapshot(
     record: dict[str, Any], *, records: list[dict[str, Any]] | None = None
 ) -> None:
@@ -886,6 +925,13 @@ def validate_pointer_snapshot(
         ]
         if len(candidates) != 1:
             _fail("B01_POINTER_SCOPE_MISMATCH", "candidate resolution")
+        _validate_pointer_root_candidate(
+            candidates[0],
+            author_workspace_logical_key=payload[
+                "author_workspace_logical_key"
+            ],
+            code="B01_POINTER_SCOPE_MISMATCH",
+        )
         if (
             candidates[0]["payload"]["chapter_revision_ref"]
             != payload["chapter_revision_ref"]
@@ -972,6 +1018,7 @@ def validate_lineage_locator(
     if locator["locator_hash"] != sha256_value(preimage):
         _fail("B01_LINEAGE_INDEX_INVALID", "locator hash")
     if candidate_version is not None:
+        validate_candidate_version(candidate_version, allow_child=True)
         matches = [
             entry
             for entry in candidate_version["payload"]["lineage_index"]
@@ -983,6 +1030,19 @@ def validate_lineage_locator(
             "item_hash": locator["item_hash"],
         }:
             _fail("B01_LINEAGE_INDEX_INVALID", "locator target")
+        pointer_match = re.fullmatch(r"/items/(0|[1-9][0-9]*)", locator["json_pointer"])
+        if pointer_match is None:
+            _fail("B01_LINEAGE_INDEX_INVALID", "locator JSON pointer")
+        item_index = int(pointer_match.group(1))
+        items = candidate_version["payload"]["items"]
+        if item_index >= len(items):
+            _fail("B01_LINEAGE_INDEX_INVALID", "locator target out of range")
+        target = items[item_index]
+        if (
+            target["lineage_id"] != locator["lineage_id"]
+            or target["item_hash"] != locator["item_hash"]
+        ):
+            _fail("B01_LINEAGE_INDEX_INVALID", "locator item")
 
 
 def _project_version_diff(
@@ -1014,6 +1074,11 @@ def _project_version_diff(
         _fail("B01_VERSION_DIFF_INVALID", "scope")
     parent_items = parent["payload"]["items"]
     child_items = child["payload"]["items"]
+    if len(child_items) > len(parent_items):
+        _fail("B01_VERSION_DIFF_INVALID", "child added lineage")
+    for index, child_item in enumerate(child_items):
+        if child_item["lineage_id"] != parent_items[index]["lineage_id"]:
+            _fail("B01_VERSION_DIFF_INVALID", "child changed lineage")
     changed: list[str] = []
     for index in range(max(len(parent_items), len(child_items))):
         if index >= len(parent_items) or index >= len(child_items):
@@ -1021,7 +1086,7 @@ def _project_version_diff(
             continue
         parent_item = parent_items[index]
         child_item = child_items[index]
-        for field in ("lineage_id", "text", "quote"):
+        for field in ("text", "quote"):
             if parent_item.get(field) != child_item.get(field):
                 changed.append(f"/items/{index}/{field}")
     return {
@@ -1194,6 +1259,11 @@ def validate_live_pointer(
     ]
     if len(candidates) != 1:
         _fail("B01_REFERENCE_INTEGRITY_FAILED", "pointer candidate")
+    _validate_pointer_root_candidate(
+        candidates[0],
+        author_workspace_logical_key=pointer["author_workspace_logical_key"],
+        code="B01_POINTER_SCOPE_MISMATCH",
+    )
     candidate_payload = candidates[0]["payload"]
     if (
         candidate_payload["chapter_revision_ref"] != pointer["chapter_revision_ref"]
@@ -1227,6 +1297,7 @@ class CandidateVersionStore:
         state: dict[str, Any],
         record: dict[str, Any],
         *,
+        author_workspace_logical_key: str,
         reference_records: list[dict[str, Any]],
     ) -> dict[str, Any]:
         validate_candidate_version(
@@ -1234,10 +1305,17 @@ class CandidateVersionStore:
             reference_records=reference_records,
         )
         payload_hash = record["payload"]["version_payload_hash"]
+        expected_record_id = (
+            f"cv:{sha256_value(author_workspace_logical_key)[:12]}:"
+            f"{payload_hash[:32]}"
+        )
+        if record["record_id"] != expected_record_id:
+            _fail("B01_CANDIDATE_VERSION_INVALID", "candidate workspace")
         existing_payload_matches = [
             existing
             for existing in state["records"].values()
             if existing["record_type"] == "M3_CANDIDATE_VERSION"
+            and existing["record_id"] == expected_record_id
             and existing["payload"]["version_payload_hash"] == payload_hash
         ]
         for existing in existing_payload_matches:
@@ -1436,6 +1514,7 @@ class B01Service:
         candidate_ref = CandidateVersionStore.stage_root(
             staged,
             candidate_record,
+            author_workspace_logical_key=author_workspace_logical_key,
             reference_records=reference_records,
         )
         prior_operation = state["operations"].get(operation_id)

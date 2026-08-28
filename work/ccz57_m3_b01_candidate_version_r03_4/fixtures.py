@@ -356,7 +356,8 @@ def n07_parent_child_read_only_diff(root: Path) -> dict[str, Any]:
     return {**result, "version_diff": view, "version_diff_hash": sha256_value(view)}
 
 
-def n08_restart_readback(root: Path) -> dict[str, Any]:
+def n08_prepare_committed_crash(root: Path) -> dict[str, Any]:
+    """Commit the transaction and stop before readback in process phase one."""
     request = base_request()
     request["crash_point"] = "after_commit_before_readback"
     try:
@@ -366,11 +367,50 @@ def n08_restart_readback(root: Path) -> dict[str, Any]:
             raise
     else:
         raise AssertionError("restart fixture did not simulate a crash")
+    committed = FixtureStore(root).read()
+    verify_state(committed, reference_records=reference_records())
+    if state_counts(root / "state.json") != (3, 1, 1):
+        raise AssertionError("committed transaction was incomplete before restart")
+    return {
+        "result": deepcopy(
+            committed["operations"]["fixture-operation-001"]["result"]
+        ),
+        "state_file_hash": state_file_hash(root / "state.json"),
+    }
+
+
+def n08_restart_readback(root: Path) -> dict[str, Any]:
+    """Reopen and replay phase-one state in a separately launched process."""
+    before_hash = state_file_hash(root / "state.json")
+    if before_hash is None:
+        raise AssertionError("N08 requires committed state from a prior process")
     reopened = FixtureStore(root).read()
     verify_state(reopened, reference_records=reference_records())
     if state_counts(root / "state.json") != (3, 1, 1):
         raise AssertionError("committed transaction was incomplete after restart")
-    return deepcopy(reopened["operations"]["fixture-operation-001"]["result"])
+    original_result = deepcopy(
+        reopened["operations"]["fixture-operation-001"]["result"]
+    )
+    replay_result = B01Service(FixtureStore(root)).initialize_root_baseline(
+        **base_request()
+    )
+    if replay_result != original_result:
+        raise AssertionError("restart replay did not return the original result")
+    if state_counts(root / "state.json") != (3, 1, 1):
+        raise AssertionError("restart replay repeated initialization")
+    after_hash = state_file_hash(root / "state.json")
+    if after_hash != before_hash:
+        raise AssertionError("restart replay changed committed state bytes")
+    replayed = FixtureStore(root).read()
+    verify_state(replayed, reference_records=reference_records())
+    live_pointer = next(iter(replayed["pointers"].values()))
+    if live_pointer["generation"] != 1:
+        raise AssertionError("restart replay advanced pointer generation")
+    return {
+        "result": replay_result,
+        "state_file_hash": after_hash,
+        "generation": live_pointer["generation"],
+    }
 
 
 NORMAL_SCENARIOS: dict[str, Callable[[Path], dict[str, Any]]] = {
@@ -611,7 +651,10 @@ def f15_child_creation_out_of_scope(root: Path) -> tuple[str, ...]:
             root,
             "B01_CHILD_CREATION_OUT_OF_SCOPE",
             lambda: CandidateVersionStore.stage_root(
-                FixtureStore.empty_state(), child, reference_records=reference_records()
+                FixtureStore.empty_state(),
+                child,
+                author_workspace_logical_key="fixture-author-workspace",
+                reference_records=reference_records(),
             ),
         ),
     )
@@ -725,6 +768,8 @@ FAILURE_SCENARIOS: dict[str, Callable[[Path], tuple[str, ...]]] = {
 
 
 def run_normal_scenario(name: str, root: Path) -> dict[str, Any]:
+    if name == "N08_RESTART_READBACK":
+        raise AssertionError("N08 must run through the two-process self-check harness")
     return NORMAL_SCENARIOS[name](root)
 
 

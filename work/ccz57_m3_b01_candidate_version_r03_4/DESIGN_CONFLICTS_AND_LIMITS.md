@@ -6,6 +6,8 @@
 
 A 阶段已经有 `RawAttemptReceipt` 机械外壳，但它不是 R03.4 的九字段 `RecordRef`。B-01 不直接复用 A 的 Python dataclass，也不偷偷改 A 的文件；它只接受 `A_RAW_ATTEMPT_RECEIPT` 适配原件生成的 `M3_RECORD_REF`。每条引用都必须找到唯一原件，并重新核对类型、版本、hash、access 和 source module。
 
+真实 `A_INTERFACE_ADMISSION_RECEIPT` 没有单独的 `merged` 字段，不能为了贴合同文字而改写这份不可变原件。B-01 锁定原件 ID `a_admission_pr186_019df751_20260828`、record hash `91257566…65af` 和生成时间，并同时要求 `admission_mode=MERGED_CURRENT_MAIN_EXACT_HEAD`、精确 merge commit、head 相等、main 可达和回读通过。这组机械条件共同承接合同里的 `merged == true`，替代记录即使声明相同也不能冒充原件。
+
 ### root baseline 和后续 child 不能混在一张票
 
 B-01 只能发布 `record_version=1`、父引用为空、commit intent 为空的根候选版本。测试需要看父子差异时，只在内存里合成 child；它不会进入 fixture store。真实 child 创建和 pointer 推进仍归 B-06。
@@ -23,6 +25,8 @@ live pointer 不是不可变记录，但必须保存完整 scope。pointer snaps
 ### 0 API 不能靠手写零值
 
 静态检查会逐文件记录 SHA、禁止 import／call、凭证路径、真实小说路径和后续票 writer 命中。运行时另装 audit hook，任何 socket、DNS、fork、exec 或 subprocess 事件都会立即让机械检查失败。离线报告中的 0 是这两套检查算出来的结果。
+
+N08 的“新进程重开”由离线测试工具启动两个独立本地 Python 进程：第一个只执行提交后中断，第二个只执行重开、全量引用校验和同 operation 幂等重放。测试工具进程数单列为 `harness_process_calls=2`；B-01 产品／fixture 路径仍不得拥有启动子进程的入口。
 
 ## 小说辅助产品目前还缺什么
 
