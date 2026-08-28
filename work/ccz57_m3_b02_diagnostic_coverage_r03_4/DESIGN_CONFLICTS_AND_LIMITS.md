@@ -30,21 +30,23 @@ B-02 校验上游 Attempt 引用的完整九字段，并核对它是 CandidateVe
 
 开放问题投影不能假设输入一定经过本目录 writer。它会重新核对 Diagnostic、RecordRef、sequence、时间和终态；第一张生命周期早于 Diagnostic 创建时间、重复 Diagnostic 输入或终态后仍有事件时，整次投影失败，不返回半结果。
 
-## 8. writer 准入能力令牌
+## 8. writer 准入提交闭包
 
-`B02Service` 只有在 GLOBAL-A 和 B-01 两份原始回执全部通过后，才给 store 与四个 writer 共享同一个仅进程内有效的能力令牌。writer 持久化入口和 store 的 `stage` 会分别验一次。直接构造对象不会写盘；直接调用任意 writer 且拿不到令牌时，必须在创建目录前失败。
+GLOBAL-A 和 B-01 两份原始回执全部通过后，准入工厂才返回两个私有闭包：一个从 sealed canonical bytes 重建只读 context，另一个负责唯一持久提交。store 不保存可替换 capability，不提供 unlock 或 `stage`；模块也没有可导入的裸 token。直接构造对象不会写盘，直接调用任意 writer 且拿不到已准入 service 持有的提交闭包时，必须在创建目录前失败。
+
+对外的 `service.context` 每次只返回 detached copy。writer 每次构建和验证都重新读取私有 sealed bytes，并复核 canonical hash，所以调用方修改外部副本不能扩大 `origin_attempt_refs`，也不能漂移 CandidateVersion、LineageLocator 或 revision。
 
 ## 9. 输出外壳与目录映射
 
 上游对象仍使用通用不可变外壳校验，B-02 自己持久化的四种对象使用更窄的输出校验：record type 必须属于固定四种、版本必须为 1、来源必须是 M3、权限只能是两种合同允许值、留存级别必须是核心不可变审计。路径不拼接任意传入类型，而是查固定目录表，并再次核对解析后的路径仍在 records 根目录内。
 
-## 10. 事务失败清理
+## 10. 事务发布顺序
 
-每次写入只清理由本次调用创建的 pending、最终文件和空目录，不碰已有内容。模拟的 mkdir 后失败、pending 写入后失败、replace 后回读失败都要保证事务前后目录和文件快照一致。启动读取若发现旧 `.pending`，直接失败关闭，不能把它当作正常记录跳过。
+每次写入先在不可见的 `.pending` 路径完成 canonical bytes、JSON、输出外壳和回读一致性校验。所有可能失败的检查结束后，才用一次 `os.replace` 发布正式文件；发布后不再设置会让本次事务改判失败的检查点。mkdir、pending 写入、私有候选回读或 replace syscall 失败时，只清理由本次调用创建的 pending 和空目录，正式 records 路径从未出现新文件。启动读取若发现旧 `.pending`，直接失败关闭，不能把它当作正常记录跳过。
 
 ## 11. 报告发布顺序
 
-self-check 先在内存里构造拟发布报告，并用这份候选 bytes 复核 MANIFEST 中的报告 hash；目录里出现 `__pycache__`、`.pytest_cache`、`.pyc`、多余文件或缺失成员都失败。只有机械检查和 MANIFEST 同时通过，才原子替换正式报告。失败不会覆盖原有报告。
+self-check 先在内存里构造拟发布报告，并用这份候选 bytes 复核 MANIFEST 中的报告 hash；目录里出现 `__pycache__`、`.pytest_cache`、`.pyc`、多余文件或缺失成员都失败。只有机械检查和 MANIFEST 同时通过，才原子替换正式报告。失败不会覆盖原有报告。`--emit-report-candidate` 只把候选 bytes 打到标准输出，不再接受路径，也不能给运行审计追加任意白名单根目录。
 
 ## 12. 产品能力限制
 

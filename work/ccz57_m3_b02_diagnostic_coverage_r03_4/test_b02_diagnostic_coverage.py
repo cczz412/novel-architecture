@@ -9,6 +9,7 @@ from typing import Any, Callable
 
 import pytest
 
+import b02_store as store_module
 import fixtures as fx
 from b02_contracts import (
     B02ContractError,
@@ -331,22 +332,22 @@ def test_f01_global_a_missing_has_zero_visible_write(tmp_path: Path) -> None:
     )
     direct_calls = (
         lambda store: DiagnosticRecorderIdentityRegistry.register(
-            store, identity, admission_capability=None
+            identity, commit_record=None
         ),
         lambda store: DiagnosticRecorder.record(
             store,
             diagnostic,
             context=build_service.context,
-            admission_capability=None,
+            commit_record=None,
         ),
         lambda store: DiagnosticLifecycleWriter.append(
-            store, lifecycle, admission_capability=None
+            store, lifecycle, commit_record=None
         ),
         lambda store: CoverageRecorder.record(
             store,
             coverage,
             context=build_service.context,
-            admission_capability=None,
+            commit_record=None,
         ),
     )
     for index, direct_call in enumerate(direct_calls, start=1):
@@ -357,6 +358,14 @@ def test_f01_global_a_missing_has_zero_visible_write(tmp_path: Path) -> None:
             lambda direct_call=direct_call, store=locked_store: direct_call(store),
             {"B02_ADMISSION_CAPABILITY_REQUIRED"},
         )
+
+    assert not hasattr(store_module, "_STORE_ADMISSION_TOKEN")
+    assert not hasattr(build_store, "stage")
+    assert not hasattr(build_store, "_unlock_after_admission")
+    assert not hasattr(build_store, "_admission_capability")
+    assert not hasattr(build_service, "_writer_capability")
+    with pytest.raises(AttributeError):
+        build_store._admission_capability = object()  # type: ignore[attr-defined]
 
 
 def test_f02_global_a_drift_has_zero_visible_write(tmp_path: Path) -> None:
@@ -482,6 +491,25 @@ def test_f07_evidence_out_of_scope_has_zero_visible_write(tmp_path: Path) -> Non
         store.root,
         lambda: service.add_diagnostic(**kwargs),
         {"B02_EVIDENCE_OUT_OF_SCOPE"},
+    )
+
+    sealed_before = canonical_bytes(service.context)
+    exposed = service.context
+    exposed["origin_attempt_refs"].append(invalid_evidence)
+    exposed["candidate_version"]["record_hash"] = "e" * 64
+    exposed["lineage_locators"][0]["lineage_locator_hash"] = "d" * 64
+    exposed["candidate_version"]["payload"]["chapter_revision_ref"][
+        "revision_no"
+    ] = 999
+    assert canonical_bytes(service.context) == sealed_before
+    with pytest.raises(AttributeError):
+        service.context = exposed  # type: ignore[misc]
+
+    forged_kwargs = fx.diagnostic_kwargs("F-07-CONTEXT", exposed, identity_ref)
+    _assert_failure_without_visible_write(
+        store.root,
+        lambda: service.add_diagnostic(**forged_kwargs),
+        {"B02_EVIDENCE_OUT_OF_SCOPE", "B02_LINEAGE_LOCATOR_INVALID"},
     )
 
 
@@ -676,7 +704,7 @@ def test_f14_revision_or_segment_drift_has_zero_visible_write(tmp_path: Path) ->
             store,
             diagnostic,
             context=service.context,
-            admission_capability=service._writer_capability,
+            commit_record=lambda _: pytest.fail("invalid Diagnostic reached commit"),
         ),
         {"B02_SCOPE_MISMATCH"},
     )
@@ -696,7 +724,7 @@ def test_f14_revision_or_segment_drift_has_zero_visible_write(tmp_path: Path) ->
             coverage_store,
             coverage,
             context=coverage_service.context,
-            admission_capability=coverage_service._writer_capability,
+            commit_record=lambda _: pytest.fail("invalid Coverage reached commit"),
         ),
         {"B02_SCOPE_MISMATCH"},
     )
@@ -716,7 +744,7 @@ def test_f15_invalid_coverage_enum_has_zero_visible_write(tmp_path: Path) -> Non
             store,
             invalid,
             context=service.context,
-            admission_capability=service._writer_capability,
+            commit_record=lambda _: pytest.fail("invalid Coverage reached commit"),
         ),
         {"B02_COVERAGE_MATCH_INVALID"},
     )
@@ -765,7 +793,11 @@ def test_f17_write_set_escape_has_zero_visible_write(tmp_path: Path) -> None:
             {"B02_OUTPUT_ENVELOPE_INVALID"},
         )
 
-    for failure_point in ("after_mkdir", "after_pending_write", "after_replace"):
+    for failure_point in (
+        "after_mkdir",
+        "after_pending_write",
+        "after_candidate_readback",
+    ):
         failure_root = tmp_path / f"F-17-{failure_point}"
         failing_store = FixtureStore(failure_root, failure_point=failure_point)
         failing_service = B02Service(
@@ -779,6 +811,30 @@ def test_f17_write_set_escape_has_zero_visible_write(tmp_path: Path) -> None:
             ),
             {"B02_SIMULATED_TRANSACTION_FAILURE"},
         )
+        assert "immutable_record_atomic_write" not in failing_store.events
+
+    replace_root = tmp_path / "F-17-replace-syscall"
+    replace_store = FixtureStore(replace_root)
+    replace_service = B02Service(replace_store, **fx.exact_upstream_fixture())
+
+    def fail_replace(_source: Path, _destination: Path) -> None:
+        raise OSError("simulated replace syscall failure")
+
+    original_replace = store_module.os.replace
+    store_module.os.replace = fail_replace
+    try:
+        _assert_failure_without_visible_write(
+            replace_root,
+            lambda: replace_service.register_identity(
+                writer_version="b02-fixture-v1",
+                created_at="2026-08-28T12:01:00Z",
+            ),
+            {"B02_TRANSACTION_WRITE_FAILED"},
+        )
+    finally:
+        store_module.os.replace = original_replace
+    assert "private_candidate_readback_validated" in replace_store.events
+    assert "immutable_record_atomic_write" not in replace_store.events
 
     pending_root = tmp_path / "F-17-preexisting-pending"
     pending_store = FixtureStore(pending_root)
@@ -790,6 +846,13 @@ def test_f17_write_set_escape_has_zero_visible_write(tmp_path: Path) -> None:
         pending_store.read_records,
         {"B02_TRANSACTION_PENDING_FOUND"},
     )
+
+    self_check_source = (Path(__file__).resolve().parent / "self_check.py").read_text(
+        encoding="utf-8"
+    )
+    assert "additional_write_roots" not in self_check_source
+    assert "candidate_path" not in self_check_source
+    assert 'action="store_true"' in self_check_source
 
 
 def test_f18_runtime_paths_are_guarded_with_zero_visible_write(

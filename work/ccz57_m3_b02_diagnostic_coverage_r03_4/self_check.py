@@ -313,7 +313,7 @@ def static_audit() -> dict[str, Any]:
 class _WriterVisitor(ast.NodeVisitor):
     def __init__(self) -> None:
         self.current_class: str | None = None
-        self.stage_call_classes: list[str | None] = []
+        self.commit_call_classes: list[str | None] = []
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         previous = self.current_class
@@ -323,12 +323,10 @@ class _WriterVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         if (
-            isinstance(node.func, ast.Attribute)
-            and isinstance(node.func.value, ast.Name)
-            and node.func.value.id == "store"
-            and node.func.attr == "stage"
+            isinstance(node.func, ast.Name)
+            and node.func.id == "commit_record"
         ):
-            self.stage_call_classes.append(self.current_class)
+            self.commit_call_classes.append(self.current_class)
         self.generic_visit(node)
 
 
@@ -337,7 +335,7 @@ def writer_audit() -> dict[str, Any]:
     visitor = _WriterVisitor()
     visitor.visit(tree)
     actual = sorted(
-        item for item in set(visitor.stage_call_classes) if item is not None
+        item for item in set(visitor.commit_call_classes) if item is not None
     )
     expected = sorted(set(WRITER_MAP.values()))
     projection_source = (ROOT / "open_issue_projection.py").read_text(
@@ -555,14 +553,12 @@ def verify_manifest(*, report_candidate_bytes: bytes) -> dict[str, Any]:
     return {"checked": True, "passed": True, "members": len(entries)}
 
 
-def build_report(*, additional_write_roots: list[Path] | None = None) -> dict[str, Any]:
+def build_report() -> dict[str, Any]:
     static_result = static_audit()
     writer_result = writer_audit()
     with tempfile.TemporaryDirectory(prefix="ccz57-b02-self-check-") as temporary:
         temporary_root = Path(temporary)
-        guard = RuntimeAuditGuard(
-            [ROOT, temporary_root, *(additional_write_roots or [])]
-        )
+        guard = RuntimeAuditGuard([ROOT, temporary_root])
         guard.install()
         normal_results, failure_results = run_acceptance(temporary_root)
         integrity = reference_integrity(temporary_root)
@@ -692,17 +688,15 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--emit-report-candidate",
-        type=Path,
-        help="write the prospective final report outside the work set",
+        action="store_true",
+        help="print the prospective final report to stdout without publishing it",
     )
     args = parser.parse_args()
-    if args.emit_report_candidate is not None:
-        candidate_path = args.emit_report_candidate.resolve(strict=False)
-        report = build_report(additional_write_roots=[candidate_path.parent])
-        candidate_path.parent.mkdir(parents=True, exist_ok=True)
-        candidate_path.write_bytes(report_bytes(report))
-    else:
-        report = run_self_check()
+    if args.emit_report_candidate:
+        report = build_report()
+        sys.stdout.buffer.write(report_bytes(report))
+        return
+    report = run_self_check()
     print(
         json.dumps(
             {
