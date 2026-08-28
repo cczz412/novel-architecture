@@ -55,9 +55,9 @@ PYTHONDONTWRITEBYTECODE=1 uv run --locked python work/ccz57_m3_b02_diagnostic_co
 - 不生成 Gold，不评分，不证明抽取准确率、作者验证或产品验收；
 - 不写 C3、M4、`f...`、`CE-...` 或 `FACT_CAUSAL_EDGE`；
 - 不启动 B-03～B-12。
-- GLOBAL-A 与 B-01 回执通过后，service 才在私有闭包里得到提交能力；store 不暴露解锁令牌或 `stage`，直接调用 writer 也拿不到可写入口；
+- GLOBAL-A 与 B-01 回执通过后，service 的私有准入方法才创建提交闭包；模块不再暴露可直接取出底层提交闭包的 runtime 工厂，store 也没有解锁令牌或 `stage`；
 - 通过准入的上游 context 会封成私有 canonical bytes；对外读取只返回副本，后续改副本不能扩大 evidence 或漂移 CandidateVersion／LineageLocator；
-- 四种输出只允许固定 record type、版本、来源、访问级别、留存级别和固定目录映射；pending 文件完成 JSON、外壳和 bytes 回读后才做唯一一次原子发布，发布后没有会把事务改判失败的检查点。
+- 四种输出只允许固定 record type、版本、来源、访问级别、留存级别和固定目录映射；提交闭包会用 sealed context 和当前 records 复核完整对象关系，pending 文件也要完成同一套语义、JSON、外壳和 bytes 回读后才做唯一一次原子发布。
 
 当前 M3 能读取固定 CandidateVersion、LineageLocator 和已封装的上游引用，并在离线夹具中输出不可变 Diagnostic／Coverage 原件。小说辅助产品还缺少从作者真实小说运行中生成这些原件、长期保存完整历史、判断当前版本并把真实进度安全传给作者状态模块的能力。这个缺失会卡住作者在产品界面里查看“哪一段仍被卡住、是否部分完成、下一步要做什么”。
 

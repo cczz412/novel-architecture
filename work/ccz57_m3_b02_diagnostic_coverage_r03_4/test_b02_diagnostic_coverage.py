@@ -360,12 +360,26 @@ def test_f01_global_a_missing_has_zero_visible_write(tmp_path: Path) -> None:
         )
 
     assert not hasattr(store_module, "_STORE_ADMISSION_TOKEN")
+    assert not hasattr(store_module, "_admit_runtime")
     assert not hasattr(build_store, "stage")
     assert not hasattr(build_store, "_unlock_after_admission")
     assert not hasattr(build_store, "_admission_capability")
     assert not hasattr(build_service, "_writer_capability")
     with pytest.raises(AttributeError):
         build_store._admission_capability = object()  # type: ignore[attr-defined]
+
+    invalid_direct_commit = deepcopy(diagnostic)
+    invalid_direct_commit["payload"]["writer_identity_ref"]["record_id"] = (
+        "missing-writer-identity"
+    )
+    invalid_direct_commit["payload"]["writer_identity_ref"]["record_hash"] = "f" * 64
+    invalid_direct_commit = fx.reseal_record(invalid_direct_commit)
+    sealed_commit = getattr(build_service, "_B02Service__commit_record")
+    _assert_failure_without_visible_write(
+        build_store.root,
+        lambda: sealed_commit(invalid_direct_commit),
+        {"B02_WRITER_IDENTITY_INVALID"},
+    )
 
 
 def test_f02_global_a_drift_has_zero_visible_write(tmp_path: Path) -> None:

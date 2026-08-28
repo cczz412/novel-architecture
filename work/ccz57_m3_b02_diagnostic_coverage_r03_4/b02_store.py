@@ -123,88 +123,6 @@ class FixtureStore:
             except (FileNotFoundError, OSError):
                 pass
 
-
-
-def _admitted_runtime_factory() -> Callable[..., tuple[Callable[[], dict[str, Any]], Callable[[dict[str, Any]], dict[str, Any]]]]:
-    """Keep the only persistence function inside a receipt-validating closure."""
-
-    def admit(
-        store: FixtureStore,
-        *,
-        admission_bytes: bytes | None,
-        merge_receipt_bytes: bytes | None,
-        reference_records: list[dict[str, Any]],
-        lineage_locators: list[dict[str, Any]],
-    ) -> tuple[Callable[[], dict[str, Any]], Callable[[dict[str, Any]], dict[str, Any]]]:
-        context = validate_upstream_context(
-            admission_bytes=admission_bytes,
-            merge_receipt_bytes=merge_receipt_bytes,
-            reference_records=reference_records,
-            lineage_locators=lineage_locators,
-        )
-        sealed_context_bytes = canonical_bytes(context)
-        sealed_context_hash = hashlib.sha256(sealed_context_bytes).hexdigest()
-
-        def load_context() -> dict[str, Any]:
-            reopened = json.loads(sealed_context_bytes)
-            if hashlib.sha256(canonical_bytes(reopened)).hexdigest() != sealed_context_hash:
-                fail("B02_ADMITTED_CONTEXT_DRIFT")
-            return reopened
-
-        def commit_record(record: dict[str, Any]) -> dict[str, Any]:
-            validate_b02_output_record(record)
-            existing = store.existing(record)
-            if existing is not None:
-                if canonical_bytes(existing) != canonical_bytes(record):
-                    fail("B02_IMMUTABLE_ALREADY_EXISTS", _record_identity(record))
-                return record_ref(existing)
-
-            path = store.path_for(record)
-            temporary = path.with_suffix(".json.pending")
-            record_bytes = canonical_bytes(record)
-            directory_candidates = [store.root, store.records_root, path.parent]
-            created_directories = [
-                directory
-                for directory in directory_candidates
-                if not directory.exists()
-            ]
-            try:
-                path.parent.mkdir(parents=True, exist_ok=True)
-                store._inject_failure("after_mkdir")
-                temporary.write_bytes(record_bytes)
-                store._inject_failure("after_pending_write")
-
-                reopened = json.loads(temporary.read_text(encoding="utf-8"))
-                validate_b02_output_record(reopened)
-                if canonical_bytes(reopened) != record_bytes:
-                    fail(
-                        "B02_TRANSACTION_READBACK_INVALID",
-                        _record_identity(record),
-                    )
-                store.events.append("private_candidate_readback_validated")
-                store._inject_failure("after_candidate_readback")
-
-                os.replace(temporary, path)
-            except B02ContractError:
-                temporary.unlink(missing_ok=True)
-                store._remove_created_empty_directories(created_directories)
-                raise
-            except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
-                temporary.unlink(missing_ok=True)
-                store._remove_created_empty_directories(created_directories)
-                fail("B02_TRANSACTION_WRITE_FAILED", str(error))
-
-            store.events.append("immutable_record_atomic_write")
-            return record_ref(reopened)
-
-        return load_context, commit_record
-
-    return admit
-
-
-_admit_runtime = _admitted_runtime_factory()
-
-
 class DiagnosticRecorderIdentityRegistry:
     """Unique writer for M3_DIAGNOSTIC_RECORDER_IDENTITY."""
 
@@ -523,8 +441,9 @@ class CoverageRecorder:
         return commit_record(record)
 
 
-def validate_store(store: FixtureStore, *, context: dict[str, Any]) -> None:
-    records = store.read_records()
+def _validate_record_collection(
+    records: list[dict[str, Any]], *, context: dict[str, Any]
+) -> None:
     for record in records:
         validate_record(record)
         if record["record_type"] == "M3_DIAGNOSTIC_RECORDER_IDENTITY":
@@ -558,10 +477,101 @@ def validate_store(store: FixtureStore, *, context: dict[str, Any]) -> None:
             )
 
 
+def validate_store(store: FixtureStore, *, context: dict[str, Any]) -> None:
+    _validate_record_collection(store.read_records(), context=context)
+
+
 class B02Service:
     """Gate B-02 before exposing its four fixture writers."""
 
     __slots__ = ("store", "__load_context", "__commit_record")
+
+    @staticmethod
+    def __admit_runtime(
+        store: FixtureStore,
+        *,
+        admission_bytes: bytes | None,
+        merge_receipt_bytes: bytes | None,
+        reference_records: list[dict[str, Any]],
+        lineage_locators: list[dict[str, Any]],
+    ) -> tuple[
+        Callable[[], dict[str, Any]],
+        Callable[[dict[str, Any]], dict[str, Any]],
+    ]:
+        context = validate_upstream_context(
+            admission_bytes=admission_bytes,
+            merge_receipt_bytes=merge_receipt_bytes,
+            reference_records=reference_records,
+            lineage_locators=lineage_locators,
+        )
+        sealed_context_bytes = canonical_bytes(context)
+        sealed_context_hash = hashlib.sha256(sealed_context_bytes).hexdigest()
+
+        def load_context() -> dict[str, Any]:
+            reopened = json.loads(sealed_context_bytes)
+            if hashlib.sha256(canonical_bytes(reopened)).hexdigest() != (
+                sealed_context_hash
+            ):
+                fail("B02_ADMITTED_CONTEXT_DRIFT")
+            return reopened
+
+        def commit_record(record: dict[str, Any]) -> dict[str, Any]:
+            validate_b02_output_record(record)
+            existing = store.existing(record)
+            if existing is not None:
+                if canonical_bytes(existing) != canonical_bytes(record):
+                    fail("B02_IMMUTABLE_ALREADY_EXISTS", _record_identity(record))
+                _validate_record_collection(
+                    store.read_records(), context=load_context()
+                )
+                return record_ref(existing)
+
+            current_records = store.read_records()
+            _validate_record_collection(
+                [*current_records, record], context=load_context()
+            )
+
+            path = store.path_for(record)
+            temporary = path.with_suffix(".json.pending")
+            record_bytes = canonical_bytes(record)
+            directory_candidates = [store.root, store.records_root, path.parent]
+            created_directories = [
+                directory
+                for directory in directory_candidates
+                if not directory.exists()
+            ]
+            try:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                store._inject_failure("after_mkdir")
+                temporary.write_bytes(record_bytes)
+                store._inject_failure("after_pending_write")
+
+                reopened = json.loads(temporary.read_text(encoding="utf-8"))
+                _validate_record_collection(
+                    [*current_records, reopened], context=load_context()
+                )
+                if canonical_bytes(reopened) != record_bytes:
+                    fail(
+                        "B02_TRANSACTION_READBACK_INVALID",
+                        _record_identity(record),
+                    )
+                store.events.append("private_candidate_readback_validated")
+                store._inject_failure("after_candidate_readback")
+
+                os.replace(temporary, path)
+            except B02ContractError:
+                temporary.unlink(missing_ok=True)
+                store._remove_created_empty_directories(created_directories)
+                raise
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+                temporary.unlink(missing_ok=True)
+                store._remove_created_empty_directories(created_directories)
+                fail("B02_TRANSACTION_WRITE_FAILED", str(error))
+
+            store.events.append("immutable_record_atomic_write")
+            return record_ref(reopened)
+
+        return load_context, commit_record
 
     def __init__(
         self,
@@ -573,7 +583,7 @@ class B02Service:
         lineage_locators: list[dict[str, Any]],
     ) -> None:
         self.store = store
-        self.__load_context, self.__commit_record = _admit_runtime(
+        self.__load_context, self.__commit_record = self.__admit_runtime(
             store,
             admission_bytes=admission_bytes,
             merge_receipt_bytes=merge_receipt_bytes,

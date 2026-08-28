@@ -32,7 +32,9 @@ B-02 校验上游 Attempt 引用的完整九字段，并核对它是 CandidateVe
 
 ## 8. writer 准入提交闭包
 
-GLOBAL-A 和 B-01 两份原始回执全部通过后，准入工厂才返回两个私有闭包：一个从 sealed canonical bytes 重建只读 context，另一个负责唯一持久提交。store 不保存可替换 capability，不提供 unlock 或 `stage`；模块也没有可导入的裸 token。直接构造对象不会写盘，直接调用任意 writer 且拿不到已准入 service 持有的提交闭包时，必须在创建目录前失败。
+GLOBAL-A 和 B-01 两份原始回执全部通过后，`B02Service` 的私有准入方法才创建两个闭包：一个从 sealed canonical bytes 重建只读 context，另一个负责唯一持久提交。模块不暴露 raw runtime factory，store 不保存可替换 capability，也不提供 unlock 或 `stage`。直接构造对象不会写盘，直接调用任意 writer 且拿不到已准入 service 持有的提交闭包时，必须在创建目录前失败。
+
+提交闭包不是只看通用外壳。它会把拟提交记录和当前 records 合成一份内存候选集合，再按对象类型、引用、writer identity、lifecycle 流和 sealed context 完整复核；pending 回读后重复同一套检查。即使有人通过 Python 反射拿到闭包，也不能用它绕过四个 writer 的语义约束写入畸形对象。
 
 对外的 `service.context` 每次只返回 detached copy。writer 每次构建和验证都重新读取私有 sealed bytes，并复核 canonical hash，所以调用方修改外部副本不能扩大 `origin_attempt_refs`，也不能漂移 CandidateVersion、LineageLocator 或 revision。
 
