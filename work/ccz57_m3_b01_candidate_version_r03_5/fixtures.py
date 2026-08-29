@@ -336,6 +336,50 @@ def _rehash_record(record: dict[str, Any]) -> None:
     )
 
 
+def _rehash_root_candidate(
+    record: dict[str, Any],
+    *,
+    author_workspace_logical_key: str,
+) -> None:
+    payload = record["payload"]
+    for index, item in enumerate(payload["items"]):
+        binding = item["evidence_binding"]
+        binding["binding_hash"] = sha256_value(
+            {key: value for key, value in binding.items() if key != "binding_hash"}
+        )
+        lineage_seed = {
+            "chapter_revision_ref": payload["chapter_revision_ref"],
+            "input_binding_hash": payload["extraction_input_binding"][
+                "input_binding_hash"
+            ],
+            "seg": payload["seg"],
+            "ordinal": index,
+            "fact": item["fact"],
+            "status": item["status"],
+            "evidence": item["evidence"],
+            "evidence_binding_hash": binding["binding_hash"],
+        }
+        if "speaker" in item:
+            lineage_seed["speaker_if_present"] = item["speaker"]
+        item["lineage_id"] = f"lin_{sha256_value(lineage_seed)}"
+        item["item_hash"] = sha256_value(
+            {key: value for key, value in item.items() if key != "item_hash"}
+        )
+        payload["lineage_index"][index] = {
+            "lineage_id": item["lineage_id"],
+            "json_pointer": f"/items/{index}",
+            "item_hash": item["item_hash"],
+        }
+    payload["version_payload_hash"] = sha256_value(
+        {key: value for key, value in payload.items() if key != "version_payload_hash"}
+    )
+    record["record_id"] = (
+        f"cv:{sha256_value(author_workspace_logical_key)[:12]}:"
+        f"{payload['version_payload_hash'][:32]}"
+    )
+    _rehash_record(record)
+
+
 def directory_snapshot(root: Path) -> dict[str, str]:
     if not root.exists():
         return {}
@@ -544,6 +588,68 @@ def n10_material_generation_changes_identity(root: Path) -> dict[str, Any]:
     }
 
 
+def n11_decomposed_unicode_evidence_round_trip(root: Path) -> dict[str, Any]:
+    evidence = "甲看见e\u0301。"
+    evidence_bytes = evidence.encode("utf-8")
+    revision = {
+        "chapter_id": "synthetic-chapter-unicode-001",
+        "revision_no": 1,
+        "revision_text_sha256": hashlib.sha256(evidence_bytes).hexdigest(),
+    }
+    generation = source_generation_record(
+        generation_hex="e",
+        revision_ref=revision,
+    )
+    references = reference_records(source_generation=generation)
+    result = _initialize(
+        root,
+        reference_records=references,
+        chapter_revision_ref=revision,
+        accepted_source_generation_ref=record_ref(generation),
+        writing_material_refs=writing_material_bindings(source_generation=generation),
+        segment_inputs=[
+            {
+                "seg": 1,
+                "start_byte": 0,
+                "end_byte": len(evidence_bytes),
+                "responsibility_text": evidence,
+            }
+        ],
+        raw_items=[
+            {
+                "fact": "甲看见了一个组合字符。",
+                "status": "已发生",
+                "evidence": evidence,
+            }
+        ],
+        operation_id="fixture-operation-unicode-001",
+    )
+    candidate = _record_by_type(root, "M3_CANDIDATE_VERSION")
+    stored_item = candidate["payload"]["items"][0]
+    if (
+        stored_item["evidence"] != evidence
+        or stored_item["evidence"].encode("utf-8") != evidence_bytes
+        or stored_item["evidence_binding"]["evidence_sha256"]
+        != hashlib.sha256(evidence_bytes).hexdigest()
+        or stored_item["evidence_binding"]["match_locations"]
+        != [{"seg": 1, "start_byte": 0, "end_byte": len(evidence_bytes)}]
+    ):
+        raise AssertionError("source-bound evidence bytes changed")
+    reopened = FixtureStore(root).read()
+    verify_state(reopened, reference_records=references)
+    reopened_candidate = next(
+        record
+        for record in reopened["records"].values()
+        if record["record_type"] == "M3_CANDIDATE_VERSION"
+    )
+    if (
+        reopened_candidate["payload"]["items"][0]["evidence"].encode("utf-8")
+        != evidence_bytes
+    ):
+        raise AssertionError("reopened evidence bytes changed")
+    return result
+
+
 def n08_prepare_committed_crash(root: Path) -> dict[str, Any]:
     """Commit the transaction and stop before readback in process phase one."""
     request = base_request()
@@ -610,6 +716,7 @@ NORMAL_SCENARIOS: dict[str, Callable[[Path], dict[str, Any]]] = {
     "N08_RESTART_READBACK": n08_restart_readback,
     "N09_LEGACY_READ_ONLY": n09_legacy_read_only,
     "N10_MATERIAL_GENERATION_CHANGES_IDENTITY": n10_material_generation_changes_identity,
+    "N11_DECOMPOSED_UNICODE_EVIDENCE_ROUND_TRIP": n11_decomposed_unicode_evidence_round_trip,
 }
 
 
@@ -879,6 +986,7 @@ def f15_child_creation_out_of_scope(root: Path) -> tuple[str, ...]:
                 child,
                 author_workspace_logical_key="fixture-author-workspace",
                 reference_records=candidate_refs,
+                segment_inputs=segment_inputs(),
             ),
         ),
     )
@@ -1111,6 +1219,34 @@ def f26_legacy_writer_rejected(root: Path) -> tuple[str, ...]:
                 legacy,
                 author_workspace_logical_key="fixture-workspace-001",
                 reference_records=_valid_candidate_refs(),
+                segment_inputs=segment_inputs(),
+            ),
+        ),
+    )
+
+
+def f27_rehashed_wrong_evidence_location_rejected(root: Path) -> tuple[str, ...]:
+    candidate, candidate_refs = _valid_candidate_parts()
+    first_location = candidate["payload"]["items"][0]["evidence_binding"][
+        "match_locations"
+    ][0]
+    first_location["start_byte"] += 1
+    first_location["end_byte"] += 1
+    _rehash_root_candidate(
+        candidate,
+        author_workspace_logical_key="fixture-workspace-001",
+    )
+    validate_candidate_version(candidate, reference_records=candidate_refs)
+    return (
+        _capture_unchanged(
+            root,
+            "B01_EVIDENCE_BINDING_INVALID",
+            lambda: CandidateVersionStore.stage_root(
+                FixtureStore.empty_state(),
+                candidate,
+                author_workspace_logical_key="fixture-workspace-001",
+                reference_records=candidate_refs,
+                segment_inputs=segment_inputs(),
             ),
         ),
     )
@@ -1143,6 +1279,7 @@ FAILURE_SCENARIOS: dict[str, Callable[[Path], tuple[str, ...]]] = {
     "F24_EVIDENCE_SENTENCE_LIMIT": f24_evidence_sentence_limit,
     "F25_CALLER_LOCATION_REJECTED": f25_caller_location_rejected,
     "F26_LEGACY_WRITER_REJECTED": f26_legacy_writer_rejected,
+    "F27_REHASHED_WRONG_EVIDENCE_LOCATION_REJECTED": f27_rehashed_wrong_evidence_location_rejected,
 }
 
 

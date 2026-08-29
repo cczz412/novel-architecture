@@ -33,7 +33,7 @@
 | --- | --- |
 | `b01_contract.py` | 不可变外壳、输入绑定、UTF-8 byte 段索引、三种持久 writer、两个 Locator、版本差异和原子 fixture store |
 | `OBJECT_SHAPES.json` | 参考输入、三份完整不可变对象、新旧候选、Locator、pointer、VersionDiff 和 writer 的机器样例 |
-| `fixtures.py` | 10 个正常夹具族和 26 个失败夹具族，只含合成内容 |
+| `fixtures.py` | 11 个正常夹具族和 27 个失败夹具族，只含合成内容 |
 | `test_b01_contract.py` | 定向测试、幂等、旧版只读、失败前 0 写入和重启回放断言 |
 | `self_check.py` | 离线重放、引用与哈希检查、固定向量、writer 静态检查、运行期 audit hook 和报告生成 |
 | `OFFLINE_REPLAY_REPORT.json` | 当前机械复验结果，不承载语义验收 |

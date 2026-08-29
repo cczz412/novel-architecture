@@ -146,7 +146,10 @@ def _fail(code: str, detail: str = "") -> None:
     raise B01ContractError(code, detail)
 
 
-def _normalize(value: Any) -> Any:
+_SOURCE_BOUND_STRING_KEYS = {"evidence"}
+
+
+def _normalize(value: Any, *, preserve_string_value: bool = False) -> Any:
     if value is None or isinstance(value, bool):
         return value
     if isinstance(value, int):
@@ -154,9 +157,12 @@ def _normalize(value: Any) -> Any:
     if isinstance(value, float):
         _fail("B01_CANONICAL_VALUE_INVALID", "floating-point values are forbidden")
     if isinstance(value, str):
-        return unicodedata.normalize("NFC", value)
+        return value if preserve_string_value else unicodedata.normalize("NFC", value)
     if isinstance(value, list):
-        return [_normalize(item) for item in value]
+        return [
+            _normalize(item, preserve_string_value=preserve_string_value)
+            for item in value
+        ]
     if isinstance(value, dict):
         normalized: dict[str, Any] = {}
         for key, item in value.items():
@@ -165,7 +171,12 @@ def _normalize(value: Any) -> Any:
             normalized_key = unicodedata.normalize("NFC", key)
             if normalized_key in normalized:
                 _fail("B01_CANONICAL_DUPLICATE_KEY", normalized_key)
-            normalized[normalized_key] = _normalize(item)
+            normalized[normalized_key] = _normalize(
+                item,
+                preserve_string_value=(
+                    preserve_string_value or normalized_key in _SOURCE_BOUND_STRING_KEYS
+                ),
+            )
         return {
             key: normalized[key]
             for key in sorted(normalized, key=lambda item: item.encode("utf-8"))
@@ -892,26 +903,13 @@ def _stored_item(
     count = sentence_count(evidence)
     if count not in {1, 2}:
         _fail("B01_EVIDENCE_SENTENCE_LIMIT", str(count))
-    full_chapter = b"".join(
-        item["responsibility_text"].encode("utf-8") for item in segment_inputs
-    )
     evidence_bytes = evidence.encode("utf-8")
-    locations: list[dict[str, int]] = []
-    offset = 0
-    while offset <= len(full_chapter) - len(evidence_bytes):
-        start = full_chapter.find(evidence_bytes, offset)
-        if start < 0:
-            break
-        end = start + len(evidence_bytes)
-        for segment in segment_index_record["payload"]["segments"]:
-            if (
-                segment["seg"] == seg
-                and segment["start_byte"] <= start
-                and end <= segment["end_byte"]
-            ):
-                locations.append({"seg": seg, "start_byte": start, "end_byte": end})
-                break
-        offset = start + 1
+    locations = _expected_evidence_locations(
+        evidence,
+        seg=seg,
+        segment_index_record=segment_index_record,
+        segment_inputs=segment_inputs,
+    )
     if not locations:
         _fail("B01_EVIDENCE_NOT_IN_EXACT_CHAPTER")
     binding_without_hash = {
@@ -951,6 +949,94 @@ def _stored_item(
     item_preimage["evidence_binding"] = evidence_binding
     item["item_hash"] = sha256_value(item_preimage)
     return item
+
+
+def _exact_segment_source_bytes(
+    segment_index_record: dict[str, Any],
+    segment_inputs: list[dict[str, Any]],
+) -> bytes:
+    """Rebuild the exact chapter bytes and bind them to the persisted index."""
+    validate_segment_index_snapshot(segment_index_record)
+    indexed_segments = segment_index_record["payload"]["segments"]
+    if len(segment_inputs) != len(indexed_segments):
+        _fail("B01_SEGMENT_SOURCE_MISMATCH", "segment count")
+    chunks: list[bytes] = []
+    for expected_seg, (source, indexed) in enumerate(
+        zip(segment_inputs, indexed_segments), start=1
+    ):
+        if set(source) not in (
+            {"seg", "start_byte", "end_byte", "responsibility_text"},
+            {
+                "seg",
+                "start_byte",
+                "end_byte",
+                "responsibility_text",
+                "responsibility_text_sha256",
+            },
+        ):
+            _fail("B01_SEGMENT_INDEX_INVALID", "segment input fields")
+        text = source.get("responsibility_text")
+        if not isinstance(text, str):
+            _fail("B01_SEGMENT_INDEX_INVALID", "responsibility text")
+        text_bytes = text.encode("utf-8")
+        expected_hash = hashlib.sha256(text_bytes).hexdigest()
+        expected_indexed = {
+            "seg": expected_seg,
+            "start_byte": source.get("start_byte"),
+            "end_byte": source.get("end_byte"),
+            "responsibility_text_sha256": expected_hash,
+        }
+        if (
+            source.get("seg") != expected_seg
+            or not _is_non_bool_int(source.get("start_byte"))
+            or not _is_non_bool_int(source.get("end_byte"))
+            or source["end_byte"] - source["start_byte"] != len(text_bytes)
+            or source.get("responsibility_text_sha256", expected_hash) != expected_hash
+            or indexed != expected_indexed
+        ):
+            _fail("B01_SEGMENT_SOURCE_MISMATCH", "segment bytes")
+        chunks.append(text_bytes)
+    full_chapter = b"".join(chunks)
+    payload = segment_index_record["payload"]
+    if (
+        len(full_chapter) != payload["chapter_length_bytes"]
+        or hashlib.sha256(full_chapter).hexdigest()
+        != payload["chapter_revision_ref"]["revision_text_sha256"]
+    ):
+        _fail("B01_SEGMENT_SOURCE_MISMATCH", "chapter bytes")
+    return full_chapter
+
+
+def _expected_evidence_locations(
+    evidence: str,
+    *,
+    seg: int,
+    segment_index_record: dict[str, Any],
+    segment_inputs: list[dict[str, Any]],
+) -> list[dict[str, int]]:
+    full_chapter = _exact_segment_source_bytes(
+        segment_index_record,
+        segment_inputs,
+    )
+    segments = segment_index_record["payload"]["segments"]
+    if not _is_non_bool_int(seg) or seg < 1 or seg > len(segments):
+        _fail("B01_SEGMENT_INDEX_INVALID", "selected segment")
+    selected_segment = segments[seg - 1]
+    evidence_bytes = evidence.encode("utf-8")
+    locations: list[dict[str, int]] = []
+    offset = 0
+    while offset <= len(full_chapter) - len(evidence_bytes):
+        start = full_chapter.find(evidence_bytes, offset)
+        if start < 0:
+            break
+        end = start + len(evidence_bytes)
+        if (
+            selected_segment["start_byte"] <= start
+            and end <= selected_segment["end_byte"]
+        ):
+            locations.append({"seg": seg, "start_byte": start, "end_byte": end})
+        offset = start + 1
+    return locations
 
 
 def _build_root_candidate_version(
@@ -1102,7 +1188,11 @@ def validate_candidate_version(
         != payload["extraction_input_binding"]["accepted_source_generation_ref"]
     ):
         _fail("B01_INPUT_BINDING_INVALID", "segment source generation")
-    if not _is_non_bool_int(payload["seg"]) or payload["seg"] < 1:
+    if (
+        not _is_non_bool_int(payload["seg"])
+        or payload["seg"] < 1
+        or payload["seg"] > len(segment_record["payload"]["segments"])
+    ):
         _fail("B01_CANDIDATE_VERSION_INVALID", "segment")
     is_child = payload["parent_candidate_version_ref"] is not None
     if is_child and not allow_child:
@@ -2049,11 +2139,30 @@ class CandidateVersionStore:
         *,
         author_workspace_logical_key: str,
         reference_records: list[dict[str, Any]],
+        segment_inputs: list[dict[str, Any]],
     ) -> dict[str, Any]:
         validate_candidate_version(
             record,
             reference_records=reference_records,
         )
+        segment_records = [
+            item
+            for item in reference_records
+            if record_ref(item) == record["payload"]["segment_index_ref"]
+        ]
+        if len(segment_records) != 1:
+            _fail("B01_SEGMENT_INDEX_INVALID", "segment reference")
+        segment_record = segment_records[0]
+        _exact_segment_source_bytes(segment_record, segment_inputs)
+        for item in record["payload"]["items"]:
+            expected_locations = _expected_evidence_locations(
+                item["evidence"],
+                seg=record["payload"]["seg"],
+                segment_index_record=segment_record,
+                segment_inputs=segment_inputs,
+            )
+            if item["evidence_binding"]["match_locations"] != expected_locations:
+                _fail("B01_EVIDENCE_BINDING_INVALID", "exact source locations")
         payload_hash = record["payload"]["version_payload_hash"]
         expected_record_id = (
             f"cv:{sha256_value(author_workspace_logical_key)[:12]}:{payload_hash[:32]}"
@@ -2294,6 +2403,7 @@ class B01Service:
             candidate_record,
             author_workspace_logical_key=author_workspace_logical_key,
             reference_records=[*reference_records, *staged["records"].values()],
+            segment_inputs=segment_inputs,
         )
         pointer_record = CandidatePointerSnapshotWriter.build(
             project_scope_id=project_scope_id,

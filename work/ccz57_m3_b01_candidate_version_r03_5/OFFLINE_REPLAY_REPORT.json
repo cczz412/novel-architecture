@@ -124,9 +124,12 @@
     ],
     "F26_LEGACY_WRITER_REJECTED": [
       "B01_CANDIDATE_VERSION_INVALID"
+    ],
+    "F27_REHASHED_WRONG_EVIDENCE_LOCATION_REJECTED": [
+      "B01_EVIDENCE_BINDING_INVALID"
     ]
   },
-  "fixture_pointer_writes": 10,
+  "fixture_pointer_writes": 11,
   "inherited_fixed_vectors": {
     "empty_version_payload_hash": {
       "actual": "1e60cd9513280b78f7cbf9c4bf54f5f2a932a40bfcc88a0adc990c140ea74823",
@@ -154,7 +157,8 @@
     "N07_PARENT_CHILD_READ_ONLY_DIFF": "PASS",
     "N08_RESTART_READBACK": "PASS",
     "N09_LEGACY_READ_ONLY": "PASS",
-    "N10_MATERIAL_GENERATION_CHANGES_IDENTITY": "PASS"
+    "N10_MATERIAL_GENERATION_CHANGES_IDENTITY": "PASS",
+    "N11_DECOMPOSED_UNICODE_EVIDENCE_ROUND_TRIP": "PASS"
   },
   "object_shapes": {
     "catalog_sha256": "b39b47f3f382fe0610e99a9b280598c09a124b116b4f97ce78e11affbef92104",
@@ -165,18 +169,18 @@
   "product_pointer_writes": 0,
   "real_novel_reads": 0,
   "reference_integrity": {
-    "immutable_record_count": 30,
+    "immutable_record_count": 33,
     "persisted_derived_views": 0,
     "record_hash_failed": 0,
-    "record_hash_passed": 30,
-    "record_ref_count": 110,
+    "record_hash_passed": 33,
+    "record_ref_count": 121,
     "record_ref_failed": 0,
-    "record_ref_passed": 110,
+    "record_ref_passed": 121,
     "reference_cycles": 0,
     "unique_writer_conflicts": 0,
     "unresolved_refs": 0
   },
-  "report_hash": "d71ee75c1dd9a6a67df2435b8b3167bbf683e1879b68aee5d8c7846db5481acf",
+  "report_hash": "f68d2be74f11de4276cf1b42f3560d0693855182fc87b90d093b6b2a502fd027",
   "restart_process_evidence": {
     "distinct_child_processes": true,
     "harness_process_calls": 2,
@@ -214,19 +218,19 @@
   },
   "runtime_event_evidence": {
     "allowed_event_counts": {
-      "open": 91,
-      "os.mkdir": 17,
+      "open": 96,
+      "os.mkdir": 18,
       "os.remove": 2,
-      "os.rename": 13
+      "os.rename": 14
     },
     "forbidden_events": [],
     "real_novel_events": []
   },
   "semantic_pass": null,
   "source_hashes": {
-    "b01_contract.py": "55fc6bbc4e23d5325c6a8449029cd71110cb0d681170e0420042697b28f04535",
-    "fixtures.py": "674b80dd5e28389b8bfdb8dbfb8bc9ae0eb31c58ba4833bc2437f3f4aef201f7",
-    "self_check.py": "841a73fa199a0f8d7b5bccc7ad19ee502376d6fba9dc89437315494e2be757a0",
+    "b01_contract.py": "ace81fdaf969a5eff06d937d5453e315c2950cdf59e48be028373d688ccfb214",
+    "fixtures.py": "a8b95fdecc76a95e06bf2d5be1dcfae8b6f8069b8b6a8605c9457d50ca4272cc",
+    "self_check.py": "15fc86e9b67b1600356dcf1c9095e3c194b53dff818efd21d7d8e75b842f353d",
     "test_b01_contract.py": "b87fe338d2b50ba7766fc0de06cff9c53531450f589798d49f8e6583e8984018"
   },
   "static_audit": {
@@ -239,7 +243,7 @@
         "forbidden_import_hits": 0,
         "real_novel_path_hits": 0,
         "scope_escape_names": [],
-        "sha256": "55fc6bbc4e23d5325c6a8449029cd71110cb0d681170e0420042697b28f04535"
+        "sha256": "ace81fdaf969a5eff06d937d5453e315c2950cdf59e48be028373d688ccfb214"
       },
       {
         "credential_path_hits": 0,
@@ -249,7 +253,7 @@
         "forbidden_import_hits": 0,
         "real_novel_path_hits": 0,
         "scope_escape_names": [],
-        "sha256": "674b80dd5e28389b8bfdb8dbfb8bc9ae0eb31c58ba4833bc2437f3f4aef201f7"
+        "sha256": "a8b95fdecc76a95e06bf2d5be1dcfae8b6f8069b8b6a8605c9457d50ca4272cc"
       }
     ],
     "totals": {

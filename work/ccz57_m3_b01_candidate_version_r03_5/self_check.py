@@ -396,11 +396,21 @@ def reference_integrity(
     unresolved = 0
     persisted_derived_views = 0
     alternate_generation = source_generation_record(generation_hex="d")
+    unicode_source = "甲看见e\u0301。".encode("utf-8")
+    unicode_generation = source_generation_record(
+        generation_hex="e",
+        revision_ref={
+            "chapter_id": "synthetic-chapter-unicode-001",
+            "revision_no": 1,
+            "revision_text_sha256": hashlib.sha256(unicode_source).hexdigest(),
+        },
+    )
     external_by_hash = {
         record["record_hash"]: record
         for record in [
             *reference_records(),
             *reference_records(source_generation=alternate_generation),
+            *reference_records(source_generation=unicode_generation),
         ]
     }
     external = list(external_by_hash.values())
