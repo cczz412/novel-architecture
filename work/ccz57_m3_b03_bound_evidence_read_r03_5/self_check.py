@@ -55,7 +55,7 @@ def main() -> None:
         "writer_count": len(WRITER_MAP) + 1,
         "immutable_record_types": len(OUTPUT_TYPES),
         "projector": PROJECTOR_NAME,
-        "b03_tests_expected": 32,
+        "b03_tests_expected": 40,
         "transaction_store": "sqlite-attached-rollback-journal",
         "plaintext_secure_delete": True,
         "public_store_exposed": False,

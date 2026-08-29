@@ -833,12 +833,39 @@ def validate_lifecycle_record(
     if payload["event"] == "SUPERSEDED":
         if replacement is None or replacement == payload["parent_ref"]:
             fail("B03_LIFECYCLE_REPLACEMENT_INVALID")
-        _resolve_ref(
+        replacement_record = _resolve_ref(
             replacement,
             all_records,
             mapping[record["record_type"]],
             "B03_LIFECYCLE_REPLACEMENT_INVALID",
         )
+        if record["record_type"] == "M3_SOURCE_READ_CONSENT_LIFECYCLE_RECEIPT":
+            binding_fields = (
+                "request_ref",
+                "policy_ref",
+                "purpose",
+                "request_scope_hash",
+                "authorization_mode",
+            )
+        else:
+            binding_fields = (
+                "request_ref",
+                "policy_ref",
+                "purpose",
+                "authorization_mode",
+                "subject_binding_hash",
+                "evidence_binding_hash",
+                "evidence_sha256",
+                "source_revision_ref",
+                "source_generation_ref",
+                "b02_context_hash",
+                "retention_class",
+            )
+        if any(
+            parent["payload"][field] != replacement_record["payload"][field]
+            for field in binding_fields
+        ):
+            fail("B03_LIFECYCLE_REPLACEMENT_INVALID")
     elif replacement is not None:
         fail("B03_LIFECYCLE_REPLACEMENT_INVALID")
 

@@ -11,7 +11,7 @@
   "writer_count": 8,
   "immutable_record_types": 7,
   "projector": "SourceReadAuthorizationStateProjector",
-  "b03_tests_expected": 32,
+  "b03_tests_expected": 40,
   "transaction_store": "sqlite-attached-rollback-journal",
   "plaintext_secure_delete": true,
   "public_store_exposed": false,
@@ -19,11 +19,11 @@
   "files_checked": [
     {
       "path": "b03_contracts.py",
-      "sha256": "b1347585b6d86f520ecae432bb37836890c673b33e42ddbb9155b2344ea46452"
+      "sha256": "c5185f59eb3963082db07c26850256d7795203264aaa2bcf4a007fa37985de6f"
     },
     {
       "path": "b03_store.py",
-      "sha256": "5b1f9ce80adac0430d25556836f0bfee82e783bf6053e0ba5dc0397018c87891"
+      "sha256": "88522a67a4b1eead9d2d66a71a6044feb478c86286868755cf964fc6ad0aab10"
     },
     {
       "path": "fixtures.py",
@@ -39,11 +39,11 @@
     },
     {
       "path": "service.py",
-      "sha256": "096d1742d2d30a95ede89eb9b2e1aaf34368717b5ffb3339ed272d9b518f620c"
+      "sha256": "66ff6c06f74a30a5695656faffc4b5be9a7877db5a7cbac26910cce2c92ee438"
     },
     {
       "path": "test_b03_bound_evidence_read.py",
-      "sha256": "8744961b3d4152ccf54f86daee0d6a524b9d00bc1384f0cfdc3c65518d1880c6"
+      "sha256": "fceca74956e451b2bbb44476f2c338f6efcc8da7b27085b0c27f750aa07d6ed6"
     }
   ]
 }

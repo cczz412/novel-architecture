@@ -417,6 +417,7 @@ class B03Service:
         slice_record: dict[str, Any],
         records: list[dict[str, Any]],
         trusted_times: list[dict[str, Any]],
+        at_publish: bool,
     ) -> None:
         policy = self.__load_policy()
         validate_slice_record(
@@ -424,20 +425,40 @@ class B03Service:
             all_records=[*records, policy],
             context=self.__load_context(),
         )
-        state = self.__project_slice(slice_record, records, trusted_times)
         payload = slice_record["payload"]
+        trusted_matches = [
+            trusted_time
+            for trusted_time in trusted_times
+            if record_ref(trusted_time) == payload["trusted_time_ref"]
+        ]
+        if len(trusted_matches) != 1:
+            fail("B03_SLICE_INTEGRITY_MISMATCH", "trusted time ref")
+        trusted_time = trusted_matches[0]
+        validate_trusted_time_record(trusted_time)
+        if (
+            payload["trusted_evaluation_time"]
+            != trusted_time["payload"]["trusted_evaluation_time"]
+            or slice_record["created_at"] != payload["trusted_evaluation_time"]
+        ):
+            fail("B03_SLICE_INTEGRITY_MISMATCH", "trusted time binding")
+
+        state = self.__project_slice(slice_record, records, trusted_times)
         if (
             state["projected_authorization_state"] != ACTIVE_STATE
             or state["projected_consent_state"] != ACTIVE_STATE
         ):
             fail("B03_SOURCE_READ_NOT_ACTIVE")
-        for key in (
-            "authorization_lifecycle_refs",
-            "consent_lifecycle_refs",
-            "trusted_time_ref",
-        ):
-            if payload[key] != state[key]:
-                fail("B03_SOURCE_READ_NOT_ACTIVE")
+        if at_publish:
+            for key in (
+                "authorization_lifecycle_refs",
+                "consent_lifecycle_refs",
+                "trusted_time_ref",
+                "trusted_evaluation_time",
+                "projected_authorization_state",
+                "projected_consent_state",
+            ):
+                if payload[key] != state[key]:
+                    fail("B03_SLICE_INTEGRITY_MISMATCH", key)
 
     def read(
         self,

@@ -57,7 +57,13 @@ class B03FixtureStore:
             str, Callable[[dict[str, Any], list[dict[str, Any]]], None]
         ],
         slice_validator: Callable[
-            [dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]], None
+            [
+                dict[str, Any],
+                list[dict[str, Any]],
+                list[dict[str, Any]],
+                bool,
+            ],
+            None,
         ],
         retention_planner: Callable[
             [
@@ -445,7 +451,10 @@ class B03FixtureStore:
             if self._tombstone_row(connection, ref["record_hash"]) is not None:
                 fail("B03_RETENTION_ALREADY_FINAL")
             self.__slice_validator(
-                record, self._record_rows(connection), self._trusted_rows(connection)
+                record,
+                self._record_rows(connection),
+                self._trusted_rows(connection),
+                True,
             )
             content = record["payload"]["content"].encode("utf-8")
             if (
@@ -497,6 +506,7 @@ class B03FixtureStore:
                 record,
                 self._record_rows(connection),
                 self._trusted_rows(connection),
+                False,
             )
             content = record["payload"]["content"]
         self.events.append("synthetic_bound_evidence_read")

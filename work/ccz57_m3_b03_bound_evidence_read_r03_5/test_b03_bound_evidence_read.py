@@ -565,6 +565,80 @@ def test_invalid_lifecycle_and_superseded_without_replacement_write_nothing(
     assert instance.snapshot() == before
 
 
+@pytest.mark.parametrize("parent_kind", ["consent", "authorization"])
+def test_superseded_replacement_cannot_cross_request_or_purpose_chain(
+    tmp_path: Path, parent_kind: str
+) -> None:
+    instance = make_service(tmp_path)
+    _, consent_one, authorization_one = admitted_chain(instance)
+    second_input = fixture_product_input()
+    second_input["purpose"] = "OTHER_REVIEW"
+    request_two = instance.request(second_input, created_at="2026-08-29T06:01:03Z")
+    consent_two = instance.consent(
+        request_two,
+        actor="fixture-author",
+        created_at="2026-08-29T06:01:04Z",
+    )
+    authorization_two = instance.authorize(
+        request_two,
+        consent_two,
+        created_at="2026-08-29T06:01:05Z",
+    )
+    parent_ref = consent_one if parent_kind == "consent" else authorization_one
+    replacement_ref = consent_two if parent_kind == "consent" else authorization_two
+    before = instance.snapshot()
+    with pytest.raises(B03ContractError) as caught:
+        instance.lifecycle(
+            parent_ref,
+            event="SUPERSEDED",
+            effective_at="2026-08-29T06:02:00Z",
+            created_at="2026-08-29T06:02:00Z",
+            replacement_ref=replacement_ref,
+        )
+    assert code(caught) == "B03_LIFECYCLE_REPLACEMENT_INVALID"
+    assert instance.snapshot() == before
+
+
+@pytest.mark.parametrize("parent_kind", ["consent", "authorization"])
+def test_superseded_replacement_accepts_a_distinct_record_on_the_same_chain(
+    tmp_path: Path, parent_kind: str
+) -> None:
+    instance = make_service(tmp_path)
+    request = instance.request(
+        fixture_product_input(), created_at="2026-08-29T06:01:00Z"
+    )
+    consent_one = instance.consent(
+        request,
+        actor="fixture-author-one",
+        created_at="2026-08-29T06:01:01Z",
+    )
+    consent_two = instance.consent(
+        request,
+        actor="fixture-author-two",
+        created_at="2026-08-29T06:01:03Z",
+    )
+    authorization_one = instance.authorize(
+        request,
+        consent_one,
+        created_at="2026-08-29T06:01:04Z",
+    )
+    authorization_two = instance.authorize(
+        request,
+        consent_two,
+        created_at="2026-08-29T06:01:05Z",
+    )
+    parent_ref = consent_one if parent_kind == "consent" else authorization_one
+    replacement_ref = consent_two if parent_kind == "consent" else authorization_two
+    lifecycle_ref = instance.lifecycle(
+        parent_ref,
+        event="SUPERSEDED",
+        effective_at="2026-08-29T06:02:00Z",
+        created_at="2026-08-29T06:02:00Z",
+        replacement_ref=replacement_ref,
+    )
+    assert lifecycle_ref["record_type"].endswith("LIFECYCLE_RECEIPT")
+
+
 def test_context_is_not_public_and_policy_or_time_copies_cannot_change_admission(
     tmp_path: Path,
 ) -> None:
@@ -578,6 +652,75 @@ def test_context_is_not_public_and_policy_or_time_copies_cannot_change_admission
     source_slice = instance.read(request, consent, authorization)
     assert instance.read_slice_content(source_slice) == "甲走进北塔。"
     assert instance.trusted_times[-1]["payload"]["monotonic_sequence"] == 2
+
+
+def test_valid_source_slice_remains_readable_when_trusted_time_advances(
+    tmp_path: Path,
+) -> None:
+    instance = make_service(tmp_path)
+    request, consent, authorization = admitted_chain(instance)
+    source_slice = instance.read(request, consent, authorization)
+    instance.advance_trusted_time(trusted_time(3, "2026-08-29T06:03:00Z"))
+    assert instance.read_slice_content(source_slice) == fixture_evidence()
+    assert instance.plaintext_present(source_slice)
+    assert instance.slice_core(source_slice) is not None
+    assert instance.tombstone(source_slice) is None
+    assert instance.state_counts() == {
+        "records": 3,
+        "source_slices": 1,
+        "tombstones": 0,
+    }
+
+
+@pytest.mark.parametrize(
+    "drift",
+    ["trusted_time_ref", "trusted_evaluation_time", "created_at"],
+)
+def test_source_slice_trusted_time_drift_is_rejected_before_paired_write(
+    tmp_path: Path, drift: str
+) -> None:
+    instance = make_service(tmp_path)
+    request_ref, consent_ref, authorization_ref = admitted_chain(instance)
+    store = getattr(instance, "_B03Service__store")
+    capability = getattr(instance, "_B03Service__commit_capability")
+    records = store.records()
+    trusted_times = store.trusted_times()
+
+    def resolve(ref: dict[str, object]) -> dict[str, object]:
+        return next(record for record in records if record_ref(record) == ref)
+
+    valid_slice = RestrictedSourceReader.build_slice(
+        request=resolve(request_ref),
+        consent=resolve(consent_ref),
+        authorization=resolve(authorization_ref),
+        policy=instance.policy,
+        records=records,
+        trusted_time_records=trusted_times,
+        supplied_time_ref=record_ref(current_trusted_time_head(trusted_times)),
+        context=admit_candidate_context(**exact_context()),
+    )
+    forged_payload = deepcopy(valid_slice["payload"])
+    forged_created_at = valid_slice["created_at"]
+    if drift == "trusted_time_ref":
+        forged_payload["trusted_time_ref"] = record_ref(
+            trusted_time(3, "2026-08-29T06:03:00Z")
+        )
+    elif drift == "trusted_evaluation_time":
+        forged_payload["trusted_evaluation_time"] = "2099-01-01T00:00:00Z"
+    else:
+        forged_created_at = "2026-08-29T06:02:01Z"
+    forged_slice = build_output_record(
+        record_type="M3_AUTHORIZED_SOURCE_SLICE",
+        payload=forged_payload,
+        created_at=forged_created_at,
+        retention_class=valid_slice["retention_class"],
+    )
+    before = instance.snapshot()
+    with pytest.raises(B03ContractError) as caught:
+        store.publish_slice(forged_slice, commit_capability=capability)
+    assert code(caught) == "B03_SLICE_INTEGRITY_MISMATCH"
+    assert instance.snapshot() == before
+    assert instance.state_counts()["source_slices"] == 0
 
 
 def test_new_authoritative_time_head_purges_for_old_service_instance(
