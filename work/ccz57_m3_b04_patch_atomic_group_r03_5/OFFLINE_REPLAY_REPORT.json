@@ -1,0 +1,29 @@
+{
+  "candidate_schema_id": "novel-fact-extraction-v2.1",
+  "candidate_version_writes": 0,
+  "catalog_hash": "e3c2c698aa28381e8e55b7afb4c02e515d08730da2849e7b102187f34b293021",
+  "contract_version": "r03.5-candidate",
+  "failure_fixture_count": 22,
+  "fixed_route_count": 5,
+  "formal_fact_writes": 0,
+  "legacy_r03_4_manifest_sha256": "5f9e896429ef7b2497c931d0f450d4f0b9689217f8bf07a189c6236aad7f188b",
+  "legacy_r03_4_mode": "READ_ONLY",
+  "mechanical_pass": true,
+  "network_calls": 0,
+  "normal_fixture_count": 10,
+  "patch_apply_calls": 0,
+  "pr_gate": "SKIPPED_NOT_CI_PASS",
+  "projector_count": 1,
+  "real_model_api_calls": 0,
+  "real_novel_reads": 0,
+  "reference_cycles": 0,
+  "report_kind": "CCZ57_M3_B04_R03_5_OFFLINE_REPLAY",
+  "route_preview_hashes": {
+    "add_only": "e38337add171bb73cd73a59994c4d6324dabdee858b2038406ac22a4df38a83a",
+    "causal_sidecar": "f3c8e66bd973b4ef58498b78523a679932fba3689f359488e0dc6994b2027291",
+    "replace_and_add": "25803fa4885772e1d95f23b73dc15268182a8d84697957fef1d2fcff610d45af",
+    "replace_only": "36efba7eda353df90cc77047fd08983db8835337bd4e92e2fa0a6a12ca0c657c",
+    "replace_with_evidence": "d354311d68e7d9e3ee3c983823ccfa5e70e1068e3dc75d42415660a8f8ecb07b"
+  },
+  "writer_count": 3
+}

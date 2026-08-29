@@ -1,0 +1,23 @@
+# 设计冲突与边界
+
+## 已收正
+
+- 旧 B-04 r03.4 只读保留，不补字段、不重算旧哈希。
+- 新写入统一使用 `r03.5-candidate` 和 `novel-fact-extraction-v2.1`。
+- Patch 从字段级 text 修改改成完整 item 替换／新增。
+- B-02 Coverage provenance 进入 Patch 原件；Diagnostic ref 不再冒充逐字 evidence。
+- B-03 SourceSlice 必须由权威 B-03 当前状态读取器验证仍可读；调用方不能自报或裁剪支持链。它只能重核单条替换正在沿用的旧 evidence，不能识别新 evidence，也不能绕过 Coverage。
+- Diagnostic 的 OPEN 状态从 B-02 当前存储的完整生命周期投影读取，不接受调用方自报的残缺列表。
+- B-02／B-03 都在 B-04 原子发布前的线性化检查点重读；检查点前发生状态变化就保持 0 写入。
+- Patch 组决定和正式事实确认保持两条不同的后续决定链。
+
+## 本票不解决
+
+- 不应用 Patch；
+- 不创建 child CandidateVersion；
+- 不写 B-05 的 `PATCH_GROUP_DECISION`；
+- 不做正式事实确认；
+- 不写 `FACT_CAUSAL_EDGE`；
+- 不读取真实小说，不调用模型或产品网络。
+
+这些能力必须留给 B-05、B-06 和后续正式事实模块，不能顺手塞进 B-04。

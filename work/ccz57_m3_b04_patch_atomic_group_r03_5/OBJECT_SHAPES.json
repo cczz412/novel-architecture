@@ -1,0 +1,276 @@
+{
+  "candidate_schema_id": "novel-fact-extraction-v2.1",
+  "catalog_hash": "e3c2c698aa28381e8e55b7afb4c02e515d08730da2849e7b102187f34b293021",
+  "contract_version": "r03.5-candidate",
+  "document_identity": "CCZ57-M3-B04-R03.5-CANDIDATE",
+  "failure_fixture_count": 22,
+  "fixed_vectors": [
+    {
+      "group_hashes": [
+        "8acd4de0ee7034accd3866a63f74b45379cff7f98600ac264f2f57c9c1bef872"
+      ],
+      "idempotent_replay": true,
+      "patch_ref": {
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "4090ab2720c71712b073052247180c4918ef93d234e169ea6a0fe5a6dfe6e652",
+        "record_id": "patch-proposal:7eabad5434f7c507ef63abfb1de379dc18de5ab665616ee01ff2bf675ec3302d",
+        "record_type": "M3_PATCH_PROPOSAL",
+        "record_version": 1,
+        "source_module": "M3"
+      },
+      "preview_hash": "36efba7eda353df90cc77047fd08983db8835337bd4e92e2fa0a6a12ca0c657c",
+      "record_hashes": [
+        "4090ab2720c71712b073052247180c4918ef93d234e169ea6a0fe5a6dfe6e652",
+        "e515d8cdb97c266c3888bbb839d87fe369a9b89ad14a68f187fb0b114097f08e"
+      ],
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "4090ab2720c71712b073052247180c4918ef93d234e169ea6a0fe5a6dfe6e652",
+          "record_id": "patch-proposal:7eabad5434f7c507ef63abfb1de379dc18de5ab665616ee01ff2bf675ec3302d",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "e515d8cdb97c266c3888bbb839d87fe369a9b89ad14a68f187fb0b114097f08e",
+          "record_id": "protection-set:36fb8a3d86e0e8dbbf79c2b4e2809e5657b1aab52aa485a0976aba8b6c29b1b8",
+          "record_type": "M3_CANDIDATE_PROTECTION_SET",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route": "replace_only",
+      "visible_record_count": 2
+    },
+    {
+      "group_hashes": [
+        "ad16fb848bb0412c0e9077bda52bc7209c7f159e4d265e774a75b86b32cbd4a1"
+      ],
+      "idempotent_replay": true,
+      "patch_ref": {
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "c9fbde815818c1f48339a3f9a4afbc95c976b1ae2c5ccd2153b959ba204871e3",
+        "record_id": "patch-proposal:c323b7eaaead9f766995ab6fac55d7b33daed19466de7c08d972def2077a7ee1",
+        "record_type": "M3_PATCH_PROPOSAL",
+        "record_version": 1,
+        "source_module": "M3"
+      },
+      "preview_hash": "e38337add171bb73cd73a59994c4d6324dabdee858b2038406ac22a4df38a83a",
+      "record_hashes": [
+        "c9fbde815818c1f48339a3f9a4afbc95c976b1ae2c5ccd2153b959ba204871e3",
+        "f68c5d42286e38959df93c891313e0dffccb1b92865f2a5e3768cceb230bdedf"
+      ],
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "c9fbde815818c1f48339a3f9a4afbc95c976b1ae2c5ccd2153b959ba204871e3",
+          "record_id": "patch-proposal:c323b7eaaead9f766995ab6fac55d7b33daed19466de7c08d972def2077a7ee1",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "f68c5d42286e38959df93c891313e0dffccb1b92865f2a5e3768cceb230bdedf",
+          "record_id": "protection-set:64cfaf44e2f5e9477fa0b63deed5d5de96292a602e7a2a5db1167ebea02c0b47",
+          "record_type": "M3_CANDIDATE_PROTECTION_SET",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route": "add_only",
+      "visible_record_count": 2
+    },
+    {
+      "group_hashes": [
+        "bda228926c4c7bcd4a143eca94e7f826782d06fffa1526b7ead4c7a31d471564"
+      ],
+      "idempotent_replay": true,
+      "patch_ref": {
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "af3985bb8657cd3bdec90439d949af8cfc0c6f3a8e4a70012b887a720f53e190",
+        "record_id": "patch-proposal:a19e6f379b57abe8dbf537bfd93f61b64181c5dd63f3a85fbabc6b8d35ff8d2f",
+        "record_type": "M3_PATCH_PROPOSAL",
+        "record_version": 1,
+        "source_module": "M3"
+      },
+      "preview_hash": "d354311d68e7d9e3ee3c983823ccfa5e70e1068e3dc75d42415660a8f8ecb07b",
+      "record_hashes": [
+        "af3985bb8657cd3bdec90439d949af8cfc0c6f3a8e4a70012b887a720f53e190",
+        "e515d8cdb97c266c3888bbb839d87fe369a9b89ad14a68f187fb0b114097f08e"
+      ],
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "af3985bb8657cd3bdec90439d949af8cfc0c6f3a8e4a70012b887a720f53e190",
+          "record_id": "patch-proposal:a19e6f379b57abe8dbf537bfd93f61b64181c5dd63f3a85fbabc6b8d35ff8d2f",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "e515d8cdb97c266c3888bbb839d87fe369a9b89ad14a68f187fb0b114097f08e",
+          "record_id": "protection-set:36fb8a3d86e0e8dbbf79c2b4e2809e5657b1aab52aa485a0976aba8b6c29b1b8",
+          "record_type": "M3_CANDIDATE_PROTECTION_SET",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route": "replace_with_evidence",
+      "visible_record_count": 2
+    },
+    {
+      "group_hashes": [
+        "8acd4de0ee7034accd3866a63f74b45379cff7f98600ac264f2f57c9c1bef872",
+        "ad16fb848bb0412c0e9077bda52bc7209c7f159e4d265e774a75b86b32cbd4a1"
+      ],
+      "idempotent_replay": true,
+      "patch_ref": {
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "b107295599dc4cffd35a2c37ce33a0058df16b169f2d72e2be831580e5901e1b",
+        "record_id": "patch-proposal:d32a88922b0561c53184078b797d5aa7776f6673f84ef4ac2ff66f8d0f45fa8c",
+        "record_type": "M3_PATCH_PROPOSAL",
+        "record_version": 1,
+        "source_module": "M3"
+      },
+      "preview_hash": "25803fa4885772e1d95f23b73dc15268182a8d84697957fef1d2fcff610d45af",
+      "record_hashes": [
+        "b107295599dc4cffd35a2c37ce33a0058df16b169f2d72e2be831580e5901e1b",
+        "e515d8cdb97c266c3888bbb839d87fe369a9b89ad14a68f187fb0b114097f08e"
+      ],
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "b107295599dc4cffd35a2c37ce33a0058df16b169f2d72e2be831580e5901e1b",
+          "record_id": "patch-proposal:d32a88922b0561c53184078b797d5aa7776f6673f84ef4ac2ff66f8d0f45fa8c",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "e515d8cdb97c266c3888bbb839d87fe369a9b89ad14a68f187fb0b114097f08e",
+          "record_id": "protection-set:36fb8a3d86e0e8dbbf79c2b4e2809e5657b1aab52aa485a0976aba8b6c29b1b8",
+          "record_type": "M3_CANDIDATE_PROTECTION_SET",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route": "replace_and_add",
+      "visible_record_count": 2
+    },
+    {
+      "group_hashes": [
+        "8acd4de0ee7034accd3866a63f74b45379cff7f98600ac264f2f57c9c1bef872"
+      ],
+      "idempotent_replay": true,
+      "patch_ref": {
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "44572b87ae349a09f2c657f71a36c4a62acb44ba59a657217f12b70059052cda",
+        "record_id": "patch-proposal:7a02ddc98f65af21755f758f466812b34987608d1668d0bd7f91fad49ff8e14d",
+        "record_type": "M3_PATCH_PROPOSAL",
+        "record_version": 1,
+        "source_module": "M3"
+      },
+      "preview_hash": "f3c8e66bd973b4ef58498b78523a679932fba3689f359488e0dc6994b2027291",
+      "record_hashes": [
+        "44572b87ae349a09f2c657f71a36c4a62acb44ba59a657217f12b70059052cda",
+        "d70259ff8a315541e2053ee729c4820cb57b881b95c61c48542eedf36cb3303a",
+        "e515d8cdb97c266c3888bbb839d87fe369a9b89ad14a68f187fb0b114097f08e"
+      ],
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "44572b87ae349a09f2c657f71a36c4a62acb44ba59a657217f12b70059052cda",
+          "record_id": "patch-proposal:7a02ddc98f65af21755f758f466812b34987608d1668d0bd7f91fad49ff8e14d",
+          "record_type": "M3_PATCH_PROPOSAL",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "d70259ff8a315541e2053ee729c4820cb57b881b95c61c48542eedf36cb3303a",
+          "record_id": "causal-hint-proposal:d50ffdbb555cb356d18f53438f27a2c0e99c212826ab3b293f9f31c97110ea24",
+          "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "e515d8cdb97c266c3888bbb839d87fe369a9b89ad14a68f187fb0b114097f08e",
+          "record_id": "protection-set:36fb8a3d86e0e8dbbf79c2b4e2809e5657b1aab52aa485a0976aba8b6c29b1b8",
+          "record_type": "M3_CANDIDATE_PROTECTION_SET",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route": "causal_sidecar",
+      "visible_record_count": 3
+    }
+  ],
+  "normal_fixture_count": 10,
+  "output_types": [
+    "M3_CANDIDATE_PROTECTION_SET",
+    "M3_CAUSAL_HINT_PROPOSAL",
+    "M3_PATCH_PROPOSAL"
+  ],
+  "projector_map": {
+    "PatchPreview": "PatchPreviewProjector"
+  },
+  "writer_map": {
+    "M3_CANDIDATE_PROTECTION_SET": "ProtectionSetBuilder",
+    "M3_CAUSAL_HINT_PROPOSAL": "CausalHintProposalRecorder",
+    "M3_PATCH_PROPOSAL": "PatchRecorder"
+  }
+}
