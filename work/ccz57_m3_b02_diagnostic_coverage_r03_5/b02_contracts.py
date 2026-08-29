@@ -455,8 +455,15 @@ def validate_upstream_context(
     ):
         fail("B02_SCOPE_MISMATCH", "CandidateVersion identity")
     chapter_bytes = _validate_segment_sources(segment_index, segment_inputs)
-    if not lineage_locators or not evidence_locators:
-        fail("B02_LOCATOR_SET_INVALID", "empty admitted locator set")
+    if not isinstance(lineage_locators, list) or not isinstance(
+        evidence_locators, list
+    ):
+        fail("B02_LOCATOR_SET_INVALID", "locator sets must be lists")
+    candidate_items = candidate_version["payload"]["items"]
+    if candidate_items and (not lineage_locators or not evidence_locators):
+        fail("B02_LOCATOR_SET_INVALID", "nonempty candidate requires locators")
+    if not candidate_items and (lineage_locators or evidence_locators):
+        fail("B02_LOCATOR_SET_INVALID", "empty candidate forbids locators")
     admitted_lineage: dict[str, dict[str, Any]] = {}
     admitted_evidence: dict[str, dict[str, Any]] = {}
     for locator in lineage_locators:

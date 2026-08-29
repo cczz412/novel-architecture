@@ -34,9 +34,11 @@ from b02_store import (
 )
 from fixtures import (
     LEGACY_B02_ROOT,
+    SOURCE_EMPTY_BASELINE_MISSING,
     SOURCE_MATCHED,
     coverage_kwargs,
     diagnostic_kwargs,
+    empty_upstream_fixture,
     exact_upstream_fixture,
     matched_pair,
     reseal_record,
@@ -187,6 +189,42 @@ def test_coverage_shapes_for_matched_partial_and_missing(tmp_path: Path) -> None
         assert pair["lineage_locator"]["lineage_id"] == pair["evidence_locator"][
             "lineage_id"
         ]
+    validate_store(service.store, context=service.context)
+
+
+def test_empty_candidate_version_admits_missing_coverage(tmp_path: Path) -> None:
+    upstream = empty_upstream_fixture()
+    service = B02Service(FixtureStore(tmp_path), **deepcopy(upstream))
+    identity_ref = service.register_identity(
+        writer_version="r03.5-fixture-writer-v1",
+        created_at="2026-08-29T04:00:00Z",
+    )
+
+    coverage_ref = service.add_coverage(
+        **coverage_kwargs(
+            "N-10",
+            service.context,
+            identity_ref,
+            "MISSING",
+            source_evidence=SOURCE_EMPTY_BASELINE_MISSING,
+        )
+    )
+    coverage = stored_by_type(service.store, "M3_COVERAGE_OBSERVATION")[0]
+    binding = coverage["payload"]["source_evidence_binding"]
+
+    assert service.context["candidate_version"]["payload"]["items"] == []
+    assert service.context["lineage_locators"] == []
+    assert service.context["evidence_locators"] == []
+    assert coverage["payload"]["candidate_match"] == "MISSING"
+    assert coverage["payload"]["matched_candidate_bindings"] == []
+    assert binding["evidence"] == SOURCE_EMPTY_BASELINE_MISSING
+    assert binding["evidence_sha256"] == hashlib.sha256(
+        SOURCE_EMPTY_BASELINE_MISSING.encode("utf-8")
+    ).hexdigest()
+    assert binding["sentence_count"] == 1
+    assert len(binding["match_locations"]) == 1
+    assert binding["match_locations"][0]["seg"] == 2
+    assert record_file_bytes(service.store, coverage_ref) == canonical_bytes(coverage)
     validate_store(service.store, context=service.context)
 
 

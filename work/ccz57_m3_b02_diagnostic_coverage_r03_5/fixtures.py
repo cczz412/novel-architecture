@@ -24,6 +24,7 @@ RESPONSIBILITY_TEXT_2 = "乙停在门外。"
 SOURCE_MATCHED = "甲走进北塔。"
 SOURCE_PARTIAL = "甲走进北塔。甲拿起铜钥匙。"
 SOURCE_MISSING = "甲拿起铜钥匙。甲走进北塔。"
+SOURCE_EMPTY_BASELINE_MISSING = RESPONSIBILITY_TEXT_2
 
 NORMAL_FIXTURES = {
     "N-01": "writer identity original",
@@ -35,6 +36,7 @@ NORMAL_FIXTURES = {
     "N-07": "open issue projection with locator summaries and no prose",
     "N-08": "idempotent atomic restart readback",
     "N-09": "decomposed Unicode source evidence canonical round trip",
+    "N-10": "empty CandidateVersion admits MISSING Coverage",
 }
 
 FAILURE_FIXTURES = {
@@ -129,6 +131,57 @@ def exact_b01_objects() -> dict[str, Any]:
 
 def exact_upstream_fixture() -> dict[str, Any]:
     return exact_b01_objects()
+
+
+def empty_upstream_fixture() -> dict[str, Any]:
+    """Build B-01's approved empty baseline and return detached exact objects."""
+
+    catalog = json.loads(B01_OBJECT_SHAPES_PATH.read_text(encoding="utf-8"))
+    records = catalog["immutable_records"]
+    segment = next(
+        record
+        for record in records
+        if record["record_type"] == "M3_SEGMENT_INDEX_SNAPSHOT"
+    )
+    nonempty_candidate = next(
+        record for record in records if record["record_type"] == "M3_CANDIDATE_VERSION"
+    )
+    pointer = next(
+        record
+        for record in records
+        if record["record_type"] == "M3_CANDIDATE_POINTER_SNAPSHOT"
+    )
+    references = deepcopy(catalog["reference_records"])
+    candidate = CandidateVersionStore.build_root(
+        chapter_revision_ref=deepcopy(
+            nonempty_candidate["payload"]["chapter_revision_ref"]
+        ),
+        seg=2,
+        author_workspace_logical_key=pointer["payload"][
+            "author_workspace_logical_key"
+        ],
+        extraction_input_binding=deepcopy(
+            nonempty_candidate["payload"]["extraction_input_binding"]
+        ),
+        segment_index_record=deepcopy(segment),
+        origin_attempt_refs=deepcopy(
+            nonempty_candidate["payload"]["origin_attempt_refs"]
+        ),
+        reference_records=references,
+        segment_inputs=segment_inputs(),
+        raw_items=[],
+        created_at=nonempty_candidate["created_at"],
+    )
+    if candidate["payload"]["items"] or candidate["payload"]["lineage_index"]:
+        raise AssertionError("B-01 empty baseline drift")
+    return {
+        "reference_records": references,
+        "segment_index": deepcopy(segment),
+        "candidate_version": deepcopy(candidate),
+        "lineage_locators": [],
+        "evidence_locators": [],
+        "segment_inputs": segment_inputs(),
+    }
 
 
 def matched_pair(context: dict[str, Any], index: int = 0) -> dict[str, Any]:

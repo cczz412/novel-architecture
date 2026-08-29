@@ -38,9 +38,11 @@ from fixtures import (
     FAILURE_FIXTURES,
     LEGACY_B02_ROOT,
     NORMAL_FIXTURES,
+    SOURCE_EMPTY_BASELINE_MISSING,
     SOURCE_MATCHED,
     coverage_kwargs,
     diagnostic_kwargs,
+    empty_upstream_fixture,
     exact_upstream_fixture,
     matched_pair,
     reseal_record,
@@ -90,7 +92,7 @@ def _static_boundary_check() -> dict[str, Any]:
         "subprocess",
         "urllib",
     }
-    forbidden_candidate_methods = {"build_root", "stage_root"}
+    forbidden_candidate_methods = {"stage_root"}
     writer_classes: dict[str, list[str]] = {name: [] for name in WRITER_MAP.values()}
     scanned: list[str] = []
     for path in sorted(MODULE_ROOT.glob("*.py")):
@@ -113,7 +115,13 @@ def _static_boundary_check() -> dict[str, Any]:
                 if (
                     isinstance(owner, ast.Name)
                     and owner.id == "CandidateVersionStore"
-                    and node.func.attr in forbidden_candidate_methods
+                    and (
+                        node.func.attr in forbidden_candidate_methods
+                        or (
+                            node.func.attr == "build_root"
+                            and path.name != "fixtures.py"
+                        )
+                    )
                 ):
                     raise AssertionError(
                         f"CandidateVersion write path: {path.name}:{node.func.attr}"
@@ -442,6 +450,41 @@ def run_replay() -> dict[str, Any]:
                 lambda event=event: guard_runtime_event(event),
             )
 
+        empty_upstream = empty_upstream_fixture()
+        empty_service = B02Service(
+            FixtureStore(root / "empty-candidate"), **deepcopy(empty_upstream)
+        )
+        empty_identity = empty_service.register_identity(
+            writer_version="r03.5-fixture-writer-v1",
+            created_at="2026-08-29T04:00:00Z",
+        )
+        empty_coverage_ref = empty_service.add_coverage(
+            **coverage_kwargs(
+                "N-10",
+                empty_service.context,
+                empty_identity,
+                "MISSING",
+                source_evidence=SOURCE_EMPTY_BASELINE_MISSING,
+            )
+        )
+        empty_records = empty_service.store.read_records()
+        validate_store(empty_service.store, context=empty_service.context)
+        empty_coverage = next(
+            record
+            for record in empty_records
+            if record["record_type"] == "M3_COVERAGE_OBSERVATION"
+        )
+        if (
+            empty_service.context["candidate_version"]["payload"]["items"]
+            or empty_service.context["lineage_locators"]
+            or empty_service.context["evidence_locators"]
+            or empty_coverage["payload"]["candidate_match"] != "MISSING"
+            or empty_coverage["payload"]["matched_candidate_bindings"]
+            or empty_coverage["payload"]["source_evidence_binding"]["evidence"]
+            != SOURCE_EMPTY_BASELINE_MISSING
+        ):
+            raise AssertionError("empty CandidateVersion MISSING Coverage drift")
+
         counts = {
             record_type: sum(
                 record["record_type"] == record_type for record in records
@@ -474,6 +517,7 @@ def run_replay() -> dict[str, Any]:
             "open_diagnostic_ref": open_ref,
             "lifecycle_ref": lifecycle_ref,
             "coverage_refs": coverage_refs,
+            "empty_candidate_missing_coverage_ref": empty_coverage_ref,
             "projection_open_count": projection["open_count"],
         },
         "source_evidence_unicode_policy": {

@@ -118,6 +118,10 @@
     "N-09": {
       "description": "decomposed Unicode source evidence canonical round trip",
       "result": "PASS"
+    },
+    "N-10": {
+      "description": "empty CandidateVersion admits MISSING Coverage",
+      "result": "PASS"
     }
   },
   "replay_evidence": {
@@ -166,6 +170,17 @@
         "record_version": 1,
         "source_module": "M3"
       }
+    },
+    "empty_candidate_missing_coverage_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "6ff4c70a25485b27609433749ce5ad55bc1e85b5822333c520eeccb6db1c072a",
+      "record_id": "coverage:6df91dddf874b7c1cca1008eb203513c234cf2d4",
+      "record_type": "M3_COVERAGE_OBSERVATION",
+      "record_version": 1,
+      "source_module": "M3"
     },
     "lifecycle_ref": {
       "access": "POLICY_FIXTURE_READ_ONLY",
