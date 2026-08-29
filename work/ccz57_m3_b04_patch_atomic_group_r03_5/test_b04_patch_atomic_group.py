@@ -3,8 +3,10 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from pathlib import Path
+from threading import Event
 from typing import Any, Callable
 
 import pytest
@@ -16,6 +18,7 @@ from b04_contracts import (
     EXPECTED_B02_MERGE_SHA,
     EXPECTED_CURRENT_MAIN,
     PROJECTOR_MAP,
+    RUN_ACCESS,
     WRITER_MAP,
     canonical_bytes,
     guard_runtime_event,
@@ -266,6 +269,103 @@ def test_n09_replay_is_idempotent(tmp_path: Path) -> None:
     assert second == first
     assert store.file_snapshot() == first_files
     assert len(store.read_records()) == 2
+
+
+def test_n09_later_distinct_patch_reuses_exact_protection_original(
+    tmp_path: Path,
+) -> None:
+    store, service, _ = _service(tmp_path)
+    first_args = _args("replace_only")
+    second_args = deepcopy(first_args)
+    second_args["created_at"] = "2026-08-30T02:10:01Z"
+    operation = second_args["groups"][0]["operations"][0]
+    operation["new_item"]["fact"] = "甲已经站在北塔内。"
+    _rehash_group(second_args["groups"][0])
+
+    first = service.propose(**first_args)
+    second = service.propose(**second_args)
+
+    assert second["protection_set_ref"] == first["protection_set_ref"]
+    assert second["patch_proposal_ref"] != first["patch_proposal_ref"]
+    records = _records_by_type(store)
+    assert len(records["M3_CANDIDATE_PROTECTION_SET"]) == 1
+    assert len(records["M3_PATCH_PROPOSAL"]) == 2
+
+
+def test_n09_later_semantic_replay_reuses_all_exact_originals(tmp_path: Path) -> None:
+    store, service, _ = _service(tmp_path)
+    first_args = _args("replace_only")
+    replay_args = deepcopy(first_args)
+    replay_args["created_at"] = "2026-08-30T02:10:01Z"
+
+    first = service.propose(**first_args)
+    first_files = store.file_snapshot()
+    replay = service.propose(**replay_args)
+
+    assert replay == first
+    assert store.file_snapshot() == first_files
+    assert len(store.read_records()) == 2
+
+
+def test_n09_same_payload_different_access_fails_before_staging(
+    tmp_path: Path,
+) -> None:
+    store, service, _ = _service(tmp_path)
+    service.propose(**_args("replace_only"))
+    before_files = store.file_snapshot()
+    before_objects = store.object_snapshot()
+    conflicting = _args("replace_only")
+    conflicting["created_at"] = "2026-08-30T02:10:01Z"
+    conflicting["access"] = RUN_ACCESS
+
+    with pytest.raises(B04ContractError) as caught:
+        service.propose(**conflicting)
+
+    assert caught.value.code == "B04_IMMUTABLE_IDENTITY_COLLISION"
+    assert store.file_snapshot() == before_files
+    assert store.object_snapshot() == before_objects
+
+
+def test_n09_two_store_instances_serialize_same_root_publish(tmp_path: Path) -> None:
+    data = route_inputs("replace_only")["catalog"]
+    b02_store, _ = build_authoritative_b02_store(tmp_path / "b02-store", data)
+    shared_root = tmp_path / "b04-store"
+    first_store = FixtureStore(shared_root)
+    second_store = FixtureStore(shared_root)
+    first_service = B04Service(first_store, b02_store=b02_store)
+    second_service = B04Service(second_store, b02_store=b02_store)
+    first_args = _args("replace_only")
+    second_args = deepcopy(first_args)
+    second_args["created_at"] = "2026-08-30T02:10:01Z"
+
+    first_at_publish = Event()
+    release_first = Event()
+    second_started = Event()
+
+    def hold_first_publish() -> None:
+        first_at_publish.set()
+        assert release_first.wait(timeout=5)
+
+    def run_second() -> dict[str, Any]:
+        second_started.set()
+        return second_service.propose(**second_args)
+
+    first_store.before_publish_guard_hook = hold_first_publish
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        first_future = executor.submit(first_service.propose, **first_args)
+        assert first_at_publish.wait(timeout=5)
+        second_future = executor.submit(run_second)
+        try:
+            assert second_started.wait(timeout=5)
+            assert not second_future.done()
+        finally:
+            release_first.set()
+        first = first_future.result(timeout=5)
+        second = second_future.result(timeout=5)
+
+    assert second == first
+    assert len(first_store.read_records()) == 2
+    assert len(list((shared_root / "transactions").iterdir())) == 1
 
 
 def test_n10_preview_has_complete_items_and_no_decision_fields(tmp_path: Path) -> None:

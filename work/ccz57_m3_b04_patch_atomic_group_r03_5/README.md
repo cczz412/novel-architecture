@@ -29,6 +29,8 @@
 - 替换锁定完整旧 item hash，不锁单个字段；
 - 新增或更换 evidence 必须由 MISSING／PARTIAL Coverage 的 exact source binding 支持；
 - Patch 原件保存 Coverage refs，过后仍能追溯“为什么补这条”；
+- payload 身份已经存在时复用原件的完整字节和 RecordRef；不同时间的合法后续 Patch 不会重建同一 ProtectionSet；
+- 同一 store 根目录用跨实例文件锁串行化“原件复用／碰撞判断 → B-02／B-03 发布前重读 → 原子发布”，不会让两个进程各自发布同一身份的不同字节；
 - B-02／B-03 在正式发布线性化检查点再次回读；检查点前发生关闭、撤回或到期时，B-04 保持 0 写入；检查点后的并发变化按 B-04 先发生解释；
 - Preview 展示完整旧／新条目；保护原因只描述“本次 Patch 未触碰”，不声称候选已接受或正确，也不出现拒绝、正式事实或 child CandidateVersion；
 - 本目录不应用 Patch、不写 B-05 决定、不创建 child、不写正式因果边。

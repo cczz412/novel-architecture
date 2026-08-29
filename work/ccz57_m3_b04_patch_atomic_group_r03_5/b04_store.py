@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import os
+import stat
 import sys
 import tempfile
+from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Iterator
 
 from b04_contracts import (
     CANDIDATE_SCHEMA_ID,
@@ -85,6 +88,7 @@ class FixtureStore:
         "failure_point",
         "events",
         "before_publish_guard_hook",
+        "_publish_lock_path",
     )
 
     def __init__(self, root: Path, *, failure_point: str | None = None) -> None:
@@ -106,10 +110,39 @@ class FixtureStore:
         self.failure_point = failure_point
         self.events: list[dict[str, str]] = []
         self.before_publish_guard_hook: Callable[[], None] | None = None
+        self._publish_lock_path = (
+            resolved.parent / f".{resolved.name}.ccz57-b04-publish.lock"
+        )
 
     def _inject(self, point: str) -> None:
         if self.failure_point == point:
             fail("B04_SIMULATED_TRANSACTION_FAILURE", point)
+
+    @contextmanager
+    def _publish_serialization(self) -> Iterator[None]:
+        """Serialize identity resolution and publication across store instances."""
+
+        flags = os.O_CREAT | os.O_RDWR
+        if hasattr(os, "O_NOFOLLOW"):
+            flags |= os.O_NOFOLLOW
+        try:
+            descriptor = os.open(self._publish_lock_path, flags, 0o600)
+        except OSError as error:
+            fail("B04_PUBLISH_LOCK_UNAVAILABLE", type(error).__name__)
+        try:
+            metadata = os.fstat(descriptor)
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+                fail("B04_PUBLISH_LOCK_INVALID")
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_EX)
+            except OSError as error:
+                fail("B04_PUBLISH_LOCK_UNAVAILABLE", type(error).__name__)
+            yield
+        finally:
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_UN)
+            finally:
+                os.close(descriptor)
 
     def _visible_paths(self) -> list[Path]:
         if not self.transactions_root.exists():
@@ -191,12 +224,45 @@ class FixtureStore:
                 path.rmdir()
         staging.rmdir()
 
+    @staticmethod
+    def _reuse_existing_original(
+        candidate: dict[str, Any],
+        existing: dict[tuple[str, str, int], dict[str, Any]],
+    ) -> dict[str, Any]:
+        """Reuse exact bytes when payload-addressed identity already exists."""
+
+        validate_output_record(candidate)
+        prior = existing.get(_identity(candidate))
+        if prior is None:
+            return deepcopy(candidate)
+        stable_prior = {
+            key: value
+            for key, value in prior.items()
+            if key not in {"created_at", "record_hash"}
+        }
+        stable_candidate = {
+            key: value
+            for key, value in candidate.items()
+            if key not in {"created_at", "record_hash"}
+        }
+        if canonical_bytes(stable_prior) != canonical_bytes(stable_candidate):
+            fail("B04_IMMUTABLE_IDENTITY_COLLISION", _identity_text(candidate))
+        return deepcopy(prior)
+
     def _commit_bundle(
         self,
         records: list[dict[str, Any]],
         *,
         pre_publish_guard: Callable[[], None] | None = None,
+        _serialized: bool = False,
     ) -> list[dict[str, Any]]:
+        if not _serialized:
+            with self._publish_serialization():
+                return self._commit_bundle(
+                    records,
+                    pre_publish_guard=pre_publish_guard,
+                    _serialized=True,
+                )
         for record in records:
             validate_output_record(record)
         existing = {_identity(item): item for item in self.read_records()}
@@ -209,6 +275,10 @@ class FixtureStore:
             else:
                 missing.append(record)
         if not missing:
+            if self.before_publish_guard_hook is not None:
+                self.before_publish_guard_hook()
+            if pre_publish_guard is not None:
+                pre_publish_guard()
             return [deepcopy(existing[_identity(record)]) for record in records]
 
         transaction_id = sha256_value(
@@ -486,7 +556,7 @@ class B04Service:
             groups=groups,
         )
         self.__require_live_source_slices(source_slice_records)
-        protection = ProtectionSetBuilder.build(
+        protection_candidate = ProtectionSetBuilder.build(
             context=context,
             policy=policy,
             groups=groups,
@@ -494,15 +564,15 @@ class B04Service:
             access=access,
         )
         validate_protection_record(
-            protection, context=context, policy=policy, groups=groups
+            protection_candidate, context=context, policy=policy, groups=groups
         )
-        causal_records = [
+        causal_candidates = [
             CausalHintProposalRecorder.build(
                 payload=payload, created_at=created_at, access=access
             )
             for payload in causal_payloads
         ]
-        for causal in causal_records:
+        for causal in causal_candidates:
             validate_causal_record(
                 causal,
                 context=context,
@@ -510,36 +580,6 @@ class B04Service:
                 coverage_refs=[record_ref(item) for item in coverages],
                 source_slice_refs=source_slice_refs,
             )
-        patch_payload = {
-            "base_candidate_version_ref": record_ref(base),
-            "candidate_schema_id": CANDIDATE_SCHEMA_ID,
-            "diagnostic_refs": [record_ref(item) for item in diagnostics],
-            "coverage_observation_refs": [record_ref(item) for item in coverages],
-            "authorized_source_slice_refs": source_slice_refs,
-            "protection_set_ref": record_ref(protection),
-            "chapter_revision_ref": deepcopy(base["payload"]["chapter_revision_ref"]),
-            "atomic_groups": groups,
-            "sidecar_proposal_refs": [record_ref(item) for item in causal_records],
-        }
-        patch = PatchRecorder.build(
-            payload=patch_payload, created_at=created_at, access=access
-        )
-        validate_patch_record(
-            patch,
-            context=context,
-            diagnostics=diagnostics,
-            coverages=coverages,
-            lifecycle_receipts=lifecycle_receipts,
-            source_slice_records=source_slice_records,
-            protection=protection,
-            causal_records=causal_records,
-        )
-        preview = PatchPreviewProjector.project(
-            context=context,
-            protection=protection,
-            patch=patch,
-            causal_records=causal_records,
-        )
 
         def pre_publish_guard() -> None:
             if self.__stable_record_bytes(self.__b02_store.read_records()) != (
@@ -548,10 +588,74 @@ class B04Service:
                 fail("B04_B02_CURRENT_STATE_CHANGED")
             self.__require_live_source_slices(source_slice_records)
 
-        published = self._store._commit_bundle(
-            [protection, *causal_records, patch],
-            pre_publish_guard=pre_publish_guard,
-        )
+        with self._store._publish_serialization():
+            existing = {_identity(item): item for item in self._store.read_records()}
+            protection = self._store._reuse_existing_original(
+                protection_candidate, existing
+            )
+            validate_protection_record(
+                protection, context=context, policy=policy, groups=groups
+            )
+            causal_records = [
+                self._store._reuse_existing_original(candidate, existing)
+                for candidate in causal_candidates
+            ]
+            for causal in causal_records:
+                validate_causal_record(
+                    causal,
+                    context=context,
+                    diagnostic_refs=[record_ref(item) for item in diagnostics],
+                    coverage_refs=[record_ref(item) for item in coverages],
+                    source_slice_refs=source_slice_refs,
+                )
+            patch_payload = {
+                "base_candidate_version_ref": record_ref(base),
+                "candidate_schema_id": CANDIDATE_SCHEMA_ID,
+                "diagnostic_refs": [record_ref(item) for item in diagnostics],
+                "coverage_observation_refs": [record_ref(item) for item in coverages],
+                "authorized_source_slice_refs": source_slice_refs,
+                "protection_set_ref": record_ref(protection),
+                "chapter_revision_ref": deepcopy(
+                    base["payload"]["chapter_revision_ref"]
+                ),
+                "atomic_groups": groups,
+                "sidecar_proposal_refs": [record_ref(item) for item in causal_records],
+            }
+            patch_candidate = PatchRecorder.build(
+                payload=patch_payload, created_at=created_at, access=access
+            )
+            validate_patch_record(
+                patch_candidate,
+                context=context,
+                diagnostics=diagnostics,
+                coverages=coverages,
+                lifecycle_receipts=lifecycle_receipts,
+                source_slice_records=source_slice_records,
+                protection=protection,
+                causal_records=causal_records,
+            )
+            patch = self._store._reuse_existing_original(patch_candidate, existing)
+            validate_patch_record(
+                patch,
+                context=context,
+                diagnostics=diagnostics,
+                coverages=coverages,
+                lifecycle_receipts=lifecycle_receipts,
+                source_slice_records=source_slice_records,
+                protection=protection,
+                causal_records=causal_records,
+            )
+            preview = PatchPreviewProjector.project(
+                context=context,
+                protection=protection,
+                patch=patch,
+                causal_records=causal_records,
+            )
+            published = self._store._commit_bundle(
+                [protection, *causal_records, patch],
+                pre_publish_guard=pre_publish_guard,
+                _serialized=True,
+            )
         by_type = {}
         for item in published:
             by_type.setdefault(item["record_type"], []).append(item)
