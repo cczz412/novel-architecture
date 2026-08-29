@@ -1,0 +1,293 @@
+{
+  "a_interface_admission_record_hash": "91257566a8c4fc662b5735ce1a1abebd905bf148b23ad594dfcf21b8410c65af",
+  "a_merge_commit_sha": "019df751641533c7de4d56aa38f50747fb564036",
+  "b01_fixed_vectors": {
+    "candidate_record_hash": {
+      "actual": "9dd89591a193754f96a7c7d3b595d16c459c01f0c4073699c5353780679f0e30",
+      "expected": "9dd89591a193754f96a7c7d3b595d16c459c01f0c4073699c5353780679f0e30"
+    },
+    "candidate_version_payload_hash": {
+      "actual": "89fd57fc802a3d7311e2605ee856db033c957c178079d92367cdd9741486ef3c",
+      "expected": "89fd57fc802a3d7311e2605ee856db033c957c178079d92367cdd9741486ef3c"
+    },
+    "evidence_locator_hash": {
+      "actual": "3a78dcd55c2934662497ab14a5704ed56afd43c4fdc16b46f24d5601a7409180",
+      "expected": "3a78dcd55c2934662497ab14a5704ed56afd43c4fdc16b46f24d5601a7409180"
+    },
+    "lineage_locator_hash": {
+      "actual": "18565157b3e39d4c57d43fa5974132693d0ee9cabb3e7bada631ac804445a839",
+      "expected": "18565157b3e39d4c57d43fa5974132693d0ee9cabb3e7bada631ac804445a839"
+    },
+    "pointer_record_hash": {
+      "actual": "f414ec685388c519afd8e495d69c32c6afc99cf3b5bbbdb161f4e85585d1c10a",
+      "expected": "f414ec685388c519afd8e495d69c32c6afc99cf3b5bbbdb161f4e85585d1c10a"
+    },
+    "pointer_snapshot_request_hash": {
+      "actual": "c0a61292f19fc5fe93e494e805613dcda3901784dcbc99f8feba71ea7755f0df",
+      "expected": "c0a61292f19fc5fe93e494e805613dcda3901784dcbc99f8feba71ea7755f0df"
+    },
+    "segment_record_hash": {
+      "actual": "cd286d6c8a65eee0b79b41a162a809527bb3e3dd2b90c3f63680948c6962b18f",
+      "expected": "cd286d6c8a65eee0b79b41a162a809527bb3e3dd2b90c3f63680948c6962b18f"
+    },
+    "version_diff_detached_hash": {
+      "actual": "7e635e4cae960ca74b66cdce5ded583ffa947d31956b126e3fe83dc8697144d2",
+      "expected": "7e635e4cae960ca74b66cdce5ded583ffa947d31956b126e3fe83dc8697144d2"
+    }
+  },
+  "b02_writers_called": 0,
+  "blueprint_self_check_sha256": "c3203ef73c9d0fc23f843673df0325b95d4d6c52cb752e8c9b543c80dc1151b0",
+  "blueprint_sha256": "8db5f9acb8ada30e929af4e710790bb36c6058023928de513757465a0fa43cd2",
+  "canonical_fixture_vector": {
+    "canonical_utf8_hex": "7b2261223a5b332c747275652c6e756c6c2c2273796e746865746963225d2c227a223a22c3a9227d",
+    "sha256": "35b5fbdfd6fdb751b5c96b1a74a84f6cee5ff787cbedccacfd8649901909ab3a"
+  },
+  "contract": "CCZ57_M3_B01_OFFLINE_REPLAY_REPORT",
+  "contract_version": "r03.5-candidate",
+  "failure_fixture_families": {
+    "F01_ADMISSION_MISSING": [
+      "B01_A_ADMISSION_REQUIRED"
+    ],
+    "F02_REVIEWED_HEAD_MERGE_HEAD_MISMATCH": [
+      "B01_A_ADMISSION_HEAD_MISMATCH"
+    ],
+    "F03_MAIN_READBACK_INVALID": [
+      "B01_A_ADMISSION_READBACK_INVALID"
+    ],
+    "F04_A_MANIFEST_DRIFT": [
+      "B01_A_INTERFACE_DRIFT"
+    ],
+    "F05_A_ATTEMPT_REF_INVALID": [
+      "B01_ATTEMPT_REF_INVALID"
+    ],
+    "F06_SEGMENT_SOURCE_MISMATCH": [
+      "B01_SEGMENT_SOURCE_MISMATCH"
+    ],
+    "F07_SEGMENT_NUMBER_INVALID": [
+      "B01_SEGMENT_INDEX_INVALID"
+    ],
+    "F08_SEGMENT_RANGE_INVALID": [
+      "B01_SEGMENT_INDEX_INVALID"
+    ],
+    "F09_RESPONSIBILITY_HASH_INVALID": [
+      "B01_SEGMENT_TEXT_HASH_MISMATCH"
+    ],
+    "F10_CANDIDATE_FIELDS_INVALID": [
+      "B01_CANDIDATE_VERSION_INVALID"
+    ],
+    "F11_ITEM_HASH_MISMATCH": [
+      "B01_ITEM_HASH_MISMATCH"
+    ],
+    "F12_DUPLICATE_LINEAGE": [
+      "B01_DUPLICATE_LINEAGE_ID"
+    ],
+    "F13_LINEAGE_INDEX_INVALID": [
+      "B01_LINEAGE_INDEX_INVALID"
+    ],
+    "F14_EMPTY_BASELINE_INCONSISTENT": [
+      "B01_EMPTY_BASELINE_INVALID"
+    ],
+    "F15_CHILD_CREATION_REQUESTED": [
+      "B01_CHILD_CREATION_OUT_OF_SCOPE"
+    ],
+    "F16_POINTER_SCOPE_MISMATCH": [
+      "B01_POINTER_SCOPE_MISMATCH"
+    ],
+    "F17_POINTER_ALREADY_INITIALIZED": [
+      "B01_POINTER_ALREADY_INITIALIZED"
+    ],
+    "F18_OPERATION_CONFLICT": [
+      "B01_OPERATION_CONFLICT"
+    ],
+    "F19_VERSION_DIFF_INVALID": [
+      "B01_VERSION_DIFF_INVALID",
+      "B01_DERIVED_VIEW_PERSIST_FORBIDDEN"
+    ],
+    "F20_BOUNDARY_ESCAPE": [
+      "B01_WRITE_SET_ESCAPE",
+      "B01_NETWORK_OR_PROCESS_EVENT"
+    ],
+    "F21_SOURCE_GENERATION_MISMATCH": [
+      "B01_SOURCE_GENERATION_MISMATCH"
+    ],
+    "F22_REQUIRED_MATERIAL_MISSING": [
+      "B01_WRITING_MATERIAL_INVALID"
+    ],
+    "F23_EVIDENCE_NOT_IN_CHAPTER": [
+      "B01_EVIDENCE_NOT_IN_EXACT_CHAPTER"
+    ],
+    "F24_EVIDENCE_SENTENCE_LIMIT": [
+      "B01_EVIDENCE_SENTENCE_LIMIT"
+    ],
+    "F25_CALLER_LOCATION_REJECTED": [
+      "B01_CANDIDATE_VERSION_INVALID"
+    ],
+    "F26_LEGACY_WRITER_REJECTED": [
+      "B01_CANDIDATE_VERSION_INVALID"
+    ],
+    "F27_REHASHED_WRONG_EVIDENCE_LOCATION_REJECTED": [
+      "B01_EVIDENCE_BINDING_INVALID"
+    ]
+  },
+  "fixture_pointer_writes": 11,
+  "inherited_fixed_vectors": {
+    "empty_version_payload_hash": {
+      "actual": "1e60cd9513280b78f7cbf9c4bf54f5f2a932a40bfcc88a0adc990c140ea74823",
+      "expected": "1e60cd9513280b78f7cbf9c4bf54f5f2a932a40bfcc88a0adc990c140ea74823"
+    },
+    "lineage_locator_hash": {
+      "actual": "f43f65f5435f6b7cedb4ddcc3078e9437fbf58d17a8885e3b2427e2793a0180d",
+      "expected": "f43f65f5435f6b7cedb4ddcc3078e9437fbf58d17a8885e3b2427e2793a0180d"
+    },
+    "parent_version_payload_hash": {
+      "actual": "27495dc404c3448063651be0672487332700c1624c14338a1e1712b995a0da7f",
+      "expected": "27495dc404c3448063651be0672487332700c1624c14338a1e1712b995a0da7f"
+    }
+  },
+  "mechanical_pass": true,
+  "model_api_calls": 0,
+  "network_calls": 0,
+  "normal_fixture_families": {
+    "N01_NONEMPTY_BASELINE": "PASS",
+    "N02_EMPTY_BASELINE": "PASS",
+    "N03_SEGMENT_INDEX_REPLAY": "PASS",
+    "N04_POINTER_INITIALIZATION": "PASS",
+    "N05_OPERATION_IDEMPOTENT_REPLAY": "PASS",
+    "N06_LINEAGE_LOCATOR_RESOLUTION": "PASS",
+    "N07_PARENT_CHILD_READ_ONLY_DIFF": "PASS",
+    "N08_RESTART_READBACK": "PASS",
+    "N09_LEGACY_READ_ONLY": "PASS",
+    "N10_MATERIAL_GENERATION_CHANGES_IDENTITY": "PASS",
+    "N11_DECOMPOSED_UNICODE_EVIDENCE_ROUND_TRIP": "PASS"
+  },
+  "object_shapes": {
+    "catalog_sha256": "b39b47f3f382fe0610e99a9b280598c09a124b116b4f97ce78e11affbef92104",
+    "immutable_records": 3,
+    "record_hashes_verified": 3,
+    "reference_records": 6
+  },
+  "product_pointer_writes": 0,
+  "real_novel_reads": 0,
+  "reference_integrity": {
+    "immutable_record_count": 33,
+    "persisted_derived_views": 0,
+    "record_hash_failed": 0,
+    "record_hash_passed": 33,
+    "record_ref_count": 121,
+    "record_ref_failed": 0,
+    "record_ref_passed": 121,
+    "reference_cycles": 0,
+    "unique_writer_conflicts": 0,
+    "unresolved_refs": 0
+  },
+  "report_hash": "f68d2be74f11de4276cf1b42f3560d0693855182fc87b90d093b6b2a502fd027",
+  "restart_process_evidence": {
+    "distinct_child_processes": true,
+    "harness_process_calls": 2,
+    "parent_process_reused": false,
+    "prepare": {
+      "generation": 1,
+      "phase": "prepare",
+      "result_hash": "2b76ea0ed4e3bebd635c0ed868ee56c402da0667f1c49d2f7e2d0fd54a9542b6",
+      "runtime_event_evidence": {
+        "allowed_event_counts": {
+          "open": 5,
+          "os.mkdir": 1,
+          "os.remove": 1,
+          "os.rename": 1
+        },
+        "forbidden_events": [],
+        "real_novel_events": []
+      },
+      "state_file_hash": "7248d8cefe76757da98fd965e3bc6bd3dcbb63fd47cedee3eb709f1a48efeb32"
+    },
+    "readback": {
+      "generation": 1,
+      "phase": "readback",
+      "result_hash": "2b76ea0ed4e3bebd635c0ed868ee56c402da0667f1c49d2f7e2d0fd54a9542b6",
+      "runtime_event_evidence": {
+        "allowed_event_counts": {
+          "open": 8,
+          "os.remove": 1
+        },
+        "forbidden_events": [],
+        "real_novel_events": []
+      },
+      "state_file_hash": "7248d8cefe76757da98fd965e3bc6bd3dcbb63fd47cedee3eb709f1a48efeb32"
+    }
+  },
+  "runtime_event_evidence": {
+    "allowed_event_counts": {
+      "open": 96,
+      "os.mkdir": 18,
+      "os.remove": 2,
+      "os.rename": 14
+    },
+    "forbidden_events": [],
+    "real_novel_events": []
+  },
+  "semantic_pass": null,
+  "source_hashes": {
+    "b01_contract.py": "ace81fdaf969a5eff06d937d5453e315c2950cdf59e48be028373d688ccfb214",
+    "fixtures.py": "a8b95fdecc76a95e06bf2d5be1dcfae8b6f8069b8b6a8605c9457d50ca4272cc",
+    "self_check.py": "15fc86e9b67b1600356dcf1c9095e3c194b53dff818efd21d7d8e75b842f353d",
+    "test_b01_contract.py": "b87fe338d2b50ba7766fc0de06cff9c53531450f589798d49f8e6583e8984018"
+  },
+  "static_audit": {
+    "files": [
+      {
+        "credential_path_hits": 0,
+        "file": "b01_contract.py",
+        "findings": [],
+        "forbidden_call_hits": 0,
+        "forbidden_import_hits": 0,
+        "real_novel_path_hits": 0,
+        "scope_escape_names": [],
+        "sha256": "ace81fdaf969a5eff06d937d5453e315c2950cdf59e48be028373d688ccfb214"
+      },
+      {
+        "credential_path_hits": 0,
+        "file": "fixtures.py",
+        "findings": [],
+        "forbidden_call_hits": 0,
+        "forbidden_import_hits": 0,
+        "real_novel_path_hits": 0,
+        "scope_escape_names": [],
+        "sha256": "a8b95fdecc76a95e06bf2d5be1dcfae8b6f8069b8b6a8605c9457d50ca4272cc"
+      }
+    ],
+    "totals": {
+      "credential_path_hits": 0,
+      "forbidden_call_hits": 0,
+      "forbidden_import_hits": 0,
+      "http_or_socket_path_hits": 0,
+      "model_client_path_hits": 0,
+      "real_novel_path_hits": 0,
+      "scope_escape_name_hits": 0
+    }
+  },
+  "writer_audit": {
+    "evidence_locator_constructor_classes": [
+      "CandidateVersionStore"
+    ],
+    "lineage_locator_constructor_classes": [
+      "CandidateVersionStore"
+    ],
+    "persisting_writer_classes": [
+      "CandidatePointerSnapshotWriter",
+      "CandidateVersionStore",
+      "SegmentIndexSnapshotWriter"
+    ],
+    "unique_writer_conflicts": 0,
+    "version_diff_projector_classes": [
+      "VersionDiffProjector"
+    ]
+  },
+  "zero_call_derivation": {
+    "credential_path_hits": 0,
+    "http_or_socket_path_hits": 0,
+    "model_client_path_hits": 0,
+    "runtime_forbidden_events": 0,
+    "runtime_real_novel_events": 0
+  }
+}
