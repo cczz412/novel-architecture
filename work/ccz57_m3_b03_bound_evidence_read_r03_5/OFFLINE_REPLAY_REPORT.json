@@ -1,0 +1,45 @@
+{
+  "contract_version": "r03.5-candidate",
+  "candidate_schema_id": "novel-fact-extraction-v2.1",
+  "offline_only": true,
+  "model_api_calls": 0,
+  "network_calls": 0,
+  "real_novel_read_events": 0,
+  "writer_count": 8,
+  "immutable_record_types": 7,
+  "projector": "SourceReadAuthorizationStateProjector",
+  "b03_tests_expected": 30,
+  "transaction_store": "sqlite-attached-rollback-journal",
+  "plaintext_secure_delete": true,
+  "public_store_exposed": false,
+  "files_checked": [
+    {
+      "path": "b03_contracts.py",
+      "sha256": "b1347585b6d86f520ecae432bb37836890c673b33e42ddbb9155b2344ea46452"
+    },
+    {
+      "path": "b03_store.py",
+      "sha256": "43dcf9d3b1e8b64ac476745c22b00048379b6ffebff8b41c1acd04bbd7606c39"
+    },
+    {
+      "path": "fixtures.py",
+      "sha256": "6881cedfeaa89ec0e817eb8c7a233b4dcd7eea0a1e1be149a352ecb1b89c49ba"
+    },
+    {
+      "path": "restricted_source_reader.py",
+      "sha256": "6ac3d19bf9a28dff855d38398e314898fd7f7712095a12e98fbca6260a97aa6d"
+    },
+    {
+      "path": "restricted_source_retention.py",
+      "sha256": "25471f3d024e38e3f85cc2820d79197d8ee8e50e2de8e851ea8853160404aa05"
+    },
+    {
+      "path": "service.py",
+      "sha256": "5139cfe6a28832a03c02f5d333b39e3589266a4d49aff6ff4d80e0460ffa99e9"
+    },
+    {
+      "path": "test_b03_bound_evidence_read.py",
+      "sha256": "bf6138a5f3d7a48f5253adfdfc5ad1e242d01c5f5cc0d39a2be2463f25d0cb07"
+    }
+  ]
+}
