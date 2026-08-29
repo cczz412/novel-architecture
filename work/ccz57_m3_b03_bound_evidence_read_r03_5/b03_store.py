@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
-import tempfile
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Callable, Iterator
@@ -82,8 +81,8 @@ class B03FixtureStore:
         self.__record_validators = dict(record_validators)
         self.__slice_validator = slice_validator
         self.__retention_planner = retention_planner
-        self._reject_symlink(self.state_path)
-        self._reject_symlink(self._content_path)
+        self._reject_external_aliases(self.state_path)
+        self._reject_external_aliases(self._content_path)
         self._connection = sqlite3.connect(
             self.state_path,
             isolation_level=None,
@@ -102,9 +101,19 @@ class B03FixtureStore:
         self._initialize_schema()
 
     @staticmethod
-    def _reject_symlink(path: Path) -> None:
-        if path.is_symlink():
-            fail("B03_WRITE_SET_VIOLATION", f"symlink:{path}")
+    def _reject_external_aliases(path: Path) -> None:
+        for candidate in (
+            path,
+            Path(f"{path}-journal"),
+            Path(f"{path}-wal"),
+            Path(f"{path}-shm"),
+        ):
+            if candidate.is_symlink():
+                fail("B03_WRITE_SET_VIOLATION", f"symlink:{candidate}")
+            if candidate.exists() and (
+                not candidate.is_file() or candidate.stat().st_nlink != 1
+            ):
+                fail("B03_WRITE_SET_VIOLATION", f"external-alias:{candidate}")
 
     @classmethod
     def _admit_root(cls, root: Path) -> Path:
@@ -114,12 +123,10 @@ class B03FixtureStore:
                 fail("B03_WRITE_SET_VIOLATION", f"symlink:{component}")
         resolved = requested.resolve(strict=False)
         module_root = Path(__file__).resolve().parent
-        temp_root = Path(tempfile.gettempdir()).resolve()
-        if _inside(resolved, module_root):
-            relative = resolved.relative_to(REPOSITORY_ROOT).as_posix() + "/"
-            guard_write_path(relative)
-        elif not _inside(resolved, temp_root) or resolved == temp_root:
+        if not _inside(resolved, module_root) or resolved == module_root:
             fail("B03_WRITE_SET_VIOLATION", str(resolved))
+        relative = resolved.relative_to(REPOSITORY_ROOT).as_posix() + "/"
+        guard_write_path(relative)
         resolved.mkdir(parents=True, exist_ok=True)
         if resolved.is_symlink() or resolved.resolve() != resolved:
             fail("B03_WRITE_SET_VIOLATION", f"symlink:{resolved}")
@@ -586,11 +593,13 @@ class B03FixtureStore:
     def append_record_with_retentions(
         self,
         record: dict[str, Any],
-        slice_refs: list[dict[str, Any]],
         *,
         event: str,
         expected_type: str,
         commit_capability: object | None = None,
+        retention_selector: Callable[
+            [dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]], bool
+        ],
     ) -> dict[str, Any]:
         if commit_capability is not self.__commit_capability:
             fail("B03_COMMIT_CAPABILITY_REQUIRED")
@@ -606,20 +615,24 @@ class B03FixtureStore:
                 fail("B03_WRITER_SCOPE_ESCAPE", expected_type)
             validator(record, self._record_rows(connection))
             inserted = self._insert_record(connection, record)
-            if not inserted and slice_refs:
-                fail("B03_LIFECYCLE_TERMINAL")
-            for slice_ref in slice_refs:
-                slice_record = self._materialize(connection, slice_ref)
+            purged = 0
+            current_records = self._record_rows(connection)
+            current_times = self._trusted_rows(connection)
+            for core in list(self._slice_core_rows(connection)):
+                slice_record = self._materialize(connection, core["record_ref"])
+                if not retention_selector(slice_record, current_records, current_times):
+                    continue
                 entry = self.__retention_planner(
                     slice_record,
-                    self._record_rows(connection),
-                    self._trusted_rows(connection),
+                    current_records,
+                    current_times,
                     event,
                 )
                 self._apply_retention(connection, entry)
+                purged += 1
         if inserted:
             self.events.append("immutable_record_atomic_write")
-        if slice_refs:
+        if purged:
             self.events.extend(
                 ["source_slice_content_purged", "content_residue_scan_passed"]
             )
@@ -671,10 +684,10 @@ class B03FixtureStore:
             is not None
         )
 
-    def state_contains(self, text: str) -> bool:
+    def _state_contains_for_test(self, text: str) -> bool:
         return text.encode("utf-8") in self.state_path.read_bytes()
 
-    def content_file_contains(self, text: str) -> bool:
+    def _content_file_contains_for_test(self, text: str) -> bool:
         return text.encode("utf-8") in self._content_path.read_bytes()
 
     def tombstone(self, slice_ref: dict[str, Any]) -> dict[str, Any] | None:

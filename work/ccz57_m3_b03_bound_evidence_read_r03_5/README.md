@@ -16,11 +16,11 @@ SourceSlice 的内容只等于 `CandidateVersion.items[].evidence`。同一句�
 
 同意和授权是两条独立 lifecycle。同意逐字绑定 Request、政策版本和用途，不能拿旧同意换用途或套到另一版政策。撤回、替代、到期会在同一事务里禁止读取、清除明文、移除 SourceSlice core，并写入 tombstone 和留存回执。
 
-B03Service 在准入时把上游 context 和 policy 封进私有快照；公开属性只是可修改的副本。可信时间链保存在事务存储里，所有实例每次都读取同一份唯一 current head，旧实例不能继续重放旧 head。服务不公开 store、明文路径或可替换的授权回调；存储内部固定调用已注册的类型校验和当前状态校验。tombstone 后固定返回 `TOMBSTONED_CONTENT_UNAVAILABLE`。
+B03Service 在准入时把上游 context 和 policy 封进私有快照；上游 context 不作为公开属性返回，policy 和可信时间的公开值只是可修改副本。可信时间链保存在事务存储里，所有实例每次都读取同一份唯一 current head，旧实例不能继续重放旧 head。服务不公开 store、明文路径或可替换的授权回调；存储内部固定调用已注册的类型校验和当前状态校验。tombstone 后固定返回 `TOMBSTONED_CONTENT_UNAVAILABLE`。
 
 明文不写入不可变状态库，只进入单独的短期内容库。两个库使用同盘 SQLite rollback journal 和 `synchronous=FULL`：SourceSlice 发布、生命周期撤回、权威时间推进、明文清除、tombstone 和留存回执都按一个跨库事务提交。进程中断时由事务日志恢复，不靠事后删除半成品；短期内容库启用 `secure_delete`。清除后 SourceSlice core 和明文都不存在，只保留 5-key tombstone：SourceSlice RecordRef、evidence binding hash、evidence hash、`content_bytes_retained=false` 和不可恢复状态。
 
-运行根只允许系统临时目录或 B-03 唯一写集。根目录和两个数据库文件遇到符号链接会在建库前拒绝，不能把明文带到写集外。
+运行根只能位于 B-03 唯一写集，不能指向系统临时目录。根目录、两个数据库文件及 SQLite 伴随文件遇到符号链接、硬链接或其他外部别名时，会在建库前拒绝，不能把明文带到写集外。
 
 ## 离线复验
 
@@ -31,6 +31,6 @@ uv run --locked ruff check work/ccz57_m3_b03_bound_evidence_read_r03_5
 uv run --locked python work/ccz57_m3_b03_bound_evidence_read_r03_5/self_check.py
 ```
 
-夹具只读 B-01/B-02 的合成接口；没有模型 API、网络、真实小说读取、B-04 Patch 或正式账本写入。
+夹具只读 B-01/B-02 的合成接口；没有模型 API、网络、真实小说读取、B-04 Patch 或正式账本写入。`OFFLINE_REPLAY_REPORT.json` 只证明本地静态与文件完整性，不把硬编码的 0 冒充独立运行证据；实际次数由精确头父级运行回执记录。
 
 来源：Codex

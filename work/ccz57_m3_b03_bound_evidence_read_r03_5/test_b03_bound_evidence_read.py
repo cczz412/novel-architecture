@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import shutil
 from copy import deepcopy
 from pathlib import Path
 
@@ -10,6 +12,7 @@ import pytest
 from b03_contracts import (
     B03ContractError,
     REPOSITORY_ROOT,
+    admit_candidate_context,
     build_output_record,
     current_trusted_time_head,
     make_input_record,
@@ -22,27 +25,55 @@ from fixtures import (
     product_input,
     trusted_time_records,
 )
+from restricted_source_reader import RestrictedSourceReader
 from service import B03Service
 
 MODULE_ROOT = Path(__file__).resolve().parent
+TEST_RUNTIME_ROOT = MODULE_ROOT / ".pytest-runtime"
+
+
+def fixture_runtime_root(tmp_path: Path) -> Path:
+    return TEST_RUNTIME_ROOT / tmp_path.name
+
+
+@pytest.fixture(autouse=True)
+def clean_test_runtime(tmp_path: Path):
+    case_root = fixture_runtime_root(tmp_path)
+    if case_root.exists():
+        shutil.rmtree(case_root)
+    yield
+    if case_root.exists():
+        shutil.rmtree(case_root)
+    try:
+        TEST_RUNTIME_ROOT.rmdir()
+    except OSError:
+        pass
 
 
 def make_service(
     tmp_path: Path, *, times: list[dict[str, object]] | None = None
 ) -> B03Service:
     return B03Service(
-        tmp_path / "b03-state",
+        fixture_runtime_root(tmp_path) / "b03-state",
         upstream=exact_context(),
         policy=policy_record(),
         trusted_times=trusted_time_records() if times is None else times,
     )
 
 
+def fixture_product_input() -> dict[str, object]:
+    return product_input(exact_context())
+
+
+def fixture_evidence() -> str:
+    return exact_context()["candidate_version"]["payload"]["items"][0]["evidence"]
+
+
 def admitted_chain(
     instance: B03Service,
 ) -> tuple[dict[str, object], dict[str, object], dict[str, object]]:
     request = instance.request(
-        product_input(instance.context), created_at="2026-08-29T06:01:00Z"
+        fixture_product_input(), created_at="2026-08-29T06:01:00Z"
     )
     consent = instance.consent(
         request,
@@ -81,7 +112,7 @@ def test_candidate_fact_reads_only_bound_evidence_without_public_store(
     source_slice = instance.read(request, consent, authorization)
     core = instance.slice_core(source_slice)
     assert core is not None
-    expected = instance.context["candidate_version"]["payload"]["items"][0]["evidence"]
+    expected = fixture_evidence()
     assert instance.read_slice_content(source_slice) == expected
     assert instance.plaintext_present(source_slice)
     binding = core["core"]["payload"]["evidence_binding"]
@@ -89,6 +120,9 @@ def test_candidate_fact_reads_only_bound_evidence_without_public_store(
     assert "range" not in core["core"]["payload"]
     assert not hasattr(instance, "store")
     assert not hasattr(instance, "append_record")
+    assert not hasattr(instance, "context")
+    assert not hasattr(instance, "state_contains")
+    assert not hasattr(instance, "content_file_contains")
     assert instance.state_counts() == {
         "records": 3,
         "source_slices": 1,
@@ -112,7 +146,7 @@ def test_legacy_caller_ranges_are_rejected_before_any_write(
     tmp_path: Path, field: str
 ) -> None:
     instance = make_service(tmp_path)
-    rejected = product_input(instance.context)
+    rejected = fixture_product_input()
     rejected[field] = 1
     before = instance.snapshot()
     with pytest.raises(B03ContractError) as caught:
@@ -123,7 +157,7 @@ def test_legacy_caller_ranges_are_rejected_before_any_write(
 
 def test_formal_ledger_route_fails_closed_without_adapter(tmp_path: Path) -> None:
     instance = make_service(tmp_path)
-    rejected = product_input(instance.context)
+    rejected = fixture_product_input()
     rejected["subject"] = {"kind": "FORMAL_LEDGER_ITEM"}
     with pytest.raises(B03ContractError) as caught:
         instance.request(rejected, created_at="2026-08-29T06:01:00Z")
@@ -134,7 +168,7 @@ def test_formal_ledger_route_fails_closed_without_adapter(tmp_path: Path) -> Non
 
 def test_binding_drift_fails_before_request_write(tmp_path: Path) -> None:
     instance = make_service(tmp_path)
-    rejected = product_input(instance.context)
+    rejected = fixture_product_input()
     rejected["evidence_binding"] = deepcopy(rejected["evidence_binding"])
     rejected["evidence_binding"]["binding_hash"] = "0" * 64
     with pytest.raises(B03ContractError) as caught:
@@ -146,7 +180,7 @@ def test_binding_drift_fails_before_request_write(tmp_path: Path) -> None:
 def test_empty_actor_is_rejected_before_consent_write(tmp_path: Path) -> None:
     instance = make_service(tmp_path)
     request = instance.request(
-        product_input(instance.context), created_at="2026-08-29T06:01:00Z"
+        fixture_product_input(), created_at="2026-08-29T06:01:00Z"
     )
     before = instance.snapshot()
     with pytest.raises(B03ContractError) as caught:
@@ -161,7 +195,7 @@ def test_stolen_internal_capability_still_cannot_commit_bad_or_paired_records(
 ) -> None:
     instance = make_service(tmp_path)
     request = instance.request(
-        product_input(instance.context), created_at="2026-08-29T06:01:00Z"
+        fixture_product_input(), created_at="2026-08-29T06:01:00Z"
     )
     forged_consent = build_output_record(
         record_type="M3_SOURCE_READ_CONSENT",
@@ -209,14 +243,14 @@ def test_consent_cannot_authorize_a_different_request_or_purpose(
     tmp_path: Path,
 ) -> None:
     instance = make_service(tmp_path)
-    first = product_input(instance.context)
+    first = fixture_product_input()
     request_one = instance.request(first, created_at="2026-08-29T06:01:00Z")
     consent_one = instance.consent(
         request_one,
         actor="fixture-author",
         created_at="2026-08-29T06:01:01Z",
     )
-    second = product_input(instance.context)
+    second = fixture_product_input()
     second["purpose"] = "OTHER_REVIEW"
     request_two = instance.request(second, created_at="2026-08-29T06:01:03Z")
     before = instance.snapshot()
@@ -231,7 +265,7 @@ def test_individually_valid_request_and_authorization_chains_cannot_be_spliced(
 ) -> None:
     instance = make_service(tmp_path)
     request_one, _, _ = admitted_chain(instance)
-    second = product_input(instance.context)
+    second = fixture_product_input()
     second["purpose"] = "OTHER_REVIEW"
     request_two = instance.request(second, created_at="2026-08-29T06:01:03Z")
     consent_two = instance.consent(
@@ -280,9 +314,10 @@ def test_manual_purge_keeps_only_five_key_tombstone_and_receipt(tmp_path: Path) 
     instance = make_service(tmp_path)
     request, consent, authorization = admitted_chain(instance)
     source_slice = instance.read(request, consent, authorization)
-    expected = instance.context["candidate_version"]["payload"]["items"][0]["evidence"]
-    assert not instance.state_contains(expected)
-    assert instance.content_file_contains(expected)
+    expected = fixture_evidence()
+    store = getattr(instance, "_B03Service__store")
+    assert not store._state_contains_for_test(expected)
+    assert store._content_file_contains_for_test(expected)
     receipt = instance.purge(source_slice)
     tombstone = instance.tombstone(source_slice)
     assert receipt["record_type"] == "M3_SOURCE_SLICE_RETENTION_RECEIPT"
@@ -296,8 +331,8 @@ def test_manual_purge_keeps_only_five_key_tombstone_and_receipt(tmp_path: Path) 
     }
     assert instance.slice_core(source_slice) is None
     assert not instance.plaintext_present(source_slice)
-    assert not instance.state_contains(expected)
-    assert not instance.content_file_contains(expected)
+    assert not store._state_contains_for_test(expected)
+    assert not store._content_file_contains_for_test(expected)
     assert instance.storage_residue() == []
     assert instance.state_counts() == {
         "records": 4,
@@ -415,6 +450,73 @@ def test_lifecycle_and_purge_are_one_transaction(tmp_path: Path) -> None:
     assert instance.tombstone(source_slice) is None
 
 
+def test_lifecycle_transaction_catches_slice_published_after_service_snapshot(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    instance = make_service(tmp_path)
+    second_instance = make_service(tmp_path)
+    request_ref, consent_ref, authorization_ref = admitted_chain(instance)
+    first_store = getattr(instance, "_B03Service__store")
+    second_store = getattr(second_instance, "_B03Service__store")
+    second_capability = getattr(second_instance, "_B03Service__commit_capability")
+    records = first_store.records()
+
+    def resolved(ref: dict[str, object]) -> dict[str, object]:
+        return next(item for item in records if record_ref(item) == ref)
+
+    times = instance.trusted_times
+    slice_record = RestrictedSourceReader.build_slice(
+        request=resolved(request_ref),
+        consent=resolved(consent_ref),
+        authorization=resolved(authorization_ref),
+        policy=policy_record(),
+        records=records,
+        trusted_time_records=times,
+        supplied_time_ref=record_ref(current_trusted_time_head(times)),
+        context=admit_candidate_context(**exact_context()),
+    )
+    original_append = first_store.append_record_with_retentions
+
+    def publish_then_append(*args, **kwargs):
+        second_store.publish_slice(
+            slice_record,
+            commit_capability=second_capability,
+        )
+        return original_append(*args, **kwargs)
+
+    monkeypatch.setattr(
+        first_store, "append_record_with_retentions", publish_then_append
+    )
+    instance.lifecycle(
+        consent_ref,
+        event="REVOKED",
+        effective_at="2026-08-29T06:02:00Z",
+        created_at="2026-08-29T06:02:00Z",
+    )
+    slice_ref = record_ref(slice_record)
+    assert not instance.plaintext_present(slice_ref)
+    assert instance.slice_core(slice_ref) is None
+    assert instance.tombstone(slice_ref) is not None
+
+
+def test_future_effective_lifecycle_is_rejected_without_write(tmp_path: Path) -> None:
+    instance = make_service(tmp_path)
+    request, consent, authorization = admitted_chain(instance)
+    source_slice = instance.read(request, consent, authorization)
+    before = instance.snapshot()
+    with pytest.raises(B03ContractError) as caught:
+        instance.lifecycle(
+            consent,
+            event="REVOKED",
+            effective_at="2026-08-29T06:09:00Z",
+            created_at="2026-08-29T06:02:00Z",
+        )
+    assert code(caught) == "B03_LIFECYCLE_FUTURE_EFFECTIVE_AT"
+    assert instance.snapshot() == before
+    assert instance.plaintext_present(source_slice)
+    assert instance.tombstone(source_slice) is None
+
+
 def test_time_head_and_expiry_purge_are_one_transaction(tmp_path: Path) -> None:
     instance = make_service(tmp_path)
     request, consent, authorization = admitted_chain(instance)
@@ -463,14 +565,13 @@ def test_invalid_lifecycle_and_superseded_without_replacement_write_nothing(
     assert instance.snapshot() == before
 
 
-def test_public_context_policy_and_time_copies_cannot_change_admission(
+def test_context_is_not_public_and_policy_or_time_copies_cannot_change_admission(
     tmp_path: Path,
 ) -> None:
     instance = make_service(tmp_path)
-    exposed_context = instance.context
     exposed_policy = instance.policy
     exposed_times = instance.trusted_times
-    exposed_context["candidate_version"]["payload"]["items"][0]["evidence"] = "forged"
+    assert not hasattr(instance, "context")
     exposed_policy["payload"]["adjacent_prose_access"] = "ALLOW"
     exposed_times.append(trusted_time(3, "2026-08-29T06:03:00Z"))
     request, consent, authorization = admitted_chain(instance)
@@ -508,7 +609,7 @@ def test_stale_service_reopen_cannot_replace_newer_time_head(tmp_path: Path) -> 
 def test_write_root_outside_temp_or_unique_write_set_is_rejected(
     tmp_path: Path,
 ) -> None:
-    escape = MODULE_ROOT.parent / f"_b03_escape_{tmp_path.name}"
+    escape = tmp_path / "b03-state"
     assert not escape.exists()
     with pytest.raises(B03ContractError) as caught:
         B03Service(
@@ -519,13 +620,15 @@ def test_write_root_outside_temp_or_unique_write_set_is_rejected(
         )
     assert code(caught) == "B03_WRITE_SET_VIOLATION"
     assert not escape.exists()
-    assert escape.parent == REPOSITORY_ROOT / "work"
+    assert not escape.is_relative_to(REPOSITORY_ROOT)
 
 
-def test_symlink_root_and_database_file_are_rejected_before_use(tmp_path: Path) -> None:
+def test_external_aliases_are_rejected_before_database_use(tmp_path: Path) -> None:
     target = tmp_path / "target"
     target.mkdir()
-    linked_root = tmp_path / "linked-root"
+    case_root = fixture_runtime_root(tmp_path)
+    case_root.mkdir(parents=True)
+    linked_root = case_root / "linked-root"
     linked_root.symlink_to(target, target_is_directory=True)
     with pytest.raises(B03ContractError) as caught:
         B03Service(
@@ -536,7 +639,7 @@ def test_symlink_root_and_database_file_are_rejected_before_use(tmp_path: Path) 
         )
     assert code(caught) == "B03_WRITE_SET_VIOLATION"
 
-    database_root = tmp_path / "database-root"
+    database_root = case_root / "database-root"
     database_root.mkdir()
     outside = tmp_path / "outside.sqlite3"
     outside.write_bytes(b"do-not-touch")
@@ -550,6 +653,21 @@ def test_symlink_root_and_database_file_are_rejected_before_use(tmp_path: Path) 
         )
     assert code(caught) == "B03_WRITE_SET_VIOLATION"
     assert outside.read_bytes() == b"do-not-touch"
+
+    hardlink_root = case_root / "hardlink-root"
+    hardlink_root.mkdir()
+    hardlink_outside = tmp_path / "hardlink-outside.sqlite3"
+    hardlink_outside.write_bytes(b"")
+    os.link(hardlink_outside, hardlink_root / "immutable-state.sqlite3")
+    with pytest.raises(B03ContractError) as caught:
+        B03Service(
+            hardlink_root,
+            upstream=exact_context(),
+            policy=policy_record(),
+            trusted_times=trusted_time_records(),
+        )
+    assert code(caught) == "B03_WRITE_SET_VIOLATION"
+    assert hardlink_outside.read_bytes() == b""
 
 
 def test_trusted_time_chain_still_rejects_ambiguous_same_sequence(

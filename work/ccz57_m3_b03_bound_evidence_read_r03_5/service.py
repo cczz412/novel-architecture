@@ -17,6 +17,7 @@ from b03_contracts import (
     canonical_bytes,
     current_trusted_time_head,
     fail,
+    parse_utc,
     record_ref,
     resolve_bound_candidate_input,
     sha256_value,
@@ -166,10 +167,6 @@ class B03Service:
         except BaseException:
             self.__store.close()
             raise
-
-    @property
-    def context(self) -> dict[str, Any]:
-        return self.__load_context()
 
     @property
     def policy(self) -> dict[str, Any]:
@@ -383,28 +380,36 @@ class B03Service:
             future_records = [*records, record]
             validate_lifecycle_streams(future_records)
             trusted_times = self.__store.trusted_times()
-            slice_refs: list[dict[str, Any]] = []
-            for core in self.__store.slice_cores():
-                slice_ref = core["record_ref"]
-                slice_record = core["core"]
+            head = current_trusted_time_head(trusted_times)
+            if parse_utc(effective_at, "B03_LIFECYCLE_INVALID") > parse_utc(
+                head["payload"]["trusted_evaluation_time"],
+                "B03_TRUSTED_TIME_INVALID",
+            ):
+                fail("B03_LIFECYCLE_FUTURE_EFFECTIVE_AT")
+
+            def should_retain(
+                slice_record: dict[str, Any],
+                current_records: list[dict[str, Any]],
+                current_times: list[dict[str, Any]],
+            ) -> bool:
                 if not self.__slice_links_parent(
                     slice_record, parent["record_type"], parent_ref
                 ):
-                    continue
+                    return False
                 state = self.__project_slice(
-                    slice_record, future_records, trusted_times
+                    slice_record, current_records, current_times
                 )
-                if (
+                return (
                     state["projected_authorization_state"] != ACTIVE_STATE
                     or state["projected_consent_state"] != ACTIVE_STATE
-                ):
-                    slice_refs.append(slice_ref)
+                )
+
             return self.__store.append_record_with_retentions(
                 record,
-                slice_refs,
                 event="UNREADABLE",
                 expected_type=record_type,
                 commit_capability=self.__commit_capability,
+                retention_selector=should_retain,
             )
 
     def __validate_live_slice(
@@ -516,14 +521,6 @@ class B03Service:
     def plaintext_present(self, slice_ref: dict[str, Any]) -> bool:
         with self.__lock:
             return self.__store.plaintext_present(slice_ref)
-
-    def state_contains(self, text: str) -> bool:
-        with self.__lock:
-            return self.__store.state_contains(text)
-
-    def content_file_contains(self, text: str) -> bool:
-        with self.__lock:
-            return self.__store.content_file_contains(text)
 
     def tombstone(self, slice_ref: dict[str, Any]) -> dict[str, Any] | None:
         with self.__lock:
