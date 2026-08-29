@@ -1,0 +1,49 @@
+{
+  "contract_version": "r03.5-candidate",
+  "candidate_schema_id": "novel-fact-extraction-v2.1",
+  "product_input_keys": ["subject", "evidence_binding", "purpose"],
+  "forbidden_caller_keys": [
+    "range",
+    "requested_range",
+    "authorized_range",
+    "start",
+    "end",
+    "max_chars",
+    "max_characters"
+  ],
+  "consent_binding_keys": ["request_ref", "policy_ref", "purpose", "request_scope_hash"],
+  "immutable_record_types": [
+    "M3_SOURCE_READ_REQUEST",
+    "M3_SOURCE_READ_CONSENT",
+    "M3_SOURCE_READ_CONSENT_LIFECYCLE_RECEIPT",
+    "M3_SOURCE_READ_AUTHORIZATION",
+    "M3_SOURCE_READ_AUTHORIZATION_LIFECYCLE_RECEIPT",
+    "M3_AUTHORIZED_SOURCE_SLICE",
+    "M3_SOURCE_SLICE_RETENTION_RECEIPT"
+  ],
+  "roles": {
+    "M3_SOURCE_READ_REQUEST": "SourceReadRequestWriter",
+    "M3_SOURCE_READ_CONSENT": "SourceReadConsentWriter",
+    "M3_SOURCE_READ_CONSENT_LIFECYCLE_RECEIPT": "SourceReadConsentLifecycleWriter",
+    "M3_SOURCE_READ_AUTHORIZATION": "SourceReadAuthorizationWriter",
+    "M3_SOURCE_READ_AUTHORIZATION_LIFECYCLE_RECEIPT": "SourceReadAuthorizationLifecycleWriter",
+    "M3_AUTHORIZED_SOURCE_SLICE": "RestrictedSourceReader",
+    "M3_SOURCE_SLICE_RETENTION_RECEIPT": "RestrictedSourceRetentionController",
+    "derived_current_state": "SourceReadAuthorizationStateProjector"
+  },
+  "tombstone_keys": [
+    "authorized_source_slice_ref",
+    "content_bytes_retained",
+    "evidence_binding_hash",
+    "evidence_sha256",
+    "storage_state"
+  ],
+  "storage": {
+    "immutable_state": "immutable-state.sqlite3",
+    "expiring_plaintext": "expiring-content.sqlite3",
+    "cross_database_transaction": "rollback-journal-full-sync",
+    "plaintext_secure_delete": true,
+    "source_slice_core_removed_on_purge": true
+  },
+  "formal_ledger_without_adapter": "B03_FORMAL_LEDGER_ADAPTER_REQUIRED"
+}
