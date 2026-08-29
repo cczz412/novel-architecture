@@ -2,9 +2,9 @@
 
 ## 本轮拍板与施工边界
 
-- CZ 语义版本决定回执：`/Users/a1234/挣钱/小说架构v2/TEMP/ccz57_m3_r03_5_contract_candidates_20260829/00_CZ_SEMANTIC_VERSION_DECISION_RECEIPT.md`
-- B-02 r03.5 施工合同候选：`/Users/a1234/挣钱/小说架构v2/TEMP/ccz57_m3_r03_5_contract_candidates_20260829/02_B02_R03_5_CONSTRUCTION_CONTRACT_CANDIDATE_R01.md`
-- GitHub #197／Linear CCZ-145 的当次施工授权：本窗口用户指令；没有转授权 B-03、B-04、提交、推送、PR 或票务写入。
+- CZ 语义版本决定回执：`00_CZ_SEMANTIC_VERSION_DECISION_RECEIPT.md`，SHA-256 `54dcd1e6bb6ddd7b3d166c568995f6d78bb544f213044e316f6ef1d24c660058`。
+- B-02 r03.5 施工合同候选：`02_B02_R03_5_CONSTRUCTION_CONTRACT_CANDIDATE_R01.md`，SHA-256 `3611f4166f55fd9ce6a4e6b02ded9e3debf5f2508f69cd9e4dc9caaa2a84b433`。
+- GitHub #197／Linear CCZ-145 的施工与普通 PR 生命周期授权来自本窗口 CZ 指令；本票仍不得顺手写 B-03、B-04 或扩大唯一写集。
 
 ## 只读工程来源
 
