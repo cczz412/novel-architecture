@@ -91,8 +91,9 @@ class FixtureStore:
         "_publish_lock_path",
     )
 
-    def __init__(self, root: Path, *, failure_point: str | None = None) -> None:
-        resolved = root.resolve(strict=False)
+    @staticmethod
+    def _resolve_allowed_storage_path(path: Path) -> Path:
+        resolved = path.resolve(strict=False)
         module_root = Path(__file__).resolve().parent
         repository_root = module_root.parents[1]
         temporary_root = Path(tempfile.gettempdir()).resolve()
@@ -104,15 +105,24 @@ class FixtureStore:
         if (inside_repository and not inside_write_set) or (
             not inside_repository and not inside_temp
         ):
-            fail("B04_WRITE_SET_ESCAPE", str(root))
+            fail("B04_WRITE_SET_ESCAPE", str(path))
+        return resolved
+
+    def __init__(self, root: Path, *, failure_point: str | None = None) -> None:
+        resolved = self._resolve_allowed_storage_path(root)
+        module_root = Path(__file__).resolve().parent
+        temporary_root = Path(tempfile.gettempdir()).resolve()
         self.root = root
         self.transactions_root = root / "transactions"
         self.failure_point = failure_point
         self.events: list[dict[str, str]] = []
         self.before_publish_guard_hook: Callable[[], None] | None = None
-        self._publish_lock_path = (
-            resolved.parent / f".{resolved.name}.ccz57-b04-publish.lock"
+        lock_path = (
+            resolved / ".ccz57-b04-publish.lock"
+            if resolved in {module_root, temporary_root}
+            else resolved.parent / f".{resolved.name}.ccz57-b04-publish.lock"
         )
+        self._publish_lock_path = self._resolve_allowed_storage_path(lock_path)
 
     def _inject(self, point: str) -> None:
         if self.failure_point == point:
@@ -125,8 +135,9 @@ class FixtureStore:
         flags = os.O_CREAT | os.O_RDWR
         if hasattr(os, "O_NOFOLLOW"):
             flags |= os.O_NOFOLLOW
+        lock_path = self._resolve_allowed_storage_path(self._publish_lock_path)
         try:
-            descriptor = os.open(self._publish_lock_path, flags, 0o600)
+            descriptor = os.open(lock_path, flags, 0o600)
         except OSError as error:
             fail("B04_PUBLISH_LOCK_UNAVAILABLE", type(error).__name__)
         try:

@@ -11,6 +11,7 @@ from typing import Any, Callable
 
 import pytest
 
+import b04_store as b04_store_module
 from b04_contracts import (
     B04ContractError,
     CANDIDATE_SCHEMA_ID,
@@ -366,6 +367,30 @@ def test_n09_two_store_instances_serialize_same_root_publish(tmp_path: Path) -> 
     assert second == first
     assert len(first_store.read_records()) == 2
     assert len(list((shared_root / "transactions").iterdir())) == 1
+
+
+def test_n09_module_root_store_keeps_publish_lock_inside_write_set(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data = route_inputs("replace_only")["catalog"]
+    b02_store, _ = build_authoritative_b02_store(tmp_path / "b02-store", data)
+    module_root = tmp_path / "work" / "ccz57_m3_b04_patch_atomic_group_r03_5"
+    module_root.mkdir(parents=True)
+    monkeypatch.setattr(
+        b04_store_module,
+        "__file__",
+        str(module_root / "b04_store.py"),
+    )
+    store = FixtureStore(module_root)
+    service = B04Service(store, b02_store=b02_store)
+
+    result = service.propose(**_args("replace_only"))
+
+    assert result["patch_proposal_ref"]["record_type"] == "M3_PATCH_PROPOSAL"
+    assert store._publish_lock_path.parent == module_root
+    assert store._publish_lock_path.is_file()
+    escaped_lock = module_root.parent / f".{module_root.name}.ccz57-b04-publish.lock"
+    assert not escaped_lock.exists()
 
 
 def test_n10_preview_has_complete_items_and_no_decision_fields(tmp_path: Path) -> None:
