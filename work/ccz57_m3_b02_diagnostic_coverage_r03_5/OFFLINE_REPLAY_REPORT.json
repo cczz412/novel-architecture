@@ -1,0 +1,281 @@
+{
+  "b01_r03_5": {
+    "manifest_verified_files": [
+      "DESIGN_CONFLICTS_AND_LIMITS.md",
+      "OBJECT_SHAPES.json",
+      "OFFLINE_REPLAY_REPORT.json",
+      "README.md",
+      "SOURCE_INDEX.md",
+      "b01_contract.py",
+      "fixtures.py",
+      "self_check.py",
+      "test_b01_contract.py"
+    ],
+    "mode": "READ_ONLY"
+  },
+  "candidate_schema_id": "novel-fact-extraction-v2.1",
+  "contract_version": "r03.5-candidate",
+  "failure_fixtures": {
+    "F-01": {
+      "description": "r03.3 CandidateVersion rejected by r03.5 admission",
+      "result": "PASS"
+    },
+    "F-02": {
+      "description": "Diagnostic EvidenceLocator missing gives zero writes",
+      "result": "PASS"
+    },
+    "F-03": {
+      "description": "Diagnostic locator pair from different lineages rejected",
+      "result": "PASS"
+    },
+    "F-04": {
+      "description": "MISSING rejects any matched locator",
+      "result": "PASS"
+    },
+    "F-05": {
+      "description": "PARTIAL and MATCHED require a matched locator pair",
+      "result": "PASS"
+    },
+    "F-06": {
+      "description": "source evidence outside exact chapter rejected",
+      "result": "PASS"
+    },
+    "F-07": {
+      "description": "source evidence hash or byte location drift rejected",
+      "result": "PASS"
+    },
+    "F-08": {
+      "description": "CandidateVersion ref/revision/contract drift rejected",
+      "result": "PASS"
+    },
+    "F-09": {
+      "description": "immutable overwrite and hash collision rejected",
+      "result": "PASS"
+    },
+    "F-10": {
+      "description": "lifecycle order, time, duplicate, and terminal errors rejected",
+      "result": "PASS"
+    },
+    "F-11": {
+      "description": "transaction failure leaves zero pending bytes",
+      "result": "PASS"
+    },
+    "F-12": {
+      "description": "write-set, model, network, subprocess, real novel, Patch blocked",
+      "result": "PASS"
+    }
+  },
+  "legacy_r03_3": {
+    "manifest_verified_files": [
+      "A_INTERFACE_ADMISSION_RECEIPT.fixture.json",
+      "B01_MERGE_READBACK_RECEIPT.fixture.json",
+      "DESIGN_CONFLICTS_AND_LIMITS.md",
+      "OFFLINE_REPLAY_REPORT.json",
+      "README.md",
+      "SOURCE_INDEX.md",
+      "b02_contracts.py",
+      "b02_store.py",
+      "fixtures.py",
+      "open_issue_projection.py",
+      "self_check.py",
+      "test_b02_diagnostic_coverage.py"
+    ],
+    "mode": "READ_ONLY"
+  },
+  "normal_fixtures": {
+    "N-01": {
+      "description": "writer identity original",
+      "result": "PASS"
+    },
+    "N-02": {
+      "description": "entry-level Diagnostic with LineageLocator + EvidenceLocator",
+      "result": "PASS"
+    },
+    "N-03": {
+      "description": "append-only lifecycle and immutable Diagnostic original",
+      "result": "PASS"
+    },
+    "N-04": {
+      "description": "MATCHED Coverage with one exact locator pair",
+      "result": "PASS"
+    },
+    "N-05": {
+      "description": "PARTIAL Coverage with source evidence and matched locator pair",
+      "result": "PASS"
+    },
+    "N-06": {
+      "description": "MISSING Coverage with source evidence and zero matched refs",
+      "result": "PASS"
+    },
+    "N-07": {
+      "description": "open issue projection with locator summaries and no prose",
+      "result": "PASS"
+    },
+    "N-08": {
+      "description": "idempotent atomic restart readback",
+      "result": "PASS"
+    },
+    "N-09": {
+      "description": "decomposed Unicode source evidence canonical round trip",
+      "result": "PASS"
+    }
+  },
+  "replay_evidence": {
+    "closed_diagnostic_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "ace553f96ec1de36f31c9a859e1fc1a14059d4e7cb8cd3886d195d1527971ec1",
+      "record_id": "diagnostic:9dd89591a193754f:f0d812e8d13fa37c58d36637c6dbbecf",
+      "record_type": "M3_DIAGNOSTIC",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "coverage_refs": {
+      "MATCHED": {
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "d0f476849c31b693f6d83d71b75d3f4ba6f479a00a16424facce1b661d7f614a",
+        "record_id": "coverage:3808dbe227a4a20bf2bc35d0bf2503dece7741ee",
+        "record_type": "M3_COVERAGE_OBSERVATION",
+        "record_version": 1,
+        "source_module": "M3"
+      },
+      "MISSING": {
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "e3a5ae68ddd7b6a00226e54972643aafd1597fece0b50fc8eaf28fe5c4163614",
+        "record_id": "coverage:dcb28ba5eee76b55a46fdf0c0cbf07ad791a4acd",
+        "record_type": "M3_COVERAGE_OBSERVATION",
+        "record_version": 1,
+        "source_module": "M3"
+      },
+      "PARTIAL": {
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "2e7aa51ff54c40419917fe3e42d3a8d57c57a26dedbc3dfb821a2a2f37f1421e",
+        "record_id": "coverage:805cbf57986abcfda55e49077107befbeb72d94c",
+        "record_type": "M3_COVERAGE_OBSERVATION",
+        "record_version": 1,
+        "source_module": "M3"
+      }
+    },
+    "lifecycle_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "1e8132f9a2a26f70efcc96dd0942d2fcad5273cf08f3c5c7ad32e0f6abb38ead",
+      "record_id": "diagnostic-lifecycle:ace553f96ec1de36:1",
+      "record_type": "M3_DIAGNOSTIC_LIFECYCLE_RECEIPT",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "open_diagnostic_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "daef68332bc106014ad54657ba55bca2ad105708b5bc23bf0d352e9161b95437",
+      "record_id": "diagnostic:9dd89591a193754f:d00498a627f0c4005ffcc8e34c0e7351",
+      "record_type": "M3_DIAGNOSTIC",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "projection_open_count": 1,
+    "record_counts": {
+      "M3_COVERAGE_OBSERVATION": 3,
+      "M3_DIAGNOSTIC": 2,
+      "M3_DIAGNOSTIC_LIFECYCLE_RECEIPT": 1,
+      "M3_DIAGNOSTIC_RECORDER_IDENTITY": 1
+    },
+    "record_hashes": [
+      "1e8132f9a2a26f70efcc96dd0942d2fcad5273cf08f3c5c7ad32e0f6abb38ead",
+      "2e7aa51ff54c40419917fe3e42d3a8d57c57a26dedbc3dfb821a2a2f37f1421e",
+      "ace553f96ec1de36f31c9a859e1fc1a14059d4e7cb8cd3886d195d1527971ec1",
+      "bc1ec8bcdc5cfc3240c38324f146dafa2851edf62d8c0b668bd865aeb60ecea7",
+      "d0f476849c31b693f6d83d71b75d3f4ba6f479a00a16424facce1b661d7f614a",
+      "daef68332bc106014ad54657ba55bca2ad105708b5bc23bf0d352e9161b95437",
+      "e3a5ae68ddd7b6a00226e54972643aafd1597fece0b50fc8eaf28fe5c4163614"
+    ]
+  },
+  "report_contract": "CCZ57_M3_B02_R03_5_OFFLINE_REPLAY",
+  "result": "PASS",
+  "runtime_event_evidence": {
+    "candidate_version_writes": 0,
+    "model_api_calls": 0,
+    "network_calls": 0,
+    "patch_writes": 0,
+    "real_novel_reads": 0,
+    "write_set_escapes": 0
+  },
+  "source_evidence_unicode_policy": {
+    "decomposed_unicode_regression": "PASS",
+    "ordinary_fields": "NFC",
+    "source_evidence": "PRESERVE_ORIGINAL_CODE_POINTS_AND_UTF8_BYTES"
+  },
+  "static_boundary": {
+    "python_files": [
+      "b02_contracts.py",
+      "b02_store.py",
+      "fixtures.py",
+      "open_issue_projection.py",
+      "self_check.py",
+      "test_b02_diagnostic_coverage.py"
+    ],
+    "writer_owners": {
+      "CoverageRecorder": [
+        "b02_store.py"
+      ],
+      "DiagnosticLifecycleWriter": [
+        "b02_store.py"
+      ],
+      "DiagnosticRecorder": [
+        "b02_store.py"
+      ],
+      "DiagnosticRecorderIdentityRegistry": [
+        "b02_store.py"
+      ]
+    }
+  },
+  "upstream_identity": {
+    "candidate_schema_id": "novel-fact-extraction-v2.1",
+    "candidate_version_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "9dd89591a193754f96a7c7d3b595d16c459c01f0c4073699c5353780679f0e30",
+      "record_id": "cv:2a17b0a756cd:89fd57fc802a3d7311e2605ee856db03",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "chapter_revision_ref": {
+      "chapter_id": "synthetic-chapter-001",
+      "revision_no": 7,
+      "revision_text_sha256": "9209f22416dfff31d931f9f8f02ce12f4b99ff735754afbb1a4abcaa4899910b"
+    },
+    "evidence_locator_hashes": [
+      "3a78dcd55c2934662497ab14a5704ed56afd43c4fdc16b46f24d5601a7409180",
+      "03bf8d8890bed0435df5b40d8b972a2e5e8e11534514f0f884dde53838d77738"
+    ],
+    "lineage_locator_hashes": [
+      "18565157b3e39d4c57d43fa5974132693d0ee9cabb3e7bada631ac804445a839",
+      "2f791fb9d35ae43b7a54623343eab55d16cabc30c2c1123e92259c8f3556b770"
+    ]
+  },
+  "writer_map": {
+    "M3_COVERAGE_OBSERVATION": "CoverageRecorder",
+    "M3_DIAGNOSTIC": "DiagnosticRecorder",
+    "M3_DIAGNOSTIC_LIFECYCLE_RECEIPT": "DiagnosticLifecycleWriter",
+    "M3_DIAGNOSTIC_RECORDER_IDENTITY": "DiagnosticRecorderIdentityRegistry"
+  }
+}
