@@ -8,7 +8,7 @@
 
 - 不可信输入、reader 故障或两次快照漂移：`ABORT_NO_OUTPUT`，不产生路线原件；
 - 输入可信且确定不安全：发布 `REJECT`；
-- 只有 exact 已声明非内容门关闭：发布 `DEFER`；
+- 只有声明与 binding 一一闭合、binding 指向 reader 返回的唯一最新状态、并精确绑定当前 route unit 或 atomic-group id＋hash 的非内容门关闭：发布 `DEFER`；
 - 机械信息不足：发布 `EXPAND_CHECK`，返回最小 ref 和疑问码。
 
 ### B-04 全局保护不足以支持部分放行
@@ -23,7 +23,7 @@ B-04 会从 ProtectionSet 中排除整份 Patch 的全部替换目标。B-05 不
 
 ### 因果提示没有直接 group 编号
 
-映射只能使用 exact Patch operation、Diagnostic／Coverage／opaque SourceSlice ref 和 lineage／evidence locator。B-04 原件或 SourceSlice 冻结关系不成立时先中止，不生成路线；只有输入已经通过 exact 闭集、但 B-05 仍无法唯一归属时才扩大检查，不能读正文或用模型猜。
+映射只能使用 exact Patch operation、Diagnostic／Coverage／opaque SourceSlice ref 和 lineage／evidence locator。即使 SourceSlice bytes 保持 opaque，Patch 仍须核对 exact candidate schema，Patch 与 CausalHintProposal 的 SourceSlice refs 也必须 canonical bytes 完全相等。B-04 原件或 SourceSlice 冻结关系不成立时先中止，不生成路线；只有输入已经通过 exact 闭集、但 B-05 仍无法唯一归属时才扩大检查，不能读正文或用模型猜。
 
 ### 上游 shape 通过不等于 exact 原件可信
 

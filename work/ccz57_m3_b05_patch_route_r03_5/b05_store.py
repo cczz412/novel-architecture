@@ -32,7 +32,6 @@ from authoritative_readers import (  # noqa: E402
 )
 from b05_contracts import (  # noqa: E402
     B05ContractError,
-    CANDIDATE_SCHEMA_ID,
     PatchLifecycleBuilder,
     PatchRouteDecider,
     PatchValidator,
@@ -1099,7 +1098,6 @@ class B05Service:
                 "coverage_observation_refs", []
             ),
         )
-        policy = self.policy_gate_reader.read(patch_proposal_ref=record_ref(patch))
         b04 = B04PatchClosureReader.read(
             patch_proposal=patch,
             protection_set=protection,
@@ -1108,6 +1106,19 @@ class B05Service:
             source_slice_records=self.source_slice_records,
             upstream_context=b01["upstream_context"],
             b02_scope=b02,
+        )
+        atomic_group_bindings = stable_sorted(
+            [
+                {
+                    "atomic_group_id": group["atomic_group_id"],
+                    "group_payload_hash": group["group_payload_hash"],
+                }
+                for group in b04["patch_proposal"]["payload"]["atomic_groups"]
+            ]
+        )
+        policy = self.policy_gate_reader.read(
+            patch_proposal_ref=record_ref(patch),
+            atomic_group_bindings=atomic_group_bindings,
         )
         return {"b01": b01, "b02": b02, "b04": b04, "policy": policy}
 
@@ -1224,6 +1235,13 @@ class B05Service:
                 by_id[binding["atomic_group_id"]]
                 for binding in unit["atomic_group_bindings"]
             ]
+        route_unit_ids = set(unit_groups)
+        for gate in gates:
+            for target in gate[
+                "applicable_atomic_group_bindings_or_route_unit_ids"
+            ]:
+                if isinstance(target, str) and target not in route_unit_ids:
+                    fail("B05_GATE_APPLICABILITY_INVALID")
         exchange_by_unit: dict[str, list[dict[str, Any]]] = {
             unit["route_unit_id"]: [] for unit in partition
         }
@@ -1414,14 +1432,22 @@ class B05Service:
             if group_ids & set(policy_payload.get("adjacent_check_group_ids", [])):
                 expand_reasons.append("ADJACENT_SEGMENT_CHECK_REQUIRED")
             applicable_closed_gates = []
+            unit_binding_keys = {
+                canonical_bytes(binding) for binding in unit["atomic_group_bindings"]
+            }
             for gate in gates:
                 targets = gate["applicable_atomic_group_bindings_or_route_unit_ids"]
-                target_ids = {
-                    item if isinstance(item, str) else item.get("atomic_group_id")
+                target_route_unit_ids = {
+                    item for item in targets if isinstance(item, str)
+                }
+                target_group_binding_keys = {
+                    canonical_bytes(item)
                     for item in targets
+                    if isinstance(item, dict)
                 }
                 if gate["current_state"] == "CLOSED" and (
-                    route_unit_id in target_ids or bool(group_ids & target_ids)
+                    route_unit_id in target_route_unit_ids
+                    or bool(unit_binding_keys & target_group_binding_keys)
                 ):
                     applicable_closed_gates.append(
                         {
@@ -1819,7 +1845,7 @@ class B05Service:
             "causal_hint_proposal_refs": [record_ref(item) for item in causals],
             "base_candidate_version_ref": record_ref(candidate),
             "base_version_payload_hash": sha256_value(candidate["payload"]),
-            "candidate_schema_id": CANDIDATE_SCHEMA_ID,
+            "candidate_schema_id": patch_payload["candidate_schema_id"],
             "chapter_revision_ref": deepcopy(patch_payload["chapter_revision_ref"]),
             "seg": deepcopy(b01["live_pointer_binding"]["seg"]),
             "segment_index_ref": record_ref(b01["segment_index_record"]),
@@ -1954,7 +1980,7 @@ class B05Service:
             "patch_proposal_ref": record_ref(patch),
             "protection_set_ref": record_ref(protection),
             "base_candidate_version_ref": record_ref(candidate),
-            "candidate_schema_id": CANDIDATE_SCHEMA_ID,
+            "candidate_schema_id": patch_payload["candidate_schema_id"],
             "chapter_revision_ref": deepcopy(patch_payload["chapter_revision_ref"]),
             "seg": deepcopy(b01["live_pointer_binding"]["seg"]),
             "segment_index_ref": record_ref(b01["segment_index_record"]),

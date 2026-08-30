@@ -1320,6 +1320,130 @@ def test_modify_m04_undeclared_gate_cannot_defer(tmp_path: Path) -> None:
     assert env.store.visible_snapshot() == before
 
 
+def test_modify_m04_declared_gate_requires_exact_binding_closure(
+    tmp_path: Path,
+) -> None:
+    env = build_environment(tmp_path / "m04-declared-unbound", closed_gate=True)
+    env.policy_reader.gate_bindings = []
+    before = env.store.visible_snapshot()
+    with pytest.raises(
+        B05ContractError, match="B05_GATE_DECLARATION_CLOSURE_INVALID"
+    ):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_modify_m04_gate_binding_must_use_current_state(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m04-current-state", closed_gate=True)
+    current_state = external_record(
+        "M3_NON_CONTENT_GATE_STATE",
+        {
+            "gate_ref": record_ref(env.records["gate"]),
+            "state_sequence": 2,
+            "current_state": "OPEN",
+        },
+        created_at=REOPENED_AT,
+    )
+    env.policy_reader.gate_records.append(current_state)
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_GATE_STATE_NOT_CURRENT"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_modify_m04_gate_state_head_must_be_unambiguous(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m04-state-ambiguous", closed_gate=True)
+    conflicting_state = external_record(
+        "M3_NON_CONTENT_GATE_STATE",
+        {
+            "gate_ref": record_ref(env.records["gate"]),
+            "state_sequence": 1,
+            "current_state": "OPEN",
+        },
+        created_at=REOPENED_AT,
+    )
+    env.policy_reader.gate_records.append(conflicting_state)
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_GATE_STATE_AMBIGUOUS"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_modify_m04_gate_group_binding_requires_exact_hash(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m04-group-hash", closed_gate=True)
+    target = env.policy_reader.gate_bindings[0][
+        "applicable_atomic_group_bindings_or_route_unit_ids"
+    ][0]
+    target["group_payload_hash"] = "0" * 64
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_GATE_APPLICABILITY_INVALID"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_modify_m04_gate_route_unit_target_must_exist(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m04-route-unit", closed_gate=True)
+    env.policy_reader.gate_bindings[0][
+        "applicable_atomic_group_bindings_or_route_unit_ids"
+    ] = ["route-unit:not-present"]
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_GATE_APPLICABILITY_INVALID"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_modify_m04_gate_bindings_must_cover_each_declared_gate_once(
+    tmp_path: Path,
+) -> None:
+    env = build_environment(
+        tmp_path / "m04-binding-bijection", mode="two-replace", closed_gate=True
+    )
+    second_gate = external_record(
+        "M3_NON_CONTENT_GATE",
+        {"gate_kind": "SECOND_CONTROL", "gate_scope": "PATCH_ROUTE_UNIT"},
+    )
+    second_state = external_record(
+        "M3_NON_CONTENT_GATE_STATE",
+        {
+            "gate_ref": record_ref(second_gate),
+            "state_sequence": 1,
+            "current_state": "CLOSED",
+        },
+    )
+    declarations = env.policy_reader.validation_policy["payload"][
+        "declared_non_content_gates"
+    ]
+    declarations.append(
+        {"gate_ref": record_ref(second_gate), "gate_kind": "SECOND_CONTROL"}
+    )
+    env.policy_reader.validation_policy["payload"]["declared_non_content_gates"] = (
+        sorted(declarations, key=canonical_bytes)
+    )
+    _rehash(env.policy_reader.validation_policy)
+    env.policy_reader.active_selection = external_record(
+        "M3_ACTIVE_POLICY_SELECTION",
+        {
+            "selected_validation_policy_ref": record_ref(
+                env.policy_reader.validation_policy
+            )
+        },
+    )
+    duplicate_binding = deepcopy(env.policy_reader.gate_bindings[0])
+    second_group = env.patch["payload"]["atomic_groups"][1]
+    duplicate_binding["applicable_atomic_group_bindings_or_route_unit_ids"] = [
+        {
+            "atomic_group_id": second_group["atomic_group_id"],
+            "group_payload_hash": second_group["group_payload_hash"],
+        }
+    ]
+    env.policy_reader.gate_bindings.append(duplicate_binding)
+    env.policy_reader.gate_records.extend([second_gate, second_state])
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_GATE_BINDING_DUPLICATE"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
 def test_modify_m05_forged_b04_target_ref_aborts(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "m05-target")
     target = env.patch["payload"]["atomic_groups"][0]["operations"][0]["target"]
@@ -1341,6 +1465,28 @@ def test_modify_m05_forged_b04_target_ref_aborts(tmp_path: Path) -> None:
     assert env.store.visible_snapshot() == before
 
 
+def test_modify_m05_opaque_source_patch_still_requires_exact_schema(
+    tmp_path: Path,
+) -> None:
+    env = build_environment(tmp_path / "m05-source-schema", mode="causal")
+    opaque_source_ref = record_ref(
+        external_record("M3_AUTHORIZED_SOURCE_SLICE", {"opaque_fixture": True})
+    )
+    env.patch["payload"]["authorized_source_slice_refs"] = [opaque_source_ref]
+    env.causals[0]["payload"]["authorized_source_slice_refs"] = [opaque_source_ref]
+    _rehash(env.causals[0])
+    env.patch["payload"]["sidecar_proposal_refs"] = [record_ref(env.causals[0])]
+    env.patch["payload"]["candidate_schema_id"] = "WRONG-SCHEMA"
+    _rehash(env.patch)
+    before = env.store.visible_snapshot()
+    with pytest.raises(
+        B05ContractError,
+        match="B05_B04_CLOSURE_INVALID.*B04_CANDIDATE_SCHEMA_MISMATCH",
+    ):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
 def test_modify_m06_source_slice_relation_never_routes_b09(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "m06-source", mode="two-replace")
     opaque_source_ref = record_ref(
@@ -1350,6 +1496,21 @@ def test_modify_m06_source_slice_relation_never_routes_b09(tmp_path: Path) -> No
     _rehash(env.patch)
     before = env.store.visible_snapshot()
     with pytest.raises(B05ContractError, match="B05_B04_SOURCE_SLICE_SCOPE_INVALID"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_modify_m06_patch_and_causal_source_refs_must_be_byte_equal(
+    tmp_path: Path,
+) -> None:
+    env = build_environment(tmp_path / "m06-source-byte-equality", mode="causal")
+    opaque_source_ref = record_ref(
+        external_record("M3_AUTHORIZED_SOURCE_SLICE", {"opaque_fixture": True})
+    )
+    env.patch["payload"]["authorized_source_slice_refs"] = [opaque_source_ref]
+    _rehash(env.patch)
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_B04_CAUSAL_SOURCE_SCOPE_INVALID"):
         env.evaluate()
     assert env.store.visible_snapshot() == before
 

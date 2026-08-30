@@ -528,6 +528,10 @@ class B04PatchClosureReader:
                     source_slice_refs=source_refs,
                 )
             if source_refs:
+                if patch_proposal["payload"].get("candidate_schema_id") != (
+                    CANDIDATE_SCHEMA_ID
+                ):
+                    raise B04ContractError("B04_CANDIDATE_SCHEMA_MISMATCH")
                 used_diagnostics, used_coverages = b04_validate_atomic_groups(
                     patch_proposal["payload"]["atomic_groups"],
                     context=upstream_context,
@@ -684,7 +688,7 @@ class B04PatchClosureReader:
             causal_refs = causal_payload.get("authorized_source_slice_refs", [])
             if causal_refs != stable_sorted(causal_refs):
                 fail("B05_B04_CAUSAL_SOURCE_REFS_INVALID")
-            if any(ref not in source_refs for ref in causal_refs):
+            if canonical_bytes(causal_refs) != canonical_bytes(source_refs):
                 fail("B05_B04_CAUSAL_SOURCE_SCOPE_INVALID")
         groups = patch.get("atomic_groups")
         if not isinstance(groups, list) or not groups:
@@ -781,9 +785,26 @@ class PolicyGateReader(_ReadOnlyReader):
         self.gate_bindings = deepcopy(gate_bindings)
         self.gate_records = deepcopy(gate_records)
 
-    def read(self, *, patch_proposal_ref: dict[str, Any]) -> dict[str, Any]:
+    def read(
+        self,
+        *,
+        patch_proposal_ref: dict[str, Any],
+        atomic_group_bindings: list[dict[str, Any]],
+    ) -> dict[str, Any]:
         self._before_read()
         validate_record_ref(patch_proposal_ref, expected_type="M3_PATCH_PROPOSAL")
+        if (
+            not isinstance(atomic_group_bindings, list)
+            or not atomic_group_bindings
+            or atomic_group_bindings != stable_sorted(atomic_group_bindings)
+        ):
+            fail("B05_GATE_GROUP_CATALOG_INVALID")
+        for group_binding in atomic_group_bindings:
+            if set(group_binding) != {"atomic_group_id", "group_payload_hash"}:
+                fail("B05_GATE_GROUP_CATALOG_INVALID")
+        exact_group_binding_keys = {
+            canonical_bytes(binding) for binding in atomic_group_bindings
+        }
         validate_immutable_record(
             self.validation_policy, expected_type="M3_PATCH_VALIDATION_POLICY"
         )
@@ -845,6 +866,7 @@ class PolicyGateReader(_ReadOnlyReader):
                 fail("B05_GATE_DECLARATION_DUPLICATE")
             declared_by_ref[key] = declaration
         gate_records_by_ref: dict[bytes, dict[str, Any]] = {}
+        state_records_by_gate: dict[bytes, list[dict[str, Any]]] = {}
         for record in self.gate_records:
             if record.get("record_type") not in {
                 "M3_NON_CONTENT_GATE",
@@ -856,6 +878,46 @@ class PolicyGateReader(_ReadOnlyReader):
             if key in gate_records_by_ref:
                 fail("B05_GATE_RECORD_AMBIGUOUS")
             gate_records_by_ref[key] = record
+            if record["record_type"] == "M3_NON_CONTENT_GATE_STATE":
+                payload = record["payload"]
+                if set(payload) != {
+                    "gate_ref",
+                    "state_sequence",
+                    "current_state",
+                }:
+                    fail("B05_GATE_STATE_SHAPE_INVALID")
+                validate_record_ref(
+                    payload["gate_ref"], expected_type="M3_NON_CONTENT_GATE"
+                )
+                if (
+                    not isinstance(payload["state_sequence"], int)
+                    or isinstance(payload["state_sequence"], bool)
+                    or payload["state_sequence"] < 1
+                    or payload["current_state"] not in {"OPEN", "CLOSED"}
+                ):
+                    fail("B05_GATE_STATE_MISMATCH")
+                state_records_by_gate.setdefault(
+                    canonical_bytes(payload["gate_ref"]), []
+                ).append(record)
+        current_state_ref_by_gate: dict[bytes, dict[str, Any]] = {}
+        for gate_key, records in state_records_by_gate.items():
+            if gate_key not in declared_by_ref:
+                fail("B05_GATE_NOT_DECLARED")
+            by_sequence: dict[int, dict[str, Any]] = {}
+            for record in records:
+                sequence = record["payload"]["state_sequence"]
+                if sequence in by_sequence:
+                    fail("B05_GATE_STATE_AMBIGUOUS")
+                by_sequence[sequence] = record
+            current_state_ref_by_gate[gate_key] = record_ref(
+                by_sequence[max(by_sequence)]
+            )
+        for key, record in gate_records_by_ref.items():
+            if record["record_type"] == "M3_NON_CONTENT_GATE" and key not in (
+                declared_by_ref
+            ):
+                fail("B05_GATE_NOT_DECLARED")
+        bound_gate_keys: set[bytes] = set()
         for binding in bindings:
             required = {
                 "gate_ref",
@@ -877,6 +939,9 @@ class PolicyGateReader(_ReadOnlyReader):
             )
             gate_key = canonical_bytes(binding["gate_ref"])
             state_key = canonical_bytes(binding["gate_state_ref"])
+            if gate_key in bound_gate_keys:
+                fail("B05_GATE_BINDING_DUPLICATE")
+            bound_gate_keys.add(gate_key)
             declaration = declared_by_ref.get(gate_key)
             gate_record = gate_records_by_ref.get(gate_key)
             state_record = gate_records_by_ref.get(state_key)
@@ -908,6 +973,8 @@ class PolicyGateReader(_ReadOnlyReader):
                 != binding["current_state"]
             ):
                 fail("B05_GATE_STATE_MISMATCH")
+            if canonical_bytes(current_state_ref_by_gate.get(gate_key)) != state_key:
+                fail("B05_GATE_STATE_NOT_CURRENT")
             if (
                 binding["reader_identity"] != self.reader_identity
                 or binding["reader_version"] != self.reader_version
@@ -929,7 +996,12 @@ class PolicyGateReader(_ReadOnlyReader):
                     "group_payload_hash",
                 }:
                     fail("B05_GATE_APPLICABILITY_INVALID")
-        if bindings and len(bindings) != len(declarations):
+                elif canonical_bytes(target) not in exact_group_binding_keys:
+                    fail("B05_GATE_APPLICABILITY_INVALID")
+        if (
+            len(bindings) != len(declarations)
+            or bound_gate_keys != set(declared_by_ref)
+        ):
             fail("B05_GATE_DECLARATION_CLOSURE_INVALID")
         return {
             "reader_identity": self.reader_identity,
