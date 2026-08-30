@@ -219,7 +219,9 @@ def test_n01_to_n07_routes(
             item["lineage_locator"]["lineage_id"]
             for item in proof["effective_protection_proof"]
         }
-        assert "lin-b" in protected_lineages
+        assert env.records["candidate"]["payload"]["items"][1][
+            "lineage_id"
+        ] in protected_lineages
         dependency = pvr["payload"]["dependency_proof"]
         assert dependency["dependency_edges"] == []
         assert dependency["unknown_dependency_tokens"] == []
@@ -240,13 +242,6 @@ def test_n08_causal_route_to_b09(tmp_path: Path) -> None:
 
 def test_add_sort_keeps_protected_base_item_positions(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "add-position", mode="add")
-    operation = env.patch["payload"]["atomic_groups"][0]["operations"][0]
-    operation["new_item"]["lineage_id"] = "lin-0"
-    group = env.patch["payload"]["atomic_groups"][0]
-    group["group_payload_hash"] = sha256_value(
-        {key: value for key, value in group.items() if key != "group_payload_hash"}
-    )
-    _rehash(env.patch)
     result = env.evaluate()
     assert result["route_units"][0]["route"] == "ALLOW_FOR_B06"
     applied, errors = b05_store_module._apply_groups(
@@ -255,10 +250,16 @@ def test_add_sort_keeps_protected_base_item_positions(tmp_path: Path) -> None:
         canonical_add_sort=True,
     )
     assert errors == []
+    base_lineages = [
+        item["lineage_id"]
+        for item in env.b01_reader.candidate_version["payload"]["items"]
+    ]
+    added_lineage = env.patch["payload"]["atomic_groups"][0]["operations"][0][
+        "new_item"
+    ]["lineage_id"]
     assert [item["lineage_id"] for item in applied["items"]] == [
-        "lin-a",
-        "lin-b",
-        "lin-0",
+        *base_lineages,
+        added_lineage,
     ]
 
 
@@ -297,11 +298,16 @@ def test_n10_atomic_supersede_and_reopen(tmp_path: Path) -> None:
     prior_head = projection["series"][0]["lifecycle_head_ref"]
     new_gate_state = external_record(
         "M3_NON_CONTENT_GATE_STATE",
-        {"current_state": "OPEN", "material": "new"},
+        {
+            "gate_ref": record_ref(env.records["gate"]),
+            "state_sequence": 2,
+            "current_state": "OPEN",
+        },
         created_at=REOPENED_AT,
     )
     env.policy_reader.gate_bindings[0]["gate_state_ref"] = record_ref(new_gate_state)
     env.policy_reader.gate_bindings[0]["current_state"] = "OPEN"
+    env.policy_reader.gate_records = [env.records["gate"], new_gate_state]
     before_invalid = env.store.visible_snapshot()
     with pytest.raises(
         B05ContractError, match="B05_REOPEN_MATERIAL_DELTA_NOT_AUTHORITATIVE"
@@ -486,7 +492,7 @@ def test_f04_policy_selection_drift_aborts(tmp_path: Path) -> None:
             _rehash(env.policy_reader.validation_policy)
 
     env.policy_reader.set_read_hook(drift)
-    with pytest.raises(B05ContractError, match="B05_ACTIVE_POLICY_SELECTION_INVALID"):
+    with pytest.raises(B05ContractError, match="B05_AUTHORITATIVE_SNAPSHOT_DRIFT"):
         env.evaluate()
     assert env.store.visible_snapshot() == before
 
@@ -676,7 +682,7 @@ def test_f07_b02_terminal_time_order_fails_closed(tmp_path: Path) -> None:
         ]
     )
     before = env.store.visible_snapshot()
-    with pytest.raises(B05ContractError, match="B05_B02_LIFECYCLE_AFTER_TERMINAL"):
+    with pytest.raises(B05ContractError, match="B05_B02_LIFECYCLE_INVALID"):
         env.evaluate()
     assert env.store.visible_snapshot() == before
 
@@ -700,7 +706,7 @@ def test_f08_partial_allow_cannot_drop_other_unit_protection(tmp_path: Path) -> 
         for item in pvr["payload"]["route_unit_proofs"]
         if item["route_unit_id"] == allow["route_unit_id"]
     )
-    assert "lin-b" in {
+    assert env.records["candidate"]["payload"]["items"][1]["lineage_id"] in {
         item["lineage_locator"]["lineage_id"]
         for item in proof["effective_protection_proof"]
     }
@@ -722,9 +728,10 @@ def test_b04_protection_set_must_equal_exact_base_complement(tmp_path: Path) -> 
     _rehash(env.protection)
     env.patch["payload"]["protection_set_ref"] = record_ref(env.protection)
     _rehash(env.patch)
-    result = env.evaluate()
-    assert [item["route"] for item in result["route_units"]] == ["REJECT"]
-    assert "PROTECTION_REGRESSION" in result["route_units"][0]["reason_codes"]
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_B04_CLOSURE_INVALID"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
 
 
 def test_f09_dependent_groups_have_no_partial_route(tmp_path: Path) -> None:
@@ -757,7 +764,7 @@ def test_f11_duplicate_group_aborts_before_publish(tmp_path: Path) -> None:
         deepcopy(env.patch["payload"]["atomic_groups"][0])
     )
     _rehash(env.patch)
-    with pytest.raises(B05ContractError, match="B05_B04_GROUP_ID_INVALID"):
+    with pytest.raises(B05ContractError, match="B05_B04_CLOSURE_INVALID"):
         env.evaluate()
     assert env.store.visible_snapshot() == before
 
@@ -918,7 +925,7 @@ def test_f17_expand_target_contains_no_text_prompt_or_new_fact(tmp_path: Path) -
     assert not ({"prompt", "novel_text", "new_fact", "new_item"} & set(target))
 
 
-def test_f18_ambiguous_causal_support_expands(tmp_path: Path) -> None:
+def test_f18_non_exact_causal_support_aborts(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "f18", mode="two-replace")
     opaque_source_ref = record_ref(
         external_record("M3_AUTHORIZED_SOURCE_SLICE", {"opaque_fixture": True})
@@ -944,11 +951,10 @@ def test_f18_ambiguous_causal_support_expands(tmp_path: Path) -> None:
     env.patch["payload"]["authorized_source_slice_refs"] = [opaque_source_ref]
     env.patch["payload"]["sidecar_proposal_refs"] = [record_ref(causal)]
     _rehash(env.patch)
-    result = env.evaluate()
-    assert result["causal_hint_routes"][0]["route"] == "EXPAND_CHECK"
-    assert result["causal_hint_routes"][0]["reason_codes"] == [
-        "CAUSAL_SUPPORT_MAPPING_AMBIGUOUS"
-    ]
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_B04_CLOSURE_INVALID"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
 
 
 def test_causal_locator_must_resolve_exact_base_before_b09(tmp_path: Path) -> None:
@@ -963,12 +969,10 @@ def test_causal_locator_must_resolve_exact_base_before_b09(tmp_path: Path) -> No
     _rehash(env.causals[0])
     env.patch["payload"]["sidecar_proposal_refs"] = [record_ref(env.causals[0])]
     _rehash(env.patch)
-    result = env.evaluate()
-    assert result["causal_hint_routes"][0]["route"] == "EXPAND_CHECK"
-    pvr = _pvr_record(env)
-    assert pvr["payload"]["causal_support_mappings"][0]["mapping_status"] == (
-        "EXPAND_REQUIRED"
-    )
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_B04_CLOSURE_INVALID"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
 
 
 def test_f19_b09_denied_route_writes_nothing(tmp_path: Path) -> None:
@@ -1183,11 +1187,16 @@ def test_f22_projection_rejects_swapped_reopen_sequence(tmp_path: Path) -> None:
     prior_head = projection["series"][0]["lifecycle_head_ref"]
     gate_state = external_record(
         "M3_NON_CONTENT_GATE_STATE",
-        {"current_state": "OPEN", "material": "sequence"},
+        {
+            "gate_ref": record_ref(env.records["gate"]),
+            "state_sequence": 2,
+            "current_state": "OPEN",
+        },
         created_at=REOPENED_AT,
     )
     env.policy_reader.gate_bindings[0]["gate_state_ref"] = record_ref(gate_state)
     env.policy_reader.gate_bindings[0]["current_state"] = "OPEN"
+    env.policy_reader.gate_records = [env.records["gate"], gate_state]
     env.evaluate(
         "reopen",
         created_at=REOPENED_AT,
@@ -1215,3 +1224,157 @@ def test_f22_projection_rejects_swapped_reopen_sequence(tmp_path: Path) -> None:
         validate_output_record(item)
     with pytest.raises(B05ContractError, match="B05_PROJECTION_REOPEN_CHAIN_INVALID"):
         PatchAggregateProjector.project(mutated)
+
+
+def test_modify_m01_exact_b01_child_is_accepted(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m01-child", candidate_child=True)
+    assert env.records["candidate"]["record_version"] == 2
+    result = env.evaluate()
+    assert [item["route"] for item in result["route_units"]] == ["ALLOW_FOR_B06"]
+
+
+def test_modify_m02_trial_rebuilds_full_candidate_payload(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m02-trial")
+    payload, local_errors = b05_store_module._apply_groups(
+        env.records["candidate"]["payload"],
+        env.patch["payload"]["atomic_groups"],
+        canonical_add_sort=True,
+    )
+    trial, exact_errors = b05_store_module._build_and_validate_trial_candidate(
+        env.records["candidate"],
+        payload,
+        reference_records=env.b01_reader.read_scope()["candidate_reference_records"],
+    )
+    assert local_errors == []
+    assert exact_errors == []
+    assert trial["record_version"] == 2
+    assert trial["payload"]["parent_candidate_version_ref"] == record_ref(
+        env.records["candidate"]
+    )
+    assert trial["payload"]["lineage_index"] == [
+        {
+            "lineage_id": item["lineage_id"],
+            "json_pointer": f"/items/{index}",
+            "item_hash": item["item_hash"],
+        }
+        for index, item in enumerate(trial["payload"]["items"])
+    ]
+
+
+def test_modify_m03_unknown_b02_lifecycle_event_aborts(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m03-lifecycle")
+    env.b02_reader.records.append(
+        external_record(
+            "M3_DIAGNOSTIC_LIFECYCLE_RECEIPT",
+            {
+                "diagnostic_ref": record_ref(env.records["diagnostic"]),
+                "lifecycle_sequence": 1,
+                "event": "OBSERVED",
+                "effective_at": CREATED_AT,
+                "reason_code": "UNKNOWN_EVENT",
+                "resolution_ref": None,
+            },
+        )
+    )
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_B02_LIFECYCLE_INVALID"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_modify_m04_undeclared_gate_cannot_defer(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m04-gate")
+    gate = env.records["gate"]
+    state = external_record(
+        "M3_NON_CONTENT_GATE_STATE",
+        {
+            "gate_ref": record_ref(gate),
+            "state_sequence": 1,
+            "current_state": "CLOSED",
+        },
+    )
+    env.policy_reader.gate_records = [gate, state]
+    env.policy_reader.gate_bindings = [
+        {
+            "gate_ref": record_ref(gate),
+            "gate_state_ref": record_ref(state),
+            "current_state": "CLOSED",
+            "applicable_patch_proposal_ref": record_ref(env.patch),
+            "applicable_atomic_group_bindings_or_route_unit_ids": [
+                {
+                    "atomic_group_id": env.patch["payload"]["atomic_groups"][0][
+                        "atomic_group_id"
+                    ],
+                    "group_payload_hash": env.patch["payload"]["atomic_groups"][0][
+                        "group_payload_hash"
+                    ],
+                }
+            ],
+            "reader_identity": env.policy_reader.reader_identity,
+            "reader_version": env.policy_reader.reader_version,
+        }
+    ]
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_GATE_NOT_DECLARED"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_modify_m05_forged_b04_target_ref_aborts(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m05-target")
+    target = env.patch["payload"]["atomic_groups"][0]["operations"][0]["target"]
+    forged_ref = deepcopy(target["candidate_version_ref"])
+    forged_ref["record_id"] = f"{forged_ref['record_id']}:forged"
+    forged_ref["record_hash"] = sha256_value(forged_ref)
+    target["candidate_version_ref"] = forged_ref
+    target["locator_hash"] = sha256_value(
+        {key: value for key, value in target.items() if key != "locator_hash"}
+    )
+    group = env.patch["payload"]["atomic_groups"][0]
+    group["group_payload_hash"] = sha256_value(
+        {key: value for key, value in group.items() if key != "group_payload_hash"}
+    )
+    _rehash(env.patch)
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_B04_CLOSURE_INVALID"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_modify_m06_source_slice_relation_never_routes_b09(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m06-source", mode="two-replace")
+    opaque_source_ref = record_ref(
+        external_record("M3_AUTHORIZED_SOURCE_SLICE", {"opaque_fixture": True})
+    )
+    env.patch["payload"]["authorized_source_slice_refs"] = [opaque_source_ref]
+    _rehash(env.patch)
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_B04_SOURCE_SLICE_SCOPE_INVALID"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_modify_m06_exact_source_slice_relation_can_route_b09(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "m06-source-exact", mode="causal")
+    opaque_source_ref = record_ref(
+        external_record("M3_AUTHORIZED_SOURCE_SLICE", {"opaque_fixture": True})
+    )
+    env.patch["payload"]["authorized_source_slice_refs"] = [opaque_source_ref]
+    env.causals[0]["payload"]["authorized_source_slice_refs"] = [opaque_source_ref]
+    _rehash(env.causals[0])
+    env.patch["payload"]["sidecar_proposal_refs"] = [record_ref(env.causals[0])]
+    _rehash(env.patch)
+    result = env.evaluate()
+    assert [item["route"] for item in result["causal_hint_routes"]] == [
+        "ROUTE_TO_B09"
+    ]
+
+
+def test_modify_m07_self_check_vectors_use_semantic_snapshot() -> None:
+    from self_check import fixed_vectors
+
+    first = fixed_vectors()
+    second = fixed_vectors()
+    assert first == second
+    assert all("semantic_snapshot_hash" in vector for vector in first)
+    assert all("visible_snapshot_hash" not in vector for vector in first)

@@ -5,7 +5,7 @@
     "M3_PATCH_VALIDATION_RECEIPT": "PatchValidator"
   },
   "candidate_schema_id": "novel-fact-extraction-v2.1",
-  "catalog_hash": "e9bfeaca936c74e1b1f18f4975abc1f0ae0c003950c52968d76d33a94c6cc7a0",
+  "catalog_hash": "efe00da8e1ef1ca2bda297dd87282d238afba0e384805303b21772e79cbdb19e",
   "contract_version": "r03.5-candidate",
   "document_identity": "CCZ57-M3-B05-R03.5-CANDIDATE",
   "failure_fixture_count": 22,
@@ -13,15 +13,26 @@
     {
       "causal_routes": [],
       "fixture_id": "N01_REPLACE_ALLOWED",
-      "projection_hash": "a4a115e265b8ed9f680269d14acf4ec36fbb4832b53cab1c4f0e0b24e9e54223",
+      "projection_hash": "7b005bed548188368b6d7437db21025f512c63933c19f027bbcc3b6df1eca34d",
       "record_refs": [
         {
           "access": "POLICY_FIXTURE_READ_ONLY",
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "255fa4690514f1598abb928ca6f0b5611b3fe91599a3df29b9fccc2a245fde56",
-          "record_id": "patch-route:087d5ed0c8fdb1ba8a86eca49c1f2a3d4d783f1625d61be3fc5cd0809ca3ce41",
+          "record_hash": "729b50b114ec77202e2d103d59269b9fb816aacc20a6736a5ef2a6949821c437",
+          "record_id": "patch-route-lifecycle:03340ac41aaff7cd2562df1e6cef8784f599442b078de8316fd1b437f1dd88da",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "7a6524cdfcb5a812475287b35fe4872e62cecb8e6c0d9548e179afaeed19ee3d",
+          "record_id": "patch-route:a838dbb8c3d98e0fa27be13d2783aecb10bed1424df3831ca091fe20be212a1a",
           "record_type": "M3_PATCH_ROUTE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -31,19 +42,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "4571c22e863a6ebbc7b40fd72de8484fbde12e61d82888f99edbb471eaef752b",
-          "record_id": "validator-identity:5976bc5c69c7a0cd4113c972f961fe4090e8efdcb75bc5eb119ed15983cf37d9",
-          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
-          "record_version": 1,
-          "source_module": "M3"
-        },
-        {
-          "access": "POLICY_FIXTURE_READ_ONLY",
-          "contract": "M3_RECORD_REF",
-          "contract_version": "r03.5-candidate",
-          "record_contract_version": "r03.5-candidate",
-          "record_hash": "8fbd8a389e4a0338f0ed7a986dc844f95c3cf06c9e9c4d320baba6de6a57282b",
-          "record_id": "patch-validation:e85005a71a6ff74e5bbfc5f2fa3451570f73f447f9c39ec0aabc50c7e927e4a5",
+          "record_hash": "a4961c00af6a816947b07e18f31e3b2125c203f21f6daa1a07be2def0abe466c",
+          "record_id": "patch-validation:377253f358b7bbe9d21303450780c4812e38252b70f99c9a97b51034ecfa4298",
           "record_type": "M3_PATCH_VALIDATION_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -53,9 +53,9 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "b1ae0b405dd61194fe3416b7703d4524d712e4c9e3e57e240f0de088e348444a",
-          "record_id": "patch-route-lifecycle:dee7870df0b6b8d056715c7d3afd003ad1f5748f338624d33142a42c6f23982e",
-          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_hash": "cca0b79295a4a16a1decdf1221fe67a50bb8c4d698107e9f384445fdc74e55f8",
+          "record_id": "validator-identity:13927702df3fd9e35af8fbdd7a74371d654500888d9973b664bce7cba61cbd61",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         }
@@ -66,23 +66,23 @@
             "MECHANICAL_PROOF_COMPLETE"
           ],
           "route": "ALLOW_FOR_B06",
-          "route_unit_id": "route-unit:e5323075495598c79ae0642e07554d794c50a3171364e15f177f31bebef35799"
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
         }
       ],
-      "visible_snapshot_hash": "6802cecf3ae47df8650faec06fc4eb39f69de49f26180fa222b0646a3cf98b70"
+      "semantic_snapshot_hash": "54521d2efcdc0a69f68f1232c46bed335c487056ec3db2d71ca3930f655637b6"
     },
     {
       "causal_routes": [],
       "fixture_id": "N02_ADD_ALLOWED",
-      "projection_hash": "d20ef9319cbb19bb101e58b5fc536db9a5c69338d8f5de826617f05728dd87bd",
+      "projection_hash": "16bdab42cc44e52e28aec7f6826e36e971f31b7a7c70a6490e3c76c8544bbb53",
       "record_refs": [
         {
           "access": "POLICY_FIXTURE_READ_ONLY",
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "0fcff08bb8d5531b92332315917e92368ae4d311f0967ed3aa348b12a11b35b4",
-          "record_id": "patch-route-lifecycle:1ef7579a4f5dffb20d1db7faffff8e81370395aa70bda0168ba3476f6c5b0b03",
+          "record_hash": "3b55d47a827b6e09186affded3c6df8f7f4003a61569c88a9ccb34034e7d06a1",
+          "record_id": "patch-route-lifecycle:7a3ff6265e07c75b6a94795d94c06f42548e7eb27643ee85b6e6e0dbf0a7b633",
           "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -92,19 +92,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "4571c22e863a6ebbc7b40fd72de8484fbde12e61d82888f99edbb471eaef752b",
-          "record_id": "validator-identity:5976bc5c69c7a0cd4113c972f961fe4090e8efdcb75bc5eb119ed15983cf37d9",
-          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
-          "record_version": 1,
-          "source_module": "M3"
-        },
-        {
-          "access": "POLICY_FIXTURE_READ_ONLY",
-          "contract": "M3_RECORD_REF",
-          "contract_version": "r03.5-candidate",
-          "record_contract_version": "r03.5-candidate",
-          "record_hash": "bbb2f63ad30d23aae133b33723303a5fc0246792910589f8c41123a93d482cdc",
-          "record_id": "patch-validation:e8c0291078ec254012b4a6cc0760a6229691066fe19da1a451bd57580f8636ee",
+          "record_hash": "b8da33a1ce8ebcc37824fc2ebd8f53d083c43fa151d6356460b5006caf9f49b8",
+          "record_id": "patch-validation:c15c44d340ecb65fa922fbcf1470230eeb064bf710000272ffdbbb9607906377",
           "record_type": "M3_PATCH_VALIDATION_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -114,8 +103,19 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "cc992210b6f7b12363a0d2e02042b273f27d4627a4342278002d11e25d8d02d9",
-          "record_id": "patch-route:e5a0b9b5e4e735fa9e97fc2bf987f6a94da4cdd774fdec32926743d3c87991db",
+          "record_hash": "cca0b79295a4a16a1decdf1221fe67a50bb8c4d698107e9f384445fdc74e55f8",
+          "record_id": "validator-identity:13927702df3fd9e35af8fbdd7a74371d654500888d9973b664bce7cba61cbd61",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "fdd8289c3718fd05606da99167a6a22634c1a83f8e5dfec15afe10ec0ffa4de1",
+          "record_id": "patch-route:ec2471089681b0149a95dbbefd42fcb72033d16510fdc481ccf7feb30eed8e9f",
           "record_type": "M3_PATCH_ROUTE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -127,45 +127,23 @@
             "MECHANICAL_PROOF_COMPLETE"
           ],
           "route": "ALLOW_FOR_B06",
-          "route_unit_id": "route-unit:36d9ec0312a687c6a49ccd7d08435847a099c0983b19d6c2196c429a6d8cf145"
+          "route_unit_id": "route-unit:9b1004f7730476e54dac19cf1629387d3753075889cab9ab6ed87bbcfa25fde9"
         }
       ],
-      "visible_snapshot_hash": "57553775a5e432cad1c34179c72d7b93d8cb01c85708f9bc33e9b2c41389acad"
+      "semantic_snapshot_hash": "68aa575117579d95cec6b68e0a5d179a4b25088fc1fb75192fbc33ed2d180f0a"
     },
     {
       "causal_routes": [],
       "fixture_id": "N03_INDEPENDENT_MIXED_ROUTES_WITH_EFFECTIVE_PROTECTION",
-      "projection_hash": "8e13bd5d6fff9bc51ab2366410e11262587c75ea3013fd60326c2d1c715e8fd3",
+      "projection_hash": "a64a077c5388af8cc2b7f71c0c39b6665fae13102b0e3e188532b25404e9c829",
       "record_refs": [
         {
           "access": "POLICY_FIXTURE_READ_ONLY",
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "15b005fdc9b507037b0f32acbe3ac011e6695b14590a08cf649260fb5681e79b",
-          "record_id": "patch-validation:9384b8f63d9f75bc3c150f886ba84a7d0c0ad71e11957bcde8d406a20cb2be20",
-          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
-          "record_version": 1,
-          "source_module": "M3"
-        },
-        {
-          "access": "POLICY_FIXTURE_READ_ONLY",
-          "contract": "M3_RECORD_REF",
-          "contract_version": "r03.5-candidate",
-          "record_contract_version": "r03.5-candidate",
-          "record_hash": "4571c22e863a6ebbc7b40fd72de8484fbde12e61d82888f99edbb471eaef752b",
-          "record_id": "validator-identity:5976bc5c69c7a0cd4113c972f961fe4090e8efdcb75bc5eb119ed15983cf37d9",
-          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
-          "record_version": 1,
-          "source_module": "M3"
-        },
-        {
-          "access": "POLICY_FIXTURE_READ_ONLY",
-          "contract": "M3_RECORD_REF",
-          "contract_version": "r03.5-candidate",
-          "record_contract_version": "r03.5-candidate",
-          "record_hash": "806e090b7e9d63fd72e6335870b2709e2bc883e7de1a234b49da9c0f81532a4c",
-          "record_id": "patch-route-lifecycle:806f6ae1a6b2b40cec01c59b7e978d48e762de00a8027c494b5c95e4abbaf967",
+          "record_hash": "c4858923b1f9b5838aec9c9551b7e588ab039a1b5dc5c0ce149bfb2a2cf71b6c",
+          "record_id": "patch-route-lifecycle:0df866fafc555c25dd3d0458ea410105bd62ef58832b762d4702053500a97042",
           "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -175,9 +153,31 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "cf8827ec1f1c36ace22f004623730a7d962352366f2dad7ede9141428ebf3725",
-          "record_id": "patch-route:1a6ba13ef65379b70d1dc3e4ea24a908d66e2b3827216d22eae78f6c6434ae23",
+          "record_hash": "cca0b79295a4a16a1decdf1221fe67a50bb8c4d698107e9f384445fdc74e55f8",
+          "record_id": "validator-identity:13927702df3fd9e35af8fbdd7a74371d654500888d9973b664bce7cba61cbd61",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "df9e6d1778f63f908a8a3f98cdfebdf8b0ea8d6b2b703c3b9a48d22701562329",
+          "record_id": "patch-route:fb996b80327419165b82cc60e16e684df9c965e1388dc5fb22b2b3e17baa6125",
           "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "ea1f091665dac1bf1e4632d4ea016483798324d79dbb1b94008ea940c4771c0b",
+          "record_id": "patch-validation:ea3bb4413b080bfea26ee72b047751f81c8068b2b4d7150dd5a028fec921f88b",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         }
@@ -188,30 +188,30 @@
             "MECHANICAL_PROOF_COMPLETE"
           ],
           "route": "ALLOW_FOR_B06",
-          "route_unit_id": "route-unit:665291095c02cf5fc3ef9cf690e307211b3c53e18fb04dcee6b422cbb469638d"
+          "route_unit_id": "route-unit:0ea5bdea90b65dfe231ecc518d6917ffa14a7a68e76e2b5980c2d8bc7a1b39e1"
         },
         {
           "reason_codes": [
             "SEMANTIC_IMPACT_UNKNOWN"
           ],
           "route": "EXPAND_CHECK",
-          "route_unit_id": "route-unit:f282cd283d6bb42893699a18055105e749328adb215e71673656bdd030fa721b"
+          "route_unit_id": "route-unit:e662a8731709150f5bd41ba065eee140473beef12d0deffa971b80dbfab4e9c0"
         }
       ],
-      "visible_snapshot_hash": "e6bc0c80cd93b5635fb80cdf188a0422e22ac66c3396f0c7b3393b298ff0823b"
+      "semantic_snapshot_hash": "bfd40dbfacb0dd5d850b7b99dfe95f3692c19cf6d08206f16005baf1a2382a03"
     },
     {
       "causal_routes": [],
       "fixture_id": "N04_DEPENDENT_GROUPS_SINGLE_ROUTE_UNIT",
-      "projection_hash": "cdc786731fdfd26547687d24a8b70b3c445706fdbfa3244befd479c645b8c33b",
+      "projection_hash": "ad7ca8df62465a3823be546d6cdfdf739a226433d1352c876b00c20c68156f75",
       "record_refs": [
         {
           "access": "POLICY_FIXTURE_READ_ONLY",
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "3178f8f67382563a55126530056f46eea99af8f40b7c10314d095ac6b5db693d",
-          "record_id": "patch-route-lifecycle:d94f1795d8afa9dbc8b1e19f1696e445150c0948fe88b4efc1685e342c5d6482",
+          "record_hash": "5eeb8d53d8d0926003a1cdf78fb4dc13368579545093fbb625ae4797db97994a",
+          "record_id": "patch-route-lifecycle:8d50583a385b30f18af8fe9b463bdc39382c3fd034ed7e1330d5be5f9e7f4db5",
           "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -221,19 +221,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "4571c22e863a6ebbc7b40fd72de8484fbde12e61d82888f99edbb471eaef752b",
-          "record_id": "validator-identity:5976bc5c69c7a0cd4113c972f961fe4090e8efdcb75bc5eb119ed15983cf37d9",
-          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
-          "record_version": 1,
-          "source_module": "M3"
-        },
-        {
-          "access": "POLICY_FIXTURE_READ_ONLY",
-          "contract": "M3_RECORD_REF",
-          "contract_version": "r03.5-candidate",
-          "record_contract_version": "r03.5-candidate",
-          "record_hash": "4e66b8b0ace21d751c0a3ea34b9eaf71266b25f706abc335295cbe6920c1ab57",
-          "record_id": "patch-route:a5d03d58495acca6c9f17b825f883872fb8d4813d0b5cacef022668aca66b036",
+          "record_hash": "7801db088dbe4f9e2778572cfde058502ca421fc9ed37e842190a47909890468",
+          "record_id": "patch-route:5fde0e574708808d24d33003f63760b2a2ca5f66096fae2580535f8ca46e6e65",
           "record_type": "M3_PATCH_ROUTE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -243,9 +232,20 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "baa071c9003c2771563906abe70a40c9ceecf752245239fcfd2cf70fff751106",
-          "record_id": "patch-validation:04cb6834fb205658c2babd87338bb596460d4ba72635b858bd87a6e3045b4c44",
+          "record_hash": "87901b25cd7b4450c16b87a022523bdce27957aa748eb21eb34cc6319b8f331d",
+          "record_id": "patch-validation:29c9a2e0a81928c3dafc8f69aea8d5ee20820e29df1c0936e6c60bc4504c991d",
           "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "cca0b79295a4a16a1decdf1221fe67a50bb8c4d698107e9f384445fdc74e55f8",
+          "record_id": "validator-identity:13927702df3fd9e35af8fbdd7a74371d654500888d9973b664bce7cba61cbd61",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         }
@@ -256,24 +256,24 @@
             "MECHANICAL_PROOF_COMPLETE"
           ],
           "route": "ALLOW_FOR_B06",
-          "route_unit_id": "route-unit:1fbbc8d37fd8c129b5520b9f09c57158b2e04444582c8af5dc185896e80972b7"
+          "route_unit_id": "route-unit:717bd2b41f7039bcfc8b0be4abaf8a98f349d2e77fc844b781a385b98925dad9"
         }
       ],
-      "visible_snapshot_hash": "73dbd418d75bcfcb9131b61258b4c52c2c02a8b1590370437b93ac25b83e5ae5"
+      "semantic_snapshot_hash": "22986125ed0944131174f270154e796d3fb2b807cdff1df180d5b6f03cc284bb"
     },
     {
       "causal_routes": [],
       "fixture_id": "N05_EXPAND_CHECK_MINIMAL_TARGET",
-      "projection_hash": "54d9166c1889ffab4e82701b299ef2b902a1e6ffd81010a2fd2dc72365e68698",
+      "projection_hash": "62733da279b10a757d803fb48c1fe11676c4603864cf47e62976fad25e89dcd4",
       "record_refs": [
         {
           "access": "POLICY_FIXTURE_READ_ONLY",
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "4571c22e863a6ebbc7b40fd72de8484fbde12e61d82888f99edbb471eaef752b",
-          "record_id": "validator-identity:5976bc5c69c7a0cd4113c972f961fe4090e8efdcb75bc5eb119ed15983cf37d9",
-          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_hash": "112e36c03c4edd3a70b97f8592df1af6d889a5c93c2b7a1b6389fa477d720c86",
+          "record_id": "patch-route:e6eccea968f44b75259989e48f3b1fd82142aa15567d716735407ca8a768d0fd",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         },
@@ -282,8 +282,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "8f14ade4ee7059f559d984604a2f1118eca3febdd346a28cb48b015680f1a60b",
-          "record_id": "patch-validation:d8ed1c496ab7b5290c4d85761fb00efe21534bb63b9ac76797feb8b87afb7148",
+          "record_hash": "5ddf9294b7ababb73a2f80c7fa8424f20e3ae3cdfa375ef2c39d47201ab4310d",
+          "record_id": "patch-validation:8321e2ff53d42496fbc42185c93ea40c812b180dafbab3bedf6e7a7a0edc47ef",
           "record_type": "M3_PATCH_VALIDATION_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -293,8 +293,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "9175cacd31b607a591694f3aac6b19febf01de11c6f06a2bf6e0b89ba4ba10f3",
-          "record_id": "patch-route-lifecycle:6a00dae8c816e5d68195ba1a1abaa152f63fb0037cac327bd10b00417a61fee9",
+          "record_hash": "75ecceba5d709502f2f816830d489c1ff2b6625e9d2d06a4a8f26f5d1f72ead4",
+          "record_id": "patch-route-lifecycle:a98b5bb01bc45c5b2786f502d33dba593e9dfaf64f645241b40d9d61090c661c",
           "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -304,9 +304,9 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "b4eff40c6e8b89900ba39038350f856fe8834ace6cd03a675476947fb1daa714",
-          "record_id": "patch-route:bfa209b2822453459ff9e5df6ac27ddfb3df0922c6b5f5bf7b031739d879c308",
-          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_hash": "cca0b79295a4a16a1decdf1221fe67a50bb8c4d698107e9f384445fdc74e55f8",
+          "record_id": "validator-identity:13927702df3fd9e35af8fbdd7a74371d654500888d9973b664bce7cba61cbd61",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         }
@@ -317,23 +317,23 @@
             "SEMANTIC_IMPACT_UNKNOWN"
           ],
           "route": "EXPAND_CHECK",
-          "route_unit_id": "route-unit:e5323075495598c79ae0642e07554d794c50a3171364e15f177f31bebef35799"
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
         }
       ],
-      "visible_snapshot_hash": "de5b4f4771123a0ec8631c82827d13c730009dd6b14fe2cddba6144fbc6ea769"
+      "semantic_snapshot_hash": "47c8e2207ffdaf8e674fae9c67f5f0115e7a59074d1ad6c70addbfdba07d97be"
     },
     {
       "causal_routes": [],
       "fixture_id": "N06_DEFER_EXACT_DECLARED_NON_CONTENT_GATE",
-      "projection_hash": "394113e00ce4fd05eab793e8d9b402e4788c9a98cfdf98591812793d92b816ed",
+      "projection_hash": "2d61cea090243d39e1301949b2deaabd905b8b64c1bb5f5e714ca1e8aa4369a7",
       "record_refs": [
         {
           "access": "POLICY_FIXTURE_READ_ONLY",
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "00ba9f1be2d9032faaab8affcb8a4745bb3c59494f7c93cb74f679c4eb5cd044",
-          "record_id": "patch-route:809c480f093553d293b00b2a9551e8ff45d1aa06e66911badeaab5b9cfd19d7d",
+          "record_hash": "61ca66798f431e0cb0866c44f4e089814db3f255b5b3244abe3ea39d268c9d2c",
+          "record_id": "patch-route:1fe5bf987ebfa57512701aff8f124a898b3adf618e7f985e1132ed0c8509525e",
           "record_type": "M3_PATCH_ROUTE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -343,8 +343,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "4571c22e863a6ebbc7b40fd72de8484fbde12e61d82888f99edbb471eaef752b",
-          "record_id": "validator-identity:5976bc5c69c7a0cd4113c972f961fe4090e8efdcb75bc5eb119ed15983cf37d9",
+          "record_hash": "cca0b79295a4a16a1decdf1221fe67a50bb8c4d698107e9f384445fdc74e55f8",
+          "record_id": "validator-identity:13927702df3fd9e35af8fbdd7a74371d654500888d9973b664bce7cba61cbd61",
           "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -354,8 +354,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "491057ab2615536c498d49ff3db00e1c8beda0f1e924d013e86354b7bca9c3f9",
-          "record_id": "patch-validation:a7e6d01109b2b57e7073f1a004c9791e32f8e1dfe02b8573bb865261dcbe78f6",
+          "record_hash": "dbb8a09c00e290f955dc85996c4d385ca5781c63097daf6cc78342a14748dc06",
+          "record_id": "patch-validation:2eb884c90c8c2143800668953289660f8beaa62212015c71c77c796a61db5ef4",
           "record_type": "M3_PATCH_VALIDATION_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -365,8 +365,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "dab9f1af63ccfefd7fa434de2a618362b6b4ea15117d9769bd5e3b3977b9eade",
-          "record_id": "patch-route-lifecycle:40fda1f7d18cffd64bb0c5261aaf6eb73c66b215a315436d69cca7d9589493ed",
+          "record_hash": "fc5f2b4315b357ee29e8e26d645e59b39c1513ed81ac6f7c0736528a2b54d75b",
+          "record_id": "patch-route-lifecycle:1f9d3784fc79b90944432d6b8cc5f17bc264d2bc10265c9f1ef2d73ae704870e",
           "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -378,23 +378,23 @@
             "DECLARED_NON_CONTENT_GATE_CLOSED"
           ],
           "route": "DEFER",
-          "route_unit_id": "route-unit:e5323075495598c79ae0642e07554d794c50a3171364e15f177f31bebef35799"
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
         }
       ],
-      "visible_snapshot_hash": "9cadb7b1dcf6c9b17cd0ce58fe10e1d71a5df87f63c6d8840a01d225abe19847"
+      "semantic_snapshot_hash": "592ba9756758e31baa2c99ee1349ce7e221f4b00a2ab446f05eee8453a644920"
     },
     {
       "causal_routes": [],
       "fixture_id": "N07_TRUSTED_STALE_OR_UNSAFE_PROPOSAL_REJECTED",
-      "projection_hash": "c8c2631a3238f1e451bb969cd69016dee69bca12b51f125f39996c6c3c247398",
+      "projection_hash": "77af0e351b25e04d0ec0ec020b8983b20c42e8df7d5797bf7d4dda4759c035e6",
       "record_refs": [
         {
           "access": "POLICY_FIXTURE_READ_ONLY",
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "29eacaab7de52e96bd31b3dfb60d90985988050adcb9923e029d3b05e0e1c200",
-          "record_id": "patch-validation:892de1c787ac63e69ecfdb2035743b99f74a4d55eb88ccc7ef8f14c0efa5e8f9",
+          "record_hash": "612411547abc44219c29644d1f95966b8a02ebd52b9096c9e1959dfe3ecf6fc7",
+          "record_id": "patch-validation:67c2eb3f2f163870fa7fdb0eb2fb26b97a74db8e212748d42d04b2aabd92d8b7",
           "record_type": "M3_PATCH_VALIDATION_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -404,19 +404,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "4571c22e863a6ebbc7b40fd72de8484fbde12e61d82888f99edbb471eaef752b",
-          "record_id": "validator-identity:5976bc5c69c7a0cd4113c972f961fe4090e8efdcb75bc5eb119ed15983cf37d9",
-          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
-          "record_version": 1,
-          "source_module": "M3"
-        },
-        {
-          "access": "POLICY_FIXTURE_READ_ONLY",
-          "contract": "M3_RECORD_REF",
-          "contract_version": "r03.5-candidate",
-          "record_contract_version": "r03.5-candidate",
-          "record_hash": "ae82632f6563244fad6f8115354e5144d6ebfa91036b8483466cf1517026fc13",
-          "record_id": "patch-route-lifecycle:d0d24141601d884f44f3ff34db5a21514ff0ddf23f04db0dbaa5018f4e506cf1",
+          "record_hash": "713ee6c0f23537499a91f97e8475fa561b6f19635ad08670d2daf42ef768fa90",
+          "record_id": "patch-route-lifecycle:334f10c14b415a89e71d2578a56201860deb875c1b7dd6ea815b08351c74469c",
           "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -426,8 +415,19 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "db8531ae1fbd016a658adede83d695db90ffb8a5212997d03c5feb8fd546317f",
-          "record_id": "patch-route:80b501d4c88b6e46b76911678d5cdead16baf3de739aac390a33c97132794bd4",
+          "record_hash": "cca0b79295a4a16a1decdf1221fe67a50bb8c4d698107e9f384445fdc74e55f8",
+          "record_id": "validator-identity:13927702df3fd9e35af8fbdd7a74371d654500888d9973b664bce7cba61cbd61",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "fa285efe3672d00fae63669005d3c6289d9f606137b1199aba9fd186f87e56c4",
+          "record_id": "patch-route:c3fd67aead7c733faf037e94a1f2b70a3f74b0ebb85ba5c4a0b2bb136148f93a",
           "record_type": "M3_PATCH_ROUTE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -439,10 +439,10 @@
             "BASE_NOT_CURRENT"
           ],
           "route": "REJECT",
-          "route_unit_id": "route-unit:e5323075495598c79ae0642e07554d794c50a3171364e15f177f31bebef35799"
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
         }
       ],
-      "visible_snapshot_hash": "b33378cad40b7835cda17d0d984f53c73a06da1e0294c3451a7686e160f8d286"
+      "semantic_snapshot_hash": "bc43e1eb301ac2b8a66930fe1d684f4b75b20ff69cfc0414a22629d8b7cd54f4"
     },
     {
       "causal_routes": [
@@ -452,8 +452,8 @@
             "contract": "M3_RECORD_REF",
             "contract_version": "r03.5-candidate",
             "record_contract_version": "r03.5-candidate",
-            "record_hash": "84d231bca92dd244d3669e636ba96704a376195deb9de34d84b34931930bbab5",
-            "record_id": "causal-hint-proposal:985500d59f7a5244e801ac72434a50ff54082a1e447e33bb9c75c5dc77f7cc53",
+            "record_hash": "040f3217540610df0228a996c4937547e9843ac0e1d5ed3df895353c8a515036",
+            "record_id": "causal-hint-proposal:7e92fb20f1a50d37700772cea995501f374afcd84f98a8933bbae9dc1a718d45",
             "record_type": "M3_CAUSAL_HINT_PROPOSAL",
             "record_version": 1,
             "source_module": "M3"
@@ -465,15 +465,15 @@
         }
       ],
       "fixture_id": "N08_CAUSAL_ROUTE_TO_B09_ALL_SUPPORT_UNITS_ALLOWED",
-      "projection_hash": "ee9ecc0e4c321dbf2689b97d9248b6612c17f21ddb72a186daee43f5224eb6c6",
+      "projection_hash": "e1af93b8b28c09de9cfb8fc36fa285de3140b6b31f11ac7cdd9076b80e0007b9",
       "record_refs": [
         {
           "access": "POLICY_FIXTURE_READ_ONLY",
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "08a3a94010311629737d58699e842c10b3ea91f006bb26f518a2aa6ad46fb442",
-          "record_id": "patch-validation:f9f7e8431dde243ab5d4a11e3b49fb0168af16d7b5286f14f08aaddeda87610c",
+          "record_hash": "6b3dc182f4cad53fdcfb63f967ad2dd68ef39efec52e116384805eac9fdbc44c",
+          "record_id": "patch-validation:ea07f64e9e5108a7804df27b3fe701b41a0bef906c0b9c7c3560ee97de8df2a9",
           "record_type": "M3_PATCH_VALIDATION_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -483,8 +483,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "16715d971b5e9bcf2fb3a8fbbd986987634c26f7390f2ab1206a008a090e7ad3",
-          "record_id": "patch-route:82efb0c7d38ab010d455d7101ea776345ea5bbece895878790eecc25f60b1c3b",
+          "record_hash": "8acafddf23444db02c40bf8ccec61c888c930525c444d1d830a1e94f0e5ee3ba",
+          "record_id": "patch-route:8fac2f6cf343710eb42c16a3eed7e35bb1508baa99e039b12b340c3bfe4d9d21",
           "record_type": "M3_PATCH_ROUTE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -494,9 +494,9 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "4571c22e863a6ebbc7b40fd72de8484fbde12e61d82888f99edbb471eaef752b",
-          "record_id": "validator-identity:5976bc5c69c7a0cd4113c972f961fe4090e8efdcb75bc5eb119ed15983cf37d9",
-          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_hash": "a3456b227b26446375cc9189a1dcf53cdb8314c09d84ad8769bec28c494edfca",
+          "record_id": "patch-route-lifecycle:9131b8d54de23eb4812dbce6a5aecdcc8cf58f5e0d51c043302c368d65566d9e",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         },
@@ -505,9 +505,9 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "e9cdd253f0ced4bdfca84907e3156dbe09beb02677799095080ce533e334e49c",
-          "record_id": "patch-route-lifecycle:25362591bf63805d0978b542194e6e170b09ebd82367de9ec1e1eb6c8b3ead75",
-          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_hash": "cca0b79295a4a16a1decdf1221fe67a50bb8c4d698107e9f384445fdc74e55f8",
+          "record_id": "validator-identity:13927702df3fd9e35af8fbdd7a74371d654500888d9973b664bce7cba61cbd61",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         }
@@ -518,24 +518,24 @@
             "MECHANICAL_PROOF_COMPLETE"
           ],
           "route": "ALLOW_FOR_B06",
-          "route_unit_id": "route-unit:17c2864b78a5ea6ebc60b8e77a9e905b9fddd4370691a665510c47ee26041d24"
+          "route_unit_id": "route-unit:cacf02121d1376053e5be8963c17c46f91565651a428ddca63e59b04a78dc044"
         }
       ],
-      "visible_snapshot_hash": "1bada8e24293dcdce2c749ca2e52a1435409ec92157902c9a68383005548bcaa"
+      "semantic_snapshot_hash": "0c6366ad774e8d86a714a8f1143b4a16cee99b06f40c13f47ecfd8ecb741b700"
     },
     {
       "causal_routes": [],
       "fixture_id": "N09_IDEMPOTENT_AND_CONTENT_DEDUP_REPLAY",
-      "projection_hash": "4be1b2030fe14ab259ce85312856bb657e0d1dc0ac4acd35a0abc3732adacaad",
+      "projection_hash": "6a4889c9a81bc2e7f5e5dc73b3be77544fe5a35a247ae6f7645e9fb5499eb0e7",
       "record_refs": [
         {
           "access": "POLICY_FIXTURE_READ_ONLY",
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "4571c22e863a6ebbc7b40fd72de8484fbde12e61d82888f99edbb471eaef752b",
-          "record_id": "validator-identity:5976bc5c69c7a0cd4113c972f961fe4090e8efdcb75bc5eb119ed15983cf37d9",
-          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_hash": "0b331a284f6665a1535f279a19e3254ce2c24f4fa2ab3745bdb5ac0045e4af33",
+          "record_id": "patch-validation:3887df1805a41557ce4f79042b0a1d0c4642d718258efbeb006e38cb57eed777",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         },
@@ -544,8 +544,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "82cb635330ea33ab414b012e4083a887b7d6ab81caff82f42723f7f87b558ca9",
-          "record_id": "patch-route-lifecycle:0d4617f51fd7673a74927253080e9e8af257558574c7433a13fc03f6e287e5e2",
+          "record_hash": "692a475d008d3ae5a6ba9417fce25ae5334ff0cb63666cadbd15e056f2bfdf23",
+          "record_id": "patch-route-lifecycle:2f0f9af0a1c758f6a36517efc29bb0af3504be625ec7578a24a5becc059568a6",
           "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -555,9 +555,9 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "bf54c2d9c72f1b4a7b33a10ee1269b467173f67e3655308d042acdd9fdad4a09",
-          "record_id": "patch-route:27cbaf53855b5d705a020f7c9405a13c329f8f7e6198cc0538f1f1f62bcf19e8",
-          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_hash": "cca0b79295a4a16a1decdf1221fe67a50bb8c4d698107e9f384445fdc74e55f8",
+          "record_id": "validator-identity:13927702df3fd9e35af8fbdd7a74371d654500888d9973b664bce7cba61cbd61",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         },
@@ -566,9 +566,9 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "c894b7391bc29bbfaebdb198679ef3a95a450e81f2fc03da7a93d8a53f82323b",
-          "record_id": "patch-validation:d2466f43b4b4f2b0dcea2b465c69913d7a065aeb0abc61d1a5864ad8e2fa4965",
-          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_hash": "f7dbb46f05e7d9f7d7de27c92b18dbb77031b10a5523cedbbcf448337cf67cf8",
+          "record_id": "patch-route:cb5bc683d09db394cd28139d5867e43a6947c89da22e958b1dcfd5e94a05938c",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         }
@@ -580,24 +580,57 @@
             "MECHANICAL_PROOF_COMPLETE"
           ],
           "route": "ALLOW_FOR_B06",
-          "route_unit_id": "route-unit:e5323075495598c79ae0642e07554d794c50a3171364e15f177f31bebef35799"
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
         }
       ],
-      "visible_snapshot_hash": "c56062b54c6d536c153de7915c355443a23ce1890b7fe2f4c5558e18ca94a8e8"
+      "semantic_snapshot_hash": "9d72aa75ccfcd4de59a4fadb357d56bf5f369baf05dd2fb56163382144f97d15"
     },
     {
       "causal_routes": [],
       "fixture_id": "N10_ATOMIC_SUPERSEDE_AND_REOPEN_WITH_NEW_MATERIAL",
       "initial_route": "DEFER",
-      "projection_hash": "7a0260b9430bada7139063f93cef42e29ec3b0680fe6b6196b353777e590cac7",
+      "projection_hash": "73ddb1b14019e68b4b1a27f386408267d42c76379addb02e35c7815c0dd1bd55",
       "record_refs": [
         {
           "access": "POLICY_FIXTURE_READ_ONLY",
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "130cb3462ee9b16dc8420b838bc0280d9bda0d8d89e53527b558280a1760302d",
-          "record_id": "patch-route-lifecycle:1d9b54d448bfadb18cc75258ab2e82ef4158465a7e7d5fc671aadc144f64790d",
+          "record_hash": "34c0f47a18495f3d62a68f77a1db5448c8bc99906591a1f6028a7ccd1829f5de",
+          "record_id": "patch-validation:e6cd9911aa70331067ee97987838f9515f7e3206960ecf9dd38c44d5c8adaed8",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "715aaf1c34098008a182bfadb7b2e93cb0ee6bbda50fa38edb320684d8eb4365",
+          "record_id": "patch-validation:a32f4367e83198f7ee1a631d71365231c5878b2ff5005534e4d34dc7f17ef829",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "a0b0b3bd6921c3404215794856790c25c54b3c8a0c22a02ba90bc35caea77300",
+          "record_id": "patch-route:264d698224565c693ee102320f2fdbed838aedcdde35c981b9758b6adf62f292",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "aa2a5d9b5e65854984fb0802cab6b4b300abf25665b31f94d76189821a5b1590",
+          "record_id": "patch-route-lifecycle:25fe145102eb8aa3a58a66e335d3a65a70b91b2f3c6d208ecffbcf578157397e",
           "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -607,8 +640,19 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "4571c22e863a6ebbc7b40fd72de8484fbde12e61d82888f99edbb471eaef752b",
-          "record_id": "validator-identity:5976bc5c69c7a0cd4113c972f961fe4090e8efdcb75bc5eb119ed15983cf37d9",
+          "record_hash": "b56750840d081361e07108db80563497b9fc9f3d1f78e42fcfc15ca593ac1574",
+          "record_id": "patch-route-lifecycle:59f5e19acbc7889505664d42b7f5afb54d55cb3d27b39ba9b10099e68b540533",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "cca0b79295a4a16a1decdf1221fe67a50bb8c4d698107e9f384445fdc74e55f8",
+          "record_id": "validator-identity:13927702df3fd9e35af8fbdd7a74371d654500888d9973b664bce7cba61cbd61",
           "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -618,19 +662,8 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "7a5db79e433e0f804c803f21074301392c3a146fbf2280b276a76f9c2a0ad96d",
-          "record_id": "patch-validation:55d3763d0d82749a7af9cef84b040e9efb29e8b315bda1df783354186646169d",
-          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
-          "record_version": 1,
-          "source_module": "M3"
-        },
-        {
-          "access": "POLICY_FIXTURE_READ_ONLY",
-          "contract": "M3_RECORD_REF",
-          "contract_version": "r03.5-candidate",
-          "record_contract_version": "r03.5-candidate",
-          "record_hash": "8510d5287ddfaabb2ebe59f00fa6da11a4457bc642ebf6b26165f135d44ff9d9",
-          "record_id": "patch-route:175ffe1b5a2b93784c012b93be98c71d26848455e79381893b8af7f2297d0f59",
+          "record_hash": "d3114052079b5523205e9fa3feac0eb4d27c4cd70a537a88154d3ab69ce3ced2",
+          "record_id": "patch-route:7b1f9d0285034d32dfd000986afa54fd6e12654bf34ee5e23979f805cf9e19dd",
           "record_type": "M3_PATCH_ROUTE_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
@@ -640,42 +673,9 @@
           "contract": "M3_RECORD_REF",
           "contract_version": "r03.5-candidate",
           "record_contract_version": "r03.5-candidate",
-          "record_hash": "b89fd720f213c4027971147f0b53ef3e310d177d24f7c64b8196f3d5e3371b11",
-          "record_id": "patch-route:739e0ff797065f0055f853986900f0447a12f2d2c001525b1bdf08697c127fce",
-          "record_type": "M3_PATCH_ROUTE_RECEIPT",
-          "record_version": 1,
-          "source_module": "M3"
-        },
-        {
-          "access": "POLICY_FIXTURE_READ_ONLY",
-          "contract": "M3_RECORD_REF",
-          "contract_version": "r03.5-candidate",
-          "record_contract_version": "r03.5-candidate",
-          "record_hash": "bbe0ce19877b2d1a313bc5e9920f22f588c9892524a219c0912155844a8623bb",
-          "record_id": "patch-route-lifecycle:fa5dde0645736f5a89c013416d8852edc10a3910b051036d38b99c0c03dc8233",
+          "record_hash": "d67fa889ac2d119b2d90176f11724b4acb08e53cc966a70d2738c9adc6d857bf",
+          "record_id": "patch-route-lifecycle:87fe7dfebf80ccf83197cfd696769aeaf7418fde1fb312969bc7602e35e97fc4",
           "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
-          "record_version": 1,
-          "source_module": "M3"
-        },
-        {
-          "access": "POLICY_FIXTURE_READ_ONLY",
-          "contract": "M3_RECORD_REF",
-          "contract_version": "r03.5-candidate",
-          "record_contract_version": "r03.5-candidate",
-          "record_hash": "e0bc27d17ed3790b6dced2c0c81ebb0489a86abb9a86db0caa796e324d904087",
-          "record_id": "patch-route-lifecycle:be57143620907e4e5ea6db87dd71c05a55f0fbb6ee1efd112f64e0d327601680",
-          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
-          "record_version": 1,
-          "source_module": "M3"
-        },
-        {
-          "access": "POLICY_FIXTURE_READ_ONLY",
-          "contract": "M3_RECORD_REF",
-          "contract_version": "r03.5-candidate",
-          "record_contract_version": "r03.5-candidate",
-          "record_hash": "f4ba6a2596a2bc67f20d875efd92398f74d1913e7e79f68aa2358a8fb871901f",
-          "record_id": "patch-validation:2649043c0c2cdca69f90eefb3b9b4dda9e7a0114e475d55259c9e0e6b62607b7",
-          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
           "record_version": 1,
           "source_module": "M3"
         }
@@ -686,13 +686,13 @@
             "MECHANICAL_PROOF_COMPLETE"
           ],
           "route": "ALLOW_FOR_B06",
-          "route_unit_id": "route-unit:e5323075495598c79ae0642e07554d794c50a3171364e15f177f31bebef35799"
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
         }
       ],
-      "visible_snapshot_hash": "295dfe330dd0037632cc62ae21f7998ab7283164a7cd5b96366c5474101020cb"
+      "semantic_snapshot_hash": "e17aef971c3091d76edc4d1dfe4d7dfbe07151ce1a76985445eea7e30cb4b7da"
     }
   ],
-  "fixture_catalog_hash": "929072f91d0a1efc1a319190feee6c91a9e14857044322b0e17fe30ceabfeea9",
+  "fixture_catalog_hash": "13761ee5a7d111436ce9e4a3f4d30b327a532eaf2e206ab3ceeba73608b18f60",
   "normal_fixture_count": 10,
   "output_types": [
     "M3_PATCH_LIFECYCLE_RECEIPT",

@@ -132,8 +132,8 @@ FAILURE_FIXTURES: dict[str, dict[str, Any]] = {
         "write_profile": "ABORT_NO_OUTPUT",
     },
     "F18_CAUSAL_SUPPORT_MAPPING_INCOMPLETE_OR_AMBIGUOUS_CANNOT_ROUTE_TO_B09": {
-        "disposition": "PUBLISH_CAUSAL_EXPAND_CHECK_NOT_ROUTE_TO_B09",
-        "write_profile": "INITIAL_ROUTE_BUNDLE",
+        "disposition": "NON_EXACT_B04_CLOSURE_ABORTS_NO_OUTPUT",
+        "write_profile": "ABORT_NO_OUTPUT",
     },
     "F19_NON_ROUTE_TO_B09_CAUSAL_ENTRY_WRITES_SIDECAR_MANIFEST_OR_LIFECYCLE": {
         "disposition": "DENY_B09_WRITES",

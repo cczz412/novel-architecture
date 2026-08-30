@@ -62,7 +62,9 @@ def _summary(env, result: dict[str, Any]) -> dict[str, Any]:
             [record_ref(item) for item in records], key=canonical_bytes
         ),
         "projection_hash": sha256_value(projection),
-        "visible_snapshot_hash": sha256_value(env.store.visible_snapshot()),
+        "semantic_snapshot_hash": sha256_value(
+            sorted(records, key=lambda item: canonical_bytes(record_ref(item)))
+        ),
     }
 
 
@@ -119,13 +121,18 @@ def fixed_vectors() -> list[dict[str, Any]]:
         prior_head = projection["series"][0]["lifecycle_head_ref"]
         new_gate_state = external_record(
             "M3_NON_CONTENT_GATE_STATE",
-            {"current_state": "OPEN", "material": "self-check"},
+            {
+                "gate_ref": record_ref(env.records["gate"]),
+                "state_sequence": 2,
+                "current_state": "OPEN",
+            },
             created_at=REOPENED_AT,
         )
         env.policy_reader.gate_bindings[0]["gate_state_ref"] = record_ref(
             new_gate_state
         )
         env.policy_reader.gate_bindings[0]["current_state"] = "OPEN"
+        env.policy_reader.gate_records = [env.records["gate"], new_gate_state]
         reopened = env.evaluate(
             "n10-reopen",
             created_at=REOPENED_AT,
@@ -178,7 +185,7 @@ def build_report(catalog: dict[str, Any]) -> dict[str, Any]:
         "candidate_schema_id": CANDIDATE_SCHEMA_ID,
         "normal_fixture_count": len(NORMAL_FIXTURES),
         "failure_fixture_count": len(FAILURE_FIXTURES),
-        "targeted_pytest_expected": "58 passed",
+        "targeted_pytest_expected": "66 passed",
         "fixed_vector_count": len(catalog["fixed_vectors"]),
         "catalog_hash": catalog["catalog_hash"],
         "writer_count": len(set(WRITER_MAP.values())),

@@ -13,7 +13,9 @@ B-05 只直接读取：
 - B-04 的 PatchProposal、ProtectionSet 和可选 CausalHintProposal；
 - exact 验证政策、当前政策选择和已经声明的非内容门。
 
-B-03 不是直接依赖。B-04 已冻结的 SourceSlice ref 只能按 opaque RecordRef 核对形状、顺序和逐字一致，不能回读 SourceSlice bytes，更不能借此读取正文。
+B-03 不是直接依赖。B-04 已冻结的 SourceSlice ref 只按 opaque RecordRef 和 B-04 已冻结的关系核对：非空时整份 Patch 必须恰好只有一条 replacement，而且新旧 evidence 与 evidence binding 必须一致。B-05 不回读 SourceSlice bytes，更不能借此读取正文。
+
+离线 reader 会调用 B-01、B-02、B-04 r03.5 的现役校验合同。合法 B-01 child CandidateVersion 可以作为 current base；B-02 未知 lifecycle、Coverage 漂移和不完整流会在路线计算前中止；B-04 locator、operation、ProtectionSet、support 和 causal 闭集不完整也会中止。
 
 ## 输出边界
 
@@ -47,6 +49,8 @@ PVR 不保存最终路线；RouteReceipt 不复制详细证明；LifecycleReceip
 
 每个 atomic group 必须恰好落入一个 route unit。只有没有已知依赖、没有未知依赖、交换顺序试应用字节一致，而且单元自己的有效保护覆盖其他未应用组目标时，多个组才能分别路由。
 
+每次试应用都会在内存里重建完整 child CandidateVersion：lineage index、parent binding、item hash 和 version payload hash 一起重算，再交回 B-01 exact validator。B-05 不持久化这份 trial，也不创建正式 child。
+
 B-04 ProtectionSet 仍是整份 Patch 的原件，B-05 不改它。每个 route unit 额外在 PVR 中保存 `effective_protection_proof`，供 B-06 应用前重验。
 
 ## 运行和验证
@@ -58,6 +62,8 @@ uv run --locked pytest -q
 uv run --locked python self_check.py
 uv run --locked ruff check .
 ```
+
+当前定向目录是 66 条测试，其中包含本轮 Pro 退修的 7 组最小反例和 SourceSlice 正反关系测试。
 
 真实模型 API、网络、小说正文、SourceSlice bytes、新事实生成、CandidateVersion 写入、pointer 写入和 B-09 sidecar 写入都必须保持 0。
 

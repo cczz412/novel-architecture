@@ -16,7 +16,7 @@
 | B-02 r03.5 | `8a62fe14802f4a128cdef32c9018f722bcb9ae3e` | `304f9ea20be7f19b739f6433b29d078225a7b3c8cec499ce8e05ef150d49ca47` | Diagnostic 生命周期和 Coverage current scope |
 | B-04 r03.5 | `e1e71d3912194aa286dcdde93c6042d000be4c1f` | `e81f7e53878a33e9b95093f94222edf6fd01636c6a1198765e2f7f66f2e8ba83` | Patch、ProtectionSet、CausalHintProposal |
 
-B-03 不是直接依赖。任何 SourceSlice ref 都只按 B-04 已冻结的 opaque ref 处理。
+B-03 不是直接依赖。任何 SourceSlice ref 都只按 B-04 已冻结的 opaque ref 和 replacement 关系处理，不读取 SourceSlice bytes。
 
 ## 合同候选和复核材料
 
@@ -28,6 +28,12 @@ B-03 不是直接依赖。任何 SourceSlice ref 都只按 B-04 已冻结的 opa
 - Codex 独立复现回执
   - SHA-256：`2d50393c1a9fc8b9bc7ac78b1ae6b2be5fff945fc5f2a3567071a4a9b7582a29`
   - 结论：5 项问题全部复现；B-01～B-04 隔离基线合计 210 passed。
+
+PR #207 exact-head Pro R01 退修回包：
+
+- 回包 ZIP SHA-256：`df05b3b80630db14f2ea5e770dc42aa59428f2feb12932848e8c0050b5737d2c`
+- 报告 SHA-256：`376d403d1703bc7146ca0be6b5e8bc77528c3c3cc77ec648608016e2557fe3f3`
+- 结论：`MODIFY`，7 组阻断；全部限定在 B-05 唯一写集内窄修。
 
 外部回包是候选证据。B-05 的开工授权来自 CZ 2026-08-30 当前对话，正式工程身份以 GitHub #206、PR 和合并后 current main 为准。
 

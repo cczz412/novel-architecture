@@ -1,8 +1,7 @@
 """B-05 r03.5 immutable records and pure route builders.
 
-This module deliberately has no imports from B-03/B-04 runtime code.  B-04
-originals are admitted as exact immutable records and SourceSlice references
-stay opaque.
+This module owns only B-05 output envelopes.  Direct-upstream originals are
+validated by their bounded reader adapters; SourceSlice bytes stay opaque.
 """
 
 from __future__ import annotations
@@ -399,7 +398,11 @@ def validate_immutable_record(record: Any, *, expected_type: str | None = None) 
         fail("B05_IMMUTABLE_TYPE_INVALID", str(record["record_type"]))
     if not isinstance(record["record_id"], str) or not record["record_id"]:
         fail("B05_IMMUTABLE_INVALID", "record_id")
-    if record["record_version"] != 1:
+    if (
+        not isinstance(record["record_version"], int)
+        or isinstance(record["record_version"], bool)
+        or record["record_version"] < 1
+    ):
         fail("B05_IMMUTABLE_INVALID", "record_version")
     if record["source_module"] != SOURCE_MODULE:
         fail("B05_IMMUTABLE_INVALID", "source_module")
@@ -490,6 +493,8 @@ def _walk_strings(value: Any) -> set[str]:
 
 def validate_output_record(record: Any) -> None:
     validate_immutable_record(record)
+    if record["record_version"] != 1:
+        fail("B05_OUTPUT_VERSION_INVALID")
     record_type = record["record_type"]
     if record_type not in OUTPUT_TYPES:
         fail("B05_OUTPUT_TYPE_INVALID", str(record_type))

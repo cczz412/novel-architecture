@@ -8,19 +8,30 @@ import json
 import os
 import sqlite3
 import stat
+import sys
 import tempfile
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Callable, Iterator
 
-from authoritative_readers import (
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+if str(REPOSITORY_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPOSITORY_ROOT))
+
+from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
+    B01ContractError,
+    validate_candidate_version as b01_validate_candidate_version,
+)
+
+from authoritative_readers import (  # noqa: E402
     B01CurrentReaderAdapter,
     B02CurrentScopeReader,
     B04PatchClosureReader,
     PolicyGateReader,
 )
-from b05_contracts import (
+from b05_contracts import (  # noqa: E402
+    B05ContractError,
     CANDIDATE_SCHEMA_ID,
     PatchLifecycleBuilder,
     PatchRouteDecider,
@@ -33,6 +44,7 @@ from b05_contracts import (
     reference_cycle_count,
     sha256_value,
     stable_sorted,
+    validate_immutable_record,
     validate_output_record,
     validate_record_ref,
 )
@@ -420,7 +432,11 @@ class B05RouteBundlePublisher:
         deterministic_result_hash: str,
     ) -> tuple[list[dict[str, Any]], bool]:
         with store.serialization():
-            if authoritative_reread() != expected_authoritative_hash:
+            try:
+                current_authoritative_hash = authoritative_reread()
+            except B05ContractError:
+                fail("B05_AUTHORITATIVE_SNAPSHOT_DRIFT")
+            if current_authoritative_hash != expected_authoritative_hash:
                 fail("B05_AUTHORITATIVE_SNAPSHOT_DRIFT")
             prior_operation = store.pvr_for_operation(operation_id, project_scope_id)
             if prior_operation is not None:
@@ -909,6 +925,15 @@ def _apply_groups(
     payload["items"] = items
     if "items_hash" in payload:
         payload["items_hash"] = sha256_value(items)
+    if "lineage_index" in payload:
+        payload["lineage_index"] = [
+            {
+                "lineage_id": item["lineage_id"],
+                "json_pointer": f"/items/{index}",
+                "item_hash": item["item_hash"],
+            }
+            for index, item in enumerate(items)
+        ]
     if "version_payload_hash" in payload:
         payload["version_payload_hash"] = sha256_value(
             {
@@ -918,6 +943,36 @@ def _apply_groups(
             }
         )
     return payload, sorted(set(errors))
+
+
+def _build_and_validate_trial_candidate(
+    base_record: dict[str, Any],
+    trial_payload: dict[str, Any],
+    *,
+    reference_records: list[dict[str, Any]],
+) -> tuple[dict[str, Any], list[str]]:
+    payload = deepcopy(trial_payload)
+    payload["parent_candidate_version_ref"] = record_ref(base_record)
+    payload["origin_commit_intent_ref"] = None
+    payload["version_payload_hash"] = sha256_value(
+        {key: value for key, value in payload.items() if key != "version_payload_hash"}
+    )
+    record = {
+        key: deepcopy(value) for key, value in base_record.items() if key != "record_hash"
+    }
+    record["record_id"] = f"b05-trial:{payload['version_payload_hash']}"
+    record["record_version"] = max(2, base_record["record_version"] + 1)
+    record["payload"] = payload
+    record["record_hash"] = sha256_value(record)
+    try:
+        b01_validate_candidate_version(
+            record,
+            allow_child=True,
+            reference_records=deepcopy(reference_records),
+        )
+    except B01ContractError:
+        return record, ["CANDIDATE_STRUCTURE_INVALID"]
+    return record, []
 
 
 def _check_result(
@@ -1004,6 +1059,8 @@ class B05Service:
         "b01_reader",
         "b02_reader",
         "policy_gate_reader",
+        "protection_policy",
+        "source_slice_records",
         "validator_identity_ref",
     )
 
@@ -1014,30 +1071,45 @@ class B05Service:
         b01_reader: B01CurrentReaderAdapter,
         b02_reader: B02CurrentScopeReader,
         policy_gate_reader: PolicyGateReader,
+        protection_policy: dict[str, Any],
+        source_slice_records: list[dict[str, Any]],
         validator_identity_ref: dict[str, Any],
     ) -> None:
         self.store = store
         self.b01_reader = b01_reader
         self.b02_reader = b02_reader
         self.policy_gate_reader = policy_gate_reader
+        self.protection_policy = deepcopy(protection_policy)
+        self.source_slice_records = deepcopy(source_slice_records)
         self.validator_identity_ref = deepcopy(validator_identity_ref)
 
-    def _read_authoritative(self, patch: dict[str, Any]) -> dict[str, Any]:
+    def _read_authoritative(
+        self,
+        patch: dict[str, Any],
+        protection: dict[str, Any],
+        causals: list[dict[str, Any]],
+    ) -> dict[str, Any]:
         payload = patch["payload"]
         b01 = self.b01_reader.read_scope()
-        candidate_payload = b01["candidate_version_record"]["payload"]
         b02 = self.b02_reader.read_scope(
             base_candidate_version_ref=payload["base_candidate_version_ref"],
-            expected_candidate_schema_id=candidate_payload["candidate_schema_id"],
-            expected_chapter_revision_ref=candidate_payload["chapter_revision_ref"],
-            expected_seg=candidate_payload["seg"],
+            upstream_context=b01["upstream_context"],
             selected_diagnostic_refs=payload.get("diagnostic_refs", []),
             selected_coverage_observation_refs=payload.get(
                 "coverage_observation_refs", []
             ),
         )
         policy = self.policy_gate_reader.read(patch_proposal_ref=record_ref(patch))
-        return {"b01": b01, "b02": b02, "policy": policy}
+        b04 = B04PatchClosureReader.read(
+            patch_proposal=patch,
+            protection_set=protection,
+            causal_hint_proposals=causals,
+            protection_policy=self.protection_policy,
+            source_slice_records=self.source_slice_records,
+            upstream_context=b01["upstream_context"],
+            b02_scope=b02,
+        )
+        return {"b01": b01, "b02": b02, "b04": b04, "policy": policy}
 
     def _validate_validator_identity(self, record: dict[str, Any]) -> None:
         payload = record["payload"]
@@ -1097,6 +1169,7 @@ class B05Service:
     def _authoritative_hash(snapshot: dict[str, Any]) -> str:
         b01 = snapshot["b01"]
         b02 = snapshot["b02"]
+        b04 = snapshot["b04"]
         policy = snapshot["policy"]
         return sha256_value(
             {
@@ -1109,6 +1182,7 @@ class B05Service:
                 else record_ref(b01["candidate_pointer_snapshot_record_or_null"]),
                 "live_pointer_binding_hash": b01["live_pointer_binding_hash"],
                 "b02_scope_snapshot_hash": b02["scope_snapshot_hash"],
+                "b04_closure_snapshot_hash": b04["closure_snapshot_hash"],
                 "active_policy_selection_hash": policy["active_policy_selection_hash"],
                 "non_content_gate_snapshot_hash": policy[
                     "non_content_gate_snapshot_hash"
@@ -1224,6 +1298,13 @@ class B05Service:
                     "canonical_add_sort_frozen", False
                 ),
             )
+            trial_record, exact_trial_errors = _build_and_validate_trial_candidate(
+                base_record,
+                trial_payload,
+                reference_records=snapshot["b01"]["candidate_reference_records"],
+            )
+            trial_payload = trial_record["payload"]
+            trial_errors = sorted(set([*trial_errors, *exact_trial_errors]))
             unknown_for_unit = [
                 token
                 for token in unknown_tokens
@@ -1600,17 +1681,25 @@ class B05Service:
         material_delta_refs = stable_sorted(material_delta_refs or [])
         for ref in material_delta_refs:
             validate_record_ref(ref)
-        closure = B04PatchClosureReader.read(
-            patch_proposal=patch_proposal,
-            protection_set=protection_set,
-            causal_hint_proposals=causal_hint_proposals,
+        validate_output_inputs = [
+            (patch_proposal, "M3_PATCH_PROPOSAL"),
+            (protection_set, "M3_CANDIDATE_PROTECTION_SET"),
+            *[
+                (causal, "M3_CAUSAL_HINT_PROPOSAL")
+                for causal in causal_hint_proposals
+            ],
+        ]
+        for record, expected_type in validate_output_inputs:
+            validate_immutable_record(record, expected_type=expected_type)
+        first = self._read_authoritative(
+            patch_proposal, protection_set, causal_hint_proposals
         )
+        closure = first["b04"]
         patch = closure["patch_proposal"]
         protection = closure["protection_set"]
         causals = closure["causal_hint_proposals"]
         validator_identity = self.store.validator_identity(self.validator_identity_ref)
         self._validate_validator_identity(validator_identity)
-        first = self._read_authoritative(patch)
         patch_payload = patch["payload"]
         candidate = first["b01"]["candidate_version_record"]
         if not _ref_equal(
@@ -1952,7 +2041,9 @@ class B05Service:
         first_prior_hash = sha256_value(prior_state)
 
         def reread_authoritative() -> str:
-            return self._authoritative_hash(self._read_authoritative(patch))
+            return self._authoritative_hash(
+                self._read_authoritative(patch, protection, causals)
+            )
 
         def reread_prior() -> str:
             if request_has_route:

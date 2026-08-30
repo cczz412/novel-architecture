@@ -4,9 +4,39 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import datetime, timezone
+from pathlib import Path
+import sys
 from typing import Any, Callable
 
-from b05_contracts import (
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+if str(REPOSITORY_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPOSITORY_ROOT))
+
+from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
+    B01ContractError,
+    validate_candidate_version as b01_validate_candidate_version,
+    validate_evidence_locator as b01_validate_evidence_locator,
+    validate_lineage_locator as b01_validate_lineage_locator,
+    validate_pointer_snapshot as b01_validate_pointer_snapshot,
+    validate_segment_index_snapshot as b01_validate_segment_index,
+)
+from work.ccz57_m3_b02_diagnostic_coverage_r03_5.b02_contracts import (  # noqa: E402
+    B02ContractError,
+    validate_coverage_record as b02_validate_coverage_record,
+    validate_diagnostic_record as b02_validate_diagnostic_record,
+    validate_identity_record as b02_validate_identity_record,
+    validate_lifecycle_record as b02_validate_lifecycle_record,
+    validate_upstream_context as b02_validate_upstream_context,
+)
+from work.ccz57_m3_b04_patch_atomic_group_r03_5.b04_contracts import (  # noqa: E402
+    B04ContractError,
+    validate_causal_record as b04_validate_causal_record,
+    validate_atomic_groups as b04_validate_atomic_groups,
+    validate_patch_record as b04_validate_patch_record,
+    validate_protection_record as b04_validate_protection_record,
+)
+
+from b05_contracts import (  # noqa: E402
     B05ContractError,
     CANDIDATE_SCHEMA_ID,
     canonical_bytes,
@@ -53,6 +83,10 @@ class B01CurrentReaderAdapter(_ReadOnlyReader):
         "segment_index",
         "pointer_snapshot",
         "live_pointer_binding",
+        "reference_records",
+        "lineage_locators",
+        "evidence_locators",
+        "segment_inputs",
     )
 
     LIVE_POINTER_KEYS = {
@@ -75,6 +109,10 @@ class B01CurrentReaderAdapter(_ReadOnlyReader):
         segment_index: dict[str, Any],
         live_pointer_binding: dict[str, Any],
         pointer_snapshot: dict[str, Any] | None = None,
+        reference_records: list[dict[str, Any]],
+        lineage_locators: list[dict[str, Any]],
+        evidence_locators: list[dict[str, Any]],
+        segment_inputs: list[dict[str, Any]],
         reader_identity: str = "B01CurrentReaderAdapter",
         reader_version: str = "b05-r03.5-fixture-1",
     ) -> None:
@@ -83,23 +121,50 @@ class B01CurrentReaderAdapter(_ReadOnlyReader):
         self.segment_index = deepcopy(segment_index)
         self.pointer_snapshot = deepcopy(pointer_snapshot)
         self.live_pointer_binding = deepcopy(live_pointer_binding)
+        self.reference_records = deepcopy(reference_records)
+        self.lineage_locators = deepcopy(lineage_locators)
+        self.evidence_locators = deepcopy(evidence_locators)
+        self.segment_inputs = deepcopy(segment_inputs)
 
     def read_scope(self) -> dict[str, Any]:
         self._before_read()
+        validation_records = [
+            *deepcopy(self.reference_records),
+            deepcopy(self.segment_index),
+        ]
         try:
-            validate_immutable_record(
-                self.candidate_version, expected_type="M3_CANDIDATE_VERSION"
-            )
-            validate_immutable_record(
-                self.segment_index, expected_type="M3_SEGMENT_INDEX_SNAPSHOT"
+            b01_validate_segment_index(self.segment_index)
+            b01_validate_candidate_version(
+                self.candidate_version,
+                allow_child=True,
+                reference_records=validation_records,
             )
             if self.pointer_snapshot is not None:
-                validate_immutable_record(
+                b01_validate_pointer_snapshot(
                     self.pointer_snapshot,
-                    expected_type="M3_CANDIDATE_POINTER_SNAPSHOT",
+                    records=[*validation_records, deepcopy(self.candidate_version)],
                 )
-        except B05ContractError as error:
+            for locator in self.lineage_locators:
+                b01_validate_lineage_locator(
+                    locator,
+                    candidate_version=self.candidate_version,
+                    reference_records=validation_records,
+                )
+            for locator in self.evidence_locators:
+                b01_validate_evidence_locator(
+                    locator,
+                    candidate_version=self.candidate_version,
+                    reference_records=validation_records,
+                )
+        except B01ContractError as error:
             fail("B05_B01_CURRENT_READER_INVALID", error.code)
+        candidate_lineages = sorted(
+            item["lineage_id"] for item in self.candidate_version["payload"]["items"]
+        )
+        lineage_ids = sorted(locator.get("lineage_id") for locator in self.lineage_locators)
+        evidence_ids = sorted(locator.get("lineage_id") for locator in self.evidence_locators)
+        if candidate_lineages != lineage_ids or candidate_lineages != evidence_ids:
+            fail("B05_B01_LOCATOR_CLOSURE_INVALID")
         if set(self.live_pointer_binding) != self.LIVE_POINTER_KEYS:
             fail("B05_B01_LIVE_POINTER_SHAPE_INVALID")
         if self.live_pointer_binding["candidate_schema_id"] != CANDIDATE_SCHEMA_ID:
@@ -118,12 +183,20 @@ class B01CurrentReaderAdapter(_ReadOnlyReader):
         ) != canonical_bytes(candidate_payload.get("chapter_revision_ref")):
             fail("B05_B01_SEGMENT_INDEX_SCOPE_MISMATCH")
         candidate_segment_ref = candidate_payload.get("segment_index_ref")
-        if candidate_segment_ref is not None and canonical_bytes(
-            candidate_segment_ref
-        ) != canonical_bytes(record_ref(self.segment_index)):
+        if canonical_bytes(candidate_segment_ref) != canonical_bytes(
+            record_ref(self.segment_index)
+        ):
             fail("B05_B01_SEGMENT_INDEX_REF_MISMATCH")
         current_ref = self.live_pointer_binding["current_candidate_version_ref"]
         validate_record_ref(current_ref, expected_type="M3_CANDIDATE_VERSION")
+        upstream_context = {
+            "reference_records": deepcopy(self.reference_records),
+            "segment_index": deepcopy(self.segment_index),
+            "candidate_version": deepcopy(self.candidate_version),
+            "lineage_locators": deepcopy(self.lineage_locators),
+            "evidence_locators": deepcopy(self.evidence_locators),
+            "segment_inputs": deepcopy(self.segment_inputs),
+        }
         return {
             "reader_identity": self.reader_identity,
             "reader_version": self.reader_version,
@@ -134,6 +207,8 @@ class B01CurrentReaderAdapter(_ReadOnlyReader):
             ),
             "live_pointer_binding": deepcopy(self.live_pointer_binding),
             "live_pointer_binding_hash": sha256_value(self.live_pointer_binding),
+            "candidate_reference_records": deepcopy(validation_records),
+            "upstream_context": upstream_context,
         }
 
 
@@ -188,9 +263,7 @@ class B02CurrentScopeReader(_ReadOnlyReader):
         self,
         *,
         base_candidate_version_ref: dict[str, Any],
-        expected_candidate_schema_id: str,
-        expected_chapter_revision_ref: dict[str, Any],
-        expected_seg: Any,
+        upstream_context: dict[str, Any],
         selected_diagnostic_refs: list[dict[str, Any]],
         selected_coverage_observation_refs: list[dict[str, Any]],
     ) -> dict[str, Any]:
@@ -204,6 +277,44 @@ class B02CurrentScopeReader(_ReadOnlyReader):
             validate_record_ref(ref, expected_type="M3_DIAGNOSTIC")
         for ref in coverages:
             validate_record_ref(ref, expected_type="M3_COVERAGE_OBSERVATION")
+        current_record_type = "UPSTREAM_CONTEXT"
+        try:
+            context = b02_validate_upstream_context(**deepcopy(upstream_context))
+            all_records = deepcopy(self.records)
+            for record in all_records:
+                record_type = record.get("record_type")
+                current_record_type = str(record_type)
+                if record_type == "M3_DIAGNOSTIC_RECORDER_IDENTITY":
+                    b02_validate_identity_record(record)
+                elif record_type == "M3_DIAGNOSTIC":
+                    b02_validate_diagnostic_record(
+                        record, context=context, records=all_records
+                    )
+                elif record_type == "M3_DIAGNOSTIC_LIFECYCLE_RECEIPT":
+                    b02_validate_lifecycle_record(record, records=all_records)
+                elif record_type == "M3_COVERAGE_OBSERVATION":
+                    b02_validate_coverage_record(
+                        record, context=context, records=all_records
+                    )
+                else:
+                    fail("B05_B02_SCOPE_RECORD_TYPE_INVALID", str(record_type))
+        except B02ContractError as error:
+            mapped = {
+                "M3_DIAGNOSTIC": "B05_B02_DIAGNOSTIC_SCOPE_INVALID",
+                "M3_DIAGNOSTIC_LIFECYCLE_RECEIPT": (
+                    "B05_B02_LIFECYCLE_INVALID"
+                ),
+                "M3_COVERAGE_OBSERVATION": "B05_B02_COVERAGE_SCOPE_INVALID",
+            }.get(current_record_type, "B05_B02_SCOPE_READER_INVALID")
+            fail(mapped, error.code)
+        candidate_payload = context["candidate_version"]["payload"]
+        expected_candidate_schema_id = candidate_payload["candidate_schema_id"]
+        expected_chapter_revision_ref = candidate_payload["chapter_revision_ref"]
+        expected_seg = candidate_payload["seg"]
+        if canonical_bytes(record_ref(context["candidate_version"])) != canonical_bytes(
+            base_candidate_version_ref
+        ):
+            fail("B05_B02_SCOPE_BASE_MISMATCH")
         by_ref: dict[bytes, dict[str, Any]] = {}
         for record in self.records:
             try:
@@ -366,7 +477,7 @@ class B02CurrentScopeReader(_ReadOnlyReader):
 
 
 class B04PatchClosureReader:
-    """Validate B-04 top-level closure without importing B-04 or B-03 code."""
+    """Validate the exact B-04 closure while keeping SourceSlice bytes opaque."""
 
     @staticmethod
     def read(
@@ -374,6 +485,10 @@ class B04PatchClosureReader:
         patch_proposal: dict[str, Any],
         protection_set: dict[str, Any],
         causal_hint_proposals: list[dict[str, Any]],
+        protection_policy: dict[str, Any],
+        source_slice_records: list[dict[str, Any]],
+        upstream_context: dict[str, Any],
+        b02_scope: dict[str, Any],
     ) -> dict[str, Any]:
         validate_immutable_record(patch_proposal, expected_type="M3_PATCH_PROPOSAL")
         validate_immutable_record(
@@ -385,6 +500,91 @@ class B04PatchClosureReader:
         )
         for record in causal_hint_proposals:
             validate_immutable_record(record, expected_type="M3_CAUSAL_HINT_PROPOSAL")
+        diagnostics = deepcopy(b02_scope["diagnostic_records"])
+        coverages = deepcopy(b02_scope["coverage_observation_records"])
+        lifecycle_receipts = [
+            deepcopy(record)
+            for stream in b02_scope["lifecycle_streams"]
+            for record in stream["records"]
+        ]
+        if source_slice_records:
+            fail("B05_B03_DIRECT_RECORD_READ_FORBIDDEN")
+        source_refs = deepcopy(
+            patch_proposal["payload"].get("authorized_source_slice_refs", [])
+        )
+        try:
+            b04_validate_protection_record(
+                protection_set,
+                context=upstream_context,
+                policy=protection_policy,
+                groups=patch_proposal["payload"]["atomic_groups"],
+            )
+            for causal in causal_hint_proposals:
+                b04_validate_causal_record(
+                    causal,
+                    context=upstream_context,
+                    diagnostic_refs=[record_ref(item) for item in diagnostics],
+                    coverage_refs=[record_ref(item) for item in coverages],
+                    source_slice_refs=source_refs,
+                )
+            if source_refs:
+                used_diagnostics, used_coverages = b04_validate_atomic_groups(
+                    patch_proposal["payload"]["atomic_groups"],
+                    context=upstream_context,
+                    diagnostics=diagnostics,
+                    coverages=coverages,
+                    lifecycle_receipts=lifecycle_receipts,
+                )
+                if used_diagnostics != {
+                    canonical_bytes(ref)
+                    for ref in patch_proposal["payload"]["diagnostic_refs"]
+                } or used_coverages != {
+                    canonical_bytes(ref)
+                    for ref in patch_proposal["payload"][
+                        "coverage_observation_refs"
+                    ]
+                }:
+                    fail("B05_B04_SUPPORT_CLOSURE_INVALID")
+                operations = [
+                    operation
+                    for group in patch_proposal["payload"]["atomic_groups"]
+                    for operation in group["operations"]
+                ]
+                if (
+                    len(source_refs) != 1
+                    or len(operations) != 1
+                    or operations[0].get("operation_kind")
+                    != "REPLACE_CANDIDATE_ITEM"
+                ):
+                    fail("B05_B04_SOURCE_SLICE_SCOPE_INVALID")
+                operation = operations[0]
+                target = operation["target"]
+                old_items = [
+                    item
+                    for item in upstream_context["candidate_version"]["payload"][
+                        "items"
+                    ]
+                    if item["lineage_id"] == target["lineage_id"]
+                ]
+                if len(old_items) != 1 or (
+                    operation["new_item"]["evidence"] != old_items[0]["evidence"]
+                    or operation["new_item"]["evidence_binding"]
+                    != old_items[0]["evidence_binding"]
+                ):
+                    fail("B05_B04_SOURCE_SLICE_SCOPE_INVALID")
+            else:
+                b04_validate_patch_record(
+                    patch_proposal,
+                    context=upstream_context,
+                    diagnostics=diagnostics,
+                    coverages=coverages,
+                    lifecycle_receipts=lifecycle_receipts,
+                    source_slice_records=[],
+                    protection=protection_set,
+                    causal_records=causal_hint_proposals,
+                )
+        except B04ContractError as error:
+            fail("B05_B04_CLOSURE_INVALID", error.code)
         patch = patch_proposal["payload"]
         if set(patch) != {
             "base_candidate_version_ref",
@@ -539,13 +739,31 @@ class B04PatchClosureReader:
             "patch_proposal": deepcopy(patch_proposal),
             "protection_set": deepcopy(protection_set),
             "causal_hint_proposals": causal_hint_proposals,
+            "protection_policy": deepcopy(protection_policy),
+            "source_slice_records": deepcopy(source_slice_records),
+            "closure_snapshot_hash": sha256_value(
+                {
+                    "patch_proposal_ref": record_ref(patch_proposal),
+                    "protection_set_ref": record_ref(protection_set),
+                    "causal_hint_proposal_refs": [
+                        record_ref(item) for item in causal_hint_proposals
+                    ],
+                    "protection_policy_ref": record_ref(protection_policy),
+                    "source_slice_refs": source_refs,
+                }
+            ),
         }
 
 
 class PolicyGateReader(_ReadOnlyReader):
     """One exact policy selection plus zero or more declared non-content gates."""
 
-    __slots__ = ("validation_policy", "active_selection", "gate_bindings")
+    __slots__ = (
+        "validation_policy",
+        "active_selection",
+        "gate_bindings",
+        "gate_records",
+    )
 
     def __init__(
         self,
@@ -553,6 +771,7 @@ class PolicyGateReader(_ReadOnlyReader):
         validation_policy: dict[str, Any],
         active_selection: dict[str, Any],
         gate_bindings: list[dict[str, Any]],
+        gate_records: list[dict[str, Any]],
         reader_identity: str = "B05PolicyGateReader",
         reader_version: str = "b05-r03.5-fixture-1",
     ) -> None:
@@ -560,6 +779,7 @@ class PolicyGateReader(_ReadOnlyReader):
         self.validation_policy = deepcopy(validation_policy)
         self.active_selection = deepcopy(active_selection)
         self.gate_bindings = deepcopy(gate_bindings)
+        self.gate_records = deepcopy(gate_records)
 
     def read(self, *, patch_proposal_ref: dict[str, Any]) -> dict[str, Any]:
         self._before_read()
@@ -570,6 +790,29 @@ class PolicyGateReader(_ReadOnlyReader):
         validate_immutable_record(
             self.active_selection, expected_type="M3_ACTIVE_POLICY_SELECTION"
         )
+        policy_payload = self.validation_policy["payload"]
+        allowed_policy_keys = {
+            "policy_version",
+            "canonical_add_sort_frozen",
+            "semantic_unknown_group_ids",
+            "unknown_dependency_tokens",
+            "declared_dependency_edges",
+            "adjacent_check_group_ids",
+            "declared_non_content_gates",
+        }
+        if not set(policy_payload) <= allowed_policy_keys or not {
+            "policy_version",
+            "canonical_add_sort_frozen",
+            "semantic_unknown_group_ids",
+            "unknown_dependency_tokens",
+            "declared_dependency_edges",
+            "adjacent_check_group_ids",
+        } <= set(policy_payload):
+            fail("B05_VALIDATION_POLICY_SHAPE_INVALID")
+        if set(self.active_selection["payload"]) != {
+            "selected_validation_policy_ref"
+        }:
+            fail("B05_ACTIVE_POLICY_SELECTION_SHAPE_INVALID")
         policy_ref = record_ref(self.validation_policy)
         selected = self.active_selection["payload"].get(
             "selected_validation_policy_ref"
@@ -585,6 +828,34 @@ class PolicyGateReader(_ReadOnlyReader):
             }
         )
         bindings = stable_sorted(self.gate_bindings)
+        declarations = policy_payload.get("declared_non_content_gates", [])
+        if declarations != stable_sorted(declarations):
+            fail("B05_GATE_DECLARATION_ORDER_INVALID")
+        declared_by_ref: dict[bytes, dict[str, Any]] = {}
+        for declaration in declarations:
+            if set(declaration) != {"gate_ref", "gate_kind"}:
+                fail("B05_GATE_DECLARATION_SHAPE_INVALID")
+            validate_record_ref(declaration["gate_ref"], expected_type="M3_NON_CONTENT_GATE")
+            if not isinstance(declaration["gate_kind"], str) or not declaration[
+                "gate_kind"
+            ]:
+                fail("B05_GATE_DECLARATION_SHAPE_INVALID")
+            key = canonical_bytes(declaration["gate_ref"])
+            if key in declared_by_ref:
+                fail("B05_GATE_DECLARATION_DUPLICATE")
+            declared_by_ref[key] = declaration
+        gate_records_by_ref: dict[bytes, dict[str, Any]] = {}
+        for record in self.gate_records:
+            if record.get("record_type") not in {
+                "M3_NON_CONTENT_GATE",
+                "M3_NON_CONTENT_GATE_STATE",
+            }:
+                fail("B05_GATE_RECORD_TYPE_INVALID")
+            validate_immutable_record(record, expected_type=record["record_type"])
+            key = canonical_bytes(record_ref(record))
+            if key in gate_records_by_ref:
+                fail("B05_GATE_RECORD_AMBIGUOUS")
+            gate_records_by_ref[key] = record
         for binding in bindings:
             required = {
                 "gate_ref",
@@ -604,6 +875,44 @@ class PolicyGateReader(_ReadOnlyReader):
                 binding["gate_state_ref"],
                 expected_type="M3_NON_CONTENT_GATE_STATE",
             )
+            gate_key = canonical_bytes(binding["gate_ref"])
+            state_key = canonical_bytes(binding["gate_state_ref"])
+            declaration = declared_by_ref.get(gate_key)
+            gate_record = gate_records_by_ref.get(gate_key)
+            state_record = gate_records_by_ref.get(state_key)
+            if declaration is None:
+                fail("B05_GATE_NOT_DECLARED")
+            if gate_record is None or state_record is None:
+                fail("B05_GATE_RECORD_UNRESOLVABLE")
+            if set(gate_record["payload"]) != {"gate_kind", "gate_scope"}:
+                fail("B05_GATE_RECORD_SHAPE_INVALID")
+            if (
+                gate_record["payload"]["gate_kind"] != declaration["gate_kind"]
+                or gate_record["payload"]["gate_scope"] != "PATCH_ROUTE_UNIT"
+            ):
+                fail("B05_GATE_DECLARATION_MISMATCH")
+            if set(state_record["payload"]) != {
+                "gate_ref",
+                "state_sequence",
+                "current_state",
+            }:
+                fail("B05_GATE_STATE_SHAPE_INVALID")
+            if (
+                canonical_bytes(state_record["payload"]["gate_ref"])
+                != canonical_bytes(binding["gate_ref"])
+                or not isinstance(state_record["payload"]["state_sequence"], int)
+                or isinstance(state_record["payload"]["state_sequence"], bool)
+                or state_record["payload"]["state_sequence"] < 1
+                or state_record["payload"]["current_state"] not in {"OPEN", "CLOSED"}
+                or state_record["payload"]["current_state"]
+                != binding["current_state"]
+            ):
+                fail("B05_GATE_STATE_MISMATCH")
+            if (
+                binding["reader_identity"] != self.reader_identity
+                or binding["reader_version"] != self.reader_version
+            ):
+                fail("B05_GATE_READER_IDENTITY_MISMATCH")
             if canonical_bytes(
                 binding["applicable_patch_proposal_ref"]
             ) != canonical_bytes(patch_proposal_ref):
@@ -620,6 +929,8 @@ class PolicyGateReader(_ReadOnlyReader):
                     "group_payload_hash",
                 }:
                     fail("B05_GATE_APPLICABILITY_INVALID")
+        if bindings and len(bindings) != len(declarations):
+            fail("B05_GATE_DECLARATION_CLOSURE_INVALID")
         return {
             "reader_identity": self.reader_identity,
             "reader_version": self.reader_version,
