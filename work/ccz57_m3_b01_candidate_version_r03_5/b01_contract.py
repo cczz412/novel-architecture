@@ -14,11 +14,14 @@ import tempfile
 import unicodedata
 from copy import deepcopy
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, ClassVar
 
 CONTRACT_VERSION = "r03.5-candidate"
 LEGACY_CONTRACT_VERSION = "r03.3-candidate"
 CANDIDATE_SCHEMA_ID = "novel-fact-extraction-v2.1"
+CCZ142_EXTRACTION_SOURCE_LANE = "CCZ142_TEXT_EXTRACTION_CANDIDATES"
+CCZ142_EXTRACTION_SOURCE_MODULE = "CCZ-142"
+CCZ142_EXTRACTION_HANDOFF_CONTRACT = "CCZ142_B01_EXTRACTION_HANDOFF_V1_CANDIDATE"
 IMMUTABLE_CONTRACT = "M3_IMMUTABLE_RECORD"
 RECORD_REF_CONTRACT = "M3_RECORD_REF"
 LINEAGE_LOCATOR_CONTRACT = "M3_LINEAGE_LOCATOR"
@@ -54,6 +57,23 @@ FORBIDDEN_RUNTIME_EVENTS = {
     "credential_read",
     "real_novel_read",
     "product_pointer_write",
+}
+
+CCZ142_HANDOFF_KEYS = {
+    "source_lane",
+    "source_module",
+    "source_contract_version",
+    "candidate_schema_id",
+    "project_scope_id",
+    "author_workspace_logical_key",
+    "chapter_revision_ref",
+    "accepted_source_generation_ref",
+    "writing_material_refs",
+    "source_module_identity",
+    "segment_inputs",
+    "seg",
+    "origin_attempt_refs",
+    "raw_items",
 }
 
 ENVELOPE_KEYS = {
@@ -196,6 +216,40 @@ def canonical_bytes(value: Any) -> bytes:
 
 def sha256_value(value: Any) -> str:
     return hashlib.sha256(canonical_bytes(value)).hexdigest()
+
+
+def _new_extraction_admission_channel() -> tuple[
+    Callable[[dict[str, Any]], object],
+    Callable[[object], dict[str, Any]],
+]:
+    """Create one service-local seal/open channel without an importable token."""
+
+    class _ExtractionAdmission:
+        __slots__ = ()
+
+    sealed: dict[object, tuple[bytes, str]] = {}
+
+    def seal(payload: dict[str, Any]) -> object:
+        payload_bytes = canonical_bytes(payload)
+        capability = _ExtractionAdmission()
+        sealed[capability] = (
+            payload_bytes,
+            hashlib.sha256(payload_bytes).hexdigest(),
+        )
+        return capability
+
+    def open_admission(capability: object) -> dict[str, Any]:
+        if type(capability) is not _ExtractionAdmission or capability not in sealed:
+            _fail("B01_EXTRACTION_ADMISSION_REQUIRED")
+        payload_bytes, expected_hash = sealed[capability]
+        if hashlib.sha256(payload_bytes).hexdigest() != expected_hash:
+            _fail("B01_EXTRACTION_ADMISSION_DRIFT")
+        reopened = json.loads(payload_bytes)
+        if canonical_bytes(reopened) != payload_bytes:
+            _fail("B01_EXTRACTION_ADMISSION_DRIFT")
+        return reopened
+
+    return seal, open_admission
 
 
 def _exact_keys(value: dict[str, Any], expected: set[str], code: str) -> None:
@@ -1988,6 +2042,15 @@ def _record_storage_key(record: dict[str, Any]) -> str:
 class FixtureStore:
     """Atomic JSON fixture store. The caller controls and isolates its directory."""
 
+    MUTATION_EVENTS: ClassVar[set[str]] = {
+        "fixture_storage_commit_attempt",
+        "fixture_storage_mkdir_attempt",
+        "fixture_storage_pending_write_attempt",
+        "fixture_storage_atomic_replace_attempt",
+        "fixture_storage_cleanup_attempt",
+    }
+    AUDIT_EVENTS: ClassVar[list[tuple[str, str]]] = []
+
     def __init__(self, root: Path) -> None:
         resolved = root.resolve(strict=False)
         module_root = Path(__file__).resolve().parent
@@ -2008,17 +2071,37 @@ class FixtureStore:
         self.state_path = root / "state.json"
         self.events: list[str] = []
 
+    def _audit(self, event: str) -> None:
+        self.events.append(event)
+        self.AUDIT_EVENTS.append((str(self.root.resolve(strict=False)), event))
+
+    @classmethod
+    def audit_marker(cls) -> int:
+        return len(cls.AUDIT_EVENTS)
+
+    @classmethod
+    def mutation_events_since(cls, marker: int, root: Path | None = None) -> list[str]:
+        resolved_root = None if root is None else str(root.resolve(strict=False))
+        return [
+            event
+            for event_root, event in cls.AUDIT_EVENTS[marker:]
+            if (resolved_root is None or event_root == resolved_root)
+            and event in cls.MUTATION_EVENTS
+        ]
+
     @staticmethod
     def empty_state() -> dict[str, Any]:
         return {"records": {}, "pointers": {}, "operations": {}}
 
     def read(self) -> dict[str, Any]:
-        self.events.append("fixture_storage_read")
+        self._audit("fixture_storage_read")
         if not self.state_path.exists():
             return self.empty_state()
         return json.loads(self.state_path.read_text(encoding="utf-8"))
 
     def commit(self, state: dict[str, Any]) -> None:
+        self._audit("fixture_storage_commit_attempt")
+        self._audit("fixture_storage_mkdir_attempt")
         self.root.mkdir(parents=True, exist_ok=True)
         temporary = self.root / ".state.json.pending"
         payload = json.dumps(
@@ -2028,12 +2111,15 @@ class FixtureStore:
             allow_nan=False,
         )
         try:
+            self._audit("fixture_storage_pending_write_attempt")
             temporary.write_text(payload, encoding="utf-8")
+            self._audit("fixture_storage_atomic_replace_attempt")
             os.replace(temporary, self.state_path)
         except OSError as error:
+            self._audit("fixture_storage_cleanup_attempt")
             temporary.unlink(missing_ok=True)
             _fail("B01_TRANSACTION_WRITE_FAILED", str(error))
-        self.events.append("fixture_storage_atomic_replace")
+        self._audit("fixture_storage_atomic_replace")
 
 
 def _stage_immutable_record(
@@ -2322,9 +2408,118 @@ def verify_state(
                 )
 
 
+def _build_ccz142_extraction_handoff_payload(
+    *,
+    source_lane: str,
+    source_module: str,
+    source_contract_version: str,
+    project_scope_id: str,
+    author_workspace_logical_key: str,
+    chapter_revision_ref: dict[str, Any],
+    accepted_source_generation_ref: dict[str, Any],
+    writing_material_refs: list[dict[str, Any]],
+    source_module_identity: str,
+    segment_inputs: list[dict[str, Any]],
+    seg: int,
+    origin_attempt_refs: list[dict[str, Any]],
+    raw_items: list[dict[str, Any]],
+) -> dict[str, Any]:
+    if (
+        source_lane != CCZ142_EXTRACTION_SOURCE_LANE
+        or source_module != CCZ142_EXTRACTION_SOURCE_MODULE
+        or source_contract_version != CCZ142_EXTRACTION_HANDOFF_CONTRACT
+    ):
+        _fail("B01_EXTRACTION_SOURCE_INVALID")
+    validate_chapter_revision_ref(chapter_revision_ref)
+    if not isinstance(project_scope_id, str) or not project_scope_id:
+        _fail("B01_EXTRACTION_SOURCE_INVALID", "project scope")
+    if (
+        not isinstance(author_workspace_logical_key, str)
+        or not author_workspace_logical_key
+    ):
+        _fail("B01_EXTRACTION_SOURCE_INVALID", "workspace scope")
+    if not _is_non_bool_int(seg) or seg < 1:
+        _fail("B01_EXTRACTION_SOURCE_INVALID", "segment")
+    if not isinstance(raw_items, list) or not all(
+        isinstance(item, dict) for item in raw_items
+    ):
+        _fail("B01_EXTRACTION_SOURCE_INVALID", "candidate items")
+    if not isinstance(segment_inputs, list) or not isinstance(
+        origin_attempt_refs, list
+    ):
+        _fail("B01_EXTRACTION_SOURCE_INVALID", "handoff references")
+    payload = {
+        "source_lane": source_lane,
+        "source_module": source_module,
+        "source_contract_version": source_contract_version,
+        "candidate_schema_id": CANDIDATE_SCHEMA_ID,
+        "project_scope_id": project_scope_id,
+        "author_workspace_logical_key": author_workspace_logical_key,
+        "chapter_revision_ref": deepcopy(chapter_revision_ref),
+        "accepted_source_generation_ref": deepcopy(accepted_source_generation_ref),
+        "writing_material_refs": deepcopy(writing_material_refs),
+        "source_module_identity": source_module_identity,
+        "segment_inputs": deepcopy(segment_inputs),
+        "seg": seg,
+        "origin_attempt_refs": deepcopy(origin_attempt_refs),
+        "raw_items": deepcopy(raw_items),
+    }
+    _exact_keys(payload, CCZ142_HANDOFF_KEYS, "B01_EXTRACTION_SOURCE_INVALID")
+    return payload
+
+
 class B01Service:
-    def __init__(self, store: FixtureStore) -> None:
-        self.store = store
+    __slots__ = ("store", "__open_extraction_admission")
+
+    def __init__(self, _store: FixtureStore) -> None:
+        _fail("B01_RUNTIME_COMPOSITION_REQUIRED")
+
+    def _load_admitted_raw_items(
+        self,
+        extraction_admission: object,
+        *,
+        project_scope_id: str,
+        author_workspace_logical_key: str,
+        chapter_revision_ref: dict[str, Any],
+        accepted_source_generation_ref: dict[str, Any],
+        writing_material_refs: list[dict[str, Any]],
+        source_module_identity: str,
+        segment_inputs: list[dict[str, Any]],
+        seg: int,
+        origin_attempt_refs: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        handoff = self.__open_extraction_admission(extraction_admission)
+        _exact_keys(
+            handoff,
+            CCZ142_HANDOFF_KEYS,
+            "B01_EXTRACTION_ADMISSION_DRIFT",
+        )
+        expected_binding = {
+            "source_lane": CCZ142_EXTRACTION_SOURCE_LANE,
+            "source_module": CCZ142_EXTRACTION_SOURCE_MODULE,
+            "source_contract_version": CCZ142_EXTRACTION_HANDOFF_CONTRACT,
+            "candidate_schema_id": CANDIDATE_SCHEMA_ID,
+            "project_scope_id": project_scope_id,
+            "author_workspace_logical_key": author_workspace_logical_key,
+            "chapter_revision_ref": chapter_revision_ref,
+            "accepted_source_generation_ref": accepted_source_generation_ref,
+            "writing_material_refs": writing_material_refs,
+            "source_module_identity": source_module_identity,
+            "segment_inputs": segment_inputs,
+            "seg": seg,
+            "origin_attempt_refs": origin_attempt_refs,
+        }
+        actual_binding = {
+            key: value for key, value in handoff.items() if key != "raw_items"
+        }
+        if canonical_bytes(actual_binding) != canonical_bytes(expected_binding):
+            _fail("B01_EXTRACTION_ADMISSION_MISMATCH")
+        raw_items = handoff["raw_items"]
+        if not isinstance(raw_items, list) or not all(
+            isinstance(item, dict) for item in raw_items
+        ):
+            _fail("B01_EXTRACTION_ADMISSION_DRIFT", "candidate items")
+        return deepcopy(raw_items)
 
     def initialize_root_baseline(
         self,
@@ -2340,13 +2535,33 @@ class B01Service:
         segment_inputs: list[dict[str, Any]],
         seg: int,
         origin_attempt_refs: list[dict[str, Any]],
-        raw_items: list[dict[str, Any]],
+        extraction_admission: object | None = None,
         operation_id: str,
         created_at: str,
         pointer_namespace: str = FIXTURE_POINTER_NAMESPACE,
         crash_point: str | None = None,
+        **unexpected_inputs: Any,
     ) -> dict[str, Any]:
+        if unexpected_inputs:
+            if "raw_items" in unexpected_inputs:
+                _fail("B01_EXTRACTION_ADMISSION_REQUIRED", "raw_items")
+            _fail(
+                "B01_CANDIDATE_VERSION_INVALID",
+                f"unexpected inputs: {sorted(unexpected_inputs)}",
+            )
         validate_admission(admission, reference_records=reference_records)
+        raw_items = self._load_admitted_raw_items(
+            extraction_admission,
+            project_scope_id=project_scope_id,
+            author_workspace_logical_key=author_workspace_logical_key,
+            chapter_revision_ref=chapter_revision_ref,
+            accepted_source_generation_ref=accepted_source_generation_ref,
+            writing_material_refs=writing_material_refs,
+            source_module_identity=source_module_identity,
+            segment_inputs=segment_inputs,
+            seg=seg,
+            origin_attempt_refs=origin_attempt_refs,
+        )
         if pointer_namespace != FIXTURE_POINTER_NAMESPACE:
             _fail("B01_POINTER_SCOPE_MISMATCH")
         if crash_point == "before_staging":
@@ -2507,6 +2722,22 @@ class B01Service:
         if canonical_bytes(reopened) != canonical_bytes(staged):
             _fail("B01_TRANSACTION_READBACK_INVALID")
         return result
+
+
+def _compose_ccz142_b01_runtime(
+    store: FixtureStore,
+) -> tuple[B01Service, Callable[..., object]]:
+    """Split source-signing authority from the ordinary B-01 service surface."""
+
+    seal, open_admission = _new_extraction_admission_channel()
+    service = object.__new__(B01Service)
+    service.store = store
+    service._B01Service__open_extraction_admission = open_admission
+
+    def admit_from_trusted_adapter(**kwargs: Any) -> object:
+        return seal(_build_ccz142_extraction_handoff_payload(**kwargs))
+
+    return service, admit_from_trusted_adapter
 
 
 def state_file_hash(path: Path) -> str | None:

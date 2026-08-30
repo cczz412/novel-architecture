@@ -12,6 +12,9 @@ from b01_contract import (
     B01ContractError,
     B01Service,
     CANDIDATE_SCHEMA_ID,
+    CCZ142_EXTRACTION_HANDOFF_CONTRACT,
+    CCZ142_EXTRACTION_SOURCE_LANE,
+    CCZ142_EXTRACTION_SOURCE_MODULE,
     CandidateVersionStore,
     FixtureStore,
     LEGACY_CONTRACT_VERSION,
@@ -33,6 +36,7 @@ from b01_contract import (
     validate_evidence_locator,
     validate_lineage_locator,
     verify_state,
+    _compose_ccz142_b01_runtime,
 )
 
 CREATED_AT = "2026-08-28T12:00:00Z"
@@ -48,6 +52,7 @@ RESPONSIBILITY_TEXT_1 = "甲走进北塔。甲拿起铜钥匙。甲走进北塔�
 RESPONSIBILITY_TEXT_2 = "乙停在门外。"
 REVISION_TEXT = RESPONSIBILITY_TEXT_1 + RESPONSIBILITY_TEXT_2
 REVISION_TEXT_SHA256 = hashlib.sha256(REVISION_TEXT.encode("utf-8")).hexdigest()
+FAILURE_WRITE_PROBE_RESULTS: list[dict[str, Any]] = []
 
 
 def review_receipt_record() -> dict[str, Any]:
@@ -302,6 +307,53 @@ def base_request(*, raw_items: list[dict[str, Any]] | None = None) -> dict[str, 
     }
 
 
+def admitted_request(
+    admit_extraction: Callable[..., object],
+    request: dict[str, Any],
+    *,
+    source_lane: str = CCZ142_EXTRACTION_SOURCE_LANE,
+    source_module: str = CCZ142_EXTRACTION_SOURCE_MODULE,
+    source_contract_version: str = CCZ142_EXTRACTION_HANDOFF_CONTRACT,
+) -> dict[str, Any]:
+    """Convert synthetic CCZ-142 handoff data into one opaque service capability."""
+
+    prepared = deepcopy(request)
+    raw_items = prepared.pop("raw_items")
+    prepared["extraction_admission"] = admit_extraction(
+        source_lane=source_lane,
+        source_module=source_module,
+        source_contract_version=source_contract_version,
+        project_scope_id=prepared["project_scope_id"],
+        author_workspace_logical_key=prepared["author_workspace_logical_key"],
+        chapter_revision_ref=prepared["chapter_revision_ref"],
+        accepted_source_generation_ref=prepared["accepted_source_generation_ref"],
+        writing_material_refs=prepared["writing_material_refs"],
+        source_module_identity=prepared["source_module_identity"],
+        segment_inputs=prepared["segment_inputs"],
+        seg=prepared["seg"],
+        origin_attempt_refs=prepared["origin_attempt_refs"],
+        raw_items=raw_items,
+    )
+    return prepared
+
+
+def initialize_request(
+    service: B01Service,
+    admit_extraction: Callable[..., object],
+    request: dict[str, Any],
+    **source_overrides: str,
+) -> dict[str, Any]:
+    return service.initialize_root_baseline(
+        **admitted_request(admit_extraction, request, **source_overrides)
+    )
+
+
+def fixture_runtime(
+    store: FixtureStore,
+) -> tuple[B01Service, Callable[..., object]]:
+    return _compose_ccz142_b01_runtime(store)
+
+
 def _load_state(root: Path) -> dict[str, Any]:
     return json.loads((root / "state.json").read_text(encoding="utf-8"))
 
@@ -327,7 +379,8 @@ def _all_candidate_refs(root: Path) -> list[dict[str, Any]]:
 def _initialize(root: Path, **overrides: Any) -> dict[str, Any]:
     request = base_request()
     request.update(overrides)
-    return B01Service(FixtureStore(root)).initialize_root_baseline(**request)
+    service, admit_extraction = fixture_runtime(FixtureStore(root))
+    return initialize_request(service, admit_extraction, request)
 
 
 def _rehash_record(record: dict[str, Any]) -> None:
@@ -396,6 +449,7 @@ def _capture_unchanged(
     before_counts = state_counts(root / "state.json")
     before_hash = state_file_hash(root / "state.json")
     before_directory = directory_snapshot(root)
+    audit_marker = FixtureStore.audit_marker()
     try:
         action()
     except B01ContractError as error:
@@ -405,12 +459,22 @@ def _capture_unchanged(
             ) from error
     else:
         raise AssertionError(f"expected {expected_code}")
+    mutation_events = FixtureStore.mutation_events_since(audit_marker)
+    FAILURE_WRITE_PROBE_RESULTS.append(
+        {
+            "expected_code": expected_code,
+            "mutation_events": list(mutation_events),
+        }
+    )
     if (
         state_counts(root / "state.json") != before_counts
         or state_file_hash(root / "state.json") != before_hash
         or directory_snapshot(root) != before_directory
+        or mutation_events
     ):
-        raise AssertionError(f"failure {expected_code} changed fixture state")
+        raise AssertionError(
+            f"failure {expected_code} attempted fixture mutation: {mutation_events}"
+        )
     return expected_code
 
 
@@ -650,12 +714,30 @@ def n11_decomposed_unicode_evidence_round_trip(root: Path) -> dict[str, Any]:
     return result
 
 
+def n12_extraction_admission_replay(root: Path) -> dict[str, Any]:
+    service, admit_extraction = fixture_runtime(FixtureStore(root))
+    prepared = admitted_request(admit_extraction, base_request())
+    first = service.initialize_root_baseline(**prepared)
+    before = directory_snapshot(root)
+    replay = dict(prepared)
+    replay["created_at"] = REPLAY_CREATED_AT
+    second = service.initialize_root_baseline(**replay)
+    if first != second or directory_snapshot(root) != before:
+        raise AssertionError("sealed extraction admission replay changed state")
+    return {
+        **second,
+        "source_lane": CCZ142_EXTRACTION_SOURCE_LANE,
+        "capability_persisted": False,
+    }
+
+
 def n08_prepare_committed_crash(root: Path) -> dict[str, Any]:
     """Commit the transaction and stop before readback in process phase one."""
     request = base_request()
     request["crash_point"] = "after_commit_before_readback"
+    service, admit_extraction = fixture_runtime(FixtureStore(root))
     try:
-        B01Service(FixtureStore(root)).initialize_root_baseline(**request)
+        initialize_request(service, admit_extraction, request)
     except B01ContractError as error:
         if error.code != "B01_SIMULATED_CRASH_AFTER_COMMIT":
             raise
@@ -683,9 +765,8 @@ def n08_restart_readback(root: Path) -> dict[str, Any]:
     original_result = deepcopy(
         reopened["operations"]["fixture-operation-001"]["result"]
     )
-    replay_result = B01Service(FixtureStore(root)).initialize_root_baseline(
-        **base_request()
-    )
+    service, admit_extraction = fixture_runtime(FixtureStore(root))
+    replay_result = initialize_request(service, admit_extraction, base_request())
     if replay_result != original_result:
         raise AssertionError("restart replay did not return the original result")
     if state_counts(root / "state.json") != (3, 1, 1):
@@ -717,6 +798,7 @@ NORMAL_SCENARIOS: dict[str, Callable[[Path], dict[str, Any]]] = {
     "N09_LEGACY_READ_ONLY": n09_legacy_read_only,
     "N10_MATERIAL_GENERATION_CHANGES_IDENTITY": n10_material_generation_changes_identity,
     "N11_DECOMPOSED_UNICODE_EVIDENCE_ROUND_TRIP": n11_decomposed_unicode_evidence_round_trip,
+    "N12_EXTRACTION_ADMISSION_REPLAY": n12_extraction_admission_replay,
 }
 
 
@@ -1252,6 +1334,107 @@ def f27_rehashed_wrong_evidence_location_rejected(root: Path) -> tuple[str, ...]
     )
 
 
+def f28_direct_raw_items_rejected(root: Path) -> tuple[str, ...]:
+    service, _admit_extraction = fixture_runtime(FixtureStore(root))
+    return (
+        _capture_unchanged(
+            root,
+            "B01_EXTRACTION_ADMISSION_REQUIRED",
+            lambda: service.initialize_root_baseline(**base_request()),
+        ),
+    )
+
+
+def f29_non_extraction_source_lanes_rejected(root: Path) -> tuple[str, ...]:
+    results: list[str] = []
+    for source_lane in (
+        "CANVAS_PLAN_FACTS",
+        "CHAPTER_KERNEL",
+        "C3_PREVIEW",
+        "GENERIC_JSON",
+    ):
+        _service, admit_extraction = fixture_runtime(FixtureStore(root))
+        results.append(
+            _capture_unchanged(
+                root,
+                "B01_EXTRACTION_SOURCE_INVALID",
+                lambda admit_extraction=admit_extraction, source_lane=source_lane: (
+                    admitted_request(
+                        admit_extraction,
+                        base_request(),
+                        source_lane=source_lane,
+                    )
+                ),
+            )
+        )
+    return tuple(results)
+
+
+def f30_untrusted_capabilities_rejected(root: Path) -> tuple[str, ...]:
+    issuing_service, admit_extraction = fixture_runtime(FixtureStore(root))
+    prepared = admitted_request(admit_extraction, base_request())
+    valid_capability = prepared["extraction_admission"]
+    results: list[str] = []
+    for capability in ({}, type(valid_capability)(), deepcopy(valid_capability)):
+        attempt = dict(prepared)
+        attempt["extraction_admission"] = capability
+        results.append(
+            _capture_unchanged(
+                root,
+                "B01_EXTRACTION_ADMISSION_REQUIRED",
+                lambda attempt=attempt: issuing_service.initialize_root_baseline(
+                    **attempt
+                ),
+            )
+        )
+    other_service, _other_admit_extraction = fixture_runtime(FixtureStore(root))
+    results.append(
+        _capture_unchanged(
+            root,
+            "B01_EXTRACTION_ADMISSION_REQUIRED",
+            lambda: other_service.initialize_root_baseline(**prepared),
+        )
+    )
+    return tuple(results)
+
+
+def f31_extraction_admission_binding_mismatch(root: Path) -> tuple[str, ...]:
+    service, admit_extraction = fixture_runtime(FixtureStore(root))
+    prepared = admitted_request(admit_extraction, base_request())
+    results: list[str] = []
+    for field, replacement in (
+        ("project_scope_id", "other-project"),
+        ("author_workspace_logical_key", "other-workspace"),
+        ("chapter_revision_ref", {}),
+        ("accepted_source_generation_ref", {}),
+        ("segment_inputs", []),
+        ("seg", 2),
+        ("writing_material_refs", []),
+        ("origin_attempt_refs", []),
+        ("source_module_identity", "M2_READ_ONLY_ADAPTER"),
+    ):
+        attempt = dict(prepared)
+        attempt[field] = replacement
+        results.append(
+            _capture_unchanged(
+                root,
+                "B01_EXTRACTION_ADMISSION_MISMATCH",
+                lambda attempt=attempt: service.initialize_root_baseline(**attempt),
+            )
+        )
+    return tuple(results)
+
+
+def f32_public_service_cannot_self_issue(root: Path) -> tuple[str, ...]:
+    return (
+        _capture_unchanged(
+            root,
+            "B01_RUNTIME_COMPOSITION_REQUIRED",
+            lambda: B01Service(FixtureStore(root)),
+        ),
+    )
+
+
 FAILURE_SCENARIOS: dict[str, Callable[[Path], tuple[str, ...]]] = {
     "F01_ADMISSION_MISSING": f01_admission_missing,
     "F02_REVIEWED_HEAD_MERGE_HEAD_MISMATCH": f02_head_mismatch,
@@ -1280,6 +1463,11 @@ FAILURE_SCENARIOS: dict[str, Callable[[Path], tuple[str, ...]]] = {
     "F25_CALLER_LOCATION_REJECTED": f25_caller_location_rejected,
     "F26_LEGACY_WRITER_REJECTED": f26_legacy_writer_rejected,
     "F27_REHASHED_WRONG_EVIDENCE_LOCATION_REJECTED": f27_rehashed_wrong_evidence_location_rejected,
+    "F28_DIRECT_RAW_ITEMS_REJECTED": f28_direct_raw_items_rejected,
+    "F29_NON_EXTRACTION_SOURCE_LANES_REJECTED": f29_non_extraction_source_lanes_rejected,
+    "F30_UNTRUSTED_CAPABILITIES_REJECTED": f30_untrusted_capabilities_rejected,
+    "F31_EXTRACTION_ADMISSION_BINDING_MISMATCH": f31_extraction_admission_binding_mismatch,
+    "F32_PUBLIC_SERVICE_CANNOT_SELF_ISSUE": f32_public_service_cannot_self_issue,
 }
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import json
 import os
 from copy import deepcopy
@@ -39,11 +40,14 @@ from self_check import (
 from fixtures import (
     FAILURE_SCENARIOS,
     NORMAL_SCENARIOS,
+    admitted_request,
     b01_fixed_vectors,
     _all_candidate_refs,
     base_request,
     canonical_fixture_vector,
+    fixture_runtime,
     inherited_fixed_vectors,
+    initialize_request,
     interface_manifest_record,
     reference_records,
     review_receipt_record,
@@ -85,8 +89,9 @@ def test_precommit_crash_leaves_zero_visible_state(
     root = tmp_path / crash_point
     request = base_request()
     request["crash_point"] = crash_point
+    service, admit_extraction = fixture_runtime(FixtureStore(root))
     with pytest.raises(B01ContractError, match="B01_SIMULATED_CRASH"):
-        B01Service(FixtureStore(root)).initialize_root_baseline(**request)
+        initialize_request(service, admit_extraction, request)
     assert state_counts(root / "state.json") == (0, 0, 0)
     assert state_file_hash(root / "state.json") is None
 
@@ -143,18 +148,140 @@ def test_canonical_json_is_nfc_compact_and_stable() -> None:
 def test_only_fixture_pointer_namespace_can_be_written(tmp_path: Path) -> None:
     request = base_request()
     request["pointer_namespace"] = "PRODUCT"
+    service, admit_extraction = fixture_runtime(FixtureStore(tmp_path))
     with pytest.raises(B01ContractError, match="B01_POINTER_SCOPE_MISMATCH"):
-        B01Service(FixtureStore(tmp_path)).initialize_root_baseline(**request)
+        initialize_request(service, admit_extraction, request)
     assert state_counts(tmp_path / "state.json") == (0, 0, 0)
 
 
 def test_runtime_event_evidence_contains_no_forbidden_event(tmp_path: Path) -> None:
     store = FixtureStore(tmp_path)
-    B01Service(store).initialize_root_baseline(**base_request())
+    service, admit_extraction = fixture_runtime(store)
+    initialize_request(service, admit_extraction, base_request())
     assert set(store.events) <= {
         "fixture_storage_read",
+        "fixture_storage_commit_attempt",
+        "fixture_storage_mkdir_attempt",
+        "fixture_storage_pending_write_attempt",
+        "fixture_storage_atomic_replace_attempt",
         "fixture_storage_atomic_replace",
     }
+
+
+def test_public_write_entry_has_no_named_raw_items_parameter() -> None:
+    parameters = inspect.signature(B01Service.initialize_root_baseline).parameters
+    assert "raw_items" not in parameters
+    assert "extraction_admission" in parameters
+    assert not hasattr(B01Service, "admit_ccz142_extraction_handoff")
+
+
+def test_public_service_cannot_self_compose_runtime(tmp_path: Path) -> None:
+    with pytest.raises(B01ContractError, match="B01_RUNTIME_COMPOSITION_REQUIRED"):
+        B01Service(FixtureStore(tmp_path))
+
+
+def test_public_write_entry_rejects_direct_raw_items_before_write(
+    tmp_path: Path,
+) -> None:
+    service, _admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    with pytest.raises(B01ContractError, match="B01_EXTRACTION_ADMISSION_REQUIRED"):
+        service.initialize_root_baseline(**base_request())
+    assert state_counts(tmp_path / "state.json") == (0, 0, 0)
+
+
+@pytest.mark.parametrize(
+    "source_lane",
+    [
+        "CANVAS_PLAN_FACTS",
+        "CHAPTER_KERNEL",
+        "C3_PREVIEW",
+        "GENERIC_JSON",
+    ],
+)
+def test_source_adapter_rejects_non_extraction_lanes(
+    source_lane: str, tmp_path: Path
+) -> None:
+    _service, admit_extraction = fixture_runtime(FixtureStore(tmp_path / source_lane))
+    with pytest.raises(B01ContractError, match="B01_EXTRACTION_SOURCE_INVALID"):
+        admitted_request(
+            admit_extraction,
+            base_request(),
+            source_lane=source_lane,
+        )
+    assert state_counts(tmp_path / source_lane / "state.json") == (0, 0, 0)
+
+
+def test_admission_rejects_plain_forged_copied_and_cross_service_capabilities(
+    tmp_path: Path,
+) -> None:
+    issuing_service, admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    prepared = admitted_request(admit_extraction, base_request())
+    valid_capability = prepared["extraction_admission"]
+    invalid_capabilities = [
+        {},
+        type(valid_capability)(),
+        deepcopy(valid_capability),
+    ]
+    for capability in invalid_capabilities:
+        attempt = dict(prepared)
+        attempt["extraction_admission"] = capability
+        with pytest.raises(B01ContractError, match="B01_EXTRACTION_ADMISSION_REQUIRED"):
+            issuing_service.initialize_root_baseline(**attempt)
+
+    other_service, _other_admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    with pytest.raises(B01ContractError, match="B01_EXTRACTION_ADMISSION_REQUIRED"):
+        other_service.initialize_root_baseline(**prepared)
+    assert state_counts(tmp_path / "state.json") == (0, 0, 0)
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    [
+        ("project_scope_id", "other-project"),
+        ("author_workspace_logical_key", "other-workspace"),
+        ("chapter_revision_ref", {}),
+        ("accepted_source_generation_ref", {}),
+        ("segment_inputs", []),
+        ("seg", 2),
+        ("writing_material_refs", []),
+        ("origin_attempt_refs", []),
+        ("source_module_identity", "M2_READ_ONLY_ADAPTER"),
+    ],
+)
+def test_admission_is_bound_to_exact_initialization_request(
+    field: str, replacement: object, tmp_path: Path
+) -> None:
+    service, admit_extraction = fixture_runtime(FixtureStore(tmp_path / field))
+    prepared = admitted_request(admit_extraction, base_request())
+    prepared[field] = replacement
+    with pytest.raises(B01ContractError, match="B01_EXTRACTION_ADMISSION_MISMATCH"):
+        service.initialize_root_baseline(**prepared)
+    assert state_counts(tmp_path / field / "state.json") == (0, 0, 0)
+
+
+def test_admission_seals_items_and_allows_same_operation_replay(
+    tmp_path: Path,
+) -> None:
+    service, admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    request = base_request()
+    prepared = admitted_request(admit_extraction, request)
+    request["raw_items"][0]["fact"] = "凭证签发后修改的内容"
+    first = service.initialize_root_baseline(**prepared)
+    before = (tmp_path / "state.json").read_bytes()
+    replay = dict(prepared)
+    replay["created_at"] = "2026-08-28T12:01:00Z"
+    second = service.initialize_root_baseline(**replay)
+    assert second == first
+    assert (tmp_path / "state.json").read_bytes() == before
+    assert b"extraction_admission" not in before
+    assert b"CCZ142_TEXT_EXTRACTION_CANDIDATES" not in before
+    state = json.loads(before)
+    candidate = next(
+        record
+        for record in state["records"].values()
+        if record["record_type"] == "M3_CANDIDATE_VERSION"
+    )
+    assert candidate["payload"]["items"][0]["fact"] == "甲进入北塔。"
 
 
 def test_global_a_records_match_exact_generated_receipts() -> None:
@@ -234,10 +361,9 @@ def test_segment_output_uses_utf8_byte_ranges_and_rejects_boolean(
     }
     request = base_request()
     request["segment_inputs"][0]["start_byte"] = False
+    service, admit_extraction = fixture_runtime(FixtureStore(tmp_path / "boolean"))
     with pytest.raises(B01ContractError, match="B01_SEGMENT_INDEX_INVALID"):
-        B01Service(FixtureStore(tmp_path / "boolean")).initialize_root_baseline(
-            **request
-        )
+        initialize_request(service, admit_extraction, request)
 
 
 def test_evidence_must_be_inside_selected_responsibility_text(tmp_path: Path) -> None:
@@ -250,8 +376,9 @@ def test_evidence_must_be_inside_selected_responsibility_text(tmp_path: Path) ->
             }
         ]
     )
+    service, admit_extraction = fixture_runtime(FixtureStore(tmp_path))
     with pytest.raises(B01ContractError, match="B01_EVIDENCE_NOT_IN_EXACT_CHAPTER"):
-        B01Service(FixtureStore(tmp_path)).initialize_root_baseline(**request)
+        initialize_request(service, admit_extraction, request)
     assert state_counts(tmp_path / "state.json") == (0, 0, 0)
 
 
@@ -265,7 +392,8 @@ def test_nfc_input_commits_without_post_commit_false_failure(tmp_path: Path) -> 
             }
         ]
     )
-    B01Service(FixtureStore(tmp_path)).initialize_root_baseline(**request)
+    service, admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    initialize_request(service, admit_extraction, request)
     assert state_counts(tmp_path / "state.json") == (3, 1, 1)
     state = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
     candidate = next(
@@ -279,26 +407,30 @@ def test_nfc_input_commits_without_post_commit_false_failure(tmp_path: Path) -> 
 def test_segment_identity_collision_never_overwrites_first_record(
     tmp_path: Path,
 ) -> None:
-    B01Service(FixtureStore(tmp_path)).initialize_root_baseline(**base_request())
+    first_service, first_admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    initialize_request(first_service, first_admit_extraction, base_request())
     before = (tmp_path / "state.json").read_bytes()
     changed = base_request()
     changed["operation_id"] = "fixture-operation-002"
     changed["author_workspace_logical_key"] = "different-workspace"
+    second_service, second_admit_extraction = fixture_runtime(FixtureStore(tmp_path))
     with pytest.raises(B01ContractError, match="B01_SEGMENT_INDEX_IDENTITY_COLLISION"):
-        B01Service(FixtureStore(tmp_path)).initialize_root_baseline(**changed)
+        initialize_request(second_service, second_admit_extraction, changed)
     assert (tmp_path / "state.json").read_bytes() == before
 
 
 def test_segment_payload_idempotency_ignores_created_at(tmp_path: Path) -> None:
-    first = B01Service(FixtureStore(tmp_path)).initialize_root_baseline(
-        **base_request()
-    )
+    first_service, first_admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    first = initialize_request(first_service, first_admit_extraction, base_request())
     second_request = base_request(raw_items=[])
     second_request["seg"] = 2
     second_request["operation_id"] = "fixture-operation-002"
     second_request["created_at"] = "2026-08-28T12:01:00Z"
-    second = B01Service(FixtureStore(tmp_path)).initialize_root_baseline(
-        **second_request
+    second_service, second_admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    second = initialize_request(
+        second_service,
+        second_admit_extraction,
+        second_request,
     )
     assert first["segment_index_snapshot_ref"] == second["segment_index_snapshot_ref"]
     state = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
@@ -315,29 +447,32 @@ def test_segment_payload_idempotency_ignores_created_at(tmp_path: Path) -> None:
 def test_operation_replay_ignores_new_created_at_and_keeps_state_bytes(
     tmp_path: Path,
 ) -> None:
-    service = B01Service(FixtureStore(tmp_path))
-    first = service.initialize_root_baseline(**base_request())
+    service, admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    first = initialize_request(service, admit_extraction, base_request())
     before = (tmp_path / "state.json").read_bytes()
     replay = base_request()
     replay["created_at"] = "2026-08-28T12:01:00Z"
-    second = service.initialize_root_baseline(**replay)
+    second = initialize_request(service, admit_extraction, replay)
     assert second == first
     assert (tmp_path / "state.json").read_bytes() == before
     assert state_counts(tmp_path / "state.json") == (3, 1, 1)
 
 
 def test_corrupt_operation_replay_fails_reference_integrity(tmp_path: Path) -> None:
-    B01Service(FixtureStore(tmp_path)).initialize_root_baseline(**base_request())
+    first_service, first_admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    initialize_request(first_service, first_admit_extraction, base_request())
     state_path = tmp_path / "state.json"
     state = json.loads(state_path.read_text(encoding="utf-8"))
     state["records"] = {}
     state_path.write_text(json.dumps(state, separators=(",", ":")), encoding="utf-8")
+    replay_service, replay_admit_extraction = fixture_runtime(FixtureStore(tmp_path))
     with pytest.raises(B01ContractError, match="B01_REFERENCE_INTEGRITY_FAILED"):
-        B01Service(FixtureStore(tmp_path)).initialize_root_baseline(**base_request())
+        initialize_request(replay_service, replay_admit_extraction, base_request())
 
 
 def test_live_pointer_keeps_full_scope_and_generation(tmp_path: Path) -> None:
-    B01Service(FixtureStore(tmp_path)).initialize_root_baseline(**base_request())
+    service, admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    initialize_request(service, admit_extraction, base_request())
     state = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
     pointer = next(iter(state["pointers"].values()))
     assert set(pointer) == {
@@ -408,11 +543,21 @@ def test_candidate_idempotency_is_scoped_to_author_workspace(tmp_path: Path) -> 
     first_request["author_workspace_logical_key"] = "workspace-one"
     second_request = base_request()
     second_request["author_workspace_logical_key"] = "workspace-two"
-    first_ref = B01Service(FixtureStore(tmp_path / "one")).initialize_root_baseline(
-        **first_request
+    first_service, first_admit_extraction = fixture_runtime(
+        FixtureStore(tmp_path / "one")
+    )
+    second_service, second_admit_extraction = fixture_runtime(
+        FixtureStore(tmp_path / "two")
+    )
+    first_ref = initialize_request(
+        first_service,
+        first_admit_extraction,
+        first_request,
     )["candidate_version_ref"]
-    second_ref = B01Service(FixtureStore(tmp_path / "two")).initialize_root_baseline(
-        **second_request
+    second_ref = initialize_request(
+        second_service,
+        second_admit_extraction,
+        second_request,
     )["candidate_version_ref"]
     assert first_ref != second_ref
 

@@ -31,6 +31,7 @@ from b01_contract import (
     verify_state,
 )
 from fixtures import (
+    FAILURE_WRITE_PROBE_RESULTS,
     FAILURE_SCENARIOS,
     NORMAL_SCENARIOS,
     b01_fixed_vectors,
@@ -664,9 +665,19 @@ def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
                 continue
             run_normal_scenario(name, normal_root / name)
             normal_results[name] = "PASS"
+        failure_write_probes: dict[str, list[str]] = {}
         for name in sorted(FAILURE_SCENARIOS):
+            probe_marker = len(FAILURE_WRITE_PROBE_RESULTS)
             codes = run_failure_scenario(name, temporary_root / "failure" / name)
             failure_results[name] = list(codes)
+            family_probes = FAILURE_WRITE_PROBE_RESULTS[probe_marker:]
+            if len(family_probes) != len(codes):
+                raise AssertionError(
+                    f"failure write probe cardinality mismatch: {name}"
+                )
+            failure_write_probes[name] = [
+                event for probe in family_probes for event in probe["mutation_events"]
+            ]
         writer_result = writer_audit()
         state_paths = sorted(normal_root.rglob("state.json"))
         integrity = reference_integrity(
@@ -719,6 +730,9 @@ def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
             "persisted_derived_views",
         )
     )
+    failure_zero_write_pass = all(
+        not events for events in failure_write_probes.values()
+    )
     network_calls = sum(event.startswith("socket.") for event in combined_forbidden)
     model_api_calls = (
         totals["model_client_path_hits"]
@@ -742,12 +756,14 @@ def run_self_check(*, allow_missing_manifest: bool) -> dict[str, Any]:
             and runtime_pass
             and vectors_pass
             and integrity_pass
+            and failure_zero_write_pass
             and product_pointer_writes == 0
             and b02_writers_called == 0
         ),
         "semantic_pass": None,
         "normal_fixture_families": normal_results,
         "failure_fixture_families": failure_results,
+        "failure_write_probes": failure_write_probes,
         "reference_integrity": integrity,
         "canonical_fixture_vector": canonical_fixture_vector(),
         "inherited_fixed_vectors": inherited_vectors,
