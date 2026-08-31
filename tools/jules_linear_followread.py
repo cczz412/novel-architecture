@@ -518,6 +518,8 @@ class JulesClient:
         session_name = self._session_name(session)
         current = dict(session)
         deadline = monotonic() + self.deadline_seconds
+        if current.get("state") is None:
+            current = self.get_session(session_name)
         while True:
             state = _string(current.get("state"), "Jules session.state")
             if state == "COMPLETED":

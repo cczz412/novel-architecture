@@ -228,7 +228,11 @@ def test_jules_source_lookup_follows_pages_and_matches_owner_repo_exactly() -> N
 def test_jules_session_creation_never_retries_or_requests_automation() -> None:
     context = context_fixture()
     jules_config, _ = provider_configs()
-    response = completed_session(context)
+    response = {
+        "name": "sessions/session-1",
+        "id": "session-1",
+        "title": followread.session_title_for(context),
+    }
     http = FakeHttp([response])
     client = followread.JulesClient("secret", jules_config, http)  # type: ignore[arg-type]
 
@@ -238,6 +242,33 @@ def test_jules_session_creation_never_retries_or_requests_automation() -> None:
     assert call["safe_attempts"] == 1
     assert "automationMode" not in call["body"]
     assert "requirePlanApproval" not in call["body"]
+
+
+def test_wait_for_completion_hydrates_create_response_without_state() -> None:
+    context = context_fixture()
+    jules_config, _ = provider_configs()
+    completed = completed_session(context)
+    http = FakeHttp([completed])
+    client = followread.JulesClient("secret", jules_config, http)  # type: ignore[arg-type]
+    sleeps: list[float] = []
+
+    result = client.wait_for_completion(
+        {"name": "sessions/session-1"},
+        monotonic=lambda: 0.0,
+        sleeper=sleeps.append,
+    )
+
+    assert result == completed
+    assert sleeps == []
+    assert http.calls == [
+        {
+            "method": "GET",
+            "url": "https://jules.googleapis.com/v1alpha/sessions/session-1",
+            "headers": {"X-Goog-Api-Key": "secret"},
+            "body": None,
+            "safe_attempts": 3,
+        }
+    ]
 
 
 def test_linear_queries_paginate_but_comment_mutation_runs_once() -> None:
