@@ -28,15 +28,21 @@ LINEAGE_LOCATOR_CONTRACT = "M3_LINEAGE_LOCATOR"
 EVIDENCE_LOCATOR_CONTRACT = "M3_EVIDENCE_LOCATOR"
 SOURCE_MODULE = "M3"
 FIXTURE_ACCESS = "POLICY_FIXTURE_READ_ONLY"
+PRODUCT_READ_ONLY_ACCESS = "PRODUCT_READ_ONLY"
 IMMUTABLE_RETENTION = "CORE_IMMUTABLE_AUDIT"
 FIXTURE_POINTER_NAMESPACE = "FIXTURE_ONLY"
 WRITE_SET_PREFIX = "work/ccz57_m3_b01_candidate_version_r03_5/"
 COORDINATE_UNIT = "UTF8_BYTE"
 SOURCE_GENERATION_RECORD_TYPE = "M1_ACCEPTED_SOURCE_GENERATION"
 WRITING_MATERIAL_RECORD_TYPE = "M1_WRITING_MATERIAL"
-REQUIRED_MATERIAL_KINDS = {"GENRE", "CORE_CHARACTER"}
-OPTIONAL_MATERIAL_KINDS = {"PLATFORM", "SYNOPSIS", "PLAN"}
-ALLOWED_MATERIAL_KINDS = REQUIRED_MATERIAL_KINDS | OPTIONAL_MATERIAL_KINDS
+OPTIONAL_MATERIAL_KINDS = {
+    "CORE_CHARACTER",
+    "GENRE",
+    "PLATFORM",
+    "SYNOPSIS",
+    "PLAN",
+}
+ALLOWED_MATERIAL_KINDS = OPTIONAL_MATERIAL_KINDS
 ALLOWED_STATUSES = {
     "已发生",
     "正在发生",
@@ -302,11 +308,16 @@ def _make_record(
     return record
 
 
-def make_fixture_input_record(**kwargs: Any) -> dict[str, Any]:
-    """Create read-only synthetic upstream evidence, never a B-01 output."""
+def make_read_only_input_record(**kwargs: Any) -> dict[str, Any]:
+    """Create read-only upstream evidence, never a B-01 output."""
     if kwargs.get("record_type") in _B_OUTPUT_WRITER_TOKENS:
-        _fail("B01_SCOPE_ESCAPE", "B-01 output requested through fixture input helper")
+        _fail("B01_SCOPE_ESCAPE", "B-01 output requested through input helper")
     return _make_record(**kwargs)
+
+
+def make_fixture_input_record(**kwargs: Any) -> dict[str, Any]:
+    """Backward-compatible helper for synthetic upstream fixture evidence."""
+    return make_read_only_input_record(**kwargs)
 
 
 def validate_record(record: dict[str, Any]) -> None:
@@ -529,7 +540,6 @@ def _resolved_record(
         code=code,
         records=records,
         expected_type=expected_type,
-        expected_access=FIXTURE_ACCESS,
         expected_source_module="M1_READ_ONLY_ADAPTER",
         expected_contract_version=expected_contract_version,
     )
@@ -545,7 +555,7 @@ def validate_source_generation_record(record: dict[str, Any]) -> None:
         record["contract_version"] != CONTRACT_VERSION
         or record["record_type"] != SOURCE_GENERATION_RECORD_TYPE
         or record["source_module"] != "M1_READ_ONLY_ADAPTER"
-        or record["access"] != FIXTURE_ACCESS
+        or record["access"] not in {FIXTURE_ACCESS, PRODUCT_READ_ONLY_ACCESS}
     ):
         _fail("B01_SOURCE_GENERATION_INVALID", "record identity")
     payload = record["payload"]
@@ -580,7 +590,7 @@ def validate_writing_material_record(
         record["contract_version"] != CONTRACT_VERSION
         or record["record_type"] != WRITING_MATERIAL_RECORD_TYPE
         or record["source_module"] != "M1_READ_ONLY_ADAPTER"
-        or record["access"] != FIXTURE_ACCESS
+        or record["access"] not in {FIXTURE_ACCESS, PRODUCT_READ_ONLY_ACCESS}
     ):
         _fail("B01_WRITING_MATERIAL_INVALID", "record identity")
     payload = record["payload"]
@@ -630,8 +640,8 @@ def build_extraction_input_binding(
     validate_chapter_revision_ref(chapter_revision_ref)
     if source_generation["payload"]["chapter_revision_ref"] != chapter_revision_ref:
         _fail("B01_SOURCE_GENERATION_MISMATCH", "chapter revision")
-    if not isinstance(writing_material_refs, list) or not writing_material_refs:
-        _fail("B01_WRITING_MATERIAL_INVALID", "materials required")
+    if not isinstance(writing_material_refs, list):
+        _fail("B01_WRITING_MATERIAL_INVALID", "materials must be a list")
     normalized: list[dict[str, Any]] = []
     seen_refs: set[bytes] = set()
     kinds: set[str] = set()
@@ -659,11 +669,11 @@ def build_extraction_input_binding(
         ref_bytes = canonical_bytes(item["material_ref"])
         if ref_bytes in seen_refs:
             _fail("B01_WRITING_MATERIAL_INVALID", "duplicate material ref")
+        if item["material_kind"] in kinds:
+            _fail("B01_WRITING_MATERIAL_INVALID", "duplicate material kind")
         seen_refs.add(ref_bytes)
         kinds.add(item["material_kind"])
         normalized.append(deepcopy(item))
-    if not REQUIRED_MATERIAL_KINDS.issubset(kinds):
-        _fail("B01_WRITING_MATERIAL_INVALID", "required material kind missing")
     normalized.sort(
         key=lambda item: (
             item["material_kind"].encode("utf-8"),
@@ -852,14 +862,19 @@ def validate_segment_index_snapshot(record: dict[str, Any]) -> None:
         payload["accepted_source_generation_ref"],
         code="B01_SOURCE_GENERATION_INVALID",
         expected_type=SOURCE_GENERATION_RECORD_TYPE,
-        expected_access=FIXTURE_ACCESS,
         expected_source_module="M1_READ_ONLY_ADAPTER",
         expected_contract_version=CONTRACT_VERSION,
     )
+    if payload["accepted_source_generation_ref"]["access"] not in {
+        FIXTURE_ACCESS,
+        PRODUCT_READ_ONLY_ACCESS,
+    }:
+        _fail("B01_SOURCE_GENERATION_INVALID", "access")
     if payload["source_module_identity"] not in {
         "M2_READ_ONLY_ADAPTER",
         "C2_READ_ONLY_ADAPTER",
         "B01_SYNTHETIC_FIXTURE",
+        "B01_AUTHOR_WORKSPACE_SOURCE_ADAPTER_R01",
     }:
         _fail("B01_SEGMENT_SOURCE_MISMATCH")
     chapter_id, revision_no = _segment_id(payload["chapter_revision_ref"])
@@ -2362,10 +2377,14 @@ def verify_state(
                 code="B01_SOURCE_GENERATION_INVALID",
                 records=all_records,
                 expected_type=SOURCE_GENERATION_RECORD_TYPE,
-                expected_access=FIXTURE_ACCESS,
                 expected_source_module="M1_READ_ONLY_ADAPTER",
                 expected_contract_version=CONTRACT_VERSION,
             )
+            if record["payload"]["accepted_source_generation_ref"]["access"] not in {
+                FIXTURE_ACCESS,
+                PRODUCT_READ_ONLY_ACCESS,
+            }:
+                _fail("B01_SOURCE_GENERATION_INVALID", "access")
         elif record["record_type"] == "M3_CANDIDATE_VERSION":
             validate_candidate_version(
                 record,

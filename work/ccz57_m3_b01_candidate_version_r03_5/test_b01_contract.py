@@ -10,6 +10,15 @@ from pathlib import Path
 
 import pytest
 
+import product_source_adapter
+from product_source_adapter import (
+    FORBIDDEN_LOGICAL_KEYS,
+    SAFE_LOGICAL_KEYS,
+    build_author_workspace_source_generation,
+)
+from mvp import chapter_initial_admission_workspace, work_draft_workspace
+from mvp.workspace import WorkspaceRouter
+
 from b01_contract import (
     B01ContractError,
     B01Service,
@@ -43,18 +52,69 @@ from fixtures import (
     admitted_request,
     b01_fixed_vectors,
     _all_candidate_refs,
+    RESPONSIBILITY_TEXT_1,
+    RESPONSIBILITY_TEXT_2,
+    attempt_record,
     base_request,
     canonical_fixture_vector,
     fixture_runtime,
     inherited_fixed_vectors,
     initialize_request,
     interface_manifest_record,
+    material_record,
     reference_records,
     review_receipt_record,
     run_failure_scenario,
     run_normal_scenario,
+    source_generation_record,
     valid_admission,
 )
+
+
+def _tree_bytes(root: Path) -> dict[str, bytes]:
+    return {
+        str(path.relative_to(root)): path.read_bytes()
+        for path in sorted(root.rglob("*"))
+        if path.is_file()
+    }
+
+
+def _seed_author_workspace_source(tmp_path: Path):
+    runtime = tmp_path / "product-runtime"
+    workspace = WorkspaceRouter(runtime).create_project(
+        "author:b01-adapter-fixture", "B-01 合成来源"
+    )
+    text = RESPONSIBILITY_TEXT_1 + RESPONSIBILITY_TEXT_2
+    work_draft_workspace.save_current_work_draft(
+        workspace,
+        {
+            "operation_id": "op-b01-work-r1",
+            "slot_ref": "S-B01-0001",
+            "source_outline_ref": "S-B01-0001@outline-r1",
+            "expected_rev": 0,
+            "entry_mode": "typed",
+            "author_text": text,
+        },
+    )
+    receipt = chapter_initial_admission_workspace.commit_initial_work_draft(
+        workspace,
+        {
+            "contract": "WORK_DRAFT_HANDOVER_ACTION",
+            "version": "v2",
+            "operation_id": "op-b01-handover-r1",
+            "actor": "author",
+            "intent": "adopt_as_manuscript",
+            "work_ref": "S-B01-0001@work",
+            "work_rev": 1,
+            "slot_ref": "S-B01-0001",
+            "source_outline_ref": "S-B01-0001@outline-r1",
+            "chapter_title": "合成章节",
+            "target_contract": "C1_CHAPTER_DOC",
+            "target_planstore_result": "handover_parts",
+        },
+        "2026-08-31T12:00:00+08:00",
+    )
+    return runtime, workspace, receipt
 
 
 @pytest.mark.parametrize(
@@ -209,6 +269,106 @@ def test_source_adapter_rejects_non_extraction_lanes(
             source_lane=source_lane,
         )
     assert state_counts(tmp_path / source_lane / "state.json") == (0, 0, 0)
+
+
+@pytest.mark.parametrize("material_kind", ["CORE_CHARACTER", "GENRE"])
+def test_genre_and_core_character_are_independently_optional(
+    material_kind: str, tmp_path: Path
+) -> None:
+    generation = source_generation_record()
+    material = material_record(material_kind, source_generation=generation)
+    request = base_request()
+    request.update(
+        {
+            "reference_records": [
+                review_receipt_record(),
+                interface_manifest_record(),
+                attempt_record(),
+                generation,
+                material,
+            ],
+            "accepted_source_generation_ref": record_ref(generation),
+            "writing_material_refs": [
+                {
+                    "material_kind": material_kind,
+                    "material_ref": record_ref(material),
+                }
+            ],
+        }
+    )
+    service, admit_extraction = fixture_runtime(FixtureStore(tmp_path))
+    result = initialize_request(service, admit_extraction, request)
+    assert result["candidate_version_ref"]["record_type"] == "M3_CANDIDATE_VERSION"
+
+
+def test_product_source_adapter_reads_only_safe_metadata_and_initializes_root(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    runtime, workspace, receipt = _seed_author_workspace_source(tmp_path)
+    before = _tree_bytes(runtime)
+    read_keys: list[str] = []
+    original_read = product_source_adapter._read_workspace_entry
+
+    def observed_read(workspace_handle, logical_key: str):
+        read_keys.append(logical_key)
+        return original_read(workspace_handle, logical_key)
+
+    monkeypatch.setattr(product_source_adapter, "_read_workspace_entry", observed_read)
+    source = build_author_workspace_source_generation(workspace, chapter_id="c01")
+
+    assert _tree_bytes(runtime) == before
+    assert set(read_keys) == set(SAFE_LOGICAL_KEYS)
+    assert len(read_keys) == 2 * len(SAFE_LOGICAL_KEYS)
+    assert set(read_keys).isdisjoint(FORBIDDEN_LOGICAL_KEYS)
+    assert source["chapter_revision_ref"] == receipt["chapter_revision_ref"]
+    assert source["writing_material_refs"] == []
+    assert source["product_writes"] == 0
+    assert source["model_api_calls"] == 0
+    assert source["real_novel_body_reads"] == 0
+
+    request = base_request()
+    request.update(
+        {
+            "reference_records": [
+                review_receipt_record(),
+                interface_manifest_record(),
+                attempt_record(),
+                source["source_generation_record"],
+            ],
+            "project_scope_id": source["project_scope_id"],
+            "author_workspace_logical_key": source["author_workspace_logical_key"],
+            "chapter_revision_ref": source["chapter_revision_ref"],
+            "accepted_source_generation_ref": source["accepted_source_generation_ref"],
+            "writing_material_refs": [],
+            "source_module_identity": source["source_module_identity"],
+        }
+    )
+    service, admit_extraction = fixture_runtime(FixtureStore(tmp_path / "b01"))
+    result = initialize_request(service, admit_extraction, request)
+    assert result["candidate_version_ref"]["record_type"] == "M3_CANDIDATE_VERSION"
+    assert _tree_bytes(runtime) == before
+
+
+def test_product_source_adapter_rejects_double_read_drift(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _runtime, workspace, _receipt = _seed_author_workspace_source(tmp_path)
+    original_read = product_source_adapter._read_workspace_entry
+    chapter_index_reads = 0
+
+    def drifting_read(workspace_handle, logical_key: str):
+        nonlocal chapter_index_reads
+        value = original_read(workspace_handle, logical_key)
+        if logical_key == "chapter_index":
+            chapter_index_reads += 1
+            if chapter_index_reads == 2:
+                value = deepcopy(value)
+                value["version"] += 1
+        return value
+
+    monkeypatch.setattr(product_source_adapter, "_read_workspace_entry", drifting_read)
+    with pytest.raises(B01ContractError, match="B01_PRODUCT_SOURCE_SNAPSHOT_DRIFT"):
+        build_author_workspace_source_generation(workspace, chapter_id="c01")
 
 
 def test_admission_rejects_plain_forged_copied_and_cross_service_capabilities(

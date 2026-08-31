@@ -54,16 +54,18 @@ EXPECTED_FILES = {
     "b01_contract.py",
     "OBJECT_SHAPES.json",
     "fixtures.py",
+    "product_source_adapter.py",
     "self_check.py",
     "test_b01_contract.py",
     "OFFLINE_REPLAY_REPORT.json",
     "SOURCE_INDEX.md",
     "DESIGN_CONFLICTS_AND_LIMITS.md",
 }
-RUNTIME_SOURCES = ("b01_contract.py", "fixtures.py")
+RUNTIME_SOURCES = ("b01_contract.py", "fixtures.py", "product_source_adapter.py")
 HASHED_SOURCES = (
     "b01_contract.py",
     "fixtures.py",
+    "product_source_adapter.py",
     "self_check.py",
     "test_b01_contract.py",
 )
@@ -473,6 +475,35 @@ def verify_object_shapes() -> dict[str, Any]:
         raise AssertionError("OBJECT_SHAPES candidate schema drift")
     if catalog["legacy_contract_version"] != LEGACY_CONTRACT_VERSION:
         raise AssertionError("OBJECT_SHAPES legacy contract version drift")
+    optional_context = catalog["optional_writing_context_example"]
+    if optional_context != {
+        "allowed_material_kinds": [
+            "CORE_CHARACTER",
+            "GENRE",
+            "PLAN",
+            "PLATFORM",
+            "SYNOPSIS",
+        ],
+        "duplicate_kind_result": "B01_WRITING_MATERIAL_INVALID",
+        "writing_material_refs": [],
+    }:
+        raise AssertionError("OBJECT_SHAPES optional writing context drift")
+    adapter = catalog["author_workspace_source_adapter_example"]
+    if (
+        adapter["read_logical_keys"]
+        != [
+            "chapter_admission_operations",
+            "chapter_index",
+            "chapter_materials",
+            "chapter_revisions",
+        ]
+        or adapter["forbidden_logical_keys"] != ["chapter_sources", "chapters", "draft"]
+        or any(
+            adapter[key] != 0
+            for key in ("product_writes", "model_api_calls", "real_novel_body_reads")
+        )
+    ):
+        raise AssertionError("OBJECT_SHAPES product source adapter drift")
     reference_records = catalog["reference_records"]
     for record in reference_records:
         validate_record(record)

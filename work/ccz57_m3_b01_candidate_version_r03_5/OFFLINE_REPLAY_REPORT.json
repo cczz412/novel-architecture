@@ -110,7 +110,7 @@
     "F21_SOURCE_GENERATION_MISMATCH": [
       "B01_SOURCE_GENERATION_MISMATCH"
     ],
-    "F22_REQUIRED_MATERIAL_MISSING": [
+    "F22_OPTIONAL_MATERIAL_KIND_INVALID": [
       "B01_WRITING_MATERIAL_INVALID"
     ],
     "F23_EVIDENCE_NOT_IN_CHAPTER": [
@@ -156,6 +156,9 @@
     ],
     "F32_PUBLIC_SERVICE_CANNOT_SELF_ISSUE": [
       "B01_RUNTIME_COMPOSITION_REQUIRED"
+    ],
+    "F33_DUPLICATE_OPTIONAL_MATERIAL_KIND": [
+      "B01_WRITING_MATERIAL_INVALID"
     ]
   },
   "failure_write_probes": {
@@ -180,7 +183,7 @@
     "F19_VERSION_DIFF_INVALID": [],
     "F20_BOUNDARY_ESCAPE": [],
     "F21_SOURCE_GENERATION_MISMATCH": [],
-    "F22_REQUIRED_MATERIAL_MISSING": [],
+    "F22_OPTIONAL_MATERIAL_KIND_INVALID": [],
     "F23_EVIDENCE_NOT_IN_CHAPTER": [],
     "F24_EVIDENCE_SENTENCE_LIMIT": [],
     "F25_CALLER_LOCATION_REJECTED": [],
@@ -190,9 +193,10 @@
     "F29_NON_EXTRACTION_SOURCE_LANES_REJECTED": [],
     "F30_UNTRUSTED_CAPABILITIES_REJECTED": [],
     "F31_EXTRACTION_ADMISSION_BINDING_MISMATCH": [],
-    "F32_PUBLIC_SERVICE_CANNOT_SELF_ISSUE": []
+    "F32_PUBLIC_SERVICE_CANNOT_SELF_ISSUE": [],
+    "F33_DUPLICATE_OPTIONAL_MATERIAL_KIND": []
   },
-  "fixture_pointer_writes": 12,
+  "fixture_pointer_writes": 13,
   "inherited_fixed_vectors": {
     "empty_version_payload_hash": {
       "actual": "1e60cd9513280b78f7cbf9c4bf54f5f2a932a40bfcc88a0adc990c140ea74823",
@@ -222,10 +226,11 @@
     "N09_LEGACY_READ_ONLY": "PASS",
     "N10_MATERIAL_GENERATION_CHANGES_IDENTITY": "PASS",
     "N11_DECOMPOSED_UNICODE_EVIDENCE_ROUND_TRIP": "PASS",
-    "N12_EXTRACTION_ADMISSION_REPLAY": "PASS"
+    "N12_EXTRACTION_ADMISSION_REPLAY": "PASS",
+    "N13_OPTIONAL_WRITING_CONTEXT_ABSENT": "PASS"
   },
   "object_shapes": {
-    "catalog_sha256": "b39b47f3f382fe0610e99a9b280598c09a124b116b4f97ce78e11affbef92104",
+    "catalog_sha256": "61406e8bc35af53c7f5f33a48558fbdfbd2bc171bd1a8702719e86515156f91a",
     "immutable_records": 3,
     "record_hashes_verified": 3,
     "reference_records": 6
@@ -233,18 +238,18 @@
   "product_pointer_writes": 0,
   "real_novel_reads": 0,
   "reference_integrity": {
-    "immutable_record_count": 36,
+    "immutable_record_count": 39,
     "persisted_derived_views": 0,
     "record_hash_failed": 0,
-    "record_hash_passed": 36,
-    "record_ref_count": 132,
+    "record_hash_passed": 39,
+    "record_ref_count": 141,
     "record_ref_failed": 0,
-    "record_ref_passed": 132,
+    "record_ref_passed": 141,
     "reference_cycles": 0,
     "unique_writer_conflicts": 0,
     "unresolved_refs": 0
   },
-  "report_hash": "e3b492a15f32163b2f4540e94117e4b914dd918fa93efda977e908095f50120e",
+  "report_hash": "c9e77c3495cbe79f5d6fefd56fd0aecf3b8048a563b1e92312b6a1d97075d4a2",
   "restart_process_evidence": {
     "distinct_child_processes": true,
     "harness_process_calls": 2,
@@ -282,20 +287,21 @@
   },
   "runtime_event_evidence": {
     "allowed_event_counts": {
-      "open": 102,
-      "os.mkdir": 19,
+      "open": 106,
+      "os.mkdir": 20,
       "os.remove": 2,
-      "os.rename": 15
+      "os.rename": 16
     },
     "forbidden_events": [],
     "real_novel_events": []
   },
   "semantic_pass": null,
   "source_hashes": {
-    "b01_contract.py": "0a0f9d73162567210daa1148ac5f568a878f339c4a62a8826a6afcb366ffd352",
-    "fixtures.py": "d96a05d8b2f2e167ef8afae6142a69a54df21f4bcb594856bc73205c086ca166",
-    "self_check.py": "2462d135a0ff90f72afca1981af82755fe0f02c867c032a561ec1969f40a175e",
-    "test_b01_contract.py": "c14dc64de31f384d1cc5c047bff93d3e36d2dfc0ea7332a8793ed553d091b7f9"
+    "b01_contract.py": "4f56e0b6a72d3cd214ab505557f0fa48508694ccaab23f0317db43e44b2aa758",
+    "fixtures.py": "2aa18dd62ab70bdd406361e1f377e023756628d1aeba3069353f4d5ddbe258a0",
+    "product_source_adapter.py": "977dcf7a78623397dd8f73d9bbc3614981f928b11bfa85a090dca3b74497ce8a",
+    "self_check.py": "2a753796305497e6b787832c82f879262f05eb728d04a97d77d9698f2a59d8e3",
+    "test_b01_contract.py": "7a23fd91819ee6b48c148979ce25e79e91e821fc90ddb2e3ddd02e9d04f6a96c"
   },
   "static_audit": {
     "files": [
@@ -307,7 +313,7 @@
         "forbidden_import_hits": 0,
         "real_novel_path_hits": 0,
         "scope_escape_names": [],
-        "sha256": "0a0f9d73162567210daa1148ac5f568a878f339c4a62a8826a6afcb366ffd352"
+        "sha256": "4f56e0b6a72d3cd214ab505557f0fa48508694ccaab23f0317db43e44b2aa758"
       },
       {
         "credential_path_hits": 0,
@@ -317,7 +323,17 @@
         "forbidden_import_hits": 0,
         "real_novel_path_hits": 0,
         "scope_escape_names": [],
-        "sha256": "d96a05d8b2f2e167ef8afae6142a69a54df21f4bcb594856bc73205c086ca166"
+        "sha256": "2aa18dd62ab70bdd406361e1f377e023756628d1aeba3069353f4d5ddbe258a0"
+      },
+      {
+        "credential_path_hits": 0,
+        "file": "product_source_adapter.py",
+        "findings": [],
+        "forbidden_call_hits": 0,
+        "forbidden_import_hits": 0,
+        "real_novel_path_hits": 0,
+        "scope_escape_names": [],
+        "sha256": "977dcf7a78623397dd8f73d9bbc3614981f928b11bfa85a090dca3b74497ce8a"
       }
     ],
     "totals": {
