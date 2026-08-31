@@ -46,6 +46,8 @@
     "https://developers.google.com/jules/api",
     "https://developers.google.com/jules/api/reference/rest/v1alpha/sources/list",
     "https://developers.google.com/jules/api/reference/rest/v1alpha/sessions",
+    "https://developers.google.com/jules/api/reference/rest/v1alpha/sessions/create",
+    "https://developers.google.com/jules/api/reference/rest/v1alpha/sessions/get",
     "https://developers.google.com/jules/api/reference/rest/v1alpha/sessions/list",
     "https://developers.google.com/jules/api/reference/rest/v1alpha/sessions.activities/list"
   ]
