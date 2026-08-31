@@ -2,7 +2,7 @@
   "b09_sidecar_writes": 0,
   "candidate_schema_id": "novel-fact-extraction-v2.1",
   "candidate_version_writes": 0,
-  "catalog_hash": "5d6e6fd9e93948fd68aa26ade193da3ec230193a5ef0fd625e9447d8aceaa471",
+  "catalog_hash": "ba94cd5b753493632bda6e0800eed9d47ad4e449054945fa5cc812593f9327c6",
   "contract_version": "r03.5-candidate",
   "failure_fixture_count": 22,
   "fixed_vector_count": 10,
@@ -30,7 +30,7 @@
     "real_novel_reads": 0,
     "text_slice_reads": 0
   },
-  "targeted_pytest_expected": "74 passed",
+  "targeted_pytest_expected": "102 passed",
   "text_slice_reads": 0,
   "writer_count": 2
 }

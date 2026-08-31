@@ -46,6 +46,7 @@ from b05_contracts import (  # noqa: E402
     validate_immutable_record,
     validate_output_record,
     validate_record_ref,
+    validate_validation_policy_semantics,
 )
 
 
@@ -707,6 +708,18 @@ def _token_bytes(values: list[Any]) -> set[bytes]:
 def _known_edges(
     groups: list[dict[str, Any]], policy_payload: dict[str, Any]
 ) -> list[dict[str, Any]]:
+    validate_validation_policy_semantics(
+        policy_payload=policy_payload,
+        atomic_group_bindings=stable_sorted(
+            [
+                {
+                    "atomic_group_id": group["atomic_group_id"],
+                    "group_payload_hash": group["group_payload_hash"],
+                }
+                for group in groups
+            ]
+        ),
+    )
     proofs = {group["atomic_group_id"]: _group_proof_inputs(group) for group in groups}
     edges: list[dict[str, Any]] = []
     for left_index, left in enumerate(groups):
@@ -767,13 +780,6 @@ def _known_edges(
                 }
                 edges.append(edge)
     for declared in policy_payload.get("declared_dependency_edges", []):
-        if set(declared) != {
-            "left_atomic_group_id",
-            "right_atomic_group_id",
-            "edge_type",
-            "evidence_tokens",
-        }:
-            fail("B05_POLICY_DEPENDENCY_EDGE_INVALID")
         edges.append(deepcopy(declared))
     return stable_sorted(edges)
 

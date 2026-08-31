@@ -44,8 +44,10 @@ from b05_contracts import (  # noqa: E402
     record_ref,
     sha256_value,
     stable_sorted,
+    validate_gate_applicability_targets,
     validate_immutable_record,
     validate_record_ref,
+    validate_validation_policy_semantics,
 )
 
 ReadHook = Callable[[int], None]
@@ -830,6 +832,10 @@ class PolicyGateReader(_ReadOnlyReader):
             "adjacent_check_group_ids",
         } <= set(policy_payload):
             fail("B05_VALIDATION_POLICY_SHAPE_INVALID")
+        validate_validation_policy_semantics(
+            policy_payload=policy_payload,
+            atomic_group_bindings=atomic_group_bindings,
+        )
         if set(self.active_selection["payload"]) != {
             "selected_validation_policy_ref"
         }:
@@ -985,19 +991,10 @@ class PolicyGateReader(_ReadOnlyReader):
             ) != canonical_bytes(patch_proposal_ref):
                 fail("B05_GATE_PATCH_SCOPE_INVALID")
             targets = binding["applicable_atomic_group_bindings_or_route_unit_ids"]
-            if not isinstance(targets, list) or not targets:
-                fail("B05_GATE_APPLICABILITY_INVALID")
-            for target in targets:
-                if isinstance(target, str):
-                    if not target.startswith("route-unit:"):
-                        fail("B05_GATE_APPLICABILITY_INVALID")
-                elif not isinstance(target, dict) or set(target) != {
-                    "atomic_group_id",
-                    "group_payload_hash",
-                }:
-                    fail("B05_GATE_APPLICABILITY_INVALID")
-                elif canonical_bytes(target) not in exact_group_binding_keys:
-                    fail("B05_GATE_APPLICABILITY_INVALID")
+            validate_gate_applicability_targets(
+                targets,
+                exact_group_binding_keys=exact_group_binding_keys,
+            )
         if (
             len(bindings) != len(declarations)
             or bound_gate_keys != set(declared_by_ref)

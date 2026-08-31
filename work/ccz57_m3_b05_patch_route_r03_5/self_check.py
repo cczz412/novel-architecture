@@ -185,7 +185,7 @@ def build_report(catalog: dict[str, Any]) -> dict[str, Any]:
         "candidate_schema_id": CANDIDATE_SCHEMA_ID,
         "normal_fixture_count": len(NORMAL_FIXTURES),
         "failure_fixture_count": len(FAILURE_FIXTURES),
-        "targeted_pytest_expected": "74 passed",
+        "targeted_pytest_expected": "102 passed",
         "fixed_vector_count": len(catalog["fixed_vectors"]),
         "catalog_hash": catalog["catalog_hash"],
         "writer_count": len(set(WRITER_MAP.values())),

@@ -49,6 +49,19 @@ def _rehash(record: dict) -> None:
     )
 
 
+def _replace_active_policy(env, mutate_payload) -> None:
+    mutate_payload(env.policy_reader.validation_policy["payload"])
+    _rehash(env.policy_reader.validation_policy)
+    env.policy_reader.active_selection = external_record(
+        "M3_ACTIVE_POLICY_SELECTION",
+        {
+            "selected_validation_policy_ref": record_ref(
+                env.policy_reader.validation_policy
+            )
+        },
+    )
+
+
 def _route_record(env) -> dict:
     return next(
         item
@@ -1529,6 +1542,474 @@ def test_modify_m06_exact_source_slice_relation_can_route_b09(tmp_path: Path) ->
     assert [item["route"] for item in result["causal_hint_routes"]] == [
         "ROUTE_TO_B09"
     ]
+
+
+def test_r03_gate_applicability_accepts_one_canonical_target_set(
+    tmp_path: Path,
+) -> None:
+    env = build_environment(
+        tmp_path / "r03-gate-canonical", mode="two-replace", closed_gate=True
+    )
+    bindings = sorted(
+        [
+            {
+                "atomic_group_id": group["atomic_group_id"],
+                "group_payload_hash": group["group_payload_hash"],
+            }
+            for group in env.patch["payload"]["atomic_groups"]
+        ],
+        key=canonical_bytes,
+    )
+    env.policy_reader.gate_bindings[0][
+        "applicable_atomic_group_bindings_or_route_unit_ids"
+    ] = bindings
+    result = env.evaluate()
+    assert [item["route"] for item in result["route_units"]] == ["DEFER", "DEFER"]
+
+
+def test_r03_gate_applicability_accepts_one_exact_route_unit_target(
+    tmp_path: Path,
+) -> None:
+    env = build_environment(
+        tmp_path / "r03-gate-route-unit", mode="two-replace", closed_gate=True
+    )
+    first_group = env.patch["payload"]["atomic_groups"][0]
+    first_binding = {
+        "atomic_group_id": first_group["atomic_group_id"],
+        "group_payload_hash": first_group["group_payload_hash"],
+    }
+    route_unit_id = f"route-unit:{sha256_value({'patch_proposal_ref': record_ref(env.patch), 'atomic_group_bindings': [first_binding]})}"
+    env.policy_reader.gate_bindings[0][
+        "applicable_atomic_group_bindings_or_route_unit_ids"
+    ] = [route_unit_id]
+    result = env.evaluate()
+    assert sorted(item["route"] for item in result["route_units"]) == [
+        "ALLOW_FOR_B06",
+        "DEFER",
+    ]
+
+
+@pytest.mark.parametrize(
+    "variant",
+    ["reversed_exact_groups", "duplicate_exact_group", "duplicate_route_unit"],
+)
+def test_r03_gate_applicability_requires_canonical_sorted_unique_targets(
+    tmp_path: Path, variant: str
+) -> None:
+    env = build_environment(
+        tmp_path / f"r03-gate-{variant}", mode="two-replace", closed_gate=True
+    )
+    bindings = sorted(
+        [
+            {
+                "atomic_group_id": group["atomic_group_id"],
+                "group_payload_hash": group["group_payload_hash"],
+            }
+            for group in env.patch["payload"]["atomic_groups"]
+        ],
+        key=canonical_bytes,
+    )
+    if variant == "reversed_exact_groups":
+        targets = list(reversed(bindings))
+    elif variant == "duplicate_exact_group":
+        targets = [bindings[0], deepcopy(bindings[0]), bindings[1]]
+    else:
+        route_unit_id = f"route-unit:{sha256_value({'patch_proposal_ref': record_ref(env.patch), 'atomic_group_bindings': [bindings[0]]})}"
+        targets = [route_unit_id, route_unit_id]
+    env.policy_reader.gate_bindings[0][
+        "applicable_atomic_group_bindings_or_route_unit_ids"
+    ] = targets
+    before = env.store.visible_snapshot()
+    with pytest.raises(B05ContractError, match="B05_GATE_APPLICABILITY_INVALID"):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_r03_gate_replay_rejects_representation_only_reordering(
+    tmp_path: Path,
+) -> None:
+    env = build_environment(
+        tmp_path / "r03-gate-replay", mode="two-replace", closed_gate=True
+    )
+    bindings = sorted(
+        [
+            {
+                "atomic_group_id": group["atomic_group_id"],
+                "group_payload_hash": group["group_payload_hash"],
+            }
+            for group in env.patch["payload"]["atomic_groups"]
+        ],
+        key=canonical_bytes,
+    )
+    env.policy_reader.gate_bindings[0][
+        "applicable_atomic_group_bindings_or_route_unit_ids"
+    ] = bindings
+    env.evaluate("canonical-first")
+    before = env.store.visible_snapshot()
+    env.policy_reader.gate_bindings[0][
+        "applicable_atomic_group_bindings_or_route_unit_ids"
+    ] = list(reversed(bindings))
+    with pytest.raises(B05ContractError, match="B05_GATE_APPLICABILITY_INVALID"):
+        env.evaluate("representation-only-replay")
+    assert env.store.visible_snapshot() == before
+
+
+@pytest.mark.parametrize(
+    "variant",
+    [
+        "invalid_edge_type",
+        "nonstring_edge_type",
+        "free_text_evidence",
+        "nonstring_evidence_type",
+        "reversed_endpoints",
+        "self_loop",
+        "ghost_adjacent_group",
+        "nonstring_unknown_reason",
+    ],
+)
+def test_r03_validation_policy_rejects_dependency_semantic_bypasses(
+    tmp_path: Path, variant: str
+) -> None:
+    env = build_environment(tmp_path / f"r03-policy-{variant}", mode="two-replace")
+    edge = {
+        "left_atomic_group_id": "replace-a",
+        "right_atomic_group_id": "replace-b",
+        "edge_type": "OPERATION_RESULT_DEPENDENCY",
+        "evidence_tokens": [
+            {
+                "type": "STABLE_CHECK_CODE",
+                "value": "B05_CHECK_R03_DECLARED_DEPENDENCY",
+            }
+        ],
+    }
+
+    def mutate(payload: dict) -> None:
+        if variant == "invalid_edge_type":
+            edge["edge_type"] = "FREE_TEXT"
+        elif variant == "nonstring_edge_type":
+            edge["edge_type"] = []
+        elif variant == "free_text_evidence":
+            edge["evidence_tokens"] = ["free text"]
+        elif variant == "nonstring_evidence_type":
+            edge["evidence_tokens"] = [{"type": [], "value": "invalid"}]
+        elif variant == "reversed_endpoints":
+            edge["left_atomic_group_id"] = "replace-b"
+            edge["right_atomic_group_id"] = "replace-a"
+        elif variant == "self_loop":
+            edge["right_atomic_group_id"] = "replace-a"
+        elif variant == "ghost_adjacent_group":
+            payload["adjacent_check_group_ids"] = ["ghost"]
+            return
+        else:
+            payload["unknown_dependency_tokens"] = [
+                {
+                    "reason_code": [],
+                    "bounded_atomic_group_ids": [],
+                    "supporting_refs": [],
+                }
+            ]
+            return
+        payload["declared_dependency_edges"] = [edge]
+
+    _replace_active_policy(env, mutate)
+    before = env.store.visible_snapshot()
+    with pytest.raises(
+        B05ContractError,
+        match="B05_(POLICY_DEPENDENCY_EDGE|POLICY_GROUP_SET|UNKNOWN_DEPENDENCY)_INVALID",
+    ):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+@pytest.mark.parametrize(
+    "variant",
+    [
+        "duplicate_edges",
+        "duplicate_evidence_tokens",
+        "reversed_evidence_tokens",
+        "reversed_semantic_groups",
+        "duplicate_adjacent_groups",
+        "reversed_unknown_bounds",
+    ],
+)
+def test_r03_validation_policy_nested_collections_are_canonical(
+    tmp_path: Path, variant: str
+) -> None:
+    env = build_environment(tmp_path / f"r03-policy-order-{variant}", mode="two-replace")
+    tokens = sorted(
+        [
+            {"type": "STABLE_CHECK_CODE", "value": "B05_CHECK_R03_A"},
+            {"type": "STABLE_CHECK_CODE", "value": "B05_CHECK_R03_B"},
+        ],
+        key=canonical_bytes,
+    )
+    edge = {
+        "left_atomic_group_id": "replace-a",
+        "right_atomic_group_id": "replace-b",
+        "edge_type": "OPERATION_RESULT_DEPENDENCY",
+        "evidence_tokens": [tokens[0]],
+    }
+
+    def mutate(payload: dict) -> None:
+        if variant == "duplicate_edges":
+            payload["declared_dependency_edges"] = [edge, deepcopy(edge)]
+        elif variant == "duplicate_evidence_tokens":
+            edge["evidence_tokens"] = [tokens[0], deepcopy(tokens[0])]
+            payload["declared_dependency_edges"] = [edge]
+        elif variant == "reversed_evidence_tokens":
+            edge["evidence_tokens"] = list(reversed(tokens))
+            payload["declared_dependency_edges"] = [edge]
+        elif variant == "reversed_semantic_groups":
+            payload["semantic_unknown_group_ids"] = ["replace-b", "replace-a"]
+        elif variant == "duplicate_adjacent_groups":
+            payload["adjacent_check_group_ids"] = ["replace-a", "replace-a"]
+        else:
+            payload["unknown_dependency_tokens"] = [
+                {
+                    "reason_code": "DEPENDENCY_ENDPOINT_UNKNOWN",
+                    "bounded_atomic_group_ids": ["replace-b", "replace-a"],
+                    "supporting_refs": [],
+                }
+            ]
+
+    _replace_active_policy(env, mutate)
+    before = env.store.visible_snapshot()
+    with pytest.raises(
+        B05ContractError,
+        match="B05_(POLICY_DEPENDENCY_EDGE|POLICY_GROUP_SET|UNKNOWN_DEPENDENCY)_INVALID",
+    ):
+        env.evaluate()
+    assert env.store.visible_snapshot() == before
+
+
+def test_r03_all_contract_dependency_edge_types_remain_accepted(
+    tmp_path: Path,
+) -> None:
+    edge_types = {
+        "WRITE_WRITE_OVERLAP",
+        "WRITE_READ_OVERLAP",
+        "TARGET_OR_LINEAGE_DEPENDENCY",
+        "SHARED_SUPPORT_AFFECTS_VALIDATION",
+        "OPERATION_RESULT_DEPENDENCY",
+        "PROTECTION_INTERACTION",
+        "NON_COMMUTATIVE_APPLICATION",
+    }
+    for edge_type in sorted(edge_types):
+        env = build_environment(
+            tmp_path / f"r03-edge-positive-{edge_type}", mode="two-replace"
+        )
+
+        def mutate(payload: dict, selected_edge_type: str = edge_type) -> None:
+            payload["declared_dependency_edges"] = [
+                {
+                    "left_atomic_group_id": "replace-a",
+                    "right_atomic_group_id": "replace-b",
+                    "edge_type": selected_edge_type,
+                    "evidence_tokens": [
+                        {
+                            "type": "STABLE_CHECK_CODE",
+                            "value": "B05_CHECK_R03_VALID_EDGE",
+                        }
+                    ],
+                }
+            ]
+
+        _replace_active_policy(env, mutate)
+        result = env.evaluate()
+        assert [item["route"] for item in result["route_units"]] == [
+            "ALLOW_FOR_B06"
+        ]
+
+
+def test_r03_all_typed_dependency_evidence_tokens_remain_accepted(
+    tmp_path: Path,
+) -> None:
+    token_types = {
+        "EXACT_RECORD_REF",
+        "LINEAGE_LOCATOR",
+        "EVIDENCE_LOCATOR",
+        "JSON_POINTER",
+        "OPERATION_FINGERPRINT",
+        "STABLE_CHECK_CODE",
+    }
+    for token_type in sorted(token_types):
+        env = build_environment(
+            tmp_path / f"r03-token-positive-{token_type}", mode="two-replace"
+        )
+        operation = env.patch["payload"]["atomic_groups"][0]["operations"][0]
+        values = {
+            "EXACT_RECORD_REF": record_ref(env.records["diagnostic"]),
+            "LINEAGE_LOCATOR": deepcopy(env.b01_reader.lineage_locators[0]),
+            "EVIDENCE_LOCATOR": deepcopy(env.b01_reader.evidence_locators[0]),
+            "JSON_POINTER": "/items/0",
+            "OPERATION_FINGERPRINT": sha256_value(operation),
+            "STABLE_CHECK_CODE": "B05_CHECK_R03_VALID_TOKEN",
+        }
+
+        def mutate(payload: dict, selected_token_type: str = token_type) -> None:
+            payload["declared_dependency_edges"] = [
+                {
+                    "left_atomic_group_id": "replace-a",
+                    "right_atomic_group_id": "replace-b",
+                    "edge_type": "OPERATION_RESULT_DEPENDENCY",
+                    "evidence_tokens": [
+                        {
+                            "type": selected_token_type,
+                            "value": values[selected_token_type],
+                        }
+                    ],
+                }
+            ]
+
+        _replace_active_policy(env, mutate)
+        result = env.evaluate()
+        assert [item["route"] for item in result["route_units"]] == [
+            "ALLOW_FOR_B06"
+        ]
+
+
+def test_r03_pvr_defense_rejects_noncanonical_gate_targets(tmp_path: Path) -> None:
+    env = build_environment(
+        tmp_path / "r03-pvr-gate-defense", mode="two-replace", closed_gate=True
+    )
+    bindings = sorted(
+        [
+            {
+                "atomic_group_id": group["atomic_group_id"],
+                "group_payload_hash": group["group_payload_hash"],
+            }
+            for group in env.patch["payload"]["atomic_groups"]
+        ],
+        key=canonical_bytes,
+    )
+    env.policy_reader.gate_bindings[0][
+        "applicable_atomic_group_bindings_or_route_unit_ids"
+    ] = bindings
+    env.evaluate()
+    pvr = deepcopy(_pvr_record(env))
+    pvr_binding = pvr["payload"]["input_binding"]
+    pvr_binding["non_content_gate_bindings"][0][
+        "applicable_atomic_group_bindings_or_route_unit_ids"
+    ] = list(reversed(bindings))
+    pvr_binding["non_content_gate_snapshot_hash"] = sha256_value(
+        pvr_binding["non_content_gate_bindings"]
+    )
+    _rehash(pvr)
+    with pytest.raises(B05ContractError, match="B05_GATE_APPLICABILITY_INVALID"):
+        validate_output_record(pvr)
+
+
+def test_r03_pvr_defense_rejects_invalid_dependency_edge(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "r03-pvr-edge-defense", mode="two-replace")
+    env.evaluate()
+    pvr = deepcopy(_pvr_record(env))
+    dependency = pvr["payload"]["dependency_proof"]
+    dependency["dependency_edges"] = [
+        {
+            "left_atomic_group_id": "replace-a",
+            "right_atomic_group_id": "replace-b",
+            "edge_type": "FREE_TEXT",
+            "evidence_tokens": [
+                {
+                    "type": "STABLE_CHECK_CODE",
+                    "value": "B05_CHECK_R03_FORGED_EDGE",
+                }
+            ],
+        }
+    ]
+    dependency["partition_hash"] = sha256_value(
+        {
+            "group_catalog": dependency["group_catalog"],
+            "dependency_edges": dependency["dependency_edges"],
+            "unknown_dependency_tokens": dependency["unknown_dependency_tokens"],
+            "route_unit_partition": dependency["route_unit_partition"],
+        }
+    )
+    _rehash(pvr)
+    with pytest.raises(B05ContractError, match="B05_DEPENDENCY_EDGE_INVALID"):
+        validate_output_record(pvr)
+
+
+def test_r03_pvr_defense_recomputes_route_unit_identity(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "r03-pvr-route-unit-id", mode="two-replace")
+    env.evaluate()
+    pvr = deepcopy(_pvr_record(env))
+    dependency = pvr["payload"]["dependency_proof"]
+    dependency["route_unit_partition"][0]["route_unit_id"] = f"route-unit:{'f' * 64}"
+    dependency["route_unit_partition"] = sorted(
+        dependency["route_unit_partition"], key=canonical_bytes
+    )
+    dependency["partition_hash"] = sha256_value(
+        {
+            "group_catalog": dependency["group_catalog"],
+            "dependency_edges": dependency["dependency_edges"],
+            "unknown_dependency_tokens": dependency["unknown_dependency_tokens"],
+            "route_unit_partition": dependency["route_unit_partition"],
+        }
+    )
+    _rehash(pvr)
+    with pytest.raises(
+        B05ContractError, match="B05_ROUTE_UNIT_PARTITION_INVALID"
+    ):
+        validate_output_record(pvr)
+
+
+@pytest.mark.parametrize(
+    "variant", ["known_edge_split", "unbounded_unknown_split", "nonstring_group_id"]
+)
+def test_r03_pvr_defense_recomputes_dependency_components(
+    tmp_path: Path, variant: str
+) -> None:
+    env = build_environment(tmp_path / f"r03-pvr-components-{variant}", mode="two-replace")
+    env.evaluate()
+    pvr = deepcopy(_pvr_record(env))
+    dependency = pvr["payload"]["dependency_proof"]
+    if variant == "known_edge_split":
+        dependency["dependency_edges"] = [
+            {
+                "left_atomic_group_id": "replace-a",
+                "right_atomic_group_id": "replace-b",
+                "edge_type": "OPERATION_RESULT_DEPENDENCY",
+                "evidence_tokens": [
+                    {
+                        "type": "STABLE_CHECK_CODE",
+                        "value": "B05_CHECK_R03_FORGED_COMPONENT",
+                    }
+                ],
+            }
+        ]
+    elif variant == "unbounded_unknown_split":
+        preimage = {
+            "reason_code": "DEPENDENCY_ENDPOINT_UNKNOWN",
+            "bounded_atomic_group_ids": [],
+            "supporting_refs": [],
+        }
+        dependency["unknown_dependency_tokens"] = [
+            {
+                "token_id": f"unknown-dependency:{sha256_value(preimage)}",
+                **preimage,
+            }
+        ]
+    else:
+        dependency["route_unit_partition"][0]["atomic_group_bindings"][0][
+            "atomic_group_id"
+        ] = []
+        dependency["route_unit_partition"] = sorted(
+            dependency["route_unit_partition"], key=canonical_bytes
+        )
+    dependency["partition_hash"] = sha256_value(
+        {
+            "group_catalog": dependency["group_catalog"],
+            "dependency_edges": dependency["dependency_edges"],
+            "unknown_dependency_tokens": dependency["unknown_dependency_tokens"],
+            "route_unit_partition": dependency["route_unit_partition"],
+        }
+    )
+    _rehash(pvr)
+    with pytest.raises(
+        B05ContractError, match="B05_ROUTE_UNIT_PARTITION_INVALID"
+    ):
+        validate_output_record(pvr)
 
 
 def test_modify_m07_self_check_vectors_use_semantic_snapshot() -> None:

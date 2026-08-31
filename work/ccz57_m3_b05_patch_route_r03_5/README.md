@@ -63,7 +63,7 @@ uv run --locked python self_check.py
 uv run --locked ruff check .
 ```
 
-当前定向目录是 74 条测试，其中包含 R01 的 7 组最小反例，以及 R02 补出的 gate 声明闭集／最新状态／exact 适用范围、opaque SourceSlice 分支 schema 和 Patch／Causal SourceSlice refs 逐字一致测试。
+当前定向目录是 102 条测试。除 R01／R02 已有反例外，R03 还固定了 gate 适用目标的规范排序与去重，以及 validation policy 依赖边的类型、端点、typed evidence token、内层集合和真实 group 绑定。这些反例都要求在发布前中止，正式三原件保持 0 写入。
 
 真实模型 API、网络、小说正文、SourceSlice bytes、新事实生成、CandidateVersion 写入、pointer 写入和 B-09 sidecar 写入都必须保持 0。
 

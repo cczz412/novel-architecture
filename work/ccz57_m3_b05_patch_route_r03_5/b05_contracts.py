@@ -245,6 +245,30 @@ REASON_CODES = {
     "DEFER": {"DECLARED_NON_CONTENT_GATE_CLOSED"},
 }
 
+DEPENDENCY_EDGE_TYPES = {
+    "WRITE_WRITE_OVERLAP",
+    "WRITE_READ_OVERLAP",
+    "TARGET_OR_LINEAGE_DEPENDENCY",
+    "SHARED_SUPPORT_AFFECTS_VALIDATION",
+    "OPERATION_RESULT_DEPENDENCY",
+    "PROTECTION_INTERACTION",
+    "NON_COMMUTATIVE_APPLICATION",
+}
+DEPENDENCY_EVIDENCE_TOKEN_TYPES = {
+    "EXACT_RECORD_REF",
+    "LINEAGE_LOCATOR",
+    "EVIDENCE_LOCATOR",
+    "JSON_POINTER",
+    "OPERATION_FINGERPRINT",
+    "STABLE_CHECK_CODE",
+}
+UNKNOWN_DEPENDENCY_REASON_CODES = {
+    "DEPENDENCY_ENDPOINT_UNKNOWN",
+    "SEMANTIC_IMPACT_UNKNOWN",
+    "EVIDENCE_SUPPORT_AMBIGUOUS",
+    "ADJACENT_SEGMENT_CHECK_REQUIRED",
+}
+
 _WRITER_TOKENS = {record_type: object() for record_type in OUTPUT_TYPES}
 
 
@@ -604,6 +628,342 @@ def _validate_route_companions(entry: dict[str, Any]) -> None:
         fail("B05_DEFER_COMPANION_INVALID")
 
 
+def _require_canonical_collection(values: Any, code: str) -> list[Any]:
+    if not isinstance(values, list):
+        fail(code, "list required")
+    try:
+        canonical = stable_sorted(values)
+    except B05ContractError as error:
+        fail(code, error.code)
+    if values != canonical:
+        fail(code, "canonical order required")
+    return values
+
+
+def validate_gate_applicability_targets(
+    targets: Any,
+    *,
+    exact_group_binding_keys: set[bytes] | None = None,
+    route_unit_ids: set[str] | None = None,
+) -> None:
+    if not isinstance(targets, list) or not targets:
+        fail("B05_GATE_APPLICABILITY_INVALID")
+    _require_canonical_collection(targets, "B05_GATE_APPLICABILITY_INVALID")
+    for target in targets:
+        if isinstance(target, str):
+            if re.fullmatch(r"route-unit:[0-9a-f]{64}", target) is None:
+                fail("B05_GATE_APPLICABILITY_INVALID")
+            if route_unit_ids is not None and target not in route_unit_ids:
+                fail("B05_GATE_APPLICABILITY_INVALID")
+            continue
+        exact_keys(
+            target,
+            {"atomic_group_id", "group_payload_hash"},
+            "B05_GATE_APPLICABILITY_INVALID",
+        )
+        if (
+            not isinstance(target["atomic_group_id"], str)
+            or not target["atomic_group_id"]
+            or not _is_sha(target["group_payload_hash"])
+        ):
+            fail("B05_GATE_APPLICABILITY_INVALID")
+        if (
+            exact_group_binding_keys is not None
+            and canonical_bytes(target) not in exact_group_binding_keys
+        ):
+            fail("B05_GATE_APPLICABILITY_INVALID")
+
+
+def _validate_dependency_evidence_token(token: Any, code: str) -> None:
+    exact_keys(token, {"type", "value"}, code)
+    token_type = token["type"]
+    value = token["value"]
+    if (
+        not isinstance(token_type, str)
+        or token_type not in DEPENDENCY_EVIDENCE_TOKEN_TYPES
+    ):
+        fail(code, "unsupported evidence token type")
+    try:
+        if token_type == "EXACT_RECORD_REF":
+            validate_record_ref(value)
+        elif token_type == "LINEAGE_LOCATOR":
+            exact_keys(
+                value,
+                {
+                    "contract",
+                    "contract_version",
+                    "candidate_version_ref",
+                    "lineage_id",
+                    "json_pointer",
+                    "item_hash",
+                    "locator_hash",
+                },
+                code,
+            )
+            if (
+                value["contract"] != "M3_LINEAGE_LOCATOR"
+                or value["contract_version"] != CONTRACT_VERSION
+                or not isinstance(value["lineage_id"], str)
+                or not value["lineage_id"]
+                or not isinstance(value["json_pointer"], str)
+                or re.fullmatch(r"/items/(0|[1-9][0-9]*)", value["json_pointer"])
+                is None
+                or not _is_sha(value["item_hash"])
+            ):
+                fail(code, "invalid lineage locator")
+            validate_record_ref(
+                value["candidate_version_ref"],
+                expected_type="M3_CANDIDATE_VERSION",
+            )
+            if value["locator_hash"] != sha256_value(
+                {key: item for key, item in value.items() if key != "locator_hash"}
+            ):
+                fail(code, "lineage locator hash")
+        elif token_type == "EVIDENCE_LOCATOR":
+            exact_keys(
+                value,
+                {
+                    "contract",
+                    "contract_version",
+                    "candidate_version_ref",
+                    "lineage_id",
+                    "evidence_json_pointer",
+                    "evidence_sha256",
+                    "binding_hash",
+                    "locator_hash",
+                },
+                code,
+            )
+            if (
+                value["contract"] != "M3_EVIDENCE_LOCATOR"
+                or value["contract_version"] != CONTRACT_VERSION
+                or not isinstance(value["lineage_id"], str)
+                or not value["lineage_id"]
+                or not isinstance(value["evidence_json_pointer"], str)
+                or re.fullmatch(
+                    r"/items/(0|[1-9][0-9]*)/evidence",
+                    value["evidence_json_pointer"],
+                )
+                is None
+                or not _is_sha(value["evidence_sha256"])
+                or not _is_sha(value["binding_hash"])
+            ):
+                fail(code, "invalid evidence locator")
+            validate_record_ref(
+                value["candidate_version_ref"],
+                expected_type="M3_CANDIDATE_VERSION",
+            )
+            if value["locator_hash"] != sha256_value(
+                {key: item for key, item in value.items() if key != "locator_hash"}
+            ):
+                fail(code, "evidence locator hash")
+        elif token_type == "JSON_POINTER":
+            if (
+                not isinstance(value, str)
+                or not value.startswith("/")
+                or re.search(r"~(?:[^01]|$)", value) is not None
+            ):
+                fail(code, "invalid JSON pointer")
+        elif token_type == "OPERATION_FINGERPRINT":
+            if not _is_sha(value):
+                fail(code, "invalid operation fingerprint")
+        elif (
+            not isinstance(value, str)
+            or re.fullmatch(r"B05_CHECK_[A-Z0-9_]+", value) is None
+        ):
+            fail(code, "invalid stable check code")
+    except B05ContractError as error:
+        if error.code == code:
+            raise
+        fail(code, error.code)
+
+
+def _validate_dependency_edge(
+    edge: Any,
+    *,
+    valid_group_ids: set[str],
+    code: str,
+) -> None:
+    exact_keys(
+        edge,
+        {
+            "left_atomic_group_id",
+            "right_atomic_group_id",
+            "edge_type",
+            "evidence_tokens",
+        },
+        code,
+    )
+    left = edge["left_atomic_group_id"]
+    right = edge["right_atomic_group_id"]
+    if (
+        not isinstance(left, str)
+        or not isinstance(right, str)
+        or left not in valid_group_ids
+        or right not in valid_group_ids
+        or left == right
+        or canonical_bytes(left) >= canonical_bytes(right)
+        or not isinstance(edge["edge_type"], str)
+        or edge["edge_type"] not in DEPENDENCY_EDGE_TYPES
+    ):
+        fail(code, "invalid dependency edge semantics")
+    tokens = _require_canonical_collection(edge["evidence_tokens"], code)
+    for token in tokens:
+        _validate_dependency_evidence_token(token, code)
+
+
+def _validate_unknown_dependency_token(
+    token: Any,
+    *,
+    valid_group_ids: set[str],
+    normalized: bool,
+    code: str,
+) -> None:
+    expected = {
+        "reason_code",
+        "bounded_atomic_group_ids",
+        "supporting_refs",
+    }
+    if normalized:
+        expected.add("token_id")
+    exact_keys(token, expected, code)
+    reason = token["reason_code"]
+    if not isinstance(reason, str) or reason not in UNKNOWN_DEPENDENCY_REASON_CODES:
+        fail(code, "invalid reason code")
+    bounded = _require_canonical_collection(token["bounded_atomic_group_ids"], code)
+    if any(
+        not isinstance(group_id, str) or group_id not in valid_group_ids
+        for group_id in bounded
+    ):
+        fail(code, "invalid bounded group")
+    supporting_refs = _require_canonical_collection(token["supporting_refs"], code)
+    for supporting_ref in supporting_refs:
+        try:
+            validate_record_ref(supporting_ref)
+        except B05ContractError as error:
+            fail(code, error.code)
+    if normalized:
+        preimage = {
+            "reason_code": reason,
+            "bounded_atomic_group_ids": bounded,
+            "supporting_refs": supporting_refs,
+        }
+        if token["token_id"] != f"unknown-dependency:{sha256_value(preimage)}":
+            fail(code, "token identity mismatch")
+
+
+def validate_validation_policy_semantics(
+    *,
+    policy_payload: Any,
+    atomic_group_bindings: Any,
+) -> None:
+    group_bindings = _require_canonical_collection(
+        atomic_group_bindings, "B05_GATE_GROUP_CATALOG_INVALID"
+    )
+    group_ids: list[str] = []
+    for binding in group_bindings:
+        exact_keys(
+            binding,
+            {"atomic_group_id", "group_payload_hash"},
+            "B05_GATE_GROUP_CATALOG_INVALID",
+        )
+        if (
+            not isinstance(binding["atomic_group_id"], str)
+            or not binding["atomic_group_id"]
+            or not _is_sha(binding["group_payload_hash"])
+        ):
+            fail("B05_GATE_GROUP_CATALOG_INVALID")
+        group_ids.append(binding["atomic_group_id"])
+    if len(group_ids) != len(set(group_ids)):
+        fail("B05_GATE_GROUP_CATALOG_INVALID")
+    valid_group_ids = set(group_ids)
+    if (
+        not isinstance(policy_payload, dict)
+        or not isinstance(policy_payload.get("policy_version"), str)
+        or not policy_payload["policy_version"]
+        or not isinstance(policy_payload.get("canonical_add_sort_frozen"), bool)
+    ):
+        fail("B05_VALIDATION_POLICY_SHAPE_INVALID")
+    for field in ("semantic_unknown_group_ids", "adjacent_check_group_ids"):
+        values = _require_canonical_collection(
+            policy_payload.get(field), "B05_POLICY_GROUP_SET_INVALID"
+        )
+        if any(
+            not isinstance(group_id, str) or group_id not in valid_group_ids
+            for group_id in values
+        ):
+            fail("B05_POLICY_GROUP_SET_INVALID", field)
+    edges = _require_canonical_collection(
+        policy_payload.get("declared_dependency_edges"),
+        "B05_POLICY_DEPENDENCY_EDGE_INVALID",
+    )
+    for edge in edges:
+        _validate_dependency_edge(
+            edge,
+            valid_group_ids=valid_group_ids,
+            code="B05_POLICY_DEPENDENCY_EDGE_INVALID",
+        )
+    unknown = _require_canonical_collection(
+        policy_payload.get("unknown_dependency_tokens"),
+        "B05_UNKNOWN_DEPENDENCY_INVALID",
+    )
+    for token in unknown:
+        _validate_unknown_dependency_token(
+            token,
+            valid_group_ids=valid_group_ids,
+            normalized=False,
+            code="B05_UNKNOWN_DEPENDENCY_INVALID",
+        )
+
+
+def _expected_route_unit_partition(
+    *,
+    patch_proposal_ref: dict[str, Any],
+    group_bindings_by_id: dict[str, dict[str, Any]],
+    edges: list[dict[str, Any]],
+    unknown_tokens: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    group_ids = set(group_bindings_by_id)
+    adjacency = {group_id: set() for group_id in group_ids}
+    for edge in edges:
+        left = edge["left_atomic_group_id"]
+        right = edge["right_atomic_group_id"]
+        adjacency[left].add(right)
+        adjacency[right].add(left)
+    all_group_ids = sorted(group_ids, key=canonical_bytes)
+    for token in unknown_tokens:
+        bounded = token["bounded_atomic_group_ids"] or all_group_ids
+        for left in bounded:
+            for right in bounded:
+                if left != right:
+                    adjacency[left].add(right)
+    components: list[set[str]] = []
+    remaining = set(group_ids)
+    while remaining:
+        stack = [min(remaining, key=canonical_bytes)]
+        component: set[str] = set()
+        while stack:
+            group_id = stack.pop()
+            if group_id in component:
+                continue
+            component.add(group_id)
+            stack.extend(adjacency[group_id] - component)
+        remaining -= component
+        components.append(component)
+    partition = []
+    for component in components:
+        bindings = stable_sorted(
+            [group_bindings_by_id[group_id] for group_id in component]
+        )
+        partition.append(
+            {
+                "route_unit_id": f"route-unit:{sha256_value({'patch_proposal_ref': patch_proposal_ref, 'atomic_group_bindings': bindings})}",
+                "atomic_group_bindings": bindings,
+            }
+        )
+    return stable_sorted(partition)
+
+
 def _validate_pvr_payload(payload: dict[str, Any]) -> None:
     for key, expected_type in (
         ("validator_identity_ref", "M3_VALIDATOR_IDENTITY_RECEIPT"),
@@ -662,6 +1022,26 @@ def _validate_pvr_payload(payload: dict[str, Any]) -> None:
         binding["non_content_gate_bindings"]
     ):
         fail("B05_GATE_SNAPSHOT_HASH_MISMATCH")
+    gate_bindings = _require_canonical_collection(
+        binding["non_content_gate_bindings"], "B05_GATE_BINDING_SHAPE_INVALID"
+    )
+    for gate_binding in gate_bindings:
+        exact_keys(
+            gate_binding,
+            {
+                "gate_ref",
+                "gate_state_ref",
+                "current_state",
+                "applicable_patch_proposal_ref",
+                "applicable_atomic_group_bindings_or_route_unit_ids",
+                "reader_identity",
+                "reader_version",
+            },
+            "B05_GATE_BINDING_SHAPE_INVALID",
+        )
+        validate_gate_applicability_targets(
+            gate_binding["applicable_atomic_group_bindings_or_route_unit_ids"]
+        )
     dependency = payload["dependency_proof"]
     exact_keys(dependency, DEPENDENCY_PROOF_KEYS, "B05_DEPENDENCY_PROOF_INVALID")
     expected_partition_hash = sha256_value(
@@ -674,33 +1054,118 @@ def _validate_pvr_payload(payload: dict[str, Any]) -> None:
     )
     if dependency["partition_hash"] != expected_partition_hash:
         fail("B05_PARTITION_HASH_MISMATCH")
-    for edge in dependency["dependency_edges"]:
+    group_catalog = _require_canonical_collection(
+        dependency["group_catalog"], "B05_GROUP_CATALOG_INVALID"
+    )
+    group_bindings_by_id: dict[str, dict[str, Any]] = {}
+    for group in group_catalog:
         exact_keys(
+            group,
+            {
+                "atomic_group_id",
+                "group_payload_hash",
+                "operation_count",
+                "operation_fingerprints",
+            },
+            "B05_GROUP_CATALOG_INVALID",
+        )
+        group_id = group["atomic_group_id"]
+        fingerprints = group["operation_fingerprints"]
+        if (
+            not isinstance(group_id, str)
+            or not group_id
+            or group_id in group_bindings_by_id
+            or not _is_sha(group["group_payload_hash"])
+            or not isinstance(group["operation_count"], int)
+            or isinstance(group["operation_count"], bool)
+            or group["operation_count"] < 1
+            or not isinstance(fingerprints, list)
+            or len(fingerprints) != group["operation_count"]
+            or any(not _is_sha(item) for item in fingerprints)
+        ):
+            fail("B05_GROUP_CATALOG_INVALID")
+        group_bindings_by_id[group_id] = {
+            "atomic_group_id": group_id,
+            "group_payload_hash": group["group_payload_hash"],
+        }
+    valid_group_ids = set(group_bindings_by_id)
+    edges = _require_canonical_collection(
+        dependency["dependency_edges"], "B05_DEPENDENCY_EDGE_INVALID"
+    )
+    for edge in edges:
+        _validate_dependency_edge(
             edge,
-            {
-                "left_atomic_group_id",
-                "right_atomic_group_id",
-                "edge_type",
-                "evidence_tokens",
-            },
-            "B05_DEPENDENCY_EDGE_INVALID",
+            valid_group_ids=valid_group_ids,
+            code="B05_DEPENDENCY_EDGE_INVALID",
         )
-    for token in dependency["unknown_dependency_tokens"]:
-        exact_keys(
+    unknown_tokens = _require_canonical_collection(
+        dependency["unknown_dependency_tokens"],
+        "B05_UNKNOWN_DEPENDENCY_INVALID",
+    )
+    for token in unknown_tokens:
+        _validate_unknown_dependency_token(
             token,
-            {
-                "token_id",
-                "reason_code",
-                "bounded_atomic_group_ids",
-                "supporting_refs",
-            },
-            "B05_UNKNOWN_DEPENDENCY_INVALID",
+            valid_group_ids=valid_group_ids,
+            normalized=True,
+            code="B05_UNKNOWN_DEPENDENCY_INVALID",
         )
-    for unit in dependency["route_unit_partition"]:
+    partition = _require_canonical_collection(
+        dependency["route_unit_partition"], "B05_ROUTE_UNIT_PARTITION_INVALID"
+    )
+    route_unit_ids: set[str] = set()
+    partitioned_group_ids: list[str] = []
+    for unit in partition:
         exact_keys(
             unit,
             {"route_unit_id", "atomic_group_bindings"},
             "B05_ROUTE_UNIT_PARTITION_INVALID",
+        )
+        route_unit_id = unit["route_unit_id"]
+        if (
+            not isinstance(route_unit_id, str)
+            or re.fullmatch(r"route-unit:[0-9a-f]{64}", route_unit_id) is None
+            or route_unit_id in route_unit_ids
+        ):
+            fail("B05_ROUTE_UNIT_PARTITION_INVALID")
+        route_unit_ids.add(route_unit_id)
+        unit_bindings = _require_canonical_collection(
+            unit["atomic_group_bindings"], "B05_ROUTE_UNIT_PARTITION_INVALID"
+        )
+        if not unit_bindings:
+            fail("B05_ROUTE_UNIT_PARTITION_INVALID")
+        for group_binding in unit_bindings:
+            exact_keys(
+                group_binding,
+                {"atomic_group_id", "group_payload_hash"},
+                "B05_ROUTE_UNIT_PARTITION_INVALID",
+            )
+            group_id = group_binding["atomic_group_id"]
+            if (
+                not isinstance(group_id, str)
+                or group_bindings_by_id.get(group_id) != group_binding
+            ):
+                fail("B05_ROUTE_UNIT_PARTITION_INVALID")
+            partitioned_group_ids.append(group_id)
+    if sorted(partitioned_group_ids, key=canonical_bytes) != sorted(
+        valid_group_ids, key=canonical_bytes
+    ):
+        fail("B05_ROUTE_UNIT_PARTITION_INVALID")
+    if partition != _expected_route_unit_partition(
+        patch_proposal_ref=binding["patch_proposal_ref"],
+        group_bindings_by_id=group_bindings_by_id,
+        edges=edges,
+        unknown_tokens=unknown_tokens,
+    ):
+        fail("B05_ROUTE_UNIT_PARTITION_INVALID")
+    exact_group_binding_keys = {
+        canonical_bytes(binding_value)
+        for binding_value in group_bindings_by_id.values()
+    }
+    for gate_binding in gate_bindings:
+        validate_gate_applicability_targets(
+            gate_binding["applicable_atomic_group_bindings_or_route_unit_ids"],
+            exact_group_binding_keys=exact_group_binding_keys,
+            route_unit_ids=route_unit_ids,
         )
     for proof in payload["route_unit_proofs"]:
         exact_keys(proof, ROUTE_UNIT_PROOF_KEYS, "B05_ROUTE_UNIT_PROOF_INVALID")
