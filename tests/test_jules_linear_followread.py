@@ -567,3 +567,6 @@ def test_check_command_needs_no_secret_and_makes_no_network_call(
     payload = json.loads(capsys.readouterr().out)
     assert payload["status"] == "READY"
     assert payload["required_secrets"] == ["JULES_API_KEY", "LINEAR_API_KEY"]
+
+
+# CCZ-59 live smoke marker. This branch is closed after the workflow check.
