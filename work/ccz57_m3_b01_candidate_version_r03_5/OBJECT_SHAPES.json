@@ -2,6 +2,22 @@
   "candidate_schema_id": "novel-fact-extraction-v2.1",
   "catalog_contract": "CCZ57_M3_B01_OBJECT_SHAPES",
   "catalog_version": "r03.5-candidate",
+  "author_workspace_source_adapter_example": {
+    "forbidden_logical_keys": [
+      "chapter_sources",
+      "chapters",
+      "draft"
+    ],
+    "model_api_calls": 0,
+    "product_writes": 0,
+    "read_logical_keys": [
+      "chapter_admission_operations",
+      "chapter_index",
+      "chapter_materials",
+      "chapter_revisions"
+    ],
+    "real_novel_body_reads": 0
+  },
   "evidence_locator_example": {
     "binding_hash": "b5acbd6cdd770235a04a2f14b0d48b4e1b3d67419ce13ecd3b8f600db2b0ba0c",
     "candidate_version_ref": {
@@ -337,6 +353,17 @@
     "source_module": "M3"
   },
   "legacy_contract_version": "r03.3-candidate",
+  "optional_writing_context_example": {
+    "allowed_material_kinds": [
+      "CORE_CHARACTER",
+      "GENRE",
+      "PLAN",
+      "PLATFORM",
+      "SYNOPSIS"
+    ],
+    "duplicate_kind_result": "B01_WRITING_MATERIAL_INVALID",
+    "writing_material_refs": []
+  },
   "legacy_read_summary_example": {
     "candidate_version_ref": {
       "access": "POLICY_FIXTURE_READ_ONLY",

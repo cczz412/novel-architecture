@@ -148,13 +148,14 @@ def material_record(
     *,
     source_generation: dict[str, Any] | None = None,
     digest_char: str = "b",
+    record_id_suffix: str = "",
 ) -> dict[str, Any]:
     generation = (
         source_generation_record() if source_generation is None else source_generation
     )
     return make_fixture_input_record(
         record_type="M1_WRITING_MATERIAL",
-        record_id=f"m1-material-{material_kind.lower()}",
+        record_id=f"m1-material-{material_kind.lower()}{record_id_suffix}",
         record_version=1,
         source_module="M1_READ_ONLY_ADAPTER",
         access="POLICY_FIXTURE_READ_ONLY",
@@ -731,6 +732,31 @@ def n12_extraction_admission_replay(root: Path) -> dict[str, Any]:
     }
 
 
+def n13_optional_writing_context_absent(root: Path) -> dict[str, Any]:
+    generation = source_generation_record()
+    request = base_request()
+    request["reference_records"] = [
+        review_receipt_record(),
+        interface_manifest_record(),
+        attempt_record(),
+        generation,
+    ]
+    request["accepted_source_generation_ref"] = record_ref(generation)
+    request["writing_material_refs"] = []
+    service, admit_extraction = fixture_runtime(FixtureStore(root))
+    result = initialize_request(service, admit_extraction, request)
+    state = FixtureStore(root).read()
+    verify_state(state, reference_records=request["reference_records"])
+    candidate = next(
+        record
+        for record in state["records"].values()
+        if record["record_type"] == "M3_CANDIDATE_VERSION"
+    )
+    if candidate["payload"]["extraction_input_binding"]["writing_material_refs"]:
+        raise AssertionError("optional writing context was not kept empty")
+    return result
+
+
 def n08_prepare_committed_crash(root: Path) -> dict[str, Any]:
     """Commit the transaction and stop before readback in process phase one."""
     request = base_request()
@@ -799,6 +825,7 @@ NORMAL_SCENARIOS: dict[str, Callable[[Path], dict[str, Any]]] = {
     "N10_MATERIAL_GENERATION_CHANGES_IDENTITY": n10_material_generation_changes_identity,
     "N11_DECOMPOSED_UNICODE_EVIDENCE_ROUND_TRIP": n11_decomposed_unicode_evidence_round_trip,
     "N12_EXTRACTION_ADMISSION_REPLAY": n12_extraction_admission_replay,
+    "N13_OPTIONAL_WRITING_CONTEXT_ABSENT": n13_optional_writing_context_absent,
 }
 
 
@@ -1198,9 +1225,9 @@ def f21_source_generation_mismatch(root: Path) -> tuple[str, ...]:
     )
 
 
-def f22_required_material_missing(root: Path) -> tuple[str, ...]:
+def f22_optional_material_kind_invalid(root: Path) -> tuple[str, ...]:
     generation = source_generation_record()
-    core = material_record("CORE_CHARACTER", source_generation=generation)
+    undeclared = material_record("UNDECLARED_CONTEXT", source_generation=generation)
     return (
         _capture_unchanged(
             root,
@@ -1212,14 +1239,53 @@ def f22_required_material_missing(root: Path) -> tuple[str, ...]:
                     interface_manifest_record(),
                     attempt_record(),
                     generation,
-                    core,
+                    undeclared,
                 ],
                 accepted_source_generation_ref=record_ref(generation),
                 writing_material_refs=[
                     {
-                        "material_kind": "CORE_CHARACTER",
-                        "material_ref": record_ref(core),
+                        "material_kind": "UNDECLARED_CONTEXT",
+                        "material_ref": record_ref(undeclared),
                     }
+                ],
+            ),
+        ),
+    )
+
+
+def f33_duplicate_optional_material_kind(root: Path) -> tuple[str, ...]:
+    generation = source_generation_record()
+    first = material_record("GENRE", source_generation=generation, digest_char="c")
+    second = material_record(
+        "GENRE",
+        source_generation=generation,
+        digest_char="d",
+        record_id_suffix="-duplicate",
+    )
+    return (
+        _capture_unchanged(
+            root,
+            "B01_WRITING_MATERIAL_INVALID",
+            lambda: _initialize(
+                root,
+                reference_records=[
+                    review_receipt_record(),
+                    interface_manifest_record(),
+                    attempt_record(),
+                    generation,
+                    first,
+                    second,
+                ],
+                accepted_source_generation_ref=record_ref(generation),
+                writing_material_refs=[
+                    {
+                        "material_kind": "GENRE",
+                        "material_ref": record_ref(first),
+                    },
+                    {
+                        "material_kind": "GENRE",
+                        "material_ref": record_ref(second),
+                    },
                 ],
             ),
         ),
@@ -1457,7 +1523,7 @@ FAILURE_SCENARIOS: dict[str, Callable[[Path], tuple[str, ...]]] = {
     "F19_VERSION_DIFF_INVALID": f19_diff_invalid_or_persisted,
     "F20_BOUNDARY_ESCAPE": f20_boundary_or_runtime_event,
     "F21_SOURCE_GENERATION_MISMATCH": f21_source_generation_mismatch,
-    "F22_REQUIRED_MATERIAL_MISSING": f22_required_material_missing,
+    "F22_OPTIONAL_MATERIAL_KIND_INVALID": f22_optional_material_kind_invalid,
     "F23_EVIDENCE_NOT_IN_CHAPTER": f23_evidence_not_in_chapter,
     "F24_EVIDENCE_SENTENCE_LIMIT": f24_evidence_sentence_limit,
     "F25_CALLER_LOCATION_REJECTED": f25_caller_location_rejected,
@@ -1468,6 +1534,7 @@ FAILURE_SCENARIOS: dict[str, Callable[[Path], tuple[str, ...]]] = {
     "F30_UNTRUSTED_CAPABILITIES_REJECTED": f30_untrusted_capabilities_rejected,
     "F31_EXTRACTION_ADMISSION_BINDING_MISMATCH": f31_extraction_admission_binding_mismatch,
     "F32_PUBLIC_SERVICE_CANNOT_SELF_ISSUE": f32_public_service_cannot_self_issue,
+    "F33_DUPLICATE_OPTIONAL_MATERIAL_KIND": f33_duplicate_optional_material_kind,
 }
 
 
