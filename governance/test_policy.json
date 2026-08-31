@@ -351,6 +351,37 @@
       "full_chain": true
     },
     {
+      "name": "Jules 只读跟读到 Linear 工作流",
+      "pattern": ".github/workflows/jules-linear-followread.yml",
+      "modules": ["M11"],
+      "tests": ["tests/test_jules_linear_followread.py"],
+      "full_chain": true
+    },
+    {
+      "name": "Jules PR 跟读与 Linear 评论工具",
+      "pattern": "tools/jules_linear_followread.py",
+      "modules": ["M11"],
+      "tests": [
+        "tests/test_jules_linear_followread.py",
+        "tests/test_tool_registry.py"
+      ],
+      "full_chain": true
+    },
+    {
+      "name": "Jules API 访问合同",
+      "pattern": "config/providers/jules_api.json",
+      "modules": ["M11"],
+      "tests": ["tests/test_jules_linear_followread.py"],
+      "full_chain": true
+    },
+    {
+      "name": "Linear 评论 API 访问合同",
+      "pattern": "config/providers/linear_graphql.json",
+      "modules": ["M11"],
+      "tests": ["tests/test_jules_linear_followread.py"],
+      "full_chain": true
+    },
+    {
       "name": "四条 CI 测试线合同",
       "pattern": "governance/ci_lanes.json",
       "modules": ["M11"],
@@ -546,6 +577,13 @@
       "pattern": "tests/test_ci_lanes.py",
       "modules": ["M11"],
       "tests": ["tests/test_ci_lanes.py"],
+      "full_chain": true
+    },
+    {
+      "name": "Jules 只读跟读合同测试",
+      "pattern": "tests/test_jules_linear_followread.py",
+      "modules": ["M11"],
+      "tests": ["tests/test_jules_linear_followread.py"],
       "full_chain": true
     },
     {

@@ -1,0 +1,36 @@
+{
+  "schema_version": "automation-provider-v1",
+  "provider": "linear_graphql",
+  "display_name": "Linear GraphQL API",
+  "graphql_endpoint": "https://api.linear.app/graphql",
+  "api_key_env": "LINEAR_API_KEY",
+  "auth_header": "Authorization",
+  "enabled_by_default": false,
+  "status": "workflow_ready_comment_only_key_required",
+  "access_rules": {
+    "allowed_queries": [
+      "issue_by_identifier",
+      "issue_comments"
+    ],
+    "allowed_mutations": [
+      "commentCreate"
+    ],
+    "comment_permission_required": true,
+    "issue_identifier_pattern": "^CCZ-[0-9]+$",
+    "exactly_one_identifier_required": true,
+    "deduplicate_by_hidden_marker": true,
+    "pass_comment_allowed": false,
+    "issue_comment_only_contains_verified_fields": true,
+    "mutation_attempt_cap": 1,
+    "check_graphql_errors_on_http_200": true
+  },
+  "pagination": {
+    "page_size": 100,
+    "max_pages": 20
+  },
+  "official_docs": [
+    "https://linear.app/developers/graphql",
+    "https://linear.app/developers/sdk-fetching-and-modifying-data",
+    "https://linear.app/docs/api-and-webhooks"
+  ]
+}
