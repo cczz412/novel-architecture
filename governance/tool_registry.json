@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-08-26T16:15:54+08:00",
+  "updated_at": "2026-08-31T15:40:00+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 112,
-    "root_visible_python_entry_count": 113,
+    "root_entity_count": 113,
+    "root_visible_python_entry_count": 114,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -566,7 +566,7 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 24,
+    "reusable_component": 25,
     "batch_reproducer": 82,
     "active_entry": 3,
     "retired_compat": 3,
@@ -4613,6 +4613,52 @@
       "review_needed": false,
       "admitted_by": "ISSUE_156",
       "tool_id": "TOOL-112"
+    },
+    {
+      "path": "tools/jules_linear_followread.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "candidate_not_default",
+      "status_label": "候选组件·Jules PR 只读跟读到 Linear",
+      "purpose": "在受信任的 GitHub Actions base 上读取 PR 事件，用 Jules API 做只读审查；没有已验证问题时只让 GitHub Actions 通过且不写 Linear，只有能给出准确位置、触发、证据和实际后果的 P0／P1／P2 问题才写详情并让 Action 失败。",
+      "human_command": "uv run --locked python tools/jules_linear_followread.py check --event-file <GitHub事件JSON>",
+      "inputs": [
+        "GitHub pull_request_target 事件 JSON",
+        "config/providers/jules_api.json",
+        "config/providers/linear_graphql.json",
+        "GitHub Actions Secrets：JULES_API_KEY、LINEAR_API_KEY"
+      ],
+      "outputs": [
+        "零网络 check 计划 JSON",
+        "Jules 只读审查会话",
+        "通过校验后的 Linear commentCreate 评论",
+        "GitHub Step Summary"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "google_jules_api",
+        "note": "只有 run 子命令在两个 Secret 都存在时联网；Jules 只读结果不合格时不写 Linear。"
+      },
+      "current_consumers": [
+        ".github/workflows/jules-linear-followread.yml",
+        "tests/test_jules_linear_followread.py",
+        "GitHub Issue #208"
+      ],
+      "consumer_evidence_rule": "同仓非草稿 PR 且标题或正文恰有一个 CCZ 编号才进入；相同 PR Head SHA 双重去重。PASS 不写 Linear；猜测、泛化风险、样式偏好、纯测试缺口和纯建议也不得进入 Linear。",
+      "test_references": [
+        "tests/test_jules_linear_followread.py"
+      ],
+      "last_use_clues": [
+        ".github/workflows/jules-linear-followread.yml",
+        "config/providers/jules_api.json",
+        "config/providers/linear_graphql.json",
+        "GitHub Issue #208"
+      ],
+      "next_confirmed_consumer": "GitHub PR 打开、更新、重开或转为可审查后的 Jules 只读跟读。",
+      "retirement_condition_and_compatibility_boundary": "不读取或执行 PR Head 代码，不允许 Jules 生成 changeSet／PR，不调用 sendMessage，不新增 Linear mutation；缺 Secret、GitHub App source、准确 SHA 或机器裁决结构时必须失败且不外发。最多外发 3 个带直接证据的 P0／P1／P2 问题。",
+      "review_needed": false,
+      "admitted_by": "ISSUE_208",
+      "tool_id": "TOOL-113"
     }
   ]
 }

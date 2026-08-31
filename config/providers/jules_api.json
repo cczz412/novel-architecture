@@ -1,0 +1,52 @@
+{
+  "schema_version": "automation-provider-v1",
+  "provider": "google_jules",
+  "display_name": "Google Jules API",
+  "base_url": "https://jules.googleapis.com/v1alpha",
+  "api_key_env": "JULES_API_KEY",
+  "auth_header": "X-Goog-Api-Key",
+  "enabled_by_default": false,
+  "status": "workflow_ready_secret_and_github_app_source_required",
+  "endpoints": {
+    "list_sources": "/sources",
+    "list_sessions": "/sessions",
+    "create_session": "/sessions",
+    "get_session": "/{session_name}",
+    "list_activities": "/{session_name}/activities"
+  },
+  "dispatch_rules": {
+    "source_must_match_event_repository": true,
+    "same_repository_pull_requests_only": true,
+    "starting_branch_must_equal_pr_head_ref": true,
+    "prompt_must_pin_base_and_head_sha": true,
+    "automation_mode_must_be_omitted": true,
+    "require_plan_approval_must_be_omitted": true,
+    "create_attempt_cap": 1,
+    "reuse_session_by_exact_title": true,
+    "reject_session_outputs": true,
+    "reject_change_set_artifacts": true,
+    "machine_verdict_required": true,
+    "pass_requires_empty_issues": true,
+    "verified_issue_limit": 3,
+    "allowed_issue_severities": [
+      "P0",
+      "P1",
+      "P2"
+    ],
+    "speculation_and_advice_only_findings_allowed": false,
+    "send_message_allowed": false
+  },
+  "polling": {
+    "interval_seconds": 30,
+    "deadline_seconds": 1200,
+    "page_size": 100,
+    "max_pages": 20
+  },
+  "official_docs": [
+    "https://developers.google.com/jules/api",
+    "https://developers.google.com/jules/api/reference/rest/v1alpha/sources/list",
+    "https://developers.google.com/jules/api/reference/rest/v1alpha/sessions",
+    "https://developers.google.com/jules/api/reference/rest/v1alpha/sessions/list",
+    "https://developers.google.com/jules/api/reference/rest/v1alpha/sessions.activities/list"
+  ]
+}
