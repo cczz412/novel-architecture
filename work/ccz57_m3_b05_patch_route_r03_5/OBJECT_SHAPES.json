@@ -1,0 +1,765 @@
+{
+  "builder_map": {
+    "M3_PATCH_LIFECYCLE_RECEIPT": "PatchLifecycleBuilder",
+    "M3_PATCH_ROUTE_RECEIPT": "PatchRouteDecider",
+    "M3_PATCH_VALIDATION_RECEIPT": "PatchValidator"
+  },
+  "candidate_schema_id": "novel-fact-extraction-v2.1",
+  "catalog_hash": "ba94cd5b753493632bda6e0800eed9d47ad4e449054945fa5cc812593f9327c6",
+  "contract_version": "r03.5-candidate",
+  "document_identity": "CCZ57-M3-B05-R03.5-CANDIDATE",
+  "failure_fixture_count": 22,
+  "fixed_vectors": [
+    {
+      "causal_routes": [],
+      "fixture_id": "N01_REPLACE_ALLOWED",
+      "projection_hash": "498df1496687662c0e74ee56e2db960a4c028ac87eee995330d9aca3d0c06c4a",
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "116b39c49c177bfd15503694f542f6775ac8bfa6817db8d209dd8d87649a5d71",
+          "record_id": "patch-route-lifecycle:b762c9a0d3b80fc621e54147e7a68a263e730c15ed8bb21fbef108878be35d21",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "544a10114cbc67f48e46b2cd2261d4e4d4022cf6737ba4d2b1527e82ab9ca2e8",
+          "record_id": "patch-validation:dc2784841b0a9e66c46761794920e9c681d80df0e05e2045e8ffc8f39a8a20b8",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "95f2ff335b9dee09e3f7715e50f60db4a0c9e86e3b888847ce1ff0cfea0f3f07",
+          "record_id": "patch-route:33142a338061d1c62460594ec1cd9b6668aa4b8f3f8f06d3816adb1998839059",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9c1d358cab2b8546c5bd6ec112092f80d5c1944563a3a413c10e76667114bf22",
+          "record_id": "validator-identity:d5018ea81bdf0adaa727be797594aeb9a1dd7cc5415442e3cadecc6ef8048ed0",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route_units": [
+        {
+          "reason_codes": [
+            "MECHANICAL_PROOF_COMPLETE"
+          ],
+          "route": "ALLOW_FOR_B06",
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
+        }
+      ],
+      "semantic_snapshot_hash": "8e5a6fa348413d0f5be51126008d78e2e984a8c9bbf293f1db88cee05d1d54c1"
+    },
+    {
+      "causal_routes": [],
+      "fixture_id": "N02_ADD_ALLOWED",
+      "projection_hash": "46d18fb9f31ab48e96411212452b500bf5c704da87c65e594d127d6a13d1631d",
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9c1d358cab2b8546c5bd6ec112092f80d5c1944563a3a413c10e76667114bf22",
+          "record_id": "validator-identity:d5018ea81bdf0adaa727be797594aeb9a1dd7cc5415442e3cadecc6ef8048ed0",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "c5bc0c61bca9cef2e143c22c499be28ce6ae724fe4d26e8ec879bbfa902db129",
+          "record_id": "patch-route-lifecycle:ed662d0b47983d30c449029b4b2dc0c613ff04d168a91cad2f47278f135e3bf0",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "cecfa45e7a6b8040fb6f134d29329ca65cc2b2633a880daa6e4f1d1b24eee896",
+          "record_id": "patch-validation:ed1c34f222cdc4b7bf0378e2cb582387be2d7e4f87f50ef05da2186dccc05bad",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "db02e8fcaeb5fe6a4b49b6bed1c39e3a35f42f525dc6fef9a30f75613123c073",
+          "record_id": "patch-route:923902a97d01453e610826839852230a2f433177746da7e8a06ad09b2ef83245",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route_units": [
+        {
+          "reason_codes": [
+            "MECHANICAL_PROOF_COMPLETE"
+          ],
+          "route": "ALLOW_FOR_B06",
+          "route_unit_id": "route-unit:9b1004f7730476e54dac19cf1629387d3753075889cab9ab6ed87bbcfa25fde9"
+        }
+      ],
+      "semantic_snapshot_hash": "24dd0d2c85e3a12b4a88c8b7d51282e30ce62c91c8316743392bbb726579e8fd"
+    },
+    {
+      "causal_routes": [],
+      "fixture_id": "N03_INDEPENDENT_MIXED_ROUTES_WITH_EFFECTIVE_PROTECTION",
+      "projection_hash": "422673421454dae1c5dbdb3cf7c6d3be2f57a414507b73c925419b0b2e941c0b",
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "10d2a65182ae62d25d52a77305606f7552858063bfed89f47c0d2f9d08cfa821",
+          "record_id": "patch-validation:afee7f980e9b3352aa9e45cc950ea050f73ea5a79334f95379fa3b041e582e7f",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9c1d358cab2b8546c5bd6ec112092f80d5c1944563a3a413c10e76667114bf22",
+          "record_id": "validator-identity:d5018ea81bdf0adaa727be797594aeb9a1dd7cc5415442e3cadecc6ef8048ed0",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "ca62486185360dd3fc414ddfdfbc7670087df5a3eb68039d37594b72b2ee5801",
+          "record_id": "patch-route:27cc6324e114f32460bd88f2aad9fd072947cfdc243d7cb2e171f39d5837a48d",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "d8eaf06aed1a33fdbf9d104c70a5d2d9fc06f80fded0ded86a00345cd800f85a",
+          "record_id": "patch-route-lifecycle:1f40b68d7ac9824a9f93a6240d4faf608f5dec9da0a2ae4359146d454355ed6a",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route_units": [
+        {
+          "reason_codes": [
+            "MECHANICAL_PROOF_COMPLETE"
+          ],
+          "route": "ALLOW_FOR_B06",
+          "route_unit_id": "route-unit:0ea5bdea90b65dfe231ecc518d6917ffa14a7a68e76e2b5980c2d8bc7a1b39e1"
+        },
+        {
+          "reason_codes": [
+            "SEMANTIC_IMPACT_UNKNOWN"
+          ],
+          "route": "EXPAND_CHECK",
+          "route_unit_id": "route-unit:e662a8731709150f5bd41ba065eee140473beef12d0deffa971b80dbfab4e9c0"
+        }
+      ],
+      "semantic_snapshot_hash": "ac7c5722fc1f48f6fb1719e76731f6fcd49a63b39722fd9f4acf24ebdb4fb3f4"
+    },
+    {
+      "causal_routes": [],
+      "fixture_id": "N04_DEPENDENT_GROUPS_SINGLE_ROUTE_UNIT",
+      "projection_hash": "c09a26083c3e42299e6d9fbf54a33b6047e300b41c345ab37c18aa451a2d7be3",
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "92e4bea05384185acddc26e310cca3abff6c02f240938bd477d1d1465cda00a7",
+          "record_id": "patch-route-lifecycle:a7d6244db0a4097f5af69b3297f254e90b2971df06586a30b3e076953918f784",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "92eeceab379f50180f50e18ac636f757bd6337dbb3b9cc60bd194e485ca79acd",
+          "record_id": "patch-validation:1ff241b1dd9f2b8c26b31d4a4f866fac4054e2a6572d17366cb21591bb45068c",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9c1d358cab2b8546c5bd6ec112092f80d5c1944563a3a413c10e76667114bf22",
+          "record_id": "validator-identity:d5018ea81bdf0adaa727be797594aeb9a1dd7cc5415442e3cadecc6ef8048ed0",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "f910887900ea603208161df5a1c9b1763309950289ce049b6ef07c9ff1cf5fd8",
+          "record_id": "patch-route:eb62e1a25611f3ddf87629f83ff2022b3be2d616cbd6e40e06b71748a465697f",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route_units": [
+        {
+          "reason_codes": [
+            "MECHANICAL_PROOF_COMPLETE"
+          ],
+          "route": "ALLOW_FOR_B06",
+          "route_unit_id": "route-unit:717bd2b41f7039bcfc8b0be4abaf8a98f349d2e77fc844b781a385b98925dad9"
+        }
+      ],
+      "semantic_snapshot_hash": "138b18fc0aafdd8be59b9793393e380883f669485355c56fe62dea2c2d83e56e"
+    },
+    {
+      "causal_routes": [],
+      "fixture_id": "N05_EXPAND_CHECK_MINIMAL_TARGET",
+      "projection_hash": "6c9b283138c634e4daf48a82788ac5318f67bff05e5d103315e79333a1e5081e",
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "384a194eabe7f0078e39acf073db871eabf4ee59e83920937776eb2fbff137cf",
+          "record_id": "patch-validation:2435a7d8375748bca57eb35958aa62dfe21c5f6689fcb741bcee1f4adc087944",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "6003664ba1c4ec0442ef2998bcd1ba1956ed102fb75844918b55263719b9bc06",
+          "record_id": "patch-route:90dc678734208d1c037e7c259b4dae6a882735e04fcc837241a4a970128e9389",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9c1d358cab2b8546c5bd6ec112092f80d5c1944563a3a413c10e76667114bf22",
+          "record_id": "validator-identity:d5018ea81bdf0adaa727be797594aeb9a1dd7cc5415442e3cadecc6ef8048ed0",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "d95c13b9c4854a4f4c640f5d5edd8178ac0d1587810f5669a5db99091627ba67",
+          "record_id": "patch-route-lifecycle:433ca0ae02a751c539dd6b5b784327218b956b9ad4d10e9a7be8e9a084f561ad",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route_units": [
+        {
+          "reason_codes": [
+            "SEMANTIC_IMPACT_UNKNOWN"
+          ],
+          "route": "EXPAND_CHECK",
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
+        }
+      ],
+      "semantic_snapshot_hash": "91e790492450eb5f7b337483af984da6bd58b9589d566f3869a08edb37b8cb62"
+    },
+    {
+      "causal_routes": [],
+      "fixture_id": "N06_DEFER_EXACT_DECLARED_NON_CONTENT_GATE",
+      "projection_hash": "be1d2b651f830e8d59c566dc8ef33f99dacd06ffd5e28e18d6d50354c79ae40c",
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "10c1fdbc007d2ace2ee0dba8d2857b51508c44fa182fd51886d4cf81c9a09702",
+          "record_id": "patch-validation:72ee8ef38f7dbe50e72f9d256203180ebfb4512c1f7fb335264efd2bbc079b60",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "3c2a097481b4509cd818cb917e96662e54234182d9a28de672c380b36bc0d55e",
+          "record_id": "patch-route-lifecycle:e61d1fbf5eb39d1fee460e417c97136d608886731ed84ad20388b61bdeb73b9d",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9c1d358cab2b8546c5bd6ec112092f80d5c1944563a3a413c10e76667114bf22",
+          "record_id": "validator-identity:d5018ea81bdf0adaa727be797594aeb9a1dd7cc5415442e3cadecc6ef8048ed0",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "eabc5fcc3618580bd33cc075026976a1c540c080279d9ab5c7c8f929fd705914",
+          "record_id": "patch-route:844eb626bfd9ca65cf0ff6670743a199b2d79bcdabaa07078865e97479ec8777",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route_units": [
+        {
+          "reason_codes": [
+            "DECLARED_NON_CONTENT_GATE_CLOSED"
+          ],
+          "route": "DEFER",
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
+        }
+      ],
+      "semantic_snapshot_hash": "2e7bcb9411ec3180b9af38c46ec1e786148427ebc8eebc74ef24b6e33339f850"
+    },
+    {
+      "causal_routes": [],
+      "fixture_id": "N07_TRUSTED_STALE_OR_UNSAFE_PROPOSAL_REJECTED",
+      "projection_hash": "b2a1b34a466ec225467137295c2b9d1a2d034617fe9dc9b824d1cd0ee49db5e3",
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "2077a5287a19347cc19e694d0d60925ef9da4468b4809cc47d109c84c20bdd51",
+          "record_id": "patch-route:eb353a96649b12d039db0bce33a8747243609711a5e6191e97b24c58a7fe1861",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "989aa9c6b07b493965af46c2e4c7f95722995781fae366b5e3d4c85ac4b6b5a4",
+          "record_id": "patch-validation:dae817ec14bd6ea3a92eacde8273d4dc8c6a6ac4376a508481440baf92d976e1",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9c1d358cab2b8546c5bd6ec112092f80d5c1944563a3a413c10e76667114bf22",
+          "record_id": "validator-identity:d5018ea81bdf0adaa727be797594aeb9a1dd7cc5415442e3cadecc6ef8048ed0",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "f120121cc27848017b471deda826261a25aa893682862bd63ffd17df9ef9c263",
+          "record_id": "patch-route-lifecycle:c3a1232fbd68518c17fe8df501b1fc2a490985cc122872ca6f0c869d0384b5bc",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route_units": [
+        {
+          "reason_codes": [
+            "BASE_NOT_CURRENT"
+          ],
+          "route": "REJECT",
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
+        }
+      ],
+      "semantic_snapshot_hash": "19684a50190e3211c4ec5411a4cb86e2b9853de176b58ed25a8ac09250471161"
+    },
+    {
+      "causal_routes": [
+        {
+          "causal_hint_proposal_ref": {
+            "access": "POLICY_FIXTURE_READ_ONLY",
+            "contract": "M3_RECORD_REF",
+            "contract_version": "r03.5-candidate",
+            "record_contract_version": "r03.5-candidate",
+            "record_hash": "040f3217540610df0228a996c4937547e9843ac0e1d5ed3df895353c8a515036",
+            "record_id": "causal-hint-proposal:7e92fb20f1a50d37700772cea995501f374afcd84f98a8933bbae9dc1a718d45",
+            "record_type": "M3_CAUSAL_HINT_PROPOSAL",
+            "record_version": 1,
+            "source_module": "M3"
+          },
+          "reason_codes": [
+            "ALL_SUPPORTING_ROUTE_UNITS_ALLOWED"
+          ],
+          "route": "ROUTE_TO_B09"
+        }
+      ],
+      "fixture_id": "N08_CAUSAL_ROUTE_TO_B09_ALL_SUPPORT_UNITS_ALLOWED",
+      "projection_hash": "4c79e83ea80553f34949593f475af2145a8964829ae7a549222279e46c86d85a",
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "25783d1274fb87f30e06923ca0d0573b4f04a9c7d34402e49ddd574f6eb73981",
+          "record_id": "patch-validation:5095d1bc842ce64e4eb8de31adafead39f54418e199e1bafe23a95e7cc14fbc1",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "2848502113ceeab437cdae8202a1b9e8281c5e2cbaebdafc0a8c81e2270acf67",
+          "record_id": "patch-route:36ece43724c5a38476eed27bd6b55a2524a7f3a0c6bd9643c473af05ef05f916",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "29bb5680e3876004469e4fd489cc54deb540c3f1e11d57f2c67d225c08aa74c3",
+          "record_id": "patch-route-lifecycle:d234ddb3a52f724d863d3ec5a847d384f5112e4ea52f57133ecca9a60113b4c3",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9c1d358cab2b8546c5bd6ec112092f80d5c1944563a3a413c10e76667114bf22",
+          "record_id": "validator-identity:d5018ea81bdf0adaa727be797594aeb9a1dd7cc5415442e3cadecc6ef8048ed0",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route_units": [
+        {
+          "reason_codes": [
+            "MECHANICAL_PROOF_COMPLETE"
+          ],
+          "route": "ALLOW_FOR_B06",
+          "route_unit_id": "route-unit:cacf02121d1376053e5be8963c17c46f91565651a428ddca63e59b04a78dc044"
+        }
+      ],
+      "semantic_snapshot_hash": "5259941f1c702db6b44f0d71cd6611d8441c90d4249512c8eb151821f7550d31"
+    },
+    {
+      "causal_routes": [],
+      "fixture_id": "N09_IDEMPOTENT_AND_CONTENT_DEDUP_REPLAY",
+      "projection_hash": "6236fb0aa7fe93efe402b1c0a77f04a0bad028d549e7bb8b13467745aa285f0e",
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "2c11b68c0eb9d4aebcbd8521b409f41d65dad7a088f02e043751f25596b7eda2",
+          "record_id": "patch-route-lifecycle:f70e8a3a4d88b7a9bf797933185beaf6ae0e285c412d9cc6302b3dc1c658cfb7",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "3262df66e0ac45476277e9e9de1d458052cb63d83d19b59046c295452576e04b",
+          "record_id": "patch-route:248bd3e0b7a426b78da9d209bcbf6656e52a744803cc0212a3804324577ca523",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "919e09096f4a274c6fad3dd0fc6cf6c133d4594ae178b68ad7ab139105be5637",
+          "record_id": "patch-validation:fbfd84d4cc6769accd71097e352121389d5b1e1248e4c021e3c549d20881b406",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9c1d358cab2b8546c5bd6ec112092f80d5c1944563a3a413c10e76667114bf22",
+          "record_id": "validator-identity:d5018ea81bdf0adaa727be797594aeb9a1dd7cc5415442e3cadecc6ef8048ed0",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "reused_existing_bundle": true,
+      "route_units": [
+        {
+          "reason_codes": [
+            "MECHANICAL_PROOF_COMPLETE"
+          ],
+          "route": "ALLOW_FOR_B06",
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
+        }
+      ],
+      "semantic_snapshot_hash": "01aaa0d27552abda485aa66adcb58b809c72bbe43544cc25ee6f6d2109597d1e"
+    },
+    {
+      "causal_routes": [],
+      "fixture_id": "N10_ATOMIC_SUPERSEDE_AND_REOPEN_WITH_NEW_MATERIAL",
+      "initial_route": "DEFER",
+      "projection_hash": "3331d937877d98e0c9f5b96858fe04db87afda757fc4c5c4268e36c0484b7359",
+      "record_refs": [
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "17c92309fede3cbdb19847625bfcbef9019aea72f27260ed367857c54998838a",
+          "record_id": "patch-validation:214c9cdd23d956e37345539663ac013309cfb1231bd73584024cf8a66d9de60a",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "181dd93daf03d1c9584dc75a14c0e58df120094c629a0c83d7319e384b405972",
+          "record_id": "patch-route-lifecycle:34e76b3da016307c12f14f01d2f31481e71d6aafd477e5db83596fcefc93553a",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "25062349b9610ca38eca27e4e55753e9a9c9a1e125079f7dbf0fa34ec08d13fb",
+          "record_id": "patch-route:71db8b42cdf6a2d7eabd470769289beba8f886b3bbc9a690ae3df319616741eb",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "3a1479ba63380951e60aa3d7e31bb7802f2a29aa6e7c53e335bec7846f92c9c1",
+          "record_id": "patch-validation:1b4fde38a8c1956c32f52905014e2837ba079be5d3eb260f28bf17894c5235e2",
+          "record_type": "M3_PATCH_VALIDATION_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "42a99805519f2a29d59d7d5c794bc92db0ccfac1bc23aa3b8d05f320134f93d8",
+          "record_id": "patch-route:f024fd1452a7ec072b839268f56b6e6e27419f0c46109ccec709648abd8bd1a5",
+          "record_type": "M3_PATCH_ROUTE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "55a70e04db360215d8df1e5fd004a3eb8fc3cd23ba92a0edb8b7309f4cf05fca",
+          "record_id": "patch-route-lifecycle:3ee2129e3e2fde6f85b97fc0c87086d31d13ba10e36893415337234e6a08f6b2",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9a80e01e14809bd4b2bd3a57cf6aa74c70d97751034237238ec592ce4e99190a",
+          "record_id": "patch-route-lifecycle:443577295fe2387fedd8fb31dfeeaaf0b873c334c541af649e45a44e633737f7",
+          "record_type": "M3_PATCH_LIFECYCLE_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        },
+        {
+          "access": "POLICY_FIXTURE_READ_ONLY",
+          "contract": "M3_RECORD_REF",
+          "contract_version": "r03.5-candidate",
+          "record_contract_version": "r03.5-candidate",
+          "record_hash": "9c1d358cab2b8546c5bd6ec112092f80d5c1944563a3a413c10e76667114bf22",
+          "record_id": "validator-identity:d5018ea81bdf0adaa727be797594aeb9a1dd7cc5415442e3cadecc6ef8048ed0",
+          "record_type": "M3_VALIDATOR_IDENTITY_RECEIPT",
+          "record_version": 1,
+          "source_module": "M3"
+        }
+      ],
+      "route_units": [
+        {
+          "reason_codes": [
+            "MECHANICAL_PROOF_COMPLETE"
+          ],
+          "route": "ALLOW_FOR_B06",
+          "route_unit_id": "route-unit:3bd3bd2b483e3cb1bac05ca2287d16904bfc3a1c0ededf8f6deec3bcd1210b66"
+        }
+      ],
+      "semantic_snapshot_hash": "3fee7d94836fe6267843dd49feb1fbe84b2fa391d2edc56940d29702bc70da6f"
+    }
+  ],
+  "fixture_catalog_hash": "13761ee5a7d111436ce9e4a3f4d30b327a532eaf2e206ab3ceeba73608b18f60",
+  "normal_fixture_count": 10,
+  "output_types": [
+    "M3_PATCH_LIFECYCLE_RECEIPT",
+    "M3_PATCH_ROUTE_RECEIPT",
+    "M3_PATCH_VALIDATION_RECEIPT",
+    "M3_VALIDATOR_IDENTITY_RECEIPT"
+  ],
+  "payload_keys": {
+    "M3_PATCH_LIFECYCLE_RECEIPT": [
+      "effective_at",
+      "evaluation_key",
+      "event",
+      "lifecycle_sequence",
+      "material_delta_refs",
+      "prior_route_receipt_ref_or_null",
+      "reason_code",
+      "replacement_route_receipt_ref_or_null",
+      "route_series_id",
+      "subject_route_receipt_ref"
+    ],
+    "M3_PATCH_ROUTE_RECEIPT": [
+      "active_policy_selection_hash",
+      "active_policy_selection_ref",
+      "binding_header",
+      "binding_header_hash",
+      "causal_hint_routes",
+      "evaluation_input_hash",
+      "evaluation_key",
+      "route_generation",
+      "route_series_id",
+      "route_units",
+      "validation_policy_ref",
+      "validation_receipt_ref",
+      "validator_identity_ref"
+    ],
+    "M3_PATCH_VALIDATION_RECEIPT": [
+      "active_policy_selection_hash",
+      "active_policy_selection_ref",
+      "causal_support_mappings",
+      "dependency_proof",
+      "evaluation_input_hash",
+      "evaluation_key",
+      "input_binding",
+      "operation_id",
+      "route_unit_proofs",
+      "runtime_counters",
+      "validation_policy_ref",
+      "validator_identity_ref"
+    ],
+    "M3_VALIDATOR_IDENTITY_RECEIPT": [
+      "implementation_identity",
+      "runtime_capabilities",
+      "supported_candidate_schema_ids",
+      "supported_contract_version",
+      "supported_policy_contract",
+      "supported_policy_versions",
+      "validator_name",
+      "validator_version"
+    ]
+  },
+  "projector_map": {
+    "PatchRouteAggregateProjection": "PatchAggregateProjector"
+  },
+  "writer_map": {
+    "M3_PATCH_LIFECYCLE_RECEIPT": "B05RouteBundlePublisher",
+    "M3_PATCH_ROUTE_RECEIPT": "B05RouteBundlePublisher",
+    "M3_PATCH_VALIDATION_RECEIPT": "B05RouteBundlePublisher",
+    "M3_VALIDATOR_IDENTITY_RECEIPT": "ValidatorIdentityRegistry"
+  }
+}
