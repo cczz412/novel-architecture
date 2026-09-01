@@ -4,7 +4,7 @@
     "current_pointer",
     "merge_receipt"
   ],
-  "catalog_hash": "f89e98166d87dc7b19f993c2277661eb16894fd411a9409a6fdd5b778dd4708c",
+  "catalog_hash": "9c9889ec31083780d7308ef8f48fe1701cc1b8915a2306f037208b026a4ef139",
   "document_identity": "CCZ57-M3-B06-COMMIT-CORE-R01",
   "fixed_vectors": [
     {
@@ -117,6 +117,13 @@
     "POINTER_SNAPSHOT_PER_COMMIT"
   ],
   "mutable_state": "current_pointer",
+  "optional_run_fence": {
+    "b06_run_state_writes": 0,
+    "connection_scope": "same_begin_immediate_connection",
+    "identity_in_request_hash": true,
+    "reader_capability": "select_only",
+    "transaction_order": "receipt_replay_then_run_fence_then_publish"
+  },
   "output_record_type": "M3_CANDIDATE_MERGE_RECEIPT",
   "shared_kernel": "work/ccz57_m3_b05_patch_route_r03_5/candidate_mutation_kernel.py"
 }

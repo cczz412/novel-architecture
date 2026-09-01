@@ -7,17 +7,87 @@ import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from b06_contracts import B06ContractError, validate_merge_receipt
-from b06_store import B06CommitStore
+from b06_store import (
+    B06CommitService,
+    B06CommitStore,
+    B06TransactionReadView,
+    RunFenceReader,
+)
 from work.ccz57_m3_b06_commit_core_r01.fixtures import (
+    B06FixtureEnvironment,
     COMMITTED_AT,
     build_environment,
 )
 
 ROOT = Path(__file__).resolve().parent
+
+
+def _run_fence(env: B06FixtureEnvironment, *, revision: int = 7) -> dict[str, Any]:
+    return {
+        "project_scope_id": env.live_pointer["project_scope_id"],
+        "run_id": "run-b07-fixture",
+        "expected_run_epoch": 2,
+        "expected_state_revision": revision,
+    }
+
+
+def _install_run_state(
+    env: B06FixtureEnvironment, *, status: str = "B06_OUTCOME_PENDING"
+) -> None:
+    with sqlite3.connect(env.store._database_path) as connection:  # noqa: SLF001
+        connection.execute(
+            "CREATE TABLE b07_current_run_states ("
+            "project_scope_id TEXT NOT NULL, run_id TEXT PRIMARY KEY, "
+            "run_epoch INTEGER NOT NULL, state_revision INTEGER NOT NULL, "
+            "status TEXT NOT NULL, pending_operation_id TEXT NOT NULL)"
+        )
+        connection.execute(
+            "INSERT INTO b07_current_run_states VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                env.live_pointer["project_scope_id"],
+                "run-b07-fixture",
+                2,
+                7,
+                status,
+                "b06-operation-1",
+            ),
+        )
+
+
+def _trusted_run_fence_reader(seen: list[dict[str, Any]]) -> RunFenceReader:
+    def reader(view: B06TransactionReadView, context: dict[str, Any]) -> None:
+        fence = context["run_fence"]
+        row = view.fetchone(
+            "SELECT project_scope_id, run_epoch, state_revision, status, "
+            "pending_operation_id FROM b07_current_run_states WHERE run_id = ?",
+            (fence["run_id"],),
+        )
+        if row != (
+            fence["project_scope_id"],
+            fence["expected_run_epoch"],
+            fence["expected_state_revision"],
+            "B06_OUTCOME_PENDING",
+            context["operation_id"],
+        ):
+            raise B06ContractError("B06_RUN_FENCE_STALE")
+        seen.append(deepcopy(context))
+
+    return reader
+
+
+def _enable_run_fence(env: B06FixtureEnvironment, reader: RunFenceReader) -> None:
+    env.service = B06CommitService(
+        store=env.store,
+        b05_store=env.b05.store,
+        freshness_reader=env.freshness_reader,
+        run_fence_reader=reader,
+        reference_records=env.reference_records,
+    )
 
 
 def test_allowed_replace_commits_child_pointer_and_receipt(tmp_path: Path) -> None:
@@ -83,6 +153,95 @@ def test_same_operation_with_different_input_is_rejected(tmp_path: Path) -> None
     env.commit()
     with pytest.raises(B06ContractError, match="B06_OPERATION_ID_INPUT_CONFLICT"):
         env.commit(committed_at="2026-08-31T23:00:01Z")
+
+
+def test_run_fence_reads_inside_publish_transaction(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "run-fence-pass")
+    _install_run_state(env)
+    seen: list[dict[str, Any]] = []
+    _enable_run_fence(env, _trusted_run_fence_reader(seen))
+
+    result = env.commit(run_fence=_run_fence(env))
+
+    assert len(seen) == 1
+    assert seen[0]["operation_id"] == "b06-operation-1"
+    assert seen[0]["request_hash"] == result["request_hash"]
+    assert env.store.visible_counts()["merge_receipts"] == 1
+
+
+def test_stopped_run_fence_rejects_new_publish_with_zero_writes(
+    tmp_path: Path,
+) -> None:
+    env = build_environment(tmp_path / "run-fence-stop")
+    _install_run_state(env, status="STOPPED")
+    _enable_run_fence(env, _trusted_run_fence_reader([]))
+    before_pointer = env.store.read_pointer(env.live_pointer["logical_pointer_key"])
+
+    with pytest.raises(B06ContractError, match="B06_RUN_FENCE_STALE"):
+        env.commit(run_fence=_run_fence(env))
+
+    assert (
+        env.store.read_pointer(env.live_pointer["logical_pointer_key"])
+        == before_pointer
+    )
+    assert env.store.visible_counts() == {
+        "candidate_versions": 1,
+        "current_pointers": 1,
+        "merge_receipts": 0,
+    }
+    assert env.store.write_attempt_count() == 0
+
+
+def test_existing_operation_replay_skips_fence_after_stop(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "run-fence-replay")
+    _install_run_state(env)
+    seen: list[dict[str, Any]] = []
+    _enable_run_fence(env, _trusted_run_fence_reader(seen))
+    first = env.commit(run_fence=_run_fence(env))
+    with sqlite3.connect(env.store._database_path) as connection:  # noqa: SLF001
+        connection.execute(
+            "UPDATE b07_current_run_states SET status = 'STOPPED', state_revision = 8"
+        )
+
+    replay = env.commit(run_fence=_run_fence(env))
+
+    assert replay["merge_receipt_ref"] == first["merge_receipt_ref"]
+    assert replay["reused_existing_commit"] is True
+    assert len(seen) == 1
+
+
+def test_run_fence_read_view_rejects_write_query(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "run-fence-read-only")
+
+    def write_reader(view: B06TransactionReadView, _context: dict[str, Any]) -> None:
+        view.fetchone("UPDATE current_pointers SET project_scope_id = 'tampered'")
+
+    _enable_run_fence(env, write_reader)
+    with pytest.raises(B06ContractError, match="B06_RUN_FENCE_QUERY_NOT_READ_ONLY"):
+        env.commit(run_fence=_run_fence(env))
+    assert env.store.visible_counts()["merge_receipts"] == 0
+
+
+def test_same_operation_cannot_swap_run_fence_identity(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "run-fence-identity")
+    _install_run_state(env)
+    _enable_run_fence(env, _trusted_run_fence_reader([]))
+    env.commit(run_fence=_run_fence(env))
+
+    with pytest.raises(B06ContractError, match="B06_OPERATION_ID_INPUT_CONFLICT"):
+        env.commit(run_fence=_run_fence(env, revision=8))
+
+
+def test_run_fence_reader_and_assertion_must_be_installed_together(
+    tmp_path: Path,
+) -> None:
+    env = build_environment(tmp_path / "run-fence-configuration")
+    with pytest.raises(B06ContractError, match="B06_RUN_FENCE_CONFIGURATION_INVALID"):
+        env.commit(run_fence=_run_fence(env))
+
+    _enable_run_fence(env, _trusted_run_fence_reader([]))
+    with pytest.raises(B06ContractError, match="B06_RUN_FENCE_CONFIGURATION_INVALID"):
+        env.commit()
 
 
 def test_reopen_reads_same_pointer_child_and_receipt(tmp_path: Path) -> None:

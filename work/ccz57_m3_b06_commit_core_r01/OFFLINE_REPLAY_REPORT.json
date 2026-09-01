@@ -1,7 +1,7 @@
 {
   "atomic_outputs": 3,
   "b05_regression_expected": "102 passed",
-  "catalog_hash": "f89e98166d87dc7b19f993c2277661eb16894fd411a9409a6fdd5b778dd4708c",
+  "catalog_hash": "9c9889ec31083780d7308ef8f48fe1701cc1b8915a2306f037208b026a4ef139",
   "fixed_vector_count": 6,
   "formal_fact_writes": 0,
   "mechanical_pass": true,
@@ -13,5 +13,5 @@
   "real_model_api_calls": 0,
   "real_novel_reads": 0,
   "report_kind": "CCZ57_M3_B06_COMMIT_CORE_R01_OFFLINE_REPLAY",
-  "targeted_pytest_expected": "19 passed"
+  "targeted_pytest_expected": "25 passed"
 }

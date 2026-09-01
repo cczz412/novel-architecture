@@ -53,6 +53,20 @@ B-05 用它算 trial child，B-06 用同一份代码生成正式 child。B-06 �
 
 同一个 operation id、同一份输入重放时，只回读原来的 MergeReceipt，不再写第二个 child。
 
+## 给 B-07 留的只读安全插口
+
+B-07 接入后，B-06 可以在同一个 SQLite 提交事务里，先通过受信任的 reader 只读核对当前 run。你可以直接理解成：真正落 child 之前，再确认“这次运行还活着，而且仍在等这次 B-06 发布”。
+
+这个插口只接受 project、run、epoch 和状态版本四项定位断言。当前状态、`B06_OUTCOME_PENDING` 和 pending operation 是否匹配，必须由安装在 service 上的 reader 从本地数据库回读，调用方不能自己报一个“可以继续”。
+
+- 已经存在的同 operation MergeReceipt 会先回读，后来即使 run 已经 STOPPED，也能完成 ack-lost 对账；
+- 尚未发布的新 operation 才检查 run fence；
+- fence 不匹配时，child、pointer、MergeReceipt 保持 0 新写入；
+- reader 只拿到同一 connection 的 SELECT-only 视图，不能借这个插口写 RunState；
+- run fence 身份进入 request hash，同 operation 不能偷偷换 run、epoch 或状态版本。
+
+B-06 仍不创建也不修改 `CurrentRunState` 或 `StopReceipt`。这两样由后续 B-07 的唯一 writer 负责。
+
 ## 当前证明到哪
 
 当前是 synthetic fixture 施工件：

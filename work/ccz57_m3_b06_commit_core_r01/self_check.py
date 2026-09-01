@@ -91,6 +91,13 @@ def build_object_shapes() -> dict[str, Any]:
             "POINTER_SNAPSHOT_PER_COMMIT",
         ],
         "shared_kernel": "work/ccz57_m3_b05_patch_route_r03_5/candidate_mutation_kernel.py",
+        "optional_run_fence": {
+            "transaction_order": "receipt_replay_then_run_fence_then_publish",
+            "connection_scope": "same_begin_immediate_connection",
+            "reader_capability": "select_only",
+            "identity_in_request_hash": True,
+            "b06_run_state_writes": 0,
+        },
         "fixed_vectors": vectors,
         "catalog_hash": "",
     }
@@ -104,7 +111,7 @@ def build_report(catalog: dict[str, Any]) -> dict[str, Any]:
     return {
         "report_kind": "CCZ57_M3_B06_COMMIT_CORE_R01_OFFLINE_REPLAY",
         "mechanical_pass": True,
-        "targeted_pytest_expected": "19 passed",
+        "targeted_pytest_expected": "25 passed",
         "b05_regression_expected": "102 passed",
         "fixed_vector_count": len(catalog["fixed_vectors"]),
         "catalog_hash": catalog["catalog_hash"],

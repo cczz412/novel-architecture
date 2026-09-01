@@ -22,6 +22,8 @@
 - 不持久化 `M3_COMMIT_INTENT`；
 - 不持久化每次 before/after pointer snapshot；
 - 保留 MergeReceipt；
+- 给 B-07 留同事务、SELECT-only 的 run fence reader；
+- 既有 operation 先做 receipt replay，新 operation 才查 run fence；
 - B-05 与 B-06 共用 CandidateMutationKernel，不写第三套修改算法。
 
 拍板人：CZ。拍板时间：2026-09-01。出处：当前 Codex 对话“同意，正式采纳。”“继续授权给你……我们就可以开启 B06 了。”

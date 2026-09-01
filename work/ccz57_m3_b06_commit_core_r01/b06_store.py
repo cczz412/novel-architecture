@@ -51,6 +51,12 @@ FRESHNESS_KEYS = {
     "active_policy_selection_hash",
     "non_content_gate_snapshot_hash",
 }
+RUN_FENCE_KEYS = {
+    "project_scope_id",
+    "run_id",
+    "expected_run_epoch",
+    "expected_state_revision",
+}
 _B06_COMMIT_PUBLISH_TOKEN = object()
 
 
@@ -64,6 +70,56 @@ def _record_bytes(record: dict[str, Any]) -> bytes:
 
 def _record_ref_hash(record: dict[str, Any]) -> str:
     return sha256_value(record_ref(record))
+
+
+class B06TransactionReadView:
+    """Expose SELECT-only access to the connection owning the B-06 transaction."""
+
+    __slots__ = ("__connection",)
+
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        self.__connection = connection
+
+    def _execute(self, query: str, parameters: tuple[Any, ...]) -> sqlite3.Cursor:
+        if (
+            not isinstance(query, str)
+            or re.match(r"\A\s*SELECT\b", query, re.I) is None
+        ):
+            fail("B06_RUN_FENCE_QUERY_NOT_READ_ONLY")
+        return self.__connection.execute(query, parameters)
+
+    def fetchone(
+        self, query: str, parameters: tuple[Any, ...] = ()
+    ) -> tuple[Any, ...] | None:
+        return self._execute(query, parameters).fetchone()
+
+    def fetchall(
+        self, query: str, parameters: tuple[Any, ...] = ()
+    ) -> list[tuple[Any, ...]]:
+        return self._execute(query, parameters).fetchall()
+
+
+RunFenceReader = Callable[[B06TransactionReadView, dict[str, Any]], None]
+
+
+def _validate_run_fence(
+    run_fence: dict[str, Any], *, project_scope_id: str
+) -> dict[str, Any]:
+    if not isinstance(run_fence, dict) or set(run_fence) != RUN_FENCE_KEYS:
+        fail("B06_RUN_FENCE_SHAPE_INVALID")
+    if (
+        run_fence["project_scope_id"] != project_scope_id
+        or not isinstance(run_fence["run_id"], str)
+        or not run_fence["run_id"]
+        or any(
+            isinstance(run_fence[key], bool)
+            or not isinstance(run_fence[key], int)
+            or run_fence[key] < 0
+            for key in ("expected_run_epoch", "expected_state_revision")
+        )
+    ):
+        fail("B06_RUN_FENCE_SHAPE_INVALID")
+    return deepcopy(run_fence)
 
 
 class B06CommitStore:
@@ -277,6 +333,8 @@ class B06CommitStore:
         logical_pointer_key: str,
         operation_id: str,
         request_hash: str,
+        run_fence_context: dict[str, Any] | None = None,
+        run_fence_reader: RunFenceReader | None = None,
         publisher_token: object | None = None,
         builder: Callable[
             [dict[str, Any], dict[str, Any]],
@@ -304,6 +362,17 @@ class B06CommitStore:
                     connection.rollback()
                     pointer = self.read_pointer(logical_pointer_key)
                     return self._result(receipt, pointer=pointer, reused=True)
+                if (run_fence_context is None) != (run_fence_reader is None):
+                    fail("B06_RUN_FENCE_CONFIGURATION_INVALID")
+                if run_fence_context is not None and run_fence_reader is not None:
+                    connection.execute("PRAGMA query_only=ON")
+                    try:
+                        run_fence_reader(
+                            B06TransactionReadView(connection),
+                            deepcopy(run_fence_context),
+                        )
+                    finally:
+                        connection.execute("PRAGMA query_only=OFF")
                 pointer_row = connection.execute(
                     "SELECT project_scope_id, pointer_json FROM current_pointers "
                     "WHERE logical_pointer_key = ?",
@@ -410,6 +479,7 @@ class B06CommitService:
         "store",
         "b05_store",
         "freshness_reader",
+        "run_fence_reader",
         "reference_records",
     )
 
@@ -419,11 +489,13 @@ class B06CommitService:
         store: B06CommitStore,
         b05_store: B05RouteStore,
         freshness_reader: Callable[[], dict[str, str]],
+        run_fence_reader: RunFenceReader | None = None,
         reference_records: list[dict[str, Any]],
     ) -> None:
         self.store = store
         self.b05_store = b05_store
         self.freshness_reader = freshness_reader
+        self.run_fence_reader = run_fence_reader
         self.reference_records = deepcopy(reference_records)
 
     def _freshness(self) -> dict[str, str]:
@@ -483,6 +555,7 @@ class B06CommitService:
         patch_proposal: dict[str, Any],
         protection_set: dict[str, Any],
         committed_at: str,
+        run_fence: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         if any(
             not isinstance(item, str) or not item
@@ -502,6 +575,13 @@ class B06CommitService:
             )
         except B05ContractError as error:
             fail("B06_PATCH_CLOSURE_INVALID", str(error))
+        if (run_fence is None) != (self.run_fence_reader is None):
+            fail("B06_RUN_FENCE_CONFIGURATION_INVALID")
+        validated_run_fence = (
+            None
+            if run_fence is None
+            else _validate_run_fence(run_fence, project_scope_id=project_scope_id)
+        )
         request_preimage = {
             "project_scope_id": project_scope_id,
             "logical_pointer_key": logical_pointer_key,
@@ -512,7 +592,19 @@ class B06CommitService:
             "protection_set_ref": record_ref(protection_set),
             "committed_at": committed_at,
         }
+        if validated_run_fence is not None:
+            request_preimage["run_fence"] = validated_run_fence
         request_hash = sha256_value(request_preimage)
+        run_fence_context = (
+            None
+            if validated_run_fence is None
+            else {
+                "project_scope_id": project_scope_id,
+                "operation_id": operation_id,
+                "request_hash": request_hash,
+                "run_fence": validated_run_fence,
+            }
+        )
 
         with self.b05_store.serialization():
             records = self.b05_store.read_records()
@@ -659,6 +751,8 @@ class B06CommitService:
                     logical_pointer_key=logical_pointer_key,
                     operation_id=operation_id,
                     request_hash=request_hash,
+                    run_fence_context=run_fence_context,
+                    run_fence_reader=self.run_fence_reader,
                     publisher_token=_B06_COMMIT_PUBLISH_TOKEN,
                     builder=builder,
                 )

@@ -4,6 +4,7 @@
 
 - B-05 trial apply 与 B-06 commit 已共用同一 CandidateMutationKernel；
 - child、current pointer、MergeReceipt 使用单一 SQLite 事务；
+- B-07 run fence 只能通过同一事务 connection 的只读视图核对；B-06 不写 RunState；
 - 同 operation 幂等重放、不同输入冲突、并发抢 pointer、数据库 reopen 和四个失败注入点都有定向反例；
 - 没有 CommitIntent 表和 pointer snapshot 表；
 - B-06 不读取正文、不调用模型、不写十本账。
