@@ -1,0 +1,109 @@
+{
+  "authority_reader": {
+    "caller_result_fields": 0,
+    "ccz142_product_adapter_connected": false,
+    "constructor_owned": true,
+    "shared_sqlite_read": true
+  },
+  "b07_boundary": {
+    "new_b07_fields": 0,
+    "new_b07_statuses": 0,
+    "new_b07_writers": 0,
+    "uses_active_finalizing": true,
+    "uses_last_component_observation": true
+  },
+  "catalog_hash": "7b78f54e36498fa120d67c5086746c3da358f2ae875f2d55f98d14e0fa8c48c6",
+  "current_binding": [
+    "chapter_revision_ref",
+    "segment_scope_hash",
+    "source_generation_ref",
+    "pointer_generation",
+    "current_candidate_version_ref",
+    "b07_last_component_observation"
+  ],
+  "derived_views": [
+    "M3_EXACT_CURRENT_SEGMENT_TERMINAL_VIEW",
+    "M3_ADAPTER_READY_SEGMENT_VIEW"
+  ],
+  "document_identity": "CCZ57-M3-B08-SEGMENT-TERMINAL-R01",
+  "fixed_vectors": [
+    {
+      "adapter_ready": true,
+      "adapter_view_hash": "ee04076c256698719600e349ce37f04b23170401f665adf0dcbfb4cc227bfb54",
+      "currentness": "CURRENT",
+      "exact_view_hash": "ee02e5b85317164063816f2c46c83ade7a483b22ca5bb3a1bf41f2a9aa864323",
+      "fixture_id": "N01_COMPLETE_CURRENT",
+      "terminal_record_hash": "b886e3d121ad771dfe905fa43cbc7dccc4f4456b58c583adc42345f2caefaf7b",
+      "visible_counts": {
+        "b08_segment_terminal_receipts": 1
+      }
+    },
+    {
+      "adapter_ready": false,
+      "b07_status": "STOPPED",
+      "currentness": "CURRENT",
+      "delivery": "PARTIAL",
+      "fixture_id": "N02_PARTIAL_STOPPED",
+      "terminal_record_hash": "32edaed6222f9da0698049943b6b56dcd49224252b67514110559357ccde135e"
+    },
+    {
+      "candidate_origin": "B06_CHILD",
+      "fixture_id": "N03_B06_CHILD",
+      "merge_receipt_bound": true,
+      "terminal_record_hash": "d9982d1e67e96e2d643aafb789e615489b2de31d3f58dfe731361b8511958097"
+    },
+    {
+      "error_code": "B08_SIMULATED_TRANSACTION_FAILURE",
+      "fixture_id": "F01_TRANSACTION_ROLLBACK",
+      "visible_counts": {
+        "b08_segment_terminal_receipts": 0
+      }
+    },
+    {
+      "current_run_epoch": 1,
+      "currentness": "SUPERSEDED_RUN_EPOCH",
+      "fixture_id": "F02_RESUME_SUPERSEDES",
+      "old_run_epoch": 0,
+      "visible_counts": {
+        "b08_segment_terminal_receipts": 1
+      }
+    }
+  ],
+  "forbidden_persistent_types": [
+    "M3_SEGMENT_STALE_RECORD",
+    "M3_EXACT_CURRENT_SEGMENT_TERMINAL_VIEW_RECORD",
+    "M3_ADAPTER_READY_SEGMENT_VIEW_RECORD",
+    "M3_CHECKPOINT",
+    "M3_COMMIT_INTENT",
+    "M3_POINTER_SNAPSHOT"
+  ],
+  "persistent_product_types": [
+    "M3_SEGMENT_CANDIDATE_TERMINAL_RECEIPT"
+  ],
+  "product_results": [
+    "CANDIDATES_READY",
+    "NO_CHANGE",
+    "LEGAL_ZERO",
+    "NOT_APPLICABLE",
+    "INSUFFICIENT_EVIDENCE",
+    "EXTRACTION_FAILED"
+  ],
+  "run_binding": [
+    "logical_run_generation",
+    "run_epoch",
+    "finalized_from_state_revision",
+    "finalized_from_state_hash"
+  ],
+  "terminal_deliveries": [
+    "COMPLETE",
+    "EMPTY_VALID",
+    "PARTIAL",
+    "BLOCKED"
+  ],
+  "transaction_domain": "b06-commit-core.sqlite3",
+  "writer_map": {
+    "M3_ADAPTER_READY_SEGMENT_VIEW": null,
+    "M3_EXACT_CURRENT_SEGMENT_TERMINAL_VIEW": null,
+    "M3_SEGMENT_CANDIDATE_TERMINAL_RECEIPT": "B08SegmentTerminalStore"
+  }
+}
