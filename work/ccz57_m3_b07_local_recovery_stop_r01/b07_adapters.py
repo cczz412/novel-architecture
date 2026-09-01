@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import sys
 from copy import deepcopy
 from pathlib import Path
@@ -14,41 +13,20 @@ if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
-    canonical_bytes,
     record_ref,
     sha256_value,
-    validate_record_ref,
 )
 
-from b07_contracts import fail  # noqa: E402
+from b07_contracts import fail, validate_component_observation  # noqa: E402
 
 SavedResultReader = Callable[[str], bytes]
 
-SAVED_OBSERVATION_KEYS = {
-    "project_scope_id",
-    "run_id",
-    "expected_run_epoch",
-    "expected_state_revision",
-    "observation_id",
-    "observation_kind",
+SAVED_ARTIFACT_KEYS = {
     "component_kind",
-    "component_contract_version",
-    "saved_result_locator",
-    "saved_result_sha256",
-    "saved_result_ref",
-    "result_class",
-    "next_phase_hint",
-    "error_fingerprint",
-    "experiment_context_hash",
+    "artifact_kind",
+    "workspace_relative_locator",
+    "artifact_sha256",
 }
-OBSERVATION_KINDS = {
-    "COMPONENT_RESULT",
-    "BUDGET_STOP",
-    "RETRY_STOP",
-    "NO_PROGRESS_STOP",
-    "TRANSIENT_SIGNAL",
-}
-RESULT_CLASSES = {"SUCCESS", "WAIT", "RETRYABLE_FAILURE", "STOP_RECOMMENDED"}
 
 
 def derive_b06_request_hash(
@@ -80,69 +58,40 @@ def derive_b06_request_hash(
     )
 
 
-def accept_saved_observation(
+def verify_saved_artifact(
     envelope: dict[str, Any], *, reader: SavedResultReader
 ) -> dict[str, Any]:
-    if not isinstance(envelope, dict) or set(envelope) != SAVED_OBSERVATION_KEYS:
+    if not isinstance(envelope, dict) or set(envelope) != SAVED_ARTIFACT_KEYS:
         fail("B07_CCZ142_OBSERVATION_SHAPE_INVALID")
-    if (
-        any(
-            not isinstance(envelope[key], str) or not envelope[key]
-            for key in (
-                "project_scope_id",
-                "run_id",
-                "observation_id",
-                "component_kind",
-                "component_contract_version",
-                "saved_result_locator",
-            )
+    if any(
+        not isinstance(envelope[key], str) or not envelope[key]
+        for key in (
+            "component_kind",
+            "artifact_kind",
+            "workspace_relative_locator",
         )
-        or any(
-            not isinstance(envelope[key], int)
-            or isinstance(envelope[key], bool)
-            or envelope[key] < 0
-            for key in ("expected_run_epoch", "expected_state_revision")
-        )
-        or envelope["observation_kind"] not in OBSERVATION_KINDS
-        or envelope["result_class"] not in RESULT_CLASSES
-        or not _sha(envelope["saved_result_sha256"])
-        or (
-            envelope["error_fingerprint"] is not None
-            and not _sha(envelope["error_fingerprint"])
-        )
-        or (
-            envelope["experiment_context_hash"] is not None
-            and not _sha(envelope["experiment_context_hash"])
-        )
-    ):
+    ) or not _sha(envelope["artifact_sha256"]):
         fail("B07_CCZ142_OBSERVATION_VALUE_INVALID")
+    observation = {
+        "component_kind": envelope["component_kind"],
+        "component_artifact_ref": {
+            "artifact_kind": envelope["artifact_kind"],
+            "workspace_relative_locator": envelope["workspace_relative_locator"],
+            "artifact_sha256": envelope["artifact_sha256"],
+        },
+    }
+    validate_component_observation(observation)
     try:
-        validate_record_ref(envelope["saved_result_ref"])
-        raw = reader(envelope["saved_result_locator"])
+        raw = reader(envelope["workspace_relative_locator"])
     except Exception as error:
         fail("B07_CCZ142_SAVED_RESULT_UNAVAILABLE", str(error))
     if (
         not isinstance(raw, bytes)
-        or hashlib.sha256(raw).hexdigest() != envelope["saved_result_sha256"]
+        or not raw
+        or hashlib.sha256(raw).hexdigest() != envelope["artifact_sha256"]
     ):
         fail("B07_CCZ142_SAVED_RESULT_HASH_MISMATCH")
-    try:
-        parsed = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, ValueError) as error:
-        fail("B07_CCZ142_SAVED_RESULT_INVALID", str(error))
-    if not isinstance(parsed, dict):
-        fail("B07_CCZ142_SAVED_RESULT_INVALID")
-    try:
-        actual_ref = record_ref(parsed)
-    except ValueError as error:
-        fail("B07_CCZ142_SAVED_RESULT_INVALID", str(error))
-    if canonical_bytes(actual_ref) != canonical_bytes(envelope["saved_result_ref"]):
-        fail("B07_CCZ142_SAVED_RESULT_REF_MISMATCH")
-    return {
-        "component_kind": envelope["component_kind"],
-        "component_receipt_ref": deepcopy(envelope["saved_result_ref"]),
-        "component_result_hash": envelope["saved_result_sha256"],
-    }
+    return observation
 
 
 def assert_author_payload_safe(payload: Any) -> None:

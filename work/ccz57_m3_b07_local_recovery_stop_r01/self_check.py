@@ -186,6 +186,14 @@ def build_object_shapes() -> dict[str, Any]:
             "b07_writes_b06_objects": 0,
             "receipt_replay_before_fence": True,
         },
+        "ccz142_saved_artifact_ref": {
+            "artifact_kind": "required",
+            "workspace_relative_locator": "required",
+            "artifact_sha256": "required",
+            "b05_record_ref_required": False,
+            "component_contract_version_required": False,
+            "caller_result_class_accepted": False,
+        },
         "forbidden_persistent_types": [
             "M3_CHECKPOINT",
             "M3_COMMIT_INTENT",
@@ -235,6 +243,8 @@ def build_report(catalog: dict[str, Any]) -> dict[str, Any]:
         "speed_improvement": None,
         "token_improvement": None,
         "ccz142_exact_adapter_complete": False,
+        "ccz142_saved_artifact_adapter_complete": True,
+        "ccz142_result_classification_complete": False,
         "pr_gate": "NOT_RUN_LOCAL_CONSTRUCTION",
     }
 

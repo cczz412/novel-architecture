@@ -13,8 +13,8 @@ from typing import Any
 import pytest
 
 from b07_adapters import (
-    accept_saved_observation,
     assert_author_payload_safe,
+    verify_saved_artifact,
 )
 from b07_contracts import (
     B07ContractError,
@@ -128,34 +128,25 @@ def test_saved_ccz142_observation_reads_local_bytes_and_copies_no_payload(
 ) -> None:
     env = build_environment(tmp_path / "saved-observation")
     raw = env.saved_result_bytes()
-    saved_ref = env.b06.route_receipt_ref
     envelope = {
-        "project_scope_id": env.project_scope_id,
-        "run_id": env.run_id,
-        "expected_run_epoch": 0,
-        "expected_state_revision": 1,
-        "observation_id": "observation-1",
-        "observation_kind": "COMPONENT_RESULT",
         "component_kind": "CCZ142_REPAIR_COMPONENT",
-        "component_contract_version": "fixture-v1",
-        "saved_result_locator": "local:fixture-result",
-        "saved_result_sha256": hashlib.sha256(raw).hexdigest(),
-        "saved_result_ref": saved_ref,
-        "result_class": "SUCCESS",
-        "next_phase_hint": "CHECKING",
-        "error_fingerprint": None,
-        "experiment_context_hash": None,
+        "artifact_kind": "component_output",
+        "workspace_relative_locator": "TEMP/fixture-result.json",
+        "artifact_sha256": hashlib.sha256(raw).hexdigest(),
     }
 
-    observation = accept_saved_observation(
+    observation = verify_saved_artifact(
         envelope,
-        reader=lambda locator: raw if locator == "local:fixture-result" else b"",
+        reader=lambda locator: raw if locator == "TEMP/fixture-result.json" else b"",
     )
 
     assert observation == {
         "component_kind": "CCZ142_REPAIR_COMPONENT",
-        "component_receipt_ref": saved_ref,
-        "component_result_hash": hashlib.sha256(raw).hexdigest(),
+        "component_artifact_ref": {
+            "artifact_kind": "component_output",
+            "workspace_relative_locator": "TEMP/fixture-result.json",
+            "artifact_sha256": hashlib.sha256(raw).hexdigest(),
+        },
     }
     assert "payload" not in observation
 
@@ -164,50 +155,34 @@ def test_saved_observation_rejects_hash_drift(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "saved-drift")
     raw = env.saved_result_bytes()
     envelope = {
-        "project_scope_id": env.project_scope_id,
-        "run_id": env.run_id,
-        "expected_run_epoch": 0,
-        "expected_state_revision": 1,
-        "observation_id": "observation-1",
-        "observation_kind": "COMPONENT_RESULT",
         "component_kind": "CCZ142_REPAIR_COMPONENT",
-        "component_contract_version": "fixture-v1",
-        "saved_result_locator": "local:fixture-result",
-        "saved_result_sha256": "0" * 64,
-        "saved_result_ref": generic_ref("M3_COMPONENT_RECEIPT", "ccz142:saved:1"),
-        "result_class": "SUCCESS",
-        "next_phase_hint": "CHECKING",
-        "error_fingerprint": None,
-        "experiment_context_hash": None,
+        "artifact_kind": "component_output",
+        "workspace_relative_locator": "TEMP/fixture-result.json",
+        "artifact_sha256": "0" * 64,
     }
     with pytest.raises(B07ContractError, match="B07_CCZ142_SAVED_RESULT_HASH_MISMATCH"):
-        accept_saved_observation(envelope, reader=lambda _locator: raw)
+        verify_saved_artifact(envelope, reader=lambda _locator: raw)
 
 
-def test_saved_observation_rejects_caller_supplied_ref_mismatch(
+def test_saved_observation_rejects_non_relative_or_unused_caller_fields(
     tmp_path: Path,
 ) -> None:
     env = build_environment(tmp_path / "saved-ref-mismatch")
     raw = env.saved_result_bytes()
-    envelope = {
-        "project_scope_id": env.project_scope_id,
-        "run_id": env.run_id,
-        "expected_run_epoch": 0,
-        "expected_state_revision": 1,
-        "observation_id": "observation-1",
-        "observation_kind": "COMPONENT_RESULT",
+    base = {
         "component_kind": "CCZ142_REPAIR_COMPONENT",
-        "component_contract_version": "fixture-v1",
-        "saved_result_locator": "local:fixture-result",
-        "saved_result_sha256": hashlib.sha256(raw).hexdigest(),
-        "saved_result_ref": generic_ref("M3_COMPONENT_RECEIPT", "wrong-ref"),
-        "result_class": "SUCCESS",
-        "next_phase_hint": "CHECKING",
-        "error_fingerprint": None,
-        "experiment_context_hash": None,
+        "artifact_kind": "component_output",
+        "workspace_relative_locator": "TEMP/fixture-result.json",
+        "artifact_sha256": hashlib.sha256(raw).hexdigest(),
     }
-    with pytest.raises(B07ContractError, match="B07_CCZ142_SAVED_RESULT_REF_MISMATCH"):
-        accept_saved_observation(envelope, reader=lambda _locator: raw)
+    for locator in ("/tmp/result.json", "TEMP/../result.json"):
+        envelope = dict(base, workspace_relative_locator=locator)
+        with pytest.raises(B07ContractError, match="B07_OBSERVATION_INVALID"):
+            verify_saved_artifact(envelope, reader=lambda _locator: raw)
+    with pytest.raises(B07ContractError, match="B07_CCZ142_OBSERVATION_SHAPE_INVALID"):
+        verify_saved_artifact(
+            dict(base, result_class="SUCCESS"), reader=lambda _locator: raw
+        )
 
 
 def test_oversized_run_state_is_rejected_before_persistence(tmp_path: Path) -> None:

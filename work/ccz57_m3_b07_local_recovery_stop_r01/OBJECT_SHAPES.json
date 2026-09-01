@@ -5,7 +5,15 @@
     "b07_writes_b06_objects": 0,
     "receipt_replay_before_fence": true
   },
-  "catalog_hash": "faca397861fd2b9bf9f935c3c3795d42fe4e48e474bf507e138276f601349ffc",
+  "catalog_hash": "804b03b4af025d5ac460a43d3b7a3488604930bdc18ad58c10f9461291aa7cd8",
+  "ccz142_saved_artifact_ref": {
+    "artifact_kind": "required",
+    "artifact_sha256": "required",
+    "b05_record_ref_required": false,
+    "caller_result_class_accepted": false,
+    "component_contract_version_required": false,
+    "workspace_relative_locator": "required"
+  },
   "debug_limits": {
     "default_retention_days": 7,
     "hard_retention_days_without_new_policy": 30,

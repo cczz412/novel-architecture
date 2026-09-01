@@ -6,7 +6,7 @@ import re
 import sys
 from copy import deepcopy
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -109,8 +109,12 @@ PENDING_B06_KEYS = {
 }
 OBSERVATION_KEYS = {
     "component_kind",
-    "component_receipt_ref",
-    "component_result_hash",
+    "component_artifact_ref",
+}
+LOCAL_ARTIFACT_REF_KEYS = {
+    "artifact_kind",
+    "workspace_relative_locator",
+    "artifact_sha256",
 }
 CURRENT_RUN_STATE_KEYS = {
     "schema_version",
@@ -294,17 +298,28 @@ def validate_pending_local_action(value: Any) -> None:
         fail("B07_PENDING_ACTION_INVALID")
 
 
+def validate_local_artifact_ref(value: Any) -> None:
+    _exact_keys(value, LOCAL_ARTIFACT_REF_KEYS, "B07_OBSERVATION_INVALID")
+    locator = value["workspace_relative_locator"]
+    if (
+        not isinstance(value["artifact_kind"], str)
+        or not value["artifact_kind"]
+        or not isinstance(locator, str)
+        or not locator
+        or "\\" in locator
+        or PurePosixPath(locator).is_absolute()
+        or PurePosixPath(locator).as_posix() != locator
+        or any(part in {"", ".", ".."} for part in PurePosixPath(locator).parts)
+        or not _sha(value["artifact_sha256"])
+    ):
+        fail("B07_OBSERVATION_INVALID")
+
+
 def validate_component_observation(value: Any) -> None:
     _exact_keys(value, OBSERVATION_KEYS, "B07_OBSERVATION_INVALID")
     if not isinstance(value["component_kind"], str) or not value["component_kind"]:
         fail("B07_OBSERVATION_INVALID")
-    _validate_ref_or_none(
-        value["component_receipt_ref"], code="B07_OBSERVATION_INVALID"
-    )
-    if value["component_receipt_ref"] is None or not _sha(
-        value["component_result_hash"]
-    ):
-        fail("B07_OBSERVATION_INVALID")
+    validate_local_artifact_ref(value["component_artifact_ref"])
 
 
 def state_hash_value(state: dict[str, Any]) -> str:
