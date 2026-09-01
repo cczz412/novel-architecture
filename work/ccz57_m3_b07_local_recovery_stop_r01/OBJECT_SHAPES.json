@@ -1,0 +1,97 @@
+{
+  "b06_boundary": {
+    "b06_reads_b07_fence": true,
+    "b06_writes_b07_objects": 0,
+    "b07_writes_b06_objects": 0,
+    "receipt_replay_before_fence": true
+  },
+  "catalog_hash": "faca397861fd2b9bf9f935c3c3795d42fe4e48e474bf507e138276f601349ffc",
+  "debug_limits": {
+    "default_retention_days": 7,
+    "hard_retention_days_without_new_policy": 30,
+    "records_per_run": 32,
+    "single_record_bytes": 4096,
+    "total_bytes_per_run": 65536
+  },
+  "derived_views": [
+    "M3_DERIVED_RESUME_PLAN"
+  ],
+  "document_identity": "CCZ57-M3-B07-LOCAL-RECOVERY-STOP-R01",
+  "fixed_vectors": [
+    {
+      "disposition": "CONTINUE_SAME_RUN",
+      "fixture_id": "N01_OPEN_RESUME_PLAN",
+      "plan_hash": "ec6c7875929f65a5bee64faeec8f2c29769ccf44a05c706c7fc16a060061e96a",
+      "state_hash": "5210f08a2f346ccb5b237f932496091e0e6d19a32aaa413f9475d189257143d8",
+      "status": "ACTIVE"
+    },
+    {
+      "fixture_id": "N02_STOP_REOPEN",
+      "new_generation": 2,
+      "old_status": "STOPPED",
+      "stop_receipt_hash": "3937e29dd10c6b9c8ced30d57f5dd40ad6831823e928d854684e561396c4e463",
+      "visible_counts": {
+        "b07_current_run_states": 2,
+        "b07_internal_debug_records": 0,
+        "b07_stop_receipts": 1
+      }
+    },
+    {
+      "b06_visible_counts": {
+        "candidate_versions": 2,
+        "current_pointers": 1,
+        "merge_receipts": 1
+      },
+      "fixture_id": "N03_B06_ACK_LOST",
+      "pending_cleared": true,
+      "replay_reused": true,
+      "status": "ACTIVE"
+    },
+    {
+      "error_code": "B07_SIMULATED_TRANSACTION_FAILURE",
+      "fixture_id": "F01_STOP_ROLLBACK",
+      "state_unchanged": true,
+      "visible_counts": {
+        "b07_current_run_states": 1,
+        "b07_internal_debug_records": 0,
+        "b07_stop_receipts": 0
+      }
+    },
+    {
+      "b06_visible_counts": {
+        "candidate_versions": 1,
+        "current_pointers": 1,
+        "merge_receipts": 0
+      },
+      "b07_visible_counts": {
+        "b07_current_run_states": 1,
+        "b07_internal_debug_records": 0,
+        "b07_stop_receipts": 1
+      },
+      "error_code": "B07_B06_FENCE_STALE",
+      "fixture_id": "F02_STOP_WINS_B06_ZERO_WRITE"
+    }
+  ],
+  "forbidden_persistent_types": [
+    "M3_CHECKPOINT",
+    "M3_COMMIT_INTENT",
+    "M3_PROVIDER_CHECKPOINT",
+    "M3_RESUME_PLAN_RECORD",
+    "M3_FAILED_COMMIT_RECEIPT"
+  ],
+  "persistent_product_types": [
+    "M3_CURRENT_RUN_STATE",
+    "M3_RUN_STOP_RECEIPT",
+    "M3_RUN_INTERNAL_DEBUG_RECORD"
+  ],
+  "private_storage_helpers": [
+    "b07_run_command_dedupe"
+  ],
+  "transaction_domain": "b06-commit-core.sqlite3",
+  "writer_map": {
+    "M3_CURRENT_RUN_STATE": "RunController",
+    "M3_DERIVED_RESUME_PLAN": null,
+    "M3_RUN_INTERNAL_DEBUG_RECORD": "RunController.InternalDebugWriter",
+    "M3_RUN_STOP_RECEIPT": "RunController"
+  }
+}
