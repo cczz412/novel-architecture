@@ -8,6 +8,14 @@
 - 开工 current main：`fd61d3e97a8158d7168385dcff87919f38f13924`
 - 唯一写集：`work/ccz57_m3_b05_patch_route_r03_5/**`
 
+## B-06 共享内核接线
+
+- GitHub Issue：[#214](https://github.com/cczz412/novel-architecture/issues/214)
+- Linear：[CCZ-157](https://linear.app/ccz/issue/CCZ-157)
+- B-06 开工 main：`28ae6ff82370e7f3f595199c0b78dd8c89d85376`
+- 共享实现：`candidate_mutation_kernel.py`
+- 边界：只抽出 B-05 已有的纯内存试应用算法；不改变 B-05 路线语义、持久对象、writer 或直接依赖。
+
 ## 直接上游
 
 | 上游 | current-main Git tree | MANIFEST 文件 SHA-256 | 用途 |

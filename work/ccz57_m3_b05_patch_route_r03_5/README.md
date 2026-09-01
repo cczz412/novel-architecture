@@ -30,7 +30,7 @@ B-03 不是直接依赖。B-04 已冻结的 SourceSlice ref 只按 opaque Record
 
 `PatchRouteAggregateProjection` 是随时重算的视图，不持久化。
 
-验证器身份不是手填版本号。离线夹具会复算四个核心实现文件的 SHA-256 闭集，并把 B-01、B-02、policy、gate reader 的精确身份和版本一起写进 `implementation_identity`；任一实现或 reader 版本变化，旧身份都会失败关闭。
+验证器身份不是手填版本号。离线夹具会复算五个核心实现文件的 SHA-256 闭集，并把 B-01、B-02、policy、gate reader 的精确身份和版本一起写进 `implementation_identity`；任一实现或 reader 版本变化，旧身份都会失败关闭。
 
 PVR 不保存最终路线；RouteReceipt 不复制详细证明；LifecycleReceipt 不保存路线内容。三件路线原件由一个 publisher 整包发布，不能分开可见。
 
@@ -51,6 +51,8 @@ PVR 不保存最终路线；RouteReceipt 不复制详细证明；LifecycleReceip
 
 每次试应用都会在内存里重建完整 child CandidateVersion：lineage index、parent binding、item hash 和 version payload hash 一起重算，再交回 B-01 exact validator。B-05 不持久化这份 trial，也不创建正式 child。
 
+试应用使用的 apply、item hash、lineage index、追加排序和 child payload hash 已抽到 `candidate_mutation_kernel.py`。B-05 继续用它生成 trial；B-06 也只能用同一份内核生成正式 child，并把结果对回 PVR 里的 `canonical_apply_result_hash`。这样不会出现“验证时一套算法、真正保存时又一套算法”。
+
 B-04 ProtectionSet 仍是整份 Patch 的原件，B-05 不改它。每个 route unit 额外在 PVR 中保存 `effective_protection_proof`，供 B-06 应用前重验。
 
 ## 运行和验证
@@ -69,6 +71,6 @@ uv run --locked ruff check .
 
 ## 当前停点
 
-这个目录只交付 B-05 候选合同和机械外壳。生产 current-pointer reader、B-02 current-scope reader、政策／门 reader，以及 B-06／B-09 的真实消费接线都需要各自正式施工合同和验收。
+这个目录只交付 B-05 候选合同和机械外壳。B-06 fixture 消费接线由 GitHub #214／Linear CCZ-157 承接；生产 current-pointer reader、B-02 current-scope reader、政策／门 reader和 B-09 真实接线仍需要各自正式施工合同与验收。
 
 来源：Codex

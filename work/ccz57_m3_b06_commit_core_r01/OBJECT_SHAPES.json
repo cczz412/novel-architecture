@@ -1,0 +1,129 @@
+{
+  "atomic_write_set": [
+    "child_candidate_version",
+    "current_pointer",
+    "merge_receipt"
+  ],
+  "catalog_hash": "9c9889ec31083780d7308ef8f48fe1701cc1b8915a2306f037208b026a4ef139",
+  "document_identity": "CCZ57-M3-B06-COMMIT-CORE-R01",
+  "fixed_vectors": [
+    {
+      "child_ref": {
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "29e95d60058d7d5f78407f4216d604bedf1e061b9fc5f815cce7daea4c39d220",
+        "record_id": "cv:2a17b0a756cd:230bdf2ce74aa2f27029c9e6b620a5f4",
+        "record_type": "M3_CANDIDATE_VERSION",
+        "record_version": 2,
+        "source_module": "M3"
+      },
+      "fixture_id": "N01_REPLACE",
+      "pointer_hash": "f88936dbee6e1ae32d1530324f786958434ec5332b1fea10ea86d964e976fae7",
+      "receipt_ref": {
+        "access": "RUN_INTERNAL_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "ea59ab15b505420354d33976d0ab8d36f85bba9ef654bf8597992eb13559861b",
+        "record_id": "merge-receipt:0c8934f14f9599ef1899ea7919ca023688bdb48bde5a78dc7aa840d67c45944c",
+        "record_type": "M3_CANDIDATE_MERGE_RECEIPT",
+        "record_version": 1,
+        "source_module": "M3"
+      },
+      "replay_reused": true,
+      "visible_counts": {
+        "candidate_versions": 2,
+        "current_pointers": 1,
+        "merge_receipts": 1
+      }
+    },
+    {
+      "child_ref": {
+        "access": "POLICY_FIXTURE_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "d9fa1718420fcab90c37adcba239fc3b415f806be8978ab5f099cf7c397fed0c",
+        "record_id": "cv:2a17b0a756cd:23d73e2ff7e49bdd8c14734fdf621422",
+        "record_type": "M3_CANDIDATE_VERSION",
+        "record_version": 2,
+        "source_module": "M3"
+      },
+      "fixture_id": "N02_ADD",
+      "pointer_hash": "0a204026cd077363641cfafd473ea3c38f130e1d0b8fa8757b632f45481c0d58",
+      "receipt_ref": {
+        "access": "RUN_INTERNAL_READ_ONLY",
+        "contract": "M3_RECORD_REF",
+        "contract_version": "r03.5-candidate",
+        "record_contract_version": "r03.5-candidate",
+        "record_hash": "260a0792aa81138f2ac5f67431ca4220ab31fc74827401c1559647f5cb8915ce",
+        "record_id": "merge-receipt:08d19296e25e0fd7fdc21bf31b63ef7cc02a2ceb83f52290e84b9187417bbeca",
+        "record_type": "M3_CANDIDATE_MERGE_RECEIPT",
+        "record_version": 1,
+        "source_module": "M3"
+      },
+      "replay_reused": true,
+      "visible_counts": {
+        "candidate_versions": 2,
+        "current_pointers": 1,
+        "merge_receipts": 1
+      }
+    },
+    {
+      "error_code": "B06_SIMULATED_TRANSACTION_FAILURE",
+      "fixture_id": "F_AFTER_CHILD_INSERT",
+      "physical_write_attempts": 0,
+      "visible_counts": {
+        "candidate_versions": 1,
+        "current_pointers": 1,
+        "merge_receipts": 0
+      }
+    },
+    {
+      "error_code": "B06_SIMULATED_TRANSACTION_FAILURE",
+      "fixture_id": "F_AFTER_POINTER_CAS",
+      "physical_write_attempts": 0,
+      "visible_counts": {
+        "candidate_versions": 1,
+        "current_pointers": 1,
+        "merge_receipts": 0
+      }
+    },
+    {
+      "error_code": "B06_SIMULATED_TRANSACTION_FAILURE",
+      "fixture_id": "F_AFTER_RECEIPT_INSERT",
+      "physical_write_attempts": 0,
+      "visible_counts": {
+        "candidate_versions": 1,
+        "current_pointers": 1,
+        "merge_receipts": 0
+      }
+    },
+    {
+      "error_code": "B06_SIMULATED_TRANSACTION_FAILURE",
+      "fixture_id": "F_BEFORE_COMMIT",
+      "physical_write_attempts": 0,
+      "visible_counts": {
+        "candidate_versions": 1,
+        "current_pointers": 1,
+        "merge_receipts": 0
+      }
+    }
+  ],
+  "forbidden_persistent_objects": [
+    "M3_COMMIT_INTENT",
+    "POINTER_SNAPSHOT_PER_COMMIT"
+  ],
+  "mutable_state": "current_pointer",
+  "optional_run_fence": {
+    "b06_run_state_writes": 0,
+    "connection_scope": "same_begin_immediate_connection",
+    "identity_in_request_hash": true,
+    "reader_capability": "select_only",
+    "transaction_order": "receipt_replay_then_run_fence_then_publish"
+  },
+  "output_record_type": "M3_CANDIDATE_MERGE_RECEIPT",
+  "shared_kernel": "work/ccz57_m3_b05_patch_route_r03_5/candidate_mutation_kernel.py"
+}

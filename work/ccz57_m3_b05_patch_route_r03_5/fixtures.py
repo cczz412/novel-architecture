@@ -237,6 +237,7 @@ def validator_identity_payload() -> dict[str, Any]:
         "authoritative_readers.py",
         "b05_contracts.py",
         "b05_store.py",
+        "candidate_mutation_kernel.py",
         "patch_route_projection.py",
     ]
     manifest_lines = [

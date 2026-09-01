@@ -885,6 +885,7 @@ def test_f16_no_model_network_text_or_b03_runtime_path() -> None:
     for name in (
         "b05_contracts.py",
         "b05_store.py",
+        "candidate_mutation_kernel.py",
         "authoritative_readers.py",
         "patch_route_projection.py",
     ):

@@ -2,7 +2,7 @@
   "b09_sidecar_writes": 0,
   "candidate_schema_id": "novel-fact-extraction-v2.1",
   "candidate_version_writes": 0,
-  "catalog_hash": "ba94cd5b753493632bda6e0800eed9d47ad4e449054945fa5cc812593f9327c6",
+  "catalog_hash": "26bc53c649b635629abed9b30d5fc7f06f0d735e3f25a35037e254cfbfc6cbae",
   "contract_version": "r03.5-candidate",
   "failure_fixture_count": 22,
   "fixed_vector_count": 10,
