@@ -74,6 +74,7 @@ from current_causal_hint_view import (  # noqa: E402
 
 def test_package_imports_share_b09_exception_identity() -> None:
     package_root = "work.ccz57_m3_b09_current_causal_hint_view_r01"
+    b05_contracts = importlib.import_module("b05_contracts")
     contracts = importlib.import_module(f"{package_root}.b09_contracts")
     authority_reader = importlib.import_module(f"{package_root}.b09_authority_reader")
     causal_hint_view = importlib.import_module(
@@ -84,6 +85,15 @@ def test_package_imports_share_b09_exception_identity() -> None:
     assert authority_reader.B09AuthorityError is contracts.B09AuthorityError
     assert causal_hint_view.B09ContractError is contracts.B09ContractError
     assert causal_hint_view.B09AuthorityError is contracts.B09AuthorityError
+    assert authority_reader.B05ContractError is b05_contracts.B05ContractError
+    assert causal_hint_view.B05ContractError is b05_contracts.B05ContractError
+
+    with pytest.raises(contracts.B09AuthorityError, match="AUTHORITY_HASH_MISMATCH"):
+        authority_reader.CurrentCausalHintAuthorityReader._b05_projection([{}])
+    mapped = causal_hint_view._guard_error(
+        b05_contracts.B05ContractError("B05_DOWNSTREAM_GUARD_POLICY_STALE")
+    )
+    assert mapped.reason_code == "AUTHORITY_DRIFT"
 
 
 def _rehash_external(record: dict[str, Any], prefix: str) -> None:

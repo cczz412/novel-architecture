@@ -14,7 +14,7 @@ for candidate in (REPOSITORY_ROOT, MODULE_ROOT, B05_ROOT):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
-from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
+from b05_contracts import (  # noqa: E402
     B05ContractError,
     canonical_bytes,
     record_ref,

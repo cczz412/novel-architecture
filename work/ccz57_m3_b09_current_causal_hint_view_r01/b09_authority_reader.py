@@ -21,7 +21,7 @@ from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E4
     LIVE_POINTER_KEYS,
     validate_segment_index_snapshot,
 )
-from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
+from b05_contracts import (  # noqa: E402
     B05ContractError,
     canonical_bytes,
     record_ref,
