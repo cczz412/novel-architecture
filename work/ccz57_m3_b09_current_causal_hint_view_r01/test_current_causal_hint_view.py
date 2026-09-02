@@ -1284,6 +1284,43 @@ def test_postcommit_merge_receipt_must_match_selected_validation_closure(
     )
 
 
+@pytest.mark.parametrize(
+    "mismatch_kind", ["atomic_group_bindings", "canonical_apply_result_hash"]
+)
+def test_postcommit_merge_receipt_must_match_selected_apply_proof(
+    tmp_path: Path,
+    mismatch_kind: str,
+) -> None:
+    world = _build_world(
+        tmp_path / f"postcommit-merge-proof-{mismatch_kind}",
+        safe_postcommit=True,
+    )
+    _commit(world)
+    snapshot = world.make_reader().read(world.request)
+    merge_receipt = snapshot["merge_receipt_or_null"]
+    if mismatch_kind == "atomic_group_bindings":
+        merge_receipt["payload"][mismatch_kind][0]["group_payload_hash"] = "f" * 64
+    else:
+        merge_receipt["payload"][mismatch_kind] = "f" * 64
+    merge_receipt["record_id"] = (
+        f"merge-receipt:{sha256_value(merge_receipt['payload'])}"
+    )
+    merge_receipt["record_hash"] = sha256_value(
+        {
+            key: value
+            for key, value in merge_receipt.items()
+            if key != "record_hash"
+        }
+    )
+
+    view = project_current_causal_hints(snapshot)
+
+    assert (view["status"], view["reason_code"]) == (
+        "EMPTY",
+        "POST_COMMIT_NOT_PROVABLY_UNCHANGED",
+    )
+
+
 @pytest.mark.parametrize("mismatch_kind", ["extra", "different"])
 def test_postcommit_view_rejects_route_unit_mismatch(
     tmp_path: Path,

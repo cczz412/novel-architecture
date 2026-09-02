@@ -319,6 +319,20 @@ def _phase(snapshot: dict[str, Any]) -> tuple[str, str]:
     if merge_receipt is None:
         raise _PostCommitUnsafe("exact merge receipt absent")
     receipt = merge_receipt["payload"]
+    route_units = [
+        unit
+        for unit in route["payload"]["route_units"]
+        if unit["route_unit_id"] == receipt["route_unit_id"]
+    ]
+    validation_proofs = [
+        proof
+        for proof in validation["payload"]["route_unit_proofs"]
+        if proof["route_unit_id"] == receipt["route_unit_id"]
+    ]
+    if len(route_units) != 1 or len(validation_proofs) != 1:
+        raise _PostCommitUnsafe("merge route unit proof is not unique")
+    route_unit = route_units[0]
+    validation_proof = validation_proofs[0]
     if (
         not _ref_equal(
             current_candidate["payload"]["parent_candidate_version_ref"], base_ref
@@ -340,6 +354,18 @@ def _phase(snapshot: dict[str, Any]) -> tuple[str, str]:
             receipt["protection_set_ref"],
             validation["payload"]["input_binding"]["protection_set_ref"],
         )
+        or not _ref_equal(
+            receipt["atomic_group_bindings"], route_unit["atomic_group_bindings"]
+        )
+        or not _ref_equal(
+            receipt["atomic_group_bindings"],
+            validation_proof["atomic_group_bindings"],
+        )
+        or route_unit["unit_proof_hash"] != validation_proof["unit_proof_hash"]
+        or receipt["canonical_apply_result_hash"]
+        != validation_proof["canonical_apply_result_hash"]
+        or receipt["canonical_apply_result_hash"]
+        != sha256_value(current_candidate["payload"])
     ):
         raise _PostCommitUnsafe("pointer is not the exact committed child")
     return "POST_COMMIT_EXACT_CHILD", route_bound_hash
