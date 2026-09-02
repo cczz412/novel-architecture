@@ -75,6 +75,7 @@ from current_causal_hint_view import (  # noqa: E402
 def test_package_imports_share_b09_exception_identity() -> None:
     package_root = "work.ccz57_m3_b09_current_causal_hint_view_r01"
     b05_contracts = importlib.import_module("b05_contracts")
+    b08_contracts = importlib.import_module("b08_contracts")
     contracts = importlib.import_module(f"{package_root}.b09_contracts")
     authority_reader = importlib.import_module(f"{package_root}.b09_authority_reader")
     causal_hint_view = importlib.import_module(
@@ -87,6 +88,7 @@ def test_package_imports_share_b09_exception_identity() -> None:
     assert causal_hint_view.B09AuthorityError is contracts.B09AuthorityError
     assert authority_reader.B05ContractError is b05_contracts.B05ContractError
     assert causal_hint_view.B05ContractError is b05_contracts.B05ContractError
+    assert authority_reader.B08ContractError is b08_contracts.B08ContractError
 
     with pytest.raises(contracts.B09AuthorityError, match="AUTHORITY_HASH_MISMATCH"):
         authority_reader.CurrentCausalHintAuthorityReader._b05_projection([{}])
@@ -94,6 +96,27 @@ def test_package_imports_share_b09_exception_identity() -> None:
         b05_contracts.B05ContractError("B05_DOWNSTREAM_GUARD_POLICY_STALE")
     )
     assert mapped.reason_code == "AUTHORITY_DRIFT"
+
+    def reject_b08_current(*_args: Any, **_kwargs: Any) -> dict[str, Any]:
+        raise b08_contracts.B08ContractError("B08_AUTHORITY_SNAPSHOT_INVALID")
+
+    reader = authority_reader.CurrentCausalHintAuthorityReader(
+        b05_store=None,
+        shared_database_path=Path("."),
+        freshness_reader=lambda: {},
+        immutable_reader=lambda _ref: {},
+        b08_authority_reader=SimpleNamespace(read_current=reject_b08_current),
+    )
+    terminal = {
+        "payload": {
+            "run_binding": {
+                "project_scope_id": "project:test",
+                "logical_run_key": "run:test",
+            }
+        }
+    }
+    with pytest.raises(contracts.B09AuthorityError, match="AUTHORITY_STATE_INCOHERENT"):
+        reader._b08_currentness(None, terminal)
 
 
 def _rehash_external(record: dict[str, Any], prefix: str) -> None:

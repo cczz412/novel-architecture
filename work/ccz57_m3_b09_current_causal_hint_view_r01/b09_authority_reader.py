@@ -36,7 +36,7 @@ from work.ccz57_m3_b06_commit_core_r01.b06_contracts import (  # noqa: E402
 from work.ccz57_m3_b07_local_recovery_stop_r01.b07_contracts import (  # noqa: E402
     validate_current_run_state,
 )
-from work.ccz57_m3_b08_segment_terminal_r01.b08_contracts import (  # noqa: E402
+from b08_contracts import (  # noqa: E402
     B08ContractError,
     terminal_component_observation,
     terminal_record_ref,
