@@ -697,6 +697,48 @@ def test_reader_rejects_corrupt_complete_live_pointer(
     assert view["reason_code"] == "AUTHORITY_STATE_INCOHERENT"
 
 
+def test_reader_rejects_coherently_rehashed_candidate_access_policy(
+    tmp_path: Path,
+) -> None:
+    world = _build_world(tmp_path / "candidate-access-policy")
+    pointer_key = world.live_pointer["logical_pointer_key"]
+    old_ref = world.live_pointer["current_candidate_version_ref"]
+    old_ref_hash = sha256_value(old_ref)
+    with sqlite3.connect(world.b06_store._database_path) as connection:
+        candidate_row = connection.execute(
+            "SELECT record_json FROM candidate_versions WHERE ref_hash = ?",
+            (old_ref_hash,),
+        ).fetchone()
+        pointer_row = connection.execute(
+            "SELECT pointer_json FROM current_pointers WHERE logical_pointer_key = ?",
+            (pointer_key,),
+        ).fetchone()
+        assert candidate_row is not None
+        assert pointer_row is not None
+        candidate = json.loads(bytes(candidate_row[0]).decode("utf-8"))
+        pointer = json.loads(bytes(pointer_row[0]).decode("utf-8"))
+        candidate["access"] = "RUN_INTERNAL_READ_ONLY"
+        candidate["record_hash"] = sha256_value(
+            {key: value for key, value in candidate.items() if key != "record_hash"}
+        )
+        new_ref = record_ref(candidate)
+        pointer["current_candidate_version_ref"] = new_ref
+        connection.execute(
+            "UPDATE candidate_versions SET ref_hash = ?, record_json = ? "
+            "WHERE ref_hash = ?",
+            (sha256_value(new_ref), canonical_bytes(candidate), old_ref_hash),
+        )
+        connection.execute(
+            "UPDATE current_pointers SET pointer_json = ? "
+            "WHERE logical_pointer_key = ?",
+            (canonical_bytes(pointer), pointer_key),
+        )
+
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    assert view["status"] == "ERROR"
+    assert view["reason_code"] == "AUTHORITY_REFERENCE_CONFLICT"
+
+
 @pytest.mark.parametrize(
     "scope_key", ["chapter_revision_ref", "current_candidate_version_ref"]
 )

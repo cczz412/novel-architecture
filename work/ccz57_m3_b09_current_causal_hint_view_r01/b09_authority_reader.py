@@ -20,7 +20,10 @@ for candidate in (REPOSITORY_ROOT, MODULE_ROOT, B05_ROOT, B08_ROOT):
 
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
     CANDIDATE_SCHEMA_ID,
+    CONTRACT_VERSION as B01_CONTRACT_VERSION,
+    FIXTURE_ACCESS as B01_FIXTURE_ACCESS,
     FIXTURE_POINTER_NAMESPACE,
+    SOURCE_MODULE as B01_SOURCE_MODULE,
     LIVE_POINTER_KEYS,
     pointer_logical_key,
     validate_chapter_revision_ref,
@@ -254,6 +257,17 @@ class CurrentCausalHintAuthorityReader:
             raise B09AuthorityError(
                 "AUTHORITY_REFERENCE_CONFLICT", str(error)
             ) from error
+        if (
+            ref["contract_version"] != B01_CONTRACT_VERSION
+            or ref["record_contract_version"] != B01_CONTRACT_VERSION
+            or ref["source_module"] != B01_SOURCE_MODULE
+            or ref["access"] != B01_FIXTURE_ACCESS
+            or not isinstance(ref["record_version"], int)
+            or isinstance(ref["record_version"], bool)
+        ):
+            raise B09AuthorityError(
+                "AUTHORITY_REFERENCE_CONFLICT", "candidate ref policy"
+            )
         row = connection.execute(
             "SELECT record_json FROM candidate_versions WHERE ref_hash = ?",
             (sha256_value(ref),),
@@ -271,6 +285,17 @@ class CurrentCausalHintAuthorityReader:
             validate_immutable_record(candidate, expected_type="M3_CANDIDATE_VERSION")
         except ValueError as error:
             raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
+        if (
+            candidate["contract_version"] != B01_CONTRACT_VERSION
+            or candidate["record_contract_version"] != B01_CONTRACT_VERSION
+            or candidate["source_module"] != B01_SOURCE_MODULE
+            or candidate["access"] != B01_FIXTURE_ACCESS
+            or not isinstance(candidate["record_version"], int)
+            or isinstance(candidate["record_version"], bool)
+        ):
+            raise B09AuthorityError(
+                "AUTHORITY_HASH_MISMATCH", "candidate record policy"
+            )
         if not _ref_equal(record_ref(candidate), ref):
             raise B09AuthorityError(
                 "AUTHORITY_REFERENCE_CONFLICT", "candidate ref mismatch"
