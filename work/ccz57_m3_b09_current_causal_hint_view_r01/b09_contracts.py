@@ -19,6 +19,7 @@ from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E4
     FIXTURE_ACCESS as B01_FIXTURE_ACCESS,
     LINEAGE_LOCATOR_CONTRACT,
     SOURCE_MODULE as B01_SOURCE_MODULE,
+    validate_chapter_revision_ref as b01_validate_chapter_revision_ref,
     validate_lineage_locator as b01_validate_lineage_locator,
     validate_record_ref as b01_validate_record_ref,
 )
@@ -336,6 +337,42 @@ def _validate_evidence_locator(value: Any) -> None:
         fail("B09_HINT_EVIDENCE_LOCATOR_INVALID", "locator hash")
 
 
+def _validate_populated_scope(scope: dict[str, Any]) -> None:
+    if (
+        any(
+            not isinstance(scope[key], str) or not scope[key]
+            for key in (
+                "project_scope_id",
+                "logical_run_key",
+                "run_id",
+                "pointer_logical_key",
+            )
+        )
+        or not _sha(scope["segment_scope_hash"])
+        or not _sha(scope["authority_fingerprint_hash"])
+        or not _positive_int(scope["logical_run_generation"])
+        or not _non_negative_int(scope["run_epoch"])
+        or not _positive_int(scope["seg"])
+        or not _positive_int(scope["pointer_generation"])
+    ):
+        fail("B09_SCOPE_VALUE_INVALID")
+    try:
+        b01_validate_chapter_revision_ref(scope["chapter_revision_ref"])
+    except (B01ContractError, TypeError, ValueError) as error:
+        fail("B09_SCOPE_CHAPTER_REVISION_INVALID", str(error))
+    try:
+        b01_validate_record_ref(
+            scope["current_candidate_version_ref"],
+            code="B09_SCOPE_CANDIDATE_REF_INVALID",
+            expected_type="M3_CANDIDATE_VERSION",
+            expected_access=B01_FIXTURE_ACCESS,
+            expected_source_module=B01_SOURCE_MODULE,
+            expected_contract_version=B01_CONTRACT_VERSION,
+        )
+    except (B01ContractError, TypeError, ValueError) as error:
+        fail("B09_SCOPE_CANDIDATE_REF_INVALID", str(error))
+
+
 def validate_view(view: Any) -> None:
     _exact_keys(view, VIEW_KEYS, "B09_VIEW_SHAPE_INVALID")
     if (
@@ -373,22 +410,8 @@ def validate_view(view: Any) -> None:
         # but a partial mixture is forbidden.  Callers either provide all or none.
         if any(scope[key] is None for key in SCOPE_KEYS if key != "phase"):
             fail("B09_ERROR_SCOPE_PARTIAL")
-    if scope["authority_fingerprint_hash"] is not None and not _sha(
-        scope["authority_fingerprint_hash"]
-    ):
-        fail("B09_SCOPE_HASH_INVALID")
-    if scope["logical_run_generation"] is not None and not _positive_int(
-        scope["logical_run_generation"]
-    ):
-        fail("B09_SCOPE_GENERATION_INVALID")
-    if scope["run_epoch"] is not None and not _non_negative_int(scope["run_epoch"]):
-        fail("B09_SCOPE_EPOCH_INVALID")
-    if scope["pointer_generation"] is not None and not _positive_int(
-        scope["pointer_generation"]
-    ):
-        fail("B09_SCOPE_POINTER_GENERATION_INVALID")
-    if scope["seg"] is not None and not _positive_int(scope["seg"]):
-        fail("B09_SCOPE_SEGMENT_INVALID")
+    if all(scope[key] is not None for key in SCOPE_KEYS if key != "phase"):
+        _validate_populated_scope(scope)
 
     if not isinstance(view["hints"], list):
         fail("B09_HINTS_INVALID")

@@ -439,6 +439,50 @@ def test_view_rejects_rehashed_malformed_nested_locators(
         validate_view(view)
 
 
+@pytest.mark.parametrize(
+    ("scope_key", "bad_value"),
+    [
+        ("project_scope_id", 7),
+        ("logical_run_key", ""),
+        ("run_id", []),
+        ("segment_scope_hash", "not-a-hash"),
+        ("pointer_logical_key", ""),
+    ],
+)
+def test_view_rejects_rehashed_invalid_authority_scope_values(
+    tmp_path: Path,
+    scope_key: str,
+    bad_value: Any,
+) -> None:
+    world = _build_world(tmp_path / scope_key)
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    view["scope"][scope_key] = bad_value
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match="B09_SCOPE"):
+        validate_view(view)
+
+
+@pytest.mark.parametrize(
+    "scope_key", ["chapter_revision_ref", "current_candidate_version_ref"]
+)
+def test_view_rejects_rehashed_invalid_authority_scope_refs(
+    tmp_path: Path,
+    scope_key: str,
+) -> None:
+    world = _build_world(tmp_path / scope_key)
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    view["scope"][scope_key] = {}
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match="B09_SCOPE"):
+        validate_view(view)
+
+
 def test_no_b07_route_is_a_normal_empty_view(tmp_path: Path) -> None:
     world = _build_world(tmp_path / "no-route", bind_route=False)
     view = read_current_causal_hints(world.make_reader(), world.request)
