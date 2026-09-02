@@ -482,6 +482,34 @@ def test_view_rejects_rehashed_invalid_top_level_record_identity(
 
 
 @pytest.mark.parametrize(
+    ("target", "bad_value", "error_code"),
+    [
+        ("status", [], "B09_VIEW_VALUE_INVALID"),
+        ("reason_code", {}, "B09_VIEW_VALUE_INVALID"),
+        ("phase", [], "B09_PHASE_INVALID"),
+    ],
+)
+def test_view_rejects_unhashable_discriminators_through_contract(
+    tmp_path: Path,
+    target: str,
+    bad_value: Any,
+    error_code: str,
+) -> None:
+    world = _build_world(tmp_path / target)
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    if target == "phase":
+        view["scope"]["phase"] = bad_value
+    else:
+        view[target] = bad_value
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match=error_code):
+        validate_view(view)
+
+
+@pytest.mark.parametrize(
     ("scope_key", "bad_value"),
     [
         ("project_scope_id", 7),

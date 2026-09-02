@@ -391,17 +391,21 @@ def _validate_populated_scope(scope: dict[str, Any]) -> None:
 
 def validate_view(view: Any) -> None:
     _exact_keys(view, VIEW_KEYS, "B09_VIEW_SHAPE_INVALID")
+    status = view["status"]
+    reason_code = view["reason_code"]
     if (
         view["view_type"] != VIEW_TYPE
         or view["contract_version"] != CONTRACT_VERSION
-        or view["status"] not in STATUSES
-        or view["reason_code"] not in REASONS_BY_STATUS.get(view["status"], set())
+        or not isinstance(status, str)
+        or status not in STATUSES
+        or not isinstance(reason_code, str)
+        or reason_code not in REASONS_BY_STATUS.get(status, set())
         or not _sha(view["view_hash"])
     ):
         fail("B09_VIEW_VALUE_INVALID")
     _exact_keys(view["scope"], SCOPE_KEYS, "B09_SCOPE_SHAPE_INVALID")
     scope = view["scope"]
-    if scope["phase"] not in PHASES:
+    if not isinstance(scope["phase"], str) or scope["phase"] not in PHASES:
         fail("B09_PHASE_INVALID")
     if view["status"] == "AVAILABLE":
         if (
