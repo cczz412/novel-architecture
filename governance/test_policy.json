@@ -657,6 +657,33 @@
       "full_chain": false
     },
     {
+      "name": "CCZ-57 B-10 当前章节候选进度权威上游",
+      "pattern": "work/ccz57_m3_b0[1678]_*/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b10_chapter_candidate_progress_view_r01/test_current_chapter_progress_view.py"
+      ],
+      "full_chain": true
+    },
+    {
+      "name": "CCZ-57 B-10 直接读取的 B-01 样例合同",
+      "pattern": "work/ccz57_m3_b01_candidate_version_r03_5/OBJECT_SHAPES.json",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b10_chapter_candidate_progress_view_r01/test_current_chapter_progress_view.py"
+      ],
+      "full_chain": true
+    },
+    {
+      "name": "CCZ-57 B-10 当前章节候选进度纯派生视图",
+      "pattern": "work/ccz57_m3_b10_chapter_candidate_progress_view_r01/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b10_chapter_candidate_progress_view_r01/test_current_chapter_progress_view.py"
+      ],
+      "full_chain": false
+    },
+    {
       "name": "局部评分器",
       "pattern": "tools/*score*.py",
       "modules": ["M10"],
