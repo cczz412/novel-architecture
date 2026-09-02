@@ -1173,6 +1173,25 @@ def test_requested_run_row_must_match_its_database_key(
     )
 
 
+def test_current_run_payload_must_match_selected_highest_generation_row(
+    tmp_path: Path,
+) -> None:
+    world = _build_world(tmp_path / "current-run-row-key")
+    with sqlite3.connect(world.b06_store._database_path) as connection:
+        connection.execute(
+            "UPDATE b07_current_run_states SET logical_run_generation = ? "
+            "WHERE project_scope_id = ? AND run_id = ?",
+            (2, world.project_scope_id, world.run_id),
+        )
+
+    view = read_current_causal_hints(world.make_reader(), world.request)
+
+    assert (view["status"], view["reason_code"]) == (
+        "ERROR",
+        "AUTHORITY_STATE_INCOHERENT",
+    )
+
+
 @pytest.mark.parametrize(
     ("field", "bad_value"),
     [
