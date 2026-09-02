@@ -5,6 +5,8 @@ from __future__ import annotations
 import ast
 import importlib
 import inspect
+import json
+import sqlite3
 import sys
 from copy import deepcopy
 from pathlib import Path
@@ -658,6 +660,41 @@ def test_view_rejects_rehashed_invalid_authority_scope_values(
 
     with pytest.raises(B09ContractError, match="B09_SCOPE"):
         validate_view(view)
+
+
+@pytest.mark.parametrize(
+    ("field", "bad_value"),
+    [
+        ("pointer_namespace", "PRODUCT"),
+        ("candidate_schema_id", "wrong-schema"),
+        ("author_workspace_logical_key", ""),
+        ("input_binding_hash", "0" * 64),
+    ],
+)
+def test_reader_rejects_corrupt_complete_live_pointer(
+    tmp_path: Path,
+    field: str,
+    bad_value: str,
+) -> None:
+    world = _build_world(tmp_path / field)
+    pointer_key = world.live_pointer["logical_pointer_key"]
+    with sqlite3.connect(world.b06_store._database_path) as connection:
+        row = connection.execute(
+            "SELECT pointer_json FROM current_pointers WHERE logical_pointer_key = ?",
+            (pointer_key,),
+        ).fetchone()
+        assert row is not None
+        pointer = json.loads(bytes(row[0]).decode("utf-8"))
+        pointer[field] = bad_value
+        connection.execute(
+            "UPDATE current_pointers SET pointer_json = ? "
+            "WHERE logical_pointer_key = ?",
+            (canonical_bytes(pointer), pointer_key),
+        )
+
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    assert view["status"] == "ERROR"
+    assert view["reason_code"] == "AUTHORITY_STATE_INCOHERENT"
 
 
 @pytest.mark.parametrize(

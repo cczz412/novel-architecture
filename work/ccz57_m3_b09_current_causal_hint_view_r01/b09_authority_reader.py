@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 import sys
 from copy import deepcopy
@@ -18,7 +19,11 @@ for candidate in (REPOSITORY_ROOT, MODULE_ROOT, B05_ROOT, B08_ROOT):
         sys.path.insert(0, str(candidate))
 
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
+    CANDIDATE_SCHEMA_ID,
+    FIXTURE_POINTER_NAMESPACE,
     LIVE_POINTER_KEYS,
+    pointer_logical_key,
+    validate_chapter_revision_ref,
     validate_segment_index_snapshot,
 )
 from b05_contracts import (  # noqa: E402
@@ -316,6 +321,57 @@ class CurrentCausalHintAuthorityReader:
         return pointer
 
     @staticmethod
+    def _validate_pointer_candidate_binding(
+        pointer: dict[str, Any],
+        candidate: dict[str, Any],
+    ) -> None:
+        try:
+            validate_chapter_revision_ref(pointer["chapter_revision_ref"])
+            validate_record_ref(
+                pointer["current_candidate_version_ref"],
+                expected_type="M3_CANDIDATE_VERSION",
+            )
+            candidate_ref = record_ref(candidate)
+            payload = candidate["payload"]
+            input_binding = payload["extraction_input_binding"]
+            expected_pointer_key = pointer_logical_key(
+                pointer["chapter_revision_ref"],
+                pointer["seg"],
+                pointer["input_binding_hash"],
+            )
+        except (KeyError, TypeError, ValueError) as error:
+            raise B09AuthorityError(
+                "AUTHORITY_STATE_INCOHERENT", f"pointer contract: {error}"
+            ) from error
+        if (
+            pointer["pointer_namespace"] != FIXTURE_POINTER_NAMESPACE
+            or pointer["candidate_schema_id"] != CANDIDATE_SCHEMA_ID
+            or payload["candidate_schema_id"] != CANDIDATE_SCHEMA_ID
+            or not isinstance(pointer["project_scope_id"], str)
+            or not pointer["project_scope_id"]
+            or not isinstance(pointer["author_workspace_logical_key"], str)
+            or not pointer["author_workspace_logical_key"]
+            or not isinstance(pointer["logical_pointer_key"], str)
+            or not pointer["logical_pointer_key"]
+            or pointer["logical_pointer_key"] != expected_pointer_key
+            or not isinstance(pointer["seg"], int)
+            or isinstance(pointer["seg"], bool)
+            or pointer["seg"] < 1
+            or not isinstance(pointer["input_binding_hash"], str)
+            or re.fullmatch(r"[0-9a-f]{64}", pointer["input_binding_hash"])
+            is None
+            or not _ref_equal(
+                pointer["current_candidate_version_ref"], candidate_ref
+            )
+            or pointer["chapter_revision_ref"] != payload["chapter_revision_ref"]
+            or pointer["seg"] != payload["seg"]
+            or pointer["input_binding_hash"] != input_binding["input_binding_hash"]
+        ):
+            raise B09AuthorityError(
+                "AUTHORITY_STATE_INCOHERENT", "pointer/candidate contract"
+            )
+
+    @staticmethod
     def _merge_receipt(
         connection: sqlite3.Connection,
         *,
@@ -546,6 +602,7 @@ class CurrentCausalHintAuthorityReader:
                 current_candidate = self._candidate_row(
                     connection, pointer["current_candidate_version_ref"]
                 )
+                self._validate_pointer_candidate_binding(pointer, current_candidate)
                 if route is None:
                     base_candidate = current_candidate
                 else:
