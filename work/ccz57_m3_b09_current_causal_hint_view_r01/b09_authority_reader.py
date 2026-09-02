@@ -21,6 +21,7 @@ for candidate in (REPOSITORY_ROOT, MODULE_ROOT, B05_ROOT, B08_ROOT):
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
     B01ContractError,
     CANDIDATE_SCHEMA_ID,
+    CandidateVersionStore,
     CONTRACT_VERSION as B01_CONTRACT_VERSION,
     FIXTURE_ACCESS as B01_FIXTURE_ACCESS,
     FIXTURE_POINTER_NAMESPACE,
@@ -53,6 +54,8 @@ from work.ccz57_m3_b06_commit_core_r01.b06_contracts import (  # noqa: E402
 from work.ccz57_m3_b04_patch_atomic_group_r03_5.b04_contracts import (  # noqa: E402
     B04ContractError,
     validate_causal_record,
+    validate_patch_record,
+    validate_protection_record,
 )
 from work.ccz57_m3_b07_local_recovery_stop_r01.b07_contracts import (  # noqa: E402
     validate_current_run_state,
@@ -146,6 +149,46 @@ def _decode_state_row(row: tuple[Any, ...], *, detail: str) -> dict[str, Any]:
             "AUTHORITY_STATE_INCOHERENT", "run row mirrored columns"
         )
     return state
+
+
+def _decode_terminal_row(row: tuple[Any, ...]) -> dict[str, Any]:
+    terminal = _decode(
+        row[10],
+        reason="AUTHORITY_HASH_MISMATCH",
+        detail="terminal bytes",
+    )
+    try:
+        validate_terminal_record(terminal)
+    except ValueError as error:
+        raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
+    payload = terminal["payload"]
+    run = payload["run_binding"]
+    expected_columns = (
+        payload["terminalization_key"],
+        run["project_scope_id"],
+        run["logical_run_key"],
+        run["run_id"],
+        run["logical_run_generation"],
+        run["run_epoch"],
+        payload["operation_id"],
+        row[7],
+        terminal["record_id"],
+        terminal["record_hash"],
+    )
+    expected_operation_request_hash = sha256_value(
+        {
+            "call_request_hash": row[7],
+            "authority_snapshot_hash": payload["authority_snapshot_hash"],
+        }
+    )
+    if (
+        tuple(row[:10]) != expected_columns
+        or payload["operation_request_hash"] != expected_operation_request_hash
+    ):
+        raise B09AuthorityError(
+            "AUTHORITY_STATE_INCOHERENT", "terminal row mirrored columns"
+        )
+    return terminal
 
 
 def _ref_equal(left: Any, right: Any) -> bool:
@@ -593,23 +636,16 @@ class CurrentCausalHintAuthorityReader:
         pointer: dict[str, Any],
     ) -> dict[str, Any] | None:
         rows = connection.execute(
-            "SELECT record_json FROM b08_segment_terminal_receipts "
+            "SELECT terminalization_key, project_scope_id, logical_run_key, run_id, "
+            "logical_run_generation, run_epoch, operation_id, call_request_hash, "
+            "record_id, record_hash, record_json "
+            "FROM b08_segment_terminal_receipts "
             "WHERE project_scope_id = ? AND logical_run_key = ?",
             (state["project_scope_id"], state["logical_run_key"]),
         ).fetchall()
         exact: list[dict[str, Any]] = []
         for row in rows:
-            terminal = _decode(
-                row[0],
-                reason="AUTHORITY_HASH_MISMATCH",
-                detail="terminal bytes",
-            )
-            try:
-                validate_terminal_record(terminal)
-            except ValueError as error:
-                raise B09AuthorityError(
-                    "AUTHORITY_HASH_MISMATCH", str(error)
-                ) from error
+            terminal = _decode_terminal_row(row)
             if self._terminal_binding_matches(terminal, state=state, pointer=pointer):
                 exact.append(terminal)
         bound = [
@@ -937,6 +973,7 @@ class CurrentCausalHintAuthorityReader:
     def _attach_immutables(self, collected: dict[str, Any]) -> dict[str, Any]:
         route = collected["active_route"]
         proposals: list[dict[str, Any]] = []
+        all_proposals: list[dict[str, Any]] = []
         patch_proposal: dict[str, Any] | None = None
         if route is not None:
             validation = collected["validation_receipt"]
@@ -945,22 +982,29 @@ class CurrentCausalHintAuthorityReader:
                 expected_type="M3_PATCH_PROPOSAL",
             )
             _require_causal_proposal_closure(route, validation, patch_proposal)
-            proposal_refs = [
+            routed_proposal_refs = [
                 entry["causal_hint_proposal_ref"]
                 for entry in route["payload"]["causal_hint_routes"]
-                if entry["route"] == "ROUTE_TO_B09"
             ]
+            selected_keys = {
+                canonical_bytes(entry["causal_hint_proposal_ref"])
+                for entry in route["payload"]["causal_hint_routes"]
+                if entry["route"] == "ROUTE_TO_B09"
+            }
             seen: set[bytes] = set()
-            for ref in sorted(proposal_refs, key=canonical_bytes):
+            for ref in sorted(routed_proposal_refs, key=canonical_bytes):
                 key = canonical_bytes(ref)
                 if key in seen:
                     raise B09AuthorityError(
                         "AUTHORITY_REFERENCE_CONFLICT", "duplicate proposal route"
                     )
                 seen.add(key)
-                proposals.append(
-                    self._read_exact(ref, expected_type="M3_CAUSAL_HINT_PROPOSAL")
+                proposal = self._read_exact(
+                    ref, expected_type="M3_CAUSAL_HINT_PROPOSAL"
                 )
+                all_proposals.append(proposal)
+                if key in selected_keys:
+                    proposals.append(proposal)
         reference_records = self._candidate_reference_records(
             [collected["base_candidate"], collected["current_candidate"]]
         )
@@ -1019,8 +1063,24 @@ class CurrentCausalHintAuthorityReader:
                     ],
                     "segment_index": base_segment_indexes[0],
                     "candidate_version": collected["base_candidate"],
-                    "lineage_locators": [],
-                    "evidence_locators": [],
+                    "lineage_locators": [
+                        CandidateVersionStore.lineage_locator(
+                            collected["base_candidate"],
+                            entry["lineage_id"],
+                            reference_records=reference_records,
+                        )
+                        for entry in collected["base_candidate"]["payload"][
+                            "lineage_index"
+                        ]
+                    ],
+                    "evidence_locators": [
+                        CandidateVersionStore.evidence_locator(
+                            collected["base_candidate"],
+                            item["lineage_id"],
+                            reference_records=reference_records,
+                        )
+                        for item in collected["base_candidate"]["payload"]["items"]
+                    ],
                     "segment_inputs": [],
                 }
                 diagnostic_refs = [
@@ -1030,6 +1090,56 @@ class CurrentCausalHintAuthorityReader:
                 coverage_refs = b02_binding["coverage_observation_refs"]
                 source_slice_refs = patch_proposal["payload"].get(
                     "authorized_source_slice_refs", []
+                )
+                diagnostics = [
+                    self._read_exact(ref, expected_type="M3_DIAGNOSTIC")
+                    for ref in diagnostic_refs
+                ]
+                coverages = [
+                    self._read_exact(ref, expected_type="M3_COVERAGE_OBSERVATION")
+                    for ref in coverage_refs
+                ]
+                lifecycle_refs = sorted(
+                    {
+                        canonical_bytes(ref): ref
+                        for binding in b02_binding["diagnostic_state_bindings"]
+                        for ref in binding["lifecycle_receipt_refs"]
+                    }.values(),
+                    key=canonical_bytes,
+                )
+                lifecycle_receipts = [
+                    self._read_exact(ref, expected_type=ref["record_type"])
+                    for ref in lifecycle_refs
+                ]
+                source_slice_records = [
+                    self._read_exact(
+                        ref, expected_type="M3_AUTHORIZED_SOURCE_SLICE"
+                    )
+                    for ref in source_slice_refs
+                ]
+                protection = self._read_exact(
+                    input_binding["protection_set_ref"],
+                    expected_type="M3_CANDIDATE_PROTECTION_SET",
+                )
+                protection_policy = self._read_exact(
+                    protection["payload"]["protection_policy_ref"],
+                    expected_type="M3_PROTECTION_POLICY",
+                )
+                validate_protection_record(
+                    protection,
+                    context=context,
+                    policy=protection_policy,
+                    groups=patch_proposal["payload"]["atomic_groups"],
+                )
+                validate_patch_record(
+                    patch_proposal,
+                    context=context,
+                    diagnostics=diagnostics,
+                    coverages=coverages,
+                    lifecycle_receipts=lifecycle_receipts,
+                    source_slice_records=source_slice_records,
+                    protection=protection,
+                    causal_records=all_proposals,
                 )
                 for proposal in proposals:
                     validate_causal_record(

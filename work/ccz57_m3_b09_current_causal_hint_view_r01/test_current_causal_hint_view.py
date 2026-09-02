@@ -72,6 +72,7 @@ from work.ccz57_m3_b08_segment_terminal_r01.fixtures import (  # noqa: E402
 from b09_authority_reader import (  # noqa: E402
     CurrentCausalHintAuthorityReader,
     _decode_state_row,
+    _decode_terminal_row,
     _require_causal_proposal_closure,
     _require_route_validation_binding,
 )
@@ -1267,6 +1268,102 @@ def test_state_row_stop_receipt_id_must_match_payload(tmp_path: Path) -> None:
 
     with pytest.raises(B09AuthorityError, match="AUTHORITY_STATE_INCOHERENT"):
         _decode_state_row(row, detail="test run state bytes")
+
+
+@pytest.mark.parametrize("column_index", range(10))
+def test_terminal_row_mirrored_columns_must_match_record(
+    tmp_path: Path,
+    column_index: int,
+) -> None:
+    world = _build_world(tmp_path / f"terminal-row-{column_index}")
+    state = _enter_finalizing(world)
+    world.b08_store.publish(
+        project_scope_id=world.project_scope_id,
+        run_id=world.run_id,
+        operation_id="terminal-row-b09",
+        expected_run_epoch=state["run_epoch"],
+        expected_state_revision=state["state_revision"],
+    )
+    with sqlite3.connect(world.b06_store._database_path) as connection:
+        row = list(
+            connection.execute(
+                "SELECT terminalization_key, project_scope_id, logical_run_key, "
+                "run_id, logical_run_generation, run_epoch, operation_id, "
+                "call_request_hash, record_id, record_hash, record_json "
+                "FROM b08_segment_terminal_receipts"
+            ).fetchone()
+        )
+    if isinstance(row[column_index], int):
+        row[column_index] += 1
+    else:
+        row[column_index] = (
+            "f" * 64
+            if len(row[column_index]) == 64
+            else f"{row[column_index]}:other"
+        )
+
+    with pytest.raises(B09AuthorityError, match="AUTHORITY_STATE_INCOHERENT"):
+        _decode_terminal_row(tuple(row))
+
+
+@pytest.mark.parametrize(
+    ("field", "bad_value"),
+    [
+        (
+            "chapter_revision_ref",
+            {
+                "chapter_id": "other-chapter",
+                "revision_no": 1,
+                "revision_text_sha256": "f" * 64,
+            },
+        ),
+        (
+            "base_candidate_version_ref",
+            {
+                "contract": "M3_RECORD_REF",
+                "contract_version": "r03.5-candidate",
+                "record_type": "M3_CANDIDATE_VERSION",
+                "record_id": "cv:other",
+                "record_version": 1,
+                "record_contract_version": "r03.5-candidate",
+                "record_hash": "f" * 64,
+                "access": "POLICY_FIXTURE_READ_ONLY",
+                "source_module": "M3",
+            },
+        ),
+    ],
+)
+def test_reader_applies_complete_b04_patch_contract(
+    tmp_path: Path,
+    field: str,
+    bad_value: Any,
+) -> None:
+    world = _build_world(tmp_path / f"patch-contract-{field}")
+    snapshot = world.make_reader().read(world.request)
+    invalid_patch = deepcopy(world.b05.patch)
+    invalid_patch["payload"][field] = bad_value
+    _rehash_external(invalid_patch, "patch-proposal")
+    invalid_patch_ref = record_ref(invalid_patch)
+    collected = deepcopy(snapshot)
+    for key in (
+        "request",
+        "b05_records",
+        "causal_hint_proposals",
+        "current_segment_index",
+    ):
+        collected.pop(key)
+    collected["validation_receipt"]["payload"]["input_binding"][
+        "patch_proposal_ref"
+    ] = invalid_patch_ref
+
+    def reissued_reader(ref: dict[str, Any]) -> dict[str, Any]:
+        if canonical_bytes(ref) == canonical_bytes(invalid_patch_ref):
+            return deepcopy(invalid_patch)
+        return world.read_immutable(ref)
+
+    reader = world.make_reader(immutable_override=reissued_reader)
+    with pytest.raises(B09AuthorityError, match="AUTHORITY_HASH_MISMATCH"):
+        reader._attach_immutables(collected)
 
 
 @pytest.mark.parametrize(
