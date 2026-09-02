@@ -521,6 +521,58 @@ def test_all_missing_sources_still_honor_continue_on_gap(behavior: str) -> None:
     ]
 
 
+def test_optional_only_empty_run_is_not_misreported_as_ready() -> None:
+    needs = [
+        _need("NEED-SHOULD", obligation="SHOULD", rank=1),
+        _need("NEED-MAY", obligation="MAY", rank=2),
+    ]
+    request = _request(needs)
+    outcomes = [
+        _outcome(needs[0], _ledger_response("LR-VALID-08"), None),
+        _not_attempted(needs[1]),
+    ]
+
+    result = core.compile_result(
+        request,
+        core.prepare_plan(request),
+        outcomes,
+        _registry(),
+    )
+
+    assert result["status"] == "READY_WITH_GAPS"
+    assert result["short_receipt"]["required_total"] == 0
+    assert result["short_receipt"]["required_missing"] == 0
+    assert result["material_package"]["loaded"] == []
+    assert result["material_package"]["outstanding"]
+
+
+def test_optional_materials_all_omitted_by_budget_return_gap_receipt() -> None:
+    needs = [
+        _need("NEED-SHOULD", obligation="SHOULD", rank=1, tokens=20),
+        _need("NEED-MAY", obligation="MAY", rank=2, tokens=20),
+    ]
+    request = _request(needs, budget=1)
+    outcomes = [
+        _outcome(need, _ledger_response("LR-VALID-07"), f"材料 {need['need_id']}")
+        for need in needs
+    ]
+
+    result = core.compile_result(
+        request,
+        core.prepare_plan(request),
+        outcomes,
+        _registry(),
+    )
+
+    assert result["status"] == "READY_WITH_GAPS"
+    assert result["material_package"]["loaded"] == []
+    assert [row["need_id"] for row in result["material_package"]["omitted"]] == [
+        "NEED-SHOULD",
+        "NEED-MAY",
+    ]
+    assert result["short_receipt"]["omitted_count"] == 2
+
+
 def test_runtime_need_id_validation_matches_published_schema() -> None:
     request = _request([_need("NEED-valid")])
     request["source_needs"][0]["need_id"] = "NEED-a/b"
