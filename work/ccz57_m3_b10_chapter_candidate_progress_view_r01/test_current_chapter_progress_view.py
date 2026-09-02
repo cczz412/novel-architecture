@@ -238,6 +238,22 @@ def _set_new_state(world: SimpleNamespace) -> None:
         connection.commit()
 
 
+def _advance_pointer_generation(world: SimpleNamespace) -> None:
+    with sqlite3.connect(world.env.store._database_path) as connection:
+        raw = connection.execute(
+            "SELECT pointer_json FROM current_pointers WHERE logical_pointer_key = ?",
+            (world.env.b07.b06.live_pointer["logical_pointer_key"],),
+        ).fetchone()[0]
+        pointer = json.loads(bytes(raw).decode("utf-8"))
+        pointer["generation"] += 1
+        connection.execute(
+            "UPDATE current_pointers SET pointer_json = ? "
+            "WHERE logical_pointer_key = ?",
+            (canonical_bytes(pointer), pointer["logical_pointer_key"]),
+        )
+        connection.commit()
+
+
 def _install_seg2_run(
     world: SimpleNamespace, root: Path
 ) -> tuple[str, str, Callable[[], dict[str, Any]]]:
@@ -562,21 +578,30 @@ def test_b07_record_hash_tamper_fails_closed(tmp_path: Path) -> None:
     assert view["reason_code"] == "AUTHORITY_HASH_MISMATCH"
 
 
+def test_unbound_current_terminal_keeps_active_run_running(tmp_path: Path) -> None:
+    world = _world(tmp_path)
+    world.env.publish("unbound-current-terminal")
+    view = _read(world)
+    segment = _segment(view)
+    assert segment["terminal_currentness_or_null"] == "RUN_NOT_PUBLISHED"
+    assert segment["segment_status"] == "RUNNING"
+
+
+def test_unbound_terminal_with_superseded_pointer_is_stale(tmp_path: Path) -> None:
+    world = _world(tmp_path)
+    world.env.publish("unbound-stale-terminal")
+    _advance_pointer_generation(world)
+    view = _read(world)
+    segment = _segment(view)
+    assert segment["terminal_currentness_or_null"] == "POINTER_STALE"
+    assert segment["segment_status"] == "STALE"
+    assert view["has_blockers"] is True
+    assert view["author_action_kind"] == "REFRESH"
+
+
 def test_nonterminal_run_with_superseded_pointer_is_stale(tmp_path: Path) -> None:
     world = _world(tmp_path)
-    with sqlite3.connect(world.env.store._database_path) as connection:
-        raw = connection.execute(
-            "SELECT pointer_json FROM current_pointers WHERE logical_pointer_key = ?",
-            (world.env.b07.b06.live_pointer["logical_pointer_key"],),
-        ).fetchone()[0]
-        pointer = json.loads(bytes(raw).decode("utf-8"))
-        pointer["generation"] += 1
-        connection.execute(
-            "UPDATE current_pointers SET pointer_json = ? "
-            "WHERE logical_pointer_key = ?",
-            (canonical_bytes(pointer), pointer["logical_pointer_key"]),
-        )
-        connection.commit()
+    _advance_pointer_generation(world)
     view = _read(world)
     assert _segment(view)["segment_status"] == "STALE"
     assert view["candidate_processing_state"] == "IN_PROGRESS"

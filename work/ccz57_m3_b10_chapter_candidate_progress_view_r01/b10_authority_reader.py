@@ -517,7 +517,12 @@ class ChapterProgressAuthorityReader:
             delivery = classification["terminal_delivery"]
             if currentness == "CURRENT":
                 status = delivery
-            elif state["status"] in {"NEW", "ACTIVE", "WAITING_LOCAL", "B06_OUTCOME_PENDING"}:
+            elif (
+                currentness == "RUN_NOT_PUBLISHED"
+                and run_pointer_current
+                and state["status"]
+                in {"NEW", "ACTIVE", "WAITING_LOCAL", "B06_OUTCOME_PENDING"}
+            ):
                 status = "WAITING" if state["status"] == "WAITING_LOCAL" else "RUNNING"
             else:
                 status = "STALE"
