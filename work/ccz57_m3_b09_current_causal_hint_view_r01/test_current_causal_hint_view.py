@@ -516,6 +516,34 @@ def test_multiple_hints_have_deterministic_order_ordinals_and_hash(
     assert keys == sorted(keys)
 
 
+@pytest.mark.parametrize("ref_key", ["route_receipt_ref", "lifecycle_head_ref"])
+def test_multi_hint_view_rejects_mixed_authority_heads(
+    tmp_path: Path,
+    ref_key: str,
+) -> None:
+    world = _build_world(tmp_path / ref_key, hint_count=2)
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    view["hints"][1][ref_key]["record_id"] += ":other-head"
+    view["hints"] = sorted(
+        view["hints"],
+        key=lambda hint: canonical_bytes(
+            {
+                "causal_hint_proposal_ref": hint["causal_hint_proposal_ref"],
+                "route_receipt_ref": hint["route_receipt_ref"],
+                "mapping_proof_hash": hint["mapping_proof_hash"],
+            }
+        ),
+    )
+    for ordinal, hint in enumerate(view["hints"], start=1):
+        hint["ordinal"] = ordinal
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match="B09_HINT_AUTHORITY_HEAD_MISMATCH"):
+        validate_view(view)
+
+
 def test_reader_detects_pre_post_authority_drift(tmp_path: Path) -> None:
     world = _build_world(tmp_path / "drift")
     world.freshness.drift_on_read = world.freshness.read_count + 2

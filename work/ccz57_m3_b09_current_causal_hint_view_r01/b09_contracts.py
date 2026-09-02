@@ -416,6 +416,7 @@ def validate_view(view: Any) -> None:
     if not isinstance(view["hints"], list):
         fail("B09_HINTS_INVALID")
     exact_keys: list[dict[str, Any]] = []
+    authority_heads: list[dict[str, Any]] = []
     for expected_ordinal, hint in enumerate(view["hints"], start=1):
         _exact_keys(hint, HINT_KEYS, "B09_HINT_SHAPE_INVALID")
         if (
@@ -482,6 +483,12 @@ def validate_view(view: Any) -> None:
         ):
             for ref in hint[key]:
                 _validate_ref(ref, expected_type, "B09_HINT_REF_INVALID")
+        authority_heads.append(
+            {
+                "route_receipt_ref": hint["route_receipt_ref"],
+                "lifecycle_head_ref": hint["lifecycle_head_ref"],
+            }
+        )
         exact_keys.append(
             {
                 "causal_hint_proposal_ref": hint["causal_hint_proposal_ref"],
@@ -491,6 +498,8 @@ def validate_view(view: Any) -> None:
         )
     if exact_keys != sorted(exact_keys, key=canonical_bytes):
         fail("B09_HINT_ORDER_INVALID")
+    if len({canonical_bytes(head) for head in authority_heads}) > 1:
+        fail("B09_HINT_AUTHORITY_HEAD_MISMATCH")
     # Record refs necessarily carry record_id/record_version.  The prohibition
     # applies to B-09-owned top-level fields, whose exact-key contracts above
     # prevent persistent identity or lifecycle metadata from being added.
