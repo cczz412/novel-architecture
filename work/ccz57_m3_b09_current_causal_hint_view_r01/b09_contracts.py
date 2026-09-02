@@ -295,7 +295,13 @@ def _validate_ref(value: Any, expected_type: str, code: str) -> None:
 
 
 def _validate_canonical_unique(values: Any, code: str) -> None:
-    if not isinstance(values, list) or values != stable_unique(values):
+    if not isinstance(values, list):
+        fail(code)
+    try:
+        canonical_values = stable_unique(values)
+    except (TypeError, ValueError) as error:
+        fail(code, str(error))
+    if values != canonical_values:
         fail(code)
 
 

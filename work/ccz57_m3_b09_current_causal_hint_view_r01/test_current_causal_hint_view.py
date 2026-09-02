@@ -561,6 +561,17 @@ def test_view_rejects_malformed_supporting_route_unit_id(tmp_path: Path) -> None
         validate_view(view)
 
 
+def test_view_rejects_noncanonical_list_value_through_contract(
+    tmp_path: Path,
+) -> None:
+    world = _build_world(tmp_path / "noncanonical-list-value")
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    view["hints"][0]["supporting_route_unit_ids"] = [1.5]
+
+    with pytest.raises(B09ContractError, match="B09_HINT_ORDER_INVALID"):
+        validate_view(view)
+
+
 def test_view_rejects_duplicate_causal_proposal_identity(tmp_path: Path) -> None:
     world = _build_world(tmp_path / "duplicate-proposal", hint_count=2)
     view = read_current_causal_hints(world.make_reader(), world.request)
