@@ -12,6 +12,16 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
+    B01ContractError,
+    CONTRACT_VERSION as B01_CONTRACT_VERSION,
+    EVIDENCE_LOCATOR_CONTRACT,
+    FIXTURE_ACCESS as B01_FIXTURE_ACCESS,
+    LINEAGE_LOCATOR_CONTRACT,
+    SOURCE_MODULE as B01_SOURCE_MODULE,
+    validate_lineage_locator as b01_validate_lineage_locator,
+    validate_record_ref as b01_validate_record_ref,
+)
 from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
     canonical_bytes,
     sha256_value,
@@ -108,6 +118,25 @@ FORBIDDEN_OUTPUT_KEYS = {
     "lifecycle_sequence",
     "store_key",
     "formal_causal_edge_ref",
+}
+LINEAGE_LOCATOR_KEYS = {
+    "contract",
+    "contract_version",
+    "candidate_version_ref",
+    "lineage_id",
+    "json_pointer",
+    "item_hash",
+    "locator_hash",
+}
+EVIDENCE_LOCATOR_KEYS = {
+    "contract",
+    "contract_version",
+    "candidate_version_ref",
+    "lineage_id",
+    "evidence_json_pointer",
+    "evidence_sha256",
+    "binding_hash",
+    "locator_hash",
 }
 
 
@@ -253,6 +282,60 @@ def _validate_canonical_unique(values: Any, code: str) -> None:
         fail(code)
 
 
+def _validate_lineage_locator(value: Any) -> None:
+    _exact_keys(value, LINEAGE_LOCATOR_KEYS, "B09_HINT_LINEAGE_LOCATOR_INVALID")
+    try:
+        b01_validate_lineage_locator(value)
+    except (B01ContractError, TypeError, ValueError) as error:
+        fail("B09_HINT_LINEAGE_LOCATOR_INVALID", str(error))
+    if (
+        value["contract"] != LINEAGE_LOCATOR_CONTRACT
+        or value["contract_version"] != B01_CONTRACT_VERSION
+        or not isinstance(value["lineage_id"], str)
+        or re.fullmatch(r"lin_[0-9a-f]{64}", value["lineage_id"]) is None
+        or not isinstance(value["json_pointer"], str)
+        or re.fullmatch(r"/items/(0|[1-9][0-9]*)", value["json_pointer"]) is None
+        or not _sha(value["item_hash"])
+        or not _sha(value["locator_hash"])
+    ):
+        fail("B09_HINT_LINEAGE_LOCATOR_INVALID")
+
+
+def _validate_evidence_locator(value: Any) -> None:
+    _exact_keys(value, EVIDENCE_LOCATOR_KEYS, "B09_HINT_EVIDENCE_LOCATOR_INVALID")
+    if (
+        value["contract"] != EVIDENCE_LOCATOR_CONTRACT
+        or value["contract_version"] != B01_CONTRACT_VERSION
+        or not isinstance(value["lineage_id"], str)
+        or re.fullmatch(r"lin_[0-9a-f]{64}", value["lineage_id"]) is None
+        or not isinstance(value["evidence_json_pointer"], str)
+        or re.fullmatch(
+            r"/items/(0|[1-9][0-9]*)/evidence",
+            value["evidence_json_pointer"],
+        )
+        is None
+        or not _sha(value["evidence_sha256"])
+        or not _sha(value["binding_hash"])
+        or not _sha(value["locator_hash"])
+    ):
+        fail("B09_HINT_EVIDENCE_LOCATOR_INVALID")
+    try:
+        b01_validate_record_ref(
+            value["candidate_version_ref"],
+            code="B09_HINT_EVIDENCE_LOCATOR_INVALID",
+            expected_type="M3_CANDIDATE_VERSION",
+            expected_access=B01_FIXTURE_ACCESS,
+            expected_source_module=B01_SOURCE_MODULE,
+            expected_contract_version=B01_CONTRACT_VERSION,
+        )
+    except (B01ContractError, TypeError, ValueError) as error:
+        fail("B09_HINT_EVIDENCE_LOCATOR_INVALID", str(error))
+    if value["locator_hash"] != sha256_value(
+        {key: item for key, item in value.items() if key != "locator_hash"}
+    ):
+        fail("B09_HINT_EVIDENCE_LOCATOR_INVALID", "locator hash")
+
+
 def validate_view(view: Any) -> None:
     _exact_keys(view, VIEW_KEYS, "B09_VIEW_SHAPE_INVALID")
     if (
@@ -352,6 +435,30 @@ def validate_view(view: Any) -> None:
             for item in hint["supporting_route_unit_ids"]
         ):
             fail("B09_HINT_SUPPORT_INVALID")
+        for locator in (
+            hint["current_from_lineage_locator"],
+            hint["current_to_lineage_locator"],
+        ):
+            _validate_lineage_locator(locator)
+            if (
+                locator["candidate_version_ref"]
+                != scope["current_candidate_version_ref"]
+            ):
+                fail("B09_HINT_LINEAGE_LOCATOR_INVALID", "candidate ref")
+        for locator in hint["current_evidence_locators"]:
+            _validate_evidence_locator(locator)
+            if (
+                locator["candidate_version_ref"]
+                != scope["current_candidate_version_ref"]
+            ):
+                fail("B09_HINT_EVIDENCE_LOCATOR_INVALID", "candidate ref")
+        for key, expected_type in (
+            ("diagnostic_refs", "M3_DIAGNOSTIC"),
+            ("coverage_observation_refs", "M3_COVERAGE_OBSERVATION"),
+            ("authorized_source_slice_refs", "M3_AUTHORIZED_SOURCE_SLICE"),
+        ):
+            for ref in hint[key]:
+                _validate_ref(ref, expected_type, "B09_HINT_REF_INVALID")
         exact_keys.append(
             {
                 "causal_hint_proposal_ref": hint["causal_hint_proposal_ref"],

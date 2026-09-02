@@ -397,6 +397,48 @@ def test_precommit_current_is_available_and_nonpersistent(tmp_path: Path) -> Non
     assert view["hints"][0]["exportable"] is False
 
 
+@pytest.mark.parametrize(
+    ("locator_key", "pointer_key", "bad_pointer", "error_code"),
+    [
+        (
+            "current_from_lineage_locator",
+            "json_pointer",
+            "/items/00",
+            "B09_HINT_LINEAGE_LOCATOR_INVALID",
+        ),
+        (
+            "current_evidence_locators",
+            "evidence_json_pointer",
+            "/items/0",
+            "B09_HINT_EVIDENCE_LOCATOR_INVALID",
+        ),
+    ],
+)
+def test_view_rejects_rehashed_malformed_nested_locators(
+    tmp_path: Path,
+    locator_key: str,
+    pointer_key: str,
+    bad_pointer: str,
+    error_code: str,
+) -> None:
+    world = _build_world(tmp_path / pointer_key)
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    hint = view["hints"][0]
+    locator = hint[locator_key]
+    if isinstance(locator, list):
+        locator = locator[0]
+    locator[pointer_key] = bad_pointer
+    locator["locator_hash"] = sha256_value(
+        {key: value for key, value in locator.items() if key != "locator_hash"}
+    )
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match=error_code):
+        validate_view(view)
+
+
 def test_no_b07_route_is_a_normal_empty_view(tmp_path: Path) -> None:
     world = _build_world(tmp_path / "no-route", bind_route=False)
     view = read_current_causal_hints(world.make_reader(), world.request)
