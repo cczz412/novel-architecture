@@ -127,6 +127,26 @@ class CandidateAuthorityStore(B06CommitStore):
         self.root_failure_point = root_failure_point
         self.root_commit_count = 0
         self.bootstrap_copy_attempt_count = 0
+        if self._database_path.is_file():
+            self._verify_existing_project_scope()
+
+    def _verify_existing_project_scope(self) -> None:
+        with sqlite3.connect(self._database_path) as connection:
+            tables = {
+                row[0]
+                for row in connection.execute(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'"
+                ).fetchall()
+            }
+            if "metadata" not in tables:
+                fail("AUTHORITY_SCHEMA_NOT_INITIALIZED")
+            row = connection.execute(
+                "SELECT value FROM metadata WHERE key = 'project_scope_id'"
+            ).fetchone()
+        if row is None:
+            fail("AUTHORITY_PROJECT_SCOPE_MISSING")
+        if bytes(row[0]) != self.project_scope_id.encode("utf-8"):
+            fail("PROJECT_SCOPE_STORE_MISMATCH")
 
     def _inject_root_failure(self, point: str) -> None:
         if self.root_failure_point == point:

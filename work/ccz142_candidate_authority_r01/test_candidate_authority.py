@@ -173,6 +173,17 @@ def test_project_scope_mismatch_is_rejected_before_write(tmp_path: Path) -> None
     assert store.visible_counts()["candidate_versions"] == 0
 
 
+def test_existing_store_rejects_wrong_project_before_read(tmp_path: Path) -> None:
+    authority_root = tmp_path / "authority"
+    store = new_store(authority_root)
+    publish_root(store, root_request())
+    with pytest.raises(CandidateAuthorityError, match="PROJECT_SCOPE_STORE_MISMATCH"):
+        CandidateAuthorityStore(
+            authority_root,
+            project_scope_id="other-project",
+        )
+
+
 def test_stale_chapter_or_input_generation_is_rejected_before_write(
     tmp_path: Path,
 ) -> None:

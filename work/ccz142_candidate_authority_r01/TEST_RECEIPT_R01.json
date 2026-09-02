@@ -15,7 +15,7 @@
   "test_suites": [
     {
       "suite": "ccz142_candidate_authority_r01",
-      "passed": 26,
+      "passed": 27,
       "failed": 0
     },
     {
@@ -60,7 +60,7 @@
     }
   ],
   "totals": {
-    "passed": 422,
+    "passed": 423,
     "failed": 0
   },
   "root_acceptance": {
@@ -68,6 +68,7 @@
     "multiple_segments": "PASS",
     "multiple_input_generations": "PASS",
     "project_scope_store_binding": "PASS",
+    "existing_store_wrong_project_read": "FAIL_CLOSED_BEFORE_READ",
     "same_operation_replay": "PASS",
     "same_operation_changed_input": "FAIL_CLOSED_ZERO_WRITE",
     "same_pointer_new_operation": "FAIL_CLOSED_ZERO_WRITE",

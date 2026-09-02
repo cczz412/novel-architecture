@@ -64,6 +64,6 @@ uv run --locked python work/ccz142_candidate_authority_r01/self_check.py
 
 完整回归还包括 B01、B05、B06、B07、B08 原测试。实际命令、数量和 SHA 见本目录离线回放报告与 PR 描述。
 
-本轮实际通过 422 项：新目录 26 项，B01～B08 直接依赖 396 项。完整分项见 `TEST_RECEIPT_R01.json`。
+本轮实际通过 423 项：新目录 27 项，B01～B08 直接依赖 396 项。完整分项见 `TEST_RECEIPT_R01.json`。
 
 来源：Codex
