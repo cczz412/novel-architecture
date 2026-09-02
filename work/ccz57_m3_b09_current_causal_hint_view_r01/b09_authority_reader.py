@@ -47,11 +47,18 @@ from work.ccz57_m3_b08_segment_terminal_r01.b08_store import (  # noqa: E402
     B08TerminalReadService,
 )
 
-from b09_contracts import (  # noqa: E402
-    B09AuthorityError,
-    B09ContractError,
-    validate_request,
-)
+if __package__:
+    from .b09_contracts import (  # noqa: E402
+        B09AuthorityError,
+        B09ContractError,
+        validate_request,
+    )
+else:
+    from b09_contracts import (  # noqa: E402
+        B09AuthorityError,
+        B09ContractError,
+        validate_request,
+    )
 
 FreshnessReader = Callable[[], dict[str, str]]
 ImmutableReader = Callable[[dict[str, Any]], dict[str, Any]]

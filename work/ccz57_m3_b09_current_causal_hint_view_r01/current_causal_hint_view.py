@@ -22,14 +22,24 @@ from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
 )
 from patch_route_projection import B09AdmissionGuard  # noqa: E402
 
-from b09_contracts import (  # noqa: E402
-    B09AuthorityError,
-    B09ContractError,
-    build_error_view,
-    build_view,
-    scope_from_authority,
-    stable_unique,
-)
+if __package__:
+    from .b09_contracts import (  # noqa: E402
+        B09AuthorityError,
+        B09ContractError,
+        build_error_view,
+        build_view,
+        scope_from_authority,
+        stable_unique,
+    )
+else:
+    from b09_contracts import (  # noqa: E402
+        B09AuthorityError,
+        B09ContractError,
+        build_error_view,
+        build_view,
+        scope_from_authority,
+        stable_unique,
+    )
 
 
 class _PostCommitUnsafe(ValueError):

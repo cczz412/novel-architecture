@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import importlib
 import inspect
 import sys
 from copy import deepcopy
@@ -69,6 +70,20 @@ from current_causal_hint_view import (  # noqa: E402
     project_current_causal_hints,
     read_current_causal_hints,
 )
+
+
+def test_package_imports_share_b09_exception_identity() -> None:
+    package_root = "work.ccz57_m3_b09_current_causal_hint_view_r01"
+    contracts = importlib.import_module(f"{package_root}.b09_contracts")
+    authority_reader = importlib.import_module(f"{package_root}.b09_authority_reader")
+    causal_hint_view = importlib.import_module(
+        f"{package_root}.current_causal_hint_view"
+    )
+
+    assert authority_reader.B09ContractError is contracts.B09ContractError
+    assert authority_reader.B09AuthorityError is contracts.B09AuthorityError
+    assert causal_hint_view.B09ContractError is contracts.B09ContractError
+    assert causal_hint_view.B09AuthorityError is contracts.B09AuthorityError
 
 
 def _rehash_external(record: dict[str, Any], prefix: str) -> None:
