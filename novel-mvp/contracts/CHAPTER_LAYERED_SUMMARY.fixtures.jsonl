@@ -1,0 +1,16 @@
+{"base":"valid_phase","case_id":"CLS-VALID-01","expected_result":"STRUCTURAL_VALID","mutation":"none"}
+{"base":"valid_long_range","case_id":"CLS-VALID-02","expected_result":"STRUCTURAL_VALID","mutation":"none"}
+{"base":"valid_author_pinned","case_id":"CLS-VALID-03","expected_result":"STRUCTURAL_VALID","mutation":"none"}
+{"base":"valid_policy_v2","case_id":"CLS-VALID-04","expected_result":"STRUCTURAL_VALID","mutation":"none"}
+{"base":"unresolved_phase","case_id":"CLS-UNRESOLVED-01","expected_result":"STRUCTURAL_VALID_OWNER_UNRESOLVED","mutation":"none"}
+{"base":"unresolved_long_range","case_id":"CLS-UNRESOLVED-02","expected_result":"STRUCTURAL_VALID_OWNER_UNRESOLVED","mutation":"none"}
+{"base":"unresolved_author_pinned","case_id":"CLS-UNRESOLVED-03","expected_result":"STRUCTURAL_VALID_OWNER_UNRESOLVED","mutation":"none"}
+{"base":"valid_phase","case_id":"CLS-INVALID-01","expected_result":"STRUCTURAL_INVALID","mutation":"writes_truth"}
+{"base":"valid_phase","case_id":"CLS-INVALID-02","expected_result":"STRUCTURAL_INVALID","mutation":"missing_leaf"}
+{"base":"valid_phase","case_id":"CLS-INVALID-03","expected_result":"STRUCTURAL_INVALID","mutation":"duplicate_leaf"}
+{"base":"valid_phase","case_id":"CLS-INVALID-04","expected_result":"STRUCTURAL_INVALID","mutation":"input_order_gap"}
+{"base":"valid_phase","case_id":"CLS-INVALID-05","expected_result":"STRUCTURAL_INVALID","mutation":"section_without_source"}
+{"base":"valid_phase","case_id":"CLS-INVALID-06","expected_result":"STRUCTURAL_INVALID","mutation":"unresolved_item_dropped"}
+{"base":"valid_phase","case_id":"CLS-INVALID-07","expected_result":"STRUCTURAL_INVALID","mutation":"scope_mismatch"}
+{"base":"unresolved_phase","case_id":"CLS-INVALID-08","expected_result":"STRUCTURAL_INVALID","mutation":"unresolved_claims_resolved"}
+{"base":"valid_phase","case_id":"CLS-INVALID-09","expected_result":"STRUCTURAL_INVALID","mutation":"policy_changed_reused_summary_sha"}
