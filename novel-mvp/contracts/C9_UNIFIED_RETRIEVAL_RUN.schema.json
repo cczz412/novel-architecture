@@ -359,6 +359,7 @@
         "obligation_tier",
         "category",
         "reason_code",
+        "source_status",
         "fatal",
         "source_validation"
       ],
@@ -371,6 +372,10 @@
           "enum": ["NOT_READ", "UNRESOLVED", "FAILED", "NOT_DELIVERED"]
         },
         "reason_code": {"type": "string", "minLength": 1},
+        "source_status": {
+          "type": "string",
+          "enum": ["OK", "EMPTY", "REJECTED", "ERROR", "NOT_ATTEMPTED"]
+        },
         "fatal": {"type": "boolean"},
         "source_validation": {
           "oneOf": [

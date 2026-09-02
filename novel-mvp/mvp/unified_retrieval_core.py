@@ -10,6 +10,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import re
 from collections.abc import Callable, Mapping
 from typing import Any, NoReturn
 
@@ -212,7 +213,7 @@ def _need_shape(value: Any, *, plan_step: bool = False) -> None:
     if plan_step:
         _integer(need["order"], 1, "PLAN_STEP_ORDER_INVALID")
     _string(need["need_id"], "NEED_ID_INVALID")
-    if not need["need_id"].startswith("NEED-"):
+    if re.fullmatch(r"NEED-[A-Za-z0-9._:-]+", need["need_id"]) is None:
         _fail("NEED_ID_INVALID")
     if need["evidence_layer"] not in LAYER_PARENT:
         _fail("NEED_EVIDENCE_LAYER_INVALID")
@@ -417,6 +418,7 @@ def _result_shape(value: Mapping[str, Any]) -> None:
                 "obligation_tier",
                 "category",
                 "reason_code",
+                "source_status",
                 "fatal",
                 "source_validation",
             },
@@ -424,6 +426,14 @@ def _result_shape(value: Mapping[str, Any]) -> None:
         )
         for field in ("need_id", "object_ref", "reason_code"):
             _string(item[field], f"OUTSTANDING_FIELD_INVALID:{field}")
+        if item["source_status"] not in {
+            "OK",
+            "EMPTY",
+            "REJECTED",
+            "ERROR",
+            "NOT_ATTEMPTED",
+        }:
+            _fail("OUTSTANDING_SOURCE_STATUS_INVALID")
         if item["obligation_tier"] not in {"HARD", "SHOULD", "MAY"}:
             _fail("OUTSTANDING_OBLIGATION_INVALID")
         if item["category"] not in {
@@ -1044,6 +1054,7 @@ def _build_outstanding(
                 "obligation_tier": needs[outcome["need_id"]]["obligation_tier"],
                 "category": category,
                 "reason_code": reason,
+                "source_status": outcome["source_status"],
                 "fatal": fatal,
                 "source_validation": copy.deepcopy(outcome["source_validation"]),
             }
@@ -1234,18 +1245,22 @@ def compile_result(
         validator_registry,
     )
     status, stop_reason = _result_status(checked_request, outcomes)
-    usable_count = sum(_outcome_is_usable(row) for row in outcomes)
     packer_result: dict[str, Any] | None = None
 
-    if status != "STOPPED" and usable_count == 0:
-        status = "STOPPED"
-        stop_reason = "NO_USABLE_MATERIALS"
     if status != "STOPPED":
-        packer_result = packer.pack_context(_packer_request(checked_request, outcomes))
-        if packer_result["decision_state"] != "READY":
-            status = "STOPPED"
-            errors = packer_result["errors"]
-            stop_reason = errors[0]["code"] if errors else packer_result["decision_state"]
+        usable_outcomes = [row for row in outcomes if _outcome_is_usable(row)]
+        if usable_outcomes:
+            packer_result = packer.pack_context(
+                _packer_request(checked_request, outcomes)
+            )
+            if packer_result["decision_state"] != "READY":
+                status = "STOPPED"
+                errors = packer_result["errors"]
+                stop_reason = (
+                    errors[0]["code"]
+                    if errors
+                    else packer_result["decision_state"]
+                )
 
     outcomes_by_id = {row["need_id"]: row for row in outcomes}
     if status == "STOPPED":
@@ -1257,18 +1272,21 @@ def compile_result(
             stop_reason=stop_reason or "RUN_STOPPED",
         )
     else:
-        assert packer_result is not None
-        loaded = _build_loaded(
-            packer_result["load_ids"],
-            packer_result["why_loaded"],
-            checked_request,
-            outcomes_by_id,
-        )
-        omitted = _build_omitted(
-            packer_result["omitted"],
-            checked_request,
-            outcomes_by_id,
-        )
+        if packer_result is None:
+            loaded = []
+            omitted = []
+        else:
+            loaded = _build_loaded(
+                packer_result["load_ids"],
+                packer_result["why_loaded"],
+                checked_request,
+                outcomes_by_id,
+            )
+            omitted = _build_omitted(
+                packer_result["omitted"],
+                checked_request,
+                outcomes_by_id,
+            )
         outstanding = _build_outstanding(checked_request, outcomes)
 
     package = _seal_package(loaded, omitted, outstanding)
@@ -1447,7 +1465,7 @@ def validate_result(
         _fail("READY_WITH_GAPS_STATUS_CONTRADICTION")
     if status == "STOPPED" and (package["loaded"] or package["omitted"]):
         _fail("STOPPED_RESULT_MUST_NOT_DELIVER_MATERIAL")
-    if status != "STOPPED":
+    if status != "STOPPED" and (package["loaded"] or package["omitted"]):
         packer_need_ids = {
             row["need_id"] for row in package["loaded"] + package["omitted"]
         }
@@ -1488,14 +1506,32 @@ def validate_result(
         label = accounting[event["need_id"]][0]
         if label == "loaded":
             expected_disposition = "LOADED"
+            expected_source_status = "OK"
+            expected_reason = None
         elif label == "omitted":
             expected_disposition = "OMITTED"
+            expected_source_status = "OK"
+            expected_reason = accounting[event["need_id"]][1]["reason"]
         else:
             expected_disposition = accounting[event["need_id"]][1]["category"]
+            expected_source_status = accounting[event["need_id"]][1][
+                "source_status"
+            ]
+            expected_reason = accounting[event["need_id"]][1]["reason_code"]
+        result_row = accounting[event["need_id"]][1]
+        source_validation = result_row.get("source_validation")
+        expected_validation = (
+            source_validation["validation_result"]
+            if source_validation is not None
+            else None
+        )
         if (
             event["order"] != step["order"]
             or event["expansion_trigger"] != step["expansion_trigger"]
             or event["final_disposition"] != expected_disposition
+            or event["source_status"] != expected_source_status
+            or event["reason_code"] != expected_reason
+            or event["validation_result"] != expected_validation
             or event["why_loaded"]
             != (
                 accounting[event["need_id"]][1]["why_loaded"]
