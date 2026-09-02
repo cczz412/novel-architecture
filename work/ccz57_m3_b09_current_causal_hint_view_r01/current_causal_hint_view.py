@@ -182,7 +182,14 @@ def _resolve_lineage(
         raise B09AuthorityError(
             "AUTHORITY_REFERENCE_CONFLICT", "proposal lineage is not exact base"
         )
-    current_locator, _ = _lineage_locator(current_candidate, original["lineage_id"])
+    try:
+        current_locator, _ = _lineage_locator(
+            current_candidate, original["lineage_id"]
+        )
+    except B09AuthorityError as error:
+        if post_commit:
+            raise _PostCommitUnsafe("endpoint lineage unavailable") from error
+        raise
     if post_commit and current_locator["item_hash"] != original["item_hash"]:
         raise _PostCommitUnsafe("endpoint item hash changed")
     if not post_commit and not _ref_equal(current_locator, original):
@@ -218,7 +225,14 @@ def _resolve_evidence(
         raise B09AuthorityError(
             "AUTHORITY_REFERENCE_CONFLICT", "proposal evidence is not exact base"
         )
-    current_locator, _ = _evidence_locator(current_candidate, original["lineage_id"])
+    try:
+        current_locator, _ = _evidence_locator(
+            current_candidate, original["lineage_id"]
+        )
+    except B09AuthorityError as error:
+        if post_commit:
+            raise _PostCommitUnsafe("evidence lineage unavailable") from error
+        raise
     if post_commit and (
         current_locator["evidence_sha256"] != original["evidence_sha256"]
         or current_locator["binding_hash"] != original["binding_hash"]

@@ -823,6 +823,27 @@ def test_postcommit_endpoint_change_returns_empty(tmp_path: Path) -> None:
     )
 
 
+def test_postcommit_deleted_endpoint_lineage_returns_empty(tmp_path: Path) -> None:
+    world = _build_world(tmp_path / "postcommit-deleted-endpoint", safe_postcommit=True)
+    _commit(world)
+    snapshot = world.make_reader().read(world.request)
+    lineage_id = snapshot["causal_hint_proposals"][0]["payload"][
+        "from_lineage_locator"
+    ]["lineage_id"]
+    snapshot["current_candidate"]["payload"]["items"] = [
+        item
+        for item in snapshot["current_candidate"]["payload"]["items"]
+        if item["lineage_id"] != lineage_id
+    ]
+
+    view = project_current_causal_hints(snapshot)
+
+    assert (view["status"], view["reason_code"]) == (
+        "EMPTY",
+        "POST_COMMIT_NOT_PROVABLY_UNCHANGED",
+    )
+
+
 def test_postcommit_evidence_binding_change_is_rejected(tmp_path: Path) -> None:
     world = _build_world(tmp_path / "evidence-change", safe_postcommit=True)
     _commit(world)
@@ -840,6 +861,27 @@ def test_postcommit_evidence_binding_change_is_rejected(tmp_path: Path) -> None:
     )
 
     with pytest.raises(ValueError, match="evidence binding changed"):
+        _resolve_evidence(
+            original=original,
+            base_candidate=snapshot["base_candidate"],
+            current_candidate=changed,
+            post_commit=True,
+        )
+
+
+def test_postcommit_deleted_evidence_lineage_is_unsafe(tmp_path: Path) -> None:
+    world = _build_world(tmp_path / "postcommit-deleted-evidence", safe_postcommit=True)
+    _commit(world)
+    snapshot = world.make_reader().read(world.request)
+    original = snapshot["causal_hint_proposals"][0]["payload"]["evidence_locators"][0]
+    changed = deepcopy(snapshot["current_candidate"])
+    changed["payload"]["items"] = [
+        item
+        for item in changed["payload"]["items"]
+        if item["lineage_id"] != original["lineage_id"]
+    ]
+
+    with pytest.raises(ValueError, match="evidence lineage unavailable"):
         _resolve_evidence(
             original=original,
             base_candidate=snapshot["base_candidate"],
