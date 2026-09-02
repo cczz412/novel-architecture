@@ -630,6 +630,33 @@
       "full_chain": true
     },
     {
+      "name": "CCZ-57 B-09 权威上游与传递合同",
+      "pattern": "work/ccz57_m3_b0[12345678]_*/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py"
+      ],
+      "full_chain": true
+    },
+    {
+      "name": "CCZ-57 B-09 直接读取的 B-01 样例合同",
+      "pattern": "work/ccz57_m3_b01_candidate_version_r03_5/OBJECT_SHAPES.json",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py"
+      ],
+      "full_chain": true
+    },
+    {
+      "name": "CCZ-57 B-09 当前因果提示纯派生视图",
+      "pattern": "work/ccz57_m3_b09_current_causal_hint_view_r01/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py"
+      ],
+      "full_chain": false
+    },
+    {
       "name": "局部评分器",
       "pattern": "tools/*score*.py",
       "modules": ["M10"],
