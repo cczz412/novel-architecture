@@ -1290,6 +1290,8 @@ def compile_result(
                 outcomes_by_id,
             )
         outstanding = _build_outstanding(checked_request, outcomes)
+        if status == "READY" and not loaded and (omitted or outstanding):
+            status = "READY_WITH_GAPS"
 
     package = _seal_package(loaded, omitted, outstanding)
     trace_log = _build_trace_log(
@@ -1460,14 +1462,16 @@ def validate_result(
     loaded_ids = {row["need_id"] for row in package["loaded"]}
     missing_hard = [need_id for need_id in hard_ids if need_id not in loaded_ids]
     fatal_outstanding = any(row["fatal"] for row in package["outstanding"])
-    empty_with_outstanding = not package["loaded"] and bool(package["outstanding"])
+    empty_with_gaps = not package["loaded"] and bool(
+        package["omitted"] or package["outstanding"]
+    )
     status = result["status"]
     if status == "READY" and (
-        missing_hard or fatal_outstanding or empty_with_outstanding
+        missing_hard or fatal_outstanding or empty_with_gaps
     ):
         _fail("READY_STATUS_CONTRADICTS_GAPS")
     if status == "READY_WITH_GAPS" and (
-        (not missing_hard and not empty_with_outstanding) or fatal_outstanding
+        (not missing_hard and not empty_with_gaps) or fatal_outstanding
     ):
         _fail("READY_WITH_GAPS_STATUS_CONTRADICTION")
     if status == "STOPPED" and (package["loaded"] or package["omitted"]):
