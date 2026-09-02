@@ -454,7 +454,11 @@ def test_view_rejects_rehashed_malformed_nested_locators(
 )
 @pytest.mark.parametrize(
     ("field", "bad_value"),
-    [("record_version", True), ("source_module", "NOT_M3")],
+    [
+        ("record_version", True),
+        ("source_module", "NOT_M3"),
+        ("access", []),
+    ],
 )
 def test_view_rejects_rehashed_invalid_top_level_record_identity(
     tmp_path: Path,
@@ -530,6 +534,44 @@ def test_view_rejects_stripped_mandatory_causal_support(
     )
 
     with pytest.raises(B09ContractError, match="B09_HINT_SUPPORT_INVALID"):
+        validate_view(view)
+
+
+def test_view_rejects_boolean_ordinal(tmp_path: Path) -> None:
+    world = _build_world(tmp_path / "boolean-ordinal")
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    view["hints"][0]["ordinal"] = True
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match="B09_HINT_VALUE_INVALID"):
+        validate_view(view)
+
+
+def test_view_rejects_malformed_supporting_route_unit_id(tmp_path: Path) -> None:
+    world = _build_world(tmp_path / "malformed-route-unit")
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    view["hints"][0]["supporting_route_unit_ids"] = ["invalid"]
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match="B09_HINT_SUPPORT_INVALID"):
+        validate_view(view)
+
+
+def test_view_rejects_duplicate_causal_proposal_identity(tmp_path: Path) -> None:
+    world = _build_world(tmp_path / "duplicate-proposal", hint_count=2)
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    view["hints"][1]["causal_hint_proposal_ref"] = deepcopy(
+        view["hints"][0]["causal_hint_proposal_ref"]
+    )
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match="B09_HINT_ORDER_INVALID"):
         validate_view(view)
 
 

@@ -283,7 +283,7 @@ def build_error_view(reason_code: str) -> dict[str, Any]:
 def _validate_ref(value: Any, expected_type: str, code: str) -> None:
     try:
         validate_record_ref(value, expected_type=expected_type)
-    except ValueError as error:
+    except (TypeError, ValueError) as error:
         fail(code, str(error))
     expected_source_module = REF_SOURCE_MODULES.get(expected_type)
     if (
@@ -440,7 +440,8 @@ def validate_view(view: Any) -> None:
     for expected_ordinal, hint in enumerate(view["hints"], start=1):
         _exact_keys(hint, HINT_KEYS, "B09_HINT_SHAPE_INVALID")
         if (
-            hint["ordinal"] != expected_ordinal
+            not _positive_int(hint["ordinal"])
+            or hint["ordinal"] != expected_ordinal
             or not _sha(hint["mapping_proof_hash"])
             or not isinstance(hint["hint_kind"], str)
             or not hint["hint_kind"]
@@ -475,7 +476,8 @@ def validate_view(view: Any) -> None:
         ):
             _validate_canonical_unique(hint[key], "B09_HINT_ORDER_INVALID")
         if not hint["supporting_route_unit_ids"] or any(
-            not isinstance(item, str) or not item
+            not isinstance(item, str)
+            or re.fullmatch(r"route-unit:[0-9a-f]{64}", item) is None
             for item in hint["supporting_route_unit_ids"]
         ):
             fail("B09_HINT_SUPPORT_INVALID")
@@ -520,6 +522,13 @@ def validate_view(view: Any) -> None:
                 "mapping_proof_hash": hint["mapping_proof_hash"],
             }
         )
+    if len(
+        {
+            canonical_bytes(item["causal_hint_proposal_ref"])
+            for item in exact_keys
+        }
+    ) != len(exact_keys):
+        fail("B09_HINT_ORDER_INVALID", "duplicate proposal")
     if exact_keys != sorted(exact_keys, key=canonical_bytes):
         fail("B09_HINT_ORDER_INVALID")
     if len({canonical_bytes(head) for head in authority_heads}) > 1:
