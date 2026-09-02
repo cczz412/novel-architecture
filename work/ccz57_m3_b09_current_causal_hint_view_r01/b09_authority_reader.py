@@ -117,6 +117,37 @@ def _decode(raw: Any, *, reason: str, detail: str) -> dict[str, Any]:
     return value
 
 
+def _decode_state_row(row: tuple[Any, ...], *, detail: str) -> dict[str, Any]:
+    state = _decode(
+        row[8],
+        reason="AUTHORITY_HASH_MISMATCH",
+        detail=detail,
+    )
+    try:
+        validate_current_run_state(state)
+    except ValueError as error:
+        raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
+    expected_columns = (
+        state["project_scope_id"],
+        state["run_id"],
+        state["logical_run_key"],
+        state["logical_run_generation"],
+        state["run_epoch"],
+        state["state_revision"],
+        state["status"],
+        (
+            None
+            if state["stop_receipt_ref"] is None
+            else state["stop_receipt_ref"]["record_id"]
+        ),
+    )
+    if tuple(row[:8]) != expected_columns:
+        raise B09AuthorityError(
+            "AUTHORITY_STATE_INCOHERENT", "run row mirrored columns"
+        )
+    return state
+
+
 def _ref_equal(left: Any, right: Any) -> bool:
     return canonical_bytes(left) == canonical_bytes(right)
 
@@ -624,7 +655,9 @@ class CurrentCausalHintAuthorityReader:
         connection: sqlite3.Connection, request: dict[str, Any]
     ) -> dict[str, Any]:
         requested = connection.execute(
-            "SELECT project_scope_id, run_id, state_json "
+            "SELECT project_scope_id, run_id, logical_run_key, "
+            "logical_run_generation, run_epoch, state_revision, status, "
+            "stop_receipt_id, state_json "
             "FROM b07_current_run_states "
             "WHERE project_scope_id = ? AND run_id = ?",
             (request["project_scope_id"], request["run_id"]),
@@ -633,27 +666,20 @@ class CurrentCausalHintAuthorityReader:
             raise B09AuthorityError(
                 "AUTHORITY_REFERENCE_CONFLICT", "requested run not found"
             )
-        requested_state = _decode(
-            requested[2],
-            reason="AUTHORITY_HASH_MISMATCH",
-            detail="requested run state bytes",
+        requested_state = _decode_state_row(
+            requested, detail="requested run state bytes"
         )
-        try:
-            validate_current_run_state(requested_state)
-        except ValueError as error:
-            raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
         if (
             requested[0] != request["project_scope_id"]
             or requested[1] != request["run_id"]
-            or requested_state["project_scope_id"] != requested[0]
-            or requested_state["run_id"] != requested[1]
         ):
             raise B09AuthorityError(
                 "AUTHORITY_STATE_INCOHERENT", "requested run row identity"
             )
         current = connection.execute(
-            "SELECT project_scope_id, logical_run_key, run_id, "
-            "logical_run_generation, state_json FROM b07_current_run_states "
+            "SELECT project_scope_id, run_id, logical_run_key, "
+            "logical_run_generation, run_epoch, state_revision, status, "
+            "stop_receipt_id, state_json FROM b07_current_run_states "
             "WHERE project_scope_id = ? AND logical_run_key = ? "
             "ORDER BY logical_run_generation DESC LIMIT 1",
             (request["project_scope_id"], requested_state["logical_run_key"]),
@@ -662,22 +688,10 @@ class CurrentCausalHintAuthorityReader:
             raise B09AuthorityError(
                 "AUTHORITY_REFERENCE_CONFLICT", "current logical run not found"
             )
-        state = _decode(
-            current[4],
-            reason="AUTHORITY_HASH_MISMATCH",
-            detail="current run state bytes",
-        )
-        try:
-            validate_current_run_state(state)
-        except ValueError as error:
-            raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
+        state = _decode_state_row(current, detail="current run state bytes")
         if (
             current[0] != request["project_scope_id"]
-            or current[1] != requested_state["logical_run_key"]
-            or state["project_scope_id"] != current[0]
-            or state["logical_run_key"] != current[1]
-            or state["run_id"] != current[2]
-            or state["logical_run_generation"] != current[3]
+            or current[2] != requested_state["logical_run_key"]
         ):
             raise B09AuthorityError(
                 "AUTHORITY_STATE_INCOHERENT", "current logical run row identity"
@@ -792,6 +806,9 @@ class CurrentCausalHintAuthorityReader:
             "run_epoch": state["run_epoch"],
             "state_revision": state["state_revision"],
             "state_hash": state["state_hash"],
+            "merge_receipt_hash_or_absent": (
+                "ABSENT" if merge_receipt is None else merge_receipt["record_hash"]
+            ),
             "exact_current_terminal_ref_or_absent": (
                 "ABSENT" if terminal_ref is None else terminal_ref
             ),

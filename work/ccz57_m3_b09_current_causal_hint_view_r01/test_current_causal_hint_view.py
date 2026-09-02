@@ -71,6 +71,7 @@ from work.ccz57_m3_b08_segment_terminal_r01.fixtures import (  # noqa: E402
 
 from b09_authority_reader import (  # noqa: E402
     CurrentCausalHintAuthorityReader,
+    _decode_state_row,
     _require_causal_proposal_closure,
     _require_route_validation_binding,
 )
@@ -988,6 +989,52 @@ def test_reader_detects_pre_post_authority_drift(tmp_path: Path) -> None:
     assert all(value is None for key, value in view["scope"].items() if key != "phase")
 
 
+def test_reader_fingerprints_merge_receipt_across_two_passes(tmp_path: Path) -> None:
+    world = _build_world(tmp_path / "merge-receipt-drift", safe_postcommit=True)
+    _commit(world)
+    read_count = 0
+
+    def freshness_with_merge_drift() -> dict[str, str]:
+        nonlocal read_count
+        read_count += 1
+        if read_count == 2:
+            with sqlite3.connect(world.b06_store._database_path) as connection:
+                row = connection.execute(
+                    "SELECT operation_id, receipt_json FROM merge_receipts "
+                    "WHERE project_scope_id = ?",
+                    (world.project_scope_id,),
+                ).fetchone()
+                assert row is not None
+                receipt = json.loads(bytes(row[1]).decode("utf-8"))
+                receipt["created_at"] = "2026-09-01T09:00:01Z"
+                receipt["payload"]["committed_at"] = receipt["created_at"]
+                receipt["record_id"] = (
+                    f"merge-receipt:{sha256_value(receipt['payload'])}"
+                )
+                receipt["record_hash"] = sha256_value(
+                    {
+                        key: value
+                        for key, value in receipt.items()
+                        if key != "record_hash"
+                    }
+                )
+                connection.execute(
+                    "UPDATE merge_receipts SET receipt_json = ? "
+                    "WHERE project_scope_id = ? AND operation_id = ?",
+                    (canonical_bytes(receipt), world.project_scope_id, row[0]),
+                )
+        return world.freshness()
+
+    reader = world.make_reader()
+    reader._freshness_reader = freshness_with_merge_drift
+    view = read_current_causal_hints(reader, world.request)
+
+    assert (view["status"], view["reason_code"]) == (
+        "ERROR",
+        "AUTHORITY_DRIFT",
+    )
+
+
 def test_exact_immutable_hash_mismatch_fails_closed(tmp_path: Path) -> None:
     world = _build_world(tmp_path / "bad-proposal")
     target_ref = record_ref(world.b05.causals[0])
@@ -1173,15 +1220,26 @@ def test_requested_run_row_must_match_its_database_key(
     )
 
 
-def test_current_run_payload_must_match_selected_highest_generation_row(
+@pytest.mark.parametrize(
+    ("column", "bad_value"),
+    [
+        ("logical_run_generation", 2),
+        ("run_epoch", 1),
+        ("state_revision", 2),
+        ("status", "SUCCEEDED"),
+    ],
+)
+def test_current_run_payload_must_match_all_selected_row_columns(
     tmp_path: Path,
+    column: str,
+    bad_value: Any,
 ) -> None:
-    world = _build_world(tmp_path / "current-run-row-key")
+    world = _build_world(tmp_path / f"current-run-row-{column}")
     with sqlite3.connect(world.b06_store._database_path) as connection:
         connection.execute(
-            "UPDATE b07_current_run_states SET logical_run_generation = ? "
+            f"UPDATE b07_current_run_states SET {column} = ? "
             "WHERE project_scope_id = ? AND run_id = ?",
-            (2, world.project_scope_id, world.run_id),
+            (bad_value, world.project_scope_id, world.run_id),
         )
 
     view = read_current_causal_hints(world.make_reader(), world.request)
@@ -1190,6 +1248,25 @@ def test_current_run_payload_must_match_selected_highest_generation_row(
         "ERROR",
         "AUTHORITY_STATE_INCOHERENT",
     )
+
+
+def test_state_row_stop_receipt_id_must_match_payload(tmp_path: Path) -> None:
+    world = _build_world(tmp_path / "state-row-stop-receipt")
+    state = _state(world)
+    row = (
+        state["project_scope_id"],
+        state["run_id"],
+        state["logical_run_key"],
+        state["logical_run_generation"],
+        state["run_epoch"],
+        state["state_revision"],
+        state["status"],
+        "stop-receipt:other",
+        canonical_bytes(state),
+    )
+
+    with pytest.raises(B09AuthorityError, match="AUTHORITY_STATE_INCOHERENT"):
+        _decode_state_row(row, detail="test run state bytes")
 
 
 @pytest.mark.parametrize(
