@@ -463,3 +463,34 @@ def test_corrupt_source_validator_stops_without_exposing_material() -> None:
         "validation_result"
     ] == "SOURCE_VALIDATION_FAILED"
     assert secret not in json.dumps(result, ensure_ascii=False)
+
+
+def test_validator_registry_rejects_unknown_or_non_callable_entries() -> None:
+    need = _need("NEED-REGISTRY")
+    request = _request([need])
+    plan = core.prepare_plan(request)
+    outcome = _outcome(need, _ledger_response("LR-VALID-07"), "可用材料")
+
+    with pytest.raises(
+        core.C9RetrievalError,
+        match="SOURCE_VALIDATOR_REGISTRY_CONTRACT_FORBIDDEN",
+    ):
+        core.compile_result(
+            request,
+            plan,
+            [outcome],
+            {
+                "LEDGER_READ_TOOL_CONTRACT": ledger_validator.validate_document,
+                "UNAUTHORIZED_BLOB": lambda value: value,
+            },
+        )
+    with pytest.raises(
+        core.C9RetrievalError,
+        match="SOURCE_VALIDATOR_NOT_CALLABLE",
+    ):
+        core.compile_result(
+            request,
+            plan,
+            [outcome],
+            {"LEDGER_READ_TOOL_CONTRACT": "not-callable"},
+        )

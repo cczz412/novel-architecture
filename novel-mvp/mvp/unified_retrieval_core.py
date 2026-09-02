@@ -883,6 +883,24 @@ def _validate_outcomes(
     return checked
 
 
+def _validate_registry(
+    request: Mapping[str, Any],
+    validator_registry: Any,
+) -> None:
+    if not isinstance(validator_registry, Mapping):
+        _fail("SOURCE_VALIDATOR_REGISTRY_INVALID")
+    unknown = sorted(set(validator_registry) - set(SOURCE_CONTRACT_VERSIONS))
+    if unknown:
+        _fail(f"SOURCE_VALIDATOR_REGISTRY_CONTRACT_FORBIDDEN:{unknown[0]}")
+    required = {need["source_contract"] for need in request["source_needs"]}
+    for source_contract in sorted(required):
+        validator = validator_registry.get(source_contract)
+        if validator is None:
+            _fail(f"SOURCE_VALIDATOR_NOT_REGISTERED:{source_contract}")
+        if not callable(validator):
+            _fail(f"SOURCE_VALIDATOR_NOT_CALLABLE:{source_contract}")
+
+
 def _outcome_reason(outcome: Mapping[str, Any]) -> str:
     validation = outcome["source_validation"]
     if validation and validation["validation_result"] == "STRUCTURAL_VALID_OWNER_UNRESOLVED":
@@ -1208,6 +1226,7 @@ def compile_result(
 ) -> dict[str, Any]:
     checked_request = validate_request(request)
     checked_plan = validate_plan(plan, checked_request)
+    _validate_registry(checked_request, validator_registry)
     outcomes = _validate_outcomes(
         checked_request,
         checked_plan,
