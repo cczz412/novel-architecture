@@ -11,6 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]
 PR_GATE_WORKFLOW = ROOT / ".github/workflows/pr-gate.yml"
 B09_COMPONENT_ROOT = "work/ccz57_m3_b09_current_causal_hint_view_r01"
 B09_DIRECTED_TEST = f"{B09_COMPONENT_ROOT}/test_current_causal_hint_view.py"
+B09_DIRECT_AUTHORITY_UPSTREAM_PATHS = [
+    "work/ccz57_m3_b01_candidate_version_r03_5/b01_contract.py",
+    "work/ccz57_m3_b04_patch_atomic_group_r03_5/b04_contracts.py",
+    "work/ccz57_m3_b05_patch_route_r03_5/b05_contracts.py",
+    "work/ccz57_m3_b06_commit_core_r01/b06_contracts.py",
+    "work/ccz57_m3_b07_local_recovery_stop_r01/b07_contracts.py",
+    "work/ccz57_m3_b08_segment_terminal_r01/b08_contracts.py",
+]
 
 
 def spec(
@@ -174,6 +182,59 @@ class TestImpactTests(unittest.TestCase):
                     "CCZ-57 B-09 当前因果提示纯派生视图",
                     plan["matched_paths"][path],
                 )
+
+    def test_b09_direct_authority_upstreams_select_the_consumer_test(self) -> None:
+        for path in B09_DIRECT_AUTHORITY_UPSTREAM_PATHS:
+            with self.subTest(path=path):
+                plan = test_impact.build_plan(
+                    spec([path]), policy=self.policy, registry=self.registry
+                )
+                self.assertEqual(plan["scope"], "targeted")
+                self.assertFalse(plan["full_chain"])
+                self.assertEqual(plan["unknown_paths"], [])
+                self.assertEqual(plan["affected_modules"], [])
+                self.assertEqual(plan["selected_tests"], [B09_DIRECTED_TEST])
+                self.assertEqual(
+                    plan["execution_steps"][0]["argv"],
+                    ["uv", "run", "--locked", "pytest", "-q", B09_DIRECTED_TEST],
+                )
+                self.assertIn(
+                    "CCZ-57 B-09 直接权威上游",
+                    plan["matched_paths"][path],
+                )
+
+    def test_full_chain_keeps_registered_tests_outside_default_collection(
+        self,
+    ) -> None:
+        changed_paths = [
+            "governance/test_policy.json",
+            f"{B09_COMPONENT_ROOT}/b09_authority_reader.py",
+        ]
+        plan = test_impact.build_plan(
+            spec(changed_paths), policy=self.policy, registry=self.registry
+        )
+        self.assertTrue(plan["full_chain"])
+        self.assertEqual(plan["scope"], "full_chain")
+        steps = plan["execution_steps"]
+        self.assertEqual(
+            [step["step_id"] for step in steps],
+            ["pytest-full", "pytest-outside-default", "ruff"],
+        )
+        self.assertEqual(
+            steps[1]["argv"],
+            ["uv", "run", "--locked", "pytest", "-q", B09_DIRECTED_TEST],
+        )
+
+    def test_full_chain_does_not_repeat_tests_inside_default_collection(self) -> None:
+        plan = test_impact.build_plan(
+            spec(["tools/test_impact.py"]),
+            policy=self.policy,
+            registry=self.registry,
+        )
+        self.assertEqual(
+            [step["step_id"] for step in plan["execution_steps"]],
+            ["pytest-full", "ruff"],
+        )
 
     def test_policy_and_planner_cannot_downgrade_their_own_full_chain_rule(self) -> None:
         weakened_policy = deepcopy(self.policy)

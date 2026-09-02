@@ -83,6 +83,18 @@ def _normalize_path(value: Any) -> str:
     return path.as_posix()
 
 
+def _tests_outside_default_collection(
+    tests: Iterable[str], default_collection_root: Any
+) -> list[str]:
+    root = PurePosixPath(_normalize_path(default_collection_root))
+    outside = []
+    for value in tests:
+        path = PurePosixPath(_normalize_path(value))
+        if not path.is_relative_to(root):
+            outside.append(path.as_posix())
+    return sorted(set(outside))
+
+
 def load_policy(path: Path = DEFAULT_POLICY) -> dict[str, Any]:
     raw = _mapping(read_json(path), "测试纪律")
     if raw.get("schema_version") != "pipeline-test-policy-v1":
@@ -229,6 +241,20 @@ def build_plan(
         execution_steps = [
             _execution_step("pytest-full", PORTABLE_FULL_CHAIN_ARGV)
         ]
+        outside_default_tests = _tests_outside_default_collection(
+            selected_tests, active_policy["default_collection_root"]
+        )
+        if outside_default_tests:
+            outside_argv = [
+                *LOCKED_COMMAND_PREFIX,
+                "pytest",
+                "-q",
+                *outside_default_tests,
+            ]
+            commands.append(shlex.join(outside_argv))
+            execution_steps.append(
+                _execution_step("pytest-outside-default", outside_argv)
+            )
         if lint_command:
             commands.append(lint_command)
             execution_steps.append(_execution_step("ruff", lint_argv))
