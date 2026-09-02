@@ -6,7 +6,7 @@ from __future__ import annotations
 import copy
 import json
 import sys
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -76,6 +76,22 @@ def _need(
     actuality: str = "CURRENT_FACT_OR_STATE",
     trigger: str = "INITIAL",
 ) -> dict[str, Any]:
+    trigger_provenance = None
+    if parent is not None:
+        decision = {
+            "need_id": need_id,
+            "parent_need_id": parent,
+            "decision_code": trigger,
+        }
+        trigger_provenance = {
+            "decision_contract": "SYNTHETIC_TASK_PLAN_DECISION",
+            "decision_contract_version": "v1",
+            "decision_object_ref": f"decision://{need_id}",
+            "decision_object_sha256": core.sha256_json(decision),
+            "producer_component_id": "C9_CONTRACT_FIXTURE_BUILDER",
+            "decision_code": trigger,
+            "parent_need_id": parent,
+        }
     return {
         "need_id": need_id,
         "evidence_layer": layer,
@@ -91,6 +107,7 @@ def _need(
         "recall_disposition": "RETRIEVABLE",
         "recall_handle": f"synthetic-recall://{need_id}",
         "expansion_trigger": trigger,
+        "trigger_provenance": trigger_provenance,
     }
 
 
@@ -181,7 +198,6 @@ def _outcome(
             "reason_code": reason_code or "OWNER_RUNTIME_NOT_AVAILABLE",
             "source_document": None,
             "material_text": None,
-            "validator_id": None,
         }
     return {
         "need_id": need["need_id"],
@@ -200,7 +216,6 @@ def _outcome(
             if material_text is not None
             else (f"{need['need_id']} 的合成材料" if status == "OK" else None)
         ),
-        "validator_id": f"synthetic-validator:{need['source_contract']}:v1",
     }
 
 
@@ -224,12 +239,73 @@ def _synthetic_object_validator(document: Any) -> str:
     return result
 
 
-def _registry() -> dict[str, Callable[[Any], Any]]:
+def _synthetic_binding_adapter(
+    document: dict[str, Any],
+    need: dict[str, Any],
+    material_text: str | None,
+    basis_mode: str,
+) -> dict[str, Any]:
+    if need["source_contract"] == "LEDGER_READ_TOOL_CONTRACT":
+        receipt = document["receipt"]
+        truth_scope = {
+            "author_id": receipt["author_id"],
+            "project_id": receipt["project_id"],
+        }
+        read_request_id = document["request_id"]
+        basis_sha256 = receipt["basis_sha256"]
+    else:
+        scope = document["truth_scope_ref"]
+        truth_scope = {
+            "author_id": scope["principal_author_id"],
+            "project_id": scope["project_id"],
+        }
+        read_request_id = f"SYNTHETIC-READ-{need['need_id']}"
+        basis_sha256 = core.sha256_json(
+            {"document": core.sha256_json(document), "need": need["need_id"]}
+        )
+    selector = {
+        "selector_kind": "SYNTHETIC_CONTRACT_PROJECTION",
+        "selector_ref": f"projection://{need['need_id']}",
+    }
+    selector["selector_sha256"] = core.sha256_json(selector)
+    manifest = [{"source_object_sha256": core.sha256_json(document)}]
     return {
+        "canonical_object_ref": need["object_ref"],
+        "truth_scope_ref": truth_scope,
+        "source_object_sha256": core.sha256_json(document),
+        "source_revision_ref": f"revision://{need['need_id']}",
+        "basis_mode": basis_mode,
+        "read_request_id": read_request_id,
+        "basis_sha256": basis_sha256,
+        "source_manifest_sha256": (
+            core.sha256_json(manifest) if basis_mode == "pinned_manifest" else None
+        ),
+        "projection_selector": selector,
+        "projected_material_sha256": (
+            core._sha256_text(material_text) if material_text is not None else None
+        ),
+        "pin_proof_status": (
+            "PINNED_VALID" if basis_mode == "pinned_manifest" else "CURRENT_AT_START"
+        ),
+    }
+
+
+def _registry() -> dict[str, dict[str, Any]]:
+    validators = {
         "LEDGER_READ_TOOL_CONTRACT": _synthetic_ledger_validator,
         "TRACEABLE_PROVENANCE_SEAL": _synthetic_object_validator,
         "CHAPTER_SETTLEMENT_SEAL": _synthetic_object_validator,
         "CHAPTER_LAYERED_SUMMARY": _synthetic_object_validator,
+    }
+    return {
+        source_contract: {
+            "source_contract": source_contract,
+            "source_contract_version": core.SOURCE_CONTRACT_VERSIONS[source_contract],
+            "validator_id": f"synthetic-validator:{source_contract}:v2",
+            "validate_document": validator,
+            "bind_projection": _synthetic_binding_adapter,
+        }
+        for source_contract, validator in validators.items()
     }
 
 
@@ -264,7 +340,7 @@ def _build_run(
 ) -> tuple[
     dict[str, Any],
     list[dict[str, Any]],
-    dict[str, Callable[[Any], Any]],
+    dict[str, dict[str, Any]],
 ]:
     basis_mode = "current_at_start"
     budget = 200
@@ -317,10 +393,7 @@ def _build_run(
         budget=budget,
         gap_behavior=gap_behavior,
     )
-    outcomes = [
-        _outcome(need, basis_mode=basis_mode)
-        for need in needs
-    ]
+    outcomes = [_outcome(need, basis_mode=basis_mode) for need in needs]
 
     if scenario in {"gap_empty_warn", "gap_assumption_allowed", "stop_missing_block"}:
         outcomes[1] = _outcome(
@@ -350,7 +423,15 @@ def _reseal(value: dict[str, Any], field: str) -> None:
     value[field] = core.sha256_json(value)
 
 
-def _mutated_result(scenario: str) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+def _mutated_result(
+    scenario: str,
+) -> tuple[
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, Any],
+    list[dict[str, Any]],
+    dict[str, dict[str, Any]],
+]:
     request, outcomes, registry = _build_run("ready_ledger")
     plan = core.prepare_plan(request)
     result = core.compile_result(request, plan, outcomes, registry)
@@ -362,6 +443,9 @@ def _mutated_result(scenario: str) -> tuple[dict[str, Any], dict[str, Any], dict
             {
                 "need_id": loaded["need_id"],
                 "object_ref": loaded["object_ref"],
+                "evidence_layer": loaded["evidence_layer"],
+                "parent_need_id": loaded["parent_need_id"],
+                "obligation_tier": loaded["obligation_tier"],
                 "reason": "BUDGET_OPTIONAL_DEFERRED",
                 "source_validation": copy.deepcopy(loaded["source_validation"]),
                 "recall_disposition": loaded["recall_disposition"],
@@ -384,11 +468,11 @@ def _mutated_result(scenario: str) -> tuple[dict[str, Any], dict[str, Any], dict
         result["replay_status"] = "REPLAYABLE_PINNED"
     elif scenario == "invalid_run_sha":
         result["run_sha256"] = "0" * 64
-        return request, plan, result
+        return request, plan, result, outcomes, registry
     else:
         raise FixtureError(f"UNKNOWN_RESULT_MUTATION:{scenario}")
     _reseal(result, "run_sha256")
-    return request, plan, result
+    return request, plan, result, outcomes, registry
 
 
 def _expect_invalid(scenario: str) -> None:
@@ -400,8 +484,8 @@ def _expect_invalid(scenario: str) -> None:
         "invalid_replay",
         "invalid_run_sha",
     }:
-        request, plan, result = _mutated_result(scenario)
-        core.validate_result(result, request, plan)
+        request, plan, result, outcomes, registry = _mutated_result(scenario)
+        core.validate_result(result, request, plan, outcomes, registry)
         return
 
     request, outcomes, registry = _build_run("ready_ledger")
@@ -450,7 +534,7 @@ def _expect_invalid(scenario: str) -> None:
             raise FixtureError(f"SAFETY_CASE_DID_NOT_STOP:{scenario}")
         result["status"] = "READY"
         _reseal(result, "run_sha256")
-        core.validate_result(result, request, plan)
+        core.validate_result(result, request, plan, outcomes, registry)
 
 
 def load_fixtures(path: Path = FIXTURE_PATH) -> list[dict[str, str]]:

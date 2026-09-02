@@ -35,7 +35,7 @@ CASES = validator.load_fixtures()
 def test_schema_and_24_case_inventory_are_frozen() -> None:
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
-    assert schema["title"] == "C9 unified retrieval run c9-unified-retrieval-run-v1"
+    assert schema["title"] == "C9 unified retrieval run c9-unified-retrieval-run-v2"
     assert len(CASES) == 24
     assert len({case["case_id"] for case in CASES}) == 24
     assert validator.validate_all_fixtures() == validator.EXPECTED_COUNTS
@@ -56,6 +56,10 @@ def test_contract_keeps_runtime_truth_and_hypothesis_boundaries_explicit() -> No
         "packer.pack_context()",
         "AUDITABLE_CURRENT_NOT_REPLAYABLE",
         "REPLAYABLE_PINNED",
+        "PINNED_REQUEST_NOT_REPLAYABLE",
+        "source_binding",
+        "trigger_provenance",
+        "RESULT_NOT_EXACT_SOURCE_RECOMPILE",
         "核心不生成假设",
         "十本账已真实接线",
     ):
