@@ -1249,6 +1249,41 @@ def test_postcommit_exact_child_narrow_positive(tmp_path: Path) -> None:
     assert len(view["hints"][0]["supporting_route_unit_ids"]) == 1
 
 
+@pytest.mark.parametrize(
+    "mismatch_kind",
+    ["validation_receipt_ref", "patch_proposal_ref", "protection_set_ref"],
+)
+def test_postcommit_merge_receipt_must_match_selected_validation_closure(
+    tmp_path: Path,
+    mismatch_kind: str,
+) -> None:
+    world = _build_world(
+        tmp_path / f"postcommit-merge-closure-{mismatch_kind}",
+        safe_postcommit=True,
+    )
+    _commit(world)
+    snapshot = world.make_reader().read(world.request)
+    merge_receipt = snapshot["merge_receipt_or_null"]
+    mismatched_ref = deepcopy(merge_receipt["payload"][mismatch_kind])
+    mismatched_ref["record_id"] = f"{mismatched_ref['record_id']}:other"
+    mismatched_ref["record_hash"] = sha256_value(mismatched_ref)
+    merge_receipt["payload"][mismatch_kind] = mismatched_ref
+    merge_receipt["record_hash"] = sha256_value(
+        {
+            key: value
+            for key, value in merge_receipt.items()
+            if key != "record_hash"
+        }
+    )
+
+    view = project_current_causal_hints(snapshot)
+
+    assert (view["status"], view["reason_code"]) == (
+        "EMPTY",
+        "POST_COMMIT_NOT_PROVABLY_UNCHANGED",
+    )
+
+
 @pytest.mark.parametrize("mismatch_kind", ["extra", "different"])
 def test_postcommit_view_rejects_route_unit_mismatch(
     tmp_path: Path,

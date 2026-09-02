@@ -331,6 +331,15 @@ def _phase(snapshot: dict[str, Any]) -> tuple[str, str]:
         or receipt["pointer_generation_after"] != pointer["generation"]
         or receipt["pointer_generation_before"] + 1 != pointer["generation"]
         or not _ref_equal(receipt["route_receipt_ref"], record_ref(route))
+        or not _ref_equal(receipt["validation_receipt_ref"], record_ref(validation))
+        or not _ref_equal(
+            receipt["patch_proposal_ref"],
+            validation["payload"]["input_binding"]["patch_proposal_ref"],
+        )
+        or not _ref_equal(
+            receipt["protection_set_ref"],
+            validation["payload"]["input_binding"]["protection_set_ref"],
+        )
     ):
         raise _PostCommitUnsafe("pointer is not the exact committed child")
     return "POST_COMMIT_EXACT_CHILD", route_bound_hash
