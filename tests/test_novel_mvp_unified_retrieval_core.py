@@ -494,3 +494,64 @@ def test_validator_registry_rejects_unknown_or_non_callable_entries() -> None:
             [outcome],
             {"LEDGER_READ_TOOL_CONTRACT": "not-callable"},
         )
+
+
+@pytest.mark.parametrize("behavior", ["AUTO_CONTINUE", "WARN_AND_CONTINUE"])
+def test_all_missing_sources_still_honor_continue_on_gap(behavior: str) -> None:
+    needs = [_need("NEED-EMPTY"), _need("NEED-NOT-OPEN")]
+    request = _request(needs, behavior=behavior)
+    outcomes = [
+        _outcome(needs[0], _ledger_response("LR-VALID-08"), None),
+        _not_attempted(needs[1]),
+    ]
+
+    result = core.compile_result(
+        request,
+        core.prepare_plan(request),
+        outcomes,
+        _registry(),
+    )
+
+    assert result["status"] == "READY_WITH_GAPS"
+    assert result["material_package"]["loaded"] == []
+    assert result["short_receipt"]["required_missing"] == 2
+    assert [row["source_status"] for row in result["material_package"]["outstanding"]] == [
+        "EMPTY",
+        "NOT_ATTEMPTED",
+    ]
+
+
+def test_runtime_need_id_validation_matches_published_schema() -> None:
+    request = _request([_need("NEED-valid")])
+    request["source_needs"][0]["need_id"] = "NEED-a/b"
+    request = core.seal_request(request)
+
+    with pytest.raises(core.C9RetrievalError, match="NEED_ID_INVALID"):
+        core.prepare_plan(request)
+
+
+def test_trace_source_fields_cannot_be_resealed_into_a_false_audit_trail() -> None:
+    needs = [_need("NEED-PRESENT"), _need("NEED-EMPTY")]
+    request = _request(needs)
+    outcomes = [
+        _outcome(needs[0], _ledger_response("LR-VALID-07"), "可用材料"),
+        _outcome(needs[1], _ledger_response("LR-VALID-08"), None),
+    ]
+    plan = core.prepare_plan(request)
+    result = core.compile_result(request, plan, outcomes, _registry())
+    changed = copy.deepcopy(result)
+    changed["trace_log"]["events"][1]["source_status"] = "REJECTED"
+    changed["trace_log"].pop("trace_log_sha256")
+    changed["trace_log"]["trace_log_sha256"] = core.sha256_json(changed["trace_log"])
+    changed["short_receipt"]["trace_log_sha256"] = changed["trace_log"][
+        "trace_log_sha256"
+    ]
+    changed["short_receipt"].pop("receipt_sha256")
+    changed["short_receipt"]["receipt_sha256"] = core.sha256_json(
+        changed["short_receipt"]
+    )
+    changed.pop("run_sha256")
+    changed["run_sha256"] = core.sha256_json(changed)
+
+    with pytest.raises(core.C9RetrievalError, match="TRACE_EVENT_MISMATCH"):
+        core.validate_result(changed, request, plan)
