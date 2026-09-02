@@ -639,6 +639,15 @@
       "full_chain": true
     },
     {
+      "name": "CCZ-57 B-09 直接读取的 B-01 样例合同",
+      "pattern": "work/ccz57_m3_b01_candidate_version_r03_5/OBJECT_SHAPES.json",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py"
+      ],
+      "full_chain": true
+    },
+    {
       "name": "CCZ-57 B-09 当前因果提示纯派生视图",
       "pattern": "work/ccz57_m3_b09_current_causal_hint_view_r01/*.py",
       "modules": [],

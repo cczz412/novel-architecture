@@ -50,6 +50,10 @@ from work.ccz57_m3_b06_commit_core_r01.b06_contracts import (  # noqa: E402
     validate_merge_receipt,
     validate_mutable_pointer,
 )
+from work.ccz57_m3_b04_patch_atomic_group_r03_5.b04_contracts import (  # noqa: E402
+    B04ContractError,
+    validate_causal_record,
+)
 from work.ccz57_m3_b07_local_recovery_stop_r01.b07_contracts import (  # noqa: E402
     validate_current_run_state,
 )
@@ -840,6 +844,7 @@ class CurrentCausalHintAuthorityReader:
     def _attach_immutables(self, collected: dict[str, Any]) -> dict[str, Any]:
         route = collected["active_route"]
         proposals: list[dict[str, Any]] = []
+        patch_proposal: dict[str, Any] | None = None
         if route is not None:
             proposal_refs = [
                 entry["causal_hint_proposal_ref"]
@@ -857,6 +862,12 @@ class CurrentCausalHintAuthorityReader:
                 proposals.append(
                     self._read_exact(ref, expected_type="M3_CAUSAL_HINT_PROPOSAL")
                 )
+            patch_proposal = self._read_exact(
+                collected["validation_receipt"]["payload"]["input_binding"][
+                    "patch_proposal_ref"
+                ],
+                expected_type="M3_PATCH_PROPOSAL",
+            )
         reference_records = self._candidate_reference_records(
             [collected["base_candidate"], collected["current_candidate"]]
         )
@@ -890,7 +901,58 @@ class CurrentCausalHintAuthorityReader:
                 reference_records=reference_records,
             )
             validate_segment_index_snapshot(current_segment_index)
-        except (B01ContractError, B06ContractError, KeyError, TypeError) as error:
+            if route is not None and patch_proposal is not None:
+                base_segment_indexes = [
+                    record
+                    for record in reference_records
+                    if _ref_equal(
+                        b01_record_ref(record),
+                        collected["base_candidate"]["payload"]["segment_index_ref"],
+                    )
+                ]
+                if len(base_segment_indexes) != 1:
+                    raise B09AuthorityError(
+                        "AUTHORITY_REFERENCE_CONFLICT", "base segment index closure"
+                    )
+                input_binding = collected["validation_receipt"]["payload"][
+                    "input_binding"
+                ]
+                b02_binding = input_binding["b02_scope_binding"]
+                context = {
+                    "reference_records": [
+                        record
+                        for record in reference_records
+                        if record["record_type"] != "M3_SEGMENT_INDEX_SNAPSHOT"
+                    ],
+                    "segment_index": base_segment_indexes[0],
+                    "candidate_version": collected["base_candidate"],
+                    "lineage_locators": [],
+                    "evidence_locators": [],
+                    "segment_inputs": [],
+                }
+                diagnostic_refs = [
+                    binding["diagnostic_ref"]
+                    for binding in b02_binding["diagnostic_state_bindings"]
+                ]
+                coverage_refs = b02_binding["coverage_observation_refs"]
+                source_slice_refs = patch_proposal["payload"].get(
+                    "authorized_source_slice_refs", []
+                )
+                for proposal in proposals:
+                    validate_causal_record(
+                        proposal,
+                        context=context,
+                        diagnostic_refs=diagnostic_refs,
+                        coverage_refs=coverage_refs,
+                        source_slice_refs=source_slice_refs,
+                    )
+        except (
+            B01ContractError,
+            B04ContractError,
+            B06ContractError,
+            KeyError,
+            TypeError,
+        ) as error:
             raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
         if (
             current_segment_index["payload"]["chapter_revision_ref"]

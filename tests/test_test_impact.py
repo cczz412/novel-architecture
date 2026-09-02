@@ -215,6 +215,28 @@ class TestImpactTests(unittest.TestCase):
                     )
                 )
 
+    def test_b09_direct_nonpython_fixture_input_selects_directed_test(self) -> None:
+        path = "work/ccz57_m3_b01_candidate_version_r03_5/OBJECT_SHAPES.json"
+        plan = test_impact.build_plan(
+            spec([path]), policy=self.policy, registry=self.registry
+        )
+        self.assertEqual(plan["scope"], "full_chain")
+        self.assertTrue(plan["full_chain"])
+        self.assertEqual(plan["unknown_paths"], [])
+        self.assertEqual(plan["selected_tests"], [B09_DIRECTED_TEST])
+        self.assertEqual(
+            [step["step_id"] for step in plan["execution_steps"]],
+            ["pytest-full", "pytest-outside-default"],
+        )
+        self.assertEqual(
+            plan["execution_steps"][1]["argv"],
+            ["uv", "run", "--locked", "pytest", "-q", B09_DIRECTED_TEST],
+        )
+        self.assertIn(
+            "CCZ-57 B-09 直接读取的 B-01 样例合同",
+            plan["matched_paths"][path],
+        )
+
     def test_full_chain_keeps_registered_tests_outside_default_collection(
         self,
     ) -> None:

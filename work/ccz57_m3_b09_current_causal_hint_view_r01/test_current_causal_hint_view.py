@@ -70,6 +70,7 @@ from work.ccz57_m3_b08_segment_terminal_r01.fixtures import (  # noqa: E402
 
 from b09_authority_reader import CurrentCausalHintAuthorityReader  # noqa: E402
 from b09_contracts import (  # noqa: E402
+    B09AuthorityError,
     B09ContractError,
     validate_request,
     validate_view,
@@ -999,6 +1000,54 @@ def test_exact_immutable_hash_mismatch_fails_closed(tmp_path: Path) -> None:
         "ERROR",
         "AUTHORITY_HASH_MISMATCH",
     )
+
+
+@pytest.mark.parametrize(
+    ("field", "bad_value"),
+    [
+        ("noncommittable", False),
+        ("expiry_request_seconds", 0),
+        (
+            "chapter_revision_ref",
+            {
+                "chapter_id": "other-chapter",
+                "revision_no": 1,
+                "revision_text_sha256": "f" * 64,
+            },
+        ),
+    ],
+)
+def test_reader_applies_complete_b04_causal_contract(
+    tmp_path: Path,
+    field: str,
+    bad_value: Any,
+) -> None:
+    world = _build_world(tmp_path / field)
+    snapshot = world.make_reader().read(world.request)
+    invalid_proposal = deepcopy(snapshot["causal_hint_proposals"][0])
+    invalid_proposal["payload"][field] = bad_value
+    _rehash_external(invalid_proposal, "causal-hint-proposal")
+    invalid_ref = record_ref(invalid_proposal)
+    collected = deepcopy(snapshot)
+    for key in (
+        "request",
+        "b05_records",
+        "causal_hint_proposals",
+        "current_segment_index",
+    ):
+        collected.pop(key)
+    collected["active_route"]["payload"]["causal_hint_routes"][0][
+        "causal_hint_proposal_ref"
+    ] = invalid_ref
+
+    def reissued_reader(ref: dict[str, Any]) -> dict[str, Any]:
+        if canonical_bytes(ref) == canonical_bytes(invalid_ref):
+            return deepcopy(invalid_proposal)
+        return world.read_immutable(ref)
+
+    reader = world.make_reader(immutable_override=reissued_reader)
+    with pytest.raises(B09AuthorityError, match="AUTHORITY_HASH_MISMATCH"):
+        reader._attach_immutables(collected)
 
 
 def test_b07_route_hash_must_equal_exact_route_record_hash(tmp_path: Path) -> None:
