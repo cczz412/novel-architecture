@@ -48,8 +48,13 @@ FIXTURE_PATH = CONTRACTS_DIR / f"{CONTRACT_ID}.fixtures.jsonl"
 ARCHITECTURE_PATH = REPO_ROOT / "novel-mvp" / "ARCHITECTURE.md"
 
 LEGACY_SHA256 = {
+    # C1 lock provenance:
+    # - 967b67f: 0363659ee3c9c754f6c5d4a96c131647bf0e5fb4f6cc2b5c6716f711b8d325f8
+    # - 4a96be0: 78441c00f76bcb2d955f157e5369f3176dc40f7b626c07dcc32937fe0fcec4d4
+    # 4a96be0 only clarified the v2 handover title source and C11 ownership;
+    # the C1 v1 version and field table stayed unchanged. Keep the whole-file guard.
     "novel-mvp/contracts/C1_CHAPTER_DOC.md": (
-        "0363659ee3c9c754f6c5d4a96c131647bf0e5fb4f6cc2b5c6716f711b8d325f8"
+        "78441c00f76bcb2d955f157e5369f3176dc40f7b626c07dcc32937fe0fcec4d4"
     ),
     "novel-mvp/contracts/C2_SEGMENT.md": (
         "50ca44b1b638ddf7b8012c3b7bc0a2cda7c2c6c4412b7f900e0573852aea1829"
