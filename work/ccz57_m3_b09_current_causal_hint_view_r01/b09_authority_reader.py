@@ -121,6 +121,33 @@ def _ref_equal(left: Any, right: Any) -> bool:
     return canonical_bytes(left) == canonical_bytes(right)
 
 
+def _require_route_validation_binding(
+    route: dict[str, Any], validation: dict[str, Any]
+) -> None:
+    route_payload = route["payload"]
+    validation_payload = validation["payload"]
+    binding_header = route_payload["binding_header"]
+    input_binding = validation_payload["input_binding"]
+    expected_header = {
+        key: deepcopy(input_binding[key]) for key in binding_header
+    }
+    shared_fields = (
+        "evaluation_key",
+        "evaluation_input_hash",
+        "validator_identity_ref",
+        "validation_policy_ref",
+        "active_policy_selection_ref",
+        "active_policy_selection_hash",
+    )
+    if not _ref_equal(binding_header, expected_header) or any(
+        not _ref_equal(route_payload[key], validation_payload[key])
+        for key in shared_fields
+    ):
+        raise B09AuthorityError(
+            "AUTHORITY_REFERENCE_CONFLICT", "route/PVR binding"
+        )
+
+
 def _record_for_ref(
     records: list[dict[str, Any]],
     ref: dict[str, Any],
@@ -692,12 +719,11 @@ class CurrentCausalHintAuthorityReader:
             )
         if route is not None:
             binding = route["payload"]["binding_header"]
+            _require_route_validation_binding(route, validation)
             if (
                 binding["chapter_revision_ref"]
                 != base_candidate["payload"]["chapter_revision_ref"]
                 or binding["seg"] != base_candidate["payload"]["seg"]
-                or validation["payload"]["active_policy_selection_hash"]
-                != route["payload"]["active_policy_selection_hash"]
             ):
                 raise B09AuthorityError(
                     "AUTHORITY_REFERENCE_CONFLICT", "route/base/PVR binding"

@@ -30,6 +30,7 @@ from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
     canonical_bytes,
     record_ref,
     sha256_value,
+    validate_output_record,
 )
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
     record_ref as b01_record_ref,
@@ -68,7 +69,10 @@ from work.ccz57_m3_b08_segment_terminal_r01.fixtures import (  # noqa: E402
     FixtureClock as B08FixtureClock,
 )
 
-from b09_authority_reader import CurrentCausalHintAuthorityReader  # noqa: E402
+from b09_authority_reader import (  # noqa: E402
+    CurrentCausalHintAuthorityReader,
+    _require_route_validation_binding,
+)
 from b09_contracts import (  # noqa: E402
     B09AuthorityError,
     B09ContractError,
@@ -1024,6 +1028,91 @@ def test_candidate_dependency_reader_preserves_b09_authority_error(
     )
 
     assert (view["status"], view["reason_code"]) == ("ERROR", reason_code)
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "patch_proposal_ref",
+        "protection_set_ref",
+        "base_candidate_version_ref",
+        "candidate_schema_id",
+        "chapter_revision_ref",
+        "seg",
+        "segment_index_ref",
+        "live_pointer_binding_hash",
+        "b02_scope_snapshot_hash",
+        "non_content_gate_snapshot_hash",
+    ],
+)
+def test_route_header_must_match_selected_validation_input(
+    tmp_path: Path,
+    field: str,
+) -> None:
+    world = _build_world(tmp_path / f"route-pvr-{field}")
+    route = deepcopy(world.route)
+    validation = world.b05.store.record_by_ref(
+        route["payload"]["validation_receipt_ref"]
+    )
+    value = route["payload"]["binding_header"][field]
+    if isinstance(value, dict):
+        value = deepcopy(value)
+        first_key = next(iter(value))
+        value[first_key] = f"{value[first_key]}:other"
+    elif isinstance(value, int):
+        value += 1
+    else:
+        value = "f" * 64 if len(value) == 64 else f"{value}:other"
+    route["payload"]["binding_header"][field] = value
+    route["payload"]["binding_header_hash"] = sha256_value(
+        route["payload"]["binding_header"]
+    )
+    route["record_id"] = f"patch-route:{sha256_value(route['payload'])}"
+    route["record_hash"] = sha256_value(
+        {key: value for key, value in route.items() if key != "record_hash"}
+    )
+    validate_output_record(route)
+
+    with pytest.raises(B09AuthorityError, match="AUTHORITY_REFERENCE_CONFLICT"):
+        _require_route_validation_binding(route, validation)
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "evaluation_key",
+        "evaluation_input_hash",
+        "validator_identity_ref",
+        "validation_policy_ref",
+        "active_policy_selection_ref",
+        "active_policy_selection_hash",
+    ],
+)
+def test_route_metadata_must_match_selected_validation_receipt(
+    tmp_path: Path,
+    field: str,
+) -> None:
+    world = _build_world(tmp_path / f"route-pvr-metadata-{field}")
+    route = deepcopy(world.route)
+    validation = world.b05.store.record_by_ref(
+        route["payload"]["validation_receipt_ref"]
+    )
+    value = route["payload"][field]
+    if isinstance(value, dict):
+        value = deepcopy(value)
+        first_key = next(iter(value))
+        value[first_key] = f"{value[first_key]}:other"
+    else:
+        value = "f" * 64 if len(value) == 64 else f"{value}:other"
+    route["payload"][field] = value
+    route["record_id"] = f"patch-route:{sha256_value(route['payload'])}"
+    route["record_hash"] = sha256_value(
+        {key: value for key, value in route.items() if key != "record_hash"}
+    )
+    validate_output_record(route)
+
+    with pytest.raises(B09AuthorityError, match="AUTHORITY_REFERENCE_CONFLICT"):
+        _require_route_validation_binding(route, validation)
 
 
 @pytest.mark.parametrize(
