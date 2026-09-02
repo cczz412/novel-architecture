@@ -824,6 +824,8 @@ class CurrentCausalHintAuthorityReader:
             b01_validate_record_ref(ref, expected_type=expected_type)
             record = self._immutable_reader(deepcopy(ref))
             b01_validate_record(record)
+        except B09AuthorityError:
+            raise
         except B01ContractError as error:
             raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
         except Exception as error:

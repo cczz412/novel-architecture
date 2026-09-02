@@ -1003,6 +1003,30 @@ def test_exact_immutable_hash_mismatch_fails_closed(tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize(
+    "reason_code",
+    ["AUTHORITY_READER_UNAVAILABLE", "AUTHORITY_HASH_MISMATCH", "AUTHORITY_DRIFT"],
+)
+def test_candidate_dependency_reader_preserves_b09_authority_error(
+    tmp_path: Path,
+    reason_code: str,
+) -> None:
+    world = _build_world(tmp_path / reason_code.lower())
+    candidate = world.b05.b01_reader.read_scope()["candidate_version_record"]
+    target_ref = candidate["payload"]["segment_index_ref"]
+
+    def unavailable_reader(ref: dict[str, Any]) -> dict[str, Any]:
+        if canonical_bytes(ref) == canonical_bytes(target_ref):
+            raise B09AuthorityError(reason_code, "candidate dependency")
+        return world.read_immutable(ref)
+
+    view = read_current_causal_hints(
+        world.make_reader(immutable_override=unavailable_reader), world.request
+    )
+
+    assert (view["status"], view["reason_code"]) == ("ERROR", reason_code)
+
+
+@pytest.mark.parametrize(
     ("field", "bad_value"),
     [
         ("noncommittable", False),

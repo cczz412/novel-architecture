@@ -630,8 +630,8 @@
       "full_chain": true
     },
     {
-      "name": "CCZ-57 B-09 直接权威上游",
-      "pattern": "work/ccz57_m3_b0[145678]_*/*.py",
+      "name": "CCZ-57 B-09 权威上游与传递合同",
+      "pattern": "work/ccz57_m3_b0[12345678]_*/*.py",
       "modules": [],
       "tests": [
         "work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py"

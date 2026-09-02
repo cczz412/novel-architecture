@@ -11,8 +11,10 @@ ROOT = Path(__file__).resolve().parents[1]
 PR_GATE_WORKFLOW = ROOT / ".github/workflows/pr-gate.yml"
 B09_COMPONENT_ROOT = "work/ccz57_m3_b09_current_causal_hint_view_r01"
 B09_DIRECTED_TEST = f"{B09_COMPONENT_ROOT}/test_current_causal_hint_view.py"
-B09_DIRECT_AUTHORITY_UPSTREAM_PATHS = [
+B09_AUTHORITY_DEPENDENCY_PATHS = [
     "work/ccz57_m3_b01_candidate_version_r03_5/b01_contract.py",
+    "work/ccz57_m3_b02_diagnostic_coverage_r03_5/b02_contracts.py",
+    "work/ccz57_m3_b03_bound_evidence_read_r03_5/b03_contracts.py",
     "work/ccz57_m3_b04_patch_atomic_group_r03_5/b04_contracts.py",
     "work/ccz57_m3_b05_patch_route_r03_5/b05_contracts.py",
     "work/ccz57_m3_b06_commit_core_r01/b06_contracts.py",
@@ -183,10 +185,10 @@ class TestImpactTests(unittest.TestCase):
                     plan["matched_paths"][path],
                 )
 
-    def test_b09_direct_authority_upstreams_add_consumer_without_downgrade(
+    def test_b09_authority_dependencies_add_consumer_without_downgrade(
         self,
     ) -> None:
-        for path in B09_DIRECT_AUTHORITY_UPSTREAM_PATHS:
+        for path in B09_AUTHORITY_DEPENDENCY_PATHS:
             with self.subTest(path=path):
                 plan = test_impact.build_plan(
                     spec([path]), policy=self.policy, registry=self.registry
@@ -205,12 +207,12 @@ class TestImpactTests(unittest.TestCase):
                     ["uv", "run", "--locked", "pytest", "-q", B09_DIRECTED_TEST],
                 )
                 self.assertIn(
-                    "CCZ-57 B-09 直接权威上游",
+                    "CCZ-57 B-09 权威上游与传递合同",
                     plan["matched_paths"][path],
                 )
                 self.assertTrue(
                     any(
-                        "CCZ-57 B-09 直接权威上游" in reason
+                        "CCZ-57 B-09 权威上游与传递合同" in reason
                         for reason in plan["full_chain_reasons"]
                     )
                 )
