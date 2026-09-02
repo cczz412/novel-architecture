@@ -198,11 +198,24 @@ class CurrentCausalHintAuthorityReader:
         series = [
             item
             for item in projection["series"]
-            if _ref_equal(item["active_route_receipt_ref"], route_ref)
+            if item["route_series_id"] == route["payload"]["route_series_id"]
         ]
         if len(series) != 1:
             raise B09AuthorityError(
-                "AUTHORITY_REFERENCE_CONFLICT", "B07 route is not uniquely active"
+                "AUTHORITY_REFERENCE_CONFLICT", "B07 route series is not unique"
+            )
+        active_route_ref = deepcopy(series[0]["active_route_receipt_ref"])
+        active_route = _record_for_ref(
+            records,
+            active_route_ref,
+            expected_type="M3_PATCH_ROUTE_RECEIPT",
+        )
+        if (
+            active_route["payload"]["route_series_id"]
+            != route["payload"]["route_series_id"]
+        ):
+            raise B09AuthorityError(
+                "AUTHORITY_REFERENCE_CONFLICT", "active route series mismatch"
             )
         lifecycle_head_ref = deepcopy(series[0]["lifecycle_head_ref"])
         _record_for_ref(
@@ -210,6 +223,8 @@ class CurrentCausalHintAuthorityReader:
             lifecycle_head_ref,
             expected_type="M3_PATCH_LIFECYCLE_RECEIPT",
         )
+        if not _ref_equal(active_route_ref, route_ref):
+            return None, None, None
         validation = _record_for_ref(
             records,
             route["payload"]["validation_receipt_ref"],

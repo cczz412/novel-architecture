@@ -9,6 +9,8 @@ from tools import test_impact
 
 ROOT = Path(__file__).resolve().parents[1]
 PR_GATE_WORKFLOW = ROOT / ".github/workflows/pr-gate.yml"
+B09_COMPONENT_ROOT = "work/ccz57_m3_b09_current_causal_hint_view_r01"
+B09_DIRECTED_TEST = f"{B09_COMPONENT_ROOT}/test_current_causal_hint_view.py"
 
 
 def spec(
@@ -144,6 +146,33 @@ class TestImpactTests(unittest.TestCase):
                 self.assertIn(rule_name, plan["matched_paths"][path])
                 self.assertTrue(
                     any(rule_name in reason for reason in plan["full_chain_reasons"])
+                )
+
+    def test_b09_pure_derived_view_has_long_term_targeted_registration(self) -> None:
+        paths = [
+            f"{B09_COMPONENT_ROOT}/b09_contracts.py",
+            f"{B09_COMPONENT_ROOT}/b09_authority_reader.py",
+            f"{B09_COMPONENT_ROOT}/current_causal_hint_view.py",
+            f"{B09_COMPONENT_ROOT}/self_check.py",
+            B09_DIRECTED_TEST,
+        ]
+        for path in paths:
+            with self.subTest(path=path):
+                plan = test_impact.build_plan(
+                    spec([path]), policy=self.policy, registry=self.registry
+                )
+                self.assertEqual(plan["scope"], "targeted")
+                self.assertFalse(plan["full_chain"])
+                self.assertEqual(plan["unknown_paths"], [])
+                self.assertEqual(plan["affected_modules"], [])
+                self.assertEqual(plan["selected_tests"], [B09_DIRECTED_TEST])
+                self.assertEqual(
+                    plan["execution_steps"][0]["argv"],
+                    ["uv", "run", "--locked", "pytest", "-q", B09_DIRECTED_TEST],
+                )
+                self.assertIn(
+                    "CCZ-57 B-09 当前因果提示纯派生视图",
+                    plan["matched_paths"][path],
                 )
 
     def test_policy_and_planner_cannot_downgrade_their_own_full_chain_rule(self) -> None:

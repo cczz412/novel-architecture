@@ -28,9 +28,11 @@ from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
     sha256_value,
 )
 from work.ccz57_m3_b05_patch_route_r03_5.fixtures import (  # noqa: E402
+    REOPENED_AT,
     build_environment as build_b05_environment,
     external_record,
 )
+from patch_route_projection import PatchAggregateProjector  # noqa: E402
 from work.ccz57_m3_b06_commit_core_r01.b06_store import (  # noqa: E402
     B06CommitService,
     B06CommitStore,
@@ -492,6 +494,42 @@ def test_no_b07_route_is_a_normal_empty_view(tmp_path: Path) -> None:
         "NO_ROUTE_TO_B09",
     )
     assert view["scope"]["phase"] == "NOT_APPLICABLE"
+
+
+def test_superseded_route_returns_empty(tmp_path: Path) -> None:
+    world = _build_world(tmp_path / "superseded-route")
+    before = PatchAggregateProjector.project(world.b05.store.read_records())
+    prior_route = before["series"][0]["active_route_receipt_ref"]
+    prior_head = before["series"][0]["lifecycle_head_ref"]
+
+    new_payload = deepcopy(world.b05.patch["payload"])
+    group = new_payload["atomic_groups"][0]
+    group["purpose"] = "b09-superseded-route-fixture"
+    group["group_payload_hash"] = sha256_value(
+        {key: value for key, value in group.items() if key != "group_payload_hash"}
+    )
+    new_patch = external_record(
+        "M3_PATCH_PROPOSAL", new_payload, created_at=REOPENED_AT
+    )
+    world.b05.patch = new_patch
+    reopened = world.b05.evaluate(
+        "b09-supersede-route",
+        created_at=REOPENED_AT,
+        prior_active_route_receipt_ref_or_null=prior_route,
+        prior_lifecycle_head_ref_or_null=prior_head,
+        material_delta_refs=[record_ref(new_patch)],
+    )
+    after = PatchAggregateProjector.project(world.b05.store.read_records())
+    assert reopened["route_receipt_ref"] != prior_route
+    assert after["series"][0]["active_route_receipt_ref"] == reopened[
+        "route_receipt_ref"
+    ]
+
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    assert view["status"] == "EMPTY"
+    assert view["reason_code"] == "NO_ROUTE_TO_B09"
+    assert view["scope"]["phase"] == "NOT_APPLICABLE"
+    assert view["hints"] == []
 
 
 def test_multiple_hints_have_deterministic_order_ordinals_and_hash(
