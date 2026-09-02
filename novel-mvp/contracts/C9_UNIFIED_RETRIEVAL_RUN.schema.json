@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://local.novel-mvp/contracts/C9_UNIFIED_RETRIEVAL_RUN.schema.json",
-  "title": "C9 unified retrieval run c9-unified-retrieval-run-v1",
+  "title": "C9 unified retrieval run c9-unified-retrieval-run-v2",
   "oneOf": [
     {"$ref": "#/$defs/request"},
     {"$ref": "#/$defs/plan"},
@@ -72,6 +72,34 @@
         "HIGH_IMPACT_DECISION"
       ]
     },
+    "trigger_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_contract",
+        "decision_contract_version",
+        "decision_object_ref",
+        "decision_object_sha256",
+        "producer_component_id",
+        "decision_code",
+        "parent_need_id"
+      ],
+      "properties": {
+        "decision_contract": {"type": "string", "minLength": 1},
+        "decision_contract_version": {"type": "string", "minLength": 1},
+        "decision_object_ref": {"type": "string", "minLength": 1},
+        "decision_object_sha256": {"$ref": "#/$defs/sha256"},
+        "producer_component_id": {"type": "string", "minLength": 1},
+        "decision_code": {"$ref": "#/$defs/expansion_trigger"},
+        "parent_need_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "nullable_trigger_provenance": {
+      "oneOf": [
+        {"$ref": "#/$defs/trigger_provenance"},
+        {"type": "null"}
+      ]
+    },
     "actuality_class": {
       "type": "string",
       "enum": [
@@ -105,7 +133,8 @@
         "estimated_tokens",
         "recall_disposition",
         "recall_handle",
-        "expansion_trigger"
+        "expansion_trigger",
+        "trigger_provenance"
       ],
       "properties": {
         "need_id": {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"},
@@ -126,7 +155,8 @@
         "estimated_tokens": {"type": "integer", "minimum": 0},
         "recall_disposition": {"$ref": "#/$defs/recall_disposition"},
         "recall_handle": {"$ref": "#/$defs/nullable_string"},
-        "expansion_trigger": {"$ref": "#/$defs/expansion_trigger"}
+        "expansion_trigger": {"$ref": "#/$defs/expansion_trigger"},
+        "trigger_provenance": {"$ref": "#/$defs/nullable_trigger_provenance"}
       }
     },
     "plan_step": {
@@ -147,7 +177,8 @@
         "estimated_tokens",
         "recall_disposition",
         "recall_handle",
-        "expansion_trigger"
+        "expansion_trigger",
+        "trigger_provenance"
       ],
       "properties": {
         "order": {"type": "integer", "minimum": 1},
@@ -169,7 +200,8 @@
         "estimated_tokens": {"type": "integer", "minimum": 0},
         "recall_disposition": {"$ref": "#/$defs/recall_disposition"},
         "recall_handle": {"$ref": "#/$defs/nullable_string"},
-        "expansion_trigger": {"$ref": "#/$defs/expansion_trigger"}
+        "expansion_trigger": {"$ref": "#/$defs/expansion_trigger"},
+        "trigger_provenance": {"$ref": "#/$defs/nullable_trigger_provenance"}
       }
     },
     "request": {
@@ -188,7 +220,7 @@
       ],
       "properties": {
         "contract": {"const": "C9_RETRIEVAL_REQUEST"},
-        "version": {"const": "c9-unified-retrieval-run-v1"},
+        "version": {"const": "c9-unified-retrieval-run-v2"},
         "scope": {"$ref": "#/$defs/scope"},
         "basis_mode": {
           "type": "string",
@@ -244,7 +276,7 @@
       ],
       "properties": {
         "contract": {"const": "C9_RETRIEVAL_PLAN"},
-        "version": {"const": "c9-unified-retrieval-run-v1"},
+        "version": {"const": "c9-unified-retrieval-run-v2"},
         "scope": {"$ref": "#/$defs/scope"},
         "basis_mode": {
           "type": "string",
@@ -259,6 +291,85 @@
         "plan_sha256": {"$ref": "#/$defs/sha256"}
       }
     },
+    "projection_selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selector_kind", "selector_ref", "selector_sha256"],
+      "properties": {
+        "selector_kind": {"type": "string", "minLength": 1},
+        "selector_ref": {"type": "string", "minLength": 1},
+        "selector_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical_object_ref",
+        "truth_scope_ref",
+        "source_object_sha256",
+        "source_revision_ref",
+        "basis_mode",
+        "read_request_id",
+        "basis_sha256",
+        "source_manifest_sha256",
+        "projection_selector",
+        "projected_material_sha256",
+        "pin_proof_status",
+        "validator_id",
+        "binding_receipt_sha256"
+      ],
+      "properties": {
+        "canonical_object_ref": {"type": "string", "minLength": 1},
+        "truth_scope_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["author_id", "project_id"],
+          "properties": {
+            "author_id": {"type": "string", "minLength": 1},
+            "project_id": {"type": "string", "minLength": 1}
+          }
+        },
+        "source_object_sha256": {"$ref": "#/$defs/sha256"},
+        "source_revision_ref": {"$ref": "#/$defs/nullable_string"},
+        "basis_mode": {
+          "type": "string",
+          "enum": ["current_at_start", "pinned_manifest"]
+        },
+        "read_request_id": {"$ref": "#/$defs/nullable_string"},
+        "basis_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "source_manifest_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "projection_selector": {"$ref": "#/$defs/projection_selector"},
+        "projected_material_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "pin_proof_status": {
+          "type": "string",
+          "enum": ["CURRENT_AT_START", "PINNED_VALID", "PINNED_INVALID"]
+        },
+        "validator_id": {"type": "string", "minLength": 1},
+        "binding_receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "nullable_source_binding": {
+      "oneOf": [
+        {"$ref": "#/$defs/source_binding"},
+        {"type": "null"}
+      ]
+    },
     "source_validation": {
       "type": "object",
       "additionalProperties": false,
@@ -271,7 +382,8 @@
         "document_sha256",
         "input_mode",
         "read_request_id",
-        "basis_sha256"
+        "basis_sha256",
+        "source_binding"
       ],
       "properties": {
         "source_contract": {"$ref": "#/$defs/source_contract"},
@@ -301,7 +413,8 @@
             {"$ref": "#/$defs/sha256"},
             {"type": "null"}
           ]
-        }
+        },
+        "source_binding": {"$ref": "#/$defs/nullable_source_binding"}
       }
     },
     "loaded_item": {
@@ -311,6 +424,8 @@
         "need_id",
         "object_ref",
         "evidence_layer",
+        "parent_need_id",
+        "obligation_tier",
         "material_text",
         "material_sha256",
         "why_loaded",
@@ -322,6 +437,8 @@
         "need_id": {"type": "string", "minLength": 1},
         "object_ref": {"type": "string", "minLength": 1},
         "evidence_layer": {"$ref": "#/$defs/evidence_layer"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
+        "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
         "material_text": {"type": "string", "minLength": 1},
         "material_sha256": {"$ref": "#/$defs/sha256"},
         "why_loaded": {"type": "string", "minLength": 1},
@@ -336,6 +453,9 @@
       "required": [
         "need_id",
         "object_ref",
+        "evidence_layer",
+        "parent_need_id",
+        "obligation_tier",
         "reason",
         "source_validation",
         "recall_disposition",
@@ -344,6 +464,9 @@
       "properties": {
         "need_id": {"type": "string", "minLength": 1},
         "object_ref": {"type": "string", "minLength": 1},
+        "evidence_layer": {"$ref": "#/$defs/evidence_layer"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
+        "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
         "reason": {"type": "string", "minLength": 1},
         "source_validation": {"$ref": "#/$defs/source_validation"},
         "recall_disposition": {"$ref": "#/$defs/recall_disposition"},
@@ -356,20 +479,32 @@
       "required": [
         "need_id",
         "object_ref",
+        "evidence_layer",
+        "parent_need_id",
         "obligation_tier",
         "category",
         "reason_code",
         "source_status",
         "fatal",
-        "source_validation"
+        "source_validation",
+        "recall_disposition",
+        "recall_handle"
       ],
       "properties": {
         "need_id": {"type": "string", "minLength": 1},
         "object_ref": {"type": "string", "minLength": 1},
+        "evidence_layer": {"$ref": "#/$defs/evidence_layer"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
         "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
         "category": {
           "type": "string",
-          "enum": ["NOT_READ", "UNRESOLVED", "FAILED", "NOT_DELIVERED"]
+          "enum": [
+            "NOT_READ",
+            "UNRESOLVED",
+            "FAILED",
+            "NOT_DELIVERED",
+            "DEPENDENCY_BLOCKED"
+          ]
         },
         "reason_code": {"type": "string", "minLength": 1},
         "source_status": {
@@ -382,7 +517,9 @@
             {"$ref": "#/$defs/source_validation"},
             {"type": "null"}
           ]
-        }
+        },
+        "recall_disposition": {"$ref": "#/$defs/recall_disposition"},
+        "recall_handle": {"$ref": "#/$defs/nullable_string"}
       }
     },
     "material_package": {
@@ -410,7 +547,10 @@
         "why_loaded",
         "validation_result",
         "final_disposition",
-        "expansion_trigger"
+        "expansion_trigger",
+        "parent_need_id",
+        "trigger_provenance",
+        "binding_receipt_sha256"
       ],
       "properties": {
         "order": {"type": "integer", "minimum": 1},
@@ -443,10 +583,19 @@
             "NOT_READ",
             "UNRESOLVED",
             "FAILED",
-            "NOT_DELIVERED"
+            "NOT_DELIVERED",
+            "DEPENDENCY_BLOCKED"
           ]
         },
-        "expansion_trigger": {"$ref": "#/$defs/expansion_trigger"}
+        "expansion_trigger": {"$ref": "#/$defs/expansion_trigger"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
+        "trigger_provenance": {"$ref": "#/$defs/nullable_trigger_provenance"},
+        "binding_receipt_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        }
       }
     },
     "trace_log": {
@@ -539,7 +688,7 @@
       ],
       "properties": {
         "contract": {"const": "C9_RETRIEVAL_RESULT"},
-        "version": {"const": "c9-unified-retrieval-run-v1"},
+        "version": {"const": "c9-unified-retrieval-run-v2"},
         "scope": {"$ref": "#/$defs/scope"},
         "basis_mode": {
           "type": "string",
@@ -550,7 +699,11 @@
         "status": {"type": "string", "enum": ["READY", "READY_WITH_GAPS", "STOPPED"]},
         "replay_status": {
           "type": "string",
-          "enum": ["REPLAYABLE_PINNED", "AUDITABLE_CURRENT_NOT_REPLAYABLE"]
+          "enum": [
+            "REPLAYABLE_PINNED",
+            "AUDITABLE_CURRENT_NOT_REPLAYABLE",
+            "PINNED_REQUEST_NOT_REPLAYABLE"
+          ]
         },
         "material_package": {"$ref": "#/$defs/material_package"},
         "short_receipt": {"$ref": "#/$defs/short_receipt"},

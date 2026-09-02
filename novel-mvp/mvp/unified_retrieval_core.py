@@ -11,13 +11,13 @@ import copy
 import hashlib
 import json
 import re
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from typing import Any, NoReturn
 
 from . import packer
 
 
-VERSION = "c9-unified-retrieval-run-v1"
+VERSION = "c9-unified-retrieval-run-v2"
 SOURCE_CONTRACT_VERSIONS = {
     "LEDGER_READ_TOOL_CONTRACT": "ledger-read-tool-contract-v1",
     "TRACEABLE_PROVENANCE_SEAL": "v1",
@@ -49,7 +49,13 @@ SOURCE_OUTCOME_FIELDS = {
     "reason_code",
     "source_document",
     "material_text",
+}
+REGISTRY_ENTRY_FIELDS = {
+    "source_contract",
+    "source_contract_version",
     "validator_id",
+    "validate_document",
+    "bind_projection",
 }
 SCOPE_FIELDS = {
     "author_id",
@@ -76,6 +82,7 @@ NEED_FIELDS = {
     "recall_disposition",
     "recall_handle",
     "expansion_trigger",
+    "trigger_provenance",
 }
 REQUEST_FIELDS = {
     "contract",
@@ -121,7 +128,42 @@ SOURCE_VALIDATION_FIELDS = {
     "input_mode",
     "read_request_id",
     "basis_sha256",
+    "source_binding",
 }
+TRIGGER_PROVENANCE_FIELDS = {
+    "decision_contract",
+    "decision_contract_version",
+    "decision_object_ref",
+    "decision_object_sha256",
+    "producer_component_id",
+    "decision_code",
+    "parent_need_id",
+}
+SOURCE_BINDING_FIELDS = {
+    "canonical_object_ref",
+    "truth_scope_ref",
+    "source_object_sha256",
+    "source_revision_ref",
+    "basis_mode",
+    "read_request_id",
+    "basis_sha256",
+    "source_manifest_sha256",
+    "projection_selector",
+    "projected_material_sha256",
+    "pin_proof_status",
+    "validator_id",
+    "binding_receipt_sha256",
+}
+RAW_SOURCE_BINDING_FIELDS = SOURCE_BINDING_FIELDS - {
+    "validator_id",
+    "binding_receipt_sha256",
+}
+PROJECTION_SELECTOR_FIELDS = {
+    "selector_kind",
+    "selector_ref",
+    "selector_sha256",
+}
+OBLIGATION_STRENGTH = {"MAY": 1, "SHOULD": 2, "HARD": 3}
 
 
 class C9RetrievalError(ValueError):
@@ -207,6 +249,85 @@ def _scope_shape(value: Any) -> None:
     )
 
 
+def _trigger_provenance_shape(value: Any) -> None:
+    row = _object(
+        value,
+        TRIGGER_PROVENANCE_FIELDS,
+        "TRIGGER_PROVENANCE_FIELDS_INVALID",
+    )
+    for field in (
+        "decision_contract",
+        "decision_contract_version",
+        "decision_object_ref",
+        "producer_component_id",
+        "decision_code",
+        "parent_need_id",
+    ):
+        _string(row[field], f"TRIGGER_PROVENANCE_FIELD_INVALID:{field}")
+    _sha(
+        row["decision_object_sha256"],
+        "TRIGGER_PROVENANCE_DECISION_SHA256_INVALID",
+    )
+
+
+def _projection_selector_shape(value: Any) -> None:
+    row = _object(
+        value,
+        PROJECTION_SELECTOR_FIELDS,
+        "PROJECTION_SELECTOR_FIELDS_INVALID",
+    )
+    for field in ("selector_kind", "selector_ref"):
+        _string(row[field], f"PROJECTION_SELECTOR_FIELD_INVALID:{field}")
+    _sha(row["selector_sha256"], "PROJECTION_SELECTOR_SHA256_INVALID")
+    _verify_seal(
+        row,
+        "selector_sha256",
+        "PROJECTION_SELECTOR_SHA256_MISMATCH",
+    )
+
+
+def _source_binding_shape(value: Any) -> None:
+    row = _object(value, SOURCE_BINDING_FIELDS, "SOURCE_BINDING_FIELDS_INVALID")
+    for field in ("canonical_object_ref", "validator_id"):
+        _string(row[field], f"SOURCE_BINDING_FIELD_INVALID:{field}")
+    scope = _object(
+        row["truth_scope_ref"],
+        {"author_id", "project_id"},
+        "SOURCE_BINDING_SCOPE_FIELDS_INVALID",
+    )
+    for field in ("author_id", "project_id"):
+        _string(scope[field], f"SOURCE_BINDING_SCOPE_INVALID:{field}")
+    _sha(row["source_object_sha256"], "SOURCE_BINDING_OBJECT_SHA256_INVALID")
+    _nullable_string(
+        row["source_revision_ref"],
+        "SOURCE_BINDING_REVISION_REF_INVALID",
+    )
+    if row["basis_mode"] not in {"current_at_start", "pinned_manifest"}:
+        _fail("SOURCE_BINDING_BASIS_MODE_INVALID")
+    _nullable_string(row["read_request_id"], "SOURCE_BINDING_READ_REQUEST_INVALID")
+    for field in ("basis_sha256", "source_manifest_sha256"):
+        if row[field] is not None:
+            _sha(row[field], f"SOURCE_BINDING_SHA256_INVALID:{field}")
+    _projection_selector_shape(row["projection_selector"])
+    if row["projected_material_sha256"] is not None:
+        _sha(
+            row["projected_material_sha256"],
+            "SOURCE_BINDING_MATERIAL_SHA256_INVALID",
+        )
+    if row["pin_proof_status"] not in {
+        "CURRENT_AT_START",
+        "PINNED_VALID",
+        "PINNED_INVALID",
+    }:
+        _fail("SOURCE_BINDING_PIN_PROOF_STATUS_INVALID")
+    _sha(row["binding_receipt_sha256"], "SOURCE_BINDING_RECEIPT_SHA256_INVALID")
+    _verify_seal(
+        row,
+        "binding_receipt_sha256",
+        "SOURCE_BINDING_RECEIPT_SHA256_MISMATCH",
+    )
+
+
 def _need_shape(value: Any, *, plan_step: bool = False) -> None:
     fields = NEED_FIELDS | ({"order"} if plan_step else set())
     need = _object(value, fields, "NEED_FIELDS_INVALID")
@@ -250,6 +371,8 @@ def _need_shape(value: Any, *, plan_step: bool = False) -> None:
         "HIGH_IMPACT_DECISION",
     }:
         _fail("NEED_EXPANSION_TRIGGER_INVALID")
+    if need["trigger_provenance"] is not None:
+        _trigger_provenance_shape(need["trigger_provenance"])
 
 
 def _source_validation_shape(value: Any) -> None:
@@ -279,6 +402,15 @@ def _source_validation_shape(value: Any) -> None:
     _nullable_string(row["read_request_id"], "SOURCE_READ_REQUEST_ID_INVALID")
     if row["basis_sha256"] is not None:
         _sha(row["basis_sha256"], "SOURCE_BASIS_SHA256_INVALID")
+    if row["source_binding"] is not None:
+        _source_binding_shape(row["source_binding"])
+        if row["source_binding"]["validator_id"] != row["validator_id"]:
+            _fail("SOURCE_BINDING_VALIDATOR_ID_MISMATCH")
+    if row["validation_result"] == "SOURCE_VALIDATION_FAILED":
+        if row["source_binding"] is not None:
+            _fail("FAILED_SOURCE_BINDING_FORBIDDEN")
+    elif row["source_binding"] is None:
+        _fail("VALID_SOURCE_BINDING_REQUIRED")
 
 
 def _request_shape(value: Mapping[str, Any]) -> None:
@@ -348,6 +480,7 @@ def _result_shape(value: Mapping[str, Any]) -> None:
     if value["replay_status"] not in {
         "REPLAYABLE_PINNED",
         "AUDITABLE_CURRENT_NOT_REPLAYABLE",
+        "PINNED_REQUEST_NOT_REPLAYABLE",
     }:
         _fail("RESULT_REPLAY_STATUS_INVALID")
 
@@ -366,6 +499,8 @@ def _result_shape(value: Mapping[str, Any]) -> None:
                 "need_id",
                 "object_ref",
                 "evidence_layer",
+                "parent_need_id",
+                "obligation_tier",
                 "material_text",
                 "material_sha256",
                 "why_loaded",
@@ -379,6 +514,9 @@ def _result_shape(value: Mapping[str, Any]) -> None:
             _string(item[field], f"LOADED_FIELD_INVALID:{field}")
         if item["evidence_layer"] not in LAYER_PARENT:
             _fail("LOADED_LAYER_INVALID")
+        _nullable_string(item["parent_need_id"], "LOADED_PARENT_NEED_ID_INVALID")
+        if item["obligation_tier"] not in OBLIGATION_STRENGTH:
+            _fail("LOADED_OBLIGATION_INVALID")
         _sha(item["material_sha256"], "LOADED_MATERIAL_SHA256_INVALID")
         _source_validation_shape(item["source_validation"])
         if item["recall_disposition"] not in {
@@ -393,6 +531,9 @@ def _result_shape(value: Mapping[str, Any]) -> None:
             {
                 "need_id",
                 "object_ref",
+                "evidence_layer",
+                "parent_need_id",
+                "obligation_tier",
                 "reason",
                 "source_validation",
                 "recall_disposition",
@@ -402,6 +543,11 @@ def _result_shape(value: Mapping[str, Any]) -> None:
         )
         for field in ("need_id", "object_ref", "reason"):
             _string(item[field], f"OMITTED_FIELD_INVALID:{field}")
+        if item["evidence_layer"] not in LAYER_PARENT:
+            _fail("OMITTED_LAYER_INVALID")
+        _nullable_string(item["parent_need_id"], "OMITTED_PARENT_NEED_ID_INVALID")
+        if item["obligation_tier"] not in OBLIGATION_STRENGTH:
+            _fail("OMITTED_OBLIGATION_INVALID")
         _source_validation_shape(item["source_validation"])
         if item["recall_disposition"] not in {
             "RETRIEVABLE",
@@ -415,12 +561,16 @@ def _result_shape(value: Mapping[str, Any]) -> None:
             {
                 "need_id",
                 "object_ref",
+                "evidence_layer",
+                "parent_need_id",
                 "obligation_tier",
                 "category",
                 "reason_code",
                 "source_status",
                 "fatal",
                 "source_validation",
+                "recall_disposition",
+                "recall_handle",
             },
             "OUTSTANDING_FIELDS_INVALID",
         )
@@ -436,17 +586,33 @@ def _result_shape(value: Mapping[str, Any]) -> None:
             _fail("OUTSTANDING_SOURCE_STATUS_INVALID")
         if item["obligation_tier"] not in {"HARD", "SHOULD", "MAY"}:
             _fail("OUTSTANDING_OBLIGATION_INVALID")
+        if item["evidence_layer"] not in LAYER_PARENT:
+            _fail("OUTSTANDING_LAYER_INVALID")
+        _nullable_string(
+            item["parent_need_id"],
+            "OUTSTANDING_PARENT_NEED_ID_INVALID",
+        )
         if item["category"] not in {
             "NOT_READ",
             "UNRESOLVED",
             "FAILED",
             "NOT_DELIVERED",
+            "DEPENDENCY_BLOCKED",
         }:
             _fail("OUTSTANDING_CATEGORY_INVALID")
         if not isinstance(item["fatal"], bool):
             _fail("OUTSTANDING_FATAL_INVALID")
         if item["source_validation"] is not None:
             _source_validation_shape(item["source_validation"])
+        if item["recall_disposition"] not in {
+            "RETRIEVABLE",
+            "NOT_RETRIEVABLE",
+        }:
+            _fail("OUTSTANDING_RECALL_DISPOSITION_INVALID")
+        _nullable_string(
+            item["recall_handle"],
+            "OUTSTANDING_RECALL_HANDLE_INVALID",
+        )
     _sha(package["package_sha256"], "PACKAGE_SHA256_INVALID")
 
     trace = _object(
@@ -469,6 +635,9 @@ def _result_shape(value: Mapping[str, Any]) -> None:
                 "validation_result",
                 "final_disposition",
                 "expansion_trigger",
+                "parent_need_id",
+                "trigger_provenance",
+                "binding_receipt_sha256",
             },
             "TRACE_EVENT_FIELDS_INVALID",
         )
@@ -500,6 +669,7 @@ def _result_shape(value: Mapping[str, Any]) -> None:
             "UNRESOLVED",
             "FAILED",
             "NOT_DELIVERED",
+            "DEPENDENCY_BLOCKED",
         }:
             _fail("TRACE_DISPOSITION_INVALID")
         if event["expansion_trigger"] not in {
@@ -513,6 +683,14 @@ def _result_shape(value: Mapping[str, Any]) -> None:
             "HIGH_IMPACT_DECISION",
         }:
             _fail("TRACE_EXPANSION_TRIGGER_INVALID")
+        _nullable_string(event["parent_need_id"], "TRACE_PARENT_NEED_ID_INVALID")
+        if event["trigger_provenance"] is not None:
+            _trigger_provenance_shape(event["trigger_provenance"])
+        if event["binding_receipt_sha256"] is not None:
+            _sha(
+                event["binding_receipt_sha256"],
+                "TRACE_BINDING_RECEIPT_SHA256_INVALID",
+            )
     _sha(trace["trace_log_sha256"], "TRACE_LOG_SHA256_INVALID")
 
     receipt = _object(
@@ -603,7 +781,10 @@ def _validate_need_order(request: Mapping[str, Any]) -> None:
             _fail(f"NEED_ID_DUPLICATE:{need_id}")
         source_contract = need["source_contract"]
         expected_version = SOURCE_CONTRACT_VERSIONS.get(source_contract)
-        if expected_version is None or need["source_contract_version"] != expected_version:
+        if (
+            expected_version is None
+            or need["source_contract_version"] != expected_version
+        ):
             _fail(f"SOURCE_CONTRACT_VERSION_UNSUPPORTED:{need_id}")
 
         layer = need["evidence_layer"]
@@ -614,6 +795,8 @@ def _validate_need_order(request: Mapping[str, Any]) -> None:
                 _fail(f"LEDGER_NEED_PARENT_FORBIDDEN:{need_id}")
             if need["expansion_trigger"] != "INITIAL":
                 _fail(f"LEDGER_NEED_MUST_BE_INITIAL:{need_id}")
+            if need["trigger_provenance"] is not None:
+                _fail(f"ROOT_TRIGGER_PROVENANCE_FORBIDDEN:{need_id}")
         else:
             parent = seen.get(parent_id)
             if parent is None:
@@ -622,13 +805,32 @@ def _validate_need_order(request: Mapping[str, Any]) -> None:
                 _fail(f"NEED_LAYER_CHAIN_INVALID:{need_id}")
             if need["expansion_trigger"] == "INITIAL":
                 _fail(f"DEEP_NEED_TRIGGER_REQUIRED:{need_id}")
+            trigger = need["trigger_provenance"]
+            if trigger is None:
+                _fail(f"DEEP_NEED_TRIGGER_PROVENANCE_REQUIRED:{need_id}")
+            if trigger["parent_need_id"] != parent_id:
+                _fail(f"TRIGGER_PROVENANCE_PARENT_MISMATCH:{need_id}")
+            if trigger["decision_code"] != need["expansion_trigger"]:
+                _fail(f"TRIGGER_PROVENANCE_DECISION_CODE_MISMATCH:{need_id}")
+            if (
+                OBLIGATION_STRENGTH[need["obligation_tier"]]
+                > OBLIGATION_STRENGTH[parent["obligation_tier"]]
+            ):
+                _fail(f"CHILD_OBLIGATION_STRONGER_THAN_PARENT:{need_id}")
 
-        if source_contract == "TRACEABLE_PROVENANCE_SEAL" and layer != "FORMATION_BASIS":
+        if (
+            source_contract == "TRACEABLE_PROVENANCE_SEAL"
+            and layer != "FORMATION_BASIS"
+        ):
             _fail(f"PROVENANCE_LAYER_INVALID:{need_id}")
-        if source_contract in {
-            "CHAPTER_SETTLEMENT_SEAL",
-            "CHAPTER_LAYERED_SUMMARY",
-        } and layer != "LEDGER_OBJECT":
+        if (
+            source_contract
+            in {
+                "CHAPTER_SETTLEMENT_SEAL",
+                "CHAPTER_LAYERED_SUMMARY",
+            }
+            and layer != "LEDGER_OBJECT"
+        ):
             _fail(f"CHAPTER_PROJECTION_LAYER_INVALID:{need_id}")
 
         obligation = need["obligation_tier"]
@@ -715,31 +917,98 @@ def _scope_from_source_document(
     return scope.get("principal_author_id"), scope.get("project_id")
 
 
+def _normalize_source_binding(
+    need: Mapping[str, Any],
+    outcome: Mapping[str, Any],
+    scope: Mapping[str, Any],
+    basis_mode: str,
+    registry_entry: Mapping[str, Any],
+) -> dict[str, Any]:
+    document = outcome["source_document"]
+    material_text = outcome["material_text"]
+    binder = registry_entry["bind_projection"]
+    try:
+        raw_binding = binder(
+            copy.deepcopy(document),
+            copy.deepcopy(need),
+            material_text,
+            basis_mode,
+        )
+    except Exception as exc:
+        raise C9RetrievalError(
+            f"SOURCE_BINDING_FAILED:{need['need_id']}:{type(exc).__name__}"
+        ) from exc
+    raw = _object(
+        raw_binding,
+        RAW_SOURCE_BINDING_FIELDS,
+        f"SOURCE_BINDING_ADAPTER_FIELDS_INVALID:{need['need_id']}",
+    )
+    binding = _seal(
+        {
+            **copy.deepcopy(dict(raw)),
+            "validator_id": registry_entry["validator_id"],
+        },
+        "binding_receipt_sha256",
+    )
+    _source_binding_shape(binding)
+
+    need_id = need["need_id"]
+    if binding["canonical_object_ref"] != need["object_ref"]:
+        _fail(f"SOURCE_BINDING_OBJECT_REF_MISMATCH:{need_id}")
+    if binding["truth_scope_ref"] != {
+        "author_id": scope["author_id"],
+        "project_id": scope["project_id"],
+    }:
+        _fail(f"SOURCE_BINDING_SCOPE_MISMATCH:{need_id}")
+    if binding["source_object_sha256"] != sha256_json(document):
+        _fail(f"SOURCE_BINDING_OBJECT_SHA256_MISMATCH:{need_id}")
+    if binding["basis_mode"] != basis_mode:
+        _fail(f"SOURCE_BINDING_BASIS_MODE_MISMATCH:{need_id}")
+    expected_material_sha256 = (
+        _sha256_text(material_text) if outcome["source_status"] == "OK" else None
+    )
+    if binding["projected_material_sha256"] != expected_material_sha256:
+        _fail(f"SOURCE_BINDING_MATERIAL_SHA256_MISMATCH:{need_id}")
+    if basis_mode == "current_at_start":
+        if binding["pin_proof_status"] != "CURRENT_AT_START":
+            _fail(f"SOURCE_BINDING_CURRENT_PROOF_INVALID:{need_id}")
+    elif binding["pin_proof_status"] == "PINNED_VALID" and any(
+        binding[field] is None
+        for field in (
+            "source_revision_ref",
+            "read_request_id",
+            "basis_sha256",
+            "source_manifest_sha256",
+        )
+    ):
+        _fail(f"SOURCE_BINDING_PIN_PROOF_INCOMPLETE:{need_id}")
+    return binding
+
+
 def _validation_result(
     need: Mapping[str, Any],
     outcome: Mapping[str, Any],
     scope: Mapping[str, Any],
     basis_mode: str,
-    validator_registry: Mapping[str, Callable[[Any], Any]],
+    validator_registry: Mapping[str, Mapping[str, Any]],
 ) -> dict[str, Any] | None:
     status = outcome["source_status"]
     if status == "NOT_ATTEMPTED":
         if (
             outcome["source_document"] is not None
             or outcome["material_text"] is not None
-            or outcome["validator_id"] is not None
             or not outcome["reason_code"]
         ):
             _fail(f"NOT_ATTEMPTED_SHAPE_INVALID:{need['need_id']}")
         return None
 
     document = outcome["source_document"]
-    validator_id = outcome["validator_id"]
-    if not isinstance(document, Mapping) or not isinstance(validator_id, str):
-        _fail(f"SOURCE_DOCUMENT_OR_VALIDATOR_MISSING:{need['need_id']}")
-    validator = validator_registry.get(need["source_contract"])
-    if validator is None:
+    if not isinstance(document, Mapping):
+        _fail(f"SOURCE_DOCUMENT_MISSING:{need['need_id']}")
+    registry_entry = validator_registry.get(need["source_contract"])
+    if registry_entry is None:
         _fail(f"SOURCE_VALIDATOR_NOT_REGISTERED:{need['need_id']}")
+    validator = registry_entry["validate_document"]
     if document.get("contract") != SOURCE_DOCUMENT_CONTRACTS[need["source_contract"]]:
         _fail(f"SOURCE_DOCUMENT_CONTRACT_MISMATCH:{need['need_id']}")
     if document.get("version") != need["source_contract_version"]:
@@ -792,16 +1061,30 @@ def _validation_result(
     elif material_text is not None:
         _fail(f"NON_OK_SOURCE_MATERIAL_FORBIDDEN:{need['need_id']}")
 
+    source_binding = _normalize_source_binding(
+        need,
+        outcome,
+        scope,
+        basis_mode,
+        registry_entry,
+    )
+    if source_contract == "LEDGER_READ_TOOL_CONTRACT" and (
+        source_binding["read_request_id"] != read_request_id
+        or source_binding["basis_sha256"] != basis_sha256
+    ):
+        _fail(f"LEDGER_SOURCE_BINDING_BASIS_MISMATCH:{need['need_id']}")
+
     return {
         "source_contract": source_contract,
         "source_contract_version": need["source_contract_version"],
-        "validator_id": validator_id,
+        "validator_id": registry_entry["validator_id"],
         "validation_result": validation_label,
         "failure_code": None,
         "document_sha256": sha256_json(document),
         "input_mode": input_mode,
-        "read_request_id": read_request_id,
-        "basis_sha256": basis_sha256,
+        "read_request_id": source_binding["read_request_id"],
+        "basis_sha256": source_binding["basis_sha256"],
+        "source_binding": source_binding,
     }
 
 
@@ -809,6 +1092,7 @@ def _failed_source_validation(
     need: Mapping[str, Any],
     outcome: Mapping[str, Any],
     failure_code: str,
+    registry_entry: Mapping[str, Any],
 ) -> dict[str, Any]:
     document = outcome.get("source_document")
     source_contract = need["source_contract"]
@@ -817,14 +1101,12 @@ def _failed_source_validation(
     return {
         "source_contract": source_contract,
         "source_contract_version": need["source_contract_version"],
-        "validator_id": outcome["validator_id"],
+        "validator_id": registry_entry["validator_id"],
         "validation_result": "SOURCE_VALIDATION_FAILED",
         "failure_code": failure_code,
         "document_sha256": sha256_json(document),
         "input_mode": (
-            "LEDGER_READ_RESPONSE"
-            if is_ledger
-            else "CALLER_PROVIDED_VALIDATED_OBJECT"
+            "LEDGER_READ_RESPONSE" if is_ledger else "CALLER_PROVIDED_VALIDATED_OBJECT"
         ),
         "read_request_id": document.get("request_id") if is_ledger else None,
         "basis_sha256": (
@@ -832,6 +1114,7 @@ def _failed_source_validation(
             if is_ledger and isinstance(receipt, Mapping)
             else None
         ),
+        "source_binding": None,
     }
 
 
@@ -839,7 +1122,7 @@ def _validate_outcomes(
     request: Mapping[str, Any],
     plan: Mapping[str, Any],
     source_outcomes: Any,
-    validator_registry: Mapping[str, Callable[[Any], Any]],
+    validator_registry: Mapping[str, Mapping[str, Any]],
 ) -> list[dict[str, Any]]:
     if not isinstance(source_outcomes, list):
         _fail("SOURCE_OUTCOMES_MUST_BE_LIST")
@@ -869,10 +1152,13 @@ def _validate_outcomes(
             failure_code = str(exc).split(":", maxsplit=1)[0]
             if failure_code in {
                 "SOURCE_VALIDATOR_NOT_REGISTERED",
-                "SOURCE_DOCUMENT_OR_VALIDATOR_MISSING",
+                "SOURCE_DOCUMENT_MISSING",
             } or not isinstance(outcome.get("source_document"), Mapping):
                 raise
-            if failure_code == "SOURCE_SCOPE_MISMATCH":
+            if failure_code in {
+                "SOURCE_SCOPE_MISMATCH",
+                "SOURCE_BINDING_SCOPE_MISMATCH",
+            }:
                 reason_code = "UNAUTHORIZED"
             elif outcome.get("reason_code") in FATAL_REASON_CODES:
                 reason_code = outcome["reason_code"]
@@ -882,6 +1168,7 @@ def _validate_outcomes(
                 needs[need_id],
                 outcome,
                 failure_code,
+                validator_registry[needs[need_id]["source_contract"]],
             )
             outcome["source_status"] = "ERROR"
             outcome["reason_code"] = reason_code
@@ -904,16 +1191,33 @@ def _validate_registry(
         _fail(f"SOURCE_VALIDATOR_REGISTRY_CONTRACT_FORBIDDEN:{unknown[0]}")
     required = {need["source_contract"] for need in request["source_needs"]}
     for source_contract in sorted(required):
-        validator = validator_registry.get(source_contract)
-        if validator is None:
+        entry = validator_registry.get(source_contract)
+        if entry is None:
             _fail(f"SOURCE_VALIDATOR_NOT_REGISTERED:{source_contract}")
-        if not callable(validator):
-            _fail(f"SOURCE_VALIDATOR_NOT_CALLABLE:{source_contract}")
+        row = _object(
+            entry,
+            REGISTRY_ENTRY_FIELDS,
+            f"SOURCE_REGISTRY_ENTRY_FIELDS_INVALID:{source_contract}",
+        )
+        if row["source_contract"] != source_contract:
+            _fail(f"SOURCE_REGISTRY_CONTRACT_MISMATCH:{source_contract}")
+        if row["source_contract_version"] != SOURCE_CONTRACT_VERSIONS[source_contract]:
+            _fail(f"SOURCE_REGISTRY_VERSION_MISMATCH:{source_contract}")
+        _string(
+            row["validator_id"],
+            f"SOURCE_REGISTRY_VALIDATOR_ID_INVALID:{source_contract}",
+        )
+        for field in ("validate_document", "bind_projection"):
+            if not callable(row[field]):
+                _fail(f"SOURCE_REGISTRY_CALLABLE_INVALID:{source_contract}:{field}")
 
 
 def _outcome_reason(outcome: Mapping[str, Any]) -> str:
     validation = outcome["source_validation"]
-    if validation and validation["validation_result"] == "STRUCTURAL_VALID_OWNER_UNRESOLVED":
+    if (
+        validation
+        and validation["validation_result"] == "STRUCTURAL_VALID_OWNER_UNRESOLVED"
+    ):
         return "OWNER_UNRESOLVED"
     return outcome["reason_code"] or outcome["source_status"]
 
@@ -937,14 +1241,44 @@ def _outcome_is_fatal(outcome: Mapping[str, Any]) -> bool:
     return _outcome_reason(outcome) in FATAL_REASON_CODES
 
 
+def _source_dependency_blockers(
+    request: Mapping[str, Any],
+    outcomes: list[dict[str, Any]],
+) -> dict[str, str]:
+    outcomes_by_id = {row["need_id"]: row for row in outcomes}
+    blocked: dict[str, str] = {}
+    for need in request["source_needs"]:
+        parent_id = need["parent_need_id"]
+        if parent_id is None:
+            continue
+        if parent_id in blocked or not _outcome_is_usable(outcomes_by_id[parent_id]):
+            blocked[need["need_id"]] = parent_id
+    return blocked
+
+
+def _pinned_inputs_valid(outcomes: list[dict[str, Any]]) -> bool:
+    for outcome in outcomes:
+        validation = outcome["source_validation"]
+        if validation is None:
+            return False
+        binding = validation["source_binding"]
+        if binding is None or binding["pin_proof_status"] != "PINNED_VALID":
+            return False
+    return True
+
+
 def _packer_request(
     request: Mapping[str, Any],
     outcomes: list[dict[str, Any]],
+    eligible_need_ids: set[str],
 ) -> dict[str, Any]:
     needs = _need_map(request)
     materials = []
     for outcome in outcomes:
-        if not _outcome_is_usable(outcome):
+        if (
+            not _outcome_is_usable(outcome)
+            or outcome["need_id"] not in eligible_need_ids
+        ):
             continue
         need = needs[outcome["need_id"]]
         materials.append(
@@ -993,6 +1327,8 @@ def _build_loaded(
                 "need_id": need_id,
                 "object_ref": need["object_ref"],
                 "evidence_layer": need["evidence_layer"],
+                "parent_need_id": need["parent_need_id"],
+                "obligation_tier": need["obligation_tier"],
                 "material_text": text,
                 "material_sha256": _sha256_text(text),
                 "why_loaded": why_loaded[need_id],
@@ -1008,19 +1344,34 @@ def _build_omitted(
     rows: list[dict[str, Any]],
     request: Mapping[str, Any],
     outcomes_by_id: Mapping[str, Mapping[str, Any]],
+    dependency_omissions: Mapping[str, str] | None = None,
 ) -> list[dict[str, Any]]:
-    needs = _need_map(request)
-    return [
-        {
-            "need_id": row["id"],
-            "object_ref": needs[row["id"]]["object_ref"],
-            "reason": row["reason"],
-            "source_validation": _source_validation_copy(outcomes_by_id[row["id"]]),
-            "recall_disposition": row["recall_disposition"],
-            "recall_handle": row["recall_handle"],
-        }
-        for row in rows
-    ]
+    packer_rows = {row["id"]: row for row in rows}
+    dependency_omissions = dependency_omissions or {}
+    result = []
+    for need in request["source_needs"]:
+        need_id = need["need_id"]
+        packer_row = packer_rows.get(need_id)
+        if packer_row is None and need_id not in dependency_omissions:
+            continue
+        result.append(
+            {
+                "need_id": need_id,
+                "object_ref": need["object_ref"],
+                "evidence_layer": need["evidence_layer"],
+                "parent_need_id": need["parent_need_id"],
+                "obligation_tier": need["obligation_tier"],
+                "reason": (
+                    packer_row["reason"]
+                    if packer_row is not None
+                    else "ANCESTOR_NOT_LOADED"
+                ),
+                "source_validation": _source_validation_copy(outcomes_by_id[need_id]),
+                "recall_disposition": need["recall_disposition"],
+                "recall_handle": need["recall_handle"],
+            }
+        )
+    return result
 
 
 def _build_outstanding(
@@ -1028,16 +1379,28 @@ def _build_outstanding(
     outcomes: list[dict[str, Any]],
     *,
     stop_reason: str | None = None,
+    dependency_blockers: Mapping[str, str] | None = None,
 ) -> list[dict[str, Any]]:
     needs = _need_map(request)
+    dependency_blockers = dependency_blockers or {}
     rows = []
     for outcome in outcomes:
-        if _outcome_is_usable(outcome) and stop_reason is None:
+        need_id = outcome["need_id"]
+        if (
+            _outcome_is_usable(outcome)
+            and need_id not in dependency_blockers
+            and stop_reason is None
+        ):
             continue
         if _outcome_is_usable(outcome):
-            category = "NOT_DELIVERED"
-            reason = stop_reason
-            fatal = True
+            if stop_reason is not None:
+                category = "NOT_DELIVERED"
+                reason = stop_reason
+                fatal = True
+            else:
+                category = "DEPENDENCY_BLOCKED"
+                reason = "ANCESTOR_SOURCE_UNAVAILABLE"
+                fatal = False
         else:
             reason = _outcome_reason(outcome)
             fatal = _outcome_is_fatal(outcome)
@@ -1049,14 +1412,18 @@ def _build_outstanding(
                 category = "FAILED"
         rows.append(
             {
-                "need_id": outcome["need_id"],
-                "object_ref": needs[outcome["need_id"]]["object_ref"],
-                "obligation_tier": needs[outcome["need_id"]]["obligation_tier"],
+                "need_id": need_id,
+                "object_ref": needs[need_id]["object_ref"],
+                "evidence_layer": needs[need_id]["evidence_layer"],
+                "parent_need_id": needs[need_id]["parent_need_id"],
+                "obligation_tier": needs[need_id]["obligation_tier"],
                 "category": category,
                 "reason_code": reason,
                 "source_status": outcome["source_status"],
                 "fatal": fatal,
                 "source_validation": copy.deepcopy(outcome["source_validation"]),
+                "recall_disposition": needs[need_id]["recall_disposition"],
+                "recall_handle": needs[need_id]["recall_handle"],
             }
         )
     return rows
@@ -1068,7 +1435,9 @@ def _warnings(
 ) -> list[str]:
     warnings = []
     for row in outstanding:
-        prefix = "MISSING_REQUIRED" if row["obligation_tier"] == "HARD" else "SOURCE_GAP"
+        prefix = (
+            "MISSING_REQUIRED" if row["obligation_tier"] == "HARD" else "SOURCE_GAP"
+        )
         warnings.append(f"{prefix}:{row['need_id']}:{row['reason_code']}")
     for row in omitted:
         warnings.append(f"OMITTED:{row['need_id']}:{row['reason']}")
@@ -1124,15 +1493,20 @@ def _build_trace_log(
                 "source_status": outcome["source_status"],
                 "reason_code": reason,
                 "why_loaded": (
-                    loaded_map[need_id]["why_loaded"]
-                    if need_id in loaded_map
-                    else None
+                    loaded_map[need_id]["why_loaded"] if need_id in loaded_map else None
                 ),
                 "validation_result": (
                     validation["validation_result"] if validation else None
                 ),
                 "final_disposition": disposition,
                 "expansion_trigger": step["expansion_trigger"],
+                "parent_need_id": step["parent_need_id"],
+                "trigger_provenance": copy.deepcopy(step["trigger_provenance"]),
+                "binding_receipt_sha256": (
+                    validation["source_binding"]["binding_receipt_sha256"]
+                    if validation and validation["source_binding"]
+                    else None
+                ),
             }
         )
     return _seal(
@@ -1204,38 +1578,51 @@ def _build_short_receipt(
 def _result_status(
     request: Mapping[str, Any],
     outcomes: list[dict[str, Any]],
+    dependency_blockers: Mapping[str, str],
 ) -> tuple[str, str | None]:
     needs = _need_map(request)
     fatal = next((row for row in outcomes if _outcome_is_fatal(row)), None)
     if fatal is not None:
         return "STOPPED", _outcome_reason(fatal)
+    if request["basis_mode"] == "pinned_manifest" and not _pinned_inputs_valid(
+        outcomes
+    ):
+        return "STOPPED", "INVALID_PIN_SET"
     missing_hard = [
         row
         for row in outcomes
         if needs[row["need_id"]]["obligation_tier"] == "HARD"
-        and not _outcome_is_usable(row)
+        and (not _outcome_is_usable(row) or row["need_id"] in dependency_blockers)
     ]
     if missing_hard:
         behavior = request["gap_policy"]["missing_required_behavior"]
         if behavior == "BLOCK":
             return "STOPPED", "MISSING_REQUIRED_BLOCKED"
         return "READY_WITH_GAPS", None
-    if not any(_outcome_is_usable(row) for row in outcomes):
+    if not any(
+        _outcome_is_usable(row) and row["need_id"] not in dependency_blockers
+        for row in outcomes
+    ):
         return "READY_WITH_GAPS", None
     return "READY", None
 
 
-def _replay_status(request: Mapping[str, Any]) -> str:
-    if request["basis_mode"] == "pinned_manifest":
+def _replay_status(
+    request: Mapping[str, Any],
+    outcomes: list[dict[str, Any]],
+) -> str:
+    if request["basis_mode"] == "pinned_manifest" and _pinned_inputs_valid(outcomes):
         return "REPLAYABLE_PINNED"
+    if request["basis_mode"] == "pinned_manifest":
+        return "PINNED_REQUEST_NOT_REPLAYABLE"
     return "AUDITABLE_CURRENT_NOT_REPLAYABLE"
 
 
-def compile_result(
+def _compile_result_from_inputs(
     request: Mapping[str, Any],
     plan: Mapping[str, Any],
     source_outcomes: list[dict[str, Any]],
-    validator_registry: Mapping[str, Callable[[Any], Any]],
+    validator_registry: Mapping[str, Mapping[str, Any]],
 ) -> dict[str, Any]:
     checked_request = validate_request(request)
     checked_plan = validate_plan(plan, checked_request)
@@ -1246,22 +1633,29 @@ def compile_result(
         source_outcomes,
         validator_registry,
     )
-    status, stop_reason = _result_status(checked_request, outcomes)
+    dependency_blockers = _source_dependency_blockers(checked_request, outcomes)
+    eligible_need_ids = {
+        row["need_id"]
+        for row in outcomes
+        if _outcome_is_usable(row) and row["need_id"] not in dependency_blockers
+    }
+    status, stop_reason = _result_status(
+        checked_request,
+        outcomes,
+        dependency_blockers,
+    )
     packer_result: dict[str, Any] | None = None
 
     if status != "STOPPED":
-        usable_outcomes = [row for row in outcomes if _outcome_is_usable(row)]
-        if usable_outcomes:
+        if eligible_need_ids:
             packer_result = packer.pack_context(
-                _packer_request(checked_request, outcomes)
+                _packer_request(checked_request, outcomes, eligible_need_ids)
             )
             if packer_result["decision_state"] != "READY":
                 status = "STOPPED"
                 errors = packer_result["errors"]
                 stop_reason = (
-                    errors[0]["code"]
-                    if errors
-                    else packer_result["decision_state"]
+                    errors[0]["code"] if errors else packer_result["decision_state"]
                 )
 
     outcomes_by_id = {row["need_id"]: row for row in outcomes}
@@ -1272,14 +1666,29 @@ def compile_result(
             checked_request,
             outcomes,
             stop_reason=stop_reason or "RUN_STOPPED",
+            dependency_blockers=dependency_blockers,
         )
     else:
         if packer_result is None:
             loaded = []
             omitted = []
         else:
+            load_ids = list(packer_result["load_ids"])
+            loaded_set = set(load_ids)
+            dependency_omissions: dict[str, str] = {}
+            for need in checked_request["source_needs"]:
+                need_id = need["need_id"]
+                parent_id = need["parent_need_id"]
+                if (
+                    need_id in loaded_set
+                    and parent_id is not None
+                    and parent_id not in loaded_set
+                ):
+                    loaded_set.remove(need_id)
+                    dependency_omissions[need_id] = parent_id
+            load_ids = [need_id for need_id in load_ids if need_id in loaded_set]
             loaded = _build_loaded(
-                packer_result["load_ids"],
+                load_ids,
                 packer_result["why_loaded"],
                 checked_request,
                 outcomes_by_id,
@@ -1288,10 +1697,35 @@ def compile_result(
                 packer_result["omitted"],
                 checked_request,
                 outcomes_by_id,
+                dependency_omissions,
             )
-        outstanding = _build_outstanding(checked_request, outcomes)
+        outstanding = _build_outstanding(
+            checked_request,
+            outcomes,
+            dependency_blockers=dependency_blockers,
+        )
+        loaded_ids = {row["need_id"] for row in loaded}
+        missing_hard = any(
+            need["obligation_tier"] == "HARD" and need["need_id"] not in loaded_ids
+            for need in checked_request["source_needs"]
+        )
+        if missing_hard:
+            if checked_request["gap_policy"]["missing_required_behavior"] == "BLOCK":
+                status = "STOPPED"
+                stop_reason = "MISSING_REQUIRED_BLOCKED"
+            else:
+                status = "READY_WITH_GAPS"
         if status == "READY" and not loaded and (omitted or outstanding):
             status = "READY_WITH_GAPS"
+        if status == "STOPPED":
+            loaded = []
+            omitted = []
+            outstanding = _build_outstanding(
+                checked_request,
+                outcomes,
+                stop_reason=stop_reason or "RUN_STOPPED",
+                dependency_blockers=dependency_blockers,
+            )
 
     package = _seal_package(loaded, omitted, outstanding)
     trace_log = _build_trace_log(
@@ -1316,62 +1750,42 @@ def compile_result(
         "request_sha256": checked_request["request_sha256"],
         "plan_sha256": checked_plan["plan_sha256"],
         "status": status,
-        "replay_status": _replay_status(checked_request),
+        "replay_status": _replay_status(checked_request, outcomes),
         "material_package": package,
         "short_receipt": short_receipt,
         "trace_log": trace_log,
     }
-    sealed = _seal(result, "run_sha256")
-    validate_result(sealed, checked_request, checked_plan)
-    return sealed
+    return _seal(result, "run_sha256")
 
 
-def _accounting_map(result: Mapping[str, Any]) -> dict[str, tuple[str, Mapping[str, Any]]]:
-    package = result["material_package"]
-    accounting: dict[str, tuple[str, Mapping[str, Any]]] = {}
-    for label in ("loaded", "omitted", "outstanding"):
-        for row in package[label]:
-            need_id = row["need_id"]
-            if need_id in accounting:
-                _fail(f"RESULT_NEED_OVERLAP:{need_id}")
-            accounting[need_id] = (label, row)
-    return accounting
-
-
-def _packer_request_for_accounted_materials(
+def compile_result(
     request: Mapping[str, Any],
-    accounted_need_ids: set[str],
+    plan: Mapping[str, Any],
+    source_outcomes: list[dict[str, Any]],
+    validator_registry: Mapping[str, Mapping[str, Any]],
 ) -> dict[str, Any]:
-    materials = []
-    for need in request["source_needs"]:
-        if need["need_id"] not in accounted_need_ids:
-            continue
-        materials.append(
-            {
-                "id": need["need_id"],
-                "estimated_tokens": need["estimated_tokens"],
-                "actuality_class": need["actuality_class"],
-                "obligation_tier": need["obligation_tier"],
-                "selection_rank": need["selection_rank"],
-                "task_relation": need["task_relation"],
-                "recall_disposition": need["recall_disposition"],
-                "recall_handle": need["recall_handle"],
-                "unresolved_reason": None,
-            }
-        )
-    return {
-        "task_id": request["scope"]["task_id"],
-        "task_actuality_scope": request["task_actuality_scope"],
-        "budget_tokens": request["budget"]["limit_tokens"],
-        "token_estimator_ref": request["budget"]["estimator_ref"],
-        "candidate_materials": materials,
-    }
+    result = _compile_result_from_inputs(
+        request,
+        plan,
+        source_outcomes,
+        validator_registry,
+    )
+    validate_result(
+        result,
+        request,
+        plan,
+        source_outcomes,
+        validator_registry,
+    )
+    return result
 
 
 def validate_result(
     value: Any,
     request: Mapping[str, Any],
     plan: Mapping[str, Any],
+    source_outcomes: list[dict[str, Any]],
+    validator_registry: Mapping[str, Mapping[str, Any]],
 ) -> dict[str, Any]:
     _validate_schema(value)
     if value.get("contract") != "C9_RETRIEVAL_RESULT":
@@ -1379,183 +1793,14 @@ def validate_result(
     checked_request = validate_request(request)
     checked_plan = validate_plan(plan, checked_request)
     result = copy.deepcopy(value)
-    if (
-        result["scope"] != checked_request["scope"]
-        or result["basis_mode"] != checked_request["basis_mode"]
-        or result["request_sha256"] != checked_request["request_sha256"]
-        or result["plan_sha256"] != checked_plan["plan_sha256"]
-    ):
-        _fail("RESULT_REQUEST_PLAN_BINDING_MISMATCH")
-    _verify_seal(
-        result["material_package"],
-        "package_sha256",
-        "PACKAGE_SHA256_MISMATCH",
+    expected = _compile_result_from_inputs(
+        checked_request,
+        checked_plan,
+        source_outcomes,
+        validator_registry,
     )
-    _verify_seal(
-        result["trace_log"],
-        "trace_log_sha256",
-        "TRACE_LOG_SHA256_MISMATCH",
-    )
-    _verify_seal(
-        result["short_receipt"],
-        "receipt_sha256",
-        "RECEIPT_SHA256_MISMATCH",
-    )
-    _verify_seal(result, "run_sha256", "RUN_SHA256_MISMATCH")
-
-    accounting = _accounting_map(result)
-    step_ids = [step["need_id"] for step in checked_plan["steps"]]
-    if set(accounting) != set(step_ids):
-        _fail("RESULT_NEEDS_NOT_EXACT_PLAN")
-    needs = _need_map(checked_request)
-    for need_id, (label, row) in accounting.items():
-        need = needs[need_id]
-        if row["object_ref"] != need["object_ref"]:
-            _fail(f"RESULT_OBJECT_REF_MISMATCH:{need_id}")
-        if label == "loaded":
-            if row["evidence_layer"] != need["evidence_layer"]:
-                _fail(f"LOADED_LAYER_MISMATCH:{need_id}")
-            if row["material_sha256"] != _sha256_text(row["material_text"]):
-                _fail(f"LOADED_MATERIAL_SHA256_MISMATCH:{need_id}")
-            if not row["why_loaded"].strip():
-                _fail(f"LOADED_WHY_MISSING:{need_id}")
-            if (
-                row["recall_disposition"] != need["recall_disposition"]
-                or row["recall_handle"] != need["recall_handle"]
-            ):
-                _fail(f"LOADED_RECALL_MISMATCH:{need_id}")
-            validation = row["source_validation"]
-            if (
-                validation["source_contract"] != need["source_contract"]
-                or validation["source_contract_version"]
-                != need["source_contract_version"]
-                or validation["validation_result"]
-                in {
-                    "STRUCTURAL_VALID_OWNER_UNRESOLVED",
-                    "SOURCE_VALIDATION_FAILED",
-                }
-            ):
-                _fail(f"LOADED_SOURCE_VALIDATION_MISMATCH:{need_id}")
-        elif label == "omitted":
-            validation = row["source_validation"]
-            if (
-                validation["source_contract"] != need["source_contract"]
-                or validation["source_contract_version"]
-                != need["source_contract_version"]
-                or validation["validation_result"]
-                in {
-                    "STRUCTURAL_VALID_OWNER_UNRESOLVED",
-                    "SOURCE_VALIDATION_FAILED",
-                }
-            ):
-                _fail(f"OMITTED_SOURCE_VALIDATION_MISMATCH:{need_id}")
-        elif label == "outstanding":
-            if row["obligation_tier"] != need["obligation_tier"]:
-                _fail(f"OUTSTANDING_OBLIGATION_MISMATCH:{need_id}")
-
-    package = result["material_package"]
-    hard_ids = [
-        need["need_id"]
-        for need in checked_request["source_needs"]
-        if need["obligation_tier"] == "HARD"
-    ]
-    loaded_ids = {row["need_id"] for row in package["loaded"]}
-    missing_hard = [need_id for need_id in hard_ids if need_id not in loaded_ids]
-    fatal_outstanding = any(row["fatal"] for row in package["outstanding"])
-    empty_with_gaps = not package["loaded"] and bool(
-        package["omitted"] or package["outstanding"]
-    )
-    status = result["status"]
-    if status == "READY" and (
-        missing_hard or fatal_outstanding or empty_with_gaps
-    ):
-        _fail("READY_STATUS_CONTRADICTS_GAPS")
-    if status == "READY_WITH_GAPS" and (
-        (not missing_hard and not empty_with_gaps) or fatal_outstanding
-    ):
-        _fail("READY_WITH_GAPS_STATUS_CONTRADICTION")
-    if status == "STOPPED" and (package["loaded"] or package["omitted"]):
-        _fail("STOPPED_RESULT_MUST_NOT_DELIVER_MATERIAL")
-    if status != "STOPPED" and (package["loaded"] or package["omitted"]):
-        packer_need_ids = {
-            row["need_id"] for row in package["loaded"] + package["omitted"]
-        }
-        expected_pack = packer.pack_context(
-            _packer_request_for_accounted_materials(
-                checked_request,
-                packer_need_ids,
-            )
-        )
-        if expected_pack["decision_state"] != "READY":
-            _fail("RESULT_PACKER_DECISION_NOT_READY")
-        if [row["need_id"] for row in package["loaded"]] != expected_pack["load_ids"]:
-            _fail("RESULT_LOAD_ORDER_NOT_PACKER_OUTPUT")
-        expected_omitted = _build_omitted(
-            expected_pack["omitted"],
-            checked_request,
-            {row["need_id"]: {"source_validation": row["source_validation"]} for row in package["omitted"]},
-        )
-        if package["omitted"] != expected_omitted:
-            _fail("RESULT_OMISSIONS_NOT_PACKER_OUTPUT")
-        why_loaded = {
-            row["need_id"]: row["why_loaded"] for row in package["loaded"]
-        }
-        if why_loaded != expected_pack["why_loaded"]:
-            _fail("RESULT_WHY_LOADED_NOT_PACKER_OUTPUT")
-
-    expected_replay = _replay_status(checked_request)
-    if result["replay_status"] != expected_replay:
-        _fail("REPLAY_STATUS_MISMATCH")
-
-    trace = result["trace_log"]
-    events = trace["events"]
-    if trace["consumer_id"] != checked_request["scope"]["consumer_id"]:
-        _fail("TRACE_CONSUMER_MISMATCH")
-    if [event["need_id"] for event in events] != step_ids:
-        _fail("TRACE_EVENTS_NOT_EXACT_PLAN_ORDER")
-    for step, event in zip(checked_plan["steps"], events, strict=True):
-        label = accounting[event["need_id"]][0]
-        if label == "loaded":
-            expected_disposition = "LOADED"
-            expected_source_status = "OK"
-            expected_reason = None
-        elif label == "omitted":
-            expected_disposition = "OMITTED"
-            expected_source_status = "OK"
-            expected_reason = accounting[event["need_id"]][1]["reason"]
-        else:
-            expected_disposition = accounting[event["need_id"]][1]["category"]
-            expected_source_status = accounting[event["need_id"]][1][
-                "source_status"
-            ]
-            expected_reason = accounting[event["need_id"]][1]["reason_code"]
-        result_row = accounting[event["need_id"]][1]
-        source_validation = result_row.get("source_validation")
-        expected_validation = (
-            source_validation["validation_result"]
-            if source_validation is not None
-            else None
-        )
-        if (
-            event["order"] != step["order"]
-            or event["expansion_trigger"] != step["expansion_trigger"]
-            or event["final_disposition"] != expected_disposition
-            or event["source_status"] != expected_source_status
-            or event["reason_code"] != expected_reason
-            or event["validation_result"] != expected_validation
-            or event["why_loaded"]
-            != (
-                accounting[event["need_id"]][1]["why_loaded"]
-                if label == "loaded"
-                else None
-            )
-        ):
-            _fail(f"TRACE_EVENT_MISMATCH:{event['need_id']}")
-
-    receipt = result["short_receipt"]
-    expected_receipt = _build_short_receipt(status, checked_request, package, trace)
-    if receipt != expected_receipt:
-        _fail("SHORT_RECEIPT_NOT_MECHANICAL_PROJECTION")
+    if result != expected:
+        _fail("RESULT_NOT_EXACT_SOURCE_RECOMPILE")
     return result
 
 

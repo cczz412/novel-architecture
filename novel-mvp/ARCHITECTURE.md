@@ -177,7 +177,7 @@ M1～M4 对作者可以合称“入料区”，但四步继续分开记账；方
 | WRITING_CLOSEOUT | 写作区作者动作层→收工流程 | `full_check`／`skip_check`／`no_prose` 三路短命命令；不写规划账、不关章 | v1 已落：[WRITING_DESK_CLOSEOUT_ACTION.md](contracts/WRITING_DESK_CLOSEOUT_ACTION.md) |
 | WORK_DRAFT_HANDOVER | 写作区作者动作层→C1 接收边界 | 显式“以这篇为准”的短命命令；C1 成功后才可进入 `handover_parts` | v1 已落：[WORK_DRAFT_HANDOVER_ACTION.md](contracts/WORK_DRAFT_HANDOVER_ACTION.md) |
 | C8 | M10→外部 | 场景卡：画面描述＋人物＋情绪＋台词信息点（谁说出什么信息＋语气，**不给成句台词**——【一致性修订 20260813】ADD-017 J1 口径）（视频工作流可直接吃） | 正式 C8 尚未冻结；M10 本地原型切片已存在 |
-| C9 | M11→M8/M6/M7 | 共同前提包：分区（铁律/近章/本线/望远/禁做/回取索引）＋每项「为何加载」＋预算与版本 | v1 合同与零 API 核心已落；真实 reader、任务方案和入口仍待接 |
+| C9 | M11→M8/M6/M7 | 共同前提包：分区（铁律/近章/本线/望远/禁做/回取索引）＋每项「为何加载」＋预算与版本 | v2 合同与零 API 核心已落，已补来源绑定、三层依赖、pin 证明和强复验；真实 adapter、reader、任务方案和入口仍待接 |
 | C10 | M1 Intake writer→材料存储／C1 投影门 | source-span 材料身份＋authority＋revision；v2 增加 Setting，v3 增加 Title，v4 增加 Tags，仍只有 Confirmed Chapter 可生成章节 C1 | v4 正式合同已落并兼容 v1／v2／v3：[C10_INTAKE_MATERIAL_IDENTITY.md](contracts/C10_INTAKE_MATERIAL_IDENTITY.md)；运行时 Intro／Setting／Title／Tags 产品路径已接。正式 validator 仍冻结旧登记文字“Tags 产品未实现”和 `NON_BLOCKING_ADOPTION_STATUS_DEBT`，这是采用状态债，不代表当前运行时能力 |
 
 ## 设计纪律（旧设计打捞＋现行拍板凝练，2026-08-13）
