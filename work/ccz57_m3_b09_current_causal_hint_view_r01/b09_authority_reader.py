@@ -148,6 +148,32 @@ def _require_route_validation_binding(
         )
 
 
+def _require_causal_proposal_closure(
+    route: dict[str, Any],
+    validation: dict[str, Any],
+    patch_proposal: dict[str, Any],
+) -> None:
+    ref_lists = (
+        [
+            entry["causal_hint_proposal_ref"]
+            for entry in route["payload"]["causal_hint_routes"]
+        ],
+        validation["payload"]["input_binding"]["causal_hint_proposal_refs"],
+        [
+            mapping["causal_hint_proposal_ref"]
+            for mapping in validation["payload"]["causal_support_mappings"]
+        ],
+        patch_proposal["payload"]["sidecar_proposal_refs"],
+    )
+    key_lists = [sorted(canonical_bytes(ref) for ref in refs) for refs in ref_lists]
+    if any(len(set(keys)) != len(keys) for keys in key_lists) or any(
+        keys != key_lists[0] for keys in key_lists[1:]
+    ):
+        raise B09AuthorityError(
+            "AUTHORITY_REFERENCE_CONFLICT", "causal proposal closure"
+        )
+
+
 def _record_for_ref(
     records: list[dict[str, Any]],
     ref: dict[str, Any],
@@ -615,6 +641,13 @@ class CurrentCausalHintAuthorityReader:
             validate_current_run_state(requested_state)
         except ValueError as error:
             raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
+        if (
+            requested_state["project_scope_id"] != request["project_scope_id"]
+            or requested_state["run_id"] != request["run_id"]
+        ):
+            raise B09AuthorityError(
+                "AUTHORITY_STATE_INCOHERENT", "requested run row identity"
+            )
         current = connection.execute(
             "SELECT state_json FROM b07_current_run_states "
             "WHERE project_scope_id = ? AND logical_run_key = ? "
@@ -634,6 +667,13 @@ class CurrentCausalHintAuthorityReader:
             validate_current_run_state(state)
         except ValueError as error:
             raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
+        if (
+            state["project_scope_id"] != request["project_scope_id"]
+            or state["logical_run_key"] != requested_state["logical_run_key"]
+        ):
+            raise B09AuthorityError(
+                "AUTHORITY_STATE_INCOHERENT", "current logical run row identity"
+            )
         return state
 
     def _collect_shared(
@@ -874,6 +914,12 @@ class CurrentCausalHintAuthorityReader:
         proposals: list[dict[str, Any]] = []
         patch_proposal: dict[str, Any] | None = None
         if route is not None:
+            validation = collected["validation_receipt"]
+            patch_proposal = self._read_exact(
+                validation["payload"]["input_binding"]["patch_proposal_ref"],
+                expected_type="M3_PATCH_PROPOSAL",
+            )
+            _require_causal_proposal_closure(route, validation, patch_proposal)
             proposal_refs = [
                 entry["causal_hint_proposal_ref"]
                 for entry in route["payload"]["causal_hint_routes"]
@@ -890,12 +936,6 @@ class CurrentCausalHintAuthorityReader:
                 proposals.append(
                     self._read_exact(ref, expected_type="M3_CAUSAL_HINT_PROPOSAL")
                 )
-            patch_proposal = self._read_exact(
-                collected["validation_receipt"]["payload"]["input_binding"][
-                    "patch_proposal_ref"
-                ],
-                expected_type="M3_PATCH_PROPOSAL",
-            )
         reference_records = self._candidate_reference_records(
             [collected["base_candidate"], collected["current_candidate"]]
         )

@@ -71,6 +71,7 @@ from work.ccz57_m3_b08_segment_terminal_r01.fixtures import (  # noqa: E402
 
 from b09_authority_reader import (  # noqa: E402
     CurrentCausalHintAuthorityReader,
+    _require_causal_proposal_closure,
     _require_route_validation_binding,
 )
 from b09_contracts import (  # noqa: E402
@@ -1116,6 +1117,63 @@ def test_route_metadata_must_match_selected_validation_receipt(
 
 
 @pytest.mark.parametrize(
+    "missing_from",
+    ["route", "validation_input", "validation_mapping", "patch"],
+)
+def test_routed_proposals_must_share_one_validation_closure(
+    tmp_path: Path,
+    missing_from: str,
+) -> None:
+    world = _build_world(tmp_path / f"proposal-closure-{missing_from}")
+    route = deepcopy(world.route)
+    validation = world.b05.store.record_by_ref(
+        route["payload"]["validation_receipt_ref"]
+    )
+    patch = deepcopy(world.b05.patch)
+    if missing_from == "route":
+        route["payload"]["causal_hint_routes"] = []
+    elif missing_from == "validation_input":
+        validation["payload"]["input_binding"]["causal_hint_proposal_refs"] = []
+    elif missing_from == "validation_mapping":
+        validation["payload"]["causal_support_mappings"] = []
+    else:
+        patch["payload"]["sidecar_proposal_refs"] = []
+
+    with pytest.raises(B09AuthorityError, match="AUTHORITY_REFERENCE_CONFLICT"):
+        _require_causal_proposal_closure(route, validation, patch)
+
+
+@pytest.mark.parametrize("identity_field", ["project_scope_id", "run_id"])
+def test_requested_run_row_must_match_its_database_key(
+    tmp_path: Path,
+    identity_field: str,
+) -> None:
+    world = _build_world(tmp_path / f"run-row-{identity_field}")
+    with sqlite3.connect(world.b06_store._database_path) as connection:
+        row = connection.execute(
+            "SELECT state_json FROM b07_current_run_states "
+            "WHERE project_scope_id = ? AND run_id = ?",
+            (world.project_scope_id, world.run_id),
+        ).fetchone()
+        assert row is not None
+        state = json.loads(bytes(row[0]).decode("utf-8"))
+        state[identity_field] = f"{state[identity_field]}:other"
+        state["state_hash"] = state_hash_value(state)
+        connection.execute(
+            "UPDATE b07_current_run_states SET state_json = ? "
+            "WHERE project_scope_id = ? AND run_id = ?",
+            (canonical_bytes(state), world.project_scope_id, world.run_id),
+        )
+
+    view = read_current_causal_hints(world.make_reader(), world.request)
+
+    assert (view["status"], view["reason_code"]) == (
+        "ERROR",
+        "AUTHORITY_STATE_INCOHERENT",
+    )
+
+
+@pytest.mark.parametrize(
     ("field", "bad_value"),
     [
         ("noncommittable", False),
@@ -1141,6 +1199,10 @@ def test_reader_applies_complete_b04_causal_contract(
     invalid_proposal["payload"][field] = bad_value
     _rehash_external(invalid_proposal, "causal-hint-proposal")
     invalid_ref = record_ref(invalid_proposal)
+    invalid_patch = deepcopy(world.b05.patch)
+    invalid_patch["payload"]["sidecar_proposal_refs"] = [invalid_ref]
+    _rehash_external(invalid_patch, "patch-proposal")
+    invalid_patch_ref = record_ref(invalid_patch)
     collected = deepcopy(snapshot)
     for key in (
         "request",
@@ -1152,10 +1214,21 @@ def test_reader_applies_complete_b04_causal_contract(
     collected["active_route"]["payload"]["causal_hint_routes"][0][
         "causal_hint_proposal_ref"
     ] = invalid_ref
+    collected["validation_receipt"]["payload"]["input_binding"][
+        "causal_hint_proposal_refs"
+    ] = [invalid_ref]
+    collected["validation_receipt"]["payload"]["input_binding"][
+        "patch_proposal_ref"
+    ] = invalid_patch_ref
+    collected["validation_receipt"]["payload"]["causal_support_mappings"][0][
+        "causal_hint_proposal_ref"
+    ] = invalid_ref
 
     def reissued_reader(ref: dict[str, Any]) -> dict[str, Any]:
         if canonical_bytes(ref) == canonical_bytes(invalid_ref):
             return deepcopy(invalid_proposal)
+        if canonical_bytes(ref) == canonical_bytes(invalid_patch_ref):
+            return deepcopy(invalid_patch)
         return world.read_immutable(ref)
 
     reader = world.make_reader(immutable_override=reissued_reader)
