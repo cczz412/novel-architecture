@@ -1220,6 +1220,8 @@ def _result_status(
         if behavior == "BLOCK":
             return "STOPPED", "MISSING_REQUIRED_BLOCKED"
         return "READY_WITH_GAPS", None
+    if not any(_outcome_is_usable(row) for row in outcomes):
+        return "READY_WITH_GAPS", None
     return "READY", None
 
 
@@ -1458,10 +1460,15 @@ def validate_result(
     loaded_ids = {row["need_id"] for row in package["loaded"]}
     missing_hard = [need_id for need_id in hard_ids if need_id not in loaded_ids]
     fatal_outstanding = any(row["fatal"] for row in package["outstanding"])
+    empty_with_outstanding = not package["loaded"] and bool(package["outstanding"])
     status = result["status"]
-    if status == "READY" and (missing_hard or fatal_outstanding):
+    if status == "READY" and (
+        missing_hard or fatal_outstanding or empty_with_outstanding
+    ):
         _fail("READY_STATUS_CONTRADICTS_GAPS")
-    if status == "READY_WITH_GAPS" and (not missing_hard or fatal_outstanding):
+    if status == "READY_WITH_GAPS" and (
+        (not missing_hard and not empty_with_outstanding) or fatal_outstanding
+    ):
         _fail("READY_WITH_GAPS_STATUS_CONTRADICTION")
     if status == "STOPPED" and (package["loaded"] or package["omitted"]):
         _fail("STOPPED_RESULT_MUST_NOT_DELIVER_MATERIAL")
