@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sqlite3
 import sys
 from copy import deepcopy
 from dataclasses import dataclass
@@ -32,9 +33,15 @@ for candidate in (
         sys.path.insert(0, str(candidate))
 
 from b05_contracts import canonical_bytes, record_ref  # noqa: E402
-from b01_contract import record_ref as b01_record_ref  # noqa: E402
+from b01_contract import (  # noqa: E402
+    B01ContractError,
+    FixtureStore,
+    _compose_ccz142_b01_runtime,
+    record_ref as b01_record_ref,
+)
 from b03_contracts import resolve_bound_candidate_input  # noqa: E402
-from b06_store import B06CommitService  # noqa: E402
+from b06_contracts import B06ContractError  # noqa: E402
+from b06_store import B06CommitService, B06CommitStore  # noqa: E402
 from b07_store import B07RunStore  # noqa: E402
 from b08_store import B08SegmentTerminalStore  # noqa: E402
 from b09_authority_reader import CurrentCausalHintAuthorityReader  # noqa: E402
@@ -62,6 +69,9 @@ from product_authority import (  # noqa: E402
     initialize_product_root,
     product_b01_scope,
 )
+from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
+    PRODUCT_AUTHORITY_PROFILE,
+)
 
 
 def _immutable_reader(
@@ -85,6 +95,81 @@ class ProductShadowResult:
     result: dict[str, Any]
     authority_root: Path
     pointer_key: str
+
+
+def _database_inventory(root: Path) -> list[dict[str, Any]]:
+    inventory: list[dict[str, Any]] = []
+    for path in sorted(root.rglob("*.sqlite3")):
+        uri = f"file:{path.resolve().as_posix()}?mode=ro"
+        with sqlite3.connect(uri, uri=True) as connection:
+            tables = [
+                row[0]
+                for row in connection.execute(
+                    "SELECT name FROM sqlite_master "
+                    "WHERE type = 'table' ORDER BY name"
+                ).fetchall()
+            ]
+            row_counts = {
+                table: connection.execute(
+                    f'SELECT COUNT(*) FROM "{table}"'
+                ).fetchone()[0]
+                for table in tables
+            }
+        inventory.append(
+            {
+                "path": path.relative_to(root).as_posix(),
+                "tables": tables,
+                "row_counts": row_counts,
+            }
+        )
+    return inventory
+
+
+def _probe_product_writer_surface(
+    root: Path,
+    *,
+    store: Any,
+    request: dict[str, Any],
+    scope: dict[str, Any],
+) -> dict[str, Any]:
+    probe_root = root / "plain-b06-product-writer-probe"
+    writers = {type(store).__name__}
+    b01_probe_root = root / "plain-b01-product-writer-probe"
+    try:
+        _compose_ccz142_b01_runtime(
+            FixtureStore(b01_probe_root),
+            authority_profile=PRODUCT_AUTHORITY_PROFILE,
+        )
+    except B01ContractError as error:
+        b01_result_code = error.code
+    else:
+        writers.add(FixtureStore.__name__)
+        b01_result_code = "UNEXPECTED_PRODUCT_WRITER_ACCEPTED"
+    try:
+        plain_b06 = B06CommitStore(
+            probe_root,
+            authority_profile=PRODUCT_AUTHORITY_PROFILE,
+        )
+    except B06ContractError as error:
+        result_code = error.code
+    else:
+        plain_b06.initialize(
+            base_candidate=scope["candidate_version"],
+            live_pointer=scope["live_pointer"],
+            reference_records=[
+                *request["reference_records"],
+                scope["segment_index"],
+            ],
+        )
+        writers.add(type(plain_b06).__name__)
+        result_code = "UNEXPECTED_PRODUCT_WRITER_ACCEPTED"
+    return {
+        "candidate_storage_writers": sorted(writers),
+        "plain_b01_product_profile_result": b01_result_code,
+        "plain_b01_probe_storage_created": b01_probe_root.exists(),
+        "plain_b06_product_profile_result": result_code,
+        "plain_b06_probe_storage_created": probe_root.exists(),
+    }
 
 
 def build_product_shadow(root: Path) -> ProductShadowResult:
@@ -270,9 +355,37 @@ def build_product_shadow(root: Path) -> ProductShadowResult:
     }
     b09_view = read_current_causal_hints(b09_reader, b09_request)
     child = store.read_candidate(child_result["child_candidate_version_ref"])
-    tables = store.table_counts()
-    formal_tables = [
-        name for name in tables if "formal" in name.lower() or "ledger" in name.lower()
+    writer_probe = _probe_product_writer_surface(
+        root,
+        store=store,
+        request=request,
+        scope=scope,
+    )
+    database_inventory = _database_inventory(root)
+    candidate_database_paths = [
+        item["path"]
+        for item in database_inventory
+        if {"candidate_versions", "current_pointers"} <= set(item["tables"])
+    ]
+    formal_rows = [
+        {
+            "database": item["path"],
+            "table": table,
+            "rows": item["row_counts"][table],
+        }
+        for item in database_inventory
+        for table in item["tables"]
+        if "formal" in table.lower()
+    ]
+    ten_ledger_rows = [
+        {
+            "database": item["path"],
+            "table": table,
+            "rows": item["row_counts"][table],
+        }
+        for item in database_inventory
+        for table in item["tables"]
+        if "ledger" in table.lower()
     ]
     return ProductShadowResult(
         result={
@@ -296,11 +409,13 @@ def build_product_shadow(root: Path) -> ProductShadowResult:
             "b08_terminal_ref": record_ref(terminal_result["terminal_record"]),
             "b09_status": b09_view["status"],
             "b09_reason_code": b09_view["reason_code"],
-            "candidate_database_files": len(list(authority_root.glob("*.sqlite3"))),
-            "candidate_storage_writers": ["CandidateAuthorityStore"],
-            "formal_tables": formal_tables,
-            "formal_writes": 0,
-            "ten_ledger_writes": 0,
+            "candidate_database_files": len(candidate_database_paths),
+            "candidate_database_paths": candidate_database_paths,
+            **writer_probe,
+            "formal_tables": formal_rows,
+            "formal_writes": sum(item["rows"] for item in formal_rows),
+            "ten_ledger_tables": ten_ledger_rows,
+            "ten_ledger_writes": sum(item["rows"] for item in ten_ledger_rows),
             "model_api_calls": 0,
             "network_api_calls": 0,
         },

@@ -30,7 +30,7 @@ from work.ccz142_candidate_authority_r01.candidate_authority import (  # noqa: E
     CandidateAuthorityStore,
 )
 
-CONTROL_SCHEMA_VERSION = "ccz142-product-namespace-migration-r01"
+CONTROL_SCHEMA_VERSION = "ccz142-product-namespace-migration-r02"
 SOURCE_KEYS = {
     "source_namespace",
     "candidate_access",
@@ -45,7 +45,6 @@ PRE_CUTOVER_STATES = {
     "TARGET_STAGED",
     "SHADOW_VERIFIED",
 }
-PRODUCT_ACTIVE_STATES = {"CUTOVER_COMMITTED", "POST_CUTOVER_ACTIVE"}
 
 
 class NamespaceMigrationError(RuntimeError):
@@ -105,8 +104,24 @@ class NamespaceMigrationController:
                 "source_json BLOB NOT NULL, source_hash TEXT NOT NULL, "
                 "state TEXT NOT NULL, target_root_result_json BLOB, "
                 "target_pointer_key TEXT, target_pointer_generation INTEGER, "
+                "target_authority_store_id TEXT, "
+                "target_storage_locator_hash TEXT, "
                 "shadow_semantic_hash TEXT, event_sequence INTEGER NOT NULL)"
             )
+            columns = {
+                row[1]
+                for row in connection.execute(
+                    "PRAGMA table_info(migration_state)"
+                ).fetchall()
+            }
+            for name in (
+                "target_authority_store_id",
+                "target_storage_locator_hash",
+            ):
+                if name not in columns:
+                    connection.execute(
+                        f"ALTER TABLE migration_state ADD COLUMN {name} TEXT"
+                    )
             connection.execute(
                 "CREATE TABLE IF NOT EXISTS migration_events ("
                 "migration_id TEXT NOT NULL, event_sequence INTEGER NOT NULL, "
@@ -118,7 +133,8 @@ class NamespaceMigrationController:
                 "key TEXT PRIMARY KEY, value BLOB NOT NULL)"
             )
             connection.execute(
-                "INSERT OR IGNORE INTO metadata(key, value) VALUES (?, ?)",
+                "INSERT INTO metadata(key, value) VALUES (?, ?) "
+                "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
                 ("schema_version", sqlite3.Binary(CONTROL_SCHEMA_VERSION.encode())),
             )
             connection.commit()
@@ -157,7 +173,8 @@ class NamespaceMigrationController:
         row = connection.execute(
             "SELECT project_scope_id, source_json, source_hash, state, "
             "target_root_result_json, target_pointer_key, "
-            "target_pointer_generation, shadow_semantic_hash, event_sequence "
+            "target_pointer_generation, target_authority_store_id, "
+            "target_storage_locator_hash, shadow_semantic_hash, event_sequence "
             "FROM migration_state WHERE migration_id = ?",
             (migration_id,),
         ).fetchone()
@@ -264,13 +281,14 @@ class NamespaceMigrationController:
         next_state: str,
         event_payload: dict[str, Any],
         updates: dict[str, Any] | None = None,
+        event_name: str | None = None,
     ) -> dict[str, Any]:
         descriptor, connection = self._open_locked()
         try:
             row = self._row(connection, migration_id)
             if row[3] != expected_state:
                 fail("MIGRATION_STATE_CONFLICT", f"{row[3]} != {expected_state}")
-            sequence = row[8] + 1
+            sequence = row[10] + 1
             assignments = ["state = ?", "event_sequence = ?"]
             values: list[Any] = [next_state, sequence]
             for key, value in (updates or {}).items():
@@ -278,6 +296,8 @@ class NamespaceMigrationController:
                     "target_root_result_json",
                     "target_pointer_key",
                     "target_pointer_generation",
+                    "target_authority_store_id",
+                    "target_storage_locator_hash",
                     "shadow_semantic_hash",
                 }:
                     fail("MIGRATION_CONTROL_FIELD_INVALID", key)
@@ -293,7 +313,7 @@ class NamespaceMigrationController:
                 connection,
                 migration_id=migration_id,
                 sequence=sequence,
-                event=next_state,
+                event=next_state if event_name is None else event_name,
                 payload=event_payload,
             )
             self._close_locked(descriptor, connection, commit=True)
@@ -318,6 +338,55 @@ class NamespaceMigrationController:
             event_payload={"source_hash": observed_source_hash},
         )
 
+    @staticmethod
+    def _require_product_store(store: CandidateAuthorityStore) -> None:
+        try:
+            identity = store.authority_profile.identity
+            project_scope_id = store.project_scope_id
+            authority_store_id = store.authority_store_id
+            storage_locator_hash = store.storage_locator_hash
+        except (AttributeError, RuntimeError, sqlite3.Error, UnicodeDecodeError):
+            fail("MIGRATION_TARGET_PROFILE_MISMATCH")
+        if (
+            identity != PRODUCT_AUTHORITY_PROFILE.identity
+            or not isinstance(project_scope_id, str)
+            or not project_scope_id
+            or not isinstance(authority_store_id, str)
+            or len(authority_store_id) != 64
+            or not isinstance(storage_locator_hash, str)
+            or len(storage_locator_hash) != 64
+        ):
+            fail("MIGRATION_TARGET_PROFILE_MISMATCH")
+
+    @classmethod
+    def _require_target_store(
+        cls,
+        state: dict[str, Any],
+        store: CandidateAuthorityStore,
+    ) -> None:
+        cls._require_product_store(store)
+        if (
+            store.project_scope_id != state["project_scope_id"]
+            or store.authority_store_id != state["target_authority_store_id"]
+            or store.storage_locator_hash != state["target_storage_locator_hash"]
+            or not isinstance(state["target_pointer_key"], str)
+            or not state["target_pointer_key"]
+        ):
+            fail("MIGRATION_TARGET_STORE_MISMATCH")
+
+    @staticmethod
+    def _require_target_pointer(
+        state: dict[str, Any],
+        pointer: dict[str, Any],
+    ) -> None:
+        if (
+            pointer.get("project_scope_id") != state["project_scope_id"]
+            or pointer.get("logical_pointer_key") != state["target_pointer_key"]
+            or pointer.get("pointer_namespace")
+            != PRODUCT_AUTHORITY_PROFILE.pointer_namespace
+        ):
+            fail("MIGRATION_TARGET_POINTER_MISMATCH")
+
     def stage_target(
         self,
         migration_id: str,
@@ -325,37 +394,39 @@ class NamespaceMigrationController:
         store: CandidateAuthorityStore,
         root_result: dict[str, Any],
     ) -> dict[str, Any]:
-        state = self.read_state(migration_id)
-        if (
-            store.authority_profile.identity != PRODUCT_AUTHORITY_PROFILE.identity
-            or store.project_scope_id != state["project_scope_id"]
-        ):
-            fail("MIGRATION_TARGET_PROFILE_MISMATCH")
-        pointer = store.read_pointer(root_result["logical_pointer_key"])
-        candidate = store.read_candidate(root_result["candidate_version_ref"])
-        if (
-            pointer["pointer_namespace"]
-            != PRODUCT_AUTHORITY_PROFILE.pointer_namespace
-            or pointer["generation"] != 1
-            or pointer["current_candidate_version_ref"] != record_ref(candidate)
-        ):
-            fail("MIGRATION_TARGET_BINDING_INVALID")
-        return self._transition(
-            migration_id,
-            expected_state="SOURCE_VERIFIED",
-            next_state="TARGET_STAGED",
-            event_payload={
-                "target_pointer_key": pointer["logical_pointer_key"],
-                "target_candidate_ref": record_ref(candidate),
-            },
-            updates={
-                "target_root_result_json": sqlite3.Binary(
-                    canonical_bytes(root_result)
-                ),
-                "target_pointer_key": pointer["logical_pointer_key"],
-                "target_pointer_generation": pointer["generation"],
-            },
-        )
+        self._require_product_store(store)
+        with store.serialization():
+            state = self.read_state(migration_id)
+            if store.project_scope_id != state["project_scope_id"]:
+                fail("MIGRATION_TARGET_PROFILE_MISMATCH")
+            pointer = store.read_pointer(root_result["logical_pointer_key"])
+            candidate = store.read_candidate(root_result["candidate_version_ref"])
+            if (
+                pointer["pointer_namespace"]
+                != PRODUCT_AUTHORITY_PROFILE.pointer_namespace
+                or pointer["project_scope_id"] != state["project_scope_id"]
+                or pointer["generation"] != 1
+                or pointer["current_candidate_version_ref"] != record_ref(candidate)
+            ):
+                fail("MIGRATION_TARGET_BINDING_INVALID")
+            return self._transition(
+                migration_id,
+                expected_state="SOURCE_VERIFIED",
+                next_state="TARGET_STAGED",
+                event_payload={
+                    "target_pointer_key": pointer["logical_pointer_key"],
+                    "target_candidate_ref": record_ref(candidate),
+                },
+                updates={
+                    "target_root_result_json": sqlite3.Binary(
+                        canonical_bytes(root_result)
+                    ),
+                    "target_pointer_key": pointer["logical_pointer_key"],
+                    "target_pointer_generation": pointer["generation"],
+                    "target_authority_store_id": store.authority_store_id,
+                    "target_storage_locator_hash": store.storage_locator_hash,
+                },
+            )
 
     def shadow_verify(
         self,
@@ -380,31 +451,44 @@ class NamespaceMigrationController:
         *,
         store: CandidateAuthorityStore,
     ) -> dict[str, Any]:
-        state = self.read_state(migration_id)
-        pointer = store.read_pointer(state["target_pointer_key"])
-        if (
-            pointer["pointer_namespace"]
-            != PRODUCT_AUTHORITY_PROFILE.pointer_namespace
-            or pointer["generation"] != state["target_pointer_generation"]
-        ):
-            fail("MIGRATION_CUTOVER_CAS_MISMATCH")
-        return self._transition(
-            migration_id,
-            expected_state="SHADOW_VERIFIED",
-            next_state="CUTOVER_COMMITTED",
-            event_payload={
-                "target_pointer_key": pointer["logical_pointer_key"],
-                "target_pointer_generation": pointer["generation"],
-            },
-        )
+        self._require_product_store(store)
+        with store.serialization():
+            state = self.read_state(migration_id)
+            self._require_target_store(state, store)
+            pointer = store.read_pointer(state["target_pointer_key"])
+            self._require_target_pointer(state, pointer)
+            if pointer["generation"] != state["target_pointer_generation"]:
+                fail("MIGRATION_CUTOVER_CAS_MISMATCH")
+            return self._transition(
+                migration_id,
+                expected_state="SHADOW_VERIFIED",
+                next_state="CUTOVER_COMMITTED",
+                event_payload={
+                    "target_pointer_key": pointer["logical_pointer_key"],
+                    "target_pointer_generation": pointer["generation"],
+                },
+            )
 
-    def activate_product_run(self, migration_id: str) -> dict[str, Any]:
-        return self._transition(
-            migration_id,
-            expected_state="CUTOVER_COMMITTED",
-            next_state="POST_CUTOVER_ACTIVE",
-            event_payload={"legacy_writer_reactivated": False},
-        )
+    def activate_product_run(
+        self,
+        migration_id: str,
+        *,
+        store: CandidateAuthorityStore,
+    ) -> dict[str, Any]:
+        self._require_product_store(store)
+        with store.serialization():
+            state = self.read_state(migration_id)
+            self._require_target_store(state, store)
+            pointer = store.read_pointer(state["target_pointer_key"])
+            self._require_target_pointer(state, pointer)
+            if pointer["generation"] != state["target_pointer_generation"]:
+                fail("MIGRATION_ACTIVATION_POINTER_DRIFT")
+            return self._transition(
+                migration_id,
+                expected_state="CUTOVER_COMMITTED",
+                next_state="POST_CUTOVER_ACTIVE",
+                event_payload={"legacy_writer_reactivated": False},
+            )
 
     def abort_before_cutover(self, migration_id: str) -> dict[str, Any]:
         state = self.read_state(migration_id)
@@ -428,33 +512,38 @@ class NamespaceMigrationController:
         pointer_before: dict[str, Any],
         pointer_after: dict[str, Any],
     ) -> dict[str, Any]:
-        state = self.read_state(migration_id)
-        if state["state"] != "POST_CUTOVER_ACTIVE":
-            fail("MIGRATION_RECOVERY_NOT_ACTIVE")
-        if (
-            pointer_before["pointer_namespace"]
-            != PRODUCT_AUTHORITY_PROFILE.pointer_namespace
-            or pointer_after["pointer_namespace"]
-            != PRODUCT_AUTHORITY_PROFILE.pointer_namespace
-            or pointer_before["logical_pointer_key"]
-            != pointer_after["logical_pointer_key"]
-            or pointer_after["generation"] <= pointer_before["generation"]
-        ):
-            fail("MIGRATION_FORWARD_RECOVERY_INVALID")
-        persisted = store.read_pointer(pointer_after["logical_pointer_key"])
-        if canonical_bytes(persisted) != canonical_bytes(pointer_after):
-            fail("MIGRATION_FORWARD_RECOVERY_NOT_PERSISTED")
-        return self._transition(
-            migration_id,
-            expected_state="POST_CUTOVER_ACTIVE",
-            next_state="POST_CUTOVER_ACTIVE",
-            event_payload={
-                "pointer_generation_before": pointer_before["generation"],
-                "pointer_generation_after": pointer_after["generation"],
-                "legacy_writer_reactivated": False,
-            },
-            updates={"target_pointer_generation": pointer_after["generation"]},
-        )
+        self._require_product_store(store)
+        with store.serialization():
+            state = self.read_state(migration_id)
+            self._require_target_store(state, store)
+            if state["state"] not in {
+                "CUTOVER_COMMITTED",
+                "POST_CUTOVER_ACTIVE",
+            }:
+                fail("MIGRATION_RECOVERY_NOT_ACTIVE")
+            self._require_target_pointer(state, pointer_before)
+            self._require_target_pointer(state, pointer_after)
+            if (
+                pointer_before["generation"]
+                != state["target_pointer_generation"]
+                or pointer_after["generation"] != pointer_before["generation"] + 1
+            ):
+                fail("MIGRATION_FORWARD_RECOVERY_INVALID")
+            persisted = store.read_pointer(state["target_pointer_key"])
+            if canonical_bytes(persisted) != canonical_bytes(pointer_after):
+                fail("MIGRATION_FORWARD_RECOVERY_NOT_PERSISTED")
+            return self._transition(
+                migration_id,
+                expected_state=state["state"],
+                next_state=state["state"],
+                event_payload={
+                    "pointer_generation_before": pointer_before["generation"],
+                    "pointer_generation_after": pointer_after["generation"],
+                    "legacy_writer_reactivated": False,
+                },
+                updates={"target_pointer_generation": pointer_after["generation"]},
+                event_name="FORWARD_RECOVERY_RECORDED",
+            )
 
     def read_state(self, migration_id: str) -> dict[str, Any]:
         with sqlite3.connect(self.database_path) as connection:
@@ -470,8 +559,10 @@ class NamespaceMigrationController:
             ),
             "target_pointer_key": row[5],
             "target_pointer_generation": row[6],
-            "shadow_semantic_hash": row[7],
-            "event_sequence": row[8],
+            "target_authority_store_id": row[7],
+            "target_storage_locator_hash": row[8],
+            "shadow_semantic_hash": row[9],
+            "event_sequence": row[10],
         }
 
     def events(self, migration_id: str) -> list[dict[str, Any]]:
@@ -509,30 +600,52 @@ class ProductCandidateAuthorityAccess:
         store: CandidateAuthorityStore,
         migration_id: str,
     ) -> None:
-        if store.authority_profile.identity != PRODUCT_AUTHORITY_PROFILE.identity:
-            fail("MIGRATION_TARGET_PROFILE_MISMATCH")
+        state = controller.read_state(migration_id)
+        controller._require_target_store(state, store)
         self.__controller = controller
         self.__store = store
         self.__migration_id = migration_id
 
-    def _require_active(self) -> None:
+    def _require_active(self) -> dict[str, Any]:
         state = self.__controller.read_state(self.__migration_id)
+        self.__controller._require_target_store(state, self.__store)
         if state["state"] != "POST_CUTOVER_ACTIVE":
             fail("PRODUCT_NAMESPACE_NOT_ACTIVE")
+        return state
+
+    def _current_pointer(self, state: dict[str, Any]) -> dict[str, Any]:
+        pointer = self.__store.read_pointer(state["target_pointer_key"])
+        self.__controller._require_target_pointer(state, pointer)
+        if pointer["generation"] != state["target_pointer_generation"]:
+            fail("PRODUCT_NAMESPACE_POINTER_DRIFT")
+        return pointer
 
     def read_pointer(self, logical_pointer_key: str) -> dict[str, Any]:
-        self._require_active()
-        pointer = self.__store.read_pointer(logical_pointer_key)
-        if pointer["pointer_namespace"] != PRODUCT_AUTHORITY_PROFILE.pointer_namespace:
-            fail("MIGRATION_MIXED_NAMESPACE_REF")
-        return deepcopy(pointer)
+        with self.__store.serialization():
+            state = self._require_active()
+            if logical_pointer_key != state["target_pointer_key"]:
+                fail("MIGRATION_TARGET_POINTER_MISMATCH")
+            return deepcopy(self._current_pointer(state))
 
     def read_candidate(self, ref: dict[str, Any]) -> dict[str, Any]:
-        self._require_active()
         if (
             ref.get("contract_version")
             != PRODUCT_AUTHORITY_PROFILE.contract_version
             or ref.get("access") != PRODUCT_AUTHORITY_PROFILE.candidate_access
         ):
             fail("MIGRATION_MIXED_NAMESPACE_REF")
-        return self.__store.read_candidate(ref)
+        with self.__store.serialization():
+            state = self._require_active()
+            pointer = self._current_pointer(state)
+            current_ref = pointer["current_candidate_version_ref"]
+            seen: set[bytes] = set()
+            while current_ref is not None:
+                encoded = canonical_bytes(current_ref)
+                if encoded in seen:
+                    fail("MIGRATION_CANDIDATE_LINEAGE_CYCLE")
+                seen.add(encoded)
+                candidate = self.__store.read_candidate(current_ref)
+                if canonical_bytes(ref) == encoded:
+                    return candidate
+                current_ref = candidate["payload"]["parent_candidate_version_ref"]
+        fail("MIGRATION_CANDIDATE_OUTSIDE_TARGET_LINEAGE")

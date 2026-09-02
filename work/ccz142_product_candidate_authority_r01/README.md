@@ -1,4 +1,4 @@
-# CCZ-142｜PRODUCT_CANDIDATE_AUTHORITY 产品接线 R01
+# CCZ-142｜PRODUCT_CANDIDATE_AUTHORITY 产品接线 R02
 
 ✅ 这块把 PR #230 的“单一候选 writer”继续接到产品身份：B01 root 和 B06 child 不再沿用 `FIXTURE_ONLY`，而是使用 `PRODUCT_CANDIDATE_AUTHORITY` namespace 与 `PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY` access。
 
@@ -9,6 +9,10 @@
 - 产品 CandidateVersion 使用 `r04-product-candidate` 合同、`pcv:` 记录编号和新的 RecordRef／record hash。
 - 产品 pointer key 包含项目 ID 的完整 SHA-256，再绑定候选 Schema、章节修订、责任段和输入绑定哈希。
 - B02～B09 仍写自己的原件或派生视图，只是能够安全读取同一套产品 CandidateVersion 引用。
+
+R02 把产品迁移绑到四个同时成立的条件：项目、随库持久化的 store ID、数据库位置摘要、目标 pointer。只有这四项都和 staged 记录一致，才能切换、激活产品读取或记录前向修复。
+
+普通 B01 `FixtureStore` 和普通 `B06CommitStore` 均会在创建第二份产品存储前拒绝产品 profile。这两道门由真实构造探针验收，不再在回执里直接写死 writer 数量。
 
 本轮的 B02～B05 对象来自现有合成 publisher，用来验证它们能不能完整绑定产品 CandidateVersion；它们自己的 `POLICY_FIXTURE_READ_ONLY` 输出身份没有在本票里晋升。产品化的是 CandidateVersion、pointer 和唯一 authority store，不把测试侧车原件偷换成产品原件。
 
@@ -29,13 +33,16 @@ DISCOVERED
   → POST_CUTOVER_ACTIVE
 ```
 
-切换前可以中止，staged 产品对象保持不可见。切换后不再重启 legacy writer；需要修复时，由 B06／CandidateAuthorityStore 用新的产品 pointer 代次向前提交。
+切换前可以中止，staged 产品对象保持不可见。pointer 检查到切换状态提交全程持有候选库锁；激活产品读取前还会再核对一次。如果 B06 在切换后、激活前推进了 pointer，必须先记录同一目标 pointer 的前向修复，不会直接放行过期影子结果。
 
 ## 本地回放覆盖
 
 - 产品 root 创建、重放、跨项目 pointer 隔离；
 - B01→B02→B03→B04→B05→B06 child→B07→B08→B09 完整影子链；
 - fixture／product 混合 namespace 失败关闭；
+- 普通 B01／B06 的第二产品 writer 入口在创建存储前拒绝；
+- 跨项目、同项目不同 store、同 store 错 pointer 和前向修复串线均失败关闭；
+- cutover 与 B06 并发时，修改不能插入 pointer 检查和切换状态提交之间；
 - synthetic fixture 拒绝产品迁移；
 - 切换前不可见、中止、CAS 漂移；
 - 切换后真实 B06 child 形成新的产品 pointer 代次；
@@ -44,6 +51,6 @@ DISCOVERED
 
 ## 当前身份
 
-这是 Issue #231 的 Draft 工程候选，堆叠在 PR #230 精确 head 上。测试通过也不等于已经进入 `main`、转 Ready、合并或接入正式事实。
+这是 Issue #231 的 Draft R02 工程候选，堆叠在 PR #230 精确 head 上。测试通过也不等于已经进入 `main`、转 Ready、合并或接入正式事实。
 
 来源：Codex

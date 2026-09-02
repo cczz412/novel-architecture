@@ -6,6 +6,8 @@
 
 后续 Issue #231 让 B-06 和候选库在构造时共用同一份冻结身份。夹具还用 `FIXTURE_ONLY`；产品 child 和 current pointer 只接受 `PRODUCT_CANDIDATE_AUTHORITY`，两种 namespace 混用会在写入前失败关闭。
 
+R02 不再允许普通 `B06CommitStore` 单独拿产品 profile。离线夹具保持原调用；产品 B06 只能在 `CandidateAuthorityStore` 里用同一数据库提交 child 和 pointer CAS，普通 B06 会在创建存储目录前拒绝。
+
 ## 一次提交只落三样东西
 
 - 一个新的 child CandidateVersion；

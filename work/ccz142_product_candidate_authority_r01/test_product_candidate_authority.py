@@ -5,6 +5,8 @@ from __future__ import annotations
 import hashlib
 import json
 import sys
+import threading
+from contextlib import contextmanager
 from copy import deepcopy
 from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
@@ -45,6 +47,7 @@ from work.ccz57_m3_b01_candidate_version_r03_5 import (  # noqa: E402
     fixtures as b01_fixtures,
 )
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
+    B01ContractError,
     FIXTURE_ACCESS,
     FIXTURE_POINTER_NAMESPACE,
     PRODUCT_AUTHORITY_PROFILE,
@@ -53,6 +56,7 @@ from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E4
     PRODUCT_POINTER_NAMESPACE,
     PRODUCT_READ_ONLY_ACCESS,
     FixtureStore,
+    _compose_ccz142_b01_runtime,
     canonical_bytes,
     record_ref,
     validate_candidate_version,
@@ -63,7 +67,7 @@ from work.ccz57_m3_b05_patch_route_r03_5.fixtures import (  # noqa: E402
 from work.ccz57_m3_b06_commit_core_r01.fixtures import FreshnessReader  # noqa: E402
 
 from b06_contracts import B06ContractError, validate_mutable_pointer  # noqa: E402
-from b06_store import B06CommitService  # noqa: E402
+from b06_store import B06CommitService, B06CommitStore  # noqa: E402
 
 from candidate_authority import (  # noqa: E402
     CandidateAuthorityError,
@@ -156,6 +160,41 @@ def _eligible_source(project_scope_id: str) -> dict[str, Any]:
     }
 
 
+def _activate_migration(
+    root: Path,
+    *,
+    migration_id: str = "active-migration",
+    project_scope_id: str = "product-project-001",
+) -> tuple[
+    NamespaceMigrationController,
+    CandidateAuthorityStore,
+    dict[str, Any],
+    dict[str, Any],
+]:
+    store, request, root_result = initialize_product_root(
+        root / "authority",
+        request=product_root_request(project_scope_id=project_scope_id),
+    )
+    controller = NamespaceMigrationController(root / "control")
+    discovered = controller.discover(
+        migration_id,
+        _eligible_source(project_scope_id),
+    )
+    controller.verify_source(
+        migration_id,
+        observed_source_hash=discovered["source_hash"],
+    )
+    controller.stage_target(migration_id, store=store, root_result=root_result)
+    controller.shadow_verify(
+        migration_id,
+        source_semantic_hash="9" * 64,
+        target_semantic_hash="9" * 64,
+    )
+    controller.cutover(migration_id, store=store)
+    controller.activate_product_run(migration_id, store=store)
+    return controller, store, request, root_result
+
+
 def test_product_profile_is_frozen_and_tampered_copy_is_rejected(
     tmp_path: Path,
 ) -> None:
@@ -171,6 +210,36 @@ def test_product_profile_is_frozen_and_tampered_copy_is_rejected(
             project_scope_id="product-project-001",
             authority_profile=forged,
         )
+
+
+def test_plain_b06_rejects_product_profile_before_creating_storage(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "second-product-writer"
+    with pytest.raises(
+        B06ContractError,
+        match="B06_PRODUCT_PROFILE_REQUIRES_CANDIDATE_AUTHORITY_STORE",
+    ):
+        B06CommitStore(
+            target,
+            authority_profile=PRODUCT_AUTHORITY_PROFILE,
+        )
+    assert not target.exists()
+
+
+def test_plain_b01_fixture_store_rejects_product_profile_before_storage(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "second-product-root-writer"
+    with pytest.raises(
+        B01ContractError,
+        match="B01_PRODUCT_PROFILE_REQUIRES_AUTHORITY_CAPTURE",
+    ):
+        _compose_ccz142_b01_runtime(
+            FixtureStore(target),
+            authority_profile=PRODUCT_AUTHORITY_PROFILE,
+        )
+    assert not target.exists()
 
 
 def test_product_root_uses_new_record_and_pointer_identity(tmp_path: Path) -> None:
@@ -266,7 +335,14 @@ def test_mixed_namespace_pointer_is_rejected(tmp_path: Path) -> None:
 
 def test_product_store_cannot_reopen_under_fixture_profile(tmp_path: Path) -> None:
     root = tmp_path / "authority"
-    initialize_product_root(root)
+    store, _, _ = initialize_product_root(root)
+    reopened = CandidateAuthorityStore(
+        root,
+        project_scope_id="product-project-001",
+        authority_profile=PRODUCT_AUTHORITY_PROFILE,
+    )
+    assert reopened.authority_store_id == store.authority_store_id
+    assert reopened.storage_locator_hash == store.storage_locator_hash
     with pytest.raises(
         CandidateAuthorityError,
         match="AUTHORITY_PROFILE_STORE_MISMATCH",
@@ -285,6 +361,18 @@ def test_product_full_b01_to_b09_shadow(tmp_path: Path) -> None:
     assert result["pointer_generation"] == 2
     assert result["b09_status"] != "ERROR"
     assert result["candidate_storage_writers"] == ["CandidateAuthorityStore"]
+    assert result["plain_b01_product_profile_result"] == (
+        "B01_PRODUCT_PROFILE_REQUIRES_AUTHORITY_CAPTURE"
+    )
+    assert result["plain_b01_probe_storage_created"] is False
+    assert result["plain_b06_product_profile_result"] == (
+        "B06_PRODUCT_PROFILE_REQUIRES_CANDIDATE_AUTHORITY_STORE"
+    )
+    assert result["plain_b06_probe_storage_created"] is False
+    assert result["candidate_database_files"] == 1
+    assert result["candidate_database_paths"] == [
+        "candidate-authority/b06-commit-core.sqlite3"
+    ]
     assert result["formal_tables"] == []
     assert result["formal_writes"] == 0
     assert result["ten_ledger_writes"] == 0
@@ -350,7 +438,7 @@ def test_cutover_hides_target_until_product_run_is_active(tmp_path: Path) -> Non
     controller.cutover("migration-001", store=store)
     with pytest.raises(NamespaceMigrationError, match="PRODUCT_NAMESPACE_NOT_ACTIVE"):
         access.read_pointer(result["logical_pointer_key"])
-    active = controller.activate_product_run("migration-001")
+    active = controller.activate_product_run("migration-001", store=store)
     assert active["state"] == "POST_CUTOVER_ACTIVE"
     assert access.read_pointer(result["logical_pointer_key"])["generation"] == 1
     assert access.read_candidate(result["candidate_version_ref"])[
@@ -457,8 +545,8 @@ def test_after_cutover_recovery_is_forward_only_and_persisted(
         target_semantic_hash="e" * 64,
     )
     controller.cutover("migration-recovery", store=store)
-    controller.activate_product_run("migration-recovery")
-    before, after, _ = _commit_product_child(
+    controller.activate_product_run("migration-recovery", store=store)
+    before, after, child_result = _commit_product_child(
         tmp_path,
         store=store,
         request=request,
@@ -473,7 +561,20 @@ def test_after_cutover_recovery_is_forward_only_and_persisted(
     )
     assert recovered["state"] == "POST_CUTOVER_ACTIVE"
     assert recovered["target_pointer_generation"] == 2
-    assert controller.events("migration-recovery")[-1]["payload"] == {
+    access = ProductCandidateAuthorityAccess(
+        controller=controller,
+        store=store,
+        migration_id="migration-recovery",
+    )
+    assert access.read_candidate(child_result["child_candidate_version_ref"])[
+        "record_version"
+    ] == 2
+    assert access.read_candidate(root_result["candidate_version_ref"])[
+        "record_version"
+    ] == 1
+    recovery_event = controller.events("migration-recovery")[-1]
+    assert recovery_event["event"] == "FORWARD_RECOVERY_RECORDED"
+    assert recovery_event["payload"] == {
         "legacy_writer_reactivated": False,
         "pointer_generation_after": 2,
         "pointer_generation_before": 1,
@@ -511,7 +612,7 @@ def test_product_access_rejects_fixture_candidate_ref(tmp_path: Path) -> None:
         target_semantic_hash="f" * 64,
     )
     controller.cutover("migration-access", store=store)
-    controller.activate_product_run("migration-access")
+    controller.activate_product_run("migration-access", store=store)
     access = ProductCandidateAuthorityAccess(
         controller=controller,
         store=store,
@@ -543,6 +644,235 @@ def test_fixture_and_product_record_refs_are_not_byte_equal(tmp_path: Path) -> N
     )
     assert product_candidate["record_hash"] != fixture_candidate["record_hash"]
     assert product_candidate["record_id"] != fixture_candidate["record_id"]
+
+
+def test_active_access_rejects_another_project_store(tmp_path: Path) -> None:
+    controller, _, _, _ = _activate_migration(
+        tmp_path / "active",
+        project_scope_id="product-project-a",
+    )
+    other_store, _, _ = initialize_product_root(
+        tmp_path / "other",
+        request=product_root_request(project_scope_id="product-project-b"),
+    )
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_TARGET_STORE_MISMATCH",
+    ):
+        ProductCandidateAuthorityAccess(
+            controller=controller,
+            store=other_store,
+            migration_id="active-migration",
+        )
+
+
+def test_active_access_rejects_a_second_store_for_same_project(
+    tmp_path: Path,
+) -> None:
+    controller, _, _, _ = _activate_migration(tmp_path / "active")
+    other_store, _, _ = initialize_product_root(tmp_path / "other")
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_TARGET_STORE_MISMATCH",
+    ):
+        ProductCandidateAuthorityAccess(
+            controller=controller,
+            store=other_store,
+            migration_id="active-migration",
+        )
+
+
+def test_active_access_rejects_another_pointer_and_candidate_in_same_store(
+    tmp_path: Path,
+) -> None:
+    controller, store, _, target_result = _activate_migration(tmp_path / "active")
+    _, _, other_result = initialize_product_root(
+        store.root,
+        request=product_root_request(
+            operation_id="other-pointer-root",
+            chapter_id="product-chapter-002",
+        ),
+    )
+    access = ProductCandidateAuthorityAccess(
+        controller=controller,
+        store=store,
+        migration_id="active-migration",
+    )
+    assert access.read_pointer(target_result["logical_pointer_key"])[
+        "logical_pointer_key"
+    ] == target_result["logical_pointer_key"]
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_TARGET_POINTER_MISMATCH",
+    ):
+        access.read_pointer(other_result["logical_pointer_key"])
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_CANDIDATE_OUTSIDE_TARGET_LINEAGE",
+    ):
+        access.read_candidate(other_result["candidate_version_ref"])
+
+
+def test_forward_recovery_rejects_another_pointer_in_same_store(
+    tmp_path: Path,
+) -> None:
+    controller, store, _, _ = _activate_migration(tmp_path / "active")
+    other_request = product_root_request(
+        operation_id="other-recovery-root",
+        chapter_id="product-chapter-003",
+    )
+    _, _, other_result = initialize_product_root(
+        store.root,
+        request=other_request,
+    )
+    pointer_before, pointer_after, _ = _commit_product_child(
+        tmp_path / "other-recovery-child",
+        store=store,
+        request=other_request,
+        root_result=other_result,
+        operation_id="other-recovery-child",
+    )
+    state_before = controller.read_state("active-migration")
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_TARGET_POINTER_MISMATCH",
+    ):
+        controller.record_forward_recovery(
+            "active-migration",
+            store=store,
+            pointer_before=pointer_before,
+            pointer_after=pointer_after,
+        )
+    assert controller.read_state("active-migration") == state_before
+
+
+def test_cutover_lock_blocks_child_and_activation_requires_forward_repair(
+    tmp_path: Path,
+) -> None:
+    transition_reached = threading.Event()
+    release_transition = threading.Event()
+    child_lock_requested = threading.Event()
+    child_done = threading.Event()
+
+    class PausedCutoverController(NamespaceMigrationController):
+        def _transition(
+            self,
+            migration_id: str,
+            *,
+            expected_state: str,
+            next_state: str,
+            event_payload: dict[str, Any],
+            updates: dict[str, Any] | None = None,
+            event_name: str | None = None,
+        ) -> dict[str, Any]:
+            if next_state == "CUTOVER_COMMITTED":
+                transition_reached.set()
+                if not release_transition.wait(timeout=5):
+                    raise AssertionError("CUTOVER_TEST_RELEASE_TIMEOUT")
+            return super()._transition(
+                migration_id,
+                expected_state=expected_state,
+                next_state=next_state,
+                event_payload=event_payload,
+                updates=updates,
+                event_name=event_name,
+            )
+
+    store, request, root_result = initialize_product_root(tmp_path / "authority")
+    controller = PausedCutoverController(tmp_path / "control")
+    discovered = controller.discover(
+        "migration-cutover-race",
+        _eligible_source(request["project_scope_id"]),
+    )
+    controller.verify_source(
+        "migration-cutover-race",
+        observed_source_hash=discovered["source_hash"],
+    )
+    controller.stage_target(
+        "migration-cutover-race",
+        store=store,
+        root_result=root_result,
+    )
+    controller.shadow_verify(
+        "migration-cutover-race",
+        source_semantic_hash="8" * 64,
+        target_semantic_hash="8" * 64,
+    )
+
+    original_serialization = store.serialization
+
+    @contextmanager
+    def traced_serialization() -> Any:
+        if threading.current_thread().name == "candidate-child":
+            child_lock_requested.set()
+        with original_serialization():
+            yield
+
+    store.serialization = traced_serialization  # type: ignore[method-assign]
+    failures: list[BaseException] = []
+    results: dict[str, Any] = {}
+
+    def run_cutover() -> None:
+        try:
+            results["cutover"] = controller.cutover(
+                "migration-cutover-race",
+                store=store,
+            )
+        except BaseException as error:  # pragma: no cover - asserted below
+            failures.append(error)
+
+    def run_child() -> None:
+        try:
+            before, after, result = _commit_product_child(
+                tmp_path / "race-child",
+                store=store,
+                request=request,
+                root_result=root_result,
+                operation_id="race-child",
+            )
+            results["pointer_before"] = before
+            results["pointer_after"] = after
+            results["child"] = result
+        except BaseException as error:  # pragma: no cover - asserted below
+            failures.append(error)
+        finally:
+            child_done.set()
+
+    cutover_thread = threading.Thread(target=run_cutover, name="cutover")
+    cutover_thread.start()
+    assert transition_reached.wait(timeout=5)
+    child_thread = threading.Thread(target=run_child, name="candidate-child")
+    child_thread.start()
+    assert child_lock_requested.wait(timeout=5)
+    assert child_done.wait(timeout=0.1) is False
+    release_transition.set()
+    cutover_thread.join(timeout=5)
+    child_thread.join(timeout=10)
+    assert not cutover_thread.is_alive()
+    assert not child_thread.is_alive()
+    assert failures == []
+    assert results["cutover"]["target_pointer_generation"] == 1
+    assert results["pointer_after"]["generation"] == 2
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_ACTIVATION_POINTER_DRIFT",
+    ):
+        controller.activate_product_run(
+            "migration-cutover-race",
+            store=store,
+        )
+    recovered = controller.record_forward_recovery(
+        "migration-cutover-race",
+        store=store,
+        pointer_before=results["pointer_before"],
+        pointer_after=results["pointer_after"],
+    )
+    assert recovered["state"] == "CUTOVER_COMMITTED"
+    active = controller.activate_product_run(
+        "migration-cutover-race",
+        store=store,
+    )
+    assert active["state"] == "POST_CUTOVER_ACTIVE"
 
 
 def test_saved_offline_report_matches_fresh_self_check() -> None:

@@ -156,6 +156,7 @@ EXPECTED_A_ADMISSION_CREATED_AT = "2026-08-28T03:26:14Z"
 _SEGMENT_WRITER_TOKEN = object()
 _CANDIDATE_WRITER_TOKEN = object()
 _POINTER_WRITER_TOKEN = object()
+_PRODUCT_B01_CAPTURE_TOKEN = object()
 _B_OUTPUT_WRITER_TOKENS = {
     "M3_SEGMENT_INDEX_SNAPSHOT": _SEGMENT_WRITER_TOKEN,
     "M3_CANDIDATE_VERSION": _CANDIDATE_WRITER_TOKEN,
@@ -3082,11 +3083,17 @@ def _compose_ccz142_b01_runtime(
     store: FixtureStore,
     *,
     authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
+    _product_capture_token: object | None = None,
 ) -> tuple[B01Service, Callable[..., object]]:
     """Split source-signing authority from the ordinary B-01 service surface."""
 
     seal, open_admission = _new_extraction_admission_channel()
     profile = require_authority_profile(authority_profile)
+    if (
+        profile != FIXTURE_AUTHORITY_PROFILE
+        and _product_capture_token is not _PRODUCT_B01_CAPTURE_TOKEN
+    ):
+        _fail("B01_PRODUCT_PROFILE_REQUIRES_AUTHORITY_CAPTURE")
     service = object.__new__(B01Service)
     service.store = store
     service._B01Service__open_extraction_admission = open_admission

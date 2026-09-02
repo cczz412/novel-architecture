@@ -52,7 +52,10 @@ def _successful_cutover(root: Path) -> dict[str, Any]:
         target_semantic_hash=semantic_hash,
     )
     controller.cutover("self-check-cutover", store=store)
-    active = controller.activate_product_run("self-check-cutover")
+    active = controller.activate_product_run(
+        "self-check-cutover",
+        store=store,
+    )
     access = ProductCandidateAuthorityAccess(
         controller=controller,
         store=store,
@@ -143,7 +146,17 @@ def run_self_check() -> dict[str, Any]:
         or first["b03_product_subject_validated"] is not True
         or first["b09_status"] == "ERROR"
         or first["candidate_storage_writers"] != ["CandidateAuthorityStore"]
+        or first["plain_b01_product_profile_result"]
+        != "B01_PRODUCT_PROFILE_REQUIRES_AUTHORITY_CAPTURE"
+        or first["plain_b01_probe_storage_created"] is not False
+        or first["plain_b06_product_profile_result"]
+        != "B06_PRODUCT_PROFILE_REQUIRES_CANDIDATE_AUTHORITY_STORE"
+        or first["plain_b06_probe_storage_created"] is not False
+        or first["candidate_database_files"] != 1
         or first["formal_tables"]
+        or first["formal_writes"] != 0
+        or first["ten_ledger_tables"]
+        or first["ten_ledger_writes"] != 0
         or migration["state"] != "POST_CUTOVER_ACTIVE"
         or aborted["state"] != "ABORTED"
         or synthetic["state"] != "REJECTED_READ_ONLY"
@@ -157,10 +170,10 @@ def run_self_check() -> dict[str, Any]:
         "successful_cutover": migration,
         "pre_cutover_abort": aborted,
         "synthetic_fixture_rejection": synthetic,
-        "candidate_storage_writer_count": 1,
+        "candidate_storage_writer_count": len(first["candidate_storage_writers"]),
         "b09_persistent_writer_count": 0,
-        "formal_fact_writes": 0,
-        "ten_ledger_writes": 0,
+        "formal_fact_writes": first["formal_writes"],
+        "ten_ledger_writes": first["ten_ledger_writes"],
         "model_api_calls": 0,
         "network_api_calls": 0,
     }

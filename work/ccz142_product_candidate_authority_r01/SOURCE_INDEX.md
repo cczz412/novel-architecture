@@ -9,6 +9,13 @@
 - CZ 授权时间：2026-09-03 04:04:25 +0800
 - 零 API 候选 Manifest SHA-256：`4c6f020a31e66ab8a0e4945411aa222765ca42098b3b1bc54d668d9053489e4c`
 
+## R02 修正依据
+
+- 联合审查对象：PR #230 head `f65b4c200629a926951826e21058bfe6a52751d1` 与 PR #235 R01 head `45be726630dafd484c99c7461d3536d81fefb1b3`。
+- 审查现场确认了三个产品阻断：普通 B06 可成为第二 writer，已激活迁移可读另一项目 store，pointer 可在检查与 cutover 提交之间前进。
+- CZ 随后批准在现有 Issue、分支和 Draft PR 内窄修，不扩大到 Linear、FormalFact、正式事实、十本账或模型 API。
+- 修正时又对称检查了 B01，并把普通 `FixtureStore` 的产品 profile 持久化旁路一并关闭。
+
 ## 直接代码来源
 
 - `work/ccz57_m3_b01_candidate_version_r03_5/`：CandidateVersion、locator、pointer 与 fixture 兼容合同。

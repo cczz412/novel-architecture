@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import secrets
 import sqlite3
 import sys
 from copy import deepcopy
@@ -24,13 +25,17 @@ from b01_contract import (  # noqa: E402
     CCZ142_EXTRACTION_SOURCE_MODULE,
     FIXTURE_AUTHORITY_PROFILE,
     CandidateAuthorityProfile,
+    _PRODUCT_B01_CAPTURE_TOKEN,
     _compose_ccz142_b01_runtime,
     canonical_bytes,
     record_ref,
     require_authority_profile,
     sha256_value,
 )
-from b06_store import B06CommitStore  # noqa: E402
+from b06_store import (  # noqa: E402
+    _CANDIDATE_AUTHORITY_STORE_TOKEN,
+    B06CommitStore,
+)
 
 ROOT_REQUEST_KEYS = {
     "admission",
@@ -126,7 +131,11 @@ class CandidateAuthorityStore(B06CommitStore):
         if not isinstance(project_scope_id, str) or not project_scope_id:
             fail("PROJECT_SCOPE_INVALID")
         profile = require_authority_profile(authority_profile)
-        super().__init__(root, authority_profile=profile)
+        super().__init__(
+            root,
+            authority_profile=profile,
+            _candidate_authority_store_token=_CANDIDATE_AUTHORITY_STORE_TOKEN,
+        )
         self.project_scope_id = project_scope_id
         self.root_failure_point = root_failure_point
         self.root_commit_count = 0
@@ -254,6 +263,22 @@ class CandidateAuthorityStore(B06CommitStore):
                     )
                 elif bytes(row[0]) != encoded:
                     fail("AUTHORITY_PROFILE_STORE_MISMATCH", key)
+            generated_store_id = secrets.token_hex(32).encode("utf-8")
+            connection.execute(
+                "INSERT OR IGNORE INTO metadata(key, value) VALUES (?, ?)",
+                ("authority_store_id", sqlite3.Binary(generated_store_id)),
+            )
+            store_id_row = connection.execute(
+                "SELECT value FROM metadata WHERE key = 'authority_store_id'"
+            ).fetchone()
+            if store_id_row is None:
+                fail("AUTHORITY_STORE_ID_MISSING")
+            store_id = bytes(store_id_row[0]).decode("utf-8")
+            if (
+                len(store_id) != 64
+                or any(character not in "0123456789abcdef" for character in store_id)
+            ):
+                fail("AUTHORITY_STORE_ID_INVALID")
             connection.commit()
 
     def initialize(self, *_args: Any, **_kwargs: Any) -> None:
@@ -551,6 +576,32 @@ class CandidateAuthorityStore(B06CommitStore):
     @property
     def database_path(self) -> Path:
         return self._database_path
+
+    @property
+    def authority_store_id(self) -> str:
+        with sqlite3.connect(self._database_path) as connection:
+            row = connection.execute(
+                "SELECT value FROM metadata WHERE key = 'authority_store_id'"
+            ).fetchone()
+        if row is None:
+            fail("AUTHORITY_STORE_ID_MISSING")
+        value = bytes(row[0]).decode("utf-8")
+        if (
+            len(value) != 64
+            or any(character not in "0123456789abcdef" for character in value)
+        ):
+            fail("AUTHORITY_STORE_ID_INVALID")
+        return value
+
+    @property
+    def storage_locator_hash(self) -> str:
+        return sha256_value(
+            {
+                "authority_store_id": self.authority_store_id,
+                "database_path": str(self._database_path.resolve()),
+                "project_scope_id": self.project_scope_id,
+            }
+        )
 
     @staticmethod
     def _migration_request_hash(
@@ -930,6 +981,7 @@ class CandidateRootInitializer:
         service, admit_extraction = _compose_ccz142_b01_runtime(
             capture,
             authority_profile=self.__store.authority_profile,
+            _product_capture_token=_PRODUCT_B01_CAPTURE_TOKEN,
         )
         extraction_admission = admit_extraction(
             source_lane=CCZ142_EXTRACTION_SOURCE_LANE,

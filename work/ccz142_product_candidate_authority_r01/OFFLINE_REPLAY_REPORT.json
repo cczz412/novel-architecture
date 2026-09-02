@@ -56,6 +56,9 @@
     "b09_status": "EMPTY",
     "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
     "candidate_database_files": 1,
+    "candidate_database_paths": [
+      "candidate-authority/b06-commit-core.sqlite3"
+    ],
     "candidate_storage_writers": [
       "CandidateAuthorityStore"
     ],
@@ -75,6 +78,10 @@
     "formal_writes": 0,
     "model_api_calls": 0,
     "network_api_calls": 0,
+    "plain_b01_probe_storage_created": false,
+    "plain_b01_product_profile_result": "B01_PRODUCT_PROFILE_REQUIRES_AUTHORITY_CAPTURE",
+    "plain_b06_probe_storage_created": false,
+    "plain_b06_product_profile_result": "B06_PRODUCT_PROFILE_REQUIRES_CANDIDATE_AUTHORITY_STORE",
     "pointer_generation": 2,
     "pointer_key": "product:m3_candidate.current/0e9acf4860184513a42e8f3475c4c0455da42a234562129f7f60e502b7a2ae2f/novel-fact-extraction-v2.1/product-chapter-001/r1/seg1/65dff7c65900e2b0e59fbef6690f6417d63167fd63c45c5ec32555a20e9db627",
     "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
@@ -91,6 +98,7 @@
       "source_module": "M3"
     },
     "root_contract_version": "r04-product-candidate",
+    "ten_ledger_tables": [],
     "ten_ledger_writes": 0
   },
   "model_api_calls": 0,

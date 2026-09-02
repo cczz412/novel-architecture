@@ -1,11 +1,12 @@
 {
-  "document_identity": "CCZ142-PRODUCT-CANDIDATE-AUTHORITY-R01-TEST-RECEIPT",
-  "validated_at": "2026-09-03T04:47:08+08:00",
+  "document_identity": "CCZ142-PRODUCT-CANDIDATE-AUTHORITY-R02-TEST-RECEIPT",
+  "validated_at": "2026-09-03T05:29:22+08:00",
   "result": "PASS",
   "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
   "upstream_draft_pr": 230,
   "upstream_exact_head": "f65b4c200629a926951826e21058bfe6a52751d1",
   "github_issue": 231,
+  "reviewed_r01_head": "45be726630dafd484c99c7461d3536d81fefb1b3",
   "runtime": {
     "python": "3.12.12",
     "environment": "uv --locked",
@@ -19,7 +20,7 @@
   "test_suites": [
     {
       "suite": "ccz142_product_candidate_authority_r01",
-      "passed": 19,
+      "passed": 26,
       "failed": 0
     },
     {
@@ -74,13 +75,17 @@
     }
   ],
   "totals": {
-    "passed": 569,
+    "passed": 576,
     "failed": 0
   },
   "authority_profile_acceptance": {
     "profile_frozen_at_construction": "PASS",
     "request_cannot_switch_profile": "PASS",
     "store_reopen_wrong_profile": "FAIL_CLOSED_BEFORE_READ",
+    "authority_store_id_persisted_across_reopen": true,
+    "storage_locator_bound_to_project_and_database_path": true,
+    "plain_B01_product_profile": "REJECTED_BEFORE_STORAGE",
+    "plain_B06_product_profile": "REJECTED_BEFORE_STORAGE",
     "candidate_contract_version": "r04-product-candidate",
     "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
     "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
@@ -102,15 +107,26 @@
       "CandidateAuthorityStore"
     ],
     "candidate_database_files": 1,
+    "candidate_database_paths": [
+      "candidate-authority/b06-commit-core.sqlite3"
+    ],
+    "writer_and_database_counts_from_runtime_probe": true,
     "B09_persistent_writer_count": 0
   },
   "migration_acceptance": {
     "synthetic_fixture_import": "MIGRATION_SYNTHETIC_FIXTURE_INELIGIBLE",
     "synthetic_source_unchanged": true,
     "mixed_namespace": "FAIL_CLOSED",
+    "cross_project_store_read": "FAIL_CLOSED",
+    "same_project_second_store_read": "FAIL_CLOSED",
+    "same_store_wrong_pointer_read": "FAIL_CLOSED",
+    "forward_recovery_wrong_pointer": "FAIL_CLOSED",
     "target_hidden_before_activation": true,
     "abort_before_cutover": "ABORTED_TARGET_HIDDEN",
     "cutover_pointer_drift": "MIGRATION_CUTOVER_CAS_MISMATCH",
+    "cutover_pointer_check_and_state_commit_lock": "PASS",
+    "activation_pointer_recheck": "PASS",
+    "post_cutover_pre_activation_drift": "REQUIRES_FORWARD_REPAIR",
     "post_cutover_recovery": "FORWARD_ONLY",
     "legacy_writer_reactivated": false,
     "migration_control_tables": [
