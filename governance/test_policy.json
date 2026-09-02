@@ -636,7 +636,7 @@
       "tests": [
         "work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py"
       ],
-      "full_chain": false
+      "full_chain": true
     },
     {
       "name": "CCZ-57 B-09 当前因果提示纯派生视图",

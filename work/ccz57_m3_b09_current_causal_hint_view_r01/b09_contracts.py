@@ -24,6 +24,7 @@ from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E4
     validate_record_ref as b01_validate_record_ref,
 )
 from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
+    SOURCE_MODULE as B05_SOURCE_MODULE,
     canonical_bytes,
     sha256_value,
     validate_record_ref,
@@ -138,6 +139,14 @@ EVIDENCE_LOCATOR_KEYS = {
     "evidence_sha256",
     "binding_hash",
     "locator_hash",
+}
+REF_SOURCE_MODULES = {
+    "M3_CAUSAL_HINT_PROPOSAL": B05_SOURCE_MODULE,
+    "M3_PATCH_ROUTE_RECEIPT": B05_SOURCE_MODULE,
+    "M3_PATCH_LIFECYCLE_RECEIPT": B05_SOURCE_MODULE,
+    "M3_DIAGNOSTIC": B05_SOURCE_MODULE,
+    "M3_COVERAGE_OBSERVATION": B05_SOURCE_MODULE,
+    "M3_AUTHORIZED_SOURCE_SLICE": B05_SOURCE_MODULE,
 }
 
 
@@ -276,6 +285,13 @@ def _validate_ref(value: Any, expected_type: str, code: str) -> None:
         validate_record_ref(value, expected_type=expected_type)
     except ValueError as error:
         fail(code, str(error))
+    expected_source_module = REF_SOURCE_MODULES.get(expected_type)
+    if (
+        expected_source_module is None
+        or not _positive_int(value["record_version"])
+        or value["source_module"] != expected_source_module
+    ):
+        fail(code, "record identity")
 
 
 def _validate_canonical_unique(values: Any, code: str) -> None:

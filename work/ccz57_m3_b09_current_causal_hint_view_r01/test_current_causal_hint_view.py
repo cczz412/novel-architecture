@@ -442,6 +442,46 @@ def test_view_rejects_rehashed_malformed_nested_locators(
 
 
 @pytest.mark.parametrize(
+    ("hint_key", "expected_type"),
+    [
+        ("causal_hint_proposal_ref", "M3_CAUSAL_HINT_PROPOSAL"),
+        ("route_receipt_ref", "M3_PATCH_ROUTE_RECEIPT"),
+        ("lifecycle_head_ref", "M3_PATCH_LIFECYCLE_RECEIPT"),
+        ("diagnostic_refs", "M3_DIAGNOSTIC"),
+        ("coverage_observation_refs", "M3_COVERAGE_OBSERVATION"),
+        ("authorized_source_slice_refs", "M3_AUTHORIZED_SOURCE_SLICE"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("field", "bad_value"),
+    [("record_version", True), ("source_module", "NOT_M3")],
+)
+def test_view_rejects_rehashed_invalid_top_level_record_identity(
+    tmp_path: Path,
+    hint_key: str,
+    expected_type: str,
+    field: str,
+    bad_value: Any,
+) -> None:
+    world = _build_world(tmp_path / f"{hint_key}-{field}")
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    hint = view["hints"][0]
+    if hint_key.endswith("_refs"):
+        ref = deepcopy(hint["causal_hint_proposal_ref"])
+        ref["record_type"] = expected_type
+        hint[hint_key] = [ref]
+    else:
+        ref = hint[hint_key]
+    ref[field] = bad_value
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match="B09_HINT_REF_INVALID"):
+        validate_view(view)
+
+
+@pytest.mark.parametrize(
     ("scope_key", "bad_value"),
     [
         ("project_scope_id", 7),

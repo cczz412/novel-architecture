@@ -183,24 +183,36 @@ class TestImpactTests(unittest.TestCase):
                     plan["matched_paths"][path],
                 )
 
-    def test_b09_direct_authority_upstreams_select_the_consumer_test(self) -> None:
+    def test_b09_direct_authority_upstreams_add_consumer_without_downgrade(
+        self,
+    ) -> None:
         for path in B09_DIRECT_AUTHORITY_UPSTREAM_PATHS:
             with self.subTest(path=path):
                 plan = test_impact.build_plan(
                     spec([path]), policy=self.policy, registry=self.registry
                 )
-                self.assertEqual(plan["scope"], "targeted")
-                self.assertFalse(plan["full_chain"])
+                self.assertEqual(plan["scope"], "full_chain")
+                self.assertTrue(plan["full_chain"])
                 self.assertEqual(plan["unknown_paths"], [])
                 self.assertEqual(plan["affected_modules"], [])
                 self.assertEqual(plan["selected_tests"], [B09_DIRECTED_TEST])
                 self.assertEqual(
-                    plan["execution_steps"][0]["argv"],
+                    [step["step_id"] for step in plan["execution_steps"]],
+                    ["pytest-full", "pytest-outside-default", "ruff"],
+                )
+                self.assertEqual(
+                    plan["execution_steps"][1]["argv"],
                     ["uv", "run", "--locked", "pytest", "-q", B09_DIRECTED_TEST],
                 )
                 self.assertIn(
                     "CCZ-57 B-09 直接权威上游",
                     plan["matched_paths"][path],
+                )
+                self.assertTrue(
+                    any(
+                        "CCZ-57 B-09 直接权威上游" in reason
+                        for reason in plan["full_chain_reasons"]
+                    )
                 )
 
     def test_full_chain_keeps_registered_tests_outside_default_collection(
