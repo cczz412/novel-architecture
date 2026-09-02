@@ -546,14 +546,15 @@ class CurrentCausalHintAuthorityReader:
         if current_candidate["payload"]["parent_candidate_version_ref"] is None:
             return None
         rows = connection.execute(
-            "SELECT receipt_json FROM merge_receipts WHERE project_scope_id = ?",
+            "SELECT operation_id, request_hash, receipt_json FROM merge_receipts "
+            "WHERE project_scope_id = ?",
             (project_scope_id,),
         ).fetchall()
         matches: list[dict[str, Any]] = []
         current_ref = record_ref(current_candidate)
         for row in rows:
             receipt = _decode(
-                row[0],
+                row[2],
                 reason="AUTHORITY_HASH_MISMATCH",
                 detail="merge receipt bytes",
             )
@@ -563,6 +564,14 @@ class CurrentCausalHintAuthorityReader:
                 raise B09AuthorityError(
                     "AUTHORITY_HASH_MISMATCH", str(error)
                 ) from error
+            if (
+                row[0] != receipt["payload"]["operation_id"]
+                or row[1] != receipt["payload"]["request_hash"]
+            ):
+                raise B09AuthorityError(
+                    "AUTHORITY_STATE_INCOHERENT",
+                    "merge receipt mirrored columns",
+                )
             if _ref_equal(
                 receipt["payload"]["child_candidate_version_ref"], current_ref
             ):

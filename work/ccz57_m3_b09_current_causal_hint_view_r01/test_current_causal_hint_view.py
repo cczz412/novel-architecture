@@ -1036,6 +1036,27 @@ def test_reader_fingerprints_merge_receipt_across_two_passes(tmp_path: Path) -> 
     )
 
 
+@pytest.mark.parametrize("column", ["operation_id", "request_hash"])
+def test_merge_receipt_mirrored_columns_must_match_payload(
+    tmp_path: Path,
+    column: str,
+) -> None:
+    world = _build_world(tmp_path / f"merge-receipt-{column}", safe_postcommit=True)
+    _commit(world)
+    with sqlite3.connect(world.b06_store._database_path) as connection:
+        connection.execute(
+            f"UPDATE merge_receipts SET {column} = ? WHERE project_scope_id = ?",
+            (f"tampered-{column}", world.project_scope_id),
+        )
+
+    view = read_current_causal_hints(world.make_reader(), world.request)
+
+    assert (view["status"], view["reason_code"]) == (
+        "ERROR",
+        "AUTHORITY_STATE_INCOHERENT",
+    )
+
+
 def test_exact_immutable_hash_mismatch_fails_closed(tmp_path: Path) -> None:
     world = _build_world(tmp_path / "bad-proposal")
     target_ref = record_ref(world.b05.causals[0])
