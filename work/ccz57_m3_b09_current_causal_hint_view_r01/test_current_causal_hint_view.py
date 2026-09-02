@@ -510,6 +510,30 @@ def test_view_rejects_unhashable_discriminators_through_contract(
 
 
 @pytest.mark.parametrize(
+    "missing_support",
+    ["evidence", "diagnostic_and_coverage"],
+)
+def test_view_rejects_stripped_mandatory_causal_support(
+    tmp_path: Path,
+    missing_support: str,
+) -> None:
+    world = _build_world(tmp_path / missing_support)
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    hint = view["hints"][0]
+    if missing_support == "evidence":
+        hint["current_evidence_locators"] = []
+    else:
+        hint["diagnostic_refs"] = []
+        hint["coverage_observation_refs"] = []
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match="B09_HINT_SUPPORT_INVALID"):
+        validate_view(view)
+
+
+@pytest.mark.parametrize(
     ("scope_key", "bad_value"),
     [
         ("project_scope_id", 7),

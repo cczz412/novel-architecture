@@ -479,6 +479,10 @@ def validate_view(view: Any) -> None:
             for item in hint["supporting_route_unit_ids"]
         ):
             fail("B09_HINT_SUPPORT_INVALID")
+        if not hint["current_evidence_locators"] or not (
+            hint["diagnostic_refs"] or hint["coverage_observation_refs"]
+        ):
+            fail("B09_HINT_SUPPORT_INVALID")
         for locator in (
             hint["current_from_lineage_locator"],
             hint["current_to_lineage_locator"],
