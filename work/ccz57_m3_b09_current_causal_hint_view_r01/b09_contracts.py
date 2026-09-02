@@ -539,6 +539,17 @@ def validate_view(view: Any) -> None:
         fail("B09_HINT_ORDER_INVALID")
     if len({canonical_bytes(head) for head in authority_heads}) > 1:
         fail("B09_HINT_AUTHORITY_HEAD_MISMATCH")
+    if scope["phase"] == "POST_COMMIT_EXACT_CHILD" and (
+        any(len(hint["supporting_route_unit_ids"]) != 1 for hint in view["hints"])
+        or len(
+            {
+                hint["supporting_route_unit_ids"][0]
+                for hint in view["hints"]
+            }
+        )
+        != 1
+    ):
+        fail("B09_HINT_SUPPORT_INVALID", "post-commit route unit mismatch")
     # Record refs necessarily carry record_id/record_version.  The prohibition
     # applies to B-09-owned top-level fields, whose exact-key contracts above
     # prevent persistent identity or lifecycle metadata from being added.

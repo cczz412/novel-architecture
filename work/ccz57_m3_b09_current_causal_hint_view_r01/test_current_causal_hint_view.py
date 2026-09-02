@@ -1084,6 +1084,39 @@ def test_postcommit_exact_child_narrow_positive(tmp_path: Path) -> None:
     assert len(view["hints"][0]["supporting_route_unit_ids"]) == 1
 
 
+@pytest.mark.parametrize("mismatch_kind", ["extra", "different"])
+def test_postcommit_view_rejects_route_unit_mismatch(
+    tmp_path: Path,
+    mismatch_kind: str,
+) -> None:
+    world = _build_world(
+        tmp_path / f"postcommit-route-unit-{mismatch_kind}",
+        safe_postcommit=True,
+        hint_count=2,
+    )
+    _commit(world)
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    other_route_unit_id = "route-unit:" + "f" * 64
+    if other_route_unit_id == view["hints"][0]["supporting_route_unit_ids"][0]:
+        other_route_unit_id = "route-unit:" + "e" * 64
+    if mismatch_kind == "extra":
+        view["hints"][0]["supporting_route_unit_ids"] = sorted(
+            [
+                *view["hints"][0]["supporting_route_unit_ids"],
+                other_route_unit_id,
+            ],
+            key=canonical_bytes,
+        )
+    else:
+        view["hints"][1]["supporting_route_unit_ids"] = [other_route_unit_id]
+    view["view_hash"] = sha256_value(
+        {key: value for key, value in view.items() if key != "view_hash"}
+    )
+
+    with pytest.raises(B09ContractError, match="B09_HINT_SUPPORT_INVALID"):
+        validate_view(view)
+
+
 def test_postcommit_endpoint_change_returns_empty(tmp_path: Path) -> None:
     world = _build_world(tmp_path / "postcommit-endpoint-change")
     _commit(world)
