@@ -1,0 +1,82 @@
+{
+  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R01",
+  "status": "DRAFT_ENGINEERING_CANDIDATE_NOT_PRODUCT_ADOPTION",
+  "github_issue": 227,
+  "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
+  "authority_scope": "one CandidateAuthorityStore per project_scope_id",
+  "public_root_capability": {
+    "owner": "CandidateRootInitializer",
+    "method": "initialize_root(request)",
+    "generic_read_exposed": false,
+    "generic_commit_exposed": false,
+    "scope_binding": [
+      "project_scope_id",
+      "chapter_revision_ref",
+      "seg",
+      "input_generation_id",
+      "input_generation_hash",
+      "input_binding_hash",
+      "segment_scope_hash"
+    ],
+    "authority_reads": 2,
+    "authority_drift_policy": "fail_closed_before_persistent_write"
+  },
+  "writer_map": {
+    "candidate_versions": "CandidateAuthorityStore",
+    "current_pointers": "CandidateAuthorityStore",
+    "candidate_aux_records": "CandidateAuthorityStore",
+    "candidate_root_operations": "CandidateAuthorityStore",
+    "merge_receipts": "CandidateAuthorityStore via inherited B06 commit core",
+    "candidate_migrations": "CandidateAuthorityStore",
+    "b07_current_run_states": "B07RunStore",
+    "b07_stop_receipts": "B07RunStore",
+    "b07_internal_debug_records": "B07RunStore",
+    "b08_segment_terminal_receipts": "B08SegmentTerminalStore"
+  },
+  "root_atomic_write_set": [
+    "M3_SEGMENT_INDEX_SNAPSHOT",
+    "root M3_CANDIDATE_VERSION",
+    "initial current pointer",
+    "M3_CANDIDATE_POINTER_SNAPSHOT",
+    "root operation binding"
+  ],
+  "child_atomic_write_set": [
+    "child M3_CANDIDATE_VERSION",
+    "current pointer CAS",
+    "M3_CANDIDATE_MERGE_RECEIPT"
+  ],
+  "legacy_migration": {
+    "sources": [
+      "B01 state.json",
+      "B06 b06-commit-core.sqlite3"
+    ],
+    "destination_writer": "CandidateAuthorityStore",
+    "source_mutation": false,
+    "same_id_same_source": "idempotent_replay",
+    "same_id_changed_source": "fail_closed",
+    "pointer_advance_requires_exact_merge_receipt_chain": true
+  },
+  "forbidden_product_path": {
+    "B01 state.json": true,
+    "B06 bootstrap copy": true,
+    "caller supplied pointer mutation": true,
+    "second candidate SQL writer": true
+  },
+  "formal_isolation": {
+    "FormalFact_tables": 0,
+    "formal_current_pointer_tables": 0,
+    "ten_ledger_tables": 0,
+    "AUTHOR_ATTESTATION_writes": 0
+  },
+  "current_contract_limit": {
+    "candidate_contract": "r03.5-candidate",
+    "pointer_namespace": "FIXTURE_ONLY",
+    "product_namespace_adopted": false,
+    "meaning": "R01 proves single-store wiring under current B01/B06 candidate contracts; product namespace needs a separately approved contract migration"
+  },
+  "external_calls": {
+    "model_api": 0,
+    "network_api": 0,
+    "browser": 0
+  }
+}

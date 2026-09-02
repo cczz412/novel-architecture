@@ -1,0 +1,70 @@
+{
+  "adoption_boundary": {
+    "current_pointer_namespace": "FIXTURE_ONLY",
+    "draft_pr_only": true,
+    "product_namespace_adopted": false
+  },
+  "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
+  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R01-SELF-CHECK",
+  "external_calls": {
+    "browser_actions": 0,
+    "model_api_calls": 0,
+    "network_api_calls": 0
+  },
+  "formal_writes": 0,
+  "full_shadow": {
+    "b01_state_json_files": 0,
+    "b06_bootstrap_copy_calls": 0,
+    "candidate_database_files": 1,
+    "child_candidate_hash": "ff6572d487c4346e13c6842c48ebb2ec8661a5490d117c232d0e65059a8d3ebc",
+    "child_candidate_id": "cv:2a17b0a756cd:230bdf2ce74aa2f27029c9e6b620a5f4",
+    "child_physical_commits": 1,
+    "child_replay_reused": true,
+    "formal_tables": [],
+    "formal_writes": 0,
+    "model_api_calls": 0,
+    "network_api_calls": 0,
+    "pointer_generation": 2,
+    "pointer_key": "fixture:m3_candidate.current/novel-fact-extraction-v2.1/synthetic-chapter-001/r7/seg1/5162b6696a41ca6024e94ae2c7c43110577eb5a068356342c9c2f9769a3ec55d",
+    "pointer_namespace": "FIXTURE_ONLY",
+    "pointer_targets_child": true,
+    "result": "PASS",
+    "root_candidate_hash": "9dd89591a193754f96a7c7d3b595d16c459c01f0c4073699c5353780679f0e30",
+    "root_candidate_id": "cv:2a17b0a756cd:89fd57fc802a3d7311e2605ee856db03",
+    "root_physical_commits": 1,
+    "root_replay_reused": true,
+    "table_counts": {
+      "b07_current_run_states": 1,
+      "b07_internal_debug_records": 0,
+      "b07_run_command_dedupe": 3,
+      "b07_stop_receipts": 0,
+      "b08_segment_terminal_receipts": 1,
+      "candidate_aux_records": 2,
+      "candidate_migrations": 0,
+      "candidate_root_operations": 1,
+      "candidate_versions": 2,
+      "current_pointers": 1,
+      "merge_receipts": 1,
+      "metadata": 2
+    },
+    "terminal_binds_child": true,
+    "terminal_binds_merge_receipt": true,
+    "terminal_replay_reused": true
+  },
+  "repeatability": {
+    "exact_result_match": true,
+    "independent_runs": 2
+  },
+  "result": "PASS",
+  "writer_audit": {
+    "candidate_destination_mutation_owners": [
+      "candidate_authority.py"
+    ],
+    "generic_root_commit_exposed": false,
+    "generic_root_read_exposed": false,
+    "root_public_parameters": [
+      "self",
+      "request"
+    ]
+  }
+}
