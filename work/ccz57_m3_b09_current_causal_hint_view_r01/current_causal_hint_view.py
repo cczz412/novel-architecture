@@ -284,6 +284,26 @@ def _guard_error(error: B05ContractError) -> B09AuthorityError:
     return B09AuthorityError("AUTHORITY_REFERENCE_CONFLICT", error.code)
 
 
+def _require_route_freshness(
+    snapshot: dict[str, Any],
+    *,
+    route_bound_pointer_hash: str,
+) -> None:
+    route = snapshot["active_route"]
+    binding = route["payload"]["binding_header"]
+    freshness = snapshot["freshness"]
+    if (
+        binding["live_pointer_binding_hash"] != route_bound_pointer_hash
+        or binding["b02_scope_snapshot_hash"]
+        != freshness["b02_scope_snapshot_hash"]
+        or route["payload"]["active_policy_selection_hash"]
+        != freshness["active_policy_selection_hash"]
+        or binding["non_content_gate_snapshot_hash"]
+        != freshness["non_content_gate_snapshot_hash"]
+    ):
+        raise B09AuthorityError("AUTHORITY_DRIFT", "active route freshness")
+
+
 def _phase(snapshot: dict[str, Any]) -> tuple[str, str]:
     route = snapshot["active_route"]
     validation = snapshot["validation_receipt"]
@@ -469,14 +489,18 @@ def project_current_causal_hints(
             for entry in route["payload"]["causal_hint_routes"]
             if entry["route"] == "ROUTE_TO_B09"
         ]
-        if not entries:
-            return _view_from_snapshot(
-                authority_snapshot,
-                status="EMPTY",
-                reason_code="NO_ROUTE_TO_B09",
-            )
         try:
             phase, route_bound_pointer_hash = _phase(authority_snapshot)
+            if not entries:
+                _require_route_freshness(
+                    authority_snapshot,
+                    route_bound_pointer_hash=route_bound_pointer_hash,
+                )
+                return _view_from_snapshot(
+                    authority_snapshot,
+                    status="EMPTY",
+                    reason_code="NO_ROUTE_TO_B09",
+                )
             hints = [
                 _hint(
                     authority_snapshot,

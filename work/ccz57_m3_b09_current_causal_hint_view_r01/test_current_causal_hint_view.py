@@ -26,9 +26,13 @@ for candidate in (REPOSITORY_ROOT, B05_ROOT, B06_ROOT, B07_ROOT, B08_ROOT):
         sys.path.insert(0, str(candidate))
 
 from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
+    B05ContractError,
     canonical_bytes,
     record_ref,
     sha256_value,
+)
+from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
+    record_ref as b01_record_ref,
 )
 from work.ccz57_m3_b05_patch_route_r03_5.fixtures import (  # noqa: E402
     REOPENED_AT,
@@ -45,6 +49,9 @@ from work.ccz57_m3_b06_commit_core_r01.fixtures import (  # noqa: E402
 )
 from work.ccz57_m3_b07_local_recovery_stop_r01.b07_adapters import (  # noqa: E402
     derive_b06_request_hash,
+)
+from work.ccz57_m3_b07_local_recovery_stop_r01.b07_contracts import (  # noqa: E402
+    state_hash_value,
 )
 from work.ccz57_m3_b07_local_recovery_stop_r01.b07_store import (  # noqa: E402
     B07RunStore,
@@ -170,8 +177,11 @@ def _immutable_reader(records: list[dict[str, Any]]) -> Any:
             continue
         try:
             key = canonical_bytes(record_ref(record))
-        except ValueError:
-            continue
+        except B05ContractError:
+            try:
+                key = canonical_bytes(b01_record_ref(record))
+            except ValueError:
+                continue
         prior = indexed.get(key)
         if prior is not None and canonical_bytes(prior) != canonical_bytes(record):
             raise AssertionError("fixture immutable identity collision")
@@ -192,11 +202,19 @@ def _build_world(
     bind_route: bool = True,
     multi_support: bool = False,
     valid_route_hash: bool = True,
+    route_mode: str | None = None,
+    b05_options: dict[str, Any] | None = None,
 ) -> SimpleNamespace:
     mode = "causal"
     if safe_postcommit:
         mode = "order-add" if multi_support else "add"
-    b05 = build_b05_environment(root / "b05", mode=mode)
+    if route_mode is not None:
+        mode = route_mode
+    b05 = build_b05_environment(
+        root / "b05",
+        mode=mode,
+        **({} if b05_options is None else b05_options),
+    )
     _prepare_causals(
         b05,
         safe_postcommit=safe_postcommit,
@@ -209,8 +227,9 @@ def _build_world(
         for item in route["payload"]["route_units"]
         if item["route"] == "ALLOW_FOR_B06"
     ]
-    assert allow_entries
-    route_unit_id = allow_entries[0]["route_unit_id"]
+    route_units = route["payload"]["route_units"]
+    assert route_units
+    route_unit_id = (allow_entries or route_units)[0]["route_unit_id"]
 
     b01_snapshot = b05.b01_reader.read_scope()
     base_candidate = b01_snapshot["candidate_version_record"]
@@ -739,6 +758,71 @@ def test_reader_rejects_coherently_rehashed_candidate_access_policy(
     assert view["reason_code"] == "AUTHORITY_REFERENCE_CONFLICT"
 
 
+def test_reader_rejects_coherently_rehashed_invalid_candidate_payload(
+    tmp_path: Path,
+) -> None:
+    world = _build_world(tmp_path / "candidate-lineage-index", bind_route=False)
+    pointer_key = world.live_pointer["logical_pointer_key"]
+    old_ref = world.live_pointer["current_candidate_version_ref"]
+    old_ref_hash = sha256_value(old_ref)
+    with sqlite3.connect(world.b06_store._database_path) as connection:
+        candidate_row = connection.execute(
+            "SELECT record_json FROM candidate_versions WHERE ref_hash = ?",
+            (old_ref_hash,),
+        ).fetchone()
+        pointer_row = connection.execute(
+            "SELECT pointer_json FROM current_pointers WHERE logical_pointer_key = ?",
+            (pointer_key,),
+        ).fetchone()
+        state_row = connection.execute(
+            "SELECT state_json FROM b07_current_run_states "
+            "WHERE project_scope_id = ? AND run_id = ?",
+            (world.project_scope_id, world.run_id),
+        ).fetchone()
+        assert candidate_row is not None
+        assert pointer_row is not None
+        assert state_row is not None
+        candidate = json.loads(bytes(candidate_row[0]).decode("utf-8"))
+        pointer = json.loads(bytes(pointer_row[0]).decode("utf-8"))
+        state = json.loads(bytes(state_row[0]).decode("utf-8"))
+        candidate["payload"]["lineage_index"][0]["json_pointer"] = "/items/1"
+        candidate["payload"]["version_payload_hash"] = sha256_value(
+            {
+                key: value
+                for key, value in candidate["payload"].items()
+                if key != "version_payload_hash"
+            }
+        )
+        candidate["record_hash"] = sha256_value(
+            {key: value for key, value in candidate.items() if key != "record_hash"}
+        )
+        new_ref = record_ref(candidate)
+        pointer["current_candidate_version_ref"] = new_ref
+        state["authority_snapshot"]["observed_candidate_version_ref"] = deepcopy(
+            new_ref
+        )
+        state["state_hash"] = state_hash_value(state)
+        connection.execute(
+            "UPDATE candidate_versions SET ref_hash = ?, record_json = ? "
+            "WHERE ref_hash = ?",
+            (sha256_value(new_ref), canonical_bytes(candidate), old_ref_hash),
+        )
+        connection.execute(
+            "UPDATE current_pointers SET pointer_json = ? "
+            "WHERE logical_pointer_key = ?",
+            (canonical_bytes(pointer), pointer_key),
+        )
+        connection.execute(
+            "UPDATE b07_current_run_states SET state_json = ? "
+            "WHERE project_scope_id = ? AND run_id = ?",
+            (canonical_bytes(state), world.project_scope_id, world.run_id),
+        )
+
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    assert view["status"] == "ERROR"
+    assert view["reason_code"] == "AUTHORITY_HASH_MISMATCH"
+
+
 @pytest.mark.parametrize(
     "scope_key", ["chapter_revision_ref", "current_candidate_version_ref"]
 )
@@ -766,6 +850,38 @@ def test_no_b07_route_is_a_normal_empty_view(tmp_path: Path) -> None:
         "NO_ROUTE_TO_B09",
     )
     assert view["scope"]["phase"] == "NOT_APPLICABLE"
+
+
+@pytest.mark.parametrize(
+    "freshness_key",
+    [
+        "b02_scope_snapshot_hash",
+        "active_policy_selection_hash",
+        "non_content_gate_snapshot_hash",
+    ],
+)
+def test_nonrouted_causal_hint_rejects_stale_route_freshness(
+    tmp_path: Path,
+    freshness_key: str,
+) -> None:
+    world = _build_world(
+        tmp_path / freshness_key,
+        route_mode="causal",
+        b05_options={"semantic_unknown_groups": ["replace-a"]},
+    )
+    assert all(
+        entry["route"] != "ROUTE_TO_B09"
+        for entry in world.route["payload"]["causal_hint_routes"]
+    )
+    world.freshness.snapshot[freshness_key] = sha256_value(
+        {"stale_route_freshness": freshness_key}
+    )
+
+    view = read_current_causal_hints(world.make_reader(), world.request)
+    assert (view["status"], view["reason_code"]) == (
+        "ERROR",
+        "AUTHORITY_DRIFT",
+    )
 
 
 def test_superseded_route_returns_empty(tmp_path: Path) -> None:

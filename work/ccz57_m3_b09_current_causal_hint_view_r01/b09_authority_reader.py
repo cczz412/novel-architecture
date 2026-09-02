@@ -19,14 +19,21 @@ for candidate in (REPOSITORY_ROOT, MODULE_ROOT, B05_ROOT, B08_ROOT):
         sys.path.insert(0, str(candidate))
 
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
+    B01ContractError,
     CANDIDATE_SCHEMA_ID,
     CONTRACT_VERSION as B01_CONTRACT_VERSION,
     FIXTURE_ACCESS as B01_FIXTURE_ACCESS,
     FIXTURE_POINTER_NAMESPACE,
+    SOURCE_GENERATION_RECORD_TYPE,
     SOURCE_MODULE as B01_SOURCE_MODULE,
+    WRITING_MATERIAL_RECORD_TYPE,
     LIVE_POINTER_KEYS,
     pointer_logical_key,
+    record_ref as b01_record_ref,
+    validate_candidate_version,
     validate_chapter_revision_ref,
+    validate_record as b01_validate_record,
+    validate_record_ref as b01_validate_record_ref,
     validate_segment_index_snapshot,
 )
 from b05_contracts import (  # noqa: E402
@@ -39,7 +46,9 @@ from b05_contracts import (  # noqa: E402
 )
 from patch_route_projection import PatchAggregateProjector  # noqa: E402
 from work.ccz57_m3_b06_commit_core_r01.b06_contracts import (  # noqa: E402
+    B06ContractError,
     validate_merge_receipt,
+    validate_mutable_pointer,
 )
 from work.ccz57_m3_b07_local_recovery_stop_r01.b07_contracts import (  # noqa: E402
     validate_current_run_state,
@@ -748,6 +757,86 @@ class CurrentCausalHintAuthorityReader:
             )
         return deepcopy(record)
 
+    def _candidate_reference_records(
+        self,
+        candidates: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        try:
+            specs: list[tuple[dict[str, Any], str]] = []
+            for candidate in candidates:
+                payload = candidate["payload"]
+                binding = payload["extraction_input_binding"]
+                specs.extend(
+                    [
+                        (
+                            binding["accepted_source_generation_ref"],
+                            SOURCE_GENERATION_RECORD_TYPE,
+                        ),
+                        (payload["segment_index_ref"], "M3_SEGMENT_INDEX_SNAPSHOT"),
+                    ]
+                )
+                specs.extend(
+                    (item["material_ref"], WRITING_MATERIAL_RECORD_TYPE)
+                    for item in binding["writing_material_refs"]
+                )
+                specs.extend(
+                    (ref, "A_RAW_ATTEMPT_RECEIPT")
+                    for ref in payload["origin_attempt_refs"]
+                )
+            resolved: dict[bytes, tuple[str, dict[str, Any]]] = {}
+            for ref, expected_type in specs:
+                key = canonical_bytes(ref)
+                prior = resolved.get(key)
+                if prior is not None:
+                    if prior[0] != expected_type:
+                        raise B09AuthorityError(
+                            "AUTHORITY_REFERENCE_CONFLICT",
+                            "candidate reference type conflict",
+                        )
+                    continue
+                resolved[key] = (
+                    expected_type,
+                    self._read_candidate_reference(
+                        ref,
+                        expected_type=expected_type,
+                    ),
+                )
+            return [resolved[key][1] for key in sorted(resolved)]
+        except B09AuthorityError:
+            raise
+        except (KeyError, TypeError, ValueError) as error:
+            raise B09AuthorityError(
+                "AUTHORITY_HASH_MISMATCH",
+                f"candidate reference closure: {error}",
+            ) from error
+
+    def _read_candidate_reference(
+        self,
+        ref: dict[str, Any],
+        *,
+        expected_type: str,
+    ) -> dict[str, Any]:
+        try:
+            b01_validate_record_ref(ref, expected_type=expected_type)
+            record = self._immutable_reader(deepcopy(ref))
+            b01_validate_record(record)
+        except B01ContractError as error:
+            raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
+        except Exception as error:
+            raise B09AuthorityError(
+                "AUTHORITY_REFERENCE_CONFLICT",
+                f"{expected_type} read failed: {error}",
+            ) from error
+        if record["record_type"] != expected_type:
+            raise B09AuthorityError(
+                "AUTHORITY_REFERENCE_CONFLICT", f"{expected_type} type mismatch"
+            )
+        if not _ref_equal(b01_record_ref(record), ref):
+            raise B09AuthorityError(
+                "AUTHORITY_REFERENCE_CONFLICT", f"{expected_type} ref mismatch"
+            )
+        return deepcopy(record)
+
     def _attach_immutables(self, collected: dict[str, Any]) -> dict[str, Any]:
         route = collected["active_route"]
         proposals: list[dict[str, Any]] = []
@@ -768,13 +857,40 @@ class CurrentCausalHintAuthorityReader:
                 proposals.append(
                     self._read_exact(ref, expected_type="M3_CAUSAL_HINT_PROPOSAL")
                 )
-        current_segment_index = self._read_exact(
-            collected["current_candidate"]["payload"]["segment_index_ref"],
-            expected_type="M3_SEGMENT_INDEX_SNAPSHOT",
+        reference_records = self._candidate_reference_records(
+            [collected["base_candidate"], collected["current_candidate"]]
         )
+        current_segment_indexes = [
+            record
+            for record in reference_records
+            if _ref_equal(
+                b01_record_ref(record),
+                collected["current_candidate"]["payload"]["segment_index_ref"],
+            )
+        ]
+        if len(current_segment_indexes) != 1:
+            raise B09AuthorityError(
+                "AUTHORITY_REFERENCE_CONFLICT", "current segment index closure"
+            )
+        current_segment_index = current_segment_indexes[0]
         try:
+            for candidate in (
+                collected["base_candidate"],
+                collected["current_candidate"],
+            ):
+                validate_candidate_version(
+                    candidate,
+                    allow_child=candidate["payload"]["parent_candidate_version_ref"]
+                    is not None,
+                    reference_records=reference_records,
+                )
+            validate_mutable_pointer(
+                collected["current_pointer"],
+                candidate=collected["current_candidate"],
+                reference_records=reference_records,
+            )
             validate_segment_index_snapshot(current_segment_index)
-        except ValueError as error:
+        except (B01ContractError, B06ContractError, KeyError, TypeError) as error:
             raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
         if (
             current_segment_index["payload"]["chapter_revision_ref"]
