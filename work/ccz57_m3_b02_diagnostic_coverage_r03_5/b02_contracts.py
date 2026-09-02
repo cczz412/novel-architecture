@@ -24,6 +24,8 @@ from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E4
     B01ContractError,
     CANDIDATE_SCHEMA_ID as B01_CANDIDATE_SCHEMA_ID,
     CONTRACT_VERSION as B01_CONTRACT_VERSION,
+    PRODUCT_CONTRACT_VERSION as B01_PRODUCT_CONTRACT_VERSION,
+    record_ref as b01_record_ref,
     sentence_count,
     validate_candidate_version as b01_validate_candidate_version,
     validate_evidence_locator as b01_validate_evidence_locator,
@@ -446,10 +448,13 @@ def validate_upstream_context(
     except B01ContractError as error:
         _b01_failure(error, "candidate")
     if (
-        candidate_version["contract_version"] != CONTRACT_VERSION
-        or candidate_version["record_contract_version"] != CONTRACT_VERSION
+        candidate_version["contract_version"]
+        not in {CONTRACT_VERSION, B01_PRODUCT_CONTRACT_VERSION}
+        or candidate_version["record_contract_version"]
+        != candidate_version["contract_version"]
         or candidate_version["payload"]["candidate_schema_id"] != CANDIDATE_SCHEMA_ID
-        or candidate_version["payload"]["segment_index_ref"] != record_ref(segment_index)
+        or candidate_version["payload"]["segment_index_ref"]
+        != b01_record_ref(segment_index)
         or candidate_version["payload"]["chapter_revision_ref"]
         != segment_index["payload"]["chapter_revision_ref"]
     ):
@@ -517,7 +522,7 @@ def validate_scope(
 ) -> None:
     candidate = context["candidate_version"]
     segment = context["segment_index"]
-    if payload["base_candidate_version_ref"] != record_ref(candidate):
+    if payload["base_candidate_version_ref"] != b01_record_ref(candidate):
         fail(code, "candidate ref")
     if payload["candidate_schema_id"] != CANDIDATE_SCHEMA_ID:
         fail(code, "candidate schema")
@@ -616,7 +621,7 @@ def _validate_locator_pair(
         _b01_failure(error, "matched locator")
     if (
         lineage["candidate_version_ref"] != evidence["candidate_version_ref"]
-        or lineage["candidate_version_ref"] != record_ref(candidate)
+        or lineage["candidate_version_ref"] != b01_record_ref(candidate)
         or lineage["lineage_id"] != evidence["lineage_id"]
     ):
         fail("B02_MATCHED_BINDING_INVALID", "locator pair identity")

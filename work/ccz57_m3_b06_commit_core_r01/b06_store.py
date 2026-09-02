@@ -23,6 +23,9 @@ for candidate in (REPOSITORY_ROOT, B05_ROOT):
 
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
     B01ContractError,
+    FIXTURE_AUTHORITY_PROFILE,
+    CandidateAuthorityProfile,
+    require_authority_profile,
     validate_candidate_version,
 )
 from b05_contracts import (  # noqa: E402
@@ -132,15 +135,27 @@ class B06CommitStore:
         "physical_write_attempts",
         "_database_path",
         "_lock_path",
+        "_authority_profile",
     )
 
-    def __init__(self, root: Path, *, failure_point: str | None = None) -> None:
+    def __init__(
+        self,
+        root: Path,
+        *,
+        failure_point: str | None = None,
+        authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
+    ) -> None:
         self.root = self._guard_storage_path(root)
         self.failure_point = failure_point
+        self._authority_profile = require_authority_profile(authority_profile)
         self.events: list[dict[str, str]] = []
         self.physical_write_attempts: list[dict[str, str]] = []
         self._database_path = self.root / "b06-commit-core.sqlite3"
         self._lock_path = self.root / ".b06-commit.lock"
+
+    @property
+    def authority_profile(self) -> CandidateAuthorityProfile:
+        return self._authority_profile
 
     @staticmethod
     def _guard_storage_path(path: Path) -> Path:
@@ -172,6 +187,7 @@ class B06CommitStore:
                 allow_child=base_candidate["payload"]["parent_candidate_version_ref"]
                 is not None,
                 reference_records=reference_records,
+                authority_profile=self._authority_profile,
             )
         except (B01ContractError, KeyError) as error:
             fail("B06_BOOTSTRAP_CANDIDATE_INVALID", str(error))
@@ -179,6 +195,7 @@ class B06CommitStore:
             live_pointer,
             candidate=base_candidate,
             reference_records=reference_records,
+            authority_profile=self._authority_profile,
         )
         self.root.mkdir(parents=True, exist_ok=True)
         descriptor = os.open(self._lock_path, os.O_CREAT | os.O_RDWR, 0o600)
@@ -616,6 +633,7 @@ class B06CommitService:
                     pointer_before,
                     candidate=base_candidate,
                     reference_records=self.reference_records,
+                    authority_profile=self.store.authority_profile,
                 )
                 if (
                     pointer_before["project_scope_id"] != project_scope_id
@@ -681,7 +699,8 @@ class B06CommitService:
                     if key != "record_hash"
                 }
                 child["record_id"] = (
-                    f"cv:{sha256_value(pointer_before['author_workspace_logical_key'])[:12]}:"
+                    f"{self.store.authority_profile.candidate_id_prefix}:"
+                    f"{sha256_value(pointer_before['author_workspace_logical_key'])[:12]}:"
                     f"{child_payload['version_payload_hash'][:32]}"
                 )
                 child["record_version"] = base_candidate["record_version"] + 1
@@ -693,6 +712,7 @@ class B06CommitService:
                         child,
                         allow_child=True,
                         reference_records=self.reference_records,
+                        authority_profile=self.store.authority_profile,
                     )
                 except B01ContractError as error:
                     fail("B06_CHILD_CANDIDATE_INVALID", str(error))
@@ -703,6 +723,7 @@ class B06CommitService:
                     pointer_after,
                     candidate=child,
                     reference_records=self.reference_records,
+                    authority_profile=self.store.authority_profile,
                 )
                 freshness_after = self._freshness()
                 if canonical_bytes(freshness_after) != canonical_bytes(

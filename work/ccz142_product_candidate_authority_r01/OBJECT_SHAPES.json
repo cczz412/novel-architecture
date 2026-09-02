@@ -1,0 +1,63 @@
+{
+  "identity": {
+    "authority_identity": "PRODUCT_CANDIDATE_AUTHORITY",
+    "candidate_contract_version": "r04-product-candidate",
+    "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
+    "root_record_id_prefix": "pcv:",
+    "segment_record_id_prefix": "psegidx:"
+  },
+  "product_root_ref_example": {
+    "access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "contract": "M3_RECORD_REF",
+    "contract_version": "r04-product-candidate",
+    "record_contract_version": "r04-product-candidate",
+    "record_hash": "f85aef0ca9d9553ce4713fae769581c66140ed7a9c7dbf91b320978990e4bcff",
+    "record_id": "pcv:bb996ed5437f:b2aebe60db74cbcc45cd7511891ffc81",
+    "record_type": "M3_CANDIDATE_VERSION",
+    "record_version": 1,
+    "source_module": "M3"
+  },
+  "product_child_ref_example": {
+    "access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "contract": "M3_RECORD_REF",
+    "contract_version": "r04-product-candidate",
+    "record_contract_version": "r04-product-candidate",
+    "record_hash": "b996479fdd6cab5fd96f3c96b4c2e2dfcf85dcd29a3977499012b05e80699276",
+    "record_id": "pcv:bb996ed5437f:f8d06c0ef1adc433c905250705bde2fd",
+    "record_type": "M3_CANDIDATE_VERSION",
+    "record_version": 2,
+    "source_module": "M3"
+  },
+  "product_pointer_example": {
+    "generation": 2,
+    "logical_pointer_key": "product:m3_candidate.current/0e9acf4860184513a42e8f3475c4c0455da42a234562129f7f60e502b7a2ae2f/novel-fact-extraction-v2.1/product-chapter-001/r1/seg1/65dff7c65900e2b0e59fbef6690f6417d63167fd63c45c5ec32555a20e9db627",
+    "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
+    "target_record_id": "pcv:bb996ed5437f:f8d06c0ef1adc433c905250705bde2fd"
+  },
+  "migration_state_sequence": [
+    "DISCOVERED",
+    "SOURCE_VERIFIED",
+    "TARGET_STAGED",
+    "SHADOW_VERIFIED",
+    "CUTOVER_COMMITTED",
+    "POST_CUTOVER_ACTIVE"
+  ],
+  "pre_cutover_abort": {
+    "state": "ABORTED",
+    "target_visible": false,
+    "legacy_writer_reactivated": false
+  },
+  "synthetic_fixture": {
+    "migration_result": "MIGRATION_SYNTHETIC_FIXTURE_INELIGIBLE",
+    "retention": "READ_ONLY_HISTORY",
+    "product_candidate_created": false
+  },
+  "scope": {
+    "gold": false,
+    "formal_fact_writes": 0,
+    "ten_ledger_writes": 0,
+    "model_api_calls": 0,
+    "network_api_calls": 0
+  }
+}

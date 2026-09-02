@@ -1,0 +1,151 @@
+{
+  "document_identity": "CCZ142-PRODUCT-CANDIDATE-AUTHORITY-R01-TEST-RECEIPT",
+  "validated_at": "2026-09-03T04:47:08+08:00",
+  "result": "PASS",
+  "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
+  "upstream_draft_pr": 230,
+  "upstream_exact_head": "f65b4c200629a926951826e21058bfe6a52751d1",
+  "github_issue": 231,
+  "runtime": {
+    "python": "3.12.12",
+    "environment": "uv --locked",
+    "syntax_check": "PASS",
+    "ruff": "PASS",
+    "self_check": "PASS",
+    "offline_report_exact_match": true,
+    "manifest_complete_and_exact": true,
+    "test_process_isolation": "B01_TO_B09_SUITES_RUN_IN_SEPARATE_PROCESSES"
+  },
+  "test_suites": [
+    {
+      "suite": "ccz142_product_candidate_authority_r01",
+      "passed": 19,
+      "failed": 0
+    },
+    {
+      "suite": "ccz142_candidate_authority_r01",
+      "passed": 27,
+      "failed": 0
+    },
+    {
+      "suite": "B01_candidate_version_r03_5",
+      "passed": 105,
+      "failed": 0
+    },
+    {
+      "suite": "B02_diagnostic_coverage_r03_5",
+      "passed": 19,
+      "failed": 0
+    },
+    {
+      "suite": "B03_bound_evidence_read_r03_5",
+      "passed": 40,
+      "failed": 0
+    },
+    {
+      "suite": "B04_patch_atomic_group_r03_5",
+      "passed": 52,
+      "failed": 0
+    },
+    {
+      "suite": "B05_patch_route_r03_5",
+      "passed": 102,
+      "failed": 0
+    },
+    {
+      "suite": "B06_commit_core_r01",
+      "passed": 25,
+      "failed": 0
+    },
+    {
+      "suite": "B07_local_recovery_stop_r01",
+      "passed": 26,
+      "failed": 0
+    },
+    {
+      "suite": "B08_segment_terminal_r01",
+      "passed": 27,
+      "failed": 0
+    },
+    {
+      "suite": "B09_current_causal_hint_view_r01",
+      "passed": 127,
+      "failed": 0
+    }
+  ],
+  "totals": {
+    "passed": 569,
+    "failed": 0
+  },
+  "authority_profile_acceptance": {
+    "profile_frozen_at_construction": "PASS",
+    "request_cannot_switch_profile": "PASS",
+    "store_reopen_wrong_profile": "FAIL_CLOSED_BEFORE_READ",
+    "candidate_contract_version": "r04-product-candidate",
+    "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
+    "candidate_record_id_prefix": "pcv:",
+    "product_pointer_key_is_project_scoped": true,
+    "fixture_and_product_record_bytes_differ": true
+  },
+  "product_chain_acceptance": {
+    "B01_root": "PASS",
+    "B02_diagnostics": "PASS",
+    "B03_bound_evidence": "PASS",
+    "B04_patch": "PASS",
+    "B05_route": "PASS",
+    "B06_child_and_pointer_CAS": "PASS",
+    "B07_recovery_fence": "PASS",
+    "B08_segment_terminal": "PASS",
+    "B09_read_only_projection": "PASS_EMPTY_NO_ROUTE_NOT_ERROR",
+    "candidate_storage_writers": [
+      "CandidateAuthorityStore"
+    ],
+    "candidate_database_files": 1,
+    "B09_persistent_writer_count": 0
+  },
+  "migration_acceptance": {
+    "synthetic_fixture_import": "MIGRATION_SYNTHETIC_FIXTURE_INELIGIBLE",
+    "synthetic_source_unchanged": true,
+    "mixed_namespace": "FAIL_CLOSED",
+    "target_hidden_before_activation": true,
+    "abort_before_cutover": "ABORTED_TARGET_HIDDEN",
+    "cutover_pointer_drift": "MIGRATION_CUTOVER_CAS_MISMATCH",
+    "post_cutover_recovery": "FORWARD_ONLY",
+    "legacy_writer_reactivated": false,
+    "migration_control_tables": [
+      "metadata",
+      "migration_events",
+      "migration_state"
+    ]
+  },
+  "scope_assertions": {
+    "model_api_calls": 0,
+    "network_api_calls": 0,
+    "browser_actions": 0,
+    "real_novel_reads": 0,
+    "FormalFact_writes": 0,
+    "formal_current_pointer_writes": 0,
+    "ten_ledger_writes": 0,
+    "synthetic_fixture_migrations": 0,
+    "Linear_writes": 0,
+    "PR230_state_changes": 0,
+    "merge_actions": 0
+  },
+  "commands": [
+    "uv run --locked python -m py_compile <changed Python modules>",
+    "uv run --locked ruff check <changed module directories>",
+    "uv run --locked pytest -q work/ccz142_product_candidate_authority_r01/test_product_candidate_authority.py",
+    "uv run --locked pytest -q work/ccz142_candidate_authority_r01/test_candidate_authority.py",
+    "uv run --locked pytest -q work/ccz57_m3_b01_candidate_version_r03_5/test_b01_contract.py",
+    "uv run --locked pytest -q work/ccz57_m3_b02_diagnostic_coverage_r03_5/test_b02_diagnostic_coverage.py",
+    "uv run --locked pytest -q work/ccz57_m3_b03_bound_evidence_read_r03_5/test_b03_bound_evidence_read.py",
+    "uv run --locked pytest -q work/ccz57_m3_b04_patch_atomic_group_r03_5/test_b04_patch_atomic_group.py",
+    "uv run --locked pytest -q work/ccz57_m3_b05_patch_route_r03_5/test_b05_patch_route.py",
+    "uv run --locked pytest -q work/ccz57_m3_b06_commit_core_r01/test_b06_commit_core.py",
+    "uv run --locked pytest -q work/ccz57_m3_b07_local_recovery_stop_r01/test_b07_local_recovery.py",
+    "uv run --locked pytest -q work/ccz57_m3_b08_segment_terminal_r01/test_b08_segment_terminal.py",
+    "uv run --locked pytest -q work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py",
+    "uv run --locked python work/ccz142_product_candidate_authority_r01/self_check.py"
+  ]
+}

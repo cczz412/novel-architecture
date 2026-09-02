@@ -4,6 +4,8 @@
 
 你可以直接理解成：B01 仍然决定 root 长什么样，B06 仍然决定 child 怎样安全提交；真正碰数据库的候选写入只走 `CandidateAuthorityStore`。
 
+Issue #231 没有另造第二个候选 writer，而是让这个 store 在构造时接受一份不可变的身份配置。原 R01 夹具身份仍然可读；产品身份使用独立合同、只读权限、记录编号和 pointer key，重开时也必须与库内身份一致。
+
 ## 当前工程身份
 
 - GitHub 施工入口：[#227](https://github.com/cczz412/novel-architecture/issues/227)

@@ -8,7 +8,13 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-from b01_contract import record_ref, validate_candidate_version, verify_state
+from b01_contract import (  # noqa: E402
+    PRODUCT_AUTHORITY_PROFILE,
+    PRODUCT_READ_ONLY_ACCESS,
+    record_ref,
+    validate_candidate_version,
+    verify_state,
+)
 from b05_contracts import canonical_bytes, sha256_value
 from b06_contracts import validate_merge_receipt, validate_mutable_pointer
 
@@ -43,6 +49,22 @@ class LegacyCandidateMigration:
     def __init__(self, store: CandidateAuthorityStore) -> None:
         self.store = store
 
+    def _reject_unconverted_product_source(
+        self,
+        candidates: list[dict[str, Any]],
+    ) -> None:
+        if self.store.authority_profile.identity != PRODUCT_AUTHORITY_PROFILE.identity:
+            return
+        if any(
+            candidate["payload"]["extraction_input_binding"][
+                "accepted_source_generation_ref"
+            ]["access"]
+            != PRODUCT_READ_ONLY_ACCESS
+            for candidate in candidates
+        ):
+            fail("MIGRATION_SYNTHETIC_FIXTURE_INELIGIBLE")
+        fail("MIGRATION_PRODUCT_REBUILD_REQUIRED")
+
     def migrate_b01_json(
         self,
         *,
@@ -64,6 +86,13 @@ class LegacyCandidateMigration:
             verify_state(state, reference_records=reference_records)
         except ValueError as error:
             fail("B01_MIGRATION_SOURCE_INVALID", str(error))
+        self._reject_unconverted_product_source(
+            [
+                record
+                for record in state["records"].values()
+                if record["record_type"] == "M3_CANDIDATE_VERSION"
+            ]
+        )
         published = self.store._publish_root(
             staged_state=state,
             authority_snapshot=authority_snapshot,
@@ -123,6 +152,7 @@ class LegacyCandidateMigration:
             ref_hash: _decode(raw, code="MIGRATION_CANDIDATE_INVALID")
             for ref_hash, raw in candidate_rows
         }
+        self._reject_unconverted_product_source(list(candidates.values()))
         for ref_hash, candidate in candidates.items():
             if sha256_value(record_ref(candidate)) != ref_hash:
                 fail("MIGRATION_CANDIDATE_REF_HASH_MISMATCH")

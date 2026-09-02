@@ -4,6 +4,8 @@
 
 你可以直接理解成：B-04 写修改单，B-05 审修改单，B-06 才是真正把获准修改存成下一版。它仍然没有把事实写进十本账，也没有把候选升级成正式事实。
 
+后续 Issue #231 让 B-06 和候选库在构造时共用同一份冻结身份。夹具还用 `FIXTURE_ONLY`；产品 child 和 current pointer 只接受 `PRODUCT_CANDIDATE_AUTHORITY`，两种 namespace 混用会在写入前失败关闭。
+
 ## 一次提交只落三样东西
 
 - 一个新的 child CandidateVersion；

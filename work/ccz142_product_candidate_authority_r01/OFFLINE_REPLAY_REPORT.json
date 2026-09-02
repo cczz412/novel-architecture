@@ -1,0 +1,137 @@
+{
+  "b09_persistent_writer_count": 0,
+  "candidate_identity": "PRODUCT_CANDIDATE_AUTHORITY",
+  "candidate_storage_writer_count": 1,
+  "deterministic_repeat_equal": true,
+  "formal_fact_writes": 0,
+  "full_chain": {
+    "b02_records_exercised": 4,
+    "b03_product_subject_validated": true,
+    "b04_patch_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "f804b6e728d2beb4633dad03a7c497961d742a389a0ed9abb6bff93fb4e278c4",
+      "record_id": "patch-proposal:bbe54a7c209578970d58d710d0df78467eea7b51bfdb721c5fcaa3f88b2f9a1b",
+      "record_type": "M3_PATCH_PROPOSAL",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "b05_route_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "4d68585b286e4741da9e1b4e1be7613337eb6b3cfc95b44ca6b24132243e318d",
+      "record_id": "patch-route:acd1291751eef1054202d571d9827f6a81e45458bfe6d4fb20b416cdb942dbcc",
+      "record_type": "M3_PATCH_ROUTE_RECEIPT",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "b06_merge_receipt_ref": {
+      "access": "RUN_INTERNAL_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "716d6fda8ab3d85f90675ca01956068ea1f5af55f9b83915d48f9722ddae69ae",
+      "record_id": "merge-receipt:2d27d30871edb14b9aeec0ca6b51efd16a873217b32a02aa1edb050940a14013",
+      "record_type": "M3_CANDIDATE_MERGE_RECEIPT",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "b07_state_revision": 3,
+    "b08_terminal_ref": {
+      "access": "RUN_INTERNAL_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "92e672396c26df1ac40666a48c79f4402d2ddce40a8e24785e81b2cfda81fb07",
+      "record_id": "segment-terminal:95ad951b99e430a6d7e2e2bd510d20f77ba468f7ba45a73cb73018eb3b09d91d",
+      "record_type": "M3_SEGMENT_CANDIDATE_TERMINAL_RECEIPT",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "b09_reason_code": "NO_ROUTE_TO_B09",
+    "b09_status": "EMPTY",
+    "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "candidate_database_files": 1,
+    "candidate_storage_writers": [
+      "CandidateAuthorityStore"
+    ],
+    "child_candidate_ref": {
+      "access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r04-product-candidate",
+      "record_contract_version": "r04-product-candidate",
+      "record_hash": "b996479fdd6cab5fd96f3c96b4c2e2dfcf85dcd29a3977499012b05e80699276",
+      "record_id": "pcv:bb996ed5437f:f8d06c0ef1adc433c905250705bde2fd",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_version": 2,
+      "source_module": "M3"
+    },
+    "child_contract_version": "r04-product-candidate",
+    "formal_tables": [],
+    "formal_writes": 0,
+    "model_api_calls": 0,
+    "network_api_calls": 0,
+    "pointer_generation": 2,
+    "pointer_key": "product:m3_candidate.current/0e9acf4860184513a42e8f3475c4c0455da42a234562129f7f60e502b7a2ae2f/novel-fact-extraction-v2.1/product-chapter-001/r1/seg1/65dff7c65900e2b0e59fbef6690f6417d63167fd63c45c5ec32555a20e9db627",
+    "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
+    "result": "PASS",
+    "root_candidate_ref": {
+      "access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r04-product-candidate",
+      "record_contract_version": "r04-product-candidate",
+      "record_hash": "f85aef0ca9d9553ce4713fae769581c66140ed7a9c7dbf91b320978990e4bcff",
+      "record_id": "pcv:bb996ed5437f:b2aebe60db74cbcc45cd7511891ffc81",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "root_contract_version": "r04-product-candidate",
+    "ten_ledger_writes": 0
+  },
+  "model_api_calls": 0,
+  "network_api_calls": 0,
+  "pre_cutover_abort": {
+    "access_result": "PRODUCT_NAMESPACE_NOT_ACTIVE",
+    "last_event": {
+      "event": "ABORTED",
+      "payload": {
+        "legacy_writer_reactivated": false,
+        "target_visible": false
+      },
+      "sequence": 4
+    },
+    "state": "ABORTED"
+  },
+  "result": "PASS",
+  "successful_cutover": {
+    "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "control_schema_objects": [
+      "metadata",
+      "migration_events",
+      "migration_state"
+    ],
+    "event_sequence": 6,
+    "events": [
+      "DISCOVERED",
+      "SOURCE_VERIFIED",
+      "TARGET_STAGED",
+      "SHADOW_VERIFIED",
+      "CUTOVER_COMMITTED",
+      "POST_CUTOVER_ACTIVE"
+    ],
+    "pointer_generation": 1,
+    "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
+    "state": "POST_CUTOVER_ACTIVE"
+  },
+  "synthetic_fixture_rejection": {
+    "candidate_store_created": false,
+    "result_code": "MIGRATION_SYNTHETIC_FIXTURE_INELIGIBLE",
+    "state": "REJECTED_READ_ONLY"
+  },
+  "ten_ledger_writes": 0
+}

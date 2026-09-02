@@ -22,10 +22,12 @@ from b01_contract import (  # noqa: E402
     CCZ142_EXTRACTION_HANDOFF_CONTRACT,
     CCZ142_EXTRACTION_SOURCE_LANE,
     CCZ142_EXTRACTION_SOURCE_MODULE,
-    FIXTURE_POINTER_NAMESPACE,
+    FIXTURE_AUTHORITY_PROFILE,
+    CandidateAuthorityProfile,
     _compose_ccz142_b01_runtime,
     canonical_bytes,
     record_ref,
+    require_authority_profile,
     sha256_value,
 )
 from b06_store import B06CommitStore  # noqa: E402
@@ -119,10 +121,12 @@ class CandidateAuthorityStore(B06CommitStore):
         *,
         project_scope_id: str,
         root_failure_point: str | None = None,
+        authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
     ) -> None:
         if not isinstance(project_scope_id, str) or not project_scope_id:
             fail("PROJECT_SCOPE_INVALID")
-        super().__init__(root)
+        profile = require_authority_profile(authority_profile)
+        super().__init__(root, authority_profile=profile)
         self.project_scope_id = project_scope_id
         self.root_failure_point = root_failure_point
         self.root_commit_count = 0
@@ -143,10 +147,33 @@ class CandidateAuthorityStore(B06CommitStore):
             row = connection.execute(
                 "SELECT value FROM metadata WHERE key = 'project_scope_id'"
             ).fetchone()
+            profile_rows = {
+                key: connection.execute(
+                    "SELECT value FROM metadata WHERE key = ?", (key,)
+                ).fetchone()
+                for key in (
+                    "authority_identity",
+                    "candidate_contract_version",
+                    "candidate_access",
+                    "pointer_namespace",
+                )
+            }
         if row is None:
             fail("AUTHORITY_PROJECT_SCOPE_MISSING")
         if bytes(row[0]) != self.project_scope_id.encode("utf-8"):
             fail("PROJECT_SCOPE_STORE_MISMATCH")
+        expected = {
+            "authority_identity": self.authority_profile.identity,
+            "candidate_contract_version": self.authority_profile.contract_version,
+            "candidate_access": self.authority_profile.candidate_access,
+            "pointer_namespace": self.authority_profile.pointer_namespace,
+        }
+        if any(
+            profile_rows[key] is None
+            or bytes(profile_rows[key][0]) != value.encode("utf-8")
+            for key, value in expected.items()
+        ):
+            fail("AUTHORITY_PROFILE_STORE_MISMATCH")
 
     def _inject_root_failure(self, point: str) -> None:
         if self.root_failure_point == point:
@@ -209,6 +236,24 @@ class CandidateAuthorityStore(B06CommitStore):
                 "INSERT OR IGNORE INTO metadata(key, value) VALUES (?, ?)",
                 ("authority_schema", sqlite3.Binary(b"r01-candidate")),
             )
+            profile_metadata = {
+                "authority_identity": self.authority_profile.identity,
+                "candidate_contract_version": self.authority_profile.contract_version,
+                "candidate_access": self.authority_profile.candidate_access,
+                "pointer_namespace": self.authority_profile.pointer_namespace,
+            }
+            for key, value in profile_metadata.items():
+                row = connection.execute(
+                    "SELECT value FROM metadata WHERE key = ?", (key,)
+                ).fetchone()
+                encoded = value.encode("utf-8")
+                if row is None:
+                    connection.execute(
+                        "INSERT INTO metadata(key, value) VALUES (?, ?)",
+                        (key, sqlite3.Binary(encoded)),
+                    )
+                elif bytes(row[0]) != encoded:
+                    fail("AUTHORITY_PROFILE_STORE_MISMATCH", key)
             connection.commit()
 
     def initialize(self, *_args: Any, **_kwargs: Any) -> None:
@@ -217,8 +262,7 @@ class CandidateAuthorityStore(B06CommitStore):
         self.bootstrap_copy_attempt_count += 1
         fail("B06_BOOTSTRAP_COPY_FORBIDDEN")
 
-    @staticmethod
-    def _root_parts(state: dict[str, Any]) -> dict[str, Any]:
+    def _root_parts(self, state: dict[str, Any]) -> dict[str, Any]:
         if set(state) != {"records", "pointers", "operations"}:
             fail("ROOT_STATE_SHAPE_INVALID")
         if len(state["pointers"]) != 1 or len(state["operations"]) != 1:
@@ -249,7 +293,8 @@ class CandidateAuthorityStore(B06CommitStore):
             candidate["record_version"] != 1
             or candidate["payload"]["parent_candidate_version_ref"] is not None
             or pointer["logical_pointer_key"] != pointer_key
-            or pointer["pointer_namespace"] != FIXTURE_POINTER_NAMESPACE
+            or pointer["pointer_namespace"]
+            != self.authority_profile.pointer_namespace
             or pointer["generation"] != 1
             or canonical_bytes(pointer["current_candidate_version_ref"])
             != canonical_bytes(candidate_ref)
@@ -467,6 +512,25 @@ class CandidateAuthorityStore(B06CommitStore):
             ),
             "result": _decode(row[3], code="ROOT_RESULT_INVALID"),
         }
+
+    def read_aux_record(self, ref: dict[str, Any]) -> dict[str, Any]:
+        if not isinstance(ref, dict):
+            fail("ROOT_AUX_REF_INVALID")
+        storage_key = (
+            f"{ref.get('record_type')}:{ref.get('record_id')}:"
+            f"{ref.get('record_version')}"
+        )
+        with sqlite3.connect(self._database_path) as connection:
+            row = connection.execute(
+                "SELECT record_json FROM candidate_aux_records WHERE storage_key = ?",
+                (storage_key,),
+            ).fetchone()
+        if row is None:
+            fail("ROOT_AUX_RECORD_NOT_FOUND")
+        record = _decode(row[0], code="ROOT_AUX_RECORD_INVALID")
+        if canonical_bytes(record_ref(record)) != canonical_bytes(ref):
+            fail("ROOT_AUX_REF_MISMATCH")
+        return record
 
     def table_counts(self) -> dict[str, int]:
         with sqlite3.connect(self._database_path) as connection:
@@ -863,7 +927,10 @@ class CandidateRootInitializer:
         raw_items = prepared.pop("raw_items")
         authority_before = self._authority(request)
         capture = _B01RootCaptureStore()
-        service, admit_extraction = _compose_ccz142_b01_runtime(capture)
+        service, admit_extraction = _compose_ccz142_b01_runtime(
+            capture,
+            authority_profile=self.__store.authority_profile,
+        )
         extraction_admission = admit_extraction(
             source_lane=CCZ142_EXTRACTION_SOURCE_LANE,
             source_module=CCZ142_EXTRACTION_SOURCE_MODULE,

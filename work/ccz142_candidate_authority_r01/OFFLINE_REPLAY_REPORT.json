@@ -45,7 +45,7 @@
       "candidate_versions": 2,
       "current_pointers": 1,
       "merge_receipts": 1,
-      "metadata": 2
+      "metadata": 6
     },
     "terminal_binds_child": true,
     "terminal_binds_merge_receipt": true,

@@ -1,0 +1,49 @@
+# CCZ-142｜PRODUCT_CANDIDATE_AUTHORITY 产品接线 R01
+
+✅ 这块把 PR #230 的“单一候选 writer”继续接到产品身份：B01 root 和 B06 child 不再沿用 `FIXTURE_ONLY`，而是使用 `PRODUCT_CANDIDATE_AUTHORITY` namespace 与 `PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY` access。
+
+## 你可以怎么理解
+
+- `CandidateAuthorityStore` 仍是 root、child 和 current pointer 的唯一候选持久 writer。
+- B01／B06 构造时拿到一份冻结身份配置。请求正文不能自己把 fixture 切成 product，也不能改其中一个字段混用。
+- 产品 CandidateVersion 使用 `r04-product-candidate` 合同、`pcv:` 记录编号和新的 RecordRef／record hash。
+- 产品 pointer key 包含项目 ID 的完整 SHA-256，再绑定候选 Schema、章节修订、责任段和输入绑定哈希。
+- B02～B09 仍写自己的原件或派生视图，只是能够安全读取同一套产品 CandidateVersion 引用。
+
+本轮的 B02～B05 对象来自现有合成 publisher，用来验证它们能不能完整绑定产品 CandidateVersion；它们自己的 `POLICY_FIXTURE_READ_ONLY` 输出身份没有在本票里晋升。产品化的是 CandidateVersion、pointer 和唯一 authority store，不把测试侧车原件偷换成产品原件。
+
+## 旧历史怎么处理
+
+旧 `FIXTURE_ONLY + POLICY_FIXTURE_READ_ONLY` 原件不改字节、不改哈希、不改引用，也不推进 pointer。
+
+`LegacyCandidateMigration` 遇到 synthetic fixture 时固定返回 `MIGRATION_SYNTHETIC_FIXTURE_INELIGIBLE`。即使旧对象的上游已经是产品只读身份，也必须重新走产品 B01 构造和迁移控制门，不能直接复制旧 CandidateVersion 冒充产品对象。
+
+迁移控制器只保存迁移状态和事件，不保存 CandidateVersion 或 current pointer：
+
+```text
+DISCOVERED
+  → SOURCE_VERIFIED
+  → TARGET_STAGED（产品读取仍关闭）
+  → SHADOW_VERIFIED
+  → CUTOVER_COMMITTED（旧 run 仍不能续跑）
+  → POST_CUTOVER_ACTIVE
+```
+
+切换前可以中止，staged 产品对象保持不可见。切换后不再重启 legacy writer；需要修复时，由 B06／CandidateAuthorityStore 用新的产品 pointer 代次向前提交。
+
+## 本地回放覆盖
+
+- 产品 root 创建、重放、跨项目 pointer 隔离；
+- B01→B02→B03→B04→B05→B06 child→B07→B08→B09 完整影子链；
+- fixture／product 混合 namespace 失败关闭；
+- synthetic fixture 拒绝产品迁移；
+- 切换前不可见、中止、CAS 漂移；
+- 切换后真实 B06 child 形成新的产品 pointer 代次；
+- 控制库没有 CandidateVersion、current pointer、FormalFact 或十本账表；
+- 模型 API、网络 API、正式事实和十本账写入均为 0。
+
+## 当前身份
+
+这是 Issue #231 的 Draft 工程候选，堆叠在 PR #230 精确 head 上。测试通过也不等于已经进入 `main`、转 Ready、合并或接入正式事实。
+
+来源：Codex
