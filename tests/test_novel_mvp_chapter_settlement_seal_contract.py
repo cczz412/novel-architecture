@@ -107,6 +107,28 @@ def test_ten_ledgers_are_complete_ordered_and_do_not_add_an_owner() -> None:
         row["result"] == "CONFIRMED_NO_CHANGE"
         for row in document["ledger_coverage"]
     )
+    assert all(row["owner_contract"] for row in document["ledger_coverage"])
+
+
+def test_committed_change_requires_a_same_ledger_owner_commit_seal() -> None:
+    document = _document("CSS-VALID-01")
+    row = next(
+        item for item in document["ledger_coverage"]
+        if item["ledger_name"] == "character"
+    )
+    row.update(
+        {
+            "result": "COMMITTED_CHANGE",
+            "before_snapshot_sha256": "1" * 64,
+            "after_snapshot_sha256": "2" * 64,
+        }
+    )
+    document = validator.seal_document(document)
+    with pytest.raises(
+        validator.ContractError,
+        match="COMMITTED_CHANGE_OWNER_RECEIPT_REQUIRED:character",
+    ):
+        validator.validate_settlement(document)
 
 
 def test_owner_unresolved_cannot_be_reported_as_sealed() -> None:

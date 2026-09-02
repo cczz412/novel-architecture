@@ -335,6 +335,8 @@ def _validate_ledger_coverage(
                 )
             if not any(
                 seal["claim_kind"] == "OWNER_COMMIT_CLAIM"
+                and seal["subject_ref"]["logical_ledger_name"]
+                == row["ledger_name"]
                 for seal in referenced
             ):
                 raise ContractError(
@@ -361,6 +363,13 @@ def _validate_ledger_coverage(
             ):
                 raise ContractError(
                     f"OWNER_UNRESOLVED_SEAL_REQUIRED:{row['ledger_name']}"
+                )
+            if (
+                row["owner_contract"]
+                != unresolved_ref["expected_owner_contract"]
+            ):
+                raise ContractError(
+                    f"OWNER_UNRESOLVED_CONTRACT_MISMATCH:{row['ledger_name']}"
                 )
     return owner_unresolved
 
@@ -435,6 +444,7 @@ def _ledger_rows(valid_seal_sha: str) -> list[dict[str, Any]]:
         rows.append(
             {
                 "ledger_name": ledger_name,
+                "owner_contract": f"SYNTHETIC_{ledger_name.upper()}_OWNER",
                 "result": "CONFIRMED_NO_CHANGE",
                 "before_snapshot_sha256": watermark,
                 "after_snapshot_sha256": watermark,
@@ -563,6 +573,7 @@ def _unresolved_document() -> dict[str, Any]:
     row.update(
         {
             "result": "OWNER_UNRESOLVED",
+            "owner_contract": "CCZ82_FORMAL_FACT_OWNER",
             "before_snapshot_sha256": None,
             "after_snapshot_sha256": None,
             "provenance_seal_refs": [unresolved_sha],
@@ -603,6 +614,9 @@ def _move_unresolved(document: dict[str, Any], target: str) -> None:
         row.update(
             {
                 "result": "CONFIRMED_NO_CHANGE",
+                "owner_contract": (
+                    f"SYNTHETIC_{row['ledger_name'].upper()}_OWNER"
+                ),
                 "before_snapshot_sha256": watermark,
                 "after_snapshot_sha256": watermark,
                 "provenance_seal_refs": [valid_sha],
@@ -616,6 +630,7 @@ def _move_unresolved(document: dict[str, Any], target: str) -> None:
     target_row.update(
         {
             "result": "OWNER_UNRESOLVED",
+            "owner_contract": f"{target.upper()}_OWNER",
             "before_snapshot_sha256": None,
             "after_snapshot_sha256": None,
             "provenance_seal_refs": [unresolved_sha],
@@ -658,6 +673,7 @@ def _apply_mutation(
         row.update(
             {
                 "result": "CONFIRMED_NO_CHANGE",
+                "owner_contract": "SYNTHETIC_FACT_OWNER",
                 "before_snapshot_sha256": watermark,
                 "after_snapshot_sha256": watermark,
                 "provenance_seal_refs": [valid_sha],

@@ -245,6 +245,7 @@
       "additionalProperties": false,
       "required": [
         "ledger_name",
+        "owner_contract",
         "result",
         "before_snapshot_sha256",
         "after_snapshot_sha256",
@@ -258,6 +259,7 @@
             "system", "world_rule", "longline", "planning"
           ]
         },
+        "owner_contract": {"$ref": "#/$defs/non_empty_string"},
         "result": {"enum": ["COMMITTED_CHANGE", "CONFIRMED_NO_CHANGE", "OWNER_UNRESOLVED"]},
         "before_snapshot_sha256": {
           "oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]

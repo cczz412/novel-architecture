@@ -96,9 +96,11 @@ planning
 
 | `result` | 必要证据 |
 | --- | --- |
-| `COMMITTED_CHANGE` | 新水位、原 owner 的 `OWNER_COMMIT_CLAIM` 来源封条；前后摘要不能相同 |
-| `CONFIRMED_NO_CHANGE` | 结算前后同一精确水位和至少一张来源封条；空数组不能代替核查 |
-| `OWNER_UNRESOLVED` | 空前后水位、未解析 owner 说明和 `OWNER_UNRESOLVED_CLAIM` 来源封条 |
+| `COMMITTED_CHANGE` | `owner_contract`、新水位、同账名的原 owner `OWNER_COMMIT_CLAIM` 来源封条；前后摘要不能相同 |
+| `CONFIRMED_NO_CHANGE` | `owner_contract`、结算前后同一精确水位和至少一张来源封条；空数组不能代替核查 |
+| `OWNER_UNRESOLVED` | `owner_contract` 与未解析说明中的预期 owner 相同、空前后水位、`OWNER_UNRESOLVED_CLAIM` 来源封条 |
+
+`owner_contract` 只钉这行声称由哪个 owner 负责；离线 validator 不会据此假装 owner 已在线解析。`COMMITTED_CHANGE` 还必须有同一 `ledger_name` 的提交封条，不能拿章节封条替人物账、事实账或其他账证明已提交。
 
 任一行 `OWNER_UNRESOLVED`，或任一被引用来源封条仍未解析，整张结算记录必须使用 `OWNER_UNRESOLVED_CANDIDATE`。
 
