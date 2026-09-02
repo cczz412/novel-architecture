@@ -2,7 +2,7 @@
 
 这块只解决一个问题：把 B-04～B-08 的当前权威现场，临时投影成一张给 CCZ-142 后续适配器使用的只读检查清单。
 
-它不是新账本，也不保存提示。每次读取都会重新核对 active route、B-02／policy／gate 新鲜度、live pointer、B-07 run、B-08 exact-current terminal 和 B-01 locator。读完得到的 `CurrentCausalHintView` 用完即丢。
+它不是新账本，也不保存提示。每次读取都会重新核对 active route、B-02／policy／gate 新鲜度、live pointer、B-07 run、B-08 对分类／覆盖／segment／pointer／MergeReceipt 的完整 exact-current 判断和 B-01 locator。读完得到的 `CurrentCausalHintView` 用完即丢。
 
 ## 入口
 

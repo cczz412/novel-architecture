@@ -12,7 +12,8 @@ from typing import Any, Callable
 MODULE_ROOT = Path(__file__).resolve().parent
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 B05_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b05_patch_route_r03_5"
-for candidate in (REPOSITORY_ROOT, MODULE_ROOT, B05_ROOT):
+B08_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b08_segment_terminal_r01"
+for candidate in (REPOSITORY_ROOT, MODULE_ROOT, B05_ROOT, B08_ROOT):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
@@ -36,9 +37,14 @@ from work.ccz57_m3_b07_local_recovery_stop_r01.b07_contracts import (  # noqa: E
     validate_current_run_state,
 )
 from work.ccz57_m3_b08_segment_terminal_r01.b08_contracts import (  # noqa: E402
+    B08ContractError,
     terminal_component_observation,
     terminal_record_ref,
+    validate_authority_snapshot,
     validate_terminal_record,
+)
+from work.ccz57_m3_b08_segment_terminal_r01.b08_store import (  # noqa: E402
+    B08TerminalReadService,
 )
 
 from b09_contracts import (  # noqa: E402
@@ -132,6 +138,7 @@ class CurrentCausalHintAuthorityReader:
         "_shared_database_path",
         "_freshness_reader",
         "_immutable_reader",
+        "_b08_authority_reader",
     )
 
     def __init__(
@@ -141,11 +148,13 @@ class CurrentCausalHintAuthorityReader:
         shared_database_path: Path,
         freshness_reader: FreshnessReader,
         immutable_reader: ImmutableReader,
+        b08_authority_reader: Any,
     ) -> None:
         self._b05_store = b05_store
         self._shared_database_path = Path(shared_database_path)
         self._freshness_reader = freshness_reader
         self._immutable_reader = immutable_reader
+        self._b08_authority_reader = b08_authority_reader
 
     @staticmethod
     def _b05_projection(records: list[dict[str, Any]]) -> dict[str, Any]:
@@ -353,9 +362,31 @@ class CurrentCausalHintAuthorityReader:
             )
         )
 
-    @classmethod
+    def _b08_currentness(
+        self,
+        connection: sqlite3.Connection,
+        terminal: dict[str, Any],
+    ) -> tuple[str, str]:
+        run = terminal["payload"]["run_binding"]
+        try:
+            snapshot = self._b08_authority_reader.read_current(
+                connection,
+                project_scope_id=run["project_scope_id"],
+                logical_run_key=run["logical_run_key"],
+            )
+            validate_authority_snapshot(snapshot, for_publish=False)
+            return B08TerminalReadService._currentness(terminal, snapshot)
+        except B08ContractError as error:
+            raise B09AuthorityError("AUTHORITY_STATE_INCOHERENT", error.code) from error
+        except B09AuthorityError:
+            raise
+        except Exception as error:
+            raise B09AuthorityError(
+                "AUTHORITY_READER_UNAVAILABLE", f"B08 currentness: {error}"
+            ) from error
+
     def _exact_terminal(
-        cls,
+        self,
         connection: sqlite3.Connection,
         *,
         state: dict[str, Any],
@@ -379,7 +410,7 @@ class CurrentCausalHintAuthorityReader:
                 raise B09AuthorityError(
                     "AUTHORITY_HASH_MISMATCH", str(error)
                 ) from error
-            if cls._terminal_binding_matches(terminal, state=state, pointer=pointer):
+            if self._terminal_binding_matches(terminal, state=state, pointer=pointer):
                 exact.append(terminal)
         bound = [
             terminal
@@ -389,6 +420,13 @@ class CurrentCausalHintAuthorityReader:
                 state["last_component_observation"],
             )
         ]
+        if len(bound) == 1:
+            currentness, reason = self._b08_currentness(connection, bound[0])
+            if currentness != "CURRENT":
+                raise B09AuthorityError(
+                    "AUTHORITY_STATE_INCOHERENT",
+                    f"B08 terminal is {currentness}: {reason}",
+                )
         if state["status"] == "SUCCEEDED":
             if len(exact) != 1 or len(bound) != 1:
                 raise B09AuthorityError(

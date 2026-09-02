@@ -240,6 +240,7 @@ def _build_world(
             immutable_reader=(
                 read_immutable if immutable_override is None else immutable_override
             ),
+            b08_authority_reader=b08_authority,
         )
 
     request = {
@@ -552,6 +553,43 @@ def test_exact_current_terminal_closes(tmp_path: Path) -> None:
     )
 
 
+def test_bound_terminal_with_b08_classification_drift_is_error(
+    tmp_path: Path,
+) -> None:
+    world = _build_world(tmp_path / "terminal-classification-drift")
+    state = _enter_finalizing(world)
+    result = world.b08_store.publish(
+        project_scope_id=world.project_scope_id,
+        run_id=world.run_id,
+        operation_id="terminal-classification-drift-b09",
+        expected_run_epoch=state["run_epoch"],
+        expected_state_revision=state["state_revision"],
+    )
+    state = _state(world)
+    world.b07.advance(
+        project_scope_id=world.project_scope_id,
+        run_id=world.run_id,
+        operation_id="bind-terminal-classification-drift-b09",
+        expected_run_epoch=state["run_epoch"],
+        expected_state_revision=state["state_revision"],
+        target_status="SUCCEEDED",
+        target_phase="FINALIZING",
+        wait_kind=None,
+        authority_reader=world.authority,
+        component_observation=result["component_observation"],
+    )
+    world.b08_authority.classification["classification_policy_hash"] = sha256_value(
+        {"policy": "b08-fixture", "version": 2}
+    )
+
+    view = read_current_causal_hints(world.make_reader(), world.request)
+
+    assert (view["status"], view["reason_code"]) == (
+        "ERROR",
+        "AUTHORITY_STATE_INCOHERENT",
+    )
+
+
 def test_b07_b08_terminal_conflict_is_error(tmp_path: Path) -> None:
     world = _build_world(tmp_path / "terminal-conflict")
     state = _enter_finalizing(world)
@@ -727,6 +765,7 @@ def test_authority_reader_constructor_owns_all_non_request_inputs() -> None:
         "shared_database_path",
         "freshness_reader",
         "immutable_reader",
+        "b08_authority_reader",
     }
     assert set(inspect.signature(CurrentCausalHintAuthorityReader.read).parameters) == {
         "self",
