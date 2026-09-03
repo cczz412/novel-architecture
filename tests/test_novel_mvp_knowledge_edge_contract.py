@@ -167,7 +167,7 @@ def test_reader_grant_must_match_edge_version_and_project() -> None:
     wrong_project["project_id"] = "PROJECT-OTHER"
     with pytest.raises(
         MODULE.ContractError,
-        match="READ_GRANT_PROJECT_BINDING_MISMATCH",
+        match="UNAUTHORIZED",
     ):
         MODULE.validate_edge_grant_for_reader(
             v1_edge,
@@ -179,11 +179,81 @@ def test_reader_grant_must_match_edge_version_and_project() -> None:
     wrong_author["author_id"] = "AUTHOR-OTHER"
     with pytest.raises(
         MODULE.ContractError,
-        match="READ_GRANT_PROJECT_BINDING_MISMATCH",
+        match="UNAUTHORIZED",
     ):
         MODULE.validate_edge_grant_for_reader(
             v1_edge,
             wrong_author,
+            MODULE.VERSION_V2,
+        )
+
+
+def test_read_grant_is_validated_before_inspecting_edge() -> None:
+    malformed_grant = copy.deepcopy(_case("KE-VALID-06")["document"])
+    malformed_grant.pop("as_of")
+    guessed_edge = {
+        "contract": "KNOWLEDGE_EDGE",
+        "version": MODULE.VERSION_V2,
+    }
+    with pytest.raises(MODULE.ContractError, match="SCHEMA_INVALID"):
+        MODULE.validate_edge_grant_for_reader(
+            guessed_edge,
+            malformed_grant,
+            MODULE.VERSION_V1,
+        )
+
+
+def test_closed_grant_denies_before_edge_version_or_schema() -> None:
+    closed_grant = copy.deepcopy(_case("KE-VALID-07")["document"])
+    guessed_edge = {
+        "contract": "KNOWLEDGE_EDGE",
+        "version": MODULE.VERSION_V2,
+    }
+    with pytest.raises(MODULE.ContractError, match="^UNAUTHORIZED$"):
+        MODULE.validate_edge_grant_for_reader(
+            guessed_edge,
+            closed_grant,
+            MODULE.VERSION_V1,
+        )
+
+
+@pytest.mark.parametrize("mismatch", ["author_id", "project_id"])
+def test_cross_identity_grant_denies_before_edge_schema(mismatch: str) -> None:
+    edge, grant = _confirmed_task_read_pair(
+        "KE-VALID-01",
+        "KE-VALID-06",
+    )
+    edge.pop("evidence_refs")
+    grant[mismatch] = f"{mismatch.upper()}-OTHER"
+    with pytest.raises(MODULE.ContractError, match="^UNAUTHORIZED$"):
+        MODULE.validate_edge_grant_for_reader(
+            edge,
+            grant,
+            MODULE.VERSION_V2,
+        )
+
+
+def test_authorized_grant_keeps_reader_errors_before_edge_schema() -> None:
+    edge, grant = _confirmed_task_read_pair(
+        "KE-VALID-01",
+        "KE-VALID-06",
+    )
+    unsupported = copy.deepcopy(edge)
+    unsupported["version"] = MODULE.VERSION_V2
+    unsupported["permission_namespace"] = MODULE.PERMISSION_NAMESPACE_V2
+    with pytest.raises(MODULE.ContractError, match="READER_VERSION_UNSUPPORTED"):
+        MODULE.validate_edge_grant_for_reader(
+            unsupported,
+            grant,
+            MODULE.VERSION_V1,
+        )
+
+    malformed = copy.deepcopy(edge)
+    malformed.pop("evidence_refs")
+    with pytest.raises(MODULE.ContractError, match="SCHEMA_INVALID"):
+        MODULE.validate_edge_grant_for_reader(
+            malformed,
+            grant,
             MODULE.VERSION_V2,
         )
 

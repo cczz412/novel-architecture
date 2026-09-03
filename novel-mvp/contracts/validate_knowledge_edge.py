@@ -206,21 +206,23 @@ def validate_edge_grant_for_reader(
     grant: Any,
     reader_version: str,
 ) -> None:
-    record = validate_document_for_reader(edge, reader_version)
     if not isinstance(grant, dict) or grant.get("contract") != (
         "KNOWLEDGE_EDGE_READ_GRANT"
     ):
         raise ContractError("READ_GRANT_DOCUMENT_TYPE_INVALID")
     authorization = validate_document(grant)
+    if authorization["access"] == "CLOSED":
+        raise ContractError("UNAUTHORIZED")
+    if (
+        not isinstance(edge, dict)
+        or edge.get("author_id") != authorization["author_id"]
+        or edge.get("project_id") != authorization["project_id"]
+    ):
+        raise ContractError("UNAUTHORIZED")
+
+    record = validate_document_for_reader(edge, reader_version)
     if record["version"] != authorization["version"]:
         raise ContractError("READ_GRANT_VERSION_MISMATCH")
-    if (
-        record["author_id"] != authorization["author_id"]
-        or record["project_id"] != authorization["project_id"]
-    ):
-        raise ContractError("READ_GRANT_PROJECT_BINDING_MISMATCH")
-    if authorization["access"] == "CLOSED":
-        raise ContractError("READ_GRANT_CLOSED")
     if authorization["access"] == "TASK_SLICE":
         if (
             record["observer_ref"] not in authorization["observer_refs"]
