@@ -95,6 +95,18 @@ def _tests_outside_default_collection(
     return sorted(set(outside))
 
 
+def _individual_pytest_steps(
+    tests: Iterable[str], *, step_prefix: str
+) -> list[dict[str, Any]]:
+    steps: list[dict[str, Any]] = []
+    for index, test_path in enumerate(sorted(set(tests)), start=1):
+        argv = [*LOCKED_COMMAND_PREFIX, "pytest", "-q", test_path]
+        steps.append(
+            _execution_step(f"{step_prefix}-{index:02d}", argv)
+        )
+    return steps
+
+
 def load_policy(path: Path = DEFAULT_POLICY) -> dict[str, Any]:
     raw = _mapping(read_json(path), "测试纪律")
     if raw.get("schema_version") != "pipeline-test-policy-v1":
@@ -237,24 +249,25 @@ def build_plan(
         lint_argv = []
     if full_chain:
         scope = "full_chain"
-        commands = [str(active_policy["full_chain_command"])]
-        execution_steps = [
-            _execution_step("pytest-full", PORTABLE_FULL_CHAIN_ARGV)
-        ]
         outside_default_tests = _tests_outside_default_collection(
             selected_tests, active_policy["default_collection_root"]
         )
-        if outside_default_tests:
-            outside_argv = [
-                *LOCKED_COMMAND_PREFIX,
-                "pytest",
-                "-q",
-                *outside_default_tests,
+        outside_steps = _individual_pytest_steps(
+            outside_default_tests, step_prefix="pytest-outside-default"
+        )
+        full_step = _execution_step("pytest-full", PORTABLE_FULL_CHAIN_ARGV)
+        if set(paths).intersection(NON_DOWNGRADABLE_PLANNER_PATHS):
+            execution_steps = [full_step, *outside_steps]
+            commands = [
+                str(active_policy["full_chain_command"]),
+                *(shlex.join(step["argv"]) for step in outside_steps),
             ]
-            commands.append(shlex.join(outside_argv))
-            execution_steps.append(
-                _execution_step("pytest-outside-default", outside_argv)
-            )
+        else:
+            execution_steps = [*outside_steps, full_step]
+            commands = [
+                *(shlex.join(step["argv"]) for step in outside_steps),
+                str(active_policy["full_chain_command"]),
+            ]
         if lint_command:
             commands.append(lint_command)
             execution_steps.append(_execution_step("ruff", lint_argv))
@@ -285,14 +298,27 @@ def build_plan(
                 execution_steps.append(_execution_step("ruff", lint_argv))
             exempt = []
         else:
-            pytest_argv = [
-                *LOCKED_COMMAND_PREFIX,
-                "pytest",
-                "-q",
-                *sorted(selected_tests),
-            ]
-            commands = [shlex.join(pytest_argv)]
-            execution_steps = [_execution_step("pytest-targeted", pytest_argv)]
+            outside_default_tests = _tests_outside_default_collection(
+                selected_tests, active_policy["default_collection_root"]
+            )
+            outside_steps = _individual_pytest_steps(
+                outside_default_tests, step_prefix="pytest-outside-default"
+            )
+            inside_default_tests = sorted(
+                set(selected_tests) - set(outside_default_tests)
+            )
+            execution_steps = list(outside_steps)
+            if inside_default_tests:
+                pytest_argv = [
+                    *LOCKED_COMMAND_PREFIX,
+                    "pytest",
+                    "-q",
+                    *inside_default_tests,
+                ]
+                execution_steps.append(
+                    _execution_step("pytest-targeted", pytest_argv)
+                )
+            commands = [shlex.join(step["argv"]) for step in execution_steps]
             if lint_command:
                 commands.append(lint_command)
                 execution_steps.append(_execution_step("ruff", lint_argv))
