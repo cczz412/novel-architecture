@@ -186,7 +186,7 @@ def validate_document(document: Any) -> dict[str, Any]:
     raise ContractError("CONTRACT_IDENTITY_INVALID")
 
 
-def validate_document_for_reader(document: Any, reader_version: str) -> dict[str, Any]:
+def _validate_reader_compatibility(document: Any, reader_version: str) -> None:
     if not isinstance(reader_version, str) or reader_version not in VERSION_POLICIES:
         raise ContractError("READER_VERSION_INVALID")
     if not isinstance(document, dict) or document.get("contract") != "KNOWLEDGE_EDGE":
@@ -198,6 +198,10 @@ def validate_document_for_reader(document: Any, reader_version: str) -> dict[str
         or (reader_version == VERSION_V1 and document_version != VERSION_V1)
     ):
         raise ContractError("READER_VERSION_UNSUPPORTED")
+
+
+def validate_document_for_reader(document: Any, reader_version: str) -> dict[str, Any]:
+    _validate_reader_compatibility(document, reader_version)
     return validate_document(document)
 
 
@@ -227,9 +231,10 @@ def validate_edge_grant_for_reader(
     ):
         raise ContractError("READ_GRANT_SCOPE_MISMATCH")
 
+    _validate_reader_compatibility(edge, reader_version)
     if authorization["access"] == "TASK_SLICE":
         _prevalidate_task_edge_eligibility(edge, authorization["as_of"])
-    record = validate_document_for_reader(edge, reader_version)
+    record = validate_document(edge)
     if authorization["access"] == "TASK_SLICE":
         _validate_task_edge_as_of(record, authorization["as_of"])
 

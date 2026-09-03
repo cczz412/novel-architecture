@@ -328,6 +328,39 @@ def test_task_scope_mismatch_stops_before_edge_schema(scope_field: str) -> None:
 
 
 @pytest.mark.parametrize(
+    ("confirmation", "lifecycle"),
+    (
+        ("candidate", "active"),
+        ("author_confirmed", "retired"),
+        ("author_confirmed", "active"),
+    ),
+)
+def test_v1_reader_rejects_v2_before_task_eligibility_or_edge_schema(
+    confirmation: str,
+    lifecycle: str,
+) -> None:
+    edge, grant = _confirmed_task_read_pair(
+        "KE-V2-VALID-01",
+        "KE-V2-VALID-05",
+    )
+    edge["version_status"] = {
+        "confirmation": confirmation,
+        "lifecycle": lifecycle,
+    }
+    malformed = copy.deepcopy(edge)
+    malformed.pop("evidence_refs")
+
+    for candidate in (edge, malformed):
+        with pytest.raises(MODULE.ContractError) as exc_info:
+            MODULE.validate_edge_grant_for_reader(
+                candidate,
+                grant,
+                MODULE.VERSION_V1,
+            )
+        assert str(exc_info.value) == "READER_VERSION_UNSUPPORTED"
+
+
+@pytest.mark.parametrize(
     ("edge_case_id", "grant_case_id", "reader_version"),
     (
         ("KE-VALID-01", "KE-VALID-06", MODULE.VERSION_V1),
