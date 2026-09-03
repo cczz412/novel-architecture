@@ -390,10 +390,9 @@ def validate_new_candidate(
     )
     if record["source_identity"] != expected_source:
         raise ContractError("NEW_CANDIDATE_SOURCE_IDENTITY_INVALID")
-    if record["version"] == VERSION_V2 and existing_edges is None:
+    if existing_edges is None:
         raise ContractError("EXISTING_EDGE_SET_REQUIRED")
-    if existing_edges is not None:
-        _validate_new_candidate_against_existing(record, existing_edges)
+    _validate_new_candidate_against_existing(record, existing_edges)
 
 
 def _stable_identity(document: dict[str, Any]) -> tuple[str, ...]:

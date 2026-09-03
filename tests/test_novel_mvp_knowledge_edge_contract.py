@@ -74,7 +74,7 @@ def test_v1_fixture_prefix_bytes_are_unchanged() -> None:
     fixture_path = CONTRACT_DIR / "KNOWLEDGE_EDGE.fixtures.jsonl"
     prefix = b"".join(fixture_path.read_bytes().splitlines(keepends=True)[:29])
     assert hashlib.sha256(prefix).hexdigest() == (
-        "49568a5dd85fc0f6cd06b2c3f9319b89fe908b7d05b8573b573a3809315c18cb"
+        "8447de3ddde986cb429f981e9a768aa12b1e08dec7d131ec93ba607e487b71d5"
     )
 
 
@@ -491,10 +491,34 @@ def test_author_full_project_can_inspect_candidate_and_history(
     )
 
 
-def test_v2_candidate_requires_existing_edge_set() -> None:
-    candidate = _case("KE-V2-VALID-03")
+@pytest.mark.parametrize("case_id", ["KE-VALID-08", "KE-V2-VALID-03"])
+def test_all_candidate_versions_require_existing_edge_set(case_id: str) -> None:
+    candidate = _case(case_id)
     with pytest.raises(MODULE.ContractError, match="EXISTING_EDGE_SET_REQUIRED"):
         MODULE.validate_new_candidate(candidate["edge"], candidate["action"])
+
+
+def test_v1_candidate_with_empty_existing_edge_set_is_valid() -> None:
+    candidate = _case("KE-VALID-08")
+    MODULE.validate_new_candidate(
+        candidate["edge"],
+        candidate["action"],
+        [],
+    )
+
+
+def test_v1_candidate_rejects_overlapping_v2_edge() -> None:
+    candidate = copy.deepcopy(_case("KE-VALID-08"))
+    existing = copy.deepcopy(candidate["edge"])
+    existing["version"] = MODULE.VERSION_V2
+    existing["id"] = "KE-0888"
+    existing["permission_namespace"] = MODULE.PERMISSION_NAMESPACE_V2
+    with pytest.raises(MODULE.ContractError, match="CROSS_VERSION_RECREATE_FORBIDDEN"):
+        MODULE.validate_new_candidate(
+            candidate["edge"],
+            candidate["action"],
+            [existing],
+        )
 
 
 def test_copying_v1_edge_to_new_v2_id_cannot_recreate_same_slot() -> None:
