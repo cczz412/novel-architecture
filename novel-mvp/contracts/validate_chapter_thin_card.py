@@ -1463,6 +1463,12 @@ def _validate_task_and_c9(bundle: dict[str, Any]) -> None:
     )
     if observed_task_proofs != expected_task_proofs:
         _fail("TASK_NO_MATCH_VERSION_BINDING_MISMATCH")
+    if evidence and any(
+        row["binding_kind"] == "OWNER_PROOF"
+        and row["material_role"] == "FACT_EXPRESSION"
+        for row in bundle["version_proofs"]
+    ):
+        _fail("TASK_NO_MATCH_VERSION_BINDING_MISMATCH")
 
 
 def _validate_task_no_match_projection(

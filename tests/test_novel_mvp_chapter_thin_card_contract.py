@@ -253,6 +253,23 @@ def test_task_level_no_match_rejects_missing_recast_or_fake_bindings() -> None:
     ):
         validator.validate_bundle(bundle)
 
+    bundle = _bundle("CTC-VALID-08")
+    generation = bundle["version_proofs"][0]["storage_generation"]
+    bundle["version_proofs"].append(
+        validator._owner_version(
+            "VERSION-FACT-EXPRESSION",
+            "FACT_EXPRESSION",
+            storage_generation=generation,
+        )
+    )
+    bundle["version_proofs"].sort(key=lambda row: row["version_ref"])
+    bundle["artifact"] = validator._build_card_or_failure(bundle)
+    with pytest.raises(
+        validator.ThinCardError,
+        match="^TASK_NO_MATCH_VERSION_BINDING_MISMATCH$",
+    ):
+        validator.validate_bundle(bundle)
+
 
 def test_existing_c9_need_no_match_path_remains_supported() -> None:
     task_bundle = validator.task_validator.build_base_bundle("continue")
