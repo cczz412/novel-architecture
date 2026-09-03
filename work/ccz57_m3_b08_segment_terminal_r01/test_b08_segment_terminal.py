@@ -23,6 +23,7 @@ from b08_contracts import (
 from b08_store import B08SegmentTerminalStore, B08TerminalReadService
 from fixtures import build_environment
 from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import sha256_value
+from b07_contracts import B07ContractError
 
 ROOT = Path(__file__).resolve().parent
 
@@ -71,6 +72,42 @@ def test_publish_uses_authority_reader_and_returns_one_terminal_object(
     assert env.store.visible_counts() == {"b08_segment_terminal_receipts": 1}
     assert record["payload"]["b06_merge_receipt_ref_or_null"] is None
     assert record["payload"]["pointer_binding"]["candidate_origin"] == "ROOT"
+
+
+@pytest.mark.parametrize("target_status", ["SUCCEEDED", "STOPPED"])
+def test_b07_cannot_finalize_before_b08_publishes_and_binds(
+    tmp_path: Path, target_status: str
+) -> None:
+    env = build_environment(tmp_path / f"early-{target_status.lower()}")
+    state = env.state()
+    with pytest.raises(B07ContractError, match="B07_TERMINAL_OBSERVATION_REQUIRED"):
+        if target_status == "SUCCEEDED":
+            env.b07.b07.advance(
+                project_scope_id=env.project_scope_id,
+                run_id=env.run_id,
+                operation_id="early-success",
+                expected_run_epoch=state["run_epoch"],
+                expected_state_revision=state["state_revision"],
+                target_status="SUCCEEDED",
+                target_phase="FINALIZING",
+                wait_kind=None,
+                authority_reader=env.b07.authority,
+            )
+        else:
+            env.b07.b07.stop(
+                project_scope_id=env.project_scope_id,
+                run_id=env.run_id,
+                operation_id="early-stop",
+                expected_run_epoch=state["run_epoch"],
+                expected_state_revision=state["state_revision"],
+                stop_reason_code="AUTHOR_ABORTED",
+                stop_class="LOCAL_CONTROL",
+                stop_source="B08_TEST",
+                authority_reader=env.b07.authority,
+            )
+    assert env.state() == state
+    assert env.store.visible_counts() == {"b08_segment_terminal_receipts": 0}
+    assert env.b07.b07.visible_counts()["b07_stop_receipts"] == 0
 
 
 def test_publish_signature_has_no_caller_owned_result_or_coverage_fields() -> None:

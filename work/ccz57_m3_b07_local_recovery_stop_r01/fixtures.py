@@ -117,6 +117,89 @@ class B07FixtureEnvironment:
             authority_reader=self.authority,
         )
 
+    def publish_terminal(
+        self,
+        state: dict[str, Any],
+        *,
+        marker: str = "fixture",
+        delivery: str = "BLOCKED",
+    ) -> dict[str, Any]:
+        b08_root = REPOSITORY_ROOT / "work" / "ccz57_m3_b08_segment_terminal_r01"
+        if str(b08_root) not in sys.path:
+            sys.path.insert(0, str(b08_root))
+        from work.ccz57_m3_b08_segment_terminal_r01.b08_store import (
+            B08SegmentTerminalStore,
+        )
+        from work.ccz57_m3_b08_segment_terminal_r01.fixtures import (
+            B08AuthorityFixture,
+            FixtureClock as B08FixtureClock,
+        )
+
+        authority = B08AuthorityFixture()
+        if delivery == "BLOCKED":
+            authority.classification.update(
+                {
+                    "product_result": "EXTRACTION_FAILED",
+                    "terminal_delivery": "BLOCKED",
+                    "reason_code": "B07_FIXTURE_STOP",
+                    "candidate_count": 0,
+                    "expected_unit_count": 1,
+                    "covered_unit_count": 0,
+                    "missing_unit_count": 1,
+                    "coverage_complete": False,
+                }
+            )
+        elif delivery != "COMPLETE":
+            raise ValueError(f"B07_FIXTURE_DELIVERY_INVALID:{delivery}")
+        store = B08SegmentTerminalStore(
+            self.b06.store.root,
+            clock=B08FixtureClock(),
+            authority_reader=authority,
+        )
+        store.initialize_schema()
+        return store.publish(
+            project_scope_id=state["project_scope_id"],
+            run_id=state["run_id"],
+            operation_id=f"b08-{marker}",
+            expected_run_epoch=state["run_epoch"],
+            expected_state_revision=state["state_revision"],
+        )
+
+    def bind_terminal_observation(
+        self,
+        state: dict[str, Any],
+        *,
+        operation_id: str = "bind-terminal-observation",
+        marker: str = "fixture",
+    ) -> dict[str, Any]:
+        if state["status"] == "ACTIVE" and state["phase"] == "FINALIZING":
+            prepared = state
+        else:
+            prepared = self.b07.advance(
+                project_scope_id=self.project_scope_id,
+                run_id=self.run_id,
+                operation_id=f"{operation_id}:finalizing",
+                expected_run_epoch=state["run_epoch"],
+                expected_state_revision=state["state_revision"],
+                target_status="ACTIVE",
+                target_phase="FINALIZING",
+                wait_kind=None,
+                authority_reader=self.authority,
+            )
+        terminal = self.publish_terminal(prepared, marker=marker)
+        return self.b07.advance(
+            project_scope_id=self.project_scope_id,
+            run_id=self.run_id,
+            operation_id=operation_id,
+            expected_run_epoch=prepared["run_epoch"],
+            expected_state_revision=prepared["state_revision"],
+            target_status="ACTIVE",
+            target_phase="FINALIZING",
+            wait_kind=None,
+            authority_reader=self.authority,
+            component_observation=terminal["component_observation"],
+        )
+
     def prepare_b06(
         self,
         state: dict[str, Any],

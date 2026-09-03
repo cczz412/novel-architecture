@@ -50,19 +50,22 @@ def _processing_state(statuses: list[str]) -> str:
 
 
 def _author_action(segments: list[dict[str, Any]], state: str) -> tuple[bool, str]:
-    statuses = {segment["segment_status"] for segment in segments}
-    if "STALE" in statuses:
-        return True, "REFRESH"
-    if "BLOCKED" in statuses:
-        return True, "RESTART"
-    if "PARTIAL" in statuses:
-        return True, "REVIEW_INPUT"
-    if any(
-        segment["run_state_or_null"] is not None
-        and segment["run_state_or_null"]["author_action_required"]
-        for segment in segments
-    ):
-        return True, "REVIEW_INPUT"
+    candidates: set[str] = set()
+    for segment in segments:
+        status = segment["segment_status"]
+        run = segment["run_state_or_null"]
+        upstream = None if run is None else run["author_action_kind"]
+        if upstream in {"WAIT", "REVIEW_INPUT", "RESTART", "REFRESH"}:
+            candidates.add(upstream)
+        if status == "STALE":
+            candidates.add("REFRESH")
+        elif status == "PARTIAL":
+            candidates.add("REVIEW_INPUT")
+        elif status == "BLOCKED" and upstream is None:
+            candidates.add("REVIEW_INPUT")
+    for action in ("WAIT", "REFRESH", "REVIEW_INPUT", "RESTART"):
+        if action in candidates:
+            return action != "WAIT", action
     if state == "COMPLETE":
         return False, "NONE"
     return False, "WAIT"

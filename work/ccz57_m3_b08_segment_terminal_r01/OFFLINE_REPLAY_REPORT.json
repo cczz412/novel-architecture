@@ -7,7 +7,7 @@
   "ccz142_product_authority_reader_connected": false,
   "derived_view_count": 2,
   "derived_view_writer_count": 0,
-  "direct_dependency_regression_expected": "156 passed",
+  "direct_dependency_regression_expected": "165 passed",
   "fixed_vector_count": 5,
   "mechanical_pass": true,
   "network_calls": 0,
@@ -20,7 +20,7 @@
   "report_kind": "CCZ57_M3_B08_SEGMENT_TERMINAL_R01_OFFLINE_REPLAY",
   "semantic_accuracy": null,
   "speed_improvement": null,
-  "targeted_pytest_expected": "27 passed",
+  "targeted_pytest_expected": "29 passed",
   "ten_ledger_writes": 0,
   "token_improvement": null,
   "writer_count": 1
