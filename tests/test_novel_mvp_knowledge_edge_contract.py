@@ -360,6 +360,36 @@ def test_same_version_state_or_id_change_cannot_duplicate_logical_slot() -> None
         )
 
 
+@pytest.mark.parametrize(
+    "reuse_variant",
+    ("different_observer", "different_fact", "non_overlapping_interval"),
+)
+def test_new_candidate_rejects_reused_edge_id_before_slot_filtering(
+    reuse_variant: str,
+) -> None:
+    candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
+    existing = copy.deepcopy(candidate["edge"])
+    if reuse_variant == "different_observer":
+        existing["observer_ref"] = "CH-0099"
+    elif reuse_variant == "different_fact":
+        existing["fact_ref"] = "f999"
+    else:
+        existing["story_time_interval"]["start"]["story_order"] = 100
+        existing["story_time_interval"]["end"] = copy.deepcopy(
+            candidate["edge"]["story_time_interval"]["start"]
+        )
+
+    with pytest.raises(
+        MODULE.ContractError,
+        match="KNOWLEDGE_EDGE_ID_REUSE_FORBIDDEN",
+    ):
+        MODULE.validate_new_candidate(
+            candidate["edge"],
+            candidate["action"],
+            [existing],
+        )
+
+
 def test_adjacent_non_overlapping_story_intervals_allow_new_v2_slot() -> None:
     candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
     existing = copy.deepcopy(candidate["edge"])

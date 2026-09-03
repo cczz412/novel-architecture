@@ -319,6 +319,8 @@ def _validate_new_candidate_against_existing(
         existing = validate_document(existing_document)
         if existing["contract"] != "KNOWLEDGE_EDGE":
             raise ContractError("EXISTING_EDGE_DOCUMENT_TYPE_INVALID")
+        if existing["id"] == record["id"]:
+            raise ContractError("KNOWLEDGE_EDGE_ID_REUSE_FORBIDDEN")
         if not _same_logical_slot(record, existing):
             continue
         if not _story_intervals_overlap(
