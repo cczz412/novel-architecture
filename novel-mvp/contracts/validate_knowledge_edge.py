@@ -227,9 +227,23 @@ def validate_edge_grant_for_reader(
     ):
         raise ContractError("READ_GRANT_SCOPE_MISMATCH")
 
+    if authorization["access"] == "TASK_SLICE":
+        _prevalidate_task_edge_eligibility(edge, authorization["as_of"])
     record = validate_document_for_reader(edge, reader_version)
     if authorization["access"] == "TASK_SLICE":
         _validate_task_edge_as_of(record, authorization["as_of"])
+
+
+def _prevalidate_task_edge_eligibility(
+    record: dict[str, Any],
+    as_of: dict[str, Any],
+) -> None:
+    try:
+        _validate_task_edge_as_of(record, as_of)
+    except ContractError:
+        raise
+    except (AttributeError, KeyError, TypeError):
+        return
 
 
 def _validate_task_edge_as_of(
@@ -287,6 +301,39 @@ def _story_order_bounds(
     return start_order, end_order
 
 
+def _same_revision_ref_without_order_conflict(
+    left: dict[str, Any],
+    right: dict[str, Any],
+) -> bool:
+    same_ref = _chapter_ref(left) == _chapter_ref(right)
+    left_order = left.get("story_order")
+    right_order = right.get("story_order")
+    if (
+        same_ref
+        and left_order is not None
+        and right_order is not None
+        and left_order != right_order
+    ):
+        raise ContractError("STORY_INTERVAL_OVERLAP_UNDETERMINED")
+    return same_ref
+
+
+def _end_proves_non_overlap(
+    end: dict[str, Any] | None,
+    start: dict[str, Any],
+) -> bool | None:
+    if end is None:
+        return None
+    same_ref = _same_revision_ref_without_order_conflict(end, start)
+    end_order = end.get("story_order")
+    start_order = start.get("story_order")
+    if end_order is not None and start_order is not None:
+        return end_order <= start_order
+    if same_ref:
+        return True
+    return None
+
+
 def _story_intervals_overlap(
     left: dict[str, Any],
     right: dict[str, Any],
@@ -295,19 +342,9 @@ def _story_intervals_overlap(
     left_end = left["end"]
     right_start = right["start"]
     right_end = right["end"]
-    if (
-        left_end is not None
-        and left_end.get("story_order") is not None
-        and right_start.get("story_order") is not None
-        and left_end["story_order"] <= right_start["story_order"]
-    ):
+    if _end_proves_non_overlap(left_end, right_start) is True:
         return False
-    if (
-        right_end is not None
-        and right_end.get("story_order") is not None
-        and left_start.get("story_order") is not None
-        and right_end["story_order"] <= left_start["story_order"]
-    ):
+    if _end_proves_non_overlap(right_end, left_start) is True:
         return False
 
     left_bounds = _story_order_bounds(left)
@@ -315,14 +352,8 @@ def _story_intervals_overlap(
     if left_bounds is not None and right_bounds is not None:
         return True
 
-    left_start_ref = _chapter_ref(left_start)
-    right_start_ref = _chapter_ref(right_start)
-    if left_start_ref == right_start_ref:
+    if _same_revision_ref_without_order_conflict(left_start, right_start):
         return True
-    if left_end is not None and _chapter_ref(left_end) == right_start_ref:
-        return False
-    if right_end is not None and _chapter_ref(right_end) == left_start_ref:
-        return False
     raise ContractError("STORY_INTERVAL_OVERLAP_UNDETERMINED")
 
 

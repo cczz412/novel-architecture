@@ -366,6 +366,54 @@ def test_task_read_requires_active_author_confirmed_edge(
         ("KE-V2-VALID-01", "KE-V2-VALID-05", MODULE.VERSION_V2),
     ),
 )
+@pytest.mark.parametrize(
+    ("scenario", "expected_error"),
+    (
+        ("candidate", "TASK_GRANT_REQUIRES_ACTIVE_AUTHOR_CONFIRMED_EDGE"),
+        ("retired", "TASK_GRANT_REQUIRES_ACTIVE_AUTHOR_CONFIRMED_EDGE"),
+        ("before_start", "READ_GRANT_AS_OF_BEFORE_EDGE_START"),
+        ("at_end", "READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL"),
+    ),
+)
+def test_task_eligibility_stops_before_remaining_edge_schema(
+    edge_case_id: str,
+    grant_case_id: str,
+    reader_version: str,
+    scenario: str,
+    expected_error: str,
+) -> None:
+    edge, grant = _confirmed_task_read_pair(edge_case_id, grant_case_id)
+    start = edge["story_time_interval"]["start"]
+    if scenario == "candidate":
+        edge["version_status"]["confirmation"] = "candidate"
+    elif scenario == "retired":
+        edge["version_status"]["lifecycle"] = "retired"
+    elif scenario == "before_start":
+        grant["as_of"]["story_order"] = start["story_order"] - 1
+    else:
+        end = copy.deepcopy(start)
+        end_ref = end["chapter_revision_ref"]
+        end_ref["revision_no"] += 1
+        end_ref["revision_text_sha256"] = "d" * 64
+        end["story_order"] = start["story_order"] + 10
+        edge["story_time_interval"]["end"] = end
+        grant["as_of"]["story_order"] = end["story_order"]
+
+    malformed = copy.deepcopy(edge)
+    malformed.pop("evidence_refs")
+    for candidate in (edge, malformed):
+        with pytest.raises(MODULE.ContractError) as exc_info:
+            MODULE.validate_edge_grant_for_reader(candidate, grant, reader_version)
+        assert str(exc_info.value) == expected_error
+
+
+@pytest.mark.parametrize(
+    ("edge_case_id", "grant_case_id", "reader_version"),
+    (
+        ("KE-VALID-01", "KE-VALID-06", MODULE.VERSION_V1),
+        ("KE-V2-VALID-01", "KE-V2-VALID-05", MODULE.VERSION_V2),
+    ),
+)
 def test_task_read_as_of_must_be_inside_story_interval(
     edge_case_id: str,
     grant_case_id: str,
@@ -696,6 +744,63 @@ def test_right_end_order_proves_separation_when_left_end_order_is_missing() -> N
         candidate["action"],
         [existing],
     )
+
+
+def test_comparable_story_orders_stop_on_contradictory_exact_boundary() -> None:
+    candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
+    candidate["edge"]["story_time_interval"]["start"] = {
+        "chapter_revision_ref": {
+            "chapter_id": "c11",
+            "revision_no": 1,
+            "revision_text_sha256": "b" * 64,
+        },
+        "story_order": 100,
+    }
+    candidate["edge"]["story_time_interval"]["end"] = {
+        "chapter_revision_ref": {
+            "chapter_id": "c12",
+            "revision_no": 1,
+            "revision_text_sha256": "c" * 64,
+        },
+        "story_order": 150,
+    }
+
+    existing = copy.deepcopy(candidate["edge"])
+    existing.update(
+        {
+            "version": MODULE.VERSION_V1,
+            "id": "KE-0992",
+            "permission_namespace": MODULE.PERMISSION_NAMESPACE_V1,
+            "epistemic_state": "suspects",
+        }
+    )
+    existing["story_time_interval"] = {
+        "start": {
+            "chapter_revision_ref": copy.deepcopy(
+                candidate["edge"]["story_time_interval"]["end"][
+                    "chapter_revision_ref"
+                ]
+            ),
+            "story_order": 120,
+        },
+        "end": {
+            "chapter_revision_ref": {
+                "chapter_id": "c13",
+                "revision_no": 1,
+                "revision_text_sha256": "d" * 64,
+            }
+        },
+    }
+
+    with pytest.raises(
+        MODULE.ContractError,
+        match="STORY_INTERVAL_OVERLAP_UNDETERMINED",
+    ):
+        MODULE.validate_new_candidate(
+            candidate["edge"],
+            candidate["action"],
+            [existing],
+        )
 
 
 def test_exact_revision_adjacent_intervals_allow_new_v2_slot() -> None:

@@ -151,7 +151,7 @@ v2 追加：
 
 - 故事时间按左闭右开区间 `[start, end)` 比较；旧边结束点等于新边开始点时，两个区间不重叠；
 - 左边结束点／右边开始点和右边结束点／左边开始点要分别比较；任一组有可比的 `story_order` 且证明结束点早于或等于另一边开始点，就判为不重叠，不因另一个结束点缺少顺序而丢掉这个结论；
-- 数字不能决定时再比较完整 `chapter_revision_ref`：开始引用相同则重叠，一边结束引用精确等于另一边开始引用则相邻且不重叠，其余情况停止；
+- 每组端点两侧都有 `story_order` 时只按数字判断；相同 `chapter_revision_ref` 若同时绑定不同数字则停止，不能让精确引用覆盖矛盾的数字顺序；只有该组端点缺少可比数字时，才允许完整 `chapter_revision_ref` 证明开始引用相同或左右相邻，其余情况停止；
 - v1／v2 新候选都必须把该项目受信来源中的完整现存知情边集合交给 `validate_new_candidate`；缺少该集合返回 `EXISTING_EDGE_SET_REQUIRED`，不再保留无冲突上下文的 v1 两参数调用；
 - 同一逻辑位置存在其他版本的边时返回 `CROSS_VERSION_RECREATE_FORBIDDEN`，不能复制内容、换 `KE-` 号后重建；
 - 同一逻辑位置存在相同版本的边时返回 `KNOWLEDGE_EDGE_SLOT_CONFLICT`，应继续原 revision 链；
@@ -204,7 +204,7 @@ current／historical 不写进不可变 revision。它们由项目级 current �
 | `READER` | `CLOSED` |
 | `PLUGIN` | `CLOSED` |
 
-正式任务的 `TASK_SLICE` 只能读取“作者已确认＋仍有效”的边；candidate 和 retired 都返回 `TASK_GRANT_REQUIRES_ACTIVE_AUTHOR_CONFIRMED_EDGE`。作者的 `FULL_PROJECT` 仍可用于查看候选和历史对象，不把它们当成正式任务输入。
+正式任务的 `TASK_SLICE` 只能读取“作者已确认＋仍有效”的边；candidate 和 retired 都返回 `TASK_GRANT_REQUIRES_ACTIVE_AUTHOR_CONFIRMED_EDGE`。人物／事实范围通过后，状态和 `as_of` 资格必须在完整边 Schema 前检查；同一不可读状态不能因为其他无关字段完整或残缺而改报 Schema 错误。作者的 `FULL_PROJECT` 仍可用于查看候选和历史对象，不把它们当成正式任务输入。
 
 `TASK_SLICE` 的章节水位 `as_of` 还必须落在边的左闭右开故事区间内：
 
