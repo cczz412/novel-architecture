@@ -1,5 +1,5 @@
 {
-  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R01",
+  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R02",
   "status": "DRAFT_ENGINEERING_CANDIDATE_NOT_PRODUCT_ADOPTION",
   "github_issue": 227,
   "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
@@ -19,6 +19,8 @@
       "segment_scope_hash"
     ],
     "authority_reads": 2,
+    "authority_serialization_required": true,
+    "authority_lock_held_through_root_commit": true,
     "authority_drift_policy": "fail_closed_before_persistent_write"
   },
   "writer_map": {
@@ -54,7 +56,16 @@
     "source_mutation": false,
     "same_id_same_source": "idempotent_replay",
     "same_id_changed_source": "fail_closed",
+    "same_source_changed_id": "fail_closed",
+    "source_stability_checked_before_destination_commit": true,
+    "B01_root_and_migration_receipt_one_transaction": true,
+    "pointer_row_identity_bound": true,
     "pointer_advance_requires_exact_merge_receipt_chain": true
+  },
+  "authority_schema": {
+    "identity": "r02-candidate",
+    "exact_identity_required_on_reopen": true,
+    "source_identity_unique": true
   },
   "forbidden_product_path": {
     "B01 state.json": true,
