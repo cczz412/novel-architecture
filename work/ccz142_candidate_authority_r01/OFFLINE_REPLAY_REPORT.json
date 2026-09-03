@@ -8,9 +8,24 @@
     "held_through_root_commit": true,
     "serialization_required": true
   },
-  "authority_schema": "r02-candidate",
+  "authority_schema": {
+    "column_properties": [
+      "type",
+      "not_null",
+      "default_value",
+      "primary_key_position"
+    ],
+    "identity": "r02-candidate",
+    "table_layouts_frozen": 7,
+    "unique_index_properties": [
+      "origin",
+      "partial",
+      "columns"
+    ],
+    "unique_index_sets_frozen": 7
+  },
   "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
-  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R02-SELF-CHECK",
+  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R03-SELF-CHECK",
   "external_calls": {
     "browser_actions": 0,
     "model_api_calls": 0,

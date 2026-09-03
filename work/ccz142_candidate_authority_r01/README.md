@@ -1,4 +1,4 @@
-# CCZ-142｜单一 CandidateAuthorityStore 接线 R02
+# CCZ-142｜单一 CandidateAuthorityStore 接线 R03
 
 ✅ 这份施工候选已经让 B01 root 与 B06 child／current pointer 写进同一个候选权威库，同时保留 B01～B08 原离线夹具不变。
 
@@ -41,7 +41,7 @@ child CandidateVersion、current pointer CAS 和 MergeReceipt 仍在一个事务
 - pointer 的数据库行键、正文逻辑键和项目身份必须一致。
 - B06 旧 pointer 只有在 MergeReceipt 能从当前 root 逐代证明到 incoming child 时才允许推进。
 - 迁移不覆盖源文件；同 migration ID 换源、同一旧源换 migration ID 都会在导入前拒绝。
-- authority store 使用 `r02-candidate` schema 身份；跨进程重开时必须精确匹配表结构和迁移源唯一约束。
+- authority store 使用 `r02-candidate` schema 身份；跨进程重开时必须逐列匹配字段类型、非空、默认值和主键位置，并逐表匹配完整唯一索引集合。
 
 ## 当前不能叫产品采用
 
@@ -66,8 +66,8 @@ uv run --locked pytest -q work/ccz142_candidate_authority_r01/test_candidate_aut
 uv run --locked python work/ccz142_candidate_authority_r01/self_check.py
 ```
 
-完整回归还包括 B01、B05、B06、B07、B08 原测试。实际命令、数量和 SHA 见本目录离线回放报告与 PR 描述。
+完整回归还包括 B01～B09 原测试。实际命令、数量和 SHA 见本目录离线回放报告与测试回执。
 
-R02 在施工分支按独立组件入口通过 558 项。叠到 `main@c2ae148f6dd6ee1731b8c936662b017ba7fcf73c` 后再次通过 558 项，Ruff 通过；该 main 已修正先前的 B09／B10 测试边界矛盾。完整分项见 `TEST_RECEIPT_R01.json`。
+R03 在施工分支按独立组件入口通过 566 项。叠到 `main@c2ae148f6dd6ee1731b8c936662b017ba7fcf73c` 后再次通过 566 项，Ruff 通过；该 main 已修正先前的 B09／B10 测试边界矛盾。完整分项见 `TEST_RECEIPT_R01.json`。
 
 来源：Codex

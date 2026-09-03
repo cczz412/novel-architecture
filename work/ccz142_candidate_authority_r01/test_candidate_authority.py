@@ -709,6 +709,88 @@ def test_reopen_rejects_wrong_authority_schema_identity(tmp_path: Path) -> None:
         CandidateAuthorityStore(authority_root, project_scope_id=PROJECT)
 
 
+def test_reopen_accepts_exact_authority_schema(tmp_path: Path) -> None:
+    authority_root = tmp_path / "authority"
+    new_store(authority_root)
+    reopened = CandidateAuthorityStore(authority_root, project_scope_id=PROJECT)
+    assert reopened.visible_counts() == {
+        "candidate_versions": 0,
+        "current_pointers": 0,
+        "merge_receipts": 0,
+    }
+
+
+@pytest.mark.parametrize(
+    ("table", "replacement_sql"),
+    [
+        (
+            "current_pointers",
+            "CREATE TABLE current_pointers ("
+            "logical_pointer_key TEXT, project_scope_id TEXT NOT NULL, "
+            "pointer_json BLOB NOT NULL)",
+        ),
+        (
+            "candidate_versions",
+            "CREATE TABLE candidate_versions ("
+            "ref_hash TEXT, record_json BLOB NOT NULL)",
+        ),
+        (
+            "merge_receipts",
+            "CREATE TABLE merge_receipts ("
+            "project_scope_id TEXT NOT NULL, operation_id TEXT NOT NULL, "
+            "request_hash TEXT NOT NULL UNIQUE, receipt_json BLOB NOT NULL)",
+        ),
+        (
+            "candidate_root_operations",
+            "CREATE TABLE candidate_root_operations ("
+            "operation_id TEXT PRIMARY KEY, pointer_logical_key TEXT NOT NULL, "
+            "request_hash TEXT NOT NULL UNIQUE, scope_hash TEXT NOT NULL, "
+            "authority_snapshot_json BLOB NOT NULL, result_json BLOB NOT NULL)",
+        ),
+        (
+            "candidate_versions",
+            "CREATE TABLE candidate_versions ("
+            "ref_hash TEXT PRIMARY KEY, record_json TEXT NOT NULL)",
+        ),
+        (
+            "candidate_versions",
+            "CREATE TABLE candidate_versions ("
+            "ref_hash TEXT PRIMARY KEY, record_json BLOB)",
+        ),
+        (
+            "candidate_versions",
+            "CREATE TABLE candidate_versions ("
+            "ref_hash TEXT PRIMARY KEY, "
+            "record_json BLOB NOT NULL DEFAULT X'')",
+        ),
+    ],
+    ids=[
+        "pointer-primary-key",
+        "candidate-primary-key",
+        "receipt-composite-primary-key",
+        "root-operation-pointer-unique",
+        "column-type",
+        "not-null",
+        "default-value",
+    ],
+)
+def test_reopen_rejects_inexact_authority_schema_before_data_access(
+    tmp_path: Path,
+    table: str,
+    replacement_sql: str,
+) -> None:
+    authority_root = tmp_path / table
+    store = new_store(authority_root)
+    with sqlite3.connect(store.database_path) as connection:
+        connection.execute(f'DROP TABLE "{table}"')
+        connection.execute(replacement_sql)
+        connection.commit()
+    before = file_sha256(store.database_path)
+    with pytest.raises(CandidateAuthorityError, match="AUTHORITY_SCHEMA_"):
+        CandidateAuthorityStore(authority_root, project_scope_id=PROJECT)
+    assert file_sha256(store.database_path) == before
+
+
 def test_current_contract_namespace_is_not_misreported_as_product_adoption(
     tmp_path: Path,
 ) -> None:

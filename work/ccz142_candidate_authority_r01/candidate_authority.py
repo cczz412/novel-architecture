@@ -63,31 +63,70 @@ ROOT_RECORD_TYPES = {
 _ROOT_PUBLISH_TOKEN = object()
 _LEGACY_MIGRATION_TOKEN = object()
 AUTHORITY_SCHEMA_ID = b"r02-candidate"
-AUTHORITY_TABLE_COLUMNS = {
-    "metadata": ("key", "value"),
-    "candidate_versions": ("ref_hash", "record_json"),
-    "current_pointers": ("logical_pointer_key", "project_scope_id", "pointer_json"),
-    "merge_receipts": (
-        "project_scope_id",
-        "operation_id",
-        "request_hash",
-        "receipt_json",
+AUTHORITY_TABLE_LAYOUTS = {
+    "metadata": (
+        ("key", "TEXT", 0, None, 1),
+        ("value", "BLOB", 1, None, 0),
     ),
-    "candidate_aux_records": ("storage_key", "record_json"),
+    "candidate_versions": (
+        ("ref_hash", "TEXT", 0, None, 1),
+        ("record_json", "BLOB", 1, None, 0),
+    ),
+    "current_pointers": (
+        ("logical_pointer_key", "TEXT", 0, None, 1),
+        ("project_scope_id", "TEXT", 1, None, 0),
+        ("pointer_json", "BLOB", 1, None, 0),
+    ),
+    "merge_receipts": (
+        ("project_scope_id", "TEXT", 1, None, 1),
+        ("operation_id", "TEXT", 1, None, 2),
+        ("request_hash", "TEXT", 1, None, 0),
+        ("receipt_json", "BLOB", 1, None, 0),
+    ),
+    "candidate_aux_records": (
+        ("storage_key", "TEXT", 0, None, 1),
+        ("record_json", "BLOB", 1, None, 0),
+    ),
     "candidate_root_operations": (
-        "operation_id",
-        "pointer_logical_key",
-        "request_hash",
-        "scope_hash",
-        "authority_snapshot_json",
-        "result_json",
+        ("operation_id", "TEXT", 0, None, 1),
+        ("pointer_logical_key", "TEXT", 1, None, 0),
+        ("request_hash", "TEXT", 1, None, 0),
+        ("scope_hash", "TEXT", 1, None, 0),
+        ("authority_snapshot_json", "BLOB", 1, None, 0),
+        ("result_json", "BLOB", 1, None, 0),
     ),
     "candidate_migrations": (
-        "migration_id",
-        "source_kind",
-        "source_sha256",
-        "request_hash",
-        "result_json",
+        ("migration_id", "TEXT", 0, None, 1),
+        ("source_kind", "TEXT", 1, None, 0),
+        ("source_sha256", "TEXT", 1, None, 0),
+        ("request_hash", "TEXT", 1, None, 0),
+        ("result_json", "BLOB", 1, None, 0),
+    ),
+}
+AUTHORITY_UNIQUE_INDEXES = {
+    "metadata": frozenset({("pk", 0, ("key",))}),
+    "candidate_versions": frozenset({("pk", 0, ("ref_hash",))}),
+    "current_pointers": frozenset({("pk", 0, ("logical_pointer_key",))}),
+    "merge_receipts": frozenset(
+        {
+            ("pk", 0, ("project_scope_id", "operation_id")),
+            ("u", 0, ("request_hash",)),
+        }
+    ),
+    "candidate_aux_records": frozenset({("pk", 0, ("storage_key",))}),
+    "candidate_root_operations": frozenset(
+        {
+            ("pk", 0, ("operation_id",)),
+            ("u", 0, ("pointer_logical_key",)),
+            ("u", 0, ("request_hash",)),
+        }
+    ),
+    "candidate_migrations": frozenset(
+        {
+            ("pk", 0, ("migration_id",)),
+            ("u", 0, ("request_hash",)),
+            ("c", 0, ("source_kind", "source_sha256")),
+        }
     ),
 }
 
@@ -171,32 +210,31 @@ class CandidateAuthorityStore(B06CommitStore):
             fail("AUTHORITY_SCHEMA_IDENTITY_MISSING")
         if bytes(schema_row[0]) != AUTHORITY_SCHEMA_ID:
             fail("AUTHORITY_SCHEMA_IDENTITY_MISMATCH")
-        for table, expected_columns in AUTHORITY_TABLE_COLUMNS.items():
-            actual_columns = tuple(
-                row[1]
+        for table, expected_layout in AUTHORITY_TABLE_LAYOUTS.items():
+            actual_layout = tuple(
+                (row[1], str(row[2]).upper(), row[3], row[4], row[5])
                 for row in connection.execute(
                     f'PRAGMA table_info("{table}")'
                 ).fetchall()
             )
-            if actual_columns != expected_columns:
+            if actual_layout != expected_layout:
                 fail("AUTHORITY_SCHEMA_LAYOUT_MISMATCH", table)
-        source_identity_unique = False
-        for index_row in connection.execute(
-            "PRAGMA index_list('candidate_migrations')"
-        ).fetchall():
-            if index_row[2] != 1:
-                continue
-            columns = tuple(
-                row[2]
-                for row in connection.execute(
-                    f'PRAGMA index_info("{index_row[1]}")'
-                ).fetchall()
-            )
-            if columns == ("source_kind", "source_sha256"):
-                source_identity_unique = True
-                break
-        if not source_identity_unique:
-            fail("AUTHORITY_SCHEMA_SOURCE_IDENTITY_UNIQUENESS_MISSING")
+            actual_unique_indexes = set()
+            for index_row in connection.execute(
+                f'PRAGMA index_list("{table}")'
+            ).fetchall():
+                if index_row[2] != 1:
+                    continue
+                escaped_index = str(index_row[1]).replace('"', '""')
+                columns = tuple(
+                    row[2]
+                    for row in connection.execute(
+                        f'PRAGMA index_info("{escaped_index}")'
+                    ).fetchall()
+                )
+                actual_unique_indexes.add((index_row[3], index_row[4], columns))
+            if actual_unique_indexes != AUTHORITY_UNIQUE_INDEXES[table]:
+                fail("AUTHORITY_SCHEMA_UNIQUE_INDEX_MISMATCH", table)
 
     def _verify_existing_project_scope(self) -> None:
         with sqlite3.connect(self._database_path) as connection:
