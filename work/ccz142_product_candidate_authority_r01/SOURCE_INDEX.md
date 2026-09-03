@@ -2,9 +2,11 @@
 
 ## 施工依据
 
-- GitHub main 基线：`c89beb4368b6b79598906bdc27819a16f751155b`
-- 上游 Draft PR：[#230](https://github.com/cczz412/novel-architecture/pull/230)
+- 原始施工基线：`c89beb4368b6b79598906bdc27819a16f751155b`
+- 当前 PR base：`main@68e13f64e475eece2d7d7cf2e26597335a734129`
+- 已合并上游 PR：[#230](https://github.com/cczz412/novel-architecture/pull/230)
 - 上游精确 head：`dd3219b9d4b9e6112431014394a152ef2680e013`
+- 上游 merge commit：`68e13f64e475eece2d7d7cf2e26597335a734129`
 - 本轮施工 Issue：[#231](https://github.com/cczz412/novel-architecture/issues/231)
 - CZ 授权时间：2026-09-03 04:04:25 +0800
 - 零 API 候选 Manifest SHA-256：`4c6f020a31e66ab8a0e4945411aa222765ca42098b3b1bc54d668d9053489e4c`
@@ -17,6 +19,7 @@
 - 修正时又对称检查了 B01，并把普通 `FixtureStore` 的产品 profile 持久化旁路一并关闭。
 - 2026-09-03 同步 PR #230 R02：保留产品 profile／store ID／pointer 门，同时纳入 root authority 序列锁、迁移零残留、pointer 行键绑定、同源唯一迁移和 `r02-candidate` schema 复核。
 - 2026-09-03 同步 PR #230 R03：继续保留上述产品门，并纳入逐列字段类型、非空、默认值、主键位置和逐表完整唯一索引校验。
+- 2026-09-03 PR #230 合并后把 PR #235 base 重定向到新 main；产品差异叠加回归 592 项通过，PR #235 继续保持 Draft。
 
 ## 直接代码来源
 

@@ -1,10 +1,13 @@
 {
   "document_identity": "CCZ142-PRODUCT-CANDIDATE-AUTHORITY-R02-TEST-RECEIPT",
-  "validated_at": "2026-09-03T10:48:51+08:00",
+  "validated_at": "2026-09-03T11:17:36+08:00",
   "result": "PASS",
-  "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
-  "upstream_draft_pr": 230,
+  "original_base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
+  "base_main_sha": "68e13f64e475eece2d7d7cf2e26597335a734129",
+  "upstream_pr": 230,
+  "upstream_pr_state": "MERGED",
   "upstream_exact_head": "dd3219b9d4b9e6112431014394a152ef2680e013",
+  "upstream_merge_commit": "68e13f64e475eece2d7d7cf2e26597335a734129",
   "github_issue": 231,
   "reviewed_r01_head": "45be726630dafd484c99c7461d3536d81fefb1b3",
   "runtime": {
@@ -77,6 +80,13 @@
   "totals": {
     "passed": 592,
     "failed": 0
+  },
+  "current_main_compatibility": {
+    "main_sha": "68e13f64e475eece2d7d7cf2e26597335a734129",
+    "result": "PASS",
+    "patched_tree_passed": 592,
+    "patched_tree_failed": 0,
+    "pr_diff_scope": "PRODUCT_AUTHORITY_NAMESPACE_ACCESS_AND_POINTER_MIGRATION_ONLY"
   },
   "authority_profile_acceptance": {
     "profile_frozen_at_construction": "PASS",
@@ -152,9 +162,12 @@
     "synthetic_fixture_migrations": 0,
     "Linear_writes": 0,
     "PR230_state_during_sync": "DRAFT",
+    "PR230_state_after_retarget": "MERGED",
     "PR230_state_changes_by_product_sync": 0,
     "stack_sync_merge_commit": 1,
-    "github_pr_merge_actions": 0
+    "PR235_base_ref": "main",
+    "PR235_state": "DRAFT",
+    "PR235_merge_actions": 0
   },
   "commands": [
     "uv run --locked python -m py_compile <changed Python modules>",
@@ -170,6 +183,7 @@
     "uv run --locked pytest -q work/ccz57_m3_b07_local_recovery_stop_r01/test_b07_local_recovery.py",
     "uv run --locked pytest -q work/ccz57_m3_b08_segment_terminal_r01/test_b08_segment_terminal.py",
     "uv run --locked pytest -q work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py",
-    "uv run --locked python work/ccz142_product_candidate_authority_r01/self_check.py"
+    "uv run --locked python work/ccz142_product_candidate_authority_r01/self_check.py",
+    "apply exact PR #235 product diff to temporary main@68e13f64e475eece2d7d7cf2e26597335a734129 worktree and repeat all suites"
   ]
 }

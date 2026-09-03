@@ -14,7 +14,7 @@ R02 把产品迁移绑到四个同时成立的条件：项目、随库持久化�
 
 普通 B01 `FixtureStore` 和普通 `B06CommitStore` 均会在创建第二份产品存储前拒绝产品 profile。这两道门由真实构造探针验收，不再在回执里直接写死 writer 数量。
 
-叠加基线已同步到 PR #230 R03 head `dd3219b9d4b9e6112431014394a152ef2680e013`。产品 profile、稳定 store ID 与 `r02-candidate` schema 身份同时生效；上游 root authority 序列锁、旧数据迁移原子门和逐表完整 schema 结构校验没有被产品接线绕过。
+上游 PR #230 R03 head `dd3219b9d4b9e6112431014394a152ef2680e013` 已通过 merge commit `68e13f64e475eece2d7d7cf2e26597335a734129` 进入 main，PR #235 的 base 已重定向到该 main。产品 profile、稳定 store ID 与 `r02-candidate` schema 身份同时生效；上游 root authority 序列锁、旧数据迁移原子门和逐表完整 schema 结构校验没有被产品接线绕过。
 
 本轮的 B02～B05 对象来自现有合成 publisher，用来验证它们能不能完整绑定产品 CandidateVersion；它们自己的 `POLICY_FIXTURE_READ_ONLY` 输出身份没有在本票里晋升。产品化的是 CandidateVersion、pointer 和唯一 authority store，不把测试侧车原件偷换成产品原件。
 
@@ -53,6 +53,6 @@ DISCOVERED
 
 ## 当前身份
 
-这是 Issue #231 的 Draft R02 工程候选，堆叠在 PR #230 精确 head 上。本轮按独立组件入口通过 592 项。测试通过也不等于已经进入 `main`、转 Ready、合并或接入正式事实。
+这是 Issue #231 的 Draft R02 工程候选，当前 base 是 `main@68e13f64e475eece2d7d7cf2e26597335a734129`。把产品差异叠到这份新 main 后，按独立组件入口通过 592 项。测试通过也不等于 PR #235 已经转 Ready、合并或接入正式事实。
 
 来源：Codex
