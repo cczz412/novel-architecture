@@ -1,5 +1,5 @@
 {
-  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R02",
+  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R03",
   "status": "DRAFT_ENGINEERING_CANDIDATE_NOT_PRODUCT_ADOPTION",
   "github_issue": 227,
   "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
@@ -65,7 +65,20 @@
   "authority_schema": {
     "identity": "r02-candidate",
     "exact_identity_required_on_reopen": true,
-    "source_identity_unique": true
+    "exact_table_layout_required_on_reopen": true,
+    "column_properties_frozen": [
+      "type",
+      "not_null",
+      "default_value",
+      "primary_key_position"
+    ],
+    "unique_index_properties_frozen": [
+      "origin",
+      "partial",
+      "columns"
+    ],
+    "source_identity_unique": true,
+    "malformed_schema_policy": "fail_closed_before_candidate_data_access"
   },
   "forbidden_product_path": {
     "B01 state.json": true,
@@ -83,7 +96,7 @@
     "candidate_contract": "r03.5-candidate",
     "pointer_namespace": "FIXTURE_ONLY",
     "product_namespace_adopted": false,
-    "meaning": "R01 proves single-store wiring under current B01/B06 candidate contracts; product namespace needs a separately approved contract migration"
+    "meaning": "This candidate proves single-store wiring under current B01/B06 candidate contracts; product namespace needs a separately approved contract migration"
   },
   "external_calls": {
     "model_api": 0,

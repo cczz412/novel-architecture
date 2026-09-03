@@ -1,10 +1,10 @@
 {
   "document_identity": "CCZ142-PRODUCT-CANDIDATE-AUTHORITY-R02-TEST-RECEIPT",
-  "validated_at": "2026-09-03T10:19:55+08:00",
+  "validated_at": "2026-09-03T10:48:51+08:00",
   "result": "PASS",
   "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
   "upstream_draft_pr": 230,
-  "upstream_exact_head": "7d449fa3e79d28ffdea20683ec0ab7621bed4056",
+  "upstream_exact_head": "dd3219b9d4b9e6112431014394a152ef2680e013",
   "github_issue": 231,
   "reviewed_r01_head": "45be726630dafd484c99c7461d3536d81fefb1b3",
   "runtime": {
@@ -25,7 +25,7 @@
     },
     {
       "suite": "ccz142_candidate_authority_r01",
-      "passed": 35,
+      "passed": 43,
       "failed": 0
     },
     {
@@ -75,7 +75,7 @@
     }
   ],
   "totals": {
-    "passed": 584,
+    "passed": 592,
     "failed": 0
   },
   "authority_profile_acceptance": {
@@ -85,6 +85,7 @@
     "authority_store_id_persisted_across_reopen": true,
     "storage_locator_bound_to_project_and_database_path": true,
     "authority_schema_identity": "r02-candidate",
+    "authority_schema_full_layout_guard": "PASS",
     "root_authority_lock_held_through_commit": true,
     "plain_B01_product_profile": "REJECTED_BEFORE_STORAGE",
     "plain_B06_product_profile": "REJECTED_BEFORE_STORAGE",

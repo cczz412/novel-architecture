@@ -1,6 +1,8 @@
 {
   "identity": {
     "authority_identity": "PRODUCT_CANDIDATE_AUTHORITY",
+    "authority_schema_identity": "r02-candidate",
+    "authority_schema_full_layout_guard": true,
     "candidate_contract_version": "r04-product-candidate",
     "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
     "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",

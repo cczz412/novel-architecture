@@ -1,4 +1,4 @@
-"""Deterministic zero-API self-check for CCZ-142 candidate authority R01."""
+"""Deterministic zero-API self-check for CCZ-142 candidate authority R03."""
 
 from __future__ import annotations
 
@@ -9,7 +9,12 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from candidate_authority import AUTHORITY_SCHEMA_ID, CandidateRootInitializer
+from candidate_authority import (
+    AUTHORITY_SCHEMA_ID,
+    AUTHORITY_TABLE_LAYOUTS,
+    AUTHORITY_UNIQUE_INDEXES,
+    CandidateRootInitializer,
+)
 from shadow_fixtures import build_full_shadow
 
 ROOT = Path(__file__).resolve().parent
@@ -84,7 +89,7 @@ def run_self_check() -> dict[str, Any]:
     if first["pointer_namespace"] != "FIXTURE_ONLY":
         raise AssertionError("CURRENT_CONTRACT_NAMESPACE_DRIFT")
     return {
-        "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R02-SELF-CHECK",
+        "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R03-SELF-CHECK",
         "result": "PASS",
         "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
         "full_shadow": first,
@@ -110,7 +115,18 @@ def run_self_check() -> dict[str, Any]:
             "pointer_row_identity_bound": True,
             "b01_root_and_migration_receipt_one_transaction": True,
         },
-        "authority_schema": AUTHORITY_SCHEMA_ID.decode("utf-8"),
+        "authority_schema": {
+            "identity": AUTHORITY_SCHEMA_ID.decode("utf-8"),
+            "table_layouts_frozen": len(AUTHORITY_TABLE_LAYOUTS),
+            "unique_index_sets_frozen": len(AUTHORITY_UNIQUE_INDEXES),
+            "column_properties": [
+                "type",
+                "not_null",
+                "default_value",
+                "primary_key_position",
+            ],
+            "unique_index_properties": ["origin", "partial", "columns"],
+        },
         "external_calls": {
             "model_api_calls": 0,
             "network_api_calls": 0,

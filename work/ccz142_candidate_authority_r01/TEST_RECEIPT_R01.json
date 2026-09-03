@@ -1,6 +1,6 @@
 {
-  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R02-TEST-RECEIPT",
-  "validated_at": "2026-09-03T10:18:25+08:00",
+  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R03-TEST-RECEIPT",
+  "validated_at": "2026-09-03T10:43:29+08:00",
   "result": "PASS_WITH_PRODUCT_NAMESPACE_BLOCKER",
   "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
   "github_issue": 227,
@@ -16,7 +16,7 @@
   "test_suites": [
     {
       "suite": "ccz142_candidate_authority_r01",
-      "passed": 35,
+      "passed": 43,
       "failed": 0
     },
     {
@@ -66,13 +66,13 @@
     }
   ],
   "totals": {
-    "passed": 558,
+    "passed": 566,
     "failed": 0
   },
   "current_main_compatibility": {
     "main_sha": "c2ae148f6dd6ee1731b8c936662b017ba7fcf73c",
     "result": "PASS",
-    "patched_tree_passed": 558,
+    "patched_tree_passed": 566,
     "patched_tree_failed": 0,
     "candidate_authority_or_B01_to_B08_failures": 0
   },
@@ -119,6 +119,14 @@
   "authority_schema": {
     "identity": "r02-candidate",
     "wrong_identity_reopen": "FAIL_CLOSED_BEFORE_READ",
+    "full_table_layout_reopen": "PASS",
+    "missing_pointer_primary_key": "FAIL_CLOSED_BEFORE_DATA_ACCESS",
+    "missing_candidate_primary_key": "FAIL_CLOSED_BEFORE_DATA_ACCESS",
+    "missing_receipt_composite_primary_key": "FAIL_CLOSED_BEFORE_DATA_ACCESS",
+    "missing_root_operation_unique_index": "FAIL_CLOSED_BEFORE_DATA_ACCESS",
+    "wrong_column_type": "FAIL_CLOSED_BEFORE_DATA_ACCESS",
+    "missing_not_null": "FAIL_CLOSED_BEFORE_DATA_ACCESS",
+    "unexpected_default": "FAIL_CLOSED_BEFORE_DATA_ACCESS",
     "migration_source_identity_unique": true
   },
   "scope_assertions": {
