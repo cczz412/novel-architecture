@@ -86,6 +86,18 @@ C9 request 的 `source_needs` 必须逐项等于任务单 `c9_source_needs`。�
 
 没有受信版本证明时，来源结果只能写 `UNTRACKED` 或 `UNAVAILABLE`。禁止补默认 revision，也不能把未知写成空值。
 
+### CCZ-139 已查无匹配时怎样留证
+
+CCZ-139 可能已经通过 `LEDGER_READ_TOOL_CONTRACT` 打开事实来源，但本次精确范围返回 `EMPTY + NO_MATCHING_ENTRIES`。这时任务单必须保持 `selected_fact_refs=[]`，也不能为不存在的事实新增 C9 need。
+
+薄卡要把这次受信读取本身登记成 `TASK_SOURCE_RESULT` 版本证明。它必须回指任务单 `source_id`、reader `request_id`、完整响应 SHA、读取 basis 和回执里的 storage generation。它的 `revision_ref` 表示不可变读取结果，不是事实修订号。
+
+只有任务单来源清单与 reader response 在合同版本、事实切片工具、精确空范围、状态、原因、对象、文档 SHA、basis、零业务条目和未截断标记上全部一致，才允许生成这条证明。对应 `source_results` 固定为 `NO_MATCH + NO_MATCHING_ENTRIES`。
+
+`TASK_SOURCE_RESULT` 证明的是“已经按这个范围查过，但没有匹配项”。它不是事实对象、C9 need 或 owner 自报版本。它已经覆盖 `FACT_EXPRESSION` 的来源身份后，编译器不得再补 `VERSION-FACT-EXPRESSION`，更不能把这次结果写成 `PRESENT`。
+
+同一次薄卡编译仍只允许一个 storage generation。有受信任务级 `NO_MATCH` 时，本次版本清单使用 reader 回执里的 generation；多个受信空结果的 generation 不一致时直接拒绝。
+
 ## 6. 常驻层
 
 `resident_layer` 只允许：
@@ -136,6 +148,8 @@ C9 request 的 `source_needs` 必须逐项等于任务单 `c9_source_needs`。�
 | `DAMAGED` | 内容、摘要、清单或来源绑定损坏 |
 
 `PRESENT／EMPTY／NO_MATCH` 必须带已披露版本引用。`UNTRACKED／UNAVAILABLE` 只能明确写身份不可用。`UNAUTHORIZED` 只能使用 `MASKED`，不能夹带任何可推断对象存在的引用。
+
+`NO_MATCH` 披露的版本可以是 `C9_NEED` 对应结果，也可以是上面定义的 `TASK_SOURCE_RESULT`。后者披露的是读取结果身份，不得伪装成不存在的事实身份。
 
 八种结果不能互相降级。完全授权只减少权限停点，不扩大默认读取量，也不取消不泄露规则。
 
@@ -227,6 +241,7 @@ SHA 只证明当前对象自洽，不能替代 current 与权限准入。
 - 三种快照和五类版本没有混用；
 - 常驻项、按需项和 C9 disposition 对齐；
 - 来源结果和权限遮蔽；
+- CCZ-139 受信 `NO_MATCH` 没有丢失、改写或补成假事实；
 - 规范化、SHA、UTF-8 bytes 与机械降级；
 - 准入回执不修改旧卡；
 - 成功薄卡和失败回执互斥。

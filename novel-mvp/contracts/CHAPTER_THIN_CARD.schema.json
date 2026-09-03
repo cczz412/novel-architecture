@@ -156,7 +156,9 @@
       "properties": {
         "version_ref": {"$ref": "#/$defs/stable_ref"},
         "material_role": {"$ref": "#/$defs/material_role"},
-        "binding_kind": {"enum": ["C9_NEED", "OWNER_PROOF"]},
+        "binding_kind": {
+          "enum": ["C9_NEED", "OWNER_PROOF", "TASK_SOURCE_RESULT"]
+        },
         "binding_ref": {"$ref": "#/$defs/stable_ref"},
         "source_contract": {"type": "string", "minLength": 1},
         "source_contract_version": {"type": "string", "minLength": 1},

@@ -30,6 +30,10 @@ STRUCTURAL_VALID = "STRUCTURAL_VALID"
 STRUCTURAL_INVALID = "STRUCTURAL_INVALID"
 MAX_PAYLOAD_BYTES = 262_144
 FIXED_TIME = "2026-09-03T00:00:00Z"
+DEFAULT_STORAGE_GENERATION = "STORAGE-GENERATION-0001"
+TASK_FACT_NO_MATCH_EMPTY_SCOPE = (
+    "current_confirmed_facts_for_selected_chapter_revision"
+)
 RECIPE_KEYS = {"artifact", "base", "case_id", "expected_result", "mutation"}
 REQUIRED_MATERIAL_ROLES = {
     "SOURCE_TEXT",
@@ -56,7 +60,7 @@ BUILD_POLICY = {
     "byte_limit_policy_version": "chapter-thin-card-byte-limit-v1",
     "max_payload_bytes": MAX_PAYLOAD_BYTES,
 }
-EXPECTED_COUNTS = {STRUCTURAL_VALID: 18, STRUCTURAL_INVALID: 47}
+EXPECTED_COUNTS = {STRUCTURAL_VALID: 18, STRUCTURAL_INVALID: 50}
 EXPECTED_ERROR_CODES = {
     "admission_card_ref": "ADMISSION_CARD_REF_MISMATCH",
     "admission_hash": "ADMISSION_RECEIPT_SHA256_MISMATCH",
@@ -98,6 +102,11 @@ EXPECTED_ERROR_CODES = {
     "success_when_c9_stopped": "SUCCESS_CARD_FOR_FAILED_BUILD",
     "success_when_unsupported": "SUCCESS_CARD_FOR_FAILED_BUILD",
     "task_c9_needs_mismatch": "TASK_C9_SOURCE_NEEDS_MISMATCH",
+    "task_no_match_source_result_missing": "TASK_NO_MATCH_SOURCE_RESULT_REQUIRED",
+    "task_no_match_source_result_mismatch": "TASK_NO_MATCH_SOURCE_RESULT_MISMATCH",
+    "task_no_match_version_binding_mismatch": (
+        "TASK_NO_MATCH_VERSION_BINDING_MISMATCH"
+    ),
     "thin_card_current_field": "SCHEMA_INVALID",
     "unauthorized_disclosed": "SOURCE_RESULT_DISCLOSURE_INVALID",
     "uncommitted_as_committed": "SCHEMA_INVALID",
@@ -398,6 +407,7 @@ def _owner_version(
     role: str,
     *,
     actuality: str | None = None,
+    storage_generation: str = DEFAULT_STORAGE_GENERATION,
 ) -> dict[str, Any]:
     object_ref = f"OWNER-OBJECT-{version_ref}"
     revision_ref = f"REVISION-{version_ref}"
@@ -425,14 +435,95 @@ def _owner_version(
         "content_sha256": sha256_json({"object_ref": object_ref, "revision": revision_ref}),
         "basis_mode": "current_at_start",
         "basis_sha256": sha256_json({"basis": version_ref}),
-        "storage_generation": "STORAGE-GENERATION-0001",
+        "storage_generation": storage_generation,
         "actuality_class": actuality or _role_actuality(role),
     }
 
 
+def _task_no_match_evidence(
+    task_bundle: dict[str, Any],
+) -> list[tuple[dict[str, Any], dict[str, Any]]]:
+    task = task_bundle["task"]
+    response_map = {
+        row["request_id"]: row for row in task_bundle["ledger_responses"]
+    }
+    evidence: list[tuple[dict[str, Any], dict[str, Any]]] = []
+    for source in task["source_manifest"]:
+        if not (
+            source["source_contract"] == "LEDGER_READ_TOOL_CONTRACT"
+            and source["access_state"] == "OPENED_EMPTY"
+            and source["source_status"] == "EMPTY"
+            and source["reason_code"] == "NO_MATCHING_ENTRIES"
+        ):
+            continue
+        response = response_map.get(source["object_ref"])
+        if response is None or not (
+            response["contract"] == "LEDGER_READ_RESPONSE"
+            and response["version"] == source["source_contract_version"]
+            and response["request_id"] == source["object_ref"]
+            and response["tool"] == "get_chapter_evidence_slice"
+            and response["status"] == source["source_status"]
+            and response["reason_code"] == source["reason_code"]
+            and response["basis_mode"] == source["basis_mode"]
+            and response["receipt"]["tool_contract_version"]
+            == source["source_contract_version"]
+            and response["receipt"]["basis_sha256"] == source["basis_sha256"]
+            and sha256_json(response) == source["source_document_sha256"]
+            and response["data"] is None
+            and response["empty_scope"] == TASK_FACT_NO_MATCH_EMPTY_SCOPE
+            and response["limits"]["business_items"] == 0
+            and response["limits"]["truncated"] is False
+        ):
+            _fail("TASK_NO_MATCH_VERSION_BINDING_MISMATCH")
+        evidence.append((source, response))
+    return sorted(evidence, key=lambda pair: pair[0]["source_id"])
+
+
+def _task_no_match_generation(
+    evidence: list[tuple[dict[str, Any], dict[str, Any]]],
+) -> str:
+    generations = {
+        response["receipt"]["storage_generation"] for _, response in evidence
+    }
+    if len(generations) > 1:
+        _fail("TASK_SOURCE_RESULT_GENERATION_MIXED")
+    return next(iter(generations), DEFAULT_STORAGE_GENERATION)
+
+
+def _task_no_match_version(
+    source: dict[str, Any],
+    response: dict[str, Any],
+    storage_generation: str,
+) -> dict[str, Any]:
+    document_sha256 = source["source_document_sha256"]
+    return {
+        "version_ref": (
+            f"VERSION-TASK-SOURCE:{source['source_id']}@{document_sha256}"
+        ),
+        "material_role": "FACT_EXPRESSION",
+        "binding_kind": "TASK_SOURCE_RESULT",
+        "binding_ref": source["source_id"],
+        "source_contract": source["source_contract"],
+        "source_contract_version": source["source_contract_version"],
+        "object_ref": response["request_id"],
+        "revision_ref": (
+            f"READ-RESULT:{response['request_id']}@{document_sha256}"
+        ),
+        "content_sha256": document_sha256,
+        "basis_mode": source["basis_mode"],
+        "basis_sha256": source["basis_sha256"],
+        "storage_generation": storage_generation,
+        "actuality_class": "FACT_EXPRESSION",
+    }
+
+
 def _version_proofs(
-    request: dict[str, Any], result: dict[str, Any]
+    task_bundle: dict[str, Any],
+    request: dict[str, Any],
+    result: dict[str, Any],
 ) -> list[dict[str, Any]]:
+    task_no_match_evidence = _task_no_match_evidence(task_bundle)
+    storage_generation = _task_no_match_generation(task_no_match_evidence)
     need_map = {row["need_id"]: row for row in request["source_needs"]}
     proofs: list[dict[str, Any]] = []
     for item in _all_c9_items(result):
@@ -455,20 +546,37 @@ def _version_proofs(
                 "content_sha256": binding["source_object_sha256"],
                 "basis_mode": binding["basis_mode"],
                 "basis_sha256": binding["basis_sha256"],
-                "storage_generation": "STORAGE-GENERATION-0001",
+                "storage_generation": storage_generation,
                 "actuality_class": _role_actuality(role),
             }
         )
 
     proofs.extend(
+        _task_no_match_version(source, response, storage_generation)
+        for source, response in task_no_match_evidence
+    )
+    proofs.extend(
         [
-            _owner_version("VERSION-CHAR-CURRENT", "FORMAL_LEDGER_STATE"),
-            _owner_version("VERSION-CHAR-STORY", "FORMAL_LEDGER_STATE"),
-            _owner_version("VERSION-CHAPTER-TARGET", "CHAPTER_TARGET"),
+            _owner_version(
+                "VERSION-CHAR-CURRENT",
+                "FORMAL_LEDGER_STATE",
+                storage_generation=storage_generation,
+            ),
+            _owner_version(
+                "VERSION-CHAR-STORY",
+                "FORMAL_LEDGER_STATE",
+                storage_generation=storage_generation,
+            ),
+            _owner_version(
+                "VERSION-CHAPTER-TARGET",
+                "CHAPTER_TARGET",
+                storage_generation=storage_generation,
+            ),
             _owner_version(
                 "VERSION-WORKSPACE-DELTA",
                 "CHAPTER_TARGET",
                 actuality="UNCOMMITTED_WORKSPACE",
+                storage_generation=storage_generation,
             ),
         ]
     )
@@ -481,7 +589,13 @@ def _version_proofs(
     }
     existing_roles = {row["material_role"] for row in proofs}
     for role in sorted(REQUIRED_MATERIAL_ROLES - existing_roles):
-        proofs.append(_owner_version(role_fallbacks[role], role))
+        proofs.append(
+            _owner_version(
+                role_fallbacks[role],
+                role,
+                storage_generation=storage_generation,
+            )
+        )
     return sorted(proofs, key=lambda row: row["version_ref"])
 
 
@@ -514,6 +628,7 @@ def _source_state(outcome: dict[str, Any]) -> tuple[str, str]:
 
 
 def _source_results(
+    task_bundle: dict[str, Any],
     request: dict[str, Any],
     outcomes: list[dict[str, Any]],
     proofs: list[dict[str, Any]],
@@ -555,6 +670,29 @@ def _source_results(
                 "state": state,
                 "reason_code": reason,
                 "identity_disclosure": disclosure,
+            }
+        )
+    task_proof_by_source = {
+        row["binding_ref"]: row
+        for row in proofs
+        if row["binding_kind"] == "TASK_SOURCE_RESULT"
+    }
+    for source, _ in _task_no_match_evidence(task_bundle):
+        proof = task_proof_by_source.get(source["source_id"])
+        if proof is None:
+            _fail("TASK_NO_MATCH_VERSION_BINDING_MISMATCH")
+        version_ref = proof["version_ref"]
+        seen_versions.add(version_ref)
+        result_rows.append(
+            {
+                "result_id": f"RESULT-{version_ref}",
+                "material_role": "FACT_EXPRESSION",
+                "state": "NO_MATCH",
+                "reason_code": "NO_MATCHING_ENTRIES",
+                "identity_disclosure": {
+                    "mode": "DISCLOSED",
+                    "version_ref": version_ref,
+                },
             }
         )
     for proof in proofs:
@@ -851,6 +989,7 @@ def _build_card_or_failure(bundle: dict[str, Any]) -> dict[str, Any]:
         )
 
     source_results = _source_results(
+        bundle["task_bundle"],
         bundle["c9_request"],
         bundle["c9_outcomes"],
         proofs,
@@ -1245,6 +1384,7 @@ def _task_base_for_scenario(scenario: str) -> str:
         "mainline_bridge": "mainline_bridge",
         "first_chapter": "first_chapter",
         "optional_gap": "optional_gap",
+        "no_match": "previous_empty",
         "directory_only": "summary_directory",
         "admission_gap": "optional_gap",
     }.get(scenario, "continue")
@@ -1264,7 +1404,7 @@ def _base_bundle(scenario: str, artifact_kind: str) -> dict[str, Any]:
         "c9_outcomes": outcomes,
         "c9_registry": registry,
     }
-    bundle["version_proofs"] = _version_proofs(request, result)
+    bundle["version_proofs"] = _version_proofs(task_bundle, request, result)
     base_artifact = _build_card_or_failure(bundle)
     if artifact_kind == "CARD":
         bundle["artifact"] = base_artifact
@@ -1304,6 +1444,66 @@ def _validate_task_and_c9(bundle: dict[str, Any]) -> None:
         _fail("TASK_C9_SOURCE_NEEDS_MISMATCH")
     if request["scope"] != _c9_scope(task):
         _fail("C9_SCOPE_MISMATCH")
+    evidence = _task_no_match_evidence(bundle["task_bundle"])
+    storage_generation = _task_no_match_generation(evidence)
+    expected_task_proofs = sorted(
+        (
+            _task_no_match_version(source, response, storage_generation)
+            for source, response in evidence
+        ),
+        key=lambda row: row["version_ref"],
+    )
+    observed_task_proofs = sorted(
+        (
+            row
+            for row in bundle["version_proofs"]
+            if row["binding_kind"] == "TASK_SOURCE_RESULT"
+        ),
+        key=lambda row: row["version_ref"],
+    )
+    if observed_task_proofs != expected_task_proofs:
+        _fail("TASK_NO_MATCH_VERSION_BINDING_MISMATCH")
+
+
+def _validate_task_no_match_projection(
+    task_bundle: dict[str, Any], payload: dict[str, Any]
+) -> None:
+    evidence = _task_no_match_evidence(task_bundle)
+    storage_generation = _task_no_match_generation(evidence)
+    expected_proofs = [
+        _task_no_match_version(source, response, storage_generation)
+        for source, response in evidence
+    ]
+    observed_proofs = [
+        row
+        for row in payload["version_manifest"]
+        if row["binding_kind"] == "TASK_SOURCE_RESULT"
+    ]
+    if sorted(observed_proofs, key=lambda row: row["version_ref"]) != sorted(
+        expected_proofs, key=lambda row: row["version_ref"]
+    ):
+        _fail("TASK_NO_MATCH_VERSION_BINDING_MISMATCH")
+
+    result_map = {
+        row["result_id"]: row for row in payload["source_results"]
+    }
+    for proof in expected_proofs:
+        result_id = f"RESULT-{proof['version_ref']}"
+        observed = result_map.get(result_id)
+        if observed is None:
+            _fail("TASK_NO_MATCH_SOURCE_RESULT_REQUIRED")
+        expected = {
+            "result_id": result_id,
+            "material_role": "FACT_EXPRESSION",
+            "state": "NO_MATCH",
+            "reason_code": "NO_MATCHING_ENTRIES",
+            "identity_disclosure": {
+                "mode": "DISCLOSED",
+                "version_ref": proof["version_ref"],
+            },
+        }
+        if observed != expected:
+            _fail("TASK_NO_MATCH_SOURCE_RESULT_MISMATCH")
 
 
 def _validate_source_disclosures(
@@ -1350,6 +1550,7 @@ def _validate_card(
         "version_ref",
         "VERSION_REF_DUPLICATE",
     )
+    _validate_task_no_match_projection(bundle["task_bundle"], payload)
     if {row["material_role"] for row in payload["version_manifest"]} != (
         REQUIRED_MATERIAL_ROLES
     ):
@@ -1755,6 +1956,37 @@ def apply_mutation(bundle: dict[str, Any], mutation: str) -> dict[str, Any]:
         artifact["compiled_payload"]["version_manifest"][0][
             "storage_generation"
         ] = "STORAGE-GENERATION-9999"
+    elif mutation == "task_no_match_source_result_missing":
+        payload = artifact["compiled_payload"]
+        proof = next(
+            row
+            for row in payload["version_manifest"]
+            if row["binding_kind"] == "TASK_SOURCE_RESULT"
+        )
+        result_id = f"RESULT-{proof['version_ref']}"
+        payload["source_results"] = [
+            row for row in payload["source_results"] if row["result_id"] != result_id
+        ]
+    elif mutation == "task_no_match_source_result_mismatch":
+        payload = artifact["compiled_payload"]
+        proof = next(
+            row
+            for row in payload["version_manifest"]
+            if row["binding_kind"] == "TASK_SOURCE_RESULT"
+        )
+        result_id = f"RESULT-{proof['version_ref']}"
+        result = next(
+            row for row in payload["source_results"] if row["result_id"] == result_id
+        )
+        result["state"] = "EMPTY"
+        result["reason_code"] = "VALID_EMPTY_OBJECT"
+    elif mutation == "task_no_match_version_binding_mismatch":
+        proof = next(
+            row
+            for row in artifact["compiled_payload"]["version_manifest"]
+            if row["binding_kind"] == "TASK_SOURCE_RESULT"
+        )
+        proof["binding_kind"] = "OWNER_PROOF"
     elif mutation == "input_hash":
         artifact["input_basis_sha256"] = "0" * 64
     elif mutation == "payload_hash":

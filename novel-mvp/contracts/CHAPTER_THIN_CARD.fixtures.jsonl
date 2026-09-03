@@ -63,3 +63,6 @@
 {"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-45","expected_result":"STRUCTURAL_INVALID","mutation":"admission_wrong_expected_fingerprint"}
 {"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-46","expected_result":"STRUCTURAL_INVALID","mutation":"admission_match_fingerprint"}
 {"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-47","expected_result":"STRUCTURAL_INVALID","mutation":"admission_current_proof_shape"}
+{"artifact":"CARD","base":"no_match","case_id":"CTC-INVALID-48","expected_result":"STRUCTURAL_INVALID","mutation":"task_no_match_source_result_missing"}
+{"artifact":"CARD","base":"no_match","case_id":"CTC-INVALID-49","expected_result":"STRUCTURAL_INVALID","mutation":"task_no_match_source_result_mismatch"}
+{"artifact":"CARD","base":"no_match","case_id":"CTC-INVALID-50","expected_result":"STRUCTURAL_INVALID","mutation":"task_no_match_version_binding_mismatch"}

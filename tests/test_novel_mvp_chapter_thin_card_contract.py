@@ -51,11 +51,11 @@ def test_schema_and_fixture_inventory_are_frozen() -> None:
         "#/$defs/build_failure",
     ]
     cases = _cases()
-    assert len(cases) == 65
+    assert len(cases) == 68
     assert len({row["case_id"] for row in cases}) == len(cases)
     assert validator.validate_all_fixtures() == {
         validator.STRUCTURAL_VALID: 18,
-        validator.STRUCTURAL_INVALID: 47,
+        validator.STRUCTURAL_INVALID: 50,
     }
 
 
@@ -155,6 +155,143 @@ def test_empty_no_match_and_unavailable_remain_different_source_results() -> Non
         "optional_gap_codes": [],
         "masked_access": False,
     }
+
+
+def test_task_level_no_match_keeps_the_ccz139_read_result_without_a_fake_fact() -> None:
+    bundle = _bundle("CTC-VALID-08")
+    task = bundle["task_bundle"]["task"]
+    response = bundle["task_bundle"]["ledger_responses"][0]
+    source = next(
+        row
+        for row in task["source_manifest"]
+        if row["source_id"] == "SOURCE-FACT-READ"
+    )
+    payload = bundle["artifact"]["compiled_payload"]
+
+    assert task["selected_fact_refs"] == []
+    assert not any(
+        row["need_id"].startswith("NEED-FACT-")
+        for row in task["c9_source_needs"]
+    )
+    assert bundle["c9_request"]["source_needs"] == task["c9_source_needs"]
+    assert source["access_state"] == "OPENED_EMPTY"
+    assert source["source_status"] == response["status"] == "EMPTY"
+    assert source["reason_code"] == response["reason_code"] == (
+        "NO_MATCHING_ENTRIES"
+    )
+    assert response["data"] is None
+    assert response["tool"] == "get_chapter_evidence_slice"
+    assert response["empty_scope"] == validator.TASK_FACT_NO_MATCH_EMPTY_SCOPE
+    assert response["limits"]["business_items"] == 0
+    assert response["limits"]["truncated"] is False
+
+    task_proofs = [
+        row
+        for row in payload["version_manifest"]
+        if row["binding_kind"] == "TASK_SOURCE_RESULT"
+    ]
+    assert len(task_proofs) == 1
+    proof = task_proofs[0]
+    assert proof["binding_ref"] == source["source_id"]
+    assert proof["source_contract"] == source["source_contract"]
+    assert proof["source_contract_version"] == source["source_contract_version"]
+    assert proof["object_ref"] == response["request_id"]
+    assert proof["content_sha256"] == source["source_document_sha256"]
+    assert proof["basis_mode"] == source["basis_mode"]
+    assert proof["basis_sha256"] == source["basis_sha256"]
+    assert proof["storage_generation"] == response["receipt"][
+        "storage_generation"
+    ]
+    assert proof["actuality_class"] == "FACT_EXPRESSION"
+    assert not any(
+        row["material_role"] == "FACT_EXPRESSION"
+        and row["binding_kind"] == "OWNER_PROOF"
+        for row in payload["version_manifest"]
+    )
+
+    no_match_results = [
+        row for row in payload["source_results"] if row["state"] == "NO_MATCH"
+    ]
+    assert no_match_results == [
+        {
+            "result_id": f"RESULT-{proof['version_ref']}",
+            "material_role": "FACT_EXPRESSION",
+            "state": "NO_MATCH",
+            "reason_code": "NO_MATCHING_ENTRIES",
+            "identity_disclosure": {
+                "mode": "DISCLOSED",
+                "version_ref": proof["version_ref"],
+            },
+        }
+    ]
+    assert {row["storage_generation"] for row in payload["version_manifest"]} == {
+        response["receipt"]["storage_generation"]
+    }
+
+
+def test_task_level_no_match_rejects_missing_recast_or_fake_bindings() -> None:
+    expected = {
+        "CTC-INVALID-48": "TASK_NO_MATCH_SOURCE_RESULT_REQUIRED",
+        "CTC-INVALID-49": "TASK_NO_MATCH_SOURCE_RESULT_MISMATCH",
+        "CTC-INVALID-50": "TASK_NO_MATCH_VERSION_BINDING_MISMATCH",
+    }
+    assert {
+        case_id: validator.fixture_error_code(_case(case_id))
+        for case_id in expected
+    } == expected
+
+    bundle = _bundle("CTC-VALID-08")
+    proof = next(
+        row
+        for row in bundle["version_proofs"]
+        if row["binding_kind"] == "TASK_SOURCE_RESULT"
+    )
+    proof["binding_ref"] = "SOURCE-FAKE-READ"
+    with pytest.raises(
+        validator.ThinCardError,
+        match="^TASK_NO_MATCH_VERSION_BINDING_MISMATCH$",
+    ):
+        validator.validate_bundle(bundle)
+
+
+def test_existing_c9_need_no_match_path_remains_supported() -> None:
+    task_bundle = validator.task_validator.build_base_bundle("continue")
+    task = task_bundle["task"]
+    request, plan, result, outcomes, registry = validator._compile_c9(
+        task, "no_match"
+    )
+    bundle = {
+        "scenario": "c9_need_no_match",
+        "artifact_kind": "CARD",
+        "task_bundle": task_bundle,
+        "c9_request": request,
+        "c9_plan": plan,
+        "c9_result": result,
+        "c9_outcomes": outcomes,
+        "c9_registry": registry,
+    }
+    bundle["version_proofs"] = validator._version_proofs(
+        task_bundle, request, result
+    )
+    bundle["artifact"] = validator._build_card_or_failure(bundle)
+
+    assert validator.validate_bundle(bundle) == validator.STRUCTURAL_VALID
+    no_match = next(
+        row
+        for row in bundle["artifact"]["compiled_payload"]["source_results"]
+        if row["state"] == "NO_MATCH"
+    )
+    version_ref = no_match["identity_disclosure"]["version_ref"]
+    proof = next(
+        row
+        for row in bundle["version_proofs"]
+        if row["version_ref"] == version_ref
+    )
+    assert proof["binding_kind"] == "C9_NEED"
+    assert not any(
+        row["binding_kind"] == "TASK_SOURCE_RESULT"
+        for row in bundle["version_proofs"]
+    )
 
 
 def test_character_current_definition_and_story_time_slice_are_separate() -> None:
@@ -277,6 +414,7 @@ def test_contract_document_keeps_the_authorized_non_runtime_boundary() -> None:
         "不重做 CCZ-137 或 CCZ-139",
         "旧卡和旧摘要保持原样",
         "按需项不允许出现 `material_text`",
+        "TASK_SOURCE_RESULT",
         "来源：Codex",
     ):
         assert phrase in text
@@ -294,7 +432,7 @@ def test_cli_reports_synthetic_only_pass_receipt() -> None:
     assert receipt["status"] == "PASS"
     assert receipt["counts"] == {
         validator.STRUCTURAL_VALID: 18,
-        validator.STRUCTURAL_INVALID: 47,
+        validator.STRUCTURAL_INVALID: 50,
     }
     assert receipt["synthetic_c9_compilation_performed"] is True
     assert {
