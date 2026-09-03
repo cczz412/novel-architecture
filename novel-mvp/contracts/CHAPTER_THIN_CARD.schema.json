@@ -643,7 +643,8 @@
         "consumer_id": {"$ref": "#/$defs/stable_ref"},
         "checks": {
           "type": "array",
-          "minItems": 8,
+          "minItems": 9,
+          "maxItems": 9,
           "items": {"$ref": "#/$defs/admission_check"}
         },
         "status": {"enum": ["ADMITTED", "ADMITTED_WITH_GAPS", "STOPPED"]},

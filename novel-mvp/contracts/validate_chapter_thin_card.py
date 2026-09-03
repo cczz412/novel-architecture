@@ -38,6 +38,17 @@ REQUIRED_MATERIAL_ROLES = {
     "CHAPTER_TARGET",
     "DERIVED_ARTIFACT",
 }
+ADMISSION_CHECK_KINDS = {
+    "THIN_CARD_INTEGRITY",
+    "SCOPE_CURRENT",
+    "PERMISSION_CURRENT",
+    "FOCUS_CURRENT",
+    "RETRIEVAL_TASK_CURRENT",
+    "C9_RUN_CURRENT",
+    "SOURCE_VERSION_CURRENT",
+    "STORAGE_GENERATION_CURRENT",
+    "CONTRACT_SUPPORT_CURRENT",
+}
 BUILD_POLICY = {
     "compiler_version": "chapter-thin-card-compiler-v1",
     "summary_policy_version": "chapter-thin-card-summary-v1",
@@ -45,11 +56,15 @@ BUILD_POLICY = {
     "byte_limit_policy_version": "chapter-thin-card-byte-limit-v1",
     "max_payload_bytes": MAX_PAYLOAD_BYTES,
 }
-EXPECTED_COUNTS = {STRUCTURAL_VALID: 17, STRUCTURAL_INVALID: 42}
+EXPECTED_COUNTS = {STRUCTURAL_VALID: 18, STRUCTURAL_INVALID: 46}
 EXPECTED_ERROR_CODES = {
     "admission_card_ref": "ADMISSION_CARD_REF_MISMATCH",
     "admission_hash": "ADMISSION_RECEIPT_SHA256_MISMATCH",
+    "admission_duplicate_check_kind": "ADMISSION_CHECK_KIND_SET_INVALID",
     "admission_mask_leak": "ADMISSION_MASK_LEAK",
+    "admission_match_fingerprint": "ADMISSION_MATCH_FINGERPRINT_MISMATCH",
+    "admission_missing_check": "SCHEMA_INVALID",
+    "admission_wrong_expected_fingerprint": "ADMISSION_EXPECTED_FINGERPRINT_MISMATCH",
     "admission_status": "ADMISSION_STATUS_MISMATCH",
     "byte_count": "PAYLOAD_BYTE_COUNT_MISMATCH",
     "c9_run_ref": "C9_RUN_REF_MISMATCH",
@@ -286,6 +301,12 @@ def _make_c9_outcomes(
             status="ERROR",
             reason_code="SOURCE_CORRUPTED",
         )
+    elif scenario == "hard_missing_failure" and fact_index is not None:
+        outcomes[fact_index] = c9_fixture_validator._outcome(
+            request["source_needs"][fact_index],
+            basis_mode=request["basis_mode"],
+            status="NOT_ATTEMPTED",
+        )
     return outcomes
 
 
@@ -469,6 +490,10 @@ def _source_state(outcome: dict[str, Any]) -> tuple[str, str]:
         return "NO_MATCH", reason
     if status == "EMPTY":
         return "EMPTY", reason or "VALID_EMPTY_OBJECT"
+    if reason == "UNTRACKED":
+        return "UNTRACKED", reason
+    if reason == "UNSUPPORTED_VERSION":
+        return "UNSUPPORTED_VERSION", reason
     if status == "NOT_ATTEMPTED":
         return "UNAVAILABLE", reason or "OWNER_RUNTIME_NOT_AVAILABLE"
     if reason == "UNAUTHORIZED":
@@ -715,9 +740,10 @@ def _gap_summary(
         optional.append(task["reason_code"])
     package = result["material_package"]
     for item in package["omitted"]:
-        optional.append(item["reason"])
+        if item["obligation_tier"] in {"SHOULD", "MAY"}:
+            optional.append(item["reason"])
     for item in package["outstanding"]:
-        if not item["fatal"]:
+        if not item["fatal"] and item["obligation_tier"] in {"SHOULD", "MAY"}:
             optional.append(item["reason_code"])
     return {
         "hard_gap_codes": [],
@@ -755,6 +781,8 @@ def _build_failure(
         "UNSUPPORTED_VERSION": ("RECOMPILE_AFTER_RULE_SUPPORT", True),
         "SOURCE_DAMAGED": ("RETRY_AFTER_SOURCE_CHANGE", True),
         "SOURCE_CORRUPTED": ("RETRY_AFTER_SOURCE_CHANGE", True),
+        "REQUIRED_SOURCE_UNAVAILABLE": ("RETRY_AFTER_SOURCE_CHANGE", True),
+        "REQUIRED_SOURCE_UNTRACKED": ("RETRY_AFTER_SOURCE_CHANGE", True),
         "REQUIRED_RESIDENT_CONTENT_TOO_LARGE": ("REDUCE_REQUIRED_INPUT", True),
     }.get(reason_code, ("NOT_RETRYABLE_WITH_CURRENT_SCOPE", False))
     failure = {
@@ -820,6 +848,27 @@ def _build_card_or_failure(bundle: dict[str, Any]) -> dict[str, Any]:
         proofs,
         task_has_optional_gap=task["status"] == "READY_WITH_GAPS",
     )
+    outcomes_by_need = _raw_outcome_map(bundle)
+    for need in bundle["c9_request"]["source_needs"]:
+        if need["obligation_tier"] != "HARD":
+            continue
+        state, _ = _source_state(outcomes_by_need[need["need_id"]])
+        if state in {"PRESENT", "EMPTY", "NO_MATCH"}:
+            continue
+        reason_code = {
+            "UNTRACKED": "REQUIRED_SOURCE_UNTRACKED",
+            "UNAVAILABLE": "REQUIRED_SOURCE_UNAVAILABLE",
+            "UNAUTHORIZED": "UNAUTHORIZED",
+            "UNSUPPORTED_VERSION": "UNSUPPORTED_VERSION",
+            "DAMAGED": "SOURCE_DAMAGED",
+        }[state]
+        return _build_failure(
+            task,
+            result,
+            proofs,
+            stage="SOURCE",
+            reason_code=reason_code,
+        )
     resident = [
         _resident_item(task, item, proofs, source_results)
         for item in result["material_package"]["loaded"]
@@ -1043,6 +1092,83 @@ def _current_proofs(card: dict[str, Any], scenario: str) -> list[dict[str, Any]]
         checks[2]["observed_state"] = "REVOKED"
         checks[2]["disclosure"] = {"mode": "MASKED"}
     return checks
+
+
+def _expected_admission_fingerprints(
+    card: dict[str, Any],
+) -> dict[str, tuple[str, str]]:
+    payload = card["compiled_payload"]
+    scope = card["scope_projection"]
+    generations = sorted(
+        {row["storage_generation"] for row in payload["version_manifest"]}
+    )
+    return {
+        "THIN_CARD_INTEGRITY": (
+            card["thin_card_id"],
+            card["thin_card_sha256"],
+        ),
+        "SCOPE_CURRENT": (scope["scope_id"], scope["scope_basis_sha256"]),
+        "PERMISSION_CURRENT": (
+            "PERMISSION-SNAPSHOT-0001",
+            scope["permission_snapshot_sha256"],
+        ),
+        "FOCUS_CURRENT": (
+            "FOCUS-SNAPSHOT-0001",
+            scope["effective_focus_sha256"],
+        ),
+        "RETRIEVAL_TASK_CURRENT": (
+            card["retrieval_task_ref"]["retrieval_task_id"],
+            card["retrieval_task_ref"]["task_basis_sha256"],
+        ),
+        "C9_RUN_CURRENT": ("C9-RUN-0001", card["c9_run_ref"]["run_sha256"]),
+        "SOURCE_VERSION_CURRENT": (
+            "SOURCE-VERSION-MANIFEST-0001",
+            sha256_json(payload["version_manifest"]),
+        ),
+        "STORAGE_GENERATION_CURRENT": (
+            generations[0],
+            sha256_json(generations),
+        ),
+        "CONTRACT_SUPPORT_CURRENT": (
+            "THIN-CARD-CONTRACT-SUPPORT-0001",
+            sha256_json(card["build_policy"]),
+        ),
+    }
+
+
+def _validate_current_proofs(
+    card: dict[str, Any], checks: list[dict[str, Any]]
+) -> None:
+    kinds = [row["check_kind"] for row in checks]
+    if len(kinds) != len(ADMISSION_CHECK_KINDS) or set(kinds) != (
+        ADMISSION_CHECK_KINDS
+    ):
+        _fail("ADMISSION_CHECK_KIND_SET_INVALID")
+    expected = _expected_admission_fingerprints(card)
+    for check in checks:
+        state = check["observed_state"]
+        disclosure = check["disclosure"]
+        mode = disclosure["mode"]
+        if state in {"REVOKED", "UNAUTHORIZED"}:
+            if mode != "MASKED":
+                _fail("ADMISSION_MASK_LEAK")
+            continue
+        if state == "UNAVAILABLE":
+            if mode != "NOT_AVAILABLE":
+                _fail("ADMISSION_UNAVAILABLE_DISCLOSURE_INVALID")
+            continue
+        if mode != "DISCLOSED":
+            _fail("ADMISSION_DISCLOSURE_REQUIRED")
+        subject_ref, expected_sha = expected[check["check_kind"]]
+        if (
+            disclosure["subject_ref"] != subject_ref
+            or disclosure["expected_sha256"] != expected_sha
+        ):
+            _fail("ADMISSION_EXPECTED_FINGERPRINT_MISMATCH")
+        if state == "MATCH" and disclosure["observed_sha256"] != expected_sha:
+            _fail("ADMISSION_MATCH_FINGERPRINT_MISMATCH")
+        if state == "ADVANCED" and disclosure["observed_sha256"] == expected_sha:
+            _fail("ADMISSION_ADVANCED_FINGERPRINT_MISMATCH")
 
 
 def _admission_reason(state: str) -> str:
@@ -1356,6 +1482,7 @@ def _validate_admission(
     }:
         _fail("ADMISSION_CARD_REF_MISMATCH")
     _unique_map(receipt["checks"], "check_id", "ADMISSION_CHECK_ID_DUPLICATE")
+    _validate_current_proofs(card, receipt["checks"])
     _validate_admission_disclosures(receipt["checks"])
     if receipt["checks"] != expected["checks"]:
         _fail("ADMISSION_CHECK_MISMATCH")
@@ -1439,6 +1566,7 @@ def validate_bundle(bundle: Any) -> str:
         if expected_card["contract"] != "CHAPTER_THIN_CARD":
             _fail("ADMISSION_REQUIRES_SUCCESS_CARD")
         _validate_card(card, expected_card, bundle)
+        _validate_current_proofs(card, checks)
         expected_receipt = _build_admission(card, checks)
         return _validate_admission(artifact, expected_receipt, card)
     _fail("ARTIFACT_CONTRACT_INVALID")
@@ -1632,6 +1760,24 @@ def apply_mutation(bundle: dict[str, Any], mutation: str) -> dict[str, Any]:
         }
     elif mutation == "admission_hash":
         artifact["admission_receipt_sha256"] = "0" * 64
+    elif mutation == "admission_missing_check":
+        checks = bundle["current_proofs"]
+        checks.pop()
+        bundle["artifact"] = _build_admission(bundle["thin_card"], checks)
+    elif mutation == "admission_duplicate_check_kind":
+        checks = bundle["current_proofs"]
+        checks[-1]["check_kind"] = checks[0]["check_kind"]
+        bundle["artifact"] = _build_admission(bundle["thin_card"], checks)
+    elif mutation == "admission_wrong_expected_fingerprint":
+        checks = bundle["current_proofs"]
+        disclosure = checks[6]["disclosure"]
+        disclosure["expected_sha256"] = "0" * 64
+        disclosure["observed_sha256"] = "0" * 64
+        bundle["artifact"] = _build_admission(bundle["thin_card"], checks)
+    elif mutation == "admission_match_fingerprint":
+        checks = bundle["current_proofs"]
+        checks[6]["disclosure"]["observed_sha256"] = "0" * 64
+        bundle["artifact"] = _build_admission(bundle["thin_card"], checks)
     elif mutation == "failure_has_card_id":
         artifact["thin_card_id"] = "THIN-CARD-0001"
     elif mutation == "failure_hash":

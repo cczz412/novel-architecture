@@ -15,6 +15,7 @@
 {"artifact":"ADMISSION","base":"admission_revoked","case_id":"CTC-VALID-15","expected_result":"STRUCTURAL_VALID","mutation":"none"}
 {"artifact":"FAILURE","base":"unsupported_failure","case_id":"CTC-VALID-16","expected_result":"STRUCTURAL_VALID","mutation":"none"}
 {"artifact":"FAILURE","base":"damaged_failure","case_id":"CTC-VALID-17","expected_result":"STRUCTURAL_VALID","mutation":"none"}
+{"artifact":"FAILURE","base":"hard_missing_failure","case_id":"CTC-VALID-18","expected_result":"STRUCTURAL_VALID","mutation":"none"}
 {"artifact":"ADMISSION","base":"admission_stale","case_id":"CTC-INVALID-01","expected_result":"STRUCTURAL_INVALID","mutation":"admission_card_ref"}
 {"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-02","expected_result":"STRUCTURAL_INVALID","mutation":"admission_hash"}
 {"artifact":"ADMISSION","base":"admission_revoked","case_id":"CTC-INVALID-03","expected_result":"STRUCTURAL_INVALID","mutation":"admission_mask_leak"}
@@ -57,3 +58,7 @@
 {"artifact":"CARD","base":"continue","case_id":"CTC-INVALID-40","expected_result":"STRUCTURAL_INVALID","mutation":"untracked_disclosed"}
 {"artifact":"CARD","base":"continue","case_id":"CTC-INVALID-41","expected_result":"STRUCTURAL_INVALID","mutation":"version_manifest_mismatch"}
 {"artifact":"CARD","base":"continue","case_id":"CTC-INVALID-42","expected_result":"STRUCTURAL_INVALID","mutation":"wrong_contract"}
+{"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-43","expected_result":"STRUCTURAL_INVALID","mutation":"admission_missing_check"}
+{"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-44","expected_result":"STRUCTURAL_INVALID","mutation":"admission_duplicate_check_kind"}
+{"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-45","expected_result":"STRUCTURAL_INVALID","mutation":"admission_wrong_expected_fingerprint"}
+{"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-46","expected_result":"STRUCTURAL_INVALID","mutation":"admission_match_fingerprint"}

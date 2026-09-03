@@ -51,11 +51,11 @@ def test_schema_and_fixture_inventory_are_frozen() -> None:
         "#/$defs/build_failure",
     ]
     cases = _cases()
-    assert len(cases) == 59
+    assert len(cases) == 64
     assert len({row["case_id"] for row in cases}) == len(cases)
     assert validator.validate_all_fixtures() == {
-        validator.STRUCTURAL_VALID: 17,
-        validator.STRUCTURAL_INVALID: 42,
+        validator.STRUCTURAL_VALID: 18,
+        validator.STRUCTURAL_INVALID: 46,
     }
 
 
@@ -145,6 +145,16 @@ def test_empty_no_match_and_unavailable_remain_different_source_results() -> Non
             (row["state"], row["identity_disclosure"]["mode"])
             for row in results
         }
+    assert _card("CTC-VALID-07")["compiled_payload"]["gap_summary"] == {
+        "hard_gap_codes": [],
+        "optional_gap_codes": [],
+        "masked_access": False,
+    }
+    assert _card("CTC-VALID-08")["compiled_payload"]["gap_summary"] == {
+        "hard_gap_codes": [],
+        "optional_gap_codes": [],
+        "masked_access": False,
+    }
 
 
 def test_character_current_definition_and_story_time_slice_are_separate() -> None:
@@ -200,6 +210,29 @@ def test_admission_rechecks_currentness_without_rewriting_the_thin_card() -> Non
     assert revoked["artifact"]["recompile_required"] is False
 
 
+def test_admission_requires_nine_unique_checks_with_truthful_fingerprints() -> None:
+    receipt = _bundle("CTC-VALID-12")["artifact"]
+    assert len(receipt["checks"]) == 9
+    assert {row["check_kind"] for row in receipt["checks"]} == (
+        validator.ADMISSION_CHECK_KINDS
+    )
+    for row in receipt["checks"]:
+        assert row["observed_state"] == "MATCH"
+        assert row["disclosure"]["expected_sha256"] == (
+            row["disclosure"]["observed_sha256"]
+        )
+    assert validator.fixture_error_code(_case("CTC-INVALID-43")) == "SCHEMA_INVALID"
+    assert validator.fixture_error_code(_case("CTC-INVALID-44")) == (
+        "ADMISSION_CHECK_KIND_SET_INVALID"
+    )
+    assert validator.fixture_error_code(_case("CTC-INVALID-45")) == (
+        "ADMISSION_EXPECTED_FINGERPRINT_MISMATCH"
+    )
+    assert validator.fixture_error_code(_case("CTC-INVALID-46")) == (
+        "ADMISSION_MATCH_FINGERPRINT_MISMATCH"
+    )
+
+
 def test_permission_revocation_masks_identity() -> None:
     receipt = _bundle("CTC-VALID-15")["artifact"]
     permission = next(
@@ -212,9 +245,12 @@ def test_permission_revocation_masks_identity() -> None:
 def test_build_failures_do_not_masquerade_as_thin_cards() -> None:
     unsupported = _bundle("CTC-VALID-16")["artifact"]
     damaged = _bundle("CTC-VALID-17")["artifact"]
+    hard_missing = _bundle("CTC-VALID-18")["artifact"]
     assert unsupported["reason_code"] == "UNSUPPORTED_VERSION"
     assert damaged["reason_code"] == "SOURCE_CORRUPTED"
-    for failure in (unsupported, damaged):
+    assert hard_missing["reason_code"] == "REQUIRED_SOURCE_UNAVAILABLE"
+    assert _bundle("CTC-VALID-18")["c9_result"]["status"] == "READY_WITH_GAPS"
+    for failure in (unsupported, damaged, hard_missing):
         assert failure["contract"] == "CHAPTER_THIN_CARD_BUILD_FAILURE"
         assert failure["status"] == "STOPPED"
         assert "thin_card_id" not in failure
@@ -254,8 +290,8 @@ def test_cli_reports_synthetic_only_pass_receipt() -> None:
     receipt = json.loads(completed.stdout)
     assert receipt["status"] == "PASS"
     assert receipt["counts"] == {
-        validator.STRUCTURAL_VALID: 17,
-        validator.STRUCTURAL_INVALID: 42,
+        validator.STRUCTURAL_VALID: 18,
+        validator.STRUCTURAL_INVALID: 46,
     }
     assert receipt["synthetic_c9_compilation_performed"] is True
     assert {
