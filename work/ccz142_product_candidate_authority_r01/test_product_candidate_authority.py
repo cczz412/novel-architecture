@@ -160,6 +160,24 @@ def _eligible_source(project_scope_id: str) -> dict[str, Any]:
     }
 
 
+def _verify_shadow(
+    controller: NamespaceMigrationController,
+    migration_id: str,
+    *,
+    store: CandidateAuthorityStore,
+    root_result: dict[str, Any],
+    semantic_hash: str,
+) -> dict[str, Any]:
+    return controller.shadow_verify(
+        migration_id,
+        store=store,
+        target_pointer_key=root_result["logical_pointer_key"],
+        target_pointer_generation=1,
+        source_semantic_hash=semantic_hash,
+        target_semantic_hash=semantic_hash,
+    )
+
+
 def _activate_migration(
     root: Path,
     *,
@@ -185,14 +203,34 @@ def _activate_migration(
         observed_source_hash=discovered["source_hash"],
     )
     controller.stage_target(migration_id, store=store, root_result=root_result)
-    controller.shadow_verify(
+    _verify_shadow(
+        controller,
         migration_id,
-        source_semantic_hash="9" * 64,
-        target_semantic_hash="9" * 64,
+        store=store,
+        root_result=root_result,
+        semantic_hash="9" * 64,
     )
     controller.cutover(migration_id, store=store)
     controller.activate_product_run(migration_id, store=store)
     return controller, store, request, root_result
+
+
+def _stage_migration(
+    controller: NamespaceMigrationController,
+    migration_id: str,
+    *,
+    store: CandidateAuthorityStore,
+    root_result: dict[str, Any],
+    source_head_character: str = "a",
+) -> None:
+    source = _eligible_source(store.project_scope_id)
+    source["source_head_sha256"] = source_head_character * 64
+    discovered = controller.discover(migration_id, source)
+    controller.verify_source(
+        migration_id,
+        observed_source_hash=discovered["source_hash"],
+    )
+    controller.stage_target(migration_id, store=store, root_result=root_result)
 
 
 def test_product_profile_is_frozen_and_tampered_copy_is_rejected(
@@ -430,10 +468,12 @@ def test_cutover_hides_target_until_product_run_is_active(tmp_path: Path) -> Non
     with pytest.raises(NamespaceMigrationError, match="PRODUCT_NAMESPACE_NOT_ACTIVE"):
         access.read_pointer(result["logical_pointer_key"])
     semantic_hash = "c" * 64
-    controller.shadow_verify(
+    _verify_shadow(
+        controller,
         "migration-001",
-        source_semantic_hash=semantic_hash,
-        target_semantic_hash=semantic_hash,
+        store=store,
+        root_result=result,
+        semantic_hash=semantic_hash,
     )
     controller.cutover("migration-001", store=store)
     with pytest.raises(NamespaceMigrationError, match="PRODUCT_NAMESPACE_NOT_ACTIVE"):
@@ -505,10 +545,12 @@ def test_cutover_detects_pointer_generation_drift(tmp_path: Path) -> None:
     )
     store, request, root_result = initialize_product_root(tmp_path / "authority")
     controller.stage_target("migration-drift", store=store, root_result=root_result)
-    controller.shadow_verify(
+    _verify_shadow(
+        controller,
         "migration-drift",
-        source_semantic_hash="d" * 64,
-        target_semantic_hash="d" * 64,
+        store=store,
+        root_result=root_result,
+        semantic_hash="d" * 64,
     )
     _commit_product_child(
         tmp_path,
@@ -539,10 +581,12 @@ def test_after_cutover_recovery_is_forward_only_and_persisted(
     )
     store, request, root_result = initialize_product_root(tmp_path / "authority")
     controller.stage_target("migration-recovery", store=store, root_result=root_result)
-    controller.shadow_verify(
+    _verify_shadow(
+        controller,
         "migration-recovery",
-        source_semantic_hash="e" * 64,
-        target_semantic_hash="e" * 64,
+        store=store,
+        root_result=root_result,
+        semantic_hash="e" * 64,
     )
     controller.cutover("migration-recovery", store=store)
     controller.activate_product_run("migration-recovery", store=store)
@@ -584,7 +628,13 @@ def test_after_cutover_recovery_is_forward_only_and_persisted(
 def test_migration_control_has_no_candidate_or_formal_tables(tmp_path: Path) -> None:
     controller = NamespaceMigrationController(tmp_path / "control")
     tables = controller.schema_objects()
-    assert tables == ["metadata", "migration_events", "migration_state"]
+    assert tables == [
+        "authority_pointer_bindings",
+        "authority_project_bindings",
+        "metadata",
+        "migration_events",
+        "migration_state",
+    ]
     assert all(
         "candidate_version" not in table
         and "current_pointer" not in table
@@ -606,10 +656,12 @@ def test_product_access_rejects_fixture_candidate_ref(tmp_path: Path) -> None:
     )
     store, _, result = initialize_product_root(tmp_path / "authority")
     controller.stage_target("migration-access", store=store, root_result=result)
-    controller.shadow_verify(
+    _verify_shadow(
+        controller,
         "migration-access",
-        source_semantic_hash="f" * 64,
-        target_semantic_hash="f" * 64,
+        store=store,
+        root_result=result,
+        semantic_hash="f" * 64,
     )
     controller.cutover("migration-access", store=store)
     controller.activate_product_run("migration-access", store=store)
@@ -644,6 +696,264 @@ def test_fixture_and_product_record_refs_are_not_byte_equal(tmp_path: Path) -> N
     )
     assert product_candidate["record_hash"] != fixture_candidate["record_hash"]
     assert product_candidate["record_id"] != fixture_candidate["record_id"]
+
+
+@pytest.mark.parametrize(
+    ("source_semantic_hash", "target_semantic_hash"),
+    [
+        ("not-a-sha256", "not-a-sha256"),
+        ("A" * 64, "A" * 64),
+        ("a" * 64, "b" * 63),
+    ],
+)
+def test_shadow_verify_rejects_non_sha256_values_without_state_change(
+    tmp_path: Path,
+    source_semantic_hash: str,
+    target_semantic_hash: str,
+) -> None:
+    controller = NamespaceMigrationController(tmp_path / "control")
+    store, _, root_result = initialize_product_root(tmp_path / "authority")
+    _stage_migration(
+        controller,
+        "migration-invalid-shadow-hash",
+        store=store,
+        root_result=root_result,
+    )
+    before = controller.read_state("migration-invalid-shadow-hash")
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_SHADOW_HASH_INVALID",
+    ):
+        controller.shadow_verify(
+            "migration-invalid-shadow-hash",
+            store=store,
+            target_pointer_key=root_result["logical_pointer_key"],
+            target_pointer_generation=1,
+            source_semantic_hash=source_semantic_hash,
+            target_semantic_hash=target_semantic_hash,
+        )
+    assert controller.read_state("migration-invalid-shadow-hash") == before
+
+
+def test_shadow_verify_rejects_wrong_store(tmp_path: Path) -> None:
+    controller = NamespaceMigrationController(tmp_path / "control")
+    store, _, root_result = initialize_product_root(tmp_path / "authority")
+    other_store, _, _ = initialize_product_root(
+        tmp_path / "other-authority",
+        request=product_root_request(operation_id="other-store-root"),
+    )
+    _stage_migration(
+        controller,
+        "migration-wrong-shadow-store",
+        store=store,
+        root_result=root_result,
+    )
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_TARGET_STORE_MISMATCH",
+    ):
+        controller.shadow_verify(
+            "migration-wrong-shadow-store",
+            store=other_store,
+            target_pointer_key=root_result["logical_pointer_key"],
+            target_pointer_generation=1,
+            source_semantic_hash="1" * 64,
+            target_semantic_hash="1" * 64,
+        )
+
+
+def test_shadow_verify_rejects_wrong_pointer(tmp_path: Path) -> None:
+    controller = NamespaceMigrationController(tmp_path / "control")
+    store, _, root_result = initialize_product_root(tmp_path / "authority")
+    _stage_migration(
+        controller,
+        "migration-wrong-shadow-pointer",
+        store=store,
+        root_result=root_result,
+    )
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_SHADOW_POINTER_MISMATCH",
+    ):
+        controller.shadow_verify(
+            "migration-wrong-shadow-pointer",
+            store=store,
+            target_pointer_key="product:m3_candidate.current/wrong",
+            target_pointer_generation=1,
+            source_semantic_hash="2" * 64,
+            target_semantic_hash="2" * 64,
+        )
+
+
+def test_shadow_verify_rejects_wrong_pointer_generation(tmp_path: Path) -> None:
+    controller = NamespaceMigrationController(tmp_path / "control")
+    store, _, root_result = initialize_product_root(tmp_path / "authority")
+    _stage_migration(
+        controller,
+        "migration-wrong-shadow-generation",
+        store=store,
+        root_result=root_result,
+    )
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_SHADOW_GENERATION_MISMATCH",
+    ):
+        controller.shadow_verify(
+            "migration-wrong-shadow-generation",
+            store=store,
+            target_pointer_key=root_result["logical_pointer_key"],
+            target_pointer_generation=2,
+            source_semantic_hash="3" * 64,
+            target_semantic_hash="3" * 64,
+        )
+
+
+def test_different_migration_id_cannot_activate_second_store_for_same_project(
+    tmp_path: Path,
+) -> None:
+    controller = NamespaceMigrationController(tmp_path / "control")
+    stores: list[CandidateAuthorityStore] = []
+    results: list[dict[str, Any]] = []
+    for suffix in ("a", "b"):
+        store, _, root_result = initialize_product_root(
+            tmp_path / f"authority-{suffix}",
+            request=product_root_request(operation_id=f"root-{suffix}"),
+        )
+        _stage_migration(
+            controller,
+            f"migration-{suffix}",
+            store=store,
+            root_result=root_result,
+            source_head_character=suffix,
+        )
+        _verify_shadow(
+            controller,
+            f"migration-{suffix}",
+            store=store,
+            root_result=root_result,
+            semantic_hash=suffix * 64,
+        )
+        stores.append(store)
+        results.append(root_result)
+    assert results[0]["logical_pointer_key"] == results[1]["logical_pointer_key"]
+    assert stores[0].authority_store_id != stores[1].authority_store_id
+    controller.cutover("migration-a", store=stores[0])
+    controller.activate_product_run("migration-a", store=stores[0])
+    with pytest.raises(
+        NamespaceMigrationError,
+        match="MIGRATION_PROJECT_AUTHORITY_CONFLICT",
+    ):
+        controller.cutover("migration-b", store=stores[1])
+    assert controller.read_state("migration-b")["state"] == "SHADOW_VERIFIED"
+    assert controller.authority_binding_counts() == {
+        "authority_project_bindings": 1,
+        "authority_pointer_bindings": 1,
+    }
+
+
+def test_same_project_different_store_concurrent_cutover_has_one_winner(
+    tmp_path: Path,
+) -> None:
+    controller = NamespaceMigrationController(tmp_path / "control")
+    stores: dict[str, CandidateAuthorityStore] = {}
+    for suffix in ("a", "b"):
+        store, _, root_result = initialize_product_root(
+            tmp_path / f"authority-{suffix}",
+            request=product_root_request(operation_id=f"concurrent-root-{suffix}"),
+        )
+        _stage_migration(
+            controller,
+            f"concurrent-{suffix}",
+            store=store,
+            root_result=root_result,
+            source_head_character=suffix,
+        )
+        _verify_shadow(
+            controller,
+            f"concurrent-{suffix}",
+            store=store,
+            root_result=root_result,
+            semantic_hash=suffix * 64,
+        )
+        stores[suffix] = store
+
+    barrier = threading.Barrier(2)
+    successes: list[str] = []
+    failures: list[NamespaceMigrationError] = []
+
+    def cutover(suffix: str) -> None:
+        barrier.wait(timeout=5)
+        try:
+            controller.cutover(f"concurrent-{suffix}", store=stores[suffix])
+        except NamespaceMigrationError as error:
+            failures.append(error)
+        else:
+            successes.append(suffix)
+
+    threads = [
+        threading.Thread(target=cutover, args=(suffix,)) for suffix in ("a", "b")
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=10)
+        assert not thread.is_alive()
+    assert len(successes) == 1
+    assert [error.code for error in failures] == [
+        "MIGRATION_PROJECT_AUTHORITY_CONFLICT"
+    ]
+    assert sorted(
+        controller.read_state(f"concurrent-{suffix}")["state"]
+        for suffix in ("a", "b")
+    ) == ["CUTOVER_COMMITTED", "SHADOW_VERIFIED"]
+    assert controller.authority_binding_counts() == {
+        "authority_project_bindings": 1,
+        "authority_pointer_bindings": 1,
+    }
+
+
+def test_same_product_store_can_bind_multiple_project_pointers(tmp_path: Path) -> None:
+    controller = NamespaceMigrationController(tmp_path / "control")
+    store, _, first = initialize_product_root(
+        tmp_path / "authority",
+        request=product_root_request(operation_id="first-root"),
+    )
+    reopened, _, second = initialize_product_root(
+        store.root,
+        request=product_root_request(
+            operation_id="second-root",
+            chapter_id="product-chapter-002",
+        ),
+    )
+    assert reopened.authority_store_id == store.authority_store_id
+    for suffix, active_store, root_result in (
+        ("a", store, first),
+        ("b", reopened, second),
+    ):
+        _stage_migration(
+            controller,
+            f"multi-pointer-{suffix}",
+            store=active_store,
+            root_result=root_result,
+            source_head_character=suffix,
+        )
+        _verify_shadow(
+            controller,
+            f"multi-pointer-{suffix}",
+            store=active_store,
+            root_result=root_result,
+            semantic_hash=suffix * 64,
+        )
+        controller.cutover(f"multi-pointer-{suffix}", store=active_store)
+        controller.activate_product_run(
+            f"multi-pointer-{suffix}",
+            store=active_store,
+        )
+    assert first["logical_pointer_key"] != second["logical_pointer_key"]
+    assert controller.authority_binding_counts() == {
+        "authority_project_bindings": 1,
+        "authority_pointer_bindings": 2,
+    }
 
 
 def test_active_access_rejects_another_project_store(tmp_path: Path) -> None:
@@ -764,6 +1074,8 @@ def test_cutover_lock_blocks_child_and_activation_requires_forward_repair(
             event_payload: dict[str, Any],
             updates: dict[str, Any] | None = None,
             event_name: str | None = None,
+            bind_cutover: bool = False,
+            advance_pointer_binding: tuple[int, int] | None = None,
         ) -> dict[str, Any]:
             if next_state == "CUTOVER_COMMITTED":
                 transition_reached.set()
@@ -776,6 +1088,8 @@ def test_cutover_lock_blocks_child_and_activation_requires_forward_repair(
                 event_payload=event_payload,
                 updates=updates,
                 event_name=event_name,
+                bind_cutover=bind_cutover,
+                advance_pointer_binding=advance_pointer_binding,
             )
 
     store, request, root_result = initialize_product_root(tmp_path / "authority")
@@ -793,10 +1107,12 @@ def test_cutover_lock_blocks_child_and_activation_requires_forward_repair(
         store=store,
         root_result=root_result,
     )
-    controller.shadow_verify(
+    _verify_shadow(
+        controller,
         "migration-cutover-race",
-        source_semantic_hash="8" * 64,
-        target_semantic_hash="8" * 64,
+        store=store,
+        root_result=root_result,
+        semantic_hash="8" * 64,
     )
 
     original_serialization = store.serialization

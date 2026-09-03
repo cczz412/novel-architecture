@@ -1,6 +1,6 @@
 {
-  "document_identity": "CCZ142-PRODUCT-CANDIDATE-AUTHORITY-R02-TEST-RECEIPT",
-  "validated_at": "2026-09-03T11:17:36+08:00",
+  "document_identity": "CCZ142-PRODUCT-CANDIDATE-AUTHORITY-R03-TEST-RECEIPT",
+  "validated_at": "2026-09-03T12:33:21+08:00",
   "result": "PASS",
   "original_base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
   "base_main_sha": "68e13f64e475eece2d7d7cf2e26597335a734129",
@@ -10,6 +10,7 @@
   "upstream_merge_commit": "68e13f64e475eece2d7d7cf2e26597335a734129",
   "github_issue": 231,
   "reviewed_r01_head": "45be726630dafd484c99c7461d3536d81fefb1b3",
+  "reviewed_r02_head": "9f7290b42a31d65f76fb653cbc0c714c6139f8fc",
   "runtime": {
     "python": "3.12.12",
     "environment": "uv --locked",
@@ -23,7 +24,7 @@
   "test_suites": [
     {
       "suite": "ccz142_product_candidate_authority_r01",
-      "passed": 26,
+      "passed": 35,
       "failed": 0
     },
     {
@@ -78,13 +79,13 @@
     }
   ],
   "totals": {
-    "passed": 592,
+    "passed": 601,
     "failed": 0
   },
   "current_main_compatibility": {
     "main_sha": "68e13f64e475eece2d7d7cf2e26597335a734129",
     "result": "PASS",
-    "patched_tree_passed": 592,
+    "patched_tree_passed": 601,
     "patched_tree_failed": 0,
     "pr_diff_scope": "PRODUCT_AUTHORITY_NAMESPACE_ACCESS_AND_POINTER_MIGRATION_ONLY"
   },
@@ -96,6 +97,7 @@
     "storage_locator_bound_to_project_and_database_path": true,
     "authority_schema_identity": "r02-candidate",
     "authority_schema_full_layout_guard": "PASS",
+    "migration_control_schema_identity": "ccz142-product-namespace-migration-r03",
     "root_authority_lock_held_through_commit": true,
     "plain_B01_product_profile": "REJECTED_BEFORE_STORAGE",
     "plain_B06_product_profile": "REJECTED_BEFORE_STORAGE",
@@ -135,8 +137,19 @@
     "mixed_namespace": "FAIL_CLOSED",
     "cross_project_store_read": "FAIL_CLOSED",
     "same_project_second_store_read": "FAIL_CLOSED",
+    "same_project_second_store_different_migration": "FAIL_CLOSED",
+    "same_project_concurrent_cutover": "ONE_WINNER",
+    "same_store_multiple_product_pointers": "PASS",
     "same_store_wrong_pointer_read": "FAIL_CLOSED",
     "forward_recovery_wrong_pointer": "FAIL_CLOSED",
+    "project_to_authority_store_binding": "PERSISTED_UNIQUE",
+    "project_pointer_to_store_binding": "PERSISTED_UNIQUE",
+    "binding_and_cutover_state_transaction": "ATOMIC",
+    "forward_recovery_binding_generation": "ATOMIC_FORWARD_ONLY",
+    "shadow_semantic_hash_format": "LOWERCASE_SHA256_ONLY",
+    "shadow_wrong_store": "FAIL_CLOSED",
+    "shadow_wrong_pointer": "FAIL_CLOSED",
+    "shadow_wrong_pointer_generation": "FAIL_CLOSED",
     "target_hidden_before_activation": true,
     "abort_before_cutover": "ABORTED_TARGET_HIDDEN",
     "cutover_pointer_drift": "MIGRATION_CUTOVER_CAS_MISMATCH",
@@ -146,6 +159,8 @@
     "post_cutover_recovery": "FORWARD_ONLY",
     "legacy_writer_reactivated": false,
     "migration_control_tables": [
+      "authority_pointer_bindings",
+      "authority_project_bindings",
       "metadata",
       "migration_events",
       "migration_state"

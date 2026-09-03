@@ -3,6 +3,7 @@
     "authority_identity": "PRODUCT_CANDIDATE_AUTHORITY",
     "authority_schema_identity": "r02-candidate",
     "authority_schema_full_layout_guard": true,
+    "migration_control_schema_identity": "ccz142-product-namespace-migration-r03",
     "candidate_contract_version": "r04-product-candidate",
     "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
     "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
@@ -53,6 +54,20 @@
     "target_storage_locator_hash": "must equal the staged database location binding",
     "target_pointer_key": "must equal the staged product pointer",
     "read_policy": "POST_CUTOVER_ACTIVE and exact binding only"
+  },
+  "persistent_authority_bindings": {
+    "project_binding": "one project_scope_id maps to one authority_store_id and storage_locator_hash",
+    "pointer_binding": "one project_scope_id plus target_pointer_key maps to the same authority store",
+    "cutover_atomicity": "project binding, pointer binding and CUTOVER_COMMITTED are one SQLite transaction",
+    "multiple_pointers": "allowed only when they use the same project authority store"
+  },
+  "shadow_verification_binding": {
+    "source_semantic_hash": "64 lowercase hexadecimal SHA-256 characters",
+    "target_semantic_hash": "must equal source_semantic_hash",
+    "target_authority_store_id": "must equal the staged CandidateAuthorityStore",
+    "target_storage_locator_hash": "must equal the staged database location binding",
+    "target_pointer_key": "must equal the staged product pointer",
+    "target_pointer_generation": "must equal the staged pointer generation"
   },
   "pre_cutover_abort": {
     "state": "ABORTED",

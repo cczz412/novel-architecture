@@ -48,6 +48,9 @@ def _successful_cutover(root: Path) -> dict[str, Any]:
     semantic_hash = "b" * 64
     controller.shadow_verify(
         "self-check-cutover",
+        store=store,
+        target_pointer_key=root_result["logical_pointer_key"],
+        target_pointer_generation=1,
         source_semantic_hash=semantic_hash,
         target_semantic_hash=semantic_hash,
     )
@@ -71,6 +74,7 @@ def _successful_cutover(root: Path) -> dict[str, Any]:
         "pointer_generation": pointer["generation"],
         "candidate_access": candidate["access"],
         "control_schema_objects": controller.schema_objects(),
+        "authority_binding_counts": controller.authority_binding_counts(),
     }
 
 

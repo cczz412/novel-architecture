@@ -21,6 +21,15 @@
 - 2026-09-03 同步 PR #230 R03：继续保留上述产品门，并纳入逐列字段类型、非空、默认值、主键位置和逐表完整唯一索引校验。
 - 2026-09-03 PR #230 合并后把 PR #235 base 重定向到新 main；产品差异叠加回归 592 项通过，PR #235 继续保持 Draft。
 
+## R03 修正依据
+
+- 合并前只读审查对象：PR #235 head `9f7290b42a31d65f76fb653cbc0c714c6139f8fc`，精确 base `main@68e13f64e475eece2d7d7cf2e26597335a734129`。
+- 审查探针证明：不同迁移编号可以把同一项目、同一逻辑 pointer 接到两个不同物理 store，并让两边同时进入 `POST_CUTOVER_ACTIVE`。
+- 同一探针证明：`shadow_verify` 会接受两个相同但不是 SHA-256 的字符串。
+- CZ 批准在现有 Issue #231、现有分支和现有 Draft PR内修复，不扩大到 Linear、FormalFact、正式事实、十本账或模型 API。
+- R03 用迁移控制库的项目绑定和 pointer 绑定收紧唯一权威；用完整影子目标绑定收紧 cutover，并保持同一 store 内多 pointer 可用。
+- 当前分支与精确 `main@68e13f64e475eece2d7d7cf2e26597335a734129` 临时叠加树均通过 601 项，语法、Ruff、自检及两套 Manifest 同时通过。
+
 ## 直接代码来源
 
 - `work/ccz57_m3_b01_candidate_version_r03_5/`：CandidateVersion、locator、pointer 与 fixture 兼容合同。

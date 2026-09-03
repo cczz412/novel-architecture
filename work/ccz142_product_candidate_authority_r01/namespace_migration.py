@@ -5,6 +5,7 @@ from __future__ import annotations
 import fcntl
 import json
 import os
+import re
 import sqlite3
 import stat
 import sys
@@ -30,7 +31,7 @@ from work.ccz142_candidate_authority_r01.candidate_authority import (  # noqa: E
     CandidateAuthorityStore,
 )
 
-CONTROL_SCHEMA_VERSION = "ccz142-product-namespace-migration-r02"
+CONTROL_SCHEMA_VERSION = "ccz142-product-namespace-migration-r03"
 SOURCE_KEYS = {
     "source_namespace",
     "candidate_access",
@@ -44,6 +45,33 @@ PRE_CUTOVER_STATES = {
     "SOURCE_VERIFIED",
     "TARGET_STAGED",
     "SHADOW_VERIFIED",
+}
+AUTHORITY_BINDING_TABLE_LAYOUTS = {
+    "authority_project_bindings": (
+        ("project_scope_id", "TEXT", 0, None, 1),
+        ("authority_store_id", "TEXT", 1, None, 0),
+        ("storage_locator_hash", "TEXT", 1, None, 0),
+        ("bound_by_migration_id", "TEXT", 1, None, 0),
+    ),
+    "authority_pointer_bindings": (
+        ("project_scope_id", "TEXT", 1, None, 1),
+        ("target_pointer_key", "TEXT", 1, None, 2),
+        ("authority_store_id", "TEXT", 1, None, 0),
+        ("storage_locator_hash", "TEXT", 1, None, 0),
+        ("migration_id", "TEXT", 1, None, 0),
+        ("target_pointer_generation", "INTEGER", 1, None, 0),
+    ),
+}
+AUTHORITY_BINDING_UNIQUE_INDEXES = {
+    "authority_project_bindings": frozenset(
+        {("pk", 0, ("project_scope_id",))}
+    ),
+    "authority_pointer_bindings": frozenset(
+        {
+            ("pk", 0, ("project_scope_id", "target_pointer_key")),
+            ("u", 0, ("migration_id",)),
+        }
+    ),
 }
 
 
@@ -63,6 +91,10 @@ def _decode(raw: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         fail("MIGRATION_CONTROL_VALUE_INVALID")
     return value
+
+
+def _is_sha256(value: Any) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is not None
 
 
 class NamespaceMigrationController:
@@ -106,7 +138,14 @@ class NamespaceMigrationController:
                 "target_pointer_key TEXT, target_pointer_generation INTEGER, "
                 "target_authority_store_id TEXT, "
                 "target_storage_locator_hash TEXT, "
-                "shadow_semantic_hash TEXT, event_sequence INTEGER NOT NULL)"
+                "shadow_semantic_hash TEXT, "
+                "shadow_source_semantic_hash TEXT, "
+                "shadow_target_semantic_hash TEXT, "
+                "shadow_target_authority_store_id TEXT, "
+                "shadow_target_storage_locator_hash TEXT, "
+                "shadow_target_pointer_key TEXT, "
+                "shadow_target_pointer_generation INTEGER, "
+                "event_sequence INTEGER NOT NULL)"
             )
             columns = {
                 row[1]
@@ -117,10 +156,21 @@ class NamespaceMigrationController:
             for name in (
                 "target_authority_store_id",
                 "target_storage_locator_hash",
+                "shadow_source_semantic_hash",
+                "shadow_target_semantic_hash",
+                "shadow_target_authority_store_id",
+                "shadow_target_storage_locator_hash",
+                "shadow_target_pointer_key",
+                "shadow_target_pointer_generation",
             ):
                 if name not in columns:
+                    column_type = (
+                        "INTEGER"
+                        if name == "shadow_target_pointer_generation"
+                        else "TEXT"
+                    )
                     connection.execute(
-                        f"ALTER TABLE migration_state ADD COLUMN {name} TEXT"
+                        f"ALTER TABLE migration_state ADD COLUMN {name} {column_type}"
                     )
             connection.execute(
                 "CREATE TABLE IF NOT EXISTS migration_events ("
@@ -133,11 +183,56 @@ class NamespaceMigrationController:
                 "key TEXT PRIMARY KEY, value BLOB NOT NULL)"
             )
             connection.execute(
+                "CREATE TABLE IF NOT EXISTS authority_project_bindings ("
+                "project_scope_id TEXT PRIMARY KEY, "
+                "authority_store_id TEXT NOT NULL, "
+                "storage_locator_hash TEXT NOT NULL, "
+                "bound_by_migration_id TEXT NOT NULL)"
+            )
+            connection.execute(
+                "CREATE TABLE IF NOT EXISTS authority_pointer_bindings ("
+                "project_scope_id TEXT NOT NULL, target_pointer_key TEXT NOT NULL, "
+                "authority_store_id TEXT NOT NULL, "
+                "storage_locator_hash TEXT NOT NULL, "
+                "migration_id TEXT NOT NULL UNIQUE, "
+                "target_pointer_generation INTEGER NOT NULL, "
+                "PRIMARY KEY(project_scope_id, target_pointer_key))"
+            )
+            self._verify_binding_schema(connection)
+            connection.execute(
                 "INSERT INTO metadata(key, value) VALUES (?, ?) "
                 "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
                 ("schema_version", sqlite3.Binary(CONTROL_SCHEMA_VERSION.encode())),
             )
             connection.commit()
+
+    @staticmethod
+    def _verify_binding_schema(connection: sqlite3.Connection) -> None:
+        for table, expected_layout in AUTHORITY_BINDING_TABLE_LAYOUTS.items():
+            actual_layout = tuple(
+                (row[1], str(row[2]).upper(), row[3], row[4], row[5])
+                for row in connection.execute(
+                    f'PRAGMA table_info("{table}")'
+                ).fetchall()
+            )
+            if actual_layout != expected_layout:
+                fail("MIGRATION_BINDING_SCHEMA_MISMATCH", table)
+            actual_unique_indexes = set()
+            for index_row in connection.execute(
+                f'PRAGMA index_list("{table}")'
+            ).fetchall():
+                if index_row[2] != 1:
+                    continue
+                escaped_index = str(index_row[1]).replace('"', '""')
+                columns = tuple(
+                    row[2]
+                    for row in connection.execute(
+                        f'PRAGMA index_info("{escaped_index}")'
+                    ).fetchall()
+                )
+                actual_unique_indexes.add((index_row[3], index_row[4], columns))
+            if actual_unique_indexes != AUTHORITY_BINDING_UNIQUE_INDEXES[table]:
+                fail("MIGRATION_BINDING_SCHEMA_MISMATCH", table)
 
     def _open_locked(self) -> tuple[int, sqlite3.Connection]:
         flags = os.O_RDWR
@@ -174,13 +269,125 @@ class NamespaceMigrationController:
             "SELECT project_scope_id, source_json, source_hash, state, "
             "target_root_result_json, target_pointer_key, "
             "target_pointer_generation, target_authority_store_id, "
-            "target_storage_locator_hash, shadow_semantic_hash, event_sequence "
+            "target_storage_locator_hash, shadow_semantic_hash, "
+            "shadow_source_semantic_hash, shadow_target_semantic_hash, "
+            "shadow_target_authority_store_id, "
+            "shadow_target_storage_locator_hash, shadow_target_pointer_key, "
+            "shadow_target_pointer_generation, event_sequence "
             "FROM migration_state WHERE migration_id = ?",
             (migration_id,),
         ).fetchone()
         if row is None:
             fail("MIGRATION_NOT_FOUND")
         return row
+
+    @staticmethod
+    def _state_from_row(migration_id: str, row: tuple[Any, ...]) -> dict[str, Any]:
+        return {
+            "migration_id": migration_id,
+            "project_scope_id": row[0],
+            "source": _decode(row[1]),
+            "source_hash": row[2],
+            "state": row[3],
+            "target_root_result": None if row[4] is None else _decode(row[4]),
+            "target_pointer_key": row[5],
+            "target_pointer_generation": row[6],
+            "target_authority_store_id": row[7],
+            "target_storage_locator_hash": row[8],
+            "shadow_semantic_hash": row[9],
+            "shadow_source_semantic_hash": row[10],
+            "shadow_target_semantic_hash": row[11],
+            "shadow_target_authority_store_id": row[12],
+            "shadow_target_storage_locator_hash": row[13],
+            "shadow_target_pointer_key": row[14],
+            "shadow_target_pointer_generation": row[15],
+            "event_sequence": row[16],
+        }
+
+    @staticmethod
+    def _bind_cutover(
+        connection: sqlite3.Connection,
+        *,
+        migration_id: str,
+        state: dict[str, Any],
+    ) -> None:
+        project_binding = (
+            state["target_authority_store_id"],
+            state["target_storage_locator_hash"],
+        )
+        prior_project = connection.execute(
+            "SELECT authority_store_id, storage_locator_hash "
+            "FROM authority_project_bindings WHERE project_scope_id = ?",
+            (state["project_scope_id"],),
+        ).fetchone()
+        if prior_project is None:
+            connection.execute(
+                "INSERT INTO authority_project_bindings("
+                "project_scope_id, authority_store_id, storage_locator_hash, "
+                "bound_by_migration_id) VALUES (?, ?, ?, ?)",
+                (
+                    state["project_scope_id"],
+                    *project_binding,
+                    migration_id,
+                ),
+            )
+        elif tuple(prior_project) != project_binding:
+            fail("MIGRATION_PROJECT_AUTHORITY_CONFLICT")
+
+        pointer_binding = (
+            state["target_authority_store_id"],
+            state["target_storage_locator_hash"],
+            migration_id,
+            state["target_pointer_generation"],
+        )
+        prior_pointer = connection.execute(
+            "SELECT authority_store_id, storage_locator_hash, migration_id, "
+            "target_pointer_generation FROM authority_pointer_bindings "
+            "WHERE project_scope_id = ? AND target_pointer_key = ?",
+            (state["project_scope_id"], state["target_pointer_key"]),
+        ).fetchone()
+        if prior_pointer is None:
+            connection.execute(
+                "INSERT INTO authority_pointer_bindings("
+                "project_scope_id, target_pointer_key, authority_store_id, "
+                "storage_locator_hash, migration_id, target_pointer_generation"
+                ") VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    state["project_scope_id"],
+                    state["target_pointer_key"],
+                    *pointer_binding,
+                ),
+            )
+        elif tuple(prior_pointer) != pointer_binding:
+            fail("MIGRATION_POINTER_AUTHORITY_CONFLICT")
+
+    @staticmethod
+    def _advance_pointer_binding(
+        connection: sqlite3.Connection,
+        *,
+        migration_id: str,
+        state: dict[str, Any],
+        generation_before: int,
+        generation_after: int,
+    ) -> None:
+        cursor = connection.execute(
+            "UPDATE authority_pointer_bindings "
+            "SET target_pointer_generation = ? "
+            "WHERE project_scope_id = ? AND target_pointer_key = ? "
+            "AND authority_store_id = ? AND storage_locator_hash = ? "
+            "AND migration_id = ? AND target_pointer_generation = ?",
+            (
+                generation_after,
+                state["project_scope_id"],
+                state["target_pointer_key"],
+                state["target_authority_store_id"],
+                state["target_storage_locator_hash"],
+                migration_id,
+                generation_before,
+            ),
+        )
+        if cursor.rowcount != 1:
+            fail("MIGRATION_POINTER_AUTHORITY_CONFLICT")
 
     @staticmethod
     def _append_event(
@@ -282,13 +489,30 @@ class NamespaceMigrationController:
         event_payload: dict[str, Any],
         updates: dict[str, Any] | None = None,
         event_name: str | None = None,
+        bind_cutover: bool = False,
+        advance_pointer_binding: tuple[int, int] | None = None,
     ) -> dict[str, Any]:
         descriptor, connection = self._open_locked()
         try:
             row = self._row(connection, migration_id)
             if row[3] != expected_state:
                 fail("MIGRATION_STATE_CONFLICT", f"{row[3]} != {expected_state}")
-            sequence = row[10] + 1
+            state = self._state_from_row(migration_id, row)
+            if bind_cutover:
+                self._bind_cutover(
+                    connection,
+                    migration_id=migration_id,
+                    state=state,
+                )
+            if advance_pointer_binding is not None:
+                self._advance_pointer_binding(
+                    connection,
+                    migration_id=migration_id,
+                    state=state,
+                    generation_before=advance_pointer_binding[0],
+                    generation_after=advance_pointer_binding[1],
+                )
+            sequence = row[16] + 1
             assignments = ["state = ?", "event_sequence = ?"]
             values: list[Any] = [next_state, sequence]
             for key, value in (updates or {}).items():
@@ -299,6 +523,12 @@ class NamespaceMigrationController:
                     "target_authority_store_id",
                     "target_storage_locator_hash",
                     "shadow_semantic_hash",
+                    "shadow_source_semantic_hash",
+                    "shadow_target_semantic_hash",
+                    "shadow_target_authority_store_id",
+                    "shadow_target_storage_locator_hash",
+                    "shadow_target_pointer_key",
+                    "shadow_target_pointer_generation",
                 }:
                     fail("MIGRATION_CONTROL_FIELD_INVALID", key)
                 assignments.append(f"{key} = ?")
@@ -432,18 +662,101 @@ class NamespaceMigrationController:
         self,
         migration_id: str,
         *,
+        store: CandidateAuthorityStore,
+        target_pointer_key: str,
+        target_pointer_generation: int,
         source_semantic_hash: str,
         target_semantic_hash: str,
     ) -> dict[str, Any]:
+        if not _is_sha256(source_semantic_hash) or not _is_sha256(
+            target_semantic_hash
+        ):
+            fail("MIGRATION_SHADOW_HASH_INVALID")
         if source_semantic_hash != target_semantic_hash:
             fail("MIGRATION_SHADOW_DIVERGENCE")
-        return self._transition(
-            migration_id,
-            expected_state="TARGET_STAGED",
-            next_state="SHADOW_VERIFIED",
-            event_payload={"semantic_hash": source_semantic_hash},
-            updates={"shadow_semantic_hash": source_semantic_hash},
-        )
+        self._require_product_store(store)
+        with store.serialization():
+            state = self.read_state(migration_id)
+            self._require_target_store(state, store)
+            if target_pointer_key != state["target_pointer_key"]:
+                fail("MIGRATION_SHADOW_POINTER_MISMATCH")
+            pointer = store.read_pointer(target_pointer_key)
+            self._require_target_pointer(state, pointer)
+            if (
+                not isinstance(target_pointer_generation, int)
+                or isinstance(target_pointer_generation, bool)
+                or target_pointer_generation != state["target_pointer_generation"]
+                or pointer["generation"] != target_pointer_generation
+            ):
+                fail("MIGRATION_SHADOW_GENERATION_MISMATCH")
+            return self._transition(
+                migration_id,
+                expected_state="TARGET_STAGED",
+                next_state="SHADOW_VERIFIED",
+                event_payload={
+                    "source_semantic_hash": source_semantic_hash,
+                    "target_semantic_hash": target_semantic_hash,
+                    "target_authority_store_id": store.authority_store_id,
+                    "target_storage_locator_hash": store.storage_locator_hash,
+                    "target_pointer_key": pointer["logical_pointer_key"],
+                    "target_pointer_generation": pointer["generation"],
+                },
+                updates={
+                    "shadow_semantic_hash": source_semantic_hash,
+                    "shadow_source_semantic_hash": source_semantic_hash,
+                    "shadow_target_semantic_hash": target_semantic_hash,
+                    "shadow_target_authority_store_id": store.authority_store_id,
+                    "shadow_target_storage_locator_hash": store.storage_locator_hash,
+                    "shadow_target_pointer_key": pointer["logical_pointer_key"],
+                    "shadow_target_pointer_generation": pointer["generation"],
+                },
+            )
+
+    @staticmethod
+    def _require_shadow_binding(
+        state: dict[str, Any],
+        store: CandidateAuthorityStore,
+        pointer: dict[str, Any],
+    ) -> None:
+        if (
+            not _is_sha256(state["shadow_source_semantic_hash"])
+            or state["shadow_source_semantic_hash"]
+            != state["shadow_target_semantic_hash"]
+            or state["shadow_semantic_hash"]
+            != state["shadow_source_semantic_hash"]
+            or state["shadow_target_authority_store_id"] != store.authority_store_id
+            or state["shadow_target_storage_locator_hash"]
+            != store.storage_locator_hash
+            or state["shadow_target_pointer_key"] != pointer["logical_pointer_key"]
+            or state["shadow_target_pointer_generation"] != pointer["generation"]
+        ):
+            fail("MIGRATION_SHADOW_BINDING_MISMATCH")
+
+    def _require_persisted_bindings(self, state: dict[str, Any]) -> None:
+        with sqlite3.connect(self.database_path) as connection:
+            project = connection.execute(
+                "SELECT authority_store_id, storage_locator_hash "
+                "FROM authority_project_bindings WHERE project_scope_id = ?",
+                (state["project_scope_id"],),
+            ).fetchone()
+            pointer = connection.execute(
+                "SELECT authority_store_id, storage_locator_hash, migration_id, "
+                "target_pointer_generation FROM authority_pointer_bindings "
+                "WHERE project_scope_id = ? AND target_pointer_key = ?",
+                (state["project_scope_id"], state["target_pointer_key"]),
+            ).fetchone()
+        if project != (
+            state["target_authority_store_id"],
+            state["target_storage_locator_hash"],
+        ):
+            fail("MIGRATION_PROJECT_AUTHORITY_CONFLICT")
+        if pointer != (
+            state["target_authority_store_id"],
+            state["target_storage_locator_hash"],
+            state["migration_id"],
+            state["target_pointer_generation"],
+        ):
+            fail("MIGRATION_POINTER_AUTHORITY_CONFLICT")
 
     def cutover(
         self,
@@ -459,6 +772,7 @@ class NamespaceMigrationController:
             self._require_target_pointer(state, pointer)
             if pointer["generation"] != state["target_pointer_generation"]:
                 fail("MIGRATION_CUTOVER_CAS_MISMATCH")
+            self._require_shadow_binding(state, store, pointer)
             return self._transition(
                 migration_id,
                 expected_state="SHADOW_VERIFIED",
@@ -467,6 +781,7 @@ class NamespaceMigrationController:
                     "target_pointer_key": pointer["logical_pointer_key"],
                     "target_pointer_generation": pointer["generation"],
                 },
+                bind_cutover=True,
             )
 
     def activate_product_run(
@@ -479,6 +794,7 @@ class NamespaceMigrationController:
         with store.serialization():
             state = self.read_state(migration_id)
             self._require_target_store(state, store)
+            self._require_persisted_bindings(state)
             pointer = store.read_pointer(state["target_pointer_key"])
             self._require_target_pointer(state, pointer)
             if pointer["generation"] != state["target_pointer_generation"]:
@@ -516,6 +832,7 @@ class NamespaceMigrationController:
         with store.serialization():
             state = self.read_state(migration_id)
             self._require_target_store(state, store)
+            self._require_persisted_bindings(state)
             if state["state"] not in {
                 "CUTOVER_COMMITTED",
                 "POST_CUTOVER_ACTIVE",
@@ -543,27 +860,16 @@ class NamespaceMigrationController:
                 },
                 updates={"target_pointer_generation": pointer_after["generation"]},
                 event_name="FORWARD_RECOVERY_RECORDED",
+                advance_pointer_binding=(
+                    pointer_before["generation"],
+                    pointer_after["generation"],
+                ),
             )
 
     def read_state(self, migration_id: str) -> dict[str, Any]:
         with sqlite3.connect(self.database_path) as connection:
             row = self._row(connection, migration_id)
-        return {
-            "migration_id": migration_id,
-            "project_scope_id": row[0],
-            "source": _decode(row[1]),
-            "source_hash": row[2],
-            "state": row[3],
-            "target_root_result": (
-                None if row[4] is None else _decode(row[4])
-            ),
-            "target_pointer_key": row[5],
-            "target_pointer_generation": row[6],
-            "target_authority_store_id": row[7],
-            "target_storage_locator_hash": row[8],
-            "shadow_semantic_hash": row[9],
-            "event_sequence": row[10],
-        }
+        return self._state_from_row(migration_id, row)
 
     def events(self, migration_id: str) -> list[dict[str, Any]]:
         with sqlite3.connect(self.database_path) as connection:
@@ -586,6 +892,18 @@ class NamespaceMigrationController:
                     "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name"
                 ).fetchall()
             ]
+
+    def authority_binding_counts(self) -> dict[str, int]:
+        with sqlite3.connect(self.database_path) as connection:
+            return {
+                table: connection.execute(
+                    f'SELECT COUNT(*) FROM "{table}"'
+                ).fetchone()[0]
+                for table in (
+                    "authority_project_bindings",
+                    "authority_pointer_bindings",
+                )
+            }
 
 
 class ProductCandidateAuthorityAccess:
@@ -611,6 +929,7 @@ class ProductCandidateAuthorityAccess:
         self.__controller._require_target_store(state, self.__store)
         if state["state"] != "POST_CUTOVER_ACTIVE":
             fail("PRODUCT_NAMESPACE_NOT_ACTIVE")
+        self.__controller._require_persisted_bindings(state)
         return state
 
     def _current_pointer(self, state: dict[str, Any]) -> dict[str, Any]:

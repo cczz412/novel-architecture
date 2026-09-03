@@ -1,4 +1,4 @@
-# CCZ-142｜PRODUCT_CANDIDATE_AUTHORITY 产品接线 R02
+# CCZ-142｜PRODUCT_CANDIDATE_AUTHORITY 产品接线 R03
 
 ✅ 这块把 PR #230 的“单一候选 writer”继续接到产品身份：B01 root 和 B06 child 不再沿用 `FIXTURE_ONLY`，而是使用 `PRODUCT_CANDIDATE_AUTHORITY` namespace 与 `PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY` access。
 
@@ -11,6 +11,10 @@
 - B02～B09 仍写自己的原件或派生视图，只是能够安全读取同一套产品 CandidateVersion 引用。
 
 R02 把产品迁移绑到四个同时成立的条件：项目、随库持久化的 store ID、数据库位置摘要、目标 pointer。只有这四项都和 staged 记录一致，才能切换、激活产品读取或记录前向修复。
+
+R03 再把这组关系写进迁移控制库：一个项目只能绑定一个产品 authority store，同一项目的每个 pointer 也只能绑定该 store。不同章节和责任段可以继续在同一个 store 里各自切换；换迁移编号不能把同一项目或同一 pointer 接到第二个库。项目绑定、pointer 绑定和 `CUTOVER_COMMITTED` 状态在同一 SQLite 事务中提交，并发争抢只能有一个胜者。
+
+影子一致性不再只比较两个字符串。来源与目标语义哈希都必须是 64 位小写十六进制 SHA-256，同时保存目标 store ID、数据库位置摘要、pointer key 和 pointer 代次。切换前会重新核对整组绑定；前向修复推进 pointer 时，也会在同一个迁移控制事务里推进保存的 pointer 代次。
 
 普通 B01 `FixtureStore` 和普通 `B06CommitStore` 均会在创建第二份产品存储前拒绝产品 profile。这两道门由真实构造探针验收，不再在回执里直接写死 writer 数量。
 
@@ -44,15 +48,18 @@ DISCOVERED
 - fixture／product 混合 namespace 失败关闭；
 - 普通 B01／B06 的第二产品 writer 入口在创建存储前拒绝；
 - 跨项目、同项目不同 store、同 store 错 pointer 和前向修复串线均失败关闭；
+- 不同迁移编号不能把同一项目接到第二个 store，并发 cutover 只能有一个胜者；
+- 同一项目的多个 pointer 可以在同一个 store 中正常绑定；
+- 非 SHA-256 影子值、错 store、错 pointer、错代次均在 cutover 前失败；
 - cutover 与 B06 并发时，修改不能插入 pointer 检查和切换状态提交之间；
 - synthetic fixture 拒绝产品迁移；
 - 切换前不可见、中止、CAS 漂移；
 - 切换后真实 B06 child 形成新的产品 pointer 代次；
-- 控制库没有 CandidateVersion、current pointer、FormalFact 或十本账表；
+- 控制库只新增项目到 store、项目和 pointer 到 store 的绑定表，没有 CandidateVersion、current pointer、FormalFact 或十本账表；
 - 模型 API、网络 API、正式事实和十本账写入均为 0。
 
 ## 当前身份
 
-这是 Issue #231 的 Draft R02 工程候选，当前 base 是 `main@68e13f64e475eece2d7d7cf2e26597335a734129`。把产品差异叠到这份新 main 后，按独立组件入口通过 592 项。测试通过也不等于 PR #235 已经转 Ready、合并或接入正式事实。
+这是 Issue #231 的 Draft R03 工程候选，当前 base 是 `main@68e13f64e475eece2d7d7cf2e26597335a734129`。当前分支和精确 main 临时叠加树均按独立组件入口通过 601 项。测试通过也不等于 PR #235 已经转 Ready、合并或接入正式事实。
 
 来源：Codex

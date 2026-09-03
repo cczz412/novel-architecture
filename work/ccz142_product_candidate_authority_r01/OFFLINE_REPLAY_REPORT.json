@@ -117,8 +117,14 @@
   },
   "result": "PASS",
   "successful_cutover": {
+    "authority_binding_counts": {
+      "authority_pointer_bindings": 1,
+      "authority_project_bindings": 1
+    },
     "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
     "control_schema_objects": [
+      "authority_pointer_bindings",
+      "authority_project_bindings",
       "metadata",
       "migration_events",
       "migration_state"
