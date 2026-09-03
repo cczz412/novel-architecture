@@ -4,7 +4,7 @@
 
 - GitHub main 基线：`c89beb4368b6b79598906bdc27819a16f751155b`
 - 上游 Draft PR：[#230](https://github.com/cczz412/novel-architecture/pull/230)
-- 上游精确 head：`fb16a836fea00a8ec03722fea876b02709bed8b1`
+- 上游精确 head：`7d449fa3e79d28ffdea20683ec0ab7621bed4056`
 - 本轮施工 Issue：[#231](https://github.com/cczz412/novel-architecture/issues/231)
 - CZ 授权时间：2026-09-03 04:04:25 +0800
 - 零 API 候选 Manifest SHA-256：`4c6f020a31e66ab8a0e4945411aa222765ca42098b3b1bc54d668d9053489e4c`

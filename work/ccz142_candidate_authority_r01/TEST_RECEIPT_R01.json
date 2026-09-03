@@ -1,10 +1,10 @@
 {
   "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R02-TEST-RECEIPT",
-  "validated_at": "2026-09-03T10:10:02+08:00",
+  "validated_at": "2026-09-03T10:18:25+08:00",
   "result": "PASS_WITH_PRODUCT_NAMESPACE_BLOCKER",
   "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
   "github_issue": 227,
-  "current_main_compatibility_sha": "b80ce84a5ffb8ff40c879acc2e32b05c228815a2",
+  "current_main_compatibility_sha": "c2ae148f6dd6ee1731b8c936662b017ba7fcf73c",
   "runtime": {
     "python": "3.12.12",
     "environment": "uv --locked",
@@ -70,12 +70,10 @@
     "failed": 0
   },
   "current_main_compatibility": {
-    "main_sha": "b80ce84a5ffb8ff40c879acc2e32b05c228815a2",
-    "result": "PASS_NO_NEW_REGRESSIONS_WITH_BASELINE_FAILURE",
-    "patched_tree_passed": 557,
-    "patched_tree_failed": 1,
-    "clean_main_same_failure_reproduced": true,
-    "baseline_failure": "B09 static boundary still forbids the B10-to-B09 dependency now present on main",
+    "main_sha": "c2ae148f6dd6ee1731b8c936662b017ba7fcf73c",
+    "result": "PASS",
+    "patched_tree_passed": 558,
+    "patched_tree_failed": 0,
     "candidate_authority_or_B01_to_B08_failures": 0
   },
   "root_acceptance": {
