@@ -1,0 +1,377 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/CHAPTER_SCOPE_CONFIRMATION.schema.json",
+  "title": "CHAPTER_SCOPE_CONFIRMATION v1",
+  "description": "Project-scoped chapter storyline, viewpoint and appearance confirmation. Structural validation only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "scope_id",
+    "truth_scope_ref",
+    "status",
+    "reason_code",
+    "chapter_slot_basis",
+    "task_ref",
+    "candidate_basis",
+    "selection",
+    "confirmation",
+    "supersedes_scope_id",
+    "superseded_by_scope_id",
+    "revoked_at",
+    "ccz139_handoff",
+    "scope_basis_sha256"
+  ],
+  "properties": {
+    "contract": {"const": "CHAPTER_SCOPE_CONFIRMATION"},
+    "version": {"const": "v1"},
+    "scope_id": {"$ref": "#/$defs/stable_ref"},
+    "truth_scope_ref": {"$ref": "#/$defs/truth_scope_ref"},
+    "status": {
+      "enum": [
+        "CONFIRMED",
+        "AWAITING_AUTHOR",
+        "STOPPED",
+        "SUPERSEDED",
+        "REVOKED"
+      ]
+    },
+    "reason_code": {"$ref": "#/$defs/nullable_reason_code"},
+    "chapter_slot_basis": {"$ref": "#/$defs/chapter_slot_basis"},
+    "task_ref": {"$ref": "#/$defs/task_ref"},
+    "candidate_basis": {"$ref": "#/$defs/candidate_basis"},
+    "selection": {
+      "oneOf": [
+        {"$ref": "#/$defs/selection"},
+        {"type": "null"}
+      ]
+    },
+    "confirmation": {
+      "oneOf": [
+        {"$ref": "#/$defs/confirmation"},
+        {"type": "null"}
+      ]
+    },
+    "supersedes_scope_id": {"$ref": "#/$defs/nullable_stable_ref"},
+    "superseded_by_scope_id": {"$ref": "#/$defs/nullable_stable_ref"},
+    "revoked_at": {"$ref": "#/$defs/nullable_timestamp"},
+    "ccz139_handoff": {
+      "oneOf": [
+        {"$ref": "#/$defs/ccz139_handoff"},
+        {"type": "null"}
+      ]
+    },
+    "scope_basis_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "nullable_timestamp": {
+      "oneOf": [
+        {"$ref": "#/$defs/timestamp"},
+        {"type": "null"}
+      ]
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stable_ref": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*-[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "nullable_stable_ref": {
+      "oneOf": [
+        {"$ref": "#/$defs/stable_ref"},
+        {"type": "null"}
+      ]
+    },
+    "stable_ref_array": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/stable_ref"},
+      "uniqueItems": true
+    },
+    "truth_scope_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_author_id", "project_id"],
+      "properties": {
+        "principal_author_id": {"$ref": "#/$defs/stable_ref"},
+        "project_id": {"$ref": "#/$defs/stable_ref"}
+      }
+    },
+    "chapter_slot_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "project_id",
+        "slot_ref",
+        "source_plan_version",
+        "source_plan_sha256",
+        "slot_rev",
+        "snapshot_sha256"
+      ],
+      "properties": {
+        "contract": {"const": "CHAPTER_SLOT_SNAPSHOT"},
+        "version": {"const": "v1"},
+        "project_id": {"$ref": "#/$defs/stable_ref"},
+        "slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "source_plan_version": {"type": "integer", "minimum": 1},
+        "source_plan_sha256": {"$ref": "#/$defs/sha256"},
+        "slot_rev": {"type": "integer", "minimum": 1},
+        "snapshot_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_ref",
+        "object_revision",
+        "object_sha256",
+        "project_id",
+        "slot_ref",
+        "expected_source_plan_version",
+        "expected_source_plan_sha256",
+        "expected_slot_rev"
+      ],
+      "properties": {
+        "object_ref": {"$ref": "#/$defs/stable_ref"},
+        "object_revision": {"type": "integer", "minimum": 1},
+        "object_sha256": {"$ref": "#/$defs/sha256"},
+        "project_id": {"$ref": "#/$defs/stable_ref"},
+        "slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "expected_source_plan_version": {"type": "integer", "minimum": 1},
+        "expected_source_plan_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_slot_rev": {"type": "integer", "minimum": 1}
+      }
+    },
+    "candidate_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis_ref",
+        "object_ref",
+        "source_kind",
+        "source_plan_version",
+        "source_plan_sha256",
+        "source_object_revision",
+        "source_object_sha256"
+      ],
+      "properties": {
+        "basis_ref": {"$ref": "#/$defs/stable_ref"},
+        "object_ref": {"$ref": "#/$defs/stable_ref"},
+        "source_kind": {
+          "enum": [
+            "CHAPTER_SLOT_SNAPSHOT",
+            "CURRENT_PLANNING_LONGLINE",
+            "AUTHOR_STABLE_REF",
+            "MAIN_AI_RECOMMENDATION"
+          ]
+        },
+        "source_plan_version": {"type": "integer", "minimum": 1},
+        "source_plan_sha256": {"$ref": "#/$defs/sha256"},
+        "source_object_revision": {"type": "integer", "minimum": 1},
+        "source_object_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "candidate_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["storyline_candidates", "character_candidates"],
+      "properties": {
+        "storyline_candidates": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/candidate_ref"}
+        },
+        "character_candidates": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/candidate_ref"}
+        }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selected_storyline_ref",
+        "transition_intent",
+        "viewpoint_character_ref",
+        "appearance_character_refs",
+        "selected_basis_refs"
+      ],
+      "properties": {
+        "selected_storyline_ref": {"$ref": "#/$defs/stable_ref"},
+        "transition_intent": {
+          "enum": [
+            "CONTINUE_CURRENT",
+            "SWITCH_HARD_CUT",
+            "SWITCH_SUSTAINED_BRANCH",
+            "SWITCH_MAINLINE_BRIDGE"
+          ]
+        },
+        "viewpoint_character_ref": {"$ref": "#/$defs/stable_ref"},
+        "appearance_character_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "selected_basis_refs": {"$ref": "#/$defs/stable_ref_array"}
+      }
+    },
+    "permission_snapshot_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "snapshot_id",
+        "snapshot_revision",
+        "snapshot_sha256",
+        "principal_author_id",
+        "delegate_actor_id",
+        "project_id",
+        "slot_ref",
+        "allowed_action",
+        "allowed_phase",
+        "allowed_scope_refs",
+        "valid_until",
+        "revoked_at",
+        "revocation_version"
+      ],
+      "properties": {
+        "contract": {"const": "PERMISSION_SNAPSHOT"},
+        "version": {"const": "v1"},
+        "snapshot_id": {"$ref": "#/$defs/stable_ref"},
+        "snapshot_revision": {"type": "integer", "minimum": 1},
+        "snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "principal_author_id": {"$ref": "#/$defs/stable_ref"},
+        "delegate_actor_id": {"$ref": "#/$defs/nullable_stable_ref"},
+        "project_id": {"$ref": "#/$defs/stable_ref"},
+        "slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "allowed_action": {"const": "CONFIRM_CHAPTER_SCOPE"},
+        "allowed_phase": {"const": "CHAPTER_PREP"},
+        "allowed_scope_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "valid_until": {"$ref": "#/$defs/timestamp"},
+        "revoked_at": {"$ref": "#/$defs/nullable_timestamp"},
+        "revocation_version": {"type": "integer", "minimum": 0}
+      }
+    },
+    "effective_focus_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "focus_id",
+        "focus_revision",
+        "focus_sha256",
+        "project_id",
+        "slot_ref",
+        "phase",
+        "valid_until"
+      ],
+      "properties": {
+        "focus_id": {"$ref": "#/$defs/stable_ref"},
+        "focus_revision": {"type": "integer", "minimum": 1},
+        "focus_sha256": {"$ref": "#/$defs/sha256"},
+        "project_id": {"$ref": "#/$defs/stable_ref"},
+        "slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "phase": {"const": "CHAPTER_PREP"},
+        "valid_until": {"$ref": "#/$defs/timestamp"}
+      }
+    },
+    "confirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "actor_id",
+        "confirmed_at",
+        "permission_revocation_version",
+        "permission_snapshot_ref",
+        "effective_focus_ref"
+      ],
+      "properties": {
+        "mode": {
+          "enum": ["AUTHOR_CONFIRMED", "DELEGATED_CONFIRMED"]
+        },
+        "actor_id": {"$ref": "#/$defs/stable_ref"},
+        "confirmed_at": {"$ref": "#/$defs/timestamp"},
+        "permission_revocation_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "permission_snapshot_ref": {
+          "$ref": "#/$defs/permission_snapshot_ref"
+        },
+        "effective_focus_ref": {"$ref": "#/$defs/effective_focus_ref"}
+      }
+    },
+    "nullable_reason_code": {
+      "oneOf": [
+        {
+          "enum": [
+            "AUTHORIZATION_REQUIRED",
+            "NO_CANDIDATE",
+            "CANDIDATE_CONFLICT",
+            "AUTHORIZATION_INVALID",
+            "FOCUS_MISMATCH",
+            "SOURCE_ADVANCED",
+            "SCOPE_MISMATCH",
+            "SOURCE_DAMAGED",
+            "UNAUTHORIZED",
+            "SUPERSEDED_BY_NEW_SCOPE",
+            "AUTHOR_REVOKED",
+            "PERMISSION_REVOKED"
+          ]
+        },
+        {"type": "null"}
+      ]
+    },
+    "ccz139_handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "scope_id",
+        "selected_storyline_ref",
+        "transition_intent",
+        "viewpoint_character_ref",
+        "appearance_character_refs",
+        "permission_snapshot_sha256",
+        "effective_focus_sha256",
+        "source_plan_version",
+        "source_plan_sha256",
+        "slot_ref",
+        "slot_rev",
+        "scope_basis_sha256"
+      ],
+      "properties": {
+        "target": {"const": "CCZ-139"},
+        "scope_id": {"$ref": "#/$defs/stable_ref"},
+        "selected_storyline_ref": {"$ref": "#/$defs/stable_ref"},
+        "transition_intent": {
+          "enum": [
+            "CONTINUE_CURRENT",
+            "SWITCH_HARD_CUT",
+            "SWITCH_SUSTAINED_BRANCH",
+            "SWITCH_MAINLINE_BRIDGE"
+          ]
+        },
+        "viewpoint_character_ref": {"$ref": "#/$defs/stable_ref"},
+        "appearance_character_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "permission_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "effective_focus_sha256": {"$ref": "#/$defs/sha256"},
+        "source_plan_version": {"type": "integer", "minimum": 1},
+        "source_plan_sha256": {"$ref": "#/$defs/sha256"},
+        "slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "slot_rev": {"type": "integer", "minimum": 1},
+        "scope_basis_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}
