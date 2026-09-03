@@ -221,19 +221,58 @@ def validate_edge_grant_for_reader(
         raise ContractError("READ_GRANT_PROJECT_BINDING_MISMATCH")
     if authorization["access"] == "CLOSED":
         raise ContractError("READ_GRANT_CLOSED")
-    if authorization["access"] == "TASK_SLICE" and (
-        record["observer_ref"] not in authorization["observer_refs"]
-        or record["fact_ref"] not in authorization["fact_refs"]
+    if authorization["access"] == "TASK_SLICE":
+        if (
+            record["observer_ref"] not in authorization["observer_refs"]
+            or record["fact_ref"] not in authorization["fact_refs"]
+        ):
+            raise ContractError("READ_GRANT_SCOPE_MISMATCH")
+        _validate_task_edge_as_of(record, authorization["as_of"])
+
+
+def _validate_task_edge_as_of(
+    record: dict[str, Any],
+    as_of: dict[str, Any],
+) -> None:
+    if record["version_status"] != {
+        "confirmation": "author_confirmed",
+        "lifecycle": "active",
+    }:
+        raise ContractError("TASK_GRANT_REQUIRES_ACTIVE_AUTHOR_CONFIRMED_EDGE")
+
+    interval = record["story_time_interval"]
+    start = interval["start"]
+    end = interval["end"]
+    start_order = start.get("story_order")
+    as_of_order = as_of.get("story_order")
+    end_order = None if end is None else end.get("story_order")
+    if (
+        start_order is not None
+        and as_of_order is not None
+        and (end is None or end_order is not None)
     ):
-        raise ContractError("READ_GRANT_SCOPE_MISMATCH")
+        if as_of_order < start_order:
+            raise ContractError("READ_GRANT_AS_OF_BEFORE_EDGE_START")
+        if end_order is not None and as_of_order >= end_order:
+            raise ContractError("READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL")
+        return
+
+    as_of_ref = _chapter_ref(as_of)
+    if as_of_ref == _chapter_ref(start):
+        return
+    if end is not None and as_of_ref == _chapter_ref(end):
+        raise ContractError("READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL")
+    raise ContractError("READ_GRANT_AS_OF_UNDETERMINED")
 
 
-def _story_order_bounds(interval: dict[str, Any]) -> tuple[int, int | None]:
+def _story_order_bounds(
+    interval: dict[str, Any],
+) -> tuple[int, int | None] | None:
     start_order = interval["start"].get("story_order")
     end = interval["end"]
     end_order = None if end is None else end.get("story_order")
     if start_order is None or (end is not None and end_order is None):
-        raise ContractError("STORY_INTERVAL_OVERLAP_UNDETERMINED")
+        return None
     return start_order, end_order
 
 
@@ -241,11 +280,26 @@ def _story_intervals_overlap(
     left: dict[str, Any],
     right: dict[str, Any],
 ) -> bool:
-    left_start, left_end = _story_order_bounds(left)
-    right_start, right_end = _story_order_bounds(right)
-    left_before_right = left_end is not None and left_end <= right_start
-    right_before_left = right_end is not None and right_end <= left_start
-    return not (left_before_right or right_before_left)
+    left_bounds = _story_order_bounds(left)
+    right_bounds = _story_order_bounds(right)
+    if left_bounds is not None and right_bounds is not None:
+        left_start, left_end = left_bounds
+        right_start, right_end = right_bounds
+        left_before_right = left_end is not None and left_end <= right_start
+        right_before_left = right_end is not None and right_end <= left_start
+        return not (left_before_right or right_before_left)
+
+    left_start_ref = _chapter_ref(left["start"])
+    right_start_ref = _chapter_ref(right["start"])
+    if left_start_ref == right_start_ref:
+        return True
+    left_end = left["end"]
+    if left_end is not None and _chapter_ref(left_end) == right_start_ref:
+        return False
+    right_end = right["end"]
+    if right_end is not None and _chapter_ref(right_end) == left_start_ref:
+        return False
+    raise ContractError("STORY_INTERVAL_OVERLAP_UNDETERMINED")
 
 
 def _same_logical_slot(left: dict[str, Any], right: dict[str, Any]) -> bool:

@@ -26,6 +26,16 @@ def _case(case_id: str) -> dict:
     return next(case for case in CASES if case["case_id"] == case_id)
 
 
+def _confirmed_task_read_pair(edge_case_id: str, grant_case_id: str) -> tuple:
+    edge = copy.deepcopy(_case(edge_case_id)["document"])
+    edge["version_status"] = {
+        "confirmation": "author_confirmed",
+        "lifecycle": "active",
+    }
+    grant = copy.deepcopy(_case(grant_case_id)["document"])
+    return edge, grant
+
+
 @pytest.mark.parametrize("case", CASES, ids=[case["case_id"] for case in CASES])
 def test_knowledge_edge_fixture_matrix(case: dict) -> None:
     MODULE.validate_fixture_case(case)
@@ -135,13 +145,17 @@ def test_reader_type_and_version_stop_before_full_schema_validation() -> None:
 
 
 def test_reader_grant_must_match_edge_version_and_project() -> None:
-    v1_edge = _case("KE-VALID-01")["document"]
-    v1_grant = _case("KE-VALID-06")["document"]
+    v1_edge, v1_grant = _confirmed_task_read_pair(
+        "KE-VALID-01",
+        "KE-VALID-06",
+    )
     MODULE.validate_edge_grant_for_reader(v1_edge, v1_grant, MODULE.VERSION_V1)
     MODULE.validate_edge_grant_for_reader(v1_edge, v1_grant, MODULE.VERSION_V2)
 
-    v2_edge = _case("KE-V2-VALID-01")["document"]
-    v2_grant = _case("KE-V2-VALID-05")["document"]
+    v2_edge, v2_grant = _confirmed_task_read_pair(
+        "KE-V2-VALID-01",
+        "KE-V2-VALID-05",
+    )
     MODULE.validate_edge_grant_for_reader(v2_edge, v2_grant, MODULE.VERSION_V2)
 
     with pytest.raises(MODULE.ContractError, match="READ_GRANT_VERSION_MISMATCH"):
@@ -172,6 +186,143 @@ def test_reader_grant_must_match_edge_version_and_project() -> None:
             wrong_author,
             MODULE.VERSION_V2,
         )
+
+
+@pytest.mark.parametrize(
+    ("edge_case_id", "grant_case_id", "reader_version"),
+    (
+        ("KE-VALID-01", "KE-VALID-06", MODULE.VERSION_V1),
+        ("KE-V2-VALID-01", "KE-V2-VALID-05", MODULE.VERSION_V2),
+    ),
+)
+def test_task_read_requires_active_author_confirmed_edge(
+    edge_case_id: str,
+    grant_case_id: str,
+    reader_version: str,
+) -> None:
+    candidate = copy.deepcopy(_case(edge_case_id)["document"])
+    grant = copy.deepcopy(_case(grant_case_id)["document"])
+    with pytest.raises(
+        MODULE.ContractError,
+        match="TASK_GRANT_REQUIRES_ACTIVE_AUTHOR_CONFIRMED_EDGE",
+    ):
+        MODULE.validate_edge_grant_for_reader(candidate, grant, reader_version)
+
+    retired = copy.deepcopy(candidate)
+    retired["version_status"] = {
+        "confirmation": "author_confirmed",
+        "lifecycle": "retired",
+    }
+    with pytest.raises(
+        MODULE.ContractError,
+        match="TASK_GRANT_REQUIRES_ACTIVE_AUTHOR_CONFIRMED_EDGE",
+    ):
+        MODULE.validate_edge_grant_for_reader(retired, grant, reader_version)
+
+
+@pytest.mark.parametrize(
+    ("edge_case_id", "grant_case_id", "reader_version"),
+    (
+        ("KE-VALID-01", "KE-VALID-06", MODULE.VERSION_V1),
+        ("KE-V2-VALID-01", "KE-V2-VALID-05", MODULE.VERSION_V2),
+    ),
+)
+def test_task_read_as_of_must_be_inside_story_interval(
+    edge_case_id: str,
+    grant_case_id: str,
+    reader_version: str,
+) -> None:
+    edge, grant = _confirmed_task_read_pair(edge_case_id, grant_case_id)
+    start_order = edge["story_time_interval"]["start"]["story_order"]
+
+    before_start = copy.deepcopy(grant)
+    before_start["as_of"]["story_order"] = start_order - 1
+    with pytest.raises(
+        MODULE.ContractError,
+        match="READ_GRANT_AS_OF_BEFORE_EDGE_START",
+    ):
+        MODULE.validate_edge_grant_for_reader(
+            edge,
+            before_start,
+            reader_version,
+        )
+
+    MODULE.validate_edge_grant_for_reader(edge, grant, reader_version)
+
+    bounded = copy.deepcopy(edge)
+    bounded["story_time_interval"]["end"] = copy.deepcopy(
+        edge["story_time_interval"]["start"]
+    )
+    bounded["story_time_interval"]["end"]["story_order"] = start_order + 10
+
+    inside = copy.deepcopy(grant)
+    inside["as_of"]["story_order"] = start_order + 5
+    MODULE.validate_edge_grant_for_reader(bounded, inside, reader_version)
+
+    for outside_order in (start_order + 10, start_order + 20):
+        outside = copy.deepcopy(grant)
+        outside["as_of"]["story_order"] = outside_order
+        with pytest.raises(
+            MODULE.ContractError,
+            match="READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL",
+        ):
+            MODULE.validate_edge_grant_for_reader(
+                bounded,
+                outside,
+                reader_version,
+            )
+
+    after_start = copy.deepcopy(grant)
+    after_start["as_of"]["story_order"] = start_order + 20
+    MODULE.validate_edge_grant_for_reader(edge, after_start, reader_version)
+
+
+def test_task_read_as_of_uses_only_exact_revision_refs_without_story_order() -> None:
+    edge, grant = _confirmed_task_read_pair(
+        "KE-V2-VALID-01",
+        "KE-V2-VALID-05",
+    )
+    edge["story_time_interval"]["start"].pop("story_order")
+    grant["as_of"].pop("story_order")
+    MODULE.validate_edge_grant_for_reader(edge, grant, MODULE.VERSION_V2)
+
+    end = copy.deepcopy(edge["story_time_interval"]["start"])
+    end_ref = end["chapter_revision_ref"]
+    end_ref["revision_no"] = 2
+    end_ref["revision_text_sha256"] = "d" * 64
+    edge["story_time_interval"]["end"] = end
+
+    at_end = copy.deepcopy(grant)
+    at_end["as_of"] = copy.deepcopy(end)
+    with pytest.raises(
+        MODULE.ContractError,
+        match="READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL",
+    ):
+        MODULE.validate_edge_grant_for_reader(edge, at_end, MODULE.VERSION_V2)
+
+    unknown = copy.deepcopy(grant)
+    unknown_ref = unknown["as_of"]["chapter_revision_ref"]
+    unknown_ref["revision_no"] = 3
+    unknown_ref["revision_text_sha256"] = "e" * 64
+    with pytest.raises(
+        MODULE.ContractError,
+        match="READ_GRANT_AS_OF_UNDETERMINED",
+    ):
+        MODULE.validate_edge_grant_for_reader(edge, unknown, MODULE.VERSION_V2)
+
+
+@pytest.mark.parametrize("lifecycle", ["active", "retired"])
+def test_author_full_project_can_inspect_candidate_and_history(
+    lifecycle: str,
+) -> None:
+    edge = copy.deepcopy(_case("KE-VALID-01")["document"])
+    edge["version_status"]["lifecycle"] = lifecycle
+    author_grant = copy.deepcopy(_case("KE-VALID-05")["document"])
+    MODULE.validate_edge_grant_for_reader(
+        edge,
+        author_grant,
+        MODULE.VERSION_V1,
+    )
 
 
 def test_v2_candidate_requires_existing_edge_set() -> None:
@@ -231,11 +382,56 @@ def test_adjacent_non_overlapping_story_intervals_allow_new_v2_slot() -> None:
     )
 
 
+def test_exact_revision_adjacent_intervals_allow_new_v2_slot() -> None:
+    candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
+    candidate["edge"]["story_time_interval"]["start"].pop("story_order")
+    existing = copy.deepcopy(candidate["edge"])
+    existing.update(
+        {
+            "version": MODULE.VERSION_V1,
+            "id": "KE-0996",
+            "permission_namespace": MODULE.PERMISSION_NAMESPACE_V1,
+            "epistemic_state": "suspects",
+        }
+    )
+    existing_start_ref = existing["story_time_interval"]["start"][
+        "chapter_revision_ref"
+    ]
+    existing_start_ref["chapter_id"] = "c11"
+    existing_start_ref["revision_text_sha256"] = "b" * 64
+    existing["story_time_interval"]["end"] = copy.deepcopy(
+        candidate["edge"]["story_time_interval"]["start"]
+    )
+    MODULE.validate_new_candidate(
+        candidate["edge"],
+        candidate["action"],
+        [existing],
+    )
+
+
+def test_exact_revision_equal_starts_are_overlapping() -> None:
+    candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
+    candidate["edge"]["story_time_interval"]["start"].pop("story_order")
+    existing = copy.deepcopy(candidate["edge"])
+    existing["id"] = "KE-0995"
+    with pytest.raises(MODULE.ContractError, match="KNOWLEDGE_EDGE_SLOT_CONFLICT"):
+        MODULE.validate_new_candidate(
+            candidate["edge"],
+            candidate["action"],
+            [existing],
+        )
+
+
 def test_unknown_story_overlap_stops_instead_of_assuming_no_conflict() -> None:
     candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
     existing = copy.deepcopy(candidate["edge"])
     existing["id"] = "KE-0997"
     existing["story_time_interval"]["start"].pop("story_order")
+    existing_start_ref = existing["story_time_interval"]["start"][
+        "chapter_revision_ref"
+    ]
+    existing_start_ref["chapter_id"] = "c13"
+    existing_start_ref["revision_text_sha256"] = "f" * 64
     with pytest.raises(
         MODULE.ContractError,
         match="STORY_INTERVAL_OVERLAP_UNDETERMINED",

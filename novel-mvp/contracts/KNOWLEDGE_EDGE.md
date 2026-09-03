@@ -150,6 +150,7 @@ v2 追加：
 新候选还要经过“逻辑位置”查重。这里的逻辑位置由作者、项目、观察者、事实和重叠的故事时间共同确定；`KE-` 号、认知状态、证据和来源身份都不能把同一个位置伪装成一条全新的边。
 
 - 故事时间按左闭右开区间 `[start, end)` 比较；旧边结束点等于新边开始点时，两个区间不重叠；
+- 两边缺少可比的 `story_order` 时，只比较完整 `chapter_revision_ref`：开始引用相同则重叠，一边结束引用精确等于另一边开始引用则相邻且不重叠，其余情况停止；
 - v2 新候选必须把该项目受信来源中的完整现存知情边集合交给 `validate_new_candidate`；缺少该集合返回 `EXISTING_EDGE_SET_REQUIRED`；
 - 同一逻辑位置存在其他版本的边时返回 `CROSS_VERSION_RECREATE_FORBIDDEN`，不能复制内容、换 `KE-` 号后重建；
 - 同一逻辑位置存在相同版本的边时返回 `KNOWLEDGE_EDGE_SLOT_CONFLICT`，应继续原 revision 链；
@@ -201,6 +202,14 @@ current／historical 不写进不可变 revision。它们由项目级 current �
 | `CHAPTER_CARD` | `TASK_SLICE`，只拿本章任务需要的已确认边 |
 | `READER` | `CLOSED` |
 | `PLUGIN` | `CLOSED` |
+
+正式任务的 `TASK_SLICE` 只能读取“作者已确认＋仍有效”的边；candidate 和 retired 都返回 `TASK_GRANT_REQUIRES_ACTIVE_AUTHOR_CONFIRMED_EDGE`。作者的 `FULL_PROJECT` 仍可用于查看候选和历史对象，不把它们当成正式任务输入。
+
+`TASK_SLICE` 的章节水位 `as_of` 还必须落在边的左闭右开故事区间内：
+
+- `as_of < start` 返回 `READ_GRANT_AS_OF_BEFORE_EDGE_START`；
+- `end` 非空时，`as_of >= end` 返回 `READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL`；
+- 存在可比的 `story_order` 时按整数顺序比较；缺少可比顺序时只认完整 `chapter_revision_ref` 精确相等，`as_of == start` 允许，`as_of == end` 拒绝，其余返回 `READ_GRANT_AS_OF_UNDETERMINED`。
 
 事实本身可读，不代表人物的误信、怀疑或明确不知道自动可读。跨项目请求要在探测人物、事实或边是否存在之前返回 `UNAUTHORIZED`。无权时不能通过数量、空数组、来源水位或差异化错误猜秘密是否存在。
 
