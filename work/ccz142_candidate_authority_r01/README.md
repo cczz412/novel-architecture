@@ -1,4 +1,4 @@
-# CCZ-142｜单一 CandidateAuthorityStore 接线 R01
+# CCZ-142｜单一 CandidateAuthorityStore 接线 R02
 
 ✅ 这份施工候选已经让 B01 root 与 B06 child／current pointer 写进同一个候选权威库，同时保留 B01～B08 原离线夹具不变。
 
@@ -12,7 +12,7 @@ R02 在 metadata 里增加了随库持久化的 `authority_store_id`。它与项
 
 - GitHub 施工入口：[#227](https://github.com/cczz412/novel-architecture/issues/227)
 - 开工基线：`main@c89beb4368b6b79598906bdc27819a16f751155b`
-- 当前是 Draft PR 候选，不是产品采用，也没有修改正式事实合同。
+- 当前是工程审查候选，不是产品采用，也没有修改正式事实合同；PR 状态不会改变这层身份。
 - 写集只在 `work/ccz142_candidate_authority_r01/**`。
 
 ## root 怎样进入同一个库
@@ -21,7 +21,7 @@ R02 在 metadata 里增加了随库持久化的 `authority_store_id`。它与项
 
 内部继续调用 B01 当前组装器：
 
-1. 两次读取上游 authority，确认章节修订、输入代次和责任段没有漂移；
+1. 先读取一次上游 authority；提交前必须取得上游序列锁，在锁内第二次读取，并把锁一直持有到 root 提交完成；
 2. 在内存捕获器里生成并读回 B01 的段索引、root CandidateVersion、初始 pointer 和 pointer snapshot；
 3. 把已经通过 B01 合同的冻结写集一次性交给 `CandidateAuthorityStore`；
 4. 同 operation 同输入只回原结果，换输入或抢同一 pointer 失败关闭。
@@ -39,9 +39,13 @@ child CandidateVersion、current pointer CAS 和 MergeReceipt 仍在一个事务
 - 每个 `project_scope_id` 使用一份独立 authority store；跨项目请求会在写前拒绝。
 - 同一项目可以保存多章节、多责任段和不同输入代次的 root；每个逻辑 pointer 独立。
 - 两个并发的同 root 请求只有一个物理提交，另一个幂等回读。
-- `LegacyCandidateMigration` 可以只读导入旧 B01 `state.json` 与旧 B06 SQLite；目标库写入仍由 `CandidateAuthorityStore` 完成。
+- `LegacyCandidateMigration` 从旧 B01 `state.json` 与旧 B06 SQLite 读取冻结快照；目标库写入仍只由 `CandidateAuthorityStore` 完成。
+- B01 root 与迁移回执在同一事务提交；源快照若在提交前变化，目标事务整体回滚。
+- B06 迁移持有旧 B06 store 的共享锁，并在目标提交前复核源文件哈希。
+- pointer 的数据库行键、正文逻辑键和项目身份必须一致。
 - B06 旧 pointer 只有在 MergeReceipt 能从当前 root 逐代证明到 incoming child 时才允许推进。
-- 迁移不覆盖源文件，同 migration ID 换源会在导入前拒绝。
+- 迁移不覆盖源文件；同 migration ID 换源、同一旧源换 migration ID 都会在导入前拒绝。
+- authority store 使用 `r02-candidate` schema 身份；跨进程重开时必须精确匹配表结构和迁移源唯一约束。
 
 ## 当前不能叫产品采用
 
@@ -68,6 +72,6 @@ uv run --locked python work/ccz142_candidate_authority_r01/self_check.py
 
 完整回归还包括 B01、B05、B06、B07、B08 原测试。实际命令、数量和 SHA 见本目录离线回放报告与 PR 描述。
 
-本轮实际通过 423 项：新目录 27 项，B01～B08 直接依赖 396 项。完整分项见 `TEST_RECEIPT_R01.json`。
+R02 在施工分支按独立组件入口通过 558 项。叠到 `main@b80ce84a5ffb8ff40c879acc2e32b05c228815a2` 后通过 557 项，另有 1 个干净 main 可重复的 B09 旧边界失败：B09 测试仍禁止 B10 依赖 B09，但 B10 已进入 main。本票没有修改 B09／B10，因此记为“没有新增回归，保留主分支基线失败”，不冒充 558 项全绿。完整分项见 `TEST_RECEIPT_R01.json`。
 
 来源：Codex

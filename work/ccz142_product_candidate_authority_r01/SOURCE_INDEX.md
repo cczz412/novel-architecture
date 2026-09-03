@@ -4,7 +4,7 @@
 
 - GitHub main 基线：`c89beb4368b6b79598906bdc27819a16f751155b`
 - 上游 Draft PR：[#230](https://github.com/cczz412/novel-architecture/pull/230)
-- 上游精确 head：`f65b4c200629a926951826e21058bfe6a52751d1`
+- 上游精确 head：`fb16a836fea00a8ec03722fea876b02709bed8b1`
 - 本轮施工 Issue：[#231](https://github.com/cczz412/novel-architecture/issues/231)
 - CZ 授权时间：2026-09-03 04:04:25 +0800
 - 零 API 候选 Manifest SHA-256：`4c6f020a31e66ab8a0e4945411aa222765ca42098b3b1bc54d668d9053489e4c`
@@ -15,6 +15,7 @@
 - 审查现场确认了三个产品阻断：普通 B06 可成为第二 writer，已激活迁移可读另一项目 store，pointer 可在检查与 cutover 提交之间前进。
 - CZ 随后批准在现有 Issue、分支和 Draft PR 内窄修，不扩大到 Linear、FormalFact、正式事实、十本账或模型 API。
 - 修正时又对称检查了 B01，并把普通 `FixtureStore` 的产品 profile 持久化旁路一并关闭。
+- 2026-09-03 同步 PR #230 R02：保留产品 profile／store ID／pointer 门，同时纳入 root authority 序列锁、迁移零残留、pointer 行键绑定、同源唯一迁移和 `r02-candidate` schema 复核。
 
 ## 直接代码来源
 

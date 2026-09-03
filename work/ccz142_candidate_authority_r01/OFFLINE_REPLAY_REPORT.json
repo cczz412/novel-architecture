@@ -1,11 +1,16 @@
 {
   "adoption_boundary": {
     "current_pointer_namespace": "FIXTURE_ONLY",
-    "draft_pr_only": true,
-    "product_namespace_adopted": false
+    "product_namespace_adopted": false,
+    "review_or_merge_does_not_equal_product_adoption": true
   },
+  "authority_commit_guard": {
+    "held_through_root_commit": true,
+    "serialization_required": true
+  },
+  "authority_schema": "r02-candidate",
   "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
-  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R01-SELF-CHECK",
+  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R02-SELF-CHECK",
   "external_calls": {
     "browser_actions": 0,
     "model_api_calls": 0,
@@ -50,6 +55,12 @@
     "terminal_binds_child": true,
     "terminal_binds_merge_receipt": true,
     "terminal_replay_reused": true
+  },
+  "migration_guard": {
+    "b01_root_and_migration_receipt_one_transaction": true,
+    "pointer_row_identity_bound": true,
+    "source_identity_import_once": true,
+    "source_stability_checked_before_commit": true
   },
   "repeatability": {
     "exact_result_match": true,

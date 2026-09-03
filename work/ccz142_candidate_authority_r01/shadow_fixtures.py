@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import hashlib
 import sys
+from contextlib import contextmanager
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from threading import RLock
+from typing import Any, Iterator
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 B07_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b07_local_recovery_stop_r01"
@@ -51,18 +53,29 @@ from work.ccz57_m3_b08_segment_terminal_r01.fixtures import (  # noqa: E402
 
 class MutableRootAuthorityReader:
     def __init__(self, snapshot: dict[str, Any]) -> None:
-        self.snapshot = deepcopy(snapshot)
+        self._snapshot = deepcopy(snapshot)
+        self._lock = RLock()
         self.read_count = 0
         self.drift_on_read: int | None = None
 
     def __call__(self) -> dict[str, Any]:
-        self.read_count += 1
-        value = deepcopy(self.snapshot)
-        if self.read_count == self.drift_on_read:
-            value["input_generation_hash"] = sha256_value(
-                {"drift_read": self.read_count}
-            )
-        return value
+        with self._lock:
+            self.read_count += 1
+            value = deepcopy(self._snapshot)
+            if self.read_count == self.drift_on_read:
+                value["input_generation_hash"] = sha256_value(
+                    {"drift_read": self.read_count}
+                )
+            return value
+
+    @contextmanager
+    def serialization(self) -> Iterator[None]:
+        with self._lock:
+            yield
+
+    def replace_snapshot(self, snapshot: dict[str, Any]) -> None:
+        with self._lock:
+            self._snapshot = deepcopy(snapshot)
 
 
 def root_request(

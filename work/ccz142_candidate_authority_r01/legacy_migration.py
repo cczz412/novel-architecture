@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
+import os
 import sqlite3
+import stat
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 from b01_contract import (  # noqa: E402
     PRODUCT_AUTHORITY_PROFILE,
@@ -65,6 +69,29 @@ class LegacyCandidateMigration:
             fail("MIGRATION_SYNTHETIC_FIXTURE_INELIGIBLE")
         fail("MIGRATION_PRODUCT_REBUILD_REQUIRED")
 
+    @staticmethod
+    @contextmanager
+    def _b06_source_serialization(
+        source_database_path: Path,
+    ) -> Iterator[None]:
+        lock_path = source_database_path.parent / ".b06-commit.lock"
+        flags = os.O_RDONLY
+        if hasattr(os, "O_NOFOLLOW"):
+            flags |= os.O_NOFOLLOW
+        try:
+            descriptor = os.open(lock_path, flags)
+        except OSError as error:
+            fail("B06_MIGRATION_SOURCE_LOCK_UNAVAILABLE", str(error))
+        try:
+            metadata = os.fstat(descriptor)
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+                fail("B06_MIGRATION_SOURCE_LOCK_INVALID")
+            fcntl.flock(descriptor, fcntl.LOCK_SH)
+            yield
+        finally:
+            fcntl.flock(descriptor, fcntl.LOCK_UN)
+            os.close(descriptor)
+
     def migrate_b01_json(
         self,
         *,
@@ -73,7 +100,8 @@ class LegacyCandidateMigration:
         reference_records: list[dict[str, Any]],
         migration_id: str,
     ) -> dict[str, Any]:
-        before_hash = file_sha256(source_state_path)
+        source_bytes = source_state_path.read_bytes()
+        before_hash = hashlib.sha256(source_bytes).hexdigest()
         prior = self.store.read_migration(
             migration_id=migration_id,
             source_kind="B01_STATE_JSON",
@@ -81,7 +109,7 @@ class LegacyCandidateMigration:
         )
         if prior is not None:
             return prior
-        state = json.loads(source_state_path.read_text(encoding="utf-8"))
+        state = json.loads(source_bytes.decode("utf-8"))
         try:
             verify_state(state, reference_records=reference_records)
         except ValueError as error:
@@ -93,25 +121,18 @@ class LegacyCandidateMigration:
                 if record["record_type"] == "M3_CANDIDATE_VERSION"
             ]
         )
-        published = self.store._publish_root(
+
+        def source_stability_check() -> None:
+            if file_sha256(source_state_path) != before_hash:
+                fail("MIGRATION_SOURCE_MUTATED_BEFORE_COMMIT")
+
+        return self.store.import_legacy_b01_snapshot(
+            migration_id=migration_id,
+            source_sha256=before_hash,
             staged_state=state,
             authority_snapshot=authority_snapshot,
-            publisher_token=_LEGACY_MIGRATION_TOKEN,
-        )
-        after_hash = file_sha256(source_state_path)
-        if after_hash != before_hash:
-            fail("MIGRATION_SOURCE_MUTATED")
-        result = {
-            "source_sha256": before_hash,
-            "root_candidate_ref": published["candidate_version_ref"],
-            "pointer_logical_key": published["logical_pointer_key"],
-            "source_unchanged": True,
-        }
-        return self.store.record_migration(
-            migration_id=migration_id,
-            source_kind="B01_STATE_JSON",
-            source_sha256=before_hash,
-            result=result,
+            source_stability_check=source_stability_check,
+            migration_token=_LEGACY_MIGRATION_TOKEN,
         )
 
     def migrate_b06_sqlite(
@@ -121,10 +142,31 @@ class LegacyCandidateMigration:
         reference_records: list[dict[str, Any]],
         migration_id: str,
     ) -> dict[str, Any]:
-        if source_database_path.resolve() == self.store.database_path.resolve():
+        resolved_source = source_database_path.resolve()
+        if resolved_source == self.store.database_path.resolve():
             fail("MIGRATION_SOURCE_EQUALS_DESTINATION")
+        with self._b06_source_serialization(resolved_source):
+            return self._migrate_b06_sqlite_locked(
+                source_database_path=resolved_source,
+                reference_records=reference_records,
+                migration_id=migration_id,
+            )
+
+    def _migrate_b06_sqlite_locked(
+        self,
+        *,
+        source_database_path: Path,
+        reference_records: list[dict[str, Any]],
+        migration_id: str,
+    ) -> dict[str, Any]:
         before_hash = file_sha256(source_database_path)
-        with sqlite3.connect(source_database_path) as source:
+        source_uri = f"{source_database_path.resolve().as_uri()}?mode=ro"
+        with sqlite3.connect(source_uri, uri=True) as source:
+            source.execute("PRAGMA query_only=ON")
+            source.execute("BEGIN")
+            journal_mode = source.execute("PRAGMA journal_mode").fetchone()[0]
+            if journal_mode.lower() not in {"delete", "truncate"}:
+                fail("B06_MIGRATION_SOURCE_JOURNAL_MODE_UNSUPPORTED", journal_mode)
             tables = {
                 row[0]
                 for row in source.execute(
@@ -145,6 +187,8 @@ class LegacyCandidateMigration:
                 "SELECT project_scope_id, operation_id, request_hash, receipt_json "
                 "FROM merge_receipts ORDER BY project_scope_id, operation_id"
             ).fetchall()
+            if file_sha256(source_database_path) != before_hash:
+                fail("MIGRATION_SOURCE_MUTATED_BEFORE_IMPORT")
         candidate_rows = [
             (row[0], bytes(row[1])) for row in raw_candidate_rows
         ]
@@ -191,6 +235,11 @@ class LegacyCandidateMigration:
             if project_scope_id != self.store.project_scope_id:
                 fail("MIGRATION_PROJECT_SCOPE_MISMATCH")
             pointer = _decode(raw, code="MIGRATION_POINTER_INVALID")
+            if (
+                pointer.get("logical_pointer_key") != _pointer_key
+                or pointer.get("project_scope_id") != project_scope_id
+            ):
+                fail("MIGRATION_POINTER_ROW_MISMATCH")
             candidate = candidates.get(
                 sha256_value(pointer["current_candidate_version_ref"])
             )
@@ -211,10 +260,17 @@ class LegacyCandidateMigration:
             pointer_rows=pointer_rows,
             receipt_rows=receipt_rows,
             receipts=receipts,
+            source_stability_check=lambda: self._verify_source_hash(
+                source_database_path, before_hash
+            ),
+            migration_token=_LEGACY_MIGRATION_TOKEN,
         )
-        if file_sha256(source_database_path) != before_hash:
-            fail("MIGRATION_SOURCE_MUTATED")
         return result
+
+    @staticmethod
+    def _verify_source_hash(source_path: Path, expected_sha256: str) -> None:
+        if file_sha256(source_path) != expected_sha256:
+            fail("MIGRATION_SOURCE_MUTATED_BEFORE_COMMIT")
 
 
 def same_record_ref(left: dict[str, Any], right: dict[str, Any]) -> bool:

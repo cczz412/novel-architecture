@@ -9,7 +9,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from candidate_authority import CandidateRootInitializer
+from candidate_authority import AUTHORITY_SCHEMA_ID, CandidateRootInitializer
 from shadow_fixtures import build_full_shadow
 
 ROOT = Path(__file__).resolve().parent
@@ -84,7 +84,7 @@ def run_self_check() -> dict[str, Any]:
     if first["pointer_namespace"] != "FIXTURE_ONLY":
         raise AssertionError("CURRENT_CONTRACT_NAMESPACE_DRIFT")
     return {
-        "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R01-SELF-CHECK",
+        "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R02-SELF-CHECK",
         "result": "PASS",
         "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
         "full_shadow": first,
@@ -100,6 +100,17 @@ def run_self_check() -> dict[str, Any]:
                 CandidateRootInitializer, "commit"
             ),
         },
+        "authority_commit_guard": {
+            "serialization_required": True,
+            "held_through_root_commit": True,
+        },
+        "migration_guard": {
+            "source_identity_import_once": True,
+            "source_stability_checked_before_commit": True,
+            "pointer_row_identity_bound": True,
+            "b01_root_and_migration_receipt_one_transaction": True,
+        },
+        "authority_schema": AUTHORITY_SCHEMA_ID.decode("utf-8"),
         "external_calls": {
             "model_api_calls": 0,
             "network_api_calls": 0,
@@ -109,7 +120,7 @@ def run_self_check() -> dict[str, Any]:
         "adoption_boundary": {
             "product_namespace_adopted": False,
             "current_pointer_namespace": "FIXTURE_ONLY",
-            "draft_pr_only": True,
+            "review_or_merge_does_not_equal_product_adoption": True,
         },
     }
 

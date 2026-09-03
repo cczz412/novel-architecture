@@ -7,9 +7,10 @@ import os
 import secrets
 import sqlite3
 import sys
+from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Iterator
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 B01_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b01_candidate_version_r03_5"
@@ -68,6 +69,34 @@ ROOT_RECORD_TYPES = {
 }
 _ROOT_PUBLISH_TOKEN = object()
 _LEGACY_MIGRATION_TOKEN = object()
+AUTHORITY_SCHEMA_ID = b"r02-candidate"
+AUTHORITY_TABLE_COLUMNS = {
+    "metadata": ("key", "value"),
+    "candidate_versions": ("ref_hash", "record_json"),
+    "current_pointers": ("logical_pointer_key", "project_scope_id", "pointer_json"),
+    "merge_receipts": (
+        "project_scope_id",
+        "operation_id",
+        "request_hash",
+        "receipt_json",
+    ),
+    "candidate_aux_records": ("storage_key", "record_json"),
+    "candidate_root_operations": (
+        "operation_id",
+        "pointer_logical_key",
+        "request_hash",
+        "scope_hash",
+        "authority_snapshot_json",
+        "result_json",
+    ),
+    "candidate_migrations": (
+        "migration_id",
+        "source_kind",
+        "source_sha256",
+        "request_hash",
+        "result_json",
+    ),
+}
 
 
 class CandidateAuthorityError(RuntimeError):
@@ -141,7 +170,46 @@ class CandidateAuthorityStore(B06CommitStore):
         self.root_commit_count = 0
         self.bootstrap_copy_attempt_count = 0
         if self._database_path.is_file():
-            self._verify_existing_project_scope()
+            if not self._lock_path.is_file():
+                fail("AUTHORITY_LOCK_MISSING")
+            with self.serialization():
+                self._verify_existing_project_scope()
+
+    @staticmethod
+    def _verify_schema(connection: sqlite3.Connection) -> None:
+        schema_row = connection.execute(
+            "SELECT value FROM metadata WHERE key = 'authority_schema'"
+        ).fetchone()
+        if schema_row is None:
+            fail("AUTHORITY_SCHEMA_IDENTITY_MISSING")
+        if bytes(schema_row[0]) != AUTHORITY_SCHEMA_ID:
+            fail("AUTHORITY_SCHEMA_IDENTITY_MISMATCH")
+        for table, expected_columns in AUTHORITY_TABLE_COLUMNS.items():
+            actual_columns = tuple(
+                row[1]
+                for row in connection.execute(
+                    f'PRAGMA table_info("{table}")'
+                ).fetchall()
+            )
+            if actual_columns != expected_columns:
+                fail("AUTHORITY_SCHEMA_LAYOUT_MISMATCH", table)
+        source_identity_unique = False
+        for index_row in connection.execute(
+            "PRAGMA index_list('candidate_migrations')"
+        ).fetchall():
+            if index_row[2] != 1:
+                continue
+            columns = tuple(
+                row[2]
+                for row in connection.execute(
+                    f'PRAGMA index_info("{index_row[1]}")'
+                ).fetchall()
+            )
+            if columns == ("source_kind", "source_sha256"):
+                source_identity_unique = True
+                break
+        if not source_identity_unique:
+            fail("AUTHORITY_SCHEMA_SOURCE_IDENTITY_UNIQUENESS_MISSING")
 
     def _verify_existing_project_scope(self) -> None:
         with sqlite3.connect(self._database_path) as connection:
@@ -167,6 +235,7 @@ class CandidateAuthorityStore(B06CommitStore):
                     "pointer_namespace",
                 )
             }
+            self._verify_schema(connection)
         if row is None:
             fail("AUTHORITY_PROJECT_SCOPE_MISSING")
         if bytes(row[0]) != self.project_scope_id.encode("utf-8"):
@@ -192,94 +261,111 @@ class CandidateAuthorityStore(B06CommitStore):
         self.root.mkdir(parents=True, exist_ok=True)
         descriptor = os.open(self._lock_path, os.O_CREAT | os.O_RDWR, 0o600)
         os.close(descriptor)
-        with sqlite3.connect(self._database_path) as connection:
-            connection.execute("PRAGMA journal_mode=TRUNCATE")
-            connection.execute("PRAGMA synchronous=FULL")
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS metadata "
-                "(key TEXT PRIMARY KEY, value BLOB NOT NULL)"
-            )
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS candidate_versions "
-                "(ref_hash TEXT PRIMARY KEY, record_json BLOB NOT NULL)"
-            )
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS current_pointers "
-                "(logical_pointer_key TEXT PRIMARY KEY, "
-                "project_scope_id TEXT NOT NULL, pointer_json BLOB NOT NULL)"
-            )
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS merge_receipts "
-                "(project_scope_id TEXT NOT NULL, operation_id TEXT NOT NULL, "
-                "request_hash TEXT NOT NULL UNIQUE, receipt_json BLOB NOT NULL, "
-                "PRIMARY KEY(project_scope_id, operation_id))"
-            )
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS candidate_aux_records "
-                "(storage_key TEXT PRIMARY KEY, record_json BLOB NOT NULL)"
-            )
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS candidate_root_operations "
-                "(operation_id TEXT PRIMARY KEY, pointer_logical_key TEXT NOT NULL UNIQUE, "
-                "request_hash TEXT NOT NULL UNIQUE, scope_hash TEXT NOT NULL, "
-                "authority_snapshot_json BLOB NOT NULL, result_json BLOB NOT NULL)"
-            )
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS candidate_migrations "
-                "(migration_id TEXT PRIMARY KEY, source_kind TEXT NOT NULL, "
-                "source_sha256 TEXT NOT NULL, request_hash TEXT NOT NULL UNIQUE, "
-                "result_json BLOB NOT NULL)"
-            )
-            row = connection.execute(
-                "SELECT value FROM metadata WHERE key = 'project_scope_id'"
-            ).fetchone()
-            encoded_scope = self.project_scope_id.encode("utf-8")
-            if row is None:
+        with self.serialization():
+            with sqlite3.connect(self._database_path) as connection:
+                connection.execute("PRAGMA journal_mode=TRUNCATE")
+                connection.execute("PRAGMA synchronous=FULL")
+                connection.execute("BEGIN IMMEDIATE")
                 connection.execute(
-                    "INSERT INTO metadata(key, value) VALUES (?, ?)",
-                    ("project_scope_id", sqlite3.Binary(encoded_scope)),
+                    "CREATE TABLE IF NOT EXISTS metadata "
+                    "(key TEXT PRIMARY KEY, value BLOB NOT NULL)"
                 )
-            elif bytes(row[0]) != encoded_scope:
-                fail("PROJECT_SCOPE_STORE_MISMATCH")
-            connection.execute(
-                "INSERT OR IGNORE INTO metadata(key, value) VALUES (?, ?)",
-                ("authority_schema", sqlite3.Binary(b"r01-candidate")),
-            )
-            profile_metadata = {
-                "authority_identity": self.authority_profile.identity,
-                "candidate_contract_version": self.authority_profile.contract_version,
-                "candidate_access": self.authority_profile.candidate_access,
-                "pointer_namespace": self.authority_profile.pointer_namespace,
-            }
-            for key, value in profile_metadata.items():
+                connection.execute(
+                    "CREATE TABLE IF NOT EXISTS candidate_versions "
+                    "(ref_hash TEXT PRIMARY KEY, record_json BLOB NOT NULL)"
+                )
+                connection.execute(
+                    "CREATE TABLE IF NOT EXISTS current_pointers "
+                    "(logical_pointer_key TEXT PRIMARY KEY, "
+                    "project_scope_id TEXT NOT NULL, pointer_json BLOB NOT NULL)"
+                )
+                connection.execute(
+                    "CREATE TABLE IF NOT EXISTS merge_receipts "
+                    "(project_scope_id TEXT NOT NULL, operation_id TEXT NOT NULL, "
+                    "request_hash TEXT NOT NULL UNIQUE, receipt_json BLOB NOT NULL, "
+                    "PRIMARY KEY(project_scope_id, operation_id))"
+                )
+                connection.execute(
+                    "CREATE TABLE IF NOT EXISTS candidate_aux_records "
+                    "(storage_key TEXT PRIMARY KEY, record_json BLOB NOT NULL)"
+                )
+                connection.execute(
+                    "CREATE TABLE IF NOT EXISTS candidate_root_operations "
+                    "(operation_id TEXT PRIMARY KEY, "
+                    "pointer_logical_key TEXT NOT NULL UNIQUE, "
+                    "request_hash TEXT NOT NULL UNIQUE, scope_hash TEXT NOT NULL, "
+                    "authority_snapshot_json BLOB NOT NULL, result_json BLOB NOT NULL)"
+                )
+                connection.execute(
+                    "CREATE TABLE IF NOT EXISTS candidate_migrations "
+                    "(migration_id TEXT PRIMARY KEY, source_kind TEXT NOT NULL, "
+                    "source_sha256 TEXT NOT NULL, request_hash TEXT NOT NULL UNIQUE, "
+                    "result_json BLOB NOT NULL)"
+                )
+                connection.execute(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS "
+                    "candidate_migrations_source_identity_uq "
+                    "ON candidate_migrations(source_kind, source_sha256)"
+                )
                 row = connection.execute(
-                    "SELECT value FROM metadata WHERE key = ?", (key,)
+                    "SELECT value FROM metadata WHERE key = 'project_scope_id'"
                 ).fetchone()
-                encoded = value.encode("utf-8")
+                encoded_scope = self.project_scope_id.encode("utf-8")
                 if row is None:
                     connection.execute(
                         "INSERT INTO metadata(key, value) VALUES (?, ?)",
-                        (key, sqlite3.Binary(encoded)),
+                        ("project_scope_id", sqlite3.Binary(encoded_scope)),
                     )
-                elif bytes(row[0]) != encoded:
-                    fail("AUTHORITY_PROFILE_STORE_MISMATCH", key)
-            generated_store_id = secrets.token_hex(32).encode("utf-8")
-            connection.execute(
-                "INSERT OR IGNORE INTO metadata(key, value) VALUES (?, ?)",
-                ("authority_store_id", sqlite3.Binary(generated_store_id)),
-            )
-            store_id_row = connection.execute(
-                "SELECT value FROM metadata WHERE key = 'authority_store_id'"
-            ).fetchone()
-            if store_id_row is None:
-                fail("AUTHORITY_STORE_ID_MISSING")
-            store_id = bytes(store_id_row[0]).decode("utf-8")
-            if (
-                len(store_id) != 64
-                or any(character not in "0123456789abcdef" for character in store_id)
-            ):
-                fail("AUTHORITY_STORE_ID_INVALID")
-            connection.commit()
+                elif bytes(row[0]) != encoded_scope:
+                    fail("PROJECT_SCOPE_STORE_MISMATCH")
+                schema_row = connection.execute(
+                    "SELECT value FROM metadata WHERE key = 'authority_schema'"
+                ).fetchone()
+                if schema_row is None:
+                    connection.execute(
+                        "INSERT INTO metadata(key, value) VALUES (?, ?)",
+                        ("authority_schema", sqlite3.Binary(AUTHORITY_SCHEMA_ID)),
+                    )
+                elif bytes(schema_row[0]) != AUTHORITY_SCHEMA_ID:
+                    fail("AUTHORITY_SCHEMA_IDENTITY_MISMATCH")
+                profile_metadata = {
+                    "authority_identity": self.authority_profile.identity,
+                    "candidate_contract_version": self.authority_profile.contract_version,
+                    "candidate_access": self.authority_profile.candidate_access,
+                    "pointer_namespace": self.authority_profile.pointer_namespace,
+                }
+                for key, value in profile_metadata.items():
+                    profile_row = connection.execute(
+                        "SELECT value FROM metadata WHERE key = ?", (key,)
+                    ).fetchone()
+                    encoded = value.encode("utf-8")
+                    if profile_row is None:
+                        connection.execute(
+                            "INSERT INTO metadata(key, value) VALUES (?, ?)",
+                            (key, sqlite3.Binary(encoded)),
+                        )
+                    elif bytes(profile_row[0]) != encoded:
+                        fail("AUTHORITY_PROFILE_STORE_MISMATCH", key)
+                generated_store_id = secrets.token_hex(32).encode("utf-8")
+                connection.execute(
+                    "INSERT OR IGNORE INTO metadata(key, value) VALUES (?, ?)",
+                    ("authority_store_id", sqlite3.Binary(generated_store_id)),
+                )
+                store_id_row = connection.execute(
+                    "SELECT value FROM metadata WHERE key = 'authority_store_id'"
+                ).fetchone()
+                if store_id_row is None:
+                    fail("AUTHORITY_STORE_ID_MISSING")
+                store_id = bytes(store_id_row[0]).decode("utf-8")
+                if (
+                    len(store_id) != 64
+                    or any(
+                        character not in "0123456789abcdef" for character in store_id
+                    )
+                ):
+                    fail("AUTHORITY_STORE_ID_INVALID")
+                self._verify_schema(connection)
+                connection.commit()
 
     def initialize(self, *_args: Any, **_kwargs: Any) -> None:
         """Reject the legacy B-06 root-copy path on the product composition."""
@@ -397,6 +483,86 @@ class CandidateAuthorityStore(B06CommitStore):
             fail("ROOT_RECORD_IDENTITY_COLLISION", f"{table}:{key}")
         return False
 
+    def _stage_root_transaction(
+        self,
+        connection: sqlite3.Connection,
+        *,
+        parts: dict[str, Any],
+        request_hash: str,
+        scope_hash: str,
+        result_bytes: bytes,
+        authority_bytes: bytes,
+    ) -> tuple[bool, int, dict[str, Any]]:
+        prior = connection.execute(
+            "SELECT request_hash, scope_hash, result_json "
+            "FROM candidate_root_operations WHERE operation_id = ?",
+            (parts["operation_id"],),
+        ).fetchone()
+        if prior is not None:
+            if (
+                prior[0] != request_hash
+                or prior[1] != scope_hash
+                or bytes(prior[2]) != result_bytes
+            ):
+                fail("ROOT_OPERATION_INPUT_CONFLICT")
+            return True, 0, _decode(prior[2], code="ROOT_RESULT_INVALID")
+        pointer_row = connection.execute(
+            "SELECT pointer_json FROM current_pointers "
+            "WHERE logical_pointer_key = ?",
+            (parts["pointer_key"],),
+        ).fetchone()
+        if pointer_row is not None:
+            fail("ROOT_POINTER_ALREADY_INITIALIZED")
+        records_inserted = 0
+        candidate = parts["candidate"]
+        if self._insert_exact(
+            connection,
+            table="candidate_versions",
+            key_column="ref_hash",
+            key=sha256_value(record_ref(candidate)),
+            value_column="record_json",
+            value=canonical_bytes(candidate),
+        ):
+            records_inserted += 1
+        for record in (parts["segment"], parts["snapshot"]):
+            if self._insert_exact(
+                connection,
+                table="candidate_aux_records",
+                key_column="storage_key",
+                key=_storage_key(record),
+                value_column="record_json",
+                value=canonical_bytes(record),
+            ):
+                records_inserted += 1
+        self._inject_root_failure("after_records_insert")
+        pointer = parts["pointer"]
+        connection.execute(
+            "INSERT INTO current_pointers("
+            "logical_pointer_key, project_scope_id, pointer_json"
+            ") VALUES (?, ?, ?)",
+            (
+                parts["pointer_key"],
+                self.project_scope_id,
+                sqlite3.Binary(canonical_bytes(pointer)),
+            ),
+        )
+        self._inject_root_failure("after_pointer_insert")
+        connection.execute(
+            "INSERT INTO candidate_root_operations("
+            "operation_id, pointer_logical_key, request_hash, scope_hash, "
+            "authority_snapshot_json, result_json"
+            ") VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                parts["operation_id"],
+                parts["pointer_key"],
+                request_hash,
+                scope_hash,
+                sqlite3.Binary(authority_bytes),
+                sqlite3.Binary(result_bytes),
+            ),
+        )
+        return False, records_inserted, deepcopy(parts["result"])
+
     def _publish_root(
         self,
         *,
@@ -417,78 +583,13 @@ class CandidateAuthorityStore(B06CommitStore):
             try:
                 connection.execute("PRAGMA synchronous=FULL")
                 connection.execute("BEGIN IMMEDIATE")
-                prior = connection.execute(
-                    "SELECT request_hash, scope_hash, result_json "
-                    "FROM candidate_root_operations WHERE operation_id = ?",
-                    (parts["operation_id"],),
-                ).fetchone()
-                if prior is not None:
-                    if (
-                        prior[0] != request_hash
-                        or prior[1] != scope_hash
-                        or bytes(prior[2]) != result_bytes
-                    ):
-                        fail("ROOT_OPERATION_INPUT_CONFLICT")
-                    connection.rollback()
-                    return {
-                        **_decode(prior[2], code="ROOT_RESULT_INVALID"),
-                        "authority_scope_hash": scope_hash,
-                        "reused_existing_initialization": True,
-                    }
-                pointer_row = connection.execute(
-                    "SELECT pointer_json FROM current_pointers "
-                    "WHERE logical_pointer_key = ?",
-                    (parts["pointer_key"],),
-                ).fetchone()
-                if pointer_row is not None:
-                    fail("ROOT_POINTER_ALREADY_INITIALIZED")
-                records_inserted = 0
-                candidate = parts["candidate"]
-                if self._insert_exact(
+                reused, records_inserted, stored_result = self._stage_root_transaction(
                     connection,
-                    table="candidate_versions",
-                    key_column="ref_hash",
-                    key=sha256_value(record_ref(candidate)),
-                    value_column="record_json",
-                    value=canonical_bytes(candidate),
-                ):
-                    records_inserted += 1
-                for record in (parts["segment"], parts["snapshot"]):
-                    if self._insert_exact(
-                        connection,
-                        table="candidate_aux_records",
-                        key_column="storage_key",
-                        key=_storage_key(record),
-                        value_column="record_json",
-                        value=canonical_bytes(record),
-                    ):
-                        records_inserted += 1
-                self._inject_root_failure("after_records_insert")
-                pointer = parts["pointer"]
-                connection.execute(
-                    "INSERT INTO current_pointers("
-                    "logical_pointer_key, project_scope_id, pointer_json"
-                    ") VALUES (?, ?, ?)",
-                    (
-                        parts["pointer_key"],
-                        self.project_scope_id,
-                        sqlite3.Binary(canonical_bytes(pointer)),
-                    ),
-                )
-                self._inject_root_failure("after_pointer_insert")
-                connection.execute(
-                    "INSERT INTO candidate_root_operations("
-                    "operation_id, pointer_logical_key, request_hash, scope_hash, "
-                    "authority_snapshot_json, result_json"
-                    ") VALUES (?, ?, ?, ?, ?, ?)",
-                    (
-                        parts["operation_id"],
-                        parts["pointer_key"],
-                        request_hash,
-                        scope_hash,
-                        sqlite3.Binary(authority_bytes),
-                        sqlite3.Binary(result_bytes),
-                    ),
+                    parts=parts,
+                    request_hash=request_hash,
+                    scope_hash=scope_hash,
+                    result_bytes=result_bytes,
+                    authority_bytes=authority_bytes,
                 )
                 self._inject_root_failure("before_commit")
                 connection.commit()
@@ -500,6 +601,12 @@ class CandidateAuthorityStore(B06CommitStore):
                 raise
             finally:
                 connection.close()
+        if reused:
+            return {
+                **stored_result,
+                "authority_scope_hash": scope_hash,
+                "reused_existing_initialization": True,
+            }
         self.root_commit_count += 1
         self.physical_write_attempts.append(
             {
@@ -515,7 +622,7 @@ class CandidateAuthorityStore(B06CommitStore):
             }
         )
         return {
-            **deepcopy(parts["result"]),
+            **stored_result,
             "authority_scope_hash": scope_hash,
             "reused_existing_initialization": False,
         }
@@ -615,6 +722,45 @@ class CandidateAuthorityStore(B06CommitStore):
             }
         )
 
+    @staticmethod
+    def _migration_prior(
+        connection: sqlite3.Connection,
+        *,
+        migration_id: str,
+        source_kind: str,
+        source_sha256: str,
+        request_hash: str,
+        expected_result_bytes: bytes | None = None,
+    ) -> dict[str, Any] | None:
+        prior = connection.execute(
+            "SELECT migration_id, source_kind, source_sha256, request_hash, result_json "
+            "FROM candidate_migrations WHERE migration_id = ?",
+            (migration_id,),
+        ).fetchone()
+        if prior is not None:
+            if (
+                prior[1] != source_kind
+                or prior[2] != source_sha256
+                or prior[3] != request_hash
+                or (
+                    expected_result_bytes is not None
+                    and bytes(prior[4]) != expected_result_bytes
+                )
+            ):
+                fail("MIGRATION_ID_INPUT_CONFLICT")
+            return {
+                **_decode(prior[4], code="MIGRATION_RESULT_INVALID"),
+                "reused": True,
+            }
+        source_prior = connection.execute(
+            "SELECT migration_id FROM candidate_migrations "
+            "WHERE source_kind = ? AND source_sha256 = ?",
+            (source_kind, source_sha256),
+        ).fetchone()
+        if source_prior is not None:
+            fail("MIGRATION_SOURCE_ALREADY_IMPORTED", source_prior[0])
+        return None
+
     def read_migration(
         self,
         *,
@@ -628,23 +774,13 @@ class CandidateAuthorityStore(B06CommitStore):
             source_sha256=source_sha256,
         )
         with sqlite3.connect(self._database_path) as connection:
-            prior = connection.execute(
-                "SELECT source_kind, source_sha256, request_hash, result_json "
-                "FROM candidate_migrations WHERE migration_id = ?",
-                (migration_id,),
-            ).fetchone()
-        if prior is None:
-            return None
-        if (
-            prior[0] != source_kind
-            or prior[1] != source_sha256
-            or prior[2] != request_hash
-        ):
-            fail("MIGRATION_ID_INPUT_CONFLICT")
-        return {
-            **_decode(prior[3], code="MIGRATION_RESULT_INVALID"),
-            "reused": True,
-        }
+            return self._migration_prior(
+                connection,
+                migration_id=migration_id,
+                source_kind=source_kind,
+                source_sha256=source_sha256,
+                request_hash=request_hash,
+            )
 
     def record_migration(
         self,
@@ -671,24 +807,17 @@ class CandidateAuthorityStore(B06CommitStore):
             connection = sqlite3.connect(self._database_path)
             try:
                 connection.execute("BEGIN IMMEDIATE")
-                prior = connection.execute(
-                    "SELECT source_kind, source_sha256, request_hash, result_json "
-                    "FROM candidate_migrations WHERE migration_id = ?",
-                    (migration_id,),
-                ).fetchone()
+                prior = self._migration_prior(
+                    connection,
+                    migration_id=migration_id,
+                    source_kind=source_kind,
+                    source_sha256=source_sha256,
+                    request_hash=request_hash,
+                    expected_result_bytes=result_bytes,
+                )
                 if prior is not None:
-                    if (
-                        prior[0] != source_kind
-                        or prior[1] != source_sha256
-                        or prior[2] != request_hash
-                        or bytes(prior[3]) != result_bytes
-                    ):
-                        fail("MIGRATION_ID_INPUT_CONFLICT")
                     connection.rollback()
-                    return {
-                        **_decode(prior[3], code="MIGRATION_RESULT_INVALID"),
-                        "reused": True,
-                    }
+                    return prior
                 connection.execute(
                     "INSERT INTO candidate_migrations("
                     "migration_id, source_kind, source_sha256, request_hash, result_json"
@@ -702,12 +831,112 @@ class CandidateAuthorityStore(B06CommitStore):
                     ),
                 )
                 connection.commit()
+            except sqlite3.IntegrityError as error:
+                connection.rollback()
+                fail("MIGRATION_IDENTITY_CONFLICT", str(error))
             except Exception:
                 connection.rollback()
                 raise
             finally:
                 connection.close()
         return {**deepcopy(result), "reused": False}
+
+    def import_legacy_b01_snapshot(
+        self,
+        *,
+        migration_id: str,
+        source_sha256: str,
+        staged_state: dict[str, Any],
+        authority_snapshot: dict[str, Any],
+        source_stability_check: Callable[[], None],
+        migration_token: object | None = None,
+    ) -> dict[str, Any]:
+        if migration_token is not _LEGACY_MIGRATION_TOKEN:
+            fail("MIGRATION_PUBLISHER_SCOPE_ESCAPE")
+        source_kind = "B01_STATE_JSON"
+        request_hash = self._migration_request_hash(
+            migration_id=migration_id,
+            source_kind=source_kind,
+            source_sha256=source_sha256,
+        )
+        parts = self._root_parts(staged_state)
+        scope = self._validate_root_scope(parts, authority_snapshot)
+        scope_hash = sha256_value(scope)
+        root_request_hash = parts["operation"]["request_hash"]
+        result_bytes = canonical_bytes(parts["result"])
+        authority_bytes = canonical_bytes(authority_snapshot)
+        migration_result = {
+            "source_sha256": source_sha256,
+            "root_candidate_ref": deepcopy(parts["result"]["candidate_version_ref"]),
+            "pointer_logical_key": parts["result"]["logical_pointer_key"],
+            "source_unchanged": True,
+        }
+        migration_result_bytes = canonical_bytes(migration_result)
+        with self.serialization():
+            connection = sqlite3.connect(self._database_path)
+            try:
+                connection.execute("PRAGMA synchronous=FULL")
+                connection.execute("BEGIN IMMEDIATE")
+                prior = self._migration_prior(
+                    connection,
+                    migration_id=migration_id,
+                    source_kind=source_kind,
+                    source_sha256=source_sha256,
+                    request_hash=request_hash,
+                    expected_result_bytes=migration_result_bytes,
+                )
+                if prior is not None:
+                    connection.rollback()
+                    return prior
+                root_reused, records_inserted, _stored_result = (
+                    self._stage_root_transaction(
+                        connection,
+                        parts=parts,
+                        request_hash=root_request_hash,
+                        scope_hash=scope_hash,
+                        result_bytes=result_bytes,
+                        authority_bytes=authority_bytes,
+                    )
+                )
+                connection.execute(
+                    "INSERT INTO candidate_migrations("
+                    "migration_id, source_kind, source_sha256, request_hash, result_json"
+                    ") VALUES (?, ?, ?, ?, ?)",
+                    (
+                        migration_id,
+                        source_kind,
+                        source_sha256,
+                        request_hash,
+                        sqlite3.Binary(migration_result_bytes),
+                    ),
+                )
+                source_stability_check()
+                self._inject_root_failure("before_commit")
+                connection.commit()
+            except sqlite3.IntegrityError as error:
+                connection.rollback()
+                fail("MIGRATION_IDENTITY_CONFLICT", str(error))
+            except Exception:
+                connection.rollback()
+                raise
+            finally:
+                connection.close()
+        if not root_reused:
+            self.root_commit_count += 1
+            self.physical_write_attempts.append(
+                {
+                    "event": "sqlite_root_atomic_commit",
+                    "transaction_id": parts["operation_id"],
+                }
+            )
+            self.events.append(
+                {
+                    "event": "root_pointer_snapshot_committed",
+                    "transaction_id": parts["operation_id"],
+                    "records_inserted": str(records_inserted),
+                }
+            )
+        return {**migration_result, "reused": False}
 
     @staticmethod
     def _legacy_chain_reaches(
@@ -770,7 +999,11 @@ class CandidateAuthorityStore(B06CommitStore):
         pointer_rows: list[tuple[str, str, bytes]],
         receipt_rows: list[tuple[str, str, str, bytes]],
         receipts: list[dict[str, Any]],
+        source_stability_check: Callable[[], None],
+        migration_token: object | None = None,
     ) -> dict[str, Any]:
+        if migration_token is not _LEGACY_MIGRATION_TOKEN:
+            fail("MIGRATION_PUBLISHER_SCOPE_ESCAPE")
         source_kind = "B06_SQLITE"
         request_hash = self._migration_request_hash(
             migration_id=migration_id,
@@ -781,23 +1014,16 @@ class CandidateAuthorityStore(B06CommitStore):
             connection = sqlite3.connect(self._database_path)
             try:
                 connection.execute("BEGIN IMMEDIATE")
-                prior = connection.execute(
-                    "SELECT source_kind, source_sha256, request_hash, result_json "
-                    "FROM candidate_migrations WHERE migration_id = ?",
-                    (migration_id,),
-                ).fetchone()
+                prior = self._migration_prior(
+                    connection,
+                    migration_id=migration_id,
+                    source_kind=source_kind,
+                    source_sha256=source_sha256,
+                    request_hash=request_hash,
+                )
                 if prior is not None:
-                    if (
-                        prior[0] != source_kind
-                        or prior[1] != source_sha256
-                        or prior[2] != request_hash
-                    ):
-                        fail("MIGRATION_ID_INPUT_CONFLICT")
                     connection.rollback()
-                    return {
-                        **_decode(prior[3], code="MIGRATION_RESULT_INVALID"),
-                        "reused": True,
-                    }
+                    return prior
                 candidate_inserts = 0
                 for ref_hash, raw in candidate_rows:
                     if self._legacy_insert_or_match(
@@ -843,6 +1069,11 @@ class CandidateAuthorityStore(B06CommitStore):
                     if project_scope_id != self.project_scope_id:
                         fail("MIGRATION_PROJECT_SCOPE_MISMATCH")
                     incoming = _decode(raw, code="MIGRATION_POINTER_INVALID")
+                    if (
+                        incoming.get("logical_pointer_key") != pointer_key
+                        or incoming.get("project_scope_id") != project_scope_id
+                    ):
+                        fail("MIGRATION_POINTER_ROW_MISMATCH")
                     existing_row = connection.execute(
                         "SELECT pointer_json FROM current_pointers "
                         "WHERE logical_pointer_key = ?",
@@ -904,7 +1135,11 @@ class CandidateAuthorityStore(B06CommitStore):
                         sqlite3.Binary(canonical_bytes(result)),
                     ),
                 )
+                source_stability_check()
                 connection.commit()
+            except sqlite3.IntegrityError as error:
+                connection.rollback()
+                fail("MIGRATION_IDENTITY_CONFLICT", str(error))
             except Exception:
                 connection.rollback()
                 raise
@@ -970,6 +1205,18 @@ class CandidateRootInitializer:
             fail("ROOT_AUTHORITY_SCOPE_MISMATCH")
         return deepcopy(value)
 
+    @contextmanager
+    def _authority_serialization(self) -> Iterator[None]:
+        serialization = getattr(self.__authority_reader, "serialization", None)
+        if not callable(serialization):
+            fail("ROOT_AUTHORITY_SERIALIZATION_REQUIRED")
+        try:
+            guard = serialization()
+        except Exception as error:
+            fail("ROOT_AUTHORITY_READER_UNAVAILABLE", str(error))
+        with guard:
+            yield
+
     def initialize_root(self, request: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(request, dict) or set(request) != ROOT_REQUEST_KEYS:
             fail("ROOT_REQUEST_SHAPE_INVALID")
@@ -1004,16 +1251,17 @@ class CandidateRootInitializer:
             **prepared,
             extraction_admission=extraction_admission,
         )
-        authority_after = self._authority(
-            {**request, "input_generation_id": input_generation_id}
-        )
-        if canonical_bytes(authority_after) != canonical_bytes(authority_before):
-            fail("ROOT_AUTHORITY_DRIFT")
-        published = self.__store._publish_root(
-            staged_state=capture.take(),
-            authority_snapshot=authority_before,
-            publisher_token=_ROOT_PUBLISH_TOKEN,
-        )
+        with self._authority_serialization():
+            authority_after = self._authority(
+                {**request, "input_generation_id": input_generation_id}
+            )
+            if canonical_bytes(authority_after) != canonical_bytes(authority_before):
+                fail("ROOT_AUTHORITY_DRIFT")
+            published = self.__store._publish_root(
+                staged_state=capture.take(),
+                authority_snapshot=authority_after,
+                publisher_token=_ROOT_PUBLISH_TOKEN,
+            )
         if any(
             canonical_bytes(published[key]) != canonical_bytes(result[key])
             for key in result

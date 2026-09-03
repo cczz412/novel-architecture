@@ -1,4 +1,4 @@
-# CCZ-142 CandidateAuthorityStore R01｜来源索引
+# CCZ-142 CandidateAuthorityStore R02｜来源索引
 
 ## 施工入口
 
@@ -22,6 +22,10 @@
 - 单库 TEMP 原型文件集合：`f0ef2299eab8c9eeeacd15d505524fb9a5f91b853b1b9ef88688a539d81f8473`
 
 本地材料只说明形成过程；本目录代码和 GitHub PR 才是本票的工程候选。
+
+R02 修正依据是 PR #230 合并前只读代码审查确认的五个可复现反例：authority 提交竞态、迁移报错残留、pointer 行键身份断裂、同源重复迁移和 schema 身份漂移。反例只使用合成数据与临时目录。
+
+当前主分支兼容基线：`main@b80ce84a5ffb8ff40c879acc2e32b05c228815a2`。该版本自身可重复出现 1 个 B09 旧静态边界失败；R02 没有修改 B09／B10，叠加前后失败一致。
 
 ## 明确排除
 

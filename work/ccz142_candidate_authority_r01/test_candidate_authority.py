@@ -4,11 +4,13 @@ import inspect
 import hashlib
 import json
 import os
+import sqlite3
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from pathlib import Path
+from threading import Event, Thread
 
 import pytest
 
@@ -210,6 +212,62 @@ def test_authority_drift_between_reads_is_rejected_before_write(
     with pytest.raises(CandidateAuthorityError, match="ROOT_AUTHORITY_SCOPE_MISMATCH"):
         publish_root(store, request, reader=reader)
     assert store.visible_counts()["candidate_versions"] == 0
+
+
+def test_root_rejects_authority_reader_without_serialization(
+    tmp_path: Path,
+) -> None:
+    store = new_store(tmp_path / "authority")
+    request = root_request()
+    with pytest.raises(
+        CandidateAuthorityError, match="ROOT_AUTHORITY_SERIALIZATION_REQUIRED"
+    ):
+        CandidateRootInitializer(
+            store=store,
+            authority_reader=lambda: authority_snapshot(request),
+        ).initialize_root(request)
+    assert store.visible_counts()["candidate_versions"] == 0
+
+
+def test_authority_writer_cannot_cross_root_commit_linearization(
+    tmp_path: Path,
+) -> None:
+    store = new_store(tmp_path / "authority")
+    request = root_request()
+    reader = MutableRootAuthorityReader(authority_snapshot(request))
+    original_publish = store._publish_root
+    mutation_started = Event()
+    mutation_finished = Event()
+    mutation_threads: list[Thread] = []
+
+    def publish_while_writer_races(**kwargs: object) -> dict:
+        changed = authority_snapshot(request)
+        changed["input_generation_hash"] = "f" * 64
+
+        def mutate_authority() -> None:
+            mutation_started.set()
+            reader.replace_snapshot(changed)
+            mutation_finished.set()
+
+        thread = Thread(target=mutate_authority)
+        mutation_threads.append(thread)
+        thread.start()
+        assert mutation_started.wait(timeout=1)
+        assert not mutation_finished.wait(timeout=0.05)
+        return original_publish(**kwargs)
+
+    store._publish_root = publish_while_writer_races
+    result = CandidateRootInitializer(
+        store=store,
+        authority_reader=reader,
+    ).initialize_root(request)
+    for thread in mutation_threads:
+        thread.join(timeout=1)
+        assert not thread.is_alive()
+    assert mutation_finished.is_set()
+    assert result["reused_existing_initialization"] is False
+    stored = store.read_root_operation(request["operation_id"])
+    assert stored["authority_snapshot"] == authority_snapshot(request)
 
 
 @pytest.mark.parametrize(
@@ -424,6 +482,151 @@ def test_b01_json_then_b06_sqlite_migration_is_exact_and_replayable(
     assert pointer["generation"] == 2
 
 
+def test_b01_source_change_before_commit_rolls_back_destination(
+    tmp_path: Path,
+) -> None:
+    legacy_root = tmp_path / "legacy-b01"
+    request = b01_fixtures.base_request()
+    service, admit = b01_fixtures.fixture_runtime(FixtureStore(legacy_root))
+    b01_fixtures.initialize_request(service, admit, request)
+    source = legacy_root / "state.json"
+    generation = next(
+        record
+        for record in request["reference_records"]
+        if canonical_bytes(record_ref(record))
+        == canonical_bytes(request["accepted_source_generation_ref"])
+    )
+    augmented = {
+        **request,
+        "input_generation_id": generation["payload"]["workspace_generation_id"],
+    }
+    destination = new_store(tmp_path / "destination")
+    original_import = destination.import_legacy_b01_snapshot
+
+    def import_after_source_change(**kwargs: object) -> dict:
+        source.write_text(source.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+        return original_import(**kwargs)
+
+    destination.import_legacy_b01_snapshot = import_after_source_change
+    with pytest.raises(
+        CandidateAuthorityError, match="MIGRATION_SOURCE_MUTATED_BEFORE_COMMIT"
+    ):
+        LegacyCandidateMigration(destination).migrate_b01_json(
+            source_state_path=source,
+            authority_snapshot=authority_snapshot(augmented),
+            reference_records=request["reference_records"],
+            migration_id="source-change-b01",
+        )
+    counts = destination.table_counts()
+    assert counts["candidate_versions"] == 0
+    assert counts["current_pointers"] == 0
+    assert counts["candidate_root_operations"] == 0
+    assert counts["candidate_migrations"] == 0
+
+
+def test_b06_source_change_before_commit_rolls_back_destination(
+    tmp_path: Path,
+) -> None:
+    legacy = b06_fixtures.build_environment(tmp_path / "legacy-b06")
+    legacy.commit()
+    source = legacy.store.root / "b06-commit-core.sqlite3"
+    destination = new_store(tmp_path / "destination")
+    original_import = destination.import_legacy_b06_snapshot
+
+    def import_after_source_change(**kwargs: object) -> dict:
+        with sqlite3.connect(source) as connection:
+            connection.execute(
+                "INSERT INTO metadata(key, value) VALUES (?, ?)",
+                ("review-source-change", sqlite3.Binary(b"1")),
+            )
+            connection.commit()
+        return original_import(**kwargs)
+
+    destination.import_legacy_b06_snapshot = import_after_source_change
+    with pytest.raises(
+        CandidateAuthorityError, match="MIGRATION_SOURCE_MUTATED_BEFORE_COMMIT"
+    ):
+        LegacyCandidateMigration(destination).migrate_b06_sqlite(
+            source_database_path=source,
+            reference_records=legacy.reference_records,
+            migration_id="source-change-b06",
+        )
+    counts = destination.table_counts()
+    assert counts["candidate_versions"] == 0
+    assert counts["current_pointers"] == 0
+    assert counts["merge_receipts"] == 0
+    assert counts["candidate_migrations"] == 0
+
+
+@pytest.mark.parametrize("tamper", ["row_key", "payload_project"])
+def test_b06_migration_rejects_pointer_row_identity_mismatch(
+    tmp_path: Path, tamper: str
+) -> None:
+    legacy = b06_fixtures.build_environment(tmp_path / f"legacy-{tamper}")
+    legacy.commit()
+    source = legacy.store.root / "b06-commit-core.sqlite3"
+    with sqlite3.connect(source) as connection:
+        row = connection.execute(
+            "SELECT logical_pointer_key, pointer_json FROM current_pointers"
+        ).fetchone()
+        if tamper == "row_key":
+            connection.execute(
+                "UPDATE current_pointers SET logical_pointer_key = ? "
+                "WHERE logical_pointer_key = ?",
+                ("mismatched-row-key", row[0]),
+            )
+        else:
+            pointer = json.loads(bytes(row[1]).decode("utf-8"))
+            pointer["project_scope_id"] = "other-project"
+            connection.execute(
+                "UPDATE current_pointers SET pointer_json = ? "
+                "WHERE logical_pointer_key = ?",
+                (sqlite3.Binary(canonical_bytes(pointer)), row[0]),
+            )
+        connection.commit()
+    destination = new_store(tmp_path / f"destination-{tamper}")
+    with pytest.raises(
+        CandidateAuthorityError, match="MIGRATION_POINTER_ROW_MISMATCH"
+    ):
+        LegacyCandidateMigration(destination).migrate_b06_sqlite(
+            source_database_path=source,
+            reference_records=legacy.reference_records,
+            migration_id=f"row-mismatch-{tamper}",
+        )
+    assert destination.visible_counts() == {
+        "candidate_versions": 0,
+        "current_pointers": 0,
+        "merge_receipts": 0,
+    }
+    assert destination.table_counts()["candidate_migrations"] == 0
+
+
+def test_same_legacy_source_cannot_use_a_second_migration_id(
+    tmp_path: Path,
+) -> None:
+    legacy = b06_fixtures.build_environment(tmp_path / "legacy-b06")
+    legacy.commit()
+    source = legacy.store.root / "b06-commit-core.sqlite3"
+    destination = new_store(tmp_path / "destination")
+    migration = LegacyCandidateMigration(destination)
+    migration.migrate_b06_sqlite(
+        source_database_path=source,
+        reference_records=legacy.reference_records,
+        migration_id="source-once-001",
+    )
+    before = destination.table_counts()
+    with pytest.raises(
+        CandidateAuthorityError, match="MIGRATION_SOURCE_ALREADY_IMPORTED"
+    ):
+        migration.migrate_b06_sqlite(
+            source_database_path=source,
+            reference_records=legacy.reference_records,
+            migration_id="source-once-002",
+        )
+    assert destination.table_counts() == before
+    assert before["candidate_migrations"] == 1
+
+
 def test_b01_migration_id_cannot_be_reused_for_changed_source(
     tmp_path: Path,
 ) -> None:
@@ -489,6 +692,21 @@ def test_b06_migration_rejects_destination_as_source(tmp_path: Path) -> None:
             reference_records=[],
             migration_id="self-migration",
         )
+
+
+def test_reopen_rejects_wrong_authority_schema_identity(tmp_path: Path) -> None:
+    authority_root = tmp_path / "authority"
+    store = new_store(authority_root)
+    with sqlite3.connect(store.database_path) as connection:
+        connection.execute(
+            "UPDATE metadata SET value = ? WHERE key = 'authority_schema'",
+            (sqlite3.Binary(b"unexpected-schema"),),
+        )
+        connection.commit()
+    with pytest.raises(
+        CandidateAuthorityError, match="AUTHORITY_SCHEMA_IDENTITY_MISMATCH"
+    ):
+        CandidateAuthorityStore(authority_root, project_scope_id=PROJECT)
 
 
 def test_current_contract_namespace_is_not_misreported_as_product_adoption(

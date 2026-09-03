@@ -1,10 +1,10 @@
 {
   "document_identity": "CCZ142-PRODUCT-CANDIDATE-AUTHORITY-R02-TEST-RECEIPT",
-  "validated_at": "2026-09-03T05:29:22+08:00",
+  "validated_at": "2026-09-03T10:13:55+08:00",
   "result": "PASS",
   "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
   "upstream_draft_pr": 230,
-  "upstream_exact_head": "f65b4c200629a926951826e21058bfe6a52751d1",
+  "upstream_exact_head": "fb16a836fea00a8ec03722fea876b02709bed8b1",
   "github_issue": 231,
   "reviewed_r01_head": "45be726630dafd484c99c7461d3536d81fefb1b3",
   "runtime": {
@@ -25,7 +25,7 @@
     },
     {
       "suite": "ccz142_candidate_authority_r01",
-      "passed": 27,
+      "passed": 35,
       "failed": 0
     },
     {
@@ -75,7 +75,7 @@
     }
   ],
   "totals": {
-    "passed": 576,
+    "passed": 584,
     "failed": 0
   },
   "authority_profile_acceptance": {
@@ -84,6 +84,8 @@
     "store_reopen_wrong_profile": "FAIL_CLOSED_BEFORE_READ",
     "authority_store_id_persisted_across_reopen": true,
     "storage_locator_bound_to_project_and_database_path": true,
+    "authority_schema_identity": "r02-candidate",
+    "root_authority_lock_held_through_commit": true,
     "plain_B01_product_profile": "REJECTED_BEFORE_STORAGE",
     "plain_B06_product_profile": "REJECTED_BEFORE_STORAGE",
     "candidate_contract_version": "r04-product-candidate",
@@ -116,6 +118,9 @@
   "migration_acceptance": {
     "synthetic_fixture_import": "MIGRATION_SYNTHETIC_FIXTURE_INELIGIBLE",
     "synthetic_source_unchanged": true,
+    "upstream_migration_source_identity_unique": true,
+    "upstream_migration_failure_is_zero_write": true,
+    "upstream_pointer_row_identity_bound": true,
     "mixed_namespace": "FAIL_CLOSED",
     "cross_project_store_read": "FAIL_CLOSED",
     "same_project_second_store_read": "FAIL_CLOSED",
@@ -145,8 +150,10 @@
     "ten_ledger_writes": 0,
     "synthetic_fixture_migrations": 0,
     "Linear_writes": 0,
-    "PR230_state_changes": 0,
-    "merge_actions": 0
+    "PR230_state_during_sync": "DRAFT",
+    "PR230_state_changes_by_product_sync": 0,
+    "stack_sync_merge_commit": 1,
+    "github_pr_merge_actions": 0
   },
   "commands": [
     "uv run --locked python -m py_compile <changed Python modules>",
