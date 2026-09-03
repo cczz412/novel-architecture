@@ -30,6 +30,13 @@
 - R03 用迁移控制库的项目绑定和 pointer 绑定收紧唯一权威；用完整影子目标绑定收紧 cutover，并保持同一 store 内多 pointer 可用。
 - 当前分支与精确 `main@68e13f64e475eece2d7d7cf2e26597335a734129` 临时叠加树均通过 601 项，语法、Ruff、自检及两套 Manifest 同时通过。
 
+## R04 修正依据
+
+- 正式审查对象：PR #235 head `e4279318b42137c11c850412e8cf71d6dfc280e9`，精确 base `main@68e13f64e475eece2d7d7cf2e26597335a734129`。
+- 审查发现三个 P1：PR #230 旧 authority 库在补元数据前被新校验拒绝；B02 Diagnostic／Coverage 与 B04 ProtectionSet／Patch／Preview 的真实写入路径仍使用旧记录引用生成器。
+- CZ 批准在现有 Issue #231、分支和 Draft PR 内修正，不扩大到 Linear、FormalFact、正式事实、十本账或模型 API。
+- R04 只升级精确旧 fixture 元数据缺口，并让产品影子链真实执行 B02／B04 writers；当前分支与精确 main 临时叠加树按独立组件入口回归 606 项。
+
 ## 直接代码来源
 
 - `work/ccz57_m3_b01_candidate_version_r03_5/`：CandidateVersion、locator、pointer 与 fixture 兼容合同。

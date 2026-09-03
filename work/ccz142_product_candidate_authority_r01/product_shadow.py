@@ -12,7 +12,9 @@ from typing import Any, Callable
 MODULE_ROOT = Path(__file__).resolve().parent
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 B01_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b01_candidate_version_r03_5"
+B02_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b02_diagnostic_coverage_r03_5"
 B03_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b03_bound_evidence_read_r03_5"
+B04_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b04_patch_atomic_group_r03_5"
 B05_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b05_patch_route_r03_5"
 B06_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b06_commit_core_r01"
 B07_ROOT = REPOSITORY_ROOT / "work" / "ccz57_m3_b07_local_recovery_stop_r01"
@@ -22,7 +24,9 @@ for candidate in (
     REPOSITORY_ROOT,
     MODULE_ROOT,
     B01_ROOT,
+    B02_ROOT,
     B03_ROOT,
+    B04_ROOT,
     B05_ROOT,
     B06_ROOT,
     B07_ROOT,
@@ -32,7 +36,6 @@ for candidate in (
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
-from b05_contracts import canonical_bytes, record_ref  # noqa: E402
 from b01_contract import (  # noqa: E402
     B01ContractError,
     FixtureStore,
@@ -40,6 +43,10 @@ from b01_contract import (  # noqa: E402
     record_ref as b01_record_ref,
 )
 from b03_contracts import resolve_bound_candidate_input  # noqa: E402
+from b04_store import B04Service, FixtureStore as B04FixtureStore  # noqa: E402
+from authoritative_readers import B02CurrentScopeReader  # noqa: E402
+from b05_contracts import canonical_bytes, record_ref, sha256_value  # noqa: E402
+from b05_store import B05Service  # noqa: E402
 from b06_contracts import B06ContractError  # noqa: E402
 from b06_store import B06CommitService, B06CommitStore  # noqa: E402
 from b07_store import B07RunStore  # noqa: E402
@@ -48,6 +55,14 @@ from b09_authority_reader import CurrentCausalHintAuthorityReader  # noqa: E402
 from current_causal_hint_view import read_current_causal_hints  # noqa: E402
 from work.ccz57_m3_b05_patch_route_r03_5 import (  # noqa: E402
     fixtures as b05_fixtures,
+)
+from work.ccz57_m3_b02_diagnostic_coverage_r03_5.fixtures import (  # noqa: E402
+    coverage_kwargs,
+    diagnostic_kwargs,
+)
+from work.ccz57_m3_b02_diagnostic_coverage_r03_5.b02_store import (  # noqa: E402
+    B02Service,
+    FixtureStore as B02FixtureStore,
 )
 from work.ccz57_m3_b06_commit_core_r01.fixtures import (  # noqa: E402
     B06FixtureEnvironment,
@@ -95,6 +110,154 @@ class ProductShadowResult:
     result: dict[str, Any]
     authority_root: Path
     pointer_key: str
+
+
+def _record_by_ref(
+    records: list[dict[str, Any]], ref: dict[str, Any]
+) -> dict[str, Any]:
+    matches = [
+        record
+        for record in records
+        if canonical_bytes(record_ref(record)) == canonical_bytes(ref)
+    ]
+    if len(matches) != 1:
+        raise AssertionError("PRODUCT_REAL_WRITER_REF_NOT_UNIQUE")
+    return deepcopy(matches[0])
+
+
+def _wire_real_b02_b04(
+    root: Path,
+    *,
+    scope: dict[str, Any],
+    b05: Any,
+) -> dict[str, Any]:
+    """Replace the B-05 fixture outputs with records from real B-02/B-04 writers."""
+
+    context = {
+        key: deepcopy(scope[key])
+        for key in (
+            "reference_records",
+            "segment_index",
+            "candidate_version",
+            "lineage_locators",
+            "evidence_locators",
+            "segment_inputs",
+        )
+    }
+    b02_store = B02FixtureStore(root / "b02-real-publisher")
+    b02_service = B02Service(b02_store, **context)
+    identity_ref = b02_service.register_identity(
+        writer_version="ccz142-product-shadow-r04",
+        created_at="2026-09-03T05:10:00Z",
+    )
+    diagnostic_ref = b02_service.add_diagnostic(
+        **diagnostic_kwargs(
+            "CCZ142-PRODUCT-R04",
+            context,
+            identity_ref,
+            created_at="2026-09-03T05:10:01Z",
+        )
+    )
+    coverage_ref = b02_service.add_coverage(
+        **coverage_kwargs(
+            "CCZ142-PRODUCT-R04",
+            context,
+            identity_ref,
+            "MATCHED",
+            created_at="2026-09-03T05:10:02Z",
+        )
+    )
+    b02_records = b02_store.read_records()
+    diagnostic = _record_by_ref(b02_records, diagnostic_ref)
+    _record_by_ref(b02_records, coverage_ref)
+
+    candidate = context["candidate_version"]
+    item = candidate["payload"]["items"][0]
+    replacement = {
+        key: deepcopy(value) for key, value in item.items() if key != "item_hash"
+    }
+    replacement["fact"] = "fixture-replaced-a"
+    operation = {
+        "operation_kind": "REPLACE_CANDIDATE_ITEM",
+        "target": deepcopy(context["lineage_locators"][0]),
+        "expected_old_item_hash": item["item_hash"],
+        "new_item": replacement,
+        "supporting_diagnostic_refs": [deepcopy(diagnostic_ref)],
+        "supporting_coverage_refs": [],
+    }
+    group = {
+        "atomic_group_id": "replace-a",
+        "purpose": "fixture-purpose-replace-a",
+        "operations": [operation],
+        "group_payload_hash": "",
+    }
+    group["group_payload_hash"] = sha256_value(
+        {key: value for key, value in group.items() if key != "group_payload_hash"}
+    )
+
+    protection_policy = deepcopy(b05.records["protection_policy"])
+    b04_store = B04FixtureStore(root / "b04-real-writers")
+    b04_result = B04Service(b04_store, b02_store=b02_store).propose(
+        context=context,
+        policy=protection_policy,
+        diagnostics=[diagnostic],
+        coverages=[],
+        source_slice_records=[],
+        groups=[group],
+        causal_payloads=[],
+        created_at="2026-09-03T05:10:03Z",
+    )
+    b04_records = b04_store.read_records()
+    protection = _record_by_ref(b04_records, b04_result["protection_set_ref"])
+    patch = _record_by_ref(b04_records, b04_result["patch_proposal_ref"])
+    causals = [
+        _record_by_ref(b04_records, ref)
+        for ref in b04_result["causal_hint_proposal_refs"]
+    ]
+
+    b02_reader = B02CurrentScopeReader(records=b02_records)
+    b05.b02_reader = b02_reader
+    b05.service = B05Service(
+        b05.store,
+        b01_reader=b05.b01_reader,
+        b02_reader=b02_reader,
+        policy_gate_reader=b05.policy_reader,
+        protection_policy=protection_policy,
+        source_slice_records=[],
+        validator_identity_ref=b05.service.validator_identity_ref,
+    )
+    b05.patch = patch
+    b05.protection = protection
+    b05.causals = causals
+    b05.records.update(
+        {
+            "diagnostic": diagnostic,
+            "coverage": _record_by_ref(b02_records, coverage_ref),
+            "protection": protection,
+            "patch": patch,
+        }
+    )
+    return {
+        "b02_records": b02_records,
+        "b02_store_events": deepcopy(b02_store.events),
+        "b02_candidate_ref_matches": all(
+            record["payload"]["base_candidate_version_ref"]
+            == b01_record_ref(candidate)
+            for record in b02_records
+            if record["record_type"]
+            in {"M3_DIAGNOSTIC", "M3_COVERAGE_OBSERVATION"}
+        ),
+        "b04_records": b04_records,
+        "b04_patch_preview": deepcopy(b04_result["patch_preview"]),
+        "b04_candidate_ref_matches": (
+            protection["payload"]["base_candidate_version_ref"]
+            == b01_record_ref(candidate)
+            and patch["payload"]["base_candidate_version_ref"]
+            == b01_record_ref(candidate)
+            and b04_result["patch_preview"]["base_candidate_version_ref"]
+            == b01_record_ref(candidate)
+        ),
+    }
 
 
 def _database_inventory(root: Path) -> list[dict[str, Any]]:
@@ -224,6 +387,7 @@ def build_product_shadow(root: Path) -> ProductShadowResult:
         mode="replace",
         b01_scope=b05_scope,
     )
+    real_writer_result = _wire_real_b02_b04(root, scope=scope, b05=b05)
     b05_result = b05.evaluate("product-b05-route-operation")
     route = b05.store.record_by_ref(b05_result["route_receipt_ref"])
     allow_entries = [
@@ -398,11 +562,31 @@ def build_product_shadow(root: Path) -> ProductShadowResult:
             "pointer_namespace": pointer_after["pointer_namespace"],
             "pointer_generation": pointer_after["generation"],
             "pointer_key": pointer_after["logical_pointer_key"],
-            "b02_records_exercised": 4,
+            "b02_records_exercised": len(real_writer_result["b02_records"]),
+            "b02_real_publisher_record_types": sorted(
+                record["record_type"]
+                for record in real_writer_result["b02_records"]
+            ),
+            "b02_real_publisher_write_events": real_writer_result[
+                "b02_store_events"
+            ].count("immutable_record_atomic_write"),
+            "b02_candidate_ref_matches_b01": real_writer_result[
+                "b02_candidate_ref_matches"
+            ],
             "b03_product_subject_validated": (
                 b03_resolved["item"]["evidence"] == item["evidence"]
             ),
             "b04_patch_ref": record_ref(b05.patch),
+            "b04_real_writer_record_types": sorted(
+                record["record_type"]
+                for record in real_writer_result["b04_records"]
+            ),
+            "b04_preview_projector": real_writer_result["b04_patch_preview"][
+                "projector"
+            ],
+            "b04_candidate_ref_matches_b01": real_writer_result[
+                "b04_candidate_ref_matches"
+            ],
             "b05_route_ref": record_ref(route),
             "b06_merge_receipt_ref": child_result["merge_receipt_ref"],
             "b07_state_revision": finalizing["state_revision"],

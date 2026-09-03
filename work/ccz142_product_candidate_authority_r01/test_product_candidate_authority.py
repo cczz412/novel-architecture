@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 import sys
 import threading
 from contextlib import contextmanager
@@ -80,6 +81,7 @@ from product_authority import (  # noqa: E402
     product_b01_scope,
     product_root_request,
 )
+import product_shadow as product_shadow_module  # noqa: E402
 from product_shadow import build_product_shadow  # noqa: E402
 
 def _b05_scope(scope: dict[str, Any]) -> dict[str, Any]:
@@ -388,6 +390,40 @@ def test_product_store_cannot_reopen_under_fixture_profile(tmp_path: Path) -> No
         CandidateAuthorityStore(root, project_scope_id="product-project-001")
 
 
+def test_pr230_legacy_store_cannot_be_relabelled_as_product(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "legacy-authority"
+    legacy = CandidateAuthorityStore(root, project_scope_id="product-project-001")
+    legacy.initialize_authority_schema()
+    metadata_keys = (
+        "authority_identity",
+        "candidate_contract_version",
+        "candidate_access",
+        "pointer_namespace",
+        "authority_store_id",
+    )
+    with sqlite3.connect(legacy.database_path) as connection:
+        connection.executemany(
+            "DELETE FROM metadata WHERE key = ?",
+            [(key,) for key in metadata_keys],
+        )
+        connection.commit()
+    before = file_sha256(legacy.database_path)
+
+    with pytest.raises(
+        CandidateAuthorityError,
+        match="AUTHORITY_LEGACY_PROFILE_UPGRADE_FORBIDDEN",
+    ):
+        CandidateAuthorityStore(
+            root,
+            project_scope_id="product-project-001",
+            authority_profile=PRODUCT_AUTHORITY_PROFILE,
+        )
+
+    assert file_sha256(legacy.database_path) == before
+
+
 def test_product_full_b01_to_b09_shadow(tmp_path: Path) -> None:
     result = build_product_shadow(tmp_path / "shadow").result
     assert result["result"] == "PASS"
@@ -416,6 +452,52 @@ def test_product_full_b01_to_b09_shadow(tmp_path: Path) -> None:
     assert result["ten_ledger_writes"] == 0
     assert result["model_api_calls"] == 0
     assert result["network_api_calls"] == 0
+    assert result["b02_records_exercised"] == 3
+    assert result["b02_real_publisher_record_types"] == [
+        "M3_COVERAGE_OBSERVATION",
+        "M3_DIAGNOSTIC",
+        "M3_DIAGNOSTIC_RECORDER_IDENTITY",
+    ]
+    assert result["b02_real_publisher_write_events"] == 3
+    assert result["b02_candidate_ref_matches_b01"] is True
+    assert result["b04_real_writer_record_types"] == [
+        "M3_CANDIDATE_PROTECTION_SET",
+        "M3_PATCH_PROPOSAL",
+    ]
+    assert result["b04_preview_projector"] == "PatchPreviewProjector"
+    assert result["b04_candidate_ref_matches_b01"] is True
+
+
+def test_product_shadow_cannot_bypass_real_b02_publisher(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def reject_real_b02(*_args: Any, **_kwargs: Any) -> dict[str, Any]:
+        raise RuntimeError("REAL_B02_PUBLISHER_REQUIRED")
+
+    monkeypatch.setattr(
+        product_shadow_module.B02Service,
+        "add_diagnostic",
+        reject_real_b02,
+    )
+    with pytest.raises(RuntimeError, match="REAL_B02_PUBLISHER_REQUIRED"):
+        build_product_shadow(tmp_path / "shadow")
+
+
+def test_product_shadow_cannot_bypass_real_b04_writers(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def reject_real_b04(*_args: Any, **_kwargs: Any) -> dict[str, Any]:
+        raise RuntimeError("REAL_B04_WRITERS_REQUIRED")
+
+    monkeypatch.setattr(
+        product_shadow_module.B04Service,
+        "propose",
+        reject_real_b04,
+    )
+    with pytest.raises(RuntimeError, match="REAL_B04_WRITERS_REQUIRED"):
+        build_product_shadow(tmp_path / "shadow")
 
 
 def test_legacy_synthetic_fixture_rejected_before_product_import(

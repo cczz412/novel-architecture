@@ -156,6 +156,10 @@ def run_self_check() -> dict[str, Any]:
         or first["plain_b06_product_profile_result"]
         != "B06_PRODUCT_PROFILE_REQUIRES_CANDIDATE_AUTHORITY_STORE"
         or first["plain_b06_probe_storage_created"] is not False
+        or first["b02_real_publisher_write_events"] != 3
+        or first["b02_candidate_ref_matches_b01"] is not True
+        or first["b04_preview_projector"] != "PatchPreviewProjector"
+        or first["b04_candidate_ref_matches_b01"] is not True
         or first["candidate_database_files"] != 1
         or first["formal_tables"]
         or first["formal_writes"] != 0

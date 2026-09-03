@@ -18,6 +18,7 @@ from b02_contracts import (
     TERMINAL_EVENTS,
     build_record,
     build_source_evidence_binding,
+    b01_record_ref,
     canonical_bytes,
     fail,
     parse_utc,
@@ -180,7 +181,7 @@ class DiagnosticRecorder:
     ) -> dict[str, Any]:
         candidate = context["candidate_version"]
         payload = {
-            "base_candidate_version_ref": record_ref(candidate),
+            "base_candidate_version_ref": b01_record_ref(candidate),
             "candidate_schema_id": CANDIDATE_SCHEMA_ID,
             "chapter_revision_ref": deepcopy(
                 candidate["payload"]["chapter_revision_ref"]
@@ -403,7 +404,7 @@ class CoverageRecorder:
             ),
         )
         identity = {
-            "candidate_ref": record_ref(candidate),
+            "candidate_ref": b01_record_ref(candidate),
             "source_observation_id": source_observation_id,
             "axis": axis,
         }
@@ -412,7 +413,7 @@ class CoverageRecorder:
             record_type="M3_COVERAGE_OBSERVATION",
             record_id=record_id,
             payload={
-                "base_candidate_version_ref": record_ref(candidate),
+                "base_candidate_version_ref": b01_record_ref(candidate),
                 "candidate_schema_id": CANDIDATE_SCHEMA_ID,
                 "chapter_revision_ref": deepcopy(
                     candidate["payload"]["chapter_revision_ref"]

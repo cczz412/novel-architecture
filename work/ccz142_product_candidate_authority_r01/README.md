@@ -1,4 +1,4 @@
-# CCZ-142｜PRODUCT_CANDIDATE_AUTHORITY 产品接线 R03
+# CCZ-142｜PRODUCT_CANDIDATE_AUTHORITY 产品接线 R04
 
 ✅ 这块把 PR #230 的“单一候选 writer”继续接到产品身份：B01 root 和 B06 child 不再沿用 `FIXTURE_ONLY`，而是使用 `PRODUCT_CANDIDATE_AUTHORITY` namespace 与 `PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY` access。
 
@@ -20,7 +20,7 @@ R03 再把这组关系写进迁移控制库：一个项目只能绑定一个产�
 
 上游 PR #230 R03 head `dd3219b9d4b9e6112431014394a152ef2680e013` 已通过 merge commit `68e13f64e475eece2d7d7cf2e26597335a734129` 进入 main，PR #235 的 base 已重定向到该 main。产品 profile、稳定 store ID 与 `r02-candidate` schema 身份同时生效；上游 root authority 序列锁、旧数据迁移原子门和逐表完整 schema 结构校验没有被产品接线绕过。
 
-本轮的 B02～B05 对象来自现有合成 publisher，用来验证它们能不能完整绑定产品 CandidateVersion；它们自己的 `POLICY_FIXTURE_READ_ONLY` 输出身份没有在本票里晋升。产品化的是 CandidateVersion、pointer 和唯一 authority store，不把测试侧车原件偷换成产品原件。
+R04 不再让 B05 fixture 直接合成 B02／B04 输出冒充全链。产品影子链会先调用 B02 的真实 Diagnostic／Coverage publisher，再调用 B04 的真实 ProtectionSet、Patch writer 与 PatchPreview projector，随后才把这些真实回件交给 B05。合成材料仍然只是非 Gold 输入，B02／B04 自己的 `POLICY_FIXTURE_READ_ONLY` 输出身份没有在本票里晋升。
 
 ## 旧历史怎么处理
 
@@ -44,7 +44,9 @@ DISCOVERED
 ## 本地回放覆盖
 
 - 产品 root 创建、重放、跨项目 pointer 隔离；
-- B01→B02→B03→B04→B05→B06 child→B07→B08→B09 完整影子链；
+- B01→真实 B02 publisher→B03→真实 B04 writer／projector→B05→B06 child→B07→B08→B09 完整影子链；
+- B02／B04 真实 writer 被断开时，影子链必须失败，不能回退到 fixture 合成结果；
+- PR #230 精确旧库先原子补齐 fixture 元数据再校验，失败不留半份元数据，也不能直接重标为产品库；
 - fixture／product 混合 namespace 失败关闭；
 - 普通 B01／B06 的第二产品 writer 入口在创建存储前拒绝；
 - 跨项目、同项目不同 store、同 store 错 pointer 和前向修复串线均失败关闭；
@@ -60,6 +62,6 @@ DISCOVERED
 
 ## 当前身份
 
-这是 Issue #231 的 Draft R03 工程候选，当前 base 是 `main@68e13f64e475eece2d7d7cf2e26597335a734129`。当前分支和精确 main 临时叠加树均按独立组件入口通过 601 项。测试通过也不等于 PR #235 已经转 Ready、合并或接入正式事实。
+这是 Issue #231 的 Draft R04 工程候选，当前 base 是 `main@68e13f64e475eece2d7d7cf2e26597335a734129`。当前分支和精确 main 临时叠加树均按独立组件入口通过 606 项。测试通过也不等于 PR #235 已经转 Ready、合并或接入正式事实。
 
 来源：Codex

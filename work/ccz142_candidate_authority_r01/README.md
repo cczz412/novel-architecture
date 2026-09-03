@@ -1,4 +1,4 @@
-# CCZ-142｜单一 CandidateAuthorityStore 接线 R03
+# CCZ-142｜单一 CandidateAuthorityStore 接线 R04
 
 ✅ 这份施工候选已经让 B01 root 与 B06 child／current pointer 写进同一个候选权威库，同时保留 B01～B08 原离线夹具不变。
 
@@ -8,10 +8,13 @@ Issue #231 没有另造第二个候选 writer，而是让这个 store 在构造�
 
 R02 在 metadata 里增加了随库持久化的 `authority_store_id`。它与项目身份、数据库位置摘要一起用来绑定产品迁移：同项目另建一个库，或把库拷到另一个位置，都不能冒充当时切换的目标库。
 
+R04 补上 PR #230 旧库的兼容升级：只有 schema、项目身份和五个缺失元数据都精确符合旧版形态时，才会在同一事务里补齐 fixture profile 与新的 store ID，然后再执行完整结构和身份校验。半升级、结构漂移、升级中途失败或试图把旧 fixture 库直接标成产品库，都会零残留拒绝。
+
 ## 当前工程身份
 
-- GitHub 施工入口：[#227](https://github.com/cczz412/novel-architecture/issues/227)
-- 开工基线：`main@c89beb4368b6b79598906bdc27819a16f751155b`
+- 原始 GitHub 施工入口：[#227](https://github.com/cczz412/novel-architecture/issues/227)
+- 当前兼容修正入口：[#231](https://github.com/cczz412/novel-architecture/issues/231)
+- 当前基线：`main@68e13f64e475eece2d7d7cf2e26597335a734129`
 - 当前是工程审查候选，不是产品采用，也没有修改正式事实合同；PR 状态不会改变这层身份。
 - 写集只在 `work/ccz142_candidate_authority_r01/**`。
 
@@ -47,18 +50,16 @@ child CandidateVersion、current pointer CAS 和 MergeReceipt 仍在一个事务
 - 迁移不覆盖源文件；同 migration ID 换源、同一旧源换 migration ID 都会在导入前拒绝。
 - authority store 使用 `r02-candidate` schema 身份；跨进程重开时必须逐列匹配字段类型、非空、默认值和主键位置，并逐表匹配完整唯一索引集合。
 
-## 当前不能叫产品采用
+## 默认旧库升级不等于产品采用
 
-⚠️ B01 r03.5 与 B06 r01 的候选合同仍把 pointer namespace 固定为 `FIXTURE_ONLY`。本票没有权限改这份既有候选合同，所以这里只证明“单库、窄 capability、原子写入和迁移接法成立”。
-
-正式产品采用前还要单独批准一次合同迁移：给 CandidateVersion、pointer 和相关读者增加产品 namespace／access，并同时回归 B01～B09。Draft PR 不会把这个缺口藏起来。
+⚠️ 兼容升级只给 PR #230 旧库补 `FIXTURE_ONLY` 身份，不能借机换成产品 namespace。产品 profile 必须由 Issue #231 的上层组合显式传入，并继续经过独立迁移与切换门。
 
 ## 没做什么
 
 - 没写 FormalFact、正式 current pointer、C4、C11、作者签字或十本账；
 - 没调用模型 API、网络或浏览器；
 - 没读取真实小说正文；
-- 没改 B01～B08 现有文件；
+- 旧库升级自身不修改 B01～B08 对象；Issue #231 另有 B02／B04 产品引用兼容修正；
 - 没删除旧夹具；旧 B06 bootstrap 只在新接线路线被禁止。
 
 ## 本地验证
@@ -72,6 +73,6 @@ uv run --locked python work/ccz142_candidate_authority_r01/self_check.py
 
 完整回归还包括 B01～B09 原测试。实际命令、数量和 SHA 见本目录离线回放报告与测试回执。
 
-R03 在施工分支按独立组件入口通过 566 项。叠到 `main@c2ae148f6dd6ee1731b8c936662b017ba7fcf73c` 后再次通过 566 项，Ruff 通过；该 main 已修正先前的 B09／B10 测试边界矛盾。完整分项见 `TEST_RECEIPT_R01.json`。
+R04 在施工分支与 `main@68e13f64e475eece2d7d7cf2e26597335a734129` 临时叠加树上均按独立组件入口通过 606 项，Ruff、自检和 Manifest 同时通过。完整分项见 `TEST_RECEIPT_R01.json`。
 
 来源：Codex

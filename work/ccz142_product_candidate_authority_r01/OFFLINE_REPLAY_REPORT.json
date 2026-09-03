@@ -5,26 +5,39 @@
   "deterministic_repeat_equal": true,
   "formal_fact_writes": 0,
   "full_chain": {
-    "b02_records_exercised": 4,
+    "b02_candidate_ref_matches_b01": true,
+    "b02_real_publisher_record_types": [
+      "M3_COVERAGE_OBSERVATION",
+      "M3_DIAGNOSTIC",
+      "M3_DIAGNOSTIC_RECORDER_IDENTITY"
+    ],
+    "b02_real_publisher_write_events": 3,
+    "b02_records_exercised": 3,
     "b03_product_subject_validated": true,
+    "b04_candidate_ref_matches_b01": true,
     "b04_patch_ref": {
       "access": "POLICY_FIXTURE_READ_ONLY",
       "contract": "M3_RECORD_REF",
       "contract_version": "r03.5-candidate",
       "record_contract_version": "r03.5-candidate",
-      "record_hash": "f804b6e728d2beb4633dad03a7c497961d742a389a0ed9abb6bff93fb4e278c4",
-      "record_id": "patch-proposal:bbe54a7c209578970d58d710d0df78467eea7b51bfdb721c5fcaa3f88b2f9a1b",
+      "record_hash": "39f7867cbe4bddda55263bcd755ab50fb7aedf70f9e3cbfa5997d061cabf3ae5",
+      "record_id": "patch-proposal:740d9d3795502db271d8d9d78970c1de35cb3844ad3390fce21c62edd04eeb0c",
       "record_type": "M3_PATCH_PROPOSAL",
       "record_version": 1,
       "source_module": "M3"
     },
+    "b04_preview_projector": "PatchPreviewProjector",
+    "b04_real_writer_record_types": [
+      "M3_CANDIDATE_PROTECTION_SET",
+      "M3_PATCH_PROPOSAL"
+    ],
     "b05_route_ref": {
       "access": "POLICY_FIXTURE_READ_ONLY",
       "contract": "M3_RECORD_REF",
       "contract_version": "r03.5-candidate",
       "record_contract_version": "r03.5-candidate",
-      "record_hash": "4d68585b286e4741da9e1b4e1be7613337eb6b3cfc95b44ca6b24132243e318d",
-      "record_id": "patch-route:acd1291751eef1054202d571d9827f6a81e45458bfe6d4fb20b416cdb942dbcc",
+      "record_hash": "5992f2ba901b40e4ae2fcd5133ba5f41f5bae2618364b64524a50da3add319c8",
+      "record_id": "patch-route:5b410acc8b00feb7eabb8a0093fa33f57ba8e3a529cfbf5a676f37718a42ca65",
       "record_type": "M3_PATCH_ROUTE_RECEIPT",
       "record_version": 1,
       "source_module": "M3"
@@ -34,8 +47,8 @@
       "contract": "M3_RECORD_REF",
       "contract_version": "r03.5-candidate",
       "record_contract_version": "r03.5-candidate",
-      "record_hash": "716d6fda8ab3d85f90675ca01956068ea1f5af55f9b83915d48f9722ddae69ae",
-      "record_id": "merge-receipt:2d27d30871edb14b9aeec0ca6b51efd16a873217b32a02aa1edb050940a14013",
+      "record_hash": "54886dc3cb6d0eaa050db0c3604c65170ee45959358a6a11982f85c6bbe1884a",
+      "record_id": "merge-receipt:827443b878ce9704018a5d648fee3b6442168d5c20691c530c1c7489e09fc6ac",
       "record_type": "M3_CANDIDATE_MERGE_RECEIPT",
       "record_version": 1,
       "source_module": "M3"
@@ -46,7 +59,7 @@
       "contract": "M3_RECORD_REF",
       "contract_version": "r03.5-candidate",
       "record_contract_version": "r03.5-candidate",
-      "record_hash": "92e672396c26df1ac40666a48c79f4402d2ddce40a8e24785e81b2cfda81fb07",
+      "record_hash": "74fcbe7a8c4ae59432e4c9b7b59d18ba1f9bf19267b238497d0a7382e3453208",
       "record_id": "segment-terminal:95ad951b99e430a6d7e2e2bd510d20f77ba468f7ba45a73cb73018eb3b09d91d",
       "record_type": "M3_SEGMENT_CANDIDATE_TERMINAL_RECEIPT",
       "record_version": 1,
