@@ -1,0 +1,577 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/CHAPTER_CONTEXT_RETRIEVAL_TASK.schema.json",
+  "title": "CHAPTER_CONTEXT_RETRIEVAL_TASK v1",
+  "description": "Immutable CCZ-139 task projection. Structural validation only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "retrieval_task_id",
+    "truth_scope_ref",
+    "predecessor_binding_ref",
+    "status",
+    "reason_code",
+    "scope_confirmation_ref",
+    "scope_projection",
+    "previous_chapter_handoff",
+    "source_manifest",
+    "selected_fact_refs",
+    "box_directory",
+    "c9_source_needs",
+    "read_coverage",
+    "task_basis_sha256"
+  ],
+  "properties": {
+    "contract": {"const": "CHAPTER_CONTEXT_RETRIEVAL_TASK"},
+    "version": {"const": "v1"},
+    "retrieval_task_id": {"$ref": "#/$defs/stable_ref"},
+    "truth_scope_ref": {"$ref": "#/$defs/truth_scope_ref"},
+    "predecessor_binding_ref": {"$ref": "#/$defs/nullable_predecessor_binding_ref"},
+    "status": {"enum": ["READY_FOR_THIN_CARD", "READY_WITH_GAPS", "STOPPED"]},
+    "reason_code": {"$ref": "#/$defs/nullable_reason"},
+    "scope_confirmation_ref": {"$ref": "#/$defs/scope_confirmation_ref"},
+    "scope_projection": {"$ref": "#/$defs/nullable_scope_projection"},
+    "previous_chapter_handoff": {"$ref": "#/$defs/nullable_previous_handoff"},
+    "source_manifest": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/source_manifest_item"}
+    },
+    "selected_fact_refs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/selected_fact_ref"}
+    },
+    "box_directory": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/box_entry"}
+    },
+    "c9_source_needs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/source_need"}
+    },
+    "read_coverage": {"$ref": "#/$defs/read_coverage"},
+    "task_basis_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stable_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9._:/@-]{2,191}$"
+    },
+    "stable_ref_array": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/stable_ref"}
+    },
+    "non_empty_string_array": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "nullable_string": {
+      "oneOf": [
+        {"type": "string", "minLength": 1},
+        {"type": "null"}
+      ]
+    },
+    "nullable_sha256": {
+      "oneOf": [
+        {"$ref": "#/$defs/sha256"},
+        {"type": "null"}
+      ]
+    },
+    "nullable_stable_ref": {
+      "oneOf": [
+        {"$ref": "#/$defs/stable_ref"},
+        {"type": "null"}
+      ]
+    },
+    "truth_scope_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_author_id", "project_id"],
+      "properties": {
+        "principal_author_id": {"$ref": "#/$defs/stable_ref"},
+        "project_id": {"$ref": "#/$defs/stable_ref"}
+      }
+    },
+    "nullable_reason": {
+      "oneOf": [
+        {
+          "enum": [
+            "OPTIONAL_SOURCES_UNAVAILABLE",
+            "SCOPE_NOT_CONFIRMED",
+            "SCOPE_MISMATCH",
+            "PREVIOUS_SETTLEMENT_UNAVAILABLE",
+            "PREVIOUS_SETTLEMENT_UNRESOLVED",
+            "PREDECESSOR_BINDING_UNAVAILABLE",
+            "REQUIRED_SOURCE_UNAVAILABLE",
+            "CURRENT_ADVANCED",
+            "RESULT_TOO_LARGE",
+            "SOURCE_DAMAGED",
+            "UNAUTHORIZED"
+          ]
+        },
+        {"type": "null"}
+      ]
+    },
+    "scope_confirmation_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "scope_id", "scope_basis_sha256"],
+      "properties": {
+        "contract": {"const": "CHAPTER_SCOPE_CONFIRMATION"},
+        "version": {"const": "v1"},
+        "scope_id": {"$ref": "#/$defs/stable_ref"},
+        "scope_basis_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "predecessor_binding_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "binding_id", "binding_basis_sha256"],
+      "properties": {
+        "contract": {"const": "CHAPTER_PREDECESSOR_BINDING"},
+        "version": {"const": "v1"},
+        "binding_id": {"$ref": "#/$defs/stable_ref"},
+        "binding_basis_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "nullable_predecessor_binding_ref": {
+      "oneOf": [
+        {"$ref": "#/$defs/predecessor_binding_ref"},
+        {"type": "null"}
+      ]
+    },
+    "chapter_predecessor_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "binding_id",
+        "truth_scope_ref",
+        "source_plan_version",
+        "source_plan_sha256",
+        "current_slot_ref",
+        "current_slot_rev",
+        "chapter_position",
+        "previous_slot_ref",
+        "previous_settlement_sha256",
+        "binding_basis_sha256"
+      ],
+      "properties": {
+        "contract": {"const": "CHAPTER_PREDECESSOR_BINDING"},
+        "version": {"const": "v1"},
+        "binding_id": {"$ref": "#/$defs/stable_ref"},
+        "truth_scope_ref": {"$ref": "#/$defs/truth_scope_ref"},
+        "source_plan_version": {"type": "integer", "minimum": 1},
+        "source_plan_sha256": {"$ref": "#/$defs/sha256"},
+        "current_slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "current_slot_rev": {"type": "integer", "minimum": 1},
+        "chapter_position": {"enum": ["FIRST_CHAPTER", "CONTINUING_CHAPTER"]},
+        "previous_slot_ref": {"$ref": "#/$defs/nullable_stable_ref"},
+        "previous_settlement_sha256": {"$ref": "#/$defs/nullable_sha256"},
+        "binding_basis_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "scope_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "scope_id",
+        "selected_storyline_ref",
+        "transition_intent",
+        "viewpoint_character_ref",
+        "appearance_character_refs",
+        "permission_snapshot_sha256",
+        "effective_focus_sha256",
+        "source_plan_version",
+        "source_plan_sha256",
+        "slot_ref",
+        "slot_rev",
+        "scope_basis_sha256"
+      ],
+      "properties": {
+        "target": {"const": "CCZ-139"},
+        "scope_id": {"$ref": "#/$defs/stable_ref"},
+        "selected_storyline_ref": {"$ref": "#/$defs/stable_ref"},
+        "transition_intent": {
+          "enum": [
+            "CONTINUE_CURRENT",
+            "SWITCH_HARD_CUT",
+            "SWITCH_SUSTAINED_BRANCH",
+            "SWITCH_MAINLINE_BRIDGE"
+          ]
+        },
+        "viewpoint_character_ref": {"$ref": "#/$defs/stable_ref"},
+        "appearance_character_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "permission_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "effective_focus_sha256": {"$ref": "#/$defs/sha256"},
+        "source_plan_version": {"type": "integer", "minimum": 1},
+        "source_plan_sha256": {"$ref": "#/$defs/sha256"},
+        "slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "slot_rev": {"type": "integer", "minimum": 1},
+        "scope_basis_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "nullable_scope_projection": {
+      "oneOf": [
+        {"$ref": "#/$defs/scope_projection"},
+        {"type": "null"}
+      ]
+    },
+    "ledger_coverage_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledger_name", "result"],
+      "properties": {
+        "ledger_name": {
+          "enum": [
+            "chapter",
+            "fact",
+            "character",
+            "location",
+            "item",
+            "faction",
+            "system",
+            "world_rule",
+            "longline",
+            "planning"
+          ]
+        },
+        "result": {
+          "enum": ["COMMITTED", "CONFIRMED_NO_CHANGE", "OWNER_UNRESOLVED"]
+        }
+      }
+    },
+    "previous_handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_contract",
+        "source_contract_version",
+        "source_slot_ref",
+        "settlement_sha256",
+        "target_disposition",
+        "actual_completion_statement_refs",
+        "key_plot_statement_refs",
+        "important_state_statement_refs",
+        "unresolved_story_item_refs",
+        "handoff_mode",
+        "handoff_scope_refs",
+        "handoff_summary",
+        "provenance_seal_refs",
+        "ledger_coverage",
+        "c9_need_id"
+      ],
+      "properties": {
+        "source_contract": {"const": "CHAPTER_SETTLEMENT_SEAL"},
+        "source_contract_version": {"const": "v1"},
+        "source_slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "settlement_sha256": {"$ref": "#/$defs/sha256"},
+        "target_disposition": {"type": "string", "minLength": 1},
+        "actual_completion_statement_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "key_plot_statement_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "important_state_statement_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "unresolved_story_item_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "handoff_mode": {"type": "string", "minLength": 1},
+        "handoff_scope_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "handoff_summary": {"type": "string", "minLength": 1, "maxLength": 512},
+        "provenance_seal_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/sha256"}
+        },
+        "ledger_coverage": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": {"$ref": "#/$defs/ledger_coverage_item"}
+        },
+        "c9_need_id": {
+          "oneOf": [
+            {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "nullable_previous_handoff": {
+      "oneOf": [
+        {"$ref": "#/$defs/previous_handoff"},
+        {"type": "null"}
+      ]
+    },
+    "source_manifest_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "source_contract",
+        "source_contract_version",
+        "object_ref",
+        "access_state",
+        "source_status",
+        "reason_code",
+        "basis_mode",
+        "basis_sha256",
+        "source_document_sha256",
+        "authorized_scope_refs"
+      ],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/stable_ref"},
+        "source_contract": {
+          "enum": [
+            "CHAPTER_SCOPE_CONFIRMATION",
+            "CHAPTER_PREDECESSOR_BINDING",
+            "CHAPTER_SETTLEMENT_SEAL",
+            "CHAPTER_LAYERED_SUMMARY",
+            "LEDGER_READ_TOOL_CONTRACT",
+            "TRACEABLE_PROVENANCE_SEAL"
+          ]
+        },
+        "source_contract_version": {"type": "string", "minLength": 1},
+        "object_ref": {"$ref": "#/$defs/stable_ref"},
+        "access_state": {
+          "enum": [
+            "OPENED_OK",
+            "OPENED_EMPTY",
+            "OPENED_REJECTED",
+            "OPENED_ERROR",
+            "DIRECTORY_ONLY",
+            "NOT_READ",
+            "CAPABILITY_UNAVAILABLE"
+          ]
+        },
+        "source_status": {
+          "oneOf": [
+            {"enum": ["VALIDATED", "OK", "EMPTY", "REJECTED", "ERROR"]},
+            {"type": "null"}
+          ]
+        },
+        "reason_code": {"$ref": "#/$defs/nullable_string"},
+        "basis_mode": {
+          "oneOf": [
+            {"enum": ["current_at_start", "pinned_manifest"]},
+            {"type": "null"}
+          ]
+        },
+        "basis_sha256": {"$ref": "#/$defs/nullable_sha256"},
+        "source_document_sha256": {"$ref": "#/$defs/nullable_sha256"},
+        "authorized_scope_refs": {"$ref": "#/$defs/stable_ref_array"}
+      }
+    },
+    "selected_fact_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fact_ref",
+        "ledger_name",
+        "read_source_id",
+        "source_response_ref",
+        "fact_revision",
+        "fact_sha256",
+        "chapter_slot_ref",
+        "chapter_revision",
+        "relation_scope_refs",
+        "selection_basis_refs",
+        "fact_summary",
+        "obligation_tier",
+        "c9_need_id"
+      ],
+      "properties": {
+        "fact_ref": {"$ref": "#/$defs/stable_ref"},
+        "ledger_name": {"const": "事实账"},
+        "read_source_id": {"$ref": "#/$defs/stable_ref"},
+        "source_response_ref": {"type": "string", "pattern": "^REQ-[A-Za-z0-9._:-]+$"},
+        "fact_revision": {
+          "oneOf": [
+            {"type": "integer", "minimum": 1},
+            {"type": "string", "minLength": 1}
+          ]
+        },
+        "fact_sha256": {"$ref": "#/$defs/sha256"},
+        "chapter_slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "chapter_revision": {"type": "integer", "minimum": 1},
+        "relation_scope_refs": {"$ref": "#/$defs/non_empty_string_array"},
+        "selection_basis_refs": {"$ref": "#/$defs/non_empty_string_array"},
+        "fact_summary": {"type": "string", "minLength": 1, "maxLength": 512},
+        "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
+        "c9_need_id": {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"}
+      }
+    },
+    "box_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "box_id",
+        "box_kind",
+        "source_id",
+        "relation_scope_refs",
+        "expected_material_kinds",
+        "availability",
+        "reason_code",
+        "obligation_tier",
+        "logical_open_ref",
+        "c9_need_ids"
+      ],
+      "properties": {
+        "box_id": {"$ref": "#/$defs/stable_ref"},
+        "box_kind": {
+          "enum": [
+            "PREVIOUS_CHAPTER_DETAIL",
+            "OLDER_CHAPTER_SUMMARY",
+            "CHARACTER_STATE",
+            "LOCATION",
+            "ITEM",
+            "FACTION",
+            "SYSTEM",
+            "WORLD_RULE",
+            "PLANNING_REFERENCE",
+            "FORMATION_BASIS",
+            "ORIGINAL_EVIDENCE"
+          ]
+        },
+        "source_id": {"$ref": "#/$defs/nullable_stable_ref"},
+        "relation_scope_refs": {"$ref": "#/$defs/non_empty_string_array"},
+        "expected_material_kinds": {"$ref": "#/$defs/non_empty_string_array"},
+        "availability": {
+          "enum": ["OPENED", "DIRECTORY_ONLY", "NOT_READ", "CAPABILITY_UNAVAILABLE", "MASKED"]
+        },
+        "reason_code": {"$ref": "#/$defs/nullable_string"},
+        "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
+        "logical_open_ref": {"$ref": "#/$defs/nullable_stable_ref"},
+        "c9_need_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"}
+        }
+      }
+    },
+    "read_coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "opened_source_ids",
+        "directory_only_source_ids",
+        "not_read_source_ids",
+        "unavailable_source_ids",
+        "selected_fact_count",
+        "complete_for_required",
+        "missing_required_box_ids"
+      ],
+      "properties": {
+        "opened_source_ids": {"$ref": "#/$defs/stable_ref_array"},
+        "directory_only_source_ids": {"$ref": "#/$defs/stable_ref_array"},
+        "not_read_source_ids": {"$ref": "#/$defs/stable_ref_array"},
+        "unavailable_source_ids": {"$ref": "#/$defs/stable_ref_array"},
+        "selected_fact_count": {"type": "integer", "minimum": 0},
+        "complete_for_required": {"type": "boolean"},
+        "missing_required_box_ids": {"$ref": "#/$defs/stable_ref_array"}
+      }
+    },
+    "source_contract": {
+      "enum": [
+        "LEDGER_READ_TOOL_CONTRACT",
+        "TRACEABLE_PROVENANCE_SEAL",
+        "CHAPTER_SETTLEMENT_SEAL",
+        "CHAPTER_LAYERED_SUMMARY"
+      ]
+    },
+    "evidence_layer": {"enum": ["LEDGER_OBJECT", "FORMATION_BASIS", "ORIGINAL_EVIDENCE"]},
+    "expansion_trigger": {
+      "enum": [
+        "INITIAL",
+        "AUDIT_REQUIRED",
+        "CONFLICT_DETECTED",
+        "SOURCE_STALE",
+        "LOW_CONFIDENCE",
+        "LEDGER_INSUFFICIENT",
+        "DOWNSTREAM_REQUESTED_MORE",
+        "HIGH_IMPACT_DECISION"
+      ]
+    },
+    "actuality_class": {
+      "enum": ["CURRENT_FACT_OR_STATE", "ACTIVE_CONSTRAINT", "FUTURE_PLAN_OR_PROJECTION"]
+    },
+    "obligation_tier": {"enum": ["HARD", "SHOULD", "MAY"]},
+    "recall_disposition": {"enum": ["RETRIEVABLE", "NOT_RETRIEVABLE"]},
+    "trigger_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_contract",
+        "decision_contract_version",
+        "decision_object_ref",
+        "decision_object_sha256",
+        "producer_component_id",
+        "decision_code",
+        "parent_need_id"
+      ],
+      "properties": {
+        "decision_contract": {"type": "string", "minLength": 1},
+        "decision_contract_version": {"type": "string", "minLength": 1},
+        "decision_object_ref": {"type": "string", "minLength": 1},
+        "decision_object_sha256": {"$ref": "#/$defs/sha256"},
+        "producer_component_id": {"type": "string", "minLength": 1},
+        "decision_code": {"$ref": "#/$defs/expansion_trigger"},
+        "parent_need_id": {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"}
+      }
+    },
+    "nullable_trigger_provenance": {
+      "oneOf": [
+        {"$ref": "#/$defs/trigger_provenance"},
+        {"type": "null"}
+      ]
+    },
+    "source_need": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "need_id",
+        "evidence_layer",
+        "parent_need_id",
+        "source_contract",
+        "source_contract_version",
+        "object_ref",
+        "actuality_class",
+        "obligation_tier",
+        "selection_rank",
+        "task_relation",
+        "estimated_tokens",
+        "recall_disposition",
+        "recall_handle",
+        "expansion_trigger",
+        "trigger_provenance"
+      ],
+      "properties": {
+        "need_id": {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"},
+        "evidence_layer": {"$ref": "#/$defs/evidence_layer"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
+        "source_contract": {"$ref": "#/$defs/source_contract"},
+        "source_contract_version": {"type": "string", "minLength": 1},
+        "object_ref": {"type": "string", "minLength": 1},
+        "actuality_class": {"$ref": "#/$defs/actuality_class"},
+        "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
+        "selection_rank": {
+          "oneOf": [
+            {"type": "integer", "minimum": 0},
+            {"type": "null"}
+          ]
+        },
+        "task_relation": {"type": "string", "minLength": 1},
+        "estimated_tokens": {"type": "integer", "minimum": 0},
+        "recall_disposition": {"$ref": "#/$defs/recall_disposition"},
+        "recall_handle": {"$ref": "#/$defs/nullable_string"},
+        "expansion_trigger": {"$ref": "#/$defs/expansion_trigger"},
+        "trigger_provenance": {"$ref": "#/$defs/nullable_trigger_provenance"}
+      }
+    }
+  }
+}
