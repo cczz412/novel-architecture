@@ -56,11 +56,12 @@ BUILD_POLICY = {
     "byte_limit_policy_version": "chapter-thin-card-byte-limit-v1",
     "max_payload_bytes": MAX_PAYLOAD_BYTES,
 }
-EXPECTED_COUNTS = {STRUCTURAL_VALID: 18, STRUCTURAL_INVALID: 46}
+EXPECTED_COUNTS = {STRUCTURAL_VALID: 18, STRUCTURAL_INVALID: 47}
 EXPECTED_ERROR_CODES = {
     "admission_card_ref": "ADMISSION_CARD_REF_MISMATCH",
     "admission_hash": "ADMISSION_RECEIPT_SHA256_MISMATCH",
     "admission_duplicate_check_kind": "ADMISSION_CHECK_KIND_SET_INVALID",
+    "admission_current_proof_shape": "ADMISSION_CURRENT_PROOF_SCHEMA_INVALID",
     "admission_mask_leak": "ADMISSION_MASK_LEAK",
     "admission_match_fingerprint": "ADMISSION_MATCH_FINGERPRINT_MISMATCH",
     "admission_missing_check": "SCHEMA_INVALID",
@@ -144,6 +145,13 @@ def _load_json(path: Path) -> dict[str, Any]:
 SCHEMA = _load_json(SCHEMA_PATH)
 Draft202012Validator.check_schema(SCHEMA)
 VALIDATOR = Draft202012Validator(SCHEMA)
+ADMISSION_CHECK_SCHEMA = {
+    "$schema": SCHEMA["$schema"],
+    "$ref": "#/$defs/admission_check",
+    "$defs": SCHEMA["$defs"],
+}
+Draft202012Validator.check_schema(ADMISSION_CHECK_SCHEMA)
+ADMISSION_CHECK_VALIDATOR = Draft202012Validator(ADMISSION_CHECK_SCHEMA)
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -1139,6 +1147,17 @@ def _expected_admission_fingerprints(
 def _validate_current_proofs(
     card: dict[str, Any], checks: list[dict[str, Any]]
 ) -> None:
+    for index, check in enumerate(checks):
+        errors = sorted(
+            ADMISSION_CHECK_VALIDATOR.iter_errors(check),
+            key=lambda item: (list(item.absolute_path), item.message),
+        )
+        if errors:
+            first = errors[0]
+            raise ThinCardError(
+                "ADMISSION_CURRENT_PROOF_SCHEMA_INVALID:"
+                f"{index}:{_schema_path(first)}:{first.validator}"
+            )
     kinds = [row["check_kind"] for row in checks]
     if len(kinds) != len(ADMISSION_CHECK_KINDS) or set(kinds) != (
         ADMISSION_CHECK_KINDS
@@ -1778,6 +1797,8 @@ def apply_mutation(bundle: dict[str, Any], mutation: str) -> dict[str, Any]:
         checks = bundle["current_proofs"]
         checks[6]["disclosure"]["observed_sha256"] = "0" * 64
         bundle["artifact"] = _build_admission(bundle["thin_card"], checks)
+    elif mutation == "admission_current_proof_shape":
+        bundle["current_proofs"][0]["disclosure"].pop("mode")
     elif mutation == "failure_has_card_id":
         artifact["thin_card_id"] = "THIN-CARD-0001"
     elif mutation == "failure_hash":

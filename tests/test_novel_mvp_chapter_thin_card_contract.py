@@ -51,11 +51,11 @@ def test_schema_and_fixture_inventory_are_frozen() -> None:
         "#/$defs/build_failure",
     ]
     cases = _cases()
-    assert len(cases) == 64
+    assert len(cases) == 65
     assert len({row["case_id"] for row in cases}) == len(cases)
     assert validator.validate_all_fixtures() == {
         validator.STRUCTURAL_VALID: 18,
-        validator.STRUCTURAL_INVALID: 46,
+        validator.STRUCTURAL_INVALID: 47,
     }
 
 
@@ -231,6 +231,9 @@ def test_admission_requires_nine_unique_checks_with_truthful_fingerprints() -> N
     assert validator.fixture_error_code(_case("CTC-INVALID-46")) == (
         "ADMISSION_MATCH_FINGERPRINT_MISMATCH"
     )
+    assert validator.fixture_error_code(_case("CTC-INVALID-47")) == (
+        "ADMISSION_CURRENT_PROOF_SCHEMA_INVALID"
+    )
 
 
 def test_permission_revocation_masks_identity() -> None:
@@ -291,7 +294,7 @@ def test_cli_reports_synthetic_only_pass_receipt() -> None:
     assert receipt["status"] == "PASS"
     assert receipt["counts"] == {
         validator.STRUCTURAL_VALID: 18,
-        validator.STRUCTURAL_INVALID: 46,
+        validator.STRUCTURAL_INVALID: 47,
     }
     assert receipt["synthetic_c9_compilation_performed"] is True
     assert {

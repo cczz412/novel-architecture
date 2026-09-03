@@ -62,3 +62,4 @@
 {"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-44","expected_result":"STRUCTURAL_INVALID","mutation":"admission_duplicate_check_kind"}
 {"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-45","expected_result":"STRUCTURAL_INVALID","mutation":"admission_wrong_expected_fingerprint"}
 {"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-46","expected_result":"STRUCTURAL_INVALID","mutation":"admission_match_fingerprint"}
+{"artifact":"ADMISSION","base":"continue","case_id":"CTC-INVALID-47","expected_result":"STRUCTURAL_INVALID","mutation":"admission_current_proof_shape"}
