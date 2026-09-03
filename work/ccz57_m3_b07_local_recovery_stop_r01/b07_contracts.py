@@ -34,6 +34,11 @@ STOP_RECEIPT_TYPE = "M3_RUN_STOP_RECEIPT"
 DEBUG_RECORD_TYPE = "M3_RUN_INTERNAL_DEBUG_RECORD"
 RESUME_PLAN_TYPE = "M3_DERIVED_RESUME_PLAN"
 ACCESS_MAINTAINER_INTERNAL = "MAINTAINER_INTERNAL"
+TERMINAL_COMPONENT_KIND = "M3_SEGMENT_CANDIDATE_TERMINAL_RECEIPT"
+TERMINAL_ARTIFACT_KIND = "B08_SEGMENT_TERMINAL_RECORD"
+TERMINAL_ARTIFACT_LOCATOR_PREFIX = (
+    "work/ccz57_m3_b08_segment_terminal_r01/records/"
+)
 
 RUN_STATUSES = {
     "NEW",
@@ -322,6 +327,35 @@ def validate_component_observation(value: Any) -> None:
     validate_local_artifact_ref(value["component_artifact_ref"])
 
 
+def validate_terminal_component_observation(value: Any) -> None:
+    try:
+        validate_component_observation(value)
+    except B07ContractError as error:
+        fail("B07_TERMINAL_OBSERVATION_REQUIRED", error.code)
+    artifact = value["component_artifact_ref"]
+    locator = artifact["workspace_relative_locator"]
+    if (
+        value["component_kind"] != TERMINAL_COMPONENT_KIND
+        or artifact["artifact_kind"] != TERMINAL_ARTIFACT_KIND
+        or not locator.startswith(TERMINAL_ARTIFACT_LOCATOR_PREFIX)
+        or not locator.endswith(".json")
+    ):
+        fail("B07_TERMINAL_OBSERVATION_REQUIRED")
+
+
+def validate_terminal_transition_source(
+    state: dict[str, Any], observation: Any
+) -> None:
+    if (
+        state["status"] != "ACTIVE"
+        or state["phase"] != "FINALIZING"
+        or state["wait_kind"] is not None
+        or state["pending_local_action"] is not None
+    ):
+        fail("B07_TERMINAL_SEQUENCE_INVALID")
+    validate_terminal_component_observation(observation)
+
+
 def state_hash_value(state: dict[str, Any]) -> str:
     return sha256_value(
         {
@@ -376,6 +410,8 @@ def validate_current_run_state(state: Any) -> None:
         or (state["status"] in {"SUCCEEDED", "STOPPED"} and state["phase"] != "DONE")
     ):
         fail("B07_RUN_STATE_INVARIANT_INVALID")
+    if state["status"] in {"SUCCEEDED", "STOPPED"}:
+        validate_terminal_component_observation(state["last_component_observation"])
 
 
 def build_current_run_state(
@@ -492,14 +528,42 @@ def validate_stop_receipt(record: Any) -> None:
     ):
         fail("B07_STOP_PAYLOAD_INVALID")
     validate_authority_snapshot(payload["authority_snapshot"])
-    if payload["last_component_observation"] is not None:
-        validate_component_observation(payload["last_component_observation"])
+    validate_terminal_component_observation(payload["last_component_observation"])
     if payload["pending_local_action"] is not None:
         validate_pending_local_action(payload["pending_local_action"])
     _validate_ref_or_none(
         payload["retainable_candidate_version_ref"],
         code="B07_STOP_PAYLOAD_INVALID",
     )
+
+
+def validate_stop_receipt_for_state(
+    state: dict[str, Any], receipt: dict[str, Any]
+) -> None:
+    validate_current_run_state(state)
+    validate_stop_receipt(receipt)
+    if state["status"] != "STOPPED":
+        fail("B07_STOP_RECEIPT_SCOPE_MISMATCH", "state is not stopped")
+    payload = receipt["payload"]
+    expected = {
+        "project_scope_id": state["project_scope_id"],
+        "logical_run_key": state["logical_run_key"],
+        "run_id": state["run_id"],
+        "logical_run_generation": state["logical_run_generation"],
+        "run_epoch": state["run_epoch"],
+        "stopped_from_state_revision": state["state_revision"] - 1,
+        "authority_snapshot": state["authority_snapshot"],
+        "last_component_observation": state["last_component_observation"],
+    }
+    if (
+        canonical_bytes(state["stop_receipt_ref"])
+        != canonical_bytes(record_ref(receipt))
+        or any(
+            canonical_bytes(payload[key]) != canonical_bytes(value)
+            for key, value in expected.items()
+        )
+    ):
+        fail("B07_STOP_RECEIPT_SCOPE_MISMATCH")
 
 
 def build_debug_record(*, payload: dict[str, Any], created_at: str) -> dict[str, Any]:
@@ -688,7 +752,9 @@ def debug_record_ref(record: dict[str, Any]) -> dict[str, Any]:
     return record_ref(record)
 
 
-def project_author_status(state: dict[str, Any]) -> dict[str, Any]:
+def project_author_status(
+    state: dict[str, Any], *, stop_receipt: dict[str, Any] | None = None
+) -> dict[str, Any]:
     validate_current_run_state(state)
     status_class = {
         "NEW": "RUNNING",
@@ -700,13 +766,17 @@ def project_author_status(state: dict[str, Any]) -> dict[str, Any]:
     }[state["status"]]
     action_kind = "NONE"
     if state["status"] == "STOPPED":
-        action_kind = "RESTART"
+        if stop_receipt is None:
+            fail("B07_STOP_RECEIPT_REQUIRED")
+        validate_stop_receipt_for_state(state, stop_receipt)
+        disposition = stop_receipt["payload"]["resume_disposition"]
+        action_kind = "RESTART" if disposition == "REOPEN_NEW_RUN" else "WAIT"
     elif state["wait_kind"] == "AUTHOR_ACTION":
         action_kind = "REVIEW_INPUT"
     return {
         "run_status_class": status_class,
         "phase_class": ("FINALIZING" if state["phase"] == "DONE" else state["phase"]),
-        "author_action_required": action_kind != "NONE",
+        "author_action_required": action_kind in {"RESTART", "REVIEW_INPUT"},
         "author_action_kind": action_kind,
-        "terminalization_pending": state["status"] == "STOPPED",
+        "terminalization_pending": False,
     }

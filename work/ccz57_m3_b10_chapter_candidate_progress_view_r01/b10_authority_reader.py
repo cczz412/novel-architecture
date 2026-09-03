@@ -35,8 +35,11 @@ from work.ccz57_m3_b06_commit_core_r01.b06_contracts import (  # noqa: E402
     validate_mutable_pointer,
 )
 from work.ccz57_m3_b07_local_recovery_stop_r01.b07_contracts import (  # noqa: E402
+    B07ContractError,
     project_author_status,
     validate_current_run_state,
+    validate_stop_receipt,
+    validate_stop_receipt_for_state,
 )
 from b08_contracts import (  # noqa: E402
     B08ContractError,
@@ -73,6 +76,7 @@ _REQUIRED_TABLES = {
     "current_pointers",
     "merge_receipts",
     "b07_current_run_states",
+    "b07_stop_receipts",
     "b08_segment_terminal_receipts",
 }
 
@@ -355,8 +359,56 @@ class ChapterProgressAuthorityReader:
         return list(current.values())
 
     @staticmethod
-    def _run_summary(state: dict[str, Any]) -> dict[str, Any]:
-        author = project_author_status(state)
+    def _stop_receipt_for_state(
+        connection: sqlite3.Connection, state: dict[str, Any]
+    ) -> dict[str, Any] | None:
+        if state["status"] != "STOPPED":
+            return None
+        ref = state["stop_receipt_ref"]
+        row = connection.execute(
+            "SELECT project_scope_id, stop_receipt_id, run_id, stop_operation_id, "
+            "request_hash, receipt_json FROM b07_stop_receipts "
+            "WHERE project_scope_id = ? AND stop_receipt_id = ?",
+            (state["project_scope_id"], ref["record_id"]),
+        ).fetchone()
+        if row is None:
+            raise B10AuthorityError(
+                "AUTHORITY_REFERENCE_CONFLICT", "exact B-07 StopReceipt missing"
+            )
+        receipt = _decode(row[5], detail="B-07 StopReceipt bytes")
+        try:
+            validate_stop_receipt(receipt)
+            validate_stop_receipt_for_state(state, receipt)
+        except B07ContractError as error:
+            reason = (
+                "AUTHORITY_STATE_INCOHERENT"
+                if error.code == "B07_STOP_RECEIPT_SCOPE_MISMATCH"
+                else "AUTHORITY_HASH_MISMATCH"
+            )
+            raise B10AuthorityError(reason, str(error)) from error
+        payload = receipt["payload"]
+        expected = (
+            payload["project_scope_id"],
+            receipt["record_id"],
+            payload["run_id"],
+            payload["stop_operation_id"],
+            payload["stop_request_hash"],
+        )
+        if tuple(row[:5]) != expected:
+            raise B10AuthorityError(
+                "AUTHORITY_STATE_INCOHERENT", "B-07 StopReceipt mirrored columns"
+            )
+        return receipt
+
+    @classmethod
+    def _run_summary(
+        cls, connection: sqlite3.Connection, state: dict[str, Any]
+    ) -> dict[str, Any]:
+        receipt = cls._stop_receipt_for_state(connection, state)
+        try:
+            author = project_author_status(state, stop_receipt=receipt)
+        except B07ContractError as error:
+            raise B10AuthorityError("AUTHORITY_STATE_INCOHERENT", str(error)) from error
         return {
             "logical_run_key": state["logical_run_key"],
             "run_id": state["run_id"],
@@ -464,7 +516,7 @@ class ChapterProgressAuthorityReader:
             validate_segment_result(result)
             return result
         state, pointer, _candidate = binding
-        run_summary = self._run_summary(state)
+        run_summary = self._run_summary(connection, state)
         state_authority = state["authority_snapshot"]
         run_pointer_current = (
             state_authority["observed_pointer_generation"] == pointer["generation"]
@@ -484,15 +536,10 @@ class ChapterProgressAuthorityReader:
             product_result = None
             delivery = None
             if state["status"] in {"SUCCEEDED", "STOPPED"}:
-                status = "TERMINALIZING" if run_pointer_current else "STALE"
-                witness = {
-                    "kind": "TERMINAL_PENDING",
-                    "run_id": state["run_id"],
-                    "logical_run_generation": state["logical_run_generation"],
-                    "run_epoch": state["run_epoch"],
-                    "state_hash": state["state_hash"],
-                    "run_pointer_current": run_pointer_current,
-                }
+                raise B10AuthorityError(
+                    "AUTHORITY_REFERENCE_CONFLICT",
+                    "terminal B-07 state has no exact B-08 terminal",
+                )
             else:
                 status = (
                     {
