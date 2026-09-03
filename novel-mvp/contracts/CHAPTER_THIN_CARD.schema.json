@@ -1,0 +1,697 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/CHAPTER_THIN_CARD.schema.json",
+  "title": "CHAPTER_THIN_CARD contract family v1",
+  "description": "Immutable CCZ-140 thin card, separate admission receipt, or separate build failure. Structural validation only.",
+  "oneOf": [
+    {"$ref": "#/$defs/thin_card"},
+    {"$ref": "#/$defs/admission_receipt"},
+    {"$ref": "#/$defs/build_failure"}
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stable_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9._:/@-]{2,191}$"
+    },
+    "stable_ref_array": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/stable_ref"}
+    },
+    "non_empty_string_array": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "nullable_stable_ref": {
+      "oneOf": [
+        {"$ref": "#/$defs/stable_ref"},
+        {"type": "null"}
+      ]
+    },
+    "truth_scope_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_author_id", "project_id"],
+      "properties": {
+        "principal_author_id": {"$ref": "#/$defs/stable_ref"},
+        "project_id": {"$ref": "#/$defs/stable_ref"}
+      }
+    },
+    "scope_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "scope_id",
+        "selected_storyline_ref",
+        "transition_intent",
+        "viewpoint_character_ref",
+        "appearance_character_refs",
+        "permission_snapshot_sha256",
+        "effective_focus_sha256",
+        "source_plan_version",
+        "source_plan_sha256",
+        "slot_ref",
+        "slot_rev",
+        "scope_basis_sha256"
+      ],
+      "properties": {
+        "target": {"const": "CCZ-139"},
+        "scope_id": {"$ref": "#/$defs/stable_ref"},
+        "selected_storyline_ref": {"$ref": "#/$defs/stable_ref"},
+        "transition_intent": {
+          "enum": [
+            "CONTINUE_CURRENT",
+            "SWITCH_HARD_CUT",
+            "SWITCH_SUSTAINED_BRANCH",
+            "SWITCH_MAINLINE_BRIDGE"
+          ]
+        },
+        "viewpoint_character_ref": {"$ref": "#/$defs/stable_ref"},
+        "appearance_character_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "permission_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "effective_focus_sha256": {"$ref": "#/$defs/sha256"},
+        "source_plan_version": {"type": "integer", "minimum": 1},
+        "source_plan_sha256": {"$ref": "#/$defs/sha256"},
+        "slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "slot_rev": {"type": "integer", "minimum": 1},
+        "scope_basis_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "retrieval_task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "version", "retrieval_task_id", "task_basis_sha256"],
+      "properties": {
+        "contract": {"const": "CHAPTER_CONTEXT_RETRIEVAL_TASK"},
+        "version": {"const": "v1"},
+        "retrieval_task_id": {"$ref": "#/$defs/stable_ref"},
+        "task_basis_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "c9_run_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "request_sha256",
+        "plan_sha256",
+        "package_sha256",
+        "receipt_sha256",
+        "trace_log_sha256",
+        "run_sha256"
+      ],
+      "properties": {
+        "contract": {"const": "C9_RETRIEVAL_RESULT"},
+        "version": {"const": "c9-unified-retrieval-run-v2"},
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "plan_sha256": {"$ref": "#/$defs/sha256"},
+        "package_sha256": {"$ref": "#/$defs/sha256"},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "trace_log_sha256": {"$ref": "#/$defs/sha256"},
+        "run_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "material_role": {
+      "enum": [
+        "SOURCE_TEXT",
+        "FACT_EXPRESSION",
+        "FORMAL_LEDGER_STATE",
+        "CHAPTER_TARGET",
+        "DERIVED_ARTIFACT"
+      ]
+    },
+    "actuality_class": {
+      "enum": [
+        "OUTER_EVIDENCE",
+        "FACT_EXPRESSION",
+        "COMMITTED_TRUTH",
+        "PLANNED_TARGET",
+        "UNCOMMITTED_WORKSPACE",
+        "DERIVED_ARTIFACT",
+        "HISTORICAL_PINNED"
+      ]
+    },
+    "source_version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version_ref",
+        "material_role",
+        "binding_kind",
+        "binding_ref",
+        "source_contract",
+        "source_contract_version",
+        "object_ref",
+        "revision_ref",
+        "content_sha256",
+        "basis_mode",
+        "basis_sha256",
+        "storage_generation",
+        "actuality_class"
+      ],
+      "properties": {
+        "version_ref": {"$ref": "#/$defs/stable_ref"},
+        "material_role": {"$ref": "#/$defs/material_role"},
+        "binding_kind": {"enum": ["C9_NEED", "OWNER_PROOF"]},
+        "binding_ref": {"$ref": "#/$defs/stable_ref"},
+        "source_contract": {"type": "string", "minLength": 1},
+        "source_contract_version": {"type": "string", "minLength": 1},
+        "object_ref": {"$ref": "#/$defs/stable_ref"},
+        "revision_ref": {"$ref": "#/$defs/stable_ref"},
+        "content_sha256": {"$ref": "#/$defs/sha256"},
+        "basis_mode": {"enum": ["current_at_start", "pinned_manifest"]},
+        "basis_sha256": {"$ref": "#/$defs/sha256"},
+        "storage_generation": {"$ref": "#/$defs/stable_ref"},
+        "actuality_class": {"$ref": "#/$defs/actuality_class"}
+      }
+    },
+    "identity_disclosure": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "version_ref"],
+          "properties": {
+            "mode": {"const": "DISCLOSED"},
+            "version_ref": {"$ref": "#/$defs/stable_ref"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": {"mode": {"const": "MASKED"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": {"mode": {"const": "NOT_AVAILABLE"}}
+        }
+      ]
+    },
+    "source_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result_id",
+        "material_role",
+        "state",
+        "reason_code",
+        "identity_disclosure"
+      ],
+      "properties": {
+        "result_id": {"$ref": "#/$defs/stable_ref"},
+        "material_role": {"$ref": "#/$defs/material_role"},
+        "state": {
+          "enum": [
+            "PRESENT",
+            "EMPTY",
+            "NO_MATCH",
+            "UNTRACKED",
+            "UNAVAILABLE",
+            "UNAUTHORIZED",
+            "UNSUPPORTED_VERSION",
+            "DAMAGED"
+          ]
+        },
+        "reason_code": {"type": "string", "minLength": 1},
+        "identity_disclosure": {"$ref": "#/$defs/identity_disclosure"}
+      }
+    },
+    "character_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_version_ref", "time_anchor_ref"],
+      "properties": {
+        "source_version_ref": {"$ref": "#/$defs/stable_ref"},
+        "time_anchor_ref": {"$ref": "#/$defs/stable_ref"}
+      }
+    },
+    "character_view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "character_ref",
+        "character_current_definition",
+        "character_story_time_slice"
+      ],
+      "properties": {
+        "character_ref": {"$ref": "#/$defs/stable_ref"},
+        "character_current_definition": {"$ref": "#/$defs/character_snapshot"},
+        "character_story_time_slice": {"$ref": "#/$defs/character_snapshot"}
+      }
+    },
+    "plan_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slot_ref",
+        "slot_rev",
+        "source_plan_version",
+        "source_plan_sha256",
+        "actuality_class"
+      ],
+      "properties": {
+        "slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "slot_rev": {"type": "integer", "minimum": 1},
+        "source_plan_version": {"type": "integer", "minimum": 1},
+        "source_plan_sha256": {"$ref": "#/$defs/sha256"},
+        "actuality_class": {"const": "PLANNED_TARGET"}
+      }
+    },
+    "previous_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_slot_ref",
+        "settlement_sha256",
+        "handoff_summary",
+        "actuality_class"
+      ],
+      "properties": {
+        "source_slot_ref": {"$ref": "#/$defs/stable_ref"},
+        "settlement_sha256": {"$ref": "#/$defs/sha256"},
+        "handoff_summary": {"type": "string", "minLength": 1},
+        "actuality_class": {"const": "COMMITTED_TRUTH"}
+      }
+    },
+    "nullable_previous_snapshot": {
+      "oneOf": [
+        {"$ref": "#/$defs/previous_snapshot"},
+        {"type": "null"}
+      ]
+    },
+    "workspace_delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_ref", "source_version_ref", "actuality_class"],
+      "properties": {
+        "object_ref": {"$ref": "#/$defs/stable_ref"},
+        "source_version_ref": {"$ref": "#/$defs/stable_ref"},
+        "actuality_class": {"const": "UNCOMMITTED_WORKSPACE"}
+      }
+    },
+    "recall_access": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["disposition", "handle"],
+          "properties": {
+            "disposition": {"const": "RETRIEVABLE"},
+            "handle": {"type": "string", "minLength": 1}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["disposition"],
+          "properties": {"disposition": {"const": "NOT_RETRIEVABLE"}}
+        }
+      ]
+    },
+    "resident_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "need_id",
+        "object_ref",
+        "evidence_layer",
+        "parent_need_id",
+        "obligation_tier",
+        "material_text",
+        "material_sha256",
+        "why_loaded",
+        "source_version_ref",
+        "source_result_ref",
+        "relation_scope_refs",
+        "display_summary",
+        "display_summary_source",
+        "consumer_use_tags",
+        "recall"
+      ],
+      "properties": {
+        "need_id": {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"},
+        "object_ref": {"$ref": "#/$defs/stable_ref"},
+        "evidence_layer": {
+          "enum": ["LEDGER_OBJECT", "FORMATION_BASIS", "ORIGINAL_EVIDENCE"]
+        },
+        "parent_need_id": {"$ref": "#/$defs/nullable_stable_ref"},
+        "obligation_tier": {"enum": ["HARD", "SHOULD", "MAY"]},
+        "material_text": {"type": "string", "minLength": 1},
+        "material_sha256": {"$ref": "#/$defs/sha256"},
+        "why_loaded": {"type": "string", "minLength": 1},
+        "source_version_ref": {"$ref": "#/$defs/stable_ref"},
+        "source_result_ref": {"$ref": "#/$defs/stable_ref"},
+        "relation_scope_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "display_summary": {"type": "string", "minLength": 1},
+        "display_summary_source": {
+          "enum": [
+            "TASK_FACT_SUMMARY",
+            "PREVIOUS_HANDOFF_SUMMARY",
+            "C9_WHY_LOADED"
+          ]
+        },
+        "consumer_use_tags": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["AUTHOR_UI", "PRODUCT_MODULE", "INTERNAL_AUDIT"]}
+        },
+        "recall": {"$ref": "#/$defs/recall_access"}
+      }
+    },
+    "on_demand_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_id",
+        "need_id",
+        "box_id",
+        "object_ref",
+        "evidence_layer",
+        "parent_need_id",
+        "obligation_tier",
+        "reason_code",
+        "recall_handle",
+        "relation_scope_refs",
+        "source_result_ref"
+      ],
+      "properties": {
+        "entry_id": {"$ref": "#/$defs/stable_ref"},
+        "need_id": {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"},
+        "box_id": {"$ref": "#/$defs/nullable_stable_ref"},
+        "object_ref": {"$ref": "#/$defs/stable_ref"},
+        "evidence_layer": {
+          "enum": ["LEDGER_OBJECT", "FORMATION_BASIS", "ORIGINAL_EVIDENCE"]
+        },
+        "parent_need_id": {"$ref": "#/$defs/nullable_stable_ref"},
+        "obligation_tier": {"enum": ["HARD", "SHOULD", "MAY"]},
+        "reason_code": {"type": "string", "minLength": 1},
+        "recall_handle": {"type": "string", "minLength": 1},
+        "relation_scope_refs": {"$ref": "#/$defs/stable_ref_array"},
+        "source_result_ref": {"$ref": "#/$defs/stable_ref"}
+      }
+    },
+    "gap_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hard_gap_codes", "optional_gap_codes", "masked_access"],
+      "properties": {
+        "hard_gap_codes": {"$ref": "#/$defs/non_empty_string_array"},
+        "optional_gap_codes": {"$ref": "#/$defs/non_empty_string_array"},
+        "masked_access": {"type": "boolean"}
+      }
+    },
+    "compiled_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "character_views",
+        "current_chapter_plan_snapshot",
+        "previous_chapter_committed_snapshot",
+        "uncommitted_workspace_delta_refs",
+        "version_manifest",
+        "source_results",
+        "resident_layer",
+        "on_demand_layer",
+        "gap_summary"
+      ],
+      "properties": {
+        "character_views": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/character_view"}
+        },
+        "current_chapter_plan_snapshot": {"$ref": "#/$defs/plan_snapshot"},
+        "previous_chapter_committed_snapshot": {
+          "$ref": "#/$defs/nullable_previous_snapshot"
+        },
+        "uncommitted_workspace_delta_refs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/workspace_delta"}
+        },
+        "version_manifest": {
+          "type": "array",
+          "minItems": 5,
+          "items": {"$ref": "#/$defs/source_version"}
+        },
+        "source_results": {
+          "type": "array",
+          "minItems": 5,
+          "items": {"$ref": "#/$defs/source_result"}
+        },
+        "resident_layer": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/resident_item"}
+        },
+        "on_demand_layer": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/on_demand_item"}
+        },
+        "gap_summary": {"$ref": "#/$defs/gap_summary"}
+      }
+    },
+    "build_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "compiler_version",
+        "summary_policy_version",
+        "normalization_policy_version",
+        "byte_limit_policy_version",
+        "max_payload_bytes"
+      ],
+      "properties": {
+        "compiler_version": {"const": "chapter-thin-card-compiler-v1"},
+        "summary_policy_version": {"const": "chapter-thin-card-summary-v1"},
+        "normalization_policy_version": {
+          "const": "chapter-thin-card-canonical-json-utf8-v1"
+        },
+        "byte_limit_policy_version": {"const": "chapter-thin-card-byte-limit-v1"},
+        "max_payload_bytes": {"const": 262144}
+      }
+    },
+    "demotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["need_id", "from_layer", "to_layer", "reason_code"],
+      "properties": {
+        "need_id": {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"},
+        "from_layer": {"const": "RESIDENT"},
+        "to_layer": {"const": "ON_DEMAND"},
+        "reason_code": {"const": "THIN_CARD_BYTE_LIMIT"}
+      }
+    },
+    "size_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["normalized_utf8_bytes", "max_payload_bytes", "demotions"],
+      "properties": {
+        "normalized_utf8_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 262144
+        },
+        "max_payload_bytes": {"const": 262144},
+        "demotions": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/demotion"}
+        }
+      }
+    },
+    "thin_card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "thin_card_id",
+        "truth_scope_ref",
+        "workpoint_ref",
+        "compiled_at",
+        "retrieval_task_ref",
+        "c9_run_ref",
+        "scope_projection",
+        "build_policy",
+        "compiled_payload",
+        "input_basis_sha256",
+        "compiled_payload_sha256",
+        "size_receipt",
+        "thin_card_sha256"
+      ],
+      "properties": {
+        "contract": {"const": "CHAPTER_THIN_CARD"},
+        "version": {"const": "v1"},
+        "thin_card_id": {"$ref": "#/$defs/stable_ref"},
+        "truth_scope_ref": {"$ref": "#/$defs/truth_scope_ref"},
+        "workpoint_ref": {"$ref": "#/$defs/stable_ref"},
+        "compiled_at": {"type": "string", "format": "date-time"},
+        "retrieval_task_ref": {"$ref": "#/$defs/retrieval_task_ref"},
+        "c9_run_ref": {"$ref": "#/$defs/c9_run_ref"},
+        "scope_projection": {"$ref": "#/$defs/scope_projection"},
+        "build_policy": {"$ref": "#/$defs/build_policy"},
+        "compiled_payload": {"$ref": "#/$defs/compiled_payload"},
+        "input_basis_sha256": {"$ref": "#/$defs/sha256"},
+        "compiled_payload_sha256": {"$ref": "#/$defs/sha256"},
+        "size_receipt": {"$ref": "#/$defs/size_receipt"},
+        "thin_card_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "check_disclosure": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "subject_ref",
+            "expected_sha256",
+            "observed_sha256"
+          ],
+          "properties": {
+            "mode": {"const": "DISCLOSED"},
+            "subject_ref": {"$ref": "#/$defs/stable_ref"},
+            "expected_sha256": {"$ref": "#/$defs/sha256"},
+            "observed_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": {"mode": {"const": "MASKED"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": {"mode": {"const": "NOT_AVAILABLE"}}
+        }
+      ]
+    },
+    "admission_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check_id", "check_kind", "observed_state", "disclosure"],
+      "properties": {
+        "check_id": {"$ref": "#/$defs/stable_ref"},
+        "check_kind": {
+          "enum": [
+            "THIN_CARD_INTEGRITY",
+            "SCOPE_CURRENT",
+            "PERMISSION_CURRENT",
+            "FOCUS_CURRENT",
+            "RETRIEVAL_TASK_CURRENT",
+            "C9_RUN_CURRENT",
+            "SOURCE_VERSION_CURRENT",
+            "STORAGE_GENERATION_CURRENT",
+            "CONTRACT_SUPPORT_CURRENT"
+          ]
+        },
+        "observed_state": {
+          "enum": [
+            "MATCH",
+            "ADVANCED",
+            "REVOKED",
+            "EXPIRED",
+            "UNAVAILABLE",
+            "UNAUTHORIZED",
+            "UNSUPPORTED",
+            "DAMAGED"
+          ]
+        },
+        "disclosure": {"$ref": "#/$defs/check_disclosure"}
+      }
+    },
+    "admission_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "admission_receipt_id",
+        "thin_card_ref",
+        "checked_at",
+        "consumer_id",
+        "checks",
+        "status",
+        "reason_codes",
+        "recompile_required",
+        "admission_receipt_sha256"
+      ],
+      "properties": {
+        "contract": {"const": "CHAPTER_THIN_CARD_ADMISSION_RECEIPT"},
+        "version": {"const": "v1"},
+        "admission_receipt_id": {"$ref": "#/$defs/stable_ref"},
+        "thin_card_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["thin_card_id", "thin_card_sha256"],
+          "properties": {
+            "thin_card_id": {"$ref": "#/$defs/stable_ref"},
+            "thin_card_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        },
+        "checked_at": {"type": "string", "format": "date-time"},
+        "consumer_id": {"$ref": "#/$defs/stable_ref"},
+        "checks": {
+          "type": "array",
+          "minItems": 8,
+          "items": {"$ref": "#/$defs/admission_check"}
+        },
+        "status": {"enum": ["ADMITTED", "ADMITTED_WITH_GAPS", "STOPPED"]},
+        "reason_codes": {"$ref": "#/$defs/non_empty_string_array"},
+        "recompile_required": {"type": "boolean"},
+        "admission_receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "build_failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "build_failure_id",
+        "truth_scope_ref",
+        "workpoint_ref",
+        "status",
+        "failure_stage",
+        "reason_code",
+        "identity_disclosure",
+        "retry_disposition",
+        "recompile_required",
+        "input_basis_sha256",
+        "build_failure_sha256"
+      ],
+      "properties": {
+        "contract": {"const": "CHAPTER_THIN_CARD_BUILD_FAILURE"},
+        "version": {"const": "v1"},
+        "build_failure_id": {"$ref": "#/$defs/stable_ref"},
+        "truth_scope_ref": {"$ref": "#/$defs/truth_scope_ref"},
+        "workpoint_ref": {"$ref": "#/$defs/stable_ref"},
+        "status": {"const": "STOPPED"},
+        "failure_stage": {"enum": ["TASK", "C9", "SOURCE", "COMPILE", "SIZE"]},
+        "reason_code": {"type": "string", "minLength": 1},
+        "identity_disclosure": {"$ref": "#/$defs/identity_disclosure"},
+        "retry_disposition": {
+          "enum": [
+            "RETRY_AFTER_SOURCE_CHANGE",
+            "RECOMPILE_AFTER_RULE_SUPPORT",
+            "REDUCE_REQUIRED_INPUT",
+            "NOT_RETRYABLE_WITH_CURRENT_SCOPE"
+          ]
+        },
+        "recompile_required": {"type": "boolean"},
+        "input_basis_sha256": {"$ref": "#/$defs/sha256"},
+        "build_failure_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}
