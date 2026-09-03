@@ -578,6 +578,80 @@ def test_adjacent_non_overlapping_story_intervals_allow_new_v2_slot() -> None:
     )
 
 
+def test_left_end_order_proves_separation_when_right_end_order_is_missing() -> None:
+    candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
+    candidate_end = copy.deepcopy(candidate["edge"]["story_time_interval"]["start"])
+    candidate_end_ref = candidate_end["chapter_revision_ref"]
+    candidate_end_ref["revision_no"] = 2
+    candidate_end_ref["revision_text_sha256"] = "d" * 64
+    candidate_end["story_order"] = 125
+    candidate["edge"]["story_time_interval"]["end"] = candidate_end
+
+    existing = copy.deepcopy(candidate["edge"])
+    existing.update(
+        {
+            "version": MODULE.VERSION_V1,
+            "id": "KE-0994",
+            "permission_namespace": MODULE.PERMISSION_NAMESPACE_V1,
+            "epistemic_state": "suspects",
+        }
+    )
+    existing_start = existing["story_time_interval"]["start"]
+    existing_start_ref = existing_start["chapter_revision_ref"]
+    existing_start_ref["chapter_id"] = "c13"
+    existing_start_ref["revision_text_sha256"] = "e" * 64
+    existing_start["story_order"] = 130
+    existing_end = copy.deepcopy(existing_start)
+    existing_end.pop("story_order")
+    existing_end_ref = existing_end["chapter_revision_ref"]
+    existing_end_ref["revision_no"] = 2
+    existing_end_ref["revision_text_sha256"] = "f" * 64
+    existing["story_time_interval"]["end"] = existing_end
+
+    MODULE.validate_new_candidate(
+        candidate["edge"],
+        candidate["action"],
+        [existing],
+    )
+
+
+def test_right_end_order_proves_separation_when_left_end_order_is_missing() -> None:
+    candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
+    candidate_end = copy.deepcopy(candidate["edge"]["story_time_interval"]["start"])
+    candidate_end.pop("story_order")
+    candidate_end_ref = candidate_end["chapter_revision_ref"]
+    candidate_end_ref["revision_no"] = 2
+    candidate_end_ref["revision_text_sha256"] = "d" * 64
+    candidate["edge"]["story_time_interval"]["end"] = candidate_end
+
+    existing = copy.deepcopy(candidate["edge"])
+    existing.update(
+        {
+            "version": MODULE.VERSION_V1,
+            "id": "KE-0993",
+            "permission_namespace": MODULE.PERMISSION_NAMESPACE_V1,
+            "epistemic_state": "suspects",
+        }
+    )
+    existing_start = existing["story_time_interval"]["start"]
+    existing_start_ref = existing_start["chapter_revision_ref"]
+    existing_start_ref["chapter_id"] = "c11"
+    existing_start_ref["revision_text_sha256"] = "b" * 64
+    existing_start["story_order"] = 100
+    existing_end = copy.deepcopy(existing_start)
+    existing_end_ref = existing_end["chapter_revision_ref"]
+    existing_end_ref["revision_no"] = 2
+    existing_end_ref["revision_text_sha256"] = "a" * 64
+    existing_end["story_order"] = 115
+    existing["story_time_interval"]["end"] = existing_end
+
+    MODULE.validate_new_candidate(
+        candidate["edge"],
+        candidate["action"],
+        [existing],
+    )
+
+
 def test_exact_revision_adjacent_intervals_allow_new_v2_slot() -> None:
     candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
     candidate["edge"]["story_time_interval"]["start"].pop("story_order")

@@ -291,23 +291,36 @@ def _story_intervals_overlap(
     left: dict[str, Any],
     right: dict[str, Any],
 ) -> bool:
+    left_start = left["start"]
+    left_end = left["end"]
+    right_start = right["start"]
+    right_end = right["end"]
+    if (
+        left_end is not None
+        and left_end.get("story_order") is not None
+        and right_start.get("story_order") is not None
+        and left_end["story_order"] <= right_start["story_order"]
+    ):
+        return False
+    if (
+        right_end is not None
+        and right_end.get("story_order") is not None
+        and left_start.get("story_order") is not None
+        and right_end["story_order"] <= left_start["story_order"]
+    ):
+        return False
+
     left_bounds = _story_order_bounds(left)
     right_bounds = _story_order_bounds(right)
     if left_bounds is not None and right_bounds is not None:
-        left_start, left_end = left_bounds
-        right_start, right_end = right_bounds
-        left_before_right = left_end is not None and left_end <= right_start
-        right_before_left = right_end is not None and right_end <= left_start
-        return not (left_before_right or right_before_left)
+        return True
 
-    left_start_ref = _chapter_ref(left["start"])
-    right_start_ref = _chapter_ref(right["start"])
+    left_start_ref = _chapter_ref(left_start)
+    right_start_ref = _chapter_ref(right_start)
     if left_start_ref == right_start_ref:
         return True
-    left_end = left["end"]
     if left_end is not None and _chapter_ref(left_end) == right_start_ref:
         return False
-    right_end = right["end"]
     if right_end is not None and _chapter_ref(right_end) == left_start_ref:
         return False
     raise ContractError("STORY_INTERVAL_OVERLAP_UNDETERMINED")
