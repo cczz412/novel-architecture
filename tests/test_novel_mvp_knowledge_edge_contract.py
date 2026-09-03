@@ -70,11 +70,33 @@ def test_seven_business_fields_are_exact_and_fact_ref_is_stable() -> None:
     }
 
 
-def test_v1_fixture_prefix_bytes_are_unchanged() -> None:
+def test_v1_fixture_prefix_matches_current_safety_baseline() -> None:
     fixture_path = CONTRACT_DIR / "KNOWLEDGE_EDGE.fixtures.jsonl"
     prefix = b"".join(fixture_path.read_bytes().splitlines(keepends=True)[:29])
     assert hashlib.sha256(prefix).hexdigest() == (
         "8447de3ddde986cb429f981e9a768aa12b1e08dec7d131ec93ba607e487b71d5"
+    )
+
+
+def test_v1_edge_objects_keep_compatibility_baseline() -> None:
+    edge_keys = ("document", "edge", "previous", "current")
+    edge_objects = [
+        case[key]
+        for case in CASES[:29]
+        for key in edge_keys
+        if isinstance(case.get(key), dict)
+        and case[key].get("contract") == "KNOWLEDGE_EDGE"
+        and case[key].get("version") == MODULE.VERSION_V1
+    ]
+    payload = json.dumps(
+        edge_objects,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    assert len(edge_objects) == 28
+    assert hashlib.sha256(payload).hexdigest() == (
+        "b6b4c22321af18c1c2e816fbbf5ddcb647aa5bc8a8aebb1ccd7fb41298cc4e5f"
     )
 
 
