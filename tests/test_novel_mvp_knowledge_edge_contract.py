@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -20,6 +22,10 @@ SPEC.loader.exec_module(MODULE)
 CASES = MODULE.load_fixtures()
 
 
+def _case(case_id: str) -> dict:
+    return next(case for case in CASES if case["case_id"] == case_id)
+
+
 @pytest.mark.parametrize("case", CASES, ids=[case["case_id"] for case in CASES])
 def test_knowledge_edge_fixture_matrix(case: dict) -> None:
     MODULE.validate_fixture_case(case)
@@ -27,9 +33,9 @@ def test_knowledge_edge_fixture_matrix(case: dict) -> None:
 
 def test_fixture_counts_are_frozen() -> None:
     assert MODULE.validate_all_fixtures() == {
-        "cases": 29,
-        "valid": 11,
-        "invalid": 18,
+        "cases": 41,
+        "valid": 16,
+        "invalid": 25,
     }
 
 
@@ -48,9 +54,307 @@ def test_seven_business_fields_are_exact_and_fact_ref_is_stable() -> None:
     assert business_fields <= set(edge["required"])
     assert edge["properties"]["observer_ref"]["pattern"] == "^CH-[0-9]+$"
     assert edge["properties"]["fact_ref"]["pattern"] == "^f[0-9]{3,}$"
-    assert edge["properties"]["permission_namespace"]["const"] == (
-        "knowledge-edge.v1"
+    assert set(edge["properties"]["permission_namespace"]["enum"]) == {
+        "knowledge-edge.v1",
+        "knowledge-edge.v2",
+    }
+
+
+def test_v1_fixture_prefix_bytes_are_unchanged() -> None:
+    fixture_path = CONTRACT_DIR / "KNOWLEDGE_EDGE.fixtures.jsonl"
+    prefix = b"".join(fixture_path.read_bytes().splitlines(keepends=True)[:29])
+    assert hashlib.sha256(prefix).hexdigest() == (
+        "49568a5dd85fc0f6cd06b2c3f9319b89fe908b7d05b8573b573a3809315c18cb"
     )
+
+
+def test_v2_adds_explicit_non_belief_with_versioned_namespaces() -> None:
+    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    edge = schema["$defs"]["edge"]
+    assert "explicitly_does_not_believe" in edge["properties"][
+        "epistemic_state"
+    ]["enum"]
+    valid = next(case for case in CASES if case["case_id"] == "KE-V2-VALID-01")
+    document = MODULE.validate_document(valid["document"])
+    assert document["version"] == MODULE.VERSION_V2
+    assert document["permission_namespace"] == "knowledge-edge.v2"
+    assert document["belief_content"] is None
+
+    for state in (
+        "knows",
+        "explicitly_does_not_know",
+        "suspects",
+        "false_belief",
+        "explicitly_does_not_believe",
+    ):
+        candidate = copy.deepcopy(valid["document"])
+        candidate["epistemic_state"] = state
+        candidate["belief_content"] = "错误认知" if state == "false_belief" else None
+        assert MODULE.validate_document(candidate)["epistemic_state"] == state
+
+
+def test_explicit_version_constants_keep_v1_legacy_aliases() -> None:
+    assert MODULE.VERSION == MODULE.VERSION_V1
+    assert MODULE.PERMISSION_NAMESPACE == MODULE.PERMISSION_NAMESPACE_V1
+    assert MODULE.WRITER_NAMESPACE == MODULE.WRITER_NAMESPACE_V1
+    assert MODULE.PERMISSION_NAMESPACE_V2 == "knowledge-edge.v2"
+    assert MODULE.WRITER_NAMESPACE_V2 == "trusted.knowledge_edge.writer.v2"
+
+
+def test_reader_type_and_version_stop_before_full_schema_validation() -> None:
+    v1 = _case("KE-VALID-01")["document"]
+    v2 = _case("KE-V2-VALID-01")["document"]
+    assert MODULE.validate_document_for_reader(v1, MODULE.VERSION_V1)
+    assert MODULE.validate_document_for_reader(v1, MODULE.VERSION_V2)
+    assert MODULE.validate_document_for_reader(v2, MODULE.VERSION_V2)
+
+    malformed_v2 = copy.deepcopy(v2)
+    malformed_v2["belief_content"] = "不该出现在第五态的文本"
+    with pytest.raises(MODULE.ContractError, match="READER_VERSION_UNSUPPORTED"):
+        MODULE.validate_document_for_reader(malformed_v2, MODULE.VERSION_V1)
+
+    for non_edge in (
+        _case("KE-VALID-04")["document"],
+        _case("KE-VALID-06")["document"],
+    ):
+        with pytest.raises(MODULE.ContractError, match="READER_DOCUMENT_TYPE_INVALID"):
+            MODULE.validate_document_for_reader(non_edge, MODULE.VERSION_V2)
+
+    for invalid_reader_version in ("knowledge-edge-v3", [], {}):
+        with pytest.raises(MODULE.ContractError, match="READER_VERSION_INVALID"):
+            MODULE.validate_document_for_reader(v1, invalid_reader_version)
+
+    for unsupported_document_version in ("knowledge-edge-v3", [], {}):
+        malformed_version = copy.deepcopy(v2)
+        malformed_version["version"] = unsupported_document_version
+        with pytest.raises(MODULE.ContractError, match="READER_VERSION_UNSUPPORTED"):
+            MODULE.validate_document_for_reader(
+                malformed_version,
+                MODULE.VERSION_V2,
+            )
+
+
+def test_reader_grant_must_match_edge_version_and_project() -> None:
+    v1_edge = _case("KE-VALID-01")["document"]
+    v1_grant = _case("KE-VALID-06")["document"]
+    MODULE.validate_edge_grant_for_reader(v1_edge, v1_grant, MODULE.VERSION_V1)
+    MODULE.validate_edge_grant_for_reader(v1_edge, v1_grant, MODULE.VERSION_V2)
+
+    v2_edge = _case("KE-V2-VALID-01")["document"]
+    v2_grant = _case("KE-V2-VALID-05")["document"]
+    MODULE.validate_edge_grant_for_reader(v2_edge, v2_grant, MODULE.VERSION_V2)
+
+    with pytest.raises(MODULE.ContractError, match="READ_GRANT_VERSION_MISMATCH"):
+        MODULE.validate_edge_grant_for_reader(v1_edge, v2_grant, MODULE.VERSION_V2)
+    with pytest.raises(MODULE.ContractError, match="READ_GRANT_VERSION_MISMATCH"):
+        MODULE.validate_edge_grant_for_reader(v2_edge, v1_grant, MODULE.VERSION_V2)
+
+    wrong_project = copy.deepcopy(v1_grant)
+    wrong_project["project_id"] = "PROJECT-OTHER"
+    with pytest.raises(
+        MODULE.ContractError,
+        match="READ_GRANT_PROJECT_BINDING_MISMATCH",
+    ):
+        MODULE.validate_edge_grant_for_reader(
+            v1_edge,
+            wrong_project,
+            MODULE.VERSION_V2,
+        )
+
+    wrong_author = copy.deepcopy(v1_grant)
+    wrong_author["author_id"] = "AUTHOR-OTHER"
+    with pytest.raises(
+        MODULE.ContractError,
+        match="READ_GRANT_PROJECT_BINDING_MISMATCH",
+    ):
+        MODULE.validate_edge_grant_for_reader(
+            v1_edge,
+            wrong_author,
+            MODULE.VERSION_V2,
+        )
+
+
+def test_v2_candidate_requires_existing_edge_set() -> None:
+    candidate = _case("KE-V2-VALID-03")
+    with pytest.raises(MODULE.ContractError, match="EXISTING_EDGE_SET_REQUIRED"):
+        MODULE.validate_new_candidate(candidate["edge"], candidate["action"])
+
+
+def test_copying_v1_edge_to_new_v2_id_cannot_recreate_same_slot() -> None:
+    old = _case("KE-VALID-08")["edge"]
+    candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
+    for field in ("author_id", "project_id", "observer_ref", "fact_ref"):
+        candidate["edge"][field] = old[field]
+    candidate["edge"]["story_time_interval"] = copy.deepcopy(
+        old["story_time_interval"]
+    )
+    with pytest.raises(MODULE.ContractError, match="CROSS_VERSION_RECREATE_FORBIDDEN"):
+        MODULE.validate_new_candidate(
+            candidate["edge"],
+            candidate["action"],
+            [old],
+        )
+
+
+def test_same_version_state_or_id_change_cannot_duplicate_logical_slot() -> None:
+    candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
+    existing = copy.deepcopy(candidate["edge"])
+    existing["id"] = "KE-0999"
+    existing["epistemic_state"] = "suspects"
+    with pytest.raises(MODULE.ContractError, match="KNOWLEDGE_EDGE_SLOT_CONFLICT"):
+        MODULE.validate_new_candidate(
+            candidate["edge"],
+            candidate["action"],
+            [existing],
+        )
+
+
+def test_adjacent_non_overlapping_story_intervals_allow_new_v2_slot() -> None:
+    candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
+    existing = copy.deepcopy(candidate["edge"])
+    existing.update(
+        {
+            "version": MODULE.VERSION_V1,
+            "id": "KE-0998",
+            "permission_namespace": MODULE.PERMISSION_NAMESPACE_V1,
+            "epistemic_state": "suspects",
+        }
+    )
+    existing["story_time_interval"]["start"]["story_order"] = 100
+    existing["story_time_interval"]["end"] = copy.deepcopy(
+        candidate["edge"]["story_time_interval"]["start"]
+    )
+    MODULE.validate_new_candidate(
+        candidate["edge"],
+        candidate["action"],
+        [existing],
+    )
+
+
+def test_unknown_story_overlap_stops_instead_of_assuming_no_conflict() -> None:
+    candidate = copy.deepcopy(_case("KE-V2-VALID-03"))
+    existing = copy.deepcopy(candidate["edge"])
+    existing["id"] = "KE-0997"
+    existing["story_time_interval"]["start"].pop("story_order")
+    with pytest.raises(
+        MODULE.ContractError,
+        match="STORY_INTERVAL_OVERLAP_UNDETERMINED",
+    ):
+        MODULE.validate_new_candidate(
+            candidate["edge"],
+            candidate["action"],
+            [existing],
+        )
+
+
+def test_new_candidate_and_action_versions_cannot_be_mixed() -> None:
+    v2 = copy.deepcopy(_case("KE-V2-VALID-03"))
+    v2["action"]["version"] = MODULE.VERSION_V1
+    v2["action"]["writer_namespace"] = MODULE.WRITER_NAMESPACE_V1
+    with pytest.raises(MODULE.ContractError, match="NEW_CANDIDATE_VERSION_MISMATCH"):
+        MODULE.validate_new_candidate(v2["edge"], v2["action"], [])
+
+    v1 = copy.deepcopy(_case("KE-VALID-08"))
+    v1["action"]["version"] = MODULE.VERSION_V2
+    v1["action"]["writer_namespace"] = MODULE.WRITER_NAMESPACE_V2
+    with pytest.raises(MODULE.ContractError, match="NEW_CANDIDATE_VERSION_MISMATCH"):
+        MODULE.validate_new_candidate(v1["edge"], v1["action"])
+
+
+def test_edge_action_and_grant_namespaces_follow_their_versions() -> None:
+    documents = (
+        _case("KE-VALID-01")["document"],
+        _case("KE-VALID-04")["document"],
+        _case("KE-VALID-06")["document"],
+        _case("KE-V2-VALID-01")["document"],
+        _case("KE-V2-VALID-03")["action"],
+        _case("KE-V2-VALID-05")["document"],
+    )
+    for source in documents:
+        document = copy.deepcopy(source)
+        document["version"] = (
+            MODULE.VERSION_V2
+            if document["version"] == MODULE.VERSION_V1
+            else MODULE.VERSION_V1
+        )
+        with pytest.raises(MODULE.ContractError, match="SCHEMA_INVALID"):
+            MODULE.validate_document(document)
+
+
+def test_all_normal_revision_operations_reject_both_cross_version_directions() -> None:
+    for case_id in ("KE-VALID-09", "KE-VALID-10", "KE-VALID-11"):
+        source = _case(case_id)
+        for direction in ("v1_to_v2", "v2_to_v1"):
+            transition = copy.deepcopy(source)
+            if direction == "v1_to_v2":
+                transition["current"]["version"] = MODULE.VERSION_V2
+                transition["current"][
+                    "permission_namespace"
+                ] = MODULE.PERMISSION_NAMESPACE_V2
+                transition["action"]["version"] = MODULE.VERSION_V2
+                transition["action"]["writer_namespace"] = MODULE.WRITER_NAMESPACE_V2
+            else:
+                transition["previous"]["version"] = MODULE.VERSION_V2
+                transition["previous"][
+                    "permission_namespace"
+                ] = MODULE.PERMISSION_NAMESPACE_V2
+            with pytest.raises(
+                MODULE.ContractError,
+                match="CROSS_VERSION_REVISION_FORBIDDEN",
+            ):
+                MODULE.validate_revision_transition(
+                    transition["previous"],
+                    transition["current"],
+                    transition["action"],
+                )
+
+
+def test_v2_keeps_confirm_modify_and_retire_revision_paths() -> None:
+    for case_id in ("KE-VALID-09", "KE-VALID-10", "KE-VALID-11"):
+        transition = copy.deepcopy(_case(case_id))
+        for edge_key in ("previous", "current"):
+            transition[edge_key]["version"] = MODULE.VERSION_V2
+            transition[edge_key][
+                "permission_namespace"
+            ] = MODULE.PERMISSION_NAMESPACE_V2
+        transition["action"]["version"] = MODULE.VERSION_V2
+        transition["action"]["writer_namespace"] = MODULE.WRITER_NAMESPACE_V2
+        MODULE.validate_revision_transition(
+            transition["previous"],
+            transition["current"],
+            transition["action"],
+        )
+
+
+@pytest.mark.parametrize("operation", ["MODIFY", "RETIRE"])
+def test_v2_explicit_non_belief_can_be_modified_or_retired(operation: str) -> None:
+    confirmed = copy.deepcopy(_case("KE-V2-VALID-04")["current"])
+    current = copy.deepcopy(confirmed)
+    current["rev"] = 3
+    current["previous_rev"] = 2
+    current["updated_at"] = "2026-09-03T11:00:00+08:00"
+    if operation == "MODIFY":
+        current["evidence_refs"] = ["f109"]
+    else:
+        current["version_status"]["lifecycle"] = "retired"
+
+    action = copy.deepcopy(_case("KE-V2-VALID-04")["action"])
+    action["action_id"] = f"KEA-V2-{operation}-FIFTH-STATE"
+    action["operation"] = operation
+    action["base_rev"] = 2
+    action["idempotency_key"] = f"v2-{operation.lower()}-fifth-state"
+
+    MODULE.validate_revision_transition(confirmed, current, action)
+
+
+def test_cross_version_revision_is_stopped() -> None:
+    case = _case("KE-V2-INVALID-07")
+    with pytest.raises(MODULE.ContractError, match="CROSS_VERSION_REVISION_FORBIDDEN"):
+        MODULE.validate_revision_transition(
+            case["previous"],
+            case["current"],
+            case["action"],
+        )
 
 
 def test_false_belief_requires_bounded_inline_text() -> None:
