@@ -221,14 +221,14 @@ def validate_edge_grant_for_reader(
         raise ContractError("UNAUTHORIZED")
     if edge.get("version") != authorization["version"]:
         raise ContractError("READ_GRANT_VERSION_MISMATCH")
+    if authorization["access"] == "TASK_SLICE" and (
+        edge.get("observer_ref") not in authorization["observer_refs"]
+        or edge.get("fact_ref") not in authorization["fact_refs"]
+    ):
+        raise ContractError("READ_GRANT_SCOPE_MISMATCH")
 
     record = validate_document_for_reader(edge, reader_version)
     if authorization["access"] == "TASK_SLICE":
-        if (
-            record["observer_ref"] not in authorization["observer_refs"]
-            or record["fact_ref"] not in authorization["fact_refs"]
-        ):
-            raise ContractError("READ_GRANT_SCOPE_MISMATCH")
         _validate_task_edge_as_of(record, authorization["as_of"])
 
 
@@ -248,22 +248,31 @@ def _validate_task_edge_as_of(
     start_order = start.get("story_order")
     as_of_order = as_of.get("story_order")
     end_order = None if end is None else end.get("story_order")
-    if (
-        start_order is not None
-        and as_of_order is not None
-        and (end is None or end_order is not None)
-    ):
+    start_is_comparable = start_order is not None and as_of_order is not None
+    end_is_comparable = (
+        end is not None and end_order is not None and as_of_order is not None
+    )
+    as_of_ref = _chapter_ref(as_of)
+    if start_is_comparable:
         if as_of_order < start_order:
             raise ContractError("READ_GRANT_AS_OF_BEFORE_EDGE_START")
-        if end_order is not None and as_of_order >= end_order:
-            raise ContractError("READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL")
-        return
+        lower_bound_satisfied = True
+    else:
+        lower_bound_satisfied = as_of_ref == _chapter_ref(start)
 
-    as_of_ref = _chapter_ref(as_of)
-    if as_of_ref == _chapter_ref(start):
+    if end is None:
+        upper_bound_satisfied = True
+    elif end_is_comparable:
+        if as_of_order >= end_order:
+            raise ContractError("READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL")
+        upper_bound_satisfied = True
+    else:
+        if as_of_ref == _chapter_ref(end):
+            raise ContractError("READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL")
+        upper_bound_satisfied = as_of_ref == _chapter_ref(start)
+
+    if lower_bound_satisfied and upper_bound_satisfied:
         return
-    if end is not None and as_of_ref == _chapter_ref(end):
-        raise ContractError("READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL")
     raise ContractError("READ_GRANT_AS_OF_UNDETERMINED")
 
 

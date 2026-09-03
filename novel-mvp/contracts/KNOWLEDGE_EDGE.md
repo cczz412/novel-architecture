@@ -192,7 +192,7 @@ current／historical 不写进不可变 revision。它们由项目级 current �
 
 机器权限对象使用 `KNOWLEDGE_EDGE_READ_GRANT`。v1 grant 使用 `knowledge-edge.v1`；v2 grant 使用 `knowledge-edge.v2`。读取器必须显式声明自己支持的合同版本：v2 reader 可以理解合法 v1／v2 对象，v1 reader 遇到 v2 必须返回 `READER_VERSION_UNSUPPORTED`，不能把第五态静默降成怀疑、误信或无记录。
 
-“读取器能理解哪个版本”和“这次获准读取哪条边”是两道独立的门。grant 必须先独立验证；`CLOSED` grant，或边的外层作者／项目与 grant 不一致时，必须在检查边的类型、版本和 Schema 前统一返回 `UNAUTHORIZED`。通过这道授权门后，边的外层版本必须先与 grant 版本比较；不一致时在边的完整 Schema 校验前返回 `READ_GRANT_VERSION_MISMATCH`。边与 grant 还必须使用同一权限命名空间，并绑定同一作者和项目；v2 reader 读取 v1 边时仍要配 v1 grant，不能拿 v2 grant 混用。一次结果若同时含 v1／v2 边，必须按版本分别授权。获准后，传入写动作、grant 或其他对象冒充边时先返回 `READER_DOCUMENT_TYPE_INVALID`；版本不受支持时先返回 `READER_VERSION_UNSUPPORTED`，不得先深入业务 Schema 后改报普通格式错误。
+“读取器能理解哪个版本”和“这次获准读取哪条边”是两道独立的门。grant 必须先独立验证；`CLOSED` grant，或边的外层作者／项目与 grant 不一致时，必须在检查边的类型、版本和 Schema 前统一返回 `UNAUTHORIZED`。通过这道授权门后，边的外层版本必须先与 grant 版本比较；不一致时在边的完整 Schema 校验前返回 `READ_GRANT_VERSION_MISMATCH`。`TASK_SLICE` 还必须先用边外层的人物／事实编号核对授权清单；任一超出范围时在完整 Schema 校验前返回 `READ_GRANT_SCOPE_MISMATCH`。边与 grant 还必须使用同一权限命名空间，并绑定同一作者和项目；v2 reader 读取 v1 边时仍要配 v1 grant，不能拿 v2 grant 混用。一次结果若同时含 v1／v2 边，必须按版本分别授权。获准后，传入写动作、grant 或其他对象冒充边时先返回 `READER_DOCUMENT_TYPE_INVALID`；版本不受支持时先返回 `READER_VERSION_UNSUPPORTED`，不得先深入业务 Schema 后改报普通格式错误。
 
 | 使用方 | 读取档位 |
 |---|---|
@@ -209,7 +209,7 @@ current／historical 不写进不可变 revision。它们由项目级 current �
 
 - `as_of < start` 返回 `READ_GRANT_AS_OF_BEFORE_EDGE_START`；
 - `end` 非空时，`as_of >= end` 返回 `READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL`；
-- 存在可比的 `story_order` 时按整数顺序比较；缺少可比顺序时只认完整 `chapter_revision_ref` 精确相等，`as_of == start` 允许，`as_of == end` 拒绝，其余返回 `READ_GRANT_AS_OF_UNDETERMINED`。
+- start 与 `as_of` 都有 `story_order` 时独立检查下界，end 与 `as_of` 都有 `story_order` 时独立检查上界；数字结果优先，不能用相同修订引用覆盖与它矛盾的数字顺序。只对无法比较的一侧回退到完整 `chapter_revision_ref`；`as_of == start` 允许，`as_of == end` 拒绝，其余返回 `READ_GRANT_AS_OF_UNDETERMINED`。
 
 事实本身可读，不代表人物的误信、怀疑或明确不知道自动可读。跨项目请求要在探测人物、事实或边是否存在之前返回 `UNAUTHORIZED`。无权时不能通过数量、空数组、来源水位或差异化错误猜秘密是否存在。
 

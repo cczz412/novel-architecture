@@ -284,6 +284,27 @@ def test_grant_version_mismatch_stops_before_edge_schema(
         )
 
 
+@pytest.mark.parametrize("scope_field", ["observer_refs", "fact_refs"])
+def test_task_scope_mismatch_stops_before_edge_schema(scope_field: str) -> None:
+    edge, grant = _confirmed_task_read_pair(
+        "KE-VALID-01",
+        "KE-VALID-06",
+    )
+    grant[scope_field] = ["CH-0099"] if scope_field == "observer_refs" else ["f999"]
+    malformed = copy.deepcopy(edge)
+    malformed.pop("evidence_refs")
+    for candidate in (edge, malformed):
+        with pytest.raises(
+            MODULE.ContractError,
+            match="^READ_GRANT_SCOPE_MISMATCH$",
+        ):
+            MODULE.validate_edge_grant_for_reader(
+                candidate,
+                grant,
+                MODULE.VERSION_V2,
+            )
+
+
 @pytest.mark.parametrize(
     ("edge_case_id", "grant_case_id", "reader_version"),
     (
@@ -371,6 +392,55 @@ def test_task_read_as_of_must_be_inside_story_interval(
     after_start = copy.deepcopy(grant)
     after_start["as_of"]["story_order"] = start_order + 20
     MODULE.validate_edge_grant_for_reader(edge, after_start, reader_version)
+
+
+def test_mixed_story_orders_enforce_start_bound_before_ref_fallback() -> None:
+    edge, grant = _confirmed_task_read_pair(
+        "KE-V2-VALID-01",
+        "KE-V2-VALID-05",
+    )
+    start = edge["story_time_interval"]["start"]
+    end = copy.deepcopy(start)
+    end.pop("story_order")
+    end_ref = end["chapter_revision_ref"]
+    end_ref["revision_no"] = 2
+    end_ref["revision_text_sha256"] = "d" * 64
+    edge["story_time_interval"]["end"] = end
+
+    grant["as_of"]["story_order"] = start["story_order"] - 1
+    with pytest.raises(
+        MODULE.ContractError,
+        match="READ_GRANT_AS_OF_BEFORE_EDGE_START",
+    ):
+        MODULE.validate_edge_grant_for_reader(edge, grant, MODULE.VERSION_V2)
+
+    grant["as_of"]["story_order"] = start["story_order"]
+    MODULE.validate_edge_grant_for_reader(edge, grant, MODULE.VERSION_V2)
+
+
+def test_mixed_story_orders_enforce_end_bound_before_ref_fallback() -> None:
+    edge, grant = _confirmed_task_read_pair(
+        "KE-V2-VALID-01",
+        "KE-V2-VALID-05",
+    )
+    start = edge["story_time_interval"]["start"]
+    start.pop("story_order")
+    end = copy.deepcopy(start)
+    end_ref = end["chapter_revision_ref"]
+    end_ref["revision_no"] = 2
+    end_ref["revision_text_sha256"] = "d" * 64
+    end["story_order"] = 130
+    edge["story_time_interval"]["end"] = end
+
+    grant["as_of"]["story_order"] = 130
+    with pytest.raises(
+        MODULE.ContractError,
+        match="READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL",
+    ):
+        MODULE.validate_edge_grant_for_reader(edge, grant, MODULE.VERSION_V2)
+
+    grant["as_of"]["story_order"] = 120
+    MODULE.validate_edge_grant_for_reader(edge, grant, MODULE.VERSION_V2)
 
 
 def test_task_read_as_of_uses_only_exact_revision_refs_without_story_order() -> None:
