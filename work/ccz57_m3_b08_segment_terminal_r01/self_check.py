@@ -214,8 +214,8 @@ def build_report(catalog: dict[str, Any]) -> dict[str, Any]:
     return {
         "report_kind": "CCZ57_M3_B08_SEGMENT_TERMINAL_R01_OFFLINE_REPLAY",
         "mechanical_pass": True,
-        "targeted_pytest_expected": "27 passed",
-        "direct_dependency_regression_expected": "156 passed",
+        "targeted_pytest_expected": "29 passed",
+        "direct_dependency_regression_expected": "165 passed",
         "fixed_vector_count": len(catalog["fixed_vectors"]),
         "catalog_hash": catalog["catalog_hash"],
         "persistent_product_type_count": 1,

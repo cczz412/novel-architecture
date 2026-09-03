@@ -3,7 +3,7 @@
   "b07_candidate_version_writes": 0,
   "b07_merge_receipt_writes": 0,
   "b07_pointer_writes": 0,
-  "catalog_hash": "804b03b4af025d5ac460a43d3b7a3488604930bdc18ad58c10f9461291aa7cd8",
+  "catalog_hash": "509151d0788f1faf35b4fba927a052706c512b192fdc01633cc593674258e705",
   "ccz142_exact_adapter_complete": false,
   "ccz142_result_classification_complete": false,
   "ccz142_saved_artifact_adapter_complete": true,
@@ -23,7 +23,7 @@
   "report_kind": "CCZ57_M3_B07_LOCAL_RECOVERY_STOP_R01_OFFLINE_REPLAY",
   "semantic_accuracy": null,
   "speed_improvement": null,
-  "targeted_pytest_expected": "26 passed",
+  "targeted_pytest_expected": "35 passed",
   "ten_ledger_writes": 0,
   "token_improvement": null
 }

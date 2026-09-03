@@ -64,6 +64,7 @@ resume 增加 epoch，reopen 新建 run 并增加 logical run generation。旧�
 - 0 模型／API／网络调用；
 - 0 CandidateVersion、pointer、MergeReceipt、正式事实和十本账写入；
 - 证明幂等、并发单赢家、事务失败回滚、resume、reopen、来源／pointer 漂移、B-06 child 精确绑定，以及派生视图不落库。
+- 证明 B-07 不能在 B-08 发布并绑定终态 observation 之前直接进入成功或停止。
 
 CCZ-142 的产品级分类／覆盖 reader 仍是接线边界。本目录只冻结接口和机械拒绝规则，不修改 CCZ-142 runtime，也不把实验 JSON 冒充产品权威。
 

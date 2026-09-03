@@ -29,7 +29,11 @@ from work.ccz57_m3_b06_commit_core_r01.fixtures import (  # noqa: E402
 )
 
 from b07_adapters import derive_b06_request_hash  # noqa: E402
-from b07_contracts import ACCESS_MAINTAINER_INTERNAL  # noqa: E402
+from b07_contracts import (  # noqa: E402
+    ACCESS_MAINTAINER_INTERNAL,
+    TERMINAL_ARTIFACT_KIND,
+    TERMINAL_COMPONENT_KIND,
+)
 from b07_store import B07RunStore  # noqa: E402
 
 
@@ -115,6 +119,53 @@ class B07FixtureEnvironment:
             run_kind="FACT_EXTRACTION_REPAIR",
             operation_id="open-1",
             authority_reader=self.authority,
+        )
+
+    def terminal_observation(self, *, marker: str = "fixture") -> dict[str, Any]:
+        return {
+            "component_kind": TERMINAL_COMPONENT_KIND,
+            "component_artifact_ref": {
+                "artifact_kind": TERMINAL_ARTIFACT_KIND,
+                "workspace_relative_locator": (
+                    "work/ccz57_m3_b08_segment_terminal_r01/records/"
+                    f"{marker}.json"
+                ),
+                "artifact_sha256": sha256_value({"b08_terminal": marker}),
+            },
+        }
+
+    def bind_terminal_observation(
+        self,
+        state: dict[str, Any],
+        *,
+        operation_id: str = "bind-terminal-observation",
+        marker: str = "fixture",
+    ) -> dict[str, Any]:
+        if state["status"] == "ACTIVE" and state["phase"] == "FINALIZING":
+            prepared = state
+        else:
+            prepared = self.b07.advance(
+                project_scope_id=self.project_scope_id,
+                run_id=self.run_id,
+                operation_id=f"{operation_id}:finalizing",
+                expected_run_epoch=state["run_epoch"],
+                expected_state_revision=state["state_revision"],
+                target_status="ACTIVE",
+                target_phase="FINALIZING",
+                wait_kind=None,
+                authority_reader=self.authority,
+            )
+        return self.b07.advance(
+            project_scope_id=self.project_scope_id,
+            run_id=self.run_id,
+            operation_id=operation_id,
+            expected_run_epoch=prepared["run_epoch"],
+            expected_state_revision=prepared["state_revision"],
+            target_status="ACTIVE",
+            target_phase="FINALIZING",
+            wait_kind=None,
+            authority_reader=self.authority,
+            component_observation=self.terminal_observation(marker=marker),
         )
 
     def prepare_b06(

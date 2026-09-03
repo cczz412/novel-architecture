@@ -19,11 +19,14 @@ from b07_adapters import (
 from b07_contracts import (
     B07ContractError,
     project_author_status,
+    record_ref,
+    sha256_value,
     stop_receipt_ref,
     validate_current_run_state,
     validate_debug_record,
     validate_resume_plan,
     validate_stop_receipt,
+    validate_stop_receipt_for_state,
 )
 from b07_store import B07RunStore
 from work.ccz57_m3_b07_local_recovery_stop_r01.fixtures import (
@@ -52,6 +55,19 @@ def _stop(
         stop_class="LOCAL_CONTROL",
         stop_source="FIXTURE",
         authority_reader=env.authority,
+    )
+
+
+def _terminal_ready(
+    env: B07FixtureEnvironment,
+    state: dict[str, Any],
+    *,
+    marker: str,
+) -> dict[str, Any]:
+    return env.bind_terminal_observation(
+        state,
+        operation_id=f"bind-{marker}",
+        marker=marker,
     )
 
 
@@ -195,9 +211,48 @@ def test_oversized_run_state_is_rejected_before_persistence(tmp_path: Path) -> N
     assert env.b07.visible_counts()["b07_current_run_states"] == 0
 
 
+@pytest.mark.parametrize("target_status", ["SUCCEEDED", "STOPPED"])
+def test_direct_terminal_transition_without_b08_observation_is_atomic_rejection(
+    tmp_path: Path, target_status: str
+) -> None:
+    env = build_environment(tmp_path / f"direct-{target_status.lower()}")
+    opened = env.open()
+    finalizing = env.b07.advance(
+        project_scope_id=env.project_scope_id,
+        run_id=env.run_id,
+        operation_id="enter-finalizing-without-b08",
+        expected_run_epoch=opened["run_epoch"],
+        expected_state_revision=opened["state_revision"],
+        target_status="ACTIVE",
+        target_phase="FINALIZING",
+        wait_kind=None,
+        authority_reader=env.authority,
+    )
+    counts = env.b07.visible_counts()
+
+    with pytest.raises(B07ContractError, match="B07_TERMINAL_OBSERVATION_REQUIRED"):
+        if target_status == "SUCCEEDED":
+            env.b07.advance(
+                project_scope_id=env.project_scope_id,
+                run_id=env.run_id,
+                operation_id="direct-success",
+                expected_run_epoch=finalizing["run_epoch"],
+                expected_state_revision=finalizing["state_revision"],
+                target_status="SUCCEEDED",
+                target_phase="FINALIZING",
+                wait_kind=None,
+                authority_reader=env.authority,
+            )
+        else:
+            _stop(env, finalizing, operation_id="direct-stop")
+
+    assert env.b07.read_state(env.project_scope_id, env.run_id) == finalizing
+    assert env.b07.visible_counts() == counts
+
+
 def test_stop_receipt_and_stopped_state_are_one_atomic_effect(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "stop")
-    state = env.open()
+    state = _terminal_ready(env, env.open(), marker="stop")
     receipt = _stop(env, state)
     stopped = env.b07.read_state(env.project_scope_id, env.run_id)
 
@@ -211,6 +266,21 @@ def test_stop_receipt_and_stopped_state_are_one_atomic_effect(tmp_path: Path) ->
     }
 
 
+def test_stop_rejects_authority_drift_after_terminal_binding(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "stop-authority-drift")
+    ready = _terminal_ready(env, env.open(), marker="stop-authority-drift")
+    env.authority.snapshot["budget_revision"] += 1
+    env.authority.snapshot["budget_state_hash"] = sha256_value(
+        {"budget_revision": env.authority.snapshot["budget_revision"]}
+    )
+
+    with pytest.raises(B07ContractError, match="B07_AUTHORITY_DRIFT"):
+        _stop(env, ready, operation_id="stop-after-authority-drift")
+
+    assert env.b07.read_state(env.project_scope_id, env.run_id) == ready
+    assert env.b07.visible_counts()["b07_stop_receipts"] == 0
+
+
 @pytest.mark.parametrize(
     "failure_point",
     ["after_stop_receipt_insert", "after_stopped_state_update", "before_stop_commit"],
@@ -219,7 +289,7 @@ def test_stop_failure_injection_rolls_back_receipt_and_state(
     tmp_path: Path, failure_point: str
 ) -> None:
     env = build_environment(tmp_path / failure_point)
-    state = env.open()
+    state = _terminal_ready(env, env.open(), marker=failure_point)
     env.b07.failure_point = failure_point
 
     with pytest.raises(B07ContractError, match="B07_SIMULATED_TRANSACTION_FAILURE"):
@@ -234,7 +304,7 @@ def test_stop_replay_returns_same_receipt_and_changed_reason_conflicts(
     tmp_path: Path,
 ) -> None:
     env = build_environment(tmp_path / "stop-replay")
-    state = env.open()
+    state = _terminal_ready(env, env.open(), marker="stop-replay")
     first = _stop(env, state)
     replay = _stop(env, state)
     assert replay == first
@@ -242,6 +312,102 @@ def test_stop_replay_returns_same_receipt_and_changed_reason_conflicts(
     with pytest.raises(B07ContractError, match="B07_IDEMPOTENCY_CONFLICT"):
         _stop(env, state, reason="RETRY_LIMIT")
     assert env.b07.visible_counts()["b07_stop_receipts"] == 1
+
+
+@pytest.mark.parametrize(
+    ("reason", "disposition", "action_kind", "action_required"),
+    [
+        ("AUTHOR_ABORTED", "REOPEN_NEW_RUN", "RESTART", True),
+        ("ROUTE_STOP", "DO_NOT_RESUME", "WAIT", False),
+        (
+            "LOCAL_STORAGE_INTEGRITY_FAILURE",
+            "MAINTENANCE_REQUIRED",
+            "WAIT",
+            False,
+        ),
+    ],
+)
+def test_stop_receipt_controls_resume_plan_and_author_action(
+    tmp_path: Path,
+    reason: str,
+    disposition: str,
+    action_kind: str,
+    action_required: bool,
+) -> None:
+    env = build_environment(tmp_path / reason.lower())
+    ready = _terminal_ready(env, env.open(), marker=reason.lower())
+    receipt = _stop(env, ready, reason=reason)
+    stopped = env.b07.read_state(env.project_scope_id, env.run_id)
+    plan = env.b07.derive_resume_plan(
+        project_scope_id=env.project_scope_id,
+        run_id=env.run_id,
+        authority_reader=env.authority,
+    )
+    author = project_author_status(stopped, stop_receipt=receipt)
+
+    assert receipt["payload"]["resume_disposition"] == disposition
+    assert plan["disposition"] == disposition
+    assert author["author_action_kind"] == action_kind
+    assert author["author_action_required"] is action_required
+    assert author["terminalization_pending"] is False
+
+
+def test_missing_stop_receipt_fails_resume_plan_closed(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "missing-stop-receipt")
+    ready = _terminal_ready(env, env.open(), marker="missing-stop-receipt")
+    _stop(env, ready)
+    with sqlite3.connect(env.b06.store._database_path) as connection:  # noqa: SLF001
+        connection.execute("DELETE FROM b07_stop_receipts")
+        connection.commit()
+
+    with pytest.raises(B07ContractError, match="B07_STOP_RECEIPT_NOT_FOUND"):
+        env.b07.derive_resume_plan(
+            project_scope_id=env.project_scope_id,
+            run_id=env.run_id,
+            authority_reader=env.authority,
+        )
+
+
+def test_tampered_stop_receipt_fails_resume_plan_closed(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "tampered-stop-receipt")
+    ready = _terminal_ready(env, env.open(), marker="tampered-stop-receipt")
+    _stop(env, ready)
+    with sqlite3.connect(env.b06.store._database_path) as connection:  # noqa: SLF001
+        raw = connection.execute(
+            "SELECT receipt_json FROM b07_stop_receipts"
+        ).fetchone()[0]
+        receipt = json.loads(bytes(raw).decode("utf-8"))
+        receipt["payload"]["resume_disposition"] = "DO_NOT_RESUME"
+        connection.execute(
+            "UPDATE b07_stop_receipts SET receipt_json = ?",
+            (json.dumps(receipt, sort_keys=True).encode("utf-8"),),
+        )
+        connection.commit()
+
+    with pytest.raises(B07ContractError, match="B07_STOP_RECEIPT_INVALID"):
+        env.b07.derive_resume_plan(
+            project_scope_id=env.project_scope_id,
+            run_id=env.run_id,
+            authority_reader=env.authority,
+        )
+
+
+def test_stop_receipt_scope_mismatch_fails_closed(tmp_path: Path) -> None:
+    env = build_environment(tmp_path / "scope-stop-receipt")
+    ready = _terminal_ready(env, env.open(), marker="scope-stop-receipt")
+    receipt = _stop(env, ready)
+    stopped = env.b07.read_state(env.project_scope_id, env.run_id)
+    wrong = json.loads(json.dumps(receipt))
+    wrong["payload"]["logical_run_key"] = "logical-run:wrong"
+    wrong["record_id"] = f"run-stop:{sha256_value(wrong['payload'])}"
+    wrong["record_hash"] = sha256_value(
+        {key: value for key, value in wrong.items() if key != "record_hash"}
+    )
+    validate_stop_receipt(wrong)
+
+    with pytest.raises(B07ContractError, match="B07_STOP_RECEIPT_SCOPE_MISMATCH"):
+        validate_stop_receipt_for_state(stopped, wrong)
+    assert record_ref(wrong) != stopped["stop_receipt_ref"]
 
 
 def test_resume_increments_epoch_and_old_epoch_writes_zero(tmp_path: Path) -> None:
@@ -288,7 +454,7 @@ def test_stopped_run_cannot_resume_and_reopen_creates_new_generation(
     tmp_path: Path,
 ) -> None:
     env = build_environment(tmp_path / "reopen")
-    state = env.open()
+    state = _terminal_ready(env, env.open(), marker="reopen")
     _stop(env, state)
     old = env.b07.read_state(env.project_scope_id, env.run_id)
 
@@ -339,21 +505,23 @@ def test_b06_ack_lost_is_reconciled_as_committed_without_second_publish(
     assert env.b06.store.visible_counts()["merge_receipts"] == 1
 
 
-def test_stop_before_b06_publish_denies_old_run_with_zero_b06_writes(
+def test_stop_before_b06_publish_is_rejected_without_a_half_terminal(
     tmp_path: Path,
 ) -> None:
     env = build_environment(tmp_path / "stop-before-b06")
     state = env.open()
     pending, fence = env.prepare_b06(state)
-    _stop(env, pending, operation_id="stop-before-publish")
+    with pytest.raises(B07ContractError, match="B07_TERMINAL_SEQUENCE_INVALID"):
+        _stop(env, pending, operation_id="stop-before-publish")
 
-    with pytest.raises(B07ContractError, match="B07_B06_FENCE_STALE"):
-        env.commit_b06(run_fence=fence)
+    committed = env.commit_b06(run_fence=fence)
+    assert committed["reused_existing_commit"] is False
     assert env.b06.store.visible_counts() == {
-        "candidate_versions": 1,
+        "candidate_versions": 2,
         "current_pointers": 1,
-        "merge_receipts": 0,
+        "merge_receipts": 1,
     }
+    assert env.b07.visible_counts()["b07_stop_receipts"] == 0
 
 
 def test_b06_commit_can_win_then_existing_operation_replays_after_stop(
@@ -364,33 +532,41 @@ def test_b06_commit_can_win_then_existing_operation_replays_after_stop(
     pending, fence = env.prepare_b06(state)
     first = env.commit_b06(run_fence=fence)
     env.authority.sync_pointer(first["current_pointer"])
-    _stop(env, pending, operation_id="stop-after-publish")
+    reconciled = env.b07.reconcile_b06(
+        project_scope_id=env.project_scope_id,
+        run_id=env.run_id,
+        operation_id="reconcile-before-stop",
+        expected_run_epoch=pending["run_epoch"],
+        expected_state_revision=pending["state_revision"],
+        authority_reader=env.authority,
+    )
+    ready = _terminal_ready(env, reconciled, marker="stop-after-publish")
+    _stop(env, ready, operation_id="stop-after-publish")
 
     replay = env.commit_b06(run_fence=fence)
     assert replay["reused_existing_commit"] is True
     assert replay["merge_receipt_ref"] == first["merge_receipt_ref"]
 
 
-def test_no_b06_publication_reconciles_to_exactly_one_stop(tmp_path: Path) -> None:
+def test_no_b06_publication_cannot_invent_a_forced_stop(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "b06-not-published")
     state = env.open()
     pending, _fence = env.prepare_b06(state)
 
-    stopped = env.b07.reconcile_b06(
-        project_scope_id=env.project_scope_id,
-        run_id=env.run_id,
-        operation_id="reconcile-no-publish",
-        expected_run_epoch=pending["run_epoch"],
-        expected_state_revision=pending["state_revision"],
-        authority_reader=env.authority,
-    )
-    receipt = env.b07.read_stop_receipt(env.project_scope_id, env.run_id)
-    assert stopped["status"] == "STOPPED"
-    assert receipt["payload"]["stop_reason_code"] == "B06_NOT_PUBLISHED"
-    assert env.b07.visible_counts()["b07_stop_receipts"] == 1
+    with pytest.raises(B07ContractError, match="B07_TERMINAL_SEQUENCE_INVALID"):
+        env.b07.reconcile_b06(
+            project_scope_id=env.project_scope_id,
+            run_id=env.run_id,
+            operation_id="reconcile-no-publish",
+            expected_run_epoch=pending["run_epoch"],
+            expected_state_revision=pending["state_revision"],
+            authority_reader=env.authority,
+        )
+    assert env.b07.read_state(env.project_scope_id, env.run_id) == pending
+    assert env.b07.visible_counts()["b07_stop_receipts"] == 0
 
 
-def test_competing_pointer_reconciles_to_conflict_stop(tmp_path: Path) -> None:
+def test_competing_pointer_cannot_invent_a_forced_stop(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "b06-conflict")
     state = env.open()
     pending, _fence = env.prepare_b06(state)
@@ -408,24 +584,24 @@ def test_competing_pointer_reconciles_to_conflict_stop(tmp_path: Path) -> None:
         )
     env.authority.sync_pointer(pointer)
 
-    stopped = env.b07.reconcile_b06(
-        project_scope_id=env.project_scope_id,
-        run_id=env.run_id,
-        operation_id="reconcile-conflict",
-        expected_run_epoch=pending["run_epoch"],
-        expected_state_revision=pending["state_revision"],
-        authority_reader=env.authority,
-    )
-    receipt = env.b07.read_stop_receipt(env.project_scope_id, env.run_id)
-    assert stopped["status"] == "STOPPED"
-    assert receipt["payload"]["stop_reason_code"] == "B06_POINTER_CONFLICT"
+    with pytest.raises(B07ContractError, match="B07_TERMINAL_SEQUENCE_INVALID"):
+        env.b07.reconcile_b06(
+            project_scope_id=env.project_scope_id,
+            run_id=env.run_id,
+            operation_id="reconcile-conflict",
+            expected_run_epoch=pending["run_epoch"],
+            expected_state_revision=pending["state_revision"],
+            authority_reader=env.authority,
+        )
+    assert env.b07.read_state(env.project_scope_id, env.run_id) == pending
+    assert env.b07.visible_counts()["b07_stop_receipts"] == 0
 
 
 def test_debug_is_best_effort_and_author_payload_rejects_internal_fields(
     tmp_path: Path,
 ) -> None:
     env = build_environment(tmp_path / "debug")
-    state = env.open()
+    state = _terminal_ready(env, env.open(), marker="debug")
     receipt = _stop(env, state)
     debug_payload = env.debug_payload()
     debug_payload["stop_receipt_ref"] = stop_receipt_ref(receipt)
@@ -436,7 +612,8 @@ def test_debug_is_best_effort_and_author_payload_rejects_internal_fields(
     )
     validate_debug_record(debug)
     author_payload = project_author_status(
-        env.b07.read_state(env.project_scope_id, env.run_id)
+        env.b07.read_state(env.project_scope_id, env.run_id),
+        stop_receipt=receipt,
     )
     assert_author_payload_safe(author_payload)
 
@@ -446,7 +623,7 @@ def test_debug_is_best_effort_and_author_payload_rejects_internal_fields(
 
 def test_debug_failure_does_not_roll_back_prior_stop(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "debug-failure")
-    state = env.open()
+    state = _terminal_ready(env, env.open(), marker="debug-failure")
     _stop(env, state)
     env.b07.failure_point = "debug_before_commit"
 
@@ -478,7 +655,7 @@ def test_debug_retention_over_thirty_days_is_rejected(tmp_path: Path) -> None:
 
 def test_two_concurrent_stops_have_one_visible_winner(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "concurrent-stop")
-    state = env.open()
+    state = _terminal_ready(env, env.open(), marker="concurrent-stop")
 
     def run(operation_id: str) -> str:
         try:
@@ -496,7 +673,7 @@ def test_two_concurrent_stops_have_one_visible_winner(tmp_path: Path) -> None:
 
 def test_database_reopen_reads_same_state_and_stop(tmp_path: Path) -> None:
     env = build_environment(tmp_path / "database-reopen")
-    state = env.open()
+    state = _terminal_ready(env, env.open(), marker="database-reopen")
     receipt = _stop(env, state)
     reopened = B07RunStore(env.b06.store.root, clock=env.clock)
     reopened.initialize_schema()

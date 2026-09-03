@@ -39,6 +39,8 @@ from b07_contracts import (  # noqa: E402
     validate_debug_record,
     validate_pending_local_action,
     validate_stop_receipt,
+    validate_stop_receipt_for_state,
+    validate_terminal_transition_source,
 )
 
 AuthorityReader = Callable[[], dict[str, Any]]
@@ -516,6 +518,8 @@ class B07RunStore:
                     state["authority_snapshot"]
                 ):
                     fail("B07_AUTHORITY_DRIFT")
+                if target_status == "SUCCEEDED":
+                    validate_terminal_transition_source(state, component_observation)
                 updated = deepcopy(state)
                 updated["state_revision"] += 1
                 updated["status"] = target_status
@@ -568,6 +572,9 @@ class B07RunStore:
         stop_source: str,
         authority: dict[str, Any],
     ) -> tuple[dict[str, Any], dict[str, Any]]:
+        validate_terminal_transition_source(
+            state, state["last_component_observation"]
+        )
         created_at = self._clock()
         payload = {
             "project_scope_id": state["project_scope_id"],
@@ -680,6 +687,10 @@ class B07RunStore:
                 if state["status"] not in NONTERMINAL_STATUSES:
                     fail("B07_STOP_ALREADY_FINALIZED")
                 authority = self._authority(authority_reader)
+                if canonical_bytes(authority) != canonical_bytes(
+                    state["authority_snapshot"]
+                ):
+                    fail("B07_AUTHORITY_DRIFT")
                 stopped, receipt = self._stop_in_transaction(
                     connection,
                     state=state,
@@ -810,7 +821,9 @@ class B07RunStore:
         authority = self._authority(authority_reader)
         preconditions: list[str] = []
         if state["status"] == "STOPPED":
-            disposition = "REOPEN_NEW_RUN"
+            receipt = self.read_stop_receipt(project_scope_id, run_id)
+            validate_stop_receipt_for_state(state, receipt)
+            disposition = receipt["payload"]["resume_disposition"]
         elif state["status"] == "SUCCEEDED":
             disposition = "DO_NOT_RESUME"
         elif state["status"] == "B06_OUTCOME_PENDING":
@@ -955,6 +968,7 @@ class B07RunStore:
                 receipt = self._stop_receipt_from_ref(
                     connection, source["stop_receipt_ref"]
                 )
+                validate_stop_receipt_for_state(source, receipt)
                 if receipt["payload"]["resume_disposition"] != "REOPEN_NEW_RUN":
                     fail("B07_REOPEN_REQUIRES_MAINTENANCE_OR_NEW_ROUTE")
                 authority = self._authority(authority_reader)

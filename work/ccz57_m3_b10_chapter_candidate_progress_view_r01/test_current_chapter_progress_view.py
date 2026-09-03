@@ -42,9 +42,11 @@ from work.ccz57_m3_b01_candidate_version_r03_5.fixtures import (  # noqa: E402
 )
 from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
     canonical_bytes,
+    record_ref,
     sha256_value,
 )
-from work.ccz57_m3_b07_local_recovery_stop_r01.b07_contracts import (  # noqa: E402
+from b07_contracts import (  # noqa: E402
+    B07ContractError,
     state_hash_value,
 )
 from work.ccz57_m3_b08_segment_terminal_r01.fixtures import (  # noqa: E402
@@ -61,6 +63,7 @@ from b10_contracts import (  # noqa: E402
     validate_segment_set_closure,
 )
 from current_chapter_progress_view import (  # noqa: E402
+    _author_action,
     _processing_state,
     project_author_progress,
     read_current_chapter_progress,
@@ -164,21 +167,6 @@ def _advance(
     )
 
 
-def _stop_without_terminal(world: SimpleNamespace) -> dict[str, Any]:
-    state = world.env.state()
-    return world.env.b07.b07.stop(
-        project_scope_id=world.env.project_scope_id,
-        run_id=world.env.run_id,
-        operation_id="b10-stop-without-terminal",
-        expected_run_epoch=state["run_epoch"],
-        expected_state_revision=state["state_revision"],
-        stop_reason_code="AUTHOR_ABORTED",
-        stop_class="LOCAL_CONTROL",
-        stop_source="B10_FIXTURE",
-        authority_reader=world.env.b07.authority,
-    )
-
-
 def _classification(
     product_result: str, delivery: str
 ) -> dict[str, Any]:
@@ -206,7 +194,11 @@ _world_classification_template: dict[str, Any] = {}
 
 
 def _terminalize(
-    world: SimpleNamespace, *, product_result: str, delivery: str
+    world: SimpleNamespace,
+    *,
+    product_result: str,
+    delivery: str,
+    stop_reason_code: str = "AUTHOR_ABORTED",
 ) -> dict[str, Any]:
     global _world_classification_template
     _world_classification_template = deepcopy(world.env.authority.classification)
@@ -215,7 +207,7 @@ def _terminalize(
     if delivery in {"COMPLETE", "EMPTY_VALID"}:
         world.env.bind_succeeded(result)
     else:
-        world.env.bind_then_stop(result)
+        world.env.bind_then_stop(result, stop_reason_code=stop_reason_code)
     return result
 
 
@@ -387,21 +379,111 @@ def test_waiting_local_preserves_author_action(tmp_path: Path) -> None:
     assert view["author_action_kind"] == "REVIEW_INPUT"
 
 
+@pytest.mark.parametrize(
+    ("stop_reason", "expected_action", "action_required"),
+    [
+        ("AUTHOR_ABORTED", "RESTART", True),
+        ("ROUTE_STOP", "WAIT", False),
+        ("LOCAL_STORAGE_INTEGRITY_FAILURE", "WAIT", False),
+    ],
+)
+def test_blocked_segment_preserves_stop_receipt_action(
+    tmp_path: Path,
+    stop_reason: str,
+    expected_action: str,
+    action_required: bool,
+) -> None:
+    world = _world(tmp_path)
+    _terminalize(
+        world,
+        product_result="EXTRACTION_FAILED",
+        delivery="BLOCKED",
+        stop_reason_code=stop_reason,
+    )
+    view = _read(world)
+
+    assert _segment(view)["segment_status"] == "BLOCKED"
+    assert view["author_action_kind"] == expected_action
+    assert view["author_action_required"] is action_required
+
+
+@pytest.mark.parametrize(
+    "stop_reason",
+    ["ROUTE_STOP", "LOCAL_STORAGE_INTEGRITY_FAILURE"],
+)
+def test_safe_stop_action_wins_over_partial_review(
+    tmp_path: Path, stop_reason: str
+) -> None:
+    world = _world(tmp_path)
+    _terminalize(
+        world,
+        product_result="INSUFFICIENT_EVIDENCE",
+        delivery="PARTIAL",
+        stop_reason_code=stop_reason,
+    )
+    view = _read(world)
+
+    assert _segment(view)["segment_status"] == "PARTIAL"
+    assert view["author_action_kind"] == "WAIT"
+    assert view["author_action_required"] is False
+
+
+@pytest.mark.parametrize(
+    ("actions", "expected"),
+    [
+        (["RESTART"], "RESTART"),
+        (["RESTART", "REVIEW_INPUT"], "REVIEW_INPUT"),
+        (["RESTART", "REFRESH"], "REFRESH"),
+        (["RESTART", "REFRESH", "WAIT"], "WAIT"),
+    ],
+)
+def test_multi_segment_author_action_priority_is_order_independent(
+    actions: list[str], expected: str
+) -> None:
+    segments = [
+        {
+            "segment_status": "BLOCKED",
+            "run_state_or_null": {"author_action_kind": action},
+        }
+        for action in actions
+    ]
+    required, action = _author_action(segments, "BLOCKED")
+    reversed_required, reversed_action = _author_action(
+        list(reversed(segments)), "BLOCKED"
+    )
+
+    assert (required, action) == (expected != "WAIT", expected)
+    assert (reversed_required, reversed_action) == (required, action)
+
+
 @pytest.mark.parametrize("terminal_status", ["SUCCEEDED", "STOPPED"])
-def test_terminal_state_without_b08_is_terminal_pending(
+def test_direct_terminal_without_b08_is_rejected_and_view_stays_running(
     tmp_path: Path, terminal_status: str
 ) -> None:
     world = _world(tmp_path)
-    if terminal_status == "SUCCEEDED":
-        _advance(world, status="SUCCEEDED")
-    else:
-        _stop_without_terminal(world)
+    state = world.env.state()
+    with pytest.raises(B07ContractError, match="B07_TERMINAL_OBSERVATION_REQUIRED"):
+        if terminal_status == "SUCCEEDED":
+            _advance(world, status="SUCCEEDED")
+        else:
+            world.env.b07.b07.stop(
+                project_scope_id=world.env.project_scope_id,
+                run_id=world.env.run_id,
+                operation_id="b10-stop-without-terminal",
+                expected_run_epoch=state["run_epoch"],
+                expected_state_revision=state["state_revision"],
+                stop_reason_code="AUTHOR_ABORTED",
+                stop_class="LOCAL_CONTROL",
+                stop_source="B10_FIXTURE",
+                authority_reader=world.env.b07.authority,
+            )
     view = _read(world)
     segment = _segment(view)
-    assert segment["segment_status"] == "TERMINALIZING"
-    assert segment["authority_witness"]["kind"] == "TERMINAL_PENDING"
+    assert segment["segment_status"] == "RUNNING"
+    assert segment["authority_witness"]["kind"] == "B07_CURRENT_RUN"
     assert view["candidate_processing_state"] == "IN_PROGRESS"
-    assert view["has_blockers"] is True
+    assert view["has_blockers"] is False
+    assert world.env.state() == state
 
 
 def test_resume_epoch_does_not_reuse_old_terminal(tmp_path: Path) -> None:
@@ -578,6 +660,73 @@ def test_b07_record_hash_tamper_fails_closed(tmp_path: Path) -> None:
     assert view["reason_code"] == "AUTHORITY_HASH_MISMATCH"
 
 
+def test_missing_stop_receipt_hides_counts_and_actions(tmp_path: Path) -> None:
+    world = _world(tmp_path)
+    _terminalize(world, product_result="EXTRACTION_FAILED", delivery="BLOCKED")
+    with sqlite3.connect(world.env.store._database_path) as connection:
+        connection.execute("DELETE FROM b07_stop_receipts")
+        connection.commit()
+
+    view = _read(world)
+    assert view["availability"] == "UNAVAILABLE"
+    assert view["reason_code"] == "AUTHORITY_REFERENCE_CONFLICT"
+    assert view["counts"] is None
+    assert view["author_action_kind"] == "NONE"
+
+
+def test_tampered_stop_receipt_hides_counts_and_actions(tmp_path: Path) -> None:
+    world = _world(tmp_path)
+    _terminalize(world, product_result="EXTRACTION_FAILED", delivery="BLOCKED")
+    with sqlite3.connect(world.env.store._database_path) as connection:
+        raw = connection.execute(
+            "SELECT receipt_json FROM b07_stop_receipts"
+        ).fetchone()[0]
+        receipt = json.loads(bytes(raw).decode("utf-8"))
+        receipt["payload"]["resume_disposition"] = "DO_NOT_RESUME"
+        connection.execute(
+            "UPDATE b07_stop_receipts SET receipt_json = ?",
+            (canonical_bytes(receipt),),
+        )
+        connection.commit()
+
+    view = _read(world)
+    assert view["availability"] == "UNAVAILABLE"
+    assert view["reason_code"] == "AUTHORITY_HASH_MISMATCH"
+    assert view["counts"] is None
+
+
+def test_stop_receipt_scope_mismatch_hides_counts_and_actions(tmp_path: Path) -> None:
+    world = _world(tmp_path)
+    _terminalize(world, product_result="EXTRACTION_FAILED", delivery="BLOCKED")
+    state = deepcopy(world.env.state())
+    with sqlite3.connect(world.env.store._database_path) as connection:
+        raw = connection.execute(
+            "SELECT receipt_json FROM b07_stop_receipts"
+        ).fetchone()[0]
+        receipt = json.loads(bytes(raw).decode("utf-8"))
+        receipt["payload"]["logical_run_key"] = "logical-run:wrong"
+        receipt["record_id"] = f"run-stop:{sha256_value(receipt['payload'])}"
+        receipt["record_hash"] = sha256_value(
+            {key: value for key, value in receipt.items() if key != "record_hash"}
+        )
+        state["stop_receipt_ref"] = record_ref(receipt)
+        state["state_hash"] = state_hash_value(state)
+        connection.execute(
+            "UPDATE b07_stop_receipts SET stop_receipt_id = ?, receipt_json = ?",
+            (receipt["record_id"], canonical_bytes(receipt)),
+        )
+        connection.execute(
+            "UPDATE b07_current_run_states SET stop_receipt_id = ?, state_json = ?",
+            (receipt["record_id"], canonical_bytes(state)),
+        )
+        connection.commit()
+
+    view = _read(world)
+    assert view["availability"] == "UNAVAILABLE"
+    assert view["reason_code"] == "AUTHORITY_STATE_INCOHERENT"
+    assert view["counts"] is None
+
+
 def test_unbound_current_terminal_keeps_active_run_running(tmp_path: Path) -> None:
     world = _world(tmp_path)
     world.env.publish("unbound-current-terminal")
@@ -645,9 +794,7 @@ def test_negative_no_run_witness_participates_in_double_read_fence(
     assert view["segments"] == []
 
 
-def test_terminal_pending_witness_participates_in_double_read_fence(
-    tmp_path: Path,
-) -> None:
+def test_terminal_state_with_missing_b08_record_fails_closed(tmp_path: Path) -> None:
     world = _world(tmp_path)
     global _world_classification_template
     _world_classification_template = deepcopy(world.env.authority.classification)
@@ -655,34 +802,14 @@ def test_terminal_pending_witness_participates_in_double_read_fence(
         "INSUFFICIENT_EVIDENCE", "PARTIAL"
     )
     result = world.env.publish("terminal-to-hide")
+    world.env.bind_then_stop(result)
     with sqlite3.connect(world.env.store._database_path) as connection:
-        saved = connection.execute(
-            "SELECT terminalization_key, project_scope_id, logical_run_key, run_id, "
-            "logical_run_generation, run_epoch, operation_id, call_request_hash, "
-            "record_id, record_hash, record_json FROM b08_segment_terminal_receipts"
-        ).fetchone()
         connection.execute("DELETE FROM b08_segment_terminal_receipts")
         connection.commit()
-    world.env.bind_then_stop(result)
-    fired = False
 
-    def restore_terminal() -> None:
-        nonlocal fired
-        if fired:
-            return
-        fired = True
-        with sqlite3.connect(world.env.store._database_path) as connection:
-            connection.execute(
-                "INSERT INTO b08_segment_terminal_receipts VALUES "
-                "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                saved,
-            )
-            connection.commit()
-
-    reader = DriftReader(callback=restore_terminal, **world.reader_kwargs)
-    view = read_current_chapter_progress(reader, world.request)
+    view = _read(world)
     assert view["availability"] == "UNAVAILABLE"
-    assert view["reason_code"] == "AUTHORITY_DRIFT"
+    assert view["reason_code"] == "AUTHORITY_REFERENCE_CONFLICT"
     assert view["counts"] is None
 
 

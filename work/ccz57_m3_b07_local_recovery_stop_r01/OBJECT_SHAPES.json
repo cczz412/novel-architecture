@@ -5,7 +5,7 @@
     "b07_writes_b06_objects": 0,
     "receipt_replay_before_fence": true
   },
-  "catalog_hash": "804b03b4af025d5ac460a43d3b7a3488604930bdc18ad58c10f9461291aa7cd8",
+  "catalog_hash": "509151d0788f1faf35b4fba927a052706c512b192fdc01633cc593674258e705",
   "ccz142_saved_artifact_ref": {
     "artifact_kind": "required",
     "artifact_sha256": "required",
@@ -37,7 +37,7 @@
       "fixture_id": "N02_STOP_REOPEN",
       "new_generation": 2,
       "old_status": "STOPPED",
-      "stop_receipt_hash": "3937e29dd10c6b9c8ced30d57f5dd40ad6831823e928d854684e561396c4e463",
+      "stop_receipt_hash": "c696a499922d1a34f640577fe4d6fdea00cb01d3cbd9cdf8b2c0585eb8aecfea",
       "visible_counts": {
         "b07_current_run_states": 2,
         "b07_internal_debug_records": 0,
@@ -66,18 +66,19 @@
       }
     },
     {
+      "b06_committed": true,
       "b06_visible_counts": {
-        "candidate_versions": 1,
+        "candidate_versions": 2,
         "current_pointers": 1,
-        "merge_receipts": 0
+        "merge_receipts": 1
       },
       "b07_visible_counts": {
         "b07_current_run_states": 1,
         "b07_internal_debug_records": 0,
-        "b07_stop_receipts": 1
+        "b07_stop_receipts": 0
       },
-      "error_code": "B07_B06_FENCE_STALE",
-      "fixture_id": "F02_STOP_WINS_B06_ZERO_WRITE"
+      "error_code": "B07_TERMINAL_SEQUENCE_INVALID",
+      "fixture_id": "F02_PENDING_STOP_DENIED"
     }
   ],
   "forbidden_persistent_types": [

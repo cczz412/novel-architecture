@@ -17,8 +17,10 @@
 2. B-07 的 `candidate_pointer_key` 读取 B-06 live pointer，再读取 current CandidateVersion；
 3. CandidateVersion 自带 `segment_index_ref` 与 `seg`，据此回到 B-01 exact segment，不解析指针字符串；
 4. B-08 terminal 只通过 exact-current 复验后才计入完成；
-5. 每个 B-01 预期段都必须有一个解析结果。没有 current run 也要留下 `AUTHORITATIVE_NO_CURRENT_RUN`；已终结但没有 terminal 要留下 `TERMINAL_PENDING`；
+5. 每个 B-01 预期段都必须有一个解析结果。没有 current run 也要留下 `AUTHORITATIVE_NO_CURRENT_RUN`；B-07 已终结却读不到对应 B-08 原件时，整张视图失败关闭；
 6. 完整身份集合必须相等，并对同一范围读两遍。正向引用或负结果见证发生变化，整张视图都不可用。
+
+停止状态还会精确回读对应 StopReceipt。普通停止显示可重开；路线停止和维护故障只显示等待，不会给作者一个实际执行不了的重启按钮。多段动作固定按“等待安全处理、刷新、检查输入、重启”的顺序聚合，结果不受责任段排列顺序影响。
 
 ## 边界
 
