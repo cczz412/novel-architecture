@@ -181,7 +181,7 @@ def test_a08_keeps_reader_items_and_thin_card_utf8_bytes_separate() -> None:
         "max_payload_bytes": 262144,
         "unit": "CANONICAL_JSON_UTF8_BYTES",
     }
-    bundle = validator._thin_bundle("CTC-VALID-11")
+    bundle = validator._multi_tier_oversized_bundle()
     card = bundle["artifact"]
     assert card["size_receipt"]["normalized_utf8_bytes"] == len(
         validator.canonical_bytes(card["compiled_payload"])
@@ -190,6 +190,12 @@ def test_a08_keeps_reader_items_and_thin_card_utf8_bytes_separate() -> None:
         row["obligation_tier"] != "HARD"
         for row in card["compiled_payload"]["on_demand_layer"]
     )
+    need_map = {row["need_id"]: row for row in bundle["c9_request"]["source_needs"]}
+    tiers = [
+        need_map[row["need_id"]]["obligation_tier"]
+        for row in card["size_receipt"]["demotions"]
+    ]
+    assert tiers == ["MAY", "SHOULD", "SHOULD"]
 
 
 def test_a10_stale_admission_cannot_mutate_the_old_card() -> None:

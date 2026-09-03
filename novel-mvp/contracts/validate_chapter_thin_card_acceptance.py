@@ -229,7 +229,11 @@ SCENARIOS: dict[str, dict[str, Any]] = {
         "admission_disposition": "MIXED_BY_STAGE",
         "source_state": None,
         "fixture_refs": ["CTC-VALID-11"],
-        "generated_variants": ["READER-101", "HARD-CONTENT-OVERSIZED"],
+        "generated_variants": [
+            "READER-101",
+            "MAY-AND-SHOULD-OVERSIZED",
+            "HARD-CONTENT-OVERSIZED",
+        ],
         "assertion_ids": [
             "A08-READER-LIMIT-IS-100-ITEMS",
             "A08-CARD-LIMIT-IS-UTF8-BYTES",
@@ -424,6 +428,50 @@ def _artifact_without_sha(artifact: dict[str, Any], field: str) -> dict[str, Any
     value = copy.deepcopy(artifact)
     value.pop(field)
     return value
+
+
+def _multi_tier_oversized_bundle() -> dict[str, Any]:
+    task_bundle = thin_validator.task_validator.build_base_bundle("three_layers")
+    task = task_bundle["task"]
+    request = thin_validator._make_c9_request(task, scenario="continue")
+    plan = thin_validator.c9_core.prepare_plan(request)
+    outcomes = thin_validator._make_c9_outcomes(request, "continue")
+    for index, need in enumerate(request["source_needs"]):
+        if need["obligation_tier"] not in {"SHOULD", "MAY"}:
+            continue
+        outcomes[index] = thin_validator.c9_fixture_validator._outcome(
+            need,
+            basis_mode=request["basis_mode"],
+            material_text=f"{need['obligation_tier']}材料" * 25_000,
+        )
+    registry = thin_validator.c9_fixture_validator._registry()
+    result = thin_validator.c9_core.compile_result(
+        request,
+        plan,
+        outcomes,
+        registry,
+    )
+    bundle: dict[str, Any] = {
+        "scenario": "continue",
+        "artifact_kind": "CARD",
+        "task_bundle": task_bundle,
+        "c9_request": request,
+        "c9_plan": plan,
+        "c9_result": result,
+        "c9_outcomes": outcomes,
+        "c9_registry": registry,
+    }
+    bundle["version_proofs"] = thin_validator._version_proofs(
+        task_bundle,
+        request,
+        result,
+    )
+    bundle["artifact"] = thin_validator._build_card_or_failure(bundle)
+    _require(
+        thin_validator.validate_bundle(bundle) == thin_validator.STRUCTURAL_VALID,
+        "A08_MULTI_TIER_BUNDLE_INVALID",
+    )
+    return bundle
 
 
 def _source_results(card: dict[str, Any], state: str) -> list[dict[str, Any]]:
@@ -669,7 +717,7 @@ def _run_a08() -> list[str]:
         reader_error = None
     _require(reader_error == "SCHEMA_INVALID", "A08_READER_LIMIT_NOT_ENFORCED")
 
-    demotion_bundle = _thin_bundle("CTC-VALID-11")
+    demotion_bundle = _multi_tier_oversized_bundle()
     card = demotion_bundle["artifact"]
     receipt = card["size_receipt"]
     _require(
@@ -689,13 +737,22 @@ def _run_a08() -> list[str]:
         ),
         "A08_HARD_DEMOTION",
     )
+    need_map = {
+        row["need_id"]: row for row in demotion_bundle["c9_request"]["source_needs"]
+    }
+    demoted_needs = [need_map[row["need_id"]] for row in receipt["demotions"]]
+    demoted_tiers = [row["obligation_tier"] for row in demoted_needs]
+    _require(demoted_tiers[0] == "MAY", "A08_DEMOTION_ORDER")
     _require(
-        all(
-            row["obligation_tier"] == "SHOULD"
-            for row in card["compiled_payload"]["on_demand_layer"]
-        ),
+        all(tier == "SHOULD" for tier in demoted_tiers[1:]),
         "A08_DEMOTION_ORDER",
     )
+    should_ranks = [
+        row["selection_rank"]
+        for row in demoted_needs
+        if row["obligation_tier"] == "SHOULD"
+    ]
+    _require(should_ranks == sorted(should_ranks, reverse=True), "A08_DEMOTION_ORDER")
 
     oversized = _custom_bundle(
         outcome_status="OK",
