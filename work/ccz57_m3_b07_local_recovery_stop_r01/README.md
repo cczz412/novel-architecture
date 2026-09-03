@@ -29,6 +29,7 @@ B-06 仍然不写 RunState 或 StopReceipt，B-07 也不写 CandidateVersion、p
 - 非终态 run 因进程崩溃，可以 `resume`：同一行的 epoch 加一，旧进程失效；
 - `STOPPED` 是终态，不能改回 `ACTIVE`；想继续必须 `reopen` 一个新 run，并重新读取当前章节版本、pointer、预算、权限和路线。
 - 普通成功或停止都必须先由 B-08 发布终态原件并绑定精确 observation。缺少这一步时，状态迁移会在写入前被拒绝。
+- 终态迁移会在同一个 SQLite 事务里回读 B-08 原件，逐项核对记录哈希、工件定位、run、generation、epoch 和来源状态围栏；只伪造一个长得像 B-08 的路径或哈希不能进入终态。
 - 停止后的 `ResumePlan` 和作者动作读取同一份 StopReceipt：普通停止可重开，路线停止不可直接重开，维护故障只显示等待维护。
 
 provider session 或 cache 即使全部丢失，也不能改变恢复判断。

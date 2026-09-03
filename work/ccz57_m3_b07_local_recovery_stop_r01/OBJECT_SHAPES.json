@@ -5,7 +5,7 @@
     "b07_writes_b06_objects": 0,
     "receipt_replay_before_fence": true
   },
-  "catalog_hash": "509151d0788f1faf35b4fba927a052706c512b192fdc01633cc593674258e705",
+  "catalog_hash": "cc379d8ce4f1351f3e1cdec51c0b1c3477005dc976e30a4130d54770b2393a16",
   "ccz142_saved_artifact_ref": {
     "artifact_kind": "required",
     "artifact_sha256": "required",
@@ -37,7 +37,7 @@
       "fixture_id": "N02_STOP_REOPEN",
       "new_generation": 2,
       "old_status": "STOPPED",
-      "stop_receipt_hash": "c696a499922d1a34f640577fe4d6fdea00cb01d3cbd9cdf8b2c0585eb8aecfea",
+      "stop_receipt_hash": "57cf8c516a3de31bf8bc559958de6eba7e7f3c4346e17a52d6909bf73b0828ac",
       "visible_counts": {
         "b07_current_run_states": 2,
         "b07_internal_debug_records": 0,

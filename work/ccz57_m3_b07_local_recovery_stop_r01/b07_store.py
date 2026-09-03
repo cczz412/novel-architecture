@@ -21,6 +21,11 @@ from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
     record_ref,
     sha256_value,
 )
+from work.ccz57_m3_b08_segment_terminal_r01.b08_contracts import (  # noqa: E402
+    B08ContractError,
+    terminal_component_observation,
+    validate_terminal_record,
+)
 from b06_contracts import validate_merge_receipt  # noqa: E402
 
 from b07_contracts import (  # noqa: E402
@@ -40,6 +45,7 @@ from b07_contracts import (  # noqa: E402
     validate_pending_local_action,
     validate_stop_receipt,
     validate_stop_receipt_for_state,
+    TERMINAL_COMPONENT_KIND,
     validate_terminal_transition_source,
 )
 
@@ -169,6 +175,92 @@ class B07RunStore:
             fail("B07_AUTHORITY_READER_UNAVAILABLE", str(error))
         validate_authority_snapshot(snapshot)
         return deepcopy(snapshot)
+
+    @staticmethod
+    def _exact_b08_terminal(
+        connection: sqlite3.Connection,
+        *,
+        state: dict[str, Any],
+        observation: Any,
+        source_state_revision: int,
+        source_state_hash: str | None,
+        target_status: str | None,
+    ) -> dict[str, Any]:
+        validate_terminal_transition_source(state, observation)
+        locator = observation["component_artifact_ref"][
+            "workspace_relative_locator"
+        ]
+        record_hash = locator.rsplit("/", 1)[-1][:-5]
+        try:
+            row = connection.execute(
+                "SELECT terminalization_key, project_scope_id, logical_run_key, "
+                "run_id, logical_run_generation, run_epoch, operation_id, "
+                "call_request_hash, record_id, record_hash, record_json "
+                "FROM b08_segment_terminal_receipts "
+                "WHERE project_scope_id = ? AND record_hash = ?",
+                (state["project_scope_id"], record_hash),
+            ).fetchone()
+        except sqlite3.OperationalError as error:
+            fail("B07_TERMINAL_OBSERVATION_NOT_FOUND", str(error))
+        if row is None:
+            fail("B07_TERMINAL_OBSERVATION_NOT_FOUND")
+        record = _decode(row[10], code="B07_TERMINAL_RECORD_INVALID")
+        try:
+            validate_terminal_record(record)
+            exact_observation = terminal_component_observation(record)
+        except B08ContractError as error:
+            fail("B07_TERMINAL_RECORD_INVALID", str(error))
+        if canonical_bytes(exact_observation) != canonical_bytes(observation):
+            fail("B07_TERMINAL_OBSERVATION_MISMATCH")
+        payload = record["payload"]
+        run = payload["run_binding"]
+        expected_row = (
+            payload["terminalization_key"],
+            run["project_scope_id"],
+            run["logical_run_key"],
+            run["run_id"],
+            run["logical_run_generation"],
+            run["run_epoch"],
+            payload["operation_id"],
+            row[7],
+            record["record_id"],
+            record["record_hash"],
+        )
+        expected_operation_request_hash = sha256_value(
+            {
+                "call_request_hash": row[7],
+                "authority_snapshot_hash": payload["authority_snapshot_hash"],
+            }
+        )
+        if (
+            tuple(row[:10]) != expected_row
+            or payload["operation_request_hash"]
+            != expected_operation_request_hash
+        ):
+            fail("B07_TERMINAL_RECORD_INVALID")
+        if (
+            run["project_scope_id"] != state["project_scope_id"]
+            or run["logical_run_key"] != state["logical_run_key"]
+            or run["run_id"] != state["run_id"]
+            or run["logical_run_generation"]
+            != state["logical_run_generation"]
+            or run["run_epoch"] != state["run_epoch"]
+            or run["finalized_from_state_revision"] != source_state_revision
+            or (
+                source_state_hash is not None
+                and run["finalized_from_state_hash"] != source_state_hash
+            )
+        ):
+            fail("B07_TERMINAL_OBSERVATION_SCOPE_MISMATCH")
+        delivery = payload["classification_binding"]["terminal_delivery"]
+        if (
+            target_status == "SUCCEEDED"
+            and delivery not in {"COMPLETE", "EMPTY_VALID"}
+        ) or (
+            target_status == "STOPPED" and delivery not in {"PARTIAL", "BLOCKED"}
+        ):
+            fail("B07_TERMINAL_DELIVERY_MISMATCH")
+        return record
 
     @staticmethod
     def _request_hash(value: dict[str, Any]) -> str:
@@ -519,7 +611,27 @@ class B07RunStore:
                 ):
                     fail("B07_AUTHORITY_DRIFT")
                 if target_status == "SUCCEEDED":
-                    validate_terminal_transition_source(state, component_observation)
+                    self._exact_b08_terminal(
+                        connection,
+                        state=state,
+                        observation=component_observation,
+                        source_state_revision=state["state_revision"],
+                        source_state_hash=state["state_hash"],
+                        target_status="SUCCEEDED",
+                    )
+                elif (
+                    isinstance(component_observation, dict)
+                    and component_observation.get("component_kind")
+                    == TERMINAL_COMPONENT_KIND
+                ):
+                    self._exact_b08_terminal(
+                        connection,
+                        state=state,
+                        observation=component_observation,
+                        source_state_revision=state["state_revision"],
+                        source_state_hash=state["state_hash"],
+                        target_status=None,
+                    )
                 updated = deepcopy(state)
                 updated["state_revision"] += 1
                 updated["status"] = target_status
@@ -572,8 +684,13 @@ class B07RunStore:
         stop_source: str,
         authority: dict[str, Any],
     ) -> tuple[dict[str, Any], dict[str, Any]]:
-        validate_terminal_transition_source(
-            state, state["last_component_observation"]
+        self._exact_b08_terminal(
+            connection,
+            state=state,
+            observation=state["last_component_observation"],
+            source_state_revision=state["state_revision"] - 1,
+            source_state_hash=None,
+            target_status="STOPPED",
         )
         created_at = self._clock()
         payload = {

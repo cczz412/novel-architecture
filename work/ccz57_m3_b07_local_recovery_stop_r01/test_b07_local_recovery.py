@@ -7,6 +7,7 @@ import hashlib
 import json
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,8 @@ from b07_adapters import (
     verify_saved_artifact,
 )
 from b07_contracts import (
+    TERMINAL_ARTIFACT_KIND,
+    TERMINAL_COMPONENT_KIND,
     B07ContractError,
     project_author_status,
     record_ref,
@@ -248,6 +251,100 @@ def test_direct_terminal_transition_without_b08_observation_is_atomic_rejection(
 
     assert env.b07.read_state(env.project_scope_id, env.run_id) == finalizing
     assert env.b07.visible_counts() == counts
+
+
+@pytest.mark.parametrize(
+    ("case", "error_code"),
+    [
+        ("NO_RECORD", "B07_TERMINAL_OBSERVATION_NOT_FOUND"),
+        ("WRONG_HASH", "B07_TERMINAL_OBSERVATION_MISMATCH"),
+        ("WRONG_LOCATOR", "B07_TERMINAL_OBSERVATION_NOT_FOUND"),
+        ("WRONG_RUN_SCOPE", "B07_TERMINAL_OBSERVATION_SCOPE_MISMATCH"),
+    ],
+)
+def test_terminal_transition_requires_exact_b08_record(
+    tmp_path: Path, case: str, error_code: str
+) -> None:
+    env = build_environment(tmp_path / case.lower())
+    opened = env.open()
+    finalizing = env.b07.advance(
+        project_scope_id=env.project_scope_id,
+        run_id=env.run_id,
+        operation_id="enter-finalizing-for-exact-b08",
+        expected_run_epoch=opened["run_epoch"],
+        expected_state_revision=opened["state_revision"],
+        target_status="ACTIVE",
+        target_phase="FINALIZING",
+        wait_kind=None,
+        authority_reader=env.authority,
+    )
+    if case == "NO_RECORD":
+        observation = {
+            "component_kind": TERMINAL_COMPONENT_KIND,
+            "component_artifact_ref": {
+                "artifact_kind": TERMINAL_ARTIFACT_KIND,
+                "workspace_relative_locator": (
+                    "work/ccz57_m3_b08_segment_terminal_r01/records/"
+                    f"{sha256_value({'missing': case})}.json"
+                ),
+                "artifact_sha256": sha256_value({"missing_bytes": case}),
+            },
+        }
+    elif case == "WRONG_RUN_SCOPE":
+        other = env.b07.open_run(
+            project_scope_id=env.project_scope_id,
+            logical_run_key="logical-run:wrong-scope",
+            run_id="run-b07-wrong-scope",
+            run_kind="FACT_EXTRACTION_REPAIR",
+            operation_id="open-wrong-scope",
+            authority_reader=env.authority,
+        )
+        other = env.b07.advance(
+            project_scope_id=env.project_scope_id,
+            run_id=other["run_id"],
+            operation_id="finalizing-wrong-scope",
+            expected_run_epoch=other["run_epoch"],
+            expected_state_revision=other["state_revision"],
+            target_status="ACTIVE",
+            target_phase="FINALIZING",
+            wait_kind=None,
+            authority_reader=env.authority,
+        )
+        observation = env.publish_terminal(
+            other, marker="wrong-scope", delivery="COMPLETE"
+        )["component_observation"]
+    else:
+        observation = deepcopy(
+            env.publish_terminal(
+                finalizing, marker=case.lower(), delivery="COMPLETE"
+            )["component_observation"]
+        )
+        if case == "WRONG_HASH":
+            observation["component_artifact_ref"]["artifact_sha256"] = sha256_value(
+                {"wrong": "artifact hash"}
+            )
+        else:
+            observation["component_artifact_ref"][
+                "workspace_relative_locator"
+            ] = (
+                "work/ccz57_m3_b08_segment_terminal_r01/records/"
+                f"{'0' * 64}.json"
+            )
+
+    with pytest.raises(B07ContractError, match=error_code):
+        env.b07.advance(
+            project_scope_id=env.project_scope_id,
+            run_id=env.run_id,
+            operation_id=f"reject-{case.lower()}",
+            expected_run_epoch=finalizing["run_epoch"],
+            expected_state_revision=finalizing["state_revision"],
+            target_status="SUCCEEDED",
+            target_phase="FINALIZING",
+            wait_kind=None,
+            authority_reader=env.authority,
+            component_observation=observation,
+        )
+    assert env.b07.read_state(env.project_scope_id, env.run_id) == finalizing
 
 
 def test_stop_receipt_and_stopped_state_are_one_atomic_effect(tmp_path: Path) -> None:

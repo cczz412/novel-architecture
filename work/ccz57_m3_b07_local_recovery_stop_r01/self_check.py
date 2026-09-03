@@ -228,7 +228,7 @@ def build_report(catalog: dict[str, Any]) -> dict[str, Any]:
     return {
         "report_kind": "CCZ57_M3_B07_LOCAL_RECOVERY_STOP_R01_OFFLINE_REPLAY",
         "mechanical_pass": True,
-        "targeted_pytest_expected": "35 passed",
+        "targeted_pytest_expected": "39 passed",
         "b06_regression_expected": "25 passed",
         "fixed_vector_count": len(catalog["fixed_vectors"]),
         "catalog_hash": catalog["catalog_hash"],
