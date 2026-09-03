@@ -68,6 +68,6 @@ uv run --locked python work/ccz142_candidate_authority_r01/self_check.py
 
 完整回归还包括 B01、B05、B06、B07、B08 原测试。实际命令、数量和 SHA 见本目录离线回放报告与 PR 描述。
 
-R02 在施工分支按独立组件入口通过 558 项。叠到 `main@b80ce84a5ffb8ff40c879acc2e32b05c228815a2` 后通过 557 项，另有 1 个干净 main 可重复的 B09 旧边界失败：B09 测试仍禁止 B10 依赖 B09，但 B10 已进入 main。本票没有修改 B09／B10，因此记为“没有新增回归，保留主分支基线失败”，不冒充 558 项全绿。完整分项见 `TEST_RECEIPT_R01.json`。
+R02 在施工分支按独立组件入口通过 558 项。叠到 `main@c2ae148f6dd6ee1731b8c936662b017ba7fcf73c` 后再次通过 558 项，Ruff 通过；该 main 已修正先前的 B09／B10 测试边界矛盾。完整分项见 `TEST_RECEIPT_R01.json`。
 
 来源：Codex
