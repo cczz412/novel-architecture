@@ -234,25 +234,51 @@ def test_cross_identity_grant_denies_before_edge_schema(mismatch: str) -> None:
 
 
 def test_authorized_grant_keeps_reader_errors_before_edge_schema() -> None:
+    unsupported, matching_v2_grant = _confirmed_task_read_pair(
+        "KE-V2-VALID-01",
+        "KE-V2-VALID-05",
+    )
+    with pytest.raises(MODULE.ContractError, match="READER_VERSION_UNSUPPORTED"):
+        MODULE.validate_edge_grant_for_reader(
+            unsupported,
+            matching_v2_grant,
+            MODULE.VERSION_V1,
+        )
+
     edge, grant = _confirmed_task_read_pair(
         "KE-VALID-01",
         "KE-VALID-06",
     )
-    unsupported = copy.deepcopy(edge)
-    unsupported["version"] = MODULE.VERSION_V2
-    unsupported["permission_namespace"] = MODULE.PERMISSION_NAMESPACE_V2
-    with pytest.raises(MODULE.ContractError, match="READER_VERSION_UNSUPPORTED"):
-        MODULE.validate_edge_grant_for_reader(
-            unsupported,
-            grant,
-            MODULE.VERSION_V1,
-        )
-
     malformed = copy.deepcopy(edge)
     malformed.pop("evidence_refs")
     with pytest.raises(MODULE.ContractError, match="SCHEMA_INVALID"):
         MODULE.validate_edge_grant_for_reader(
             malformed,
+            grant,
+            MODULE.VERSION_V2,
+        )
+
+
+@pytest.mark.parametrize(
+    ("edge_case_id", "grant_case_id"),
+    (
+        ("KE-VALID-01", "KE-V2-VALID-05"),
+        ("KE-V2-VALID-01", "KE-VALID-06"),
+    ),
+)
+def test_grant_version_mismatch_stops_before_edge_schema(
+    edge_case_id: str,
+    grant_case_id: str,
+) -> None:
+    edge = copy.deepcopy(_case(edge_case_id)["document"])
+    edge.pop("evidence_refs")
+    grant = copy.deepcopy(_case(grant_case_id)["document"])
+    with pytest.raises(
+        MODULE.ContractError,
+        match="^READ_GRANT_VERSION_MISMATCH$",
+    ):
+        MODULE.validate_edge_grant_for_reader(
+            edge,
             grant,
             MODULE.VERSION_V2,
         )

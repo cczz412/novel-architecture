@@ -219,10 +219,10 @@ def validate_edge_grant_for_reader(
         or edge.get("project_id") != authorization["project_id"]
     ):
         raise ContractError("UNAUTHORIZED")
+    if edge.get("version") != authorization["version"]:
+        raise ContractError("READ_GRANT_VERSION_MISMATCH")
 
     record = validate_document_for_reader(edge, reader_version)
-    if record["version"] != authorization["version"]:
-        raise ContractError("READ_GRANT_VERSION_MISMATCH")
     if authorization["access"] == "TASK_SLICE":
         if (
             record["observer_ref"] not in authorization["observer_refs"]
