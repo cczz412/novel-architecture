@@ -29,6 +29,64 @@ B10_AUTHORITY_DEPENDENCY_PATHS = [
     "work/ccz57_m3_b07_local_recovery_stop_r01/b07_contracts.py",
     "work/ccz57_m3_b08_segment_terminal_r01/b08_contracts.py",
 ]
+B_STAGE_PRODUCER_CASES = [
+    (
+        "B-01",
+        "work/ccz57_m3_b01_candidate_version_r03_5",
+        "CCZ-57 B-01 当前候选版本生产者自测",
+        "work/ccz57_m3_b01_candidate_version_r03_5/test_b01_contract.py",
+    ),
+    (
+        "B-02",
+        "work/ccz57_m3_b02_diagnostic_coverage_r03_5",
+        "CCZ-57 B-02 当前诊断覆盖生产者自测",
+        "work/ccz57_m3_b02_diagnostic_coverage_r03_5/test_b02_diagnostic_coverage.py",
+    ),
+    (
+        "B-03",
+        "work/ccz57_m3_b03_bound_evidence_read_r03_5",
+        "CCZ-57 B-03 当前证据读取生产者自测",
+        "work/ccz57_m3_b03_bound_evidence_read_r03_5/test_b03_bound_evidence_read.py",
+    ),
+    (
+        "B-04",
+        "work/ccz57_m3_b04_patch_atomic_group_r03_5",
+        "CCZ-57 B-04 当前原子补丁生产者自测",
+        "work/ccz57_m3_b04_patch_atomic_group_r03_5/test_b04_patch_atomic_group.py",
+    ),
+    (
+        "B-05",
+        "work/ccz57_m3_b05_patch_route_r03_5",
+        "CCZ-57 B-05 当前安全路线生产者自测",
+        "work/ccz57_m3_b05_patch_route_r03_5/test_b05_patch_route.py",
+    ),
+    (
+        "B-06",
+        "work/ccz57_m3_b06_commit_core_r01",
+        "CCZ-57 B-06 当前提交核心生产者自测",
+        "work/ccz57_m3_b06_commit_core_r01/test_b06_commit_core.py",
+    ),
+    (
+        "B-07",
+        "work/ccz57_m3_b07_local_recovery_stop_r01",
+        "CCZ-57 B-07 当前恢复停损生产者自测",
+        "work/ccz57_m3_b07_local_recovery_stop_r01/test_b07_local_recovery.py",
+    ),
+    (
+        "B-08",
+        "work/ccz57_m3_b08_segment_terminal_r01",
+        "CCZ-57 B-08 当前责任段终态生产者自测",
+        "work/ccz57_m3_b08_segment_terminal_r01/test_b08_segment_terminal.py",
+    ),
+]
+B_STAGE_OWN_TEST_BY_DEPENDENCY_PATH = {
+    dependency_path: own_test
+    for dependency_path, own_test in zip(
+        B09_AUTHORITY_DEPENDENCY_PATHS,
+        [case[3] for case in B_STAGE_PRODUCER_CASES],
+        strict=True,
+    )
+}
 
 
 def spec(
@@ -166,6 +224,49 @@ class TestImpactTests(unittest.TestCase):
                     any(rule_name in reason for reason in plan["full_chain_reasons"])
                 )
 
+    def test_b01_to_b08_producers_run_own_tests_before_consumers_and_full_chain(
+        self,
+    ) -> None:
+        b10_stages = {"B-01", "B-06", "B-07", "B-08"}
+        for stage, component_root, rule_name, own_test in B_STAGE_PRODUCER_CASES:
+            python_paths = sorted(
+                path.relative_to(ROOT).as_posix()
+                for path in (ROOT / component_root).glob("*.py")
+            )
+            self.assertTrue(python_paths, stage)
+            expected_tests = [own_test, B09_DIRECTED_TEST]
+            if stage in b10_stages:
+                expected_tests.append(B10_DIRECTED_TEST)
+            expected_tests = sorted(expected_tests)
+            for path in python_paths:
+                with self.subTest(stage=stage, path=path):
+                    plan = test_impact.build_plan(
+                        spec([path]), policy=self.policy, registry=self.registry
+                    )
+                    self.assertEqual(plan["scope"], "full_chain")
+                    self.assertTrue(plan["full_chain"])
+                    self.assertEqual(plan["unknown_paths"], [])
+                    self.assertEqual(plan["affected_modules"], [])
+                    self.assertEqual(plan["selected_tests"], expected_tests)
+                    self.assertIn(rule_name, plan["matched_paths"][path])
+                    pytest_steps = [
+                        step
+                        for step in plan["execution_steps"]
+                        if step["step_id"].startswith("pytest-")
+                    ]
+                    self.assertEqual(
+                        [step["argv"] for step in pytest_steps[:-1]],
+                        [
+                            ["uv", "run", "--locked", "pytest", "-q", test_path]
+                            for test_path in expected_tests
+                        ],
+                    )
+                    self.assertEqual(
+                        pytest_steps[-1]["argv"],
+                        test_impact.PORTABLE_FULL_CHAIN_ARGV,
+                    )
+                    self.assertEqual(pytest_steps[0]["argv"][-1], own_test)
+
     def test_b09_pure_derived_view_has_long_term_targeted_registration(self) -> None:
         paths = [
             f"{B09_COMPONENT_ROOT}/b09_contracts.py",
@@ -205,17 +306,34 @@ class TestImpactTests(unittest.TestCase):
                 self.assertTrue(plan["full_chain"])
                 self.assertEqual(plan["unknown_paths"], [])
                 self.assertEqual(plan["affected_modules"], [])
-                expected_tests = [B09_DIRECTED_TEST]
+                expected_tests = [
+                    B_STAGE_OWN_TEST_BY_DEPENDENCY_PATH[path],
+                    B09_DIRECTED_TEST,
+                ]
                 if path in B10_AUTHORITY_DEPENDENCY_PATHS:
                     expected_tests.append(B10_DIRECTED_TEST)
+                expected_tests = sorted(expected_tests)
                 self.assertEqual(plan["selected_tests"], expected_tests)
                 self.assertEqual(
                     [step["step_id"] for step in plan["execution_steps"]],
-                    ["pytest-full", "pytest-outside-default", "ruff"],
+                    [
+                        *[
+                            f"pytest-outside-default-{index:02d}"
+                            for index in range(1, len(expected_tests) + 1)
+                        ],
+                        "pytest-full",
+                        "ruff",
+                    ],
                 )
                 self.assertEqual(
-                    plan["execution_steps"][1]["argv"],
-                    ["uv", "run", "--locked", "pytest", "-q", *expected_tests],
+                    [
+                        step["argv"]
+                        for step in plan["execution_steps"][:-2]
+                    ],
+                    [
+                        ["uv", "run", "--locked", "pytest", "-q", test_path]
+                        for test_path in expected_tests
+                    ],
                 )
                 self.assertIn(
                     "CCZ-57 B-09 权威上游与传递合同",
@@ -241,18 +359,17 @@ class TestImpactTests(unittest.TestCase):
         )
         self.assertEqual(
             [step["step_id"] for step in plan["execution_steps"]],
-            ["pytest-full", "pytest-outside-default"],
+            [
+                "pytest-outside-default-01",
+                "pytest-outside-default-02",
+                "pytest-full",
+            ],
         )
         self.assertEqual(
-            plan["execution_steps"][1]["argv"],
+            [step["argv"] for step in plan["execution_steps"][:2]],
             [
-                "uv",
-                "run",
-                "--locked",
-                "pytest",
-                "-q",
-                B09_DIRECTED_TEST,
-                B10_DIRECTED_TEST,
+                ["uv", "run", "--locked", "pytest", "-q", B09_DIRECTED_TEST],
+                ["uv", "run", "--locked", "pytest", "-q", B10_DIRECTED_TEST],
             ],
         )
         self.assertIn(
@@ -299,23 +416,31 @@ class TestImpactTests(unittest.TestCase):
                 self.assertTrue(plan["full_chain"])
                 self.assertEqual(plan["unknown_paths"], [])
                 self.assertEqual(plan["affected_modules"], [])
+                expected_tests = sorted(
+                    [
+                        B_STAGE_OWN_TEST_BY_DEPENDENCY_PATH[path],
+                        B09_DIRECTED_TEST,
+                        B10_DIRECTED_TEST,
+                    ]
+                )
                 self.assertEqual(
-                    plan["selected_tests"], [B09_DIRECTED_TEST, B10_DIRECTED_TEST]
+                    plan["selected_tests"], expected_tests
                 )
                 self.assertEqual(
                     [step["step_id"] for step in plan["execution_steps"]],
-                    ["pytest-full", "pytest-outside-default", "ruff"],
+                    [
+                        "pytest-outside-default-01",
+                        "pytest-outside-default-02",
+                        "pytest-outside-default-03",
+                        "pytest-full",
+                        "ruff",
+                    ],
                 )
                 self.assertEqual(
-                    plan["execution_steps"][1]["argv"],
+                    [step["argv"] for step in plan["execution_steps"][:3]],
                     [
-                        "uv",
-                        "run",
-                        "--locked",
-                        "pytest",
-                        "-q",
-                        B09_DIRECTED_TEST,
-                        B10_DIRECTED_TEST,
+                        ["uv", "run", "--locked", "pytest", "-q", test_path]
+                        for test_path in expected_tests
                     ],
                 )
                 self.assertIn(
@@ -338,7 +463,7 @@ class TestImpactTests(unittest.TestCase):
         steps = plan["execution_steps"]
         self.assertEqual(
             [step["step_id"] for step in steps],
-            ["pytest-full", "pytest-outside-default", "ruff"],
+            ["pytest-full", "pytest-outside-default-01", "ruff"],
         )
         self.assertEqual(
             steps[1]["argv"],

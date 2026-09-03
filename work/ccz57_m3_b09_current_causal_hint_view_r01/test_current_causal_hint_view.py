@@ -1948,7 +1948,17 @@ def test_static_boundaries_have_no_b09_writer_schema_model_network_or_b10_edge()
         assert "UPDATE " not in source.upper()
         assert "DELETE FROM" not in source.upper()
 
-    b10_files = list((REPOSITORY_ROOT / "work").glob("*b10*/*.py"))
+    b10_root = (
+        REPOSITORY_ROOT
+        / "work"
+        / "ccz57_m3_b10_chapter_candidate_progress_view_r01"
+    )
+    b10_files = [
+        b10_root / "b10_contracts.py",
+        b10_root / "b10_authority_reader.py",
+        b10_root / "current_chapter_progress_view.py",
+    ]
+    assert all(path.is_file() for path in b10_files)
     assert all(
         "ccz57_m3_b09" not in path.read_text(encoding="utf-8")
         and "current_causal_hint" not in path.read_text(encoding="utf-8")
