@@ -1,9 +1,9 @@
 {
-  "document_identity": "CCZ142-PRODUCT-CANDIDATE-AUTHORITY-R04-TEST-RECEIPT",
-  "validated_at": "2026-09-03T13:30:48+08:00",
+  "document_identity": "CCZ142-PRODUCT-CANDIDATE-AUTHORITY-R05-TEST-RECEIPT",
+  "validated_at": "2026-09-04T13:44:14+08:00",
   "result": "PASS",
   "original_base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
-  "base_main_sha": "68e13f64e475eece2d7d7cf2e26597335a734129",
+  "base_main_sha": "f98609cb0399ba5e182ade501c4d70c8be20ed11",
   "upstream_pr": 230,
   "upstream_pr_state": "MERGED",
   "upstream_exact_head": "dd3219b9d4b9e6112431014394a152ef2680e013",
@@ -12,6 +12,7 @@
   "reviewed_r01_head": "45be726630dafd484c99c7461d3536d81fefb1b3",
   "reviewed_r02_head": "9f7290b42a31d65f76fb653cbc0c714c6139f8fc",
   "reviewed_r04_input_head": "e4279318b42137c11c850412e8cf71d6dfc280e9",
+  "reviewed_r05_input_head": "e6a9fccc06bb3fc20035b3c4953a9292efc4e345",
   "runtime": {
     "python": "3.12.12",
     "environment": "uv --locked",
@@ -20,12 +21,16 @@
     "self_check": "PASS",
     "offline_report_exact_match": true,
     "manifest_complete_and_exact": true,
-    "test_process_isolation": "B01_TO_B09_SUITES_RUN_IN_SEPARATE_PROCESSES"
+    "test_process_isolation": "B01_TO_B10_SUITES_RUN_IN_SEPARATE_PROCESSES",
+    "full_repository_pytest": {
+      "result": "NOT_RUN_THIS_ROUND",
+      "reason": "R05 rebuild onto current main only re-ran isolated receipt suites (674) plus py_compile, ruff and self_check."
+    }
   },
   "test_suites": [
     {
       "suite": "ccz142_product_candidate_authority_r01",
-      "passed": 38,
+      "passed": 41,
       "failed": 0
     },
     {
@@ -65,30 +70,38 @@
     },
     {
       "suite": "B07_local_recovery_stop_r01",
-      "passed": 26,
+      "passed": 39,
       "failed": 0
     },
     {
       "suite": "B08_segment_terminal_r01",
-      "passed": 27,
+      "passed": 29,
       "failed": 0
     },
     {
       "suite": "B09_current_causal_hint_view_r01",
       "passed": 127,
       "failed": 0
+    },
+    {
+      "suite": "B10_chapter_candidate_progress_view_r01",
+      "passed": 50,
+      "failed": 0
     }
   ],
   "totals": {
-    "passed": 606,
+    "passed": 674,
     "failed": 0
   },
   "current_main_compatibility": {
-    "main_sha": "68e13f64e475eece2d7d7cf2e26597335a734129",
+    "main_sha": "f98609cb0399ba5e182ade501c4d70c8be20ed11",
+    "merge_commit": "32c12dddbb5e4f37382d8e0ce3f6b2b2925c79e5",
+    "merge_committed": true,
     "result": "PASS",
-    "patched_tree_passed": 606,
+    "patched_tree_passed": 674,
     "patched_tree_failed": 0,
-    "pr_diff_scope": "PRODUCT_AUTHORITY_NAMESPACE_ACCESS_AND_POINTER_MIGRATION_ONLY"
+    "pr_diff_scope": "PRODUCT_AUTHORITY_NAMESPACE_ACCESS_AND_POINTER_MIGRATION_ONLY",
+    "full_repository_pytest": "NOT_RUN_THIS_ROUND"
   },
   "authority_profile_acceptance": {
     "profile_frozen_at_construction": "PASS",
@@ -101,7 +114,9 @@
     "pr230_legacy_metadata_upgrade": "EXACT_GAP_ONLY_ATOMIC",
     "pr230_upgrade_failure": "FAIL_CLOSED_ZERO_RESIDUE",
     "legacy_fixture_to_product_relabel": "DENY",
-    "migration_control_schema_identity": "ccz142-product-namespace-migration-r03",
+    "migration_control_schema_identity": "ccz142-product-namespace-migration-r04",
+    "migration_control_full_schema_guard": "PASS",
+    "migration_control_unknown_version": "FAIL_CLOSED_WITHOUT_REWRITE",
     "root_authority_lock_held_through_commit": true,
     "plain_B01_product_profile": "REJECTED_BEFORE_STORAGE",
     "plain_B06_product_profile": "REJECTED_BEFORE_STORAGE",
@@ -154,6 +169,12 @@
     "binding_and_cutover_state_transaction": "ATOMIC",
     "forward_recovery_binding_generation": "ATOMIC_FORWARD_ONLY",
     "shadow_semantic_hash_format": "LOWERCASE_SHA256_ONLY",
+    "source_qualification_from_read_only_store": "PASS",
+    "caller_supplied_source_claims": "REJECTED",
+    "source_evidence_drift": "FAIL_CLOSED",
+    "source_semantic_hash_from_verified_records": true,
+    "target_semantic_hash_from_verified_records": true,
+    "cutover_source_and_target_recheck": "PASS",
     "shadow_wrong_store": "FAIL_CLOSED",
     "shadow_wrong_pointer": "FAIL_CLOSED",
     "shadow_wrong_pointer_generation": "FAIL_CLOSED",
@@ -205,7 +226,9 @@
     "uv run --locked pytest -q work/ccz57_m3_b07_local_recovery_stop_r01/test_b07_local_recovery.py",
     "uv run --locked pytest -q work/ccz57_m3_b08_segment_terminal_r01/test_b08_segment_terminal.py",
     "uv run --locked pytest -q work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py",
+    "uv run --locked pytest -q work/ccz57_m3_b10_chapter_candidate_progress_view_r01/test_current_chapter_progress_view.py",
     "uv run --locked python work/ccz142_product_candidate_authority_r01/self_check.py",
-    "apply merge-base dd3219b9d4b9e6112431014394a152ef2680e013..PR head plus R04 working-tree diff to temporary main@68e13f64e475eece2d7d7cf2e26597335a734129 and repeat all suites"
-  ]
+    "merge origin/main@f98609cb0399ba5e182ade501c4d70c8be20ed11 with --no-ff (commit 32c12dddbb5e4f37382d8e0ce3f6b2b2925c79e5), overlay R05 writeset from input head e6a9fccc06bb3fc20035b3c4953a9292efc4e345, then repeat isolated suites"
+  ],
+  "rebuild_merge_commit": "32c12dddbb5e4f37382d8e0ce3f6b2b2925c79e5"
 }

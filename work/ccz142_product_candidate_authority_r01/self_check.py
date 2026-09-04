@@ -3,58 +3,71 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any
 
 from namespace_migration import (
+    CONTROL_SCHEMA_VERSION,
+    CONTROL_TABLE_LAYOUTS,
     NamespaceMigrationController,
     NamespaceMigrationError,
     ProductCandidateAuthorityAccess,
+    ReadOnlyMigrationSource,
 )
-from product_authority import initialize_product_root
+from product_authority import (
+    initialize_fixture_source,
+    initialize_product_read_only_source_fixture,
+    initialize_product_root,
+    product_root_request,
+)
 from product_shadow import build_product_shadow
-from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (
-    FIXTURE_ACCESS,
-    FIXTURE_POINTER_NAMESPACE,
-    PRODUCT_READ_ONLY_ACCESS,
-)
-
-
-def _eligible_source() -> dict[str, Any]:
-    return {
-        "source_namespace": FIXTURE_POINTER_NAMESPACE,
-        "candidate_access": FIXTURE_ACCESS,
-        "upstream_access": PRODUCT_READ_ONLY_ACCESS,
-        "project_scope_id": "product-project-001",
-        "source_head_sha256": "a" * 64,
-        "synthetic_fixture": False,
-    }
+from work.ccz57_m3_b01_candidate_version_r03_5 import fixtures as b01_fixtures
+def _source_reader(
+    root: Path,
+    *,
+    request: dict[str, Any],
+) -> ReadOnlyMigrationSource:
+    store, source_request, result = initialize_product_read_only_source_fixture(
+        root,
+        product_request=request,
+    )
+    return ReadOnlyMigrationSource(
+        store=store,
+        logical_pointer_key=result["logical_pointer_key"],
+        reference_records=source_request["reference_records"],
+    )
 
 
 def _successful_cutover(root: Path) -> dict[str, Any]:
+    request = product_root_request()
+    source_reader = _source_reader(root / "source-authority", request=request)
     controller = NamespaceMigrationController(root / "control")
-    discovered = controller.discover("self-check-cutover", _eligible_source())
+    discovered = controller.discover("self-check-cutover", source_reader)
     controller.verify_source(
         "self-check-cutover",
-        observed_source_hash=discovered["source_hash"],
+        source_reader=source_reader,
     )
-    store, _, root_result = initialize_product_root(root / "authority")
+    store, _, root_result = initialize_product_root(
+        root / "authority",
+        request=request,
+    )
     controller.stage_target(
         "self-check-cutover",
         store=store,
         root_result=root_result,
     )
-    semantic_hash = "b" * 64
     controller.shadow_verify(
         "self-check-cutover",
+        source_reader=source_reader,
         store=store,
-        target_pointer_key=root_result["logical_pointer_key"],
-        target_pointer_generation=1,
-        source_semantic_hash=semantic_hash,
-        target_semantic_hash=semantic_hash,
     )
-    controller.cutover("self-check-cutover", store=store)
+    controller.cutover(
+        "self-check-cutover",
+        source_reader=source_reader,
+        store=store,
+    )
     active = controller.activate_product_run(
         "self-check-cutover",
         store=store,
@@ -75,17 +88,23 @@ def _successful_cutover(root: Path) -> dict[str, Any]:
         "candidate_access": candidate["access"],
         "control_schema_objects": controller.schema_objects(),
         "authority_binding_counts": controller.authority_binding_counts(),
+        "source_semantic_hash": discovered["source"]["source_semantic_hash"],
     }
 
 
 def _aborted_cutover(root: Path) -> dict[str, Any]:
+    request = product_root_request()
+    source_reader = _source_reader(root / "source-authority", request=request)
     controller = NamespaceMigrationController(root / "control")
-    discovered = controller.discover("self-check-abort", _eligible_source())
+    controller.discover("self-check-abort", source_reader)
     controller.verify_source(
         "self-check-abort",
-        observed_source_hash=discovered["source_hash"],
+        source_reader=source_reader,
     )
-    store, _, root_result = initialize_product_root(root / "authority")
+    store, _, root_result = initialize_product_root(
+        root / "authority",
+        request=request,
+    )
     controller.stage_target(
         "self-check-abort",
         store=store,
@@ -112,13 +131,18 @@ def _aborted_cutover(root: Path) -> dict[str, Any]:
 
 def _synthetic_rejection(root: Path) -> dict[str, Any]:
     controller = NamespaceMigrationController(root / "control")
-    source = {
-        **_eligible_source(),
-        "upstream_access": FIXTURE_ACCESS,
-        "synthetic_fixture": True,
-    }
+    request = b01_fixtures.base_request()
+    source_store, source_request, source_result = initialize_fixture_source(
+        root / "source-authority",
+        request=request,
+    )
+    source_reader = ReadOnlyMigrationSource(
+        store=source_store,
+        logical_pointer_key=source_result["logical_pointer_key"],
+        reference_records=source_request["reference_records"],
+    )
     try:
-        controller.discover("self-check-synthetic", source)
+        controller.discover("self-check-synthetic", source_reader)
     except NamespaceMigrationError as error:
         code = error.code
     else:
@@ -130,6 +154,34 @@ def _synthetic_rejection(root: Path) -> dict[str, Any]:
     }
 
 
+def _schema_guard(root: Path) -> dict[str, Any]:
+    controller = NamespaceMigrationController(root / "control")
+    with sqlite3.connect(controller.database_path) as connection:
+        connection.execute(
+            "UPDATE metadata SET value = ? WHERE key = 'schema_version'",
+            (sqlite3.Binary(b"future-incompatible-schema"),),
+        )
+        connection.commit()
+    try:
+        NamespaceMigrationController(root / "control")
+    except NamespaceMigrationError as error:
+        result_code = error.code
+    else:
+        result_code = "UNEXPECTEDLY_ACCEPTED"
+    with sqlite3.connect(controller.database_path) as connection:
+        persisted = bytes(
+            connection.execute(
+                "SELECT value FROM metadata WHERE key = 'schema_version'"
+            ).fetchone()[0]
+        ).decode("utf-8")
+    return {
+        "current_schema_version": CONTROL_SCHEMA_VERSION,
+        "full_table_layouts_frozen": len(CONTROL_TABLE_LAYOUTS),
+        "unknown_schema_result": result_code,
+        "unknown_schema_preserved": persisted == "future-incompatible-schema",
+    }
+
+
 def run_self_check() -> dict[str, Any]:
     with (
         TemporaryDirectory() as first_root,
@@ -137,6 +189,7 @@ def run_self_check() -> dict[str, Any]:
         TemporaryDirectory() as migration_root,
         TemporaryDirectory() as abort_root,
         TemporaryDirectory() as synthetic_root,
+        TemporaryDirectory() as schema_root,
     ):
         first = build_product_shadow(Path(first_root)).result
         second = build_product_shadow(Path(second_root)).result
@@ -145,6 +198,7 @@ def run_self_check() -> dict[str, Any]:
         migration = _successful_cutover(Path(migration_root))
         aborted = _aborted_cutover(Path(abort_root))
         synthetic = _synthetic_rejection(Path(synthetic_root))
+        schema_guard = _schema_guard(Path(schema_root))
     if (
         first["result"] != "PASS"
         or first["b03_product_subject_validated"] is not True
@@ -168,6 +222,9 @@ def run_self_check() -> dict[str, Any]:
         or migration["state"] != "POST_CUTOVER_ACTIVE"
         or aborted["state"] != "ABORTED"
         or synthetic["state"] != "REJECTED_READ_ONLY"
+        or schema_guard["unknown_schema_result"]
+        != "MIGRATION_CONTROL_SCHEMA_IDENTITY_MISMATCH"
+        or schema_guard["unknown_schema_preserved"] is not True
     ):
         raise AssertionError("PRODUCT_AUTHORITY_SELF_CHECK_FAILED")
     return {
@@ -178,6 +235,7 @@ def run_self_check() -> dict[str, Any]:
         "successful_cutover": migration,
         "pre_cutover_abort": aborted,
         "synthetic_fixture_rejection": synthetic,
+        "migration_control_schema_guard": schema_guard,
         "candidate_storage_writer_count": len(first["candidate_storage_writers"]),
         "b09_persistent_writer_count": 0,
         "formal_fact_writes": first["formal_writes"],

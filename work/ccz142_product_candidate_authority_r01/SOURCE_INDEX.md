@@ -3,7 +3,8 @@
 ## 施工依据
 
 - 原始施工基线：`c89beb4368b6b79598906bdc27819a16f751155b`
-- 当前 PR base：`main@68e13f64e475eece2d7d7cf2e26597335a734129`
+- 当前对齐 main：`main@f98609cb0399ba5e182ade501c4d70c8be20ed11`（已提交 merge `32c12dddbb5e4f37382d8e0ce3f6b2b2925c79e5`）
+- 当前 PR 输入 head：`e6a9fccc06bb3fc20035b3c4953a9292efc4e345`；R05 写集与本回执同一提交
 - 已合并上游 PR：[#230](https://github.com/cczz412/novel-architecture/pull/230)
 - 上游精确 head：`dd3219b9d4b9e6112431014394a152ef2680e013`
 - 上游 merge commit：`68e13f64e475eece2d7d7cf2e26597335a734129`
@@ -36,6 +37,17 @@
 - 审查发现三个 P1：PR #230 旧 authority 库在补元数据前被新校验拒绝；B02 Diagnostic／Coverage 与 B04 ProtectionSet／Patch／Preview 的真实写入路径仍使用旧记录引用生成器。
 - CZ 批准在现有 Issue #231、分支和 Draft PR 内修正，不扩大到 Linear、FormalFact、正式事实、十本账或模型 API。
 - R04 只升级精确旧 fixture 元数据缺口，并让产品影子链真实执行 B02／B04 writers；当前分支与精确 main 临时叠加树按独立组件入口回归 606 项。
+
+## R05 修正依据
+
+- 只读审查对象：PR #235 head `e6a9fccc06bb3fc20035b3c4953a9292efc4e345`，动作前 current main 为 `6bf7d6e6b8dfdd827e21d6257eade2925c955d0d`。
+- 审查探针证明：旧接口会采信调用方填写的来源资格和相同影子哈希，在没有可核验来源对象时也能走到 `POST_CUTOVER_ACTIVE`。
+- 审查探针还证明：迁移控制库只校验两张绑定表，并会把未知版本静默改回当前版本。
+- CZ 批准只在 Issue #231／PR #235 现有写集内修正。2026-09-03 曾要求对齐 current main、完成回归后停在提交前。
+- 2026-09-04 03:22 指挥口令覆盖为：同一 Draft 上继续修复、测试、创建提交并普通推送；停在 Ready／合并／关票之前。Codex 额度耗尽后由 Cursor 接手同一写集。
+- R05 改为从真实只读来源和目标权限库计算资格与语义证据，并在来源验证、影子验证和 cutover 重读；控制库版本升为 R04，同时冻结五张表的完整列、主键和唯一索引。
+- 2026-09-04 重建树提交 merge `32c12dddbb5e4f37382d8e0ce3f6b2b2925c79e5`，对齐 `main@f98609cb0399ba5e182ade501c4d70c8be20ed11`。未提交改动只落在本目录 10 个文件。未修改 #243／CCZ-168，未启动 B-11／B-12，未改 Linear。
+- 独立组件入口按分进程套件回归 674 项；本轮未重跑全仓 pytest。
 
 ## 直接代码来源
 

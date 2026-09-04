@@ -200,6 +200,60 @@ def initialize_product_root(
     return store, prepared, result
 
 
+def initialize_product_read_only_source_fixture(
+    root: Path,
+    *,
+    product_request: dict[str, Any] | None = None,
+) -> tuple[CandidateAuthorityStore, dict[str, Any], dict[str, Any]]:
+    """Build a fixture-namespace source whose actual upstream refs are product read-only."""
+
+    prepared = (
+        product_root_request() if product_request is None else deepcopy(product_request)
+    )
+    fixture_attempt = b01_fixtures.attempt_record()
+    source_request = deepcopy(prepared)
+    source_request["operation_id"] = f"source:{prepared['operation_id']}"
+    source_request["reference_records"] = [
+        record
+        for record in source_request["reference_records"]
+        if record["record_type"] != "A_RAW_ATTEMPT_RECEIPT"
+    ]
+    source_request["reference_records"].append(fixture_attempt)
+    source_request["origin_attempt_refs"] = [record_ref(fixture_attempt)]
+    return initialize_fixture_source(root, request=source_request)
+
+
+def initialize_fixture_source(
+    root: Path,
+    *,
+    request: dict[str, Any],
+) -> tuple[CandidateAuthorityStore, dict[str, Any], dict[str, Any]]:
+    """Persist one validated fixture-profile source for read-only migration probes."""
+
+    source_request = deepcopy(request)
+    if "input_generation_id" not in source_request:
+        accepted_generation_ref = source_request["accepted_source_generation_ref"]
+        accepted_generation = next(
+            record
+            for record in source_request["reference_records"]
+            if record_ref(record) == accepted_generation_ref
+        )
+        source_request["input_generation_id"] = accepted_generation["payload"][
+            "workspace_generation_id"
+        ]
+    store = CandidateAuthorityStore(
+        root,
+        project_scope_id=source_request["project_scope_id"],
+    )
+    store.initialize_authority_schema()
+    initializer = CandidateRootInitializer(
+        store=store,
+        authority_reader=MutableRootAuthorityReader(authority_snapshot(source_request)),
+    )
+    result = initializer.initialize_root(source_request)
+    return store, source_request, result
+
+
 def product_b01_scope(
     store: CandidateAuthorityStore,
     request: dict[str, Any],

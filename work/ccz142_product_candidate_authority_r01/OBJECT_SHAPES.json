@@ -3,7 +3,8 @@
     "authority_identity": "PRODUCT_CANDIDATE_AUTHORITY",
     "authority_schema_identity": "r02-candidate",
     "authority_schema_full_layout_guard": true,
-    "migration_control_schema_identity": "ccz142-product-namespace-migration-r03",
+    "migration_control_schema_identity": "ccz142-product-namespace-migration-r04",
+    "migration_control_full_schema_guard": "five exact tables, columns, primary keys and unique indexes",
     "candidate_contract_version": "r04-product-candidate",
     "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
     "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
@@ -61,13 +62,22 @@
     "cutover_atomicity": "project binding, pointer binding and CUTOVER_COMMITTED are one SQLite transaction",
     "multiple_pointers": "allowed only when they use the same project authority store"
   },
+  "migration_source_evidence": {
+    "reader": "exact read-only CandidateAuthorityStore source",
+    "source_pointer": "reread and validated under source serialization lock",
+    "source_candidate": "exact current candidate and segment index validated from the source store",
+    "source_eligibility": "derived from actual upstream record access and source module identity",
+    "source_semantic_hash": "computed from the validated source candidate and segment index",
+    "caller_claims": "not accepted"
+  },
   "shadow_verification_binding": {
-    "source_semantic_hash": "64 lowercase hexadecimal SHA-256 characters",
-    "target_semantic_hash": "must equal source_semantic_hash",
+    "source_semantic_hash": "computed by rereading the exact source under its lock",
+    "target_semantic_hash": "computed from the exact staged target and must equal source_semantic_hash",
     "target_authority_store_id": "must equal the staged CandidateAuthorityStore",
     "target_storage_locator_hash": "must equal the staged database location binding",
     "target_pointer_key": "must equal the staged product pointer",
-    "target_pointer_generation": "must equal the staged pointer generation"
+    "target_pointer_generation": "must equal the staged pointer generation",
+    "cutover_recheck": "source and target evidence are recomputed before the cutover transaction"
   },
   "pre_cutover_abort": {
     "state": "ABORTED",

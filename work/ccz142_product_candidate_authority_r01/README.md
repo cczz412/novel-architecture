@@ -1,4 +1,4 @@
-# CCZ-142｜PRODUCT_CANDIDATE_AUTHORITY 产品接线 R04
+# CCZ-142｜PRODUCT_CANDIDATE_AUTHORITY 产品接线 R05
 
 ✅ 这块把 PR #230 的“单一候选 writer”继续接到产品身份：B01 root 和 B06 child 不再沿用 `FIXTURE_ONLY`，而是使用 `PRODUCT_CANDIDATE_AUTHORITY` namespace 与 `PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY` access。
 
@@ -21,6 +21,10 @@ R03 再把这组关系写进迁移控制库：一个项目只能绑定一个产�
 上游 PR #230 R03 head `dd3219b9d4b9e6112431014394a152ef2680e013` 已通过 merge commit `68e13f64e475eece2d7d7cf2e26597335a734129` 进入 main，PR #235 的 base 已重定向到该 main。产品 profile、稳定 store ID 与 `r02-candidate` schema 身份同时生效；上游 root authority 序列锁、旧数据迁移原子门和逐表完整 schema 结构校验没有被产品接线绕过。
 
 R04 不再让 B05 fixture 直接合成 B02／B04 输出冒充全链。产品影子链会先调用 B02 的真实 Diagnostic／Coverage publisher，再调用 B04 的真实 ProtectionSet、Patch writer 与 PatchPreview projector，随后才把这些真实回件交给 B05。合成材料仍然只是非 Gold 输入，B02／B04 自己的 `POLICY_FIXTURE_READ_ONLY` 输出身份没有在本票里晋升。
+
+R05 不再接收调用方自报的来源资格或影子语义哈希。迁移控制器必须通过只读来源入口，在来源权限库的序列锁内重读 exact pointer、CandidateVersion、责任段索引和上游引用；目标语义哈希也从目标权限库现场计算。来源验证、影子验证和 cutover 都会重新核验，证据漂移时失败关闭。
+
+迁移控制库的身份升为 `ccz142-product-namespace-migration-r04`。五张控制表的完整列定义、主键和唯一索引一起冻结；旧版、未来版、缺表、多表、列漂移和索引漂移都拒绝打开，未知版本不会被静默重写。
 
 ## 旧历史怎么处理
 
@@ -53,6 +57,9 @@ DISCOVERED
 - 不同迁移编号不能把同一项目接到第二个 store，并发 cutover 只能有一个胜者；
 - 同一项目的多个 pointer 可以在同一个 store 中正常绑定；
 - 非 SHA-256 影子值、错 store、错 pointer、错代次均在 cutover 前失败；
+- 调用方不能用自报字典伪造来源资格，来源 pointer、候选、上游引用和语义必须从只读来源现场取得；
+- 来源证据或目标语义在验证后漂移时，后续验证与 cutover 失败关闭；
+- 迁移控制库五张表的完整 schema 和版本身份均需精确匹配，未知版本保持原值并拒绝打开；
 - cutover 与 B06 并发时，修改不能插入 pointer 检查和切换状态提交之间；
 - synthetic fixture 拒绝产品迁移；
 - 切换前不可见、中止、CAS 漂移；
@@ -62,6 +69,6 @@ DISCOVERED
 
 ## 当前身份
 
-这是 Issue #231 的 Draft R04 工程候选，当前 base 是 `main@68e13f64e475eece2d7d7cf2e26597335a734129`。当前分支和精确 main 临时叠加树均按独立组件入口通过 606 项。测试通过也不等于 PR #235 已经转 Ready、合并或接入正式事实。
+这是 Issue #231 的 Draft R05 工程候选。2026-09-04 已提交 merge `32c12dddbb5e4f37382d8e0ce3f6b2b2925c79e5`，对齐 `main@f98609cb0399ba5e182ade501c4d70c8be20ed11`，再叠 R05 写集；输入 head 仍是 `e6a9fccc06bb3fc20035b3c4953a9292efc4e345`。独立组件入口按分进程套件共回归 674 项；本轮未重跑全仓 pytest。测试通过也不等于 PR #235 已经转 Ready、合并或接入正式事实。
 
 来源：Codex

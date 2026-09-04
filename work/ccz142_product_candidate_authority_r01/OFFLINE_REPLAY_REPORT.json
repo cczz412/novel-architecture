@@ -114,6 +114,12 @@
     "ten_ledger_tables": [],
     "ten_ledger_writes": 0
   },
+  "migration_control_schema_guard": {
+    "current_schema_version": "ccz142-product-namespace-migration-r04",
+    "full_table_layouts_frozen": 5,
+    "unknown_schema_preserved": true,
+    "unknown_schema_result": "MIGRATION_CONTROL_SCHEMA_IDENTITY_MISMATCH"
+  },
   "model_api_calls": 0,
   "network_api_calls": 0,
   "pre_cutover_abort": {
@@ -153,6 +159,7 @@
     ],
     "pointer_generation": 1,
     "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
+    "source_semantic_hash": "1ce8c343a32e6412500ab58c5ee8537237a5ea8948921e7ebab54ca4602c247c",
     "state": "POST_CUTOVER_ACTIVE"
   },
   "synthetic_fixture_rejection": {

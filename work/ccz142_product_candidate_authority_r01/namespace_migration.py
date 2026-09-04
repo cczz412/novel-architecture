@@ -10,35 +10,47 @@ import sqlite3
 import stat
 import sys
 import tempfile
+from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-if str(REPOSITORY_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPOSITORY_ROOT))
+AUTHORITY_ROOT = REPOSITORY_ROOT / "work" / "ccz142_candidate_authority_r01"
+for candidate in (REPOSITORY_ROOT, AUTHORITY_ROOT):
+    if str(candidate) not in sys.path:
+        sys.path.insert(0, str(candidate))
 
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
     FIXTURE_ACCESS,
+    FIXTURE_AUTHORITY_PROFILE,
     FIXTURE_POINTER_NAMESPACE,
     PRODUCT_AUTHORITY_PROFILE,
     PRODUCT_READ_ONLY_ACCESS,
     canonical_bytes,
     record_ref,
+    require_authority_profile,
     sha256_value,
+    validate_candidate_version,
 )
-from work.ccz142_candidate_authority_r01.candidate_authority import (  # noqa: E402
-    CandidateAuthorityStore,
+from work.ccz57_m3_b06_commit_core_r01.b06_contracts import (  # noqa: E402
+    validate_mutable_pointer,
 )
+from candidate_authority import CandidateAuthorityStore  # noqa: E402
 
-CONTROL_SCHEMA_VERSION = "ccz142-product-namespace-migration-r03"
-SOURCE_KEYS = {
+CONTROL_SCHEMA_VERSION = "ccz142-product-namespace-migration-r04"
+SOURCE_EVIDENCE_KEYS = {
     "source_namespace",
     "candidate_access",
     "upstream_access",
     "project_scope_id",
-    "source_head_sha256",
-    "synthetic_fixture",
+    "source_authority_store_id",
+    "source_storage_locator_hash",
+    "source_pointer_key",
+    "source_pointer_generation",
+    "source_candidate_ref",
+    "source_semantic_hash",
+    "source_eligibility",
 }
 PRE_CUTOVER_STATES = {
     "DISCOVERED",
@@ -46,7 +58,37 @@ PRE_CUTOVER_STATES = {
     "TARGET_STAGED",
     "SHADOW_VERIFIED",
 }
-AUTHORITY_BINDING_TABLE_LAYOUTS = {
+CONTROL_TABLE_LAYOUTS = {
+    "metadata": (
+        ("key", "TEXT", 0, None, 1),
+        ("value", "BLOB", 1, None, 0),
+    ),
+    "migration_state": (
+        ("migration_id", "TEXT", 0, None, 1),
+        ("project_scope_id", "TEXT", 1, None, 0),
+        ("source_json", "BLOB", 1, None, 0),
+        ("source_hash", "TEXT", 1, None, 0),
+        ("state", "TEXT", 1, None, 0),
+        ("target_root_result_json", "BLOB", 0, None, 0),
+        ("target_pointer_key", "TEXT", 0, None, 0),
+        ("target_pointer_generation", "INTEGER", 0, None, 0),
+        ("target_authority_store_id", "TEXT", 0, None, 0),
+        ("target_storage_locator_hash", "TEXT", 0, None, 0),
+        ("shadow_semantic_hash", "TEXT", 0, None, 0),
+        ("shadow_source_semantic_hash", "TEXT", 0, None, 0),
+        ("shadow_target_semantic_hash", "TEXT", 0, None, 0),
+        ("shadow_target_authority_store_id", "TEXT", 0, None, 0),
+        ("shadow_target_storage_locator_hash", "TEXT", 0, None, 0),
+        ("shadow_target_pointer_key", "TEXT", 0, None, 0),
+        ("shadow_target_pointer_generation", "INTEGER", 0, None, 0),
+        ("event_sequence", "INTEGER", 1, None, 0),
+    ),
+    "migration_events": (
+        ("migration_id", "TEXT", 1, None, 1),
+        ("event_sequence", "INTEGER", 1, None, 2),
+        ("event", "TEXT", 1, None, 0),
+        ("payload_json", "BLOB", 1, None, 0),
+    ),
     "authority_project_bindings": (
         ("project_scope_id", "TEXT", 0, None, 1),
         ("authority_store_id", "TEXT", 1, None, 0),
@@ -62,7 +104,12 @@ AUTHORITY_BINDING_TABLE_LAYOUTS = {
         ("target_pointer_generation", "INTEGER", 1, None, 0),
     ),
 }
-AUTHORITY_BINDING_UNIQUE_INDEXES = {
+CONTROL_UNIQUE_INDEXES = {
+    "metadata": frozenset({("pk", 0, ("key",))}),
+    "migration_state": frozenset({("pk", 0, ("migration_id",))}),
+    "migration_events": frozenset(
+        {("pk", 0, ("migration_id", "event_sequence"))}
+    ),
     "authority_project_bindings": frozenset(
         {("pk", 0, ("project_scope_id",))}
     ),
@@ -97,6 +144,144 @@ def _is_sha256(value: Any) -> bool:
     return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is not None
 
 
+def _candidate_semantic_projection(
+    candidate: dict[str, Any],
+    segment_index: dict[str, Any],
+) -> dict[str, Any]:
+    """Project fixture/product identities onto the same content semantics."""
+
+    payload = candidate["payload"]
+    seg = payload["seg"]
+    selected_segment = segment_index["payload"]["segments"][seg - 1]
+    items = []
+    for item in payload["items"]:
+        projected = {
+            "fact": item["fact"],
+            "status": item["status"],
+            "evidence": item["evidence"],
+            "evidence_binding": deepcopy(item["evidence_binding"]),
+        }
+        if "speaker" in item:
+            projected["speaker"] = item["speaker"]
+        items.append(projected)
+    return {
+        "candidate_schema_id": payload["candidate_schema_id"],
+        "chapter_revision_ref": deepcopy(payload["chapter_revision_ref"]),
+        "seg": seg,
+        "extraction_input_binding": deepcopy(payload["extraction_input_binding"]),
+        "segment_scope": {
+            "coordinate_unit": segment_index["payload"]["coordinate_unit"],
+            "chapter_length_bytes": segment_index["payload"]["chapter_length_bytes"],
+            "coverage_denominator_bytes": segment_index["payload"][
+                "coverage_denominator_bytes"
+            ],
+            "selected_segment": deepcopy(selected_segment),
+        },
+        "items": items,
+    }
+
+
+class ReadOnlyMigrationSource:
+    """Reread one exact fixture authority pointer without exposing a writer."""
+
+    __slots__ = ("__store", "__logical_pointer_key", "__reference_records")
+
+    def __init__(
+        self,
+        *,
+        store: CandidateAuthorityStore,
+        logical_pointer_key: str,
+        reference_records: list[dict[str, Any]],
+    ) -> None:
+        if not isinstance(store, CandidateAuthorityStore):
+            fail("MIGRATION_SOURCE_READER_INVALID")
+        if not isinstance(logical_pointer_key, str) or not logical_pointer_key:
+            fail("MIGRATION_SOURCE_POINTER_INVALID")
+        if not isinstance(reference_records, list):
+            fail("MIGRATION_SOURCE_REFERENCE_SET_INVALID")
+        self.__store = store
+        self.__logical_pointer_key = logical_pointer_key
+        self.__reference_records = deepcopy(reference_records)
+
+    @contextmanager
+    def locked_evidence(self) -> Iterator[dict[str, Any]]:
+        with self.__store.serialization():
+            yield self._read_locked()
+
+    def read_evidence(self) -> dict[str, Any]:
+        with self.locked_evidence() as evidence:
+            return deepcopy(evidence)
+
+    def _read_locked(self) -> dict[str, Any]:
+        try:
+            source_profile = require_authority_profile(
+                self.__store.authority_profile
+            )
+        except ValueError:
+            fail("MIGRATION_SOURCE_PROFILE_INVALID")
+        if source_profile is not FIXTURE_AUTHORITY_PROFILE:
+            fail("MIGRATION_SOURCE_PROFILE_INVALID")
+        try:
+            pointer = self.__store.read_pointer(self.__logical_pointer_key)
+            candidate = self.__store.read_candidate(
+                pointer["current_candidate_version_ref"]
+            )
+            segment_index = self.__store.read_aux_record(
+                candidate["payload"]["segment_index_ref"]
+            )
+            validation_records = [
+                *deepcopy(self.__reference_records),
+                deepcopy(segment_index),
+            ]
+            validate_candidate_version(
+                candidate,
+                allow_child=(
+                    candidate["payload"]["parent_candidate_version_ref"] is not None
+                ),
+                reference_records=validation_records,
+                authority_profile=FIXTURE_AUTHORITY_PROFILE,
+            )
+            validate_mutable_pointer(
+                pointer,
+                candidate=candidate,
+                reference_records=validation_records,
+                authority_profile=FIXTURE_AUTHORITY_PROFILE,
+            )
+        except (KeyError, IndexError, TypeError, ValueError, RuntimeError) as error:
+            fail("MIGRATION_SOURCE_EVIDENCE_INVALID", str(error))
+        binding = candidate["payload"]["extraction_input_binding"]
+        upstream_refs = [
+            binding["accepted_source_generation_ref"],
+            *(item["material_ref"] for item in binding["writing_material_refs"]),
+        ]
+        product_read_only = (
+            upstream_refs
+            and all(ref["access"] == PRODUCT_READ_ONLY_ACCESS for ref in upstream_refs)
+            and segment_index["payload"]["source_module_identity"]
+            == "CCZ142_READ_ONLY_ADAPTER"
+        )
+        projection = _candidate_semantic_projection(candidate, segment_index)
+        return {
+            "source_namespace": pointer["pointer_namespace"],
+            "candidate_access": candidate["access"],
+            "upstream_access": (
+                PRODUCT_READ_ONLY_ACCESS if product_read_only else FIXTURE_ACCESS
+            ),
+            "project_scope_id": pointer["project_scope_id"],
+            "source_authority_store_id": self.__store.authority_store_id,
+            "source_storage_locator_hash": self.__store.storage_locator_hash,
+            "source_pointer_key": pointer["logical_pointer_key"],
+            "source_pointer_generation": pointer["generation"],
+            "source_candidate_ref": record_ref(candidate),
+            "source_semantic_hash": sha256_value(projection),
+            "source_eligibility": (
+                "PRODUCT_READ_ONLY_VERIFIED"
+                if product_read_only
+                else "SYNTHETIC_FIXTURE_REJECTED"
+            ),
+        }
+
+
 class NamespaceMigrationController:
     """Write only migration state and cutover events, never candidate objects."""
 
@@ -125,90 +310,113 @@ class NamespaceMigrationController:
 
     def _initialize(self) -> None:
         self.root.mkdir(parents=True, exist_ok=True)
-        descriptor = os.open(self.lock_path, os.O_CREAT | os.O_RDWR, 0o600)
-        os.close(descriptor)
-        with sqlite3.connect(self.database_path) as connection:
-            connection.execute("PRAGMA journal_mode=TRUNCATE")
-            connection.execute("PRAGMA synchronous=FULL")
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS migration_state ("
-                "migration_id TEXT PRIMARY KEY, project_scope_id TEXT NOT NULL, "
-                "source_json BLOB NOT NULL, source_hash TEXT NOT NULL, "
-                "state TEXT NOT NULL, target_root_result_json BLOB, "
-                "target_pointer_key TEXT, target_pointer_generation INTEGER, "
-                "target_authority_store_id TEXT, "
-                "target_storage_locator_hash TEXT, "
-                "shadow_semantic_hash TEXT, "
-                "shadow_source_semantic_hash TEXT, "
-                "shadow_target_semantic_hash TEXT, "
-                "shadow_target_authority_store_id TEXT, "
-                "shadow_target_storage_locator_hash TEXT, "
-                "shadow_target_pointer_key TEXT, "
-                "shadow_target_pointer_generation INTEGER, "
-                "event_sequence INTEGER NOT NULL)"
-            )
-            columns = {
-                row[1]
-                for row in connection.execute(
-                    "PRAGMA table_info(migration_state)"
-                ).fetchall()
-            }
-            for name in (
-                "target_authority_store_id",
-                "target_storage_locator_hash",
-                "shadow_source_semantic_hash",
-                "shadow_target_semantic_hash",
-                "shadow_target_authority_store_id",
-                "shadow_target_storage_locator_hash",
-                "shadow_target_pointer_key",
-                "shadow_target_pointer_generation",
-            ):
-                if name not in columns:
-                    column_type = (
-                        "INTEGER"
-                        if name == "shadow_target_pointer_generation"
-                        else "TEXT"
+        flags = os.O_CREAT | os.O_RDWR
+        if hasattr(os, "O_NOFOLLOW"):
+            flags |= os.O_NOFOLLOW
+        descriptor = os.open(self.lock_path, flags, 0o600)
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+            os.close(descriptor)
+            fail("MIGRATION_CONTROL_LOCK_INVALID")
+        fcntl.flock(descriptor, fcntl.LOCK_EX)
+        try:
+            with sqlite3.connect(self.database_path) as connection:
+                connection.execute("PRAGMA journal_mode=TRUNCATE")
+                connection.execute("PRAGMA synchronous=FULL")
+                existing_tables = {
+                    row[0]
+                    for row in connection.execute(
+                        "SELECT name FROM sqlite_master WHERE type = 'table'"
+                    ).fetchall()
+                }
+                if existing_tables:
+                    if existing_tables != set(CONTROL_TABLE_LAYOUTS):
+                        fail("MIGRATION_CONTROL_SCHEMA_OBJECT_MISMATCH")
+                    schema_row = connection.execute(
+                        "SELECT value FROM metadata WHERE key = 'schema_version'"
+                    ).fetchone()
+                    if schema_row is None:
+                        fail("MIGRATION_CONTROL_SCHEMA_IDENTITY_MISSING")
+                    if bytes(schema_row[0]) != CONTROL_SCHEMA_VERSION.encode("utf-8"):
+                        fail("MIGRATION_CONTROL_SCHEMA_IDENTITY_MISMATCH")
+                else:
+                    connection.execute(
+                        "CREATE TABLE metadata ("
+                        "key TEXT PRIMARY KEY, value BLOB NOT NULL)"
                     )
                     connection.execute(
-                        f"ALTER TABLE migration_state ADD COLUMN {name} {column_type}"
+                        "CREATE TABLE migration_state ("
+                        "migration_id TEXT PRIMARY KEY, "
+                        "project_scope_id TEXT NOT NULL, "
+                        "source_json BLOB NOT NULL, source_hash TEXT NOT NULL, "
+                        "state TEXT NOT NULL, target_root_result_json BLOB, "
+                        "target_pointer_key TEXT, target_pointer_generation INTEGER, "
+                        "target_authority_store_id TEXT, "
+                        "target_storage_locator_hash TEXT, "
+                        "shadow_semantic_hash TEXT, "
+                        "shadow_source_semantic_hash TEXT, "
+                        "shadow_target_semantic_hash TEXT, "
+                        "shadow_target_authority_store_id TEXT, "
+                        "shadow_target_storage_locator_hash TEXT, "
+                        "shadow_target_pointer_key TEXT, "
+                        "shadow_target_pointer_generation INTEGER, "
+                        "event_sequence INTEGER NOT NULL)"
                     )
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS migration_events ("
-                "migration_id TEXT NOT NULL, event_sequence INTEGER NOT NULL, "
-                "event TEXT NOT NULL, payload_json BLOB NOT NULL, "
-                "PRIMARY KEY(migration_id, event_sequence))"
-            )
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS metadata ("
-                "key TEXT PRIMARY KEY, value BLOB NOT NULL)"
-            )
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS authority_project_bindings ("
-                "project_scope_id TEXT PRIMARY KEY, "
-                "authority_store_id TEXT NOT NULL, "
-                "storage_locator_hash TEXT NOT NULL, "
-                "bound_by_migration_id TEXT NOT NULL)"
-            )
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS authority_pointer_bindings ("
-                "project_scope_id TEXT NOT NULL, target_pointer_key TEXT NOT NULL, "
-                "authority_store_id TEXT NOT NULL, "
-                "storage_locator_hash TEXT NOT NULL, "
-                "migration_id TEXT NOT NULL UNIQUE, "
-                "target_pointer_generation INTEGER NOT NULL, "
-                "PRIMARY KEY(project_scope_id, target_pointer_key))"
-            )
-            self._verify_binding_schema(connection)
-            connection.execute(
-                "INSERT INTO metadata(key, value) VALUES (?, ?) "
-                "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
-                ("schema_version", sqlite3.Binary(CONTROL_SCHEMA_VERSION.encode())),
-            )
-            connection.commit()
+                    connection.execute(
+                        "CREATE TABLE migration_events ("
+                        "migration_id TEXT NOT NULL, "
+                        "event_sequence INTEGER NOT NULL, "
+                        "event TEXT NOT NULL, payload_json BLOB NOT NULL, "
+                        "PRIMARY KEY(migration_id, event_sequence))"
+                    )
+                    connection.execute(
+                        "CREATE TABLE authority_project_bindings ("
+                        "project_scope_id TEXT PRIMARY KEY, "
+                        "authority_store_id TEXT NOT NULL, "
+                        "storage_locator_hash TEXT NOT NULL, "
+                        "bound_by_migration_id TEXT NOT NULL)"
+                    )
+                    connection.execute(
+                        "CREATE TABLE authority_pointer_bindings ("
+                        "project_scope_id TEXT NOT NULL, "
+                        "target_pointer_key TEXT NOT NULL, "
+                        "authority_store_id TEXT NOT NULL, "
+                        "storage_locator_hash TEXT NOT NULL, "
+                        "migration_id TEXT NOT NULL UNIQUE, "
+                        "target_pointer_generation INTEGER NOT NULL, "
+                        "PRIMARY KEY(project_scope_id, target_pointer_key))"
+                    )
+                    connection.execute(
+                        "INSERT INTO metadata(key, value) VALUES (?, ?)",
+                        (
+                            "schema_version",
+                            sqlite3.Binary(CONTROL_SCHEMA_VERSION.encode("utf-8")),
+                        ),
+                    )
+                self._verify_control_schema(connection)
+                connection.commit()
+        finally:
+            fcntl.flock(descriptor, fcntl.LOCK_UN)
+            os.close(descriptor)
 
     @staticmethod
-    def _verify_binding_schema(connection: sqlite3.Connection) -> None:
-        for table, expected_layout in AUTHORITY_BINDING_TABLE_LAYOUTS.items():
+    def _verify_control_schema(connection: sqlite3.Connection) -> None:
+        actual_tables = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            ).fetchall()
+        }
+        if actual_tables != set(CONTROL_TABLE_LAYOUTS):
+            fail("MIGRATION_CONTROL_SCHEMA_OBJECT_MISMATCH")
+        schema_row = connection.execute(
+            "SELECT value FROM metadata WHERE key = 'schema_version'"
+        ).fetchone()
+        if schema_row is None:
+            fail("MIGRATION_CONTROL_SCHEMA_IDENTITY_MISSING")
+        if bytes(schema_row[0]) != CONTROL_SCHEMA_VERSION.encode("utf-8"):
+            fail("MIGRATION_CONTROL_SCHEMA_IDENTITY_MISMATCH")
+        for table, expected_layout in CONTROL_TABLE_LAYOUTS.items():
             actual_layout = tuple(
                 (row[1], str(row[2]).upper(), row[3], row[4], row[5])
                 for row in connection.execute(
@@ -216,7 +424,7 @@ class NamespaceMigrationController:
                 ).fetchall()
             )
             if actual_layout != expected_layout:
-                fail("MIGRATION_BINDING_SCHEMA_MISMATCH", table)
+                fail("MIGRATION_CONTROL_SCHEMA_LAYOUT_MISMATCH", table)
             actual_unique_indexes = set()
             for index_row in connection.execute(
                 f'PRAGMA index_list("{table}")'
@@ -231,8 +439,8 @@ class NamespaceMigrationController:
                     ).fetchall()
                 )
                 actual_unique_indexes.add((index_row[3], index_row[4], columns))
-            if actual_unique_indexes != AUTHORITY_BINDING_UNIQUE_INDEXES[table]:
-                fail("MIGRATION_BINDING_SCHEMA_MISMATCH", table)
+            if actual_unique_indexes != CONTROL_UNIQUE_INDEXES[table]:
+                fail("MIGRATION_CONTROL_SCHEMA_UNIQUE_INDEX_MISMATCH", table)
 
     def _open_locked(self) -> tuple[int, sqlite3.Connection]:
         flags = os.O_RDWR
@@ -247,6 +455,7 @@ class NamespaceMigrationController:
         connection = sqlite3.connect(self.database_path)
         connection.execute("PRAGMA synchronous=FULL")
         connection.execute("BEGIN IMMEDIATE")
+        self._verify_control_schema(connection)
         return descriptor, connection
 
     @staticmethod
@@ -410,28 +619,98 @@ class NamespaceMigrationController:
             ),
         )
 
-    def discover(self, migration_id: str, source: dict[str, Any]) -> dict[str, Any]:
-        if not isinstance(migration_id, str) or not migration_id:
-            fail("MIGRATION_ID_INVALID")
-        if not isinstance(source, dict) or set(source) != SOURCE_KEYS:
-            fail("MIGRATION_SOURCE_SHAPE_INVALID")
+    @staticmethod
+    def _validate_source_evidence(source: dict[str, Any]) -> dict[str, Any]:
+        if not isinstance(source, dict) or set(source) != SOURCE_EVIDENCE_KEYS:
+            fail("MIGRATION_SOURCE_EVIDENCE_SHAPE_INVALID")
+        candidate_ref = source["source_candidate_ref"]
         if (
             source["source_namespace"] != FIXTURE_POINTER_NAMESPACE
             or source["candidate_access"] != FIXTURE_ACCESS
             or not isinstance(source["project_scope_id"], str)
             or not source["project_scope_id"]
-            or not isinstance(source["source_head_sha256"], str)
-            or len(source["source_head_sha256"]) != 64
-            or any(
-                character not in "0123456789abcdef"
-                for character in source["source_head_sha256"]
-            )
-            or not isinstance(source["synthetic_fixture"], bool)
+            or not _is_sha256(source["source_authority_store_id"])
+            or not _is_sha256(source["source_storage_locator_hash"])
+            or not isinstance(source["source_pointer_key"], str)
+            or not source["source_pointer_key"]
+            or not isinstance(source["source_pointer_generation"], int)
+            or isinstance(source["source_pointer_generation"], bool)
+            or source["source_pointer_generation"] < 1
+            or not isinstance(candidate_ref, dict)
+            or candidate_ref.get("access") != FIXTURE_ACCESS
+            or candidate_ref.get("record_type") != "M3_CANDIDATE_VERSION"
+            or not _is_sha256(candidate_ref.get("record_hash"))
+            or not _is_sha256(source["source_semantic_hash"])
+            or source["upstream_access"]
+            not in {FIXTURE_ACCESS, PRODUCT_READ_ONLY_ACCESS}
+            or source["source_eligibility"]
+            not in {
+                "PRODUCT_READ_ONLY_VERIFIED",
+                "SYNTHETIC_FIXTURE_REJECTED",
+            }
         ):
-            fail("MIGRATION_SOURCE_IDENTITY_INVALID")
+            fail("MIGRATION_SOURCE_EVIDENCE_INVALID")
+        eligibility_matches = (
+            source["source_eligibility"] == "PRODUCT_READ_ONLY_VERIFIED"
+            and source["upstream_access"] == PRODUCT_READ_ONLY_ACCESS
+        ) or (
+            source["source_eligibility"] == "SYNTHETIC_FIXTURE_REJECTED"
+            and source["upstream_access"] == FIXTURE_ACCESS
+        )
+        if not eligibility_matches:
+            fail("MIGRATION_SOURCE_EVIDENCE_INVALID", "eligibility")
+        return deepcopy(source)
+
+    @classmethod
+    @contextmanager
+    def _locked_source_evidence(
+        cls,
+        source_reader: ReadOnlyMigrationSource,
+    ) -> Iterator[dict[str, Any]]:
+        if not isinstance(source_reader, ReadOnlyMigrationSource):
+            fail("MIGRATION_SOURCE_READER_REQUIRED")
+        with source_reader.locked_evidence() as source:
+            yield cls._validate_source_evidence(source)
+
+    @staticmethod
+    def _require_source_evidence(
+        state: dict[str, Any],
+        source: dict[str, Any],
+    ) -> None:
+        if (
+            canonical_bytes(source) != canonical_bytes(state["source"])
+            or sha256_value(source) != state["source_hash"]
+            or source["project_scope_id"] != state["project_scope_id"]
+        ):
+            fail("MIGRATION_SOURCE_EVIDENCE_DRIFT")
+
+    @staticmethod
+    def _target_semantic_hash(
+        store: CandidateAuthorityStore,
+        pointer: dict[str, Any],
+    ) -> str:
+        try:
+            candidate = store.read_candidate(pointer["current_candidate_version_ref"])
+            segment_index = store.read_aux_record(
+                candidate["payload"]["segment_index_ref"]
+            )
+            projection = _candidate_semantic_projection(candidate, segment_index)
+        except (KeyError, IndexError, TypeError, ValueError, RuntimeError) as error:
+            fail("MIGRATION_TARGET_EVIDENCE_INVALID", str(error))
+        return sha256_value(projection)
+
+    def discover(
+        self,
+        migration_id: str,
+        source_reader: ReadOnlyMigrationSource,
+    ) -> dict[str, Any]:
+        if not isinstance(migration_id, str) or not migration_id:
+            fail("MIGRATION_ID_INVALID")
+        with self._locked_source_evidence(source_reader) as source:
+            source = deepcopy(source)
         source_hash = sha256_value(source)
         rejected = (
-            source["synthetic_fixture"]
+            source["source_eligibility"] != "PRODUCT_READ_ONLY_VERIFIED"
             or source["upstream_access"] != PRODUCT_READ_ONLY_ACCESS
         )
         state = "REJECTED_READ_ONLY" if rejected else "DISCOVERED"
@@ -557,16 +836,21 @@ class NamespaceMigrationController:
             raise
         return self.read_state(migration_id)
 
-    def verify_source(self, migration_id: str, *, observed_source_hash: str) -> dict[str, Any]:
-        state = self.read_state(migration_id)
-        if observed_source_hash != state["source_hash"]:
-            fail("MIGRATION_SOURCE_HASH_MISMATCH")
-        return self._transition(
-            migration_id,
-            expected_state="DISCOVERED",
-            next_state="SOURCE_VERIFIED",
-            event_payload={"source_hash": observed_source_hash},
-        )
+    def verify_source(
+        self,
+        migration_id: str,
+        *,
+        source_reader: ReadOnlyMigrationSource,
+    ) -> dict[str, Any]:
+        with self._locked_source_evidence(source_reader) as source:
+            state = self.read_state(migration_id)
+            self._require_source_evidence(state, source)
+            return self._transition(
+                migration_id,
+                expected_state="DISCOVERED",
+                next_state="SOURCE_VERIFIED",
+                event_payload={"source_evidence_hash": state["source_hash"]},
+            )
 
     @staticmethod
     def _require_product_store(store: CandidateAuthorityStore) -> None:
@@ -662,68 +946,63 @@ class NamespaceMigrationController:
         self,
         migration_id: str,
         *,
+        source_reader: ReadOnlyMigrationSource,
         store: CandidateAuthorityStore,
-        target_pointer_key: str,
-        target_pointer_generation: int,
-        source_semantic_hash: str,
-        target_semantic_hash: str,
     ) -> dict[str, Any]:
-        if not _is_sha256(source_semantic_hash) or not _is_sha256(
-            target_semantic_hash
-        ):
-            fail("MIGRATION_SHADOW_HASH_INVALID")
-        if source_semantic_hash != target_semantic_hash:
-            fail("MIGRATION_SHADOW_DIVERGENCE")
         self._require_product_store(store)
-        with store.serialization():
-            state = self.read_state(migration_id)
-            self._require_target_store(state, store)
-            if target_pointer_key != state["target_pointer_key"]:
-                fail("MIGRATION_SHADOW_POINTER_MISMATCH")
-            pointer = store.read_pointer(target_pointer_key)
-            self._require_target_pointer(state, pointer)
-            if (
-                not isinstance(target_pointer_generation, int)
-                or isinstance(target_pointer_generation, bool)
-                or target_pointer_generation != state["target_pointer_generation"]
-                or pointer["generation"] != target_pointer_generation
-            ):
-                fail("MIGRATION_SHADOW_GENERATION_MISMATCH")
-            return self._transition(
-                migration_id,
-                expected_state="TARGET_STAGED",
-                next_state="SHADOW_VERIFIED",
-                event_payload={
-                    "source_semantic_hash": source_semantic_hash,
-                    "target_semantic_hash": target_semantic_hash,
-                    "target_authority_store_id": store.authority_store_id,
-                    "target_storage_locator_hash": store.storage_locator_hash,
-                    "target_pointer_key": pointer["logical_pointer_key"],
-                    "target_pointer_generation": pointer["generation"],
-                },
-                updates={
-                    "shadow_semantic_hash": source_semantic_hash,
-                    "shadow_source_semantic_hash": source_semantic_hash,
-                    "shadow_target_semantic_hash": target_semantic_hash,
-                    "shadow_target_authority_store_id": store.authority_store_id,
-                    "shadow_target_storage_locator_hash": store.storage_locator_hash,
-                    "shadow_target_pointer_key": pointer["logical_pointer_key"],
-                    "shadow_target_pointer_generation": pointer["generation"],
-                },
-            )
+        with self._locked_source_evidence(source_reader) as source:
+            with store.serialization():
+                state = self.read_state(migration_id)
+                self._require_source_evidence(state, source)
+                self._require_target_store(state, store)
+                pointer = store.read_pointer(state["target_pointer_key"])
+                self._require_target_pointer(state, pointer)
+                if pointer["generation"] != state["target_pointer_generation"]:
+                    fail("MIGRATION_SHADOW_GENERATION_MISMATCH")
+                source_semantic_hash = source["source_semantic_hash"]
+                target_semantic_hash = self._target_semantic_hash(store, pointer)
+                if source_semantic_hash != target_semantic_hash:
+                    fail("MIGRATION_SHADOW_DIVERGENCE")
+                return self._transition(
+                    migration_id,
+                    expected_state="TARGET_STAGED",
+                    next_state="SHADOW_VERIFIED",
+                    event_payload={
+                        "source_evidence_hash": state["source_hash"],
+                        "source_semantic_hash": source_semantic_hash,
+                        "target_semantic_hash": target_semantic_hash,
+                        "target_authority_store_id": store.authority_store_id,
+                        "target_storage_locator_hash": store.storage_locator_hash,
+                        "target_pointer_key": pointer["logical_pointer_key"],
+                        "target_pointer_generation": pointer["generation"],
+                    },
+                    updates={
+                        "shadow_semantic_hash": source_semantic_hash,
+                        "shadow_source_semantic_hash": source_semantic_hash,
+                        "shadow_target_semantic_hash": target_semantic_hash,
+                        "shadow_target_authority_store_id": store.authority_store_id,
+                        "shadow_target_storage_locator_hash": store.storage_locator_hash,
+                        "shadow_target_pointer_key": pointer["logical_pointer_key"],
+                        "shadow_target_pointer_generation": pointer["generation"],
+                    },
+                )
 
     @staticmethod
     def _require_shadow_binding(
         state: dict[str, Any],
+        source: dict[str, Any],
         store: CandidateAuthorityStore,
         pointer: dict[str, Any],
+        target_semantic_hash: str,
     ) -> None:
         if (
             not _is_sha256(state["shadow_source_semantic_hash"])
+            or state["shadow_source_semantic_hash"] != source["source_semantic_hash"]
             or state["shadow_source_semantic_hash"]
             != state["shadow_target_semantic_hash"]
             or state["shadow_semantic_hash"]
             != state["shadow_source_semantic_hash"]
+            or state["shadow_target_semantic_hash"] != target_semantic_hash
             or state["shadow_target_authority_store_id"] != store.authority_store_id
             or state["shadow_target_storage_locator_hash"]
             != store.storage_locator_hash
@@ -734,6 +1013,7 @@ class NamespaceMigrationController:
 
     def _require_persisted_bindings(self, state: dict[str, Any]) -> None:
         with sqlite3.connect(self.database_path) as connection:
+            self._verify_control_schema(connection)
             project = connection.execute(
                 "SELECT authority_store_id, storage_locator_hash "
                 "FROM authority_project_bindings WHERE project_scope_id = ?",
@@ -762,27 +1042,38 @@ class NamespaceMigrationController:
         self,
         migration_id: str,
         *,
+        source_reader: ReadOnlyMigrationSource,
         store: CandidateAuthorityStore,
     ) -> dict[str, Any]:
         self._require_product_store(store)
-        with store.serialization():
-            state = self.read_state(migration_id)
-            self._require_target_store(state, store)
-            pointer = store.read_pointer(state["target_pointer_key"])
-            self._require_target_pointer(state, pointer)
-            if pointer["generation"] != state["target_pointer_generation"]:
-                fail("MIGRATION_CUTOVER_CAS_MISMATCH")
-            self._require_shadow_binding(state, store, pointer)
-            return self._transition(
-                migration_id,
-                expected_state="SHADOW_VERIFIED",
-                next_state="CUTOVER_COMMITTED",
-                event_payload={
-                    "target_pointer_key": pointer["logical_pointer_key"],
-                    "target_pointer_generation": pointer["generation"],
-                },
-                bind_cutover=True,
-            )
+        with self._locked_source_evidence(source_reader) as source:
+            with store.serialization():
+                state = self.read_state(migration_id)
+                self._require_source_evidence(state, source)
+                self._require_target_store(state, store)
+                pointer = store.read_pointer(state["target_pointer_key"])
+                self._require_target_pointer(state, pointer)
+                if pointer["generation"] != state["target_pointer_generation"]:
+                    fail("MIGRATION_CUTOVER_CAS_MISMATCH")
+                target_semantic_hash = self._target_semantic_hash(store, pointer)
+                self._require_shadow_binding(
+                    state,
+                    source,
+                    store,
+                    pointer,
+                    target_semantic_hash,
+                )
+                return self._transition(
+                    migration_id,
+                    expected_state="SHADOW_VERIFIED",
+                    next_state="CUTOVER_COMMITTED",
+                    event_payload={
+                        "source_evidence_hash": state["source_hash"],
+                        "target_pointer_key": pointer["logical_pointer_key"],
+                        "target_pointer_generation": pointer["generation"],
+                    },
+                    bind_cutover=True,
+                )
 
     def activate_product_run(
         self,
@@ -868,11 +1159,13 @@ class NamespaceMigrationController:
 
     def read_state(self, migration_id: str) -> dict[str, Any]:
         with sqlite3.connect(self.database_path) as connection:
+            self._verify_control_schema(connection)
             row = self._row(connection, migration_id)
         return self._state_from_row(migration_id, row)
 
     def events(self, migration_id: str) -> list[dict[str, Any]]:
         with sqlite3.connect(self.database_path) as connection:
+            self._verify_control_schema(connection)
             rows = connection.execute(
                 "SELECT event_sequence, event, payload_json "
                 "FROM migration_events WHERE migration_id = ? "
@@ -895,6 +1188,7 @@ class NamespaceMigrationController:
 
     def authority_binding_counts(self) -> dict[str, int]:
         with sqlite3.connect(self.database_path) as connection:
+            self._verify_control_schema(connection)
             return {
                 table: connection.execute(
                     f'SELECT COUNT(*) FROM "{table}"'
