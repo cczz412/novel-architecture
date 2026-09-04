@@ -607,19 +607,19 @@
           "exists": true,
           "kind": "file",
           "path": "tools/test_impact.py",
-          "sha256": "58473012e769e51028c5514c9dcc3973eefddb682ded5494a8b60433097bf3d1"
+          "sha256": "7c27e2e83e7bef4f14ad8aed355c8b87dab63f70bb216bd228df84b0a9b42dad"
         },
         {
           "exists": true,
           "kind": "file",
           "path": "governance/test_policy.json",
-          "sha256": "e02dc4490195cb4dc9a4160c155c469cf61fad963c419222f6c30bac9650655a"
+          "sha256": "bb6b850594a1075a649c1d306506c4a3e873bb9216511b45170095ee898ecb2d"
         },
         {
           "exists": true,
           "kind": "file",
           "path": "tests/test_test_impact.py",
-          "sha256": "0aafacbb2b522b9397434634d7017a49041fe90f5868c2227fb1248c8e9912f6"
+          "sha256": "ced247f9c2099db2bd17165b52d7f0375da196bd846ee18757bc30037433fafa"
         }
       ],
       "status": "可用",

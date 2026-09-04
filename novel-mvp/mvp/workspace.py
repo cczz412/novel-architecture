@@ -134,8 +134,8 @@ def _sha256_bytes(payload: bytes) -> str:
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
+    return (
+        datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     )
 
 
@@ -291,6 +291,39 @@ class _LocalFilesystemBackend:
             binding_token=self._handle_binding_token(author_id, project_id),
         )
         return handle
+
+    def _issue_current_snapshot(
+        self,
+        author_id: str,
+        project_id: str,
+        generation_id: str | None,
+        manifest_sha256: str | None,
+        states: Mapping[str, dict[str, Any] | None],
+    ) -> "CurrentGenerationSnapshot":
+        snapshot = object.__new__(CurrentGenerationSnapshot)
+        logical_keys = tuple(sorted(states))
+        binding_token = hmac.digest(
+            self._handle_secret,
+            (
+                "current-snapshot-v1\0"
+                f"{author_id}\0{project_id}\0{generation_id or ''}\0"
+                f"{manifest_sha256 or ''}\0{'\0'.join(logical_keys)}"
+            ).encode("utf-8"),
+            "sha256",
+        )
+        _CURRENT_GENERATION_SNAPSHOT_BINDINGS[snapshot] = (
+            _CurrentGenerationSnapshotBinding(
+                backend=self,
+                author_id=author_id,
+                project_id=project_id,
+                generation_id=generation_id,
+                manifest_sha256=manifest_sha256,
+                logical_keys=logical_keys,
+                states=copy.deepcopy(dict(states)),
+                binding_token=binding_token,
+            )
+        )
+        return snapshot
 
     def _assert_safe_path(self, path: Path) -> None:
         try:
@@ -576,10 +609,7 @@ class _LocalFilesystemBackend:
         if pointer is None:
             return None, {"entries": {}}
         manifest_path = (
-            project_dir
-            / "generations"
-            / pointer["generation_id"]
-            / "manifest.json"
+            project_dir / "generations" / pointer["generation_id"] / "manifest.json"
         )
         manifest_bytes = self._read_bytes(manifest_path)
         if _sha256_bytes(manifest_bytes) != pointer["manifest_sha256"]:
@@ -651,6 +681,65 @@ class _LocalFilesystemBackend:
             return None
         return self._read_entry(project_dir, logical_key, entry)
 
+    def read_current_snapshot(
+        self,
+        author_id: str,
+        project_id: str,
+        logical_keys: tuple[str, ...] | list[str],
+    ) -> "CurrentGenerationSnapshot":
+        """一次锁定 current manifest，并只解码点名的逻辑键。"""
+        if not isinstance(logical_keys, (tuple, list)) or not logical_keys:
+            raise InvalidLogicalKeyError("SNAPSHOT_LOGICAL_KEYS_REQUIRED")
+        checked_keys = tuple(_validate_logical_key(key) for key in logical_keys)
+        if len(checked_keys) != len(set(checked_keys)):
+            raise InvalidLogicalKeyError("SNAPSHOT_LOGICAL_KEY_DUPLICATE")
+        project_dir = self._require_project(author_id, project_id)
+        with self._exclusive_lock(project_dir):
+            pointer, manifest = self._load_manifest(
+                project_dir,
+                author_id,
+                project_id,
+            )
+            states: dict[str, dict[str, Any] | None] = {}
+            for logical_key in sorted(checked_keys):
+                entry = manifest["entries"].get(logical_key)
+                states[logical_key] = (
+                    None
+                    if entry is None
+                    else self._read_entry(project_dir, logical_key, entry)
+                )
+            return self._issue_current_snapshot(
+                author_id,
+                project_id,
+                None if pointer is None else pointer["generation_id"],
+                None if pointer is None else pointer["manifest_sha256"],
+                states,
+            )
+
+    def is_current_snapshot(
+        self,
+        author_id: str,
+        project_id: str,
+        snapshot: "CurrentGenerationSnapshot",
+    ) -> bool:
+        """确认快照仍对应当前代；不重读业务 blob，也不写入。"""
+        binding = _current_generation_snapshot_binding(snapshot)
+        if (
+            binding.backend is not self
+            or binding.author_id != author_id
+            or binding.project_id != project_id
+        ):
+            raise AuthenticationError("CURRENT_SNAPSHOT_SCOPE_MISMATCH")
+        project_dir = self._require_project(author_id, project_id)
+        with self._exclusive_lock(project_dir):
+            pointer, _ = self._load_manifest(project_dir, author_id, project_id)
+        current_generation = None if pointer is None else pointer["generation_id"]
+        current_manifest_sha = None if pointer is None else pointer["manifest_sha256"]
+        return (
+            current_generation == binding.generation_id
+            and current_manifest_sha == binding.manifest_sha256
+        )
+
     @staticmethod
     def _normalize_expectations(
         mutation_keys: set[str],
@@ -674,11 +763,7 @@ class _LocalFilesystemBackend:
                 expected_sha = raw.get("sha256")
             else:
                 raise VersionConflictError("EXPECTED_VERSION_SHAPE_INVALID")
-            if (
-                not isinstance(version, int)
-                or isinstance(version, bool)
-                or version < 0
-            ):
+            if not isinstance(version, int) or isinstance(version, bool) or version < 0:
                 raise VersionConflictError("EXPECTED_VERSION_SHAPE_INVALID")
             if expected_sha is not None and (
                 not isinstance(expected_sha, str)
@@ -707,9 +792,7 @@ class _LocalFilesystemBackend:
             receipt.get("operation_id") != operation_id
             or receipt.get("request_sha256") != request_sha
         ):
-            raise OperationConflictError(
-                "OPERATION_ID_REUSED_WITH_DIFFERENT_REQUEST"
-            )
+            raise OperationConflictError("OPERATION_ID_REUSED_WITH_DIFFERENT_REQUEST")
         return {**receipt, "replayed": True}
 
     def _recover_unlocked(self, project_dir: Path) -> dict[str, Any]:
@@ -799,9 +882,7 @@ class _LocalFilesystemBackend:
         request_sha = _sha256_bytes(_canonical_bytes(request_payload))
         with self._exclusive_lock(project_dir):
             self._recover_unlocked(project_dir)
-            replayed = self._existing_receipt(
-                project_dir, operation_id, request_sha
-            )
+            replayed = self._existing_receipt(project_dir, operation_id, request_sha)
             if replayed is not None:
                 return replayed
             old_pointer, current_manifest = self._load_manifest(
@@ -867,9 +948,7 @@ class _LocalFilesystemBackend:
             manifest_sha = _sha256_bytes(manifest_bytes)
             generation_dir = project_dir / "generations" / generation_id
             self._ensure_dir(generation_dir)
-            self._write_immutable(
-                generation_dir / "manifest.json", manifest_bytes
-            )
+            self._write_immutable(generation_dir / "manifest.json", manifest_bytes)
             new_pointer = {
                 "schema_version": "author-workspace-current-v1",
                 "generation_id": generation_id,
@@ -956,12 +1035,7 @@ class _LocalFilesystemBackend:
         metadata_sha = _sha256_bytes(descriptor_bytes)
         kind_root = self._author_dir(author_id) / "immutable" / kind
         blob_path = kind_root / "blobs" / f"{content_sha}.blob"
-        metadata_path = (
-            kind_root
-            / "metadata"
-            / content_sha
-            / f"{metadata_sha}.json"
-        )
+        metadata_path = kind_root / "metadata" / content_sha / f"{metadata_sha}.json"
         self._write_immutable(blob_path, content)
         self._write_immutable(metadata_path, descriptor_bytes)
         return {
@@ -986,8 +1060,7 @@ class _LocalFilesystemBackend:
         if not isinstance(uploads, list):
             return False
         return any(
-            isinstance(item, dict)
-            and item.get("immutable_receipt") == dict(receipt)
+            isinstance(item, dict) and item.get("immutable_receipt") == dict(receipt)
             for item in uploads
         )
 
@@ -1028,12 +1101,7 @@ class _LocalFilesystemBackend:
 
         kind_root = self._author_dir(author_id) / "immutable" / kind
         blob_path = kind_root / "blobs" / f"{content_sha}.blob"
-        metadata_path = (
-            kind_root
-            / "metadata"
-            / content_sha
-            / f"{metadata_sha}.json"
-        )
+        metadata_path = kind_root / "metadata" / content_sha / f"{metadata_sha}.json"
         try:
             raw_bytes = self._read_bytes(blob_path)
             descriptor_bytes = self._read_bytes(metadata_path)
@@ -1077,9 +1145,24 @@ class _AuthorWorkspaceBinding(NamedTuple):
     binding_token: bytes
 
 
+class _CurrentGenerationSnapshotBinding(NamedTuple):
+    backend: _LocalFilesystemBackend
+    author_id: str
+    project_id: str
+    generation_id: str | None
+    manifest_sha256: str | None
+    logical_keys: tuple[str, ...]
+    states: dict[str, dict[str, Any] | None]
+    binding_token: bytes
+
+
 _AUTHOR_WORKSPACE_BINDINGS: weakref.WeakKeyDictionary[
     object,
     _AuthorWorkspaceBinding,
+] = weakref.WeakKeyDictionary()
+_CURRENT_GENERATION_SNAPSHOT_BINDINGS: weakref.WeakKeyDictionary[
+    object,
+    _CurrentGenerationSnapshotBinding,
 ] = weakref.WeakKeyDictionary()
 
 
@@ -1096,6 +1179,71 @@ def _author_workspace_binding(
         binding.binding_token,
     )
     return binding
+
+
+def _current_generation_snapshot_binding(
+    snapshot: "CurrentGenerationSnapshot",
+) -> _CurrentGenerationSnapshotBinding:
+    try:
+        binding = _CURRENT_GENERATION_SNAPSHOT_BINDINGS[snapshot]
+    except (KeyError, TypeError) as exc:
+        raise AuthenticationError("CURRENT_SNAPSHOT_BINDING_INVALID") from exc
+    expected = hmac.digest(
+        binding.backend._handle_secret,
+        (
+            "current-snapshot-v1\0"
+            f"{binding.author_id}\0{binding.project_id}\0"
+            f"{binding.generation_id or ''}\0{binding.manifest_sha256 or ''}\0"
+            f"{'\0'.join(binding.logical_keys)}"
+        ).encode("utf-8"),
+        "sha256",
+    )
+    if not hmac.compare_digest(binding.binding_token, expected):
+        raise AuthenticationError("CURRENT_SNAPSHOT_BINDING_INVALID")
+    return binding
+
+
+class CurrentGenerationSnapshot:
+    """不暴露物理路径、不可伪造的 AuthorWorkspace current 只读快照。"""
+
+    __slots__ = ("__dict__", "__weakref__")
+
+    def __init__(self, *args: object, **kwargs: object):
+        del args, kwargs
+        raise AuthenticationError("CURRENT_SNAPSHOT_WORKSPACE_REQUIRED")
+
+    def __copy__(self) -> "CurrentGenerationSnapshot":
+        raise AuthenticationError("CURRENT_SNAPSHOT_SERIALIZATION_FORBIDDEN")
+
+    def __deepcopy__(self, memo: dict[int, object]) -> "CurrentGenerationSnapshot":
+        del memo
+        raise AuthenticationError("CURRENT_SNAPSHOT_SERIALIZATION_FORBIDDEN")
+
+    def __reduce__(self) -> object:
+        raise AuthenticationError("CURRENT_SNAPSHOT_SERIALIZATION_FORBIDDEN")
+
+    def __reduce_ex__(self, protocol: int) -> object:
+        del protocol
+        raise AuthenticationError("CURRENT_SNAPSHOT_SERIALIZATION_FORBIDDEN")
+
+    @property
+    def generation_id(self) -> str | None:
+        return _current_generation_snapshot_binding(self).generation_id
+
+    @property
+    def manifest_sha256(self) -> str | None:
+        return _current_generation_snapshot_binding(self).manifest_sha256
+
+    @property
+    def logical_keys(self) -> tuple[str, ...]:
+        return _current_generation_snapshot_binding(self).logical_keys
+
+    def read(self, logical_key: str) -> dict[str, Any] | None:
+        key = _validate_logical_key(logical_key)
+        binding = _current_generation_snapshot_binding(self)
+        if key not in binding.logical_keys:
+            raise InvalidLogicalKeyError("SNAPSHOT_LOGICAL_KEY_NOT_REQUESTED")
+        return copy.deepcopy(binding.states[key])
 
 
 class AuthorWorkspace:
@@ -1145,6 +1293,25 @@ class AuthorWorkspace:
             binding.author_id,
             binding.project_id,
             logical_key,
+        )
+
+    def read_current_snapshot(
+        self,
+        logical_keys: tuple[str, ...] | list[str],
+    ) -> CurrentGenerationSnapshot:
+        binding = _author_workspace_binding(self)
+        return binding.backend.read_current_snapshot(
+            binding.author_id,
+            binding.project_id,
+            logical_keys,
+        )
+
+    def is_current_snapshot(self, snapshot: CurrentGenerationSnapshot) -> bool:
+        binding = _author_workspace_binding(self)
+        return binding.backend.is_current_snapshot(
+            binding.author_id,
+            binding.project_id,
+            snapshot,
         )
 
     def commit(

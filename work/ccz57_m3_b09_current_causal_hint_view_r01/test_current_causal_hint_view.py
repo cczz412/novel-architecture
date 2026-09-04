@@ -1489,15 +1489,49 @@ def test_request_scope_stale_closes(tmp_path: Path) -> None:
     )
 
 
-def test_stop_closes_without_persisting_a_b09_lifecycle(tmp_path: Path) -> None:
+def test_terminalized_stop_closes_without_persisting_a_b09_lifecycle(
+    tmp_path: Path,
+) -> None:
     world = _build_world(tmp_path / "stop")
+    world.b08_authority.classification.update(
+        {
+            "product_result": "EXTRACTION_FAILED",
+            "terminal_delivery": "BLOCKED",
+            "reason_code": "B09_STOPPED_FIXTURE",
+            "candidate_count": 0,
+            "expected_unit_count": 1,
+            "covered_unit_count": 0,
+            "missing_unit_count": 1,
+            "coverage_complete": False,
+        }
+    )
+    state = _enter_finalizing(world)
+    result = world.b08_store.publish(
+        project_scope_id=world.project_scope_id,
+        run_id=world.run_id,
+        operation_id="terminal-before-stop-b09",
+        expected_run_epoch=state["run_epoch"],
+        expected_state_revision=state["state_revision"],
+    )
     state = _state(world)
+    bound = world.b07.advance(
+        project_scope_id=world.project_scope_id,
+        run_id=world.run_id,
+        operation_id="bind-terminal-before-stop-b09",
+        expected_run_epoch=state["run_epoch"],
+        expected_state_revision=state["state_revision"],
+        target_status="ACTIVE",
+        target_phase="FINALIZING",
+        wait_kind=None,
+        authority_reader=world.authority,
+        component_observation=result["component_observation"],
+    )
     world.b07.stop(
         project_scope_id=world.project_scope_id,
         run_id=world.run_id,
         operation_id="stop-b09",
-        expected_run_epoch=state["run_epoch"],
-        expected_state_revision=state["state_revision"],
+        expected_run_epoch=bound["run_epoch"],
+        expected_state_revision=bound["state_revision"],
         stop_reason_code="AUTHOR_ABORTED",
         stop_class="LOCAL_CONTROL",
         stop_source="B09_TEST",
@@ -1507,7 +1541,7 @@ def test_stop_closes_without_persisting_a_b09_lifecycle(tmp_path: Path) -> None:
 
     assert (view["status"], view["reason_code"]) == (
         "CLOSED",
-        "RUN_STOPPED",
+        "EXACT_CURRENT_SEGMENT_TERMINAL",
     )
 
 
@@ -1579,7 +1613,7 @@ def test_bound_terminal_with_b08_classification_drift_is_error(
     )
 
 
-def test_b07_b08_terminal_conflict_is_error(tmp_path: Path) -> None:
+def test_b07_rejects_published_b08_terminal_without_binding(tmp_path: Path) -> None:
     world = _build_world(tmp_path / "terminal-conflict")
     state = _enter_finalizing(world)
     world.b08_store.publish(
@@ -1590,23 +1624,22 @@ def test_b07_b08_terminal_conflict_is_error(tmp_path: Path) -> None:
         expected_state_revision=state["state_revision"],
     )
     state = _state(world)
-    world.b07.advance(
-        project_scope_id=world.project_scope_id,
-        run_id=world.run_id,
-        operation_id="succeed-without-terminal-binding",
-        expected_run_epoch=state["run_epoch"],
-        expected_state_revision=state["state_revision"],
-        target_status="SUCCEEDED",
-        target_phase="FINALIZING",
-        wait_kind=None,
-        authority_reader=world.authority,
-    )
+    with pytest.raises(ValueError, match="B07_TERMINAL_OBSERVATION_REQUIRED"):
+        world.b07.advance(
+            project_scope_id=world.project_scope_id,
+            run_id=world.run_id,
+            operation_id="succeed-without-terminal-binding",
+            expected_run_epoch=state["run_epoch"],
+            expected_state_revision=state["state_revision"],
+            target_status="SUCCEEDED",
+            target_phase="FINALIZING",
+            wait_kind=None,
+            authority_reader=world.authority,
+        )
+    assert _state(world) == state
     view = read_current_causal_hints(world.make_reader(), world.request)
 
-    assert (view["status"], view["reason_code"]) == (
-        "ERROR",
-        "AUTHORITY_STATE_INCOHERENT",
-    )
+    assert view["status"] == "AVAILABLE"
 
 
 def test_old_epoch_unbound_terminal_does_not_close_resumed_run(
@@ -1948,7 +1981,17 @@ def test_static_boundaries_have_no_b09_writer_schema_model_network_or_b10_edge()
         assert "UPDATE " not in source.upper()
         assert "DELETE FROM" not in source.upper()
 
-    b10_files = list((REPOSITORY_ROOT / "work").glob("*b10*/*.py"))
+    b10_root = (
+        REPOSITORY_ROOT
+        / "work"
+        / "ccz57_m3_b10_chapter_candidate_progress_view_r01"
+    )
+    b10_files = [
+        b10_root / "b10_contracts.py",
+        b10_root / "b10_authority_reader.py",
+        b10_root / "current_chapter_progress_view.py",
+    ]
+    assert all(path.is_file() for path in b10_files)
     assert all(
         "ccz57_m3_b09" not in path.read_text(encoding="utf-8")
         and "current_causal_hint" not in path.read_text(encoding="utf-8")

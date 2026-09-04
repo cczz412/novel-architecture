@@ -630,6 +630,78 @@
       "full_chain": true
     },
     {
+      "name": "CCZ-57 B-01 当前候选版本生产者自测",
+      "pattern": "work/ccz57_m3_b01_candidate_version_r03_5/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b01_candidate_version_r03_5/test_b01_contract.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-57 B-02 当前诊断覆盖生产者自测",
+      "pattern": "work/ccz57_m3_b02_diagnostic_coverage_r03_5/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b02_diagnostic_coverage_r03_5/test_b02_diagnostic_coverage.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-57 B-03 当前证据读取生产者自测",
+      "pattern": "work/ccz57_m3_b03_bound_evidence_read_r03_5/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b03_bound_evidence_read_r03_5/test_b03_bound_evidence_read.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-57 B-04 当前原子补丁生产者自测",
+      "pattern": "work/ccz57_m3_b04_patch_atomic_group_r03_5/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b04_patch_atomic_group_r03_5/test_b04_patch_atomic_group.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-57 B-05 当前安全路线生产者自测",
+      "pattern": "work/ccz57_m3_b05_patch_route_r03_5/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b05_patch_route_r03_5/test_b05_patch_route.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-57 B-06 当前提交核心生产者自测",
+      "pattern": "work/ccz57_m3_b06_commit_core_r01/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b06_commit_core_r01/test_b06_commit_core.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-57 B-07 当前恢复停损生产者自测",
+      "pattern": "work/ccz57_m3_b07_local_recovery_stop_r01/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b07_local_recovery_stop_r01/test_b07_local_recovery.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-57 B-08 当前责任段终态生产者自测",
+      "pattern": "work/ccz57_m3_b08_segment_terminal_r01/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b08_segment_terminal_r01/test_b08_segment_terminal.py"
+      ],
+      "full_chain": false
+    },
+    {
       "name": "CCZ-57 B-09 权威上游与传递合同",
       "pattern": "work/ccz57_m3_b0[12345678]_*/*.py",
       "modules": [],
@@ -653,6 +725,33 @@
       "modules": [],
       "tests": [
         "work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-57 B-10 当前章节候选进度权威上游",
+      "pattern": "work/ccz57_m3_b0[1678]_*/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b10_chapter_candidate_progress_view_r01/test_current_chapter_progress_view.py"
+      ],
+      "full_chain": true
+    },
+    {
+      "name": "CCZ-57 B-10 直接读取的 B-01 样例合同",
+      "pattern": "work/ccz57_m3_b01_candidate_version_r03_5/OBJECT_SHAPES.json",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b10_chapter_candidate_progress_view_r01/test_current_chapter_progress_view.py"
+      ],
+      "full_chain": true
+    },
+    {
+      "name": "CCZ-57 B-10 当前章节候选进度纯派生视图",
+      "pattern": "work/ccz57_m3_b10_chapter_candidate_progress_view_r01/*.py",
+      "modules": [],
+      "tests": [
+        "work/ccz57_m3_b10_chapter_candidate_progress_view_r01/test_current_chapter_progress_view.py"
       ],
       "full_chain": false
     },

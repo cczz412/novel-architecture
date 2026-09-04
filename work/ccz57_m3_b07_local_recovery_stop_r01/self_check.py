@@ -50,7 +50,9 @@ def fixed_vectors() -> list[dict[str, Any]]:
         )
 
         env = build_environment(base / "N02_STOP_REOPEN")
-        state = env.open()
+        state = env.bind_terminal_observation(
+            env.open(), operation_id="bind-self-check-stop", marker="self-check-stop"
+        )
         receipt = env.b07.stop(
             project_scope_id=env.project_scope_id,
             run_id=env.run_id,
@@ -106,7 +108,11 @@ def fixed_vectors() -> list[dict[str, Any]]:
         )
 
         env = build_environment(base / "F01_STOP_ROLLBACK")
-        state = env.open()
+        state = env.bind_terminal_observation(
+            env.open(),
+            operation_id="bind-self-check-rollback",
+            marker="self-check-rollback",
+        )
         env.b07.failure_point = "after_stop_receipt_insert"
         error_code = None
         try:
@@ -133,29 +139,30 @@ def fixed_vectors() -> list[dict[str, Any]]:
             }
         )
 
-        env = build_environment(base / "F02_STOP_WINS_B06_ZERO_WRITE")
+        env = build_environment(base / "F02_PENDING_STOP_DENIED")
         state = env.open()
         pending, fence = env.prepare_b06(state)
-        env.b07.stop(
-            project_scope_id=env.project_scope_id,
-            run_id=env.run_id,
-            operation_id="stop-before-b06-self-check",
-            expected_run_epoch=pending["run_epoch"],
-            expected_state_revision=pending["state_revision"],
-            stop_reason_code="AUTHOR_ABORTED",
-            stop_class="LOCAL_CONTROL",
-            stop_source="SELF_CHECK",
-            authority_reader=env.authority,
-        )
         error_code = None
         try:
-            env.commit_b06(run_fence=fence)
+            env.b07.stop(
+                project_scope_id=env.project_scope_id,
+                run_id=env.run_id,
+                operation_id="stop-before-b06-self-check",
+                expected_run_epoch=pending["run_epoch"],
+                expected_state_revision=pending["state_revision"],
+                stop_reason_code="AUTHOR_ABORTED",
+                stop_class="LOCAL_CONTROL",
+                stop_source="SELF_CHECK",
+                authority_reader=env.authority,
+            )
         except ValueError as error:
             error_code = str(error).split(":", 1)[0]
+        committed = env.commit_b06(run_fence=fence)
         vectors.append(
             {
-                "fixture_id": "F02_STOP_WINS_B06_ZERO_WRITE",
+                "fixture_id": "F02_PENDING_STOP_DENIED",
                 "error_code": error_code,
+                "b06_committed": committed["reused_existing_commit"] is False,
                 "b06_visible_counts": env.b06.store.visible_counts(),
                 "b07_visible_counts": env.b07.visible_counts(),
             }
@@ -221,7 +228,7 @@ def build_report(catalog: dict[str, Any]) -> dict[str, Any]:
     return {
         "report_kind": "CCZ57_M3_B07_LOCAL_RECOVERY_STOP_R01_OFFLINE_REPLAY",
         "mechanical_pass": True,
-        "targeted_pytest_expected": "26 passed",
+        "targeted_pytest_expected": "39 passed",
         "b06_regression_expected": "25 passed",
         "fixed_vector_count": len(catalog["fixed_vectors"]),
         "catalog_hash": catalog["catalog_hash"],

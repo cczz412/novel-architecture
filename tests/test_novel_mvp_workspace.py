@@ -21,6 +21,7 @@ try:
     from mvp.workspace import (
         AuthorWorkspace,
         AuthenticationError,
+        CurrentGenerationSnapshot,
         InjectedWorkspaceCrash,
         IntegrityError,
         InvalidLogicalKeyError,
@@ -50,10 +51,7 @@ def _current_blob(runtime_root: Path, workspace, logical_key: str) -> Path:
     pointer = json.loads((project_dir / "state/CURRENT.json").read_text())
     manifest = json.loads(
         (
-            project_dir
-            / "generations"
-            / pointer["generation_id"]
-            / "manifest.json"
+            project_dir / "generations" / pointer["generation_id"] / "manifest.json"
         ).read_text()
     )
     blob_sha = manifest["entries"][logical_key]["blob_sha256"]
@@ -66,19 +64,12 @@ def _immutable_paths(
     receipt: dict,
 ) -> tuple[Path, Path]:
     root = (
-        runtime_root
-        / "authors"
-        / workspace.author_id
-        / "immutable"
-        / receipt["kind"]
+        runtime_root / "authors" / workspace.author_id / "immutable" / receipt["kind"]
     )
     content_sha = receipt["content_sha256"]
     return (
         root / "blobs" / f"{content_sha}.blob",
-        root
-        / "metadata"
-        / content_sha
-        / f"{receipt['metadata_sha256']}.json",
+        root / "metadata" / content_sha / f"{receipt['metadata_sha256']}.json",
     )
 
 
@@ -617,9 +608,7 @@ def test_immutable_upload_is_author_scoped_content_addressed(tmp_path: Path) -> 
     alice_blob = alice.store_immutable(
         "raw_upload", payload, {"file_name": "sample.bin"}
     )
-    bob_blob = bob.store_immutable(
-        "raw_upload", payload, {"file_name": "sample.bin"}
-    )
+    bob_blob = bob.store_immutable("raw_upload", payload, {"file_name": "sample.bin"})
 
     assert alice_blob["content_sha256"] == bob_blob["content_sha256"]
     assert alice_blob["blob_id"] != bob_blob["blob_id"]
@@ -713,9 +702,7 @@ def test_raw_upload_reader_detects_actual_immutable_corruption_without_writing(
     target: str,
 ) -> None:
     runtime_root = tmp_path / f"runtime-{target}"
-    workspace = WorkspaceRouter(runtime_root).create_project(
-        "principal-a", "项目"
-    )
+    workspace = WorkspaceRouter(runtime_root).create_project("principal-a", "项目")
     receipt = workspace.store_immutable(
         "raw_upload",
         b"original bytes",
@@ -743,9 +730,7 @@ def test_raw_upload_reader_rejects_symlink_without_following(
     target: str,
 ) -> None:
     runtime_root = tmp_path / f"runtime-symlink-{target}"
-    workspace = WorkspaceRouter(runtime_root).create_project(
-        "principal-a", "项目"
-    )
+    workspace = WorkspaceRouter(runtime_root).create_project("principal-a", "项目")
     receipt = workspace.store_immutable(
         "raw_upload",
         b"original bytes",
@@ -779,3 +764,108 @@ def test_created_directories_and_files_have_private_modes(tmp_path: Path) -> Non
         for file_name in file_names:
             file_path = current / file_name
             assert stat.S_IMODE(file_path.stat().st_mode) == 0o600
+
+
+def test_current_snapshot_reads_requested_keys_from_one_generation_without_writes(
+    tmp_path: Path,
+) -> None:
+    runtime_root = tmp_path / "runtime"
+    workspace = WorkspaceRouter(runtime_root).create_project("auth:alice", "项目")
+    receipt = workspace.commit(
+        "op-snapshot-seed",
+        {"chapters": [{"id": "c01"}], "facts": [{"id": "f001"}]},
+        {"chapters": 0, "facts": 0},
+    )
+    before = _tree_bytes(runtime_root)
+
+    snapshot = workspace.read_current_snapshot(["facts", "chapters"])
+
+    assert isinstance(snapshot, CurrentGenerationSnapshot)
+    assert snapshot.generation_id == receipt["generation_id"]
+    assert snapshot.manifest_sha256 is not None
+    assert snapshot.logical_keys == ("chapters", "facts")
+    assert snapshot.read("chapters")["payload"] == [{"id": "c01"}]
+    assert snapshot.read("facts")["payload"] == [{"id": "f001"}]
+    assert workspace.is_current_snapshot(snapshot) is True
+    assert _tree_bytes(runtime_root) == before
+    assert not hasattr(snapshot, "runtime_root")
+    assert not hasattr(snapshot, "physical_path")
+
+    with pytest.raises(
+        InvalidLogicalKeyError, match="SNAPSHOT_LOGICAL_KEY_NOT_REQUESTED"
+    ):
+        snapshot.read("plan")
+    with pytest.raises(
+        AuthenticationError, match="CURRENT_SNAPSHOT_WORKSPACE_REQUIRED"
+    ):
+        CurrentGenerationSnapshot()
+
+
+def test_current_snapshot_recheck_fails_after_current_advances(tmp_path: Path) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "auth:alice", "项目"
+    )
+    workspace.commit("op-seed", {"facts": []}, {"facts": 0})
+    snapshot = workspace.read_current_snapshot(["facts"])
+
+    workspace.commit("op-advance", {"state": {"ready": True}}, {"state": 0})
+
+    assert workspace.is_current_snapshot(snapshot) is False
+    assert snapshot.read("facts")["payload"] == []
+
+
+def test_current_snapshot_survives_restart_and_rejects_other_project(
+    tmp_path: Path,
+) -> None:
+    runtime_root = tmp_path / "runtime"
+    router = WorkspaceRouter(runtime_root)
+    workspace = router.create_project("auth:alice", "项目 A")
+    other = router.create_project("auth:alice", "项目 B")
+    workspace.commit("op-seed", {"facts": []}, {"facts": 0})
+
+    restarted = WorkspaceRouter(runtime_root).open_project(
+        "auth:alice", workspace.project_id
+    )
+    snapshot = restarted.read_current_snapshot(["facts"])
+
+    assert restarted.is_current_snapshot(snapshot) is True
+    with pytest.raises(AuthenticationError, match="CURRENT_SNAPSHOT_SCOPE_MISMATCH"):
+        other.is_current_snapshot(snapshot)
+
+
+def test_current_snapshot_rejects_empty_duplicate_and_forged_keys(
+    tmp_path: Path,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime").create_project(
+        "auth:alice", "项目"
+    )
+    with pytest.raises(InvalidLogicalKeyError, match="SNAPSHOT_LOGICAL_KEYS_REQUIRED"):
+        workspace.read_current_snapshot([])
+    with pytest.raises(InvalidLogicalKeyError, match="SNAPSHOT_LOGICAL_KEY_DUPLICATE"):
+        workspace.read_current_snapshot(["facts", "facts"])
+    with pytest.raises(InvalidLogicalKeyError, match="LOGICAL_KEY_NOT_ALLOWED"):
+        workspace.read_current_snapshot(["../facts"])
+
+
+@pytest.mark.parametrize("target", ["manifest", "blob"])
+def test_current_snapshot_rejects_corrupted_manifest_or_blob(
+    tmp_path: Path,
+    target: str,
+) -> None:
+    runtime_root = tmp_path / f"runtime-{target}"
+    workspace = WorkspaceRouter(runtime_root).create_project("auth:alice", "项目")
+    workspace.commit("op-seed", {"facts": []}, {"facts": 0})
+    project_dir = _project_dir(runtime_root, workspace)
+    if target == "manifest":
+        pointer = json.loads((project_dir / "state/CURRENT.json").read_text())
+        damaged = (
+            project_dir / "generations" / pointer["generation_id"] / "manifest.json"
+        )
+    else:
+        damaged = _current_blob(runtime_root, workspace, "facts")
+    damaged.write_bytes(b"tampered")
+    before = _tree_bytes(runtime_root)
+
+    with pytest.raises(IntegrityError):
+        workspace.read_current_snapshot(["facts"])
+    assert _tree_bytes(runtime_root) == before

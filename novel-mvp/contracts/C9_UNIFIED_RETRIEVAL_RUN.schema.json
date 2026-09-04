@@ -1,0 +1,715 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/C9_UNIFIED_RETRIEVAL_RUN.schema.json",
+  "title": "C9 unified retrieval run c9-unified-retrieval-run-v2",
+  "oneOf": [
+    {"$ref": "#/$defs/request"},
+    {"$ref": "#/$defs/plan"},
+    {"$ref": "#/$defs/result"}
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nullable_string": {
+      "oneOf": [
+        {"type": "string", "minLength": 1},
+        {"type": "null"}
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "author_id",
+        "project_id",
+        "task_id",
+        "consumer_id",
+        "workpoint_ref",
+        "story_scope_ref",
+        "sandbox_ref",
+        "upstream_card_ref"
+      ],
+      "properties": {
+        "author_id": {"type": "string", "minLength": 1},
+        "project_id": {"type": "string", "minLength": 1},
+        "task_id": {"type": "string", "minLength": 1},
+        "consumer_id": {"type": "string", "minLength": 1},
+        "workpoint_ref": {"type": "string", "minLength": 1},
+        "story_scope_ref": {"type": "string", "minLength": 1},
+        "sandbox_ref": {"$ref": "#/$defs/nullable_string"},
+        "upstream_card_ref": {"$ref": "#/$defs/nullable_string"}
+      }
+    },
+    "source_contract": {
+      "type": "string",
+      "enum": [
+        "LEDGER_READ_TOOL_CONTRACT",
+        "TRACEABLE_PROVENANCE_SEAL",
+        "CHAPTER_SETTLEMENT_SEAL",
+        "CHAPTER_LAYERED_SUMMARY"
+      ]
+    },
+    "evidence_layer": {
+      "type": "string",
+      "enum": [
+        "LEDGER_OBJECT",
+        "FORMATION_BASIS",
+        "ORIGINAL_EVIDENCE"
+      ]
+    },
+    "expansion_trigger": {
+      "type": "string",
+      "enum": [
+        "INITIAL",
+        "AUDIT_REQUIRED",
+        "CONFLICT_DETECTED",
+        "SOURCE_STALE",
+        "LOW_CONFIDENCE",
+        "LEDGER_INSUFFICIENT",
+        "DOWNSTREAM_REQUESTED_MORE",
+        "HIGH_IMPACT_DECISION"
+      ]
+    },
+    "trigger_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_contract",
+        "decision_contract_version",
+        "decision_object_ref",
+        "decision_object_sha256",
+        "producer_component_id",
+        "decision_code",
+        "parent_need_id"
+      ],
+      "properties": {
+        "decision_contract": {"type": "string", "minLength": 1},
+        "decision_contract_version": {"type": "string", "minLength": 1},
+        "decision_object_ref": {"type": "string", "minLength": 1},
+        "decision_object_sha256": {"$ref": "#/$defs/sha256"},
+        "producer_component_id": {"type": "string", "minLength": 1},
+        "decision_code": {"$ref": "#/$defs/expansion_trigger"},
+        "parent_need_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "nullable_trigger_provenance": {
+      "oneOf": [
+        {"$ref": "#/$defs/trigger_provenance"},
+        {"type": "null"}
+      ]
+    },
+    "actuality_class": {
+      "type": "string",
+      "enum": [
+        "CURRENT_FACT_OR_STATE",
+        "ACTIVE_CONSTRAINT",
+        "FUTURE_PLAN_OR_PROJECTION"
+      ]
+    },
+    "obligation_tier": {
+      "type": "string",
+      "enum": ["HARD", "SHOULD", "MAY"]
+    },
+    "recall_disposition": {
+      "type": "string",
+      "enum": ["RETRIEVABLE", "NOT_RETRIEVABLE"]
+    },
+    "source_need": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "need_id",
+        "evidence_layer",
+        "parent_need_id",
+        "source_contract",
+        "source_contract_version",
+        "object_ref",
+        "actuality_class",
+        "obligation_tier",
+        "selection_rank",
+        "task_relation",
+        "estimated_tokens",
+        "recall_disposition",
+        "recall_handle",
+        "expansion_trigger",
+        "trigger_provenance"
+      ],
+      "properties": {
+        "need_id": {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"},
+        "evidence_layer": {"$ref": "#/$defs/evidence_layer"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
+        "source_contract": {"$ref": "#/$defs/source_contract"},
+        "source_contract_version": {"type": "string", "minLength": 1},
+        "object_ref": {"type": "string", "minLength": 1},
+        "actuality_class": {"$ref": "#/$defs/actuality_class"},
+        "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
+        "selection_rank": {
+          "oneOf": [
+            {"type": "integer", "minimum": 0},
+            {"type": "null"}
+          ]
+        },
+        "task_relation": {"type": "string", "minLength": 1},
+        "estimated_tokens": {"type": "integer", "minimum": 0},
+        "recall_disposition": {"$ref": "#/$defs/recall_disposition"},
+        "recall_handle": {"$ref": "#/$defs/nullable_string"},
+        "expansion_trigger": {"$ref": "#/$defs/expansion_trigger"},
+        "trigger_provenance": {"$ref": "#/$defs/nullable_trigger_provenance"}
+      }
+    },
+    "plan_step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "order",
+        "need_id",
+        "evidence_layer",
+        "parent_need_id",
+        "source_contract",
+        "source_contract_version",
+        "object_ref",
+        "actuality_class",
+        "obligation_tier",
+        "selection_rank",
+        "task_relation",
+        "estimated_tokens",
+        "recall_disposition",
+        "recall_handle",
+        "expansion_trigger",
+        "trigger_provenance"
+      ],
+      "properties": {
+        "order": {"type": "integer", "minimum": 1},
+        "need_id": {"type": "string", "pattern": "^NEED-[A-Za-z0-9._:-]+$"},
+        "evidence_layer": {"$ref": "#/$defs/evidence_layer"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
+        "source_contract": {"$ref": "#/$defs/source_contract"},
+        "source_contract_version": {"type": "string", "minLength": 1},
+        "object_ref": {"type": "string", "minLength": 1},
+        "actuality_class": {"$ref": "#/$defs/actuality_class"},
+        "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
+        "selection_rank": {
+          "oneOf": [
+            {"type": "integer", "minimum": 0},
+            {"type": "null"}
+          ]
+        },
+        "task_relation": {"type": "string", "minLength": 1},
+        "estimated_tokens": {"type": "integer", "minimum": 0},
+        "recall_disposition": {"$ref": "#/$defs/recall_disposition"},
+        "recall_handle": {"$ref": "#/$defs/nullable_string"},
+        "expansion_trigger": {"$ref": "#/$defs/expansion_trigger"},
+        "trigger_provenance": {"$ref": "#/$defs/nullable_trigger_provenance"}
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "scope",
+        "basis_mode",
+        "task_actuality_scope",
+        "budget",
+        "gap_policy",
+        "source_needs",
+        "request_sha256"
+      ],
+      "properties": {
+        "contract": {"const": "C9_RETRIEVAL_REQUEST"},
+        "version": {"const": "c9-unified-retrieval-run-v2"},
+        "scope": {"$ref": "#/$defs/scope"},
+        "basis_mode": {
+          "type": "string",
+          "enum": ["current_at_start", "pinned_manifest"]
+        },
+        "task_actuality_scope": {
+          "type": "string",
+          "enum": [
+            "CURRENT_TRUTH_REQUIRED",
+            "FUTURE_MATERIAL_EXPLICITLY_IN_SCOPE"
+          ]
+        },
+        "budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["limit_tokens", "estimator_ref"],
+          "properties": {
+            "limit_tokens": {"type": "integer", "minimum": 1},
+            "estimator_ref": {"type": "string", "minLength": 1}
+          }
+        },
+        "gap_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["policy_ref", "missing_required_behavior"],
+          "properties": {
+            "policy_ref": {"type": "string", "minLength": 1},
+            "missing_required_behavior": {
+              "type": "string",
+              "enum": ["AUTO_CONTINUE", "WARN_AND_CONTINUE", "BLOCK"]
+            }
+          }
+        },
+        "source_needs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/source_need"}
+        },
+        "request_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "scope",
+        "basis_mode",
+        "request_sha256",
+        "steps",
+        "plan_sha256"
+      ],
+      "properties": {
+        "contract": {"const": "C9_RETRIEVAL_PLAN"},
+        "version": {"const": "c9-unified-retrieval-run-v2"},
+        "scope": {"$ref": "#/$defs/scope"},
+        "basis_mode": {
+          "type": "string",
+          "enum": ["current_at_start", "pinned_manifest"]
+        },
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/plan_step"}
+        },
+        "plan_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "projection_selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selector_kind", "selector_ref", "selector_sha256"],
+      "properties": {
+        "selector_kind": {"type": "string", "minLength": 1},
+        "selector_ref": {"type": "string", "minLength": 1},
+        "selector_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical_object_ref",
+        "truth_scope_ref",
+        "source_object_sha256",
+        "source_revision_ref",
+        "basis_mode",
+        "read_request_id",
+        "basis_sha256",
+        "source_manifest_sha256",
+        "projection_selector",
+        "projected_material_sha256",
+        "pin_proof_status",
+        "validator_id",
+        "binding_receipt_sha256"
+      ],
+      "properties": {
+        "canonical_object_ref": {"type": "string", "minLength": 1},
+        "truth_scope_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["author_id", "project_id"],
+          "properties": {
+            "author_id": {"type": "string", "minLength": 1},
+            "project_id": {"type": "string", "minLength": 1}
+          }
+        },
+        "source_object_sha256": {"$ref": "#/$defs/sha256"},
+        "source_revision_ref": {"$ref": "#/$defs/nullable_string"},
+        "basis_mode": {
+          "type": "string",
+          "enum": ["current_at_start", "pinned_manifest"]
+        },
+        "read_request_id": {"$ref": "#/$defs/nullable_string"},
+        "basis_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "source_manifest_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "projection_selector": {"$ref": "#/$defs/projection_selector"},
+        "projected_material_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "pin_proof_status": {
+          "type": "string",
+          "enum": ["CURRENT_AT_START", "PINNED_VALID", "PINNED_INVALID"]
+        },
+        "validator_id": {"type": "string", "minLength": 1},
+        "binding_receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "nullable_source_binding": {
+      "oneOf": [
+        {"$ref": "#/$defs/source_binding"},
+        {"type": "null"}
+      ]
+    },
+    "source_validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_contract",
+        "source_contract_version",
+        "validator_id",
+        "validation_result",
+        "failure_code",
+        "document_sha256",
+        "input_mode",
+        "read_request_id",
+        "basis_sha256",
+        "source_binding"
+      ],
+      "properties": {
+        "source_contract": {"$ref": "#/$defs/source_contract"},
+        "source_contract_version": {"type": "string", "minLength": 1},
+        "validator_id": {"type": "string", "minLength": 1},
+        "validation_result": {
+          "type": "string",
+          "enum": [
+            "LEDGER_READ_RESPONSE_VALID",
+            "STRUCTURAL_VALID",
+            "STRUCTURAL_VALID_OWNER_UNRESOLVED",
+            "SOURCE_VALIDATION_FAILED"
+          ]
+        },
+        "failure_code": {"$ref": "#/$defs/nullable_string"},
+        "document_sha256": {"$ref": "#/$defs/sha256"},
+        "input_mode": {
+          "type": "string",
+          "enum": [
+            "LEDGER_READ_RESPONSE",
+            "CALLER_PROVIDED_VALIDATED_OBJECT"
+          ]
+        },
+        "read_request_id": {"$ref": "#/$defs/nullable_string"},
+        "basis_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "source_binding": {"$ref": "#/$defs/nullable_source_binding"}
+      }
+    },
+    "loaded_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "need_id",
+        "object_ref",
+        "evidence_layer",
+        "parent_need_id",
+        "obligation_tier",
+        "material_text",
+        "material_sha256",
+        "why_loaded",
+        "source_validation",
+        "recall_disposition",
+        "recall_handle"
+      ],
+      "properties": {
+        "need_id": {"type": "string", "minLength": 1},
+        "object_ref": {"type": "string", "minLength": 1},
+        "evidence_layer": {"$ref": "#/$defs/evidence_layer"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
+        "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
+        "material_text": {"type": "string", "minLength": 1},
+        "material_sha256": {"$ref": "#/$defs/sha256"},
+        "why_loaded": {"type": "string", "minLength": 1},
+        "source_validation": {"$ref": "#/$defs/source_validation"},
+        "recall_disposition": {"$ref": "#/$defs/recall_disposition"},
+        "recall_handle": {"$ref": "#/$defs/nullable_string"}
+      }
+    },
+    "omitted_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "need_id",
+        "object_ref",
+        "evidence_layer",
+        "parent_need_id",
+        "obligation_tier",
+        "reason",
+        "source_validation",
+        "recall_disposition",
+        "recall_handle"
+      ],
+      "properties": {
+        "need_id": {"type": "string", "minLength": 1},
+        "object_ref": {"type": "string", "minLength": 1},
+        "evidence_layer": {"$ref": "#/$defs/evidence_layer"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
+        "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
+        "reason": {"type": "string", "minLength": 1},
+        "source_validation": {"$ref": "#/$defs/source_validation"},
+        "recall_disposition": {"$ref": "#/$defs/recall_disposition"},
+        "recall_handle": {"$ref": "#/$defs/nullable_string"}
+      }
+    },
+    "outstanding_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "need_id",
+        "object_ref",
+        "evidence_layer",
+        "parent_need_id",
+        "obligation_tier",
+        "category",
+        "reason_code",
+        "source_status",
+        "fatal",
+        "source_validation",
+        "recall_disposition",
+        "recall_handle"
+      ],
+      "properties": {
+        "need_id": {"type": "string", "minLength": 1},
+        "object_ref": {"type": "string", "minLength": 1},
+        "evidence_layer": {"$ref": "#/$defs/evidence_layer"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
+        "obligation_tier": {"$ref": "#/$defs/obligation_tier"},
+        "category": {
+          "type": "string",
+          "enum": [
+            "NOT_READ",
+            "UNRESOLVED",
+            "FAILED",
+            "NOT_DELIVERED",
+            "DEPENDENCY_BLOCKED"
+          ]
+        },
+        "reason_code": {"type": "string", "minLength": 1},
+        "source_status": {
+          "type": "string",
+          "enum": ["OK", "EMPTY", "REJECTED", "ERROR", "NOT_ATTEMPTED"]
+        },
+        "fatal": {"type": "boolean"},
+        "source_validation": {
+          "oneOf": [
+            {"$ref": "#/$defs/source_validation"},
+            {"type": "null"}
+          ]
+        },
+        "recall_disposition": {"$ref": "#/$defs/recall_disposition"},
+        "recall_handle": {"$ref": "#/$defs/nullable_string"}
+      }
+    },
+    "material_package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["loaded", "omitted", "outstanding", "package_sha256"],
+      "properties": {
+        "loaded": {"type": "array", "items": {"$ref": "#/$defs/loaded_item"}},
+        "omitted": {"type": "array", "items": {"$ref": "#/$defs/omitted_item"}},
+        "outstanding": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/outstanding_item"}
+        },
+        "package_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "trace_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "order",
+        "need_id",
+        "source_status",
+        "reason_code",
+        "why_loaded",
+        "validation_result",
+        "final_disposition",
+        "expansion_trigger",
+        "parent_need_id",
+        "trigger_provenance",
+        "binding_receipt_sha256"
+      ],
+      "properties": {
+        "order": {"type": "integer", "minimum": 1},
+        "need_id": {"type": "string", "minLength": 1},
+        "source_status": {
+          "type": "string",
+          "enum": ["OK", "EMPTY", "REJECTED", "ERROR", "NOT_ATTEMPTED"]
+        },
+        "reason_code": {"$ref": "#/$defs/nullable_string"},
+        "why_loaded": {"$ref": "#/$defs/nullable_string"},
+        "validation_result": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": [
+                "LEDGER_READ_RESPONSE_VALID",
+                "STRUCTURAL_VALID",
+                "STRUCTURAL_VALID_OWNER_UNRESOLVED",
+                "SOURCE_VALIDATION_FAILED"
+              ]
+            },
+            {"type": "null"}
+          ]
+        },
+        "final_disposition": {
+          "type": "string",
+          "enum": [
+            "LOADED",
+            "OMITTED",
+            "NOT_READ",
+            "UNRESOLVED",
+            "FAILED",
+            "NOT_DELIVERED",
+            "DEPENDENCY_BLOCKED"
+          ]
+        },
+        "expansion_trigger": {"$ref": "#/$defs/expansion_trigger"},
+        "parent_need_id": {"$ref": "#/$defs/nullable_string"},
+        "trigger_provenance": {"$ref": "#/$defs/nullable_trigger_provenance"},
+        "binding_receipt_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "trace_log": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["consumer_id", "events", "trace_log_sha256"],
+      "properties": {
+        "consumer_id": {"type": "string", "minLength": 1},
+        "events": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/trace_event"}},
+        "trace_log_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "short_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "scope",
+        "required_total",
+        "required_satisfied",
+        "required_missing",
+        "loaded_count",
+        "omitted_count",
+        "outstanding_count",
+        "evidence_layers_loaded",
+        "important_missing_need_ids",
+        "warnings",
+        "source_versions_used",
+        "package_sha256",
+        "trace_log_sha256",
+        "receipt_sha256"
+      ],
+      "properties": {
+        "status": {"type": "string", "enum": ["READY", "READY_WITH_GAPS", "STOPPED"]},
+        "scope": {"$ref": "#/$defs/scope"},
+        "required_total": {"type": "integer", "minimum": 0},
+        "required_satisfied": {"type": "integer", "minimum": 0},
+        "required_missing": {"type": "integer", "minimum": 0},
+        "loaded_count": {"type": "integer", "minimum": 0},
+        "omitted_count": {"type": "integer", "minimum": 0},
+        "outstanding_count": {"type": "integer", "minimum": 0},
+        "evidence_layers_loaded": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/evidence_layer"}
+        },
+        "important_missing_need_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "warnings": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "source_versions_used": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source_contract", "source_contract_version"],
+            "properties": {
+              "source_contract": {"$ref": "#/$defs/source_contract"},
+              "source_contract_version": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "package_sha256": {"$ref": "#/$defs/sha256"},
+        "trace_log_sha256": {"$ref": "#/$defs/sha256"},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "scope",
+        "basis_mode",
+        "request_sha256",
+        "plan_sha256",
+        "status",
+        "replay_status",
+        "material_package",
+        "short_receipt",
+        "trace_log",
+        "run_sha256"
+      ],
+      "properties": {
+        "contract": {"const": "C9_RETRIEVAL_RESULT"},
+        "version": {"const": "c9-unified-retrieval-run-v2"},
+        "scope": {"$ref": "#/$defs/scope"},
+        "basis_mode": {
+          "type": "string",
+          "enum": ["current_at_start", "pinned_manifest"]
+        },
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "plan_sha256": {"$ref": "#/$defs/sha256"},
+        "status": {"type": "string", "enum": ["READY", "READY_WITH_GAPS", "STOPPED"]},
+        "replay_status": {
+          "type": "string",
+          "enum": [
+            "REPLAYABLE_PINNED",
+            "AUDITABLE_CURRENT_NOT_REPLAYABLE",
+            "PINNED_REQUEST_NOT_REPLAYABLE"
+          ]
+        },
+        "material_package": {"$ref": "#/$defs/material_package"},
+        "short_receipt": {"$ref": "#/$defs/short_receipt"},
+        "trace_log": {"$ref": "#/$defs/trace_log"},
+        "run_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}
