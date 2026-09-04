@@ -73,6 +73,8 @@ uv run --locked python work/ccz142_candidate_authority_r01/self_check.py
 
 完整回归还包括 B01～B09 原测试。实际命令、数量和 SHA 见本目录离线回放报告与测试回执。
 
-R04 在施工分支与 `main@68e13f64e475eece2d7d7cf2e26597335a734129` 临时叠加树上均按独立组件入口通过 606 项，Ruff、自检和 Manifest 同时通过。完整分项见 `TEST_RECEIPT_R01.json`。
+R04 在施工分支与 `main@68e13f64e475eece2d7d7cf2e26597335a734129` 临时叠加树上均按独立组件入口通过 606 项。
+
+2026-09-04 随 PR #235 R05 重建树再次分进程跑本目录套件：writer 45、B01–B09 合计 583 passed（B07 现为 39、B08 现为 29，比 R04 回执多 15 项，来自 current main 后续提交，不是本目录新写的测试）。对齐 `main@f98609cb0399ba5e182ade501c4d70c8be20ed11`，merge `32c12dddbb5e4f37382d8e0ce3f6b2b2925c79e5`，PR head `fcc487a05b975c993e229f3d83ad783a0ec5c514`。本轮未重跑全仓 pytest。
 
 来源：Codex
