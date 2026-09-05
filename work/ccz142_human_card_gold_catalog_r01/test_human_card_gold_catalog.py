@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from self_check import PREFERRED, run_self_check  # noqa: E402
+from self_check import NEWBOOKS, PREFERRED, run_self_check  # noqa: E402
 
 
 def test_self_check_passes() -> None:
@@ -17,6 +17,8 @@ def test_self_check_passes() -> None:
     assert result["preferred"] == list(PREFERRED)
     assert result["window_count"] == 0
     assert result["read_novel_body"] is False
+    assert result["newbooks"] == list(NEWBOOKS)
+    assert result["second_batch_github_issue"] == 284
 
 
 def test_catalog_does_not_embed_chapter_windows_or_body() -> None:
@@ -25,6 +27,15 @@ def test_catalog_does_not_embed_chapter_windows_or_body() -> None:
     dumped = json.dumps(payload, ensure_ascii=False)
     assert "第1章" not in dumped
     assert "chapter_text" not in dumped
+
+
+def test_second_batch_does_not_steal_first_cap_or_old_books() -> None:
+    payload = json.loads((ROOT / "CATALOG.json").read_text(encoding="utf-8"))
+    second = payload["second_batch_newbooks"]
+    assert second["consumes_first_batch_cap"] is False
+    titles = [item["title"] for item in second["books"]]
+    assert titles == list(NEWBOOKS)
+    assert second["in_trial_seven"] is True
 
 
 def test_package_has_no_novel_body_files() -> None:

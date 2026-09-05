@@ -17,6 +17,7 @@ EXPECTED_FILES = {
     "MANIFEST.sha256",
 }
 PREFERRED = ("全职高手", "道诡异仙", "十日终焉")
+NEWBOOKS = ("炼气士不死于无限", "我在美恐科普都市传说", "请勿高考时渡劫")
 FORBIDDEN_KEYS = ("chapter_text", "novel_body", "excerpt", "source_paragraph")
 
 
@@ -113,6 +114,24 @@ def run_self_check() -> dict[str, Any]:
     caution = payload["preferred"][2]["caution"]
     require("因果大纲" in caution, "十日终焉应保留选窗警告")
 
+    second = payload["second_batch_newbooks"]
+    require(second["github_issue"] == 284, "第二批 github_issue 漂移")
+    require(second["status"] == "BOOKS_SELECTED_WINDOWS_NOT_YET", "第二批 status 漂移")
+    require(second["consumes_first_batch_cap"] is False, "第二批不得抢第一批额度")
+    require(second["in_trial_seven"] is True, "第二批应标明来自试拆新书")
+    require(second["in_repo_book_meta"] is False, "不得假装仓内已有这三行书目")
+    require(second["windows"] == [], "第二批不得登记章节窗口")
+    require(second["local_availability"] == "UNVERIFIED", "第二批不得假装已核本地正文")
+    new_titles = tuple(item["title"] for item in second["books"])
+    require(new_titles == NEWBOOKS, f"第二批三本漂移：{new_titles}")
+    for item in second["books"]:
+        require("corpus-downloads/_newbook_rank_20260804/books/" in item["corpus_rel"], "新书路径应落在 _newbook_rank")
+    new_title_set = set(new_titles)
+    require("庶女明兰传（知否）" not in new_title_set, "知否不得进第二批")
+    require("凡人修仙传" not in new_title_set, "凡人不得进第二批")
+    require("庆余年" not in new_title_set, "庆余年不得进第二批")
+    require("全职高手" not in new_title_set, "第一批书不得混进第二批")
+
     for blob in _walk_strings(payload):
         require(len(blob) < 400, "目录字符串过长，疑似正文")
 
@@ -122,12 +141,17 @@ def run_self_check() -> dict[str, Any]:
     require("知否" in readme and "凡人" in readme, "README 应写明这批不用知否／凡人")
     require("不自动换入庆余年" in readme or "不自动换入" in readme, "README 应写明不自动换入庆余年")
     require("PR #235" in readme, "README 应排除 #235")
+    for title in NEWBOOKS:
+        require(title in readme, f"README 缺第二批：{title}")
+    require("不抢第一批" in readme or "不消耗第一批" in readme, "README 应写明第二批不抢额度")
 
     return {
         "result": "PASS",
         "github_issue": 281,
+        "second_batch_github_issue": 284,
         "preferred": list(titles),
-        "window_count": len(payload["windows"]),
+        "newbooks": list(new_titles),
+        "window_count": len(payload["windows"]) + len(second["windows"]),
         "manifest_count": verify_manifest(),
         "read_novel_body": False,
         "zero_api": True,

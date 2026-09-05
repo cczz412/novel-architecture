@@ -79,5 +79,52 @@
     "structure_hooks_or_payoff_advice",
     "outbound_novel_body",
     "call_real_novel_api"
-  ]
+  ],
+  "second_batch_newbooks": {
+    "github_issue": 284,
+    "status": "BOOKS_SELECTED_WINDOWS_NOT_YET",
+    "gold_kind": "human_card_candidate_only",
+    "chapter_cap": 12,
+    "chapter_normal": {
+      "min": 8,
+      "max": 10
+    },
+    "consumes_first_batch_cap": false,
+    "reason": "newbook_unseen_by_models",
+    "in_trial_seven": true,
+    "windows": [],
+    "local_availability": "UNVERIFIED",
+    "in_repo_book_meta": false,
+    "books": [
+      {
+        "title": "炼气士不死于无限",
+        "trial_seven_slot": 5,
+        "corpus_rel": "corpus-downloads/_newbook_rank_20260804/books/炼气士不死于无限/"
+      },
+      {
+        "title": "我在美恐科普都市传说",
+        "trial_seven_slot": 6,
+        "corpus_rel": "corpus-downloads/_newbook_rank_20260804/books/我在美恐科普都市传说/"
+      },
+      {
+        "title": "请勿高考时渡劫",
+        "trial_seven_slot": 7,
+        "corpus_rel": "corpus-downloads/_newbook_rank_20260804/books/请勿高考时渡劫/"
+      }
+    ],
+    "backups_not_enabled": [
+      {
+        "title": "从磁场转动开始的魔法少女番！",
+        "reason": "backup_only_if_swap"
+      },
+      {
+        "title": "系统想害我，我选择上交国家",
+        "reason": "backup_only_if_swap"
+      },
+      {
+        "title": "末日来袭，我能无限升级庇护所",
+        "reason": "backup_only_if_swap"
+      }
+    ]
+  }
 }
