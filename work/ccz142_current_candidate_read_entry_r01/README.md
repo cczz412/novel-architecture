@@ -81,3 +81,5 @@ uv run --locked --offline python -B -m pytest -p no:cacheprovider -q work/ccz142
 来源：ChatGPT
 
 GitHub #274 起，入口里的三张离线副本随预览样张更新，并钉 `main@62a40317` 为这轮基线。
+
+GitHub #276 起，入口三张离线副本随预览样张更新，并钉 `main@71b1cc6` 为这轮基线。

@@ -15,20 +15,20 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ENTRY_NAME = "打开人话结果卡.html"
-SOURCE_COMMIT = "62a40317f92c15402b5f7d31bcbfaedc5b3bae72"
+SOURCE_COMMIT = "71b1cc6b71bf7b0ca67771d27d3f7d45c52d4cc7"
 SOURCE_DIR = Path("work/ccz142_current_candidate_read_preview_r01/samples")
 EXPECTED = {
     "fixture_layout.html": (
-        "d663f01e2c3b9f90bab4bb2185b61752bdf8ff04d0c9ffe9cb85d6ba5f0512a9",
-        "52b9eeb9a0838643b45980d6cf42fc81c4cab711",
+        "dd75f04ebeeda6d7668510e60d62460593f117d16d6f01296d2cc83fd8231b52",
+        "b0ed7d609bad46fa5db655eea19288cc90ac9165",
     ),
     "no_live_store.html": (
         "1f2dc32009c59fc19980b15a4c48bb0e7b2c0930c5308ad3bb314bb2d0719a06",
         "72e95d7070c14d46e70c085bae31e3b21bff9f11",
     ),
     "types_layout.html": (
-        "8b0eaa1a96a335913af8db4629b8ecc160b34e42eadbae6d130da8200b8c5bc5",
-        "6ba924c1360104feaeab3bda103d407c05c1732c",
+        "70a98cc4a191508b5244f63cd9f89df75f36206f1cf04fb715771c01526fee20",
+        "a68f2b26092ab3aa40e02a6b900513017fb7c7a8",
     ),
 }
 LINKS = {
@@ -140,7 +140,7 @@ def check_entry(entry_dir: Path = HERE, source_root: Path | None = None) -> dict
     require(all(link.get("target") in (None, "_self") for link in landing.links),
             "链接应在原标签页打开，方便返回")
     text = "".join(landing.text)
-    for token in ("FIXTURE_ONLY", "不检查活库", "GAP_NO_LIVE_STORE", "main@62a40317"):
+    for token in ("FIXTURE_ONLY", "不检查活库", "GAP_NO_LIVE_STORE", "main@71b1cc6"):
         require(token in text, f"入口缺身份说明：{token}")
 
     for name, (sha256, blob_sha1) in EXPECTED.items():

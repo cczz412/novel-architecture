@@ -123,6 +123,10 @@ def render_markdown(proof: dict[str, Any]) -> str:
                 lines.append(f"- 类型：{kind}")
             if evidence:
                 lines.append(f"- 证据：{evidence}")
+            stable = str(item.get("stable_item_id") or "").strip() or SCOPE_UNPROVIDED
+            source_location = str(item.get("source_location") or "").strip() or SCOPE_UNPROVIDED
+            lines.append(f"- 稳定条目：{stable}")
+            lines.append(f"- 原文位置：{source_location}")
             if isinstance(speaker, str) and speaker:
                 lines.append(f"- 说话人：{speaker}")
             lines.append("")

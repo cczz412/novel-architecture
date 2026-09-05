@@ -21,7 +21,10 @@
     "status",
     "evidence",
     "kind",
-    "speaker?"
+    "speaker?",
+    "stable_item_id",
+    "match_locations",
+    "source_location"
   ],
   "gap_codes": [
     "GAP_NO_LIVE_STORE",
@@ -50,5 +53,5 @@
     "chapter_completeness",
     "density"
   ],
-  "github_issue_follow_on": 274
+  "github_issue_follow_on": 276
 }

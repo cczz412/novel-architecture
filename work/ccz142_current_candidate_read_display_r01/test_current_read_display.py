@@ -86,6 +86,8 @@ def test_fixture_store_page_shows_human_items(tmp_path: Path) -> None:
     assert "### 1. 甲进入北塔。" in page
     assert "状态：已发生" in page
     assert "证据：甲走进北塔。" in page
+    assert "稳定条目：lin_" in page
+    assert "原文位置：责任段 1，字节 0–18；责任段 1，字节 39–57" in page
     assert "说话人：旁白" in page
     assert EMPTY_READ_GAPS in page.split("## 缺口", 1)[1]
 
@@ -111,6 +113,8 @@ def test_layout_sample_is_not_a_live_product_card() -> None:
     assert "样张" in sample
     assert "不是活库读出" in sample
     assert "甲进入北塔。" in sample
+    assert "稳定条目：未提供" in sample
+    assert "原文位置：未提供" in sample
     assert "产品权威" in sample
     assert "## 写法指导" not in sample
 

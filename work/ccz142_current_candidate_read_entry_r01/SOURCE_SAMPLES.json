@@ -2,7 +2,7 @@
   "status": "CONSTRUCTION_DRAFT__NOT_MERGED",
   "github_issue": 270,
   "linear_issue": "CCZ-142",
-  "source_commit": "62a40317f92c15402b5f7d31bcbfaedc5b3bae72",
+  "source_commit": "71b1cc6b71bf7b0ca67771d27d3f7d45c52d4cc7",
   "reuse": "BYTE_IDENTICAL_OFFLINE_COPIES",
   "live_store_checked": false,
   "product_adopted": false,
@@ -10,10 +10,10 @@
     {
       "local_path": "samples/fixture_layout.html",
       "source_path": "work/ccz142_current_candidate_read_preview_r01/samples/fixture_layout.html",
-      "source_git_blob_sha1": "52b9eeb9a0838643b45980d6cf42fc81c4cab711",
-      "sha256": "d663f01e2c3b9f90bab4bb2185b61752bdf8ff04d0c9ffe9cb85d6ba5f0512a9",
-      "size_bytes": 2736,
-      "source_url": "https://github.com/cczz412/novel-architecture/blob/62a40317f92c15402b5f7d31bcbfaedc5b3bae72/work/ccz142_current_candidate_read_preview_r01/samples/fixture_layout.html"
+      "source_git_blob_sha1": "b0ed7d609bad46fa5db655eea19288cc90ac9165",
+      "sha256": "dd75f04ebeeda6d7668510e60d62460593f117d16d6f01296d2cc83fd8231b52",
+      "size_bytes": 2872,
+      "source_url": "https://github.com/cczz412/novel-architecture/blob/71b1cc6b71bf7b0ca67771d27d3f7d45c52d4cc7/work/ccz142_current_candidate_read_preview_r01/samples/fixture_layout.html"
     },
     {
       "local_path": "samples/no_live_store.html",
@@ -21,15 +21,15 @@
       "source_git_blob_sha1": "72e95d7070c14d46e70c085bae31e3b21bff9f11",
       "sha256": "1f2dc32009c59fc19980b15a4c48bb0e7b2c0930c5308ad3bb314bb2d0719a06",
       "size_bytes": 2185,
-      "source_url": "https://github.com/cczz412/novel-architecture/blob/62a40317f92c15402b5f7d31bcbfaedc5b3bae72/work/ccz142_current_candidate_read_preview_r01/samples/no_live_store.html"
+      "source_url": "https://github.com/cczz412/novel-architecture/blob/71b1cc6b71bf7b0ca67771d27d3f7d45c52d4cc7/work/ccz142_current_candidate_read_preview_r01/samples/no_live_store.html"
     },
     {
       "local_path": "samples/types_layout.html",
       "source_path": "work/ccz142_current_candidate_read_preview_r01/samples/types_layout.html",
-      "source_git_blob_sha1": "6ba924c1360104feaeab3bda103d407c05c1732c",
-      "sha256": "8b0eaa1a96a335913af8db4629b8ecc160b34e42eadbae6d130da8200b8c5bc5",
-      "size_bytes": 3098,
-      "source_url": "https://github.com/cczz412/novel-architecture/blob/62a40317f92c15402b5f7d31bcbfaedc5b3bae72/work/ccz142_current_candidate_read_preview_r01/samples/types_layout.html"
+      "source_git_blob_sha1": "a68f2b26092ab3aa40e02a6b900513017fb7c7a8",
+      "sha256": "70a98cc4a191508b5244f63cd9f89df75f36206f1cf04fb715771c01526fee20",
+      "size_bytes": 3370,
+      "source_url": "https://github.com/cczz412/novel-architecture/blob/71b1cc6b71bf7b0ca67771d27d3f7d45c52d4cc7/work/ccz142_current_candidate_read_preview_r01/samples/types_layout.html"
     }
   ]
 }
