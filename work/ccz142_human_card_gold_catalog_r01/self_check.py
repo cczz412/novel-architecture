@@ -75,11 +75,28 @@ def run_self_check() -> dict[str, Any]:
     payload = json.loads((ROOT / "CATALOG.json").read_text(encoding="utf-8"))
     require(payload["package_id"] == "ccz142_human_card_gold_catalog_r01", "package_id 漂移")
     require(payload["github_issue"] == 281, "github_issue 漂移")
-    require(payload["status"] == "BOOKS_SELECTED_WINDOWS_NOT_YET", "status 漂移")
+    require(payload["windows_github_issue"] == 289, "windows_github_issue 漂移")
+    require(payload["status"] == "WINDOWS_CANDIDATE_REGISTERED", "status 漂移")
     require(payload["gold_kind"] == "human_card_candidate_only", "gold_kind 漂移")
-    require(payload["windows"] == [], "本票不得登记章节窗口")
+    require(payload["body_read"] is False, "不得声称已读正文")
+    require(payload["usage_rights"] == "NOT_GRANTED_FOR_THIS_EVAL", "不得假装本次用途已放行")
     require(payload["chapter_cap"] == 12, "章数上限漂移")
-    require(payload["local_availability"] == "UNVERIFIED", "不得假装已核本地正文")
+    require(payload["local_availability"] == "FILES_PRESENT_RIGHTS_NOT_GRANTED", "本地核验口径漂移")
+    first_chapters = [ch for window in payload["windows"] for ch in window["chapters"]]
+    require(len(first_chapters) == 10, f"第一批章数应为 10：{first_chapters}")
+    require(len(first_chapters) <= payload["chapter_cap"], "第一批超过上限")
+    require(first_chapters == [1, 2, 9, 10, 1, 2, 3, 4, 1, 2], "第一批章号漂移")
+    require(all(isinstance(ch, int) for ch in first_chapters), "章号必须是数字")
+    gold = payload["gold_review"]
+    require(gold["current_stage"] == "unreviewed_candidate", "金标不得提前升格")
+    require(gold["constructor_makes_candidates_only"] is True, "施工只能交候选")
+    require("未独立人工复核" in gold["unreviewed_label"], "未审名称漂移")
+    require("待采纳" in gold["reviewed_pending_adopt_label"], "待采纳名称漂移")
+    require("已独立人工复核并采纳" in gold["adopted_label"], "已采纳名称漂移")
+    density = payload["density_copy"]
+    require(density["no_percents"] is True, "密度不得改成可写百分数")
+    require("尚未提供" in density["unprovided"], "密度尚未提供口径漂移")
+    require("B02" in density["coverage_unprovided"], "覆盖尚未提供口径漂移")
 
     titles = tuple(item["title"] for item in payload["preferred"])
     require(titles == PREFERRED, f"优先三本漂移：{titles}")
@@ -113,15 +130,27 @@ def run_self_check() -> dict[str, Any]:
 
     caution = payload["preferred"][2]["caution"]
     require("因果大纲" in caution, "十日终焉应保留选窗警告")
+    require("正文未读" in caution, "十日终焉应标明正文未读")
+    dumped = json.dumps(payload, ensure_ascii=False)
+    require("第1章" not in dumped, "目录不得写入第N章正文标题")
+    window_titles = [item["title"] for item in payload["windows"]]
+    require(window_titles == list(PREFERRED), "第一批窗口书名漂移")
 
     second = payload["second_batch_newbooks"]
+    second_window_titles = [item["title"] for item in second["windows"]]
+    require(second_window_titles == list(NEWBOOKS), "第二批窗口书名漂移")
     require(second["github_issue"] == 284, "第二批 github_issue 漂移")
-    require(second["status"] == "BOOKS_SELECTED_WINDOWS_NOT_YET", "第二批 status 漂移")
+    require(second["windows_github_issue"] == 289, "第二批 windows_github_issue 漂移")
+    require(second["status"] == "WINDOWS_CANDIDATE_REGISTERED", "第二批 status 漂移")
     require(second["consumes_first_batch_cap"] is False, "第二批不得抢第一批额度")
     require(second["in_trial_seven"] is True, "第二批应标明来自试拆新书")
     require(second["in_repo_book_meta"] is False, "不得假装仓内已有这三行书目")
-    require(second["windows"] == [], "第二批不得登记章节窗口")
-    require(second["local_availability"] == "UNVERIFIED", "第二批不得假装已核本地正文")
+    require(second["body_read"] is False, "第二批不得声称已读正文")
+    require(second["usage_rights"] == "NOT_GRANTED_FOR_THIS_EVAL", "第二批不得假装本次用途已放行")
+    require(second["local_availability"] == "FILES_PRESENT_RIGHTS_NOT_GRANTED", "第二批本地核验口径漂移")
+    second_chapters = [ch for window in second["windows"] for ch in window["chapters"]]
+    require(second_chapters == [1, 2, 15, 16, 1, 2, 29, 30, 10, 11], "第二批章号漂移")
+    require(len(second_chapters) <= second["chapter_cap"], "第二批超过上限")
     new_titles = tuple(item["title"] for item in second["books"])
     require(new_titles == NEWBOOKS, f"第二批三本漂移：{new_titles}")
     for item in second["books"]:
@@ -144,6 +173,9 @@ def run_self_check() -> dict[str, Any]:
     for title in NEWBOOKS:
         require(title in readme, f"README 缺第二批：{title}")
     require("不抢第一批" in readme or "不消耗第一批" in readme, "README 应写明第二批不抢额度")
+    require("未独立人工复核" in readme, "README 应写明未审名称")
+    require("尚未提供" in readme, "README 应保留密度尚未提供")
+    require("289" in readme, "README 应挂窗口施工票")
 
     return {
         "result": "PASS",
@@ -151,7 +183,8 @@ def run_self_check() -> dict[str, Any]:
         "second_batch_github_issue": 284,
         "preferred": list(titles),
         "newbooks": list(new_titles),
-        "window_count": len(payload["windows"]) + len(second["windows"]),
+        "window_count": len(first_chapters) + len(second_chapters),
+        "windows_github_issue": 289,
         "manifest_count": verify_manifest(),
         "read_novel_body": False,
         "zero_api": True,
