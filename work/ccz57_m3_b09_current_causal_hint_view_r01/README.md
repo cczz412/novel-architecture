@@ -1,5 +1,7 @@
 # CCZ-57 M3 B-09｜当前因果提示纯派生视图 R01
 
+> **按需支路。** 不进第一张人话结果卡的默认链。日常只看「抽出了什么」时不要从这里开工。代码和路径全留，不是删除令。需要只读因果提示清单时再进本目录。别拿这张视图冒充人话结果卡。
+
 这块只解决一个问题：把 B-04～B-08 的当前权威现场，临时投影成一张给 CCZ-142 后续适配器使用的只读检查清单。
 
 它不是新账本，也不保存提示。每次读取都会重新核对 active route、B-02／policy／gate 新鲜度、live pointer、B-07 run、B-08 对分类／覆盖／segment／pointer／MergeReceipt 的完整 exact-current 判断和 B-01 locator。视图自身还会逐项校验 authority scope 与 current lineage／evidence locator 的标识、合同、ref、JSON pointer 和 hash，并要求全部 hint 共用同一个 route receipt 和 lifecycle head；重算顶层 `view_hash` 也不能掩盖畸形或混合权威。读完得到的 `CurrentCausalHintView` 用完即丢。
