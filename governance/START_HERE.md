@@ -4,16 +4,28 @@
 
 ## 唯一真源
 
-工程线唯一真源是本 GitHub 仓库 [`cczz412/novel-architecture`](https://github.com/cczz412/novel-architecture)。所有窗口（含本地 Agent）只在这里读、只在这里干活。
+工程线唯一真源仍是本 GitHub 仓库 [`cczz412/novel-architecture`](https://github.com/cczz412/novel-architecture)。动代码、改合同、合 PR，只在这里。
 
-Notion 工程镜像制度已取消，本地镜像也取消。Notion 旧监督页／账序页已盖停更章，只当历史存档，不能再当施工入口。
+四台不要混：
 
-拍板出处：CZ 2026-08-22 21:47 +08:00，经 Notion AI 对话。落账见 [DR-20260822-02](decision_records/DR-20260822-02.md)。
+| 地方 | 干什么 | 入口 |
+|---|---|---|
+| GitHub | 工程合同、代码、PR、施工授权 | 本仓 |
+| Linear | 有结束点的任务、父子、硬前置 | [novel-architecture](https://linear.app/ccz/project/novel-architecture-e0f2a433c335) |
+| Notion | 长期说明、已拍口径、原话档案 | [当前口径入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133) |
+| Slack `#施工` | 现场短通知 | [#施工](https://novel-architecture.slack.com/archives/C0BRYSBUJKX) |
+| Slack `#主控聊天` | 批复、阶段门、跨工具批准 | [#主控聊天](https://novel-architecture.slack.com/archives/C0BTPJ1FMCY) |
+
+读 Notion 那一页不等于开工。登记不等于工程采纳。Notion 旧监督页／账序页仍是历史存档，不能当施工入口，也不能冒充工程真源。
+
+干活用的插件就这几个：GitHub（Issue／PR）、Linear（票和依赖）、Notion（口径和原话）、Slack（只进任务卡点名的频道）。普通窗口默认只报 `#施工`，不要因为连着了就去读完整 `#主控聊天`。
+
+拍板出处：工程真源唯一化见 [DR-20260822-02](decision_records/DR-20260822-02.md)；四台分工见 CZ 2026-09-05，落账 GitHub [#262](https://github.com/cczz412/novel-architecture/issues/262)。
 
 ## 先读顺序
 
 1. 本页 [`governance/START_HERE.md`](START_HERE.md)
-2. 三边怎么分工：[GitHub / Linear / Slack 协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)（正式施工仍以 GitHub Issues 为准；规划／过程票见 Linear；短通知进 Slack #施工）
+2. 四台怎么分工：[GitHub / Linear / Notion / Slack 协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)（正式施工仍以 GitHub Issues 为准；任务看 Linear；当前口径看 Notion；短通知进 `#施工`，批复进 `#主控聊天`）
 3. 建票／拆票／依赖：[Agent 必读：建票、拆票与依赖规则](agent_ticket_rules.md)（R1–R5；查依赖先读 [CCZ-77](https://linear.app/ccz/issue/CCZ-77)）
 4. 整体看任务：先读 Linear 的[建票、拆票与依赖规则](https://linear.app/ccz/document/00agent-必读linear-建票拆票与依赖规则codex-aea4df7ecca6)，再看项目最新 Update 和 [CCZ-77 路线入口](https://linear.app/ccz/issue/CCZ-77)；推荐用 `$linear-github-task-map` 输出图和表。
 5. 工程施工：[GitHub Issues](https://github.com/cczz412/novel-architecture/issues) 与 [Pull requests](https://github.com/cczz412/novel-architecture/pulls)。

@@ -1,12 +1,18 @@
-# GitHub / Linear / Slack 协作约定
+# GitHub / Linear / Notion / Slack 协作约定
 
-说白了就一件事：三个地方各干各的，不必票票对齐。
+说白了就一件事：四个地方各干各的，不必票票对齐。
 
 | 地方 | 干什么 |
 |---|---|
-| Slack | 短通知（干完／卡住＋链接）进 #施工；不当看板，不写长过程账 |
-| Linear | 想清楚、过程账／依赖 |
-| GitHub | 正式施工合同 + PR 合流 |
+| GitHub | 正式施工合同 + PR 合流。工程真源。 |
+| Linear | 有结束点的任务、过程账、依赖 |
+| Notion | 长期说明、已拍口径、原话档案。不是工程真源，也不是施工入口。 |
+| Slack `#施工` | 现场短通知（干完／卡住＋链接）。不当看板。 |
+| Slack `#主控聊天` | 批复、阶段门、跨工具批准。不接每次票态、提交或窗口心跳。 |
+
+当前口径入口：[Notion 当前口径](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)。读那页 ≠ 开工。
+
+干活插件：GitHub、Linear、Notion、Slack。单票干活用 GitHub 或 Linear 插件打开目标票。查已拍口径用 Notion 插件打开上面那页。Slack 只进任务卡点名的频道；普通受控窗默认 `#施工`，不能因为连着了就读完整 `#主控聊天`。
 
 ## 整体看项目时怎么读
 
@@ -41,13 +47,19 @@ CZ 指定去哪领就去哪领。
 
 Linear 可以放详细处理笔记、评论、附件。代码和 review 留在 GitHub PR。
 
-## Slack 短通知
+## Slack 两个频道
 
 短通知只进 [#施工](https://novel-architecture.slack.com/archives/C0BRYSBUJKX)（id `C0BRYSBUJKX`）。
 
 - 发什么：一两句＋Issue／Linear／PR 链接。干完或卡住就报一声。
 - 不发什么：长思考、完整过程账。那些去 Linear，或写在 GitHub 施工票上。
 - 为啥：Slack 是按时间往下刷的时间线；过程账按票记在 Linear。别把 Slack 当看板。
+
+批复、阶段门、依赖重排、基线切换和跨工具批准进 [#主控聊天](https://novel-architecture.slack.com/archives/C0BTPJ1FMCY)（id `C0BTPJ1FMCY`）。
+
+- 真正往那里发决定，要有当次授权；消息标明身份，并点名范围、结论、证据链接和下一停点。
+- 长期决定仍落 Notion，任务关系仍落 Linear，工程状态仍落 GitHub。
+- `#主控聊天` 不接每次票态变化、提交、窗口心跳，或 Linear 已经自动播报的内容。
 
 ## 不要删已关闭的 GitHub Issues
 
@@ -58,6 +70,9 @@ Linear 可以放详细处理笔记、评论、附件。代码和 review 留在 G
 - Linear 项目：[novel-architecture](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)
 - [仅 Todo](https://linear.app/ccz/project/novel-architecture-e0f2a433c335/view/5b44bca5-7143-4ea4-b849-21ab2babd8de)
 - [施工](https://linear.app/ccz/project/novel-architecture-e0f2a433c335/view/1204cd3d-a372-4e37-913d-c18d3de1afbe)
+- Notion 当前口径：[当前口径入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)
+- Slack `#施工`：[#施工](https://novel-architecture.slack.com/archives/C0BRYSBUJKX)
+- Slack `#主控聊天`：[#主控聊天](https://novel-architecture.slack.com/archives/C0BTPJ1FMCY)
 - 开着的票系统盘点（可选）：[2026-08-24](https://linear.app/ccz/document/开着的票-系统盘点2026-08-24-9fb758cd5574)
 
-来源：CZ 拍板（2026-08-24）
+来源：CZ 拍板（2026-08-24）；四台与双频道补丁 CZ 2026-09-05，GitHub [#262](https://github.com/cczz412/novel-architecture/issues/262)
