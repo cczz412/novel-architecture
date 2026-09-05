@@ -1,0 +1,83 @@
+{
+  "package_id": "ccz142_human_card_gold_catalog_r01",
+  "github_issue": 281,
+  "baseline": "main@f27d08be93219e84ad55ad3a58ad51646f1a4746",
+  "status": "BOOKS_SELECTED_WINDOWS_NOT_YET",
+  "gold_kind": "human_card_candidate_only",
+  "chapter_cap": 12,
+  "chapter_normal": {
+    "min": 8,
+    "max": 10
+  },
+  "windows": [],
+  "local_availability": "UNVERIFIED",
+  "preferred": [
+    {
+      "title": "全职高手",
+      "selected_for_this_batch": true,
+      "in_trial_seven": false,
+      "book_meta_index_row": true,
+      "pointers": [
+        "references/corpus-pointers.md",
+        "references/book-meta/INDEX.md"
+      ],
+      "corpus_rel": "corpus-downloads/06_系统关卡/全职高手/"
+    },
+    {
+      "title": "道诡异仙",
+      "selected_for_this_batch": true,
+      "in_trial_seven": false,
+      "book_meta_index_row": true,
+      "pointers": [
+        "references/corpus-pointers.md",
+        "references/book-meta/INDEX.md"
+      ],
+      "corpus_rel": "corpus-downloads/03_多视角/道诡异仙/"
+    },
+    {
+      "title": "十日终焉",
+      "selected_for_this_batch": true,
+      "in_trial_seven": false,
+      "book_meta_index_row": false,
+      "pointers": [
+        "references/corpus-pointers.md"
+      ],
+      "corpus_rel": "corpus-downloads/04_悬疑信息差/十日终焉/",
+      "caution": "试拆七本书单写它仍只有因果大纲、不当事实句。本批仍按拍板列入优先；选窗前要核对本地是否有可对照章节。"
+    }
+  ],
+  "not_this_batch": [
+    {
+      "title": "庶女明兰传（知否）",
+      "aliases": [
+        "知否"
+      ],
+      "reason": "overlap_trial_seven",
+      "trial_seven_slot": 3,
+      "selected_for_this_batch": false
+    },
+    {
+      "title": "凡人修仙传",
+      "aliases": [
+        "凡人"
+      ],
+      "reason": "overlap_trial_seven",
+      "trial_seven_slot": 2,
+      "selected_for_this_batch": false
+    }
+  ],
+  "not_auto_included": [
+    {
+      "title": "庆余年",
+      "reason": "not_picked_for_swap",
+      "selected_for_this_batch": false
+    }
+  ],
+  "forbidden": [
+    "novel_body_in_repo",
+    "full_book_dissect",
+    "structure_hooks_or_payoff_advice",
+    "outbound_novel_body",
+    "call_real_novel_api"
+  ]
+}
