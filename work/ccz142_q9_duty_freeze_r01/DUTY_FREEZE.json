@@ -1,0 +1,44 @@
+{
+  "package_id": "ccz142_q9_duty_freeze_r01",
+  "github_issue": 280,
+  "baseline": "main@f27d08be93219e84ad55ad3a58ad51646f1a4746",
+  "status": "SIGNPOST_ONLY",
+  "frozen_duties": [
+    {
+      "id": "facts_and_source",
+      "label_zh": "事实与来源"
+    },
+    {
+      "id": "coverage_and_misses",
+      "label_zh": "覆盖与漏抽"
+    },
+    {
+      "id": "same_result_card",
+      "label_zh": "同一张结果卡"
+    }
+  ],
+  "explicitly_deferred": [
+    "wire_b02_coverage_numbers",
+    "declare_best_model"
+  ],
+  "on_demand_not_first_card_default": [
+    {
+      "module": "B03",
+      "path": "work/ccz57_m3_b03_bound_evidence_read_r03_5"
+    },
+    {
+      "module": "B04",
+      "path": "work/ccz57_m3_b04_patch_atomic_group_r03_5"
+    },
+    {
+      "module": "B05",
+      "path": "work/ccz57_m3_b05_patch_route_r03_5"
+    },
+    {
+      "module": "B09",
+      "path": "work/ccz57_m3_b09_current_causal_hint_view_r01"
+    }
+  ],
+  "keep_side_path_code": true,
+  "not_a_delete_order": true
+}
