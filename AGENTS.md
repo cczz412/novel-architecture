@@ -14,7 +14,7 @@
 
 ## 1. Repository entry / authority
 
-- 上工先读 [`governance/START_HERE.md`](governance/START_HERE.md)。工程真源是 GitHub；有结束点的任务看 Linear；当前口径看 [Notion 当前口径入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)；短通知进 Slack `#施工`，批复／阶段门进 Slack `#主控聊天`。读 Notion ≠ 开工。细则见[协作约定](governance/COLLAB_GITHUB_LINEAR_SLACK.md)。
+- 上工先读 [`governance/START_HERE.md`](governance/START_HERE.md)。工程真源是 GitHub；有结束点的任务看 Linear；当前产品口径看 Linear 模块票顶部（产品题 [CCZ-158](https://linear.app/ccz/issue/CCZ-158)，人话卡 [CCZ-142](https://linear.app/ccz/issue/CCZ-142)）。Notion [原话／拍板台账](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133) 只当档案，不当当前。短通知进 Slack `#施工`，批复／阶段门进 Slack `#主控聊天`。读 Notion ≠ 开工。细则见[协作约定](governance/COLLAB_GITHUB_LINEAR_SLACK.md)。
 - 仓库里的[治理索引](governance/INDEX.md)只负责稳定寻路，不保存整体任务进度。查看主线、支线、领票、父子关系、硬前置、阻塞和可并行工作时，现场读取 [Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)；查看施工 Issue、PR、检查和合并时，现场读取 [GitHub](https://github.com/cczz412/novel-architecture)。整体查看优先用个人 Skill `$linear-github-task-map`，单票施工直接用 Linear／GitHub 插件。细则见[协作约定](governance/COLLAB_GITHUB_LINEAR_SLACK.md)。
 - [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json) 是带日期的技术兼容／控制快照，供现有工具读取旧机器字段；它不是全局任务地图，不能据此判断当前谁在做、哪些票被领、最新阻塞或下一张票。
 - 当前版本、路径和候选身份只认 [`governance/current_pointers.json`](governance/current_pointers.json)；它不保存全局任务进度、运行成绩或领票状态，也不替产品或领域 CURRENT 拍板。
@@ -45,7 +45,8 @@
 | 做 Repo Bridge 交接／外审 | `experiments/repo_bridge_v1_prototype_20260807/README.md` | 当前任务的 handoff／review 包 |
 | 做 ChatGPT 外发包 | `config/review_pack/README.md` | `config/review_pack/routes.json` |
 | Cursor 窗口 Skill（团队／便宜助手／探路／外发） | `.cursor/skills/` | 外发打包仍回 `config/review_pack/README.md` |
-| 查当前已拍口径／长期说明 | [Notion 当前口径入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133) | 产品题 Q1–Q29 看 [CCZ-158](https://linear.app/ccz/issue/CCZ-158)；读那页 ≠ 开工 |
+| 查当前产品口径 | Linear 模块票顶部当前层；产品题看 [CCZ-158](https://linear.app/ccz/issue/CCZ-158) | 人话卡看 [CCZ-142](https://linear.app/ccz/issue/CCZ-142)。只认票顶「当前」层，Done 不等于已经做成 |
+| 查原话或拍板台账 | [Notion 档案入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133) | 不当现在还算数；读那页 ≠ 开工 |
 | 查四台和插件频道 | [`governance/START_HERE.md`](governance/START_HERE.md) | [协作约定](governance/COLLAB_GITHUB_LINEAR_SLACK.md) |
 | 看整体任务进度 | 现场读取 Linear | 再现场读取 GitHub Issue／PR／合并；不从仓库静态页猜 |
 | 决定新文件放哪 | `governance/indexes/new_file_routing.md` | `governance/directory_registry.json` |

@@ -5,7 +5,7 @@
 - 上工先读：[`governance/START_HERE.md`](governance/START_HERE.md)
 - 看整体任务进度、领票、阻塞与并行线：[Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)；推荐用 `$linear-github-task-map` 同时核对 GitHub。
 - 看工程施工、PR 与合并：[GitHub](https://github.com/cczz412/novel-architecture)。
-- 看当前已拍口径／长期说明：[Notion 当前口径入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)。读那页 ≠ 开工。
+- 看当前产品口径：Linear 模块票顶部当前层，产品题看 [CCZ-158](https://linear.app/ccz/issue/CCZ-158)。原话／拍板台账仍在 [Notion 档案入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)，不当现在还算数。读 Notion ≠ 开工。
 - 短通知进 Slack [#施工](https://novel-architecture.slack.com/archives/C0BRYSBUJKX)；批复／阶段门进 [#主控聊天](https://novel-architecture.slack.com/archives/C0BTPJ1FMCY)。普通窗口不要去读完整 `#主控聊天`。
 - 看仓库稳定入口：[`governance/INDEX.md`](governance/INDEX.md)
 - 现有工具读取带日期的技术兼容字段：[`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)；它不是全局任务地图。
