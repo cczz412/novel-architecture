@@ -34,7 +34,8 @@ uv run --locked python work/ccz142_current_candidate_read_display_r01/show.py --
 - 事实、状态、证据
 - 能标则标：传闻／怀疑、误信、未证实
 - 身份横幅：`FIXTURE_ONLY`，不是产品权威
-- 覆盖／漏抽：写明这层还没接到 B02，不编数字
+- 覆盖／漏抽尚未提供：这张卡还没接到 B02，本卡目前不能判断是否抽全
+- 密度（仅说明本次已返回的候选）：尚未提供。不写百分数
 
 没有修补建议，也没有写法指导。
 
@@ -56,6 +57,6 @@ uv run --locked python work/ccz142_current_candidate_read_display_r01/self_check
 
 来源：Cursor
 
-本包随 GitHub #274 补上「这张卡对应哪一段」和密度尚未提供，不编数字。单一指针读成功不再写成整章已抽完。
+本包随 GitHub #274 补上「这张卡对应哪一段」和密度尚未提供。GitHub #289 把这两句改成顾问拍定的口径，仍不编数字。单一指针读成功不再写成整章已抽完。
 
 GitHub #276 起，每条事实写出稳定条目和原文位置；样张没有定位时写未提供。

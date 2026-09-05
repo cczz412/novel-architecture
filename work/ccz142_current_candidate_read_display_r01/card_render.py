@@ -22,8 +22,8 @@ from current_read_proof import STATUS_READ_OK, prove_current_read  # noqa: E402
 DOCUMENT_IDENTITY = "CCZ142-CURRENT-CANDIDATE-READ-DISPLAY-R01"
 GITHUB_ISSUE = 266
 BASE_MAIN_SHA = "177c5832df9527cdcee3eaa513aafeda335550ea"
-COVERAGE_NOT_WIRED = "覆盖／漏抽：这层还没接到 B02，不编数字。"
-DENSITY_NOT_WIRED = "密度：这层尚未提供，不编数字。"
+COVERAGE_NOT_WIRED = "覆盖／漏抽尚未提供：这张卡还没接到 B02，本卡目前不能判断是否抽全。"
+DENSITY_NOT_WIRED = "密度（仅说明本次已返回的候选）：尚未提供。还没有可核对的候选信息分布说明。"
 EMPTY_READ_GAPS = "读取缺口：无。这不等于没有漏抽。"
 CARD_TITLE = "抽出了什么（人话结果卡）"
 SCOPE_UNPROVIDED = "未提供"
