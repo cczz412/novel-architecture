@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 from pathlib import Path
@@ -19,6 +20,20 @@ EXPECTED_FILES = {
 PREFERRED = ("全职高手", "道诡异仙", "十日终焉")
 NEWBOOKS = ("炼气士不死于无限", "我在美恐科普都市传说", "请勿高考时渡劫")
 FORBIDDEN_KEYS = ("chapter_text", "novel_body", "excerpt", "source_paragraph")
+FORBIDDEN_VERDICT_COLUMNS = ("抽取句", "候选整句", "candidate_sentence", "原文", "chapter_text")
+SECOND_BATCH_GOLD_DIR = "second_batch_gold_r01"
+ALLOWED_VERDICTS = {
+    "keep_as_fact",
+    "mark_hearsay",
+    "drop_not_for_card",
+    "cannot_confirm_without_body",
+}
+EXPECTED_VERDICT_COUNTS = {
+    "keep_as_fact": 176,
+    "mark_hearsay": 76,
+    "drop_not_for_card": 24,
+    "cannot_confirm_without_body": 7,
+}
 
 
 class CheckError(ValueError):
@@ -66,6 +81,49 @@ def _walk_strings(node: Any) -> list[str]:
     return []
 
 
+
+def _verify_second_batch_gold() -> bool:
+    gold_dir = ROOT / SECOND_BATCH_GOLD_DIR
+    require(gold_dir.is_dir(), f"缺 {SECOND_BATCH_GOLD_DIR}/")
+    require((gold_dir / "README.md").is_file(), "金标夹缺 README.md")
+    readme = (gold_dir / "README.md").read_text(encoding="utf-8")
+    require("对照金标" in readme, "金标夹 README 应写对照金标")
+    require("可凭充分证据修订" in readme, "金标夹 README 应写可修订")
+    require("已独立人工复核并采纳" not in readme, "金标夹不得冒充独立人工复核")
+
+    manifest = gold_dir / "SHA256SUMS"
+    require(manifest.is_file(), "金标夹缺 SHA256SUMS")
+    for line in manifest.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        digest, relative = line.split(None, 1)
+        path = gold_dir / relative.strip()
+        require(path.is_file(), f"金标夹缺文件：{relative}")
+        require(sha256(path) == digest, f"金标夹清单对不上：{relative}")
+
+    csv_path = gold_dir / "ROW_VERDICTS.csv"
+    with csv_path.open(encoding="utf-8-sig", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    require(len(rows) == 283, f"主表行数应为 283：{len(rows)}")
+    require(rows, "主表为空")
+    for col in FORBIDDEN_VERDICT_COLUMNS:
+        require(col not in rows[0], f"主表禁止列：{col}")
+    counts = {name: 0 for name in ALLOWED_VERDICTS}
+    for row in rows:
+        verdict = str(row.get("结论", "")).strip()
+        require(verdict in ALLOWED_VERDICTS, f"非法结论：{verdict}")
+        counts[verdict] += 1
+        for value in row.values():
+            require(len(str(value)) < 80, "主表单元格过长，疑似整句抽取")
+    require(counts == EXPECTED_VERDICT_COUNTS, f"主表计数不对：{counts}")
+
+    receipt = json.loads((gold_dir / "REVIEW_RECEIPT.json").read_text(encoding="utf-8"))
+    require(receipt["independent_human_review_performed"] is False, "回执不得声称独立人工复核")
+    require(receipt["body_read"] is False, "回执不得声称已读正文")
+    require("chapter_text" not in json.dumps(receipt), "回执出现禁止字段")
+    return True
+
+
 def run_self_check() -> dict[str, Any]:
     actual = {path.name for path in ROOT.iterdir() if path.is_file()}
     require(actual == EXPECTED_FILES, f"文件集不对：{sorted(actual)}")
@@ -88,11 +146,18 @@ def run_self_check() -> dict[str, Any]:
     require(first_chapters == [1, 2, 9, 10, 1, 2, 3, 4, 1, 2], "第一批章号漂移")
     require(all(isinstance(ch, int) for ch in first_chapters), "章号必须是数字")
     gold = payload["gold_review"]
-    require(gold["current_stage"] == "unreviewed_candidate", "金标不得提前升格")
+    require(gold["current_stage"] == "split_by_batch", "金标阶段应按批分开")
+    require(gold["first_batch_stage"] == "unreviewed_candidate", "第一批不得提前升格")
+    require(gold["second_batch_stage"] == "chatgpt_cz_adopted_revisable", "第二批应为顾问预审＋CZ采纳")
     require(gold["constructor_makes_candidates_only"] is True, "施工只能交候选")
+    require(gold["revisable_with_sufficient_evidence"] is True, "金标必须可凭充分证据修订")
+    require(gold["independent_human_extract_review_performed"] is False, "不得假装做过独立人工抽审")
     require("未独立人工复核" in gold["unreviewed_label"], "未审名称漂移")
     require("待采纳" in gold["reviewed_pending_adopt_label"], "待采纳名称漂移")
-    require("已独立人工复核并采纳" in gold["adopted_label"], "已采纳名称漂移")
+    require("已独立人工复核并采纳" in gold["adopted_label"], "独立复核采纳名称漂移")
+    require("对照金标" in gold["chatgpt_cz_adopted_label"], "第二批采纳名称应是对照金标")
+    require("可凭充分证据修订" in gold["chatgpt_cz_adopted_label"], "第二批采纳名称应写可修订")
+    require("已独立人工复核并采纳" not in gold["chatgpt_cz_adopted_label"], "第二批不得冒充独立人工复核")
     density = payload["density_copy"]
     require(density["no_percents"] is True, "密度不得改成可写百分数")
     require("尚未提供" in density["unprovided"], "密度尚未提供口径漂移")
@@ -141,7 +206,15 @@ def run_self_check() -> dict[str, Any]:
     require(second_window_titles == list(NEWBOOKS), "第二批窗口书名漂移")
     require(second["github_issue"] == 284, "第二批 github_issue 漂移")
     require(second["windows_github_issue"] == 289, "第二批 windows_github_issue 漂移")
-    require(second["status"] == "WINDOWS_CANDIDATE_REGISTERED", "第二批 status 漂移")
+    require(second["status"] == "CHATGPT_CZ_ADOPTED_GOLD", "第二批 status 漂移")
+    require(second["gold_kind"] == "human_card_fact_source_gold", "第二批 gold_kind 漂移")
+    require(second["adopt_github_issue"] == 293, "第二批 adopt_github_issue 漂移")
+    require(second["revisable_with_sufficient_evidence"] is True, "第二批必须可修订")
+    require(second["independent_human_extract_review_performed"] is False, "第二批不得假装独立抽审")
+    require(second["coverage_completed"] is False, "第二批不得假装覆盖已完成")
+    require(second["artifact_dir"] == SECOND_BATCH_GOLD_DIR, "第二批金标夹漂移")
+    require(second["primary_rows"] == 283, "第二批主表行数漂移")
+    require(second["verdict_counts"] == EXPECTED_VERDICT_COUNTS, "第二批结论计数漂移")
     require(second["consumes_first_batch_cap"] is False, "第二批不得抢第一批额度")
     require(second["in_trial_seven"] is True, "第二批应标明来自试拆新书")
     require(second["in_repo_book_meta"] is False, "不得假装仓内已有这三行书目")
@@ -176,6 +249,10 @@ def run_self_check() -> dict[str, Any]:
     require("未独立人工复核" in readme, "README 应写明未审名称")
     require("尚未提供" in readme, "README 应保留密度尚未提供")
     require("289" in readme, "README 应挂窗口施工票")
+    require("293" in readme, "README 应挂第二批采纳票")
+    require("可凭充分证据修订" in readme, "README 应写明金标可修订")
+    require("CHATGPT_CZ_ADOPTED_GOLD" in readme, "README 应写明第二批已采纳")
+    require(_verify_second_batch_gold(), "第二批金标夹检查失败")
 
     return {
         "result": "PASS",
@@ -185,6 +262,7 @@ def run_self_check() -> dict[str, Any]:
         "newbooks": list(new_titles),
         "window_count": len(first_chapters) + len(second_chapters),
         "windows_github_issue": 289,
+        "adopt_github_issue": 293,
         "manifest_count": verify_manifest(),
         "read_novel_body": False,
         "zero_api": True,

@@ -30,7 +30,11 @@ def test_catalog_registers_numeric_windows_without_body() -> None:
     dumped = json.dumps(payload, ensure_ascii=False)
     assert "第1章" not in dumped
     assert "chapter_text" not in dumped
-    assert payload["gold_review"]["current_stage"] == "unreviewed_candidate"
+    gold = payload["gold_review"]
+    assert gold["current_stage"] == "split_by_batch"
+    assert gold["first_batch_stage"] == "unreviewed_candidate"
+    assert gold["second_batch_stage"] == "chatgpt_cz_adopted_revisable"
+    assert gold["revisable_with_sufficient_evidence"] is True
 
 
 def test_second_batch_does_not_steal_first_cap_or_old_books() -> None:
@@ -47,3 +51,18 @@ def test_package_has_no_novel_body_files() -> None:
     assert "chapters" not in names
     for path in ROOT.iterdir():
         assert path.suffix not in {".txt", ".epub", ".html"}
+
+
+def test_second_batch_adopted_gold_is_revisable() -> None:
+    payload = json.loads((ROOT / "CATALOG.json").read_text(encoding="utf-8"))
+    second = payload["second_batch_newbooks"]
+    assert second["status"] == "CHATGPT_CZ_ADOPTED_GOLD"
+    assert second["adopt_github_issue"] == 293
+    assert second["revisable_with_sufficient_evidence"] is True
+    assert second["independent_human_extract_review_performed"] is False
+    assert second["coverage_completed"] is False
+    assert (ROOT / "second_batch_gold_r01" / "ROW_VERDICTS.csv").is_file()
+    label = payload["gold_review"]["chatgpt_cz_adopted_label"]
+    assert "对照金标" in label
+    assert "可凭充分证据修订" in label
+    assert "已独立人工复核并采纳" not in label

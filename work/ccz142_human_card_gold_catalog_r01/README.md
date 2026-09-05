@@ -1,8 +1,8 @@
 # 人话卡对照书目登记
 
-GitHub 施工入口：[Issue #281](https://github.com/cczz412/novel-architecture/issues/281)（第一批书名）、[Issue #284](https://github.com/cczz412/novel-architecture/issues/284)（第二批新书）、[Issue #289](https://github.com/cczz412/novel-architecture/issues/289)（候选窗口／密度口径／金标命名）。模块仍看 [CCZ-142](https://linear.app/ccz/issue/CCZ-142)。
+GitHub 施工入口：[Issue #281](https://github.com/cczz412/novel-architecture/issues/281)（第一批书名）、[Issue #284](https://github.com/cczz412/novel-architecture/issues/284)（第二批新书）、[Issue #289](https://github.com/cczz412/novel-architecture/issues/289)（候选窗口／密度口径／金标命名）、[Issue #293](https://github.com/cczz412/novel-architecture/issues/293)（第二批采纳为对照金标）。模块仍看 [CCZ-142](https://linear.app/ccz/issue/CCZ-142)。
 
-✅ 对照可以有两批。第一批仍是 **全职高手、道诡异仙、十日终焉**。第二批用试拆已锁的新书：**炼气士不死于无限、我在美恐科普都市传说、请勿高考时渡劫**。两批都已登记候选章号，都还没读正文，更没有金标。
+✅ 对照可以有两批。第一批仍是 **全职高手、道诡异仙、十日终焉**，还是未审候选。第二批用试拆已锁的新书：**炼气士不死于无限、我在美恐科普都市传说、请勿高考时渡劫**，这 10 章已经采纳为对照金标。两批都还没读正文。金标以后证据充分可以改，不是封死。
 
 你可以直接理解成：老书目一批、未见过的新书再一批。知否／凡人仍不用。不自动换入庆余年。第二批不抢第一批那 8–10／上限 12 章。
 
@@ -39,13 +39,14 @@ GitHub 施工入口：[Issue #281](https://github.com/cczz412/novel-architecture
 
 ## 窗口和金标
 
-- 两批状态都是：`WINDOWS_CANDIDATE_REGISTERED`
+- 第一批状态：`WINDOWS_CANDIDATE_REGISTERED`。名称仍是：人话卡金标候选｜未独立人工复核
+- 第二批状态：`CHATGPT_CZ_ADOPTED_GOLD`。名称：人话卡对照金标｜顾问预审＋CZ采纳｜可凭充分证据修订。逐行结论在 [second_batch_gold_r01/](second_batch_gold_r01/)
 - 每一批登记 10 章，上限仍是 12；第二批不消耗第一批额度
 - 本机分章文件看过文件名：**在**。这次评测用途：**未放行**。正文：**未读**
-- 当前名称：人话卡金标候选｜未独立人工复核。施工只交候选，默认由 CZ 独立复核后再按版本签认
-- 审过、尚未采纳：人话卡金标候选｜独立人工复核通过，待采纳
-- 复核通过且具名采纳后：人话卡对照金标｜已独立人工复核并采纳。升格后也只是限定范围的评测参照，不是正式事实或十本账
-- 只做人话结果卡的金标候选，不拆全书，不加章结构／钩子／爽点／修补建议
+- 金标可以改。后面发现问题、证据充分，按行修订即可；不要因为它叫金标就不敢动
+- 另一条独立人工复核路径仍保留名称：审过待采纳；复核通过且具名采纳。本次第二批没有走这条
+- 升格后也只是限定范围的评测参照，不是正式事实或十本账，更不是产品已经能查账
+- 只做人话结果卡的事实与来源金标，不拆全书，不加章结构／钩子／爽点／修补建议
 
 ## 密度
 

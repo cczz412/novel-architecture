@@ -135,8 +135,8 @@
   ],
   "second_batch_newbooks": {
     "github_issue": 284,
-    "status": "WINDOWS_CANDIDATE_REGISTERED",
-    "gold_kind": "human_card_candidate_only",
+    "status": "CHATGPT_CZ_ADOPTED_GOLD",
+    "gold_kind": "human_card_fact_source_gold",
     "chapter_cap": 12,
     "chapter_normal": {
       "min": 8,
@@ -236,19 +236,41 @@
     ],
     "windows_github_issue": 289,
     "body_read": false,
-    "usage_rights": "NOT_GRANTED_FOR_THIS_EVAL"
+    "usage_rights": "NOT_GRANTED_FOR_THIS_EVAL",
+    "adopt_github_issue": 293,
+    "adopted_at": "2026-09-05",
+    "adopted_by": "CZ",
+    "revisable_with_sufficient_evidence": true,
+    "independent_human_extract_review_performed": false,
+    "coverage_completed": false,
+    "artifact_dir": "second_batch_gold_r01",
+    "primary_rows": 283,
+    "verdict_counts": {
+      "keep_as_fact": 176,
+      "mark_hearsay": 76,
+      "drop_not_for_card": 24,
+      "cannot_confirm_without_body": 7
+    },
+    "auxiliary_rows": 178,
+    "source_zip_sha256": "37684e873fef9c291260e200084c49922f40e7c68b4ea45abd3992aef52d3d16",
+    "return_zip_sha256": "1c172c76e77a221526f7689a6f6c034db8a1f97ed44a591408e542ada5210c55"
   },
   "windows_github_issue": 289,
   "windows_baseline": "main@1c5b9c9d0e838b19f5978a01e526c86d6e6b0247",
   "body_read": false,
   "usage_rights": "NOT_GRANTED_FOR_THIS_EVAL",
   "gold_review": {
-    "current_stage": "unreviewed_candidate",
+    "current_stage": "split_by_batch",
     "constructor_makes_candidates_only": true,
     "reviewer_default": "CZ_independent_session",
     "unreviewed_label": "人话卡金标候选｜未独立人工复核",
     "reviewed_pending_adopt_label": "人话卡金标候选｜独立人工复核通过，待采纳",
-    "adopted_label": "人话卡对照金标｜已独立人工复核并采纳"
+    "adopted_label": "人话卡对照金标｜已独立人工复核并采纳",
+    "chatgpt_cz_adopted_label": "人话卡对照金标｜顾问预审＋CZ采纳｜可凭充分证据修订",
+    "first_batch_stage": "unreviewed_candidate",
+    "second_batch_stage": "chatgpt_cz_adopted_revisable",
+    "revisable_with_sufficient_evidence": true,
+    "independent_human_extract_review_performed": false
   },
   "density_copy": {
     "label": "密度（仅说明本次已返回的候选）",
