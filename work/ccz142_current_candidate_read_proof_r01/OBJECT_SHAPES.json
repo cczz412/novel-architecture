@@ -1,0 +1,42 @@
+{
+  "document_identity": "CCZ142-CURRENT-CANDIDATE-READ-PROOF-R01",
+  "status": "READ_PROOF_NOT_PRODUCT_ADOPTION",
+  "github_issue": 264,
+  "base_main_sha": "e01bb638fdbb9cf509aa22e588522840cea799e5",
+  "product_adopted": false,
+  "read_path": {
+    "store_class": "work/ccz142_candidate_authority_r01/candidate_authority.py::CandidateAuthorityStore",
+    "inherits": "B06CommitStore",
+    "read_pointer": "B06CommitStore.read_pointer",
+    "read_candidate": "B06CommitStore.read_candidate",
+    "database_filename": "b06-commit-core.sqlite3",
+    "pointer_discovery": "readonly SELECT logical_pointer_key FROM current_pointers; discovery probe, not a second writer",
+    "human_card": "project payload.items to fact/status/evidence; no patch advice"
+  },
+  "pointer_namespace_on_main": "FIXTURE_ONLY",
+  "candidate_access_on_main": "POLICY_FIXTURE_READ_ONLY",
+  "candidate_contract_on_main": "r03.5-candidate",
+  "human_card_fields": [
+    "fact",
+    "status",
+    "evidence",
+    "kind",
+    "speaker?"
+  ],
+  "gap_codes": [
+    "GAP_NO_LIVE_STORE",
+    "GAP_STORE_MISSING",
+    "GAP_POINTER_MISSING",
+    "GAP_POINTER_AMBIGUOUS",
+    "GAP_CANDIDATE_MISSING",
+    "GAP_NO_HUMAN_ITEMS",
+    "GAP_NOT_PRODUCT_IDENTITY",
+    "GAP_REAL_NOVEL_NOT_IN_SCOPE"
+  ],
+  "forbidden": {
+    "second_writer": true,
+    "real_novel_api": true,
+    "pr_235_writes": true,
+    "product_identity_claim": true
+  }
+}

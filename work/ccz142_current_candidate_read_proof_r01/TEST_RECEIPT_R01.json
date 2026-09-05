@@ -1,0 +1,33 @@
+{
+  "document_identity": "CCZ142-CURRENT-CANDIDATE-READ-PROOF-R01-TEST-RECEIPT",
+  "validated_at": "2026-09-05T10:30:00+08:00",
+  "result": "PASS",
+  "base_main_sha": "e01bb638fdbb9cf509aa22e588522840cea799e5",
+  "github_issue": 264,
+  "product_adopted": false,
+  "runtime": {
+    "python": "3.12.12",
+    "command_runner": "uv run --locked"
+  },
+  "totals": {
+    "pytest": "11 passed",
+    "ruff": "pass",
+    "self_check": "PASS",
+    "py_compile": "pass"
+  },
+  "commands": [
+    "uv run --locked python -m py_compile work/ccz142_current_candidate_read_proof_r01/*.py",
+    "uv run --locked ruff check work/ccz142_current_candidate_read_proof_r01",
+    "uv run --locked pytest -q work/ccz142_current_candidate_read_proof_r01/test_current_read_proof.py",
+    "uv run --locked python work/ccz142_current_candidate_read_proof_r01/self_check.py"
+  ],
+  "write_set": [
+    "work/ccz142_current_candidate_read_proof_r01/**"
+  ],
+  "forbidden_touches": [
+    "PR 235",
+    "B01-B09 writers",
+    "contracts",
+    "real novel API"
+  ]
+}
