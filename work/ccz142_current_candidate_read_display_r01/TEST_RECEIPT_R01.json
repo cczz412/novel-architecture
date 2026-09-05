@@ -1,0 +1,33 @@
+{
+  "document_identity": "CCZ142-CURRENT-CANDIDATE-READ-DISPLAY-R01-TEST-RECEIPT",
+  "validated_at": "2026-09-05T11:10:00+08:00",
+  "result": "PASS",
+  "base_main_sha": "177c5832df9527cdcee3eaa513aafeda335550ea",
+  "github_issue": 266,
+  "product_adopted": false,
+  "runtime": {
+    "python": "3.12.12",
+    "command_runner": "uv run --locked"
+  },
+  "totals": {
+    "pytest": "7 passed",
+    "ruff": "pass",
+    "self_check": "PASS",
+    "py_compile": "pass"
+  },
+  "commands": [
+    "uv run --locked python -m py_compile work/ccz142_current_candidate_read_display_r01/*.py",
+    "uv run --locked ruff check work/ccz142_current_candidate_read_display_r01",
+    "uv run --locked pytest -q work/ccz142_current_candidate_read_display_r01/test_current_read_display.py",
+    "uv run --locked python work/ccz142_current_candidate_read_display_r01/self_check.py"
+  ],
+  "write_set": [
+    "work/ccz142_current_candidate_read_display_r01/**"
+  ],
+  "forbidden_touches": [
+    "PR 235",
+    "B01-B09 writers",
+    "real novel API",
+    "invented coverage"
+  ]
+}
