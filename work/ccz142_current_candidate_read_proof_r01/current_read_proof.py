@@ -112,7 +112,7 @@ READ_PATH = {
         "readonly SELECT logical_pointer_key FROM current_pointers; "
         "discovery probe, not a second writer"
     ),
-    "human_card": "project payload.items to fact/status/evidence; no patch advice",
+    "human_card": "project payload.items to fact/status/evidence plus lineage_id and match_locations when present; never re-search text; no patch advice",
     "not_this_path": [
         "work/ccz57_m3_b09_current_causal_hint_view_r01",
         "GitHub pull request 235 product namespace cutover",
@@ -218,6 +218,51 @@ def _item_kind(status: str) -> str:
     return KIND_BY_STATUS.get(status, "未证实")
 
 
+def _is_plain_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def project_item_source(raw: dict[str, Any]) -> tuple[str, list[dict[str, int]]]:
+    """Copy lineage and match locations already on the candidate. Never re-search text."""
+
+    lineage = raw.get("lineage_id")
+    if isinstance(lineage, str) and lineage.startswith("lin_") and lineage[4:]:
+        stable = lineage
+    else:
+        stable = SCOPE_UNPROVIDED
+    locations: list[dict[str, int]] = []
+    binding = raw.get("evidence_binding")
+    if isinstance(binding, dict):
+        matches = binding.get("match_locations")
+        if isinstance(matches, list):
+            for loc in matches:
+                if not isinstance(loc, dict):
+                    continue
+                seg = loc.get("seg")
+                start = loc.get("start_byte")
+                end = loc.get("end_byte")
+                if (
+                    _is_plain_int(seg)
+                    and _is_plain_int(start)
+                    and _is_plain_int(end)
+                    and start < end
+                ):
+                    locations.append(
+                        {"seg": int(seg), "start_byte": int(start), "end_byte": int(end)}
+                    )
+    return stable, locations
+
+
+def format_source_locations(locations: list[dict[str, int]]) -> str:
+    if not locations:
+        return SCOPE_UNPROVIDED
+    parts = [
+        f"责任段 {loc['seg']}，字节 {loc['start_byte']}–{loc['end_byte']}"
+        for loc in locations
+    ]
+    return "；".join(parts)
+
+
 def project_human_card(
     *,
     pointer: dict[str, Any],
@@ -239,11 +284,15 @@ def project_human_card(
                 continue
             if not isinstance(evidence, str) or not evidence:
                 continue
+            stable, locations = project_item_source(raw)
             item: dict[str, Any] = {
                 "fact": fact,
                 "status": status,
                 "evidence": evidence,
                 "kind": _item_kind(status),
+                "stable_item_id": stable,
+                "match_locations": locations,
+                "source_location": format_source_locations(locations),
             }
             speaker = raw.get("speaker")
             if isinstance(speaker, str) and speaker:
@@ -286,6 +335,8 @@ def render_human_text(proof: dict[str, Any]) -> str:
             speaker = f"（{item['speaker']}）" if "speaker" in item else ""
             lines.append(
                 f"- [{item['kind']}] {item['fact']}{speaker}｜证据：{item['evidence']}"
+                f"｜条目：{item.get('stable_item_id') or SCOPE_UNPROVIDED}"
+                f"｜位置：{item.get('source_location') or SCOPE_UNPROVIDED}"
             )
     lines.append("真实小说 API 不在本票范围。")
     return "\n".join(lines)

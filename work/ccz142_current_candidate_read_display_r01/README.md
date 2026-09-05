@@ -57,3 +57,5 @@ uv run --locked python work/ccz142_current_candidate_read_display_r01/self_check
 来源：Cursor
 
 本包随 GitHub #274 补上「这张卡对应哪一段」和密度尚未提供，不编数字。单一指针读成功不再写成整章已抽完。
+
+GitHub #276 起，每条事实写出稳定条目和原文位置；样张没有定位时写未提供。

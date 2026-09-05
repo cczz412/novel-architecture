@@ -118,7 +118,17 @@ def test_fixture_current_projects_human_card_and_fixture_identity(
     assert card["items"][0]["status"] == "已发生"
     assert card["items"][0]["evidence"] == "甲走进北塔。"
     assert card["items"][0]["kind"] == "已发生"
+    assert card["items"][0]["stable_item_id"].startswith("lin_")
+    assert card["items"][0]["match_locations"] == [
+        {"seg": 1, "start_byte": 0, "end_byte": 18},
+        {"seg": 1, "start_byte": 39, "end_byte": 57},
+    ]
+    assert "字节 0–18" in card["items"][0]["source_location"]
+    assert "字节 39–57" in card["items"][0]["source_location"]
     assert card["items"][1]["speaker"] == "旁白"
+    assert card["items"][1]["match_locations"] == [
+        {"seg": 1, "start_byte": 18, "end_byte": 39},
+    ]
     assert all("patch" not in item and "建议" not in item for item in card["items"])
     text = render_human_text(proof)
     assert "甲进入北塔。" in text

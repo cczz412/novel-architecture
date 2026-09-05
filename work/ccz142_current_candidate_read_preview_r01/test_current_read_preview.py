@@ -83,6 +83,8 @@ def test_fixture_store_html_shows_human_items(tmp_path: Path) -> None:
     assert "状态：已发生" in page
     assert "synthetic-chapter-001" in page
     assert "不是已确认的整章汇总" in page
+    assert "稳定条目：lin_" in page
+    assert "原文位置：责任段 1，字节 0–18；责任段 1，字节 39–57" in page
 
 
 def test_types_sample_shows_rumor_misbelief_unverified() -> None:
@@ -90,6 +92,8 @@ def test_types_sample_shows_rumor_misbelief_unverified() -> None:
     assert "传闻／怀疑" in page
     assert "误信" in page
     assert "未证实" in page
+    assert "稳定条目：未提供" in page
+    assert "原文位置：未提供" in page
     assert "不是活库读出" in page
     assert "写法指导" not in page
 

@@ -48,3 +48,5 @@ uv run --locked python work/ccz142_current_candidate_read_preview_r01/self_check
 来源：Cursor
 
 本包随 GitHub #274 同步卡面：书章版本／展示范围／密度尚未提供。
+
+GitHub #276 起，HTML 样张同步稳定条目和原文位置。
