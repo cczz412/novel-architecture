@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-08-31T15:40:00+08:00",
+  "updated_at": "2026-08-30T12:56:53+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -4084,48 +4084,6 @@
       "review_needed": false
     },
     {
-      "tool_id": "TOOL-099",
-      "path": "tools/build_background_board_upload_zip.py",
-      "primary_identity": "reusable_component",
-      "primary_identity_label": "可复用组件",
-      "status": "candidate_not_default",
-      "status_label": "候选组件·背景板手工上传运输",
-      "purpose": "读取已登记的当前产品、外部报告、原子需求与验收三块背景，生成加版本前缀、单层平铺、排除缓存垃圾且可重复核验的 ZIP。",
-      "human_command": "uv run --locked python tools/build_background_board_upload_zip.py [build|check]",
-      "inputs": [
-        "config/background_board_upload/sources.json",
-        "references/shared-context/ 下版本号最大的完整产品共同背景板",
-        "references/external-knowledge-base/CURRENT.json 指向的当前外部报告背景板",
-        "references/atomic-expectations/CURRENT.json 指向的当前原子需求与验收背景板"
-      ],
-      "outputs": [
-        "TEMP/background-board-upload/ 下的版本化单层 ZIP",
-        "包内总导航、逐文件来源与运输 SHA 清单、SHA256SUMS"
-      ],
-      "network_or_model": {
-        "network": "none",
-        "model": "none",
-        "note": "纯本地只读编译；不上传、不调用模型，不修改正式背景板。"
-      },
-      "current_consumers": [
-        "CZ 手工解压或上传 ChatGPT 的背景材料准备",
-        "config/background_board_upload/README.md",
-        "tests/test_background_board_upload.py"
-      ],
-      "consumer_evidence_rule": "产品板只从固定存放目录选择名称以 _R数字 收尾且入口、清单齐全的唯一最高版本；报告板和原子需求板必须通过各自 CURRENT.json 清单 SHA 校验；每块背景只允许清单、清单自身和配置明确追加的精确文件进入。",
-      "test_references": [
-        "tests/test_background_board_upload.py"
-      ],
-      "last_use_clues": [
-        "config/background_board_upload/sources.json",
-        "config/background_board_upload/README.md",
-        "TEMP/background-board-upload/"
-      ],
-      "next_confirmed_consumer": "CZ 后续在 ChatGPT、Codex、Notion 或其他 Agent 的平铺读取环境中反复上传或解压使用当前三块背景。",
-      "retirement_condition_and_compatibility_boundary": "只生成无权限的运输副本；拒绝符号链接、入口漂移、清单漂移、平铺重名、TEMP 外输出和同名异字节覆盖。背景板升版由各自正式入口决定，工具不替它们转正。",
-      "review_needed": false
-    },
-    {
       "path": "tools/check_current_freshness.py",
       "primary_identity": "reusable_component",
       "primary_identity_label": "可复用组件",
@@ -4208,46 +4166,6 @@
       "review_needed": false,
       "admitted_by": "WORK_ORDER_7",
       "tool_id": "TOOL-101"
-    },
-    {
-      "path": "tools/check_traceability.py",
-      "primary_identity": "reusable_component",
-      "primary_identity_label": "可复用组件",
-      "status": "candidate_not_default",
-      "status_label": "候选组件·能力追踪只读检查",
-      "purpose": "只读核对 142 条需求 ID、测试设计身份／SHA 以及声明过的实现／测试路径存在。",
-      "human_command": "uv run --locked python tools/check_traceability.py --check",
-      "inputs": [
-        "governance/capability_traceability.json",
-        "references/atomic-expectations/TEST_DESIGN_CURRENT.json"
-      ],
-      "outputs": [
-        "traceability-check-report-v1 JSON",
-        "一页摘要",
-        "退出码"
-      ],
-      "network_or_model": {
-        "network": "none",
-        "model": "none",
-        "note": "纯本地只读。"
-      },
-      "current_consumers": [
-        "tools/check_drift.py",
-        "tests/test_traceability.py"
-      ],
-      "consumer_evidence_rule": "PASS 不等于 852 条语义测试已执行。",
-      "test_references": [
-        "tests/test_traceability.py",
-        "tests/test_drift.py"
-      ],
-      "last_use_clues": [
-        "governance/capability_traceability.json"
-      ],
-      "next_confirmed_consumer": "工单 7 五件套统一入口 tools/check_drift.py",
-      "retirement_condition_and_compatibility_boundary": "只读；不改需求正文或合同。",
-      "review_needed": false,
-      "admitted_by": "WORK_ORDER_7",
-      "tool_id": "TOOL-102"
     },
     {
       "path": "tools/check_tracked_temp.py",

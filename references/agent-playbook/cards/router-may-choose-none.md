@@ -1,6 +1,6 @@
 # 没有合适插件时，可以一个也不用
 
-身份：已拍加固
+身份：当前纪律＋未实现边界
 
 ## 遇到什么
 
@@ -16,10 +16,8 @@
 
 永远返回至少一个插件。只按组件名或触发行关键词匹配。把相似组件全塞进执行包再让模型自己挑。把“0 命中”算系统错误。把 20、28±4、24～32、Top K 或评测样本量写成已拍。把本卡升级成执行票，或自行冻结机器路由字段。
 
-## 出处
+## 当前依据
 
-- [R14 系统架构与真值分层](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md)（ADD-023：索引行人机分离、0 命中合法）
-- [R14 术语表](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/07_GLOSSARY.md)（索引行人机分离）
-- [SI-007 包入口](../../survey-inbox/packages/DESIGN_REVIEW_AND_TECH_RESEARCH_RETURNS_20260813_R01/00_READ_ME_FIRST.md)（P03；发现性与错误召回审查）
+- [CCZ-131](https://linear.app/ccz/issue/CCZ-131)｜[CCZ-132](https://linear.app/ccz/issue/CCZ-132)：插件后备合同；零命中合法，运行时未开放
 
-来源：#115；批次 C；2026-08-24
+来源：Codex

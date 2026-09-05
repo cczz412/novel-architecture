@@ -10,7 +10,7 @@
 
 | 包 | 内容一句话 | 给哪张工单用 | 什么时候用 | ZIP SHA256 |
 |---|---|---|---|---|
-| 测试设计增补（原文已迁走） | 新增 15 条×6＝90 例。现行包装件在 [ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01](../../references/atomic-expectations/ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01/)；顾问原文在同包 [source/](../../references/atomic-expectations/ATOMIC_TEST_DESIGN_R03_ADDENDUM_20260821_R01/source/) | 工单 3（已吸收） | 不要再从 work 读 | `f0de2eb114aa5191358ff424778425961d82b0e9c15f9e59e3b41d84d7c9303e` |
+| 测试设计增补（原文已迁走） | 新增 15 条×6＝90 例。旧仓库包装件已经退出当前入口；冻结原件与 SHA 回执见 [CCZ-83](https://linear.app/ccz/issue/CCZ-83) 和[三类背景卡解耦迁移总索引](https://linear.app/ccz/document/三类仓库背景卡解耦迁移总索引2026-08-30-e14efc91008b)。 | 工单 3（已吸收） | 不要再从 work 读 | `f0de2eb114aa5191358ff424778425961d82b0e9c15f9e59e3b41d84d7c9303e` |
 | 运行缺口登记（已迁走） | 142 条需求的代码证据分层。现行在 [capability_traceability_sources_r01/](../../governance/capability_traceability_sources_r01/) | 工单 4／5（已吸收进追踪表） | 不要再从 work 读 | `b19c09bc7367683e8d034d7dbf8be4c374155cebff145df1ae101dab06598f6b` |
 | [dual_lane_ledger_handover_r01/](dual_lane_ledger_handover_r01/) | 双车道、章事实稿、十本账与交棒设计；含确认粒度候选方案「整包提交＋逐条状态：普通批量、高影响单签」 | 工单 5 的 PR-C 参考；PR-E5 施工依据 | PR-C 前读；PR-E5 必须等 CZ 冻结确认粒度后才能按它施工 | `7e080ba243b12c01d5b75e0dd8b688cedd5b7f032a6b1e3a0988e99fd9eec933` |
 | [multi_form_creative_intake_r01/](multi_form_creative_intake_r01/) | 新功能设计：剧本／灵感／产品原生大纲三条导入适配器 | 暂不施工 | 冻结到七张工单收线；之后作为第一批走「想法→需求条目→照表施工」小门的输入 | `d5dba654994e406beacb553dc6384c03136f35b805d3160636ceb6846aeee017` |

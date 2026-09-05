@@ -16,10 +16,9 @@
 
 一边看 DEV 一边改，一边仍称盲测。把多次使用的小集合冠军写成普遍最优或生产默认。让训练、开发、确认集互相回流。把本卡升级成执行票；把外部样本规模、显著性门或开封方法写成已拍。
 
-## 出处
+## 当前依据
 
-- [R14 抽取页](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md)（“当前数据资产”“Production Canonical 的门”“当前可做和不可做”）
-- [SI-002 消化稿](../../survey-inbox/packages/T5_R04_FACT_EXTRACTION_RESEARCH_RETURNS_20260811_R01/02_RETURNS_DIGEST.md)（DEV 与确认集分开；开发集不能回流训练）
-- [SI-004 评测回包](../../survey-inbox/packages/MANUS_R06_CLOUD_RESEARCH_20260812_R01/returns/RETURN_01_FACT_EXTRACTION_EVAL_SURVEY_20260812_R01.md)（作者／书／来源切分；开发接触降级）
+- [CCZ-83](https://linear.app/ccz/issue/CCZ-83)：当前评测设计入口
+- [GitHub 当前正式合同入口](../../../governance/START_HERE.md)
 
-来源：#115；批次 A；2026-08-24
+来源：Codex

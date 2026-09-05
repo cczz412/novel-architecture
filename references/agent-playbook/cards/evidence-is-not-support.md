@@ -16,10 +16,9 @@
 
 看到逐字命中就判事实成立。把 Schema、位置或 SHA 合法当成语义承托。让同一个模型或两个一致的模型自动签绿票。把本卡升级成自动入账执行票；把短引文、模型一致等加固建议写成已拍。
 
-## 出处
+## 当前依据
 
-- [R14 抽取页](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md)（“长期不轻易变的抽取原则”“评分不能压成一个总分”）
-- [EKB 抽取评测页](../../external-knowledge-base/EXTERNAL_KNOWLEDGE_BASE_20260815_R01/background/05_EXTRACTION_EVALUATION_AND_EVIDENCE.md)（K01／K11／K12）
-- [SI-004 评测回包](../../survey-inbox/packages/MANUS_R06_CLOUD_RESEARCH_20260812_R01/returns/RETURN_01_FACT_EXTRACTION_EVAL_SURVEY_20260812_R01.md)（证据“合法—定位—承托”分门）
+- [CCZ-142](https://linear.app/ccz/issue/CCZ-142)：正文抽取与证据边界
+- [CCZ-83](https://linear.app/ccz/issue/CCZ-83)：当前评测设计入口
 
-来源：#115；批次 A；2026-08-24
+来源：Codex

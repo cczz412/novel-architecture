@@ -8,7 +8,7 @@
 - `topic_tags`：中国网文；写作技法；作者工作流；长篇记忆；事实抽取；评测；Agent；产品交互；平台合规；商业化；知识治理
 - `product_angle`：作者工作台；产品架构；试验示范；需求验证；商业化
 - 备注：外部证据与候选先验；不产生产品结论、执行权、训练权、API 权、Notion 拍板、Git 权或生产晋级权。
-- 编译入口：[外部报告知识库](../../external-knowledge-base/README.md)
+- 当前证据入口：[CCZ-64｜外部调查与刷新台账](https://linear.app/ccz/issue/CCZ-64)；旧知识库原件已按 SHA 冻结到 Linear，不再从仓库目录编译日常背景。
 - 录入日：2026-08-15
 
 来源：Codex

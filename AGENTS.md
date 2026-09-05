@@ -1,43 +1,43 @@
 # 小说架构仓库 · Agent 极薄入口（候选）
 
-## 0. 几张容易认错的「背景」
+## 0. 先认清三类真源
 
-| 名字 | 打开哪里 | 别当成 |
+| 要找什么 | 打开哪里 | 别当成 |
 |---|---|---|
-| **共同背景板（现行）** | [R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) | R13 及更早印刷版已退出本 Git，本机备份；旧 Notion 镜像不冒充 R14 |
-| **外部报告背景板** | [当前入口](references/external-knowledge-base/README.md) | 只提供证据、反例和未知，不能替产品拍板 |
-| **原子需求与验收背景板** | [R03 CURRENT](references/atomic-expectations/CURRENT.json) · [人读入口](references/atomic-expectations/README.md) | 142 条需求；六例设计 CURRENT 组合覆盖 142／852，仍不是执行证明 |
+| **产品需求、模块边界和 CZ 拍板** | [Linear 路线入口 CCZ-77](https://linear.app/ccz/issue/CCZ-77)；新需求先登记到 [CCZ-128](https://linear.app/ccz/issue/CCZ-128)，再进入所属模块票 | Linear 的 `Done` 不等于代码已经合并，也不能代替 GitHub 正式合同 |
+| **已经落地的工程合同、代码和检查** | 当前 GitHub Issue／PR 与 `main` 上的正式合同、Schema、登记册和测试 | 计划票、外部报告和历史设计不能冒充已上线能力 |
+| **外部调查证据** | [调查收件箱](references/survey-inbox/README.md)与 [CCZ-64](https://linear.app/ccz/issue/CCZ-64) 的冻结证据登记 | 只提供来源、反例和未知；是否吸收仍回所属模块票拍板 |
 | **P3 背景卡** | `references/novel_fact_extraction_contract_v2.md` | 抽事实的五条小抄，不是设计理念 |
-| **foundation/** | 2026-07-16 的 04 批快照 | 不是现行背景板；后来的改判不在这份原文里 |
+| **foundation/** | 2026-07-16 的 04 批快照 | 是历史原件，不是现行产品入口；后来的改判不在这份原文里 |
 | **novel-mvp/** | [试跑示例 README](novel-mvp/README.md) | 测试阶段示例。代码偏旧；设计稿有用。不是已经上线的产品 |
-| **情景问答** | [agent-playbook](references/agent-playbook/README.md) | 拿不准账本／工具／执行包／权限时先对卡片。不是执行票，不代替 R14，禁止拿它当理由通读调查包 |
+| **情景问答** | [agent-playbook](references/agent-playbook/README.md) | 拿不准账本／工具／执行包／权限时先对一张卡。不是执行票，也不代替现行模块票和正式合同 |
 
 ## 1. Repository entry / authority
 
 - 上工先读 [`governance/START_HERE.md`](governance/START_HERE.md)。工程真源是 GitHub；有结束点的任务看 Linear；当前口径看 [Notion 当前口径入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)；短通知进 Slack `#施工`，批复／阶段门进 Slack `#主控聊天`。读 Notion ≠ 开工。细则见[协作约定](governance/COLLAB_GITHUB_LINEAR_SLACK.md)。
-- 仓库里的[治理索引](governance/INDEX.md)只负责稳定寻路，不保存整体任务进度。查看主线、支线、领票、父子关系、硬前置、阻塞和可并行工作时，现场读取 [Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)；查看施工 Issue、PR、检查和合并时，现场读取 [GitHub](https://github.com/cczz412/novel-architecture)。整体查看优先用个人 Skill `$linear-github-task-map`，单票施工直接用 Linear／GitHub 插件。查已拍口径用 Notion 插件打开上面那页。Slack 插件只进任务卡点名的频道；普通窗口默认 `#施工`，不要因为连着了就读完整 `#主控聊天`。
+- 仓库里的[治理索引](governance/INDEX.md)只负责稳定寻路，不保存整体任务进度。查看主线、支线、领票、父子关系、硬前置、阻塞和可并行工作时，现场读取 [Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)；查看施工 Issue、PR、检查和合并时，现场读取 [GitHub](https://github.com/cczz412/novel-architecture)。整体查看优先用个人 Skill `$linear-github-task-map`，单票施工直接用 Linear／GitHub 插件。细则见[协作约定](governance/COLLAB_GITHUB_LINEAR_SLACK.md)。
 - [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json) 是带日期的技术兼容／控制快照，供现有工具读取旧机器字段；它不是全局任务地图，不能据此判断当前谁在做、哪些票被领、最新阻塞或下一张票。
 - 当前版本、路径和候选身份只认 [`governance/current_pointers.json`](governance/current_pointers.json)；它不保存全局任务进度、运行成绩或领票状态，也不替产品或领域 CURRENT 拍板。
-- 产品共同理解从 [共同背景板 R14 本地入口](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md) 开始。R13 及更早印刷版已退出本 Git，本机备份；旧 Notion 镜像不代表 R14。它不是执行票、训练许可、当前状态或生产默认；简单机械任务直接走下表，不通读整包。
-- 外部论文、官方文档、行业材料和作者经验的可复用结论从[外部报告知识库当前入口](references/external-knowledge-base/README.md)开始；Notion 人读镜像在[报告背景 R01](https://app.notion.com/p/3be5cadc4d0f819eb8ebd02ca1b9b8e5)。它与产品共同背景板分开，只提供证据、反例和待核缺口。
-- 原子需求与验收背景只认 [R03 CURRENT](references/atomic-expectations/CURRENT.json)：142 条唯一 ID；人读入口见 [README](references/atomic-expectations/README.md)。旧 R02 及更早已退出本 Git，本机备份；[六例测试设计 CURRENT](references/atomic-expectations/TEST_DESIGN_CURRENT.json) 组合覆盖 142 条／852 例（旧 127×6 加新增 15×6），不能冒充已经跑完，旧 127 套也不能单独冒充全 R03。
+- 产品需求和 CZ 拍板从 Linear 现场读取：先用 [CCZ-77](https://linear.app/ccz/issue/CCZ-77) 找路线；新需求先到 [CCZ-128](https://linear.app/ccz/issue/CCZ-128) 登记，再进入所属模块票。不要在仓库里另建一份万能产品背景。
+- 工程能力只认 GitHub 当前 `main` 上的正式合同、Schema、登记册、测试和已合并代码。Linear 负责需求、关系和回执，不替 GitHub 证明能力已经落地。
+- 外部论文、官方文档、行业材料和作者经验先保留来源与 SHA；可复用证据登记到 [CCZ-64](https://linear.app/ccz/issue/CCZ-64)，是否吸收回所属模块票。外部材料不能替 CZ 拍板，也不能直接变成产品合同。
 - 路径职责与新文件落点只认 [`governance/directory_registry.json`](governance/directory_registry.json) 和生成的 [`governance/indexes/new_file_routing.md`](governance/indexes/new_file_routing.md)。
 
 ## 2. Task routing
 
 | 你要做什么 | 第一站 | 需要时的第二站 |
 |---|---|---|
-| 理解产品目标 | `references/shared-context/.../01_PRODUCT_NORTH_STAR.md` | `02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md` |
+| 理解产品目标或模块边界 | Linear [CCZ-77](https://linear.app/ccz/issue/CCZ-77) 找所属模块票 | 已落地能力再核 GitHub 正式合同与 `main`；新需求先登记 [CCZ-128](https://linear.app/ccz/issue/CCZ-128) |
 | 查当前版本、路径和候选分支 | `governance/current_pointers.json` | 技术兼容快照才看 `governance/CURRENT_STATE.json`；任务进度不从仓库读取 |
-| 理解创作／记忆流程 | `references/shared-context/.../03_CREATION_AND_MEMORY_PIPELINES.md` | 无 |
+| 理解创作／记忆流程 | Linear 当前所属模块票和一跳关系 | 再核 GitHub 已落合同；不要从历史设计反推当前产品 |
 | 看产品试跑示例（代码偏旧，不是现行产品） | `novel-mvp/README.md` | `novel-mvp/design/INDEX.md` |
 | 看微调结论 | [finetuning/README.md](finetuning/README.md) | 正线已放弃；CURRENT 只是空落点 |
 | 判断能否训练 | `finetuning/CURRENT.json` 的授权字段 | 没有明确许可就是不能训练；正线已关 |
 | 查抽取研究 | `governance/route_registry.json` | 对应实验结果票；产品解释再看 R04 第 04 页 |
 | 查已验证的工程结论、技术选型或管线骨架 | `references/engineering-ledger/00_READ_ME_FIRST.md` | 按账内指针回正式结果票／冻结合同核对；当前任务状态仍现场读取 Linear／GitHub |
-| 查已吸收的外部证据、行业经验、冲突或研究缺口 | `references/external-knowledge-base/README.md` | 按主题页的 claim ID 追 `02_CLAIM_LEDGER.jsonl`、来源登记和原报告；不能替产品拍板 |
-| 拿不准账本／工具／执行包／权限，或抽取／评测／记忆、需求／产品形态、日常循环／插件／画布／平台／人格标签、规划账／保存对照交棒／状态轴、局部复核／反馈外发／切片验收会不会做歪 | [情景问答](references/agent-playbook/README.md) | [卡片目录](references/agent-playbook/INDEX.md)。只打开对得上的那一张。不当执行票或训练许可，不代替 R14。禁止通读调查包，禁止把 `work/` 当知识库 |
-| 查模块长期需求、测试配方或评分维度 | `references/atomic-expectations/CURRENT.json` | 人读看 `README.md`；机器内容看 R03 包；旧六例设计另看 `TEST_DESIGN_CURRENT.json` |
+| 查外部证据、行业经验、冲突或研究缺口 | [CCZ-64](https://linear.app/ccz/issue/CCZ-64) 冻结证据登记 | 需要原文时再按 [survey-inbox](references/survey-inbox/README.md) 的来源卡追原报告；吸收决定回模块票 |
+| 拿不准账本／工具／执行包／权限，或抽取／评测／记忆、需求／产品形态、日常循环／插件／画布／平台／人格标签、规划账／保存对照交棒／状态轴、局部复核／反馈外发／切片验收会不会做歪 | [情景问答](references/agent-playbook/README.md) | [卡片目录](references/agent-playbook/INDEX.md)。只打开对得上的一张；再回它标出的现行 Linear 票或 GitHub 合同核对 |
+| 查模块长期需求、测试配方或评分维度 | [CCZ-128](https://linear.app/ccz/issue/CCZ-128) 找需求归属；评测设计看 [CCZ-83](https://linear.app/ccz/issue/CCZ-83) | 已落地部分再核 GitHub 合同、Schema 和测试；候选不能冒充实现 |
 | 查历史外部调查，避免同类问题重做 | `references/survey-inbox/INDEX.md` | 先对情景问答；仍要对原文时才打开对应 `SI-*` 卡和那一份消化稿。历史报告只作证据与候选先验，不产生执行权 |
 | 接仓库重构任务 | 当前 GitHub 施工 Issue | 回 Linear 核对父子、硬前置、领票和停点；没有明确票与授权就停下 |
 | 找历史外置对象 | `governance/external_archive_registry.json` | 对象登记的 manifest／恢复方式 |
@@ -45,12 +45,12 @@
 | 做 Repo Bridge 交接／外审 | `experiments/repo_bridge_v1_prototype_20260807/README.md` | 当前任务的 handoff／review 包 |
 | 做 ChatGPT 外发包 | `config/review_pack/README.md` | `config/review_pack/routes.json` |
 | Cursor 窗口 Skill（团队／便宜助手／探路／外发） | `.cursor/skills/` | 外发打包仍回 `config/review_pack/README.md` |
-| 看整体任务进度 | 现场读取 Linear | 再现场读取 GitHub Issue／PR／合并；不从仓库静态页猜 |
 | 查当前已拍口径／长期说明 | [Notion 当前口径入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133) | 产品题 Q1–Q29 看 [CCZ-158](https://linear.app/ccz/issue/CCZ-158)；读那页 ≠ 开工 |
 | 查四台和插件频道 | [`governance/START_HERE.md`](governance/START_HERE.md) | [协作约定](governance/COLLAB_GITHUB_LINEAR_SLACK.md) |
+| 看整体任务进度 | 现场读取 Linear | 再现场读取 GitHub Issue／PR／合并；不从仓库静态页猜 |
 | 决定新文件放哪 | `governance/indexes/new_file_routing.md` | `governance/directory_registry.json` |
 
-情景问答：**什么时候用**＝施工时怕账本／工具／执行包／权限，或抽取／评测／记忆、需求／产品形态、规划账／状态轴、局部复核／反馈外发做歪，先打开一张对得上的卡。**什么时候不用**＝当执行票、训练许可、已拍清单，或代替 R14；也不许拿它当理由通读 `survey-inbox/packages/` 或把 `work/` 当知识库。
+情景问答：**什么时候用**＝施工时怕账本／工具／执行包／权限，或抽取／评测／记忆、需求／产品形态、规划账／状态轴、局部复核／反馈外发做歪，先打开一张对得上的卡。**什么时候不用**＝当执行票、训练许可、已拍清单，或代替现行模块票与正式合同；也不许拿它当理由通读 `survey-inbox/packages/` 或把 `work/` 当知识库。
 
 ## 3. Universal safety rules
 

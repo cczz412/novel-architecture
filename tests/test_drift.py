@@ -16,14 +16,13 @@ MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 
 
-def test_live_root_five_checker_suite_has_no_errors() -> None:
+def test_live_root_four_checker_suite_has_no_errors() -> None:
     report = MODULE.build_report(ROOT)
     assert report["schema_version"] == "drift-check-report-v1"
-    assert report["summary"]["checker_count"] == 5
+    assert report["summary"]["checker_count"] == 4
     assert set(report["checks"]) == {
         "current_freshness",
         "design_currentness",
-        "traceability",
         "tracked_temp",
         "review_identity",
     }

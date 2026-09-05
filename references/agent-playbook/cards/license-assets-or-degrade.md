@@ -16,10 +16,8 @@
 
 “库是 MIT”就默认所有素材、示例、Pro 资源和再分发都可用。把 seed 相同写成角色必然一致。画不出来时让模型补写账里没有的人物事实。未经清洗直接渲染用户 SVG。把 `asset_manifest` 示例字段当成冻结 API。把本卡升级成执行票，或把 P07 的技术栈写成唯一已拍路线。
 
-## 出处
+## 当前依据
 
-- [R14 系统架构与真值分层](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md)（ADD-026：素材逐项核对、降级、不猜事实、SVG 清洗）
-- [R14 入口页](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)（确定性 SVG 的身份与许可边界）
-- [SI-007 包入口](../../survey-inbox/packages/DESIGN_REVIEW_AND_TECH_RESEARCH_RETURNS_20260813_R01/00_READ_ME_FIRST.md)（P07；程序化插画技术调查）
+- [CCZ-49](https://linear.app/ccz/issue/CCZ-49)｜[CCZ-74](https://linear.app/ccz/issue/CCZ-74)：素材授权、SVG 清洗与降级路线
 
-来源：#115；批次 C；2026-08-24
+来源：Codex

@@ -16,10 +16,9 @@
 
 `INFP`、`NPD`、九型编号或依恋类型单独决定角色行动。标签不符就拦截剧情或判“崩人设”。把角色成长、伪装、压力下反常都当错误。冻结七层字段、检查器四档或优先级。把本卡升级成执行票，或把 P13 的实验方案写成已拍。
 
-## 出处
+## 当前依据
 
-- [R14 创作与记忆管线](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md)（ADD-033：心理标签降级与行为判断依据）
-- [R14 术语表](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/07_GLOSSARY.md)（软先验＋编辑索引、检查器四档的身份）
-- [SI-007 包入口](../../survey-inbox/packages/DESIGN_REVIEW_AND_TECH_RESEARCH_RETURNS_20260813_R01/00_READ_ME_FIRST.md)（P13；心理标签驱动角色行为调查）
+- [CCZ-134](https://linear.app/ccz/issue/CCZ-134)：人物故事时间边界
+- [CCZ-126](https://linear.app/ccz/issue/CCZ-126)：统一只读合同
 
-来源：#115；批次 C；2026-08-24
+来源：Codex

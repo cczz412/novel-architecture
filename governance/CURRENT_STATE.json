@@ -118,14 +118,14 @@
     "role": "HISTORICAL_ONLY_NO_CURRENT_AUTHORITY"
   },
   "refresh_metadata": {
-    "updated_at": "2026-08-22T23:46:41+08:00",
-    "mode": "signpost_refresh_issue_64",
-    "source_count": 7,
+    "updated_at": "2026-08-30T12:16:36+08:00",
+    "mode": "background_decouple_issue_204",
+    "source_count": 6,
     "source_snapshot": [
       {
         "identity": "main",
         "kind": "refresh_base",
-        "commit": "c91ecffa084dd8a5cb834a2789e8fb408c0229e3"
+        "commit": "9e115ccc5070760f485594235d67daa30175ba37"
       },
       {
         "identity": "module_candidate",
@@ -141,10 +141,6 @@
         "role": "CURRENT_VERSION_AND_PATH_REGISTRY"
       },
       {
-        "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
-        "role": "ACTIVE_PRODUCT_BACKGROUND_R14"
-      },
-      {
         "path": "governance/decision_records/DR-20260822-01.md",
         "role": "WO6_READONLY_DECISION_RECORD"
       },
@@ -157,7 +153,6 @@
       "repository_current": "governance/CURRENT_STATE.json",
       "repository_history": "governance/CURRENT_STATE_HISTORY.json",
       "current_pointers": "governance/current_pointers.json",
-      "product_background": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
       "finetuning_navigation": "finetuning/CURRENT.json"
     }
   }

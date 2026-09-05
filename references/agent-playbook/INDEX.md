@@ -1,111 +1,104 @@
-# 情景问答｜目录
+# Agent 情景卡｜目录
 
 入口说明：[README.md](README.md)
 
-## 工作台／账本／权限（第一批）
+## 工作台／账本／权限
 
-| 遇到什么 | 身份 | 卡片 |
+| 遇到什么 | 当前定位 | 卡片 |
 |---|---|---|
-| 生成前要不要把所有篮子塞进模型 | 已拍 | [账本可以细，执行包必须瘦](cards/store-fine-feed-thin.md) |
-| AI 该看见哪些工具、会不会乱翻后台站 | 已拍＋加固 | [按意图分探讨／查询／真改](cards/intent-gates-tools.md) |
-| 生成结果是一墙字还是可点对象；草稿放哪 | 已拍 | [草稿是提案，产出落画布](cards/draft-is-proposal.md) |
-| 提示词写了「别乱改」够不够 | 外部先验 | [提示词不是权限](cards/prompt-is-not-permission.md) |
-| 作者选了一个计划，算不算已经发生 | 已拍＋设计审查 | [选中不是已发生](cards/selected-is-not-happened.md) |
-| 读到 P02 写 No-Go，是不是产品已经否了 | 设计审查风险 | [P02 的 No-Go 不是现行产品否决](cards/p02-nogo-is-candidate.md) |
-| 检查器回一个 OK 能不能过 | 已拍＋验收目标 | [检查器要覆盖回执](cards/checker-needs-coverage.md) |
-| 篮子协作难，要不要再开一本账 | 已拍＋加固 | [先补户口和指针，不砍树也不加层](cards/no-extra-baskets.md) |
-| 拿不准要不要重查／通读报告 | 本票纪律 | [先对卡片和 INDEX，不要重查](cards/look-up-dont-rescan.md) |
+| 写下一章／出题前，面前有很多篮子（规划、事实、人物、伏笔、灵感）。要不要全塞给模型？ | 已拍 | [账本可以细，执行包必须瘦](cards/store-fine-feed-thin.md) |
+| 用户只是讨论剧情或查询材料，Agent 却拿到全部写入工具；或者用户已经授予某项托管权限，系统仍把所有动作都当成只能逐条手签。 | 当前权限纪律 | [先分清要做什么，再开放对应工具](cards/intent-gates-tools.md) |
+| 主 AI 或工作卡生成了一段方案、事实候选或剧情选择，后续流程准备立刻把它当成正式故事结果。 | 当前产品纪律 | [草稿是提案，产出留在本章工作区](cards/draft-is-proposal.md) |
+| 为了防止 AI 越权，只在提示词里写“不要乱动”；或者因为作者说过“全都托管”，就把这句话当成永久万能授权。 | 当前权限纪律 | [提示词不是权限](cards/prompt-is-not-permission.md) |
+| 作者或主 AI 在规划里选了一条故事路线，系统准备立刻把伏笔标成已兑现、人物状态改成已经发生。 | 当前产品纪律 | [选中不是已发生](cards/selected-is-not-happened.md) |
+| 检查器只回一句“没问题”，后续工作准备把它当成整章、整书都已经检查完。 | 当前产品纪律 | [检查器要覆盖回执](cards/checker-needs-coverage.md) |
+| 出现一个新字段、插件或工作流，后续施工立刻再建一本账；或者反过来，因为已有十本账，就拒绝任何未来扩展。 | 当前产品纪律 | [先看十本账能否承接，新账本要走准入](cards/no-extra-baskets.md) |
+| 施工者拿不准产品口径，准备通读旧共同背景、外部知识库和历史调查包，再从中挑一句继续做。 | 仓库施工纪律 | [先找当前入口，不要重扫旧背景包](cards/look-up-dont-rescan.md) |
 
-## 抽取／评测／记忆（批次 A）
+## 抽取／评测／记忆
 
-CZ 2026-08-24 同意收进。P4 预检没有写成已拍。「六层」是当前拆法，不是新评测合同。格式 V1.1 未迁。
-
-| 遇到什么 | 身份 | 卡片 |
+| 遇到什么 | 当前定位 | 卡片 |
 |---|---|---|
-| 引文、位置和 SHA 都合法，能否直接判事实成立 | 已拍加固 | [引文能对上，不等于事实被证明](cards/evidence-is-not-support.md) |
-| “打算／可能／除非／某人说”能否只抽事件核心 | 已拍加固 | [别把“想做”抽成“已经做了”](cards/preserve-modal-qualifiers.md) |
-| 输出很准，能否认为没有漏抽 | 已拍加固 | [输出很干净，不等于没有漏抽](cards/clean-output-can-still-miss.md) |
-| 评测能否只留一个准确率或 F1 | 已拍加固 | [评测不能压成一个总分](cards/evaluation-needs-layers.md) |
-| 反复使用的 DEV 高分，能否叫 blind 或生产胜出 | 已拍加固 | [开发集高分，不是生产证明](cards/dev-score-is-not-production.md) |
-| 同章几百条事实能否当几百个独立样本 | 外部先验 | [一章里的很多事实，不等于很多独立样本](cards/chapter-is-statistical-unit.md) |
-| API 重试成功后，失败记录能否覆盖掉 | 外部先验 | [重试失败也算一次真实尝试](cards/retries-are-real-attempts.md) |
-| 一轮同时改模型、Prompt、上下文和评分器，能否归因 | 外部先验 | [一次实验别同时改五件事](cards/change-one-variable.md) |
-| 验真器给了修正版，能否自动覆盖候选或真值 | 已拍 | [验真先判，修复不能顺手改账](cards/verifier-diagnoses-not-writes.md) |
-| 背景卡、旧状态或检索段能否替目标段作证 | 已拍加固 | [背景能帮理解，不能替目标段作证](cards/background-is-not-evidence.md) |
-| 章节顺序或最后修改时间能否代表故事当时状态 | 已拍加固 | [故事时间、叙述位置、系统时间别混成一个字段](cards/separate-three-times.md) |
-| 没值或没查到，能否统一写成 false／未发生 | 已拍加固 | [不知道，不等于没有发生](cards/unknown-is-not-false.md) |
+| 抽取器给了一段逐字引文，位置、来源版本和证据编号也都合法。后续 Agent 能不能因此把对应事实直接标成“已验证”？ | 已拍加固 | [引文能对上，不等于事实被证明](cards/evidence-is-not-support.md) |
+| 原文写的是“她打算离开”“除非拿到钥匙才能开门”“张三说城主死了”。抽取器能不能只保留“离开”“开门”“城主死亡”这些事件核心？ | 已拍加固 | [别把“想做”抽成“已经做了”](cards/preserve-modal-qualifiers.md) |
+| 抽出来的每条事实都挺准，误报很少。后续 Agent 能不能据此写“本段已完整抽取”？ | 已拍加固 | [输出很干净，不等于没有漏抽](cards/clean-output-can-still-miss.md) |
+| 评测脚本准备只输出一个“准确率”或 F1，再按总分排模型。这样够不够？ | 已拍加固 | [评测不能压成一个总分](cards/evaluation-needs-layers.md) |
+| 同一批 DEV 已经反复拿来改 Prompt、Schema、评分器和模型，现在某个候选得分最高。能不能把它叫 blind 胜出或直接晋级生产？ | 已拍加固 | [开发集高分，不是生产证明](cards/dev-score-is-not-production.md) |
+| 四章里抽出了几百条事实。评测 Agent 想把每条事实、每个块或每次重复调用都当独立样本，算显著性并排头部名次。 | 外部先验 | [一章里的很多事实，不等于很多独立样本](cards/chapter-is-statistical-unit.md) |
+| 评测调用失败后自动重试，最终成功了。结果账只保留最后一次成功，行不行？ | 外部先验 | [重试失败也算一次真实尝试](cards/retries-are-real-attempts.md) |
+| 新一轮评测同时换了模型、Prompt、示例、上下文、Schema 和评分器，分数上升。后续 Agent 能不能说“某一项改动有效”？ | 外部先验 | [一次实验别同时改五件事](cards/change-one-variable.md) |
+| 验真器判一条事实不受证据支持，同时给了一个“修正版”。后续 Agent 能不能直接用修正版覆盖候选或真值？ | 已拍 | [验真先判，修复不能顺手改账](cards/verifier-diagnoses-not-writes.md) |
+| 模型读到了人物卡、别名、前态、整章背景或检索回来的旧段落。目标责任段里没写这件事，模型能不能仍把它登记成这次新事实？ | 已拍加固 | [背景能帮理解，不能替目标段作证](cards/background-is-not-evidence.md) |
+| Agent 要判断人物在某一场景的状态，手上只有章节顺序或最后修改时间。能不能把“最新一条”当时的当前状态？ | 已拍加固 | [故事时间、叙述位置、系统时间别混成一个字段](cards/separate-three-times.md) |
+| 某个状态没有值，或检查器没找到证据。后续 Agent 能不能统一写成 `false`、未发生或不存在？ | 已拍加固 | [不知道，不等于没有发生](cards/unknown-is-not-false.md) |
 
-## 需求／产品形态（批次 B）
+## 作者需求／产品形态
 
-CZ 2026-08-24 同意收进。P4 双入口、10 分钟、动画指标、价格数字没有写成已拍。格式 V1.1 未迁。
-
-| 遇到什么 | 身份 | 卡片 |
+| 遇到什么 | 当前定位 | 卡片 |
 |---|---|---|
-| 看到“续写、生成、提高产量”，准备加一键正文 | 已拍加固 | [别把编辑助手做成 AI 写手](cards/guide-dont-ghostwrite.md) |
-| 报告里人群很多，准备同时服务作者、读者和工作室 | 已拍加固 | [首发主线不是所有故事用户](cards/serve-current-author-first.md) |
-| 每个垂直场景都要字段，准备各建一套真源 | 已拍加固 | [垂直场景共用真源，不复制七套产品](cards/one-core-many-projections.md) |
-| 导入旧稿前，准备先深抽全书并补齐 Wiki | 已拍加固 | [先回答一个真问题，不先造整本百科](cards/answer-one-question-first.md) |
-| 输入已经分类，准备按桶直接入账或丢弃未知内容 | 已拍加固 | [分到哪个桶，不会自动变成真相](cards/classification-is-not-authority.md) |
-| 简单／专业模式准备各用一套项目格式 | 已拍加固 | [简装精装换视图，不换故事底座](cards/same-truth-different-views.md) |
-| 动画播放成功，准备直接记为激活 | 已拍加固 | [激活不是播完一段动画](cards/activation-is-work-not-animation.md) |
-| 手机端准备照搬桌面全部能力 | 已拍加固 | [手机不是缩小版写作台](cards/mobile-is-companion.md) |
-| 分镜或视频生成了新细节，准备回写真源 | 已拍加固 | [分镜和视频是投影，不是故事真源](cards/visuals-are-projections.md) |
-| 拆书标签准备写进事实账或当硬约束 | 已拍加固 | [拆书配方是参考，不是真值标签](cards/craft-recipe-is-not-truth.md) |
-| 钩子、情绪或期待感分数准备当章节硬门 | 已拍加固 | [钩子和情绪只能亮黄灯，不能给作者判分](cards/reader-signals-are-yellow.md) |
-| 调查报告给了价格和积分建议，准备直接做计费 | 已拍 | [调查里的价格表不是施工合同](cards/prices-are-not-contract.md) |
+| 后续施工准备给主 AI、官方内置能力或官方插件加“一键写正文”；或者因为官方不提供，就把用户自建写作插件的可能性也彻底封死。 | 当前产品决定＋未实现边界 | [官方产品不写可发表正文，只预留受控扩展接口](cards/official-product-does-not-write-prose.md) |
+| 外部报告同时提到作者、读者、互动故事用户、短剧团队和改编负责人，后续施工准备把所有人群都塞进同一版首页和待办。 | 当前产品方向 | [首版不要同时服务所有故事用户](cards/serve-current-author-first.md) |
+| 作者、分镜、短剧、漫画或插件需要不同视图和字段，后续施工准备给每个场景复制一套事实库和确认流程。 | 当前产品纪律 | [一套故事真值，可以有多种受控投影](cards/one-core-many-projections.md) |
+| 作者导入旧稿。系统准备先深抽全书、补齐人物百科和世界观，全部完成后才肯开始工作。 | 当前产品纪律 | [先回答一个真问题，不先造整本百科](cards/answer-one-question-first.md) |
+| 导入器把材料标成正文、设定、大纲或参考资料，后续流程准备只凭这个标签直接写真值，或把识别不了的内容丢掉。 | 当前产品纪律 | [分到哪个桶，不会自动变成真相](cards/classification-is-not-authority.md) |
+| 产品准备区分简单模式和专业模式。后续 Agent 想为不同档位建不同项目格式，升级时做迁移，降级时删除高级数据。 | 已拍加固 | [简装精装换视图，不换故事底座](cards/same-truth-different-views.md) |
+| 页面播完动画、分镜或演示以后，准备把“播放成功”直接算成作者已经感受到产品价值。 | 当前产品纪律 | [激活不是播完一段动画](cards/activation-is-work-not-animation.md) |
+| 看到旧材料写过“手机只做陪伴端”或“手机照搬桌面”，后续施工准备直接冻结移动端范围。 | 候选边界 | [手机端形态尚未冻结，不能从旧报告直接施工](cards/mobile-is-companion.md) |
+| SVG、角色图或分镜里出现了新服装、新伤势和新关系，后续施工准备把这些画面细节直接写回故事；或者把 CCZ-49／74 说成已经覆盖完整分镜系统。 | 当前产品纪律 | [SVG 和分镜是投影，不是故事真源](cards/visuals-are-projections.md) |
+| 拆书报告或模型给一章贴了爽点、钩子、主题、情绪曲线和镜头写法，后续流程准备把这些标签写进事实账或变成生成硬约束。 | 当前产品纪律 | [写法配方是指导，不是故事真值](cards/craft-recipe-is-not-truth.md) |
+| 模型能给“钩子强度、情绪张力、期待感”打分。后续 Agent 准备用一个总分卡住章节，或向作者宣称这章留存差。 | 当前纪律＋未实现边界 | [钩子和情绪只能亮黄灯，不能给作者判分](cards/reader-signals-are-yellow.md) |
+| 外部报告、竞品页面或旧讨论写了月费、积分、免费额度和按项目价格，后续施工准备直接据此建套餐和付费墙。 | 当前商业纪律 | [调查里的价格表不是施工合同](cards/prices-are-not-contract.md) |
 
-## SI-007 其余审查（批次 C）
+## 日常流程／插件／视觉／风险
 
-CZ 2026-08-24 同意收进。字段名、组件数、市场数字、晋江阉割档、心理量表细节没有写成已拍。格式 V1.1 未迁。
-
-| 遇到什么 | 身份 | 卡片 |
+| 遇到什么 | 当前定位 | 卡片 |
 |---|---|---|
-| 五份日常循环稿状态互相打架，准备各自施工 | 已拍加固 | [先统一一条日常状态流，再把稿发给开发](cards/one-daily-flow-before-build.md) |
-| P01 建议全部未决，或高影响暗稿准备批量放行 | 已拍加固 | [暗稿能默认，小事和大事不能一锅勾](cards/dark-draft-high-impact-needs-single-sign.md) |
-| 无书稿点了收工，准备记成写完并关章 | 已拍加固 | [收工不是关章，无书稿不算写完一章](cards/finish-is-not-close.md) |
-| 收工检查散成弹窗，容量和欠账准备自动改剧情 | 已拍加固 | [收口只合并异常，不替作者改剧情](cards/close-with-anomalies-not-autopilot.md) |
-| 插件更新后准备让旧项目静默读取最新版 | 已拍加固 | [插件升级不能改写旧结果](cards/pin-plugin-version.md) |
-| 模型自报用了插件，准备据此认定作者和版权 | 已拍加固 | [运行回执不是作者署名](cards/runtime-receipt-is-not-authorship.md) |
-| 路由器无论如何都要选中至少一个插件 | 已拍加固 | [没有合适插件时，可以一个也不用](cards/router-may-choose-none.md) |
-| 私人 Skill 上传后准备直接公开或授予系统权力 | 已拍加固 | [私人 Skill 先过治理门，再谈公开](cards/private-skill-needs-governance.md) |
-| 一个许可证标签准备包办整库素材，画不出时让 AI 猜 | 已拍加固 | [素材要逐项核权，画不出来就降级](cards/license-assets-or-degrade.md) |
-| 画布节点和浏览器缓存准备成为第二套真源 | 已拍加固 | [画布是交互投影，缓存只是加速层](cards/canvas-is-projection-cache-is-accelerator.md) |
-| 产品不代写正文，准备显示平台“安全发布” | 已拍加固 | [不代写，不等于平台一定合规](cards/no-prose-is-not-compliance.md) |
-| 人格标签准备直接驱动行为或触发硬冲突 | 已拍加固 | [人格标签只能提醒，不能替角色做决定](cards/psych-labels-are-soft.md) |
+| 几份旧设计稿对入口、暂停、提交和异常恢复的说法不同，施工者准备各做一套，或按文件更新时间自行挑一份。 | 当前产品纪律 | [日常流程只认当前一条主线](cards/one-daily-flow-before-build.md) |
+| 章节里出现人物死亡、身份翻转、重大关系改变、关键物品转手或秘密揭示。系统要么每出现一次就停下来问，要么因为作者开了托管就直接默默提交。 | 当前产品纪律 | [高影响变化在章末集中验收](cards/high-impact-changes-close-at-chapter-end.md) |
+| 作者只做完一部分规划、画布卡或正文，系统准备因为点了“收工”就增加已写章数、合并十本账并跳到下一章。 | 当前产品纪律 | [暂停工作不是关章，章末结算也不是一句“完成”](cards/finish-is-not-close.md) |
+| 每发现一个风险就停下来问作者，或者反过来，让人物死亡、重大关系改变和秘密揭示等变化静默进入正式结果。 | 当前产品纪律 | [章内不断流，异常在章末集中验收](cards/close-with-anomalies-not-autopilot.md) |
+| 插件内容更新后，后续 Agent 准备让所有项目直接读取最新版；历史记录只保留组件键，旧生成结果已经无法回答“当时到底加载了哪一版内容”。 | 候选设计要求 | [插件升级不能改写旧结果](cards/pin-plugin-version.md) |
+| 模型输出 `used_components`，或页面记下“加载过某插件”。后续 Agent 准备用这条记录证明插件确实影响了结果、认定谁是作者、决定版权归属，甚至据此允许公开发布。 | 当前纪律＋未实现边界 | [运行回执不是作者署名](cards/runtime-receipt-is-not-authorship.md) |
+| 插件路由器拿到作者当前任务后，后续 Agent 准备按 15～25 字触发行做关键词匹配，并且无论如何都返回 Top 1／Top 3，认为“装了插件就必须用一个”。 | 当前纪律＋未实现边界 | [没有合适插件时，可以一个也不用](cards/router-may-choose-none.md) |
+| 作者或第三方做出一个写作配方、Skill 或插件，后续施工准备因为它“不执行本地代码”就直接公开、联网、读全项目或写真值。 | 候选设计要求 | [私人插件要先过治理门，当前还不是已上线能力](cards/private-skill-needs-governance.md) |
+| 接入 SVG、图标、插画风格或生成模型时，后续 Agent 看到某个库写着 MIT，就准备把整库所有素材、示例和导出用途统一放行；模型无法稳定表现角色时，又准备让它根据剧情自行补脸、补服装或补身份细节。 | 已拍加固 | [素材要逐项核权，画不出来就降级](cards/license-assets-or-degrade.md) |
+| 画布、浏览器缓存或前端组件保存了一份人物、事实和章节数据，后续施工准备把这份副本当成新的故事真源。 | 当前产品纪律 | [画布是交互投影，缓存只是加速层](cards/canvas-is-projection-cache-is-accelerator.md) |
+| 正文由作者、人类编辑、外部写作插件或模型生成，系统准备仅凭这个来源显示“安全发布”或“平台一定接受”。 | 当前风险纪律 | [生成方式不等于平台合规](cards/no-prose-is-not-compliance.md) |
+| 人物页有 MBTI、九型、依恋型或临床标签。后续 Agent 准备把标签直接塞进规则引擎：角色做出不符合标签的选择就报硬冲突，或让标签自动决定下一步行为。 | 已拍加固 | [人格标签只能提醒，不能替角色做决定](cards/psych-labels-are-soft.md) |
 
-## 规划账合同（批次 D）
+## 规划／版本／状态
 
-CZ 2026-08-24 同意收进。SI-016 是当时候选合同审查，不是现行代码故障。`plan-v2-candidate` 字段表、空数组收窄、C5 候选、具体 ID 格式没有写成已拍。格式 V1.1 未迁。
-
-| 遇到什么 | 身份 | 卡片 |
+| 遇到什么 | 当前定位 | 卡片 |
 |---|---|---|
-| 目录写着“已对齐”，准备跳过现行合同直接施工 | 设计审查风险 | [“已对齐”只是状态说明，不是施工放行票](cards/aligned-label-is-not-release.md) |
-| 下游要读完整规划，准备把一次 C7 出题快照当整本规划账 | 设计审查风险 | [一次出题快照不能冒充完整规划账](cards/snapshot-is-not-ledger.md) |
-| 导入时准备把大纲条目和章节书稿排进同一个章节数组 | 已拍加固 | [大纲原稿不能占章节序号](cards/outline-is-not-chapter.md) |
-| 准备把黄金三章做成三章上限、付费额度或 C1 类型 | 已拍加固 | [黄金三章是独立工作台，不是三章上限](cards/golden-three-is-workspace.md) |
-| 准备把 `truth_bearing`、P 号和内部模块名直接放到作者界面 | 已拍加固 | [作者看人话，合同字段留在内部](cards/schema-names-stay-internal.md) |
-| 概览、体检或快照只有生成时间，准备据此判断仍然有效 | 已拍加固 | [投影必须知道自己基于哪一版](cards/projection-needs-source-version.md) |
-| 跨账引用遇到 `f001`／`F-0001` 两种写法，准备随便选一种落库 | 已拍加固 | [跨账引用认稳定 ID，不认界面编号](cards/store-internal-id-render-display-id.md) |
-| 书稿一保存就准备自动改规划；或没交棒就不允许对账 | 已拍加固 | [保存、对照、交棒是三件事](cards/save-compare-handover-are-separate.md) |
-| 想用一个 `status`／`closed`／`completed` 包办审核、交棒、收工和关章 | 已拍加固 | [一个状态字段只能管一条轴](cards/status-belongs-to-one-axis.md) |
+| 设计目录或索引写着“第二版已对齐”“已完成”。后续 Agent 准备跳过现行合同和正文，直接按这个标签施工。 | 设计审查风险 | [“已对齐”只是状态说明，不是施工放行票](cards/aligned-label-is-not-release.md) |
+| 主 AI 或工作卡需要开工材料，后续施工准备把一次本章情况卡当成完整规划账、人物历史账或新的可写真值存储。 | 当前产品纪律 | [本章情况卡是薄投影，不是第十一本账](cards/context-pack-is-projection-not-ledger.md) |
+| 导入器要同时保存章节书稿和作者旧大纲。后续 Agent 准备用一个章节数组承载两者，只靠 `kind=chapter／outline` 区分，再把数组顺序当实际章序。 | 已拍加固 | [大纲原稿不能占章节序号](cards/outline-is-not-chapter.md) |
+| 实现黄金三章体验时，后续 Agent 准备加 `chapter_limit=3`、免费三章、C1 的特殊章节类型，或把前三章自动整包塞进小说项目。 | 已拍加固 | [黄金三章是独立工作台，不是三章上限](cards/golden-three-is-workspace.md) |
+| 后续 Agent 已经有内部字段、模块号和枚举，准备直接把 `truth_bearing`、`slot_status`、C7、P3、`draft` 等词放进按钮、提示和作者可见状态。 | 已拍加固 | [作者看人话，合同字段留在内部](cards/schema-names-stay-internal.md) |
+| 故事概览、体检报告、C7 快照或其他派生视图只有 `generated_at`／最后修改时间。后续 Agent 准备用时间新旧判断它是否还能支撑当前操作。 | 已拍加固 | [投影必须知道自己基于哪一版](cards/projection-needs-source-version.md) |
+| 字段表写一种事实编号，JSON 示例又写另一种；界面显示 `F-0001`，旧合同里还有 `f001`。后续 Agent 准备挑一种顺眼的，直接当跨账外键。 | 已拍加固 | [跨账引用认稳定 ID，不认界面编号](cards/store-internal-id-render-display-id.md) |
+| 作者保存了一份新正文，系统准备立刻让它覆盖原计划；或者因为作者还没选“以这份为准”，就拒绝比较计划和正文。 | 当前产品纪律 | [保存、对照、交棒是三件事](cards/save-compare-handover-are-separate.md) |
+| 为了少写字段，后续 Agent 准备用一个 `status`、`closed` 或 `completed` 同时表示：事实已确认、计划已消化、槽位已交棒、作者已收工、质检通过、章节已关并可开下一章。 | 已拍加固 | [一个状态字段只能管一条轴](cards/status-belongs-to-one-axis.md) |
 
-## TEMP 剩料缺口（批次 E）
+## 复核／证据／材料
 
-CZ 2026-08-24 同意收进。Deep Search 原 URL 打不开的部分只标外部先验。切片 PASS 是历史审查，不是现行故障。格式 V1.1 未迁。
-
-| 遇到什么 | 身份 | 卡片 |
+| 遇到什么 | 当前定位 | 卡片 |
 |---|---|---|
-| 检索命中、材料入包、模型使用准备合成一个“证据已用” | 外部先验 | [找到、装进、真正用到是三道证据](cards/found-loaded-used-are-different.md) |
-| 合同递增版本号后准备直接宣称兼容 | 外部先验 | [版本号不是兼容证明](cards/version-number-is-not-compatibility.md) |
-| 作者处置过的问题在后续版本里永久消失或反复轰炸 | 已拍加固 | [问题可以还在，处置不能失忆](cards/handled-issue-needs-reopen.md) |
-| 本地最新稿准备冒充读者实际看过的线上版本 | 外部先验 | [本地最新稿不等于读者看过的版本](cards/published-view-is-not-current-draft.md) |
-| 局部修改后准备盲用全部旧结果，或默认全书重跑 | 已拍加固 | [局部复核要说明旧结果为什么还能用](cards/local-recheck-needs-freshness-proof.md) |
-| 计划与书稿准备做成段落级一对一映射 | 外部先验 | [一条计划不只对应一段书稿](cards/outline-prose-is-many-to-many.md) |
-| 局部文风修改准备越过选区并改变故事含义 | 外部先验 | [改句子不能顺手改故事](cards/style-patch-cannot-change-story.md) |
-| 作者一句方向准备被 Agent 改写成全局永久偏好 | 外部先验 | [作者原话和产品理解要并存](cards/author-words-and-interpretation-coexist.md) |
-| 作者抱怨准备被直接翻译成不存在的配置项 | 外部先验 | [作者抱怨不是配置命令](cards/complaint-is-not-setting-command.md) |
-| “只看核心”准备同时减少分析、抽取、证据和展示 | 已拍加固 | [少看一点，不等于少分析一点](cards/less-display-is-not-less-analysis.md) |
-| 识别到产品意见后准备自动外发聊天和书稿 | 已拍加固 | [识别到产品反馈，不等于同意外发](cards/feedback-needs-separate-consent.md) |
-| TEMP 中某个切片或测试包通过后准备宣称整模块完成 | 设计审查风险 | [一个切片通过，不等于整个模块完成](cards/slice-pass-is-not-module-complete.md) |
+| 检索器命中了材料，打包日志也列出了文件，模型最后还给了一个看似正确的答案。后续 Agent 准备据此写“证据已经被使用”。 | 外部先验 | [找到、装进、真正用到是三道证据](cards/found-loaded-used-are-different.md) |
+| 某个 JSON、合同或模块接口加了字段，也递增了版本号。后续 Agent 准备直接宣布“向后兼容”，或者只测新代码能读新样例。 | 外部先验 | [版本号不是兼容证明](cards/version-number-is-not-compatibility.md) |
+| 作者把一个冲突标成“故意”“稍后再看”或“这一处忽略”。后续版本变化后，系统要么永远不再提醒，要么完全忘掉旧处置，重新从头轰炸作者。 | 已拍加固 | [问题可以还在，处置不能失忆](cards/handled-issue-needs-reopen.md) |
+| 作者把连载作品迁进来。本地文件、平台草稿和线上读者实际看到的内容不一致，后续 Agent 准备拿“当前文件”统一代表已发表历史。 | 外部先验 | [本地最新稿不等于读者看过的版本](cards/published-view-is-not-current-draft.md) |
+| 作者只改了两段。后续 Agent 想把整本旧分析原样复用，或者反过来每次都重跑全书，却说不清哪些旧结果已经过期。 | 已拍加固 | [局部复核要说明旧结果为什么还能用](cards/local-recheck-needs-freshness-proof.md) |
+| 后续 Agent 要做计划—书稿对账，准备规定“一条计划只绑定一个段落，一个段落只完成一条计划”，再用这组一对一关系判定偏离。 | 外部先验 | [一条计划不只对应一段书稿](cards/outline-prose-is-many-to-many.md) |
+| 作者只选中一小段，要求删套话、收紧节奏或调整文风。后续 Agent 准备用整段重写或批量补丁处理，却没有检查故事含义是否被改掉。 | 外部先验 | [改句子不能顺手改故事](cards/style-patch-cannot-change-story.md) |
+| 作者说“反派再坏一点，但只对主角”或“这一卷先别让主角翻身”。后续 Agent 准备只存一条自己改写后的全局偏好，或者根据沉默、重试和连续编辑自动推断长期方向。 | 外部先验 | [作者原话和产品理解要并存](cards/author-words-and-interpretation-coexist.md) |
+| 作者说“金手指一开就还债太烦”“这卷想更爽一点”或“配角坏得不够”。后续 Agent 准备直接修改一个并不存在的全局设置，或立刻生成剧情来证明已经解决。 | 外部先验 | [作者抱怨不是配置命令](cards/complaint-is-not-setting-command.md) |
+| 作者说“这次只看核心”“别拆那么碎”。后续 Agent 准备用一个全局颗粒度数字，同时减少切段、抽取、规划、检查、证据保存和界面展示。 | 已拍加固 | [少看一点，不等于少分析一点](cards/less-display-is-not-less-analysis.md) |
+| 作者在创作对话里说“你们怎么没有这个功能”。后续 Agent 准备自动提交产品反馈，并顺手附上聊天、书稿、角色卡或上传原件作上下文。 | 已拍加固 | [识别到产品反馈，不等于同意外发](cards/feedback-needs-separate-consent.md) |
+| 后续 Agent 在 TEMP 里看到 20/20 PASS、上千条回归通过，或 127×6 测试设计验收通过，准备把相关模块标成“已完成”“端到端可用”或“真实内容质量已证明”。 | 设计审查风险 | [一个切片通过，不等于整个模块完成](cards/slice-pass-is-not-module-complete.md) |
 
-来源：#115
+## 历史审查
+
+退出日常目录的旧审查卡只从[历史索引](history/README.md)读取，不能作为当前施工入口。
+
+来源：Codex
