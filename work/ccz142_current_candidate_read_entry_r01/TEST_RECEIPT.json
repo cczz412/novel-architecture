@@ -1,0 +1,182 @@
+{
+  "status": "CONSTRUCTION_DRAFT__NOT_MERGED",
+  "acceptance_complete": false,
+  "issue": 270,
+  "base_main_sha": "9c2fb95881caf795aae46f1838a93eb674a63a5e",
+  "receipt_created_at_utc": "2026-09-05T08:20:35.966594+00:00",
+  "environment": {
+    "python": "3.13.5",
+    "pytest": "9.0.2",
+    "playwright": "1.57.0",
+    "chromium": "Chromium 144.0.7559.96 built on Debian GNU/Linux 13 (trixie)",
+    "ruff_installed": false
+  },
+  "repository_locked_environment": {
+    "python": "3.12.12",
+    "pytest": "9.0.2",
+    "ruff": "0.15.22",
+    "executed": false
+  },
+  "execution_note": "Commands ran from the draft root, not a full checkout. File navigation failures are retained. Memory rendering does not validate double-click or navigation. No Ruff/browser/dependency downloads were made.",
+  "path_redaction": "Interpreter path is labelled python; sandbox roots and temporary browser test file URLs are redacted. Error codes, process exits and pytest counts are unchanged.",
+  "checks": [
+    {
+      "name": "static_pytest",
+      "status": "PASS",
+      "command_argv": [
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "-q",
+        "work/ccz142_current_candidate_read_entry_r01/test_current_read_entry.py"
+      ],
+      "process_exit_code": 0,
+      "passed": 33,
+      "failed": 0,
+      "stdout": ".................................                                        [100%]\n33 passed in 1.34s\n",
+      "stderr": ""
+    },
+    {
+      "name": "render_only_pytest",
+      "status": "PASS_RENDER_ONLY",
+      "command_argv": [
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "-q",
+        "work/ccz142_current_candidate_read_entry_r01/test_entry_browser.py::test_memory_render_only"
+      ],
+      "process_exit_code": 0,
+      "passed": 4,
+      "failed": 0,
+      "stdout": "....                                                                     [100%]\n4 passed in 3.13s\n",
+      "stderr": ""
+    },
+    {
+      "name": "file_navigation_pytest",
+      "status": "BLOCKED_ENV_ADMIN_POLICY",
+      "command_argv": [
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "-q",
+        "--tb=line",
+        "work/ccz142_current_candidate_read_entry_r01/test_entry_browser.py::test_offline_file_links_without_repo_or_store"
+      ],
+      "process_exit_code": 1,
+      "passed": 0,
+      "failed": 4,
+      "stdout": "FFFF                                                                     [100%]\n=================================== FAILURES ===================================\nE   playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\n    Call log:\n      - navigating to \"file:///<temporary-test-copy>/打开人话结果卡.html\", waiting until \"load\"\n/opt/pyvenv/lib/python3.13/site-packages/playwright/_impl/_connection.py:559: playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\nE   playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\n    Call log:\n      - navigating to \"file:///<temporary-test-copy>/打开人话结果卡.html\", waiting until \"load\"\n/opt/pyvenv/lib/python3.13/site-packages/playwright/_impl/_connection.py:559: playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\nE   playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\n    Call log:\n      - navigating to \"file:///<temporary-test-copy>/打开人话结果卡.html\", waiting until \"load\"\n/opt/pyvenv/lib/python3.13/site-packages/playwright/_impl/_connection.py:559: playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\nE   playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\n    Call log:\n      - navigating to \"file:///<temporary-test-copy>/打开人话结果卡.html\", waiting until \"load\"\n/opt/pyvenv/lib/python3.13/site-packages/playwright/_impl/_connection.py:559: playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\n=========================== short test summary info ============================\nFAILED work/ccz142_current_candidate_read_entry_r01/test_entry_browser.py::test_offline_file_links_without_repo_or_store[desktop-no-js] - playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\nCall log:\n  - navigating to \"file:///<temporary-test-copy>/打开人话结果卡.html\", waiting until \"load\"\nFAILED work/ccz142_current_candidate_read_entry_r01/test_entry_browser.py::test_offline_file_links_without_repo_or_store[desktop-js] - playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\nCall log:\n  - navigating to \"file:///<temporary-test-copy>/打开人话结果卡.html\", waiting until \"load\"\nFAILED work/ccz142_current_candidate_read_entry_r01/test_entry_browser.py::test_offline_file_links_without_repo_or_store[mobile-no-js] - playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\nCall log:\n  - navigating to \"file:///<temporary-test-copy>/打开人话结果卡.html\", waiting until \"load\"\nFAILED work/ccz142_current_candidate_read_entry_r01/test_entry_browser.py::test_offline_file_links_without_repo_or_store[mobile-js] - playwright._impl._errors.Error: Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///<temporary-test-copy>/打开人话结果卡.html\nCall log:\n  - navigating to \"file:///<temporary-test-copy>/打开人话结果卡.html\", waiting until \"load\"\n4 failed in 2.49s\n",
+      "stderr": ""
+    },
+    {
+      "name": "self_check",
+      "status": "PASS",
+      "command_argv": [
+        "python",
+        "-B",
+        "work/ccz142_current_candidate_read_entry_r01/self_check.py"
+      ],
+      "process_exit_code": 0,
+      "passed": null,
+      "failed": null,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"source_commit\": \"9c2fb95881caf795aae46f1838a93eb674a63a5e\",\n  \"entry\": \"打开人话结果卡.html\",\n  \"samples_verified\": 3,\n  \"source_comparison\": \"PINNED_COPIES_ONLY\",\n  \"live_store_checked\": false,\n  \"check_scope\": \"STATIC_FILES_ONLY\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "exact_source_check",
+      "status": "PASS_AGAINST_ONLINE_HASH_VERIFIED_SLICE",
+      "command_argv": [
+        "python",
+        "-B",
+        "work/ccz142_current_candidate_read_entry_r01/self_check.py",
+        "--source-root",
+        "<source-snapshot-root>"
+      ],
+      "process_exit_code": 0,
+      "passed": null,
+      "failed": null,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"source_commit\": \"9c2fb95881caf795aae46f1838a93eb674a63a5e\",\n  \"entry\": \"打开人话结果卡.html\",\n  \"samples_verified\": 3,\n  \"source_comparison\": \"MATCHED_THREE_SOURCE_FILES\",\n  \"live_store_checked\": false,\n  \"check_scope\": \"STATIC_FILES_ONLY\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "ruff",
+      "status": "NOT_RUN_MISSING_TOOL",
+      "command_argv": [
+        "python",
+        "-m",
+        "ruff",
+        "check",
+        "--no-cache",
+        "work/ccz142_current_candidate_read_entry_r01"
+      ],
+      "process_exit_code": 1,
+      "passed": null,
+      "failed": null,
+      "stdout": "",
+      "stderr": "python: No module named ruff\n"
+    }
+  ],
+  "syntax_compile": {
+    "status": "PASS",
+    "method": "built-in compile(text, filename, exec); no bytecode writes",
+    "files": [
+      "self_check.py",
+      "test_current_read_entry.py",
+      "test_entry_browser.py"
+    ]
+  },
+  "evidence_limits": [
+    "Browser local-file navigation: four real test failures before any card navigation; ERR_BLOCKED_BY_ADMINISTRATOR. No policy changes or circumvention.",
+    "Memory rendering: four parameterized cases, all four HTML documents each; zero page-resource requests and page errors observed. Not a local-file opening test.",
+    "Zero-write checks compare file bytes/hashes and modification timestamps on temporary entry/source copies. Browser profile writes are outside business-state scope.",
+    "Three source HTML files were compared with the provided slice after their Git blob SHA-1 values had matched online pinned main metadata. This is not a full checkout regression.",
+    "Ruff unavailable and repository Python version not installed/tested in this run. Local locked-toolchain acceptance remains required."
+  ],
+  "source_files_verified": [
+    {
+      "local_path": "samples/fixture_layout.html",
+      "source_path": "work/ccz142_current_candidate_read_preview_r01/samples/fixture_layout.html",
+      "source_git_blob_sha1": "fc9b146ed6524823e10edc1aa90a5df60ec09522",
+      "sha256": "4c529c174e907c32d10f6298397cc09cd10a9e203c38574d0a397ae06c7fb16d",
+      "size_bytes": 2289,
+      "source_url": "https://github.com/cczz412/novel-architecture/blob/9c2fb95881caf795aae46f1838a93eb674a63a5e/work/ccz142_current_candidate_read_preview_r01/samples/fixture_layout.html"
+    },
+    {
+      "local_path": "samples/no_live_store.html",
+      "source_path": "work/ccz142_current_candidate_read_preview_r01/samples/no_live_store.html",
+      "source_git_blob_sha1": "f79dfddc75d1c2bbc920c60dece819e35b179308",
+      "sha256": "be5060218726514b6302a21ad3eb4b872b968e8fd1ad2df8b6f43a826a597aec",
+      "size_bytes": 1780,
+      "source_url": "https://github.com/cczz412/novel-architecture/blob/9c2fb95881caf795aae46f1838a93eb674a63a5e/work/ccz142_current_candidate_read_preview_r01/samples/no_live_store.html"
+    },
+    {
+      "local_path": "samples/types_layout.html",
+      "source_path": "work/ccz142_current_candidate_read_preview_r01/samples/types_layout.html",
+      "source_git_blob_sha1": "d0c6ff40b6b3da755bdb6107437fb7f19749373f",
+      "sha256": "29c752644fe9e2b939e8e89bd89961ade2ca2495e4e169a46b1cc3ee2194acf1",
+      "size_bytes": 2651,
+      "source_url": "https://github.com/cczz412/novel-architecture/blob/9c2fb95881caf795aae46f1838a93eb674a63a5e/work/ccz142_current_candidate_read_preview_r01/samples/types_layout.html"
+    }
+  ],
+  "executed_python_file_sha256": {
+    "self_check.py": "2689c12682556a17906dfb5fff8bd3a5b7c08883a35a9d2bf2364421328d165e",
+    "test_current_read_entry.py": "2f47fff44f5eb963bc7b6bb4d6665ecbb331949f91f31096d6fcb0bddd0c2ec8",
+    "test_entry_browser.py": "440139de27b49dcbc46a42a914575ef499b782e220cd1471c578b64e0b3f3573"
+  },
+  "input_archive_verification": {
+    "name": "issue270_entry_pro_build_20260905.zip",
+    "sha256": "a0f8bda8acb09f263b4951d32b8b4a843dd920b3576d60e20c41dd40435a5e96",
+    "sha256sums_members_verified": 19,
+    "unchanged": true
+  }
+}
