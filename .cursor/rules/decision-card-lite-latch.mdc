@@ -1,0 +1,14 @@
+---
+description: 要 CZ 勾选方案时自动走轻量拍题板，不必等口令
+alwaysApply: true
+---
+
+# 轻量拍题板（自动启用）
+
+只要这一轮准备让 CZ **在方案里勾选**，就按 [decision-card-lite Skill](../skills/decision-card-lite/SKILL.md) 执行。不必等他说「拍题」「问题清单」。
+
+- 默认最多 3 题；聊天不贴整屏表
+- 优先 canvas，选完只留问题和裁决
+- 必须写清：在问什么、更推荐哪个、差多少
+- CZ 明说「按 v3 / 三十问」才走重模板
+- 「直接问 / 别走问题清单」则普通问一句就行
