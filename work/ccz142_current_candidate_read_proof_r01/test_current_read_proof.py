@@ -66,6 +66,8 @@ def test_no_live_store_reports_gap_and_still_names_the_read_path() -> None:
     assert proof["status"] == STATUS_GAP
     assert proof["gaps"] == [GAP_NO_LIVE_STORE]
     assert proof["human_card"] is None
+    assert proof["result_scope"]["book_title"] == "未提供"
+    assert proof["result_scope"]["chapter_completeness"] == "未确认"
     assert proof["identity"]["product_adopted"] is False
     assert proof["read_path"]["store_class"] == READ_PATH["store_class"]
     assert GAP_REAL_NOVEL_NOT_IN_SCOPE in proof["standing_boundaries"]
@@ -101,6 +103,13 @@ def test_fixture_current_projects_human_card_and_fixture_identity(
     assert proof["identity"]["candidate_access"] == FIXTURE_ACCESS
     assert proof["identity"]["candidate_contract"] == "r03.5-candidate"
     assert proof["identity"]["product_adopted"] is False
+    scope = proof["result_scope"]
+    assert scope["book_title"] == "未提供"
+    assert scope["chapter_id"] == "synthetic-chapter-001"
+    assert scope["revision_no"] == 7
+    assert scope["project_scope_id"] == PROJECT
+    assert scope["chapter_completeness"] == "未确认"
+    assert "不是已确认的整章汇总" in scope["display_range"]
     assert GAP_NOT_PRODUCT_IDENTITY in proof["limitations"]
     card = proof["human_card"]
     assert card["item_count"] == 2

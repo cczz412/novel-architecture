@@ -23,6 +23,40 @@ DOCUMENT_IDENTITY = "CCZ142-CURRENT-CANDIDATE-READ-DISPLAY-R01"
 GITHUB_ISSUE = 266
 BASE_MAIN_SHA = "177c5832df9527cdcee3eaa513aafeda335550ea"
 COVERAGE_NOT_WIRED = "覆盖／漏抽：这层还没接到 B02，不编数字。"
+DENSITY_NOT_WIRED = "密度：这层尚未提供，不编数字。"
+EMPTY_READ_GAPS = "读取缺口：无。这不等于没有漏抽。"
+CARD_TITLE = "抽出了什么（人话结果卡）"
+SCOPE_UNPROVIDED = "未提供"
+
+
+def _scope_line(label: str, value: object) -> str:
+    if value is None or value == "":
+        shown = SCOPE_UNPROVIDED
+    else:
+        shown = str(value)
+    return f"- {label}：{shown}"
+
+
+def render_scope_section(proof: dict[str, Any]) -> list[str]:
+    scope = proof.get("result_scope") if isinstance(proof.get("result_scope"), dict) else {}
+    lines = [
+        "## 这张卡对应哪一段",
+        _scope_line("书名", scope.get("book_title") or SCOPE_UNPROVIDED),
+        _scope_line("项目", scope.get("project_scope_id") or SCOPE_UNPROVIDED),
+        _scope_line("章节", scope.get("chapter_id") or SCOPE_UNPROVIDED),
+        _scope_line("修订", scope.get("revision_no") or SCOPE_UNPROVIDED),
+        _scope_line("修订正文哈希", scope.get("revision_text_sha256") or SCOPE_UNPROVIDED),
+        _scope_line("责任段", scope.get("responsibility_segment") or SCOPE_UNPROVIDED),
+        _scope_line(
+            "展示范围",
+            scope.get("display_range") or "当前指针指向的这一份候选。不是已确认的整章汇总。",
+        ),
+        _scope_line("整章完整性", scope.get("chapter_completeness") or "未确认"),
+        "",
+    ]
+    return lines
+
+
 GAP_LABELS = {
     "GAP_NO_LIVE_STORE": "没人给出权威库路径。读路仍写在下面。",
     "GAP_STORE_MISSING": "路径上没有库，或打不开。",
@@ -43,7 +77,7 @@ def _gap_line(code: str) -> str:
 def render_markdown(proof: dict[str, Any]) -> str:
     """Turn a proof dict into a page a person can open and read."""
 
-    lines: list[str] = ["# 本章抽出了什么（人话结果卡）", ""]
+    lines: list[str] = [f"# {CARD_TITLE}", ""]
     identity = proof.get("identity") if isinstance(proof.get("identity"), dict) else {}
     namespace = identity.get("pointer_namespace")
     access = identity.get("candidate_access")
@@ -58,6 +92,7 @@ def render_markdown(proof: dict[str, Any]) -> str:
             lines.append(">")
             lines.append(f"> 已读到的身份：`{namespace}`。仍不是产品采用。")
     lines.append("")
+    lines.extend(render_scope_section(proof))
     lines.append("## 读路")
     read_path = proof.get("read_path") if isinstance(proof.get("read_path"), dict) else {}
     store_class = read_path.get("store_class", "未知")
@@ -97,6 +132,7 @@ def render_markdown(proof: dict[str, Any]) -> str:
 
     lines.append("## 还没接到的层")
     lines.append(f"- {COVERAGE_NOT_WIRED}")
+    lines.append(f"- {DENSITY_NOT_WIRED}")
     lines.append("")
 
     limitations = proof.get("limitations") if isinstance(proof.get("limitations"), list) else []
@@ -114,7 +150,7 @@ def render_markdown(proof: dict[str, Any]) -> str:
         for code in gaps:
             lines.append(_gap_line(str(code)))
     else:
-        lines.append("无。")
+        lines.append(EMPTY_READ_GAPS)
     lines.append("")
 
     standing = proof.get("standing_boundaries") if isinstance(proof.get("standing_boundaries"), list) else []
@@ -128,6 +164,8 @@ def render_markdown(proof: dict[str, Any]) -> str:
     lines.append("本页没有修补条目，也不教你怎么写下一句。")
     lines.append("")
     return "\n".join(lines)
+
+
 def show_current_card(
     *,
     store_root: Path | None = None,

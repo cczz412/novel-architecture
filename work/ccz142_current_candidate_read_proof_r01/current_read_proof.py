@@ -47,6 +47,58 @@ GAP_REAL_NOVEL_NOT_IN_SCOPE = "GAP_REAL_NOVEL_NOT_IN_SCOPE"
 
 STANDING_BOUNDARIES = (GAP_REAL_NOVEL_NOT_IN_SCOPE,)
 
+
+SCOPE_UNPROVIDED = "未提供"
+
+
+def empty_result_scope() -> dict[str, Any]:
+    """Honest unknowns. Never invent a book title or whole-chapter claim."""
+
+    return {
+        "book_title": SCOPE_UNPROVIDED,
+        "project_scope_id": SCOPE_UNPROVIDED,
+        "chapter_id": SCOPE_UNPROVIDED,
+        "revision_no": SCOPE_UNPROVIDED,
+        "revision_text_sha256": SCOPE_UNPROVIDED,
+        "responsibility_segment": SCOPE_UNPROVIDED,
+        "display_range": "当前指针指向的这一份候选。不是已确认的整章汇总。",
+        "chapter_completeness": "未确认",
+        "density": "尚未提供，不编数字",
+    }
+
+
+def project_result_scope(
+    *,
+    pointer: dict[str, Any] | None = None,
+    candidate: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    scope = empty_result_scope()
+    pointer = pointer if isinstance(pointer, dict) else {}
+    candidate = candidate if isinstance(candidate, dict) else {}
+    ref = pointer.get("chapter_revision_ref")
+    payload = candidate.get("payload")
+    if not isinstance(ref, dict) and isinstance(payload, dict):
+        ref = payload.get("chapter_revision_ref")
+    if isinstance(ref, dict):
+        chapter_id = ref.get("chapter_id")
+        if isinstance(chapter_id, str) and chapter_id:
+            scope["chapter_id"] = chapter_id
+        revision_no = ref.get("revision_no")
+        if isinstance(revision_no, int) and not isinstance(revision_no, bool):
+            scope["revision_no"] = revision_no
+        revision_hash = ref.get("revision_text_sha256")
+        if isinstance(revision_hash, str) and revision_hash:
+            scope["revision_text_sha256"] = revision_hash
+    project_scope_id = pointer.get("project_scope_id")
+    if isinstance(project_scope_id, str) and project_scope_id:
+        scope["project_scope_id"] = project_scope_id
+    seg = pointer.get("seg")
+    if isinstance(seg, int) and not isinstance(seg, bool):
+        scope["responsibility_segment"] = seg
+        scope["display_range"] = f"当前指针的责任段 {seg}。不是已确认的整章汇总。"
+    return scope
+
+
 READ_PATH = {
     "store_class": (
         "work/ccz142_candidate_authority_r01/candidate_authority.py"
@@ -118,6 +170,7 @@ def _base_proof() -> dict[str, Any]:
         "pointer_key": None,
         "discovered_pointer_keys": [],
         "human_card": None,
+        "result_scope": empty_result_scope(),
         "gaps": [],
         "limitations": [],
         "standing_boundaries": list(STANDING_BOUNDARIES),
@@ -197,7 +250,7 @@ def project_human_card(
                 item["speaker"] = speaker
             items.append(item)
     return {
-        "title": "本章抽出了什么（人话结果卡）",
+        "title": "抽出了什么（人话结果卡）",
         "identity_note": (
             "这是夹具 current，不是产品权威，也不是正式事实。"
             "没有修补建议。"
@@ -292,6 +345,7 @@ def prove_current_read(
     namespace = pointer.get("pointer_namespace")
     access = candidate.get("access")
     card = project_human_card(pointer=pointer, candidate=candidate)
+    result_scope = project_result_scope(pointer=pointer, candidate=candidate)
     limitations: list[str] = []
     if namespace != PRODUCT_CANDIDATE_NAMESPACE:
         limitations.append(GAP_NOT_PRODUCT_IDENTITY)
@@ -306,6 +360,7 @@ def prove_current_read(
         "product_adopted": False,
     }
     proof["human_card"] = card
+    proof["result_scope"] = result_scope
     proof["limitations"] = limitations
     if card["item_count"] == 0:
         proof["status"] = STATUS_GAP

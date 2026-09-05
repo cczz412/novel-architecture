@@ -38,5 +38,17 @@
     "real_novel_api": true,
     "pr_235_writes": true,
     "product_identity_claim": true
-  }
+  },
+  "result_scope_fields": [
+    "book_title",
+    "project_scope_id",
+    "chapter_id",
+    "revision_no",
+    "revision_text_sha256",
+    "responsibility_segment",
+    "display_range",
+    "chapter_completeness",
+    "density"
+  ],
+  "github_issue_follow_on": 274
 }

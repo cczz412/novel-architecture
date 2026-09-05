@@ -18,7 +18,10 @@ from candidate_authority import (  # noqa: E402
     CandidateRootInitializer,
 )
 from card_render import (  # noqa: E402
+    CARD_TITLE,
     COVERAGE_NOT_WIRED,
+    DENSITY_NOT_WIRED,
+    EMPTY_READ_GAPS,
     render_markdown,
     show_current_card,
 )
@@ -57,6 +60,8 @@ def test_no_live_store_page_shows_gap_and_read_path() -> None:
     assert "CandidateAuthorityStore" in page
     assert "还读不到一张可展示的 current 卡" in page
     assert COVERAGE_NOT_WIRED in page
+    assert DENSITY_NOT_WIRED in page
+    assert "整章完整性" in page
     assert "## 写法指导" not in page
     assert shown["proof"]["identity"]["product_adopted"] is False
 
@@ -73,11 +78,16 @@ def test_fixture_store_page_shows_human_items(tmp_path: Path) -> None:
     assert "FIXTURE_ONLY" in page
     assert "不是产品权威" in page
     assert COVERAGE_NOT_WIRED in page
+    assert DENSITY_NOT_WIRED in page
+    assert "synthetic-chapter-001" in page
+    assert "整章完整性：未确认" in page
+    assert "不是已确认的整章汇总" in page
+    assert "书名：未提供" in page
     assert "### 1. 甲进入北塔。" in page
     assert "状态：已发生" in page
     assert "证据：甲走进北塔。" in page
     assert "说话人：旁白" in page
-    assert "无。" in page.split("## 缺口", 1)[1]
+    assert EMPTY_READ_GAPS in page.split("## 缺口", 1)[1]
 
 
 def test_cli_writes_gap_page_to_stdout(capsys: pytest.CaptureFixture[str]) -> None:
@@ -85,7 +95,7 @@ def test_cli_writes_gap_page_to_stdout(capsys: pytest.CaptureFixture[str]) -> No
     captured = capsys.readouterr()
     assert exit_code == 2
     assert "`GAP_NO_LIVE_STORE`" in captured.out
-    assert captured.out.startswith("# 本章抽出了什么")
+    assert captured.out.startswith(f"# {CARD_TITLE}")
 
 
 def test_cli_out_writes_file(tmp_path: Path) -> None:

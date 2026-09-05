@@ -24,7 +24,7 @@ from card_render import render_markdown, show_current_card  # noqa: E402
 DOCUMENT_IDENTITY = "CCZ142-CURRENT-CANDIDATE-READ-PREVIEW-R01"
 GITHUB_ISSUE = 268
 BASE_MAIN_SHA = "9364598dad5fd51e2acf1bbafd34e7e19b7554ba"
-PAGE_TITLE = "本章抽出了什么（人话结果卡）"
+PAGE_TITLE = "抽出了什么（人话结果卡）"
 TYPES_DISCLAIMER = (
     "> 这是夹具样张，用来看「传闻／误信／未证实」长什么样。"
     "不是活库读出，也不是产品权威。\n\n"
@@ -53,6 +53,17 @@ def types_proof() -> dict[str, Any]:
             "read_candidate": "B06CommitStore.read_candidate",
         },
         "pointer_key": "fixture-types-sample",
+        "result_scope": {
+            "book_title": "未提供",
+            "project_scope_id": "未提供",
+            "chapter_id": "未提供",
+            "revision_no": "未提供",
+            "revision_text_sha256": "未提供",
+            "responsibility_segment": "未提供",
+            "display_range": "当前指针指向的这一份候选。不是已确认的整章汇总。",
+            "chapter_completeness": "未确认",
+            "density": "尚未提供，不编数字",
+        },
         "human_card": {
             "items": [
                 {
