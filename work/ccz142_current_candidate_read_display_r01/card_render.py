@@ -1,0 +1,143 @@
+"""Render a current-candidate proof into a human Markdown card.
+
+This package does not read the store itself. It displays what
+`prove_current_read` already returned, or a typed gap page.
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+from typing import Any
+
+MODULE_ROOT = Path(__file__).resolve().parent
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+PROOF_ROOT = REPOSITORY_ROOT / "work" / "ccz142_current_candidate_read_proof_r01"
+for candidate in (REPOSITORY_ROOT, MODULE_ROOT, PROOF_ROOT):
+    if str(candidate) not in sys.path:
+        sys.path.insert(0, str(candidate))
+
+from current_read_proof import STATUS_READ_OK, prove_current_read  # noqa: E402
+
+DOCUMENT_IDENTITY = "CCZ142-CURRENT-CANDIDATE-READ-DISPLAY-R01"
+GITHUB_ISSUE = 266
+BASE_MAIN_SHA = "177c5832df9527cdcee3eaa513aafeda335550ea"
+COVERAGE_NOT_WIRED = "覆盖／漏抽：这层还没接到 B02，不编数字。"
+GAP_LABELS = {
+    "GAP_NO_LIVE_STORE": "没人给出权威库路径。读路仍写在下面。",
+    "GAP_STORE_MISSING": "路径上没有库，或打不开。",
+    "GAP_POINTER_MISSING": "库在，current 指针不在。",
+    "GAP_POINTER_AMBIGUOUS": "库里多于一个指针，又没指定是哪一条。",
+    "GAP_CANDIDATE_MISSING": "指针在，候选版本不在或对不上。",
+    "GAP_NO_HUMAN_ITEMS": "候选读到了，但没有可展示的事实条目。",
+    "GAP_NOT_PRODUCT_IDENTITY": "读到了，但身份仍是夹具。这是限制，不是崩。",
+    "GAP_REAL_NOVEL_NOT_IN_SCOPE": "真实小说 API 不在本票范围。",
+}
+
+
+def _gap_line(code: str) -> str:
+    meaning = GAP_LABELS.get(code, "稳定缺口。")
+    return f"- `{code}`：{meaning}"
+
+
+def render_markdown(proof: dict[str, Any]) -> str:
+    """Turn a proof dict into a page a person can open and read."""
+
+    lines: list[str] = ["# 本章抽出了什么（人话结果卡）", ""]
+    identity = proof.get("identity") if isinstance(proof.get("identity"), dict) else {}
+    namespace = identity.get("pointer_namespace")
+    access = identity.get("candidate_access")
+    if proof.get("status") == STATUS_READ_OK:
+        lines.append(
+            f"> 身份：夹具 current（`{namespace}`／`{access}`）。"
+            "不是产品权威，也不是正式事实。"
+        )
+    else:
+        lines.append("> 还读不到一张可展示的 current 卡。下面是缺口，不是编出来的条目。")
+        if namespace:
+            lines.append(">")
+            lines.append(f"> 已读到的身份：`{namespace}`。仍不是产品采用。")
+    lines.append("")
+    lines.append("## 读路")
+    read_path = proof.get("read_path") if isinstance(proof.get("read_path"), dict) else {}
+    store_class = read_path.get("store_class", "未知")
+    lines.append(f"- 库：`{store_class}`")
+    lines.append(f"- 指针：`{read_path.get('read_pointer', '未知')}`")
+    lines.append(f"- 候选：`{read_path.get('read_candidate', '未知')}`")
+    pointer_key = proof.get("pointer_key")
+    if pointer_key:
+        lines.append(f"- 当前指针：`{pointer_key}`")
+    lines.append("")
+
+    card = proof.get("human_card") if isinstance(proof.get("human_card"), dict) else None
+    items = card.get("items") if card else None
+    lines.append("## 条目")
+    if isinstance(items, list) and items:
+        for index, item in enumerate(items, start=1):
+            if not isinstance(item, dict):
+                continue
+            fact = str(item.get("fact") or "").strip()
+            status = str(item.get("status") or "").strip()
+            kind = str(item.get("kind") or "").strip()
+            evidence = str(item.get("evidence") or "").strip()
+            speaker = item.get("speaker")
+            lines.append(f"### {index}. {fact}")
+            if status:
+                lines.append(f"- 状态：{status}")
+            if kind:
+                lines.append(f"- 类型：{kind}")
+            if evidence:
+                lines.append(f"- 证据：{evidence}")
+            if isinstance(speaker, str) and speaker:
+                lines.append(f"- 说话人：{speaker}")
+            lines.append("")
+    else:
+        lines.append("没有可展示的事实条目。")
+        lines.append("")
+
+    lines.append("## 还没接到的层")
+    lines.append(f"- {COVERAGE_NOT_WIRED}")
+    lines.append("")
+
+    limitations = proof.get("limitations") if isinstance(proof.get("limitations"), list) else []
+    lines.append("## 限制")
+    if limitations:
+        for code in limitations:
+            lines.append(_gap_line(str(code)))
+    else:
+        lines.append("无。")
+    lines.append("")
+
+    gaps = proof.get("gaps") if isinstance(proof.get("gaps"), list) else []
+    lines.append("## 缺口")
+    if gaps:
+        for code in gaps:
+            lines.append(_gap_line(str(code)))
+    else:
+        lines.append("无。")
+    lines.append("")
+
+    standing = proof.get("standing_boundaries") if isinstance(proof.get("standing_boundaries"), list) else []
+    lines.append("## 常驻边界")
+    if standing:
+        for code in standing:
+            lines.append(_gap_line(str(code)))
+    else:
+        lines.append(_gap_line("GAP_REAL_NOVEL_NOT_IN_SCOPE"))
+    lines.append("")
+    lines.append("本页没有修补条目，也不教你怎么写下一句。")
+    lines.append("")
+    return "\n".join(lines)
+def show_current_card(
+    *,
+    store_root: Path | None = None,
+    project_scope_id: str = "fixture-project-001",
+    pointer_key: str | None = None,
+) -> dict[str, Any]:
+    proof = prove_current_read(
+        store_root=store_root,
+        project_scope_id=project_scope_id,
+        pointer_key=pointer_key,
+    )
+    markdown = render_markdown(proof)
+    return {"proof": proof, "markdown": markdown}
