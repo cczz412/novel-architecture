@@ -35,7 +35,7 @@
 9. 找目录职责／「要加 X 去哪」：[ARCHITECTURE_MAP.md](ARCHITECTURE_MAP.md)。
 10. 写任何给人读的中文之前：[中文语感对齐](chinese_language_style_alignment.md)（去 AI 腔、不啯嗦，全 Agent 通用）。
 
-版本、路径、候选身份仍只认 [`governance/current_pointers.json`](current_pointers.json)。产品语义仍回共同背景板 R14，不在本页重写。整体任务图不得从仓库旧快照复原。
+版本、路径、候选身份仍只认 [`governance/current_pointers.json`](current_pointers.json)。产品需求和 CZ 拍板回 Linear 的当前模块票；工程能力回 GitHub `main` 上的正式合同与代码。仓库不再把 R14／R01／R03 当现行入口，整体任务图也不得从旧快照复原。
 
 ## 标签词典
 

@@ -2,9 +2,9 @@
 
 产品目标架构：[ARCHITECTURE.md](ARCHITECTURE.md)；现状与目标差距：[CURRENT_VS_TARGET_R01.md](CURRENT_VS_TARGET_R01.md)。
 
-🔥 这是测试阶段的示例代码和设计稿，**不是**已经上线的产品，也**不是**共同背景板。
+🔥 这是测试阶段的示例代码和设计稿，**不是**已经上线的产品，也不是产品需求总入口。
 
-- 产品怎么想：回本仓 [共同背景板 R14](../references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)
+- 产品怎么想：回 Linear 当前所属模块票；新需求先在 [CCZ-128](https://linear.app/ccz/issue/CCZ-128) 登记归属
 - 这里真正有用的： [design/INDEX.md](design/INDEX.md) 和 [contracts/](contracts/)
 - 大部分代码偏旧，不能当成现行产品；其中 T03-A 已把 M1 常用入口收到 C10-first，并完成 M1/M2 本地机械收口，仍不等于 Production Ready。`mvp/planstore.py` 已补出 handover／跨文件恢复护栏，`mvp/reconcile.py` 已接通六态观察与作者 facts 准入，`mvp/factstore.py` 已把旧 M5 确认／改判写入口收进同一事务链；这些仍不等于通用 planstore 或完整主循环。
 
@@ -43,12 +43,13 @@ workspace = entry.open("authenticated-principal", projects[0]["project_id"])
 
 发现问题记 [ISSUES.md](ISSUES.md)。默认只记问题、不改核心代码，除非 CZ 点名。
 
-## 别和这几张「背景」搞混
+## 别把示例当正式能力
 
-| 你找的 | 在哪 | 不是什么 |
+| 你找的 | 去哪里 | 这里不负责什么 |
 |---|---|---|
-| 共同背景板 | 本仓 `references/shared-context/…R13` | 不是本夹，也不是 `foundation/` |
+| 产品需求和拍板 | Linear 当前模块票；路线从 [CCZ-77](https://linear.app/ccz/issue/CCZ-77) 找 | 本夹不保存第二份产品真值 |
+| 已落地工程合同 | 本仓 `contracts/`、Schema、测试和 GitHub 已合并记录 | 示例设计或 Linear `Done` 不等于实现完成 |
 | P3 背景卡 | `references/novel_fact_extraction_contract_v2.md` | 只是抽事实的五条小抄 |
-| `foundation/` | 2026-07-16 快照 | 不是现行共享背景板 |
+| `foundation/` | 2026-07-16 快照 | 是历史原件，不是现行产品入口 |
 
 来源：CZ 2026-08-15 把试跑示例迁进小说架构仓；代码骨架 2026-08-13

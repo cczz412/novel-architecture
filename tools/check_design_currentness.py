@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only validator for the R14 design-currentness registry and INDEX route."""
+"""Read-only validator for the design registry and its INDEX route."""
 
 from __future__ import annotations
 
@@ -17,6 +17,11 @@ DEFAULT_END = "<!-- DESIGN_DEFAULT_ROUTES_END -->"
 TABLE_START = "<!-- DESIGN_STATUS_TABLE_START -->"
 TABLE_END = "<!-- DESIGN_STATUS_TABLE_END -->"
 EXCLUDED_MARKDOWN = {"INDEX.md"}
+MIGRATION_DOCUMENT_ID = "a77972d8-8be7-4dfa-9d71-b6c7aa6d09ec"
+MIGRATION_DOCUMENT_URL = (
+    "https://linear.app/ccz/document/"
+    "三类仓库背景卡解耦迁移总索引2026-08-30-e14efc91008b"
+)
 
 
 def load_json(path: Path) -> Any:
@@ -87,14 +92,24 @@ def build_report(
         errors.append(issue("ERROR", "SCHEMA_VERSION", "unexpected registry schema version"))
     if registry.get("review_status") != "CANDIDATE_REVIEWED":
         errors.append(issue("ERROR", "REVIEW_STATUS", "review_status must be CANDIDATE_REVIEWED"))
-    product = registry.get("product_background", {})
-    if product.get("version") != "R14":
-        errors.append(issue("ERROR", "PRODUCT_BACKGROUND", "design registry must be reviewed against R14"))
-    product_path = product.get("path")
-    if not isinstance(product_path, str) or not product_path:
-        errors.append(issue("ERROR", "PRODUCT_BACKGROUND_PATH", "product_background.path is required"))
-    elif not (root / product_path).is_file():
-        errors.append(issue("ERROR", "PRODUCT_BACKGROUND_PATH_MISSING", "product background path is missing", product_path))
+    if "product_background" in registry:
+        errors.append(issue("ERROR", "RETIRED_PRODUCT_BACKGROUND", "local product_background binding must not return"))
+    migration = registry.get("migration_source", {})
+    if (
+        migration.get("identity") != "LINEAR_FROZEN_MIGRATION_RECEIPT"
+        or migration.get("former_source_version") != "R14"
+        or migration.get("document_id") != MIGRATION_DOCUMENT_ID
+        or migration.get("url") != MIGRATION_DOCUMENT_URL
+        or not migration.get("attachment_id")
+        or not migration.get("attachment_sha256")
+    ):
+        errors.append(
+            issue(
+                "ERROR",
+                "MIGRATION_SOURCE_IDENTITY",
+                "design registry must bind the frozen Linear migration receipt",
+            )
+        )
 
     rows = registry.get("documents")
     if not isinstance(rows, list):
@@ -121,8 +136,19 @@ def build_report(
         status = row.get("status")
         if status not in STATUSES:
             errors.append(issue("ERROR", "STATUS_ENUM", f"invalid status {status!r}", path))
-        if not isinstance(row.get("r14_relation"), dict) or not row["r14_relation"].get("state") or not row["r14_relation"].get("note"):
-            errors.append(issue("ERROR", "R14_RELATION", "r14_relation must contain state and note", path))
+        relation = row.get("source_relation")
+        if not isinstance(relation, dict) or not relation.get("state") or not relation.get("note"):
+            errors.append(issue("ERROR", "SOURCE_RELATION", "source_relation must contain state and note", path))
+        source_basis = row.get("source_basis")
+        if not isinstance(source_basis, list) or MIGRATION_DOCUMENT_URL not in source_basis:
+            errors.append(
+                issue(
+                    "ERROR",
+                    "MIGRATION_SOURCE_MISSING",
+                    "every design row must retain the frozen migration receipt in source_basis",
+                    path,
+                )
+            )
         if "superseded_by" not in row:
             errors.append(issue("ERROR", "SUPERSEDED_BY_FIELD", "superseded_by field is required", path))
         successor = row.get("superseded_by")

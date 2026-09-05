@@ -71,13 +71,12 @@ JSON 顶层依次写目录版本（`catalog_version`）、栏目（`view`）、�
 也不读取密钥、不联网、不调用模型。它不会扫描受保护的 R02，不会进入 R02 的目录或
 payload；`status` 若没有 CMIN-B 的正式当前状态，就保持“不替机器真源猜”的边界。
 
-## 三个打包入口
+## 两个打包入口
 
 | 工具 | 用途 | 保护线 |
 |---|---|---|
 | `simple_pack.py` | 小型 Prompt＋材料外发包；`--controlled-review` 是轻量摘要外审卫生门 | 普通模式保留旧行为；受控模式拒收符号链接、嵌套 ZIP、锁箱／金标／正文式材料名、密钥、绝对路径、非法 JSON 和超长行，并生成模型与发送核对单 |
 | `chatgpt_review_pack.py` | 仓库结构与路线证据审查包 | 全仓用 profile；高频产品线用四层 route 取材地图；包内 manifest／SHA／来源票；包外验收票；所有回读通过后才落目标目录 |
-| `build_background_board_upload_zip.py` | 把当前产品、外部报告、原子需求与验收三块背景做成 ChatGPT 单层运输 ZIP | 只读正式原件；加身份与版本前缀、改写包内链接、排除缓存垃圾，成品只落 `TEMP`，不上传、不覆盖同名异字节 ZIP |
 
 打包成功只说明归档字节完整，不等于材料的语义结论已经审收。
 
@@ -97,15 +96,6 @@ python3 tools/simple_pack.py \
 输出目录里会有 Prompt 副本、一个 ZIP、机械验收票和
 `SEND_CHECKLIST.json`。这张清单只负责让浏览器发送前后核对模型、附件、Prompt
 和对话状态；它不会自动发送，也不替代 `chatgpt_review_pack.py` 的全仓路线取材。
-
-全部背景板要交给 ChatGPT 时，不需要先手工整理文件夹：
-
-```bash
-uv run --locked python tools/build_background_board_upload_zip.py
-```
-
-它会从正式入口读取三块当前背景，生成一个带总导航的单层 ZIP。详细规则见
-`config/background_board_upload/README.md`。
 
 ## 开跑前的保护线
 

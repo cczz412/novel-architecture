@@ -16,11 +16,9 @@
 
 只看一个总分。只测 JSON 合法，或只测事实语义。把 invalid JSON、复读、截断和无证据事实平均掉。用验真器自评分、模型自信或两模型一致替代端到端结果。把六层清单写成已拍验收合同。把本卡升级成执行票；把外部评测建议写成已拍门线或权重。
 
-## 出处
+## 当前依据
 
-- [R14 抽取页](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md)（“评分不能压成一个总分”；六层是当前拆法）
-- [SI-002 消化稿](../../survey-inbox/packages/T5_R04_FACT_EXTRACTION_RESEARCH_RETURNS_20260811_R01/02_RETURNS_DIGEST.md)（评分拆层；验真看净效果）
-- [SI-004 评测回包](../../survey-inbox/packages/MANUS_R06_CLOUD_RESEARCH_20260812_R01/returns/RETURN_01_FACT_EXTRACTION_EVAL_SURVEY_20260812_R01.md)（格式门、事实门、证据门、端到端门）
-- [EKB 抽取评测页](../../external-knowledge-base/EXTERNAL_KNOWLEDGE_BASE_20260815_R01/background/05_EXTRACTION_EVALUATION_AND_EVIDENCE.md)（K01／K06／K09）
+- [CCZ-83](https://linear.app/ccz/issue/CCZ-83)：当前评测尺与施工入口；旧“六层”不冻结为永久合同
+- [GitHub 当前正式合同入口](../../../governance/START_HERE.md)
 
-来源：#115；批次 A；CZ 2026-08-24 六层不当已拍清单
+来源：Codex

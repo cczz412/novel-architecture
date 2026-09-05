@@ -26,7 +26,7 @@
 
 Agent 会：写一条 `items/SI-xxx.md` → 追加 [catalog.csv](catalog.csv) → 更新 [INDEX.md](INDEX.md)。
 
-收到一整批报告时，还要把原字节、Prompt 状态和 SHA 放进 `packages/<batch_id>/`。报告若要进入日常外部背景，再按[外部报告知识库](../external-knowledge-base/README.md)的准入、结论、来源和升版规则处理；不能把整篇报告直接贴进背景页。
+收到一整批报告时，还要把原字节、Prompt 状态和 SHA 放进 `packages/<batch_id>/`。可复用证据登记到 [CCZ-64](https://linear.app/ccz/issue/CCZ-64)，是否吸收回所属模块票裁决；不能把整篇报告直接贴进模块票，也不能另外编译一套日常产品背景。
 
 ## 标签怎么打（筛选用）
 

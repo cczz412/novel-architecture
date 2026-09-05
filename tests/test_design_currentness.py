@@ -49,11 +49,18 @@ def test_invalid_status_is_error() -> None:
     assert "STATUS_ENUM" in codes(report)
 
 
-def test_missing_product_background_path_is_error() -> None:
+def test_migration_source_identity_drift_is_error() -> None:
     value = copy.deepcopy(REGISTRY)
-    value["product_background"]["path"] = "references/shared-context/missing-r14/00_READ_ME_FIRST.md"
+    value["migration_source"]["document_id"] = "wrong"
     report = MODULE.build_report(ROOT, value, INDEX)
-    assert "PRODUCT_BACKGROUND_PATH_MISSING" in codes(report)
+    assert "MIGRATION_SOURCE_IDENTITY" in codes(report)
+
+
+def test_design_row_must_keep_migration_source() -> None:
+    value = copy.deepcopy(REGISTRY)
+    value["documents"][0]["source_basis"].remove(MODULE.MIGRATION_DOCUMENT_URL)
+    report = MODULE.build_report(ROOT, value, INDEX)
+    assert "MIGRATION_SOURCE_MISSING" in codes(report)
 
 
 def test_missing_repository_successor_is_error() -> None:

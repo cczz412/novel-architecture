@@ -16,10 +16,9 @@
 
 简单版和专业版各存一份事实。升级靠导出导入，降级就删专业字段。假定所有用户都会一路升档。把报告里的三模式、前台形态和转档流程写成已拍合同。把本卡升级成执行票，或把外部形状写成已拍。
 
-## 出处
+## 当前依据
 
-- [R14 产品北极星](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/01_PRODUCT_NORTH_STAR.md)（停点即设置；“简装升级精装后取法不变”）
-- [R14 真值分层页](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md)（十账户籍的简装／精装口径）
-- [SI-006 难度分档调查](../../survey-inbox/packages/PRODUCT_DESIGN_RESEARCH_RETURNS_20260813_R01/returns/222.md)（外部形状，不是合同）
+- [CCZ-102](https://linear.app/ccz/issue/CCZ-102)：扩展准入
+- [CCZ-126](https://linear.app/ccz/issue/CCZ-126)：同一真值的受控读取
 
-来源：#115；批次 B；2026-08-24
+来源：Codex
