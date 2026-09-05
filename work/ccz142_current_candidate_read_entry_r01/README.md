@@ -79,3 +79,5 @@ uv run --locked --offline python -B -m pytest -p no:cacheprovider -q work/ccz142
 没有改仓库首页或全局导航，因为不在写集里。包根目录说明和本 README 都给了直达入口；不能把这项描述成“仓库首页已接入口”。
 
 来源：ChatGPT
+
+GitHub #274 起，入口里的三张离线副本随预览样张更新，并钉 `main@62a40317` 为这轮基线。

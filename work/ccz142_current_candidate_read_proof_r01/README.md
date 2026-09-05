@@ -71,3 +71,5 @@ uv run --locked python work/ccz142_current_candidate_read_proof_r01/prove.py
 ```
 
 来源：Cursor
+
+GitHub #274 起，`prove_current_read` 附带 `result_scope`：有章号就写章号，没有就写未提供；整章完整性未确认。

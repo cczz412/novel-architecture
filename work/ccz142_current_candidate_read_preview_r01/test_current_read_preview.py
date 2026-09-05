@@ -61,7 +61,9 @@ def test_no_live_store_html_shows_gap() -> None:
     assert shown["proof"]["gaps"] == ["GAP_NO_LIVE_STORE"]
     assert "GAP_NO_LIVE_STORE" in page
     assert "<!DOCTYPE html>" in page
-    assert "本章抽出了什么" in page
+    assert "抽出了什么（人话结果卡）" in page
+    assert "整章完整性" in page
+    assert "密度" in page
     assert "还读不到一张可展示的 current 卡" in page
     assert "写法指导" not in page
     assert shown["proof"]["identity"]["product_adopted"] is False
@@ -79,6 +81,8 @@ def test_fixture_store_html_shows_human_items(tmp_path: Path) -> None:
     assert "不是产品权威" in page
     assert "<h3>" in page
     assert "状态：已发生" in page
+    assert "synthetic-chapter-001" in page
+    assert "不是已确认的整章汇总" in page
 
 
 def test_types_sample_shows_rumor_misbelief_unverified() -> None:
@@ -119,7 +123,7 @@ def test_renderer_does_not_invent_items_on_gap() -> None:
 
 
 def test_page_html_escapes_angle_brackets() -> None:
-    page = page_html("# 本章抽出了什么\n\n<script>alert(1)</script>\n")
+    page = page_html("# 抽出了什么\n\n<script>alert(1)</script>\n")
     assert "<script>" not in page
     assert "&lt;script&gt;" in page
 
