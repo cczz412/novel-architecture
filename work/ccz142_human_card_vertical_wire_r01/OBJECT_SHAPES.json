@@ -1,0 +1,21 @@
+{
+  "document_identity": "CCZ142-HUMAN-CARD-VERTICAL-WIRE-R01",
+  "status": "VERTICAL_WIRE_NOT_PRODUCT_ADOPTION",
+  "github_issue": 295,
+  "base_main_sha": "79a034bce97de06a08d7fee871551d6e6a938339",
+  "product_adopted": false,
+  "writes_via": "CandidateRootInitializer.initialize_root",
+  "html_via": "show_current_html",
+  "reads_via": "prove_current_read",
+  "coverage_wired": false,
+  "synthetic_chapter": "synthetic_chapter.txt",
+  "forbidden": {
+    "second_reader": true,
+    "real_novel_api": true,
+    "pr_235_writes": true,
+    "patch_advice": true,
+    "invented_coverage": true,
+    "b09_adapter": true,
+    "product_workspace_ui": true
+  }
+}
