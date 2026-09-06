@@ -75,3 +75,4 @@ uv run --locked python work/ccz142_current_candidate_read_proof_r01/prove.py
 GitHub #274 起，`prove_current_read` 附带 `result_scope`：有章号就写章号，没有就写未提供；整章完整性未确认。
 
 GitHub #276 起，条目投影带上候选已有的 `lineage_id` 和 `match_locations`；没有就写未提供，不在展示层重搜正文。
+GitHub #303 起，库目录旁若有 `named-card-identity.json`，`result_scope` 的书名／章号从这份 sidecar 填；没有或坏了仍写未提供。

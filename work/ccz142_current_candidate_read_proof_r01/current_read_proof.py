@@ -50,6 +50,42 @@ STANDING_BOUNDARIES = (GAP_REAL_NOVEL_NOT_IN_SCOPE,)
 
 SCOPE_UNPROVIDED = "未提供"
 
+NAMED_CARD_IDENTITY_FILENAME = "named-card-identity.json"
+
+
+def load_named_card_identity(store_root: Path) -> dict[str, Any] | None:
+    """Read optional sidecar beside sqlite. Bad files are ignored."""
+
+    target = Path(store_root) / NAMED_CARD_IDENTITY_FILENAME
+    if not target.is_file():
+        return None
+    try:
+        payload = json.loads(target.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    title = payload.get("book_title")
+    chapter_no = payload.get("chapter_no")
+    if not isinstance(title, str) or not title.strip():
+        return None
+    if not isinstance(chapter_no, int) or isinstance(chapter_no, bool):
+        return None
+    return payload
+
+
+def apply_named_card_identity(
+    scope: dict[str, Any],
+    store_root: Path,
+) -> dict[str, Any]:
+    payload = load_named_card_identity(store_root)
+    if payload is None:
+        return scope
+    scope["book_title"] = str(payload["book_title"]).strip()
+    scope["chapter_id"] = str(payload["chapter_no"])
+    return scope
+
+
 
 def empty_result_scope() -> dict[str, Any]:
     """Honest unknowns. Never invent a book title or whole-chapter claim."""
@@ -397,6 +433,7 @@ def prove_current_read(
     access = candidate.get("access")
     card = project_human_card(pointer=pointer, candidate=candidate)
     result_scope = project_result_scope(pointer=pointer, candidate=candidate)
+    result_scope = apply_named_card_identity(result_scope, store_root)
     limitations: list[str] = []
     if namespace != PRODUCT_CANDIDATE_NAMESPACE:
         limitations.append(GAP_NOT_PRODUCT_IDENTITY)
