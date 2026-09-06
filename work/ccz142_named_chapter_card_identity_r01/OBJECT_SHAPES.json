@@ -1,0 +1,22 @@
+{
+  "document_identity": "CCZ142-NAMED-CHAPTER-CARD-IDENTITY-R01",
+  "status": "NAMED_IDENTITY_NOT_PRODUCT_ADOPTION",
+  "github_issue": 299,
+  "base_main_sha": "427e5c891285978e419f63f27984648e6e98e3c4",
+  "product_adopted": false,
+  "writes_via": "drop_named_chapter",
+  "html_via": "render_markdown plus page_html plus drop banner",
+  "stamps": ["result_scope.book_title", "result_scope.chapter_id"],
+  "coverage_wired": false,
+  "released_book_title": "北塔夹具",
+  "forbidden": {
+    "second_reader": true,
+    "real_novel_api": true,
+    "pr_235_writes": true,
+    "patch_advice": true,
+    "invented_coverage": true,
+    "b09_adapter": true,
+    "unreleased_body_read": true,
+    "unreleased_title_on_card": true
+  }
+}
