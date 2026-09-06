@@ -76,3 +76,5 @@ GitHub #274 起，`prove_current_read` 附带 `result_scope`：有章号就写�
 
 GitHub #276 起，条目投影带上候选已有的 `lineage_id` 和 `match_locations`；没有就写未提供，不在展示层重搜正文。
 GitHub #303 起，库目录旁若有 `named-card-identity.json`，`result_scope` 的书名／章号从这份 sidecar 填；没有或坏了仍写未提供。
+
+GitHub #305 起，当前候选有可展示条目时，`coverage_view` 只读派生责任段条数和来源绑定；没有候选集合仍写尚未提供，不写零。不是 B02 原件，整章仍不足以判断全部覆盖。

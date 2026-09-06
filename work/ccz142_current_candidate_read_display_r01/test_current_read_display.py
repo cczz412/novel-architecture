@@ -77,8 +77,12 @@ def test_fixture_store_page_shows_human_items(tmp_path: Path) -> None:
     assert "甲走进北塔。" in page
     assert "FIXTURE_ONLY" in page
     assert "不是产品权威" in page
-    assert COVERAGE_NOT_WIRED in page
-    assert DENSITY_NOT_WIRED in page
+    assert COVERAGE_NOT_WIRED not in page
+    assert DENSITY_NOT_WIRED not in page
+    assert "责任段 1 有 2 条" in page
+    assert "来源「甲走进北塔。」：有 1 条当前候选绑定。" in page
+    assert "来源「甲拿起铜钥匙。」：有 1 条当前候选绑定。" in page
+    assert "不足以判断全部覆盖" in page
     assert "synthetic-chapter-001" in page
     assert "整章完整性：未确认" in page
     assert "不是已确认的整章汇总" in page

@@ -87,6 +87,81 @@ def apply_named_card_identity(
 
 
 
+
+def empty_coverage_view() -> dict[str, Any]:
+    """No candidate set yet. Do not write zero as if coverage was measured."""
+
+    return {
+        "wired": False,
+        "b02_originals": False,
+        "chapter_claim": "不足以判断全部覆盖",
+        "density_line": None,
+        "segment_counts": [],
+        "bindings": [],
+        "unobserved_note": (
+            "尚无 B02 穷尽观察。不能把没列到的来源说成没有漏抽。"
+        ),
+    }
+
+
+def project_coverage_view(card: dict[str, Any] | None) -> dict[str, Any]:
+    """Derive count distribution from current items. Not a B02 original."""
+
+    view = empty_coverage_view()
+    if not isinstance(card, dict):
+        return view
+    items = card.get("items")
+    if not isinstance(items, list) or not items:
+        return view
+    seg_counts: dict[int, int] = {}
+    evidence_counts: dict[str, int] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        evidence = item.get("evidence")
+        if isinstance(evidence, str) and evidence.strip():
+            key = evidence.strip()
+            evidence_counts[key] = evidence_counts.get(key, 0) + 1
+        locations = item.get("match_locations")
+        segs: set[int] = set()
+        if isinstance(locations, list):
+            for loc in locations:
+                if not isinstance(loc, dict):
+                    continue
+                seg = loc.get("seg")
+                if isinstance(seg, int) and not isinstance(seg, bool):
+                    segs.add(seg)
+        for seg in segs:
+            seg_counts[seg] = seg_counts.get(seg, 0) + 1
+    if not evidence_counts:
+        return view
+    parts = [
+        f"责任段 {seg} 有 {seg_counts[seg]} 条" for seg in sorted(seg_counts)
+    ]
+    if not parts:
+        total = sum(evidence_counts.values())
+        parts = [f"本次已返回 {total} 条"]
+    view["wired"] = True
+    view["density_line"] = (
+        "密度（仅说明本次已返回的候选）："
+        + "；".join(parts)
+        + "。这是条数分布，不是抽全评分，也不能按条数比漏抽。"
+    )
+    view["segment_counts"] = [
+        {"seg": seg, "candidate_count": seg_counts[seg]}
+        for seg in sorted(seg_counts)
+    ]
+    view["bindings"] = [
+        {
+            "source_evidence": source,
+            "candidate_count": count,
+            "status": "BOUND",
+        }
+        for source, count in sorted(evidence_counts.items())
+    ]
+    return view
+
+
 def empty_result_scope() -> dict[str, Any]:
     """Honest unknowns. Never invent a book title or whole-chapter claim."""
 
@@ -207,6 +282,7 @@ def _base_proof() -> dict[str, Any]:
         "discovered_pointer_keys": [],
         "human_card": None,
         "result_scope": empty_result_scope(),
+        "coverage_view": empty_coverage_view(),
         "gaps": [],
         "limitations": [],
         "standing_boundaries": list(STANDING_BOUNDARIES),
@@ -447,8 +523,12 @@ def prove_current_read(
         "candidate_contract": candidate.get("contract_version"),
         "product_adopted": False,
     }
+    coverage_view = project_coverage_view(card)
+    if coverage_view["wired"]:
+        result_scope["density"] = coverage_view["density_line"]
     proof["human_card"] = card
     proof["result_scope"] = result_scope
+    proof["coverage_view"] = coverage_view
     proof["limitations"] = limitations
     if card["item_count"] == 0:
         proof["status"] = STATUS_GAP
