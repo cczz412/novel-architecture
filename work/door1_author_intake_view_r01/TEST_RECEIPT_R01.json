@@ -1,0 +1,238 @@
+{
+  "document_identity": "DOOR1-AUTHOR-INTAKE-VIEW-R01",
+  "github_issue": 309,
+  "base_main_sha": "908fbbfef6fa3a6b1d92e9a3fc35b1c35570ef66",
+  "status": "PARTIAL_VERIFICATION__NOT_MERGED",
+  "generated_at_utc": "2026-09-06T11:00:18.028966+00:00",
+  "overall_acceptance_pass": false,
+  "summary": "代码、单测与受控浏览器交互已核对；旧库联调、指定解释器与原生文件授权仍待完整环境验收。",
+  "environment": {
+    "python_executed": "3.13.5",
+    "python_required_by_repository": "3.12.12",
+    "pytest": "9.0.2",
+    "uv": "uv 0.10.0",
+    "node": "v22.16.0",
+    "input_contains_uv_lock": false,
+    "added_project_dependencies": false
+  },
+  "pytest": {
+    "command": "python -m pytest work/door1_author_intake_view_r01/ -q --disable-warnings --tb=short -rs --junitxml=.door1-pytest-receipt.xml",
+    "environment_overrides": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "working_directory": "仓库根目录",
+    "started_at_utc": "2026-09-06T11:00:10.658803+00:00",
+    "duration_seconds": 5.369,
+    "exit_code": 0,
+    "stdout": "........................................................................ [ 90%]\nsss.....                                                                 [100%]\n=========================== short test summary info ============================\nSKIPPED [3] work/door1_author_intake_view_r01/test_door1_view.py:474: 真实库联调未运行；切片缺依赖：work/ccz57_m3_b05_patch_route_r03_5/b05_store.py, work/ccz57_m3_b06_commit_core_r01/b06_store.py, work/ccz57_m3_b06_commit_core_r01/b06_contracts.py, work/ccz57_m3_b07_local_recovery_stop_r01/b07_store.py, work/ccz57_m3_b08_segment_terminal_r01/b08_store.py\n77 passed, 3 skipped in 0.60s\n",
+    "stderr": "",
+    "status": "PASS_WITH_EXPLICIT_SKIPS",
+    "collected": 80,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 3,
+    "passed": 77,
+    "skip_details": [
+      {
+        "name": "test_integration_real_store_read_and_marks_never_write_authority",
+        "reason": "真实库联调未运行；切片缺依赖：work/ccz57_m3_b05_patch_route_r03_5/b05_store.py, work/ccz57_m3_b06_commit_core_r01/b06_store.py, work/ccz57_m3_b06_commit_core_r01/b06_contracts.py, work/ccz57_m3_b07_local_recovery_stop_r01/b07_store.py, work/ccz57_m3_b08_segment_terminal_r01/b08_store.py"
+      },
+      {
+        "name": "test_integration_real_store_missing_source_projection_is_local_gap",
+        "reason": "真实库联调未运行；切片缺依赖：work/ccz57_m3_b05_patch_route_r03_5/b05_store.py, work/ccz57_m3_b06_commit_core_r01/b06_store.py, work/ccz57_m3_b06_commit_core_r01/b06_contracts.py, work/ccz57_m3_b07_local_recovery_stop_r01/b07_store.py, work/ccz57_m3_b08_segment_terminal_r01/b08_store.py"
+      },
+      {
+        "name": "test_integration_real_store_corrupt_sidecar_still_opens",
+        "reason": "真实库联调未运行；切片缺依赖：work/ccz57_m3_b05_patch_route_r03_5/b05_store.py, work/ccz57_m3_b06_commit_core_r01/b06_store.py, work/ccz57_m3_b06_commit_core_r01/b06_contracts.py, work/ccz57_m3_b07_local_recovery_stop_r01/b07_store.py, work/ccz57_m3_b08_segment_terminal_r01/b08_store.py"
+      }
+    ]
+  },
+  "locked_build": {
+    "command": "uv run --locked python work/door1_author_intake_view_r01/build_view.py --book 北塔夹具 --chapter 1 --store .door1-local/store --out .door1-local/door1.html",
+    "environment_overrides": {
+      "UV_OFFLINE": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "working_directory": "仓库根目录",
+    "started_at_utc": "2026-09-06T11:00:16.029439+00:00",
+    "duration_seconds": 0.219,
+    "exit_code": 2,
+    "stdout": "",
+    "stderr": "error: No interpreter found for Python ==3.12.12 in managed installations or search path\n\nhint: A managed Python download is available for Python ==3.12.12, but uv is set to offline mode\n",
+    "status": "ENVIRONMENT_BLOCKED_BEFORE_APPLICATION_OR_TESTS"
+  },
+  "locked_pytest": {
+    "command": "uv run --locked pytest work/door1_author_intake_view_r01/",
+    "environment_overrides": {
+      "UV_OFFLINE": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "working_directory": "仓库根目录",
+    "started_at_utc": "2026-09-06T11:00:16.248375+00:00",
+    "duration_seconds": 0.177,
+    "exit_code": 2,
+    "stdout": "",
+    "stderr": "error: No interpreter found for Python ==3.12.12 in managed installations or search path\n\nhint: A managed Python download is available for Python ==3.12.12, but uv is set to offline mode\n",
+    "status": "ENVIRONMENT_BLOCKED_BEFORE_APPLICATION_OR_TESTS"
+  },
+  "self_check": {
+    "command": "python work/door1_author_intake_view_r01/self_check.py",
+    "environment_overrides": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "working_directory": "仓库根目录",
+    "started_at_utc": "2026-09-06T11:00:16.425281+00:00",
+    "duration_seconds": 1.603,
+    "exit_code": 0,
+    "stdout": "{\n  \"document_identity\": \"DOOR1-AUTHOR-INTAKE-VIEW-R01\",\n  \"base_main_sha\": \"908fbbfef6fa3a6b1d92e9a3fc35b1c35570ef66\",\n  \"result\": \"PASS\",\n  \"manifest_verified_files\": 9,\n  \"protected_input_verified_files\": 71,\n  \"authority_wrote\": false,\n  \"product_adopted\": false,\n  \"network_calls\": false,\n  \"integration_dependencies_present\": false,\n  \"missing_integration_paths\": [\n    \"work/ccz57_m3_b05_patch_route_r03_5/b05_store.py\",\n    \"work/ccz57_m3_b06_commit_core_r01/b06_store.py\",\n    \"work/ccz57_m3_b06_commit_core_r01/b06_contracts.py\",\n    \"work/ccz57_m3_b07_local_recovery_stop_r01/b07_store.py\",\n    \"work/ccz57_m3_b08_segment_terminal_r01/b08_store.py\"\n  ],\n  \"note\": \"这是文件与边界机械检查，不是浏览器验收，也不代替真实库联调。\"\n}\n",
+    "stderr": "",
+    "status": "PASS_MECHANICAL_ONLY",
+    "parsed_result": {
+      "document_identity": "DOOR1-AUTHOR-INTAKE-VIEW-R01",
+      "base_main_sha": "908fbbfef6fa3a6b1d92e9a3fc35b1c35570ef66",
+      "result": "PASS",
+      "manifest_verified_files": 9,
+      "protected_input_verified_files": 71,
+      "authority_wrote": false,
+      "product_adopted": false,
+      "network_calls": false,
+      "integration_dependencies_present": false,
+      "missing_integration_paths": [
+        "work/ccz57_m3_b05_patch_route_r03_5/b05_store.py",
+        "work/ccz57_m3_b06_commit_core_r01/b06_store.py",
+        "work/ccz57_m3_b06_commit_core_r01/b06_contracts.py",
+        "work/ccz57_m3_b07_local_recovery_stop_r01/b07_store.py",
+        "work/ccz57_m3_b08_segment_terminal_r01/b08_store.py"
+      ],
+      "note": "这是文件与边界机械检查，不是浏览器验收，也不代替真实库联调。"
+    }
+  },
+  "browser_additional_verification": {
+    "checked_at": "2026-09-06T10:57:36.034066+00:00",
+    "browser": "Chromium 144.0.7559.96",
+    "status": "PASS_WITH_NATIVE_FILE_TEST_GAP",
+    "passed_checks": 14,
+    "checks": [
+      {
+        "name": "four_columns_fixture_identity_and_ten_ledgers",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "candidate_hover_highlights_both_exact_duplicate_locations_and_ledger",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "source_hover_reverse_binding_and_missing_source_hint",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "offscreen_ledger_match_is_brought_into_view_without_animation",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "plus_adds_empty_candidate_dashed_line_and_real_temp_json_via_test_adapter",
+        "status": "PASS",
+        "detail": "原生目录授权未测；这里仅替换 File System Access，Python 桥写真实临时 JSON。"
+      },
+      {
+        "name": "reextract_preserves_existing_candidate_and_can_mark_empty_candidate",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "fresh_page_reconnect_reads_marks_back_from_temp_json",
+        "status": "PASS",
+        "detail": "新页面重连测试替身目录后读回；不等于原生句柄跨重启自动恢复。"
+      },
+      {
+        "name": "write_failure_preserves_pending_mark_and_retry_does_not_duplicate",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "corrupt_sidecar_does_not_break_page_or_get_overwritten",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "missing_source_location_has_warning_and_no_original_highlight",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "cancelled_permission_keeps_visible_unsaved_mark",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "unsupported_file_api_does_not_claim_saved",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "keyboard_focus_and_narrow_screen_horizontal_scrolling",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "no_browser_page_errors_or_outbound_requests",
+        "status": "PASS",
+        "detail": ""
+      }
+    ],
+    "fixture_provenance": "包内冻结候选的投影单测替身；不是从 CandidateAuthorityStore 读取的联调回执。",
+    "browser_test_mode": "Playwright set_content，零网络加载；目录 API 替身 + 固定临时 JSON 读写桥。",
+    "native_file_navigation": "BLOCKED_BY_ENVIRONMENT",
+    "native_file_gap": "ERR_BLOCKED_BY_ADMINISTRATOR",
+    "native_file_picker_and_reopen_permissions": "NOT_TESTED",
+    "page_errors": [],
+    "outbound_requests_during_behavior_checks": []
+  },
+  "browser_harness": {
+    "command": "python browser_check.py",
+    "working_directory": "临时附加检查目录（不进入施工写集）",
+    "included_in_zip": false,
+    "repeat_in_full_environment": "README 的三条手工验收；pytest 里不引入 Playwright 依赖。",
+    "script_sha256": "54e654644902fcb6f6d4bb4e76ae2570a14981d7bd376e7549d82cb4999fea38"
+  },
+  "ruff": {
+    "status": "NOT_RUN",
+    "reason": "本环境没有安装仓库指定的 Ruff；没有修改依赖或冒充 lint 通过。"
+  },
+  "implementation_sha256": {
+    "build_view.py": "e01811d3597ecfad5e5387c2c2f5fae499cdf47262b446a4b45e963eb02c22d7",
+    "view_render.py": "3a11a5b603790413f4174c58544d18519eafe404f55eae14ef2a54fe2d0b1348",
+    "marks_sidecar.py": "3a848c8022302a6c6b81ef5ffbc0665c11ac9d3d441cd3bba9aee813804ead02",
+    "self_check.py": "d7714eff66aab9d2244a2008c3db5b5671a049fd386dddb16aea68607c05255b",
+    "test_door1_view.py": "09b9bc4550d39ab17c58bb390fc0b5b1cee89e7013dbda3b15a36b3b485cb28e"
+  },
+  "evidence_boundaries": [
+    "投影单测输入来自包内冻结五条候选的测试替身；生产 CLI 不含替身退路。",
+    "3 个旧库集成测试因指定间接依赖缺失被 pytest 跳过；不是已通过。",
+    "受控 Chromium 检查加载本地生成内容，无外网请求；文件接口替身连实际临时 JSON。",
+    "原生 file 打开被环境政策阻止，错误 ERR_BLOCKED_BY_ADMINISTRATOR；未变更政策。",
+    "原生目录选择器、真实文件句柄保存与重开自动恢复未验收。",
+    "locked 命令实际运行但在寻找指定 Python 时退出；没有开始执行页面生成器或 pytest。",
+    "MANIFEST 不收录自身；本回执不自算哈希，完整性由 MANIFEST 提供。"
+  ],
+  "source_files_unchanged_count": 71,
+  "authority_write_calls_by_new_production_code": 0,
+  "github_or_linear_writes": false,
+  "product_adopted": false,
+  "locked_rerun_in_full_repo": {
+    "by": "Cursor",
+    "at_utc": "2026-09-06T11:14:09+00:00",
+    "base_main_sha": "908fbbfef6fa3a6b1d92e9a3fc35b1c35570ef66",
+    "python": "3.12 (uv --locked)",
+    "pytest": "80 passed, 0 skipped (3 real-store integration tests ran)",
+    "self_check": "PASS",
+    "ruff": "All checks passed",
+    "build_view": "BUILT: candidate_count=5 source_sentence_count=4 possibly_missing_count=1, store prepared by ccz142_named_chapter_txt_card_r01/drop.py under system temp dir",
+    "browser": "Playwright Chromium over local http: 4-panel layout, fact->sentence and ->ledger highlight, hover toolbar shows only ＋补一条／重新抽, no cross/minus, no external resources; ＋ creates 新生成待抽 with dashed link; without directory permission marks show 未落盘 (honest). Native showDirectoryPicker persistence not automated: left for CZ manual check.",
+    "readme_fix": "store path must be under tempfile.gettempdir(); README updated."
+  }
+}
