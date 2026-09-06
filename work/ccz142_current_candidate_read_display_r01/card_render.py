@@ -134,9 +134,42 @@ def render_markdown(proof: dict[str, Any]) -> str:
         lines.append("没有可展示的事实条目。")
         lines.append("")
 
-    lines.append("## 还没接到的层")
-    lines.append(f"- {COVERAGE_NOT_WIRED}")
-    lines.append(f"- {DENSITY_NOT_WIRED}")
+    view = proof.get("coverage_view")
+    if not isinstance(view, dict):
+        view = {}
+    if view.get("wired") is True:
+        lines.append("## 覆盖／漏抽与密度")
+        density_line = view.get("density_line")
+        if isinstance(density_line, str) and density_line:
+            lines.append(f"- {density_line}")
+        lines.append(
+            "- 覆盖／漏抽：下列只说明当前候选和来源的绑定，"
+            "不是语义抽对，也不是全书评测。"
+        )
+        bindings = view.get("bindings")
+        if isinstance(bindings, list):
+            for binding in bindings:
+                if not isinstance(binding, dict):
+                    continue
+                source = str(binding.get("source_evidence") or "").strip()
+                count = binding.get("candidate_count")
+                if not source:
+                    continue
+                if not isinstance(count, int) or isinstance(count, bool):
+                    continue
+                lines.append(
+                    f"- 来源「{source}」：有 {count} 条当前候选绑定。"
+                )
+        note = view.get("unobserved_note")
+        if isinstance(note, str) and note:
+            lines.append(f"- {note}")
+        claim = view.get("chapter_claim")
+        if isinstance(claim, str) and claim:
+            lines.append(f"- 整章：{claim}")
+    else:
+        lines.append("## 还没接到的层")
+        lines.append(f"- {COVERAGE_NOT_WIRED}")
+        lines.append(f"- {DENSITY_NOT_WIRED}")
     lines.append("")
 
     limitations = proof.get("limitations") if isinstance(proof.get("limitations"), list) else []

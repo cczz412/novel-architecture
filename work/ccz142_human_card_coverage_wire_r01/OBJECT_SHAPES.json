@@ -1,0 +1,23 @@
+{
+  "document_identity": "CCZ142-HUMAN-CARD-COVERAGE-WIRE-R01",
+  "status": "COUNT_DISTRIBUTION_NOT_B02_ORIGINALS",
+  "github_issue": 305,
+  "base_main_sha": "ef1d3ad96867539faa8105f57be81b16401aae1b",
+  "product_adopted": false,
+  "reads_via": "prove_current_read / show_current_html",
+  "count_distribution_wired": true,
+  "b02_originals_wired": false,
+  "invented_coverage_percent": false,
+  "sqlite_schema_changed": false,
+  "released_book_title": "北塔夹具",
+  "forbidden": {
+    "second_reader": true,
+    "real_novel_api": true,
+    "pr_235_writes": true,
+    "b01_b09_writer_edits": true,
+    "sqlite_schema_change": true,
+    "invented_coverage": true,
+    "unreleased_body_read": true,
+    "b02_writer_edits": true
+  }
+}
