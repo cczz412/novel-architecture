@@ -1,4 +1,4 @@
-"""Validate KNOWLEDGE_EDGE knowledge-edge-v1 contract documents."""
+"""Validate versioned KNOWLEDGE_EDGE v1/v2 contract documents."""
 
 from __future__ import annotations
 
@@ -13,9 +13,26 @@ from jsonschema import Draft202012Validator, FormatChecker
 DIR = Path(__file__).resolve().parent
 SCHEMA_PATH = DIR / "KNOWLEDGE_EDGE.schema.json"
 FIXTURE_PATH = DIR / "KNOWLEDGE_EDGE.fixtures.jsonl"
-VERSION = "knowledge-edge-v1"
-PERMISSION_NAMESPACE = "knowledge-edge.v1"
-WRITER_NAMESPACE = "trusted.knowledge_edge.writer.v1"
+VERSION_V1 = "knowledge-edge-v1"
+VERSION_V2 = "knowledge-edge-v2"
+# Backward-compatible aliases. New code should use the explicit version suffixes.
+VERSION = VERSION_V1
+PERMISSION_NAMESPACE_V1 = "knowledge-edge.v1"
+PERMISSION_NAMESPACE_V2 = "knowledge-edge.v2"
+WRITER_NAMESPACE_V1 = "trusted.knowledge_edge.writer.v1"
+WRITER_NAMESPACE_V2 = "trusted.knowledge_edge.writer.v2"
+PERMISSION_NAMESPACE = PERMISSION_NAMESPACE_V1
+WRITER_NAMESPACE = WRITER_NAMESPACE_V1
+VERSION_POLICIES = {
+    VERSION_V1: {
+        "permission_namespace": PERMISSION_NAMESPACE_V1,
+        "writer_namespace": WRITER_NAMESPACE_V1,
+    },
+    VERSION_V2: {
+        "permission_namespace": PERMISSION_NAMESPACE_V2,
+        "writer_namespace": WRITER_NAMESPACE_V2,
+    },
+}
 TASK_PRINCIPALS = {"MAIN_AI", "POV_CHECKER", "CHAPTER_CARD"}
 CLOSED_PRINCIPALS = {"READER", "PLUGIN"}
 
@@ -144,19 +161,243 @@ def _validate_read_grant(document: dict[str, Any]) -> dict[str, Any]:
 def validate_document(document: Any) -> dict[str, Any]:
     _validate_schema(document)
     assert isinstance(document, dict)
-    if document["version"] != VERSION:
+    version = document["version"]
+    if version not in VERSION_POLICIES:
         raise ContractError("CONTRACT_VERSION_INVALID")
     contract = document["contract"]
     if contract == "KNOWLEDGE_EDGE":
+        if document["permission_namespace"] != VERSION_POLICIES[version][
+            "permission_namespace"
+        ]:
+            raise ContractError("PERMISSION_NAMESPACE_VERSION_MISMATCH")
         return _validate_edge(document)
     if contract == "KNOWLEDGE_EDGE_WRITE_ACTION":
+        if document["writer_namespace"] != VERSION_POLICIES[version][
+            "writer_namespace"
+        ]:
+            raise ContractError("WRITER_NAMESPACE_VERSION_MISMATCH")
         return _validate_write_action(document)
     if contract == "KNOWLEDGE_EDGE_READ_GRANT":
+        if document["permission_namespace"] != VERSION_POLICIES[version][
+            "permission_namespace"
+        ]:
+            raise ContractError("PERMISSION_NAMESPACE_VERSION_MISMATCH")
         return _validate_read_grant(document)
     raise ContractError("CONTRACT_IDENTITY_INVALID")
 
 
-def validate_new_candidate(edge: Any, action: Any) -> None:
+def _validate_reader_compatibility(document: Any, reader_version: str) -> None:
+    if not isinstance(reader_version, str) or reader_version not in VERSION_POLICIES:
+        raise ContractError("READER_VERSION_INVALID")
+    if not isinstance(document, dict) or document.get("contract") != "KNOWLEDGE_EDGE":
+        raise ContractError("READER_DOCUMENT_TYPE_INVALID")
+    document_version = document.get("version")
+    if (
+        not isinstance(document_version, str)
+        or document_version not in VERSION_POLICIES
+        or (reader_version == VERSION_V1 and document_version != VERSION_V1)
+    ):
+        raise ContractError("READER_VERSION_UNSUPPORTED")
+
+
+def validate_document_for_reader(document: Any, reader_version: str) -> dict[str, Any]:
+    _validate_reader_compatibility(document, reader_version)
+    return validate_document(document)
+
+
+def validate_edge_grant_for_reader(
+    edge: Any,
+    grant: Any,
+    reader_version: str,
+) -> None:
+    if not isinstance(grant, dict) or grant.get("contract") != (
+        "KNOWLEDGE_EDGE_READ_GRANT"
+    ):
+        raise ContractError("READ_GRANT_DOCUMENT_TYPE_INVALID")
+    authorization = validate_document(grant)
+    if authorization["access"] == "CLOSED":
+        raise ContractError("UNAUTHORIZED")
+    if (
+        not isinstance(edge, dict)
+        or edge.get("author_id") != authorization["author_id"]
+        or edge.get("project_id") != authorization["project_id"]
+    ):
+        raise ContractError("UNAUTHORIZED")
+    if edge.get("version") != authorization["version"]:
+        raise ContractError("READ_GRANT_VERSION_MISMATCH")
+    if authorization["access"] == "TASK_SLICE" and (
+        edge.get("observer_ref") not in authorization["observer_refs"]
+        or edge.get("fact_ref") not in authorization["fact_refs"]
+    ):
+        raise ContractError("READ_GRANT_SCOPE_MISMATCH")
+
+    _validate_reader_compatibility(edge, reader_version)
+    if authorization["access"] == "TASK_SLICE":
+        _prevalidate_task_edge_eligibility(edge, authorization["as_of"])
+    record = validate_document(edge)
+    if authorization["access"] == "TASK_SLICE":
+        _validate_task_edge_as_of(record, authorization["as_of"])
+
+
+def _prevalidate_task_edge_eligibility(
+    record: dict[str, Any],
+    as_of: dict[str, Any],
+) -> None:
+    try:
+        _validate_task_edge_as_of(record, as_of)
+    except ContractError:
+        raise
+    except (AttributeError, KeyError, TypeError):
+        return
+
+
+def _validate_task_edge_as_of(
+    record: dict[str, Any],
+    as_of: dict[str, Any],
+) -> None:
+    if record["version_status"] != {
+        "confirmation": "author_confirmed",
+        "lifecycle": "active",
+    }:
+        raise ContractError("TASK_GRANT_REQUIRES_ACTIVE_AUTHOR_CONFIRMED_EDGE")
+
+    interval = record["story_time_interval"]
+    start = interval["start"]
+    end = interval["end"]
+    start_order = start.get("story_order")
+    as_of_order = as_of.get("story_order")
+    end_order = None if end is None else end.get("story_order")
+    start_is_comparable = start_order is not None and as_of_order is not None
+    end_is_comparable = (
+        end is not None and end_order is not None and as_of_order is not None
+    )
+    as_of_ref = _chapter_ref(as_of)
+    if start_is_comparable:
+        if as_of_order < start_order:
+            raise ContractError("READ_GRANT_AS_OF_BEFORE_EDGE_START")
+        lower_bound_satisfied = True
+    else:
+        lower_bound_satisfied = as_of_ref == _chapter_ref(start)
+
+    if end is None:
+        upper_bound_satisfied = True
+    elif end_is_comparable:
+        if as_of_order >= end_order:
+            raise ContractError("READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL")
+        upper_bound_satisfied = True
+    else:
+        if as_of_ref == _chapter_ref(end):
+            raise ContractError("READ_GRANT_AS_OF_OUTSIDE_EDGE_INTERVAL")
+        upper_bound_satisfied = as_of_ref == _chapter_ref(start)
+
+    if lower_bound_satisfied and upper_bound_satisfied:
+        return
+    raise ContractError("READ_GRANT_AS_OF_UNDETERMINED")
+
+
+def _story_order_bounds(
+    interval: dict[str, Any],
+) -> tuple[int, int | None] | None:
+    start_order = interval["start"].get("story_order")
+    end = interval["end"]
+    end_order = None if end is None else end.get("story_order")
+    if start_order is None or (end is not None and end_order is None):
+        return None
+    return start_order, end_order
+
+
+def _same_revision_ref_without_order_conflict(
+    left: dict[str, Any],
+    right: dict[str, Any],
+) -> bool:
+    same_ref = _chapter_ref(left) == _chapter_ref(right)
+    left_order = left.get("story_order")
+    right_order = right.get("story_order")
+    if (
+        same_ref
+        and left_order is not None
+        and right_order is not None
+        and left_order != right_order
+    ):
+        raise ContractError("STORY_INTERVAL_OVERLAP_UNDETERMINED")
+    return same_ref
+
+
+def _end_proves_non_overlap(
+    end: dict[str, Any] | None,
+    start: dict[str, Any],
+) -> bool | None:
+    if end is None:
+        return None
+    same_ref = _same_revision_ref_without_order_conflict(end, start)
+    end_order = end.get("story_order")
+    start_order = start.get("story_order")
+    if end_order is not None and start_order is not None:
+        return end_order <= start_order
+    if same_ref:
+        return True
+    return None
+
+
+def _story_intervals_overlap(
+    left: dict[str, Any],
+    right: dict[str, Any],
+) -> bool:
+    left_start = left["start"]
+    left_end = left["end"]
+    right_start = right["start"]
+    right_end = right["end"]
+    if _end_proves_non_overlap(left_end, right_start) is True:
+        return False
+    if _end_proves_non_overlap(right_end, left_start) is True:
+        return False
+
+    left_bounds = _story_order_bounds(left)
+    right_bounds = _story_order_bounds(right)
+    if left_bounds is not None and right_bounds is not None:
+        return True
+
+    if _same_revision_ref_without_order_conflict(left_start, right_start):
+        return True
+    raise ContractError("STORY_INTERVAL_OVERLAP_UNDETERMINED")
+
+
+def _same_logical_slot(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    return all(
+        left[field] == right[field]
+        for field in ("author_id", "project_id", "observer_ref", "fact_ref")
+    )
+
+
+def _validate_new_candidate_against_existing(
+    record: dict[str, Any],
+    existing_edges: Any,
+) -> None:
+    if not isinstance(existing_edges, list):
+        raise ContractError("EXISTING_EDGE_SET_INVALID")
+    for existing_document in existing_edges:
+        existing = validate_document(existing_document)
+        if existing["contract"] != "KNOWLEDGE_EDGE":
+            raise ContractError("EXISTING_EDGE_DOCUMENT_TYPE_INVALID")
+        if existing["id"] == record["id"]:
+            raise ContractError("KNOWLEDGE_EDGE_ID_REUSE_FORBIDDEN")
+        if not _same_logical_slot(record, existing):
+            continue
+        if not _story_intervals_overlap(
+            record["story_time_interval"],
+            existing["story_time_interval"],
+        ):
+            continue
+        if record["version"] != existing["version"]:
+            raise ContractError("CROSS_VERSION_RECREATE_FORBIDDEN")
+        raise ContractError("KNOWLEDGE_EDGE_SLOT_CONFLICT")
+
+
+def validate_new_candidate(
+    edge: Any,
+    action: Any,
+    existing_edges: Any | None = None,
+) -> None:
     record = validate_document(edge)
     request = validate_document(action)
     if record["contract"] != "KNOWLEDGE_EDGE" or request["contract"] != (
@@ -165,6 +406,8 @@ def validate_new_candidate(edge: Any, action: Any) -> None:
         raise ContractError("NEW_CANDIDATE_DOCUMENTS_INVALID")
     if request["operation"] != "PROPOSE_CANDIDATE":
         raise ContractError("NEW_CANDIDATE_ACTION_REQUIRED")
+    if record["version"] != request["version"]:
+        raise ContractError("NEW_CANDIDATE_VERSION_MISMATCH")
     if (
         record["author_id"] != request["author_id"]
         or record["project_id"] != request["project_id"]
@@ -183,6 +426,9 @@ def validate_new_candidate(edge: Any, action: Any) -> None:
     )
     if record["source_identity"] != expected_source:
         raise ContractError("NEW_CANDIDATE_SOURCE_IDENTITY_INVALID")
+    if existing_edges is None:
+        raise ContractError("EXISTING_EDGE_SET_REQUIRED")
+    _validate_new_candidate_against_existing(record, existing_edges)
 
 
 def _stable_identity(document: dict[str, Any]) -> tuple[str, ...]:
@@ -206,6 +452,8 @@ def validate_revision_transition(previous: Any, current: Any, action: Any) -> No
         raise ContractError("TRANSITION_REQUIRES_EDGES")
     if request["contract"] != "KNOWLEDGE_EDGE_WRITE_ACTION":
         raise ContractError("TRANSITION_REQUIRES_ACTION")
+    if len({old["version"], new["version"], request["version"]}) != 1:
+        raise ContractError("CROSS_VERSION_REVISION_FORBIDDEN")
     if request["operation"] == "PROPOSE_CANDIDATE":
         raise ContractError("PROPOSE_CANDIDATE_IS_NOT_REVISION_TRANSITION")
     if request["edge_id"] != old["id"] or request["edge_id"] != new["id"]:
@@ -270,7 +518,11 @@ def validate_fixture_case(case: dict[str, Any]) -> str | None:
         if kind == "document":
             validate_document(case["document"])
         elif kind == "new_candidate":
-            validate_new_candidate(case["edge"], case["action"])
+            validate_new_candidate(
+                case["edge"],
+                case["action"],
+                case.get("existing_edges"),
+            )
         elif kind == "transition":
             validate_revision_transition(
                 case["previous"],

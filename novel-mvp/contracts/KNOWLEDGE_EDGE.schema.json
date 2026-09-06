@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://local.novel-mvp/contracts/KNOWLEDGE_EDGE.schema.json",
-  "title": "KNOWLEDGE_EDGE knowledge-edge-v1",
-  "description": "Project-level sparse character knowledge edges, trusted write actions, and least-privilege read grants.",
+  "title": "KNOWLEDGE_EDGE knowledge-edge-v1 and knowledge-edge-v2",
+  "description": "Version-dispatched project-level sparse character knowledge edges, trusted write actions, and least-privilege read grants.",
   "oneOf": [
     {"$ref": "#/$defs/edge"},
     {"$ref": "#/$defs/write_action"},
@@ -92,11 +92,17 @@
       ],
       "properties": {
         "contract": {"const": "KNOWLEDGE_EDGE"},
-        "version": {"const": "knowledge-edge-v1"},
+        "version": {
+          "type": "string",
+          "enum": ["knowledge-edge-v1", "knowledge-edge-v2"]
+        },
         "id": {"type": "string", "pattern": "^KE-[0-9]+$"},
         "author_id": {"type": "string", "minLength": 1},
         "project_id": {"type": "string", "minLength": 1},
-        "permission_namespace": {"const": "knowledge-edge.v1"},
+        "permission_namespace": {
+          "type": "string",
+          "enum": ["knowledge-edge.v1", "knowledge-edge.v2"]
+        },
         "source_identity": {
           "type": "string",
           "enum": ["author_declared", "draft_inferred", "model_suggested"]
@@ -117,7 +123,8 @@
             "knows",
             "explicitly_does_not_know",
             "suspects",
-            "false_belief"
+            "false_belief",
+            "explicitly_does_not_believe"
           ]
         },
         "fact_ref": {"type": "string", "pattern": "^f[0-9]{3,}$"},
@@ -137,6 +144,39 @@
         "version_status": {"$ref": "#/$defs/version_status"}
       },
       "allOf": [
+        {
+          "if": {
+            "properties": {"version": {"const": "knowledge-edge-v1"}},
+            "required": ["version"]
+          },
+          "then": {
+            "properties": {
+              "permission_namespace": {"const": "knowledge-edge.v1"},
+              "epistemic_state": {
+                "enum": [
+                  "knows",
+                  "explicitly_does_not_know",
+                  "suspects",
+                  "false_belief"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "permission_namespace": {"const": "knowledge-edge.v2"},
+              "epistemic_state": {
+                "enum": [
+                  "knows",
+                  "explicitly_does_not_know",
+                  "suspects",
+                  "false_belief",
+                  "explicitly_does_not_believe"
+                ]
+              }
+            }
+          }
+        },
         {
           "if": {
             "properties": {"epistemic_state": {"const": "false_belief"}},
@@ -171,11 +211,20 @@
       ],
       "properties": {
         "contract": {"const": "KNOWLEDGE_EDGE_WRITE_ACTION"},
-        "version": {"const": "knowledge-edge-v1"},
+        "version": {
+          "type": "string",
+          "enum": ["knowledge-edge-v1", "knowledge-edge-v2"]
+        },
         "action_id": {"type": "string", "pattern": "^KEA-[A-Za-z0-9._:-]+$"},
         "author_id": {"type": "string", "minLength": 1},
         "project_id": {"type": "string", "minLength": 1},
-        "writer_namespace": {"const": "trusted.knowledge_edge.writer.v1"},
+        "writer_namespace": {
+          "type": "string",
+          "enum": [
+            "trusted.knowledge_edge.writer.v1",
+            "trusted.knowledge_edge.writer.v2"
+          ]
+        },
         "operation": {
           "type": "string",
           "enum": ["PROPOSE_CANDIDATE", "CONFIRM", "MODIFY", "RETIRE"]
@@ -194,7 +243,25 @@
           ]
         },
         "idempotency_key": {"type": "string", "minLength": 1}
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"version": {"const": "knowledge-edge-v1"}},
+            "required": ["version"]
+          },
+          "then": {
+            "properties": {
+              "writer_namespace": {"const": "trusted.knowledge_edge.writer.v1"}
+            }
+          },
+          "else": {
+            "properties": {
+              "writer_namespace": {"const": "trusted.knowledge_edge.writer.v2"}
+            }
+          }
+        }
+      ]
     },
     "read_grant": {
       "type": "object",
@@ -215,11 +282,17 @@
       ],
       "properties": {
         "contract": {"const": "KNOWLEDGE_EDGE_READ_GRANT"},
-        "version": {"const": "knowledge-edge-v1"},
+        "version": {
+          "type": "string",
+          "enum": ["knowledge-edge-v1", "knowledge-edge-v2"]
+        },
         "grant_id": {"type": "string", "pattern": "^KEG-[A-Za-z0-9._:-]+$"},
         "author_id": {"type": "string", "minLength": 1},
         "project_id": {"type": "string", "minLength": 1},
-        "permission_namespace": {"const": "knowledge-edge.v1"},
+        "permission_namespace": {
+          "type": "string",
+          "enum": ["knowledge-edge.v1", "knowledge-edge.v2"]
+        },
         "permission_policy_version": {"type": "string", "minLength": 1},
         "principal_kind": {
           "type": "string",
@@ -242,7 +315,25 @@
             {"type": "null"}
           ]
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"version": {"const": "knowledge-edge-v1"}},
+            "required": ["version"]
+          },
+          "then": {
+            "properties": {
+              "permission_namespace": {"const": "knowledge-edge.v1"}
+            }
+          },
+          "else": {
+            "properties": {
+              "permission_namespace": {"const": "knowledge-edge.v2"}
+            }
+          }
+        }
+      ]
     }
   }
 }
