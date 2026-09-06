@@ -13,6 +13,7 @@
 - 权威库：`work/ccz142_candidate_authority_r01/`（`CandidateAuthorityStore`）
 - 只读指针／候选：`work/ccz57_m3_b06_commit_core_r01/b06_store.py` 的 `read_pointer` / `read_candidate`
 - 夹具身份：`work/ccz57_m3_b01_candidate_version_r03_5/` 的 `FIXTURE_ONLY` / `POLICY_FIXTURE_READ_ONLY`
+- 可选身份 sidecar：库目录 `named-card-identity.json`（[#301](https://github.com/cczz412/novel-architecture/issues/301) 写入；本包只读）
 - 测试建库：`work/ccz142_candidate_authority_r01/shadow_fixtures.py` 的 `root_request`（仅测试写入）
 
 这些模块在本票中，生产代码全部只读。测试可以建临时夹具库，再交给本包只读。
