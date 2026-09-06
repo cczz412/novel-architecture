@@ -1,24 +1,37 @@
-"""CCZ-126 current-only reader for AuthorWorkspace chapter and fact state.
+"""同一作者项目里的章节、事实与六本设定账，只读当前版本。
 
-The reader opens one AuthorWorkspace generation snapshot, validates each logical
-state once, and emits the frozen LEDGER_READ_RESPONSE v1 shape.  It does not
-write workspace state, expose physical paths, or open pinned/setting/plan data.
+工作区多键快照和 settingstore 文件共同组成这次读取的水位。
+来源先整批校验，交付前再核对；不写文件，不开放人物时点查询或 pinned。
 """
 
 from __future__ import annotations
 
 import copy
+import fcntl
 import hashlib
 import importlib.util
 import json
+import os
+import stat
+from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Mapping, NoReturn
+from typing import Any, Iterator, Mapping, NoReturn
 
-from . import chapter_workspace, factstore, ledger_directory_workspace
-from .workspace import AuthorWorkspace, CurrentGenerationSnapshot
+from . import (
+    chapter_workspace,
+    factstore,
+    ledger_directory_workspace,
+    planstore,
+    settingstore,
+)
+from .workspace import (
+    AuthorWorkspace,
+    CurrentGenerationSnapshot,
+    _author_workspace_binding,
+)
 
 
 VERSION = "ledger-read-tool-contract-v1"
@@ -26,7 +39,19 @@ LIMIT_POLICY_VERSION = "limit-policy-v1"
 MAX_REFS = 50
 MAX_BUSINESS_ITEMS = 100
 MAX_RESPONSE_BYTES = 256 * 1024
-SNAPSHOT_KEYS = ("ledger_directory", "chapters", "chapter_index", "facts")
+WORKSPACE_SNAPSHOT_KEYS = ("ledger_directory", "chapters", "chapter_index", "facts")
+SETTING_LEDGER_KEYS = {
+    "人物账": "character",
+    "地点账": "location",
+    "物品账": "item",
+    "势力账": "faction",
+    "体系账": "system",
+    "世界规则账": "world_rule",
+}
+# 这是整份读取会话的键清单，不把设定文件冒充 workspace 已注册的逻辑键。
+SNAPSHOT_KEYS = WORKSPACE_SNAPSHOT_KEYS + tuple(
+    settingstore.LEDGERS[key].filename for key in SETTING_LEDGER_KEYS.values()
+)
 TRUSTED_CONTEXT_FIELDS = {
     "caller_id",
     "permission_profile",
@@ -35,19 +60,13 @@ TRUSTED_CONTEXT_FIELDS = {
 OPEN_ENTRY_PROFILES = {
     "章节账": "chapter_metadata",
     "事实账": "fact_record",
+    **{name: f"{key}_definition" for name, key in SETTING_LEDGER_KEYS.items()},
 }
-UNAVAILABLE_ENTRY_LEDGERS = {
-    "人物账",
-    "地点账",
-    "物品账",
-    "势力账",
-    "体系账",
-    "世界规则账",
-}
+UNAVAILABLE_ENTRY_LEDGERS: frozenset[str] = frozenset()
 
 
 class LedgerReadRuntimeError(ValueError):
-    """The trusted composition or current reader boundary was violated."""
+    """受信组装参数或当前读取边界不满足要求。"""
 
 
 def _fail(code: str) -> NoReturn:
@@ -104,9 +123,131 @@ def _trusted_context(value: Any) -> dict[str, str]:
     return result
 
 
+def _setting_project_dir(workspace: AuthorWorkspace) -> Path:
+    """只认工作区已绑定的作者和项目；调用方没有可替换的路径参数。"""
+    binding = _author_workspace_binding(workspace)
+    return binding.backend._require_project(binding.author_id, binding.project_id)
+
+
+def _setting_file_bytes(path: Path) -> bytes | None:
+    try:
+        descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except FileNotFoundError:
+        return None
+    with os.fdopen(descriptor, "rb") as handle:
+        if not stat.S_ISREG(os.fstat(handle.fileno()).st_mode):
+            _fail("SETTING_SOURCE_NOT_REGULAR_FILE")
+        return handle.read()
+
+
+@contextmanager
+def _setting_read_lock(root: Path) -> Iterator[None]:
+    """借现有 writer 锁读，不创建锁、不恢复事务。写入正在进行就拒绝本次读。"""
+    try:
+        descriptor = os.open(
+            root / ".planstore.lock",
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+        )
+    except FileNotFoundError:
+        # 尚未写过任何设定的空项目，不为一次查询创建文件。
+        yield
+        return
+    try:
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            _fail("SETTING_LOCK_INVALID")
+        fcntl.flock(descriptor, fcntl.LOCK_SH | fcntl.LOCK_NB)
+        try:
+            yield
+        finally:
+            fcntl.flock(descriptor, fcntl.LOCK_UN)
+    finally:
+        os.close(descriptor)
+
+
+def _setting_files(root: Path) -> dict[str, bytes | None]:
+    return {
+        filename: _setting_file_bytes(root / filename)
+        for filename in (
+            *SNAPSHOT_KEYS[len(WORKSPACE_SNAPSHOT_KEYS) :],
+            "commit_log.jsonl",
+        )
+    }
+
+
+def _setting_stamp(files: dict[str, bytes | None]) -> dict[str, str | None]:
+    return {
+        name: None if raw is None else hashlib.sha256(raw).hexdigest()
+        for name, raw in files.items()
+    }
+
+
+def _require_committed_settings(raw: bytes | None) -> None:
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for line in (raw or b"").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if not isinstance(row, dict) or not isinstance(row.get("op"), str):
+            _fail("SETTING_COMMIT_LOG_INVALID")
+        groups.setdefault(row["op"], []).append(row)
+    for rows in groups.values():
+        if planstore._phase_state(rows) not in {"COMMITTED", "NOT_HAPPENED"}:
+            _fail("SETTING_SOURCE_NOT_COMMITTED")
+
+
+def _read_setting_snapshot(
+    workspace: AuthorWorkspace,
+) -> tuple[dict[str, Any], dict[str, str | None]]:
+    root = _setting_project_dir(workspace)
+    with _setting_read_lock(root):
+        before = _setting_files(root)
+        _require_committed_settings(before["commit_log.jsonl"])
+        states = {}
+        for name, key in SETTING_LEDGER_KEYS.items():
+            spec = settingstore.LEDGERS[key]
+            rows = settingstore.read_setting_records(root, key)
+            for row in rows:
+                settingstore._validate_payload(spec, row)
+            # 普通 reader 跑过后再核对原字节，不能把两次读取拼成一份快照。
+            raw = before[spec.filename]
+            expected = [] if raw is None or not raw.strip() else json.loads(raw)
+            if rows != expected:
+                _fail("SETTING_SOURCE_CHANGED")
+            states[name] = {"payload": rows, "sha256": _sha256_json(rows)}
+        if before != _setting_files(root):
+            _fail("SETTING_SOURCE_CHANGED")
+        return states, _setting_stamp(before)
+
+
+def _settings_are_current(
+    workspace: AuthorWorkspace,
+    expected: dict[str, str | None],
+) -> bool:
+    try:
+        root = _setting_project_dir(workspace)
+        with _setting_read_lock(root):
+            files = _setting_files(root)
+            _require_committed_settings(files["commit_log.jsonl"])
+            return _setting_stamp(files) == expected
+    except (OSError, ValueError, TypeError):
+        return False
+
+
+def _storage_generation(
+    snapshot: CurrentGenerationSnapshot,
+    settings_stamp: dict[str, str | None],
+) -> str:
+    return "author-settings-current:" + _sha256_json(
+        {
+            "workspace_generation": snapshot.generation_id,
+            "setting_files": settings_stamp,
+        }
+    )
+
+
 @dataclass(frozen=True)
 class CurrentLedgerReadSession:
-    """One validated, current-at-start read session; callers use the factory."""
+    """一次只读会话；请用工厂函数创建，不手工拼装。"""
 
     workspace: AuthorWorkspace
     snapshot: CurrentGenerationSnapshot
@@ -119,6 +260,8 @@ class CurrentLedgerReadSession:
     facts_by_id: dict[str, dict[str, Any]]
     confirmed_facts_by_revision: dict[tuple[str, int, str], list[dict[str, Any]]]
     capability_snapshot: dict[str, Any] | None
+    setting_states: dict[str, dict[str, Any]]
+    setting_files_stamp: dict[str, str | None]
     source_error: str | None
 
     @property
@@ -131,10 +274,13 @@ class CurrentLedgerReadSession:
 
     @property
     def storage_generation(self) -> str:
-        return self.snapshot.generation_id or "author-workspace-empty-v1"
+        return _storage_generation(self.snapshot, self.setting_files_stamp)
 
     def is_current(self) -> bool:
-        return self.workspace.is_current_snapshot(self.snapshot)
+        return self.workspace.is_current_snapshot(self.snapshot) and (
+            self.source_error is not None
+            or _settings_are_current(self.workspace, self.setting_files_stamp)
+        )
 
 
 def _state_content_status(state: dict[str, Any] | None) -> str:
@@ -156,6 +302,8 @@ def _capability_snapshot(
     directory_state: dict[str, Any],
     chapters_state: dict[str, Any] | None,
     facts_state: dict[str, Any] | None,
+    setting_states: dict[str, dict[str, Any]],
+    setting_files_stamp: dict[str, str | None],
 ) -> dict[str, Any]:
     ledgers = [
         {
@@ -183,15 +331,17 @@ def _capability_snapshot(
             "source_watermark": _state_watermark(facts_state, "facts"),
         },
     ]
-    for ledger_name in ("人物账", "地点账", "物品账", "势力账", "体系账", "世界规则账"):
+    for ledger_name, key in SETTING_LEDGER_KEYS.items():
+        state = setting_states[ledger_name]
+        empty = not state["payload"]
         ledgers.append(
             {
                 "ledger_name": ledger_name,
-                "runtime_status": "UNAVAILABLE",
-                "content_status": "UNKNOWN",
+                "runtime_status": "AVAILABLE",
+                "content_status": "EMPTY" if empty else "PRESENT",
                 "visibility": "FULL",
-                "reason_code": "CAPABILITY_UNAVAILABLE",
-                "source_watermark": None,
+                "reason_code": "REGISTERED_EMPTY" if empty else None,
+                "source_watermark": f"{settingstore.LEDGERS[key].filename}@{state['sha256']}",
             }
         )
     ledgers.extend(
@@ -222,7 +372,7 @@ def _capability_snapshot(
         "project_id": workspace.project_id,
         "permission_profile": trusted["permission_profile"],
         "permission_policy_version": trusted["permission_policy_version"],
-        "storage_generation": snapshot.generation_id or "author-workspace-empty-v1",
+        "storage_generation": _storage_generation(snapshot, setting_files_stamp),
         "directory_registration": {
             "identity": registration["payload"]["directory_identity"],
             "version": registration["version"],
@@ -245,11 +395,11 @@ def open_current_reader_session(
     workspace: AuthorWorkspace,
     trusted_execution_context: Mapping[str, Any],
 ) -> CurrentLedgerReadSession:
-    """Read four logical keys once and build disposable in-memory indexes."""
+    """读工作区四键和六本设定文件，形成只供本次使用的索引。"""
     if not isinstance(workspace, AuthorWorkspace):
         _fail("AUTHOR_WORKSPACE_HANDLE_REQUIRED")
     trusted = _trusted_context(trusted_execution_context)
-    snapshot = workspace.read_current_snapshot(list(SNAPSHOT_KEYS))
+    snapshot = workspace.read_current_snapshot(list(WORKSPACE_SNAPSHOT_KEYS))
     directory_state = snapshot.read("ledger_directory")
     chapters_state = snapshot.read("chapters")
     chapter_index_state = snapshot.read("chapter_index")
@@ -259,6 +409,8 @@ def open_current_reader_session(
     facts_by_revision: dict[tuple[str, int, str], list[dict[str, Any]]] = {}
     capability: dict[str, Any] | None = None
     source_error: str | None = None
+    setting_states: dict[str, dict[str, Any]] = {}
+    setting_files_stamp: dict[str, str | None] = {}
 
     if directory_state is None:
         source_error = "DIRECTORY_NOT_INITIALIZED"
@@ -295,6 +447,7 @@ def open_current_reader_session(
                 facts_by_revision.setdefault(key, []).append(fact)
             for rows in facts_by_revision.values():
                 rows.sort(key=lambda item: item["id"])
+            setting_states, setting_files_stamp = _read_setting_snapshot(workspace)
             capability = _capability_snapshot(
                 workspace,
                 snapshot,
@@ -302,6 +455,16 @@ def open_current_reader_session(
                 directory_state,
                 chapters_state,
                 facts_state,
+                setting_states,
+                setting_files_stamp,
+            )
+        except BlockingIOError:
+            source_error = "CURRENT_ADVANCED"
+        except LedgerReadRuntimeError as exc:
+            source_error = (
+                "CURRENT_ADVANCED"
+                if str(exc) == "SETTING_SOURCE_CHANGED"
+                else "SOURCE_CORRUPTED"
             )
         except Exception:
             source_error = "SOURCE_CORRUPTED"
@@ -318,6 +481,8 @@ def open_current_reader_session(
         facts_by_id=copy.deepcopy(facts_by_id),
         confirmed_facts_by_revision=copy.deepcopy(facts_by_revision),
         capability_snapshot=copy.deepcopy(capability),
+        setting_states=copy.deepcopy(setting_states),
+        setting_files_stamp=copy.deepcopy(setting_files_stamp),
         source_error=source_error,
     )
 
@@ -375,6 +540,49 @@ def _fact_source(
         "revision": f"workspace-facts-v{facts_state['version']}",
         "logical_content_sha256": _sha256_json(fact),
         "role": role,
+        "binding_mode": "resolved_at_read",
+        "retired_notice": False,
+        "compiler_version": None,
+        "input_basis_sha256": None,
+    }
+
+
+def _setting_source(ledger_name: str, entry: dict[str, Any]) -> dict[str, Any]:
+    spec = settingstore.LEDGERS[SETTING_LEDGER_KEYS[ledger_name]]
+    return {
+        "source_kind": "ledger_entry",
+        "source_contract": spec.contract,
+        "source_contract_version": spec.version,
+        "logical_ledger_name": ledger_name,
+        "object_type": OPEN_ENTRY_PROFILES[ledger_name],
+        "stable_id": entry["id"],
+        "revision": entry["rev"],
+        "logical_content_sha256": _sha256_json(entry),
+        "role": "requested_entry",
+        "binding_mode": "resolved_at_read",
+        "retired_notice": entry["confirm_status"] == "retired",
+        "compiler_version": None,
+        "input_basis_sha256": None,
+    }
+
+
+def _setting_file_source(
+    session: CurrentLedgerReadSession,
+    ledger_name: str,
+) -> dict[str, Any]:
+    spec = settingstore.LEDGERS[SETTING_LEDGER_KEYS[ledger_name]]
+    digest = session.setting_states[ledger_name]["sha256"]
+    # 文件名是固定来源标识，不泄露本机路径。摘要按公共合同的逻辑 JSON 算。
+    return {
+        "source_kind": "ledger_entry",
+        "source_contract": "SETTING_LEDGER_STORAGE",
+        "source_contract_version": "setting-ledger-storage-v1",
+        "logical_ledger_name": ledger_name,
+        "object_type": "setting_ledger_file",
+        "stable_id": spec.filename,
+        "revision": digest,
+        "logical_content_sha256": digest,
+        "role": "setting_ledger_file",
         "binding_mode": "resolved_at_read",
         "retired_notice": False,
         "compiler_version": None,
@@ -479,6 +687,18 @@ def _final_response(
             source_manifest=[],
             business_items=0,
         )
+    if response["status"] in {"OK", "EMPTY"} and not session.is_current():
+        response = _base_response(
+            session,
+            request,
+            status="REJECTED",
+            reason_code="CURRENT_ADVANCED",
+            message="读取期间来源已变化，整批不交付。",
+            data=None,
+            empty_scope=None,
+            source_manifest=[],
+            business_items=0,
+        )
     return validate_ledger_read_document(response)
 
 
@@ -522,7 +742,7 @@ def execute_read(
     session: CurrentLedgerReadSession,
     request: Mapping[str, Any],
 ) -> dict[str, Any]:
-    """Execute one validated request against an already-open current session."""
+    """在已经打开的当前会话里执行一个合法请求。"""
     if not isinstance(session, CurrentLedgerReadSession):
         _fail("CURRENT_LEDGER_READ_SESSION_REQUIRED")
     checked = validate_ledger_read_document(request)
@@ -603,7 +823,10 @@ def execute_read(
             message="已读取十账 current 能力目录。",
             data={"capability_snapshot": session.capability_snapshot},
             empty_scope=None,
-            source_manifest=[_directory_source(session.capability_snapshot)],
+            source_manifest=[
+                _directory_source(session.capability_snapshot),
+                *[_setting_file_source(session, name) for name in SETTING_LEDGER_KEYS],
+            ],
             business_items=10,
         )
 
@@ -703,6 +926,31 @@ def execute_read(
                     }
                 )
                 source_rows.append(_chapter_source(entry, "requested_entry"))
+            elif ledger_name in SETTING_LEDGER_KEYS:
+                entry = next(
+                    (
+                        row
+                        for row in session.setting_states[ledger_name]["payload"]
+                        if row["id"] == stable_id
+                    ),
+                    None,
+                )
+                if entry is None:
+                    return _rejected(
+                        session,
+                        checked,
+                        "ENTRY_NOT_FOUND",
+                        "至少一个设定稳定引用不存在，整批不返回。",
+                    )
+                entries.append(
+                    {
+                        "ledger_name": ledger_name,
+                        "id": stable_id,
+                        "read_profile": selector["read_profile"],
+                        "entry": copy.deepcopy(entry),
+                    }
+                )
+                source_rows.append(_setting_source(ledger_name, entry))
             else:
                 entry = session.facts_by_id.get(stable_id)
                 if entry is None:
@@ -724,6 +972,8 @@ def execute_read(
                 source_rows.append(
                     _fact_source(entry, session.facts_state, "requested_entry")
                 )
+        if ledger_name in SETTING_LEDGER_KEYS:
+            source_rows.append(_setting_file_source(session, ledger_name))
         return _final_response(
             session,
             checked,

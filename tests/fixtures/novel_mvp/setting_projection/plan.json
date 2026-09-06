@@ -1,0 +1,26 @@
+{
+  "schema": "plan-v2",
+  "ledger": "plan",
+  "book": {
+    "id": "BK-0001",
+    "volumes_enabled": false
+  },
+  "slot_sequence": [],
+  "volumes": [],
+  "slots": [],
+  "scenes": [],
+  "events": [],
+  "storylines": [],
+  "hooks": [],
+  "widgets": [],
+  "pins": [],
+  "must_carries": [],
+  "option_records": [],
+  "slot_mappings": [],
+  "reconciliation_edges": [],
+  "stop_points": {},
+  "id_counters": {
+    "MAP": 0,
+    "RE": 0
+  }
+}
