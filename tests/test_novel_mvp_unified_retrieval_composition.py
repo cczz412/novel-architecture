@@ -18,8 +18,9 @@ PRODUCT_ROOT = ROOT / "novel-mvp"
 sys.path.insert(0, str(PRODUCT_ROOT))
 try:
     from mvp import c9_ledger_read_adapter as adapter
-    from mvp import ledger_directory_workspace, unified_retrieval_core as c9
+    from mvp import ledger_directory_workspace, ledger_read_runtime
     from mvp import unified_retrieval_composition as composition
+    from mvp import unified_retrieval_core as c9
     from mvp.workspace import (
         AuthorWorkspace,
         CurrentGenerationSnapshot,
@@ -272,7 +273,15 @@ def test_current_advance_after_a_read_stops_the_whole_c9_run(
     assert all(row["fatal"] for row in result["material_package"]["outstanding"])
 
 
-def test_reader_adapter_preserve_empty_and_unavailable_in_c9(tmp_path: Path) -> None:
+def test_reader_adapter_preserve_empty_and_unavailable_in_c9(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # #311 之后六本设定账已开放点读；这里临时把地点账关回去，
+    # 只为验证 C9 原样透传 EMPTY 与 CAPABILITY_UNAVAILABLE，不是重新关账。
+    monkeypatch.setattr(
+        ledger_read_runtime, "UNAVAILABLE_ENTRY_LEDGERS", frozenset({"地点账"})
+    )
     workspace, _, _ = _workspace(tmp_path, 1, 0)
     needs = [
         _need(

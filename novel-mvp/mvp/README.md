@@ -15,9 +15,10 @@
 | `store.py`（M4 兼容面） | 项目/材料/C1/事实读取；旧事实写调用保持原名字，但不得裸写 facts | `facts` / `add_fact_candidates` / `set_status` / `edit_fact_text` / `review_fact` / `repair_ids` | facts 写动作全部转给 factstore；其他模块继续读它 |
 | `factstore.py`（M4/M5 writer） | C3 候选、作者确认／驳回／改判、改写后采纳、修号与事实因果边共用一把文件锁；被改事实的旧 RE 同事务 stale | `add_fact_candidates` / `review_fact` / `repair_duplicate_fact_ids` / `add_fact_causal_edge_candidates` / `review_fact_causal_edge` / `read_confirmed_fact_causal_edges` | 唯一允许替换 `facts.json` 与 `fact_causal_edges.json` 的运行时入口；底层交 planstore 恢复事务；机器只能写因果候选，确认只认作者 |
 | `workspace.py`（作者项目底座） | 原子提交之外，提供不暴露物理路径的同代多键只读快照和 current 重核 | `AuthorWorkspace.read_current_snapshot` / `AuthorWorkspace.is_current_snapshot` | 真实 reader 一次只打开一个 generation；不改变任何 writer |
-| `ledger_read_runtime.py`（CCZ-126 current reader） | 读取十账目录、current 章节证据切片和章节／事实稳定 ID；六本设定账、规划、长线、知情边与 pinned 如实保持关闭 | `open_current_reader_session` / `execute_read` | 输出冻结的 `LEDGER_READ_RESPONSE v1`，零 workspace 写入 |
+| `setting_projection.py`（#311 事实投影） | 已确认事实经手写绑定写六本候选设定卡；只调用 settingstore，操作号可重放，绑定仍是候选形状 | `validate_setting_projection_binding` / `read_setting_projection_bindings` / `project_confirmed_facts` | 六本设定账 → current 点读；不替作者确认，不调用模型 |
+| `ledger_read_runtime.py`（CCZ-126 current reader） | 读取十账目录、current 章节证据切片和章节／事实／六本设定账稳定 ID；人物时点、规划、长线、知情边与 pinned 仍关闭 | `open_current_reader_session` / `execute_read` | 输出冻结的 `LEDGER_READ_RESPONSE v1`，零 workspace 写入 |
 | `c9_ledger_read_adapter.py`（C9 adapter） | 把规范账本对象引用变成公共读取请求，并把完整回执、材料投影和来源绑定交给 C9 | `directory_object_ref` / `chapter_evidence_object_ref` / `ledger_entries_object_ref` | 只适配现有 C9 v2，不复制取件或预算逻辑 |
-| `unified_retrieval_composition.py`（M11 受信组装入口） | 从 AuthorWorkspace 能力句柄取得作用域，单会话运行 reader → adapter → C9，末尾重核 current | `run_current_retrieval` | 当前只接章节账和事实账；故事线、自动备料、假设、返工与产品入口仍在边界外 |
+| `unified_retrieval_composition.py`（M11 受信组装入口） | 从 AuthorWorkspace 能力句柄取得作用域，单会话运行 reader → adapter → C9，末尾重核 current | `run_current_retrieval` | reader 可点读章节、事实和六本设定账；故事线、自动备料、假设、返工与产品入口仍在边界外 |
 | `check.py`（M7） | 一致性体检：机械分组＋打包调模型扫矛盾，含账本完整性预检（重复号只认首条、单独报） | `run_check` / `format_plan` / `format_report` / `save_report` | cli 存 health_report |
 | `ask.py` | 取证问答：关键词查已确认事实（带原文依据） | `search_confirmed` | cli 打印 |
 | `plan.py`（M8） | 续写规划最小出题：目的挂卡＋选项／前置卡＋冲突爆出＋写作指导副产品；计划不入事实账 | `run_plan` / `format_plan` / `save_plan` | cli 存 plan_latest.json |
