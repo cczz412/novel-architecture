@@ -162,6 +162,39 @@ def project_coverage_view(card: dict[str, Any] | None) -> dict[str, Any]:
     return view
 
 
+def empty_settlement_view() -> dict[str, Any]:
+    """No extract to grade. Do not write zero as a score."""
+
+    return {
+        "wired": False,
+        "score": None,
+        "max_score": 5,
+        "grade": None,
+        "score_line": "自评：尚未评分。没有可核对的抽取结果，不写零分。",
+        "concern": "这不是作者认可。认可在事实句子和账本上。",
+        "author_approval": False,
+    }
+
+
+def project_settlement_view(card: dict[str, Any] | None) -> dict[str, Any]:
+    """System self-score for this chapter extract. Cap at 3 without coverage."""
+
+    view = empty_settlement_view()
+    if not isinstance(card, dict):
+        return view
+    items = card.get("items")
+    if not isinstance(items, list) or not items:
+        return view
+    view["wired"] = True
+    view["score"] = 3
+    view["grade"] = "合格"
+    view["score_line"] = "自评：3／5（合格）"
+    view["concern"] = (
+        "尚无覆盖观察，不能评到良好或优。作者可瞟，这不是认可。"
+    )
+    return view
+
+
 def empty_result_scope() -> dict[str, Any]:
     """Honest unknowns. Never invent a book title or whole-chapter claim."""
 
@@ -283,6 +316,7 @@ def _base_proof() -> dict[str, Any]:
         "human_card": None,
         "result_scope": empty_result_scope(),
         "coverage_view": empty_coverage_view(),
+        "settlement_view": empty_settlement_view(),
         "gaps": [],
         "limitations": [],
         "standing_boundaries": list(STANDING_BOUNDARIES),
@@ -524,11 +558,13 @@ def prove_current_read(
         "product_adopted": False,
     }
     coverage_view = project_coverage_view(card)
+    settlement_view = project_settlement_view(card)
     if coverage_view["wired"]:
         result_scope["density"] = coverage_view["density_line"]
     proof["human_card"] = card
     proof["result_scope"] = result_scope
     proof["coverage_view"] = coverage_view
+    proof["settlement_view"] = settlement_view
     proof["limitations"] = limitations
     if card["item_count"] == 0:
         proof["status"] = STATUS_GAP

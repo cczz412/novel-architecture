@@ -78,3 +78,5 @@ GitHub #276 起，条目投影带上候选已有的 `lineage_id` 和 `match_loca
 GitHub #303 起，库目录旁若有 `named-card-identity.json`，`result_scope` 的书名／章号从这份 sidecar 填；没有或坏了仍写未提供。
 
 GitHub #305 起，当前候选有可展示条目时，`coverage_view` 只读派生责任段条数和来源绑定；没有候选集合仍写尚未提供，不写零。不是 B02 原件，整章仍不足以判断全部覆盖。
+
+GitHub #307 起，证明里带 `settlement_view`：有条目时自评 3／5（合格）；没活库尚未评分，不写零。不是作者认可。

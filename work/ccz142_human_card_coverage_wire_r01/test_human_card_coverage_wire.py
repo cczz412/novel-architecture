@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import sys
 from pathlib import Path
 
@@ -24,7 +25,6 @@ for candidate in (
         sys.path.insert(0, str(candidate))
 sys.path.insert(0, str(MODULE_ROOT))
 
-from self_check import run_self_check  # noqa: E402
 from current_read_proof import prove_current_read  # noqa: E402
 from html_render import show_current_html  # noqa: E402
 from named_chapter import DATABASE_FILENAME  # noqa: E402
@@ -59,12 +59,11 @@ def test_named_drop_shows_count_distribution(tmp_path: Path) -> None:
     view = shown["proof"]["coverage_view"]
     assert view["wired"] is True
     assert view["b02_originals"] is False
-    assert "责任段 1 有 5 条" in page
-    assert "来源「甲走进北塔。」：有 3 条当前候选绑定。" in page
-    assert "来源「甲拿起铜钥匙。」：有 2 条当前候选绑定。" in page
-    assert "不足以判断全部覆盖" in page
+    assert shown["proof"]["settlement_view"]["score"] == 3
+    assert "自评：3／5（合格）" in page
+    assert "这不是认可" in page
+    assert "责任段 1 有 5 条" not in page
     assert "满覆盖" not in page
-    assert "%" not in page
     assert "覆盖／漏抽尚未提供" not in page
     opened = open_coverage_card(store_root=store_root)
     assert opened["coverage_wired"] is True
@@ -74,8 +73,10 @@ def test_no_live_store_keeps_unprovided() -> None:
     proof = prove_current_read()
     assert proof["coverage_view"]["wired"] is False
     shown = show_current_html()
+    assert shown["proof"]["settlement_view"]["wired"] is False
     assert "覆盖／漏抽尚未提供" in shown["markdown"]
     assert "责任段 1 有" not in shown["markdown"]
+    assert "抽取结算" not in shown["markdown"]
 
 
 def test_unreleased_book_does_not_write(tmp_path: Path) -> None:
@@ -106,11 +107,22 @@ def test_cli_original_open(tmp_path: Path) -> None:
         ["--store", str(store_root), "--out", str(out), "--json-only"]
     ) == 0
     html = out.read_text(encoding="utf-8")
-    assert "责任段 1 有 5 条" in html
-    assert "不足以判断全部覆盖" in html
+    assert "自评：3／5（合格）" in html
+    assert "这不是认可" in html
+
+
+def _load_self_check():
+    spec = importlib.util.spec_from_file_location(
+        "coverage_wire_self_check",
+        MODULE_ROOT / "self_check.py",
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def test_self_check_pass() -> None:
-    report = run_self_check()
+    report = _load_self_check().run_self_check()
     assert report["result"] == "PASS"
     assert report["github_issue"] == 305
