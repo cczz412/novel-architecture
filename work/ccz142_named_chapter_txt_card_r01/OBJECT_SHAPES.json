@@ -1,0 +1,24 @@
+{
+  "document_identity": "CCZ142-NAMED-CHAPTER-TXT-CARD-R01",
+  "status": "NAMED_DROP_NOT_PRODUCT_ADOPTION",
+  "github_issue": 297,
+  "base_main_sha": "80b9485fbe47ff2e71d5066b7ff640eb51c48c9c",
+  "product_adopted": false,
+  "writes_via": "wire_synthetic_chapter_to_card",
+  "html_via": "show_current_html plus drop banner",
+  "reads_via": "prove_current_read",
+  "coverage_wired": false,
+  "allowlist": "ALLOWLIST.json",
+  "released_entry_count": 1,
+  "released_book_title": "北塔夹具",
+  "forbidden": {
+    "second_reader": true,
+    "real_novel_api": true,
+    "pr_235_writes": true,
+    "patch_advice": true,
+    "invented_coverage": true,
+    "b09_adapter": true,
+    "product_workspace_ui": true,
+    "unreleased_body_read": true
+  }
+}
