@@ -1,0 +1,24 @@
+{
+  "document_identity": "CCZ142-NAMED-CHAPTER-TXT-CARD-R01",
+  "github_issue": 297,
+  "base_main_sha": "80b9485fbe47ff2e71d5066b7ff640eb51c48c9c",
+  "entries": [
+    {
+      "book_id": "fixture-north-tower",
+      "book_title": "北塔夹具",
+      "chapter_no": 1,
+      "rights": "FIXTURE_RELEASED",
+      "source_txt_repo_path": "work/ccz142_human_card_vertical_wire_r01/synthetic_chapter.txt",
+      "chapter_text_sha256": "9209f22416dfff31d931f9f8f02ce12f4b99ff735754afbb1a4abcaa4899910b",
+      "source_file_sha256": "e217cbdba708352584c26ef1404e99e24075da88d07b32624fecc7c436c3ffa4"
+    }
+  ],
+  "not_released_titles": [
+    "全职高手",
+    "道诡异仙",
+    "十日终焉",
+    "炼气士不死于无限",
+    "我在美恐科普都市传说",
+    "请勿高考时渡劫"
+  ]
+}

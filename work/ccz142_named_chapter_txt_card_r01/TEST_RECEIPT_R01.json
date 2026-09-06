@@ -1,0 +1,36 @@
+{
+  "document_identity": "CCZ142-NAMED-CHAPTER-TXT-CARD-R01-TEST-RECEIPT",
+  "validated_at": "2026-09-06T10:45:01+08:00",
+  "result": "PASS",
+  "base_main_sha": "80b9485fbe47ff2e71d5066b7ff640eb51c48c9c",
+  "github_issue": 297,
+  "product_adopted": false,
+  "runtime": {
+    "python": "3.12.12",
+    "command_runner": "uv run --locked"
+  },
+  "totals": {
+    "pytest": "9 passed",
+    "ruff": "pass",
+    "self_check": "PASS",
+    "py_compile": "pass"
+  },
+  "commands": [
+    "uv run --locked python -m py_compile work/ccz142_named_chapter_txt_card_r01/*.py",
+    "uv run --locked ruff check work/ccz142_named_chapter_txt_card_r01",
+    "uv run --locked pytest -q work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py",
+    "uv run --locked python work/ccz142_named_chapter_txt_card_r01/self_check.py"
+  ],
+  "write_set": [
+    "work/ccz142_named_chapter_txt_card_r01/**"
+  ],
+  "forbidden_touches": [
+    "PR 235",
+    "Issue 231",
+    "B01-B09 writers",
+    "real novel API",
+    "unreleased gold body",
+    "invented coverage",
+    "B-09 adapter"
+  ]
+}
