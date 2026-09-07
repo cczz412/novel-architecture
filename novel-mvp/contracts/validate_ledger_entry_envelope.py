@@ -274,6 +274,8 @@ def validate_pack_prefilled_author_edit(
 ) -> None:
     """Validate the approved pack-prefilled → author-declared edit transition."""
 
+    if not isinstance(before, dict):
+        validate_entry(before, entry_kind="DEFINITION", contract_version=CONTRACT_VERSION_V1)
     version = before.get("contract_version")
     if version is None:
         version = (
@@ -401,6 +403,10 @@ def validate_confirmation_transition(
             raise ContractError("RETIREMENT_BUSINESS_SNAPSHOTS_REQUIRED")
         if business_before != business_after:
             raise ContractError("RETIREMENT_MUST_NOT_CHANGE_CONTENT")
+        lifecycle_fields = {"confirm_status", "rev", "updated_at"}
+        if ({key: value for key, value in before.items() if key not in lifecycle_fields}
+                != {key: value for key, value in after.items() if key not in lifecycle_fields}):
+            raise ContractError("RETIREMENT_MUST_PRESERVE_ENVELOPE")
     elif old_status == "confirmed" and new_status == "confirmed":
         if actor != "AUTHOR":
             raise ContractError("CONFIRMED_EDIT_REQUIRES_AUTHOR")

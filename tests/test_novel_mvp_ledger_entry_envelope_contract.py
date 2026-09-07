@@ -314,3 +314,26 @@ def test_nested_attestations_follow_versioned_retirement_rule(ledger, v2, status
     else:
         with pytest.raises(module.ContractError, match="NESTED_AUTHOR_ATTESTATION"):
             module.validate_record(record)
+
+
+@pytest.mark.parametrize('changes', [
+    {'source_identity': 'model_suggested'},
+    {'evidence_refs': ['f999']},
+    {'note': 'rewritten history'},
+])
+def test_retirement_preserves_non_lifecycle_envelope(changes):
+    before, after = _v2_confirmed_pair()
+    before['evidence_refs'] = ['f001']
+    after.update(deepcopy(before))
+    after.update(confirm_status='retired', rev=before['rev'] + 1,
+                 updated_at='2026-09-08T00:00:00+00:00', **changes)
+    with pytest.raises(contract.ContractError, match='RETIREMENT_MUST_PRESERVE_ENVELOPE'):
+        contract.validate_confirmation_transition(
+            before, after, actor='AUTHOR', business_before={}, business_after={})
+
+
+@pytest.mark.parametrize('before', [None, [], 'bad', 7])
+def test_malformed_pack_transition_returns_contract_error(before):
+    case = {'fixture_kind': 'pack_author_edit_transition', 'before': before,
+            'after': {}, 'content_before': {}, 'content_after': {}}
+    assert contract.validate_fixture_case(case) is not None
