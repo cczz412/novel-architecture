@@ -763,3 +763,21 @@ def test_initialize_allocator_accepts_empty_ledger_files(tmp_path: Path) -> None
         (tmp_path / spec.filename).write_bytes(b"")
     assert settingstore.initialize_setting_allocator(tmp_path, book_id="BK-EMPTY")["status"] == "INITIALIZED"
     assert all(settingstore.read_setting_records(tmp_path, name) == [] for name in settingstore.LEDGERS)
+
+
+def test_initialized_book_core_has_storage_contract_fields(tmp_path: Path) -> None:
+    from datetime import datetime
+    settingstore.initialize_setting_allocator(tmp_path, book_id="BK-EMPTY")
+    book = _read_json(tmp_path / "plan.json")["book"]
+    required = {"id", "source_identity", "created_at", "updated_at", "rev", "note",
+                "premise", "genre_promise", "main_beats", "ending_anchor", "volumes_enabled"}
+    assert required <= set(book)
+    assert book["premise"] == ""
+    assert book["genre_promise"] is None
+    assert book["main_beats"] == []
+    assert book["ending_anchor"] is None
+    assert book["source_identity"] == "draft_inferred"
+    assert book["rev"] == 1 and book["note"] == ""
+    assert book["created_at"] == book["updated_at"]
+    assert datetime.fromisoformat(book["created_at"]).utcoffset() is not None
+    assert "truth_bearing" not in book

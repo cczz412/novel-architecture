@@ -158,9 +158,15 @@ def initialize_setting_allocator(root: Path | str, *, book_id: str) -> dict[str,
             return {"status": "ALREADY_INITIALIZED", "book_id": book_id}
         if any(records.values()):
             raise SettingstoreError("SETTING_ALLOCATOR_MISSING_WITH_EXISTING_RECORDS")
+        timestamp = datetime.now(timezone.utc).isoformat()
         plan = {
             "schema": "plan-v2", "ledger": "plan",
-            "book": {"id": book_id, "volumes_enabled": False},
+            "book": {
+                "id": book_id, "source_identity": "draft_inferred",
+                "created_at": timestamp, "updated_at": timestamp, "rev": 1, "note": "",
+                "premise": "", "genre_promise": None, "main_beats": [],
+                "ending_anchor": None, "volumes_enabled": False,
+            },
             "stop_points": {},
             "id_counters": {"MAP": 0, "RE": 0, **{s.counter_key: 0 for s in LEDGERS.values()}},
             **{key: [] for key in (

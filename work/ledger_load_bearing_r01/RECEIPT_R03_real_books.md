@@ -41,7 +41,7 @@ R02 点名的三组已逐条处置：
 
 ## 初始化与投影
 
-产品入口为 `setting_projection.initialize_setting_allocator(workspace, book_id=...)`，调用方显式提供项目内书号，函数内部构造并校验空 plan。`settingstore` 在既有 planstore 锁内原子写入；已有书号和计数必须一致，重复调用不重置计数。有设定记录却缺发号账时拒绝初始化。绑定工作区的适配层持有 workspace 锁再取得 planstore 锁，防止检查 logical plan 后被同期写入穿透。
+产品入口为 `setting_projection.initialize_setting_allocator(workspace, book_id=...)`，调用方显式提供项目内书号，函数内部构造并校验空 plan，书核包含合同要求的完整字段：故事前提空串、题材承诺与结局锚为null、节拍为空，保留draft_inferred来源、UTC登记时间和rev=1，不伪造作者内容。`settingstore` 在既有 planstore 锁内原子写入；已有书号和计数必须一致，重复调用不重置计数。有设定记录却缺发号账时拒绝初始化。绑定工作区的适配层持有 workspace 锁再取得 planstore 锁，防止检查 logical plan 后被同期写入穿透。
 
 这是显式产品初始化入口，未自动接入创建项目界面。AuthorWorkspace 的 logical plan 与实体发号账仍是两个存储面：发现已有 logical plan 时明确拒绝；初始化成功后，统一workspace提交入口也在同一把锁内拒绝再写logical plan。两种初始化顺序只允许一种存储面先取得写入位置，不猜测同步。空的设定账文件按现行合同读为空数组。目录 fsync 失败可能已留下完整合法文件，调用报错后可重试确认；不承诺报错必然未写。
 
