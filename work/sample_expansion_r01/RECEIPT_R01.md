@@ -49,6 +49,23 @@
 
 主窗口另写本地只读校验器，未执行回包脚本。681行字段、非空事实与类型、书章范围、联合编号唯一、逐字引文唯一命中、单段／跨段标签和Markdown引文一致性全部通过；18份原文件哈希和27项来源疑点引文均可回取。逐书分母与来源摘要精确一致。
 
+可复跑命令（从本机小说架构v2容器根目录运行；只读取本批18章及回包，生成本地核验结果，不重新登记材料）：
+
+```sh
+python3 local/sample_expansion_r01/validate_local_return.py local/sample_expansion_r01/return_r01/unpacked > local/sample_expansion_r01/VALIDATION_STDOUT_R01.json
+```
+
+本次补充复跑退出码0。完整标准输出与 `LOCAL_VALIDATION_R01.json` 逐字节相同，顶层结果为 `total=681, errors=[], passed=true`；六本逐章数量见原输出。它只证明上文声明的机械核查范围。
+
+| 本机证据 | SHA-256 |
+|---|---|
+| `local/sample_expansion_r01/validate_local_return.py`（Codex独立校验器） | `87930eb13c5e0101b7dcfe8ecc12a765989459a131e063a9a49794a9f0875584` |
+| `local/sample_expansion_r01/VALIDATION_STDOUT_R01.json`（完整命令输出） | `1a877f04d8da7d4d4af20ef6349de9993d62c907dcc0440e9ed86a9cd93b8b21` |
+| `local/sample_expansion_r01/LOCAL_VALIDATION_R01.json`（核验结果） | `1a877f04d8da7d4d4af20ef6349de9993d62c907dcc0440e9ed86a9cd93b8b21` |
+| `local/sample_expansion_r01/QUOTE_ANCHORS_R01.jsonl`（681条精确定位） | `0da24bfc32bfd9f29d9365addf00c76fb72cd52fa764bc5cafd886741669263b` |
+
+这些证据依赖本机材料存在；仓库只保存脱敏回执，不能仅靠clone复算正文核查。保留本批local目录及原包是后续复核前提。
+
 两条内容不足项保留原编号和原候选：NB03 E-02-001 的代词指向未明确；NB05 E-02-017 为被动句补了施动者。没有删出分母或悄悄改成通过。27项来源疑点中含6处疑似评论／抓取残留，不能把“疑似”当已证来源身份；NB05 E-02-009连续引文中夹有一处疑似评论，原样保留以免拼接，该疑似评论行不作为事实支持，E-02-009仍归为跨段暂缓。
 
 Pro报告的完整阅读和语义自查属于外部自报；主窗口本轮独立完成的是逐条引文、身份、段数和分母核查，并读取上述疑点及内容不足说明，未宣称681条已完成独立全量语义审定。来源矛盾、人物说法与事实的区分仍随候选保留。生成期间出现的625条是中间预览，不是本次登记版本；本回执只认最终ZIP中的681条。
@@ -60,5 +77,7 @@ Pro报告的完整阅读和语义自查属于外部自报；主窗口本轮独�
 本机 `local/fact_ledger_material_registry/BOOK_REGISTRY.jsonl` 新增6条 `ccz178-r01-nb01-ch01-03` 至 `ccz178-r01-nb06-ch01-03`；登记前16条、登记后22条，原有字节保留，六条新增逐项回读一致。每条包含来源文件／哈希、候选路径、四类分母、精确Chat URL、回包哈希与未入Gold／未正式入账身份。
 
 仓内只有本回执。正文、引文、逐条候选、绑定和本地登记不入GitHub；本轮不调产品API、不建绑定、不投影、不确认事实。518条跨段和2条内容不足继续暂缓；其余为可供后续独立语义评测使用的候选。PR送审不合并，不用回包或机械核查替代产品验收。
+
+归位条件：本回执当前按#324批准写集暂存work。CCZ-178验收完成且后续明确批准报告归位时，目标为 `reports/sample_expansion_r01/RECEIPT_R01.md`，迁移时保留本PR固定版本回链；在该条件满足前保留本文件，不把work当长期正式样本库，也不自行移动、删除或复制正文。候选材料的正式采用仍另行验收。
 
 来源：Codex
