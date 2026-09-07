@@ -52,10 +52,10 @@
 可复跑命令（从本机小说架构v2容器根目录运行；只读取本批18章及回包，生成本地核验结果，不重新登记材料）：
 
 ```sh
-python3 local/sample_expansion_r01/validate_local_return.py local/sample_expansion_r01/return_r01/unpacked > local/sample_expansion_r01/VALIDATION_STDOUT_R01.json
+uv run --locked --project novel-architecture python local/sample_expansion_r01/validate_local_return.py local/sample_expansion_r01/return_r01/unpacked > local/sample_expansion_r01/VALIDATION_STDOUT_R01.json
 ```
 
-本次补充复跑退出码0。完整标准输出与 `LOCAL_VALIDATION_R01.json` 逐字节相同，顶层结果为 `total=681, errors=[], passed=true`；六本逐章数量见原输出。它只证明上文声明的机械核查范围。
+本次使用镜像仓库的锁定环境复跑，Python 3.12.12，退出码0。完整标准输出与 `LOCAL_VALIDATION_R01.json` 逐字节相同，顶层结果为 `total=681, errors=[], passed=true`；六本逐章数量见原输出。它只证明上文声明的机械核查范围。
 
 | 本机证据 | SHA-256 |
 |---|---|
