@@ -155,7 +155,7 @@ def test_v2_fixture_file_and_forward_confirmation_rules() -> None:
     path = CONTRACTS_DIR / "LEDGER_ENTRY_ENVELOPE.v2.fixtures.jsonl"
     summary = contract.validate_fixture_suite(path)
     assert summary["status"] == "PASS"
-    assert summary["case_count"] == 12
+    assert summary["case_count"] == 13
     before = {
         "id": "CH-0003",
         "source_identity": "author_declared",
