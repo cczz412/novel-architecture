@@ -1,4 +1,4 @@
-"""Validate LEDGER_ENTRY_ENVELOPE v1 entries and pack-prefilled author edits."""
+"""Validate versioned LEDGER_ENTRY_ENVELOPE entries and author edits."""
 
 from __future__ import annotations
 
@@ -13,15 +13,45 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 CONTRACTS_DIR = Path(__file__).resolve().parent
 SCHEMA_PATH = CONTRACTS_DIR / "LEDGER_ENTRY_ENVELOPE.schema.json"
+V1_SCHEMA_PATH = CONTRACTS_DIR / "LEDGER_ENTRY_ENVELOPE.v1.schema.json"
 FIXTURE_PATH = CONTRACTS_DIR / "LEDGER_ENTRY_ENVELOPE.fixtures.jsonl"
 
 CONTRACT_NAME = "LEDGER_ENTRY_ENVELOPE"
-CONTRACT_VERSION = "ledger-entry-envelope-v1"
+CONTRACT_VERSION_V1 = "ledger-entry-envelope-v1"
+CONTRACT_VERSION_V2 = "ledger-entry-envelope-v2"
+CONTRACT_VERSION = CONTRACT_VERSION_V2
 ENTRY_KINDS = frozenset({"DEFINITION", "STATE", "CHANGE"})
 SOURCE_IDENTITIES = frozenset(
     {"author_declared", "draft_inferred", "model_suggested", "pack_prefilled"}
 )
 CONFIRM_STATUSES = frozenset({"candidate", "confirmed", "retired"})
+TRANSITION_RULES = frozenset({"confirmation_forward_v1"})
+CORE_GROUP_SHAPES = {
+    "core:identity": {
+        "members": frozenset({"core:identity"}),
+        "targets": frozenset({"/id", "/created_at"}),
+        "mutation": "write_once",
+        "transition_rule": None,
+        "managed_by": "CONTRACT",
+        "write": frozenset({"SYSTEM"}),
+    },
+    "core:confirmation": {
+        "members": frozenset({"core:confirmation"}),
+        "targets": frozenset({"/confirm_status"}),
+        "mutation": "transition_only",
+        "transition_rule": "confirmation_forward_v1",
+        "managed_by": "CONTRACT",
+        "write": frozenset({"AUTHOR"}),
+    },
+    "core:revision": {
+        "members": frozenset({"core:revision"}),
+        "targets": frozenset({"/rev", "/updated_at"}),
+        "mutation": "editable",
+        "transition_rule": None,
+        "managed_by": "CONTRACT",
+        "write": frozenset({"SYSTEM"}),
+    },
+}
 ID_PREFIXES = {
     "人物账": "CH-",
     "地点账": "LOC-",
@@ -46,14 +76,16 @@ class ContractError(ValueError):
     """A frozen common-envelope invariant failed."""
 
 
-def _load_schema() -> dict[str, Any]:
-    value = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+def _load_schema(path: Path) -> dict[str, Any]:
+    value = json.loads(path.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(value)
     return value
 
 
-SCHEMA = _load_schema()
-VALIDATOR = Draft202012Validator(SCHEMA, format_checker=FormatChecker())
+SCHEMAS = {
+    CONTRACT_VERSION_V1: _load_schema(V1_SCHEMA_PATH),
+    CONTRACT_VERSION_V2: _load_schema(SCHEMA_PATH),
+}
 
 
 def _schema_path(error: Any) -> str:
@@ -61,9 +93,14 @@ def _schema_path(error: Any) -> str:
     return ".".join(parts) if parts else "$"
 
 
-def _validate_schema(document: Any) -> None:
+def _validate_schema(document: Any, *, contract_version: str) -> None:
+    try:
+        schema = SCHEMAS[contract_version]
+    except KeyError as exc:
+        raise ContractError("CONTRACT_VERSION_INVALID") from exc
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
     errors = sorted(
-        VALIDATOR.iter_errors(document),
+        validator.iter_errors(document),
         key=lambda item: (list(item.absolute_path), item.message),
     )
     if errors:
@@ -92,12 +129,83 @@ def _walk_keys(value: Any) -> Iterable[str]:
             yield from _walk_keys(nested)
 
 
-def validate_entry(document: Any, *, entry_kind: str) -> dict[str, Any]:
+def _validate_tag_groups(
+    document: dict[str, Any], *, allowed_targets: frozenset[str] | None
+) -> None:
+    tags = document["tags"]
+    tag_groups = document["tag_groups"]
+    if len(tags) != len(set(tags)):
+        raise ContractError("TAGS_MUST_BE_UNIQUE")
+    if any(":" not in tag or tag.split(":", 1)[0] == "" for tag in tags):
+        raise ContractError("TAG_NAMESPACE_REQUIRED")
+    if tag_groups["rules_version"] != "tag-group-rules-v1":
+        raise ContractError("TAG_GROUP_RULES_VERSION_UNKNOWN")
+    groups = tag_groups["groups"]
+    group_ids = [group["group_id"] for group in groups]
+    if len(group_ids) != len(set(group_ids)):
+        raise ContractError("TAG_GROUP_ID_DUPLICATE")
+    required_core_groups = set(CORE_GROUP_SHAPES)
+    if not required_core_groups <= set(group_ids):
+        raise ContractError("TAG_GROUP_REQUIRED_CORE_GROUP_MISSING")
+    tag_set = set(tags)
+    covered_tags: set[str] = set()
+    for group in groups:
+        members = group["members"]
+        if not set(members) <= tag_set:
+            raise ContractError("TAG_GROUP_MEMBER_NOT_IN_TAGS")
+        covered_tags.update(members)
+        targets = group["targets"]
+        if allowed_targets is not None:
+            unknown = sorted(set(targets) - allowed_targets)
+            if unknown:
+                raise ContractError(
+                    "TAG_GROUP_TARGET_NOT_ALLOWED:" + ",".join(unknown)
+                )
+        mutation = group["mutation"]
+        transition_rule = group["transition_rule"]
+        if mutation == "transition_only" and not transition_rule:
+            raise ContractError("TRANSITION_RULE_REQUIRED")
+        if transition_rule is not None and transition_rule not in TRANSITION_RULES:
+            raise ContractError("TRANSITION_RULE_UNKNOWN")
+        if mutation != "transition_only" and transition_rule is not None:
+            raise ContractError("TRANSITION_RULE_ONLY_FOR_TRANSITION_MUTATION")
+        if not group["access"]["read"] or not group["access"]["write"]:
+            raise ContractError("TAG_GROUP_ACCESS_MUST_NOT_BE_EMPTY")
+        required_shape = CORE_GROUP_SHAPES.get(group["group_id"])
+        if group["group_id"].startswith("core:") and required_shape is None:
+            raise ContractError("CORE_GROUP_UNKNOWN")
+        if required_shape is not None and (
+            set(group["members"]) != required_shape["members"]
+            or set(group["targets"]) != required_shape["targets"]
+            or group["mutation"] != required_shape["mutation"]
+            or group["transition_rule"] != required_shape["transition_rule"]
+            or group["managed_by"] != required_shape["managed_by"]
+            or set(group["access"]["write"]) != required_shape["write"]
+        ):
+            raise ContractError("CORE_PROTECTION_SHAPE_INVALID")
+    if covered_tags != tag_set:
+        raise ContractError("TAG_MISSING_REQUIRED_GROUP")
+
+
+def validate_entry(
+    document: Any,
+    *,
+    entry_kind: str,
+    contract_version: str | None = None,
+    allowed_targets: frozenset[str] | None = None,
+) -> dict[str, Any]:
     """Validate one common envelope in its content-contract context."""
 
+    if contract_version is None:
+        contract_version = (
+            CONTRACT_VERSION_V2
+            if isinstance(document, dict)
+            and ("tags" in document or "tag_groups" in document)
+            else CONTRACT_VERSION_V1
+        )
     if entry_kind not in ENTRY_KINDS:
         raise ContractError("ENTRY_KIND_INVALID")
-    _validate_schema(document)
+    _validate_schema(document, contract_version=contract_version)
     assert isinstance(document, dict)
 
     created_at = _parse_datetime(document["created_at"], label="CREATED_AT")
@@ -121,15 +229,29 @@ def validate_entry(document: Any, *, entry_kind: str) -> dict[str, Any]:
     evidence_refs = document["evidence_refs"]
 
     if source_identity == "pack_prefilled" and confirm_status != "candidate":
-        raise ContractError("PACK_PREFILLED_MUST_REMAIN_CANDIDATE")
+        if not (
+            contract_version == CONTRACT_VERSION_V2 and confirm_status == "retired"
+        ):
+            raise ContractError("PACK_PREFILLED_MUST_REMAIN_CANDIDATE")
     if confirm_status == "confirmed" and not evidence_refs:
         raise ContractError("CONFIRMED_EVIDENCE_REQUIRED")
 
     has_attestation = "AUTHOR_ATTESTATION" in evidence_refs
     if has_attestation and source_identity != "author_declared":
         raise ContractError("AUTHOR_ATTESTATION_REQUIRES_AUTHOR_DECLARED")
-    if has_attestation and confirm_status != "confirmed":
-        raise ContractError("AUTHOR_ATTESTATION_REQUIRES_CONFIRMED")
+    if has_attestation:
+        allowed_statuses = (
+            {"confirmed", "retired"}
+            if contract_version == CONTRACT_VERSION_V2
+            else {"confirmed"}
+        )
+        if confirm_status not in allowed_statuses:
+            if contract_version == CONTRACT_VERSION_V1:
+                raise ContractError("AUTHOR_ATTESTATION_REQUIRES_CONFIRMED")
+            raise ContractError("AUTHOR_ATTESTATION_REQUIRES_CONFIRMED_OR_RETIRED")
+
+    if contract_version == CONTRACT_VERSION_V2:
+        _validate_tag_groups(document, allowed_targets=allowed_targets)
 
     return document
 
@@ -152,8 +274,15 @@ def validate_pack_prefilled_author_edit(
 ) -> None:
     """Validate the approved pack-prefilled → author-declared edit transition."""
 
-    validate_entry(before, entry_kind="DEFINITION")
-    validate_entry(after, entry_kind="DEFINITION")
+    version = before.get("contract_version")
+    if version is None:
+        version = (
+            CONTRACT_VERSION_V2
+            if "tags" in before or "tag_groups" in before
+            else CONTRACT_VERSION_V1
+        )
+    validate_entry(before, entry_kind="DEFINITION", contract_version=version)
+    validate_entry(after, entry_kind="DEFINITION", contract_version=version)
     assert isinstance(before, dict)
     assert isinstance(after, dict)
 
@@ -183,6 +312,93 @@ def validate_pack_prefilled_author_edit(
         content_after, label="AFTER"
     ):
         raise ContractError("PACK_REF_MUST_BE_PRESERVED")
+    if version == CONTRACT_VERSION_V2:
+        validate_confirmation_transition(before, after, actor="AUTHOR")
+
+
+def validate_confirmation_transition(
+    before: Any,
+    after: Any,
+    *,
+    actor: str,
+    business_before: Any = None,
+    business_after: Any = None,
+) -> None:
+    """Validate the forward-only confirmation/lifecycle transition."""
+
+    version = (
+        CONTRACT_VERSION_V2
+        if isinstance(before, dict)
+        and ("tags" in before or "tag_groups" in before)
+        else CONTRACT_VERSION_V1
+    )
+    if (
+        isinstance(before, dict)
+        and isinstance(after, dict)
+        and before.get("confirm_status") == "confirmed"
+        and after.get("confirm_status") == "candidate"
+    ):
+        raise ContractError("CONFIRMED_CANNOT_RETURN_TO_CANDIDATE")
+    validate_entry(before, entry_kind="DEFINITION", contract_version=version)
+    validate_entry(after, entry_kind="DEFINITION", contract_version=version)
+    assert isinstance(before, dict) and isinstance(after, dict)
+    if before["id"] != after["id"]:
+        raise ContractError("TRANSITION_ID_MUST_STAY_STABLE")
+    if before["rev"] + 1 != after["rev"]:
+        raise ContractError("TRANSITION_REV_MUST_INCREMENT")
+    if before["created_at"] != after["created_at"]:
+        raise ContractError("TRANSITION_CREATED_AT_MUST_STAY_STABLE")
+    if version == CONTRACT_VERSION_V2:
+        before_groups = {
+            group["group_id"]: group for group in before["tag_groups"]["groups"]
+        }
+        after_groups = {
+            group["group_id"]: group for group in after["tag_groups"]["groups"]
+        }
+        for group_id, group in before_groups.items():
+            if group["managed_by"] == "CONTRACT" and (
+                after_groups.get(group_id) != group
+            ):
+                raise ContractError("CONTRACT_GROUP_IMMUTABLE")
+    before_updated = _parse_datetime(before["updated_at"], label="BEFORE_UPDATED_AT")
+    after_updated = _parse_datetime(after["updated_at"], label="AFTER_UPDATED_AT")
+    if after_updated <= before_updated:
+        raise ContractError("TRANSITION_UPDATED_AT_MUST_ADVANCE")
+
+    old_status = before["confirm_status"]
+    new_status = after["confirm_status"]
+    if old_status == "retired" and new_status != "retired":
+        raise ContractError("RETIRED_CANNOT_BE_RESTORED")
+    if old_status == "confirmed" and new_status == "candidate":
+        raise ContractError("CONFIRMED_CANNOT_RETURN_TO_CANDIDATE")
+    if old_status == "candidate" and new_status == "confirmed":
+        if actor != "AUTHOR":
+            raise ContractError("CONFIRMATION_REQUIRES_AUTHOR")
+        if after["source_identity"] != "author_declared" or not after["evidence_refs"]:
+            raise ContractError("CONFIRMATION_REQUIRES_AUTHOR_EVIDENCE")
+    elif old_status in {"candidate", "confirmed"} and new_status == "retired":
+        if actor != "AUTHOR":
+            raise ContractError("RETIREMENT_REQUIRES_AUTHOR")
+        if business_before is not None or business_after is not None:
+            if business_before != business_after:
+                raise ContractError("RETIREMENT_MUST_NOT_CHANGE_CONTENT")
+        if "AUTHOR_ATTESTATION" in before["evidence_refs"] and (
+            "AUTHOR_ATTESTATION" not in after["evidence_refs"]
+        ):
+            raise ContractError("RETIREMENT_MUST_PRESERVE_ATTESTATION")
+        if "AUTHOR_ATTESTATION" not in before["evidence_refs"] and (
+            "AUTHOR_ATTESTATION" in after["evidence_refs"]
+        ):
+            raise ContractError("RETIREMENT_MUST_NOT_CREATE_ATTESTATION")
+    elif old_status == "confirmed" and new_status == "confirmed":
+        if actor != "AUTHOR":
+            raise ContractError("CONFIRMED_EDIT_REQUIRES_AUTHOR")
+    elif old_status == "candidate" and new_status == "candidate":
+        return
+    elif old_status == new_status == "retired":
+        raise ContractError("RETIRED_CANNOT_BE_EDITED")
+    else:
+        raise ContractError("CONFIRMATION_TRANSITION_INVALID")
 
 
 def load_fixtures(path: Path = FIXTURE_PATH) -> list[dict[str, Any]]:
@@ -209,13 +425,34 @@ def validate_fixture_case(case: dict[str, Any]) -> str | None:
     kind = case.get("fixture_kind")
     try:
         if kind == "entry":
-            validate_entry(case.get("document"), entry_kind=case.get("entry_kind"))
+            document = case.get("document")
+            version = case.get("contract_version")
+            if version is None:
+                version = (
+                    CONTRACT_VERSION_V2
+                    if isinstance(document, dict)
+                    and ("tags" in document or "tag_groups" in document)
+                    else CONTRACT_VERSION_V1
+                )
+            validate_entry(
+                document,
+                entry_kind=case.get("entry_kind"),
+                contract_version=version,
+            )
         elif kind == "pack_author_edit_transition":
             validate_pack_prefilled_author_edit(
                 case.get("before"),
                 case.get("after"),
                 content_before=case.get("content_before"),
                 content_after=case.get("content_after"),
+            )
+        elif kind == "confirmation_transition":
+            validate_confirmation_transition(
+                case.get("before"),
+                case.get("after"),
+                actor=case.get("actor"),
+                business_before=case.get("business_before"),
+                business_after=case.get("business_after"),
             )
         else:
             raise ContractError("FIXTURE_KIND_INVALID")
@@ -248,9 +485,22 @@ def validate_fixture_suite(path: Path = FIXTURE_PATH) -> dict[str, Any]:
                     "actual_error": error,
                 }
             )
+    versions = {
+        case.get("contract_version")
+        or (
+            CONTRACT_VERSION_V2
+            if isinstance(case.get("document"), dict)
+            and (
+                "tags" in case["document"]
+                or "tag_groups" in case["document"]
+            )
+            else CONTRACT_VERSION_V1
+        )
+        for case in cases
+    }
     summary = {
         "contract": CONTRACT_NAME,
-        "version": CONTRACT_VERSION,
+        "version": next(iter(versions)) if len(versions) == 1 else "mixed",
         "status": "PASS" if not mismatches else "FAIL",
         "case_count": len(cases),
         "valid_case_count": sum(bool(case.get("valid")) for case in cases),

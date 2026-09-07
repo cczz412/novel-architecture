@@ -1,6 +1,6 @@
 # ITEM_LEDGER_CONTENT · 物品账内容合同
 
-**正式版本：`item-ledger-content-v1`**
+**正式版本：`item-ledger-content-v2`；兼容读取：`item-ledger-content-v1`**
 
 一句话用途：保存物品定义卡、初次出现锚、归属时间线和状态读取面；“宝物易手”的变化真值住事实账，物品账只按故事时点投影谁持有它。
 
@@ -54,3 +54,7 @@
 ## 7. 机器件与状态
 
 Schema、validator、fixtures 与定向测试同名配套。实现状态：`UNIFIED_WRITER_SETTINGSTORE_V1`。
+
+## 8. v2 标签组扩展
+
+`item-ledger-content-v2` 保留 v1 字段和运行行为，并要求 `tags`、`tag_groups`。允许的根目标为：`/id`、`/created_at`、`/updated_at`、`/rev`、`/note`、`/source_identity`、`/confirm_status`、`/evidence_refs`、`/story_time`、`/name`、`/item_type`、`/first_seen`、`/ownership`、`/item_status`。未知 `targets` 拒绝；v1 条目继续按旧合同读取。

@@ -31,6 +31,8 @@ ContractError = COMMON.ContractError
 SCHEMA = COMMON.load_schema(SCHEMA_PATH)
 CONTRACT = "SYSTEM_LEDGER_CONTENT"
 VERSION = "system-ledger-content-v1"
+VERSION_V2 = "system-ledger-content-v2"
+VERSIONS = (VERSION, VERSION_V2)
 PREFIX = "SY-"
 
 
@@ -39,7 +41,7 @@ def validate_record(document: Any) -> dict[str, Any]:
         document,
         schema=SCHEMA,
         contract=CONTRACT,
-        version=VERSION,
+        version=VERSIONS,
         prefix=PREFIX,
     )
     if record["source_identity"] == "pack_prefilled" and record["pack_ref"] is None:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from pathlib import Path
 import subprocess
 import sys
@@ -50,7 +51,13 @@ def test_schema_is_valid_draft_2020_12_and_exposes_reusable_envelope() -> None:
     )
     Draft202012Validator.check_schema(schema)
     assert schema["$schema"] == "https://json-schema.org/draft/2020-12/schema"
-    assert schema["$defs"]["envelope"]["required"] == [
+    assert schema["$defs"]["envelope"]["required"][-2:] == ["tags", "tag_groups"]
+    v1_schema = json.loads(
+        (CONTRACTS_DIR / "LEDGER_ENTRY_ENVELOPE.v1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert v1_schema["$defs"]["envelope"]["required"] == [
         "id",
         "source_identity",
         "confirm_status",
@@ -68,6 +75,7 @@ def test_schema_is_valid_draft_2020_12_and_exposes_reusable_envelope() -> None:
         "pack_prefilled",
     ]
     assert schema["$defs"]["author_attestation"]["const"] == "AUTHOR_ATTESTATION"
+    assert schema["$defs"]["tag_groups"]["properties"]["rules_version"]["const"] == "tag-group-rules-v1"
 
 
 def test_contract_text_carries_decisions_review_notes_and_open_boundaries() -> None:
@@ -140,3 +148,88 @@ def test_cli_validates_the_formal_fixture_file() -> None:
     assert completed.stdout.strip() == (
         "PASS_LEDGER_ENTRY_ENVELOPE cases=24 valid=7 invalid=17"
     )
+
+
+def test_v2_fixture_file_and_forward_confirmation_rules() -> None:
+    path = CONTRACTS_DIR / "LEDGER_ENTRY_ENVELOPE.v2.fixtures.jsonl"
+    summary = contract.validate_fixture_suite(path)
+    assert summary["status"] == "PASS"
+    assert summary["case_count"] == 12
+    before = {
+        "id": "CH-0003",
+        "source_identity": "author_declared",
+        "confirm_status": "confirmed",
+        "evidence_refs": ["AUTHOR_ATTESTATION"],
+        "story_time": None,
+        "created_at": "2026-08-22T09:00:00+08:00",
+        "updated_at": "2026-08-22T09:00:00+08:00",
+        "rev": 1,
+        "note": "",
+    }
+    after = dict(before, confirm_status="candidate", rev=2, updated_at="2026-08-22T09:01:00+08:00")
+    with pytest.raises(contract.ContractError, match="CONFIRMED_CANNOT_RETURN_TO_CANDIDATE"):
+        contract.validate_confirmation_transition(before, after, actor="AUTHOR")
+
+
+def test_v1_signature_retirement_rule_stays_unchanged() -> None:
+    record = {
+        "id": "CH-0100",
+        "source_identity": "author_declared",
+        "confirm_status": "retired",
+        "evidence_refs": ["AUTHOR_ATTESTATION"],
+        "story_time": None,
+        "created_at": "2026-08-22T09:00:00+08:00",
+        "updated_at": "2026-08-22T09:01:00+08:00",
+        "rev": 2,
+        "note": "",
+    }
+    with pytest.raises(
+        contract.ContractError, match="AUTHOR_ATTESTATION_REQUIRES_CONFIRMED$"
+    ):
+        contract.validate_entry(
+            record,
+            entry_kind="DEFINITION",
+            contract_version=contract.CONTRACT_VERSION_V1,
+        )
+
+
+@pytest.mark.parametrize("group_id", list(contract.CORE_GROUP_SHAPES))
+@pytest.mark.parametrize("change", ["targets", "mutation", "managed_by", "write"])
+def test_core_group_cannot_be_weakened_at_entry_validation(group_id, change) -> None:
+    record = deepcopy(contract.load_fixtures(
+        CONTRACTS_DIR / "LEDGER_ENTRY_ENVELOPE.v2.fixtures.jsonl"
+    )[0]["document"])
+    group = next(g for g in record["tag_groups"]["groups"] if g["group_id"] == group_id)
+    if change == "targets":
+        group["targets"] = ["/note"]
+    elif change == "mutation":
+        group["mutation"] = "frozen"
+        group["transition_rule"] = None
+    elif change == "managed_by":
+        group["managed_by"] = "AUTHOR"
+    else:
+        group["access"]["write"] = ["PLUGIN"]
+    with pytest.raises(contract.ContractError, match="CORE_PROTECTION_SHAPE_INVALID"):
+        contract.validate_entry(record, entry_kind="DEFINITION",
+                                contract_version=contract.CONTRACT_VERSION_V2)
+
+
+def test_v2_pack_author_edit_preserves_contract_groups() -> None:
+    before = deepcopy(contract.load_fixtures(
+        CONTRACTS_DIR / "LEDGER_ENTRY_ENVELOPE.v2.fixtures.jsonl"
+    )[0]["document"])
+    before.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+    after = deepcopy(before)
+    after.update(source_identity="author_declared", confirm_status="confirmed",
+                 evidence_refs=["AUTHOR_ATTESTATION"], rev=before["rev"] + 1,
+                 updated_at="2026-09-08T00:00:00+00:00")
+    content = {"pack_ref": "PACK-DEMO-01"}
+    contract.validate_pack_prefilled_author_edit(
+        before, after, content_before=content, content_after=content)
+    group = next(g for g in after["tag_groups"]["groups"]
+                 if g["group_id"] == "core:confirmation")
+    group["access"]["read"] = ["AUTHOR"]
+    group["mask_for"] = ["model_context", "reader_view", "plugin"]
+    with pytest.raises(contract.ContractError, match="CONTRACT_GROUP_IMMUTABLE"):
+        contract.validate_pack_prefilled_author_edit(
+            before, after, content_before=content, content_after=content)

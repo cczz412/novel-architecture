@@ -1,6 +1,6 @@
 # WORLD_RULE_LEDGER_CONTENT · 世界规则账内容合同
 
-**正式版本：`world-rule-ledger-content-v1`**
+**正式版本：`world-rule-ledger-content-v2`；兼容读取：`world-rule-ledger-content-v1`**
 
 一句话用途：保存独立完整的世界规则句、适用范围、强度和例外；只有 hard 且 confirmed 的记录具备进入 M7 红灯判断的机械资格。
 
@@ -93,3 +93,7 @@ hardness=hard 且 confirm_status=confirmed
 - `tests/test_novel_mvp_world_rule_ledger_content_contract.py`
 
 实现状态：`UNIFIED_WRITER_SETTINGSTORE_V1__M7_RUNTIME_PENDING`。
+
+## 9. v2 标签组扩展
+
+`world-rule-ledger-content-v2` 保留 v1 字段和 M7 资格门，并要求 `tags`、`tag_groups`。允许的根目标为：`/id`、`/created_at`、`/updated_at`、`/rev`、`/note`、`/source_identity`、`/confirm_status`、`/evidence_refs`、`/story_time`、`/rule_text`、`/scope`、`/hardness`、`/exceptions`。保护 `rule_text` 或 `exceptions` 的每个组必须同时包含这两个目标，避免屏蔽必要条件后留下不完整命题；只覆盖其中一项或出现未知 `targets` 都拒绝。

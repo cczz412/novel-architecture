@@ -1,6 +1,6 @@
 # LEDGER_ENTRY_ENVELOPE · 十本账共同条目信封
 
-**正式版本：`ledger-entry-envelope-v1`**
+**正式版本：`ledger-entry-envelope-v2`；兼容读取：`ledger-entry-envelope-v1`**
 
 一句话用途：给人物、地点、物品、势力、体系、世界规则六本设定账及其后续长线对象提供同一套来源、确认、证据、时间与修订身份；落盘方是 `settingstore`，本合同只冻字段，不实现文件布局。
 
@@ -41,9 +41,9 @@
 | `author_declared` | 作者明确声明或直接编辑后的内容 | 可以在有合法证据时进入 `confirmed` |
 | `draft_inferred` | 从草稿／正文机械提取或推断 | 默认停在 `candidate`，不得自动冒充作者声明 |
 | `model_suggested` | 模型建议 | 默认停在 `candidate`，不得自动确认 |
-| `pack_prefilled` | 题材包预填 | 必须停在 `candidate`；作者可改可删 |
+| `pack_prefilled` | 题材包预填 | v1 必须停在 `candidate`；v2 可由作者退役，但不能因此变成 `confirmed` |
 
-**新增语义正式成文：**作者修改 `pack_prefilled` 条目后，新的 `source_identity` 必须转为 `author_declared`，并在 `evidence_refs` 写入 `AUTHOR_ATTESTATION`。`pack_ref` 属于各内容合同的业务字段，不在共同信封内；作者修改后必须保留原 `pack_ref` 作为来源留痕。
+**新增语义正式成文：**作者编辑 `pack_prefilled` 的业务正文后，新的 `source_identity` 必须转为 `author_declared`，并在 `evidence_refs` 写入 `AUTHOR_ATTESTATION`。只退役、不改正文的操作不走这条转正路径。`pack_ref` 属于各内容合同的业务字段，不在共同信封内；作者修改后必须保留原 `pack_ref` 作为来源留痕。
 
 ### 2.2 `confirm_status`
 
@@ -66,7 +66,7 @@
 
 机械含义：
 - 含 `AUTHOR_ATTESTATION` 的条目必须是 `source_identity=author_declared`；
-- 含 `AUTHOR_ATTESTATION` 的条目必须是 `confirm_status=confirmed`；
+- 含 `AUTHOR_ATTESTATION` 的条目可以是 `confirm_status=confirmed` 或 `retired`；退役保留“曾经确认”的历史签字，不产生新签字；
 - 程序、模型、题材包、投影过程都不能自行生成该枚举；
 - 作者对题材包预填定义卡的直接编辑，必须走“来源转 author_declared＋保留 pack_ref＋写 AUTHOR_ATTESTATION”的完整迁移。
 
@@ -78,6 +78,26 @@
 - 变化／状态条目：可以是非空对象；精确锚形状由 L2～L4 内容合同继续收窄。
 - 禁止在 `story_time` 中使用 `created_at`、`updated_at`、`recorded_at`、`committed_at`、`system_time`、`timestamp` 等系统时间键。
 - 系统时间不能代替故事时间，故事时间也不能反推系统提交顺序。
+
+## 2b. v2 标签与标签组
+
+v1 条目继续按原九个共同字段校验；v2 条目在此基础上必须带 `tags` 和 `tag_groups`。标签只是命名空间化的描述，不能代替作者确认，也不能自己授予权限。
+
+标签组规则版本固定写成 `tag-group-rules-v1`。每个 v2 标签都必须属于至少一个组；每组的 `members` 必须来自本条目的 `tags`，组 ID 不得重复，`targets` 必须命中宿主内容合同列出的字段，未知规则、未知字段、缺少必要组成员时拒绝。作者界面只让作者选择组并查看限制说明，底层仍保留完整规则对象，不能为了页面清爽把规则藏回口头解释。
+
+四种 `mutation` 的含义固定为：`editable` 可按本组写入权限修改；`write_once` 首次写入后不可改；`frozen` 不允许普通修改；`transition_only` 只能按 `transition_rule` 指定的状态机变化。第一版唯一允许的规则名是 `confirmation_forward_v1`；缺少规则或填入未知规则都拒绝。
+
+v2 必须有下列三个合同内置组。成员标签与组名相同；管理方必须为合同（`managed_by=CONTRACT`）。目标、修改方式、转换规则和写入方必须与下表一致，不能靠改名、搬走字段或改成作者组解除保护。读取方和屏蔽受众可进一步收紧，但不能自行授权。普通修订不能改变已有合同内置组；规则升版另走显式迁移。
+
+| 必要组 | 保护字段 | 修改方式 | 转换规则 | 可请求写入方 |
+|---|---|---|---|---|
+| `core:identity` | `/id`、`/created_at` | `write_once` | `null` | `SYSTEM` |
+| `core:confirmation` | `/confirm_status` | `transition_only` | `confirmation_forward_v1` | `AUTHOR` |
+| `core:revision` | `/rev`、`/updated_at` | `editable` | `null` | `SYSTEM` |
+
+修订组的“可编辑”只允许受信 writer 推进系统字段：创建时修订号为 1，更新时恰好加 1，更新时间严格前进。普通请求不能指定结果，也不能用另一个组放宽这条宿主限制。合同校验器核对前后版本；实际写盘拦截留给第二刀。插件不能创建或管理 `core:` 命名空间内的组。
+
+实际权限按交集计算：受信账号权限 ∩ 本次任务许可 ∩ 内容合同限制 ∩ 所有命中组限制。`access` 只是上限，不是授权凭证；真正写入仍必须经过原 writer。自动屏蔽发生在送出前，不能留下秘密字段的外壳。
 
 ## 3. ID 前缀与统一发号
 
@@ -103,6 +123,8 @@ ID 形状为“前缀＋十进制数字”，例如 `CH-0001`、`LOC-12`。前�
 L1 只冻结合同和校验规则；统一 writer 现由 `settingstore` 实现。
 
 ## 4. 真实示例
+
+以下保留 v1 示例形状，供旧版读取对照；v2 完整样例见 [v2 校验样例](LEDGER_ENTRY_ENVELOPE.v2.fixtures.jsonl)，必须包含标签和三个必要组。
 
 ### 4.1 作者直接编辑的人物定义卡信封
 
@@ -144,13 +166,21 @@ L1 只冻结合同和校验规则；统一 writer 现由 `settingstore` 实现�
 2. 禁止 `pack_prefilled`、`draft_inferred`、`model_suggested` 直接写成 `confirmed`。
 3. 禁止 `confirmed` 条目没有证据。
 4. 禁止程序伪造 `AUTHOR_ATTESTATION`。
-5. 禁止作者修改题材包条目后仍把来源写成 `pack_prefilled`，或删除／改写原 `pack_ref` 留痕。
+5. 禁止作者编辑题材包业务正文后仍把来源写成 `pack_prefilled`，或删除／改写原 `pack_ref` 留痕；仅退役不触发业务编辑转正。
 6. 禁止定义卡携带非空 `story_time`。
 7. 禁止把系统时间字段塞进 `story_time`，或把系统提交时间当故事时间。
 8. 禁止物理删除 `retired` 条目的历史身份。
 9. 禁止把信封合同当成落盘方；文件布局与原子提交只认 `SETTING_LEDGER_STORAGE`／`settingstore`。
 
-## 6. 开放问题
+## 6. 确认流程与退役
+
+`confirmation_forward_v1` 只允许向前走：`candidate → confirmed` 需要作者和证据，`candidate → retired` 可以由作者放弃，`confirmed → retired` 保留已有签字但不改正文、不新增或撤销 `AUTHOR_ATTESTATION`；`confirmed → candidate` 和 `retired → candidate/confirmed` 都拒绝。v1 仍按旧规则拒绝带签字的 retired；只有 v2 才保留“曾经确认”的 retired 历史语义。失败事务可以回滚到“本次写入未发生”，读取旧版也不是把 current 指针拨回去。人物故事里的死亡／复活是独立故事时间条目，不属于系统回退。
+
+## 7. 迁移
+
+v1 记录保留原文和原版本；迁移必须显式生成 v2，不能静默改写。迁移程序可以机械补入 `id`、`created_at` 和修订纪律对应的保护组，但不能猜作者私密组、扩大可见范围、伪造 `AUTHOR_ATTESTATION` 或自动把候选转正。缺少私密标记时按旧可见范围保守处理。
+
+## 8. 开放问题
 
 以下四项只留位，不在 L1 定义：
 
@@ -159,11 +189,13 @@ L1 只冻结合同和校验规则；统一 writer 现由 `settingstore` 实现�
 - READER 侧数据结构；
 - 新账申请流程。
 
-## 7. 机器件
+## 9. 机器件
 
 - Schema：[LEDGER_ENTRY_ENVELOPE.schema.json](LEDGER_ENTRY_ENVELOPE.schema.json)
+- v1 兼容 Schema：[LEDGER_ENTRY_ENVELOPE.v1.schema.json](LEDGER_ENTRY_ENVELOPE.v1.schema.json)
 - Validator：[validate_ledger_entry_envelope.py](validate_ledger_entry_envelope.py)
 - Fixtures：[LEDGER_ENTRY_ENVELOPE.fixtures.jsonl](LEDGER_ENTRY_ENVELOPE.fixtures.jsonl)
+- v2 Fixtures：[LEDGER_ENTRY_ENVELOPE.v2.fixtures.jsonl](LEDGER_ENTRY_ENVELOPE.v2.fixtures.jsonl)
 - 定向测试：`tests/test_novel_mvp_ledger_entry_envelope_contract.py`
 
 ## 8. 实现状态
