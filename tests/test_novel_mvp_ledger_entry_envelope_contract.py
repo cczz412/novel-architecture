@@ -155,7 +155,7 @@ def test_v2_fixture_file_and_forward_confirmation_rules() -> None:
     path = CONTRACTS_DIR / "LEDGER_ENTRY_ENVELOPE.v2.fixtures.jsonl"
     summary = contract.validate_fixture_suite(path)
     assert summary["status"] == "PASS"
-    assert summary["case_count"] == 13
+    assert summary["case_count"] == 14
     before = {
         "id": "CH-0003",
         "source_identity": "author_declared",
@@ -327,9 +327,13 @@ def test_retirement_preserves_non_lifecycle_envelope(changes):
     after.update(deepcopy(before))
     after.update(confirm_status='retired', rev=before['rev'] + 1,
                  updated_at='2026-09-08T00:00:00+00:00', **changes)
+    old_record, new_record, _ = _retirement_records('character')
+    old_record.update(before)
+    new_record.update(after)
     with pytest.raises(contract.ContractError, match='RETIREMENT_MUST_PRESERVE_ENVELOPE'):
         contract.validate_confirmation_transition(
-            before, after, actor='AUTHOR', contract_version=contract.CONTRACT_VERSION_V2, business_before={}, business_after={})
+            before, after, actor='AUTHOR', contract_version=contract.CONTRACT_VERSION_V2,
+            business_before=old_record, business_after=new_record)
 
 
 @pytest.mark.parametrize('before', [None, [], 'bad', 7])
@@ -507,3 +511,56 @@ def test_candidate_cannot_fabricate_pack_provenance(source, changed_body, versio
         contract.validate_confirmation_transition(
             before, after, actor='AUTHOR', contract_version=version,
             business_before=old_body, business_after=new_body)
+
+
+def _retirement_records(ledger):
+    rows = contract.load_fixtures(CONTRACTS_DIR / f"{ledger.upper()}_LEDGER_CONTENT.fixtures.jsonl")
+    before = deepcopy(next(row["document"] for row in rows
+                           if row.get("document", {}).get("version", "").endswith("-v2")
+                           and (row.get("valid") is True or row.get("expect") == "PASS")))
+    after = deepcopy(before)
+    after.update(confirm_status="retired", rev=before["rev"] + 1,
+                 updated_at="2026-09-08T01:00:00+00:00")
+    keys = set(_v2_confirmed_pair()[0])
+    envelopes = [{key: record[key] for key in keys} for record in (before, after)]
+    return before, after, envelopes
+
+
+@pytest.mark.parametrize("ledger", ["character", "location", "item", "faction", "system", "world_rule"])
+def test_retirement_validates_full_host_records(ledger):
+    before, after, (old_envelope, new_envelope) = _retirement_records(ledger)
+    contract.validate_confirmation_transition(
+        old_envelope, new_envelope, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
+        business_before=before, business_after=after)
+
+
+@pytest.mark.parametrize("partial", [{}, {"profile": "same"}, [], "same"])
+def test_retirement_rejects_equal_partial_snapshots(partial):
+    _, _, (before, after) = _retirement_records("character")
+    with pytest.raises(contract.ContractError, match="RETIREMENT_FULL_RECORD_REQUIRED"):
+        contract.validate_confirmation_transition(
+            before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
+            business_before=partial, business_after=deepcopy(partial))
+
+
+@pytest.mark.parametrize("failure", ["missing_field", "changed_body", "mismatched_envelope", "wrong_version"])
+def test_retirement_full_records_cannot_hide_content_changes(failure):
+    before, after, (old_envelope, new_envelope) = _retirement_records("character")
+    if failure == "missing_field":
+        before.pop("profile")
+        after.pop("profile")
+        error = "RETIREMENT_RECORD_INVALID"
+    elif failure == "changed_body":
+        after["profile"] += " changed"
+        error = "RETIREMENT_MUST_NOT_CHANGE_CONTENT"
+    elif failure == "mismatched_envelope":
+        after["id"] = "CH-9999"
+        error = "RETIREMENT_RECORD_ENVELOPE_MISMATCH"
+    else:
+        before["version"] = "character-ledger-content-v1.1"
+        after["version"] = "character-ledger-content-v1.1"
+        error = "RETIREMENT_RECORD_VERSION_MISMATCH"
+    with pytest.raises(contract.ContractError, match=error):
+        contract.validate_confirmation_transition(
+            old_envelope, new_envelope, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
+            business_before=before, business_after=after)

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime
+from functools import lru_cache
+import importlib.util
 import json
 from pathlib import Path
 from typing import Any, Iterable
@@ -322,6 +324,47 @@ def validate_pack_prefilled_author_edit(
         )
 
 
+@lru_cache(maxsize=6)
+def _retirement_host_validator(contract_name: str) -> Any:
+    hosts = {
+        "CHARACTER_LEDGER_CONTENT": "character",
+        "LOCATION_LEDGER_CONTENT": "location",
+        "ITEM_LEDGER_CONTENT": "item",
+        "FACTION_LEDGER_CONTENT": "faction",
+        "SYSTEM_LEDGER_CONTENT": "system",
+        "WORLD_RULE_LEDGER_CONTENT": "world_rule",
+    }
+    host = hosts.get(contract_name)
+    if host is None:
+        raise ContractError("RETIREMENT_FULL_RECORD_REQUIRED")
+    path = CONTRACTS_DIR / f"validate_{host}_ledger_content.py"
+    spec = importlib.util.spec_from_file_location(f"retirement_host_{host}", path)
+    if spec is None or spec.loader is None:
+        raise ContractError("RETIREMENT_HOST_VALIDATOR_UNAVAILABLE")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _retirement_body(record: Any, entry: dict[str, Any], version: str) -> dict[str, Any]:
+    """Validate a complete host record, bind its envelope, then derive its body."""
+    if not isinstance(record, dict) or not isinstance(record.get("contract"), str):
+        raise ContractError("RETIREMENT_FULL_RECORD_REQUIRED")
+    host = _retirement_host_validator(record["contract"])
+    record_version = record.get("version")
+    if not isinstance(record_version, str) or (
+        record_version.endswith("-v2") != (version == CONTRACT_VERSION_V2)
+    ):
+        raise ContractError("RETIREMENT_RECORD_VERSION_MISMATCH")
+    try:
+        host.validate_record(record)
+    except host.ContractError as exc:
+        raise ContractError(f"RETIREMENT_RECORD_INVALID:{exc}") from exc
+    if any(record.get(key) != value for key, value in entry.items()):
+        raise ContractError("RETIREMENT_RECORD_ENVELOPE_MISMATCH")
+    return {key: value for key, value in record.items() if key not in entry}
+
+
 def validate_confirmation_transition(
     before: Any,
     after: Any,
@@ -400,7 +443,9 @@ def validate_confirmation_transition(
             raise ContractError("RETIREMENT_MUST_NOT_CREATE_ATTESTATION")
         if business_before is None or business_after is None:
             raise ContractError("RETIREMENT_BUSINESS_SNAPSHOTS_REQUIRED")
-        if business_before != business_after:
+        before_body = _retirement_body(business_before, before, version)
+        after_body = _retirement_body(business_after, after, version)
+        if before_body != after_body:
             raise ContractError("RETIREMENT_MUST_NOT_CHANGE_CONTENT")
         lifecycle_fields = {"confirm_status", "rev", "updated_at"}
         if ({key: value for key, value in before.items() if key not in lifecycle_fields}

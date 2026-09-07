@@ -186,6 +186,8 @@ v1 记录保留原文和原版本；迁移必须显式生成 v2，不能静默�
 
 两个版本的 Schema 同时注册时，v1 保留原 `$id`（`https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.schema.json`），v2 使用独立 `$id`（`https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.v2.schema.json`）。v2 文件仍为下方 `LEDGER_ENTRY_ENVELOPE.schema.json`，标识用于版本解析，不改变文件路径。
 
+退役转换的 `business_before`／`business_after` 必须传入六本宿主内容合同之一的完整前后记录，不能传空对象或裁剪过的正文字段。校验器按记录的合同与版本检查完整内容，并将其中的信封逐字段绑定到本次转换的 before／after，再自行剥离信封比较正文；合同身份和内容版本也不得在退役时变化。缺字段、未知宿主或信封不一致均拒绝。记录是否来自当前持久版本，仍由第二刀宿主读取与修订检查保证，调用方不能用手造副本代替实际旧记录。
+
 普通候选不能通过修订把来源改成 `pack_prefilled`，也不能借此添加题材包出处；该来源应在真实题材包首次接纳时建立。已有题材包候选的原样修订与合法作者签字转换仍按既有规则处理。
 
 通用确认转换与题材包签字转换必须显式传入 `contract_version`，前后快照按同一声明版本校验；不能因为缺少 `tags/tag_groups` 就降为 v1。内容合同调用方从已校验的宿主版本传递信封版本。旧 fixture 未声明版本时固定按历史 v1 解释，v2 fixture 必须声明 v2，夹具入口原样转交该声明。
