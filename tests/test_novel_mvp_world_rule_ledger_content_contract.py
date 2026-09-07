@@ -109,3 +109,14 @@ def test_open_items_are_not_materialized_as_fields() -> None:
         "recall_handle",
     ):
         assert forbidden not in schema_text
+
+
+@pytest.mark.parametrize("source", ["draft_inferred", "model_suggested"])
+def test_v2_non_author_rule_cannot_enter_red_light_path(source):
+    record = deepcopy(next(case["document"] for case in CASES
+                           if case["document"]["version"] == MODULE.VERSION_V2
+                           and case["expect"] == "PASS"))
+    record.update(source_identity=source, confirm_status="confirmed",
+                  evidence_refs=["f001"], hardness="hard")
+    with pytest.raises(MODULE.ContractError, match="CONFIRMED_REQUIRES_AUTHOR_DECLARED"):
+        MODULE.m7_red_light_eligibility(record)

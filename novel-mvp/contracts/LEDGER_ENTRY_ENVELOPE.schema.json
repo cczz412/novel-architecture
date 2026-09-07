@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.schema.json",
+  "$id": "https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.v2.schema.json",
   "title": "LEDGER_ENTRY_ENVELOPE ledger-entry-envelope-v2",
   "description": "Common envelope v2 with namespaced tags and field-scoped tag groups. The v1 schema is retained in LEDGER_ENTRY_ENVELOPE.v1.schema.json.",
   "allOf": [

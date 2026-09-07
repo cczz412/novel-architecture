@@ -235,6 +235,12 @@ def validate_entry(
             raise ContractError("PACK_PREFILLED_MUST_REMAIN_CANDIDATE")
     if confirm_status == "confirmed" and not evidence_refs:
         raise ContractError("CONFIRMED_EVIDENCE_REQUIRED")
+    if (
+        contract_version == CONTRACT_VERSION_V2
+        and confirm_status == "confirmed"
+        and source_identity != "author_declared"
+    ):
+        raise ContractError("CONFIRMED_REQUIRES_AUTHOR_DECLARED")
 
     has_attestation = "AUTHOR_ATTESTATION" in evidence_refs
     if has_attestation and source_identity != "author_declared":
@@ -411,6 +417,17 @@ def validate_confirmation_transition(
         if actor != "AUTHOR":
             raise ContractError("CONFIRMED_EDIT_REQUIRES_AUTHOR")
     elif old_status == "candidate" and new_status == "candidate":
+        if before["source_identity"] == "pack_prefilled":
+            if after["source_identity"] != "pack_prefilled":
+                raise ContractError("AUTHOR_EDIT_STATUS_MUST_BECOME_CONFIRMED")
+            if business_before is None or business_after is None:
+                raise ContractError("PACK_CANDIDATE_BUSINESS_SNAPSHOTS_REQUIRED")
+            if _pack_ref(business_before, label="BEFORE") != _pack_ref(
+                business_after, label="AFTER"
+            ):
+                raise ContractError("PACK_REF_MUST_BE_PRESERVED")
+            if business_before != business_after:
+                raise ContractError("PACK_CONTENT_EDIT_REQUIRES_AUTHOR_MIGRATION")
         return
     elif old_status == new_status == "retired":
         raise ContractError("RETIRED_CANNOT_BE_EDITED")

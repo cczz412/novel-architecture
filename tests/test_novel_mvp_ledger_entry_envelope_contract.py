@@ -337,3 +337,109 @@ def test_malformed_pack_transition_returns_contract_error(before):
     case = {'fixture_kind': 'pack_author_edit_transition', 'before': before,
             'after': {}, 'content_before': {}, 'content_after': {}}
     assert contract.validate_fixture_case(case) is not None
+
+
+@pytest.mark.parametrize("intermediate_source", ["author_declared", "draft_inferred", "model_suggested"])
+def test_pack_cannot_launder_source_through_candidate_edit(intermediate_source):
+    before, middle = _v2_confirmed_pair()
+    before.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+    middle.update(source_identity=intermediate_source, confirm_status="candidate", evidence_refs=["f001"])
+    with pytest.raises(contract.ContractError, match="AUTHOR_EDIT_STATUS_MUST_BECOME_CONFIRMED"):
+        contract.validate_confirmation_transition(
+            before, middle, actor="AUTHOR",
+            business_before={"pack_ref": "PACK-01", "category": "old"},
+            business_after={"category": "changed"},
+        )
+
+
+def test_pack_candidate_body_edit_requires_signed_migration():
+    before, after = _v2_confirmed_pair()
+    for row in (before, after):
+        row.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+    with pytest.raises(contract.ContractError, match="PACK_CONTENT_EDIT_REQUIRES_AUTHOR_MIGRATION"):
+        contract.validate_confirmation_transition(
+            before, after, actor="AUTHOR",
+            business_before={"pack_ref": "PACK-01", "category": "old"},
+            business_after={"pack_ref": "PACK-01", "category": "changed"},
+        )
+
+
+@pytest.mark.parametrize("snapshots", [{}, {"business_before": {"pack_ref": "PACK-01"}}])
+def test_pack_candidate_edit_requires_business_snapshots(snapshots):
+    before, after = _v2_confirmed_pair()
+    for row in (before, after):
+        row.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+    with pytest.raises(contract.ContractError, match="PACK_CANDIDATE_BUSINESS_SNAPSHOTS_REQUIRED"):
+        contract.validate_confirmation_transition(before, after, actor="AUTHOR", **snapshots)
+
+
+def test_versioned_schema_registry_resolves_both_envelope_versions():
+    from referencing import Registry, Resource
+
+    v1 = contract.SCHEMAS[contract.CONTRACT_VERSION_V1]
+    v2 = contract.SCHEMAS[contract.CONTRACT_VERSION_V2]
+    registry = Registry().with_resources([
+        (v1["$id"], Resource.from_contents(v1)),
+        (v2["$id"], Resource.from_contents(v2)),
+    ])
+    v2_entry, _ = _v2_confirmed_pair()
+    v1_entry = {k: v for k, v in v2_entry.items() if k not in {"tags", "tag_groups"}}
+    old_validator = Draft202012Validator({"$ref": v1["$id"]}, registry=registry)
+    new_validator = Draft202012Validator({"$ref": v2["$id"]}, registry=registry)
+    old_validator.validate(v1_entry)
+    new_validator.validate(v2_entry)
+    assert not old_validator.is_valid(v2_entry)
+    assert not new_validator.is_valid(v1_entry)
+
+
+@pytest.mark.parametrize("source", ["draft_inferred", "model_suggested"])
+def test_v2_common_envelope_rejects_non_author_confirmation(source):
+    record, _ = _v2_confirmed_pair()
+    record.update(source_identity=source, evidence_refs=["f001"])
+    with pytest.raises(contract.ContractError, match="CONFIRMED_REQUIRES_AUTHOR_DECLARED"):
+        contract.validate_entry(record, entry_kind="DEFINITION", contract_version=contract.CONTRACT_VERSION_V2)
+
+
+def test_pack_candidate_unchanged_body_can_advance_revision():
+    before, after = _v2_confirmed_pair()
+    for row in (before, after):
+        row.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+    body = {"pack_ref": "PACK-01", "category": "unchanged"}
+    contract.validate_confirmation_transition(
+        before, after, actor="AUTHOR", business_before=body, business_after=deepcopy(body))
+
+
+@pytest.mark.parametrize("body_after", [{"pack_ref": "PACK-02"}, {}])
+def test_pack_candidate_cannot_drop_or_replace_pack_reference(body_after):
+    before, after = _v2_confirmed_pair()
+    for row in (before, after):
+        row.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+    with pytest.raises(contract.ContractError, match="PACK_REF"):
+        contract.validate_confirmation_transition(
+            before, after, actor="AUTHOR",
+            business_before={"pack_ref": "PACK-01"}, business_after=body_after)
+
+
+@pytest.mark.parametrize("source", ["draft_inferred", "model_suggested"])
+def test_v2_non_author_candidates_and_v1_static_behavior_remain(source):
+    record, _ = _v2_confirmed_pair()
+    record.update(source_identity=source, evidence_refs=["f001"], confirm_status="candidate")
+    contract.validate_entry(record, entry_kind="DEFINITION", contract_version=contract.CONTRACT_VERSION_V2)
+    old = {k: v for k, v in record.items() if k not in {"tags", "tag_groups"}}
+    old["confirm_status"] = "confirmed"
+    contract.validate_entry(old, entry_kind="DEFINITION", contract_version=contract.CONTRACT_VERSION_V1)
+
+
+@pytest.mark.parametrize("ledger", ["character", "location", "item", "faction", "system", "world_rule"])
+@pytest.mark.parametrize("source", ["draft_inferred", "model_suggested"])
+def test_v2_content_roots_share_author_confirmation_guard(ledger, source):
+    module = importlib.import_module(f"validate_{ledger}_ledger_content")
+    rows = [json.loads(line) for line in
+            (CONTRACTS_DIR / f"{ledger.upper()}_LEDGER_CONTENT.fixtures.jsonl").read_text().splitlines()]
+    record = deepcopy(next(row["document"] for row in rows
+                           if "document" in row
+                           and row["document"]["version"].endswith("-v2")
+                           and (row.get("valid") is True or row.get("expect") == "PASS")))
+    record.update(source_identity=source, confirm_status="confirmed", evidence_refs=["f001"])
+    with pytest.raises(module.ContractError, match="CONFIRMED_REQUIRES_AUTHOR_DECLARED"):
+        module.validate_record(record)
