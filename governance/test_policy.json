@@ -64,6 +64,413 @@
   },
   "path_rules": [
     {
+      "name": "CCZ-180 原位测试入口：authority",
+      "pattern": "work/ccz142_candidate_authority_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：display",
+      "pattern": "work/ccz142_current_candidate_read_display_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_current_candidate_read_display_r01/test_current_read_display.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：entry",
+      "pattern": "work/ccz142_current_candidate_read_entry_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_current_candidate_read_entry_r01/test_current_read_entry.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：preview",
+      "pattern": "work/ccz142_current_candidate_read_preview_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：proof",
+      "pattern": "work/ccz142_current_candidate_read_proof_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_current_candidate_read_proof_r01/test_current_read_proof.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：coverage",
+      "pattern": "work/ccz142_human_card_coverage_wire_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_human_card_coverage_wire_r01/test_human_card_coverage_wire.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：catalog",
+      "pattern": "work/ccz142_human_card_gold_catalog_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_human_card_gold_catalog_r01/test_human_card_gold_catalog.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：vertical",
+      "pattern": "work/ccz142_human_card_vertical_wire_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：card_identity",
+      "pattern": "work/ccz142_named_chapter_card_identity_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_named_chapter_card_identity_r01/test_named_chapter_card_identity.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：named",
+      "pattern": "work/ccz142_named_chapter_txt_card_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：identity_read",
+      "pattern": "work/ccz142_named_identity_read_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_named_identity_read_r01/test_named_identity_read.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：identity_store",
+      "pattern": "work/ccz142_named_identity_store_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_named_identity_store_r01/test_named_identity_store.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：duty",
+      "pattern": "work/ccz142_q9_duty_freeze_r01/*",
+      "modules": [],
+      "tests": [
+        "work/ccz142_q9_duty_freeze_r01/test_duty_freeze.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 原位测试入口：door",
+      "pattern": "work/door1_author_intake_view_r01/*",
+      "modules": [],
+      "tests": [
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：references/book-meta/INDEX.md",
+      "pattern": "references/book-meta/INDEX.md",
+      "modules": [],
+      "tests": [
+        "work/ccz142_human_card_gold_catalog_r01/test_human_card_gold_catalog.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：references/corpus-pointers.md",
+      "pattern": "references/corpus-pointers.md",
+      "modules": [],
+      "tests": [
+        "work/ccz142_human_card_gold_catalog_r01/test_human_card_gold_catalog.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz142_candidate_authority_r01/candidate_authority.py",
+      "pattern": "work/ccz142_candidate_authority_r01/candidate_authority.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_current_candidate_read_display_r01/test_current_read_display.py",
+        "work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py",
+        "work/ccz142_current_candidate_read_proof_r01/test_current_read_proof.py",
+        "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz142_candidate_authority_r01/shadow_fixtures.py",
+      "pattern": "work/ccz142_candidate_authority_r01/shadow_fixtures.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_current_candidate_read_display_r01/test_current_read_display.py",
+        "work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py",
+        "work/ccz142_current_candidate_read_proof_r01/test_current_read_proof.py",
+        "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz142_current_candidate_read_display_r01/card_render.py",
+      "pattern": "work/ccz142_current_candidate_read_display_r01/card_render.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py",
+        "work/ccz142_named_chapter_card_identity_r01/test_named_chapter_card_identity.py",
+        "work/ccz142_named_identity_store_r01/test_named_identity_store.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz142_current_candidate_read_preview_r01/html_render.py",
+      "pattern": "work/ccz142_current_candidate_read_preview_r01/html_render.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_human_card_coverage_wire_r01/test_human_card_coverage_wire.py",
+        "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py",
+        "work/ccz142_named_chapter_card_identity_r01/test_named_chapter_card_identity.py",
+        "work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py",
+        "work/ccz142_named_identity_read_r01/test_named_identity_read.py",
+        "work/ccz142_named_identity_store_r01/test_named_identity_store.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz142_current_candidate_read_proof_r01/current_read_proof.py",
+      "pattern": "work/ccz142_current_candidate_read_proof_r01/current_read_proof.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_current_candidate_read_display_r01/test_current_read_display.py",
+        "work/ccz142_human_card_coverage_wire_r01/test_human_card_coverage_wire.py",
+        "work/ccz142_named_identity_read_r01/test_named_identity_read.py",
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz142_human_card_vertical_wire_r01/vertical_wire.py",
+      "pattern": "work/ccz142_human_card_vertical_wire_r01/vertical_wire.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py",
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz142_named_chapter_card_identity_r01/identity_card.py",
+      "pattern": "work/ccz142_named_chapter_card_identity_r01/identity_card.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_named_identity_store_r01/test_named_identity_store.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz142_named_chapter_txt_card_r01/ALLOWLIST.json",
+      "pattern": "work/ccz142_named_chapter_txt_card_r01/ALLOWLIST.json",
+      "modules": [],
+      "tests": [
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz142_named_chapter_txt_card_r01/named_chapter.py",
+      "pattern": "work/ccz142_named_chapter_txt_card_r01/named_chapter.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_human_card_coverage_wire_r01/test_human_card_coverage_wire.py",
+        "work/ccz142_named_chapter_card_identity_r01/test_named_chapter_card_identity.py",
+        "work/ccz142_named_identity_read_r01/test_named_identity_read.py",
+        "work/ccz142_named_identity_store_r01/test_named_identity_store.py",
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz142_named_identity_store_r01/store_identity.py",
+      "pattern": "work/ccz142_named_identity_store_r01/store_identity.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_human_card_coverage_wire_r01/test_human_card_coverage_wire.py",
+        "work/ccz142_named_identity_read_r01/test_named_identity_read.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b01_candidate_version_r03_5/b01_contract.py",
+      "pattern": "work/ccz57_m3_b01_candidate_version_r03_5/b01_contract.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b01_candidate_version_r03_5/fixtures.py",
+      "pattern": "work/ccz57_m3_b01_candidate_version_r03_5/fixtures.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py",
+        "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py",
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b03_bound_evidence_read_r03_5/README.md",
+      "pattern": "work/ccz57_m3_b03_bound_evidence_read_r03_5/README.md",
+      "modules": [],
+      "tests": [
+        "work/ccz142_q9_duty_freeze_r01/test_duty_freeze.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b04_patch_atomic_group_r03_5/README.md",
+      "pattern": "work/ccz57_m3_b04_patch_atomic_group_r03_5/README.md",
+      "modules": [],
+      "tests": [
+        "work/ccz142_q9_duty_freeze_r01/test_duty_freeze.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b05_patch_route_r03_5/README.md",
+      "pattern": "work/ccz57_m3_b05_patch_route_r03_5/README.md",
+      "modules": [],
+      "tests": [
+        "work/ccz142_q9_duty_freeze_r01/test_duty_freeze.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b05_patch_route_r03_5/b05_contracts.py",
+      "pattern": "work/ccz57_m3_b05_patch_route_r03_5/b05_contracts.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b05_patch_route_r03_5/b05_store.py",
+      "pattern": "work/ccz57_m3_b05_patch_route_r03_5/b05_store.py",
+      "modules": [],
+      "tests": [
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b05_patch_route_r03_5/fixtures.py",
+      "pattern": "work/ccz57_m3_b05_patch_route_r03_5/fixtures.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b06_commit_core_r01/b06_contracts.py",
+      "pattern": "work/ccz57_m3_b06_commit_core_r01/b06_contracts.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py",
+        "work/ccz142_current_candidate_read_proof_r01/test_current_read_proof.py",
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b06_commit_core_r01/b06_store.py",
+      "pattern": "work/ccz57_m3_b06_commit_core_r01/b06_store.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py",
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b06_commit_core_r01/fixtures.py",
+      "pattern": "work/ccz57_m3_b06_commit_core_r01/fixtures.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b07_local_recovery_stop_r01/b07_store.py",
+      "pattern": "work/ccz57_m3_b07_local_recovery_stop_r01/b07_store.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py",
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b07_local_recovery_stop_r01/fixtures.py",
+      "pattern": "work/ccz57_m3_b07_local_recovery_stop_r01/fixtures.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b08_segment_terminal_r01/b08_store.py",
+      "pattern": "work/ccz57_m3_b08_segment_terminal_r01/b08_store.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py",
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b08_segment_terminal_r01/fixtures.py",
+      "pattern": "work/ccz57_m3_b08_segment_terminal_r01/fixtures.py",
+      "modules": [],
+      "tests": [
+        "work/ccz142_candidate_authority_r01/test_candidate_authority.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-180 直接上游：work/ccz57_m3_b09_current_causal_hint_view_r01/README.md",
+      "pattern": "work/ccz57_m3_b09_current_causal_hint_view_r01/README.md",
+      "modules": [],
+      "tests": [
+        "work/ccz142_q9_duty_freeze_r01/test_duty_freeze.py"
+      ],
+      "full_chain": false
+    },
+    {
       "name": "novel-mvp handover planstore writer",
       "pattern": "novel-mvp/mvp/planstore.py",
       "modules": ["M08"],
