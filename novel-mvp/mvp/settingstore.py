@@ -142,9 +142,7 @@ def initialize_setting_allocator(root: Path | str, *, book_id: str) -> dict[str,
         for name, spec in LEDGERS.items():
             ledger_path = root / spec.filename
             if ledger_path.is_symlink() or (
-                ledger_path.exists() and (
-                    not ledger_path.is_file() or ledger_path.stat().st_size == 0
-                )
+                ledger_path.exists() and not ledger_path.is_file()
             ):
                 raise SettingstoreError("SETTING_ALLOCATOR_LEDGER_UNSAFE")
             records[name] = _load_records(root, spec.filename)

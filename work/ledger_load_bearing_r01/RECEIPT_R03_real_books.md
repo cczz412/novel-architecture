@@ -43,7 +43,7 @@ R02 点名的三组已逐条处置：
 
 产品入口为 `setting_projection.initialize_setting_allocator(workspace, book_id=...)`，调用方显式提供项目内书号，函数内部构造并校验空 plan。`settingstore` 在既有 planstore 锁内原子写入；已有书号和计数必须一致，重复调用不重置计数。有设定记录却缺发号账时拒绝初始化。绑定工作区的适配层持有 workspace 锁再取得 planstore 锁，防止检查 logical plan 后被同期写入穿透。
 
-这是显式产品初始化入口，未自动接入创建项目界面。AuthorWorkspace 的 logical plan 与实体发号账仍是两个存储面：发现已有 logical plan 时明确拒绝，要求另行协调，不猜测同步。目录 fsync 失败可能已留下完整合法文件，调用报错后可重试确认；不承诺报错必然未写。
+这是显式产品初始化入口，未自动接入创建项目界面。AuthorWorkspace 的 logical plan 与实体发号账仍是两个存储面：发现已有 logical plan 时明确拒绝；初始化成功后，统一workspace提交入口也在同一把锁内拒绝再写logical plan。两种初始化顺序只允许一种存储面先取得写入位置，不猜测同步。空的设定账文件按现行合同读为空数组。目录 fsync 失败可能已留下完整合法文件，调用报错后可重试确认；不承诺报错必然未写。
 
 两本新工作区初始化前均没有 plan.json，由上述产品函数首次返回 INITIALIZED，重复返回 ALREADY_INITIALIZED 且文件哈希不变。本地运行脚本没有预写发号账；手写绑定仍按现有入口写入实体绑定文件，本票没有新增绑定编辑界面。
 
@@ -77,12 +77,16 @@ R02 点名的三组已逐条处置：
 
 ## 验证与本地证据
 
-定向初始化／投影测试 99 passed；C9 组装测试文件 7 passed。五个改动代码／测试文件 Ruff 通过，diff 检查通过。本轮全量 `uv run --locked pytest -q`：4224 passed、902 skipped、40 deselected、1 xfailed、179 subtests passed，252.67 秒，退出 0（本地日志 `TEMP/ccz176_r03_full_pytest.txt`）。
+首轮定向初始化／投影测试 99 passed；C9 组装测试文件 7 passed。五个改动代码／测试文件 Ruff 通过，diff 检查通过。首轮全量 `uv run --locked pytest -q`：4224 passed、902 skipped、40 deselected、1 xfailed、179 subtests passed，252.67 秒，退出 0（本地日志 `TEMP/ccz176_r03_full_pytest.txt`）。
 
 两书 182 条逐条通过：C4 原章区间回取等于原引文及其哈希，事实文本和 ID 不变；原始文件哈希未变，接纳的 C1 等于完整派生前三章。
 
 正文、事实、引文、绑定和运行结果只在本地：`local/ccz176_r03_review/` 保存逐条建议和主窗口决定，`local/ccz176_r03_run/` 保存新工作区、初始化／投影／C9 回执及核验。原 R02 证据仍在 `TEMP/ccz176_real_books_20260907/`。本 PR 只含产品初始化代码、对应测试和本回执；不含这些本地材料。
 
 旧 W1／CCZ-172 的“全量逐条落账评审与至少一个实际消费者”欠缺由本回执承接；17 条保留项和未验证消费者仍如上列明。初始化改动和本回执均须经 PR 审阅，不能用本地运行成绩替代合并或整体验收。
+
+审查补件：逻辑计划与实体发号账的后续写入冲突、空文件误拒已修复。修前3条反例失败，修后初始化／投影／C9／plan工作区共118项定向通过；新增同项目并发创建用例确认只有一个存储面成功。为封住后续直接commit绕路，写集增加统一workspace提交入口的一道拒绝检查；不改变其他逻辑键，也不增加自动同步能力。最新组合全量测试结果在本PR审查回执中另列，不能用首轮计数冒充新版本。
+
+归位条件：R03验收及后续报告归位获批后，回执目标为 `reports/ledger_load_bearing_r03/RECEIPT_R03_real_books.md`，保留本PR固定版本回链；本次按#317批准位置保留，不自行搬迁或复制本机正文。
 
 来源：Codex

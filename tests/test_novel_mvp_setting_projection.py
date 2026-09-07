@@ -679,3 +679,53 @@ def test_workspace_allocator_holds_workspace_lock_until_physical_write(tmp_path:
         return original(project, book_id=book_id)
     monkeypatch.setattr(settingstore, "initialize_setting_allocator", check_lock)
     assert projection.initialize_setting_allocator(workspace, book_id="BK-TEST")["status"] == "INITIALIZED"
+
+
+@pytest.mark.parametrize("via_adapter", [False, True])
+def test_allocator_blocks_later_logical_plan_write(tmp_path: Path, via_adapter: bool) -> None:
+    from mvp import plan_workspace
+    from mvp.workspace import WorkspaceError, WorkspaceRouter
+    workspace = WorkspaceRouter(tmp_path).create_project("auth:allocator", "初始化")
+    projection.initialize_setting_allocator(workspace, book_id="BK-TEST")
+    root = projection._bound_project_dir(workspace)
+    physical_before = (root / "plan.json").read_bytes()
+    other_plan = _load(FIXTURE / "plan.json")
+    with pytest.raises(WorkspaceError, match="PHYSICAL_PLAN_REQUIRES_RECONCILIATION"):
+        if via_adapter:
+            plan_workspace.save_plan(workspace, "conflicting-plan", other_plan, 0)
+        else:
+            workspace.commit("conflicting-plan", {"plan": other_plan}, {"plan": 0})
+    assert workspace.read("plan") is None
+    assert (root / "plan.json").read_bytes() == physical_before
+
+
+def test_allocator_and_logical_plan_creation_have_one_winner(tmp_path: Path) -> None:
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    from mvp import plan_workspace
+    from mvp.workspace import WorkspaceError, WorkspaceRouter
+    workspace = WorkspaceRouter(tmp_path).create_project("auth:allocator", "竞争初始化")
+    start = Barrier(2)
+    def initialize():
+        start.wait()
+        try:
+            projection.initialize_setting_allocator(workspace, book_id="BK-TEST")
+            return "physical"
+        except projection.SettingProjectionError as exc:
+            assert "LOGICAL_PLAN_REQUIRES_RECONCILIATION" in str(exc)
+            return "blocked"
+    def save():
+        start.wait()
+        try:
+            plan_workspace.save_plan(workspace, "logical-plan", _load(FIXTURE / "plan.json"), 0)
+            return "logical"
+        except WorkspaceError as exc:
+            assert "PHYSICAL_PLAN_REQUIRES_RECONCILIATION" in str(exc)
+            return "blocked"
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first = pool.submit(initialize)
+        second = pool.submit(save)
+        results = [first.result(), second.result()]
+    assert results.count("blocked") == 1
+    root = projection._bound_project_dir(workspace)
+    assert (root / "plan.json").exists() != (workspace.read("plan") is not None)

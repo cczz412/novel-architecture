@@ -756,3 +756,10 @@ def test_initialize_allocator_concurrent_calls_only_create_once(tmp_path: Path) 
         ))
     assert [row["status"] for row in results].count("INITIALIZED") == 1
     assert [row["status"] for row in results].count("ALREADY_INITIALIZED") == 3
+
+
+def test_initialize_allocator_accepts_empty_ledger_files(tmp_path: Path) -> None:
+    for spec in settingstore.LEDGERS.values():
+        (tmp_path / spec.filename).write_bytes(b"")
+    assert settingstore.initialize_setting_allocator(tmp_path, book_id="BK-EMPTY")["status"] == "INITIALIZED"
+    assert all(settingstore.read_setting_records(tmp_path, name) == [] for name in settingstore.LEDGERS)
