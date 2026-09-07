@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from datetime import datetime, timedelta
 import hashlib
 import json
 import sys
@@ -705,7 +706,7 @@ def test_setting_change_invalidates_even_chapter_only_request(tmp_path: Path) ->
         operation_id="advance-setting",
         record=entry,
         expected_rev=entry["rev"],
-        timestamp="2026-09-07T01:00:00+00:00",
+        timestamp=(datetime.fromisoformat(entry["updated_at"]) + timedelta(seconds=1)).isoformat(),
     )
     response = ledger_read_runtime.execute_read(
         session,
@@ -735,7 +736,7 @@ def test_change_during_response_build_is_caught_before_delivery(
             operation_id="during-read",
             record=row,
             expected_rev=row["rev"],
-            timestamp="2026-09-07T01:00:00+00:00",
+            timestamp=(datetime.fromisoformat(entry["updated_at"]) + timedelta(seconds=1)).isoformat(),
         )
         return original(ledger_name, entry)
 
@@ -780,7 +781,7 @@ def test_pending_writer_transaction_is_neither_read_nor_recovered(
             operation_id="unfinished-setting",
             record=entry,
             expected_rev=entry["rev"],
-            timestamp="2026-09-07T01:00:00+00:00",
+            timestamp=(datetime.fromisoformat(entry["updated_at"]) + timedelta(seconds=1)).isoformat(),
             fault_at="after_characters",
         )
     before = _files(root)
