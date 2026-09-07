@@ -644,3 +644,38 @@ def test_interrupted_run_rejects_changed_inputs_and_a_different_parent(
     ):
         projection.project_confirmed_facts(root, operation_id="unfinished")
     assert len(settingstore.read_setting_records(root, "character")) == 1
+
+
+def test_workspace_allocator_initialization_is_explicit_and_idempotent(tmp_path: Path) -> None:
+    from mvp.workspace import WorkspaceRouter
+    workspace = WorkspaceRouter(tmp_path).create_project("auth:allocator", "初始化")
+    assert projection.initialize_setting_allocator(workspace, book_id="BK-TEST")["status"] == "INITIALIZED"
+    assert projection.initialize_setting_allocator(workspace, book_id="BK-TEST")["status"] == "ALREADY_INITIALIZED"
+    assert workspace.read("plan") is None
+    root = projection._bound_project_dir(workspace)
+    assert _load(root / "plan.json")["book"]["id"] == "BK-TEST"
+
+
+def test_workspace_allocator_refuses_unsynchronized_logical_plan(tmp_path: Path) -> None:
+    from mvp import plan_workspace
+    from mvp.workspace import WorkspaceRouter
+    workspace = WorkspaceRouter(tmp_path).create_project("auth:allocator", "初始化")
+    plan_workspace.save_plan(workspace, "logical-plan", _load(FIXTURE / "plan.json"), 0)
+    with pytest.raises(projection.SettingProjectionError, match="LOGICAL_PLAN_REQUIRES_RECONCILIATION"):
+        projection.initialize_setting_allocator(workspace, book_id="BK-0001")
+    assert not (projection._bound_project_dir(workspace) / "plan.json").exists()
+
+
+def test_workspace_allocator_holds_workspace_lock_until_physical_write(tmp_path: Path, monkeypatch) -> None:
+    import fcntl
+    from mvp.workspace import WorkspaceRouter
+    workspace = WorkspaceRouter(tmp_path).create_project("auth:allocator", "初始化")
+    root = projection._bound_project_dir(workspace)
+    original = settingstore.initialize_setting_allocator
+    def check_lock(project, *, book_id):
+        with (root / ".workspace.lock").open("rb") as handle:
+            with pytest.raises(BlockingIOError):
+                fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return original(project, book_id=book_id)
+    monkeypatch.setattr(settingstore, "initialize_setting_allocator", check_lock)
+    assert projection.initialize_setting_allocator(workspace, book_id="BK-TEST")["status"] == "INITIALIZED"

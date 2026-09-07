@@ -671,3 +671,88 @@ def test_storage_contract_names_planstore_reuse_and_forbids_private_writers() ->
         "新账申请流程",
     ):
         assert needle in text
+
+
+def test_initialize_allocator_preserves_written_counters(tmp_path: Path) -> None:
+    assert settingstore.initialize_setting_allocator(tmp_path, book_id="BK-TEST")["status"] == "INITIALIZED"
+    planstore._validate_plan(_read_json(tmp_path / "plan.json"))
+    settingstore.write_setting_record(
+        tmp_path, ledger="character", operation_id="init-character",
+        record=_character_payload(), timestamp=NOW,
+    )
+    before = (tmp_path / "plan.json").read_bytes()
+    assert _read_json(tmp_path / "plan.json")["id_counters"]["CH"] == 1
+    assert settingstore.initialize_setting_allocator(tmp_path, book_id="BK-TEST")["status"] == "ALREADY_INITIALIZED"
+    assert (tmp_path / "plan.json").read_bytes() == before
+    with pytest.raises(settingstore.SettingstoreError, match="BOOK_ID_CONFLICT"):
+        settingstore.initialize_setting_allocator(tmp_path, book_id="BK-OTHER")
+    assert (tmp_path / "plan.json").read_bytes() == before
+
+
+def test_initialize_allocator_rejects_orphan_records(tmp_path: Path) -> None:
+    _write_json(tmp_path / "characters.json", [{"id": "CH-0001"}])
+    with pytest.raises(settingstore.SettingstoreError, match="MISSING_WITH_EXISTING_RECORDS"):
+        settingstore.initialize_setting_allocator(tmp_path, book_id="BK-TEST")
+    assert not (tmp_path / "plan.json").exists()
+
+
+@pytest.mark.parametrize("bad_id", [None, "", " ", " BK-TEST"])
+def test_initialize_allocator_rejects_invalid_identity(tmp_path: Path, bad_id) -> None:
+    with pytest.raises(settingstore.SettingstoreError, match="BOOK_ID_INVALID"):
+        settingstore.initialize_setting_allocator(tmp_path, book_id=bad_id)
+    assert not (tmp_path / "plan.json").exists()
+
+
+def test_initialize_allocator_failed_replace_leaves_no_plan(tmp_path: Path, monkeypatch) -> None:
+    original = planstore.os.replace
+    def fail_replace(*args):
+        raise OSError("injected replace failure")
+    monkeypatch.setattr(planstore.os, "replace", fail_replace)
+    with pytest.raises(OSError, match="injected"):
+        settingstore.initialize_setting_allocator(tmp_path, book_id="BK-TEST")
+    assert not (tmp_path / "plan.json").exists()
+    monkeypatch.setattr(planstore.os, "replace", original)
+    assert settingstore.initialize_setting_allocator(tmp_path, book_id="BK-TEST")["status"] == "INITIALIZED"
+    planstore._validate_plan(_read_json(tmp_path / "plan.json"))
+
+
+def test_initialize_allocator_rejects_counter_drift(tmp_path: Path) -> None:
+    settingstore.initialize_setting_allocator(tmp_path, book_id="BK-TEST")
+    plan = _read_json(tmp_path / "plan.json")
+    plan["id_counters"]["CH"] = 8
+    _write_json(tmp_path / "plan.json", plan)
+    before = (tmp_path / "plan.json").read_bytes()
+    with pytest.raises(settingstore.SettingstoreError, match="COUNTER_DRIFT"):
+        settingstore.initialize_setting_allocator(tmp_path, book_id="BK-TEST")
+    assert (tmp_path / "plan.json").read_bytes() == before
+
+
+@pytest.mark.parametrize("after_replace", [False, True])
+def test_initialize_allocator_fsync_failure_leaves_absent_or_valid_plan(
+    tmp_path: Path, monkeypatch, after_replace: bool,
+) -> None:
+    target = "_fsync_directory" if after_replace else None
+    def fail_sync(*args):
+        raise OSError("injected sync failure")
+    if target:
+        monkeypatch.setattr(planstore, target, fail_sync)
+    else:
+        monkeypatch.setattr(planstore.os, "fsync", fail_sync)
+    with pytest.raises(OSError, match="injected"):
+        settingstore.initialize_setting_allocator(tmp_path, book_id="BK-TEST")
+    path = tmp_path / "plan.json"
+    assert path.exists() == after_replace
+    if after_replace:
+        planstore._validate_plan(_read_json(path))
+        assert _read_json(path)["book"]["id"] == "BK-TEST"
+
+
+def test_initialize_allocator_concurrent_calls_only_create_once(tmp_path: Path) -> None:
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        results = list(pool.map(
+            lambda _: settingstore.initialize_setting_allocator(tmp_path, book_id="BK-TEST"),
+            range(4),
+        ))
+    assert [row["status"] for row in results].count("INITIALIZED") == 1
+    assert [row["status"] for row in results].count("ALREADY_INITIALIZED") == 3
