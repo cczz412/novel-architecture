@@ -275,20 +275,15 @@ def validate_pack_prefilled_author_edit(
     before: Any,
     after: Any,
     *,
+    contract_version: str,
     content_before: Any,
     content_after: Any,
 ) -> None:
     """Validate the approved pack-prefilled → author-declared edit transition."""
 
-    if not isinstance(before, dict):
-        validate_entry(before, entry_kind="DEFINITION", contract_version=CONTRACT_VERSION_V1)
-    version = before.get("contract_version")
-    if version is None:
-        version = (
-            CONTRACT_VERSION_V2
-            if "tags" in before or "tag_groups" in before
-            else CONTRACT_VERSION_V1
-        )
+    version = contract_version
+    if not isinstance(version, str) or version not in SCHEMAS:
+        raise ContractError("CONTRACT_VERSION_INVALID")
     validate_entry(before, entry_kind="DEFINITION", contract_version=version)
     validate_entry(after, entry_kind="DEFINITION", contract_version=version)
     assert isinstance(before, dict)
@@ -322,7 +317,7 @@ def validate_pack_prefilled_author_edit(
         raise ContractError("PACK_REF_MUST_BE_PRESERVED")
     if version == CONTRACT_VERSION_V2:
         validate_confirmation_transition(
-            before, after, actor="AUTHOR",
+            before, after, actor="AUTHOR", contract_version=version,
             business_before=content_before, business_after=content_after,
         )
 
@@ -332,17 +327,15 @@ def validate_confirmation_transition(
     after: Any,
     *,
     actor: str,
+    contract_version: str,
     business_before: Any = None,
     business_after: Any = None,
 ) -> None:
     """Validate the forward-only confirmation/lifecycle transition."""
 
-    version = (
-        CONTRACT_VERSION_V2
-        if isinstance(before, dict)
-        and ("tags" in before or "tag_groups" in before)
-        else CONTRACT_VERSION_V1
-    )
+    version = contract_version
+    if not isinstance(version, str) or version not in SCHEMAS:
+        raise ContractError("CONTRACT_VERSION_INVALID")
     if (
         isinstance(before, dict)
         and isinstance(after, dict)
@@ -477,6 +470,7 @@ def validate_fixture_case(case: dict[str, Any]) -> str | None:
             validate_pack_prefilled_author_edit(
                 case.get("before"),
                 case.get("after"),
+                contract_version=case.get("contract_version", CONTRACT_VERSION_V1),
                 content_before=case.get("content_before"),
                 content_after=case.get("content_after"),
             )
@@ -484,6 +478,7 @@ def validate_fixture_case(case: dict[str, Any]) -> str | None:
             validate_confirmation_transition(
                 case.get("before"),
                 case.get("after"),
+                contract_version=case.get("contract_version", CONTRACT_VERSION_V1),
                 actor=case.get("actor"),
                 business_before=case.get("business_before"),
                 business_after=case.get("business_after"),

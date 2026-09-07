@@ -169,7 +169,7 @@ def test_v2_fixture_file_and_forward_confirmation_rules() -> None:
     }
     after = dict(before, confirm_status="candidate", rev=2, updated_at="2026-08-22T09:01:00+08:00")
     with pytest.raises(contract.ContractError, match="CONFIRMED_CANNOT_RETURN_TO_CANDIDATE"):
-        contract.validate_confirmation_transition(before, after, actor="AUTHOR")
+        contract.validate_confirmation_transition(before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V1)
 
 
 def test_v1_signature_retirement_rule_stays_unchanged() -> None:
@@ -226,14 +226,14 @@ def test_v2_pack_author_edit_preserves_contract_groups() -> None:
                  updated_at="2026-09-08T00:00:00+00:00")
     content = {"pack_ref": "PACK-DEMO-01"}
     contract.validate_pack_prefilled_author_edit(
-        before, after, content_before=content, content_after=content)
+        before, after, contract_version=contract.CONTRACT_VERSION_V2, content_before=content, content_after=content)
     group = next(g for g in after["tag_groups"]["groups"]
                  if g["group_id"] == "core:confirmation")
     group["access"]["read"] = ["AUTHOR"]
     group["mask_for"] = ["model_context", "reader_view", "plugin"]
     with pytest.raises(contract.ContractError, match="CONTRACT_GROUP_IMMUTABLE"):
         contract.validate_pack_prefilled_author_edit(
-            before, after, content_before=content, content_after=content)
+            before, after, contract_version=contract.CONTRACT_VERSION_V2, content_before=content, content_after=content)
 
 
 def _v2_confirmed_pair():
@@ -251,7 +251,7 @@ def test_retirement_requires_both_business_snapshots(snapshots) -> None:
     before, after = _v2_confirmed_pair()
     after["confirm_status"] = "retired"
     with pytest.raises(contract.ContractError, match="RETIREMENT_BUSINESS_SNAPSHOTS_REQUIRED"):
-        contract.validate_confirmation_transition(before, after, actor="AUTHOR", **snapshots)
+        contract.validate_confirmation_transition(before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2, **snapshots)
 
 
 @pytest.mark.parametrize("failure", ["missing_attestation", "missing_pack_ref", "changed_pack_ref"])
@@ -271,7 +271,7 @@ def test_generic_pack_confirmation_cannot_bypass_migration(failure) -> None:
         error = "PACK_REF_MUST_BE_PRESERVED"
     with pytest.raises(contract.ContractError, match=error):
         contract.validate_confirmation_transition(
-            before, after, actor="AUTHOR", business_before=before_body, business_after=after_body)
+            before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2, business_before=before_body, business_after=after_body)
 
 
 @pytest.mark.parametrize("ledger", ["character", "location", "item", "faction"])
@@ -329,7 +329,7 @@ def test_retirement_preserves_non_lifecycle_envelope(changes):
                  updated_at='2026-09-08T00:00:00+00:00', **changes)
     with pytest.raises(contract.ContractError, match='RETIREMENT_MUST_PRESERVE_ENVELOPE'):
         contract.validate_confirmation_transition(
-            before, after, actor='AUTHOR', business_before={}, business_after={})
+            before, after, actor='AUTHOR', contract_version=contract.CONTRACT_VERSION_V2, business_before={}, business_after={})
 
 
 @pytest.mark.parametrize('before', [None, [], 'bad', 7])
@@ -346,7 +346,7 @@ def test_pack_cannot_launder_source_through_candidate_edit(intermediate_source):
     middle.update(source_identity=intermediate_source, confirm_status="candidate", evidence_refs=["f001"])
     with pytest.raises(contract.ContractError, match="AUTHOR_EDIT_STATUS_MUST_BECOME_CONFIRMED"):
         contract.validate_confirmation_transition(
-            before, middle, actor="AUTHOR",
+            before, middle, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
             business_before={"pack_ref": "PACK-01", "category": "old"},
             business_after={"category": "changed"},
         )
@@ -358,7 +358,7 @@ def test_pack_candidate_body_edit_requires_signed_migration():
         row.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
     with pytest.raises(contract.ContractError, match="PACK_CONTENT_EDIT_REQUIRES_AUTHOR_MIGRATION"):
         contract.validate_confirmation_transition(
-            before, after, actor="AUTHOR",
+            before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
             business_before={"pack_ref": "PACK-01", "category": "old"},
             business_after={"pack_ref": "PACK-01", "category": "changed"},
         )
@@ -370,7 +370,7 @@ def test_pack_candidate_edit_requires_business_snapshots(snapshots):
     for row in (before, after):
         row.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
     with pytest.raises(contract.ContractError, match="PACK_CANDIDATE_BUSINESS_SNAPSHOTS_REQUIRED"):
-        contract.validate_confirmation_transition(before, after, actor="AUTHOR", **snapshots)
+        contract.validate_confirmation_transition(before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2, **snapshots)
 
 
 def test_versioned_schema_registry_resolves_both_envelope_versions():
@@ -406,7 +406,7 @@ def test_pack_candidate_unchanged_body_can_advance_revision():
         row.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
     body = {"pack_ref": "PACK-01", "category": "unchanged"}
     contract.validate_confirmation_transition(
-        before, after, actor="AUTHOR", business_before=body, business_after=deepcopy(body))
+        before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2, business_before=body, business_after=deepcopy(body))
 
 
 @pytest.mark.parametrize("body_after", [{"pack_ref": "PACK-02"}, {}])
@@ -416,7 +416,7 @@ def test_pack_candidate_cannot_drop_or_replace_pack_reference(body_after):
         row.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
     with pytest.raises(contract.ContractError, match="PACK_REF"):
         contract.validate_confirmation_transition(
-            before, after, actor="AUTHOR",
+            before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
             business_before={"pack_ref": "PACK-01"}, business_after=body_after)
 
 
@@ -443,3 +443,48 @@ def test_v2_content_roots_share_author_confirmation_guard(ledger, source):
     record.update(source_identity=source, confirm_status="confirmed", evidence_refs=["f001"])
     with pytest.raises(module.ContractError, match="CONFIRMED_REQUIRES_AUTHOR_DECLARED"):
         module.validate_record(record)
+
+
+@pytest.mark.parametrize("kind", ["confirmation_transition", "pack_author_edit_transition"])
+@pytest.mark.parametrize("strip_from", ["before", "after", "both"])
+def test_declared_v2_transition_cannot_fall_back_to_v1(kind, strip_from):
+    before, after = _v2_confirmed_pair()
+    if kind == "pack_author_edit_transition":
+        before.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+    for label, row in [("before", before), ("after", after)]:
+        if strip_from in {label, "both"}:
+            row.pop("tags")
+            row.pop("tag_groups")
+    case = {"fixture_kind": kind, "contract_version": contract.CONTRACT_VERSION_V2,
+            "before": before, "after": after, "actor": "AUTHOR",
+            "content_before": {"pack_ref": "PACK-01"},
+            "content_after": {"pack_ref": "PACK-01"}}
+    error = contract.validate_fixture_case(case)
+    assert error is not None and error.startswith("SCHEMA_INVALID")
+
+
+@pytest.mark.parametrize("version", [contract.CONTRACT_VERSION_V1, contract.CONTRACT_VERSION_V2])
+def test_direct_transition_uses_explicit_version(version):
+    before, after = _v2_confirmed_pair()
+    if version == contract.CONTRACT_VERSION_V1:
+        for row in (before, after):
+            row.pop("tags")
+            row.pop("tag_groups")
+    contract.validate_confirmation_transition(
+        before, after, actor="AUTHOR", contract_version=version)
+    before.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+    contract.validate_pack_prefilled_author_edit(
+        before, after, contract_version=version,
+        content_before={"pack_ref": "PACK-01"}, content_after={"pack_ref": "PACK-01"})
+
+
+@pytest.mark.parametrize("version", [None, "ledger-entry-envelope-v999"])
+def test_transition_rejects_unknown_explicit_version(version):
+    before, after = _v2_confirmed_pair()
+    with pytest.raises(contract.ContractError, match="CONTRACT_VERSION_INVALID"):
+        contract.validate_confirmation_transition(
+            before, after, actor="AUTHOR", contract_version=version)
+    with pytest.raises(contract.ContractError, match="CONTRACT_VERSION_INVALID"):
+        contract.validate_pack_prefilled_author_edit(
+            before, after, contract_version=version,
+            content_before={"pack_ref": "PACK-01"}, content_after={"pack_ref": "PACK-01"})
