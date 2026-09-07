@@ -1,6 +1,6 @@
 # 仓库地图一页速查
 
-本页给人定位用，**不是第二真源**。目录职责和落点冲突时，以 [directory_registry.json](directory_registry.json) 和它生成的 [new_file_routing.md](indexes/new_file_routing.md) 为准。产品语义回共同背景板 R14，不在这里重写。
+本页给人定位用，**不是第二真源**。目录职责和落点冲突时，以 [directory_registry.json](directory_registry.json) 和它生成的 [new_file_routing.md](indexes/new_file_routing.md) 为准。产品决定与规格按 [Notion 决定与规格入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)逐项主存登记读取；未迁项回原主存。
 
 ## 30 秒三问
 
@@ -15,7 +15,7 @@
 | 要加的东西 | 去哪 | 说明 |
 |---|---|---|
 | 新功能代码 | 已证明可复用 → [tools/](../tools/)；产品试跑示例 → [novel-mvp/mvp/](../novel-mvp/mvp/)；单次试验程序 → [experiments/](../experiments/)；还没定型 → [work/](../work/) | 详情：[new_file_routing.md](indexes/new_file_routing.md) |
-| 新需求 | [GitHub Issues](https://github.com/cczz412/novel-architecture/issues) | 工程线唯一需求台账。Notion 旧账不能再当施工入口。 |
+| 新需求 | [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0) | 活动任务先找所属 Project；需要进仓的交付再配 GitHub 施工票。工程真源仍是 GitHub。 |
 | 新评测题集 | **待 CZ 拍板** | 登记占位在 `directory_registry.json` 的 `evaluation_item_set_pending_cz`。不要新建顶层目录。 |
 | 新实验 | [experiments/](../experiments/) | 每个试验自带身份；程序放 `experiments/<id>/program`。 |
 | 外部调查回包 | [references/survey-inbox/](../references/survey-inbox/) | 入口：[INDEX.md](../references/survey-inbox/INDEX.md)。历史报告只作证据，不产生执行权。 |
@@ -84,6 +84,6 @@
 
 ## 任务路由（更细的「我要做什么」）
 
-根 [AGENTS.md](../AGENTS.md) 第 2 节已经有一张任务路由表。本页不复制那张表。查当前版本和路径认 [current_pointers.json](current_pointers.json)；机器当前执行状态认 [CURRENT_STATE.json](CURRENT_STATE.json)。
+根 [AGENTS.md](../AGENTS.md) 第 2 节已经有一张任务路由表。本页不复制那张表。查当前版本和路径认 [current_pointers.json](current_pointers.json)；旧技术控制字段查带日期的 [CURRENT_STATE.json](CURRENT_STATE.json)，任务状态现场读取 Linear／GitHub。
 
 来源：[#76](https://github.com/cczz412/novel-architecture/issues/76)

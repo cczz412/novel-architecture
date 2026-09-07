@@ -1396,7 +1396,7 @@ class GovernanceIndexTests(unittest.TestCase):
             "整体任务、主支线、领票、父子、硬前置、阻塞、并行线",
             "工程施工、PR、检查、合并",
             "技术兼容／控制字段",
-            "$linear-github-task-map",
+            "https://linear.app/ccz/document/4ddff334d4f0",
             "agent_ticket_rules.md",
         ):
             self.assertIn(phrase, index)
