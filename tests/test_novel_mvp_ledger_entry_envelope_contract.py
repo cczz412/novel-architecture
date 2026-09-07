@@ -357,14 +357,12 @@ def test_pack_cannot_launder_source_through_candidate_edit(intermediate_source):
 
 
 def test_pack_candidate_body_edit_requires_signed_migration():
-    before, after = _v2_confirmed_pair()
-    for row in (before, after):
-        row.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+    old_record, new_record, (before, after) = _pack_candidate_records()
+    new_record["record"]["profile"] += " changed"
     with pytest.raises(contract.ContractError, match="PACK_CONTENT_EDIT_REQUIRES_AUTHOR_MIGRATION"):
         contract.validate_confirmation_transition(
             before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
-            business_before={"pack_ref": "PACK-01", "category": "old"},
-            business_after={"pack_ref": "PACK-01", "category": "changed"},
+            business_before=old_record, business_after=new_record,
         )
 
 
@@ -405,12 +403,10 @@ def test_v2_common_envelope_rejects_non_author_confirmation(source):
 
 
 def test_pack_candidate_unchanged_body_can_advance_revision():
-    before, after = _v2_confirmed_pair()
-    for row in (before, after):
-        row.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
-    body = {"pack_ref": "PACK-01", "category": "unchanged"}
+    old_record, new_record, (before, after) = _pack_candidate_records()
     contract.validate_confirmation_transition(
-        before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2, business_before=body, business_after=deepcopy(body))
+        before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
+        business_before=old_record, business_after=new_record)
 
 
 @pytest.mark.parametrize("body_after", [{"pack_ref": "PACK-02"}, {}])
@@ -563,4 +559,38 @@ def test_retirement_full_records_cannot_hide_content_changes(failure):
     with pytest.raises(contract.ContractError, match=error):
         contract.validate_confirmation_transition(
             old_envelope, new_envelope, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
+            business_before=before, business_after=after)
+
+
+def _pack_candidate_records(ledger="character"):
+    before, after, envelopes = _retirement_records(ledger)
+    for record, envelope in zip((before, after), envelopes):
+        envelope.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+        record.update(envelope)
+        if ledger == "system":
+            record["pack_ref"] = "PACK-01"
+    return {"record": before, "pack_ref": "PACK-01"}, {"record": after, "pack_ref": "PACK-01"}, envelopes
+
+
+@pytest.mark.parametrize("ledger", ["character", "location", "item", "faction", "system", "world_rule"])
+def test_pack_candidate_validates_complete_host_records(ledger):
+    before, after, (old, new) = _pack_candidate_records(ledger)
+    contract.validate_confirmation_transition(
+        old, new, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
+        business_before=before, business_after=after)
+
+
+@pytest.mark.parametrize("failure", ["partial", "missing_field", "mismatched_envelope"])
+def test_pack_candidate_rejects_incomplete_or_unbound_records(failure):
+    before, after, (old, new) = _pack_candidate_records()
+    if failure == "partial":
+        before = after = {"pack_ref": "PACK-01"}
+    elif failure == "missing_field":
+        before["record"].pop("profile")
+        after["record"].pop("profile")
+    else:
+        after["record"]["id"] = "CH-9999"
+    with pytest.raises(contract.ContractError, match="PACK_CANDIDATE_.*RECORD"):
+        contract.validate_confirmation_transition(
+            old, new, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
             business_before=before, business_after=after)

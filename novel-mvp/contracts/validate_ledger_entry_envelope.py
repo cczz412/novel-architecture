@@ -469,7 +469,15 @@ def validate_confirmation_transition(
                 business_after, label="AFTER"
             ):
                 raise ContractError("PACK_REF_MUST_BE_PRESERVED")
-            if business_before != business_after:
+            try:
+                before_body = _retirement_body(business_before.get("record"), before, version)
+                after_body = _retirement_body(business_after.get("record"), after, version)
+            except ContractError as exc:
+                raise ContractError(str(exc).replace("RETIREMENT_", "PACK_CANDIDATE_")) from exc
+            for body, snapshot in ((before_body, business_before), (after_body, business_after)):
+                if "pack_ref" in body and body["pack_ref"] != snapshot["pack_ref"]:
+                    raise ContractError("PACK_CANDIDATE_RECORD_PACK_REF_MISMATCH")
+            if before_body != after_body:
                 raise ContractError("PACK_CONTENT_EDIT_REQUIRES_AUTHOR_MIGRATION")
         return
     elif old_status == new_status == "retired":

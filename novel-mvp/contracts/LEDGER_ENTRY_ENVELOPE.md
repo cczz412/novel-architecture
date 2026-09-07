@@ -182,7 +182,7 @@ L1 只冻结合同和校验规则；统一 writer 现由 `settingstore` 实现�
 
 v1 记录保留原文和原版本；迁移必须显式生成 v2，不能静默改写。迁移程序可以机械补入 `id`、`created_at` 和修订纪律对应的保护组，但不能猜作者私密组、扩大可见范围、伪造 `AUTHOR_ATTESTATION` 或自动把候选转正。缺少私密标记时按旧可见范围保守处理。
 
-题材包候选不能先换成另一种候选来源，再用普通确认绕过签字和来源留痕。保持 `pack_prefilled/candidate` 的修订也须提供前后业务快照，正文与 `pack_ref` 均未变才可保留候选；作者编辑正文须一次完成上述签字迁移。v2 条目只要是 `confirmed`，来源就必须为 `author_declared`；六本内容合同共用此检查，世界规则的红灯资格不能接纳其他来源的已确认条目。v1 静态校验行为保留。
+题材包候选不能先换成另一种候选来源，再用普通确认绕过签字和来源留痕。保持 `pack_prefilled/candidate` 的修订也须提供前后快照 `{record: 完整宿主记录, pack_ref: 题材包来源}`，其中 `record` 含信封、合同名和版本，按六账内容合同校验并绑定各自信封后再比较业务正文；局部对象不能作为快照，正文与 `pack_ref` 均未变才可保留候选；作者编辑正文须一次完成上述签字迁移。v2 条目只要是 `confirmed`，来源就必须为 `author_declared`；六本内容合同共用此检查，世界规则的红灯资格不能接纳其他来源的已确认条目。v1 静态校验行为保留。
 
 两个版本的 Schema 同时注册时，v1 保留原 `$id`（`https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.schema.json`），v2 使用独立 `$id`（`https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.v2.schema.json`）。v2 文件仍为下方 `LEDGER_ENTRY_ENVELOPE.schema.json`，标识用于版本解析，不改变文件路径。
 
