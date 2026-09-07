@@ -4,7 +4,7 @@
 
 本文件是顾问设计的仓内收件版，交六项设计供审阅。后文保留 Pro 成稿时的视角；“我／本轮读取”指 Pro 自报的研究过程。Codex 独立核对的范围另列如下，不把外部自报全部转成主窗口实证。
 
-- 原始设计包 `API_MASS_TEST_PLAN_R01.zip` 共129108字节，SHA-256 `84f6cab203ac7c2328d2dcd3b80a574af2eabac24924e0bafde768923a8ce138`；一次下载、安全解包19文件。原件及16份附表保存在本机 `TEMP/api_mass_test_plan_20260908/return_r01/`，本PR只有本文件。来源：[精确Pro对话](https://chatgpt.com/g/g-p-6a8d805c26e48191ace954cf0c1fb3c0-xiao-shuo-jia-gou-zhu-kong-wai-zhi-da-nao/c/6a9f4025-db68-83e9-bfad-672fb9687e40)。
+- 原始设计包 `API_MASS_TEST_PLAN_R01.zip` 共129108字节，SHA-256 `84f6cab203ac7c2328d2dcd3b80a574af2eabac24924e0bafde768923a8ce138`；一次下载、安全解包19文件。原件及16份附表保存在本机 `TEMP/api_mass_test_plan_20260908/return_r01/`，本PR只有本文件；执行必需的两份机器格式已按第17节完整内嵌。来源：[精确Pro对话](https://chatgpt.com/g/g-p-6a8d805c26e48191ace954cf0c1fb3c0-xiao-shuo-jia-gou-zhu-kong-wai-zhi-da-nao/c/6a9f4025-db68-83e9-bfad-672fb9687e40)。
 - 独立机械核对：502份源码覆盖表的SHA-256逐一与固定Git对象比对一致；88处引用的路径、行号范围可回取；包内文件校验和通过；109格唯一，预算与逐格token上限可回算，1371基础请求＋342重试＝1713，费用分配993元。56个0-API单元保持未运行。证据在本机 `LOCAL_DESIGN_CHECK_R01.json`。
 - 主窗口已通读主文，并核关键调用链：共享通道单次arkcli调用且写死disabled；refine最多四个基础请求、失败内重试与不完整calls账；新抽取工作区使用冻结响应；C6/C7工具强制零调用／零usage；C9由公共reader完成组装并复查代际。没有逐行复审全部502份源码，也没有运行本计划的产品用例或API。
 - 材料状态更新：后文“#324未收件”是设计生成时快照。六本现已完成本机收件与681条逐字引文核对，回执见[PR #333](https://github.com/cczz412/novel-architecture/pull/333)。仍不是Gold或全量独立语义审定；ZSAMPLE运行格尚未执行，不能把收件机械核对等同56格测试通过。
@@ -14,7 +14,7 @@
 
 设计依据与沿用关系：本轮发出固定main源码、CCZ-142及真书交接文档后才收到计划；第2节记录历史实调证据，第3节指出新版冻结入口与旧live入口接缝，第12节记录沿用／替代范围。本节是收件时的核对，不能倒写成设计前已经完成的回执。最新任务表述要求后续设计前先登记依据；后续执行设计应沿用本件并补当时版本变化，不能重做一份无承接计划。
 
-仓内全文保留完整测试表、预算、判据和固定源码链接；机器附表只有本机副本，不是已经入仓的配套Schema。批准采用或收费执行仍回[CCZ-179](https://linear.app/ccz/issue/CCZ-179)及明确后续施工范围。
+仓内全文保留完整测试表、预算、判据和固定源码链接；第17节完整内嵌批次模板和请求回执候选Schema，其余机器附表保留本机副本。批准采用或收费执行仍回[CCZ-179](https://linear.app/ccz/issue/CCZ-179)及明确后续施工范围。
 
 
 > 关联：GH#325／CCZ-179；对齐 CCZ-142。  
@@ -1034,4 +1034,683 @@ CCZ-142 的“六份施工包”以及研究侧 B 系列属于责任分工和已
 
 [S088]: https://github.com/cczz412/novel-architecture/blob/45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5/tests/test_novel_mvp_scene_export.py#L1-L220
 
-来源：Codex（收件、核对与第0节整理；顾问正文来源保留为ChatGPT Pro）
+来源：Codex（收件与核对；顾问正文来源保留为ChatGPT Pro）
+
+## 17. 可从本文件提取的完整机器格式
+
+本节补齐执行者不能访问本机TEMP的交接缺口。下列JSON逐字节取自Pro原包，不需要从本机取件或自行发明字段；两者仍为设计候选。批次模板中的null和空清单必须在另有执行授权后填入真实值，不能直接运行。其余预算、模型组合和逐格判据以本文第5—13节为完整人读依据；本节不要求先下载其余本机CSV。
+
+受#325单文件写集约束，JSON内嵌在本文件而非新增独立仓库文件。获准执行时可用下列标准库脚本提取到本机TEMP，并检查哈希；不调用API，不读取密钥。
+
+```python
+from pathlib import Path
+import hashlib
+import re
+
+source = Path("work/api_mass_test_plan_r01/PLAN_R01.md").read_text(encoding="utf-8")
+out = Path("TEMP/api_mass_test_plan_r01_formats")
+out.mkdir(parents=True, exist_ok=True)
+for name, expected, payload in re.findall(
+    r"<!-- MACHINE_FILE: ([A-Za-z0-9_.]+) SHA256: ([0-9a-f]{64}) -->\n```json\n(.*?)```",
+    source,
+    re.S,
+):
+    raw = payload.encode("utf-8")
+    assert hashlib.sha256(raw).hexdigest() == expected, name
+    (out / name).write_bytes(raw)
+```
+
+### BATCH_MANIFEST_TEMPLATE.json
+
+<!-- MACHINE_FILE: BATCH_MANIFEST_TEMPLATE.json SHA256: 67bf5f35d314c24513d308901994d4d42dcdc6a488c86c514b11a55fdabb55d0 -->
+```json
+{
+  "schema_version": "PROPOSED_API_TEST_BATCH_MANIFEST_R01",
+  "status": "DESIGN_TEMPLATE_NOT_EXECUTION_AUTHORIZED",
+  "batch_id": null,
+  "design_source": "GH#325 / CCZ-179 / PLAN_R01",
+  "source_sha": "45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5",
+  "selected_cell_ids": [],
+  "selected_profiles": [],
+  "execution_authorization": {
+    "issue_ref": null,
+    "authorizer": null,
+    "scope": null,
+    "approved_at": null,
+    "payment_cap_cny": null,
+    "approval_hash": null
+  },
+  "source_authorization": {
+    "newbook_pool_development_permission": "CZ 2026-09-08 06:30 +08:00",
+    "reference": "https://github.com/cczz412/novel-architecture/issues/325#issuecomment-5576263577",
+    "selected_books": [],
+    "old_book_permission_ref": null
+  },
+  "source_manifest": [],
+  "prompt_manifest": [],
+  "contract_versions": {},
+  "nonsecret_provider_readback": {
+    "checked_at": null,
+    "catalog_hash": null,
+    "profile_identity": null,
+    "endpoint_fingerprint": null,
+    "resolved_model_mapping": null,
+    "quota_evidence_ref": null,
+    "plan_use_allowed_evidence_ref": null
+  },
+  "rate_card": {
+    "verified_at": null,
+    "evidence_ref": null,
+    "billing_currency": null,
+    "pricing_function_version": null,
+    "input_uncached_per_million": null,
+    "input_cached_per_million": null,
+    "output_per_million": null,
+    "reasoning_separate_per_million": null,
+    "reasoning_included_in_output": null,
+    "fx_to_cny": null,
+    "fx_evidence_ref": null,
+    "quota_accounting_rule": null
+  },
+  "approved_limits": {
+    "attempt_cap": null,
+    "input_tokens_cap": null,
+    "output_plus_reasoning_tokens_cap": null,
+    "fee_cap_cny": null,
+    "concurrency_cap": 1
+  },
+  "experiment_order": [],
+  "reference_obligation_manifest_hash": null,
+  "material_split_policy": {
+    "selection_chapters": [
+      1,
+      2
+    ],
+    "holdout_chapters": [
+      3
+    ],
+    "first_holdout_model_phase": "S5",
+    "holdout_scope": "This experiment selection chain only; not a claim that Pro or pretraining never saw the chapter.",
+    "leakage_detected": null,
+    "legacy_and_v21_obligation_scopes_separate": true
+  },
+  "failure_policy_ref": "STOP_POLICY.json",
+  "production_writes_allowed": false,
+  "raw_text_destination": "local approved provider input only; never repository/notion receipts",
+  "credential_material": null,
+  "ready_to_dispatch": false,
+  "null_policy": "Null, empty selected cells, absent verified pricing or absent execution authorization all block dispatch; this file cannot authorize a run."
+}
+```
+
+### CALL_RECEIPT.schema.json
+
+<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: 76062870a1d94e472863059f784da447b6f24cf4155b10d447f9df4c1a1f27ad -->
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:novel-architecture:advisory:api-call-receipt-r01",
+  "title": "PROPOSED_API_CALL_RECEIPT_R01_NOT_REPOSITORY_CONTRACT",
+  "description": "One actual model request attempt; schema validity is not proof of transport, semantic quality, author approval or billing reconciliation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "batch_id",
+    "cell_id",
+    "material_unit_id",
+    "repeat_id",
+    "logical_request_id",
+    "attempt_id",
+    "attempt_no",
+    "source_sha",
+    "source_manifest_sha256",
+    "prompt_sha256",
+    "config_sha256",
+    "profile_id",
+    "provider",
+    "requested_model",
+    "response_model",
+    "endpoint_fingerprint",
+    "time",
+    "transport",
+    "usage",
+    "cost",
+    "evaluation",
+    "raw_response_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "PROPOSED_API_CALL_RECEIPT_R01"
+    },
+    "batch_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cell_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "material_unit_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repeat_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logical_request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attempt_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requested_model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "endpoint_fingerprint": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attempt_no": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2
+    },
+    "parent_attempt_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "parent_live_run_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "source_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "prompt_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "config_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "response_model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "chapter_revision_ref": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Exact existing chapter revision object, validated under its declared repository contract, never generated by the model."
+    },
+    "contract_versions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "time": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "started_at",
+        "ended_at",
+        "duration_seconds"
+      ],
+      "properties": {
+        "started_at": {
+          "type": "string"
+        },
+        "ended_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "duration_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "transport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dispatched",
+        "completion_state",
+        "provider_request_id",
+        "response_id",
+        "error_class",
+        "finish_reason"
+      ],
+      "properties": {
+        "dispatched": {
+          "const": true
+        },
+        "http_status": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "completion_state": {
+          "enum": [
+            "SUCCEEDED",
+            "REFUSED",
+            "FAILED_TIMEOUT",
+            "FAILED_TRANSPORT",
+            "FAILED_RAW_RESPONSE",
+            "INCOMPLETE_TRUNCATED",
+            "MODEL_MISMATCH",
+            "USAGE_UNKNOWN"
+          ]
+        },
+        "provider_request_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "response_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "error_class": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "finish_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "missing_server_id_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_turn_index": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 4
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw",
+        "normalization_rule",
+        "input_uncached",
+        "input_cached",
+        "output_billable_excluding_separate_reasoning",
+        "reasoning_separately_billable",
+        "reasoning_observed",
+        "status"
+      ],
+      "properties": {
+        "raw": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "normalization_rule": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "input_uncached": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "input_cached": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "output_billable_excluding_separate_reasoning": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "reasoning_separately_billable": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "reasoning_observed": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "KNOWN",
+            "PARTIAL",
+            "UNKNOWN_RESERVED"
+          ]
+        }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rate_card_ref",
+        "billing_currency",
+        "fx_to_cny",
+        "reserved_cny",
+        "reconciled_cny",
+        "status"
+      ],
+      "properties": {
+        "rate_card_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "billing_currency": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fx_to_cny": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "estimated_cny": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "reserved_cny": {
+          "type": "number",
+          "minimum": 0
+        },
+        "reconciled_cny": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "quota_consumption": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "status": {
+          "enum": [
+            "RESERVED_PENDING",
+            "RECONCILED",
+            "USAGE_UNKNOWN_RESERVED"
+          ]
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transport_level",
+        "contract_level",
+        "semantic_level",
+        "author_level",
+        "product_level"
+      ],
+      "properties": {
+        "transport_level": {
+          "enum": [
+            "NOT_RUN",
+            "BLOCKED",
+            "PASS",
+            "FAIL",
+            "INCONCLUSIVE",
+            "N/A_ZERO_API",
+            "N/A"
+          ]
+        },
+        "contract_level": {
+          "enum": [
+            "NOT_RUN",
+            "BLOCKED",
+            "PASS",
+            "FAIL",
+            "INCONCLUSIVE",
+            "N/A_ZERO_API",
+            "N/A"
+          ]
+        },
+        "semantic_level": {
+          "enum": [
+            "NOT_RUN",
+            "BLOCKED",
+            "PASS",
+            "FAIL",
+            "INCONCLUSIVE",
+            "N/A_ZERO_API",
+            "N/A"
+          ]
+        },
+        "author_level": {
+          "enum": [
+            "NOT_RUN",
+            "BLOCKED",
+            "PASS",
+            "FAIL",
+            "INCONCLUSIVE",
+            "N/A_ZERO_API",
+            "N/A"
+          ]
+        },
+        "product_level": {
+          "enum": [
+            "NOT_RUN",
+            "BLOCKED",
+            "PASS",
+            "FAIL",
+            "INCONCLUSIVE",
+            "N/A_ZERO_API",
+            "N/A"
+          ]
+        }
+      }
+    },
+    "raw_response_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "stop_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "native_tool_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tool_call_id",
+          "host_execution_id",
+          "name",
+          "arguments_sha256",
+          "response_sha256",
+          "permission_result"
+        ],
+        "properties": {
+          "tool_call_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "host_execution_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "arguments_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "response_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "permission_result": {
+            "enum": [
+              "ALLOWED_READ_ONLY",
+              "REJECTED",
+              "ERROR"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "transport": {
+            "properties": {
+              "completion_state": {
+                "const": "SUCCEEDED"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "response_model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "raw_response_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usage": {
+            "properties": {
+              "status": {
+                "const": "UNKNOWN_RESERVED"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "cost": {
+            "properties": {
+              "status": {
+                "const": "USAGE_UNKNOWN_RESERVED"
+              },
+              "reconciled_cny": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### 跨记录语义检查
+
+# 回执的跨记录约束（拟议）
+
+JSON Schema 只验形状。下面这些必须由宿主对原始材料、批准清单和整批请求账检查，不能因JSON通过就标PASS。
+
+1. requested_model/response_model必须匹配本批核准映射，endpoint/profile与清单一致；未知/缺失响应模型不能取得L1的模型绑定通过。
+2. source_manifest/prompt/config哈希必须来自实际送出字节，source_sha是执行代码版本；不可拿计划SHA替换后来实际运行SHA。
+3. cell_id只可引用获批单元；repeat_id匹配该单元固定重复数。attempt_no=2必须指向同一logical_request_id的第一次，并符合重试类别和剩余额度。
+4. 每个attempt_id/供应商request_id和响应指纹的关系必须可核；同一响应不得占两个独立重复的名额。供应商不暴露ID时记录缺口，另以可核代理/账单证据绑定，不能凭本机自发ID冒充供应商ID。
+5. 费用、请求、token在发网前原子预留，同时受单格/分组/全局约束。未知usage保留最坏预留额；不能写reconciled_cny=0冒充已清算。
+6. output与reasoning归一化后不得重复计费；价格分档、套餐扣额、缓存写入、币种转换按已核rate card函数处理，不靠字段名猜。
+7. 子模块内部与SDK内部重试都计入actual request ledger；0-API回放另开run、parent_live_run_id指回生成run，禁止抹掉生成费用。
+8. transport PASS不传播给contract/semantic/author/product。拒答、截断、内容不足、未接线各记各的终态。
+9. 0-API用例不产生本CALL_RECEIPT（它代表已发出的请求），另交零出口证明与机械回执。API调用前被拦的任务记录BLOCKED任务回执，不伪造dispatched请求。
+10. 原生tool必须有真实tool_call_id，并与宿主受信执行绑定；每逻辑任务最多4个模型回合，每回合最多2次只读工具调用。非法patch不能写正式账。
+11. 记录公开usage，不收集内部思考正文。正文、候选、原始响应留本机受控目录；仓内只放脱敏汇总和哈希。
+
+来源：ChatGPT Pro
+
+归位条件：本计划完成审阅且后续报告归位获批时，目标为 `reports/api_mass_test_plan_r01/PLAN_R01.md`，保留本PR固定版本回链；本次不移动或新增其他文件。实际采用哪些模型、预算与Schema仍以执行票批准为准。
+
+来源：Codex
