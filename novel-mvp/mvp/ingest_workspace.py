@@ -428,3 +428,21 @@ def load_persisted_upload_sources(
     ):
         raise IngestWorkspaceError("M1_REHYDRATE_WATERMARK_CHANGED")
     return loaded_sources
+
+
+def load_persisted_m1_snapshot(workspace: AuthorWorkspace) -> dict[str, Any]:
+    """内部接纳用：同一 M1 版本的材料身份、上传回执和已复验的原始对象。
+
+    返回值含正文，只交给已绑定的业务入口，不是作者项目列表的安全摘要。
+    消费者写入时仍必须用 state_identity 作为原子提交的只读前置水位。
+    """
+    if not isinstance(workspace, AuthorWorkspace):
+        raise IngestWorkspaceError("AUTHOR_WORKSPACE_HANDLE_REQUIRED")
+    before = _validated_visible_state(workspace)
+    if before is None:
+        raise IngestWorkspaceError("M1_PERSISTED_STATE_REQUIRED")
+    uploads = load_persisted_upload_sources(workspace)
+    after = _validated_visible_state(workspace)
+    if before != after:
+        raise IngestWorkspaceError("M1_REHYDRATE_WATERMARK_CHANGED")
+    return {**before, "upload_sources": uploads}

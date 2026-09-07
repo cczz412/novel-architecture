@@ -17,7 +17,7 @@ from typing import Any, NoReturn
 
 from contracts import validate_c11_chapter_revision_ledger as c11_contract
 from contracts.validate_c10_intake_material_identity import validate_record
-from mvp import chapter_workspace, store, work_draft_workspace
+from mvp import chapter_workspace, intake_identity, store, work_draft_workspace
 from mvp.workspace import OPERATION_ID_RE, SHA256_RE, AuthorWorkspace
 
 
@@ -39,6 +39,15 @@ SOURCE_STORE_SCHEMA = "chapter-sources-v1"
 MATERIAL_STORE_SCHEMA = "chapter-materials-v1"
 LEDGER_STORE_SCHEMA = "chapter-revision-ledgers-v1"
 OPERATION_STORE_SCHEMA = "chapter-admission-operations-v1"
+EXTERNAL_SOURCE_STORE_SCHEMA = "chapter-sources-v2"
+EXTERNAL_OPERATION_STORE_SCHEMA = "chapter-admission-operations-v2"
+EXTERNAL_KIND = "EXTERNAL_UPLOAD"
+EXTERNAL_STAGE = "EXTERNAL_INITIAL_COMMITTED"
+EXTERNAL_ADMISSION_KEYS = {
+    "kind", "operation_id", "request_sha256", "stage", "chapter_title",
+    "chapter_id", "source_id", "material_unit_id", "identity_revision_no",
+    "revision_no", "revision_text_sha256", "committed_at", "m1_state",
+}
 ADMISSION_IDENTITY = "AUTHOR_WORKSPACE_INITIAL_CHAPTER_ADMISSION_R01"
 SOURCE_KEYS = {
     "storage_contract",
@@ -180,6 +189,8 @@ def _validated_source(value: object, source_id: str) -> dict[str, Any]:
     if not isinstance(value, dict) or set(value) != SOURCE_KEYS:
         _fail("CHAPTER_SOURCE_STORE_INVALID")
     origin = value.get("origin")
+    if isinstance(origin, dict) and origin.get("kind") == EXTERNAL_KIND:
+        return _validated_external_source(value, source_id)
     if not isinstance(origin, dict) or set(origin) != SOURCE_ORIGIN_KEYS:
         _fail("CHAPTER_SOURCE_STORE_INVALID")
     raw_base64 = value.get("original_bytes_base64")
@@ -216,7 +227,77 @@ def _validated_source(value: object, source_id: str) -> dict[str, Any]:
     return copy.deepcopy(value)
 
 
+def _validated_m1_state(value: object) -> dict[str, Any]:
+    if not isinstance(value, dict) or set(value) != {"input_manifest", "module_state"}:
+        _fail("EXTERNAL_M1_STATE_INVALID")
+    for ref in value.values():
+        if (
+            not isinstance(ref, dict) or set(ref) != {"version", "sha256"}
+            or type(ref.get("version")) is not int or ref["version"] < 1
+            or not isinstance(ref.get("sha256"), str)
+            or SHA256_RE.fullmatch(ref["sha256"]) is None
+        ):
+            _fail("EXTERNAL_M1_STATE_INVALID")
+    if value["input_manifest"]["version"] != value["module_state"]["version"]:
+        _fail("EXTERNAL_M1_STATE_INVALID")
+    return copy.deepcopy(value)
+
+
+def _validated_external_source(value: dict[str, Any], source_id: str) -> dict[str, Any]:
+    origin = value["origin"]
+    if set(origin) != {"kind", "immutable_receipt"}:
+        _fail("EXTERNAL_SOURCE_ORIGIN_INVALID")
+    receipt = origin["immutable_receipt"]
+    if (
+        not isinstance(receipt, dict)
+        or set(receipt) != {"blob_id", "kind", "content_sha256", "size", "metadata_sha256"}
+        or receipt.get("kind") != "raw_upload"
+        or not isinstance(receipt.get("blob_id"), str)
+        or type(receipt.get("size")) is not int or receipt["size"] < 1
+        or not isinstance(receipt.get("metadata_sha256"), str)
+        or SHA256_RE.fullmatch(receipt["metadata_sha256"]) is None
+        or receipt.get("content_sha256") != value.get("source_sha256")
+    ):
+        _fail("EXTERNAL_SOURCE_IMMUTABLE_RECEIPT_INVALID")
+    source = {key: val for key, val in value.items() if key != "origin"}
+    try:
+        intake_identity._decode_stored_source(source)
+        raw = base64.b64decode(source["original_bytes_base64"], validate=True)
+        stable_id = intake_identity._stable_source_id(raw, source["encoding"])
+    except (ValueError, TypeError, KeyError, AttributeError) as exc:
+        raise ChapterInitialAdmissionError("EXTERNAL_SOURCE_INVALID") from exc
+    if source["source_id"] != source_id or source_id != stable_id:
+        _fail("EXTERNAL_SOURCE_ID_MISMATCH")
+    if len(raw) != receipt["size"] or not isinstance(source["source_name"], str):
+        _fail("EXTERNAL_SOURCE_IMMUTABLE_RECEIPT_INVALID")
+    return copy.deepcopy(value)
+
+
+def _validated_external_admission(value: dict[str, Any], operation_id: str) -> dict[str, Any]:
+    if set(value) != EXTERNAL_ADMISSION_KEYS:
+        _fail("EXTERNAL_ADMISSION_OPERATION_INVALID")
+    for key in ("operation_id", "chapter_title", "chapter_id", "source_id", "material_unit_id"):
+        if not isinstance(value.get(key), str) or not value[key]:
+            _fail("EXTERNAL_ADMISSION_OPERATION_INVALID")
+    if (
+        value["operation_id"] != operation_id
+        or OPERATION_ID_RE.fullmatch(operation_id) is None
+        or value["stage"] != EXTERNAL_STAGE
+        or type(value["revision_no"]) is not int or value["revision_no"] != 1
+        or type(value["identity_revision_no"]) is not int or value["identity_revision_no"] < 1
+    ):
+        _fail("EXTERNAL_ADMISSION_OPERATION_INVALID")
+    for key in ("request_sha256", "revision_text_sha256"):
+        if not isinstance(value[key], str) or SHA256_RE.fullmatch(value[key]) is None:
+            _fail("EXTERNAL_ADMISSION_OPERATION_INVALID")
+    _validated_m1_state(value["m1_state"])
+    _committed_at(value["committed_at"])
+    return copy.deepcopy(value)
+
+
 def _validated_admission(value: object, operation_id: str) -> dict[str, Any]:
+    if isinstance(value, dict) and value.get("kind") == EXTERNAL_KIND:
+        return _validated_external_admission(value, operation_id)
     if not isinstance(value, dict) or set(value) != ADMISSION_KEYS:
         _fail("CHAPTER_ADMISSION_OPERATION_STORE_INVALID")
     string_fields = (
@@ -284,7 +365,7 @@ def _validated_payloads(payloads: dict[str, object]) -> dict[str, object]:
     if (
         not isinstance(source_store, dict)
         or set(source_store) != {"schema", "sources"}
-        or source_store.get("schema") != SOURCE_STORE_SCHEMA
+        or source_store.get("schema") not in (SOURCE_STORE_SCHEMA, EXTERNAL_SOURCE_STORE_SCHEMA)
         or not isinstance(source_store.get("sources"), dict)
         or not isinstance(material_store, dict)
         or set(material_store) != {"schema", "records"}
@@ -299,7 +380,7 @@ def _validated_payloads(payloads: dict[str, object]) -> dict[str, object]:
         or ledger_store["next_chapter_number"] < 1
         or not isinstance(operation_store, dict)
         or set(operation_store) != {"schema", "operations"}
-        or operation_store.get("schema") != OPERATION_STORE_SCHEMA
+        or operation_store.get("schema") not in (OPERATION_STORE_SCHEMA, EXTERNAL_OPERATION_STORE_SCHEMA)
         or not isinstance(operation_store.get("operations"), dict)
     ):
         _fail("CHAPTER_ADMISSION_STORE_INVALID")
@@ -311,6 +392,10 @@ def _validated_payloads(payloads: dict[str, object]) -> dict[str, object]:
     }
     if len(sources) != len(source_store["sources"]):
         _fail("CHAPTER_SOURCE_STORE_INVALID")
+    if source_store["schema"] == SOURCE_STORE_SCHEMA and any(
+        source["origin"]["kind"] == EXTERNAL_KIND for source in sources.values()
+    ):
+        _fail("EXTERNAL_SOURCE_REQUIRES_V2_STORE")
 
     materials: dict[str, dict[str, Any]] = {}
     for material_id, material in material_store["records"].items():
@@ -379,9 +464,13 @@ def _validated_payloads(payloads: dict[str, object]) -> dict[str, object]:
     }
     if len(operations) != len(operation_store["operations"]):
         _fail("CHAPTER_ADMISSION_OPERATION_STORE_INVALID")
+    if operation_store["schema"] == OPERATION_STORE_SCHEMA and any(
+        operation.get("kind") == EXTERNAL_KIND for operation in operations.values()
+    ):
+        _fail("EXTERNAL_ADMISSION_REQUIRES_V2_STORE")
     if len(operations) != len(ledgers):
         _fail("CHAPTER_ADMISSION_OPERATION_COUNT_MISMATCH")
-    if len(sources) != len(materials) or len(materials) != len(ledgers):
+    if len(materials) != len(ledgers):
         _fail("CHAPTER_ADMISSION_OWNER_COUNT_MISMATCH")
 
     chapter_by_id = {chapter["id"]: chapter for chapter in validated_chapters}
@@ -391,15 +480,15 @@ def _validated_payloads(payloads: dict[str, object]) -> dict[str, object]:
     seen_sources: set[str] = set()
     seen_materials: set[str] = set()
     for operation in operations.values():
-        work_key = (operation["work_ref"], operation["work_rev"])
-        if (
-            work_key in seen_work
-            or operation["slot_ref"] in seen_slots
-            or operation["chapter_id"] in seen_chapters
-        ):
+        external = operation.get("kind") == EXTERNAL_KIND
+        if not external:
+            work_key = (operation["work_ref"], operation["work_rev"])
+            if work_key in seen_work or operation["slot_ref"] in seen_slots:
+                _fail("CHAPTER_ADMISSION_OPERATION_DUPLICATE_IDENTITY")
+            seen_work.add(work_key)
+            seen_slots.add(operation["slot_ref"])
+        if operation["chapter_id"] in seen_chapters or operation["material_unit_id"] in seen_materials:
             _fail("CHAPTER_ADMISSION_OPERATION_DUPLICATE_IDENTITY")
-        seen_work.add(work_key)
-        seen_slots.add(operation["slot_ref"])
         seen_chapters.add(operation["chapter_id"])
         seen_sources.add(operation["source_id"])
         seen_materials.add(operation["material_unit_id"])
@@ -411,19 +500,33 @@ def _validated_payloads(payloads: dict[str, object]) -> dict[str, object]:
             _fail("CHAPTER_ADMISSION_OPERATION_REFERENCE_MISSING")
         revision = ledger["revisions"][0]
         ref = chapter["chapter_revision_ref"]
-        if (
-            source["origin"]["work_ref"] != operation["work_ref"]
+        if external:
+            if source["origin"]["kind"] != EXTERNAL_KIND:
+                _fail("EXTERNAL_ADMISSION_SOURCE_KIND_MISMATCH")
+        elif (
+            source["origin"]["kind"] != "AUTHOR_WORK_DRAFT_FREEZE"
+            or source["origin"]["work_ref"] != operation["work_ref"]
             or source["origin"]["work_rev"] != operation["work_rev"]
             or source["origin"]["handover_operation_id"] != operation["operation_id"]
-            or material["source_ref"]["source_id"] != operation["source_id"]
+        ):
+            _fail("CHAPTER_ADMISSION_OPERATION_REFERENCE_MISMATCH")
+        source_ref = material["source_ref"]
+        expected_text = (
+            source["decoded_text"][source_ref["start"]:source_ref["end"]]
+            if external else source["decoded_text"]
+        )
+        if (
+            material["source_ref"]["source_id"] != operation["source_id"]
             or revision["origin_material_ref"]["material_unit_id"]
             != operation["material_unit_id"]
+            or revision["origin_material_ref"]["identity_revision_no"]
+            != operation.get("identity_revision_no", 1)
             or revision["commit_operation_id"] != operation["operation_id"]
             or revision["title"] != operation["chapter_title"]
             or revision["committed_at"] != operation["committed_at"]
             or revision["text_sha256"] != operation["revision_text_sha256"]
             or chapter["title"] != operation["chapter_title"]
-            or chapter["text"] != source["decoded_text"]
+            or chapter["text"] != expected_text
             or ref["revision_no"] != 1
             or ref["revision_text_sha256"] != operation["revision_text_sha256"]
         ):
@@ -434,7 +537,7 @@ def _validated_payloads(payloads: dict[str, object]) -> dict[str, object]:
         _fail("CHAPTER_ADMISSION_OPERATION_REFERENCE_SET_MISMATCH")
 
     return {
-        SOURCE_KEY: {"schema": SOURCE_STORE_SCHEMA, "sources": sources},
+        SOURCE_KEY: {"schema": source_store["schema"], "sources": sources},
         MATERIAL_KEY: {"schema": MATERIAL_STORE_SCHEMA, "records": materials},
         LEDGER_KEY: {
             "schema": LEDGER_STORE_SCHEMA,
@@ -444,7 +547,7 @@ def _validated_payloads(payloads: dict[str, object]) -> dict[str, object]:
         CHAPTERS_KEY: validated_chapters,
         INDEX_KEY: validated_index,
         OPERATIONS_KEY: {
-            "schema": OPERATION_STORE_SCHEMA,
+            "schema": operation_store["schema"],
             "operations": operations,
         },
     }
@@ -466,6 +569,13 @@ def _read_bundle(workspace: AuthorWorkspace) -> dict[str, Any]:
             payloads[key] = payload
             watermarks[key] = {"version": version, "sha256": sha256}
         payloads = _validated_payloads(payloads)
+        for source in payloads[SOURCE_KEY]["sources"].values():
+            if source["origin"]["kind"] == EXTERNAL_KIND:
+                # The admitted source is frozen in this transaction. A later M1
+                # manifest may no longer expose the old raw_upload receipt.
+                expected_blob = f"i_{workspace.author_id[2:]}_raw_upload_{source['source_sha256']}"
+                if source["origin"]["immutable_receipt"]["blob_id"] != expected_blob:
+                    _fail("EXTERNAL_SOURCE_AUTHOR_MISMATCH")
     return {"payloads": payloads, "watermarks": watermarks, "raw": raw}
 
 
@@ -541,7 +651,7 @@ def commit_initial_work_draft(
         normalized_action["operation_id"]
     )
     if existing is not None:
-        if existing["request_sha256"] != request_sha:
+        if existing.get("kind") == EXTERNAL_KIND or existing["request_sha256"] != request_sha:
             _fail("OPERATION_ID_REUSED_WITH_DIFFERENT_REQUEST")
         after = _read_bundle(handle)
         if before["raw"] != after["raw"]:
@@ -565,13 +675,13 @@ def commit_initial_work_draft(
     )
     operations = before["payloads"][OPERATIONS_KEY]["operations"]
     if any(
-        operation["work_ref"] == draft["work_ref"]
-        and operation["work_rev"] == draft["work_rev"]
+        operation.get("work_ref") == draft["work_ref"]
+        and operation.get("work_rev") == draft["work_rev"]
         for operation in operations.values()
     ):
         _fail("WORK_DRAFT_REVISION_ALREADY_ADMITTED")
     if any(
-        operation["slot_ref"] == draft["slot_ref"]
+        operation.get("slot_ref") == draft["slot_ref"]
         for operation in operations.values()
     ):
         _fail("SLOT_ALREADY_HAS_INITIAL_CHAPTER")
@@ -731,6 +841,8 @@ def resolve_initial_admission(
     operation = first["payloads"][OPERATIONS_KEY]["operations"].get(operation_id)
     if operation is None:
         _fail("CHAPTER_ADMISSION_OPERATION_NOT_FOUND")
+    if operation.get("kind") == EXTERNAL_KIND:
+        _fail("WORK_DRAFT_ADMISSION_REQUIRED")
     second = _read_bundle(handle)
     if first["raw"] != second["raw"]:
         _fail("CHAPTER_ADMISSION_STATE_CHANGED_DURING_READ")
