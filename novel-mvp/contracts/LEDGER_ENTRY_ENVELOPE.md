@@ -186,6 +186,8 @@ v1 记录保留原文和原版本；迁移必须显式生成 v2，不能静默�
 
 两个版本的 Schema 同时注册时，v1 保留原 `$id`（`https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.schema.json`），v2 使用独立 `$id`（`https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.v2.schema.json`）。v2 文件仍为下方 `LEDGER_ENTRY_ENVELOPE.schema.json`，标识用于版本解析，不改变文件路径。
 
+普通候选不能通过修订把来源改成 `pack_prefilled`，也不能借此添加题材包出处；该来源应在真实题材包首次接纳时建立。已有题材包候选的原样修订与合法作者签字转换仍按既有规则处理。
+
 通用确认转换与题材包签字转换必须显式传入 `contract_version`，前后快照按同一声明版本校验；不能因为缺少 `tags/tag_groups` 就降为 v1。内容合同调用方从已校验的宿主版本传递信封版本。旧 fixture 未声明版本时固定按历史 v1 解释，v2 fixture 必须声明 v2，夹具入口原样转交该声明。
 
 ## 8. 开放问题

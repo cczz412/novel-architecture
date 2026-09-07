@@ -410,6 +410,11 @@ def validate_confirmation_transition(
         if actor != "AUTHOR":
             raise ContractError("CONFIRMED_EDIT_REQUIRES_AUTHOR")
     elif old_status == "candidate" and new_status == "candidate":
+        if (
+            after["source_identity"] == "pack_prefilled"
+            and before["source_identity"] != "pack_prefilled"
+        ):
+            raise ContractError("PACK_PROVENANCE_CANNOT_BE_CREATED_BY_TRANSITION")
         if before["source_identity"] == "pack_prefilled":
             if after["source_identity"] != "pack_prefilled":
                 raise ContractError("AUTHOR_EDIT_STATUS_MUST_BECOME_CONFIRMED")

@@ -488,3 +488,22 @@ def test_transition_rejects_unknown_explicit_version(version):
         contract.validate_pack_prefilled_author_edit(
             before, after, contract_version=version,
             content_before={"pack_ref": "PACK-01"}, content_after={"pack_ref": "PACK-01"})
+
+
+@pytest.mark.parametrize('source', ['draft_inferred', 'model_suggested', 'author_declared'])
+@pytest.mark.parametrize('changed_body', [False, True])
+@pytest.mark.parametrize('version', [contract.CONTRACT_VERSION_V1, contract.CONTRACT_VERSION_V2])
+def test_candidate_cannot_fabricate_pack_provenance(source, changed_body, version):
+    before, after = _v2_confirmed_pair()
+    before.update(source_identity=source, confirm_status='candidate', evidence_refs=['f001'])
+    after.update(source_identity='pack_prefilled', confirm_status='candidate', evidence_refs=[])
+    if version == contract.CONTRACT_VERSION_V1:
+        for row in (before, after):
+            row.pop('tags')
+            row.pop('tag_groups')
+    old_body = {'category': 'old'}
+    new_body = {'category': 'changed' if changed_body else 'old', 'pack_ref': 'FABRICATED-PACK'}
+    with pytest.raises(contract.ContractError, match='PACK_PROVENANCE_CANNOT_BE_CREATED_BY_TRANSITION'):
+        contract.validate_confirmation_transition(
+            before, after, actor='AUTHOR', contract_version=version,
+            business_before=old_body, business_after=new_body)
