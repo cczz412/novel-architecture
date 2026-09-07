@@ -313,7 +313,10 @@ def validate_pack_prefilled_author_edit(
     ):
         raise ContractError("PACK_REF_MUST_BE_PRESERVED")
     if version == CONTRACT_VERSION_V2:
-        validate_confirmation_transition(before, after, actor="AUTHOR")
+        validate_confirmation_transition(
+            before, after, actor="AUTHOR",
+            business_before=content_before, business_after=content_after,
+        )
 
 
 def validate_confirmation_transition(
@@ -376,12 +379,16 @@ def validate_confirmation_transition(
             raise ContractError("CONFIRMATION_REQUIRES_AUTHOR")
         if after["source_identity"] != "author_declared" or not after["evidence_refs"]:
             raise ContractError("CONFIRMATION_REQUIRES_AUTHOR_EVIDENCE")
+        if before["source_identity"] == "pack_prefilled":
+            if "AUTHOR_ATTESTATION" not in after["evidence_refs"]:
+                raise ContractError("AUTHOR_EDIT_REQUIRES_ATTESTATION")
+            if _pack_ref(business_before, label="BEFORE") != _pack_ref(
+                business_after, label="AFTER"
+            ):
+                raise ContractError("PACK_REF_MUST_BE_PRESERVED")
     elif old_status in {"candidate", "confirmed"} and new_status == "retired":
         if actor != "AUTHOR":
             raise ContractError("RETIREMENT_REQUIRES_AUTHOR")
-        if business_before is not None or business_after is not None:
-            if business_before != business_after:
-                raise ContractError("RETIREMENT_MUST_NOT_CHANGE_CONTENT")
         if "AUTHOR_ATTESTATION" in before["evidence_refs"] and (
             "AUTHOR_ATTESTATION" not in after["evidence_refs"]
         ):
@@ -390,6 +397,10 @@ def validate_confirmation_transition(
             "AUTHOR_ATTESTATION" in after["evidence_refs"]
         ):
             raise ContractError("RETIREMENT_MUST_NOT_CREATE_ATTESTATION")
+        if business_before is None or business_after is None:
+            raise ContractError("RETIREMENT_BUSINESS_SNAPSHOTS_REQUIRED")
+        if business_before != business_after:
+            raise ContractError("RETIREMENT_MUST_NOT_CHANGE_CONTENT")
     elif old_status == "confirmed" and new_status == "confirmed":
         if actor != "AUTHOR":
             raise ContractError("CONFIRMED_EDIT_REQUIRES_AUTHOR")

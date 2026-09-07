@@ -216,9 +216,10 @@ def validate_interval(interval: dict[str, Any], label: str) -> None:
 def validate_evidence(record: dict[str, Any], refs: list[str], label: str) -> None:
     if not refs:
         raise ContractError(f"EVIDENCE_REQUIRED:{label}")
+    allowed_statuses = {"confirmed", "retired"} if record["version"].endswith("-v2") else {"confirmed"}
     if "AUTHOR_ATTESTATION" in refs and (
         record["source_identity"] != "author_declared"
-        or record["confirm_status"] != "confirmed"
+        or record["confirm_status"] not in allowed_statuses
     ):
         raise ContractError(
             f"NESTED_AUTHOR_ATTESTATION_REQUIRES_AUTHOR_DECLARED_CONFIRMED:{label}"

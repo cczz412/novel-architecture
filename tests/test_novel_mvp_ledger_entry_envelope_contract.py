@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
+import importlib
 from pathlib import Path
 import subprocess
 import sys
@@ -233,3 +234,83 @@ def test_v2_pack_author_edit_preserves_contract_groups() -> None:
     with pytest.raises(contract.ContractError, match="CONTRACT_GROUP_IMMUTABLE"):
         contract.validate_pack_prefilled_author_edit(
             before, after, content_before=content, content_after=content)
+
+
+def _v2_confirmed_pair():
+    before = deepcopy(contract.load_fixtures(
+        CONTRACTS_DIR / "LEDGER_ENTRY_ENVELOPE.v2.fixtures.jsonl"
+    )[0]["document"])
+    before["confirm_status"] = "confirmed"
+    after = deepcopy(before)
+    after.update(rev=before["rev"] + 1, updated_at="2026-09-08T00:00:00+00:00")
+    return before, after
+
+
+@pytest.mark.parametrize("snapshots", [{}, {"business_before": {}}, {"business_after": {}}])
+def test_retirement_requires_both_business_snapshots(snapshots) -> None:
+    before, after = _v2_confirmed_pair()
+    after["confirm_status"] = "retired"
+    with pytest.raises(contract.ContractError, match="RETIREMENT_BUSINESS_SNAPSHOTS_REQUIRED"):
+        contract.validate_confirmation_transition(before, after, actor="AUTHOR", **snapshots)
+
+
+@pytest.mark.parametrize("failure", ["missing_attestation", "missing_pack_ref", "changed_pack_ref"])
+def test_generic_pack_confirmation_cannot_bypass_migration(failure) -> None:
+    before, after = _v2_confirmed_pair()
+    before.update(source_identity="pack_prefilled", confirm_status="candidate", evidence_refs=[])
+    before_body = {"pack_ref": "PACK-DEMO-01"}
+    after_body = dict(before_body)
+    if failure == "missing_attestation":
+        after["evidence_refs"] = ["f001"]
+        error = "AUTHOR_EDIT_REQUIRES_ATTESTATION"
+    elif failure == "missing_pack_ref":
+        after_body = {}
+        error = "AFTER_PACK_REF_REQUIRED"
+    else:
+        after_body["pack_ref"] = "PACK-OTHER-02"
+        error = "PACK_REF_MUST_BE_PRESERVED"
+    with pytest.raises(contract.ContractError, match=error):
+        contract.validate_confirmation_transition(
+            before, after, actor="AUTHOR", business_before=before_body, business_after=after_body)
+
+
+@pytest.mark.parametrize("ledger", ["character", "location", "item", "faction"])
+@pytest.mark.parametrize("v2,status,accepted", [
+    (True, "retired", True), (True, "confirmed", True),
+    (False, "retired", False), (True, "candidate", False),
+])
+def test_nested_attestations_follow_versioned_retirement_rule(ledger, v2, status, accepted):
+    module = importlib.import_module(f"validate_{ledger}_ledger_content")
+
+    def nested_refs(value):
+        found = []
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key == "evidence_refs" and child:
+                    found.append(child)
+                elif isinstance(child, (dict, list)):
+                    found.extend(nested_refs(child))
+        elif isinstance(value, list):
+            for child in value:
+                found.extend(nested_refs(child))
+        return found
+
+    rows = [json.loads(line) for line in (CONTRACTS_DIR / f"{ledger.upper()}_LEDGER_CONTENT.fixtures.jsonl").read_text().splitlines()]
+    record = deepcopy(next(row["document"] for row in rows
+                           if (row.get("valid") is True or row.get("expect") == "PASS")
+                           and "document" in row
+                           and not row["document"]["version"].endswith("-v2")
+                           and any(nested_refs(v) for k, v in row["document"].items() if k != "evidence_refs")))
+    record.update(source_identity="author_declared", confirm_status=status, evidence_refs=["f001"])
+    for key, value in record.items():
+        if key != "evidence_refs":
+            for refs in nested_refs(value):
+                refs[:] = ["AUTHOR_ATTESTATION"]
+    if v2:
+        envelope, _ = _v2_confirmed_pair()
+        record.update(version=f"{ledger}-ledger-content-v2", tags=envelope["tags"], tag_groups=envelope["tag_groups"])
+    if accepted:
+        module.validate_record(record)
+    else:
+        with pytest.raises(module.ContractError, match="NESTED_AUTHOR_ATTESTATION"):
+            module.validate_record(record)

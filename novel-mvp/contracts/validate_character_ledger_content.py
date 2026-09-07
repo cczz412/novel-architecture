@@ -132,9 +132,10 @@ def _validate_interval(value: dict[str, Any], *, label: str) -> None:
 def _nested_attestation_requires_author(record: dict[str, Any], evidence_refs: list[str]) -> None:
     if "AUTHOR_ATTESTATION" not in evidence_refs:
         return
+    allowed_statuses = {"confirmed", "retired"} if record["version"] == CONTRACT_VERSION_V2 else {"confirmed"}
     if (
         record["source_identity"] != "author_declared"
-        or record["confirm_status"] != "confirmed"
+        or record["confirm_status"] not in allowed_statuses
     ):
         raise ContractError(
             "NESTED_AUTHOR_ATTESTATION_REQUIRES_AUTHOR_DECLARED_CONFIRMED"
