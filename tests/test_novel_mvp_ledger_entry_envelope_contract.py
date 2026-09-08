@@ -607,3 +607,14 @@ def test_entry_fixture_requires_explicit_v2_declaration(version):
         assert error is None
     else:
         assert error is not None and error.startswith("SCHEMA_INVALID")
+
+
+def test_undeclared_fixture_summary_reports_actual_v1_validator(tmp_path):
+    document, _ = _v2_confirmed_pair()
+    path = tmp_path / "legacy.jsonl"
+    path.write_text(json.dumps({"case_id": "UNDECLARED", "fixture_kind": "entry",
+                               "entry_kind": "DEFINITION", "document": document,
+                               "valid": False, "expected_error": "SCHEMA_INVALID"}) + "\n")
+    result = contract.validate_fixture_suite(path)
+    assert result["status"] == "PASS"
+    assert result["version"] == contract.CONTRACT_VERSION_V1

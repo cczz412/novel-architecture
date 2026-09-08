@@ -566,16 +566,7 @@ def validate_fixture_suite(path: Path = FIXTURE_PATH) -> dict[str, Any]:
                 }
             )
     versions = {
-        case.get("contract_version")
-        or (
-            CONTRACT_VERSION_V2
-            if isinstance(case.get("document"), dict)
-            and (
-                "tags" in case["document"]
-                or "tag_groups" in case["document"]
-            )
-            else CONTRACT_VERSION_V1
-        )
+        case.get("contract_version", CONTRACT_VERSION_V1)
         for case in cases
     }
     summary = {
