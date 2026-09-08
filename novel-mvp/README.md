@@ -6,6 +6,7 @@
 
 - 产品怎么想：按 [Notion 决定与规格入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)的逐项主存登记读取，未迁项回原 Linear 主存；新需求先在 [CCZ-128](https://linear.app/ccz/issue/CCZ-128) 登记归属
 - 这里真正有用的： [design/INDEX.md](design/INDEX.md) 和 [contracts/](contracts/)
+- 八份合同的仅文档迁入审阅入口：[来源与版本索引](contracts/CCZ184_CONTRACT_MIGRATION_R01.md)；本批不提前切换主存。
 - 大部分代码偏旧，不能当成现行产品；其中 T03-A 已把 M1 常用入口收到 C10-first，并完成 M1/M2 本地机械收口，仍不等于 Production Ready。`mvp/planstore.py` 已补出 handover／跨文件恢复护栏，`mvp/reconcile.py` 已接通六态观察与作者 facts 准入，`mvp/factstore.py` 已把旧 M5 确认／改判写入口收进同一事务链；这些仍不等于通用 planstore 或完整主循环。
 
 本夹没有 `AGENTS.md`。Agent 仍读本仓根目录的 [AGENTS.md](../AGENTS.md)。
