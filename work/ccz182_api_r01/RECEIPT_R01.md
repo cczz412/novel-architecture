@@ -8,9 +8,9 @@
 
 《炼气士不死于无限》《我在美恐科普都市传说》各完整前三章；只读新书池 chapters_cache 中的六个 UTF-8 原文件，不加标题、不截正文、不换行归一化。共20个责任段，分别14段、6段；全章覆盖与单次调用分开核。两本已有本地试拆记录，不称独立盲测或模型训练未见。
 
-显式使用 `agent-plan_cn-beijing_personal`，当日 arkcli 登录刷新后读回 CZ 个人 Agent Plan Small 为 Running，套餐目录包含完整模型 `doubao-seed-2-1-turbo-260628`。每条调用均指定该 profile；子进程去掉临时 API Key、Base URL 和 profile 环境覆盖，不借用 platform 后付费档。20条回包实际模型均是同一 ID。没有读取或保存密钥。
+显式使用 `agent-plan_cn-beijing_personal`，当日 arkcli 登录刷新后读回 CZ 个人 Agent Plan Small 为 Running，套餐目录包含完整模型 `doubao-seed-2-1-turbo-260628`。每条调用均指定该 profile；子进程去掉临时 API Key、Base URL 和 profile 环境覆盖，不借用 platform 后付费档。20条回包实际模型均是同一 ID。没有读取或保存密钥。实际arkcli版本为1.0.13；stderr只有升级提示，20份stderr未见重试日志，仍不足以证明底层绝无重试。
 
-参数：temperature=0，thinking=disabled，text-format=json_object，max-output-tokens=4096，timeout=180秒，切段620/923、halo180。固定一轮，每段调用一次，自动重试0次，模型／端点回退0次。沿用现行 M3 INSTRUCTIONS 和 build_user_content；没有为了过校验修改提示词、输出字段或引文。
+参数：temperature=0，thinking=disabled，text-format=json_object，max-output-tokens=4096，timeout=180秒，切段620/923、halo180。固定一轮，每段主控调用一次，脚本层自动重试0次，模型／端点回退0次。arkcli本次未暴露底层重试明细，不能把20次主控调用当作已经穷尽供应商侧网络尝试。沿用现行 M3 INSTRUCTIONS 和 build_user_content；没有为了过校验修改提示词、输出字段或引文。
 
 运行源码对应 CCZ-177 第二刀候选提交 `47a63b7afca2152f4679b83829f9890a7a0fb24b`；执行前后按清单核12份源码／配置／Schema的逐文件SHA，不能把候选运行身份倒写成当时已合 main。此批调用与后续零API回放使用同一份冻结响应。
 
