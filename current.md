@@ -3,9 +3,10 @@
 > 这是根路径兼容 stub，不保存当前进度、运行成绩或产品结论。
 
 - 上工先读：[`governance/START_HERE.md`](governance/START_HERE.md)
-- 看整体任务进度、领票、阻塞与并行线：[Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)；推荐用 `$linear-github-task-map` 同时核对 GitHub。
-- 看工程施工、PR 与合并：[GitHub](https://github.com/cczz412/novel-architecture)。
-- 看当前产品口径：Linear 模块票顶部当前层，产品题看 [CCZ-158](https://linear.app/ccz/issue/CCZ-158)。原话／拍板台账仍在 [Notion 档案入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)，不当现在还算数。读 Notion ≠ 开工。
+- 看活动任务、负责人、交付、父子、前置、验收、状态与未决问题：[Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)，按五个 Project 路由现场读取。
+- 看需进仓的工程交付、Issue 写集、PR 证据与合并：[GitHub](https://github.com/cczz412/novel-architecture)。
+- 看已核对的长期决定、原话、产品说明／规格及工程合同索引：[Notion 决定与规格入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)。Notion 不维护实时票态或 PR 状态。
+- 迁移按项确认：本轮范围是门1、置信度、后端优先三项已核对决定，具体主存与版本查 Notion 迁移登记；未迁内容仍以原 Linear 文档为主存，Notion 只登记指路。登记不等于迁入，不能宣称全库已迁。原始记录和历史保留，读 Notion 不产生施工授权。
 - 短通知进 Slack [#施工](https://novel-architecture.slack.com/archives/C0BRYSBUJKX)；批复／阶段门进 [#主控聊天](https://novel-architecture.slack.com/archives/C0BTPJ1FMCY)。普通窗口不要去读完整 `#主控聊天`。
 - 看仓库稳定入口：[`governance/INDEX.md`](governance/INDEX.md)
 - 现有工具读取带日期的技术兼容字段：[`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json)；它不是全局任务地图。

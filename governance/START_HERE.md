@@ -10,24 +10,26 @@
 
 | 地方 | 干什么 | 入口 |
 |---|---|---|
-| GitHub | 工程合同、代码、PR、施工授权 | 本仓 |
-| Linear | 有结束点的任务、父子、硬前置；当前产品口径在模块票顶部 | [novel-architecture](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)；产品题 [CCZ-158](https://linear.app/ccz/issue/CCZ-158) |
-| Notion | 原话档案、拍板台账。不当当前，不是工程真源 | [档案入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133) |
+| GitHub | 需进仓的工程交付；Issue 规定写集，PR 证明交付 | 本仓 |
+| Linear | 活动任务、负责人、交付、父子、前置、验收、状态及未决问题 | [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)（五个 Project 路由） |
+| Notion | 已核对的长期决定、原话、产品说明／规格和工程合同索引 | [Notion 决定与规格入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133) |
 | Slack `#施工` | 现场短通知 | [#施工](https://novel-architecture.slack.com/archives/C0BRYSBUJKX) |
 | Slack `#主控聊天` | 批复、阶段门、跨工具批准 | [#主控聊天](https://novel-architecture.slack.com/archives/C0BTPJ1FMCY) |
 
-查现在还算数，打开 Linear 模块票最上面那一层。Notion 那页是档案，不当当前。登记不等于工程采纳。Notion 旧监督页／账序页仍是历史存档，不能当施工入口，也不能冒充工程真源。
+迁移按项确认：本轮范围是门1、置信度、后端优先三项已核对决定，具体主存与版本查 Notion 迁移登记；未迁内容仍以原 Linear 文档为主存，Notion 只登记指路。登记不等于迁入，不能宣称全库已迁。原始记录和历史保留，读 Notion 不产生施工授权。
 
-干活用的插件就这几个：GitHub（Issue／PR）、Linear（票、依赖、当前产品口径）、Notion（原话档案）、Slack（只进任务卡点名的频道）。普通窗口默认只报 `#施工`，不要因为连着了就去读完整 `#主控聊天`。
+完整内容只留一个主存，其他地方保留短背景和固定依据链接；不是每个任务三处必建。Notion 不维护实时票态或 PR 状态，旧监督页／账序页仍为历史。任务状态读 Linear，工程状态读 GitHub。
 
-拍板出处：工程真源唯一化见 [DR-20260822-02](decision_records/DR-20260822-02.md)；四台分工见 CZ 2026-09-05，落账 GitHub [#262](https://github.com/cczz412/novel-architecture/issues/262)；当前口径改口见 GitHub [#291](https://github.com/cczz412/novel-architecture/issues/291)。
+干活按目标打开 GitHub、Linear 或 Notion。Slack 只进任务卡点名的频道；普通窗口默认只报 `#施工`，不要因为连着了就去读完整 `#主控聊天`。
+
+拍板出处：工程真源唯一化见 [DR-20260822-02](decision_records/DR-20260822-02.md)；本次分工由 CZ 2026-09-08 批准，见 [#327](https://github.com/cczz412/novel-architecture/issues/327)。此前分工见 [#262](https://github.com/cczz412/novel-architecture/issues/262)、[#291](https://github.com/cczz412/novel-architecture/issues/291)，历史保留。
 
 ## 先读顺序
 
 1. 本页 [`governance/START_HERE.md`](START_HERE.md)
-2. 四台怎么分工：[GitHub / Linear / Notion / Slack 协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)（正式施工仍以 GitHub Issues 为准；任务看 Linear；当前产品口径看模块票顶部；Notion 只当档案；短通知进 `#施工`，批复进 `#主控聊天`）
+2. 四台怎么分工：[GitHub / Linear / Notion / Slack 协作约定](COLLAB_GITHUB_LINEAR_SLACK.md)（正式施工仍以 GitHub Issues 为准；任务看 Linear；长期决定与规格按 Notion 主存登记寻路；短通知进 `#施工`，批复进 `#主控聊天`）
 3. 建票／拆票／依赖：[Agent 必读：建票、拆票与依赖规则](agent_ticket_rules.md)（R1–R5；查依赖先读 [CCZ-77](https://linear.app/ccz/issue/CCZ-77)）
-4. 整体看任务：先读 Linear 的[建票、拆票与依赖规则](https://linear.app/ccz/document/00agent-必读linear-建票拆票与依赖规则codex-aea4df7ecca6)，再看项目最新 Update 和 [CCZ-77 路线入口](https://linear.app/ccz/issue/CCZ-77)；推荐用 `$linear-github-task-map` 输出图和表。
+4. 整体看任务：先读 Linear 的[建票、拆票与依赖规则](https://linear.app/ccz/document/00agent-必读linear-建票拆票与依赖规则codex-aea4df7ecca6)，从 [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)按相关 Project 路由读活动票与最新 Update；不另造总看板，也不只搜索旧总 Project。
 5. 工程施工：[GitHub Issues](https://github.com/cczz412/novel-architecture/issues) 与 [Pull requests](https://github.com/cczz412/novel-architecture/pulls)。
 6. 仓库寻路：[`current.md`](../current.md) 与 [`governance/INDEX.md`](INDEX.md)。
 7. 只有现有工具需要旧技术控制字段时，才读带日期的 [`governance/CURRENT_STATE.json`](CURRENT_STATE.json)；它不回答领票、并行线或最新阻塞。
@@ -35,7 +37,7 @@
 9. 找目录职责／「要加 X 去哪」：[ARCHITECTURE_MAP.md](ARCHITECTURE_MAP.md)。
 10. 写任何给人读的中文之前：[中文语感对齐](chinese_language_style_alignment.md)（去 AI 腔、不啯嗦，全 Agent 通用）。
 
-版本、路径、候选身份仍只认 [`governance/current_pointers.json`](current_pointers.json)。产品需求和 CZ 拍板回 Linear 的当前模块票；工程能力回 GitHub `main` 上的正式合同与代码。仓库不再把 R14／R01／R03 当现行入口，整体任务图也不得从旧快照复原。
+版本、路径、候选身份仍只认 [`governance/current_pointers.json`](current_pointers.json)。活动需求与未决问题回 Linear，长期决定与规格按 Notion 主存登记寻路；工程能力回 GitHub `main` 上的正式合同与代码。仓库不再把 R14／R01／R03 当现行入口，整体任务图也不得从旧快照复原。
 
 ## 标签词典
 
