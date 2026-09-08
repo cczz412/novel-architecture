@@ -64,6 +64,80 @@
   },
   "path_rules": [
     {
+      "name": "novel-mvp text mapping runtime",
+      "pattern": "novel-mvp/mvp/text_mapping.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py",
+        "tests/test_novel_mvp_c2_c1_text_map_contract.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp text mapping runtime tests",
+      "pattern": "tests/test_novel_mvp_text_mapping_runtime.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py",
+        "tests/test_novel_mvp_c2_c1_text_map_contract.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp mapped flow segment",
+      "pattern": "novel-mvp/mvp/segment.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp mapped flow segment_tool",
+      "pattern": "novel-mvp/mvp/segment_tool.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp mapped flow segment_workspace",
+      "pattern": "novel-mvp/mvp/segment_workspace.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp mapped flow extract",
+      "pattern": "novel-mvp/mvp/extract.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp mapped flow extract_tool",
+      "pattern": "novel-mvp/mvp/extract_tool.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp mapped flow factstore",
+      "pattern": "novel-mvp/mvp/factstore.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py"
+      ],
+      "full_chain": false
+    },
+    {
       "name": "novel-mvp isolated C2 C1 text mapping contract",
       "pattern": "novel-mvp/contracts/C2_C1_TEXT_MAP.*",
       "modules": [],

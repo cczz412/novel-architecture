@@ -1,14 +1,14 @@
 # C2 → C1 受控文本映射合同
 
-版本：`C2_C1_TEXT_MAP v1`。用途：证明一段规范化引文确实对应同一章、同一 revision 的原章连续片段。#322 第一刀只交合同与离线校验，不表示生产 C3/C4 已能接收跨段引文。
+版本：`C2_C1_TEXT_MAP v1`。用途：证明一段规范化引文确实对应同一章、同一 revision 的原章连续片段。#322 第一刀冻结合同与离线校验；第二刀提供下述显式运行入口。
 
-现役 C2/C3/C4 v1 保持原规则。启用此扩展必须另批第二刀，完成 M2 映射输出、M3 候选证据传输、M4 事务校验与持久保存，以及两本前三章的回取验收。不得给旧 reader 加字段后默默降级；不认识扩展的入口拒绝接收。章仍是文本身份单位，责任段只是一次抽取任务的范围；本合同不增加跨章匹配，也不改变全章整合。
+默认 C2/C3/C4 v1 入口保留原规则。显式启用 `text_mapping=True` 或 M2 `options.text_mapping=true` 后，M2 输出 `text_map`，M3 传递 `text_map_evidence`，M4 在当前原章与责任范围下复验并事务保存。工作区入口为 `persist_current_mapped_segments`。章仍是文本身份单位，责任段只是一次抽取范围；不增加跨章匹配，也不改变全章整合。
 
 ## 输入与可信边界
 
 机器形状见 [Schema](C2_C1_TEXT_MAP.schema.json)，纯校验入口为 [validate_mapping](validate_c2_c1_text_map.py)。调用者分别传入待验证 `evidence` 和可信 `snapshot`，不能用证据包自带的快照替代当前状态。
 
-`snapshot` 含 `text`、`chapter_revision_ref`、`responsibility`。第二刀中，C1/C11 的读取方提供当前不可变原章正文和 revision；M2 调度方提供本次任务的责任段分配。M3／模型不得修改这些可信输入。本刀只用传入的合成快照，不读取本机书库，不写文件或存储，也不把校验结果自动确认成事实。
+`snapshot` 含 `text`、`chapter_revision_ref`、`responsibility`。第二刀中，C1/C11 的读取方提供当前不可变原章正文和 revision；M2 调度方提供本次任务的责任段分配。M3／模型不得修改这些可信输入。纯校验器不读取本机书库、不写文件，也不把校验结果自动确认成事实。运行调用方负责取得可信快照。
 
 revision 是 `{chapter_id, revision_no, revision_text_sha256}`；SHA-256 对原章逐字文本的 UTF-8 字节计算。相同文本的旧 revision_no 仍拒绝。字符偏移都是 Unicode code point、0 起点、左闭右开；不按 UTF-8 字节、UTF-16 单元或可视字形计数，组合字符不合并。
 
@@ -34,9 +34,9 @@ revision 是 `{chapter_id, revision_no, revision_text_sha256}`；SHA-256 对原�
 
 ## 归属、返回与失败
 
-M2 负责产生映射；M3 保留候选原文、revision 和责任范围；M4 在当前 revision 与责任范围下复验，成功后才可把原章片段交给已有事务 writer。C4 后续保存候选原文、映射证据及原章片段的具体运行形状由第二刀接线；本刀没有修改 C4 v1 字段表，也没有新造 C11 anchor 形状。
+M2 负责产生映射；M3 保留候选原文、revision 和责任范围；M4 在当前 revision 与责任范围下复验，成功后才可把原章片段交给已有事务 writer。C4 用可选 `text_map_evidence` 保存候选原文与完整来源映射，用 `quote` 保存原章片段，anchor 沿用 C11 原形状。后续 revision 可更新 current anchor，来源映射保持首次入账身份，不能当成新版映射。
 
-本校验器只返回 `{chapter_revision_ref,start,end,text,sha256}` 的拟保存片段，不返回 `confirmed`，不分配事实号或 E-ID，不写正式账本。失败抛出 `ValueError`，不得产生任何写入；调用者也不能在验证前预写。C11 revision 与事实写入之间的并发复核和事务零写入保证，留第二刀沿现有事务协调器完成。
+本校验器只返回 `{chapter_revision_ref,start,end,text,sha256}` 的拟保存片段，不返回 `confirmed`，不分配事实号或 E-ID，不写正式账本。失败抛出 `ValueError`，不得产生任何写入；调用者也不能在验证前预写。运行层沿现有事务协调器复核 C11 revision 与上游来源版本，并保证失败零写入。
 
 错误码区分 Schema／可信快照无效、快照 SHA 不符、revision 不符、映射重放不符、责任范围不符或无效、超出责任范围、匹配无效或不符、重复引文、原章区间／片段／SHA 不符、候选引文不符。对应正常和拒绝输入见 [合成用例](C2_C1_TEXT_MAP.fixtures.jsonl)；测试同时核对输入不被修改和运行代码未被导入。
 

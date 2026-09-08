@@ -53,6 +53,8 @@
 
 v0 reader 遇到 v1 不得剥掉 revision ref 后继续抽取；产品完成 revision-aware 升级前必须 fail closed。
 
-## 合同扩展：跨自然段的可重放映射（尚未接入运行）
+## 可选扩展：跨自然段的可重放映射
 
-第一刀新增 [C2_C1_TEXT_MAP v1](C2_C1_TEXT_MAP.md)，单独保存规范化版本、每字符到原章的映射、去除空白和责任范围。现役 C2 v1 字段及偏移规则不变。第二刀由 M2 生成映射，C1/C11 提供不可变原章与 current revision；M3 只能使用任务分配的责任范围，halo 不能作为证据范围。完成 M2/M3/M4 接线与真书验收后才可启用，不得把离线合同校验通过写成现运行支持跨段。
+显式调用 `segment_chapter(..., text_mapping=True)`、M2 请求 `options.text_mapping=true` 或工作区 `persist_current_mapped_segments` 时，C2 v1 增加 `text_map`。默认入口保持原字段和行为；v0 不接受此扩展。
+
+`text_map` 包含 `normalization_version`、`original_text`、`normalized_text`、`char_map`、`removed_whitespace`，规则见 [C2_C1_TEXT_MAP v1](C2_C1_TEXT_MAP.md)。原章不改写；M2 按原章重放映射并绑定 current revision。责任范围仍是 C2 的 `seg/start/end`，halo 不得充当证据。工作区保存切段参数并在读取时从当前 C1 重算；未知字段与失配证据拒绝接收。

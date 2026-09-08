@@ -19,9 +19,10 @@ from typing import Any
 from jsonschema import Draft202012Validator, FormatChecker
 
 try:
-    from . import planstore
+    from . import planstore, text_mapping
 except ImportError:  # pragma: no cover - 直接运行脚本时使用
     import planstore  # type: ignore[no-redef]
+    import text_mapping  # type: ignore[no-redef]
 
 
 STATUS_EXTRACTED = "extracted"
@@ -130,13 +131,37 @@ def _validate_c11_object(
         raise FactstoreError(f"{contract}_NOT_OBJECT")
     if value.get("contract") != contract or value.get("version") != version:
         raise FactstoreError(f"{contract}_IDENTITY_INVALID")
+    # The optional, explicitly named mapping extension belongs to C2/C3/C4.
+    # Validate its proof separately; the frozen C11 base schema stays unchanged.
+    base = dict(value)
+    extension = None
+    if contract == "C2_SEGMENT" and "text_map" in base:
+        extension = base.pop("text_map")
+    elif contract in {"C3_FACT_CANDIDATE", "C4_FACT_QUERY"} and "text_map_evidence" in base:
+        extension = base.pop("text_map_evidence")
     errors = sorted(
-        _c11_validator().iter_errors(value), key=lambda item: list(item.path)
+        _c11_validator().iter_errors(base), key=lambda item: list(item.path)
     )
     if errors:
         first = errors[0]
         path = "/".join(map(str, first.path)) or "$"
         raise FactstoreError(f"{contract}_SCHEMA_INVALID:{path}:{first.message}")
+    if value != base:
+        try:
+            if contract == "C2_SEGMENT":
+                text_mapping.validate_segment(value)
+            else:
+                result = text_mapping.validate_origin_evidence(extension)
+                if contract == "C3_FACT_CANDIDATE":
+                    if (value["quote"] != extension["quote_original"]
+                            or value["chapter_revision_ref"] != result["chapter_revision_ref"]
+                            or value["seg"] != extension["responsibility"]["seg"]):
+                        raise ValueError("C3_TEXT_MAP_ORIGIN_MISMATCH")
+                elif (value["quote"] != result["text"]
+                      or value["chapter_id"] != result["chapter_revision_ref"]["chapter_id"]):
+                    raise ValueError("C4_TEXT_MAP_ORIGIN_MISMATCH")
+        except (ValueError, KeyError, TypeError) as exc:
+            raise FactstoreError(f"{contract}_TEXT_MAP_INVALID:{exc}") from exc
     return value
 
 
@@ -382,6 +407,15 @@ def build_extracted_c4_snapshot(
         if segment is None:
             raise FactstoreError("C3_SEGMENT_NOT_FOUND")
         quote = candidate["quote"]
+        if "text_map" in segment:
+            try:
+                mapped = text_mapping.validate_candidate(candidate, segment, chapter=chapter)
+            except (ValueError, KeyError, TypeError) as exc:
+                raise FactstoreError(f"C3_TEXT_MAP_INVALID:{exc}") from exc
+            validated_candidates.append((candidate, segment, mapped["start"], mapped["end"]))
+            continue
+        if "text_map_evidence" in candidate:
+            raise FactstoreError("C3_TEXT_MAP_WITHOUT_C2_CONTEXT")
         if not quote:
             raise FactstoreError("C3_QUOTE_REQUIRED_FOR_VERIFIED_ANCHOR")
         local_start = segment["text"].find(quote)
@@ -408,7 +442,8 @@ def build_extracted_c4_snapshot(
     for (candidate, segment, raw_start, raw_end), fact_ref in zip(
         validated_candidates, new_ids
     ):
-        quote = candidate["quote"]
+        quote = (chapter_text[raw_start:raw_end]
+                 if "text_map_evidence" in candidate else candidate["quote"])
         record = {
             "contract": "C4_FACT_QUERY",
             "version": "v1",
@@ -432,6 +467,8 @@ def build_extracted_c4_snapshot(
             "anchor_state": "VERIFIED",
             "recheck": None,
         }
+        if "text_map_evidence" in candidate:
+            record["text_map_evidence"] = copy.deepcopy(candidate["text_map_evidence"])
         new_records.append(copy.deepcopy(_validate_c11_object(record, "C4_FACT_QUERY")))
     return [*facts_before, *new_records], new_ids
 
