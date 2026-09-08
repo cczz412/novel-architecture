@@ -1038,7 +1038,7 @@ CCZ-142 的“六份施工包”以及研究侧 B 系列属于责任分工和已
 
 ## 17. 可从本文件提取的完整机器格式
 
-本节补齐执行者不能访问本机TEMP的交接缺口。下列JSON来自Pro原包；Codex按复审修正批次模板的逐配置绑定和回执费用条件，停止策略保留原包字节。三份均为设计候选，不需要从本机取件。profile_bindings按获批selected_profiles增删键；选中P-T或P-N时使用相同字段结构逐项核实，不能借用其他配置的端点或价格。批次模板中的null和空清单必须在另有执行授权后填入真实值，不能直接运行。其余预算、模型组合和逐格判据以本文第5—13节为完整人读依据；本节不要求先下载其余本机CSV。
+本节补齐执行者不能访问本机TEMP的交接缺口。下列JSON来自Pro原包；Codex按复审修正逐配置绑定、批准配置哈希、逐格／阶段预算和回执费用／失败响应条件，停止策略保留原包字节。三份均为设计候选，不需要从本机取件。profile_bindings按获批selected_profiles增删键；选中P-T或P-N时使用相同字段结构逐项核实，不能借用其他配置的端点或价格。批次模板中的null和空清单必须在另有执行授权后填入真实值，不能直接运行。其余预算、模型组合和逐格判据以本文第5—13节为完整人读依据；本节不要求先下载其余本机CSV。
 
 受#325单文件写集约束，JSON内嵌在本文件而非新增独立仓库文件。获准执行时可用下列标准库脚本提取到本机TEMP，并检查哈希；不调用API，不读取密钥。
 
@@ -1062,7 +1062,7 @@ for name, expected, payload in re.findall(
 
 ### BATCH_MANIFEST_TEMPLATE.json
 
-<!-- MACHINE_FILE: BATCH_MANIFEST_TEMPLATE.json SHA256: f1c5e74c30fe946d9242bf8fdcd6137060a90c66bf99c94fa5fa6027bdde2bd8 -->
+<!-- MACHINE_FILE: BATCH_MANIFEST_TEMPLATE.json SHA256: e4d59e6f1990e5a5496813f157e042ef34c83bd9025d85f8d4afbe46f180087f -->
 ```json
 {
   "schema_version": "PROPOSED_API_TEST_BATCH_MANIFEST_R01",
@@ -1194,13 +1194,874 @@ for name, expected, payload in re.findall(
       }
     }
   },
-  "profile_binding_policy": "Before dispatch, profile_bindings keys must exactly equal selected_profiles; each receipt binds its profile_id and rate_card_ref to that profile entry. Remove unselected template profiles. Any missing, null or stale provider or pricing evidence blocks that profile."
+  "profile_binding_policy": "Before dispatch, profile_bindings keys must exactly equal selected_profiles; each receipt binds its profile_id and rate_card_ref to that profile entry. Remove unselected template profiles. Any missing, null or stale provider or pricing evidence blocks that profile.",
+  "experiment_id": null,
+  "config_manifest": {
+    "schema_version": "PROPOSED_REQUEST_CONFIG_MANIFEST_R01",
+    "manifest_sha256": null,
+    "entries": []
+  },
+  "config_entry_template": {
+    "cell_id": null,
+    "profile_id": null,
+    "config_version": "REQUEST_CONFIG_R01",
+    "approved_config_sha256": null,
+    "request_config": {
+      "requested_model": null,
+      "temperature": null,
+      "thinking": null,
+      "output_mode": null,
+      "input_tokens_cap": null,
+      "visible_output_tokens_cap": null,
+      "reasoning_tokens_cap": null,
+      "timeout_seconds": null,
+      "max_model_turns": null,
+      "max_tool_calls_per_turn": null,
+      "sdk_retry_limit": 0,
+      "other_provider_parameters": {}
+    }
+  },
+  "approved_cell_caps": {
+    "S0-01": {
+      "phase_id": "S0",
+      "attempt_cap": 1,
+      "input_tokens_cap": 8192,
+      "output_plus_reasoning_tokens_cap": 4096,
+      "fee_cap_cny": 1.0
+    },
+    "S0-02": {
+      "phase_id": "S0",
+      "attempt_cap": 1,
+      "input_tokens_cap": 8192,
+      "output_plus_reasoning_tokens_cap": 4096,
+      "fee_cap_cny": 1.0
+    },
+    "S0-03": {
+      "phase_id": "S0",
+      "attempt_cap": 1,
+      "input_tokens_cap": 8192,
+      "output_plus_reasoning_tokens_cap": 4096,
+      "fee_cap_cny": 1.0
+    },
+    "S1-01": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-02": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-03": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-04": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-05": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-06": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-07": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-08": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-09": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-10": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-11": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-12": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-13": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-14": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-15": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-16": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-17": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S1-18": {
+      "phase_id": "S1",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S2H-01": {
+      "phase_id": "S2H",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S2H-02": {
+      "phase_id": "S2H",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S2H-03": {
+      "phase_id": "S2H",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S2H-04": {
+      "phase_id": "S2H",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S2H-05": {
+      "phase_id": "S2H",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S2H-06": {
+      "phase_id": "S2H",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 5.0
+    },
+    "S2T-01": {
+      "phase_id": "S2T",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 20.0
+    },
+    "S2T-02": {
+      "phase_id": "S2T",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 368640,
+      "fee_cap_cny": 20.0
+    },
+    "S2T-03": {
+      "phase_id": "S2T",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 40960,
+      "fee_cap_cny": 20.0
+    },
+    "S2T-04": {
+      "phase_id": "S2T",
+      "attempt_cap": 10,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 368640,
+      "fee_cap_cny": 20.0
+    },
+    "S3-01": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-02": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-03": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-04": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-05": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-06": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-07": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-08": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-09": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-10": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-11": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-12": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-13": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-14": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-15": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-16": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-17": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-18": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-19": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-20": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-21": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-22": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-23": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-24": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-25": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-26": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-27": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-28": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-29": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-30": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-31": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-32": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-33": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-34": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-35": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3-36": {
+      "phase_id": "S3",
+      "attempt_cap": 5,
+      "input_tokens_cap": 40960,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 2.5
+    },
+    "S3P-01": {
+      "phase_id": "S3P",
+      "attempt_cap": 40,
+      "input_tokens_cap": 327680,
+      "output_plus_reasoning_tokens_cap": 163840,
+      "fee_cap_cny": 15.0
+    },
+    "S3P-02": {
+      "phase_id": "S3P",
+      "attempt_cap": 40,
+      "input_tokens_cap": 327680,
+      "output_plus_reasoning_tokens_cap": 163840,
+      "fee_cap_cny": 15.0
+    },
+    "S4C-01": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-02": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-03": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-04": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-05": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-06": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-07": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-08": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-09": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-10": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-11": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4C-12": {
+      "phase_id": "S4C",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4P-01": {
+      "phase_id": "S4P",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4P-02": {
+      "phase_id": "S4P",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4P-03": {
+      "phase_id": "S4P",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4P-04": {
+      "phase_id": "S4P",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4P-05": {
+      "phase_id": "S4P",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S4P-06": {
+      "phase_id": "S4P",
+      "attempt_cap": 5,
+      "input_tokens_cap": 81920,
+      "output_plus_reasoning_tokens_cap": 20480,
+      "fee_cap_cny": 5.0
+    },
+    "S5-01": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-02": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-03": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-04": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-05": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-06": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-07": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-08": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-09": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-10": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-11": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-12": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-13": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-14": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-15": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-16": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-17": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S5-18": {
+      "phase_id": "S5",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S6-01": {
+      "phase_id": "S6",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S6-02": {
+      "phase_id": "S6",
+      "attempt_cap": 50,
+      "input_tokens_cap": 409600,
+      "output_plus_reasoning_tokens_cap": 204800,
+      "fee_cap_cny": 25.0
+    },
+    "S7-01": {
+      "phase_id": "S7",
+      "attempt_cap": 40,
+      "input_tokens_cap": 655360,
+      "output_plus_reasoning_tokens_cap": 163840,
+      "fee_cap_cny": 40.0
+    },
+    "S7-02": {
+      "phase_id": "S7",
+      "attempt_cap": 40,
+      "input_tokens_cap": 655360,
+      "output_plus_reasoning_tokens_cap": 163840,
+      "fee_cap_cny": 40.0
+    }
+  },
+  "approved_phase_caps": {
+    "S0": {
+      "attempt_cap": 3,
+      "input_tokens_cap": 24576,
+      "output_plus_reasoning_tokens_cap": 12288,
+      "fee_cap_cny": 3.0
+    },
+    "S1": {
+      "attempt_cap": 180,
+      "input_tokens_cap": 1474560,
+      "output_plus_reasoning_tokens_cap": 737280,
+      "fee_cap_cny": 90.0
+    },
+    "S2H": {
+      "attempt_cap": 60,
+      "input_tokens_cap": 491520,
+      "output_plus_reasoning_tokens_cap": 245760,
+      "fee_cap_cny": 30.0
+    },
+    "S2T": {
+      "attempt_cap": 40,
+      "input_tokens_cap": 327680,
+      "output_plus_reasoning_tokens_cap": 819200,
+      "fee_cap_cny": 80.0
+    },
+    "S3": {
+      "attempt_cap": 180,
+      "input_tokens_cap": 1474560,
+      "output_plus_reasoning_tokens_cap": 737280,
+      "fee_cap_cny": 90.0
+    },
+    "S3P": {
+      "attempt_cap": 80,
+      "input_tokens_cap": 655360,
+      "output_plus_reasoning_tokens_cap": 327680,
+      "fee_cap_cny": 30.0
+    },
+    "S4C": {
+      "attempt_cap": 60,
+      "input_tokens_cap": 983040,
+      "output_plus_reasoning_tokens_cap": 245760,
+      "fee_cap_cny": 60.0
+    },
+    "S4P": {
+      "attempt_cap": 30,
+      "input_tokens_cap": 491520,
+      "output_plus_reasoning_tokens_cap": 122880,
+      "fee_cap_cny": 30.0
+    },
+    "S5": {
+      "attempt_cap": 900,
+      "input_tokens_cap": 7372800,
+      "output_plus_reasoning_tokens_cap": 3686400,
+      "fee_cap_cny": 450.0
+    },
+    "S6": {
+      "attempt_cap": 100,
+      "input_tokens_cap": 819200,
+      "output_plus_reasoning_tokens_cap": 409600,
+      "fee_cap_cny": 50.0
+    },
+    "S7": {
+      "attempt_cap": 80,
+      "input_tokens_cap": 1310720,
+      "output_plus_reasoning_tokens_cap": 327680,
+      "fee_cap_cny": 80.0
+    }
+  },
+  "freeze_policy": "Template caps are proposed ceilings, not approval. At freeze retain exactly selected cells and their phases; bind execution authorization to manifest hash. Config entries must cover every selected cell/profile pair exactly once, including sub-call profiles. Canonical config hash is SHA-256 of UTF-8 JSON with sorted keys, compact separators and no NaN; receipt config_sha256 must equal approved_config_sha256 and the actual sent non-prompt/source request configuration. Every actual provider parameter, limits, tools and retry setting must be represented; unsupported or omitted parameters require an explicit disposition in other_provider_parameters. Any unresolved value blocks dispatch. Freeze final provider-native parameters after adaptation. Configuration changes require new approval and batch, not mutation of the old manifest.",
+  "budget_scope_policy": "Persist reservations and reconciliations under experiment_id/cell_id/phase_id across all batches and retries. Selected cell and phase cap keys must match selected_cell_ids and their phase membership exactly. Proposed ceilings may only decrease without a new budget approval. Every attempt atomically reserves against cell, phase, batch approved_limits and global STOP_POLICY limits; unused sibling allocations are not transferable. Batch restart or new config must not reset experiment spend."
 }
 ```
 
 ### CALL_RECEIPT.schema.json
 
-<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: 52a03ef9e2f9ea5078bdbea7264193c080cc5881f338f5f73929ef4fa986a947 -->
+<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: 337cd3622ebc416ebaa88fda154a579a547beddd090d5c9ce31214296390be78 -->
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -1366,7 +2227,8 @@ for name, expected, payload in re.findall(
         "provider_request_id",
         "response_id",
         "error_class",
-        "finish_reason"
+        "finish_reason",
+        "response_received"
       ],
       "properties": {
         "dispatched": {
@@ -1427,6 +2289,10 @@ for name, expected, payload in re.findall(
           ],
           "minimum": 1,
           "maximum": 4
+        },
+        "response_received": {
+          "type": "boolean",
+          "description": "True whenever any provider response bytes were received, including HTTP error bodies and partial streams; false only when none were received."
         }
       }
     },
@@ -1775,6 +2641,77 @@ for name, expected, payload in re.findall(
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "transport": {
+            "properties": {
+              "response_received": {
+                "const": true
+              }
+            },
+            "required": [
+              "response_received"
+            ]
+          }
+        },
+        "required": [
+          "transport"
+        ]
+      },
+      "then": {
+        "properties": {
+          "raw_response_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "raw_response_sha256": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "transport": {
+            "properties": {
+              "completion_state": {
+                "enum": [
+                  "SUCCEEDED",
+                  "REFUSED",
+                  "FAILED_RAW_RESPONSE",
+                  "INCOMPLETE_TRUNCATED",
+                  "MODEL_MISMATCH",
+                  "USAGE_UNKNOWN"
+                ]
+              }
+            },
+            "required": [
+              "completion_state"
+            ]
+          }
+        },
+        "required": [
+          "transport"
+        ]
+      },
+      "then": {
+        "properties": {
+          "transport": {
+            "properties": {
+              "response_received": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
     }
   ]
 }
@@ -1894,13 +2831,13 @@ for name, expected, payload in re.findall(
 JSON Schema 只验形状。下面这些必须由宿主对原始材料、批准清单和整批请求账检查，不能因JSON通过就标PASS。
 
 1. profile_bindings的键必须与selected_profiles完全一致；每份回执按profile_id取得唯一供应商快照和rate_card，rate_card_ref指向该配置的计价项。缺项、未核价或配置间错配均拦截。requested_model/response_model必须匹配本批核准映射，endpoint/profile与清单一致；未知/缺失响应模型不能取得L1的模型绑定通过。
-2. source_manifest/prompt/config哈希必须来自实际送出字节，source_sha是执行代码版本；不可拿计划SHA替换后来实际运行SHA。
+2. 冻结config_manifest逐一覆盖获批cell/profile组合（含子调用配置），批准哈希必须与适配后的全部实际请求配置一致；未知供应商参数不能省略。批次批准绑定整个清单哈希，不能只记录事后config_sha256。source_manifest/prompt/config哈希必须来自实际送出字节，source_sha是执行代码版本；不可拿计划SHA替换后来实际运行SHA。
 3. cell_id只可引用获批单元；repeat_id匹配该单元固定重复数。attempt_no=2必须指向同一logical_request_id的第一次，并符合重试类别和剩余额度。
 4. 每个attempt_id/供应商request_id和响应指纹的关系必须可核；同一响应不得占两个独立重复的名额。供应商不暴露ID时记录缺口，另以可核代理/账单证据绑定，不能凭本机自发ID冒充供应商ID。
-5. 费用、请求、token在发网前原子预留，同时受单格/分组/全局约束。未知usage保留最坏预留额；不能写reconciled_cny=0冒充已清算。
+5. 费用、请求、token在发网前原子预留，同时受approved_cell_caps、approved_phase_caps、批次及全局约束。各批按experiment_id共享已花费与预留账，重启或换配置不能重新取得一份预算；选中格／阶段键须精确覆盖，不能借用相邻格余额。未知usage保留最坏预留额；不能写reconciled_cny=0冒充已清算。
 6. output与reasoning归一化后不得重复计费；价格分档、套餐扣额、缓存写入、币种转换按已核rate card函数处理，不靠字段名猜。
 7. 子模块内部与SDK内部重试都计入actual request ledger；0-API回放另开run、parent_live_run_id指回生成run，禁止抹掉生成费用。
-8. transport PASS不传播给contract/semantic/author/product。拒答、截断、内容不足、未接线各记各的终态。
+8. 只要收到任何供应商响应字节（含HTTP错误体／部分流），transport.response_received必须为true，并保留raw_response_sha256；仅未收到字节时为false/null。transport PASS不传播给contract/semantic/author/product。拒答、截断、内容不足、未接线各记各的终态。
 9. 0-API用例不产生本CALL_RECEIPT（它代表已发出的请求），另交零出口证明与机械回执。API调用前被拦的任务记录BLOCKED任务回执，不伪造dispatched请求。
 10. 原生tool必须有真实tool_call_id，并与宿主受信执行绑定；每逻辑任务最多4个模型回合，每回合最多2次只读工具调用。非法patch不能写正式账。
 11. 记录公开usage，不收集内部思考正文。正文、候选、原始响应留本机受控目录；仓内只放脱敏汇总和哈希。
