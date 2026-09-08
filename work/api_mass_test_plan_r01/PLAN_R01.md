@@ -2075,7 +2075,7 @@ for name, expected, payload in re.findall(
 
 ### CALL_RECEIPT.schema.json
 
-<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: 7258e3daf73d1f0704278f2c4afed7d6458fa19216ebc5065daa47fb484f3e99 -->
+<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: bc7480c99d2766717e21118397e4769e9e7a7961aba5e864d5ba2f421e64571f -->
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -2529,7 +2529,8 @@ for name, expected, payload in re.findall(
           "name",
           "arguments_sha256",
           "response_sha256",
-          "permission_result"
+          "permission_result",
+          "response_received"
         ],
         "properties": {
           "tool_call_id": {
@@ -2564,9 +2565,65 @@ for name, expected, payload in re.findall(
               "REJECTED",
               "ERROR"
             ]
+          },
+          "response_received": {
+            "type": "boolean"
           }
-        }
-      }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "response_received": {
+                  "const": true
+                }
+              },
+              "required": [
+                "response_received"
+              ]
+            },
+            "then": {
+              "properties": {
+                "response_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "response_sha256": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "permission_result": {
+                  "const": "ALLOWED_READ_ONLY"
+                }
+              },
+              "required": [
+                "permission_result"
+              ]
+            },
+            "then": {
+              "properties": {
+                "response_received": {
+                  "const": true
+                },
+                "arguments_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "maxItems": 2
     }
   },
   "allOf": [
@@ -2945,7 +3002,7 @@ JSON Schema 只验形状。下面这些必须由宿主对原始材料、批准�
 7. 子模块内部与SDK内部重试都计入actual request ledger；0-API回放另开run、parent_live_run_id指回生成run，禁止抹掉生成费用。
 8. 只要收到任何供应商响应字节（含HTTP错误体／部分流），transport.response_received必须为true，并保留raw_response_sha256；仅未收到字节时为false/null。transport PASS不传播给contract/semantic/author/product。拒答、截断、内容不足、未接线各记各的终态。
 9. 0-API用例不产生本CALL_RECEIPT（它代表已发出的请求），另交零出口证明与机械回执。API调用前被拦的任务记录BLOCKED任务回执，不伪造dispatched请求。
-10. 原生tool必须有真实tool_call_id，并与宿主受信执行绑定；每逻辑任务最多4个模型回合，每回合最多2次只读工具调用。非法patch不能写正式账。
+10. 原生tool必须有真实tool_call_id，并与宿主受信执行绑定；ALLOWED_READ_ONLY表示本次成功只读执行，必须记录参数哈希、response_received=true及响应哈希；ERROR／REJECTED只有未收到响应字节才可false/null，若有错误响应仍须哈希。每逻辑任务最多4个模型回合，每回合最多2次只读工具调用。非法patch不能写正式账。
 11. 记录公开usage，不收集内部思考正文。正文、候选、原始响应留本机受控目录；仓内只放脱敏汇总和哈希。
 
 来源：ChatGPT Pro；Codex按复审修订机器格式。
