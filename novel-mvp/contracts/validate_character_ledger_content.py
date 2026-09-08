@@ -1,4 +1,4 @@
-"Validate CHARACTER_LEDGER_CONTENT v1 records and as-of query semantics."
+"Validate versioned CHARACTER_LEDGER_CONTENT records and as-of query semantics."
 
 from __future__ import annotations
 
@@ -19,6 +19,8 @@ ENVELOPE_VALIDATOR_PATH = CONTRACTS_DIR / "validate_ledger_entry_envelope.py"
 
 CONTRACT_NAME = "CHARACTER_LEDGER_CONTENT"
 CONTRACT_VERSION = "character-ledger-content-v1.1"
+CONTRACT_VERSION_V2 = "character-ledger-content-v2"
+CONTRACT_VERSIONS = (CONTRACT_VERSION, CONTRACT_VERSION_V2)
 ENVELOPE_KEYS = (
     "id",
     "source_identity",
@@ -90,7 +92,10 @@ def _parse_datetime(value: str, *, label: str) -> datetime:
 
 
 def _envelope(document: dict[str, Any]) -> dict[str, Any]:
-    return {key: document[key] for key in ENVELOPE_KEYS}
+    keys = list(ENVELOPE_KEYS)
+    if document["version"] == CONTRACT_VERSION_V2:
+        keys.extend(("tags", "tag_groups"))
+    return {key: document[key] for key in keys}
 
 
 def _canonical(value: Any) -> str:
@@ -127,9 +132,10 @@ def _validate_interval(value: dict[str, Any], *, label: str) -> None:
 def _nested_attestation_requires_author(record: dict[str, Any], evidence_refs: list[str]) -> None:
     if "AUTHOR_ATTESTATION" not in evidence_refs:
         return
+    allowed_statuses = {"confirmed", "retired"} if record["version"] == CONTRACT_VERSION_V2 else {"confirmed"}
     if (
         record["source_identity"] != "author_declared"
-        or record["confirm_status"] != "confirmed"
+        or record["confirm_status"] not in allowed_statuses
     ):
         raise ContractError(
             "NESTED_AUTHOR_ATTESTATION_REQUIRES_AUTHOR_DECLARED_CONFIRMED"
@@ -145,9 +151,28 @@ def validate_record(
 
     _validate_schema(document)
     assert isinstance(document, dict)
+    if document["contract"] != CONTRACT_NAME or document["version"] not in CONTRACT_VERSIONS:
+        raise ContractError("CONTRACT_IDENTITY_INVALID")
 
     try:
-        ENVELOPE_VALIDATOR.validate_entry(_envelope(document), entry_kind="DEFINITION")
+        ENVELOPE_VALIDATOR.validate_entry(
+            _envelope(document),
+            entry_kind="DEFINITION",
+            contract_version=(
+                ENVELOPE_VALIDATOR.CONTRACT_VERSION_V2
+                if document["version"] == CONTRACT_VERSION_V2
+                else ENVELOPE_VALIDATOR.CONTRACT_VERSION_V1
+            ),
+            allowed_targets=frozenset(
+                {
+                    "/id", "/created_at", "/updated_at", "/rev", "/note",
+                    "/source_identity", "/confirm_status", "/evidence_refs", "/story_time",
+                    "/canonical_name", "/aliases", "/role_tag", "/profile", "/visibility",
+                    "/destiny_ref", "/state_timeline", "/relationships", "/desire_seq",
+                    "/ordeal_seq", "/intent_seq", "/choice_seq",
+                }
+            ),
+        )
     except ENVELOPE_VALIDATOR.ContractError as exc:
         raise ContractError(f"ENVELOPE_INVALID:{exc}") from exc
 

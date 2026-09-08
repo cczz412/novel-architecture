@@ -10,6 +10,7 @@ import copy
 import importlib.util
 import re
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -122,6 +123,61 @@ LEDGERS: dict[str, LedgerSpec] = {
         "validate_world_rule_ledger_content.py",
     ),
 }
+
+
+def initialize_setting_allocator(root: Path | str, *, book_id: str) -> dict[str, Any]:
+    """Create the physical allocator once; existing counters are never reset.
+
+    This does not create or synchronize the AuthorWorkspace logical plan.
+    """
+    if not isinstance(book_id, str) or not book_id.strip() or book_id != book_id.strip():
+        raise SettingstoreError("SETTING_ALLOCATOR_BOOK_ID_INVALID")
+    root = Path(root)
+    with planstore._exclusive_lock(root):
+        planstore._recover_pending_locked(root, timestamp=datetime.now(timezone.utc).isoformat())
+        path = root / "plan.json"
+        if path.is_symlink() or (path.exists() and not path.is_file()):
+            raise SettingstoreError("SETTING_ALLOCATOR_PLAN_UNSAFE")
+        records = {}
+        for name, spec in LEDGERS.items():
+            ledger_path = root / spec.filename
+            if ledger_path.is_symlink() or (
+                ledger_path.exists() and not ledger_path.is_file()
+            ):
+                raise SettingstoreError("SETTING_ALLOCATOR_LEDGER_UNSAFE")
+            records[name] = _load_records(root, spec.filename)
+        if path.exists():
+            plan = planstore._read_json(path)
+            planstore._validate_plan(plan)
+            if not isinstance(plan.get("book"), dict) or plan["book"].get("id") != book_id:
+                raise SettingstoreError("SETTING_ALLOCATOR_BOOK_ID_CONFLICT")
+            for name, spec in LEDGERS.items():
+                for record in records[name]:
+                    _validate_payload(spec, record)
+                _assert_counter_aligned(records[name], spec, plan)
+            return {"status": "ALREADY_INITIALIZED", "book_id": book_id}
+        if any(records.values()):
+            raise SettingstoreError("SETTING_ALLOCATOR_MISSING_WITH_EXISTING_RECORDS")
+        timestamp = datetime.now(timezone.utc).isoformat()
+        plan = {
+            "schema": "plan-v2", "ledger": "plan",
+            "book": {
+                "id": book_id, "source_identity": "draft_inferred",
+                "created_at": timestamp, "updated_at": timestamp, "rev": 1, "note": "",
+                "premise": "", "genre_promise": None, "main_beats": [],
+                "ending_anchor": None, "volumes_enabled": False,
+            },
+            "stop_points": {},
+            "id_counters": {"MAP": 0, "RE": 0, **{s.counter_key: 0 for s in LEDGERS.values()}},
+            **{key: [] for key in (
+                "slot_sequence", "volumes", "slots", "scenes", "events", "storylines",
+                "hooks", "widgets", "pins", "must_carries", "option_records",
+                "slot_mappings", "reconciliation_edges",
+            )},
+        }
+        planstore._validate_plan(plan)
+        planstore._write_json_atomic(path, plan)
+        return {"status": "INITIALIZED", "book_id": book_id}
 
 
 def _spec(ledger: Any) -> LedgerSpec:

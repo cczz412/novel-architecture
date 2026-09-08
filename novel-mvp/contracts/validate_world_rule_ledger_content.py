@@ -31,6 +31,8 @@ ContractError = COMMON.ContractError
 SCHEMA = COMMON.load_schema(SCHEMA_PATH)
 CONTRACT = "WORLD_RULE_LEDGER_CONTENT"
 VERSION = "world-rule-ledger-content-v1"
+VERSION_V2 = "world-rule-ledger-content-v2"
+VERSIONS = (VERSION, VERSION_V2)
 PREFIX = "RU-"
 
 
@@ -39,9 +41,16 @@ def validate_record(document: Any) -> dict[str, Any]:
         document,
         schema=SCHEMA,
         contract=CONTRACT,
-        version=VERSION,
+        version=VERSIONS,
         prefix=PREFIX,
     )
+    if record["version"] == VERSION_V2:
+        for index, group in enumerate(record["tag_groups"]["groups"]):
+            protected = set(group["targets"]) & {"/rule_text", "/exceptions"}
+            if protected and protected != {"/rule_text", "/exceptions"}:
+                raise ContractError(
+                    f"WORLD_RULE_REQUIRED_FIELDS_MUST_SHARE_GROUP:{index}"
+                )
     if record["rule_text"] != record["rule_text"].strip():
         raise ContractError("RULE_TEXT_MUST_BE_TRIMMED")
     if "\n" in record["rule_text"] or "\r" in record["rule_text"]:

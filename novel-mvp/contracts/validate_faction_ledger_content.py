@@ -28,6 +28,8 @@ ContractError = COMMON.ContractError
 SCHEMA = COMMON.load_schema(SCHEMA_PATH)
 CONTRACT = "FACTION_LEDGER_CONTENT"
 VERSION = "faction-ledger-content-v1"
+VERSION_V2 = "faction-ledger-content-v2"
+VERSIONS = (VERSION, VERSION_V2)
 PREFIX = "FA-"
 
 def validate_record(document: Any) -> dict[str, Any]:
@@ -35,7 +37,7 @@ def validate_record(document: Any) -> dict[str, Any]:
         document,
         schema=SCHEMA,
         contract=CONTRACT,
-        version=VERSION,
+        version=VERSIONS,
         prefix=PREFIX,
     )
     COMMON.validate_aliases(record, record["aliases"])

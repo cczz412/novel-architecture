@@ -135,6 +135,31 @@ def test_checker_is_read_only(tmp_path: Path) -> None:
     assert before == after
 
 
+def test_registered_content_routing_accepts_partial_migration(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    value = pointers(tmp_path)
+    value["invariants"][-1] = (
+        "已核对的长期决定、原话和产品规格按 Notion 逐项主存登记读取，"
+        "未迁项仍回原 Linear 主存；活动任务与未决问题现场读取 Linear；"
+        "工程能力只认 GitHub main 上的正式合同、测试和已合并代码。"
+    )
+    dump(tmp_path / "governance/current_pointers.json", value)
+    assert MODULE.build_report(tmp_path)["status"] == "PASS"
+
+
+def test_old_linear_only_content_routing_is_rejected(tmp_path: Path) -> None:
+    seed_repo(tmp_path)
+    value = pointers(tmp_path)
+    value["invariants"][-1] = (
+        "产品需求、模块边界和 CZ 拍板现场读取 Linear；"
+        "工程能力只认 GitHub main 上的正式合同、测试和已合并代码。"
+    )
+    dump(tmp_path / "governance/current_pointers.json", value)
+    report = MODULE.build_report(tmp_path)
+    assert report["status"] == "FAIL"
+    assert {item["code"] for item in report["errors"]} == {"INVARIANT_SET_DRIFT"}
+
+
 def test_live_repository_current_freshness_passes() -> None:
     root = Path(__file__).resolve().parents[1]
     report = MODULE.build_report(root)

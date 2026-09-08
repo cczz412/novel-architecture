@@ -885,6 +885,11 @@ class _LocalFilesystemBackend:
             replayed = self._existing_receipt(project_dir, operation_id, request_sha)
             if replayed is not None:
                 return replayed
+            # Physical planstore and logical plan must not become independent
+            # writers for one project. The allocator initializer holds this same
+            # workspace lock while checking the opposite ownership direction.
+            if "plan" in validated_mutations and os.path.lexists(project_dir / "plan.json"):
+                raise WorkspaceError("PHYSICAL_PLAN_REQUIRES_RECONCILIATION")
             old_pointer, current_manifest = self._load_manifest(
                 project_dir, author_id, project_id
             )

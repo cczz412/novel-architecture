@@ -1,6 +1,6 @@
 # SYSTEM_LEDGER_CONTENT · 体系账内容合同
 
-**正式版本：`system-ledger-content-v1`**
+**正式版本：`system-ledger-content-v2`；兼容读取：`system-ledger-content-v1`**
 
 一句话用途：保存体系定义卡、同类排序和有方向的体系关系；题材包预填必须保留来源，作者改写后 pack_ref 原样留痕，仍能回溯原包。
 
@@ -41,7 +41,7 @@
 
 ## 4. 题材包预填与作者改写
 
-- 预填条目必须是 `source_identity=pack_prefilled`、`confirm_status=candidate`，且 `pack_ref` 非空。
+- v1 预填条目必须是 `source_identity=pack_prefilled`、`confirm_status=candidate`，且 `pack_ref` 非空；v2 允许作者把未采用的预填条目退役，但不能因此变成 `confirmed`。
 - 作者改写后必须转成 `author_declared + confirmed + AUTHOR_ATTESTATION`。
 - 改写前后 `id` 不变、`rev` 加一、`pack_ref` 原样留痕。
 - 校验器直接调用 L1 `validate_pack_prefilled_author_edit`，不重定义该语义。
@@ -94,3 +94,7 @@
 - `tests/test_novel_mvp_system_ledger_content_contract.py`
 
 实现状态：`UNIFIED_WRITER_SETTINGSTORE_V1`。
+
+## 9. v2 标签组扩展
+
+`system-ledger-content-v2` 保留 v1 字段和运行行为，并要求 `tags`、`tag_groups`。允许的根目标为：`/id`、`/created_at`、`/updated_at`、`/rev`、`/note`、`/source_identity`、`/confirm_status`、`/evidence_refs`、`/story_time`、`/name`、`/category`、`/rank_order`、`/relations`、`/scope`、`/pack_ref`。未知 `targets` 拒绝；v1 条目继续按旧合同读取。
