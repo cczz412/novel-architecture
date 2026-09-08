@@ -20,7 +20,7 @@ from . import (
     factstore,
     segment_workspace,
 )
-from .workspace import AuthorWorkspace, OperationConflictError
+from .workspace import AuthorWorkspace, OperationConflictError, VersionConflictError
 
 
 LOGICAL_KEY = "facts"
@@ -349,6 +349,22 @@ def save_snapshot(
     ):
         raise FactWorkspaceError("FACTS_EXPECTED_VERSION_INVALID")
     facts = factstore.validate_c4_v1_snapshot(snapshot)
+    current = read_snapshot(workspace)
+    # A future caller version must not let a concurrent commit slip between the
+    # provenance comparison and CAS. Older versions still reach commit so exact
+    # operation replays retain the existing idempotency behavior.
+    if current["version"] < expected_version:
+        raise VersionConflictError("VERSION_CONFLICT")
+    after_by_id = {fact["id"]: fact for fact in facts}
+    for before in current["facts"]:
+        after = after_by_id.get(before["id"])
+        if "text_map_evidence" in before:
+            if (after is None or "text_map_evidence" not in after
+                    or _canonical_bytes(after["text_map_evidence"])
+                    != _canonical_bytes(before["text_map_evidence"])):
+                raise FactWorkspaceError("M4_TEXT_MAP_ORIGIN_IMMUTABLE")
+        elif after is not None and "text_map_evidence" in after:
+            raise FactWorkspaceError("M4_TEXT_MAP_REQUIRES_NEW_FACT_ID")
     receipt = workspace.commit(
         operation_id,
         {LOGICAL_KEY: facts},

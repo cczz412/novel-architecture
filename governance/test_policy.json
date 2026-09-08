@@ -64,6 +64,33 @@
   },
   "path_rules": [
     {
+      "name": "novel-mvp mapped C4 consumer fact_workspace",
+      "pattern": "novel-mvp/mvp/fact_workspace.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp mapped C4 consumer check_tool",
+      "pattern": "novel-mvp/mvp/check_tool.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp mapped C4 consumer overview",
+      "pattern": "novel-mvp/mvp/overview.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_text_mapping_runtime.py"
+      ],
+      "full_chain": false
+    },
+    {
       "name": "novel-mvp text mapping runtime",
       "pattern": "novel-mvp/mvp/text_mapping.py",
       "modules": [],

@@ -12,8 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "novel-mvp"))
 try:
     from mvp import (
-        chapter_workspace, extract_tool, extract_workspace, fact_tool,
-        fact_workspace, factstore, segment_tool, segment_workspace,
+        chapter_workspace, check_tool, extract_tool, extract_workspace, fact_tool,
+        fact_workspace, factstore, overview, segment_tool, segment_workspace, text_mapping,
     )
     from mvp.workspace import WorkspaceRouter
 finally:
@@ -217,3 +217,137 @@ def test_c4_reader_rejects_origin_provenance_tampering(tmp_path, tamper):
         facts[0]['anchor_ref']['end'] += 1
     with pytest.raises(factstore.FactstoreError, match='C4_TEXT_MAP_ORIGIN'):
         factstore.validate_c4_v1_snapshot(facts)
+
+
+
+def advanced_mapped_snapshot(tmp_path):
+    ws, c1, _c2, responses = prepare(tmp_path)
+    extract_workspace.persist_current_fact_candidates(ws, 'extract', responses, 0)
+    fact_workspace.materialize_current_extracted_snapshot(
+        ws, operation_id='facts', source='synthetic', added_at='now',
+    )
+    current = fact_workspace.read_snapshot(ws)
+    facts = current['facts']
+    origin = copy.deepcopy(facts[0]['text_map_evidence'])
+    prefix = '前言。\n'
+    new_c1 = chapter(prefix + c1['text'])
+    new_c1['chapter_revision_ref']['revision_no'] = 2
+    chapter_workspace.persist_c1_current_views(
+        ws, 'chapter-r2', [new_c1], [new_c1['chapter_revision_ref']],
+        {'chapters': 1, 'chapter_index': 1},
+    )
+    facts[0]['chapter_revision_ref'] = copy.deepcopy(new_c1['chapter_revision_ref'])
+    facts[0]['anchor_ref'].update(new_c1['chapter_revision_ref'])
+    facts[0]['anchor_ref']['start'] += len(prefix)
+    facts[0]['anchor_ref']['end'] += len(prefix)
+    args = dict(operation_id='fact-r2', snapshot=facts, expected_version=current['version'])
+    receipt = fact_workspace.save_snapshot(ws, **args)
+    assert fact_workspace.save_snapshot(ws, **args)['replayed'] is True
+    assert fact_workspace.read_snapshot(ws)['facts'][0]['text_map_evidence'] == origin
+    fact_workspace.read_current_snapshot(ws)
+    return ws, new_c1, facts, receipt['version']
+
+
+@pytest.mark.parametrize('tamper', ['replace_origin', 'strip_origin', 'remove_fact'])
+def test_snapshot_writer_preserves_origin_after_revision_advance(tmp_path, tamper):
+    ws, _c1, facts, version = advanced_mapped_snapshot(tmp_path)
+    if tamper == 'replace_origin':
+        fake_origin = chapter('假序。\n' + RAW)
+        fake_segment = segment_tool.execute({'items': [fake_origin], 'options': {
+            'seg_min_chars': 20, 'seg_max_chars': 100, 'halo_chars': 10,
+            'text_mapping': True,
+        }})['items'][0]
+        facts[0]['text_map_evidence'] = text_mapping.build_evidence(
+            fake_segment, facts[0]['text_map_evidence']['quote_original'],
+        )
+    elif tamper == 'strip_origin':
+        facts[0].pop('text_map_evidence')
+    else:
+        facts = []
+    # Each forged replacement is internally valid; only the prior stored proof
+    # exposes the origin swap/removal after the current revision has advanced.
+    factstore.validate_c4_v1_snapshot(facts)
+    before = inventory(tmp_path / 'runtime')
+    with pytest.raises(fact_workspace.FactWorkspaceError, match='ORIGIN_IMMUTABLE'):
+        fact_workspace.save_snapshot(
+            ws, operation_id='forged-replacement', snapshot=facts, expected_version=version,
+        )
+    assert inventory(tmp_path / 'runtime') == before
+
+
+def test_snapshot_does_not_add_origin_to_an_existing_unmapped_id(tmp_path):
+    ws, _c1, _c2, responses = prepare(tmp_path)
+    extract_workspace.persist_current_fact_candidates(ws, 'extract', responses, 0)
+    c3 = extract_workspace.read_current_fact_candidates(ws)['items']
+    c1 = ws.read('chapters')['payload'][0]
+    c2 = segment_workspace.read_current_segments(ws)['items']
+    facts = fact_tool.execute({'chapter': c1, 'segments': c2, 'candidates': c3,
+                               'source': 'synthetic', 'added_at': 'now'})['facts']
+    legacy = copy.deepcopy(facts)
+    legacy[0].pop('text_map_evidence')
+    fact_workspace.save_snapshot(ws, operation_id='legacy', snapshot=legacy, expected_version=0)
+    before = inventory(tmp_path / 'runtime')
+    with pytest.raises(fact_workspace.FactWorkspaceError, match='REQUIRES_NEW_FACT_ID'):
+        fact_workspace.save_snapshot(ws, operation_id='backfill', snapshot=facts, expected_version=1)
+    assert inventory(tmp_path / 'runtime') == before
+
+
+def test_future_expected_version_cannot_bypass_provenance_read(tmp_path, monkeypatch):
+    ws, _c1, facts, version = advanced_mapped_snapshot(tmp_path)
+    before = inventory(tmp_path / 'runtime')
+
+    def must_not_commit(*args, **kwargs):
+        pytest.fail('future version must fail before any commit or racing write')
+
+    monkeypatch.setattr(type(ws), 'commit', must_not_commit)
+    with pytest.raises(fact_workspace.VersionConflictError, match='VERSION_CONFLICT'):
+        fact_workspace.save_snapshot(
+            ws, operation_id='future', snapshot=facts, expected_version=version + 1,
+        )
+    assert inventory(tmp_path / 'runtime') == before
+
+
+@pytest.mark.parametrize('forged', [False, True])
+def test_strict_health_and_overview_readers_validate_mapped_c4(tmp_path, forged):
+    ws, c1, _c2, responses = prepare(tmp_path)
+    extract_workspace.persist_current_fact_candidates(ws, 'extract', responses, 0)
+    fact_workspace.materialize_current_extracted_snapshot(
+        ws, operation_id='facts', source='synthetic', added_at='now',
+    )
+    facts = ws.read('facts')['payload']
+    # Only this in-memory synthetic author fixture is confirmed. Stored facts
+    # and all real-book test data remain extracted.
+    facts[0]['status'] = 'confirmed'
+    facts[0]['decided_at'] = 'synthetic-author-action'
+    if forged:
+        facts[0]['text_map_evidence']['original_slice_sha256'] = '0' * 64
+    provider = check_tool.FrozenFindingProvider({
+        'provider_id': 'frozen-map-check', 'model_calls': 0, 'response': {'findings': []},
+    })
+    report = check_tool.execute({
+        'project': 'mapped fixture', 'generated_at': 'now', 'facts': facts,
+        'current_revision_refs': [c1['chapter_revision_ref']],
+        'check_config': {'scope_name': 'mapped', 'scope_kind': 'leftover', 'kinds': ['event']},
+    }, provider)
+    assert report['scan']['groups'][0]['facts'] == (0 if forged else 1)
+    assert report['scan']['excluded_counts']['invalid_evidence'] == int(forged)
+    request = {'facts': facts, 'current_revision_ref': c1['chapter_revision_ref'],
+               'source_revision': 'synthetic', 'generated_at': 'now'}
+    called = []
+
+    def overview_provider(batch):
+        called.append(batch)
+        return {'synopsis': 'placeholder', 'beats': [], 'visual_hint': '',
+                'orphan_refs': [facts[0]['id']]}
+
+    if forged:
+        with pytest.raises(overview.OverviewError, match='C4_TEXT_MAP_INVALID'):
+            overview.execute(request, overview_provider)
+        assert not called
+    else:
+        card = overview.execute(request, overview_provider)
+        assert card['synopsis'] == facts[0]['text']
+        assert card['evidence'][0]['quote'] == facts[0]['quote']
+        assert card['writes_truth'] is False
+        assert called[0]['facts'][0]['text_map_evidence'] == facts[0]['text_map_evidence']
+    assert ws.read('facts')['payload'][0]['status'] == 'extracted'

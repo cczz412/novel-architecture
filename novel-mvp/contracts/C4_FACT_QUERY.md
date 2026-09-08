@@ -75,6 +75,10 @@ M6 回答时会在记录上附加 `chapter_title`（章节标题，内存态补�
 
 `text_map_evidence` 是不可变的来源证据，其中的 revision、责任范围、候选原文和规范化内容记录首次入账来源。C4 的 current revision／anchor 可按现有 C11 规则随修订前进；来源证据不冒充新版映射。存储 reader 复验来源证据自身一致性，并要求 C4 seg 等于来源责任段；current revision 不得早于来源版本；同版号的完整 revision 身份必须一致，anchor 坐标也必须等于来源证据。revision 已前进时允许 current anchor 按既有规则移动。入账必须另外对当前可信 C1/C2 复验。未知扩展、缺证据、错 revision、越责任范围和任意转抄改写均拒绝。
 
+保存入口 `fact_workspace.save_snapshot` 还会与当前已存快照比较：同一事实 ID 的来源映射不能替换或剥除，带映射的记录也不能通过整批替换删除后重用 ID；已有未映射 ID 不在此入口追加新来源映射。新映射候选使用新事实 ID。作者改判或文字修订不改变来源映射；current anchor 前进仍保留来源证据。比较以本次读取版本为准，后续 CAS 拒绝并发漂移，旧操作精确重放保持幂等。
+
+M7 `check_tool` 与 M9 `overview` 的严格 C4 读取器接收此可选字段，并复用同一 C4 映射校验。伪造证据不会进入检查或总览的模型供应器；M9 仍只用 confirmed，不因映射通过自动确认。
+
 候选与事实继续使用现有工作区事务、源版本并发复核和操作幂等规则；失败不得留下部分候选或部分事实。本扩展不改变冻结的 C11 Schema，也不新增 anchor 形状。
 
 - v0-r02 迁移到 v1 时，能唯一回验的 quote 生成 VERIFIED anchor；不能回验的历史记录可以暂存 `LEGACY_UNVERIFIED`。
