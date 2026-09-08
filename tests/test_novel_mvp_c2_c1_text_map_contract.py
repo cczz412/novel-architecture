@@ -47,6 +47,18 @@ def test_schema_is_valid_and_closed():
         MODULE.validate_mapping(bad["evidence"], bad["snapshot"])
 
 
+def test_json_schema_integral_numbers_do_not_crash_python_slicing():
+    case = copy.deepcopy(CASES[0])
+    for key in ("match_start", "match_end"):
+        case["evidence"][key] = float(case["evidence"][key])
+    for obj in (case["evidence"], case["snapshot"]):
+        for key in ("start", "end"):
+            obj["responsibility"][key] = float(obj["responsibility"][key])
+    assert MODULE.validate_mapping(case["evidence"], case["snapshot"])["text"] == (
+        case["evidence"]["original_slice"]
+    )
+
+
 @pytest.mark.parametrize("raw,normalized,offsets", [
     ("\u3000\u3000甲\r\n\r\n\u3000乙\r\n", "甲\n乙", [2, 4, 8]),
     ("甲😀e\u0301。", "甲😀e\u0301。", [0, 1, 2, 3, 4]),

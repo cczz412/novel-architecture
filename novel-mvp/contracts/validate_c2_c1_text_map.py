@@ -74,13 +74,14 @@ def validate_mapping(evidence: dict, snapshot: dict) -> dict:
     responsibility = snapshot["responsibility"]
     if evidence["responsibility"] != responsibility:
         raise ValueError("TEXT_MAP_RESPONSIBILITY_MISMATCH")
-    left, right = responsibility["start"], responsibility["end"]
+    # JSON Schema integers include integral JSON numbers such as 1.0.
+    left, right = int(responsibility["start"]), int(responsibility["end"])
     if not (0 <= left < right <= len(flat)):
         raise ValueError("TEXT_MAP_RESPONSIBILITY_INVALID")
     # Responsibility consists of whole natural paragraphs; halo is never admitted.
     if (left and flat[left - 1] != "\n") or (right < len(flat) and flat[right] != "\n"):
         raise ValueError("TEXT_MAP_RESPONSIBILITY_INVALID")
-    start, end = evidence["match_start"], evidence["match_end"]
+    start, end = int(evidence["match_start"]), int(evidence["match_end"])
     if not left <= start < end <= right:
         raise ValueError("TEXT_MAP_OUTSIDE_RESPONSIBILITY")
     match = flat[start:end]
