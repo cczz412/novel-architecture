@@ -618,3 +618,62 @@ def test_undeclared_fixture_summary_reports_actual_v1_validator(tmp_path):
     result = contract.validate_fixture_suite(path)
     assert result["status"] == "PASS"
     assert result["version"] == contract.CONTRACT_VERSION_V1
+
+
+def test_v2_envelope_defaults_to_common_targets():
+    record, _ = _v2_confirmed_pair()
+    record["tag_groups"]["groups"][1]["targets"] = ["/not_a_contract_field"]
+    with pytest.raises(contract.ContractError, match="TAG_GROUP_TARGET_NOT_ALLOWED"):
+        contract.validate_entry(record, entry_kind="DEFINITION", contract_version=contract.CONTRACT_VERSION_V2)
+
+
+@pytest.mark.parametrize("kind", ["STATE", "CHANGE"])
+def test_confirmation_preserves_declared_entry_kind(kind):
+    before, after = _v2_confirmed_pair()
+    before.update(source_identity="model_suggested", confirm_status="candidate", evidence_refs=["f001"])
+    for record in (before, after):
+        record["story_time"] = {"start": {"opaque_anchor": "chapter-1"}, "end": None}
+    contract.validate_confirmation_transition(
+        before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2, entry_kind=kind)
+    case = {"fixture_kind": "confirmation_transition", "entry_kind": kind,
+            "contract_version": contract.CONTRACT_VERSION_V2, "actor": "AUTHOR",
+            "before": before, "after": after}
+    assert contract.validate_fixture_case(case) is None
+
+
+@pytest.mark.parametrize("version", [[], {}, None, 2])
+def test_malformed_fixture_version_aggregates_without_crashing(tmp_path, version):
+    record, _ = _v2_confirmed_pair()
+    case = {"case_id": "BAD-VERSION", "fixture_kind": "entry", "entry_kind": "DEFINITION",
+            "contract_version": version, "document": record, "valid": False,
+            "expected_error": "CONTRACT_VERSION_INVALID"}
+    assert contract.validate_fixture_case(case) == "CONTRACT_VERSION_INVALID"
+    path = tmp_path / "invalid-version.jsonl"
+    path.write_text(json.dumps(case) + "\n")
+    result = contract.validate_fixture_suite(path)
+    assert result["status"] == "PASS" and result["mismatches"] == []
+
+
+def test_v2_transition_accepts_explicit_host_target_context():
+    before, after = _v2_confirmed_pair()
+    for record in (before, after):
+        record["tags"].append("author:business")
+        group = deepcopy(record["tag_groups"]["groups"][1])
+        group.update(group_id="author:business", members=["author:business"], targets=["/profile"],
+                     mutation="editable", transition_rule=None, managed_by="AUTHOR")
+        record["tag_groups"]["groups"].append(group)
+    with pytest.raises(contract.ContractError, match="TAG_GROUP_TARGET_NOT_ALLOWED"):
+        contract.validate_confirmation_transition(
+            before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2)
+    targets = importlib.import_module("ledger_content_contract_common").TAG_TARGETS_BY_CONTRACT["CHARACTER_LEDGER_CONTENT"]
+    contract.validate_confirmation_transition(
+        before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
+        allowed_targets=targets)
+
+
+@pytest.mark.parametrize("kind", [[], {}, None])
+def test_transition_rejects_malformed_entry_kind(kind):
+    before, after = _v2_confirmed_pair()
+    with pytest.raises(contract.ContractError, match="ENTRY_KIND_INVALID"):
+        contract.validate_confirmation_transition(
+            before, after, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2, entry_kind=kind)

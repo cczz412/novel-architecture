@@ -96,6 +96,8 @@ def _schema_path(error: Any) -> str:
 
 
 def _validate_schema(document: Any, *, contract_version: str) -> None:
+    if not isinstance(contract_version, str):
+        raise ContractError("CONTRACT_VERSION_INVALID")
     try:
         schema = SCHEMAS[contract_version]
     except KeyError as exc:
@@ -134,6 +136,10 @@ def _walk_keys(value: Any) -> Iterable[str]:
 def _validate_tag_groups(
     document: dict[str, Any], *, allowed_targets: frozenset[str] | None
 ) -> None:
+    if allowed_targets is None:
+        allowed_targets = frozenset(
+            "/" + key for key in SCHEMAS[CONTRACT_VERSION_V1]["$defs"]["envelope"]["properties"]
+        )
     tags = document["tags"]
     tag_groups = document["tag_groups"]
     if len(tags) != len(set(tags)):
@@ -193,19 +199,12 @@ def validate_entry(
     document: Any,
     *,
     entry_kind: str,
-    contract_version: str | None = None,
+    contract_version: str = CONTRACT_VERSION_V1,
     allowed_targets: frozenset[str] | None = None,
 ) -> dict[str, Any]:
     """Validate one common envelope in its content-contract context."""
 
-    if contract_version is None:
-        contract_version = (
-            CONTRACT_VERSION_V2
-            if isinstance(document, dict)
-            and ("tags" in document or "tag_groups" in document)
-            else CONTRACT_VERSION_V1
-        )
-    if entry_kind not in ENTRY_KINDS:
+    if not isinstance(entry_kind, str) or entry_kind not in ENTRY_KINDS:
         raise ContractError("ENTRY_KIND_INVALID")
     _validate_schema(document, contract_version=contract_version)
     assert isinstance(document, dict)
@@ -280,14 +279,18 @@ def validate_pack_prefilled_author_edit(
     contract_version: str,
     content_before: Any,
     content_after: Any,
+    entry_kind: str = "DEFINITION",
+    allowed_targets: frozenset[str] | None = None,
 ) -> None:
     """Validate the approved pack-prefilled → author-declared edit transition."""
 
     version = contract_version
     if not isinstance(version, str) or version not in SCHEMAS:
         raise ContractError("CONTRACT_VERSION_INVALID")
-    validate_entry(before, entry_kind="DEFINITION", contract_version=version)
-    validate_entry(after, entry_kind="DEFINITION", contract_version=version)
+    validate_entry(before, entry_kind=entry_kind, contract_version=version,
+                   allowed_targets=allowed_targets)
+    validate_entry(after, entry_kind=entry_kind, contract_version=version,
+                   allowed_targets=allowed_targets)
     assert isinstance(before, dict)
     assert isinstance(after, dict)
 
@@ -321,6 +324,7 @@ def validate_pack_prefilled_author_edit(
         validate_confirmation_transition(
             before, after, actor="AUTHOR", contract_version=version,
             business_before=content_before, business_after=content_after,
+            entry_kind=entry_kind, allowed_targets=allowed_targets,
         )
 
 
@@ -373,6 +377,8 @@ def validate_confirmation_transition(
     contract_version: str,
     business_before: Any = None,
     business_after: Any = None,
+    entry_kind: str = "DEFINITION",
+    allowed_targets: frozenset[str] | None = None,
 ) -> None:
     """Validate the forward-only confirmation/lifecycle transition."""
 
@@ -386,8 +392,10 @@ def validate_confirmation_transition(
         and after.get("confirm_status") == "candidate"
     ):
         raise ContractError("CONFIRMED_CANNOT_RETURN_TO_CANDIDATE")
-    validate_entry(before, entry_kind="DEFINITION", contract_version=version)
-    validate_entry(after, entry_kind="DEFINITION", contract_version=version)
+    validate_entry(before, entry_kind=entry_kind, contract_version=version,
+                   allowed_targets=allowed_targets)
+    validate_entry(after, entry_kind=entry_kind, contract_version=version,
+                   allowed_targets=allowed_targets)
     assert isinstance(before, dict) and isinstance(after, dict)
     if before["id"] != after["id"]:
         raise ContractError("TRANSITION_ID_MUST_STAY_STABLE")
@@ -524,6 +532,7 @@ def validate_fixture_case(case: dict[str, Any]) -> str | None:
                 contract_version=case.get("contract_version", CONTRACT_VERSION_V1),
                 content_before=case.get("content_before"),
                 content_after=case.get("content_after"),
+                entry_kind=case.get("entry_kind", "DEFINITION"),
             )
         elif kind == "confirmation_transition":
             validate_confirmation_transition(
@@ -533,6 +542,7 @@ def validate_fixture_case(case: dict[str, Any]) -> str | None:
                 actor=case.get("actor"),
                 business_before=case.get("business_before"),
                 business_after=case.get("business_after"),
+                entry_kind=case.get("entry_kind", "DEFINITION"),
             )
         else:
             raise ContractError("FIXTURE_KIND_INVALID")
@@ -566,8 +576,9 @@ def validate_fixture_suite(path: Path = FIXTURE_PATH) -> dict[str, Any]:
                 }
             )
     versions = {
-        case.get("contract_version", CONTRACT_VERSION_V1)
+        version if isinstance(version, str) else "invalid"
         for case in cases
+        for version in [case.get("contract_version", CONTRACT_VERSION_V1)]
     }
     summary = {
         "contract": CONTRACT_NAME,

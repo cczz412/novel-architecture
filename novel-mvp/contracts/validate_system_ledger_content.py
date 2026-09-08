@@ -66,6 +66,8 @@ def validate_pack_prefilled_transition(before: Any, after: Any) -> None:
                 if before_record["version"] == VERSION_V2
                 else COMMON.ENVELOPE.CONTRACT_VERSION_V1
             ),
+            entry_kind="DEFINITION",
+            allowed_targets=COMMON.TAG_TARGETS_BY_CONTRACT[CONTRACT],
             content_before={"pack_ref": before_record["pack_ref"]},
             content_after={"pack_ref": after_record["pack_ref"]},
         )
