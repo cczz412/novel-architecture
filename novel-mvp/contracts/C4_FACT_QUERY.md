@@ -69,9 +69,17 @@ M6 回答时会在记录上附加 `chapter_title`（章节标题，内存态补�
 
 ## Backward compatibility
 
-### 合同扩展：保存可回取的原章片段（尚未接入运行）
+### 可选扩展：保存可回取的原章片段
 
-[C2_C1_TEXT_MAP v1](C2_C1_TEXT_MAP.md) 定义跨自然段引文的离线验证证据。第二刀由 M4 在同一 current revision 与可信责任范围下重放映射，保存原章实际连续片段及其 UTF-8 SHA-256，另保留候选原文和规范化匹配内容。现役 C4 v1 字段表、确认权限、C11 anchor 形状及事务规则不变；本刀的返回值只是拟保存片段，不等于正式 anchor、已入账事实或 confirmed。运行 writer、并发复核及失败零写入接线另批，不允许旧 reader 忽略扩展后降级消费。
+显式映射链路的 C4 v1 增加 `text_map_evidence`，完整保留 C3 证据。M4 从工作区读取可信 current C1、C2 责任范围和 C3 批次，重放 [C2_C1_TEXT_MAP v1](C2_C1_TEXT_MAP.md)；成功后 `quote` 保存原章实际连续片段，既有 C11 `anchor_ref` 保存原章坐标与片段 SHA-256。入账状态仍为 `extracted`，作者确认权限不变。
+
+`text_map_evidence` 是不可变的来源证据，其中的 revision、责任范围、候选原文和规范化内容记录首次入账来源。C4 的 current revision／anchor 可按现有 C11 规则随修订前进；来源证据不冒充新版映射。存储 reader 复验来源证据自身一致性，并要求 C4 seg 等于来源责任段；current revision 不得早于来源版本；同版号的完整 revision 身份必须一致，anchor 坐标也必须等于来源证据。revision 已前进时允许 current anchor 按既有规则移动。入账必须另外对当前可信 C1/C2 复验。未知扩展、缺证据、错 revision、越责任范围和任意转抄改写均拒绝。
+
+保存入口 `fact_workspace.save_snapshot` 还会与当前已存快照比较：同一事实 ID 的来源映射不能替换或剥除，带映射的记录也不能通过整批替换删除后重用 ID；已有未映射 ID 不在此入口追加新来源映射。新映射候选使用新事实 ID。作者改判或文字修订不改变来源映射；current anchor 前进仍保留来源证据。比较以本次读取版本为准，后续 CAS 拒绝并发漂移，旧操作精确重放保持幂等。
+
+M7 `check_tool` 与 M9 `overview` 的严格 C4 读取器接收此可选字段，并复用同一 C4 映射校验。伪造证据不会进入检查或总览的模型供应器；M9 仍只用 confirmed，不因映射通过自动确认。
+
+候选与事实继续使用现有工作区事务、源版本并发复核和操作幂等规则；失败不得留下部分候选或部分事实。本扩展不改变冻结的 C11 Schema，也不新增 anchor 形状。
 
 - v0-r02 迁移到 v1 时，能唯一回验的 quote 生成 VERIFIED anchor；不能回验的历史记录可以暂存 `LEGACY_UNVERIFIED`。
 - legacy confirmed 不因迁移本身自动撤销；但所属章节第一次 revision 时必须双边唯一验证，否则转 needs_recheck。

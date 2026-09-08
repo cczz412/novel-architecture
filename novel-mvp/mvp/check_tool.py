@@ -21,6 +21,11 @@ from typing import Any, Protocol
 
 from jsonschema import Draft202012Validator
 
+if __package__:
+    from . import factstore
+else:
+    import factstore
+
 
 TRANSPORT_SCOPE = "LOCAL_FILESYSTEM_ONLY"
 MODEL_PROVIDER_SWAP_POINT = "finding_provider"
@@ -55,7 +60,7 @@ C4_REQUIRED_KEYS = {
     "anchor_state",
     "recheck",
 }
-C4_ALLOWED_KEYS = C4_REQUIRED_KEYS | {"seg", "decided_at"}
+C4_ALLOWED_KEYS = C4_REQUIRED_KEYS | {"seg", "decided_at", "text_map_evidence"}
 KINDS = ("naming", "timeline", "setting", "event")
 SCOPE_KINDS = {"entity", "timeline", "leftover"}
 PROVIDER_FINDING_KEYS = {
@@ -275,7 +280,14 @@ def _anchor_valid(fact: dict[str, Any]) -> bool:
         or not _valid_sha256(anchor.get("slice_sha256"))
     ):
         return False
-    return anchor["slice_sha256"] == hashlib.sha256(quote.encode("utf-8")).hexdigest()
+    if anchor["slice_sha256"] != hashlib.sha256(quote.encode("utf-8")).hexdigest():
+        return False
+    if "text_map_evidence" in fact:
+        try:
+            factstore.validate_c4_v1_snapshot([fact])
+        except factstore.FactstoreError:
+            return False
+    return True
 
 
 def _loc(fact: dict[str, Any]) -> dict[str, Any]:

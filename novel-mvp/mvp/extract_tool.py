@@ -14,6 +14,11 @@ import sys
 import tempfile
 from collections.abc import Callable
 from pathlib import Path
+
+try:
+    from . import text_mapping as mapping_runtime
+except ImportError:  # direct local-file CLI
+    import text_mapping as mapping_runtime
 from typing import Any, TextIO
 
 if __package__:
@@ -129,7 +134,8 @@ def _validate_provider_result(value: object, *, key: str) -> dict[str, Any]:
 
 
 def _validate_c3_candidate(candidate: object, *, source_item: dict[str, Any], key: str) -> None:
-    if not isinstance(candidate, dict) or set(candidate) != C3_V1_KEYS:
+    expected_keys = C3_V1_KEYS | ({"text_map_evidence"} if "text_map" in source_item else set())
+    if not isinstance(candidate, dict) or set(candidate) != expected_keys:
         raise ExtractToolError(f"C3_V1_SHAPE_INVALID:{key}")
     if candidate["contract"] != "C3_FACT_CANDIDATE" or candidate["version"] != "v1":
         raise ExtractToolError(f"C3_V1_IDENTITY_INVALID:{key}")
@@ -138,6 +144,12 @@ def _validate_c3_candidate(candidate: object, *, source_item: dict[str, Any], ke
     if candidate["seg"] != source_item["seg"]:
         raise ExtractToolError(f"C3_SEG_NOT_INHERITED:{key}")
     quote = candidate["quote"]
+    if "text_map" in source_item:
+        try:
+            mapping_runtime.validate_candidate(candidate, source_item)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise ExtractToolError(f"C3_TEXT_MAP_INVALID:{key}:{exc}") from exc
+        return
     if quote and quote not in source_item["text"]:
         raise ExtractToolError(f"C3_QUOTE_NOT_IN_RESPONSIBILITY_SEGMENT:{key}")
 
