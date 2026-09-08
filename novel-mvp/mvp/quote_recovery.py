@@ -63,16 +63,12 @@ def adapt_provider_item(item: object) -> tuple[dict, dict | None]:
     return adapted, evidence
 
 
-def validate_adaptation(value: object, quote: str, fact_text: str | None = None) -> None:
-    if value is None:
-        return
-    if not isinstance(value, dict) or set(value) != {"rule", "original_item", "from_key", "to_key"}:
-        raise ValueError("PROVIDER_ADAPTATION_INVALID")
-    adapted, expected = adapt_provider_item(value["original_item"])
-    if expected is None or value != expected:
-        raise ValueError("PROVIDER_ADAPTATION_REPLAY_MISMATCH")
+def validate_provider_item(item: object, quote: str) -> tuple[dict, dict | None]:
+    """Derive adaptation from the preserved source, never from adaptation itself."""
+    adapted, expected = adapt_provider_item(item)
     text = adapted["text"]
     if (not isinstance(text, str) or not text or text != text.strip()
-            or adapted["quote"] != quote
-            or (fact_text is not None and fact_text != text)):
+            or not isinstance(quote, str) or not quote or quote != quote.strip()
+            or adapted["quote"] != quote):
         raise ValueError("PROVIDER_ADAPTATION_VALUE_MISMATCH")
+    return adapted, expected

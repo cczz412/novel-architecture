@@ -57,3 +57,5 @@
 ## 显式恢复证据 v2
 
 调用方显式启用 [C2/C1恢复v2](C2_C1_TEXT_MAP_V2.md) 时，text_map_evidence.version为v2；C3 quote仍是模型原引文，恢复后的原章片段和点名字段适配原件另存于证据内。只有源LF缺失或被单普通空格替代可以受控恢复；旧默认及v1校验不放宽。M3工作区新增独立入口 `persist_current_recovered_fact_candidates`，仍按原始响应身份、完整来源批次与事务保存。
+
+修复后的v2由独立provider_item原响应条目推导适配，正常条目同样保留来源。C3入账核对原事实文字；C4允许作者修改事实文字，仍重放并保留不可替换的首次来源证据。

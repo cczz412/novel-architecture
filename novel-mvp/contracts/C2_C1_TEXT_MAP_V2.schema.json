@@ -19,7 +19,8 @@
     "original_slice",
     "original_slice_sha256",
     "recovery",
-    "provider_adaptation"
+    "provider_adaptation",
+    "provider_item"
   ],
   "properties": {
     "contract": {
@@ -199,6 +200,46 @@
                   "type": "string"
                 }
               }
+            }
+          }
+        }
+      ]
+    },
+    "provider_item": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text",
+            "quote"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quote": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text：",
+            "quote"
+          ],
+          "properties": {
+            "text：": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quote": {
+              "type": "string",
+              "minLength": 1
             }
           }
         }

@@ -13,11 +13,12 @@ v2只在调用方明确启用时恢复原章已有的段间LF，并记录点名�
 
 沿用 `text_map_evidence`，`contract`仍为 `C2_C1_TEXT_MAP`，扩展 `version`为`v2`。C2/C3/C4顶层仍为各自v1，C11形状不改。
 
-Schema见 [C2_C1_TEXT_MAP_V2.schema.json](C2_C1_TEXT_MAP_V2.schema.json)。v1字段全部保留，增加两个必填可空字段：
+Schema见 [C2_C1_TEXT_MAP_V2.schema.json](C2_C1_TEXT_MAP_V2.schema.json)。v1字段全部保留，增加以下必填字段：
 
 | 字段 | 用途 |
 |---|---|
 | recovery | 未恢复时null；否则记录规则 `SOURCE_LF_ONLY_V1`、`quote_recovered` 和逐处changes。 |
+| provider_item | 每条记录独立保留适配前的原响应条目，正常text条目也必须保存。 |
 | provider_adaptation | 无字段适配时null；否则记录 `TEXT_FULLWIDTH_COLON_KEY_V1`、原条目、from_key与to_key。 |
 
 `quote_original`始终为模型原引文，等于C3 quote。发生恢复时，`quote_recovered`等于实际原章连续片段；C4 quote等于该片段。changes记录原章Unicode坐标、回文Unicode坐标，以及 `RESTORE_SOURCE_LF` 或 `SPACE_TO_SOURCE_LF` 原因。
@@ -34,13 +35,15 @@ Schema见 [C2_C1_TEXT_MAP_V2.schema.json](C2_C1_TEXT_MAP_V2.schema.json)。v1字
 
 ## 字段适配
 
-只识别精确键集 `{text：, quote}`，转换成内存候选 `{text, quote}` 后仍走现有严格解析器。原条目深拷贝留在provider_adaptation内，不修改调用方响应；事实文本、原quote与适配证据绑定验证。
+只识别精确键集 `{text：, quote}`，转换成内存候选 `{text, quote}` 后仍走现有严格解析器。原条目由M3直接从本次响应深拷贝到provider_item，不从适配凭据反推，不修改调用方响应。重放时从provider_item推导应有的provider_adaptation；剥除或伪添适配、两份原条目不一致均拒绝。C3构造和入账时同时核对事实文本、原quote；C4后续读取只核来源与引文，不要求作者编辑后的事实文字等于模型原文字。
 
 同时有text与text：、未知附加字段、text:等相似别名、非法类型、空事实句或首尾空白均拒绝。无别名的正常条目不生成适配记录。模型不能自行提交“已适配”证据绕过解析。
 
 ## 保存与下游
 
 M3验证原quote与v2证据，M4结合工作区当前C1/C2再核对并保存原章片段和完整首次来源证据。C4重开重放同一v2规则；已有事实来源证据不可替换、剥除或降为v1，同operation幂等与批次原子提交沿用现有工作区。
+
+原响应条目与适配一同随已准入C3进入C4，作为首次来源不可变内容。独立C4校验只证明证据内部一致；外部重新构造整份一致证据不获得来源权威，已有来源整体替换由M4拒绝。
 
 M7/M9通过共同C4校验器读取v2。没有作者确认的extracted事实仍不能触发M9概览；支持证据读取不等于作者确认或产品可用。段级通过、整章批次提交与整书验收分别报告，不从失败批次捞出好条目冒充完成。
 

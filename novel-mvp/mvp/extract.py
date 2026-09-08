@@ -410,11 +410,10 @@ def extract_segment(
     if text_map_version == "v2" and (revision_ref is None or "text_map" not in seg):
         raise C2V1ContractError("TEXT_MAP_V2_REQUIRES_MAPPED_C2")
     user_content = build_user_content(seg)
-    adaptations = []
     if text_map_version == "v2":
         raw = (response_provider(INSTRUCTIONS, user_content, cfg) if response_provider is not None
                else call_json(INSTRUCTIONS, user_content, cfg))
-        r, adaptations = prepare_recovery_response(raw)
+        r, _adaptations = prepare_recovery_response(raw)
     elif response_provider is not None:
         r = parse_fact_call_result(response_provider(INSTRUCTIONS, user_content, cfg))
     else:
@@ -438,7 +437,7 @@ def extract_segment(
             try:
                 if text_map_version == "v2":
                     candidate["text_map_evidence"] = mapping_runtime.build_evidence_v2(
-                        seg, candidate["quote"], adaptations[index])
+                        seg, candidate["quote"], raw["data"]["facts"][index])
                     mapping_runtime.validate_fact_adaptation(candidate)
                 else:
                     candidate["text_map_evidence"] = mapping_runtime.build_evidence(seg, candidate["quote"])

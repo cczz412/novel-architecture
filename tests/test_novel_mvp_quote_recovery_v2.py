@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / "novel-mvp"))
 try:
     from mvp import (chapter_workspace, segment_workspace, extract_workspace,
                      extract_tool, extract, text_mapping, quote_recovery,
-                     fact_workspace, factstore, check_tool, overview)
+                     fact_workspace, factstore, check_tool, overview, review_workspace)
     from mvp.workspace import WorkspaceRouter
 finally:
     sys.path.pop(0)
@@ -110,7 +110,7 @@ def test_halo_wrong_revision_and_missing_opt_in_inputs(tmp_path):
     s["end"] = len("甲推开门。")
     s["text"] = "甲推开门。"
     with pytest.raises(ValueError, match="OUTSIDE_RESPONSIBILITY"):
-        text_mapping.build_evidence_v2(s, QUOTE)
+        text_mapping.build_evidence_v2(s, QUOTE, {"text": "事实", "quote": QUOTE})
     called = []
     bad_ref = {**c["chapter_revision_ref"], "revision_no": 2}
     with pytest.raises(RuntimeError):
@@ -145,7 +145,7 @@ def test_field_adapter_is_exact_and_atomic(tmp_path, mode):
 
 
 @pytest.mark.parametrize("mode", ["original_quote", "recovered", "offset", "reason", "rule", "missing",
-                                   "adapter_text", "adapter_quote", "fact_text", "extra"])
+                                   "adapter_text", "adapter_quote", "source_missing", "source_type", "source_quote", "source_unknown", "source_keys", "extra"])
 def test_forged_v2_evidence_rejected_before_save(tmp_path, mode):
     ws, _c, _segs, responses = setup(tmp_path, alias=True)
     facts = persist(ws, responses)
@@ -166,8 +166,16 @@ def test_forged_v2_evidence_rejected_before_save(tmp_path, mode):
         e["provider_adaptation"]["original_item"]["text："] += "假"
     elif mode == "adapter_quote":
         e["provider_adaptation"]["original_item"]["quote"] += "假"
-    elif mode == "fact_text":
-        facts[0]["text"] += "假"
+    elif mode == "source_missing":
+        del e["provider_item"]
+    elif mode == "source_type":
+        e["provider_item"]["text："] = 1
+    elif mode == "source_quote":
+        e["provider_item"]["quote"] += "假"
+    elif mode == "source_unknown":
+        e["provider_item"]["unknown"] = 1
+    elif mode == "source_keys":
+        e["provider_item"]["text"] = e["provider_item"]["text："]
     else:
         e["extra"] = 1
     before = inventory(tmp_path)
@@ -213,3 +221,97 @@ def test_m7_m9_validate_v2_without_auto_confirmation(tmp_path, forged):
         overview.execute({"facts": facts, "current_revision_ref": c["chapter_revision_ref"],
                           "source_revision": "synthetic", "generated_at": "now"}, lambda r: called.append(r))
     assert not called and ws.read("facts")["payload"][0]["status"] == "extracted"
+
+
+@pytest.mark.parametrize("alias", [False, True])
+def test_adaptation_cannot_be_added_or_stripped_in_c3_c4_m7_m9(tmp_path, alias):
+    ws, c, segs, responses = setup(tmp_path, alias=alias)
+    facts = persist(ws, responses)
+    c3 = extract_workspace.read_current_fact_candidates(ws)["items"][0]
+    e = facts[0]["text_map_evidence"]
+    original = copy.deepcopy(e["provider_item"])
+    e["provider_adaptation"] = (None if alias else quote_recovery.adapt_provider_item(
+        {"text：": facts[0]["text"], "quote": QUOTE})[1])
+    assert e["provider_item"] == original
+    c3["text_map_evidence"] = copy.deepcopy(e)
+    with pytest.raises(ValueError, match="REPLAY_MISMATCH"):
+        text_mapping.validate_candidate(c3, segs[0])
+    with pytest.raises(factstore.FactstoreError, match="REPLAY_MISMATCH"):
+        factstore.validate_c4_v1_snapshot(facts)
+    before = inventory(tmp_path)
+    with pytest.raises(factstore.FactstoreError):
+        fact_workspace.save_snapshot(ws, operation_id="bad", snapshot=facts, expected_version=1)
+    assert inventory(tmp_path) == before
+    report = check_tool.execute({"project": "synthetic", "generated_at": "now", "facts": facts,
+        "current_revision_refs": [c["chapter_revision_ref"]],
+        "check_config": {"scope_name": "test", "scope_kind": "leftover", "kinds": ["event"]}},
+        check_tool.FrozenFindingProvider({"provider_id": "offline", "model_calls": 0,
+                                         "response": {"findings": []}}))
+    assert report["scan"]["excluded_counts"]["invalid_evidence"] == 1
+    called = []
+    with pytest.raises(overview.OverviewError, match="C4_TEXT_MAP_INVALID"):
+        overview.execute({"facts": facts, "current_revision_ref": c["chapter_revision_ref"],
+                          "source_revision": "synthetic", "generated_at": "now"},
+                         lambda r: called.append(r))
+    assert not called
+
+
+@pytest.mark.parametrize("alias", [False, True])
+def test_source_item_binding_at_admission_and_immutability_after_storage(tmp_path, alias):
+    ws, _c, segs, responses = setup(tmp_path, alias=alias)
+    facts = persist(ws, responses)
+    c3 = extract_workspace.read_current_fact_candidates(ws)["items"][0]
+    assert c3["text_map_evidence"]["provider_item"] == next(iter(responses.values()))["data"]["facts"][0]
+    c3["text"] = "篡改入账文字"
+    with pytest.raises(ValueError, match="VALUE_MISMATCH"):
+        text_mapping.validate_candidate(c3, segs[0])
+    # Even coherently replacing both source and derived adaptation cannot change
+    # an admitted origin. Stateless proof validation is not origin authority.
+    e = facts[0]["text_map_evidence"]
+    e["provider_item"] = {"text" if alias else "text：": facts[0]["text"], "quote": QUOTE}
+    e["provider_adaptation"] = quote_recovery.adapt_provider_item(e["provider_item"])[1]
+    factstore.validate_c4_v1_snapshot(facts)
+    before = inventory(tmp_path)
+    with pytest.raises(fact_workspace.FactWorkspaceError, match="ORIGIN_IMMUTABLE"):
+        fact_workspace.save_snapshot(ws, operation_id="replace", snapshot=facts, expected_version=1)
+    assert inventory(tmp_path) == before
+
+
+@pytest.mark.parametrize("decision", ["edit", "edit_and_confirm"])
+@pytest.mark.parametrize("alias", [False, True])
+def test_m5_author_edit_preserves_source_and_reopens(tmp_path, decision, alias):
+    ws, c, _segs, responses = setup(tmp_path, alias=alias)
+    original = persist(ws, responses)[0]
+    evidence = copy.deepcopy(original["text_map_evidence"])
+    args = {"operation_id": "author-edit", "expected_facts_version": 1, "review_action": {
+        "action": factstore.build_review_action(original, decision=decision,
+            replacement_text="作者修正后的事实。", operation_id="author-edit"),
+        "chapter_revision_ref": c["chapter_revision_ref"], "decided_at": "now"}}
+    result = review_workspace.apply_review(ws, **args)
+    updated = result["facts"][0]
+    assert updated["text"] == "作者修正后的事实。"
+    assert updated["status"] == ("confirmed" if decision == "edit_and_confirm" else "extracted")
+    assert updated["text_map_evidence"] == evidence
+    reopened = WorkspaceRouter(tmp_path / "ws").open_project("auth:v2", ws.project_id)
+    fact_workspace.read_current_snapshot(reopened)
+    assert reopened.read("facts")["payload"] == result["facts"]
+    before = inventory(tmp_path)
+    assert review_workspace.apply_review(reopened, **args)["replayed"]
+    assert inventory(tmp_path) == before
+    report = check_tool.execute({"project": "synthetic", "generated_at": "now", "facts": result["facts"],
+        "current_revision_refs": [c["chapter_revision_ref"]],
+        "check_config": {"scope_name": "test", "scope_kind": "leftover", "kinds": ["event"]}},
+        check_tool.FrozenFindingProvider({"provider_id": "offline", "model_calls": 0,
+                                         "response": {"findings": []}}))
+    assert report["scan"]["excluded_counts"]["invalid_evidence"] == 0
+
+    class ProviderReached(Exception):
+        pass
+
+    def probe_provider(request):
+        raise ProviderReached()
+
+    with pytest.raises(ProviderReached if decision == "edit_and_confirm" else overview.OverviewError,
+                       match=None if decision == "edit_and_confirm" else "NO_CONFIRMED_FACTS"):
+        overview.execute({"facts": result["facts"], "current_revision_ref": c["chapter_revision_ref"],
+                          "source_revision": "synthetic", "generated_at": "now"}, probe_provider)

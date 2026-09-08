@@ -83,9 +83,9 @@ def build_evidence(segment: dict, quote: str) -> dict:
     return evidence
 
 
-def build_evidence_v2(segment: dict, quote: str, adaptation: dict | None = None) -> dict:
+def build_evidence_v2(segment: dict, quote: str, provider_item: dict) -> dict:
     snapshot = validate_segment(segment)
-    quote_recovery.validate_adaptation(adaptation, quote)
+    _adapted, adaptation = quote_recovery.validate_provider_item(provider_item, quote)
     recovery = None
     try:
         base = build_evidence(segment, quote)
@@ -101,7 +101,8 @@ def build_evidence_v2(segment: dict, quote: str, adaptation: dict | None = None)
         recovery = {"rule": quote_recovery.RULE, "quote_recovered": recovered,
                     "changes": changes}
     return {**base, "version": "v2", "quote_original": quote,
-            "recovery": recovery, "provider_adaptation": copy.deepcopy(adaptation)}
+            "recovery": recovery, "provider_item": copy.deepcopy(provider_item),
+            "provider_adaptation": copy.deepcopy(adaptation)}
 
 
 def _validate_v2(evidence: dict, snapshot: dict) -> dict:
@@ -116,11 +117,11 @@ def _validate_v2(evidence: dict, snapshot: dict) -> dict:
     segment = {**responsibility, "chapter_revision_ref": snapshot["chapter_revision_ref"],
                "text": context["normalized_text"][responsibility["start"]:responsibility["end"]],
                "text_map": context}
-    expected = build_evidence_v2(segment, evidence["quote_original"], evidence["provider_adaptation"])
+    expected = build_evidence_v2(segment, evidence["quote_original"], evidence["provider_item"])
     if _canonical(expected) != _canonical(evidence):
         raise ValueError("TEXT_MAP_V2_REPLAY_MISMATCH")
     base = {k: copy.deepcopy(v) for k, v in evidence.items()
-            if k not in {"recovery", "provider_adaptation"}}
+            if k not in {"recovery", "provider_adaptation", "provider_item"}}
     base["version"] = "v1"
     if evidence["recovery"] is not None:
         base["quote_original"] = evidence["recovery"]["quote_recovered"]
@@ -136,8 +137,10 @@ def _validate_evidence(evidence: object, snapshot: dict) -> dict:
 def validate_fact_adaptation(fact: dict) -> None:
     evidence = fact.get("text_map_evidence", {})
     if evidence.get("version") == "v2":
-        quote_recovery.validate_adaptation(
-            evidence["provider_adaptation"], evidence["quote_original"], fact["text"])
+        adapted, expected = quote_recovery.validate_provider_item(
+            evidence["provider_item"], evidence["quote_original"])
+        if (expected != evidence["provider_adaptation"] or adapted["text"] != fact["text"]):
+            raise ValueError("PROVIDER_ADAPTATION_VALUE_MISMATCH")
 
 
 def validate_candidate(candidate: dict, segment: dict, *, chapter: dict | None = None) -> dict:
