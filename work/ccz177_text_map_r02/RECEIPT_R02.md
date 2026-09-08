@@ -51,4 +51,13 @@ Codex 审查与合并：尚未完成，不把本回执写成已合。合并门�
 
 支持事实验收汇总 SHA-256：`05b8c25817bb4c545cb73442f0844d59405cdf929476b51b807628fb9d013fd1`。
 
+
+## Codex P2 修复与最终复验
+
+[Codex 对47a63b7的P2](https://github.com/cczz412/novel-architecture/pull/345#discussion_r3954715147)指出：C4读取时未把顶层seg和原版本anchor坐标绑定到来源映射。已补齐两项：seg始终等于来源责任段；current revision仍是来源版本时，anchor起止也必须等于来源证据。修订已前进时继续允许current anchor移动。
+
+新增改段号、删段号、平移原版本坐标三个拒绝用例；运行测试17项通过，定向Ruff与diff检查通过。修复后全量 `uv run --locked pytest -q`：4433 passed、902 skipped、40 deselected、1 xfailed、179 subtests passed，用时235.56秒。原4430结果保留为修复前证据，不代替本次复验。
+
+原始20次API响应另在本地 `TEMP/ccz177_p2fix_replay/` 作零API回放，PARENT_RUN指回原运行；两本整批仍按非法候选拒绝且零写入。六条支持事实再次全部原样传输、保存和逐字回取；两份结果汇总与原回放逐字段相等。原API请求／响应未改，新增真实调用为0。修复提交仍待最终Codex核对，未提前合并。
+
 来源：Codex

@@ -157,9 +157,17 @@ def _validate_c11_object(
                             or value["chapter_revision_ref"] != result["chapter_revision_ref"]
                             or value["seg"] != extension["responsibility"]["seg"]):
                         raise ValueError("C3_TEXT_MAP_ORIGIN_MISMATCH")
-                elif (value["quote"] != result["text"]
-                      or value["chapter_id"] != result["chapter_revision_ref"]["chapter_id"]):
-                    raise ValueError("C4_TEXT_MAP_ORIGIN_MISMATCH")
+                else:
+                    if (value["quote"] != result["text"]
+                            or value["chapter_id"] != result["chapter_revision_ref"]["chapter_id"]
+                            or value.get("seg") != extension["responsibility"]["seg"]):
+                        raise ValueError("C4_TEXT_MAP_ORIGIN_MISMATCH")
+                    if value["chapter_revision_ref"] == result["chapter_revision_ref"]:
+                        anchor = value["anchor_ref"]
+                        if (not isinstance(anchor, dict)
+                                or anchor.get("start") != result["start"]
+                                or anchor.get("end") != result["end"]):
+                            raise ValueError("C4_TEXT_MAP_ORIGIN_ANCHOR_MISMATCH")
         except (ValueError, KeyError, TypeError) as exc:
             raise FactstoreError(f"{contract}_TEXT_MAP_INVALID:{exc}") from exc
     return value

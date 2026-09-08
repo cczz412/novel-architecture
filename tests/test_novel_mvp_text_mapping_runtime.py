@@ -191,3 +191,22 @@ def test_c4_origin_proof_is_immutable_when_current_anchor_advances(tmp_path):
     checked[0]['text_map_evidence']['original_slice'] = '伪造来源'
     with pytest.raises(factstore.FactstoreError):
         factstore.validate_c4_v1_snapshot(checked)
+
+
+@pytest.mark.parametrize("tamper", ["seg", "missing_seg", "origin_anchor"])
+def test_c4_reader_rejects_origin_provenance_tampering(tmp_path, tamper):
+    ws, _c1, _c2, responses = prepare(tmp_path)
+    extract_workspace.persist_current_fact_candidates(ws, 'extract', responses, 0)
+    fact_workspace.materialize_current_extracted_snapshot(
+        ws, operation_id='facts', source='synthetic', added_at='now',
+    )
+    facts = ws.read('facts')['payload']
+    if tamper == 'seg':
+        facts[0]['seg'] += 1
+    elif tamper == 'missing_seg':
+        facts[0].pop('seg')
+    else:
+        facts[0]['anchor_ref']['start'] += 1
+        facts[0]['anchor_ref']['end'] += 1
+    with pytest.raises(factstore.FactstoreError, match='C4_TEXT_MAP_ORIGIN'):
+        factstore.validate_c4_v1_snapshot(facts)
