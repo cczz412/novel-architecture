@@ -511,14 +511,7 @@ def validate_fixture_case(case: dict[str, Any]) -> str | None:
     try:
         if kind == "entry":
             document = case.get("document")
-            version = case.get("contract_version")
-            if version is None:
-                version = (
-                    CONTRACT_VERSION_V2
-                    if isinstance(document, dict)
-                    and ("tags" in document or "tag_groups" in document)
-                    else CONTRACT_VERSION_V1
-                )
+            version = case.get("contract_version", CONTRACT_VERSION_V1)
             validate_entry(
                 document,
                 entry_kind=case.get("entry_kind"),

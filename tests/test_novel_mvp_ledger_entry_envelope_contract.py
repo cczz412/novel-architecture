@@ -594,3 +594,16 @@ def test_pack_candidate_rejects_incomplete_or_unbound_records(failure):
         contract.validate_confirmation_transition(
             old, new, actor="AUTHOR", contract_version=contract.CONTRACT_VERSION_V2,
             business_before=before, business_after=after)
+
+
+@pytest.mark.parametrize("version", ["missing", contract.CONTRACT_VERSION_V1, contract.CONTRACT_VERSION_V2])
+def test_entry_fixture_requires_explicit_v2_declaration(version):
+    document, _ = _v2_confirmed_pair()
+    case = {"fixture_kind": "entry", "entry_kind": "DEFINITION", "document": document}
+    if version != "missing":
+        case["contract_version"] = version
+    error = contract.validate_fixture_case(case)
+    if version == contract.CONTRACT_VERSION_V2:
+        assert error is None
+    else:
+        assert error is not None and error.startswith("SCHEMA_INVALID")
