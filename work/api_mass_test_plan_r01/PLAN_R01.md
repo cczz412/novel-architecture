@@ -1038,7 +1038,7 @@ CCZ-142 的“六份施工包”以及研究侧 B 系列属于责任分工和已
 
 ## 17. 可从本文件提取的完整机器格式
 
-本节补齐执行者不能访问本机TEMP的交接缺口。下列JSON来自Pro原包；Codex按复审修正逐配置绑定、批准配置哈希、逐格／阶段预算和回执费用／失败响应条件，停止策略保留原包字节。三份均为设计候选，不需要从本机取件。profile_bindings按获批selected_profiles增删键；选中P-T或P-N时使用相同字段结构逐项核实，不能借用其他配置的端点或价格。批次模板中的null和空清单必须在另有执行授权后填入真实值，不能直接运行。其余预算、模型组合和逐格判据以本文第5—13节为完整人读依据；本节不要求先下载其余本机CSV。
+本节补齐执行者不能访问本机TEMP的交接缺口。下列JSON来自Pro原包；Codex按复审修正逐配置绑定、批准配置与批次摘要、逐格／阶段预算和费用／用量／失败响应条件，停止策略保留原包字节。三份均为设计候选，不需要从本机取件。profile_bindings按获批selected_profiles增删键；选中P-T或P-N时使用相同字段结构逐项核实，不能借用其他配置的端点或价格。批次模板中的null和空清单必须在另有执行授权后填入真实值，不能直接运行。其余预算、模型组合和逐格判据以本文第5—13节为完整人读依据；本节不要求先下载其余本机CSV。
 
 受#325单文件写集约束，JSON内嵌在本文件而非新增独立仓库文件。获准执行时可用下列标准库脚本提取到本机TEMP，并检查哈希；不调用API，不读取密钥。
 
@@ -1062,7 +1062,7 @@ for name, expected, payload in re.findall(
 
 ### BATCH_MANIFEST_TEMPLATE.json
 
-<!-- MACHINE_FILE: BATCH_MANIFEST_TEMPLATE.json SHA256: e4d59e6f1990e5a5496813f157e042ef34c83bd9025d85f8d4afbe46f180087f -->
+<!-- MACHINE_FILE: BATCH_MANIFEST_TEMPLATE.json SHA256: c95904e95ee90bd55ee50e4e19330b1d3aced2a6876ad1d3440bd0372cb6f89f -->
 ```json
 {
   "schema_version": "PROPOSED_API_TEST_BATCH_MANIFEST_R01",
@@ -2055,13 +2055,27 @@ for name, expected, payload in re.findall(
     }
   },
   "freeze_policy": "Template caps are proposed ceilings, not approval. At freeze retain exactly selected cells and their phases; bind execution authorization to manifest hash. Config entries must cover every selected cell/profile pair exactly once, including sub-call profiles. Canonical config hash is SHA-256 of UTF-8 JSON with sorted keys, compact separators and no NaN; receipt config_sha256 must equal approved_config_sha256 and the actual sent non-prompt/source request configuration. Every actual provider parameter, limits, tools and retry setting must be represented; unsupported or omitted parameters require an explicit disposition in other_provider_parameters. Any unresolved value blocks dispatch. Freeze final provider-native parameters after adaptation. Configuration changes require new approval and batch, not mutation of the old manifest.",
-  "budget_scope_policy": "Persist reservations and reconciliations under experiment_id/cell_id/phase_id across all batches and retries. Selected cell and phase cap keys must match selected_cell_ids and their phase membership exactly. Proposed ceilings may only decrease without a new budget approval. Every attempt atomically reserves against cell, phase, batch approved_limits and global STOP_POLICY limits; unused sibling allocations are not transferable. Batch restart or new config must not reset experiment spend."
+  "budget_scope_policy": "Persist reservations and reconciliations under experiment_id/cell_id/phase_id across all batches and retries. Selected cell and phase cap keys must match selected_cell_ids and their phase membership exactly. Proposed ceilings may only decrease without a new budget approval. Every attempt atomically reserves against cell, phase, batch approved_limits and global STOP_POLICY limits; unused sibling allocations are not transferable. Batch restart or new config must not reset experiment spend.",
+  "batch_manifest_sha256": null,
+  "digest_policy": {
+    "canonical_encoding": "UTF-8 bytes of Python json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(comma, colon), allow_nan=False), with no trailing newline; the normative code below supplies exact separators.",
+    "batch_excluded_paths": [
+      "/batch_manifest_sha256",
+      "/execution_authorization/approval_hash",
+      "/ready_to_dispatch"
+    ],
+    "config_manifest_excluded_paths": [
+      "/manifest_sha256"
+    ],
+    "approval_hash_meaning": "SHA-256 of preserved external approval evidence bytes, not the manifest digest. That evidence must explicitly approve batch_manifest_sha256, authorizer, scope and payment cap. Verify the evidence authority, not merely this self-reported JSON.",
+    "dispatch_rule": "Compute both digests using the normative code. Freeze every other field including status and authorization metadata before approval. Verify external approval binds the recomputed batch digest and config manifest digest matches; only then may ready_to_dispatch become true. Any non-excluded edit invalidates approval and requires a new frozen manifest. Excluded fields never grant authorization by themselves."
+  }
 }
 ```
 
 ### CALL_RECEIPT.schema.json
 
-<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: 337cd3622ebc416ebaa88fda154a579a547beddd090d5c9ce31214296390be78 -->
+<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: 7258e3daf73d1f0704278f2c4afed7d6458fa19216ebc5065daa47fb484f3e99 -->
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -2712,6 +2726,64 @@ for name, expected, payload in re.findall(
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "usage": {
+            "properties": {
+              "status": {
+                "const": "KNOWN"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "usage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "usage": {
+            "properties": {
+              "raw": {
+                "type": "object"
+              },
+              "normalization_rule": {
+                "type": "string",
+                "minLength": 1
+              },
+              "input_uncached": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "input_cached": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "output_billable_excluding_separate_reasoning": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "reasoning_separately_billable": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "raw",
+              "normalization_rule",
+              "input_uncached",
+              "input_cached",
+              "output_billable_excluding_separate_reasoning",
+              "reasoning_separately_billable"
+            ]
+          }
+        }
+      }
     }
   ]
 }
@@ -2823,6 +2895,40 @@ for name, expected, payload in re.findall(
   "resume": "only approved remaining logical tasks under the same source/config hash; configuration or code changes create a new batch"
 }
 ```
+
+### 批次批准摘要的规范算法
+
+下列算法定义摘要输入，不执行API。审批证据单独保存，明确批准计算所得的batch_manifest_sha256；execution_authorization.approval_hash是该证据原始字节的SHA-256。不能仅凭模板自报authorizer或ready_to_dispatch放行。状态和其他全部字段在送审批前填定，审批后不再改变；只有下列三个排除槽可填摘要、证据哈希和派发就绪标记。
+
+```python
+import copy
+import hashlib
+import json
+
+
+def canonical_sha256(value):
+    raw = json.dumps(value, ensure_ascii=False, sort_keys=True,
+                     separators=(",", ":"), allow_nan=False).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def config_manifest_digest(config_manifest):
+    frozen = copy.deepcopy(config_manifest)
+    frozen.pop("manifest_sha256", None)
+    return canonical_sha256(frozen)
+
+
+def batch_manifest_digest(manifest):
+    frozen = copy.deepcopy(manifest)
+    frozen.pop("batch_manifest_sha256", None)
+    frozen.pop("ready_to_dispatch", None)
+    frozen["execution_authorization"].pop("approval_hash", None)
+    return canonical_sha256(frozen)
+```
+
+先给config_manifest.manifest_sha256填入config_manifest_digest，再计算batch_manifest_sha256。批准对象包含配置摘要、选中格、prompt清单、预算、供应商绑定及其余未排除字段；任一变化都会改变批次摘要。每次派发前重算并与外部审批证据核对。原始审批证据不是这份JSON本身，证据及摘要均不得用事后生成的自报批准替代。
+
+usage为KNOWN时，原始usage对象、归一化规则和四项计费计数（未缓存输入、缓存输入、独立计费输出、独立计费思考）必须存在且非空。经供应商计费口径确认不适用的计数才可填0，不能用0补未知数。reasoning_observed只是公开观测项，供应商不单列时可为null，不参与费用或token上限对账；缺计费所需计数就保留PARTIAL／UNKNOWN_RESERVED及原预留额。
 
 ### 跨记录语义检查
 
