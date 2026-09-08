@@ -15,7 +15,7 @@
 | 要加的东西 | 去哪 | 说明 |
 |---|---|---|
 | 新功能代码 | 已证明可复用 → [tools/](../tools/)；产品试跑示例 → [novel-mvp/mvp/](../novel-mvp/mvp/)；单次试验程序 → [experiments/](../experiments/)；还没定型 → [work/](../work/) | 详情：[new_file_routing.md](indexes/new_file_routing.md) |
-| 新需求 | [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0) | 活动任务先找所属 Project；需要进仓的交付再配 GitHub 施工票。工程真源仍是 GitHub。 |
+| 新需求 | [CCZ-128 需求登记](https://linear.app/ccz/issue/CCZ-128)，再从 [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)找所属 Project | 尚未归属的新需求先登记、去重，再进入模块任务；需要进仓的交付再配 GitHub 施工票。工程真源仍是 GitHub。 |
 | 新评测题集 | **待 CZ 拍板** | 登记占位在 `directory_registry.json` 的 `evaluation_item_set_pending_cz`。不要新建顶层目录。 |
 | 新实验 | [experiments/](../experiments/) | 每个试验自带身份；程序放 `experiments/<id>/program`。 |
 | 外部调查回包 | [references/survey-inbox/](../references/survey-inbox/) | 入口：[INDEX.md](../references/survey-inbox/INDEX.md)。历史报告只作证据，不产生执行权。 |
