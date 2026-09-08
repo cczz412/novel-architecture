@@ -53,3 +53,7 @@
 来源 C2 含 `text_map` 时，每条 C3 必须带 `text_map_evidence`，形状严格遵守 [C2_C1_TEXT_MAP v1](C2_C1_TEXT_MAP.md)。`quote` 保持模型原样并等于证据的 `quote_original`；映射由 M3 从可信 C2 构造，模型不能提交或改写映射。证据失败使该批候选写入失败，不能丢掉扩展再按旧规则接纳。
 
 原始 C3 v1 入口保持原规则。扩展没有增加置信分；证据校验通过不说明事实语义正确，更不表示作者确认。
+
+## 显式恢复证据 v2
+
+调用方显式启用 [C2/C1恢复v2](C2_C1_TEXT_MAP_V2.md) 时，text_map_evidence.version为v2；C3 quote仍是模型原引文，恢复后的原章片段和点名字段适配原件另存于证据内。只有源LF缺失或被单普通空格替代可以受控恢复；旧默认及v1校验不放宽。M3工作区新增独立入口 `persist_current_recovered_fact_candidates`，仍按原始响应身份、完整来源批次与事务保存。

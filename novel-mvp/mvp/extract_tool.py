@@ -54,7 +54,9 @@ def _validate_request(request: object) -> tuple[list[dict[str, Any]], dict[str, 
     if not isinstance(request, dict):
         raise ExtractToolError("REQUEST_NOT_OBJECT")
     missing = sorted(REQUEST_KEYS - request.keys())
-    extra = sorted(request.keys() - REQUEST_KEYS)
+    extra = sorted(request.keys() - (REQUEST_KEYS | {"text_map_version"}))
+    if "text_map_version" in request and request["text_map_version"] != "v2":
+        raise ExtractToolError("TEXT_MAP_VERSION_INVALID")
     if missing:
         raise ExtractToolError(f"REQUEST_MISSING_FIELDS:{','.join(missing)}")
     if extra:
@@ -160,6 +162,9 @@ def execute(request: dict, response_provider: ResponseProvider) -> dict:
         raise ExtractToolError("RESPONSE_PROVIDER_NOT_CALLABLE")
     items, current_by_chapter = _validate_request(request)
 
+    use_v2 = request.get("text_map_version") == "v2"
+    if use_v2 and any("text_map" not in item for item in items):
+        raise ExtractToolError("TEXT_MAP_V2_REQUIRES_MAPPED_C2")
     output_items: list[dict[str, Any]] = []
     for item in items:
         key = item_key(item)
@@ -179,6 +184,9 @@ def execute(request: dict, response_provider: ResponseProvider) -> dict:
                 "c2_item": copy.deepcopy(_item),
             }
             result = response_provider(provider_request)
+            if use_v2:
+                extract.prepare_recovery_response(result)
+                return result
             return _validate_provider_result(result, key=_key)
 
         chapter_id = item["chapter_revision_ref"]["chapter_id"]
@@ -187,6 +195,7 @@ def execute(request: dict, response_provider: ResponseProvider) -> dict:
             {"model_id": MODEL_PROVIDER_SWAP_POINT},
             current_chapter_revision_ref=current_by_chapter[chapter_id],
             response_provider=provider_adapter,
+            **({"text_map_version": "v2"} if use_v2 else {}),
         )
         for candidate in candidates:
             _validate_c3_candidate(candidate, source_item=item, key=key)
