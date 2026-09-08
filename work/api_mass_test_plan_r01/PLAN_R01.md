@@ -1062,7 +1062,7 @@ for name, expected, payload in re.findall(
 
 ### BATCH_MANIFEST_TEMPLATE.json
 
-<!-- MACHINE_FILE: BATCH_MANIFEST_TEMPLATE.json SHA256: c95904e95ee90bd55ee50e4e19330b1d3aced2a6876ad1d3440bd0372cb6f89f -->
+<!-- MACHINE_FILE: BATCH_MANIFEST_TEMPLATE.json SHA256: fdf2dbdfe2f40a3e61d8f209ec9ac5473f01d3ec3a6f07084d809536efd27ad4 -->
 ```json
 {
   "schema_version": "PROPOSED_API_TEST_BATCH_MANIFEST_R01",
@@ -2068,14 +2068,15 @@ for name, expected, payload in re.findall(
       "/manifest_sha256"
     ],
     "approval_hash_meaning": "SHA-256 of preserved external approval evidence bytes, not the manifest digest. That evidence must explicitly approve batch_manifest_sha256, authorizer, scope and payment cap. Verify the evidence authority, not merely this self-reported JSON.",
-    "dispatch_rule": "Compute both digests using the normative code. Freeze every other field including status and authorization metadata before approval. Verify external approval binds the recomputed batch digest and config manifest digest matches; only then may ready_to_dispatch become true. Any non-excluded edit invalidates approval and requires a new frozen manifest. Excluded fields never grant authorization by themselves."
-  }
+    "dispatch_rule": "Compute both digests using the normative code. Freeze every other field including status and authorization metadata before approval. Verify external approval binds the recomputed batch digest and config manifest digest matches; only then may ready_to_dispatch become true. Any non-excluded edit invalidates approval and requires a new frozen manifest. Excluded fields never grant authorization by themselves. Before every dispatch verify SHA-256 of the exact loaded failure-policy bytes equals failure_policy_sha256. Changing this digest changes the approved batch digest. Each receipt must carry batch_manifest_sha256; reconciliation resolves the immutable manifest by this digest and verifies its approval evidence, not by batch_id alone."
+  },
+  "failure_policy_sha256": "85f28776c8da2f31a2e83df5fa7727abba84bb90fd2554fe4a66e51d6147977f"
 }
 ```
 
 ### CALL_RECEIPT.schema.json
 
-<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: bc7480c99d2766717e21118397e4769e9e7a7961aba5e864d5ba2f421e64571f -->
+<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: 79ee704cea7ed89821baf70ae0d4666d2212279af38adcc5db720ec28e3e4e0e -->
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -2107,7 +2108,8 @@ for name, expected, payload in re.findall(
     "usage",
     "cost",
     "evaluation",
-    "raw_response_sha256"
+    "raw_response_sha256",
+    "batch_manifest_sha256"
   ],
   "properties": {
     "schema_version": {
@@ -2624,6 +2626,10 @@ for name, expected, payload in re.findall(
         ]
       },
       "maxItems": 2
+    },
+    "batch_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     }
   },
   "allOf": [
@@ -2633,7 +2639,11 @@ for name, expected, payload in re.findall(
           "transport": {
             "properties": {
               "completion_state": {
-                "const": "SUCCEEDED"
+                "enum": [
+                  "SUCCEEDED",
+                  "USAGE_UNKNOWN",
+                  "MODEL_MISMATCH"
+                ]
               }
             }
           }
@@ -2643,7 +2653,8 @@ for name, expected, payload in re.findall(
         "properties": {
           "response_model": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": "\\S"
           },
           "raw_response_sha256": {
             "type": "string",
@@ -2983,7 +2994,7 @@ def batch_manifest_digest(manifest):
     return canonical_sha256(frozen)
 ```
 
-先给config_manifest.manifest_sha256填入config_manifest_digest，再计算batch_manifest_sha256。批准对象包含配置摘要、选中格、prompt清单、预算、供应商绑定及其余未排除字段；任一变化都会改变批次摘要。每次派发前重算并与外部审批证据核对。原始审批证据不是这份JSON本身，证据及摘要均不得用事后生成的自报批准替代。
+先给config_manifest.manifest_sha256填入config_manifest_digest，再计算batch_manifest_sha256。批准对象包含配置摘要、选中格、prompt清单、预算、供应商绑定及其余未排除字段；任一变化都会改变批次摘要。每次派发前重算并与外部审批证据核对；同时将实际加载停止策略的原始字节SHA-256与failure_policy_sha256比较，不能只认同名文件。每条请求回执携带batch_manifest_sha256，清算时按此摘要取得不可变清单和批准证据，不能仅按batch_id找当前文件。原始审批证据不是这份JSON本身，证据及摘要均不得用事后生成的自报批准替代。
 
 usage为KNOWN时，原始usage对象、归一化规则和四项计费计数（未缓存输入、缓存输入、独立计费输出、独立计费思考）必须存在且非空。经供应商计费口径确认不适用的计数才可填0，不能用0补未知数。reasoning_observed只是公开观测项，供应商不单列时可为null，不参与费用或token上限对账；缺计费所需计数就保留PARTIAL／UNKNOWN_RESERVED及原预留额。
 
@@ -2993,7 +3004,7 @@ usage为KNOWN时，原始usage对象、归一化规则和四项计费计数（�
 
 JSON Schema 只验形状。下面这些必须由宿主对原始材料、批准清单和整批请求账检查，不能因JSON通过就标PASS。
 
-1. profile_bindings的键必须与selected_profiles完全一致；每份回执按profile_id取得唯一供应商快照和rate_card，rate_card_ref指向该配置的计价项。缺项、未核价或配置间错配均拦截。requested_model/response_model必须匹配本批核准映射，endpoint/profile与清单一致；未知/缺失响应模型不能取得L1的模型绑定通过。
+1. 每份回执batch_manifest_sha256必须等于已核批准证据绑定的清单摘要；失败或缺原清单不可清算。profile_bindings的键必须与selected_profiles完全一致；每份回执按profile_id取得唯一供应商快照和rate_card，rate_card_ref指向该配置的计价项。缺项、未核价或配置间错配均拦截。requested_model/response_model必须匹配本批核准映射，endpoint/profile与清单一致；未知/缺失响应模型不能取得L1的模型绑定通过；SUCCEEDED、USAGE_UNKNOWN和MODEL_MISMATCH都必须保存非空实际response_model，未知身份不能伪装成已经证实错配。
 2. 冻结config_manifest逐一覆盖获批cell/profile组合（含子调用配置），批准哈希必须与适配后的全部实际请求配置一致；未知供应商参数不能省略。批次批准绑定整个清单哈希，不能只记录事后config_sha256。source_manifest/prompt/config哈希必须来自实际送出字节，source_sha是执行代码版本；不可拿计划SHA替换后来实际运行SHA。
 3. cell_id只可引用获批单元；repeat_id匹配该单元固定重复数。attempt_no=2必须指向同一logical_request_id的第一次，并符合重试类别和剩余额度。
 4. 每个attempt_id/供应商request_id和响应指纹的关系必须可核；同一响应不得占两个独立重复的名额。供应商不暴露ID时记录缺口，另以可核代理/账单证据绑定，不能凭本机自发ID冒充供应商ID。
