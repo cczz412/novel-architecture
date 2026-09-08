@@ -19,6 +19,7 @@ sys.path.insert(0, str(PRODUCT_ROOT))
 try:
     from mvp import c9_ledger_read_adapter as adapter
     from mvp import ledger_directory_workspace, ledger_read_runtime
+    from mvp import setting_projection, settingstore
     from mvp import unified_retrieval_composition as composition
     from mvp import unified_retrieval_core as c9
     from mvp.workspace import (
@@ -28,6 +29,9 @@ try:
     )
 finally:
     sys.path.pop(0)
+
+
+SETTING_FIXTURE = ROOT / "tests/fixtures/novel_mvp/setting_projection"
 
 
 def _sha(text: str) -> str:
@@ -197,6 +201,107 @@ def test_real_reader_adapter_and_c9_form_one_deterministic_run(tmp_path: Path) -
         "validator"
         not in inspect.signature(composition.run_current_retrieval).parameters
     )
+
+
+def test_projected_six_setting_ledgers_are_consumed_by_c9(
+    tmp_path: Path,
+) -> None:
+    workspace = WorkspaceRouter(tmp_path / "runtime-settings").create_project(
+        "auth:alice",
+        "六账合成项目",
+    )
+    ledger_directory_workspace.initialize_directory(workspace, "op-directory-settings")
+    chapters = json.loads(
+        (SETTING_FIXTURE / "chapters.json").read_text(encoding="utf-8")
+    )
+    facts = json.loads(
+        (SETTING_FIXTURE / "facts.json").read_text(encoding="utf-8")
+    )
+    workspace.commit(
+        "op-content-settings",
+        {
+            "chapters": chapters,
+            "chapter_index": [row["chapter_revision_ref"] for row in chapters],
+            "facts": facts,
+        },
+        {"chapters": 0, "chapter_index": 0, "facts": 0},
+    )
+    initialized = setting_projection.initialize_setting_allocator(
+        workspace,
+        book_id="BK-0001",
+    )
+    already_initialized = setting_projection.initialize_setting_allocator(
+        workspace,
+        book_id="BK-0001",
+    )
+    assert initialized == {"status": "INITIALIZED", "book_id": "BK-0001"}
+    assert already_initialized == {
+        "status": "ALREADY_INITIALIZED",
+        "book_id": "BK-0001",
+    }
+    project_root = setting_projection._bound_project_dir(workspace)
+    bindings_path = SETTING_FIXTURE / setting_projection.BINDINGS_FILENAME
+    (project_root / setting_projection.BINDINGS_FILENAME).write_bytes(
+        bindings_path.read_bytes()
+    )
+
+    first_projection = setting_projection.project_confirmed_facts(
+        workspace,
+        operation_id="op-project-settings",
+    )
+    assert first_projection["written_ledger_count"] == 6
+    cards_before_replay = {
+        ledger_name: settingstore.read_setting_records(project_root, ledger_key)
+        for ledger_name, ledger_key in ledger_read_runtime.SETTING_LEDGER_KEYS.items()
+    }
+    replayed_projection = setting_projection.project_confirmed_facts(
+        workspace,
+        operation_id="op-project-settings",
+    )
+    cards_after_replay = {
+        ledger_name: settingstore.read_setting_records(project_root, ledger_key)
+        for ledger_name, ledger_key in ledger_read_runtime.SETTING_LEDGER_KEYS.items()
+    }
+
+    assert replayed_projection == first_projection
+    assert cards_after_replay == cards_before_replay
+    assert all(len(cards) == 1 for cards in cards_after_replay.values())
+
+    needs = []
+    expected_cards = {}
+    for index, (ledger_name, cards) in enumerate(cards_after_replay.items(), start=1):
+        card = cards[0]
+        need_id = f"NEED-SETTING-{index}"
+        needs.append(
+            _need(
+                need_id,
+                adapter.ledger_entries_object_ref(ledger_name, [card["id"]]),
+            )
+        )
+        expected_cards[need_id] = card
+
+    result = composition.run_current_retrieval(
+        workspace,
+        _trusted(),
+        _request(workspace, needs),
+    )
+
+    assert result["status"] == "READY"
+    assert result["short_receipt"]["loaded_count"] == 6
+    assert result["short_receipt"]["required_satisfied"] == 6
+    loaded_by_need = {
+        row["need_id"]: row for row in result["material_package"]["loaded"]
+    }
+    assert set(loaded_by_need) == set(expected_cards)
+    for need_id, card in expected_cards.items():
+        loaded = loaded_by_need[need_id]
+        material = json.loads(loaded["material_text"])
+        assert material["entries"][0]["entry"] == card
+        assert card["confirm_status"] == "candidate"
+        assert card["source_identity"] == "draft_inferred"
+        assert loaded["source_validation"]["validation_result"] == (
+            "LEDGER_READ_RESPONSE_VALID"
+        )
 
 
 def test_composition_rejects_forged_scope_and_noncanonical_reference(
