@@ -54,11 +54,13 @@ Linear 票写「谁交付什么、依赖谁、怎样验收」；GitHub 工单写
 
 ## Slack 两个频道
 
-短通知进 [#施工](https://novel-architecture.slack.com/archives/C0BRYSBUJKX)（id `C0BRYSBUJKX`）：一两句说明干完或卡住，附 Issue／Linear／PR 链接。长过程账回任务。
+人工短通知进 [#施工](https://novel-architecture.slack.com/archives/C0BRYSBUJKX)（id `C0BRYSBUJKX`），固定一行：`[CCZ-xxx／PR #xxx] 干完｜卡住：一句话 · 问题键@版本 · 链接（Codex）`。按实际结果保留“干完”或“卡住”；超过两行的内容回票或 PR，Slack 只留这一行与链接。
 
 只有别人需要知道交付、阻塞或交接时才通知；Linear 已自动播报的普通状态不再手工重发。
 
-批复、阶段门、依赖重排、基线切换和跨工具批准进 [#主控聊天](https://novel-architecture.slack.com/archives/C0BTPJ1FMCY)（id `C0BTPJ1FMCY`）。真正发送仍须当次授权，消息标明身份、范围、结论、证据链接和下一停点。长期决定按主存登记落 Notion，任务关系在 Linear，工程状态在 GitHub。
+Slack 中 CZ 口述的唯一入口是 [#主控聊天](https://novel-architecture.slack.com/archives/C0BTPJ1FMCY)（id `C0BTPJ1FMCY`），也承接批复、阶段门和跨工具批准。承接了获准口述保存任务的窗口，必须先读取完整原消息，逐字保存到 Notion 原话库，不整理成裁决；随后按已有发送授权，在原消息同一线程固定回复一行：`已存：原话 ID ／ 问题键（或待定键）／ 记录状态=待核对 ／ Notion 链接（Codex）`。本次范围已有授权不重复确认；仅获只读权限时，保留消息链接待交接，不自动写 Notion 或回复 Slack。
+
+上述规则不授权自动监听全频道。读取、Notion 写入和 Slack 发送都须符合当次授权；有效拍板另按来源、范围和版本记录，不能把“原话已存”当成“决定已生效”。长期决定按主存登记落 Notion，任务关系在 Linear，工程状态在 GitHub。
 
 Slack 只进任务卡点名的频道；普通受控窗默认 `#施工`，不能因为连着了就读完整 `#主控聊天`。
 

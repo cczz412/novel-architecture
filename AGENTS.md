@@ -1,17 +1,10 @@
-# 小说架构仓库 · Agent 极薄入口（候选）
+# 小说架构仓库 · Agent 极薄入口
 
 ## 0. 先认清内容归属
 
-| 要找什么 | 打开哪里 | 别当成 |
-|---|---|---|
-| **活动任务、交付、关系和未决问题** | [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)按五个 Project 路由找到所属任务 | 任务验收不等于代码合并，也不能代替工程合同 |
-| **已核对的长期决定、原话和产品说明／规格** | [Notion 决定与规格入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)；未迁项按登记回原 Linear 主存 | 不维护实时任务／PR 状态，不证明工程能力 |
-| **需进仓的工程交付** | GitHub Issue／PR 与 `main` 上的代码、正式合同、Schema、测试、工程方案和回执 | Issue 规定写集，PR 提供交付证据；候选或未合并内容不能冒充已落地能力 |
-| **外部调查证据** | [调查收件箱](references/survey-inbox/README.md)与 [CCZ-64](https://linear.app/ccz/issue/CCZ-64) 的冻结证据登记 | 只提供来源、反例和未知；是否吸收仍回所属模块票拍板 |
-| **P3 背景卡** | `references/novel_fact_extraction_contract_v2.md` | 抽事实的五条小抄，不是设计理念 |
-| **foundation/** | 2026-07-16 的 04 批快照 | 是历史原件，不是现行产品入口；后来的改判不在这份原文里 |
-| **novel-mvp/** | [试跑示例 README](novel-mvp/README.md) | 测试阶段示例。代码偏旧；设计稿有用。不是已经上线的产品 |
-| **情景问答** | [agent-playbook](references/agent-playbook/README.md) | 拿不准账本／工具／执行包／权限时先对一张卡。不是执行票，也不代替现行模块票和正式合同 |
+- 长期决定与内容分工：[Notion 分工决定 R2](https://app.notion.com/p/3d45cadc4d0f8115b10cc1fb4ba7786f)。
+- 工程交接与 Slack 规则：[COLLAB 协作流程](governance/COLLAB_GITHUB_LINEAR_SLACK.md)。
+- 未迁项按[逐项主存登记](https://app.notion.com/p/3d45cadc4d0f81c9aa9dcd6bdd4cce3c)回原主存；具体任务按下文路由，工程能力仍回 GitHub `main` 核对。
 
 ## 1. Repository entry / authority
 
