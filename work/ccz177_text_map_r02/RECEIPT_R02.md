@@ -36,8 +36,19 @@
 
 映射合同、运行与 C10 合同锁共 54 项通过；另补 halo／旧 revision 拒绝与 C4 来源证据保留用例后，运行测试 14 项通过。新增 halo 测试第一次误把抛异常入口当成返回状态入口；只修正测试预期，拒绝行为未改。
 
-本地首轮全量 pytest：4426 passed、902 skipped、40 deselected、1 xfailed、179 subtests passed，用时252.92秒；采集后新增两项测试已单独通过，最终同步主线后再核全量。定向 Ruff 通过；全仓 Ruff 发现 70 个已有问题，位于未修改的旧实验、外审原件及历史 runner 等文件，本票不借机修正。`git diff --check` 通过。
+本地首轮全量 pytest：4426 passed、902 skipped、40 deselected、1 xfailed、179 subtests passed，用时252.92秒；采集后新增两项测试已单独通过，同步 main `badc4d9019c937d1f4c4afe42ae4f08369b2e351` 后全量复验：4430 passed、902 skipped、40 deselected、1 xfailed、179 subtests passed，用时249.21秒；命令 `uv run --locked pytest -q`。定向 Ruff 通过；全仓 Ruff 发现 70 个已有问题，位于未修改的旧实验、外审原件及历史 runner 等文件，本票不借机修正。`git diff --check` 通过。
 
 Codex 审查与合并：尚未完成，不把本回执写成已合。合并门采用 CZ 批准的本地全量 pytest 通过＋当前提交无未解决 P1/P2；Actions 状态在 PR 如实记录。
+
+
+## 有原文支持的跨段事实补充检查
+
+每章另选一条已有 Codex 复核测试参考，共六条，使用 `reference.text` 并保留限定语。主窗口重新对照六条原章证据确认支持范围；再走完整 C1/M2/M3/M4 工作区，六条均以 `extracted` 保存，候选引文原样保留，逐字回取 6/6，confirmed 为 0。参考来源标为 `CODEX_REVIEWED_TEST_REFERENCE_NOT_HUMAN_GOLD`；不把它称为作者金标。
+
+原始参考的 evidence 只是来源位置，未重现外部候选 quote。本次另建本地测试候选，从该可信范围选取连续原章片段；美恐三条不包含范围末尾的段分隔符。旧参考、完整 evidence 与本次候选分开保留，没有覆盖或修正真实 API 回包。两书完整章本身为 LF 单行分段，无全角缩进；不能宣称这六条在旧实现都曾失败，缩进／CRLF 导致的旧反例由合成运行用例覆盖。
+
+六条参考身份：LQ-0001、LQ-0038、LQ-0069、MK-CH01-F001、MK-CH02-F001、MK-CH03-F001。具体正文、限定语、原始记录和片段只留本地 `supported_cross_selection.json`；验收在 `supported_cross_summary.json`。
+
+支持事实验收汇总 SHA-256：`05b8c25817bb4c545cb73442f0844d59405cdf929476b51b807628fb9d013fd1`。
 
 来源：Codex
