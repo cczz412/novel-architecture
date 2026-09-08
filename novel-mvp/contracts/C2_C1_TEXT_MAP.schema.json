@@ -1,0 +1,176 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "normalization_version",
+    "chapter_revision_ref",
+    "normalized_text",
+    "char_map",
+    "removed_whitespace",
+    "responsibility",
+    "quote_original",
+    "match_start",
+    "match_end",
+    "normalized_match",
+    "original_start",
+    "original_end",
+    "original_slice",
+    "original_slice_sha256"
+  ],
+  "properties": {
+    "contract": {
+      "const": "C2_C1_TEXT_MAP"
+    },
+    "version": {
+      "const": "v1"
+    },
+    "normalization_version": {
+      "const": "LF_SPLIT_EDGE_WS_V1"
+    },
+    "chapter_revision_ref": {
+      "$ref": "#/$defs/revision"
+    },
+    "normalized_text": {
+      "type": "string"
+    },
+    "char_map": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "removed_whitespace": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "start",
+          "end",
+          "text"
+        ],
+        "properties": {
+          "start": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "responsibility": {
+      "$ref": "#/$defs/responsibility"
+    },
+    "quote_original": {
+      "type": "string",
+      "minLength": 1
+    },
+    "match_start": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "match_end": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "normalized_match": {
+      "type": "string",
+      "minLength": 1
+    },
+    "original_start": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "original_end": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "original_slice": {
+      "type": "string",
+      "minLength": 1
+    },
+    "original_slice_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_id",
+        "revision_no",
+        "revision_text_sha256"
+      ],
+      "properties": {
+        "chapter_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_text_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "responsibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seg",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "seg": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_revision_ref",
+        "text",
+        "responsibility"
+      ],
+      "properties": {
+        "chapter_revision_ref": {
+          "$ref": "#/$defs/revision"
+        },
+        "text": {
+          "type": "string"
+        },
+        "responsibility": {
+          "$ref": "#/$defs/responsibility"
+        }
+      }
+    }
+  }
+}

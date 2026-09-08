@@ -69,6 +69,10 @@ M6 回答时会在记录上附加 `chapter_title`（章节标题，内存态补�
 
 ## Backward compatibility
 
+### 合同扩展：保存可回取的原章片段（尚未接入运行）
+
+[C2_C1_TEXT_MAP v1](C2_C1_TEXT_MAP.md) 定义跨自然段引文的离线验证证据。第二刀由 M4 在同一 current revision 与可信责任范围下重放映射，保存原章实际连续片段及其 UTF-8 SHA-256，另保留候选原文和规范化匹配内容。现役 C4 v1 字段表、确认权限、C11 anchor 形状及事务规则不变；本刀的返回值只是拟保存片段，不等于正式 anchor、已入账事实或 confirmed。运行 writer、并发复核及失败零写入接线另批，不允许旧 reader 忽略扩展后降级消费。
+
 - v0-r02 迁移到 v1 时，能唯一回验的 quote 生成 VERIFIED anchor；不能回验的历史记录可以暂存 `LEGACY_UNVERIFIED`。
 - legacy confirmed 不因迁移本身自动撤销；但所属章节第一次 revision 时必须双边唯一验证，否则转 needs_recheck。
 - 旧 C4 reader 遇到 v1 必须 fail closed，不能只看 `status=confirmed` 就继续问答、规划或体检。
