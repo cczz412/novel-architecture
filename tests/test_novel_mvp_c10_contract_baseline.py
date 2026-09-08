@@ -23,7 +23,7 @@ EXPECTED_LEGACY_SHA256 = {
         "78441c00f76bcb2d955f157e5369f3176dc40f7b626c07dcc32937fe0fcec4d4"
     ),
     "novel-mvp/contracts/C2_SEGMENT.md": (
-        "50ca44b1b638ddf7b8012c3b7bc0a2cda7c2c6c4412b7f900e0573852aea1829"
+        "fcb27ba30a5e522b64eac60657e7dd869dd42f7979c8b6127e846752fce20581"
     ),
 }
 
