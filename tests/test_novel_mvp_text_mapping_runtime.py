@@ -193,7 +193,9 @@ def test_c4_origin_proof_is_immutable_when_current_anchor_advances(tmp_path):
         factstore.validate_c4_v1_snapshot(checked)
 
 
-@pytest.mark.parametrize("tamper", ["seg", "missing_seg", "origin_anchor"])
+@pytest.mark.parametrize("tamper", [
+    "seg", "missing_seg", "origin_anchor", "same_revision_other_sha", "origin_newer",
+])
 def test_c4_reader_rejects_origin_provenance_tampering(tmp_path, tamper):
     ws, _c1, _c2, responses = prepare(tmp_path)
     extract_workspace.persist_current_fact_candidates(ws, 'extract', responses, 0)
@@ -205,6 +207,11 @@ def test_c4_reader_rejects_origin_provenance_tampering(tmp_path, tamper):
         facts[0]['seg'] += 1
     elif tamper == 'missing_seg':
         facts[0].pop('seg')
+    elif tamper == 'same_revision_other_sha':
+        facts[0]['chapter_revision_ref']['revision_text_sha256'] = '0' * 64
+        facts[0]['anchor_ref']['revision_text_sha256'] = '0' * 64
+    elif tamper == 'origin_newer':
+        facts[0]['text_map_evidence']['chapter_revision_ref']['revision_no'] += 1
     else:
         facts[0]['anchor_ref']['start'] += 1
         facts[0]['anchor_ref']['end'] += 1

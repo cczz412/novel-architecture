@@ -162,7 +162,11 @@ def _validate_c11_object(
                             or value["chapter_id"] != result["chapter_revision_ref"]["chapter_id"]
                             or value.get("seg") != extension["responsibility"]["seg"]):
                         raise ValueError("C4_TEXT_MAP_ORIGIN_MISMATCH")
-                    if value["chapter_revision_ref"] == result["chapter_revision_ref"]:
+                    current_ref = value["chapter_revision_ref"]
+                    origin_ref = result["chapter_revision_ref"]
+                    if current_ref["revision_no"] <= origin_ref["revision_no"]:
+                        if current_ref != origin_ref:
+                            raise ValueError("C4_TEXT_MAP_ORIGIN_REVISION_MISMATCH")
                         anchor = value["anchor_ref"]
                         if (not isinstance(anchor, dict)
                                 or anchor.get("start") != result["start"]

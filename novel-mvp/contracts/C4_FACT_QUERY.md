@@ -73,7 +73,7 @@ M6 回答时会在记录上附加 `chapter_title`（章节标题，内存态补�
 
 显式映射链路的 C4 v1 增加 `text_map_evidence`，完整保留 C3 证据。M4 从工作区读取可信 current C1、C2 责任范围和 C3 批次，重放 [C2_C1_TEXT_MAP v1](C2_C1_TEXT_MAP.md)；成功后 `quote` 保存原章实际连续片段，既有 C11 `anchor_ref` 保存原章坐标与片段 SHA-256。入账状态仍为 `extracted`，作者确认权限不变。
 
-`text_map_evidence` 是不可变的来源证据，其中的 revision、责任范围、候选原文和规范化内容记录首次入账来源。C4 的 current revision／anchor 可按现有 C11 规则随修订前进；来源证据不冒充新版映射。存储 reader 复验来源证据自身一致性，并要求 C4 seg 等于来源责任段；current revision 仍是来源版本时，anchor 坐标也必须等于来源证据。revision 已前进时允许 current anchor 按既有规则移动。入账必须另外对当前可信 C1/C2 复验。未知扩展、缺证据、错 revision、越责任范围和任意转抄改写均拒绝。
+`text_map_evidence` 是不可变的来源证据，其中的 revision、责任范围、候选原文和规范化内容记录首次入账来源。C4 的 current revision／anchor 可按现有 C11 规则随修订前进；来源证据不冒充新版映射。存储 reader 复验来源证据自身一致性，并要求 C4 seg 等于来源责任段；current revision 不得早于来源版本；同版号的完整 revision 身份必须一致，anchor 坐标也必须等于来源证据。revision 已前进时允许 current anchor 按既有规则移动。入账必须另外对当前可信 C1/C2 复验。未知扩展、缺证据、错 revision、越责任范围和任意转抄改写均拒绝。
 
 候选与事实继续使用现有工作区事务、源版本并发复核和操作幂等规则；失败不得留下部分候选或部分事实。本扩展不改变冻结的 C11 Schema，也不新增 anchor 形状。
 
