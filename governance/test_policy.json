@@ -64,6 +64,27 @@
   },
   "path_rules": [
     {
+      "name": "novel-mvp isolated C2 C1 text mapping contract",
+      "pattern": "novel-mvp/contracts/C2_C1_TEXT_MAP.*",
+      "modules": [],
+      "tests": ["tests/test_novel_mvp_c2_c1_text_map_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp isolated C2 C1 text mapping validator",
+      "pattern": "novel-mvp/contracts/validate_c2_c1_text_map.py",
+      "modules": [],
+      "tests": ["tests/test_novel_mvp_c2_c1_text_map_contract.py"],
+      "full_chain": false
+    },
+    {
+      "name": "novel-mvp isolated C2 C1 text mapping tests",
+      "pattern": "tests/test_novel_mvp_c2_c1_text_map_contract.py",
+      "modules": [],
+      "tests": ["tests/test_novel_mvp_c2_c1_text_map_contract.py"],
+      "full_chain": false
+    },
+    {
       "name": "novel-mvp handover planstore writer",
       "pattern": "novel-mvp/mvp/planstore.py",
       "modules": ["M08"],
