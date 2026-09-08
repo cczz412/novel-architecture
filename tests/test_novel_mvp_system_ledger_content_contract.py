@@ -27,16 +27,17 @@ def test_system_ledger_fixture_matrix(case: dict) -> None:
 
 def test_fixture_counts_are_frozen() -> None:
     assert MODULE.validate_all_fixtures() == {
-        "cases": 20,
-        "valid": 8,
-        "invalid": 12,
+        "cases": 22,
+        "valid": 9,
+        "invalid": 13,
     }
 
 
 def test_contract_identity_and_fields_are_frozen() -> None:
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     contract = CONTRACT_PATH.read_text(encoding="utf-8")
-    assert schema["title"] == "SYSTEM_LEDGER_CONTENT system-ledger-content-v1"
+    assert "system-ledger-content-v1" in schema["title"]
+    assert "system-ledger-content-v2" in schema["title"]
     for anchor in (
         "category",
         "rank_order",

@@ -1,4 +1,4 @@
-"""Validate LOCATION_LEDGER_CONTENT location-ledger-content-v1."""
+"""Validate versioned LOCATION_LEDGER_CONTENT records."""
 
 from __future__ import annotations
 
@@ -28,6 +28,8 @@ ContractError = COMMON.ContractError
 SCHEMA = COMMON.load_schema(SCHEMA_PATH)
 CONTRACT = "LOCATION_LEDGER_CONTENT"
 VERSION = "location-ledger-content-v1"
+VERSION_V2 = "location-ledger-content-v2"
+VERSIONS = (VERSION, VERSION_V2)
 PREFIX = "LOC-"
 
 def validate_record(document: Any) -> dict[str, Any]:
@@ -35,7 +37,7 @@ def validate_record(document: Any) -> dict[str, Any]:
         document,
         schema=SCHEMA,
         contract=CONTRACT,
-        version=VERSION,
+        version=VERSIONS,
         prefix=PREFIX,
     )
     COMMON.validate_aliases(record, record["aliases"])

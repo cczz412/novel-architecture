@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -20,6 +21,22 @@ SPEC.loader.exec_module(MODULE)
 CASES = MODULE.load_fixtures()
 
 
+@pytest.mark.parametrize("target", ["/rule_text", "/exceptions"])
+def test_v2_rejects_separately_masked_rule_condition(target: str) -> None:
+    record = deepcopy(next(case["document"] for case in CASES
+                           if case["document"]["version"] == MODULE.VERSION_V2
+                           and case["expect"] == "PASS"))
+    record["tags"].append("author:secret")
+    record["tag_groups"]["groups"].append({
+        "group_id": "author:secret", "members": ["author:secret"],
+        "targets": [target], "mutation": "editable", "transition_rule": None,
+        "access": {"read": ["AUTHOR"], "write": ["AUTHOR"]},
+        "mask_for": ["model_context"], "managed_by": "AUTHOR",
+    })
+    with pytest.raises(MODULE.ContractError, match="WORLD_RULE_REQUIRED_FIELDS_MUST_SHARE_GROUP"):
+        MODULE.validate_record(record)
+
+
 @pytest.mark.parametrize("case", CASES, ids=[case["case_id"] for case in CASES])
 def test_world_rule_ledger_fixture_matrix(case: dict) -> None:
     MODULE.validate_fixture_case(case)
@@ -27,9 +44,9 @@ def test_world_rule_ledger_fixture_matrix(case: dict) -> None:
 
 def test_fixture_counts_are_frozen() -> None:
     assert MODULE.validate_all_fixtures() == {
-        "cases": 20,
-        "valid": 8,
-        "invalid": 12,
+        "cases": 22,
+        "valid": 9,
+        "invalid": 13,
     }
 
 
@@ -37,8 +54,8 @@ def test_contract_identity_and_fields_are_frozen() -> None:
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     contract = CONTRACT_PATH.read_text(encoding="utf-8")
     assert (
-        schema["title"]
-        == "WORLD_RULE_LEDGER_CONTENT world-rule-ledger-content-v1"
+        "world-rule-ledger-content-v1" in schema["title"]
+        and "world-rule-ledger-content-v2" in schema["title"]
     )
     for anchor in (
         "rule_text",
@@ -92,3 +109,14 @@ def test_open_items_are_not_materialized_as_fields() -> None:
         "recall_handle",
     ):
         assert forbidden not in schema_text
+
+
+@pytest.mark.parametrize("source", ["draft_inferred", "model_suggested"])
+def test_v2_non_author_rule_cannot_enter_red_light_path(source):
+    record = deepcopy(next(case["document"] for case in CASES
+                           if case["document"]["version"] == MODULE.VERSION_V2
+                           and case["expect"] == "PASS"))
+    record.update(source_identity=source, confirm_status="confirmed",
+                  evidence_refs=["f001"], hardness="hard")
+    with pytest.raises(MODULE.ContractError, match="CONFIRMED_REQUIRES_AUTHOR_DECLARED"):
+        MODULE.m7_red_light_eligibility(record)
