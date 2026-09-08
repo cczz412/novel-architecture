@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import shutil
 import sys
 from pathlib import Path
+
+import pytest
 
 MODULE_ROOT = Path(__file__).resolve().parent
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -36,6 +39,7 @@ from shadow_fixtures import (  # noqa: E402
 )
 
 sys.path.insert(0, str(MODULE_ROOT))
+import self_check as preview_check  # noqa: E402
 from self_check import run_self_check  # noqa: E402
 
 PROJECT = "fixture-project-001"
@@ -64,6 +68,8 @@ def test_no_live_store_html_shows_gap() -> None:
     assert "抽出了什么（人话结果卡）" in page
     assert "整章完整性" in page
     assert "密度" in page
+    assert "覆盖／漏抽尚未提供" in page
+    assert "抽取结算" not in page
     assert "还读不到一张可展示的 current 卡" in page
     assert "写法指导" not in page
     assert shown["proof"]["identity"]["product_adopted"] is False
@@ -79,6 +85,10 @@ def test_fixture_store_html_shows_human_items(tmp_path: Path) -> None:
     assert "甲拿起铜钥匙。" in page
     assert "FIXTURE_ONLY" in page
     assert "不是产品权威" in page
+    assert "抽取结算" in page
+    assert "自评：3／5（合格）" in page
+    assert "这不是认可" in page
+    assert "覆盖／漏抽尚未提供" not in page
     assert "<h3>" in page
     assert "状态：已发生" in page
     assert "synthetic-chapter-001" in page
@@ -135,3 +145,38 @@ def test_page_html_escapes_angle_brackets() -> None:
 def test_self_check_passes() -> None:
     receipt = run_self_check()
     assert receipt["result"] == "PASS"
+
+
+@pytest.mark.parametrize("name", sorted(preview_check.FROZEN_SAMPLE_SHA256))
+def test_self_check_rejects_changed_frozen_sample(tmp_path: Path, monkeypatch, name: str) -> None:
+    copied = tmp_path / "preview"
+    shutil.copytree(MODULE_ROOT, copied)
+    sample = copied / "samples" / name
+    original = sample.read_bytes()
+    sample.write_bytes(b"!" + original[1:])
+    monkeypatch.setattr(preview_check, "ROOT", copied)
+    with pytest.raises(RuntimeError, match=f"READ_PREVIEW_FROZEN_SAMPLE_DRIFT: {name}"):
+        run_self_check()
+
+
+def test_self_check_accepts_current_page_independent_of_frozen_html(monkeypatch) -> None:
+    original = preview_check.show_current_html
+
+    def with_extra_newline():
+        shown = original()
+        return {**shown, "html": shown["html"] + "\n"}
+
+    monkeypatch.setattr(preview_check, "show_current_html", with_extra_newline)
+    assert run_self_check()["result"] == "PASS"
+
+
+def test_self_check_rejects_current_gap_page_without_gap_label(monkeypatch) -> None:
+    original = preview_check.show_current_html
+
+    def without_label():
+        shown = original()
+        return {**shown, "html": shown["html"].replace("GAP_NO_LIVE_STORE", "")}
+
+    monkeypatch.setattr(preview_check, "show_current_html", without_label)
+    with pytest.raises(RuntimeError, match="READ_PREVIEW_GAP_PAGE_UNLABELLED"):
+        run_self_check()

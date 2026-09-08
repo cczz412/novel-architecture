@@ -54,7 +54,10 @@ def test_named_released_chapter_opens_existing_card(tmp_path: Path) -> None:
     assert "误信" in page
     assert "未证实" in page
     assert "FIXTURE_ONLY" in page
-    assert "覆盖／漏抽尚未提供" in page
+    assert "覆盖／漏抽尚未提供" not in page
+    assert "抽取结算" in page
+    assert "自评：3／5（合格）" in page
+    assert "这不是认可" in page
     assert "写法指导" not in page
     assert "修补建议" not in page.replace("没有修补建议", "")
 
