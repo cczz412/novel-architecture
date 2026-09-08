@@ -87,6 +87,8 @@
 
 ## 5. Environment / commands
 
+开发、推送或转 Ready 前，按 [开发测试与 PR 节流](tests/README.md#开发测试与-pr-节流)执行：复用同一获批交付的 Draft PR，先在开发环境完成必要验证，最终提交仍须核对实际门禁；本流程不新增提交、推送或合并授权。
+
 本仓普通 Python、测试和 Ruff 固定走锁定环境，Python 为 3.12.12：
 
 ```bash
