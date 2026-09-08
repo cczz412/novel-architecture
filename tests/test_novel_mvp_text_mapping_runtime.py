@@ -351,3 +351,29 @@ def test_strict_health_and_overview_readers_validate_mapped_c4(tmp_path, forged)
         assert card['writes_truth'] is False
         assert called[0]['facts'][0]['text_map_evidence'] == facts[0]['text_map_evidence']
     assert ws.read('facts')['payload'][0]['status'] == 'extracted'
+
+
+def test_old_save_replay_after_later_mapped_addition_is_zero_write(tmp_path):
+    ws, _c1, facts, version = advanced_mapped_snapshot(tmp_path)
+    old_args = dict(operation_id='fact-r2', snapshot=facts, expected_version=version - 1)
+    added = copy.deepcopy(facts)
+    extra = copy.deepcopy(facts[0])
+    extra['id'] = 'f9999'
+    added.append(extra)
+    fact_workspace.save_snapshot(
+        ws, operation_id='later-addition', snapshot=added, expected_version=version,
+    )
+    before = inventory(tmp_path / 'runtime')
+    replay = fact_workspace.save_snapshot(ws, **old_args)
+    assert replay['replayed'] is True and replay['version'] == version
+    assert fact_workspace.read_snapshot(ws)['facts'] == added
+    assert inventory(tmp_path / 'runtime') == before
+    with pytest.raises(fact_workspace.VersionConflictError, match='VERSION_CONFLICT'):
+        fact_workspace.save_snapshot(
+            ws, operation_id='new-stale-write', snapshot=facts, expected_version=version - 1,
+        )
+    changed = copy.deepcopy(facts)
+    changed[0]['text'] += 'changed'
+    with pytest.raises(fact_workspace.OperationConflictError):
+        fact_workspace.save_snapshot(ws, **{**old_args, 'snapshot': changed})
+    assert inventory(tmp_path / 'runtime') == before

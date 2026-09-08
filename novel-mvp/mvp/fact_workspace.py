@@ -355,16 +355,17 @@ def save_snapshot(
     # operation replays retain the existing idempotency behavior.
     if current["version"] < expected_version:
         raise VersionConflictError("VERSION_CONFLICT")
-    after_by_id = {fact["id"]: fact for fact in facts}
-    for before in current["facts"]:
-        after = after_by_id.get(before["id"])
-        if "text_map_evidence" in before:
-            if (after is None or "text_map_evidence" not in after
-                    or _canonical_bytes(after["text_map_evidence"])
-                    != _canonical_bytes(before["text_map_evidence"])):
-                raise FactWorkspaceError("M4_TEXT_MAP_ORIGIN_IMMUTABLE")
-        elif after is not None and "text_map_evidence" in after:
-            raise FactWorkspaceError("M4_TEXT_MAP_REQUIRES_NEW_FACT_ID")
+    if current["version"] == expected_version:
+        after_by_id = {fact["id"]: fact for fact in facts}
+        for before in current["facts"]:
+            after = after_by_id.get(before["id"])
+            if "text_map_evidence" in before:
+                if (after is None or "text_map_evidence" not in after
+                        or _canonical_bytes(after["text_map_evidence"])
+                        != _canonical_bytes(before["text_map_evidence"])):
+                    raise FactWorkspaceError("M4_TEXT_MAP_ORIGIN_IMMUTABLE")
+            elif after is not None and "text_map_evidence" in after:
+                raise FactWorkspaceError("M4_TEXT_MAP_REQUIRES_NEW_FACT_ID")
     receipt = workspace.commit(
         operation_id,
         {LOGICAL_KEY: facts},
