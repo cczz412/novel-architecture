@@ -1038,7 +1038,7 @@ CCZ-142 的“六份施工包”以及研究侧 B 系列属于责任分工和已
 
 ## 17. 可从本文件提取的完整机器格式
 
-本节补齐执行者不能访问本机TEMP的交接缺口。下列JSON逐字节取自Pro原包，不需要从本机取件或自行发明字段；两者仍为设计候选。批次模板中的null和空清单必须在另有执行授权后填入真实值，不能直接运行。其余预算、模型组合和逐格判据以本文第5—13节为完整人读依据；本节不要求先下载其余本机CSV。
+本节补齐执行者不能访问本机TEMP的交接缺口。下列JSON来自Pro原包；Codex按复审修正批次模板的逐配置绑定和回执费用条件，停止策略保留原包字节。三份均为设计候选，不需要从本机取件。批次模板中的null和空清单必须在另有执行授权后填入真实值，不能直接运行。其余预算、模型组合和逐格判据以本文第5—13节为完整人读依据；本节不要求先下载其余本机CSV。
 
 受#325单文件写集约束，JSON内嵌在本文件而非新增独立仓库文件。获准执行时可用下列标准库脚本提取到本机TEMP，并检查哈希；不调用API，不读取密钥。
 
@@ -1062,7 +1062,7 @@ for name, expected, payload in re.findall(
 
 ### BATCH_MANIFEST_TEMPLATE.json
 
-<!-- MACHINE_FILE: BATCH_MANIFEST_TEMPLATE.json SHA256: 67bf5f35d314c24513d308901994d4d42dcdc6a488c86c514b11a55fdabb55d0 -->
+<!-- MACHINE_FILE: BATCH_MANIFEST_TEMPLATE.json SHA256: f1c5e74c30fe946d9242bf8fdcd6137060a90c66bf99c94fa5fa6027bdde2bd8 -->
 ```json
 {
   "schema_version": "PROPOSED_API_TEST_BATCH_MANIFEST_R01",
@@ -1089,29 +1089,6 @@ for name, expected, payload in re.findall(
   "source_manifest": [],
   "prompt_manifest": [],
   "contract_versions": {},
-  "nonsecret_provider_readback": {
-    "checked_at": null,
-    "catalog_hash": null,
-    "profile_identity": null,
-    "endpoint_fingerprint": null,
-    "resolved_model_mapping": null,
-    "quota_evidence_ref": null,
-    "plan_use_allowed_evidence_ref": null
-  },
-  "rate_card": {
-    "verified_at": null,
-    "evidence_ref": null,
-    "billing_currency": null,
-    "pricing_function_version": null,
-    "input_uncached_per_million": null,
-    "input_cached_per_million": null,
-    "output_per_million": null,
-    "reasoning_separate_per_million": null,
-    "reasoning_included_in_output": null,
-    "fx_to_cny": null,
-    "fx_evidence_ref": null,
-    "quota_accounting_rule": null
-  },
   "approved_limits": {
     "attempt_cap": null,
     "input_tokens_cap": null,
@@ -1139,13 +1116,91 @@ for name, expected, payload in re.findall(
   "raw_text_destination": "local approved provider input only; never repository/notion receipts",
   "credential_material": null,
   "ready_to_dispatch": false,
-  "null_policy": "Null, empty selected cells, absent verified pricing or absent execution authorization all block dispatch; this file cannot authorize a run."
+  "null_policy": "Null, empty selected cells, absent verified pricing or absent execution authorization all block dispatch; this file cannot authorize a run.",
+  "profile_bindings": {
+    "P-A": {
+      "nonsecret_provider_readback": {
+        "checked_at": null,
+        "catalog_hash": null,
+        "profile_identity": null,
+        "endpoint_fingerprint": null,
+        "resolved_model_mapping": null,
+        "quota_evidence_ref": null,
+        "plan_use_allowed_evidence_ref": null
+      },
+      "rate_card": {
+        "verified_at": null,
+        "evidence_ref": null,
+        "billing_currency": null,
+        "pricing_function_version": null,
+        "input_uncached_per_million": null,
+        "input_cached_per_million": null,
+        "output_per_million": null,
+        "reasoning_separate_per_million": null,
+        "reasoning_included_in_output": null,
+        "fx_to_cny": null,
+        "fx_evidence_ref": null,
+        "quota_accounting_rule": null
+      }
+    },
+    "P-B": {
+      "nonsecret_provider_readback": {
+        "checked_at": null,
+        "catalog_hash": null,
+        "profile_identity": null,
+        "endpoint_fingerprint": null,
+        "resolved_model_mapping": null,
+        "quota_evidence_ref": null,
+        "plan_use_allowed_evidence_ref": null
+      },
+      "rate_card": {
+        "verified_at": null,
+        "evidence_ref": null,
+        "billing_currency": null,
+        "pricing_function_version": null,
+        "input_uncached_per_million": null,
+        "input_cached_per_million": null,
+        "output_per_million": null,
+        "reasoning_separate_per_million": null,
+        "reasoning_included_in_output": null,
+        "fx_to_cny": null,
+        "fx_evidence_ref": null,
+        "quota_accounting_rule": null
+      }
+    },
+    "P-C": {
+      "nonsecret_provider_readback": {
+        "checked_at": null,
+        "catalog_hash": null,
+        "profile_identity": null,
+        "endpoint_fingerprint": null,
+        "resolved_model_mapping": null,
+        "quota_evidence_ref": null,
+        "plan_use_allowed_evidence_ref": null
+      },
+      "rate_card": {
+        "verified_at": null,
+        "evidence_ref": null,
+        "billing_currency": null,
+        "pricing_function_version": null,
+        "input_uncached_per_million": null,
+        "input_cached_per_million": null,
+        "output_per_million": null,
+        "reasoning_separate_per_million": null,
+        "reasoning_included_in_output": null,
+        "fx_to_cny": null,
+        "fx_evidence_ref": null,
+        "quota_accounting_rule": null
+      }
+    }
+  },
+  "profile_binding_policy": "Before dispatch, profile_bindings keys must exactly equal selected_profiles; each receipt binds its profile_id and rate_card_ref to that profile entry. Remove unselected template profiles. Any missing, null or stale provider or pricing evidence blocks that profile."
 }
 ```
 
 ### CALL_RECEIPT.schema.json
 
-<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: 76062870a1d94e472863059f784da447b6f24cf4155b10d447f9df4c1a1f27ad -->
+<!-- MACHINE_FILE: CALL_RECEIPT.schema.json SHA256: 52a03ef9e2f9ea5078bdbea7264193c080cc5881f338f5f73929ef4fa986a947 -->
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -1686,8 +1741,149 @@ for name, expected, payload in re.findall(
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "cost": {
+            "properties": {
+              "status": {
+                "const": "RECONCILED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "cost"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cost": {
+            "properties": {
+              "reconciled_cny": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "reconciled_cny"
+            ]
+          }
+        }
+      }
     }
   ]
+}
+```
+
+### STOP_POLICY.json
+
+<!-- MACHINE_FILE: STOP_POLICY.json SHA256: 85f28776c8da2f31a2e83df5fa7727abba84bb90fd2554fe4a66e51d6147977f -->
+```json
+{
+  "status": "PROPOSED_NOT_EXECUTION_AUTHORIZATION",
+  "source_sha": "45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5",
+  "global_fee_cap_cny": 1000,
+  "allocated_cell_caps_cny": 993,
+  "unallocated_not_spendable_cny": 7,
+  "global_attempt_cap": 1713,
+  "global_input_token_ceiling": 15425536,
+  "global_output_plus_reasoning_token_ceiling": 7671808,
+  "pricing_verified_required": true,
+  "source_manifest_bound_required": true,
+  "explicit_execution_authorization_required": true,
+  "automatic_model_or_endpoint_fallback": false,
+  "automatic_paid_batch_advance": false,
+  "max_concurrency_initial": 1,
+  "max_concurrency_after_20_audited_successful_requests": 2,
+  "eligible_parallel_phases": [
+    "S5",
+    "S6"
+  ],
+  "max_logical_tasks_per_dispatch_chunk": 8,
+  "max_retries_per_logical_request": 1,
+  "smoke_retries": 0,
+  "retryable_classes": [
+    "TEMPORARY_TRANSPORT_FAILURE",
+    "HTTP_429",
+    "HTTP_5XX",
+    "RECOVERABLE_TIMEOUT"
+  ],
+  "not_retryable_classes": [
+    "JSON_INVALID",
+    "SCHEMA_INVALID",
+    "REFUSAL",
+    "TRUNCATED",
+    "SEMANTIC_ERROR",
+    "MODEL_MISMATCH",
+    "SOURCE_DRIFT",
+    "UNAUTHORIZED"
+  ],
+  "halt_conditions": [
+    {
+      "condition": "unapproved batch / missing source, profile or price binding",
+      "threshold": 1,
+      "scope": "affected_batch_before_dispatch"
+    },
+    {
+      "condition": "secret leakage / unauthorized egress or write",
+      "threshold": 1,
+      "scope": "all_related_egress"
+    },
+    {
+      "condition": "unexpected response model",
+      "threshold": 1,
+      "scope": "profile"
+    },
+    {
+      "condition": "next request exceeds any reserved fee/token/attempt limit",
+      "threshold": 1,
+      "scope": "before_dispatch"
+    },
+    {
+      "condition": "HTTP401 / HTTP403 / quota exhausted",
+      "threshold": 1,
+      "scope": "provider"
+    },
+    {
+      "condition": "consecutive timeout attempts",
+      "threshold": 2,
+      "scope": "profile_pause"
+    },
+    {
+      "condition": "HTTP429_or_5xx_in_last_10_attempts",
+      "threshold": 3,
+      "scope": "profile_pause"
+    },
+    {
+      "condition": "consecutive same schema/truncation failure",
+      "threshold": 2,
+      "scope": "profile_pause"
+    },
+    {
+      "condition": "core_semantic_error",
+      "threshold": 1,
+      "scope": "module_profile_no_scale_up"
+    },
+    {
+      "condition": "wrong authority write / mixed current snapshot",
+      "threshold": 1,
+      "scope": "affected_write_or_read_chain"
+    },
+    {
+      "condition": "consecutive unresolved usage",
+      "threshold": 2,
+      "scope": "profile_pause_keep_reservation"
+    }
+  ],
+  "unknown_usage_handling": "KEEP_FULL_RESERVED_COST_UNTIL_RECONCILED_NOT_ZERO",
+  "hidden_sdk_retry_policy": "MUST_BE_DISABLED_OR_COUNTED_AT_ACTUAL_REQUEST_LAYER",
+  "material_exceeds_10_segment_placeholder": "BLOCK_COMPLETE_CHAPTER_CELL_AND_REBUDGET_BEFORE_DISPATCH_NO_TRUNCATION",
+  "resume": "only approved remaining logical tasks under the same source/config hash; configuration or code changes create a new batch"
 }
 ```
 
@@ -1697,7 +1893,7 @@ for name, expected, payload in re.findall(
 
 JSON Schema 只验形状。下面这些必须由宿主对原始材料、批准清单和整批请求账检查，不能因JSON通过就标PASS。
 
-1. requested_model/response_model必须匹配本批核准映射，endpoint/profile与清单一致；未知/缺失响应模型不能取得L1的模型绑定通过。
+1. profile_bindings的键必须与selected_profiles完全一致；每份回执按profile_id取得唯一供应商快照和rate_card，rate_card_ref指向该配置的计价项。缺项、未核价或配置间错配均拦截。requested_model/response_model必须匹配本批核准映射，endpoint/profile与清单一致；未知/缺失响应模型不能取得L1的模型绑定通过。
 2. source_manifest/prompt/config哈希必须来自实际送出字节，source_sha是执行代码版本；不可拿计划SHA替换后来实际运行SHA。
 3. cell_id只可引用获批单元；repeat_id匹配该单元固定重复数。attempt_no=2必须指向同一logical_request_id的第一次，并符合重试类别和剩余额度。
 4. 每个attempt_id/供应商request_id和响应指纹的关系必须可核；同一响应不得占两个独立重复的名额。供应商不暴露ID时记录缺口，另以可核代理/账单证据绑定，不能凭本机自发ID冒充供应商ID。
@@ -1709,7 +1905,7 @@ JSON Schema 只验形状。下面这些必须由宿主对原始材料、批准�
 10. 原生tool必须有真实tool_call_id，并与宿主受信执行绑定；每逻辑任务最多4个模型回合，每回合最多2次只读工具调用。非法patch不能写正式账。
 11. 记录公开usage，不收集内部思考正文。正文、候选、原始响应留本机受控目录；仓内只放脱敏汇总和哈希。
 
-来源：ChatGPT Pro
+来源：ChatGPT Pro；Codex按复审修订机器格式。
 
 归位条件：本计划完成审阅且后续报告归位获批时，目标为 `reports/api_mass_test_plan_r01/PLAN_R01.md`，保留本PR固定版本回链；本次不移动或新增其他文件。实际采用哪些模型、预算与Schema仍以执行票批准为准。
 
