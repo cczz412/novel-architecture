@@ -6,7 +6,14 @@
   "api_key_env": "JULES_API_KEY",
   "auth_header": "X-Goog-Api-Key",
   "enabled_by_default": false,
-  "status": "workflow_ready_secret_and_github_app_source_required",
+  "status": "retired_replaced_by_codex_native_github_review",
+  "replacement": {
+    "provider": "codex_native_github_review",
+    "settings_url": "https://chatgpt.com/codex/cloud/settings/code-review",
+    "review_output": "github_pull_request",
+    "linear_output": "link_only",
+    "github_issue": 330
+  },
   "endpoints": {
     "list_sources": "/sources",
     "list_sessions": "/sessions",

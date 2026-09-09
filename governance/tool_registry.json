@@ -574,10 +574,10 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 23,
+    "reusable_component": 22,
     "batch_reproducer": 83,
     "active_entry": 3,
-    "retired_compat": 3,
+    "retired_compat": 4,
     "pending": 0
   },
   "unresolved_identity_paths": [],
@@ -4542,11 +4542,11 @@
     },
     {
       "path": "tools/jules_linear_followread.py",
-      "primary_identity": "reusable_component",
-      "primary_identity_label": "可复用组件",
-      "status": "candidate_not_default",
-      "status_label": "候选组件·Jules PR 只读跟读到 Linear",
-      "purpose": "在受信任的 GitHub Actions base 上读取 PR 事件，用 Jules API 做只读审查；没有已验证问题时只让 GitHub Actions 通过且不写 Linear，只有能给出准确位置、触发、证据和实际后果的 P0／P1／P2 问题才写详情并让 Action 失败。",
+      "primary_identity": "retired_compat",
+      "primary_identity_label": "退役兼容件",
+      "status": "retained_for_compatibility",
+      "status_label": "退役兼容·Jules自动跟读已停用",
+      "purpose": "旧Jules PR跟读与Linear写入适配器，保留历史兼容与零网络合同测试；当前PR审查使用Codex原生审查。",
       "human_command": "uv run --locked python tools/jules_linear_followread.py check --event-file <GitHub事件JSON>",
       "inputs": [
         "GitHub pull_request_target 事件 JSON",
@@ -4565,12 +4565,8 @@
         "model": "google_jules_api",
         "note": "只有 run 子命令在两个 Secret 都存在时联网；Jules 只读结果不合格时不写 Linear。"
       },
-      "current_consumers": [
-        ".github/workflows/jules-linear-followread.yml",
-        "tests/test_jules_linear_followread.py",
-        "GitHub Issue #208"
-      ],
-      "consumer_evidence_rule": "同仓非草稿 PR 且标题或正文恰有一个 CCZ 编号才进入；相同 PR Head SHA 双重去重。PASS 不写 Linear；猜测、泛化风险、样式偏好、纯测试缺口和纯建议也不得进入 Linear。",
+      "current_consumers": [],
+      "consumer_evidence_rule": "已取消PR自动触发，工作流与历史工单不再列为当前消费者；保留原测试引用和历史线索。",
       "test_references": [
         "tests/test_jules_linear_followread.py"
       ],
@@ -4580,8 +4576,8 @@
         "config/providers/linear_graphql.json",
         "GitHub Issue #208"
       ],
-      "next_confirmed_consumer": "GitHub PR 打开、更新、重开或转为可审查后的 Jules 只读跟读。",
-      "retirement_condition_and_compatibility_boundary": "不读取或执行 PR Head 代码，不允许 Jules 生成 changeSet／PR，不调用 sendMessage，不新增 Linear mutation；缺 Secret、GitHub App source、准确 SHA 或机器裁决结构时必须失败且不外发。最多外发 3 个带直接证据的 P0／P1／P2 问题。",
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "保留原代码、配置结构和历史路径供追溯与零网络合同测试；PR自动触发、密钥注入和Linear自动写入已停用。旧手工CLI仍有联网能力，不作为当前入口，联网执行另须明确授权。",
       "review_needed": false,
       "admitted_by": "ISSUE_208",
       "tool_id": "TOOL-111"

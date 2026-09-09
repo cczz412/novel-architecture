@@ -1,55 +1,18 @@
-name: Jules 只读跟读到 Linear
+name: 已停用 Jules 跟读（改用 Codex 原生审查）
 
+# CZ 2026-09-08：改用 Codex 原生 GitHub 审查，见 Issue #330。
+# 在 https://chatgpt.com/codex/cloud/settings/code-review 配置自动审查。
+# 审查意见留在 PR，Linear 只回链；基础测试仍由 pr-gate 负责。
+# 保留这个路牌以便追历史；即使重新启用工作流，也不恢复 Jules 调用。
 on:
-  pull_request_target:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
+  workflow_dispatch:
 
-permissions:
-  contents: read
-
-concurrency:
-  group: jules-linear-followread-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+permissions: {}
 
 jobs:
-  jules-linear-followread:
-    if: >-
-      github.event.pull_request.draft == false &&
-      github.event.pull_request.head.repo.full_name == github.repository
+  retired:
+    if: ${{ false }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
     steps:
-      - name: 检出 base 上受信任的调度代码
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
-          fetch-depth: 1
-          persist-credentials: false
-
-      - name: 安装固定 Python
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
-        with:
-          version: "0.12.3"
-          python-version: "3.12.12"
-          enable-cache: false
-
-      - name: 建立无第三方依赖的锁定环境
-        shell: bash
-        run: |
-          set -euo pipefail
-          uv sync --locked --no-dev
-          uv run --locked --no-sync python --version
-
-      - name: Jules 只读审查并写入 Linear
-        shell: bash
-        env:
-          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
-          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
-        run: |
-          set -euo pipefail
-          uv run --locked --no-sync python tools/jules_linear_followread.py run \
-            --event-file "$GITHUB_EVENT_PATH"
+      - name: 历史路牌
+        run: echo 'Jules 自动跟读已停用。审查由 Codex 原生 GitHub 集成负责。'

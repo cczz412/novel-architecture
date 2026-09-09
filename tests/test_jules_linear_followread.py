@@ -538,23 +538,21 @@ def test_incomplete_jules_report_never_creates_linear_comment() -> None:
     assert linear.created == []
 
 
-def test_workflow_uses_trusted_base_code_and_least_permissions() -> None:
+def test_retired_workflow_cannot_dispatch_jules_or_write_linear() -> None:
     raw = WORKFLOW.read_text(encoding="utf-8")
 
-    assert "pull_request_target:" in raw
-    assert "github.event.pull_request.head.repo.full_name == github.repository" in raw
-    assert "github.event.pull_request.draft == false" in raw
-    assert "ref: ${{ github.event.pull_request.base.sha }}" in raw
-    assert "ref: ${{ github.event.pull_request.head.sha }}" not in raw
-    assert "persist-credentials: false" in raw
-    assert "permissions:\n  contents: read\n" in raw
-    assert "pull-requests: write" not in raw
-    assert "issues: write" not in raw
-    assert "secrets.JULES_API_KEY" in raw
-    assert "secrets.LINEAR_API_KEY" in raw
-    assert "github.event.pull_request.title" not in raw
-    assert "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" in raw
-    assert "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d" in raw
+    assert "on:\n  workflow_dispatch:\n" in raw
+    assert "pull_request" not in raw
+    assert "if: ${{ false }}" in raw
+    assert "permissions: {}" in raw
+    assert "secrets." not in raw
+    assert "uses:" not in raw
+    assert "jules_linear_followread.py" not in raw
+
+    config = followread.load_json(ROOT / "config/providers/jules_api.json", "Jules 配置")
+    assert config["enabled_by_default"] is False
+    assert config["status"] == "retired_replaced_by_codex_native_github_review"
+    assert config["replacement"]["linear_output"] == "link_only"
 
 
 def test_check_command_needs_no_secret_and_makes_no_network_call(
