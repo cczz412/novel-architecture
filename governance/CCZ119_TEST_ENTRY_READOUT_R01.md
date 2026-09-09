@@ -1,3 +1,69 @@
+# CCZ-180 测试入口回执 R02｜2026-09-09
+
+本轮同步 main、保留两边测试规则并修复浏览器退出告警。浏览器8项全部通过且入口stderr为空；14份原测试合计229通过、1失败、0跳过。唯一失败是门1自检的固定输入哈希过期，位于本票写集外，保持Draft，不合并、不关闭，不认定为已批准旧债。
+
+## 当前范围与环境
+
+CZ 本轮批准在 #332 原分支同步main、在原写集处理退出告警、必要复验、更新回执并推送。同步main `1f90e94c24062dfe09afed04d45736d9e27af448`，原PR head `a3c33cf27a63860a3f9d0184adc4315d70456124`；最终head见PR身份字段。相对main仍为原七文件，不重写已合并的 #357 修复。
+
+测试规则冲突只在 governance/test_policy.json：保留main新增14条、本PR新增42条及原86条，规则内容不变。项目依赖、锁文件和工作流不改。普通测试沿用锁定Python3.12.12/pytest9.0.2；浏览器沿用已批准独立Playwright1.62.0＋Chromium151.0.7922.34（revision1234），没有再次安装或换版本。
+
+## 浏览器告警定位与处理
+
+独立子进程最小对照：只启动sync_playwright、读取缓存executable_path、立即退出，稳定看到pending初始化任务和TargetClosedError；完成公开驱动往返后再退出，stderr为空。入口前检增加创建并释放空APIRequestContext，仅完成驱动初始化往返，不调用HTTP方法、不访问外网、不启动额外浏览器。缺浏览器提前退出路径也在往返完成后执行。
+
+入口测试覆盖驱动启动失败、往返失败、缺文件、不可执行与成功释放。原始告警日志保留在本工作树 TEMP/ccz180-final/path_only.txt；修复对照见driver_roundtrip.txt，不修改Playwright包本身。
+
+## 本轮实际验证
+
+普通命令使用 UV_PROJECT_ENVIRONMENT=../novel-architecture/.venv、UV_NO_SYNC=1、UV_OFFLINE=1、PYTEST_DISABLE_PLUGIN_AUTOLOAD=1，均走 uv run --locked。浏览器只换为已批准独立venv与PLAYWRIGHT_BROWSERS_PATH。
+
+- `uv run --locked pytest -q tests/test_test_impact.py tests/test_ccz119_browser_test.py`：80通过，77子检查通过。
+- `uv run --locked python tools/ccz119_browser_test.py`：dispatched=true，8通过、0失败/错误/跳过，退出0，入口stderr为空；保留result中的八节点、精确pytest argv和stdout。耗时 10.74 秒。
+- `uv run --locked pytest -q`：4501通过、902跳过、40未选中、1预期失败、179子检查通过、0失败，220.31秒。默认收集不含上述work原位测试，不能据此覆盖门1失败。
+- 四个修改Python文件定向Ruff通过；全仓Ruff70项发现，逐文件确认全部来自与main字节相同的文件，不混作本票新增或获批旧债。
+- `uv run --locked python tools/governance_index.py --check`：仍因缺历史Z36保护件失败，未补入本机材料；原失败保留。
+- `git diff --check`：通过。
+
+14份原测试各以独立pytest进程执行，命令为 `uv run --locked pytest -q <路径>`：
+
+| 路径 | 结果 |
+|---|---|
+| `work/ccz142_candidate_authority_r01/test_candidate_authority.py` | 43 passed in 3.52s |
+| `work/ccz142_current_candidate_read_display_r01/test_current_read_display.py` | 7 passed in 0.09s |
+| `work/ccz142_current_candidate_read_entry_r01/test_current_read_entry.py` | 33 passed in 0.23s |
+| `work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py` | 12 passed in 0.13s |
+| `work/ccz142_current_candidate_read_proof_r01/test_current_read_proof.py` | 11 passed in 0.34s |
+| `work/ccz142_human_card_coverage_wire_r01/test_human_card_coverage_wire.py` | 5 passed in 0.16s |
+| `work/ccz142_human_card_gold_catalog_r01/test_human_card_gold_catalog.py` | 5 passed in 0.03s |
+| `work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py` | 7 passed in 0.17s |
+| `work/ccz142_named_chapter_card_identity_r01/test_named_chapter_card_identity.py` | 5 passed in 0.30s |
+| `work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py` | 9 passed in 0.22s |
+| `work/ccz142_named_identity_read_r01/test_named_identity_read.py` | 5 passed in 0.27s |
+| `work/ccz142_named_identity_store_r01/test_named_identity_store.py` | 5 passed in 0.21s |
+| `work/ccz142_q9_duty_freeze_r01/test_duty_freeze.py` | 3 passed in 0.05s |
+| `work/door1_author_intake_view_r01/test_door1_view.py` | 1 failed, 79 passed in 1.03s |
+
+## 写集外停点
+
+`work/door1_author_intake_view_r01/test_door1_view.py::test_package_self_check` 失败，首个报错 DOOR1_PROTECTED_INPUT_DRIFT 指向接线测试。读取OBJECT_SHAPES.json发现共9条固定输入哈希与当前main不符：七条来自#357已合并修复，另两条是已更新的治理说明。门1包自身与九个输入均逐字节等于main，因此这是同步现行main后暴露的下游固定校验冲突；本票不改门1包、样张或这九份输入。
+
+- `work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py`：旧 `7e239c89d9be4b00a0cf2f45179fe308a8bb5158295e8a896c99091c35aed91d`；当前 `8a1ce0ac998ff79c1b5d6d255a10e62094a699b02db4aa38fb22250ec4616c85`。
+- `work/ccz142_human_card_vertical_wire_r01/MANIFEST.sha256`：旧 `25052d7f58aa96e0db6d4a31929cd8fe92c393c3f65282cd75ac77900a7e1c73`；当前 `938ca2ff50cfd1cb809e67a3497a3a2425e2ebbb55f3c00d02496f7184c32845`。
+- `work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py`：旧 `c57a8e50365d997e938c13889e51c009dc2041ab192b54cc96f6ca0acd57a836`；当前 `9842dc0749cd66fe6b476b484664addfb5159b5699c17f39f400bfe27d5bf2fd`。
+- `work/ccz142_named_chapter_txt_card_r01/MANIFEST.sha256`：旧 `c294499c3786b687dee07ab31a3817f8a80e08e6e026b35155a79a5093cc9a48`；当前 `74f9c104280d5b90e7ec437ce2a1ff3f213fb8d59c7e02e8405766f02be97486`。
+- `work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py`：旧 `ee06062a7d3718e5e1afad564beb7fbcc6f3060045fa72aaa972d4124763baed`；当前 `b16e08345a7c2486cb6bf17c3cf9e1b0594670eed04c1322ef2bfa05fc9f1fc9`。
+- `work/ccz142_current_candidate_read_preview_r01/self_check.py`：旧 `d0609f9d5a60f24ba32e66e859f0f5a8c12fb8d2701888daffffa04b853c5f39`；当前 `114c71d4e319a4e0a90ef22c8bccceb6f8659f03a9556df6188aa3afdfcb6175`。
+- `work/ccz142_current_candidate_read_preview_r01/MANIFEST.sha256`：旧 `18c3e7a9506c4725fd58b71e40939d19b48f8385d4732e196c6b3b4c06c7bc13`；当前 `c7475a4d8aaf0477113c2c3ec4639e82748702db863e8ccfcce8bd1a2843d5af`。
+- `governance/agent_ticket_rules.md`：旧 `71615bee29b8b543fd8677176bc45c0d000691a1b461629db96c1284ac52ca20`；当前 `4c637056466492d0d028fec0c0009b689186720ca0aa1b616af6e577867069a0`。
+- `governance/START_HERE.md`：旧 `4e47f940b8edf167054aeb45f614ed0fce6dc1ed81074fdbf6303265573e3791`；当前 `16bb734b8bfac9d39b2d6c9d67133a0888b659c9ffcdccff8190b504bd3fa5d4`。
+
+来源：Codex
+
+---
+
+## R01 历史原件｜以下为同步前记录，不代表当前结果
+
 # CCZ-180 测试入口回执 R01
 
 入口补齐和排序回归已通过；原测试实跑有3个失败，浏览器因缺 Playwright 未派发。因此本次只交 Draft PR，不能宣称15份测试全部验收通过。

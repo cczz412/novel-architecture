@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Read-only checker for the repository's current technical entry surface.
 
-Product requirements and decisions live in Linear; implemented engineering truth lives
-in GitHub. This checker validates only repository paths, identities, the dated technical
+Verified long-term decisions and product specifications follow Notion's per-item
+storage register; unmigrated items retain their original Linear source. Active tasks
+live in Linear; implemented engineering truth lives in GitHub.
+This checker validates only repository paths, identities, the dated technical
 snapshot, and registered drift tools. It does not compile or validate a repository-wide
 product background.
 """
@@ -53,7 +55,7 @@ EXPECTED_INVARIANTS = (
     "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",
     "本表不保存整体任务进度、领票、依赖、阻塞、PR 或合并状态；这些信息现场读取 Linear 与 GitHub。",
     "设计默认路由只能指向 design_registry 中的 CURRENT；其他状态一律不得指导施工。",
-    "产品需求、模块边界和 CZ 拍板现场读取 Linear；工程能力只认 GitHub main 上的正式合同、测试和已合并代码。",
+    "已核对的长期决定、原话和产品规格按 Notion 逐项主存登记读取，未迁项仍回原 Linear 主存；活动任务与未决问题现场读取 Linear；工程能力只认 GitHub main 上的正式合同、测试和已合并代码。",
 )
 REQUIRED_ACTIVE_POINTERS = {
     "repository_current": "governance/CURRENT_STATE.json",

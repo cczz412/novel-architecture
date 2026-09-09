@@ -128,22 +128,30 @@ def test_cli_exit_code_matches_receipt(monkeypatch, capsys, status, exit_code):
     assert status in capsys.readouterr().out
 
 
-@pytest.mark.parametrize("failure", ["missing", "not_executable", "driver_start"])
+@pytest.mark.parametrize("failure", ["missing", "not_executable", "driver_start", "driver_probe", "ready"])
 def test_real_preflight_checks_browser_prerequisites(monkeypatch, tmp_path, failure):
     import sys
     from types import ModuleType
 
     executable = tmp_path / "chromium"
-    if failure == "not_executable":
-        executable.write_text("not executable")
-        executable.chmod(0o600)
+    if failure in {"not_executable", "ready"}:
+        executable.write_text("browser placeholder")
+        executable.chmod(0o700 if failure == "ready" else 0o600)
+    events = []
+
+    def new_context():
+        events.append("probe")
+        if failure == "driver_probe":
+            raise OSError("driver handshake failed")
+        return SimpleNamespace(dispose=lambda: events.append("dispose"))
 
     class Driver:
         def __enter__(self):
             if failure == "driver_start":
                 raise OSError("driver cannot start")
             return SimpleNamespace(
-                chromium=SimpleNamespace(executable_path=str(executable))
+                chromium=SimpleNamespace(executable_path=str(executable)),
+                request=SimpleNamespace(new_context=new_context),
             )
 
         def __exit__(self, *args):
@@ -155,14 +163,19 @@ def test_real_preflight_checks_browser_prerequisites(monkeypatch, tmp_path, fail
     monkeypatch.setitem(sys.modules, "playwright", package)
     monkeypatch.setitem(sys.modules, "playwright.sync_api", sync_api)
     monkeypatch.setattr(runner.shutil, "which", lambda name: None)
-    receipt = runner.run()
-    assert receipt["dispatched"] is False
+    receipt = runner._preflight()
+    if failure != "driver_start":
+        assert events == (["probe"] if failure == "driver_probe" else ["probe", "dispose"])
+    if failure == "ready":
+        assert receipt == {"status": "READY", "browser_executable": str(executable)}
+        return
     assert (
         receipt["reason"]
         == {
             "missing": "CHROMIUM_MISSING",
             "not_executable": "CHROMIUM_NOT_EXECUTABLE",
             "driver_start": "PLAYWRIGHT_START_FAILED",
+            "driver_probe": "PLAYWRIGHT_START_FAILED",
         }[failure]
     )
     assert receipt["status"] == ("NOT_DISPATCHED" if failure == "missing" else "FAILED")

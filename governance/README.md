@@ -1,9 +1,9 @@
 # 治理区
 
-这里放当前状态、索引、模块状态、路线状态、合同和依赖关系，不复制大型运行工件。
+这里放工程治理入口、登记册、合同与技术快照。活动任务从 [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)现场读取；长期决定与规格按 [Notion 决定与规格入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)主存登记寻路。分工采用 [分工决定 R2](https://app.notion.com/p/3d45cadc4d0f8115b10cc1fb4ba7786f)，旧未迁项保持原主存，工程真源仍是 GitHub。
 
 - `INDEX.md`：人看的唯一一跳入口，由生成器维护。
-- `CURRENT_STATE.json`：本地唯一机器可读当前执行状态真源；Notion 拍板回读后，只在这里解释“现在到哪”。`current_execution` 只放现在这道，`historical_context` 留审计历史，生成路牌不再把历史重印成当前任务。
+- `CURRENT_STATE.json`：供既有工具读取的带日期技术兼容／控制快照；`current_execution` 与 `historical_context` 是旧字段分层，不能据此判断当前任务、领票或阻塞。
 - `route_registry.json`：实验路线状态登记册；没有明确重开凭证，换名字或版本号也不能复活退役路线。
 - `control_plane.json`：稳定入口、正式指针和保护件；不再保存当前任务。
 - `module_registry.source.json`：模块状态的人工审定源；生成器补齐现存路径和 SHA。
@@ -39,7 +39,11 @@ uv run --locked python tools/novel_pipeline.py governance refresh
 uv run --locked python tools/governance_index.py --check
 ```
 
-仓库重构只认两级机器票。一级票只校准 HEAD、治理索引、账序和脏路径，不能放行
+## 既有重构工具的使用边界
+
+以下说明既有两级机器票接口，不给普通文档清理新增 Wave 许可要求。历史批次的完整路径、数字与批准语境保留在 [整理前固定版本](https://github.com/cczz412/novel-architecture/blob/45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5/governance/README.md)。
+
+使用该重构接口时，一级票只校准 HEAD、治理索引、账序和脏路径，不能放行
 Wave；CZ 选定路线并补齐配套口径后，二级票还要绑定精确写集、测试影响单和固定路径
 冲突锁，才能把票面写明的一个 Wave 标成“机械条件满足”。
 
@@ -52,8 +56,8 @@ Wave；CZ 选定路线并补齐配套口径后，二级票还要绑定精确写�
 哪个 Wave 的机械条件满足；真正动手还要在同一个任务里回读 CZ 的明确选择。这个边界
 是故意保留的，因为本机 JSON 无法给自己制造可信数字签名。
 
-Wave 1 修改治理生成器或它的测试时，精确写集必须包含会记录这些文件 SHA 的
-`module_registry.json`。本波不准在主仓运行全量 `governance refresh`；只允许把生成
+治理生成器或它的测试发生变化时，要核对直接记录这些文件 SHA 的
+`module_registry.json` 及生成 manifest 的最小派生变化。局部获批变更不运行全量 `governance refresh` 覆盖无关生成件；只把生成
 结果写到临时目录做逐字比对，再把实际发生字节变化的白名单文件落回主仓，避免无变化
 的旧生成件也被整批重写。
 
@@ -121,32 +125,7 @@ Wave 1 实际二级计划、二级票、完整检查集、逐文件输出 SHA，
 `qianwen_qwen3_7_flash_json_object_no_thinking`，唯一试点工件编号是
 `wave2_synthetic_json_probe_v1`。
 
-候选写集固定为下面 22 个文件，任一增删都会被机器闸拒绝：
-
-```text
-config/model_call_profiles/contracts/README.md
-config/model_call_profiles/contracts/contract_bundle.schema.json
-config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/bundle.json
-config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/request_envelope.schema.json
-config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/response_envelope.schema.json
-config/model_call_profiles/contracts/qianwen_qwen3_7_flash_json_object_no_thinking/normalization.json
-config/prompts/README.md
-config/prompts/prompt_manifest.schema.json
-config/prompts/wave2_synthetic_json_probe_v1/prompt.md
-config/prompts/wave2_synthetic_json_probe_v1/manifest.json
-config/context_recipes/README.md
-config/context_recipes/context_recipe.schema.json
-config/context_recipes/wave2_synthetic_json_probe_v1.json
-config/contracts/wave2_synthetic_json_probe_v1.schema.json
-config/model_call_profiles/registry.json
-config/model_call_profiles/README.md
-config/README.md
-tools/model_call_profiles.py
-tests/test_model_call_profiles.py
-tools/README.md
-tests/README.md
-governance/tool_registry.json
-```
+2026-07-30 Wave2 的22项固定写集、六类票据槽位和逐项输入范围见[原始清单](https://github.com/cczz412/novel-architecture/blob/45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5/governance/README.md#L123-L173)，本页不重印历史路径清单。
 
 这 22 项全是精确文件路径，没有目录前缀权限。即使文件位于上面列出的合同目录或提示词
 目录里，清单外的 `run.py`、`secret.env`、`part.json` 也会被拒绝；Git 不需要登记空目录。
@@ -161,16 +140,7 @@ governance/tool_registry.json
 Wave2 固定一级计划内部的 `bound_inputs` 也必须与一级基线的 6 个必绑输入完全相等；
 多塞 TEMP 私有文件或少绑任一必需文件，都会在一级重放和文件读取前硬停。
 
-六类票据只认下面这些固定槽位，不能拿别的 TEMP 文件冒充：
-
-```text
-一级计划：TEMP/restructure_wave_preflight/route-a-plus-wave2-20260730/BASELINE_PLAN_WAVE2_20260730.json
-一级票：TEMP/restructure_wave_preflight/route-a-plus-wave2-20260730/BASELINE_RECEIPT_WAVE2_20260730.json
-准备票：TEMP/restructure_wave_preflight/route-a-plus-wave2-20260730/WAVE2_PREPARATION_TICKET_20260730.json
-冲突锁：TEMP/restructure_wave_preflight/locks/WAVE2_RULE_BUNDLES.lock.json
-测试影响单：TEMP/restructure_wave_preflight/route-a-plus-wave2-20260730/WAVE2_TEST_IMPACT_20260730.json
-S0 完成票：TEMP/restructure_wave_preflight/route-a-plus-s0-20260730/S0_MATERIALIZE_COMPLETION_V2_20260730.json
-```
+六类票据只认上述固定槽位，不能拿别的 TEMP 文件冒充。
 
 交接顺序是：
 
@@ -182,10 +152,10 @@ S0 完成票：TEMP/restructure_wave_preflight/route-a-plus-s0-20260730/S0_MATER
 5. 即使二级票 PASS，也必须回到同一任务，请 CZ 另给一次明确的正向确认，才能开始写
    Wave2 候选文件。
 
-当前 `a` 只说明可以补 S0 完成证据并扩建 Wave2 机器闸；准备票和二级 PASS 都不授权
+该批次的 `a` 只说明可以补 S0 完成证据并扩建 Wave2 机器闸；准备票和二级 PASS 都不授权
 写 Wave2 文件。能力字段必须与机器规格完全相等，多一个未知字段也会拒绝；预检、联网、
 读密钥、发请求、模型 API、Notion 和外置清退始终不在本闸授权里。
-本波不含 `config/experiment_assembly`：它还没进入当前目录身份账，可信签发要留到
+该批次不含 `config/experiment_assembly`：它还没进入当前目录身份账，可信签发要留到
 Wave9 另开合同，不能顺手塞进 Wave2。
 
 Wave2 规格还钉住本次真实 S0 的计划／开工票路径、文件 SHA 和起止提交；换一套自造票
@@ -198,7 +168,7 @@ Wave2 规格还钉住本次真实 S0 的计划／开工票路径、文件 SHA �
 Wave 5 只解决一件事：把三份旧 `MANIFEST.json` 读成结构化库存账。它不搬外置内容，
 不跟随清单里的路径，也不把缺少逐项 SHA 的旧账说成“已经可以恢复”。
 
-当前固定输入只有：
+该批次固定输入只有：
 
 ```text
 同级外置仓/archive_batch_20260723/MANIFEST.json
@@ -211,15 +181,7 @@ Wave 5 只解决一件事：把三份旧 `MANIFEST.json` 读成结构化库存�
 清单是软链接，清单是硬链接，文件超过 5 MiB，读取期间被替换，SHA 或 51／91／6
 条目数变化，都会直接停。
 
-Wave 5 使用独立的五个票据槽位：
-
-```text
-一级计划：TEMP/restructure_wave_preflight/route-a-plus-wave5-20260730/BASELINE_PLAN_WAVE5_20260730.json
-一级票：TEMP/restructure_wave_preflight/route-a-plus-wave5-20260730/BASELINE_RECEIPT_WAVE5_20260730.json
-授权票：TEMP/restructure_wave_preflight/route-a-plus-wave5-20260730/WAVE5_CONSTRUCTION_AUTHORIZATION_20260730.json
-冲突锁：TEMP/restructure_wave_preflight/locks/WAVE5_EXTERNAL_ARCHIVE_READONLY.lock.json
-测试影响单：TEMP/restructure_wave_preflight/route-a-plus-wave5-20260730/WAVE5_TEST_IMPACT_20260730.json
-```
+2026-07-30 Wave5 的独立五个票据槽位见[原始清单](https://github.com/cczz412/novel-architecture/blob/45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5/governance/README.md#L213-L221)，不能复用别批槽位。
 
 授权票必须原样记录 CZ 的 `B｜机器闸和实际扫描器连续施工`，绑定原 S0 决策票、三份
 清单当前 SHA 和 148 条总数。二级票 PASS 后只允许施工精确写集里的离线扫描器、合同、
@@ -250,8 +212,7 @@ uv run --locked python tools/repo_slim_inventory.py check
 uv run --locked python tools/repo_slim_inventory.py report
 ```
 
-体积只认 Git 索引按路径累计的 blob 字节。S-06-A 前精确基线是 18,841,846 字节，
-10MB 目标当前仍为未达成。扫描 PASS 只表示登记、固定 SHA 和当前生效上限没有破；
+体积只认 Git 索引按路径累计的 blob 字节。S-06-A 的18,841,846字节基线与当时未达10MB的结果见[历史回执说明](https://github.com/cczz412/novel-architecture/blob/45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5/governance/README.md#L252-L258)，不能当今日读数。扫描 PASS 只表示登记、固定 SHA 和生效上限没有破；
 不表示完成迁移、遍历过外置 payload、证明可恢复或解决 8 项旧冲突。
 
 S-06-A 不提供硬上限激活能力。迁移票即使格式和 SHA 都合法，也必须等另行获批的外置
@@ -325,13 +286,11 @@ uv run --locked python tools/novel_pipeline.py catalog \
 ```
 
 这张目录没有自己的状态账。它每次回读现有真源和登记册；体积栏目则即时调用原来的
-`repo_slim_inventory.py`，不复制一份扫描结果长期保存。发生冲突时，当前状态仍只认
-`CURRENT_STATE.json`，实验、模型、仓外对象和取件资格仍分别回各自登记册裁定。
+`repo_slim_inventory.py`，不复制一份扫描结果长期保存。技术快照字段来自 `CURRENT_STATE.json`；实验、模型、仓外对象和取件资格分别回各自登记册。当前任务与工程状态仍现场读取 Linear／GitHub。
 
 几条边界不能混：
 
-- `status` 只照读当前状态真源已经登记的内容，不根据 TEMP、运行目录或旧票猜 CMIN-B
-  的当前状态；
+- `status` 只照读技术快照已登记的内容，不根据 TEMP、运行目录或旧票猜当前任务；
 - `models` 只列候选模型调用档和已登记规则组装包，不证明供应商在线、账号可用、已经
   获批调用或已经升成默认；
 - `experiments` 只接已登记实验对象、路线和显式结论卡，不遍历整棵实验树后自判成败；
@@ -357,104 +316,28 @@ uv run --locked python tools/novel_pipeline.py inspect run --input <检查批.js
 uv run --locked python tools/novel_pipeline.py test-plan --spec <变更说明.json>
 ```
 
-Notion 账序与队列仍是最终真源。本区只解决本地寻路和机械复现，不自行拍板状态。
+这些命令只帮助寻路与复现；技术快照、Notion 记录和扫描结果都不产生施工授权。
 
-## S-07-B-A／B-B 模型横评零调用作废包瘦身
+## 历史外置批次：按需查证
 
-S-07-B-A 只复制 5 轮状态为“零调用作废”的模型横评完整现场。来源固定在 Git 提交
-`e3bcec6634a8fe1794793b13831205f78d766a41`，不是从正在变化的工作树临时抓取。
+这些记录是2026-07的批次结果，不是当前任务状态。[完整说明及固定来源](https://github.com/cczz412/novel-architecture/blob/45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5/governance/README.md#L362-L457)保留每批文件数、字节数、SHA与当时批准语境。这里只保留寻路和仍须遵守的证据边界。
+
+| 批次 | 原件与结果入口 | 保留边界 |
+|---|---|---|
+| S-07-B-A／B-B：5轮零调用作废包 | 外置对象 `model-benchmark-superseded-zero-call-s07ba-v1`；[固定来源及回执](https://github.com/cczz412/novel-architecture/blob/45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5/governance/README.md#L362-L382) | 轻量目录只寻路，不能原地运行；原件验包后取到新临时目录，不塞回主仓。原删除范围不包含真实得分轮、通用配置、运行器或测试。 |
+| S-07-C-A：2026-07-29 QEC终局 | `experiments/model_benchmarks/comparison_r2_qec_four_model_20260729.json` 与同目录 README；对象 `r2-qec-four-model-score-sources-s07ca-v1` | 四路线均未过共同门槛，未升默认；只有平台展示名，无精确API model_id，不外推家族能力。原7件只证明终局收口，缺完整题集/金标/判分器绑定，不能独立重判；成本是登记下限，缺直接来源和冻结SHA，不能独立复算；其他分母不并表，TokenRhythm不恢复渠道。 |
+| S-07-F-A／F-B-A：千问r05／r06 | [固定来源、两轮外置对象及删除回执](https://github.com/cczz412/novel-architecture/blob/45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5/governance/README.md#L402-L419) | 真实银标候选，不是现役默认；Z98、平台配置、模型索引、V02仍依赖剩余轻量件，不再删、不原地复跑，完整现场从外置对象取回。 |
+| S-07-G-A／G-B-A：Z66诊断 | [原目录tree、外置清单及回执](https://github.com/cczz412/novel-architecture/blob/45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5/governance/README.md#L421-L437) | 历史候选，不是默认；Z68及13个后续工具仍依赖保留请求JSON，消费者保持open。重建或核验旧包须给 `package_diagnostic_returns.py` 显式目标目录；不能把轻量目录当完整包。 |
+| 2026-07-31 analysis_library首批 | `analysis_library/pilot_batch_01/`；对象 `analysis-library-pilot-batch-01-cz-move-20260731-v1`；[原快照与清单SHA](https://github.com/cczz412/novel-architecture/blob/45d0eb61a89cb843bbce6a2b1f0aa471c4e110c5/governance/README.md#L439-L457) | 来源是本地未跟踪快照，Git不能重建原包；内容是候选分析，不代表人工审定。 |
+
+以上外置包和主仓同盘，不是独立备份；完整性验证不等于消费者收口、可恢复、完成迁移或启用10MB硬门。原件须按外置对象编号逐文件验证，保留轻量身份件与现役消费者输入。
 
 ```bash
 uv run --locked python tools/external_payload_validator.py check \
   --artifact-id model-benchmark-superseded-zero-call-s07ba-v1
-```
-
-机器应回报 86 个文件、1,664,821 字节。包与主仓在同一磁盘，只证明这份副本当前逐文件
-完整，不能叫独立备份。
-
-S-07-B-B 在删除前又把整包取到全新临时目录，文件数、总字节和逐字节比较全部一致。随后
-只从这 5 个零调用目录移除 71 个已外置工件，共 1,657,195 字节；每轮保留
-`benchmark.json`、`state.json` 和一张作废原因票，共 15 个文件。目录索引仍只读这些
-小型身份件，真实得分轮、通用模型配置、运行器和测试没有进入本次删除范围。
-
-轻量目录只负责寻路，不能再原地运行。要看完整冻结输入或准备件，先按外置对象编号
-`model-benchmark-superseded-zero-call-s07ba-v1` 验包，再复制到新的临时目录；不要把
-完整现场重新塞回日常主仓。主仓删除不改变同盘故障边界，也没有启用 10MB 硬门。
-
-## S-07-C-A QEC 四模型终局记录轻量卡
-
-这一波只收 2026-07-29 同一套 QEC 30 题终局对照。主仓机器卡在
-`experiments/model_benchmarks/comparison_r2_qec_four_model_20260729.json`，人看表在
-同目录 README；仓外对象 `r2-qec-four-model-score-sources-s07ca-v1` 保留 7 份原件，
-包括执行、授权网络恢复、判分、最终成绩、正式报告、收口和成本补充账。
-
-四条平台路线分别得到 13/30、9/30、6/30、3/30，但共同门槛是完整回答至少 15/30 且
-关键错误不多于 10，所以全部未过，没有升默认或改默认链。原成绩卡没有精确 API
-`model_id`；卡片只写当时的平台路线、模型展示名和终局记录，不外推模型家族能力。机器卡
-的顺序只按完整回答数展示，不是综合排名或推荐顺序。
-
-成本账登记整段长线 169 次请求、162 次有用量、7 次用量未知。2.813388 元只是账面登记
-最低值，本包不能独立复算；成本账没有被收口票钉 SHA，r01～r11 的直接来源票也不在这
-7 件原件里。7 件包同样不含 MiniMax M3 原成绩卡、原输出、共享题集、金标和判分器完整
-绑定，所以只能核对终局收口声明，不能独立重判。23、28、41 等其他分母不并表，退役
-TokenRhythm 也不恢复成当前渠道。
-
-## S-07-F-A／F-B-A 千问 r05／r06 有分候选瘦身
-
-这一波从固定提交 `1d919759f11b481a69eab1bdb1b7bfac5f4e0851` 分别复制两轮：
-
-- r05 是结构化不思考档，温度 0.0；23 个评分位中严格命中 4、语义影子 7、有效召回 11；
-- r06 是 32K 思考档，温度 0.2、思考预算 32,768；严格命中 3、语义影子 9、有效召回 12。
-
-两轮各有独立外置对象和清单：r05 为 40 个文件、702,031 字节，r06 为 41 个文件、
-714,081 字节。它们都是真实跑过的银标候选，但不是现役默认。
-
-Z98 核验程序仍读取两轮的请求体和用量账；r06 还有平台成绩指针与 V02 请求指针。因此
-S-07-F-A 当时只建副本，两轮消费者保持 `open`。S-07-F-B-A 又核明 60 个重件没有现役
-消费者，并在两包复验通过后从主仓移除 r05／r06 各 30 件，共 1,259,208 字节。r05 留
-10 件，r06 留 11 件，继续承接 Z98、平台配置、模型索引和 V02 指针；剩余轻量入口不得
-删除，也不能原地复跑。完整历史现场仍从两个外置对象按需取回。
-
-各波次不改变模型横评结果，不启用 10MB 硬门。外置包与主仓仍在同一磁盘，不是独立备份；
-轻量目录不能原地运行。
-
-## S-07-G-A／G-B-A Z66 三问法诊断回包瘦身
-
-这一波从固定提交 `18281795703497760bf3fc090a771db1e1782574` 复制 Z66 三问法诊断回包。
-原目录 tree 是 `20a1a3d7290b86a24756a79eec84ac5885722241`，外置对象共有 93 个文件、
-1,240,575 字节。原始回包、全 Markdown 审阅副本和当时的 ZIP 有意原样保留，没有在复制时
-去重或改写。
-
-这批只是一组历史候选诊断，不是现役默认。`tools/z68_revised_request_pilot.py` 仍读取主仓
-的一份第 3 章修正版请求 JSON，并核固定 SHA，因此消费者继续为 `open`。
-
-S-07-G-A 只建同盘完整副本和轻量入口，没有移动或删除 93 个主仓源文件。S-07-G-B-A
-在外置 93 件复验、完整取回和消费者扫描通过后，从主仓移除 88 个重件、1,200,070 字节。
-主仓现在留 6 件、42,310 字节：一张轻量入口、四张身份票和 Z68 继续读取的请求 JSON。
-
-旧 `package_diagnostic_returns.py` 不再默认把主仓轻量目录当完整包，历史重建或核验必须
-显式传入目标目录。完整外置现物统一用对象编号逐文件验证。Z68 及 13 个后续工具仍会经它
-读取保留的请求 JSON，所以消费者继续为 `open`，不得顺手再删。
-
-## analysis_library 首批分析材料外置
-
-这批主要解决一个问题：日常只看简短结论，不让原始 ZIP、解包文件和映射材料继续挤在
-主仓里。主仓入口是 `analysis_library/pilot_batch_01/`，保留 7 份分析摘要、3 份验收
-摘要、说明和仓外指针；平时从这里判断材料用途与结论。
-
-需要追到原件时，按对象编号
-`analysis-library-pilot-batch-01-cz-move-20260731-v1` 找到同级外置仓的
-`analysis_library_pilot_batch_01_cz_move_20260731_v1/`，再运行：
-
-```bash
 uv run --locked python tools/external_payload_validator.py check \
   --artifact-id analysis-library-pilot-batch-01-cz-move-20260731-v1
 ```
-
-外置现物共 242 个文件、23,895,907 字节；`MANIFEST.json` 的 SHA-256 是
-`2e8ecee5a580a4926597093b41d0d9f70321bc7f67326f5790feacbd415fd5f0`。这份来源是
-本地未跟踪目录快照，不是 Git 可重建包；内容还是候选分析，不代表人工审定。它和主仓处在
-同一磁盘，也不是独立备份。
 
 ## 常检尺子（支线瘦身批件③写入）
 
@@ -462,14 +345,14 @@ uv run --locked python tools/external_payload_validator.py check \
 - 细则见 [hygiene_inspection_ruler.md](hygiene_inspection_ruler.md)（文档级；不改 check／`.py`）。
 - ❌ 不再拿整仓 `du -sh .` 单数字判胖瘦。
 
-## 收口纪律（第84道写入）
+## 生成页维护
 
-- **每收口一道，重跑 INDEX**：`uv run --locked python tools/novel_pipeline.py governance refresh`，再用 `uv run --locked python tools/governance_index.py --check` 验漂移。
+- 登记输入或生成模板变化时，按批准写集生成并检查受影响派生件；普通票态变化不刷新仓库索引。全量刷新命令见上，局部变更不能借此覆盖无关生成件。
 - 本纪律写在本 README（不会被 refresh 覆盖）；不要手改 `INDEX.md`。
 
 ## 当前状态分层与新工件身份（九项第二道写入）
 
-- 当前执行页只读 `CURRENT_STATE.json.current_execution`：任务、授权、运行、停点、下一动作、调用账和保护面。
+- `CURRENT_STATE.json.current_execution` 保留旧技术控制字段；读它不能替代 Linear 活动任务或 GitHub 当前工程状态。
 - 历史任务、封存运行、旧问题与收口规则只放 `historical_context`。`INDEX.md` 只做稳定寻路；整体任务进度现场读取 Linear／GitHub，不再生成 `current_run.md`。
 - 新生成工件的身份统一写仓库相对 POSIX 路径。主机本地绝对路径若确需留作排障，只能单放 `*_host_local` 字段，不能当身份、不能参与跨机器 SHA 清单。
 - 本规则从九项第二道起生效；Notion 登记的旧账 `198处／36文件` 只作授权基线，不回改，也不把本轮不同范围的扫描数冒充成该母数。
@@ -481,7 +364,7 @@ uv run --locked python tools/external_payload_validator.py check \
 - 40 项历史测试恢复只走便携夹具小包：保留仓库相对路径，带逐文件 SHA，在干净 checkout 中证明 40 项全部真跑通过。不得为省事把大型旧运行目录塞回主仓。
 - review／replay 双包与外发工程证据清单见 [`config/review_pack/README.md`](../config/review_pack/README.md)。外发调查包必须带 commit、环境锁、manifest、原始响应索引和 SHA 清单。
 
-## 状态收口纪律（第86道写入）
+## 历史运行回执纪律（第86道）
 
 - 第86道之后的新运行，只要主运行落了 `main/hard_stop.json`、检查员等子运行在本层落了 `hard_stop.json`，或形成获批收口票，就必须同步顶层 `run_manifest.json`、`governance/CURRENT_STATE.json`，再刷新并检查治理索引。
 - Z80、Z83 既有运行目录已经封存，不回写。旧顶层 `prepared` 与后续票据冲突时，由 `CURRENT_STATE.json` 对外裁定。
@@ -493,9 +376,9 @@ uv run --locked python tools/external_payload_validator.py check \
 - 进程读取闸只证明子进程能读到非空密钥，回执不得显示密钥。
 - 供应商认证闸只由首个获批主采样请求的正常响应证明。不得把“密钥存在”写成“认证通过”，也不得另发试探请求。
 
-## 检查停手线（第86道写入）
+## 历史检查停手线（第86道）
 
-- 两份相互独立的证据给出同一结论就停，不再做第三份同义核验。
+- 当时的“两份相互独立的证据给出同一结论就停”保留作历史停手线；当前任务按根 AGENTS 的最小充分验证执行，不默认增加第二轮同义核验。
 - 先看输出实际结构，再写解析命令；解析失败时先修字段路径，不重复跑原任务。
 - 同一停点同时运行的子任务最多 3 个；已有子任务仍在运行时，不补派同义任务。
 

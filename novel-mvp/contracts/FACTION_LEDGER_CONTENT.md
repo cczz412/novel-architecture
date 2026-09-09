@@ -1,6 +1,6 @@
 # FACTION_LEDGER_CONTENT · 势力账内容合同
 
-**正式版本：`faction-ledger-content-v1`**
+**正式版本：`faction-ledger-content-v2`；兼容读取：`faction-ledger-content-v1`**
 
 一句话用途：保存势力定义卡，以及成员和势力关系的故事时间读取面；每个成员／关系条目必须带区间和证据。
 
@@ -55,3 +55,7 @@
 ## 7. 机器件与状态
 
 Schema、validator、fixtures 与定向测试同名配套。实现状态：`UNIFIED_WRITER_SETTINGSTORE_V1`。
+
+## 8. v2 标签组扩展
+
+`faction-ledger-content-v2` 保留 v1 字段和运行行为，并要求 `tags`、`tag_groups`。允许的根目标为：`/id`、`/created_at`、`/updated_at`、`/rev`、`/note`、`/source_identity`、`/confirm_status`、`/evidence_refs`、`/story_time`、`/name`、`/aliases`、`/fac_type`、`/members`、`/relations`、`/profile`。未知 `targets` 拒绝；v1 条目继续按旧合同读取。

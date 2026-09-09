@@ -75,6 +75,11 @@ def _preflight() -> dict:
         }
     try:
         with sync_playwright() as playwright:
+            # A cached executable_path read alone can exit before driver init
+            # settles. Complete a public driver round trip without any request
+            # or browser launch, including when the browser file is missing.
+            probe = playwright.request.new_context()
+            probe.dispose()
             executable = (
                 shutil.which("chromium")
                 or shutil.which("chromium-browser")

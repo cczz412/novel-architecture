@@ -8,7 +8,7 @@
 
 ## 对的做法
 
-先读仓库的 START_HERE，确认 GitHub 当前 main 和正式合同；再实时读取对应 Linear 模块票、依赖和有效评论。当前工程能力以 GitHub 为准，产品需求与决策以 Linear 模块入口为准，外部报告只提供带来源的候选证据。
+先读仓库的 START_HERE，确认 GitHub 当前 main 和正式合同；再读取 Notion 逐项主存登记中的已核对决定与规格，未迁项回原 Linear 主存。活动任务、依赖和未决问题实时读取所属 Linear 票。当前工程能力以 GitHub 为准，外部报告只提供带来源的候选证据。
 
 这套情景卡只是快速找路。卡片和当前入口冲突时，停在当前真源，不从旧卡或历史报告自行裁决。
 
@@ -20,6 +20,7 @@
 
 - [GitHub 当前入口](../../../governance/START_HERE.md)
 - [Linear 建票、拆票与依赖规则](https://linear.app/ccz/document/00agent-必读linear-建票拆票与依赖规则codex-aea4df7ecca6)
-- [CCZ-77｜产品导航入口](https://linear.app/ccz/issue/CCZ-77)
+- [Notion 决定与规格入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)
+- [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)
 
 来源：Codex

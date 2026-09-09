@@ -22,6 +22,11 @@ import subprocess
 from collections.abc import Callable
 from pathlib import Path
 
+try:
+    from . import text_mapping as mapping_runtime
+except ImportError:  # direct local-file CLI
+    import text_mapping as mapping_runtime
+
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.json"
 
 INSTRUCTIONS = (
@@ -182,7 +187,7 @@ def validate_c2_v1_segment(seg: object, *, current_chapter_revision_ref: object)
     if not isinstance(seg, dict):
         raise C2V1ContractError("C2_V1_NOT_OBJECT")
     missing = sorted(C2_V1_KEYS - seg.keys())
-    extra = sorted(seg.keys() - C2_V1_KEYS)
+    extra = sorted(seg.keys() - C2_V1_KEYS - {"text_map"})
     if missing:
         raise C2V1ContractError(f"C2_V1_MISSING_FIELDS:{','.join(missing)}")
     if extra:
@@ -213,6 +218,11 @@ def validate_c2_v1_segment(seg: object, *, current_chapter_revision_ref: object)
         raise C2V1ContractError("C2_V1_BAD_OFFSETS:end_must_equal_start_plus_text_length")
     if not isinstance(seg["halo_before"], str) or not isinstance(seg["halo_after"], str):
         raise C2V1ContractError("C2_V1_BAD_FIELD:halo")
+    if "text_map" in seg:
+        try:
+            mapping_runtime.validate_segment(seg)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise C2V1ContractError(f"C2_TEXT_MAP_INVALID:{exc}") from exc
     return revision_ref
 
 
@@ -383,7 +393,7 @@ def extract_segment(
 
     if revision_ref is None:
         return [{**fact, "seg": seg["seg"]} for fact in r["facts"]]
-    return [
+    candidates = [
         {
             "contract": "C3_FACT_CANDIDATE",
             "version": "v1",
@@ -394,6 +404,13 @@ def extract_segment(
         }
         for fact in r["facts"]
     ]
+    if "text_map" in seg:
+        for candidate in candidates:
+            try:
+                candidate["text_map_evidence"] = mapping_runtime.build_evidence(seg, candidate["quote"])
+            except (ValueError, KeyError, TypeError) as exc:
+                raise C2V1ContractError(f"C3_TEXT_MAP_INVALID:{exc}") from exc
+    return candidates
 
 
 def load_candidates_file(path: str) -> list[dict]:

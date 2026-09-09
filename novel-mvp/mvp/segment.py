@@ -17,6 +17,11 @@ import json
 import re
 from pathlib import Path
 
+try:
+    from . import text_mapping as mapping_runtime
+except ImportError:  # direct local-file CLI
+    import text_mapping as mapping_runtime
+
 from jsonschema import Draft202012Validator
 
 
@@ -77,13 +82,22 @@ def _validated_c1_v1_text(chapter: dict) -> tuple[str, dict]:
     return text, copy.deepcopy(revision_ref)
 
 
-def segment_chapter(text: str | dict, lo: int, hi: int, halo: int) -> list[dict]:
+def segment_chapter(
+    text: str | dict, lo: int, hi: int, halo: int, *, text_mapping: bool = False
+) -> list[dict]:
     """整章切窗；C1 v1 对象逐字段继承 revision ref，字符串保持 legacy v0。"""
     revision_ref = None
     if isinstance(text, dict):
         text, revision_ref = _validated_c1_v1_text(text)
     elif not isinstance(text, str):
         raise ValueError("SEGMENT_INPUT_MUST_BE_C1_V1_OR_LEGACY_TEXT")
+    if type(text_mapping) is not bool:
+        raise ValueError("TEXT_MAPPING_OPTION_MUST_BE_BOOL")
+    if text_mapping and revision_ref is None:
+        raise ValueError("TEXT_MAPPING_REQUIRES_C1_V1")
+    context = None
+    if text_mapping:
+        context = mapping_runtime.build_context(text)
     flat = "\n".join(split_paragraphs(text))
     out = []
     for i, s in enumerate(build_segments(text, lo, hi), 1):
@@ -102,5 +116,7 @@ def segment_chapter(text: str | dict, lo: int, hi: int, halo: int) -> list[dict]
                 "chapter_revision_ref": copy.deepcopy(revision_ref),
                 **segment,
             }
+        if context is not None:
+            segment["text_map"] = copy.deepcopy(context)
         out.append(segment)
     return out

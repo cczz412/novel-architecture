@@ -23,13 +23,14 @@ def test_fixture_matrix(case: dict) -> None:
 
 
 def test_fixture_counts_are_frozen() -> None:
-    assert MODULE.validate_all_fixtures() == {'cases': 13, 'valid': 6, 'invalid': 7}
+    assert MODULE.validate_all_fixtures() == {'cases': 15, 'valid': 7, 'invalid': 8}
 
 
 def test_contract_identity_and_anchor_shape() -> None:
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     contract = CONTRACT_PATH.read_text(encoding="utf-8")
-    assert schema["title"] == "ITEM_LEDGER_CONTENT item-ledger-content-v1"
+    assert "item-ledger-content-v1" in schema["title"]
+    assert "item-ledger-content-v2" in schema["title"]
     assert "chapter_revision_ref" in contract
     assert "revision_text_sha256" in contract
     assert "story_order" in contract
@@ -48,4 +49,3 @@ def test_item_ownership_is_read_projection() -> None:
     assert "变化真值住事实账" in contract
     recorded = next(case for case in CASES if case["case_id"] == "IT-PASS-03")
     assert MODULE.run_query_case(recorded)["owner_ref"] == "CH-0001"
-
