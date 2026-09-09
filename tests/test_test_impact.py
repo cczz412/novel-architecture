@@ -4,6 +4,8 @@ from copy import deepcopy
 import unittest
 from pathlib import Path
 
+import pytest
+
 from tools import test_impact
 
 
@@ -247,7 +249,8 @@ class TestImpactTests(unittest.TestCase):
                     self.assertTrue(plan["full_chain"])
                     self.assertEqual(plan["unknown_paths"], [])
                     self.assertEqual(plan["affected_modules"], [])
-                    self.assertEqual(plan["selected_tests"], expected_tests)
+                    selected = expected_with_ccz180(path, expected_tests)
+                    self.assertEqual(plan["selected_tests"], selected)
                     self.assertIn(rule_name, plan["matched_paths"][path])
                     pytest_steps = [
                         step
@@ -258,7 +261,7 @@ class TestImpactTests(unittest.TestCase):
                         [step["argv"] for step in pytest_steps[:-1]],
                         [
                             ["uv", "run", "--locked", "pytest", "-q", test_path]
-                            for test_path in expected_tests
+                            for test_path in [own_test, *sorted(set(selected) - {own_test})]
                         ],
                     )
                     self.assertEqual(
@@ -312,7 +315,7 @@ class TestImpactTests(unittest.TestCase):
                 ]
                 if path in B10_AUTHORITY_DEPENDENCY_PATHS:
                     expected_tests.append(B10_DIRECTED_TEST)
-                expected_tests = sorted(expected_tests)
+                expected_tests = expected_with_ccz180(path, expected_tests)
                 self.assertEqual(plan["selected_tests"], expected_tests)
                 self.assertEqual(
                     [step["step_id"] for step in plan["execution_steps"]],
@@ -332,7 +335,7 @@ class TestImpactTests(unittest.TestCase):
                     ],
                     [
                         ["uv", "run", "--locked", "pytest", "-q", test_path]
-                        for test_path in expected_tests
+                        for test_path in producer_first(path, expected_tests)
                     ],
                 )
                 self.assertIn(
@@ -423,24 +426,24 @@ class TestImpactTests(unittest.TestCase):
                         B10_DIRECTED_TEST,
                     ]
                 )
+                expected_tests = expected_with_ccz180(path, expected_tests)
                 self.assertEqual(
                     plan["selected_tests"], expected_tests
                 )
                 self.assertEqual(
                     [step["step_id"] for step in plan["execution_steps"]],
                     [
-                        "pytest-outside-default-01",
-                        "pytest-outside-default-02",
-                        "pytest-outside-default-03",
+                        *[f"pytest-outside-default-{i:02d}"
+                          for i in range(1, len(expected_tests) + 1)],
                         "pytest-full",
                         "ruff",
                     ],
                 )
                 self.assertEqual(
-                    [step["argv"] for step in plan["execution_steps"][:3]],
+                    [step["argv"] for step in plan["execution_steps"][:-2]],
                     [
                         ["uv", "run", "--locked", "pytest", "-q", test_path]
-                        for test_path in expected_tests
+                        for test_path in producer_first(path, expected_tests)
                     ],
                 )
                 self.assertIn(
@@ -579,6 +582,261 @@ class TestImpactTests(unittest.TestCase):
             "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
             text,
         )
+
+
+# Frozen CCZ-180 consumers; this table checks actual executable argv, not labels.
+CCZ180_TESTS = {
+    "authority": "work/ccz142_candidate_authority_r01/test_candidate_authority.py",
+    "display": "work/ccz142_current_candidate_read_display_r01/test_current_read_display.py",
+    "entry": "work/ccz142_current_candidate_read_entry_r01/test_current_read_entry.py",
+    "preview": "work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py",
+    "proof": "work/ccz142_current_candidate_read_proof_r01/test_current_read_proof.py",
+    "coverage": "work/ccz142_human_card_coverage_wire_r01/test_human_card_coverage_wire.py",
+    "catalog": "work/ccz142_human_card_gold_catalog_r01/test_human_card_gold_catalog.py",
+    "vertical": "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py",
+    "card_identity": "work/ccz142_named_chapter_card_identity_r01/test_named_chapter_card_identity.py",
+    "named": "work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py",
+    "identity_read": "work/ccz142_named_identity_read_r01/test_named_identity_read.py",
+    "identity_store": "work/ccz142_named_identity_store_r01/test_named_identity_store.py",
+    "duty": "work/ccz142_q9_duty_freeze_r01/test_duty_freeze.py",
+    "door": "work/door1_author_intake_view_r01/test_door1_view.py",
+}
+CCZ180_DIRECT_UPSTREAM = {
+    "authority": [
+        "work/ccz57_m3_b01_candidate_version_r03_5/b01_contract.py",
+        "work/ccz57_m3_b05_patch_route_r03_5/b05_contracts.py",
+        "work/ccz57_m3_b06_commit_core_r01/b06_contracts.py",
+        "work/ccz57_m3_b06_commit_core_r01/b06_store.py",
+        "work/ccz57_m3_b07_local_recovery_stop_r01/b07_store.py",
+        "work/ccz57_m3_b08_segment_terminal_r01/b08_store.py",
+        "work/ccz57_m3_b01_candidate_version_r03_5/fixtures.py",
+        "work/ccz57_m3_b05_patch_route_r03_5/fixtures.py",
+        "work/ccz57_m3_b06_commit_core_r01/fixtures.py",
+        "work/ccz57_m3_b07_local_recovery_stop_r01/fixtures.py",
+        "work/ccz57_m3_b08_segment_terminal_r01/fixtures.py",
+    ],
+    "display": [
+        "work/ccz142_candidate_authority_r01/candidate_authority.py",
+        "work/ccz142_candidate_authority_r01/shadow_fixtures.py",
+        "work/ccz142_current_candidate_read_proof_r01/current_read_proof.py",
+    ],
+    "entry": [],
+    "preview": [
+        "work/ccz142_candidate_authority_r01/candidate_authority.py",
+        "work/ccz142_candidate_authority_r01/shadow_fixtures.py",
+        "work/ccz142_current_candidate_read_display_r01/card_render.py",
+    ],
+    "proof": [
+        "work/ccz142_candidate_authority_r01/candidate_authority.py",
+        "work/ccz142_candidate_authority_r01/shadow_fixtures.py",
+        "work/ccz57_m3_b06_commit_core_r01/b06_contracts.py",
+    ],
+    "coverage": [
+        "work/ccz142_current_candidate_read_proof_r01/current_read_proof.py",
+        "work/ccz142_current_candidate_read_preview_r01/html_render.py",
+        "work/ccz142_named_chapter_txt_card_r01/named_chapter.py",
+        "work/ccz142_named_identity_store_r01/store_identity.py",
+    ],
+    "catalog": ["references/corpus-pointers.md", "references/book-meta/INDEX.md"],
+    "vertical": [
+        "work/ccz142_candidate_authority_r01/candidate_authority.py",
+        "work/ccz142_candidate_authority_r01/shadow_fixtures.py",
+        "work/ccz142_current_candidate_read_preview_r01/html_render.py",
+        "work/ccz57_m3_b01_candidate_version_r03_5/fixtures.py",
+    ],
+    "card_identity": [
+        "work/ccz142_current_candidate_read_display_r01/card_render.py",
+        "work/ccz142_current_candidate_read_preview_r01/html_render.py",
+        "work/ccz142_named_chapter_txt_card_r01/named_chapter.py",
+    ],
+    "named": [
+        "work/ccz142_current_candidate_read_preview_r01/html_render.py",
+        "work/ccz142_human_card_vertical_wire_r01/vertical_wire.py",
+    ],
+    "identity_read": [
+        "work/ccz142_current_candidate_read_proof_r01/current_read_proof.py",
+        "work/ccz142_current_candidate_read_preview_r01/html_render.py",
+        "work/ccz142_named_chapter_txt_card_r01/named_chapter.py",
+        "work/ccz142_named_identity_store_r01/store_identity.py",
+    ],
+    "identity_store": [
+        "work/ccz142_current_candidate_read_display_r01/card_render.py",
+        "work/ccz142_current_candidate_read_preview_r01/html_render.py",
+        "work/ccz142_named_chapter_card_identity_r01/identity_card.py",
+        "work/ccz142_named_chapter_txt_card_r01/named_chapter.py",
+    ],
+    "duty": [
+        "work/ccz57_m3_b03_bound_evidence_read_r03_5/README.md",
+        "work/ccz57_m3_b04_patch_atomic_group_r03_5/README.md",
+        "work/ccz57_m3_b05_patch_route_r03_5/README.md",
+        "work/ccz57_m3_b09_current_causal_hint_view_r01/README.md",
+    ],
+    "door": [
+        "work/ccz142_current_candidate_read_proof_r01/current_read_proof.py",
+        "work/ccz142_named_chapter_txt_card_r01/named_chapter.py",
+        "work/ccz142_named_chapter_txt_card_r01/ALLOWLIST.json",
+        "work/ccz57_m3_b01_candidate_version_r03_5/fixtures.py",
+        "work/ccz57_m3_b05_patch_route_r03_5/b05_store.py",
+        "work/ccz57_m3_b06_commit_core_r01/b06_store.py",
+        "work/ccz57_m3_b06_commit_core_r01/b06_contracts.py",
+        "work/ccz57_m3_b07_local_recovery_stop_r01/b07_store.py",
+        "work/ccz57_m3_b08_segment_terminal_r01/b08_store.py",
+        "work/ccz142_human_card_vertical_wire_r01/vertical_wire.py",
+    ],
+}
+
+
+def expected_with_ccz180(path, existing):
+    added = [
+        CCZ180_TESTS[key]
+        for key, paths in CCZ180_DIRECT_UPSTREAM.items()
+        if path in paths
+    ]
+    return sorted(set(existing) | set(added))
+
+
+def producer_first(path, expected):
+    own = B_STAGE_OWN_TEST_BY_DEPENDENCY_PATH[path]
+    return [own, *sorted(set(expected) - {own})]
+
+
+def ccz180_plan(paths, *, flags=None):
+    return test_impact.build_plan(spec(paths, flags=flags))
+
+
+@pytest.mark.parametrize("extra", [[], ["governance/test_policy.json"]])
+def test_shared_chapter_fixture_dispatches_every_direct_consumer(extra):
+    fixture = "work/ccz142_human_card_vertical_wire_r01/synthetic_chapter.txt"
+    plan = ccz180_plan([fixture, *extra])
+    for key in (
+        "vertical", "coverage", "card_identity", "named",
+        "identity_read", "identity_store", "door",
+    ):
+        assert_individual_dispatch(plan, CCZ180_TESTS[key])
+
+
+def assert_individual_dispatch(plan, test_path):
+    matching = [step for step in plan["execution_steps"] if test_path in step["argv"]]
+    # A Ruff argument or display-only selected_tests entry cannot satisfy this.
+    assert [step["argv"] for step in matching] == [
+        ["uv", "run", "--locked", "pytest", "-q", test_path]
+    ]
+    assert matching[0]["cwd"] == "repo_root"
+
+
+@pytest.mark.parametrize("key,test_path", list(CCZ180_TESTS.items()))
+def test_ccz180_test_and_own_python_changes_dispatch_original_test(key, test_path):
+    # Each current Python file in this bounded component must call its own test.
+    paths = sorted((ROOT / test_path).parent.glob("*.py"))
+    for path in paths:
+        changed = path.relative_to(ROOT).as_posix()
+        plan = ccz180_plan([changed])
+        # The test path itself also occurs in Ruff, so only inspect pytest steps.
+        pytest_plan = {
+            **plan,
+            "execution_steps": [
+                step for step in plan["execution_steps"] if step["argv"][3] == "pytest"
+            ],
+        }
+        assert_individual_dispatch(pytest_plan, test_path)
+        assert not plan["unknown_paths"]
+
+
+@pytest.mark.parametrize("key", list(CCZ180_TESTS))
+def test_ccz180_direct_upstream_changes_dispatch_consumer(key):
+    for upstream in CCZ180_DIRECT_UPSTREAM[key]:
+        assert (ROOT / upstream).is_file(), upstream
+        assert_individual_dispatch(ccz180_plan([upstream]), CCZ180_TESTS[key])
+
+
+@pytest.mark.parametrize(
+    "extra,flags",
+    [
+        (["governance/test_policy.json"], []),
+        (["unregistered/example.bin"], []),
+        ([], ["test_collection_changed"]),
+    ],
+)
+def test_ccz180_mixed_and_full_chain_keep_all_fourteen_original_tests(extra, flags):
+    plan = ccz180_plan([*CCZ180_TESTS.values(), *extra], flags=flags)
+    assert plan["scope"] == "full_chain"
+    assert test_impact.PORTABLE_FULL_CHAIN_ARGV in [
+        s["argv"] for s in plan["execution_steps"]
+    ]
+    pytest_plan = {
+        **plan,
+        "execution_steps": [
+            step for step in plan["execution_steps"] if step["argv"][3] == "pytest"
+        ],
+    }
+    for test_path in CCZ180_TESTS.values():
+        assert_individual_dispatch(pytest_plan, test_path)
+
+
+@pytest.mark.parametrize(
+    "paths,flags",
+    [
+        (
+            [
+                "work/ccz57_m3_b01_candidate_version_r03_5/b01_contract.py",
+                "work/ccz57_m3_b06_commit_core_r01/b06_contracts.py",
+            ],
+            [],
+        ),
+        (["work/ccz142_current_candidate_read_proof_r01/current_read_proof.py"], []),
+        (
+            ["work/ccz142_current_candidate_read_proof_r01/current_read_proof.py"],
+            ["test_collection_changed"],
+        ),
+    ],
+)
+def test_ccz180_changed_components_precede_consumers(paths, flags):
+    plan = ccz180_plan(paths, flags=flags)
+    tests = [
+        step["argv"][-1]
+        for step in plan["execution_steps"]
+        if step["step_id"].startswith("pytest-outside-default-")
+    ]
+    own = [
+        test
+        for test in tests
+        if any(Path(path).parent == Path(test).parent for path in paths)
+    ]
+    assert own
+    assert tests[: len(own)] == sorted(own)
+    assert tests[len(own) :] == sorted(set(tests) - set(own))
+    assert tests == [
+        step["argv"][-1]
+        for step in ccz180_plan(list(reversed(paths)), flags=flags)["execution_steps"]
+        if step["step_id"].startswith("pytest-outside-default-")
+    ]
+
+
+def test_ccz180_browser_is_never_in_portable_pytest_steps():
+    browser = "work/ccz142_current_candidate_read_entry_r01/test_entry_browser.py"
+    plan = ccz180_plan([browser, *CCZ180_TESTS.values(), "governance/test_policy.json"])
+    assert all(
+        browser not in step["argv"]
+        for step in plan["execution_steps"]
+        if step["argv"][3] == "pytest"
+    )
+    assert test_impact.load_policy()["default_collection_root"] == "tests"
+
+
+def test_ccz180_metadata_and_html_inputs_are_executable_triggers():
+    cases = [
+        ("entry", "打开人话结果卡.html"),
+        ("entry", "SOURCE_SAMPLES.json"),
+        ("entry", "samples/no_live_store.html"),
+        ("catalog", "CATALOG.json"),
+        ("catalog", "second_batch_gold_r01/ROW_VERDICTS.csv"),
+        ("duty", "DUTY_FREEZE.json"),
+        ("named", "ALLOWLIST.json"),
+    ]
+    for key, name in cases:
+        path = str(Path(CCZ180_TESTS[key]).parent / name)
+        assert (ROOT / path).is_file()
+        assert_individual_dispatch(ccz180_plan([path]), CCZ180_TESTS[key])
 
 
 if __name__ == "__main__":

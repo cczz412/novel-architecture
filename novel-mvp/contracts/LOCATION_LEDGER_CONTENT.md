@@ -1,6 +1,6 @@
 # LOCATION_LEDGER_CONTENT · 地点账内容合同
 
-**正式版本：`location-ledger-content-v1`**
+**正式版本：`location-ledger-content-v2`；兼容读取：`location-ledger-content-v1`**
 
 一句话用途：保存地点定义卡和有证据、有故事时间锚的状态读取面，按故事时点回答地点是否存在、是否损毁、归属哪个势力；没记录必须返回 `NOT_RECORDED`，不能拿最新状态冒充历史。
 
@@ -61,3 +61,7 @@
 ## 7. 机器件与状态
 
 Schema、validator、fixtures 与定向测试同名配套。实现状态：`UNIFIED_WRITER_SETTINGSTORE_V1`。
+
+## 8. v2 标签组扩展
+
+`location-ledger-content-v2` 保留 v1 字段和运行行为，并要求 `tags`、`tag_groups`。允许的根目标为：`/id`、`/created_at`、`/updated_at`、`/rev`、`/note`、`/source_identity`、`/confirm_status`、`/evidence_refs`、`/story_time`、`/name`、`/aliases`、`/loc_type`、`/parent_ref`、`/profile`、`/state_timeline`。未知 `targets` 拒绝；v1 条目继续按旧合同读取。

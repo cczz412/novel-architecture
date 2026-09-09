@@ -209,5 +209,43 @@
     "missing_count": "没有绑定到当前候选的原文句数，不是漏抽率或质量评分",
     "product_adopted": "固定 false，标记不改变产品权威身份",
     "read_status": "MISSING 表示构建读取时不存在；OK 表示核对通过；ERROR 表示局部损坏，页面继续显示"
+  },
+  "historical_input_evidence": {
+    "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py": {
+      "reason": "旧交付未修改输入的证据；此文件不由门1页面运行代码读取。",
+      "change_source": "https://github.com/cczz412/novel-architecture/pull/357"
+    },
+    "work/ccz142_human_card_vertical_wire_r01/MANIFEST.sha256": {
+      "reason": "旧交付未修改输入的证据；此文件不由门1页面运行代码读取。",
+      "change_source": "https://github.com/cczz412/novel-architecture/pull/357"
+    },
+    "work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py": {
+      "reason": "旧交付未修改输入的证据；此文件不由门1页面运行代码读取。",
+      "change_source": "https://github.com/cczz412/novel-architecture/pull/357"
+    },
+    "work/ccz142_named_chapter_txt_card_r01/MANIFEST.sha256": {
+      "reason": "旧交付未修改输入的证据；此文件不由门1页面运行代码读取。",
+      "change_source": "https://github.com/cczz412/novel-architecture/pull/357"
+    },
+    "work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py": {
+      "reason": "旧交付未修改输入的证据；此文件不由门1页面运行代码读取。",
+      "change_source": "https://github.com/cczz412/novel-architecture/pull/357"
+    },
+    "work/ccz142_current_candidate_read_preview_r01/self_check.py": {
+      "reason": "旧交付未修改输入的证据；此文件不由门1页面运行代码读取。",
+      "change_source": "https://github.com/cczz412/novel-architecture/pull/357"
+    },
+    "work/ccz142_current_candidate_read_preview_r01/MANIFEST.sha256": {
+      "reason": "旧交付未修改输入的证据；此文件不由门1页面运行代码读取。",
+      "change_source": "https://github.com/cczz412/novel-architecture/pull/357"
+    },
+    "governance/agent_ticket_rules.md": {
+      "reason": "旧交付未修改输入的证据；此文件不由门1页面运行代码读取。",
+      "change_source": "https://github.com/cczz412/novel-architecture/commit/e27cb07fe054145b3fdce23f8e2248a4d0674f68"
+    },
+    "governance/START_HERE.md": {
+      "reason": "旧交付未修改输入的证据；此文件不由门1页面运行代码读取。",
+      "change_source": "https://github.com/cczz412/novel-architecture/commit/b4b485d520b367c46c7561a76779785e00d65b5b"
+    }
   }
 }

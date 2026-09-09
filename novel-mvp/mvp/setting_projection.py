@@ -103,6 +103,24 @@ def _bound_project_dir(workspace: AuthorWorkspace) -> Path:
     return binding.backend._require_project(binding.author_id, binding.project_id)
 
 
+def initialize_setting_allocator(
+    workspace: AuthorWorkspace, *, book_id: str
+) -> dict[str, Any]:
+    """Explicitly prepare the physical setting allocator for a bound workspace.
+
+    A logical plan without a physical allocator needs reconciliation, not an
+    inferred copy or a fresh set of counters.
+    """
+    root = _bound_project_dir(workspace)
+    binding = _author_workspace_binding(workspace)
+    # Workspace commits take this lock too. Acquire workspace before planstore;
+    # projection and reader paths release either lock before taking the other.
+    with binding.backend._exclusive_lock(root):
+        if workspace.read("plan") is not None:
+            _fail("PROJECTION_LOGICAL_PLAN_REQUIRES_RECONCILIATION")
+        return settingstore.initialize_setting_allocator(root, book_id=book_id)
+
+
 def _regular_bytes(path: Path) -> bytes | None:
     """缺文件留空；不跟随符号链接，也不阻塞在管道等非普通文件上。"""
     try:

@@ -1,0 +1,320 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "normalization_version",
+    "chapter_revision_ref",
+    "normalized_text",
+    "char_map",
+    "removed_whitespace",
+    "responsibility",
+    "quote_original",
+    "match_start",
+    "match_end",
+    "normalized_match",
+    "original_start",
+    "original_end",
+    "original_slice",
+    "original_slice_sha256",
+    "recovery",
+    "provider_adaptation",
+    "provider_item"
+  ],
+  "properties": {
+    "contract": {
+      "const": "C2_C1_TEXT_MAP"
+    },
+    "version": {
+      "const": "v2"
+    },
+    "normalization_version": {
+      "const": "LF_SPLIT_EDGE_WS_V1"
+    },
+    "chapter_revision_ref": {
+      "$ref": "#/$defs/revision"
+    },
+    "normalized_text": {
+      "type": "string"
+    },
+    "char_map": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "removed_whitespace": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "start",
+          "end",
+          "text"
+        ],
+        "properties": {
+          "start": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "responsibility": {
+      "$ref": "#/$defs/responsibility"
+    },
+    "quote_original": {
+      "type": "string",
+      "minLength": 1
+    },
+    "match_start": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "match_end": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "normalized_match": {
+      "type": "string",
+      "minLength": 1
+    },
+    "original_start": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "original_end": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "original_slice": {
+      "type": "string",
+      "minLength": 1
+    },
+    "original_slice_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "recovery": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rule",
+            "quote_recovered",
+            "changes"
+          ],
+          "properties": {
+            "rule": {
+              "const": "SOURCE_LF_ONLY_V1"
+            },
+            "quote_recovered": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changes": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "original_offset",
+                  "returned_offset",
+                  "reason"
+                ],
+                "properties": {
+                  "original_offset": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "returned_offset": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "reason": {
+                    "enum": [
+                      "RESTORE_SOURCE_LF",
+                      "SPACE_TO_SOURCE_LF"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "provider_adaptation": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rule",
+            "original_item",
+            "from_key",
+            "to_key"
+          ],
+          "properties": {
+            "rule": {
+              "const": "TEXT_FULLWIDTH_COLON_KEY_V1"
+            },
+            "from_key": {
+              "const": "text："
+            },
+            "to_key": {
+              "const": "text"
+            },
+            "original_item": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "text：",
+                "quote"
+              ],
+              "properties": {
+                "text：": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "quote": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "provider_item": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text",
+            "quote"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quote": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text：",
+            "quote"
+          ],
+          "properties": {
+            "text：": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quote": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_id",
+        "revision_no",
+        "revision_text_sha256"
+      ],
+      "properties": {
+        "chapter_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_text_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "responsibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seg",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "seg": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_revision_ref",
+        "text",
+        "responsibility"
+      ],
+      "properties": {
+        "chapter_revision_ref": {
+          "$ref": "#/$defs/revision"
+        },
+        "text": {
+          "type": "string"
+        },
+        "responsibility": {
+          "$ref": "#/$defs/responsibility"
+        }
+      }
+    }
+  },
+  "$id": "C2_C1_TEXT_MAP_V2.schema.json",
+  "title": "C2/C1 explicit LF recovery evidence v2"
+}

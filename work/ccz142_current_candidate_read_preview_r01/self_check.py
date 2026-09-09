@@ -38,6 +38,12 @@ EXPECTED_SAMPLES = {
     "fixture_layout.html",
     "types_layout.html",
 }
+# Historical #268/#269 HTML bytes; never regenerate from the current renderer.
+FROZEN_SAMPLE_SHA256 = {
+    "no_live_store.html": "1f2dc32009c59fc19980b15a4c48bb0e7b2c0930c5308ad3bb314bb2d0719a06",
+    "fixture_layout.html": "dd75f04ebeeda6d7668510e60d62460593f117d16d6f01296d2cc83fd8231b52",
+    "types_layout.html": "70a98cc4a191508b5244f63cd9f89df75f36206f1cf04fb715771c01526fee20",
+}
 IMPLEMENTATION_FILES = {
     "html_render.py",
 }
@@ -95,6 +101,10 @@ def run_self_check() -> dict[str, Any]:
     if actual_samples != EXPECTED_SAMPLES:
         raise RuntimeError(f"READ_PREVIEW_SAMPLE_SET_INVALID: {sorted(actual_samples)}")
 
+    for name, expected in FROZEN_SAMPLE_SHA256.items():
+        if _sha(sample_dir / name) != expected:
+            raise RuntimeError(f"READ_PREVIEW_FROZEN_SAMPLE_DRIFT: {name}")
+
     implementation_hashes: dict[str, str] = {}
     for name in sorted(IMPLEMENTATION_FILES):
         path = ROOT / name
@@ -124,21 +134,26 @@ def run_self_check() -> dict[str, Any]:
     if first["proof"]["identity"]["product_adopted"] is not False:
         raise RuntimeError("READ_PREVIEW_PRODUCT_ADOPTION_CLAIM")
     frozen_gap = (sample_dir / "no_live_store.html").read_text(encoding="utf-8")
-    if frozen_gap != first["html"]:
-        raise RuntimeError("READ_PREVIEW_FROZEN_GAP_PAGE_DRIFT")
+    for page in (frozen_gap, first["html"]):
+        if "GAP_NO_LIVE_STORE" not in page or "没有可展示的事实条目" not in page:
+            raise RuntimeError("READ_PREVIEW_GAP_PAGE_UNLABELLED")
     frozen_layout = (sample_dir / "fixture_layout.html").read_text(encoding="utf-8")
-    if frozen_layout != fixture_layout_html():
-        raise RuntimeError("READ_PREVIEW_FROZEN_LAYOUT_DRIFT")
+    current_layout = fixture_layout_html()
+    if "样张" not in current_layout or "不是活库读出" not in current_layout:
+        raise RuntimeError("READ_PREVIEW_CURRENT_LAYOUT_UNLABELLED")
     if "样张" not in frozen_layout or "不是活库读出" not in frozen_layout:
         raise RuntimeError("READ_PREVIEW_LAYOUT_SAMPLE_UNLABELLED")
     frozen_types = (sample_dir / "types_layout.html").read_text(encoding="utf-8")
-    if frozen_types != types_preview_html():
-        raise RuntimeError("READ_PREVIEW_FROZEN_TYPES_DRIFT")
+    current_types = types_preview_html()
+    if any(token not in current_types for token in (
+        "传闻／怀疑", "误信", "未证实", "不是活库读出", "FIXTURE_ONLY",
+    )):
+        raise RuntimeError("READ_PREVIEW_CURRENT_TYPES_MISSING")
     if "传闻／怀疑" not in frozen_types or "误信" not in frozen_types:
         raise RuntimeError("READ_PREVIEW_TYPES_MISSING")
     if "未证实" not in frozen_types:
         raise RuntimeError("READ_PREVIEW_UNVERIFIED_MISSING")
-    joined = first["html"] + frozen_layout + frozen_types
+    joined = first["html"] + current_layout + current_types + frozen_gap + frozen_layout + frozen_types
     if "写法指导" in joined:
         raise RuntimeError("READ_PREVIEW_WRITING_ADVICE_LEAK")
 

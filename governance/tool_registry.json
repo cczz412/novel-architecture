@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-09-05T20:30:00+08:00",
+  "updated_at": "2026-09-08T07:14:16+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 111,
-    "root_visible_python_entry_count": 112,
+    "root_entity_count": 112,
+    "root_visible_python_entry_count": 113,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -454,6 +454,14 @@
         "violation": "根层 Python 已存在但单体 tool_registry 未同步登记；工单 7 收口时只补登记、不搬动、不删除。",
         "current_disposition": "只补登记、不搬动、不删除；继续由对应定向测试或批次边界约束。",
         "follow_up": "出生违规事实永久保留。"
+      },
+      {
+        "detected_at": "2026-09-08T07:14:16+08:00",
+        "task_id": "CCZ-180 / ISSUE_326",
+        "path": "tools/ccz119_browser_test.py",
+        "violation": "点名单文件测试入口按#326冻结路径放入tools根层；其固定测试路径不满足通用工具无批次写死门槛。初始冻结写集遗漏登记册，全量测试发现漏登。",
+        "current_disposition": "只补专用身份登记与计数，不将其包装成通用工具；原测试和路径均不迁移。",
+        "follow_up": "保留#326限定的离线、无下载、缺件不算通过边界；未来归并或迁移须另获批准。"
       }
     ]
   },
@@ -566,10 +574,10 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 23,
-    "batch_reproducer": 82,
+    "reusable_component": 22,
+    "batch_reproducer": 83,
     "active_entry": 3,
-    "retired_compat": 3,
+    "retired_compat": 4,
     "pending": 0
   },
   "unresolved_identity_paths": [],
@@ -4534,11 +4542,11 @@
     },
     {
       "path": "tools/jules_linear_followread.py",
-      "primary_identity": "reusable_component",
-      "primary_identity_label": "可复用组件",
-      "status": "candidate_not_default",
-      "status_label": "候选组件·Jules PR 只读跟读到 Linear",
-      "purpose": "在受信任的 GitHub Actions base 上读取 PR 事件，用 Jules API 做只读审查；没有已验证问题时只让 GitHub Actions 通过且不写 Linear，只有能给出准确位置、触发、证据和实际后果的 P0／P1／P2 问题才写详情并让 Action 失败。",
+      "primary_identity": "retired_compat",
+      "primary_identity_label": "退役兼容件",
+      "status": "retained_for_compatibility",
+      "status_label": "退役兼容·Jules自动跟读已停用",
+      "purpose": "旧Jules PR跟读与Linear写入适配器，保留历史兼容与零网络合同测试；当前PR审查使用Codex原生审查。",
       "human_command": "uv run --locked python tools/jules_linear_followread.py check --event-file <GitHub事件JSON>",
       "inputs": [
         "GitHub pull_request_target 事件 JSON",
@@ -4557,12 +4565,8 @@
         "model": "google_jules_api",
         "note": "只有 run 子命令在两个 Secret 都存在时联网；Jules 只读结果不合格时不写 Linear。"
       },
-      "current_consumers": [
-        ".github/workflows/jules-linear-followread.yml",
-        "tests/test_jules_linear_followread.py",
-        "GitHub Issue #208"
-      ],
-      "consumer_evidence_rule": "同仓非草稿 PR 且标题或正文恰有一个 CCZ 编号才进入；相同 PR Head SHA 双重去重。PASS 不写 Linear；猜测、泛化风险、样式偏好、纯测试缺口和纯建议也不得进入 Linear。",
+      "current_consumers": [],
+      "consumer_evidence_rule": "已取消PR自动触发，工作流与历史工单不再列为当前消费者；保留原测试引用和历史线索。",
       "test_references": [
         "tests/test_jules_linear_followread.py"
       ],
@@ -4572,11 +4576,50 @@
         "config/providers/linear_graphql.json",
         "GitHub Issue #208"
       ],
-      "next_confirmed_consumer": "GitHub PR 打开、更新、重开或转为可审查后的 Jules 只读跟读。",
-      "retirement_condition_and_compatibility_boundary": "不读取或执行 PR Head 代码，不允许 Jules 生成 changeSet／PR，不调用 sendMessage，不新增 Linear mutation；缺 Secret、GitHub App source、准确 SHA 或机器裁决结构时必须失败且不外发。最多外发 3 个带直接证据的 P0／P1／P2 问题。",
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "保留原代码、配置结构和历史路径供追溯与零网络合同测试；PR自动触发、密钥注入和Linear自动写入已停用。旧手工CLI仍有联网能力，不作为当前入口，联网执行另须明确授权。",
       "review_needed": false,
       "admitted_by": "ISSUE_208",
       "tool_id": "TOOL-111"
+    },
+    {
+      "path": "tools/ccz119_browser_test.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "bounded_test_entry",
+      "purpose": "仅执行CCZ-180点名的离线浏览器测试；缺环境、失败与通过分开报告。",
+      "human_command": "uv run --locked python tools/ccz119_browser_test.py",
+      "inputs": [
+        "work/ccz142_current_candidate_read_entry_r01/test_entry_browser.py",
+        "同目录固定HTML与样张",
+        "当前锁定Python环境已有的Playwright和本机Chromium"
+      ],
+      "outputs": [
+        "JSON结果：PASSED、FAILED或NOT_DISPATCHED",
+        "已派发时的8项JUnit统计和退出码"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "只验证本地离线页面，不启动HTTP服务、不下载浏览器、不安装依赖。"
+      },
+      "current_consumers": [
+        "GitHub Issue #326 / CCZ-180 的浏览器验收",
+        "tests/test_ccz119_browser_test.py"
+      ],
+      "consumer_evidence_rule": "执行入口可用不等于浏览器实测通过；本机缺Playwright时必须记未派发。",
+      "test_references": [
+        "tests/test_ccz119_browser_test.py"
+      ],
+      "last_use_clues": [
+        "governance/CCZ119_TEST_ENTRY_READOUT_R01.md",
+        "GitHub Issue #326"
+      ],
+      "next_confirmed_consumer": "CCZ-180在具备已有Playwright和Chromium的环境补做8项浏览器实测。",
+      "retirement_condition_and_compatibility_boundary": "只接受固定测试文件；不得改成自由命令执行器或自动下载入口。未来如需并入统一分线或迁移路径，另按获批写集处理。",
+      "review_needed": false,
+      "admitted_by": "ISSUE_326",
+      "tool_id": "TOOL-112"
     }
   ]
 }

@@ -2134,7 +2134,7 @@ def build_documents(
 
 | 要看什么 | 入口 | 边界 |
 |---|---|---|
-| 整体任务、主支线、领票、父子、硬前置、阻塞、并行线 | [Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335)，推荐 `$linear-github-task-map` | 必须现场读取，不从仓库静态页复原 |
+| 整体任务、主支线、领票、父子、硬前置、阻塞、并行线 | [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)，按相关 Project 路由读取 | 必须现场读取，不从仓库静态页复原 |
 | 工程施工、PR、检查、合并 | [GitHub](https://github.com/cczz412/novel-architecture) | GitHub 是工程线真值 |
 | 上工规矩 | [START_HERE](START_HERE.md)、[Agent 必读：建票、拆票与依赖规则](agent_ticket_rules.md)与[四台协作约定](COLLAB_GITHUB_LINEAR_SLACK.md) | CZ 最新明确指令仍优先 |
 | 版本、路径、候选身份 | [current pointers](current_pointers.json) | 不保存领票、依赖或运行成绩 |
