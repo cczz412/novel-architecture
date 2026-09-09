@@ -842,3 +842,168 @@ def test_documented_object_keys_match_runtime_projection(model, ids, tmp_path):
     assert sorted(model["candidates"][0]) == shapes["candidate_keys"]
     observed = marks.read_marks(tmp_path / marks.SIDECAR_NAME, model["view_id"], *ids)
     assert sorted(observed) == shapes["marks_read_result_keys"]
+
+
+@pytest.fixture
+def self_check_copy(tmp_path, monkeypatch):
+    import shutil
+    from work.door1_author_intake_view_r01 import self_check as checker
+
+    package = tmp_path / "work" / ROOT.name
+    package.mkdir(parents=True)
+    for name in checker.EXPECTED_FILES:
+        shutil.copyfile(ROOT / name, package / name)
+    shapes = json.loads((package / "OBJECT_SHAPES.json").read_text())
+    for rel in shapes["protected_input_sha256"]:
+        target = tmp_path / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(checker.REPO / rel, target)
+    monkeypatch.setattr(checker, "ROOT", package)
+    monkeypatch.setattr(checker, "REPO", tmp_path)
+
+    def refresh():
+        (package / "MANIFEST.sha256").write_text(
+            "".join(
+                f"{checker.sha(package / name)}  {name}\n"
+                for name in sorted(checker.EXPECTED_FILES - {"MANIFEST.sha256"})
+            )
+        )
+
+    return checker, shapes, refresh
+
+
+def test_self_check_reports_nine_historical_differences_and_62_strict():
+    from work.door1_author_intake_view_r01 import self_check as checker
+
+    report = checker.run_self_check()
+    assert report["result"] == "PASS"
+    assert report["manifest_verified_files"] == 9
+    assert report["protected_input_verified_files"] == 62
+    assert report["historical_input_compared_files"] == 9
+    records = report["historical_input_evidence"]
+    assert {r["path"] for r in records} == checker.HISTORICAL_INPUT_PATHS
+    for record in records:
+        assert record["current_sha256"] == checker.sha(checker.REPO / record["path"])
+        expected_status = (
+            "same"
+            if record["current_sha256"] == record["historical_sha256"]
+            else "changed"
+        )
+        assert record["status"] == expected_status
+
+
+@pytest.mark.parametrize("state", ["same", "changed", "missing", "unreadable"])
+def test_historical_comparison_preserves_all_rows(self_check_copy, monkeypatch, state):
+    checker, shapes, _ = self_check_copy
+    rel = sorted(checker.HISTORICAL_INPUT_PATHS)[0]
+    real_sha = checker.sha
+
+    def read(path):
+        if path == checker.REPO / rel:
+            if state == "same":
+                return shapes["protected_input_sha256"][rel]
+            if state == "changed":
+                return "0" * 64
+            if state == "missing":
+                raise FileNotFoundError(path)
+            raise PermissionError(path)
+        return real_sha(path)
+
+    monkeypatch.setattr(checker, "sha", read)
+    report = checker.run_self_check()
+    records = report["historical_input_evidence"]
+    record = next(r for r in records if r["path"] == rel)
+    assert len(records) == 9 and record["status"] == state
+    assert record["historical_sha256"] == shapes["protected_input_sha256"][rel]
+    available = state in {"same", "changed"}
+    assert report["result"] == ("PASS" if available else "FAIL")
+    assert report["historical_input_compared_files"] == (9 if available else 8)
+    assert (record["current_sha256"] is not None) == available
+    assert report["protected_input_verified_files"] == 62
+
+
+@pytest.mark.parametrize(
+    "mutation", ["missing", "extra", "replace", "metadata", "baseline"]
+)
+def test_historical_classification_rejects_expansion_and_incomplete_data(
+    self_check_copy, mutation
+):
+    checker, shapes, refresh = self_check_copy
+    classification = shapes["historical_input_evidence"]
+    key = next(iter(classification))
+    if mutation == "missing":
+        del classification[key]
+    elif mutation == "extra":
+        classification["governance/*"] = classification[key]
+    elif mutation == "replace":
+        strict = next(
+            p for p in shapes["protected_input_sha256"] if p not in classification
+        )
+        classification[strict] = classification.pop(key)
+    elif mutation == "metadata":
+        classification[key]["reason"] = ""
+    else:
+        shapes["base_main_sha"] = "0" * 40
+    (checker.ROOT / "OBJECT_SHAPES.json").write_text(json.dumps(shapes))
+    refresh()
+    with pytest.raises(RuntimeError, match="DOOR1_HISTORICAL_CLASSIFICATION"):
+        checker.run_self_check()
+
+
+def test_each_remaining_protected_input_still_rejects_tampering(self_check_copy):
+    checker, shapes, _ = self_check_copy
+    strict = set(shapes["protected_input_sha256"]) - checker.HISTORICAL_INPUT_PATHS
+    assert len(strict) == 62
+    for rel in strict:
+        path = checker.REPO / rel
+        original = path.read_bytes()
+        path.write_bytes(original + b"\nchanged")
+        with pytest.raises(RuntimeError, match="DOOR1_PROTECTED_INPUT_DRIFT"):
+            checker.run_self_check()
+        path.write_bytes(original)
+
+
+@pytest.mark.parametrize("guard", ["manifest", "schema", "import", "call", "js"])
+def test_existing_package_and_boundary_guards_survive(
+    self_check_copy, monkeypatch, guard
+):
+    checker, shapes, refresh = self_check_copy
+    errors = {
+        "manifest": "DOOR1_MANIFEST_HASH",
+        "schema": "DOOR1_OBJECT_SHAPES_DRIFT",
+        "import": "DOOR1_FORBIDDEN_IMPORT",
+        "call": "DOOR1_FORBIDDEN_CALL",
+        "js": "DOOR1_FORBIDDEN_JS_CALL",
+    }
+    if guard == "schema":
+        shapes["authority_wrote"] = True
+        (checker.ROOT / "OBJECT_SHAPES.json").write_text(json.dumps(shapes))
+    elif guard == "js":
+        monkeypatch.setattr(checker, "SCRIPT", checker.SCRIPT + "fetch(")
+    else:
+        with (checker.ROOT / "build_view.py").open("a") as stream:
+            stream.write("\nimport socket\n" if guard == "import" else "\nexecute()\n")
+    if guard != "manifest":
+        refresh()
+    with pytest.raises(RuntimeError, match=errors[guard]):
+        checker.run_self_check()
+
+
+@pytest.mark.parametrize("value", [None, "0" * 64])
+@pytest.mark.parametrize(
+    "rel",
+    sorted(
+        json.loads((ROOT / "OBJECT_SHAPES.json").read_text())[
+            "historical_input_evidence"
+        ]
+    ),
+)
+def test_historical_hash_edits_fail_even_with_refreshed_manifest(
+    self_check_copy, rel, value
+):
+    checker, shapes, refresh = self_check_copy
+    shapes["protected_input_sha256"][rel] = value
+    (checker.ROOT / "OBJECT_SHAPES.json").write_text(json.dumps(shapes))
+    refresh()
+    with pytest.raises(RuntimeError, match="DOOR1_HISTORICAL_EVIDENCE_DRIFT"):
+        checker.run_self_check()
