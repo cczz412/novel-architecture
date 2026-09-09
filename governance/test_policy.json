@@ -64,6 +64,21 @@
   },
   "path_rules": [
     {
+      "name": "CCZ-180 共享合成章的直接消费者",
+      "pattern": "work/ccz142_human_card_vertical_wire_r01/synthetic_chapter.txt",
+      "modules": [],
+      "tests": [
+        "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py",
+        "work/ccz142_human_card_coverage_wire_r01/test_human_card_coverage_wire.py",
+        "work/ccz142_named_chapter_card_identity_r01/test_named_chapter_card_identity.py",
+        "work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py",
+        "work/ccz142_named_identity_read_r01/test_named_identity_read.py",
+        "work/ccz142_named_identity_store_r01/test_named_identity_store.py",
+        "work/door1_author_intake_view_r01/test_door1_view.py"
+      ],
+      "full_chain": false
+    },
+    {
       "name": "CCZ-185 explicit recovery v2 novel-mvp/mvp/quote_recovery.py",
       "pattern": "novel-mvp/mvp/quote_recovery.py",
       "modules": [],

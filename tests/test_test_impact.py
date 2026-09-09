@@ -704,6 +704,17 @@ def ccz180_plan(paths, *, flags=None):
     return test_impact.build_plan(spec(paths, flags=flags))
 
 
+@pytest.mark.parametrize("extra", [[], ["governance/test_policy.json"]])
+def test_shared_chapter_fixture_dispatches_every_direct_consumer(extra):
+    fixture = "work/ccz142_human_card_vertical_wire_r01/synthetic_chapter.txt"
+    plan = ccz180_plan([fixture, *extra])
+    for key in (
+        "vertical", "coverage", "card_identity", "named",
+        "identity_read", "identity_store", "door",
+    ):
+        assert_individual_dispatch(plan, CCZ180_TESTS[key])
+
+
 def assert_individual_dispatch(plan, test_path):
     matching = [step for step in plan["execution_steps"] if test_path in step["argv"]]
     # A Ruff argument or display-only selected_tests entry cannot satisfy this.

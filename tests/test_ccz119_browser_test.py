@@ -8,15 +8,57 @@ import pytest
 
 from tools import ccz119_browser_test as runner
 
+APPROVED_CLASS = "work.ccz142_current_candidate_read_entry_r01.test_entry_browser"
+APPROVED_NAMES = [
+    f"{test}[{viewport}-{javascript}]"
+    for test in ("test_offline_file_links_without_repo_or_store", "test_memory_render_only")
+    for viewport in ("desktop", "mobile")
+    for javascript in ("no-js", "js")
+]
+
 
 def write_report(path, *, passed=8, skipped=0, failed=0, errors=0):
-    cases = ['<testcase name="passed" />'] * passed
+    cases = [
+        f'<testcase classname="{APPROVED_CLASS}" name="{name}" />'
+        for name in APPROVED_NAMES[:passed]
+    ]
     cases += ['<testcase name="skipped"><skipped /></testcase>'] * skipped
     cases += ['<testcase name="failed"><failure /></testcase>'] * failed
     cases += ['<testcase name="error"><error /></testcase>'] * errors
     path.write_text(
         "<testsuites><testsuite>" + "".join(cases) + "</testsuite></testsuites>"
     )
+
+
+@pytest.mark.parametrize("change", ["duplicate", "substitute", "wrong_module"])
+def test_eight_passing_wrong_case_identities_are_rejected(tmp_path, change):
+    report = tmp_path / "junit.xml"
+    write_report(report)
+    content = report.read_text()
+    if change == "duplicate":
+        content = content.replace(APPROVED_NAMES[0], APPROVED_NAMES[1], 1)
+    elif change == "substitute":
+        content = content.replace(APPROVED_NAMES[0], "test_unapproved[desktop-js]", 1)
+    else:
+        content = content.replace(APPROVED_CLASS, "unapproved.module", 1)
+    report.write_text(content)
+    result = runner._read_result(report, 0)
+    assert result["counts"]["passed"] == 8
+    assert result["status"] == "FAILED"
+    assert result["reason"] == "BROWSER_CASE_IDENTITY_MISMATCH"
+
+
+def test_approved_case_identities_can_run_in_another_order(tmp_path):
+    report = tmp_path / "junit.xml"
+    report.write_text(
+        "<testsuites><testsuite>"
+        + "".join(
+            f'<testcase classname="{APPROVED_CLASS}" name="{name}" />'
+            for name in reversed(APPROVED_NAMES)
+        )
+        + "</testsuite></testsuites>"
+    )
+    assert runner._read_result(report, 0)["status"] == "PASSED"
 
 
 @pytest.mark.parametrize("reason", ["PLAYWRIGHT_MISSING", "CHROMIUM_MISSING"])
