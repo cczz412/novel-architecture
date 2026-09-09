@@ -1,0 +1,21 @@
+{
+  "document_identity": "CCZ142-NAMED-IDENTITY-READ-R01",
+  "status": "NAMED_IDENTITY_READ_NOT_PRODUCT_ADOPTION",
+  "github_issue": 303,
+  "base_main_sha": "e2559ca23ccbe586416dd3bced3fae8a2fdaeb82",
+  "product_adopted": false,
+  "reads_via": "prove_current_read / show_current_html",
+  "sidecar_filename": "named-card-identity.json",
+  "sqlite_schema_changed": false,
+  "coverage_wired": false,
+  "released_book_title": "北塔夹具",
+  "forbidden": {
+    "second_reader": true,
+    "real_novel_api": true,
+    "pr_235_writes": true,
+    "b01_b09_writer_edits": true,
+    "sqlite_schema_change": true,
+    "invented_coverage": true,
+    "unreleased_body_read": true
+  }
+}

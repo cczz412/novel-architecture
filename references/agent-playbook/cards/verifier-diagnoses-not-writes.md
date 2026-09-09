@@ -14,9 +14,9 @@
 
 验真器一发现问题就自动重写事实并落账。让主抽模型自检自改。两个模型一致就直接转正。把“跨家族”写成质量保证。把本卡升级成固定模型分工、API 名单或自动修复执行票；把“跨家族一定可靠”的待验假设写成已拍保证。
 
-## 出处
+## 当前依据
 
-- [R14 创作与记忆管线页](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md)（ADD-021：诊断—修复拆两步；修正建议不自动改账）
-- [R14 抽取页](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md)（ADD-021；跨家族论证降级为待验工程假设）
+- [CCZ-142](https://linear.app/ccz/issue/CCZ-142)｜[CCZ-105](https://linear.app/ccz/issue/CCZ-105)：诊断与局部修复候选
+- [CCZ-86](https://linear.app/ccz/issue/CCZ-86)：正式晋级边界
 
-来源：#115；批次 A；2026-08-24
+来源：Codex

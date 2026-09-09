@@ -17,6 +17,11 @@ from collections import Counter
 from collections.abc import Callable
 from typing import Any
 
+if __package__:
+    from . import factstore
+else:
+    import factstore
+
 
 OUTPUT_CONTRACT = "C5_OVERVIEW_CARD_PROTOTYPE"
 OUTPUT_VERSION = "v0"
@@ -58,7 +63,7 @@ C4_REQUIRED_KEYS = frozenset(
         "recheck",
     }
 )
-C4_OPTIONAL_KEYS = frozenset({"seg", "decided_at"})
+C4_OPTIONAL_KEYS = frozenset({"seg", "decided_at", "text_map_evidence"})
 CURRENT_FACT_STATUSES = frozenset({"extracted", "confirmed", "rejected"})
 AUTHOR_CARD_FACT_STATUS = "confirmed"
 PROVIDER_RESULT_KEYS = frozenset(
@@ -225,6 +230,11 @@ def _validate_fact(
         or hashlib.sha256(quote.encode("utf-8")).hexdigest() != anchor["slice_sha256"]
     ):
         raise OverviewError(f"C4_ANCHOR_QUOTE_INVALID:{fact_id}")
+    if "text_map_evidence" in value:
+        try:
+            factstore.validate_c4_v1_snapshot([value])
+        except factstore.FactstoreError as exc:
+            raise OverviewError(f"C4_TEXT_MAP_INVALID:{fact_id}") from exc
     return value
 
 

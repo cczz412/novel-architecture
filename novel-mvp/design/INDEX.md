@@ -1,7 +1,7 @@
-# 设计稿总索引｜R14 currentness 登记 R03（S3 正式能力目录）
+# 设计稿总索引｜currentness 登记（来源已解耦）
 
-> 更新：2026-08-28。产品语义只认背景板 **R14**。本页与 `design_registry.json` 是同一份 currentness 登记的两种视图；设计稿不是产品完成态，也不是施工放行票。
-> 工单 5 PR-C 已接入产品目标架构、账本目录和三个冻结设计正文；S3 GitHub #182 新增工程能力目录和作者速查。INDEX 继续沿用工单 4 的 R14 currentness 格式，不用旧分支 INDEX 整页覆盖。
+> 更新：2026-08-30。产品需求和拍板回所属 Linear 模块票，工程能力回 GitHub 正式合同与已合并代码。本页与 `design_registry.json` 是同一份设计路由登记的两种视图；设计稿不是产品完成态，也不是施工放行票。
+> 工单 5 PR-C 已接入产品目标架构、账本目录和三个冻结设计正文；S3 GitHub #182 新增工程能力目录和作者速查。2026-08-30 只把来源身份改到 Linear 冻结迁移回执，保留 60 条分类、哈希和替代关系。
 
 ## 产品架构、账本与能力目录入口
 
@@ -16,24 +16,24 @@
 
 ### 本页为什么不是冻结分支 INDEX 的逐字节复制
 
-- 保留工单 4 已建立的 R14 currentness、默认路由和全量状态镜像；
+- 保留工单 4 已建立的 currentness、默认路由和全量状态镜像；
 - 吸收冻结 INDEX 的产品总入口、账本目录入口和旧术语纠偏；
 - 新增设计进入 registry 后才进入默认路由；
 - `WAITING_REWRITE`／`HISTORICAL`／`SUPERSEDED` 继续禁止指导施工。
 
 ## 就近重写规则（开工硬门）
 
-**哪个模块要开工，先把它的设计稿升到 R14 口径，并把 `design_registry.json` 中该稿状态改成 `CURRENT`，才准动模块代码。**
+**哪个模块要开工，先回读所属 Linear 模块票和 GitHub 正式合同；设计稿有冲突就先标 `WAITING_REWRITE`，校准完成后才可恢复 `CURRENT`。**
 
 - `WAITING_REWRITE`、`HISTORICAL`、`SUPERSEDED` 一律不能进入默认施工路由。
 - `CURRENT` 只表示可作默认设计参考；不能外推成代码完成、作者可用、真实语义通过或已获施工授权。
 - 机器检查：`uv run --locked python tools/check_drift.py --check`（设计一项也可单独跑 `tools/check_design_currentness.py --check`）。
-- 五个只读检查器已登记进 `governance/tool_registry.json`。
+- 四个现行只读检查器已登记进 `governance/tool_registry.json`。
 
 ## 默认设计路由（只允许 CURRENT）
 
 <!-- DESIGN_DEFAULT_ROUTES_START -->
-| 设计稿 | 状态 | R14 下的用途／边界 |
+| 设计稿 | 状态 | 当前用途／边界 |
 |---|---|---|
 | [API_EXPOSURE_DESIGN_R01.md](API_EXPOSURE_DESIGN_R01.md) | `CURRENT` | API 暴露层；仍是设计，不代表接口已经开放。 |
 | [BOOK_DISSECT_MENU_DESIGN_R01.md](BOOK_DISSECT_MENU_DESIGN_R01.md) | `CURRENT` | 拆书菜单与只读分析入口。 |
@@ -59,7 +59,7 @@
 | [WEB_CANVAS_MVP_DESIGN_R01.md](WEB_CANVAS_MVP_DESIGN_R01.md) | `CURRENT` | 网页画布目标；完成与性能承诺仍需代码和结果票。 |
 <!-- DESIGN_DEFAULT_ROUTES_END -->
 
-## 等待 R14 改版（禁止默认施工）
+## 等待所属模块校准（禁止默认施工）
 
 | 设计稿 | 状态 | 为什么要先改 |
 |---|---|---|
@@ -84,7 +84,7 @@
 下表覆盖当前 `novel-mvp/design/` 下全部 60 份设计／调查文档，不含本索引和 registry 自身。状态和 `superseded_by` 必须与 JSON 一致。
 
 <!-- DESIGN_STATUS_TABLE_START -->
-| 设计稿 | status | superseded_by | R14 relation |
+| 设计稿 | status | superseded_by | source relation |
 |---|---|---|---|
 | [17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md](17_EXTERNAL_PROMPTS_AGENT_TOOLS_PIPELINE_20260814_R01.md) | `HISTORICAL` | `—` | 外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。 |
 | [18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md](18_EXTERNAL_PROMPTS_OUTLINE_LOADBEARING_20260814_R01.md) | `HISTORICAL` | `—` | 外发调查题／审查 Prompt，只作历史研究材料，不是现行设计、合同或施工入口。 |
@@ -154,4 +154,4 @@
 - 一致性体检原型设计（ADD-027.5）
 - `LEDGER_DIRECTORY_DESIGN_R01.md`：只读登记为工单 5 PR-C 预期新增，未进入本票。
 
-来源：ChatGPT（工单 4 云端候选；依据 main INDEX、R14 与 cc793c4 的只读设计差量登记）
+来源：ChatGPT（工单 4 云端候选；依据当时 main INDEX、R14 与 cc793c4 的只读设计差量登记）；2026-08-30 来源解耦：Codex

@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-08-31T15:40:00+08:00",
+  "updated_at": "2026-09-08T07:14:16+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 113,
-    "root_visible_python_entry_count": 114,
+    "root_entity_count": 112,
+    "root_visible_python_entry_count": 113,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -454,6 +454,14 @@
         "violation": "根层 Python 已存在但单体 tool_registry 未同步登记；工单 7 收口时只补登记、不搬动、不删除。",
         "current_disposition": "只补登记、不搬动、不删除；继续由对应定向测试或批次边界约束。",
         "follow_up": "出生违规事实永久保留。"
+      },
+      {
+        "detected_at": "2026-09-08T07:14:16+08:00",
+        "task_id": "CCZ-180 / ISSUE_326",
+        "path": "tools/ccz119_browser_test.py",
+        "violation": "点名单文件测试入口按#326冻结路径放入tools根层；其固定测试路径不满足通用工具无批次写死门槛。初始冻结写集遗漏登记册，全量测试发现漏登。",
+        "current_disposition": "只补专用身份登记与计数，不将其包装成通用工具；原测试和路径均不迁移。",
+        "follow_up": "保留#326限定的离线、无下载、缺件不算通过边界；未来归并或迁移须另获批准。"
       }
     ]
   },
@@ -566,8 +574,8 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 25,
-    "batch_reproducer": 82,
+    "reusable_component": 23,
+    "batch_reproducer": 83,
     "active_entry": 3,
     "retired_compat": 3,
     "pending": 0
@@ -4084,48 +4092,6 @@
       "review_needed": false
     },
     {
-      "tool_id": "TOOL-099",
-      "path": "tools/build_background_board_upload_zip.py",
-      "primary_identity": "reusable_component",
-      "primary_identity_label": "可复用组件",
-      "status": "candidate_not_default",
-      "status_label": "候选组件·背景板手工上传运输",
-      "purpose": "读取已登记的当前产品、外部报告、原子需求与验收三块背景，生成加版本前缀、单层平铺、排除缓存垃圾且可重复核验的 ZIP。",
-      "human_command": "uv run --locked python tools/build_background_board_upload_zip.py [build|check]",
-      "inputs": [
-        "config/background_board_upload/sources.json",
-        "references/shared-context/ 下版本号最大的完整产品共同背景板",
-        "references/external-knowledge-base/CURRENT.json 指向的当前外部报告背景板",
-        "references/atomic-expectations/CURRENT.json 指向的当前原子需求与验收背景板"
-      ],
-      "outputs": [
-        "TEMP/background-board-upload/ 下的版本化单层 ZIP",
-        "包内总导航、逐文件来源与运输 SHA 清单、SHA256SUMS"
-      ],
-      "network_or_model": {
-        "network": "none",
-        "model": "none",
-        "note": "纯本地只读编译；不上传、不调用模型，不修改正式背景板。"
-      },
-      "current_consumers": [
-        "CZ 手工解压或上传 ChatGPT 的背景材料准备",
-        "config/background_board_upload/README.md",
-        "tests/test_background_board_upload.py"
-      ],
-      "consumer_evidence_rule": "产品板只从固定存放目录选择名称以 _R数字 收尾且入口、清单齐全的唯一最高版本；报告板和原子需求板必须通过各自 CURRENT.json 清单 SHA 校验；每块背景只允许清单、清单自身和配置明确追加的精确文件进入。",
-      "test_references": [
-        "tests/test_background_board_upload.py"
-      ],
-      "last_use_clues": [
-        "config/background_board_upload/sources.json",
-        "config/background_board_upload/README.md",
-        "TEMP/background-board-upload/"
-      ],
-      "next_confirmed_consumer": "CZ 后续在 ChatGPT、Codex、Notion 或其他 Agent 的平铺读取环境中反复上传或解压使用当前三块背景。",
-      "retirement_condition_and_compatibility_boundary": "只生成无权限的运输副本；拒绝符号链接、入口漂移、清单漂移、平铺重名、TEMP 外输出和同名异字节覆盖。背景板升版由各自正式入口决定，工具不替它们转正。",
-      "review_needed": false
-    },
-    {
       "path": "tools/check_current_freshness.py",
       "primary_identity": "reusable_component",
       "primary_identity_label": "可复用组件",
@@ -4167,7 +4133,7 @@
       "retirement_condition_and_compatibility_boundary": "只读；不自动改 current、指针或产品语义。",
       "review_needed": false,
       "admitted_by": "WORK_ORDER_7",
-      "tool_id": "TOOL-100"
+      "tool_id": "TOOL-099"
     },
     {
       "path": "tools/check_design_currentness.py",
@@ -4207,47 +4173,7 @@
       "retirement_condition_and_compatibility_boundary": "只读；不重写设计稿正文。",
       "review_needed": false,
       "admitted_by": "WORK_ORDER_7",
-      "tool_id": "TOOL-101"
-    },
-    {
-      "path": "tools/check_traceability.py",
-      "primary_identity": "reusable_component",
-      "primary_identity_label": "可复用组件",
-      "status": "candidate_not_default",
-      "status_label": "候选组件·能力追踪只读检查",
-      "purpose": "只读核对 142 条需求 ID、测试设计身份／SHA 以及声明过的实现／测试路径存在。",
-      "human_command": "uv run --locked python tools/check_traceability.py --check",
-      "inputs": [
-        "governance/capability_traceability.json",
-        "references/atomic-expectations/TEST_DESIGN_CURRENT.json"
-      ],
-      "outputs": [
-        "traceability-check-report-v1 JSON",
-        "一页摘要",
-        "退出码"
-      ],
-      "network_or_model": {
-        "network": "none",
-        "model": "none",
-        "note": "纯本地只读。"
-      },
-      "current_consumers": [
-        "tools/check_drift.py",
-        "tests/test_traceability.py"
-      ],
-      "consumer_evidence_rule": "PASS 不等于 852 条语义测试已执行。",
-      "test_references": [
-        "tests/test_traceability.py",
-        "tests/test_drift.py"
-      ],
-      "last_use_clues": [
-        "governance/capability_traceability.json"
-      ],
-      "next_confirmed_consumer": "工单 7 五件套统一入口 tools/check_drift.py",
-      "retirement_condition_and_compatibility_boundary": "只读；不改需求正文或合同。",
-      "review_needed": false,
-      "admitted_by": "WORK_ORDER_7",
-      "tool_id": "TOOL-102"
+      "tool_id": "TOOL-100"
     },
     {
       "path": "tools/check_tracked_temp.py",
@@ -4286,7 +4212,7 @@
       "retirement_condition_and_compatibility_boundary": "只读；不移动、不删除 tracked 文件。",
       "review_needed": false,
       "admitted_by": "WORK_ORDER_7",
-      "tool_id": "TOOL-103"
+      "tool_id": "TOOL-101"
     },
     {
       "path": "tools/check_review_identity.py",
@@ -4326,7 +4252,7 @@
       "retirement_condition_and_compatibility_boundary": "不改历史 PR；不自动填字段。",
       "review_needed": false,
       "admitted_by": "WORK_ORDER_7",
-      "tool_id": "TOOL-104"
+      "tool_id": "TOOL-102"
     },
     {
       "path": "tools/check_drift.py",
@@ -4365,7 +4291,7 @@
       "retirement_condition_and_compatibility_boundary": "只读；不自动改 current、需求、合同或产品语义。",
       "review_needed": false,
       "admitted_by": "WORK_ORDER_7",
-      "tool_id": "TOOL-105"
+      "tool_id": "TOOL-103"
     },
     {
       "path": "tools/finetuning_control.py",
@@ -4400,7 +4326,7 @@
       "next_confirmed_consumer": null,
       "retirement_condition_and_compatibility_boundary": "不授权训练或晋升。",
       "review_needed": false,
-      "tool_id": "TOOL-106"
+      "tool_id": "TOOL-104"
     },
     {
       "path": "tools/finetuning_domain.py",
@@ -4436,7 +4362,7 @@
       "next_confirmed_consumer": null,
       "retirement_condition_and_compatibility_boundary": "不授权训练。",
       "review_needed": false,
-      "tool_id": "TOOL-107"
+      "tool_id": "TOOL-105"
     },
     {
       "path": "tools/validate_novel_fact_v2.py",
@@ -4470,7 +4396,7 @@
       "next_confirmed_consumer": null,
       "retirement_condition_and_compatibility_boundary": "不调用模型。",
       "review_needed": false,
-      "tool_id": "TOOL-108"
+      "tool_id": "TOOL-106"
     },
     {
       "path": "tools/cplus_stage1_runner.py",
@@ -4500,7 +4426,7 @@
       "next_confirmed_consumer": null,
       "retirement_condition_and_compatibility_boundary": "批次专用；不得当通用训练入口。",
       "review_needed": false,
-      "tool_id": "TOOL-109"
+      "tool_id": "TOOL-107"
     },
     {
       "path": "tools/build_p2_production_prerequisites.py",
@@ -4528,7 +4454,7 @@
       "next_confirmed_consumer": null,
       "retirement_condition_and_compatibility_boundary": "不把无训练说明升级成版权许可。",
       "review_needed": false,
-      "tool_id": "TOOL-110"
+      "tool_id": "TOOL-108"
     },
     {
       "path": "tools/check_approved_failure_list.py",
@@ -4568,7 +4494,7 @@
       "retirement_condition_and_compatibility_boundary": "只读对账；不得把观察失败自动写入批准清单。不并进工单 7 五件套。",
       "review_needed": false,
       "admitted_by": "ISSUE_63",
-      "tool_id": "TOOL-111"
+      "tool_id": "TOOL-109"
     },
     {
       "path": "tools/ci_lanes.py",
@@ -4612,7 +4538,7 @@
       "retirement_condition_and_compatibility_boundary": "不代替 PR 基础门禁或历史复制器；不接受自由命令、自由工作目录、材料根或上传目标；不能读取、保存或输出密钥与正文。",
       "review_needed": false,
       "admitted_by": "ISSUE_156",
-      "tool_id": "TOOL-112"
+      "tool_id": "TOOL-110"
     },
     {
       "path": "tools/jules_linear_followread.py",
@@ -4658,7 +4584,46 @@
       "retirement_condition_and_compatibility_boundary": "不读取或执行 PR Head 代码，不允许 Jules 生成 changeSet／PR，不调用 sendMessage，不新增 Linear mutation；缺 Secret、GitHub App source、准确 SHA 或机器裁决结构时必须失败且不外发。最多外发 3 个带直接证据的 P0／P1／P2 问题。",
       "review_needed": false,
       "admitted_by": "ISSUE_208",
-      "tool_id": "TOOL-113"
+      "tool_id": "TOOL-111"
+    },
+    {
+      "path": "tools/ccz119_browser_test.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "bounded_test_entry",
+      "purpose": "仅执行CCZ-180点名的离线浏览器测试；缺环境、失败与通过分开报告。",
+      "human_command": "uv run --locked python tools/ccz119_browser_test.py",
+      "inputs": [
+        "work/ccz142_current_candidate_read_entry_r01/test_entry_browser.py",
+        "同目录固定HTML与样张",
+        "当前锁定Python环境已有的Playwright和本机Chromium"
+      ],
+      "outputs": [
+        "JSON结果：PASSED、FAILED或NOT_DISPATCHED",
+        "已派发时的8项JUnit统计和退出码"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "只验证本地离线页面，不启动HTTP服务、不下载浏览器、不安装依赖。"
+      },
+      "current_consumers": [
+        "GitHub Issue #326 / CCZ-180 的浏览器验收",
+        "tests/test_ccz119_browser_test.py"
+      ],
+      "consumer_evidence_rule": "执行入口可用不等于浏览器实测通过；本机缺Playwright时必须记未派发。",
+      "test_references": [
+        "tests/test_ccz119_browser_test.py"
+      ],
+      "last_use_clues": [
+        "governance/CCZ119_TEST_ENTRY_READOUT_R01.md",
+        "GitHub Issue #326"
+      ],
+      "next_confirmed_consumer": "CCZ-180在具备已有Playwright和Chromium的环境补做8项浏览器实测。",
+      "retirement_condition_and_compatibility_boundary": "只接受固定测试文件；不得改成自由命令执行器或自动下载入口。未来如需并入统一分线或迁移路径，另按获批写集处理。",
+      "review_needed": false,
+      "admitted_by": "ISSUE_326",
+      "tool_id": "TOOL-112"
     }
   ]
 }

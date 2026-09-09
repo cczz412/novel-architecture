@@ -1,0 +1,129 @@
+[
+  {
+    "fact_id": "f001",
+    "ledger": "character",
+    "target": {
+      "entry_id": null,
+      "canonical_name": "林舟"
+    },
+    "kind": "definition",
+    "state_key": null,
+    "value": null,
+    "proposer": "author",
+    "note": "夹具手写定义绑定；proposer 不是作者签字。"
+  },
+  {
+    "fact_id": "f002",
+    "ledger": "location",
+    "target": {
+      "entry_id": null,
+      "canonical_name": "北塔"
+    },
+    "kind": "definition",
+    "state_key": null,
+    "value": {
+      "loc_type": "瞭望塔"
+    },
+    "proposer": "author",
+    "note": "夹具手写定义绑定；proposer 不是作者签字。"
+  },
+  {
+    "fact_id": "f003",
+    "ledger": "item",
+    "target": {
+      "entry_id": null,
+      "canonical_name": "铜钥匙"
+    },
+    "kind": "definition",
+    "state_key": null,
+    "value": {
+      "item_type": "钥匙"
+    },
+    "proposer": "author",
+    "note": "夹具手写定义绑定；proposer 不是作者签字。"
+  },
+  {
+    "fact_id": "f004",
+    "ledger": "faction",
+    "target": {
+      "entry_id": null,
+      "canonical_name": "守塔人"
+    },
+    "kind": "definition",
+    "state_key": null,
+    "value": {
+      "fac_type": "值守队伍"
+    },
+    "proposer": "author",
+    "note": "夹具手写定义绑定；proposer 不是作者签字。"
+  },
+  {
+    "fact_id": "f005",
+    "ledger": "system",
+    "target": {
+      "entry_id": null,
+      "canonical_name": "塔卫阶序"
+    },
+    "kind": "definition",
+    "state_key": null,
+    "value": {
+      "category": "值守职责"
+    },
+    "proposer": "author",
+    "note": "夹具手写定义绑定；proposer 不是作者签字。"
+  },
+  {
+    "fact_id": "f006",
+    "ledger": "world_rule",
+    "target": {
+      "entry_id": null,
+      "canonical_name": "北塔封钟后禁止通行。"
+    },
+    "kind": "definition",
+    "state_key": null,
+    "value": {
+      "hardness": "hard"
+    },
+    "proposer": "author",
+    "note": "夹具手写定义绑定；proposer 不是作者签字。"
+  },
+  {
+    "fact_id": "f007",
+    "ledger": "character",
+    "target": {
+      "entry_id": null,
+      "canonical_name": "林舟"
+    },
+    "kind": "state",
+    "state_key": "location",
+    "value": "北塔",
+    "proposer": "author",
+    "note": "同名追加位置状态。"
+  },
+  {
+    "fact_id": "f008",
+    "ledger": "location",
+    "target": {
+      "entry_id": null,
+      "canonical_name": "北塔"
+    },
+    "kind": "state",
+    "state_key": "gate_state",
+    "value": "开启",
+    "proposer": "author",
+    "note": "同名追加侧门状态；显式 ID 另在已有条目的测试中覆盖。"
+  },
+  {
+    "fact_id": "f010",
+    "ledger": "character",
+    "target": {
+      "entry_id": null,
+      "canonical_name": "门外人"
+    },
+    "kind": "definition",
+    "state_key": null,
+    "value": null,
+    "proposer": "author",
+    "note": "未确认事实即使有绑定也不落账。"
+  }
+]

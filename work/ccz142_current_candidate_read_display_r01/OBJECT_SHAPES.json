@@ -1,0 +1,21 @@
+{
+  "document_identity": "CCZ142-CURRENT-CANDIDATE-READ-DISPLAY-R01",
+  "status": "READ_DISPLAY_NOT_PRODUCT_ADOPTION",
+  "github_issue": 266,
+  "base_main_sha": "177c5832df9527cdcee3eaa513aafeda335550ea",
+  "product_adopted": false,
+  "reads_via": "prove_current_read",
+  "human_surface": "markdown_card",
+  "coverage_wired": false,
+  "samples": [
+    "samples/no_live_store.md",
+    "samples/fixture_layout.md"
+  ],
+  "forbidden": {
+    "second_reader": true,
+    "real_novel_api": true,
+    "pr_235_writes": true,
+    "patch_advice": true,
+    "invented_coverage": true
+  }
+}

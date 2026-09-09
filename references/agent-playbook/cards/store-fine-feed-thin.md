@@ -18,11 +18,9 @@
 
 把所有篮子的字段都喂进去。以为上下文越长越好。脱离共同前提直接生成（剧情会走飞）。把「瘦」理解成越小越好，把关键前提压丢。把检索段落当真值。缺料就在旧包后面追加。
 
-## 出处
+## 当前依据
 
-- [R14 架构页 ADD-007](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md)（账本可以细，执行包必须瘦；存而不喂）
-- 同页 ADD-008／D11（共同前提 vs 不能全加载）
-- 同页 ADD-022（瘦＝最小充分＋可扩张）
-- [SI-008 消化](../../survey-inbox/packages/AGENT_TOOLS_PIPELINE_RESEARCH_RETURNS_20260814_R01/02_RETURNS_DIGEST.md)（程序编译瘦包；RAG 找候选，不是真值）——这是加固形状，不是新合同
+- [CCZ-114](https://linear.app/ccz/issue/CCZ-114)：本章薄卡
+- [CCZ-126](https://linear.app/ccz/issue/CCZ-126)：按需只读合同
 
-来源：#115
+来源：Codex

@@ -1,0 +1,34 @@
+{
+  "document_identity": "CCZ142-NAMED-IDENTITY-STORE-R01-TEST-RECEIPT",
+  "validated_at": "2026-09-06T11:50:00+08:00",
+  "result": "PASS",
+  "base_main_sha": "4856209bdb2817c875474e3ae5baecae66f43f96",
+  "github_issue": 301,
+  "product_adopted": false,
+  "runtime": {
+    "python": "3.12.12",
+    "command_runner": "uv run --locked"
+  },
+  "totals": {
+    "pytest": "5 passed",
+    "ruff": "pass",
+    "self_check": "PASS",
+    "py_compile": "pass"
+  },
+  "commands": [
+    "uv run --locked python -m py_compile work/ccz142_named_identity_store_r01/*.py",
+    "uv run --locked ruff check work/ccz142_named_identity_store_r01",
+    "uv run --locked pytest -q work/ccz142_named_identity_store_r01/test_named_identity_store.py",
+    "uv run --locked python work/ccz142_named_identity_store_r01/self_check.py"
+  ],
+  "write_set": [
+    "work/ccz142_named_identity_store_r01/**"
+  ],
+  "forbidden_touches": [
+    "PR 235",
+    "sqlite schema",
+    "B01-B09 writers",
+    "real novel API",
+    "unreleased gold body"
+  ]
+}

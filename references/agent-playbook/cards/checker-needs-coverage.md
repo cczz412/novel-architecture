@@ -1,37 +1,25 @@
 # 检查器要覆盖回执
 
-身份：已拍＋验收目标
+身份：当前产品纪律
 
 ## 遇到什么
 
-生成前／关章前跑了质检。模型或检查器回一句 OK。能不能当「没问题」？
+检查器只回一句“没问题”，后续工作准备把它当成整章、整书都已经检查完。
 
 ## 对的做法
 
-每次查询或检查附覆盖回执：至少说明书稿版本、扫描范围、检查类型、用了哪个状态版本、没读什么、未决线索、结果是否过期（R14 N20）。覆盖回执不是「全书无遗漏保证」。
+检查结果必须带覆盖回执：读了哪个来源版本、检查了什么范围和类型、哪些材料没有读、哪些地方仍未知、结果是否已经过期。没有检出问题，只能说明在这次覆盖范围内没有检出。
 
-检查器只影响「现在能不能建议关章」，不能自己执行关章。R14 说的「静默关章」是反面：系统在作者关章事件之前把章关掉。硬冲突（红灯）挡住的是这条路，而且它只对应关章硬门槛里「不冲突」这一条，不是唯一门槛；没检到只能说覆盖范围内未检出。覆盖范围可视化仍是 ADD-027 的设计／验收目标，不要写成界面已经有了。
-
-## 加固形状（SI-008／010，还不是合同）
-
-事实句关键字只能帮你找可能相关的材料，不能直接判冲突。设定还是整块材料时，检查器不能假装能算冷却或剩余次数（规则拆条档位，调查不替拍）。生成章纲前，调查建议要拿到带覆盖范围的回执，不要只信裸 `OK`；这不等于「缺回执已经构成关章硬冲突」。
-
-覆盖回执也不是行业规范包装词（EKB 标过 U）。
-
-## 设计审查风险（P02 B08，不是现行已炸）
-
-跨账读取若投影对不齐：高风险写操作不要拿一本账的旧页配另一本账的新提交继续生成。正文见 [SI-007 包入口](../../survey-inbox/packages/DESIGN_REVIEW_AND_TECH_RESEARCH_RETURNS_20260813_R01/00_READ_ME_FIRST.md)。
+检查器负责发现和解释问题，不自动关章或改剧情。作者侧怎样查看、接受、退回和重开问题，回 CCZ-18／50；CCZ-115 只管测试怎样执行，不替产品决定作者处置流程。
 
 ## 错的做法
 
-相信裸 `OK`。检查器通过就直接关章。把「硬冲突挡住静默关章」理解成产品允许无作者事件的关章。关键字命中当冲突成立。小模型超时偷偷当已检查。把「最近文件日期」当各账已经对齐。
+相信裸“OK”。超时或漏读后仍显示检查完成。检查器一通过就自动关章。把测试运行成功冒充产品质量已经验收。
 
-## 出处
+## 当前依据
 
-- [R14 N20／词典覆盖回执](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md)
-- [R14 ADD-027](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md)（覆盖范围可视化＝验收目标）
-- [EKB UX](../../external-knowledge-base/EXTERNAL_KNOWLEDGE_BASE_20260815_R01/background/06_PRODUCT_UX_AND_AGENT_TOOLS.md)（`CLM-DR-UX-03-K13`）
-- [SI-008 消化](../../survey-inbox/packages/AGENT_TOOLS_PIPELINE_RESEARCH_RETURNS_20260814_R01/02_RETURNS_DIGEST.md)
-- [SI-007 包入口](../../survey-inbox/packages/DESIGN_REVIEW_AND_TECH_RESEARCH_RETURNS_20260813_R01/00_READ_ME_FIRST.md)（P02 B08）
+- [CCZ-18｜检查结果处置生命周期](https://linear.app/ccz/issue/CCZ-18)
+- [CCZ-50｜作者每日操作环](https://linear.app/ccz/issue/CCZ-50)
+- [CCZ-115｜测试执行架构治理](https://linear.app/ccz/issue/CCZ-115)
 
-来源：#115
+来源：Codex

@@ -52,3 +52,9 @@
 ```
 
 v0 reader 遇到 v1 不得剥掉 revision ref 后继续抽取；产品完成 revision-aware 升级前必须 fail closed。
+
+## 可选扩展：跨自然段的可重放映射
+
+显式调用 `segment_chapter(..., text_mapping=True)`、M2 请求 `options.text_mapping=true` 或工作区 `persist_current_mapped_segments` 时，C2 v1 增加 `text_map`。默认入口保持原字段和行为；v0 不接受此扩展。
+
+`text_map` 包含 `normalization_version`、`original_text`、`normalized_text`、`char_map`、`removed_whitespace`，规则见 [C2_C1_TEXT_MAP v1](C2_C1_TEXT_MAP.md)。原章不改写；M2 按原章重放映射并绑定 current revision。责任范围仍是 C2 的 `seg/start/end`，halo 不得充当证据。工作区保存切段参数并在读取时从当前 C1 重算；未知字段与失配证据拒绝接收。

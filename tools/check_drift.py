@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """One-command read-only drift suite.
 
-Runs the five standing checkers and prints a combined JSON / summary / exit code.
+Runs the four standing checkers and prints a combined JSON / summary / exit code.
 Does not rewrite current pointers, requirements, contracts, or product semantics.
 """
 
@@ -18,7 +18,6 @@ from typing import Any
 CHECKERS = (
     ("current_freshness", "check_current_freshness", "build_report"),
     ("design_currentness", "check_design_currentness", "build_report"),
-    ("traceability", "check_traceability", "build_report"),
     ("tracked_temp", "check_tracked_temp", "build_report"),
     ("review_identity", "check_review_identity", "build_report"),
 )

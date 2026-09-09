@@ -1,0 +1,16 @@
+[
+  {
+    "contract": "C1_CHAPTER_DOC",
+    "version": "v1",
+    "id": "c01",
+    "title": "北塔值夜（合成测试）",
+    "kind": "draft",
+    "text": "林舟是北塔的值夜人。\n北塔是一座瞭望塔。\n铜钥匙能打开北塔侧门。\n守塔人是一支轮班值守的队伍。\n塔卫阶序用于安排值守职责。\n北塔封钟后禁止通行。\n林舟已经走进北塔。\n北塔的侧门已经开启。\n钟声响了三下。\n也许有人还在塔门外。\n错误候选：侧门一直紧闭。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    }
+  }
+]

@@ -1,12 +1,12 @@
 # Agent 必读：建票、拆票与依赖规则
 
-说白了就一件事：票怎么建、怎么拆、谁能拍板、什么时候才算真值。查依赖先读 [CCZ-77](https://linear.app/ccz/issue/CCZ-77)；路线图、Linear 关系和 GitHub 施工状态没有互相打架时，不要把全部 Todo 再扫一遍。
+说白了就一件事：票怎么建、怎么拆、谁能拍板、什么时候才算真值。查依赖从 [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)找到所属 Project 与目标票；路线图、Linear 关系和 GitHub 施工状态没有互相打架时，不要把全部 Todo 再扫一遍。
 
 本文是 Git 里的必读入口。拍板出处：[CCZ-77](https://linear.app/ccz/issue/CCZ-77) 评论 `f804a645`（CZ 2026-08-25 15:45）。合并前若评论与本文冲突，以更新的 CZ 原话为准。
 
 ## 查依赖怎么读
 
-1. 先读 [CCZ-77](https://linear.app/ccz/issue/CCZ-77) 票面「当前入口」和本文 R1–R5。
+1. 从 [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)按 Project 路由找目标票；建票或改关系前完整读 [Linear 建票规则](https://linear.app/ccz/document/00agent-必读linear-建票拆票与依赖规则codex-aea4df7ecca6)，工程票同时守本文 R1–R5。
 2. 再核对当前 Linear 关系（父票、blockedBy、relatedTo）和 GitHub Issue／PR 状态。
 3. 三者打架再重做推导。没有冲突就不要重开全局审计。
 
@@ -40,7 +40,7 @@ R4 另加了一条：冻结快照引用的证据失效时，也要重开。见�
 
 ## 分工原则（软约束，不写死身份）
 
-- **默认分工**：决策整理与拍板准备在 Notion 分析线；其他 Agent 主要建票／做票，票内自由度以停点为界。
+- **内容分工**：未决问题及拍板准备随 Linear 活动票；已核对的长期决定按 Notion 主存登记保存，工程写集与交付证据在 GitHub。票内自由度以停点为界。
 - **不设硬身份认领**：欢迎任何 Agent 发现问题——发现好问题就写到票上（现象＋证据＋可回读入口）。这是鼓励的，不因越出默认分工而被拦。
 - **底线只有三条**：不越 `needs-cz` 停点自拍（R1）；不把候选写成真值（R2）；结构扩展走 CCZ-102（R3）。守住这三条，其余不额外设限——目标是不乱，不是管死。
 
@@ -55,6 +55,6 @@ R4 另加了一条：冻结快照引用的证据失效时，也要重开。见�
 - 对新票和一跳邻居做局部依赖环检查。
 - 只有路线真的变化才更新 CCZ-77。
 
-一张票一条分支一个 PR，见 [START_HERE.md](START_HERE.md)。
+一张 GitHub 施工票一条分支一个 PR；没有仓内交付的 Linear 任务不强配 PR。见 [START_HERE.md](START_HERE.md)。
 
 来源：R1–R4 为 CZ 2026-08-25 15:45、CCZ-77 评论 `f804a645`；R5 为 CZ 2026-08-27 当前会话授权，Codex 落账

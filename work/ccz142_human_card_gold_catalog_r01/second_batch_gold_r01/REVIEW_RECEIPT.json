@@ -1,0 +1,369 @@
+{
+  "artifact_type": "advisory_candidate_row_review",
+  "status": "ADVISORY_ONLY__NOT_AUTHORIZED",
+  "label": "人话卡金标候选｜未独立人工复核",
+  "reviewer": "ChatGPT（AI 顾问）",
+  "review_date": "2026-09-05",
+  "generated_at_utc": "2026-09-05T13:40:47+00:00",
+  "independent_human_review_performed": false,
+  "independent_human_reviewer": null,
+  "human_review_passed_at": null,
+  "adopted_as_gold": false,
+  "adopted_at": null,
+  "source_zip": "chatgpt_review_route_ccz142-human-card-gold-candidate-review-20260905-r01_20260905_212123.zip",
+  "source_zip_sha256": "37684e873fef9c291260e200084c49922f40e7c68b4ea45abd3992aef52d3d16",
+  "github_main_commit": "5867c329d6f83cbb20686dfa6d53d2fdfb10caf5",
+  "github_main_rechecked_unchanged": true,
+  "scope": {
+    "炼气士不死于无限": [
+      1,
+      2,
+      15,
+      16
+    ],
+    "我在美恐科普都市传说": [
+      1,
+      2,
+      29,
+      30
+    ],
+    "请勿高考时渡劫": [
+      10,
+      11
+    ]
+  },
+  "primary_verdict_subject": "已有落位候选行；按本包候选及所附短证据判断，不声称核实全文",
+  "primary_rows": 283,
+  "verdict_counts": {
+    "keep_as_fact": 176,
+    "mark_hearsay": 76,
+    "cannot_confirm_without_body": 7,
+    "drop_not_for_card": 24
+  },
+  "chapter_counts": [
+    {
+      "book": "炼气士不死于无限",
+      "chapter": 1,
+      "candidate_rows": 36,
+      "keep_as_fact": 31,
+      "mark_hearsay": 4,
+      "drop_not_for_card": 0,
+      "cannot_confirm_without_body": 1
+    },
+    {
+      "book": "炼气士不死于无限",
+      "chapter": 2,
+      "candidate_rows": 31,
+      "keep_as_fact": 17,
+      "mark_hearsay": 11,
+      "drop_not_for_card": 3,
+      "cannot_confirm_without_body": 0
+    },
+    {
+      "book": "炼气士不死于无限",
+      "chapter": 15,
+      "candidate_rows": 34,
+      "keep_as_fact": 24,
+      "mark_hearsay": 5,
+      "drop_not_for_card": 4,
+      "cannot_confirm_without_body": 1
+    },
+    {
+      "book": "炼气士不死于无限",
+      "chapter": 16,
+      "candidate_rows": 37,
+      "keep_as_fact": 25,
+      "mark_hearsay": 6,
+      "drop_not_for_card": 6,
+      "cannot_confirm_without_body": 0
+    },
+    {
+      "book": "我在美恐科普都市传说",
+      "chapter": 1,
+      "candidate_rows": 26,
+      "keep_as_fact": 19,
+      "mark_hearsay": 3,
+      "drop_not_for_card": 2,
+      "cannot_confirm_without_body": 2
+    },
+    {
+      "book": "我在美恐科普都市传说",
+      "chapter": 2,
+      "candidate_rows": 20,
+      "keep_as_fact": 10,
+      "mark_hearsay": 9,
+      "drop_not_for_card": 1,
+      "cannot_confirm_without_body": 0
+    },
+    {
+      "book": "我在美恐科普都市传说",
+      "chapter": 29,
+      "candidate_rows": 16,
+      "keep_as_fact": 6,
+      "mark_hearsay": 8,
+      "drop_not_for_card": 2,
+      "cannot_confirm_without_body": 0
+    },
+    {
+      "book": "我在美恐科普都市传说",
+      "chapter": 30,
+      "candidate_rows": 13,
+      "keep_as_fact": 9,
+      "mark_hearsay": 3,
+      "drop_not_for_card": 0,
+      "cannot_confirm_without_body": 1
+    },
+    {
+      "book": "请勿高考时渡劫",
+      "chapter": 10,
+      "candidate_rows": 22,
+      "keep_as_fact": 10,
+      "mark_hearsay": 11,
+      "drop_not_for_card": 1,
+      "cannot_confirm_without_body": 0
+    },
+    {
+      "book": "请勿高考时渡劫",
+      "chapter": 11,
+      "candidate_rows": 48,
+      "keep_as_fact": 25,
+      "mark_hearsay": 16,
+      "drop_not_for_card": 5,
+      "cannot_confirm_without_body": 2
+    }
+  ],
+  "book_counts": [
+    {
+      "book": "炼气士不死于无限",
+      "candidate_rows": 138,
+      "keep_as_fact": 97,
+      "mark_hearsay": 26,
+      "drop_not_for_card": 13,
+      "cannot_confirm_without_body": 2
+    },
+    {
+      "book": "我在美恐科普都市传说",
+      "candidate_rows": 75,
+      "keep_as_fact": 44,
+      "mark_hearsay": 23,
+      "drop_not_for_card": 5,
+      "cannot_confirm_without_body": 3
+    },
+    {
+      "book": "请勿高考时渡劫",
+      "candidate_rows": 70,
+      "keep_as_fact": 35,
+      "mark_hearsay": 27,
+      "drop_not_for_card": 6,
+      "cannot_confirm_without_body": 2
+    }
+  ],
+  "auxiliary_verdict_subject": "辅助记录是否应另作为新增卡片条目；不取代所关联主表候选的结论",
+  "auxiliary_rows": 178,
+  "auxiliary_kind_counts": {
+    "章末零条": 110,
+    "抉择句": 26,
+    "因果句": 42
+  },
+  "auxiliary_candidate_references_resolved": 68,
+  "duplicated_candidate_sentence_comparisons_equal": 41,
+  "body_requested": false,
+  "body_read": false,
+  "extra_chapter_extractions_requested": false,
+  "extra_chapters_reviewed": false,
+  "coverage_or_misses_verified": false,
+  "density_provided": false,
+  "b02_numbers_wired": false,
+  "best_model_declared": false,
+  "real_novel_api_called": false,
+  "product_tests_run": false,
+  "product_card_rendering_accepted": false,
+  "external_writes_performed": false,
+  "pr235_source_read": false,
+  "gold_catalog_changed": false,
+  "patches_delivered": false,
+  "online_sources": [
+    {
+      "id": "S01",
+      "resource": "GitHub main branch",
+      "url": "https://api.github.com/repos/cczz412/novel-architecture/branches/main",
+      "observed_commit": "5867c329d6f83cbb20686dfa6d53d2fdfb10caf5"
+    },
+    {
+      "id": "S02",
+      "resource": "GitHub Issue #289",
+      "url": "https://github.com/cczz412/novel-architecture/issues/289",
+      "state": "closed",
+      "updated_at": "2026-09-05T13:01:49Z",
+      "scope": "窗口／密度口径／名称登记；不是本轮语义通过或金标采纳"
+    },
+    {
+      "id": "S03",
+      "resource": "Linear CCZ-142",
+      "url": "https://linear.app/ccz/issue/CCZ-142",
+      "read_scope": "返回内容中的 2026-09-05 当前路牌段；长票全文返回有截断，不声明完整通读"
+    }
+  ],
+  "governance_file_comparisons": [
+    {
+      "repository_path": "work/ccz142_human_card_gold_catalog_r01/CATALOG.json",
+      "github_main_commit": "5867c329d6f83cbb20686dfa6d53d2fdfb10caf5",
+      "online_blob_sha": "c41b2d4bd06897a0dfa9e6bb87b3d2a9b75b39bf",
+      "local_git_blob_sha": "c41b2d4bd06897a0dfa9e6bb87b3d2a9b75b39bf",
+      "content_equal": true,
+      "local_zip_path": "02_current_route/work/ccz142_human_card_gold_catalog_r01/CATALOG.json",
+      "url": "https://github.com/cczz412/novel-architecture/blob/5867c329d6f83cbb20686dfa6d53d2fdfb10caf5/work/ccz142_human_card_gold_catalog_r01/CATALOG.json"
+    },
+    {
+      "repository_path": "work/ccz142_human_card_gold_catalog_r01/README.md",
+      "github_main_commit": "5867c329d6f83cbb20686dfa6d53d2fdfb10caf5",
+      "online_blob_sha": "44f253af74bc023d3bed7b6833daac07be1810ee",
+      "local_git_blob_sha": "44f253af74bc023d3bed7b6833daac07be1810ee",
+      "content_equal": true,
+      "local_zip_path": "02_current_route/work/ccz142_human_card_gold_catalog_r01/README.md",
+      "url": "https://github.com/cczz412/novel-architecture/blob/5867c329d6f83cbb20686dfa6d53d2fdfb10caf5/work/ccz142_human_card_gold_catalog_r01/README.md"
+    },
+    {
+      "repository_path": "work/ccz142_q9_duty_freeze_r01/DUTY_FREEZE.json",
+      "github_main_commit": "5867c329d6f83cbb20686dfa6d53d2fdfb10caf5",
+      "online_blob_sha": "f2eb01d55dd0454fcedd4becffd3b0934c354065",
+      "local_git_blob_sha": "f2eb01d55dd0454fcedd4becffd3b0934c354065",
+      "content_equal": true,
+      "local_zip_path": "02_current_route/work/ccz142_q9_duty_freeze_r01/DUTY_FREEZE.json",
+      "url": "https://github.com/cczz412/novel-architecture/blob/5867c329d6f83cbb20686dfa6d53d2fdfb10caf5/work/ccz142_q9_duty_freeze_r01/DUTY_FREEZE.json"
+    },
+    {
+      "repository_path": "work/ccz142_q9_duty_freeze_r01/README.md",
+      "github_main_commit": "5867c329d6f83cbb20686dfa6d53d2fdfb10caf5",
+      "online_blob_sha": "bbf2613150bb1f44ff6934bd7cb0fbb83660d347",
+      "local_git_blob_sha": "bbf2613150bb1f44ff6934bd7cb0fbb83660d347",
+      "content_equal": true,
+      "local_zip_path": "02_current_route/work/ccz142_q9_duty_freeze_r01/README.md",
+      "url": "https://github.com/cczz412/novel-architecture/blob/5867c329d6f83cbb20686dfa6d53d2fdfb10caf5/work/ccz142_q9_duty_freeze_r01/README.md"
+    },
+    {
+      "repository_path": "work/ccz142_current_candidate_read_display_r01/README.md",
+      "github_main_commit": "5867c329d6f83cbb20686dfa6d53d2fdfb10caf5",
+      "online_blob_sha": "a5c05fdb726e0558f651a2236679180c6306e94e",
+      "local_git_blob_sha": "a5c05fdb726e0558f651a2236679180c6306e94e",
+      "content_equal": true,
+      "local_zip_path": "02_current_route/work/ccz142_current_candidate_read_display_r01/README.md",
+      "url": "https://github.com/cczz412/novel-architecture/blob/5867c329d6f83cbb20686dfa6d53d2fdfb10caf5/work/ccz142_current_candidate_read_display_r01/README.md"
+    }
+  ],
+  "source_csv_files": [
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/gaokao/new_gaokao_ch01-10__01_落位表.csv",
+      "slice_relative_path": "gaokao/new_gaokao_ch01-10__01_落位表.csv",
+      "rows": 22,
+      "sha256": "c2a330de24b5dfe9e86ab56e5f7c521acf47dc06e78c74a9efd6c07f4d9d5ffc"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/gaokao/new_gaokao_ch01-10__02_章末零条.csv",
+      "slice_relative_path": "gaokao/new_gaokao_ch01-10__02_章末零条.csv",
+      "rows": 11,
+      "sha256": "dbfdc4b2db6e73622c873e5143e8a534724a8f4d73a4589fdf50bef5618a1ff1"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/gaokao/new_gaokao_ch01-10__03_抉择句.csv",
+      "slice_relative_path": "gaokao/new_gaokao_ch01-10__03_抉择句.csv",
+      "rows": 2,
+      "sha256": "fadb89b0541ff5413f65819fbc2b8864c3a13eef4069c182cf0463e783e95281"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/gaokao/new_gaokao_ch01-10__04_因果句.csv",
+      "slice_relative_path": "gaokao/new_gaokao_ch01-10__04_因果句.csv",
+      "rows": 4,
+      "sha256": "0d9bf9675e43420c84bbc6e3b22f83fb31800268583da8fe75a39416f83e6684"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/gaokao/new_gaokao_ch11-17__01_落位表.csv",
+      "slice_relative_path": "gaokao/new_gaokao_ch11-17__01_落位表.csv",
+      "rows": 48,
+      "sha256": "c5319bdbc1007142e73c14cad2ca7ec500cbaa3b3ffe05ea0d336061cba0b0c5"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/gaokao/new_gaokao_ch11-17__02_章末零条.csv",
+      "slice_relative_path": "gaokao/new_gaokao_ch11-17__02_章末零条.csv",
+      "rows": 11,
+      "sha256": "deefc4896c10ac6b29179d113e3f924d5dc69a893878de6ea315ffb1e8e580b3"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/gaokao/new_gaokao_ch11-17__03_抉择句.csv",
+      "slice_relative_path": "gaokao/new_gaokao_ch11-17__03_抉择句.csv",
+      "rows": 9,
+      "sha256": "fbed7a4a2ccaa4a01a19ff15d3a1cad0d093ca34ca97d3948af76fc3c5673a1a"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/gaokao/new_gaokao_ch11-17__04_因果句.csv",
+      "slice_relative_path": "gaokao/new_gaokao_ch11-17__04_因果句.csv",
+      "rows": 10,
+      "sha256": "18ddce481b28cca3c565411f01f23270a6dc5751f924fbb049c97ee56de3aa8b"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/lianqishi/01_落位表.csv",
+      "slice_relative_path": "lianqishi/01_落位表.csv",
+      "rows": 138,
+      "sha256": "a9192d1266cef2a383d8d36ded98d3d53b61199c5a16b1a2f8aca782d982adb4"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/lianqishi/02_章末零条.csv",
+      "slice_relative_path": "lianqishi/02_章末零条.csv",
+      "rows": 44,
+      "sha256": "8056594107d655971e29ba839b28bdda4d537b95b02ea892e4bb514d4affa097"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/lianqishi/03_抉择句.csv",
+      "slice_relative_path": "lianqishi/03_抉择句.csv",
+      "rows": 8,
+      "sha256": "ea365fab6358641bb1cc281d6f264723ab7114f8f0e289a558ba41cb4b4a2431"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/lianqishi/04_因果句.csv",
+      "slice_relative_path": "lianqishi/04_因果句.csv",
+      "rows": 8,
+      "sha256": "44217c95afce58c7ca4b1eb48155bb91e3b897c42bf2969583a41004e4c19134"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/meikong/01_落位表.csv",
+      "slice_relative_path": "meikong/01_落位表.csv",
+      "rows": 75,
+      "sha256": "165d414a8f619948309f9b03521c23768d0401a1f63695675f637812d64c05e2"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/meikong/02_章末零条.csv",
+      "slice_relative_path": "meikong/02_章末零条.csv",
+      "rows": 44,
+      "sha256": "f9855e52b34c9ba50537dc452699c8f33da753f67e1f5147f284a8aa9c507c20"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/meikong/03_抉择句.csv",
+      "slice_relative_path": "meikong/03_抉择句.csv",
+      "rows": 7,
+      "sha256": "3c552c44f14c7fb23611d690236bbb1ed9f53bacb9f4d3058cf63239b7891ba3"
+    },
+    {
+      "zip_path": "02_current_route/TEMP/chatgpt_review_cycles/ccz142_human_card_gold_review_pro_20260905_r01/candidate_slices/meikong/04_因果句.csv",
+      "slice_relative_path": "meikong/04_因果句.csv",
+      "rows": 20,
+      "sha256": "c7feb2d259f5032643a768f305f639ae7769296bf34542719e4ff0f76c6d0133"
+    }
+  ],
+  "input_manifest_checksum_members_checked": 36,
+  "input_manifest_checksum_mismatches": 0,
+  "historical_mismatches": [
+    {
+      "source": "PRIOR_WHO_REVIEWS_EXCERPT.md §5.5",
+      "historical": "BOOKS_SELECTED_WINDOWS_NOT_YET / 空窗口",
+      "current": "WINDOWS_CANDIDATE_REGISTERED / 已登记第二批10章",
+      "decision": "仅采现行 main 的窗口状态，旧审人要求未被推翻"
+    },
+    {
+      "source": "PRIOR_LOCAL_MATERIALS_CHECK.md",
+      "historical": "main@1c5b9c9 / 目录测试要求窗口为空",
+      "current": "main@5867c329d6f83cbb20686dfa6d53d2fdfb10caf5 / #289窗口登记已合",
+      "decision": "旧材料检查保留为历史，不当当前目录状态"
+    }
+  ],
+  "limits": "文件一致、行数一致、编号可回指只说明交付对应本包；不能证明候选准确率、正文覆盖或独立人工复核通过。"
+}

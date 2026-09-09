@@ -1,6 +1,6 @@
 # 钩子和情绪只能亮黄灯，不能给作者判分
 
-身份：已拍加固
+身份：当前纪律＋未实现边界
 
 ## 遇到什么
 
@@ -16,9 +16,9 @@
 
 用一个情绪或钩子总分决定章节能否继续。把模型偏好写成“读者会流失”。让黄灯覆盖硬事实结果，或把低分当作者能力评价。把本卡升级成执行票，或把外部评分方案写成已拍。
 
-## 出处
+## 当前依据
 
-- [R14 产品北极星](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/01_PRODUCT_NORTH_STAR.md)（产品长期纪律：硬冲突红灯、手法建议黄灯）
-- [SI-003 消化稿](../../survey-inbox/packages/PRODUCT_ARCHITECTURE_RESEARCH_RETURNS_20260809_R01/02_RETURNS_DIGEST.md)（“读者体验判定”一节）
+- [CCZ-128](https://linear.app/ccz/issue/CCZ-128)：需求候选入口
+- [CCZ-131](https://linear.app/ccz/issue/CCZ-131)：未来插件候选；当前未实现
 
-来源：#115；批次 B；2026-08-24
+来源：Codex

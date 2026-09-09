@@ -1,0 +1,46 @@
+{
+  "document_identity": "CCZ142-HUMAN-CARD-COVERAGE-WIRE-R01-TEST-RECEIPT",
+  "validated_at": "2026-09-06T12:48:00+08:00",
+  "result": "PASS",
+  "base_main_sha": "ef1d3ad96867539faa8105f57be81b16401aae1b",
+  "github_issue": 305,
+  "product_adopted": false,
+  "runtime": {
+    "python": "3.12.12",
+    "command_runner": "uv run --locked"
+  },
+  "totals": {
+    "pytest": "23 passed (coverage 5 + proof + display)",
+    "ruff": "pass",
+    "self_check": "PASS",
+    "py_compile": "pass"
+  },
+  "commands": [
+    "uv run --locked python -m py_compile work/ccz142_human_card_coverage_wire_r01/*.py work/ccz142_current_candidate_read_proof_r01/*.py work/ccz142_current_candidate_read_display_r01/*.py",
+    "uv run --locked ruff check work/ccz142_human_card_coverage_wire_r01 work/ccz142_current_candidate_read_proof_r01 work/ccz142_current_candidate_read_display_r01",
+    "uv run --locked pytest -q work/ccz142_human_card_coverage_wire_r01/test_human_card_coverage_wire.py work/ccz142_current_candidate_read_proof_r01/test_current_read_proof.py work/ccz142_current_candidate_read_display_r01/test_current_read_display.py",
+    "uv run --locked python work/ccz142_human_card_coverage_wire_r01/self_check.py",
+    "uv run --locked python work/ccz142_current_candidate_read_proof_r01/self_check.py",
+    "uv run --locked python work/ccz142_current_candidate_read_display_r01/self_check.py"
+  ],
+  "write_set": [
+    "work/ccz142_human_card_coverage_wire_r01/**",
+    "work/ccz142_current_candidate_read_proof_r01/current_read_proof.py",
+    "work/ccz142_current_candidate_read_proof_r01/README.md",
+    "work/ccz142_current_candidate_read_proof_r01/SOURCE_INDEX.md",
+    "work/ccz142_current_candidate_read_proof_r01/MANIFEST.sha256",
+    "work/ccz142_current_candidate_read_display_r01/card_render.py",
+    "work/ccz142_current_candidate_read_display_r01/test_current_read_display.py",
+    "work/ccz142_current_candidate_read_display_r01/README.md",
+    "work/ccz142_current_candidate_read_display_r01/MANIFEST.sha256"
+  ],
+  "forbidden_touches": [
+    "PR 235",
+    "sqlite schema",
+    "B01-B09 writers",
+    "B02 originals",
+    "real novel API",
+    "unreleased gold body",
+    "invented coverage percent"
+  ]
+}

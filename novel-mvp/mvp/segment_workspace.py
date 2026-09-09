@@ -74,13 +74,15 @@ def _validated_source_snapshot(
     return chapters, _source_identity(chapters_state, index_state)
 
 
-def persist_current_segments(
+def _persist_current_segments(
     workspace: AuthorWorkspace,
     operation_id: str,
     seg_min_chars: int,
     seg_max_chars: int,
     halo_chars: int,
     expected_segments_version: Any,
+    *,
+    text_mapping: bool = False,
 ) -> dict[str, Any]:
     """读取当前 C1，调用现役 M2，并一次提交 segments。"""
     workspace = _validate_workspace(workspace)
@@ -90,6 +92,10 @@ def persist_current_segments(
         "seg_max_chars": seg_max_chars,
         "halo_chars": halo_chars,
     }
+    if type(text_mapping) is not bool:
+        raise SegmentWorkspaceError("TEXT_MAPPING_OPTION_MUST_BE_BOOL")
+    if text_mapping:
+        options["text_mapping"] = True
     try:
         result = segment_tool.execute({"items": chapters, "options": options})
     except segment_tool.SegmentToolError as exc:
@@ -112,6 +118,36 @@ def persist_current_segments(
         operation_id,
         {"segments": payload},
         {"segments": expected_segments_version},
+    )
+
+
+def persist_current_segments(
+    workspace: AuthorWorkspace,
+    operation_id: str,
+    seg_min_chars: int,
+    seg_max_chars: int,
+    halo_chars: int,
+    expected_segments_version: Any,
+) -> dict[str, Any]:
+    """Existing v1 entry; its public signature and output remain unchanged."""
+    return _persist_current_segments(
+        workspace, operation_id, seg_min_chars, seg_max_chars, halo_chars,
+        expected_segments_version,
+    )
+
+
+def persist_current_mapped_segments(
+    workspace: AuthorWorkspace,
+    operation_id: str,
+    seg_min_chars: int,
+    seg_max_chars: int,
+    halo_chars: int,
+    expected_segments_version: Any,
+) -> dict[str, Any]:
+    """Explicitly enable the C2/C1 mapping extension in the same workspace writer."""
+    return _persist_current_segments(
+        workspace, operation_id, seg_min_chars, seg_max_chars, halo_chars,
+        expected_segments_version, text_mapping=True,
     )
 
 

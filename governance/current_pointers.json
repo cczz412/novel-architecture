@@ -1,6 +1,6 @@
 {
   "schema_version": "governance-current-pointers-v1",
-  "updated_at": "2026-08-28T01:32:25+08:00",
+  "updated_at": "2026-08-30T12:30:00+08:00",
   "authority": {
     "role": "当前版本、路径和候选身份的唯一机器索引；不保存整体任务进度",
     "does_not_replace": [
@@ -33,73 +33,6 @@
       "boundary": "只读检查；不自动改 current、需求、设计或合同。"
     },
     {
-      "pointer_id": "product_background",
-      "status": "ACTIVE_CURRENT",
-      "version": "R14",
-      "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md",
-      "source": {
-        "branch": "codex/module-runtime-foundation-20260819-r01",
-        "commit": "cc793c4719fb6470946c70e744f463147989547b",
-        "admitted_by_work_order": 2
-      },
-      "supersedes": {
-        "version": "R13",
-        "path": "references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260814_R13/00_READ_ME_FIRST.md",
-        "status": "SUPERSEDED_HISTORICAL",
-        "retention": "local_backup_not_in_this_git"
-      }
-    },
-    {
-      "pointer_id": "external_report_background",
-      "status": "ACTIVE_CURRENT",
-      "version": "R01",
-      "path": "references/external-knowledge-base/README.md",
-      "current_pointer": "references/external-knowledge-base/CURRENT.json"
-    },
-    {
-      "pointer_id": "atomic_expectations",
-      "status": "ACTIVE_CURRENT",
-      "version": "R03",
-      "path": "references/atomic-expectations/CURRENT.json",
-      "entry_path": "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/00_READ_ME_FIRST.md",
-      "manifest_path": "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260820_R03/MANIFEST.json",
-      "record_count": 142,
-      "source": {
-        "branch": "codex/module-runtime-foundation-20260819-r01",
-        "commit": "cc793c4719fb6470946c70e744f463147989547b",
-        "admitted_by_work_order": 2
-      },
-      "supersedes": {
-        "version": "R02",
-        "path": "references/atomic-expectations/ATOMIC_EXPECTATION_BACKGROUND_20260819_R02/00_READ_ME_FIRST.md",
-        "status": "SUPERSEDED_HISTORICAL",
-        "retention": "local_backup_not_in_this_git"
-      }
-    },
-    {
-      "pointer_id": "atomic_test_design",
-      "status": "ACTIVE_CURRENT",
-      "version": "R03_COMPOSITE_127_PLUS_15",
-      "path": "references/atomic-expectations/TEST_DESIGN_CURRENT.json",
-      "covered_expectations": 142,
-      "designed_test_cases": 852,
-      "scope_status": "CURRENT_ADVISORY_DESIGN_FULL_R03_COVERAGE_NOT_EXECUTED",
-      "source": {
-        "branch": "codex/module-runtime-foundation-20260819-r01",
-        "commit": "cc793c4719fb6470946c70e744f463147989547b",
-        "admitted_by_work_order": 2
-      },
-      "boundary": "旧 127×6 与新增 15×6 身份分开；组合覆盖仍是设计，不是执行证明。",
-      "legacy_suite": {
-        "requirements": 127,
-        "small_tests": 762
-      },
-      "r03_addendum": {
-        "requirements": 15,
-        "small_tests": 90
-      }
-    },
-    {
       "pointer_id": "design_registry",
       "status": "ACTIVE_CURRENT",
       "version": "R01",
@@ -120,20 +53,6 @@
       "boundary": "CURRENT 只允许进入默认设计路由；不证明实现、语义质量或施工授权。"
     },
     {
-      "pointer_id": "capability_traceability",
-      "status": "CANDIDATE_REVIEWED",
-      "version": "R01",
-      "path": "governance/capability_traceability.json",
-      "record_count": 142,
-      "unassigned_count": 0,
-      "checker_path": "tools/check_traceability.py",
-      "checker_registry_status": "REGISTERED",
-      "suite_entry": "tools/check_drift.py",
-      "authority": "ADVISORY_ONLY_NO_PRODUCT_OR_EXECUTION_AUTHORITY",
-      "boundary": "142/142 候选追踪已复核，不等于 142 条实现完成或产品拍板。",
-      "admitted_by_work_order": 3
-    },
-    {
       "pointer_id": "module_runtime_candidate",
       "status": "CANDIDATE_BRANCH",
       "version": "cc793c4719fb6470946c70e744f463147989547b",
@@ -151,13 +70,11 @@
     }
   ],
   "invariants": [
-    "repository_current、product_background 与 atomic_expectations 各自只有一个 ACTIVE_CURRENT。",
-    "产品共同背景现行只认 R14；R13 及更早印刷版已退出本 Git，本机备份，身份仍记为 SUPERSEDED_HISTORICAL。",
-    "原子需求现行只认 R03／142 条唯一 ID；R02 及更早已退出本 Git，本机备份，身份仍记为 SUPERSEDED_HISTORICAL。",
-    "六例设计 CURRENT 的组合覆盖是 142 条／852 例（旧 127×6 加 R03 新增 15×6）；旧 127 套不得单独冒充全 R03。组合覆盖仍是设计，不是执行证明。",
+    "repository_current、current_freshness_checker 与 design_registry 各自只有一个登记入口。",
     "候选分支、PLANNED 和 PENDING_WORK_ORDER 不得冒充 main current。",
     "本表不保存运行分数，不替代正式合同、结果票或 CZ 拍板。",
     "本表不保存整体任务进度、领票、依赖、阻塞、PR 或合并状态；这些信息现场读取 Linear 与 GitHub。",
-    "设计默认路由只能指向 design_registry 中的 CURRENT；其他状态一律不得指导施工。"
+    "设计默认路由只能指向 design_registry 中的 CURRENT；其他状态一律不得指导施工。",
+    "已核对的长期决定、原话和产品规格按 Notion 逐项主存登记读取，未迁项仍回原 Linear 主存；活动任务与未决问题现场读取 Linear；工程能力只认 GitHub main 上的正式合同、测试和已合并代码。"
   ]
 }

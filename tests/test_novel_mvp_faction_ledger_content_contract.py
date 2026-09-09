@@ -23,13 +23,14 @@ def test_fixture_matrix(case: dict) -> None:
 
 
 def test_fixture_counts_are_frozen() -> None:
-    assert MODULE.validate_all_fixtures() == {'cases': 12, 'valid': 6, 'invalid': 6}
+    assert MODULE.validate_all_fixtures() == {'cases': 14, 'valid': 7, 'invalid': 7}
 
 
 def test_contract_identity_and_anchor_shape() -> None:
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     contract = CONTRACT_PATH.read_text(encoding="utf-8")
-    assert schema["title"] == "FACTION_LEDGER_CONTENT faction-ledger-content-v1"
+    assert "faction-ledger-content-v1" in schema["title"]
+    assert "faction-ledger-content-v2" in schema["title"]
     assert "chapter_revision_ref" in contract
     assert "revision_text_sha256" in contract
     assert "story_order" in contract
@@ -48,4 +49,3 @@ def test_faction_member_and_relation_queries_use_same_vocabulary() -> None:
     incomparable = next(case for case in CASES if case["case_id"] == "FA-PASS-06")
     assert MODULE.run_query_case(missing)["status"] == "NOT_RECORDED"
     assert MODULE.run_query_case(incomparable)["status"] == "STORY_TIME_NOT_COMPARABLE"
-

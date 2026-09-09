@@ -1,0 +1,282 @@
+{
+  "package_id": "ccz142_human_card_gold_catalog_r01",
+  "github_issue": 281,
+  "baseline": "main@f27d08be93219e84ad55ad3a58ad51646f1a4746",
+  "status": "WINDOWS_CANDIDATE_REGISTERED",
+  "gold_kind": "human_card_candidate_only",
+  "chapter_cap": 12,
+  "chapter_normal": {
+    "min": 8,
+    "max": 10
+  },
+  "windows": [
+    {
+      "title": "全职高手",
+      "chapters": [
+        1,
+        2,
+        9,
+        10
+      ],
+      "spans": [
+        [
+          1,
+          2
+        ],
+        [
+          9,
+          10
+        ]
+      ],
+      "pressure_goal": "source_vs_rule_vs_event"
+    },
+    {
+      "title": "道诡异仙",
+      "chapters": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "spans": [
+        [
+          1,
+          4
+        ]
+      ],
+      "pressure_goal": "perception_vs_claim_vs_fact"
+    },
+    {
+      "title": "十日终焉",
+      "chapters": [
+        1,
+        2
+      ],
+      "spans": [
+        [
+          1,
+          2
+        ]
+      ],
+      "pressure_goal": "speaker_belief_vs_confirmed",
+      "sample_cache_present": true,
+      "in_trial_seven": false
+    }
+  ],
+  "local_availability": "FILES_PRESENT_RIGHTS_NOT_GRANTED",
+  "preferred": [
+    {
+      "title": "全职高手",
+      "selected_for_this_batch": true,
+      "in_trial_seven": false,
+      "book_meta_index_row": true,
+      "pointers": [
+        "references/corpus-pointers.md",
+        "references/book-meta/INDEX.md"
+      ],
+      "corpus_rel": "corpus-downloads/06_系统关卡/全职高手/"
+    },
+    {
+      "title": "道诡异仙",
+      "selected_for_this_batch": true,
+      "in_trial_seven": false,
+      "book_meta_index_row": true,
+      "pointers": [
+        "references/corpus-pointers.md",
+        "references/book-meta/INDEX.md"
+      ],
+      "corpus_rel": "corpus-downloads/03_多视角/道诡异仙/"
+    },
+    {
+      "title": "十日终焉",
+      "selected_for_this_batch": true,
+      "in_trial_seven": false,
+      "book_meta_index_row": false,
+      "pointers": [
+        "references/corpus-pointers.md"
+      ],
+      "corpus_rel": "corpus-downloads/04_悬疑信息差/十日终焉/",
+      "caution": "试拆七本书单写它仍只有因果大纲、不当事实句。优书样本库有 1-2 分章文件；用途未放行，正文未读。"
+    }
+  ],
+  "not_this_batch": [
+    {
+      "title": "庶女明兰传（知否）",
+      "aliases": [
+        "知否"
+      ],
+      "reason": "overlap_trial_seven",
+      "trial_seven_slot": 3,
+      "selected_for_this_batch": false
+    },
+    {
+      "title": "凡人修仙传",
+      "aliases": [
+        "凡人"
+      ],
+      "reason": "overlap_trial_seven",
+      "trial_seven_slot": 2,
+      "selected_for_this_batch": false
+    }
+  ],
+  "not_auto_included": [
+    {
+      "title": "庆余年",
+      "reason": "not_picked_for_swap",
+      "selected_for_this_batch": false
+    }
+  ],
+  "forbidden": [
+    "novel_body_in_repo",
+    "full_book_dissect",
+    "structure_hooks_or_payoff_advice",
+    "outbound_novel_body",
+    "call_real_novel_api"
+  ],
+  "second_batch_newbooks": {
+    "github_issue": 284,
+    "status": "CHATGPT_CZ_ADOPTED_GOLD",
+    "gold_kind": "human_card_fact_source_gold",
+    "chapter_cap": 12,
+    "chapter_normal": {
+      "min": 8,
+      "max": 10
+    },
+    "consumes_first_batch_cap": false,
+    "reason": "newbook_unseen_by_models",
+    "in_trial_seven": true,
+    "windows": [
+      {
+        "title": "炼气士不死于无限",
+        "chapters": [
+          1,
+          2,
+          15,
+          16
+        ],
+        "spans": [
+          [
+            1,
+            2
+          ],
+          [
+            15,
+            16
+          ]
+        ],
+        "pressure_goal": "term_condition_plan_vs_changed"
+      },
+      {
+        "title": "我在美恐科普都市传说",
+        "chapters": [
+          1,
+          2,
+          29,
+          30
+        ],
+        "spans": [
+          [
+            1,
+            2
+          ],
+          [
+            29,
+            30
+          ]
+        ],
+        "pressure_goal": "hearsay_vs_explanation_vs_confirmed"
+      },
+      {
+        "title": "请勿高考时渡劫",
+        "chapters": [
+          10,
+          11
+        ],
+        "spans": [
+          [
+            10,
+            11
+          ]
+        ],
+        "pressure_goal": "cross_old_split_1_10_vs_11_17"
+      }
+    ],
+    "local_availability": "FILES_PRESENT_RIGHTS_NOT_GRANTED",
+    "in_repo_book_meta": false,
+    "books": [
+      {
+        "title": "炼气士不死于无限",
+        "trial_seven_slot": 5,
+        "corpus_rel": "corpus-downloads/_newbook_rank_20260804/books/炼气士不死于无限/"
+      },
+      {
+        "title": "我在美恐科普都市传说",
+        "trial_seven_slot": 6,
+        "corpus_rel": "corpus-downloads/_newbook_rank_20260804/books/我在美恐科普都市传说/"
+      },
+      {
+        "title": "请勿高考时渡劫",
+        "trial_seven_slot": 7,
+        "corpus_rel": "corpus-downloads/_newbook_rank_20260804/books/请勿高考时渡劫/"
+      }
+    ],
+    "backups_not_enabled": [
+      {
+        "title": "从磁场转动开始的魔法少女番！",
+        "reason": "backup_only_if_swap"
+      },
+      {
+        "title": "系统想害我，我选择上交国家",
+        "reason": "backup_only_if_swap"
+      },
+      {
+        "title": "末日来袭，我能无限升级庇护所",
+        "reason": "backup_only_if_swap"
+      }
+    ],
+    "windows_github_issue": 289,
+    "body_read": false,
+    "usage_rights": "NOT_GRANTED_FOR_THIS_EVAL",
+    "adopt_github_issue": 293,
+    "adopted_at": "2026-09-05",
+    "adopted_by": "CZ",
+    "revisable_with_sufficient_evidence": true,
+    "independent_human_extract_review_performed": false,
+    "coverage_completed": false,
+    "artifact_dir": "second_batch_gold_r01",
+    "primary_rows": 283,
+    "verdict_counts": {
+      "keep_as_fact": 176,
+      "mark_hearsay": 76,
+      "drop_not_for_card": 24,
+      "cannot_confirm_without_body": 7
+    },
+    "auxiliary_rows": 178,
+    "source_zip_sha256": "37684e873fef9c291260e200084c49922f40e7c68b4ea45abd3992aef52d3d16",
+    "return_zip_sha256": "1c172c76e77a221526f7689a6f6c034db8a1f97ed44a591408e542ada5210c55"
+  },
+  "windows_github_issue": 289,
+  "windows_baseline": "main@1c5b9c9d0e838b19f5978a01e526c86d6e6b0247",
+  "body_read": false,
+  "usage_rights": "NOT_GRANTED_FOR_THIS_EVAL",
+  "gold_review": {
+    "current_stage": "split_by_batch",
+    "constructor_makes_candidates_only": true,
+    "reviewer_default": "CZ_independent_session",
+    "unreviewed_label": "人话卡金标候选｜未独立人工复核",
+    "reviewed_pending_adopt_label": "人话卡金标候选｜独立人工复核通过，待采纳",
+    "adopted_label": "人话卡对照金标｜已独立人工复核并采纳",
+    "chatgpt_cz_adopted_label": "人话卡对照金标｜顾问预审＋CZ采纳｜可凭充分证据修订",
+    "first_batch_stage": "unreviewed_candidate",
+    "second_batch_stage": "chatgpt_cz_adopted_revisable",
+    "revisable_with_sufficient_evidence": true,
+    "independent_human_extract_review_performed": false
+  },
+  "density_copy": {
+    "label": "密度（仅说明本次已返回的候选）",
+    "unprovided": "密度尚未提供：还没有可核对的候选信息分布说明。",
+    "coverage_unprovided": "覆盖／漏抽尚未提供：这张卡还没接到 B02，本卡目前不能判断是否抽全。",
+    "qualitative_template_not_yet_used": "本次已返回并核对的信息集中在相邻段落；是否抽全，本卡尚未提供判断。",
+    "no_percents": true
+  }
+}

@@ -1,6 +1,6 @@
 # CHARACTER_LEDGER_CONTENT · 人物账内容合同
 
-**正式版本：`character-ledger-content-v1.1`**
+**正式版本：`character-ledger-content-v2`；兼容读取：`character-ledger-content-v1.1`**
 
 一句话用途：用一张可直接编辑的人物定义卡，配一组有证据、有故事时间锚的状态与轻量关系读取面，回答“这个人是谁、在某个故事时点是什么状态”；没有记录时必须明说，不能拿最新状态冒充历史。v1.1 在人物卡上冻结四条可收起子对象序列：渴望／困境／计划／抉择。
 
@@ -276,3 +276,7 @@ created_at/updated_at/rev/note
 `UNIFIED_WRITER_SETTINGSTORE_V1__DESIRE_ORDEAL_INTENT_CHOICE_SEQ_V1_1`
 
 通过本合同只证明人物内容形状、证据纪律、时间锚、查询边界，以及四条子对象序列已经冻结；落盘走 `settingstore`。不证明人物页、as-of 查询、完整接入 M10/M11，也不证明「待入位」行已经转正。
+
+## 13. v2 标签组扩展
+
+`character-ledger-content-v2` 保留 v1.1 的业务字段和读取行为，并要求根对象增加共同信封的 `tags`、`tag_groups`。允许的根目标为：`/id`、`/created_at`、`/updated_at`、`/rev`、`/note`、`/source_identity`、`/confirm_status`、`/evidence_refs`、`/story_time`、`/canonical_name`、`/aliases`、`/role_tag`、`/profile`、`/visibility`、`/destiny_ref`、`/state_timeline`、`/relationships`、`/desire_seq`、`/ordeal_seq`、`/intent_seq`、`/choice_seq`。未知目标拒绝；v1.1 条目不要求这些新增字段。

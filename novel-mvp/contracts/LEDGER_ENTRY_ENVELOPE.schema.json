@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.schema.json",
-  "title": "LEDGER_ENTRY_ENVELOPE ledger-entry-envelope-v1",
-  "description": "Common envelope for the six setting ledgers. The root validates envelope-only fixture documents; future content contracts may reuse #/$defs/envelope.",
+  "$id": "https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.v2.schema.json",
+  "title": "LEDGER_ENTRY_ENVELOPE ledger-entry-envelope-v2",
+  "description": "Common envelope v2 with namespaced tags and field-scoped tag groups. The v1 schema is retained in LEDGER_ENTRY_ENVELOPE.v1.schema.json.",
   "allOf": [
     {
       "$ref": "#/$defs/envelope"
@@ -70,7 +70,9 @@
         "created_at",
         "updated_at",
         "rev",
-        "note"
+        "note",
+        "tags",
+        "tag_groups"
       ],
       "properties": {
         "id": {
@@ -106,6 +108,159 @@
         },
         "note": {
           "type": "string"
+        },
+        "tags": {
+          "$ref": "#/$defs/tags"
+        },
+        "tag_groups": {
+          "$ref": "#/$defs/tag_groups"
+        }
+      }
+    },
+    "tag": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*:[a-z][a-z0-9._-]*$"
+    },
+    "tag_group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group_id",
+        "members",
+        "targets",
+        "mutation",
+        "transition_rule",
+        "access",
+        "mask_for",
+        "managed_by"
+      ],
+      "properties": {
+        "group_id": {
+          "$ref": "#/$defs/tag"
+        },
+        "members": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/tag"
+          },
+          "uniqueItems": true
+        },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^/[A-Za-z][A-Za-z0-9_./-]*$"
+          },
+          "uniqueItems": true
+        },
+        "mutation": {
+          "type": "string",
+          "enum": [
+            "editable",
+            "write_once",
+            "frozen",
+            "transition_only"
+          ]
+        },
+        "transition_rule": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "access": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "read",
+            "write"
+          ],
+          "properties": {
+            "read": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "AUTHOR",
+                  "MODEL",
+                  "READER",
+                  "PLUGIN",
+                  "SYSTEM"
+                ]
+              },
+              "uniqueItems": true
+            },
+            "write": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "AUTHOR",
+                  "MODEL",
+                  "READER",
+                  "PLUGIN",
+                  "SYSTEM"
+                ]
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "mask_for": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "model_context",
+              "reader_view",
+              "plugin"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "managed_by": {
+          "type": "string",
+          "enum": [
+            "CONTRACT",
+            "AUTHOR",
+            "PLUGIN"
+          ]
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/tag"
+      },
+      "uniqueItems": true
+    },
+    "tag_groups": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rules_version",
+        "groups"
+      ],
+      "properties": {
+        "rules_version": {
+          "const": "tag-group-rules-v1"
+        },
+        "groups": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/tag_group"
+          }
         }
       }
     }

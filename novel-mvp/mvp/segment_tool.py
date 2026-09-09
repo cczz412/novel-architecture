@@ -14,6 +14,11 @@ import os
 import sys
 import tempfile
 from pathlib import Path
+
+try:
+    from . import text_mapping as mapping_runtime
+except ImportError:  # direct local-file CLI
+    import text_mapping as mapping_runtime
 from typing import Any
 
 
@@ -84,7 +89,7 @@ def _validate_request(request: object) -> tuple[list[dict], dict[str, int]]:
     if not isinstance(options, dict):
         raise SegmentToolError("OPTIONS_MUST_BE_OBJECT")
     option_keys = set(options)
-    if option_keys != OPTION_KEYS:
+    if option_keys - {"text_mapping"} != OPTION_KEYS:
         missing = sorted(OPTION_KEYS - option_keys)
         extra = sorted(option_keys - OPTION_KEYS)
         raise SegmentToolError(f"OPTIONS_FIELDS_INVALID:missing={missing}:extra={extra}")
@@ -102,6 +107,10 @@ def _validate_request(request: object) -> tuple[list[dict], dict[str, int]]:
     if normalized["halo_chars"] < 0:
         raise SegmentToolError("HALO_CHARS_MUST_BE_NON_NEGATIVE")
 
+    if "text_mapping" in options:
+        if type(options["text_mapping"]) is not bool:
+            raise SegmentToolError("TEXT_MAPPING_OPTION_MUST_BE_BOOL")
+        normalized["text_mapping"] = options["text_mapping"]
     _canonical_json_bytes(request)
     return items, normalized
 
@@ -232,6 +241,7 @@ def execute(request: dict) -> dict:
             options["seg_min_chars"],
             options["seg_max_chars"],
             options["halo_chars"],
+            **({"text_mapping": True} if options.get("text_mapping") else {}),
         )
         chapter_receipts.append(
             _chapter_coverage_receipt(
@@ -283,7 +293,8 @@ def _validated_render_payload(
     grouped: list[list[dict[str, Any]]] = [[] for _ in items]
     observed_chapter_order: list[str] = []
     for index, c2_item in enumerate(c2_items):
-        if not isinstance(c2_item, dict) or set(c2_item) != C2_ITEM_KEYS:
+        expected_keys = C2_ITEM_KEYS | ({"text_map"} if options.get("text_mapping") else set())
+        if not isinstance(c2_item, dict) or set(c2_item) != expected_keys:
             raise SegmentToolError(f"RENDER_C2_ITEM_SHAPE_INVALID:{index}")
         ref = c2_item.get("chapter_revision_ref")
         if not isinstance(ref, dict):
@@ -292,6 +303,13 @@ def _validated_render_payload(
         chapter_index = chapters_by_revision.get(revision_identity)
         if chapter_index is None:
             raise SegmentToolError(f"RENDER_C2_SOURCE_REF_NOT_FOUND:{index}")
+        if options.get("text_mapping"):
+            try:
+                mapping_runtime.validate_segment(c2_item)
+                if c2_item["text_map"]["original_text"] != items[chapter_index]["text"]:
+                    raise ValueError("TEXT_MAP_CURRENT_SOURCE_MISMATCH")
+            except (ValueError, KeyError, TypeError) as exc:
+                raise SegmentToolError(f"RENDER_C2_TEXT_MAP_INVALID:{index}") from exc
         grouped[chapter_index].append(copy.deepcopy(c2_item))
         chapter_id = ref["chapter_id"]
         if not observed_chapter_order or observed_chapter_order[-1] != chapter_id:

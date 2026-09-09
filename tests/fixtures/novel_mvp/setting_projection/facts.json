@@ -1,0 +1,310 @@
+[
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f001",
+    "chapter_id": "c01",
+    "text": "林舟是北塔的值夜人。",
+    "quote": "林舟是北塔的值夜人。",
+    "status": "confirmed",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 0,
+      "end": 10,
+      "slice_sha256": "cad471f5c8adf083b7d8cd67f9e563c60415ee87d70cebb7b32b47d4655f3df2"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f002",
+    "chapter_id": "c01",
+    "text": "北塔是一座瞭望塔。",
+    "quote": "北塔是一座瞭望塔。",
+    "status": "confirmed",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 11,
+      "end": 20,
+      "slice_sha256": "087fd5315f7139a107c7d3331220ac0dc2bcf550501a856c32bf611d3a88cf45"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f003",
+    "chapter_id": "c01",
+    "text": "铜钥匙能打开北塔侧门。",
+    "quote": "铜钥匙能打开北塔侧门。",
+    "status": "confirmed",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 21,
+      "end": 32,
+      "slice_sha256": "2ad0d0072a293cda8b474aecc2a726775dcc87ea09a7db11004306e505ed3024"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f004",
+    "chapter_id": "c01",
+    "text": "守塔人是一支轮班值守的队伍。",
+    "quote": "守塔人是一支轮班值守的队伍。",
+    "status": "confirmed",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 33,
+      "end": 47,
+      "slice_sha256": "7818ed3b96edeb92e260e5c9108ab958110ef35a9ebcc5586eb503f8bf3cd8d5"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f005",
+    "chapter_id": "c01",
+    "text": "塔卫阶序用于安排值守职责。",
+    "quote": "塔卫阶序用于安排值守职责。",
+    "status": "confirmed",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 48,
+      "end": 61,
+      "slice_sha256": "c67214c8aa6ac81c13f891204f5b479874e491b91d734a512a0bbcd8e3866b31"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f006",
+    "chapter_id": "c01",
+    "text": "北塔封钟后禁止通行。",
+    "quote": "北塔封钟后禁止通行。",
+    "status": "confirmed",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 62,
+      "end": 72,
+      "slice_sha256": "aa0b5728b63cfdca95fbd7645f6f82d3842c6d83f5f9314acc20fe85803c7728"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f007",
+    "chapter_id": "c01",
+    "text": "林舟已经走进北塔。",
+    "quote": "林舟已经走进北塔。",
+    "status": "confirmed",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 73,
+      "end": 82,
+      "slice_sha256": "51850fd1c5adc0fc578423f9e649bc6caed11d7e79995f9c68f60cc3ee9707f0"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f008",
+    "chapter_id": "c01",
+    "text": "北塔的侧门已经开启。",
+    "quote": "北塔的侧门已经开启。",
+    "status": "confirmed",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 83,
+      "end": 93,
+      "slice_sha256": "6a8a35bd7a2f1ebc6911bec03f145f0066fc65825f762625de03605ae085601f"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f009",
+    "chapter_id": "c01",
+    "text": "钟声响了三下。",
+    "quote": "钟声响了三下。",
+    "status": "confirmed",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 94,
+      "end": 101,
+      "slice_sha256": "9226e7f429f113affe3fc14478d876b08f42387881622e4b17c696bc8dc4c57b"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f010",
+    "chapter_id": "c01",
+    "text": "也许有人还在塔门外。",
+    "quote": "也许有人还在塔门外。",
+    "status": "extracted",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 102,
+      "end": 112,
+      "slice_sha256": "d74b5eb81690612f733a2d330292ebee9fbe189b56ba8912144f98a941162f12"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  },
+  {
+    "contract": "C4_FACT_QUERY",
+    "version": "v1",
+    "id": "f011",
+    "chapter_id": "c01",
+    "text": "错误候选：侧门一直紧闭。",
+    "quote": "错误候选：侧门一直紧闭。",
+    "status": "rejected",
+    "source": "CCZ172_BEITA_SYNTHETIC",
+    "note": "人工编写的北塔测试事实，不是小说正文摘录。",
+    "added_at": "2026-09-07 00:00:00",
+    "chapter_revision_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345"
+    },
+    "anchor_ref": {
+      "chapter_id": "c01",
+      "revision_no": 1,
+      "revision_text_sha256": "f5c780dd94ac7973b88dbd7f01156f90185ee7d3a94f0bf813049498f8718345",
+      "coordinate_basis": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN",
+      "start": 113,
+      "end": 125,
+      "slice_sha256": "911c55b747338faf7b504081e217f39cb5608148c86b3cb0a13dd23c8eac8941"
+    },
+    "anchor_state": "VERIFIED",
+    "recheck": null
+  }
+]

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.novel-mvp/contracts/LEDGER_ENTRY_ENVELOPE.schema.json",
+  "title": "LEDGER_ENTRY_ENVELOPE ledger-entry-envelope-v1",
+  "description": "Common envelope for the six setting ledgers. The root validates envelope-only fixture documents; future content contracts may reuse #/$defs/envelope.",
+  "allOf": [
+    {
+      "$ref": "#/$defs/envelope"
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "ledger_id": {
+      "type": "string",
+      "pattern": "^(CH|LOC|IT|FA|SY|RU)-[0-9]+$"
+    },
+    "source_identity": {
+      "type": "string",
+      "enum": [
+        "author_declared",
+        "draft_inferred",
+        "model_suggested",
+        "pack_prefilled"
+      ]
+    },
+    "confirm_status": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "confirmed",
+        "retired"
+      ]
+    },
+    "fact_ref": {
+      "type": "string",
+      "pattern": "^f[0-9]{3,}$"
+    },
+    "author_attestation": {
+      "const": "AUTHOR_ATTESTATION"
+    },
+    "evidence_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/fact_ref"
+        },
+        {
+          "$ref": "#/$defs/author_attestation"
+        }
+      ]
+    },
+    "story_time": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "minProperties": 1
+        }
+      ]
+    },
+    "envelope": {
+      "type": "object",
+      "required": [
+        "id",
+        "source_identity",
+        "confirm_status",
+        "evidence_refs",
+        "story_time",
+        "created_at",
+        "updated_at",
+        "rev",
+        "note"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ledger_id"
+        },
+        "source_identity": {
+          "$ref": "#/$defs/source_identity"
+        },
+        "confirm_status": {
+          "$ref": "#/$defs/confirm_status"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence_ref"
+          },
+          "uniqueItems": true
+        },
+        "story_time": {
+          "$ref": "#/$defs/story_time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "rev": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

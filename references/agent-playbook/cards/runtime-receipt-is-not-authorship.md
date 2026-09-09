@@ -1,6 +1,6 @@
 # 运行回执不是作者署名
 
-身份：已拍加固
+身份：当前纪律＋未实现边界
 
 ## 遇到什么
 
@@ -16,10 +16,8 @@
 
 把模型说“我用了”当成系统加载证明或效果证明。用运行回执自动生成版权结论、作者名单或平台申诉结论。微改后抹掉原作者。上传者填了名字就视为有权公开。把四段回执合成一个布尔值。把本卡升级成执行票，或把 P03 的治理建议写成已拍法律合同。
 
-## 出处
+## 当前依据
 
-- [R14 系统架构与真值分层](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md)（ADD-023：运行来源四段回执、署名链另算）
-- [R14 术语表](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/07_GLOSSARY.md)（运行回执与作者署名链的区别）
-- [SI-007 包入口](../../survey-inbox/packages/DESIGN_REVIEW_AND_TECH_RESEARCH_RETURNS_20260813_R01/00_READ_ME_FIRST.md)（P03；自报与权利链审查）
+- [CCZ-131](https://linear.app/ccz/issue/CCZ-131)｜[CCZ-132](https://linear.app/ccz/issue/CCZ-132)：插件权限、来源回执与生命周期候选
 
-来源：#115；批次 C；2026-08-24
+来源：Codex

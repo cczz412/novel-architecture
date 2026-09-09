@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>打开人话结果卡｜已有样张入口</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #faf8f4; color: #24221f; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; line-height: 1.7; }
+    main { max-width: 52rem; margin: 0 auto; padding: 2.5rem 1.25rem 2rem; }
+    .eyebrow { margin: 0 0 .7rem; font-size: .8rem; letter-spacing: .1em; color: #666057; }
+    h1 { margin: 0 0 .65rem; font-size: clamp(1.8rem, 5vw, 2.5rem); line-height: 1.25; }
+    .lead { margin: 0 0 1.25rem; font-size: 1.1rem; }
+    .notice { padding: 1rem 1.15rem; background: #fff6d6; border-left: 4px solid #ba8b1e; border-radius: 0 .5rem .5rem 0; }
+    .notice p { margin: 0; }
+    .notice p + p { margin-top: .3rem; }
+    .cards { display: grid; gap: .85rem; margin: 1.5rem 0; }
+    .card { display: block; padding: 1.1rem 1.2rem; color: inherit; background: #fffdfa; border: 1px solid #d8d0c3; border-radius: .65rem; text-decoration: none; }
+    .card:hover { border-color: #6e6558; background: #fff; }
+    .card:focus-visible { outline: 3px solid #6f5116; outline-offset: 4px; }
+    .card strong { display: block; margin: .2rem 0 .35rem; font-size: 1.15rem; text-decoration: underline; text-underline-offset: .2em; }
+    .card span { display: block; }
+    .label { color: #665f55; font-size: .8rem; }
+    .description { color: #4d4841; font-size: .95rem; }
+    code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .85em; background: #eee8dc; padding: .12em .35em; border-radius: 4px; overflow-wrap: anywhere; }
+    .help { margin: 1rem 0 .4rem; font-size: .95rem; }
+    footer { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e6e0d4; color: #665f55; font-size: .8rem; }
+    footer p { margin: .3rem 0; }
+    @media (max-width: 32rem) { main { padding-top: 1.5rem; } .card { padding: 1rem; } }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">已有样张入口 · 施工草稿</p>
+    <h1>打开人话结果卡</h1>
+    <p class="lead">不用找文件，不用跑命令。选一张，直接看。</p>
+    <aside class="notice" aria-label="样张身份">
+      <p><strong>这里只打开已有 HTML 样张，不检查活库。</strong></p>
+      <p>夹具样张保留 <code>FIXTURE_ONLY</code>：不是本次读出的结果，也不是产品权威或正式事实。</p>
+    </aside>
+    <nav class="cards" aria-label="选择要看的结果卡">
+      <a class="card" id="open-gap" href="samples/no_live_store.html">
+        <span class="label">没有活库，也能看</span>
+        <strong>打开没有活库时的缺口页 →</strong>
+        <span class="description">看缺什么，不编事实条目。保留 <code>GAP_NO_LIVE_STORE</code>。</span>
+      </a>
+      <a class="card" id="open-types" href="samples/types_layout.html">
+        <span class="label">夹具样张 · FIXTURE_ONLY</span>
+        <strong>打开传闻／怀疑、误信、未证实样张 →</strong>
+        <span class="description">看不同信息类型怎样摆在卡上，不把人物说法当成客观真相。</span>
+      </a>
+      <a class="card" id="open-fixture" href="samples/fixture_layout.html">
+        <span class="label">夹具样张 · FIXTURE_ONLY</span>
+        <strong>打开两条已发生条目的样张 →</strong>
+        <span class="description">看事实条目、状态和证据怎样摆在一起。</span>
+      </a>
+    </nav>
+    <p class="help">看完一张，点浏览器的“返回”，再选另一张。</p>
+    <p class="help">覆盖／漏抽仍未接到 B02，不编数字。卡上没有修补建议。</p>
+    <footer>
+      <p>三张卡原样取自已合入的预览样张。这里附离线副本，解压后就能看，不需要数据库、Python 或服务器。</p>
+      <p>样张版本：<code>main@71b1cc6</code> · 本入口：<code>CONSTRUCTION_DRAFT__NOT_MERGED</code></p>
+    </footer>
+  </main>
+</body>
+</html>

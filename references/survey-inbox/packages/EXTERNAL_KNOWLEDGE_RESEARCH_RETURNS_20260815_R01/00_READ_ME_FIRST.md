@@ -8,7 +8,7 @@
 
 - 想看原报告：按报告编号打开 `returns/<report_id>.md`。
 - 想确认题意：查 [PROMPT_TRACE.jsonl](PROMPT_TRACE.jsonl)。逐字 Prompt 没有随回包保留下来，因此 30 条全部明确标成重建题意，不能冒充原始 Prompt。
-- 想看报告是否能进入日常背景：从[外部报告知识库当前入口](../../../external-knowledge-base/README.md)进入，按结论编号追到报告与来源。
+- 想判断报告能否进入当前产品：先到 [CCZ-64｜外部调查与刷新台账](https://linear.app/ccz/issue/CCZ-64)核来源和时效；形成作者需求后再进入 [CCZ-128｜作者需求候选池](https://linear.app/ccz/issue/CCZ-128)。本包不再承担日常背景入口。
 
 ## 收件结果
 
@@ -19,7 +19,7 @@
 
 ## 权限边界
 
-本包只证明“当时收到了什么”。报告中的建议、数字、平台规则和技术结论仍要经过结论账、来源核验、冲突检查和时效检查。本包不修改产品共同背景板 R13，也不授权 Git 提交、Notion 同步、模型调用、API、训练或生产晋升。
+本包只证明“当时收到了什么”。报告中的建议、数字、平台规则和技术结论仍要经过来源核验、冲突检查和时效检查。本包不修改当前产品决定，也不授权 Git 提交、Notion 同步、模型调用、API、训练或生产晋升。
 
 原始 ChatGPT Pro 候选知识库 ZIP 另按原字节保存在 `intake/raw/CANDIDATE_EXTERNAL_KNOWLEDGE_BASE_20260815_R01.zip`，收件 SHA 见 `intake/manifests/CANDIDATE_EXTERNAL_KNOWLEDGE_BASE_20260815_R01.json`。
 

@@ -31,6 +31,8 @@ ContractError = COMMON.ContractError
 SCHEMA = COMMON.load_schema(SCHEMA_PATH)
 CONTRACT = "SYSTEM_LEDGER_CONTENT"
 VERSION = "system-ledger-content-v1"
+VERSION_V2 = "system-ledger-content-v2"
+VERSIONS = (VERSION, VERSION_V2)
 PREFIX = "SY-"
 
 
@@ -39,7 +41,7 @@ def validate_record(document: Any) -> dict[str, Any]:
         document,
         schema=SCHEMA,
         contract=CONTRACT,
-        version=VERSION,
+        version=VERSIONS,
         prefix=PREFIX,
     )
     if record["source_identity"] == "pack_prefilled" and record["pack_ref"] is None:
@@ -59,6 +61,13 @@ def validate_pack_prefilled_transition(before: Any, after: Any) -> None:
         COMMON.ENVELOPE.validate_pack_prefilled_author_edit(
             COMMON.envelope(before_record),
             COMMON.envelope(after_record),
+            contract_version=(
+                COMMON.ENVELOPE.CONTRACT_VERSION_V2
+                if before_record["version"] == VERSION_V2
+                else COMMON.ENVELOPE.CONTRACT_VERSION_V1
+            ),
+            entry_kind="DEFINITION",
+            allowed_targets=COMMON.TAG_TARGETS_BY_CONTRACT[CONTRACT],
             content_before={"pack_ref": before_record["pack_ref"]},
             content_after={"pack_ref": after_record["pack_ref"]},
         )

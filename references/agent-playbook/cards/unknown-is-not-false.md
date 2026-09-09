@@ -16,10 +16,8 @@
 
 没检索就写不存在。覆盖内没找到就写绝对没有。对读者隐藏就写尚未发生。作者没决定就写冲突或默认值。把本卡升级成执行票；把外部 unknown 经验写成已拍存储枚举、界面文案或迁移合同。
 
-## 出处
+## 当前依据
 
-- [R14 真值分层页](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/02_SYSTEM_ARCHITECTURE_AND_TRUTH_LAYERS.md)（N17：unknown 六分）
-- [R14 创作与记忆管线页](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/03_CREATION_AND_MEMORY_PIPELINES.md)（检测器增加“模型不知道”档）
-- [EKB 记忆页](../../external-knowledge-base/EXTERNAL_KNOWLEDGE_BASE_20260815_R01/background/04_MEMORY_TRUTH_TIME_AND_RULES.md)（K11）
+- [CCZ-114](https://linear.app/ccz/issue/CCZ-114)｜[CCZ-126](https://linear.app/ccz/issue/CCZ-126)｜[CCZ-134](https://linear.app/ccz/issue/CCZ-134)：空值、未知和故事时间语义
 
-来源：#115；批次 A；2026-08-24
+来源：Codex

@@ -1,15 +1,15 @@
 # 小说架构实验仓
 
-> 整体任务进度现场读取 [Linear 项目](https://linear.app/ccz/project/novel-architecture-e0f2a433c335) 与 [GitHub](https://github.com/cczz412/novel-architecture)；仓库的[治理索引](governance/INDEX.md)只负责稳定寻路，[技术兼容快照](governance/CURRENT_STATE.json)只供现有工具读取带日期的控制字段，当前版本、路径与候选身份只走 [current pointers](governance/current_pointers.json)。根 README 不抄当前票态、领票、模型或成绩。
+> 整体任务进度现场读取 [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0) 与 [GitHub](https://github.com/cczz412/novel-architecture)；仓库的[治理索引](governance/INDEX.md)只负责稳定寻路，[技术兼容快照](governance/CURRENT_STATE.json)只供现有工具读取带日期的控制字段，当前版本、路径与候选身份只走 [current pointers](governance/current_pointers.json)。根 README 不抄当前票态、领票、模型或成绩。
 
 ✅ 你可以直接理解成：这个仓库一边打磨“大纲中枢”，一边把设计放进真实小说里做可回放的实验。
 
 ## 30 秒冷启动
 
-1. 想知道现在做到哪、谁在做、被什么拦住：用 `$linear-github-task-map` 现场读取 Linear＋GitHub；不要从仓库静态页猜。
+1. 想知道现在做到哪、谁在做、被什么拦住：从 Linear 总入口按相关 Project 现场读取任务，再核对 GitHub；不要从仓库静态页猜。
 2. 想直接干某张票：规划／过程票用 Linear 插件，工程施工和 PR 用 GitHub 插件。
 3. 程序要读取旧技术控制字段：只读带日期的[技术兼容快照](governance/CURRENT_STATE.json)，不能把它当全局任务地图。
-4. 想知道当前背景、候选分支和正式登记在哪：只读 [current pointers](governance/current_pointers.json)。
+4. 想知道当前版本、候选分支和正式登记在哪：只读 [current pointers](governance/current_pointers.json)；产品决定与规格按 [Notion 决定与规格入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)的逐项主存登记读取，未迁项保留原主存。
 5. 想一次看清有哪些仓库入口：运行 `uv run --locked python tools/novel_pipeline.py catalog menu`。它是即时导航，不是第二份任务看板。
 6. 想找某条实验：先看 [试验专区说明](experiments/README.md)，再看该实验自己的 README／manifest；不要按“最新文件夹”猜。
 7. 想找正式金标、候选、运行或材料：从治理索引里的固定入口进入。
@@ -19,13 +19,13 @@
 | 路径 | 这里放什么 | 真值／继续入口 | Git 口径 |
 |---|---|---|---|
 | `governance/` | 稳定治理入口、技术兼容快照、正式指针、模块／路线／工具登记 | [治理索引](governance/INDEX.md) | 长期件；不保存 Linear／GitHub 的整体任务进度，生成页不要手改 |
-| `foundation/` | 04 批全文根基 | 原件自身；时效冲突回 Notion | 长期真源，禁止摘要替代 |
+| `foundation/` | 04 批全文根基 | 原件自身；现行分工见[分工说明](governance/COLLAB_GITHUB_LINEAR_SLACK.md) | 2026-07-16 历史原件，禁止摘要替代 |
 | `intake/` | 新材料、外部回包的来源与 SHA 登记 | [收件说明](intake/README.md) | 长期件 |
 | `config/` | 批次、合同、默认指针、供应商配置；不含密钥 | [配置说明](config/README.md) | 长期件 |
 | `experiments/` | 候选实验、零调用程序件与成绩 | [试验说明](experiments/README.md) | 是否进 Git 逐件审 |
 | `tools/` | 统一入口、可复用组件、批次复现器 | [工具说明](tools/README.md)＋`governance/tool_registry.json` | 长期程序精确挑件 |
 | `tests/` | 不调用模型的机械回归 | [测试说明](tests/README.md) | 长期件 |
-| `references/` | 书目、调查、外部诊断；共同背景板和原子需求都在这里 | [R14 共同背景](references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md)＋[R03 原子需求 CURRENT](references/atomic-expectations/CURRENT.json)＋[参考区说明](references/README.md) | 候选材料不作运行真值；R14／R03 是当前语义入口，不证明实现完成 |
+| `references/` | 书目、调查原件、来源卡和外部诊断 | [参考区说明](references/README.md) | 只保存可追溯材料；任务回 Linear，决定与规格按 Notion 主存登记，工程合同回 GitHub，不在这里另造万能背景 |
 | `novel-mvp/` | 产品试跑示例（代码偏旧；设计稿可参考） | [示例说明](novel-mvp/README.md) | 代码／设计稿进 Git；`data/` 和草稿不进 |
 | `analysis_library/` | 小说分析的轻量摘要、验收摘要和仓外指针 | [分析库说明](analysis_library/README.md) | 只跟踪轻量入口；完整原件在外置仓 |
 | `work/` | 设计稿、合同、提示词和执行配套 | [施工区说明](work/README.md) | 精确挑件 |
@@ -64,7 +64,7 @@ uv run --locked python tools/governance_index.py --check
 # 检查唯一 current、版本路径和入口一致性（不写仓库）
 uv run --locked python tools/check_current_freshness.py --check
 
-# 一条命令跑完全套防漂移检查（current / 设计 / 追踪 / tracked-temp / PR 身份）
+# 一条命令跑现行防漂移检查（current / 设计 / tracked-temp / PR 身份）
 uv run --locked python tools/check_drift.py --check
 
 # 全仓唯一测试命令（固定工作路径、固定 Python，只收集 tests/）
@@ -102,6 +102,3 @@ uv run --locked python tools/chatgpt_review_pack.py --dry-run
 - 不把 `runs/`、`reports/`、`TEMP/` 重新强行加进 Git。
 
 来源：Codex
-
-<!-- active_product_background: references/shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/00_READ_ME_FIRST.md -->
-<!-- active_atomic_expectations: references/atomic-expectations/CURRENT.json -->

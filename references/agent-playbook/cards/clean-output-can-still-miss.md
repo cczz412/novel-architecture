@@ -16,10 +16,9 @@
 
 只检查已输出事实，不反看源文。验真器没驳回就当没有漏抽。把“输出条数少、看起来整洁”当完整性证明。把本卡升级成执行票；把反向覆盖的加固形状写成已拍字段表或阈值。
 
-## 出处
+## 当前依据
 
-- [R14 抽取页](../../shared-context/NOVEL_ARCH_SHARED_CONTEXT_CORE_MATERIALS_20260820_R14/04_EXTRACTION_MODEL_AND_DATA_STRATEGY.md)（ADD-021：源文反向覆盖账本＋分事实族补漏）
-- [EKB 抽取评测页](../../external-knowledge-base/EXTERNAL_KNOWLEDGE_BASE_20260815_R01/background/05_EXTRACTION_EVALUATION_AND_EVIDENCE.md)（K06／K09）
-- [SI-004 评测回包](../../survey-inbox/packages/MANUS_R06_CLOUD_RESEARCH_20260812_R01/returns/RETURN_01_FACT_EXTRACTION_EVAL_SURVEY_20260812_R01.md)（Precision／Recall／原始计数分开）
+- [CCZ-142](https://linear.app/ccz/issue/CCZ-142)：正文到事实候选
+- [CCZ-83](https://linear.app/ccz/issue/CCZ-83)：当前评测设计入口
 
-来源：#115；批次 A；2026-08-24
+来源：Codex

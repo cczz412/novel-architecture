@@ -410,16 +410,16 @@ class _LocalFilesystemBackend:
             return
         try:
             os.fchmod(descriptor, 0o600)
-            with os.fdopen(descriptor, "wb", closefd=True) as handle:
-                handle.write(payload)
-                handle.flush()
-                os.fsync(handle.fileno())
-        finally:
-            if descriptor >= 0:
-                try:
-                    os.close(descriptor)
-                except OSError:
-                    pass
+            handle = os.fdopen(descriptor, "wb", closefd=True)
+        except BaseException:
+            os.close(descriptor)
+            raise
+        # fdopen 接管了这个 fd；退出 with 时它只关一次。
+        # 不能再补一句 os.close：fd 号可能已被别的线程复用，二次关闭会关掉别人的文件。
+        with handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
         self._fsync_directory(path.parent)
 
     def _read_bytes(self, path: Path) -> bytes:
@@ -435,13 +435,13 @@ class _LocalFilesystemBackend:
         try:
             if not stat.S_ISREG(os.fstat(descriptor).st_mode):
                 raise UnsafePathError("REGULAR_FILE_REQUIRED")
-            with os.fdopen(descriptor, "rb", closefd=True) as handle:
-                return handle.read()
-        finally:
-            try:
-                os.close(descriptor)
-            except OSError:
-                pass
+            handle = os.fdopen(descriptor, "rb", closefd=True)
+        except BaseException:
+            os.close(descriptor)
+            raise
+        # 同上：fd 交给 fdopen 后只关一次，禁止二次 os.close。
+        with handle:
+            return handle.read()
 
     def _read_json(self, path: Path) -> Any:
         try:
@@ -885,6 +885,11 @@ class _LocalFilesystemBackend:
             replayed = self._existing_receipt(project_dir, operation_id, request_sha)
             if replayed is not None:
                 return replayed
+            # Physical planstore and logical plan must not become independent
+            # writers for one project. The allocator initializer holds this same
+            # workspace lock while checking the opposite ownership direction.
+            if "plan" in validated_mutations and os.path.lexists(project_dir / "plan.json"):
+                raise WorkspaceError("PHYSICAL_PLAN_REQUIRES_RECONCILIATION")
             old_pointer, current_manifest = self._load_manifest(
                 project_dir, author_id, project_id
             )

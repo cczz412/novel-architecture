@@ -14,6 +14,11 @@ import sys
 import tempfile
 from collections.abc import Callable
 from pathlib import Path
+
+try:
+    from . import text_mapping as mapping_runtime
+except ImportError:  # direct local-file CLI
+    import text_mapping as mapping_runtime
 from typing import Any, TextIO
 
 if __package__:
@@ -49,7 +54,9 @@ def _validate_request(request: object) -> tuple[list[dict[str, Any]], dict[str, 
     if not isinstance(request, dict):
         raise ExtractToolError("REQUEST_NOT_OBJECT")
     missing = sorted(REQUEST_KEYS - request.keys())
-    extra = sorted(request.keys() - REQUEST_KEYS)
+    extra = sorted(request.keys() - (REQUEST_KEYS | {"text_map_version"}))
+    if "text_map_version" in request and request["text_map_version"] != "v2":
+        raise ExtractToolError("TEXT_MAP_VERSION_INVALID")
     if missing:
         raise ExtractToolError(f"REQUEST_MISSING_FIELDS:{','.join(missing)}")
     if extra:
@@ -129,7 +136,8 @@ def _validate_provider_result(value: object, *, key: str) -> dict[str, Any]:
 
 
 def _validate_c3_candidate(candidate: object, *, source_item: dict[str, Any], key: str) -> None:
-    if not isinstance(candidate, dict) or set(candidate) != C3_V1_KEYS:
+    expected_keys = C3_V1_KEYS | ({"text_map_evidence"} if "text_map" in source_item else set())
+    if not isinstance(candidate, dict) or set(candidate) != expected_keys:
         raise ExtractToolError(f"C3_V1_SHAPE_INVALID:{key}")
     if candidate["contract"] != "C3_FACT_CANDIDATE" or candidate["version"] != "v1":
         raise ExtractToolError(f"C3_V1_IDENTITY_INVALID:{key}")
@@ -138,6 +146,12 @@ def _validate_c3_candidate(candidate: object, *, source_item: dict[str, Any], ke
     if candidate["seg"] != source_item["seg"]:
         raise ExtractToolError(f"C3_SEG_NOT_INHERITED:{key}")
     quote = candidate["quote"]
+    if "text_map" in source_item:
+        try:
+            mapping_runtime.validate_candidate(candidate, source_item)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise ExtractToolError(f"C3_TEXT_MAP_INVALID:{key}:{exc}") from exc
+        return
     if quote and quote not in source_item["text"]:
         raise ExtractToolError(f"C3_QUOTE_NOT_IN_RESPONSIBILITY_SEGMENT:{key}")
 
@@ -148,6 +162,9 @@ def execute(request: dict, response_provider: ResponseProvider) -> dict:
         raise ExtractToolError("RESPONSE_PROVIDER_NOT_CALLABLE")
     items, current_by_chapter = _validate_request(request)
 
+    use_v2 = request.get("text_map_version") == "v2"
+    if use_v2 and any("text_map" not in item for item in items):
+        raise ExtractToolError("TEXT_MAP_V2_REQUIRES_MAPPED_C2")
     output_items: list[dict[str, Any]] = []
     for item in items:
         key = item_key(item)
@@ -167,6 +184,9 @@ def execute(request: dict, response_provider: ResponseProvider) -> dict:
                 "c2_item": copy.deepcopy(_item),
             }
             result = response_provider(provider_request)
+            if use_v2:
+                extract.prepare_recovery_response(result)
+                return result
             return _validate_provider_result(result, key=_key)
 
         chapter_id = item["chapter_revision_ref"]["chapter_id"]
@@ -175,6 +195,7 @@ def execute(request: dict, response_provider: ResponseProvider) -> dict:
             {"model_id": MODEL_PROVIDER_SWAP_POINT},
             current_chapter_revision_ref=current_by_chapter[chapter_id],
             response_provider=provider_adapter,
+            **({"text_map_version": "v2"} if use_v2 else {}),
         )
         for candidate in candidates:
             _validate_c3_candidate(candidate, source_item=item, key=key)
