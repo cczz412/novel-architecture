@@ -362,12 +362,32 @@ def call_model(user_content: str, cfg: dict, instructions: str = INSTRUCTIONS) -
     return parse_fact_call_result(call_json(instructions, user_content, cfg))
 
 
+def prepare_recovery_response(value: object) -> tuple[dict, list]:
+    """Explicit v2 parser, retaining each recognized alias as source evidence."""
+    if (not isinstance(value, dict) or set(value) != CALL_RESULT_KEYS
+            or not isinstance(value.get("data"), dict)
+            or set(value["data"]) != {"facts"}
+            or not isinstance(value["data"]["facts"], list)):
+        raise RuntimeError("RECOVERY_PROVIDER_SHAPE_INVALID")
+    items, adaptations = [], []
+    for item in value["data"]["facts"]:
+        try:
+            adapted, evidence = mapping_runtime.quote_recovery.adapt_provider_item(item)
+        except ValueError as exc:
+            raise RuntimeError(str(exc)) from exc
+        items.append(adapted)
+        adaptations.append(evidence)
+    parsed = parse_fact_call_result({**value, "data": {"facts": items}})
+    return parsed, adaptations
+
+
 def extract_segment(
     seg: dict,
     cfg: dict,
     *,
     current_chapter_revision_ref: dict | None = None,
     response_provider: Callable[[str, str, dict], dict] | None = None,
+    text_map_version: str = "v1",
 ) -> list[dict]:
     """单个责任段 → C3 事实候选列表。
 
@@ -385,8 +405,16 @@ def extract_segment(
             current_chapter_revision_ref=current_chapter_revision_ref,
         )
 
+    if text_map_version not in ("v1", "v2"):
+        raise C2V1ContractError("TEXT_MAP_VERSION_INVALID")
+    if text_map_version == "v2" and (revision_ref is None or "text_map" not in seg):
+        raise C2V1ContractError("TEXT_MAP_V2_REQUIRES_MAPPED_C2")
     user_content = build_user_content(seg)
-    if response_provider is not None:
+    if text_map_version == "v2":
+        raw = (response_provider(INSTRUCTIONS, user_content, cfg) if response_provider is not None
+               else call_json(INSTRUCTIONS, user_content, cfg))
+        r, _adaptations = prepare_recovery_response(raw)
+    elif response_provider is not None:
         r = parse_fact_call_result(response_provider(INSTRUCTIONS, user_content, cfg))
     else:
         r = call_model(user_content, cfg)
@@ -405,9 +433,14 @@ def extract_segment(
         for fact in r["facts"]
     ]
     if "text_map" in seg:
-        for candidate in candidates:
+        for index, candidate in enumerate(candidates):
             try:
-                candidate["text_map_evidence"] = mapping_runtime.build_evidence(seg, candidate["quote"])
+                if text_map_version == "v2":
+                    candidate["text_map_evidence"] = mapping_runtime.build_evidence_v2(
+                        seg, candidate["quote"], raw["data"]["facts"][index])
+                    mapping_runtime.validate_fact_adaptation(candidate)
+                else:
+                    candidate["text_map_evidence"] = mapping_runtime.build_evidence(seg, candidate["quote"])
             except (ValueError, KeyError, TypeError) as exc:
                 raise C2V1ContractError(f"C3_TEXT_MAP_INVALID:{exc}") from exc
     return candidates

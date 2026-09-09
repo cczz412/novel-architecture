@@ -376,6 +376,30 @@ def persist_current_fact_candidates(
     responses: Mapping[str, Any],
     expected_fact_candidates_version: Any,
 ) -> dict[str, Any]:
+    """Unchanged v1 default entry."""
+    return _persist_current_fact_candidates(
+        workspace, operation_id, responses, expected_fact_candidates_version)
+
+
+def persist_current_recovered_fact_candidates(
+    workspace: AuthorWorkspace,
+    operation_id: str,
+    responses: Mapping[str, Any],
+    expected_fact_candidates_version: Any,
+) -> dict[str, Any]:
+    """Explicit v2 LF recovery and exact provider-key adaptation entry."""
+    return _persist_current_fact_candidates(
+        workspace, operation_id, responses, expected_fact_candidates_version, recovery_v2=True)
+
+
+def _persist_current_fact_candidates(
+    workspace: AuthorWorkspace,
+    operation_id: str,
+    responses: Mapping[str, Any],
+    expected_fact_candidates_version: Any,
+    *,
+    recovery_v2: bool = False,
+) -> dict[str, Any]:
     """离线完整抽取当前 C2，并原子提交 C3 与 ``COMPLETE`` 运行回执。"""
     workspace = _validate_workspace(workspace)
     candidate_parent_version = _expected_version_number(
@@ -395,6 +419,7 @@ def persist_current_fact_candidates(
             {
                 "items": copy.deepcopy(source_items),
                 "current_chapter_revision_refs": copy.deepcopy(current_refs),
+                **({"text_map_version": "v2"} if recovery_v2 else {}),
             },
             extract_tool.offline_response_provider(responses),
         )
@@ -427,7 +452,8 @@ def persist_current_fact_candidates(
     )
     run_receipt = extract_run_receipt.build_complete_receipt(
         operation_id=operation_id,
-        provider_ref=f"FROZEN_RESPONSES:{responses_identity['sha256']}",
+        provider_ref=(f"FROZEN_RESPONSES:{responses_identity['sha256']}"
+                      + (":TEXT_MAP_V2" if recovery_v2 else "")),
         source_identity=source_identity,
         expected_item_keys=item_keys,
         accepted_candidate_count=len(candidates),

@@ -153,6 +153,7 @@ def _validate_c11_object(
             else:
                 result = text_mapping.validate_origin_evidence(extension)
                 if contract == "C3_FACT_CANDIDATE":
+                    text_mapping.validate_fact_adaptation(value)
                     if (value["quote"] != extension["quote_original"]
                             or value["chapter_revision_ref"] != result["chapter_revision_ref"]
                             or value["seg"] != extension["responsibility"]["seg"]):
