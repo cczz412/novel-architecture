@@ -31,6 +31,20 @@ EXPECTED_FILES = {
     "TEST_RECEIPT_R01.json",
     "MANIFEST.sha256",
 }
+HISTORICAL_INPUT_PATHS = frozenset(
+    (
+        "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py",
+        "work/ccz142_human_card_vertical_wire_r01/MANIFEST.sha256",
+        "work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py",
+        "work/ccz142_named_chapter_txt_card_r01/MANIFEST.sha256",
+        "work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py",
+        "work/ccz142_current_candidate_read_preview_r01/self_check.py",
+        "work/ccz142_current_candidate_read_preview_r01/MANIFEST.sha256",
+        "governance/agent_ticket_rules.md",
+        "governance/START_HERE.md",
+    )
+)
+
 IMPLEMENTATION_FILES = {"build_view.py", "view_render.py", "marks_sidecar.py"}
 FORBIDDEN_IMPORTS = {
     "socket",
@@ -71,6 +85,48 @@ def check_manifest() -> int:
     return len(listed)
 
 
+def check_protected_inputs(shapes: dict[str, Any]) -> tuple[int, list[dict[str, Any]]]:
+    protected = shapes["protected_input_sha256"]
+    classification = shapes.get("historical_input_evidence")
+    if (
+        not isinstance(classification, dict)
+        or set(classification) != HISTORICAL_INPUT_PATHS
+        or not isinstance(protected, dict)
+        or len(protected) != 71
+        or not HISTORICAL_INPUT_PATHS <= protected.keys()
+        or shapes.get("base_main_sha") != BASE_MAIN_SHA
+    ):
+        raise RuntimeError("DOOR1_HISTORICAL_CLASSIFICATION")
+    for metadata in classification.values():
+        if (
+            not isinstance(metadata, dict)
+            or set(metadata) != {"reason", "change_source"}
+            or any(not isinstance(v, str) or not v.strip() for v in metadata.values())
+        ):
+            raise RuntimeError("DOOR1_HISTORICAL_CLASSIFICATION")
+    checked = 0
+    historical = []
+    for rel, expected in protected.items():
+        if rel not in HISTORICAL_INPUT_PATHS:
+            if not (REPO / rel).is_file() or sha(REPO / rel) != expected:
+                raise RuntimeError("DOOR1_PROTECTED_INPUT_DRIFT:" + rel)
+            checked += 1
+            continue
+        record = {"path": rel, "historical_sha256": expected, "current_sha256": None}
+        try:
+            record["current_sha256"] = sha(REPO / rel)
+        except FileNotFoundError:
+            record["status"] = "missing"
+        except OSError:
+            record["status"] = "unreadable"
+        else:
+            record["status"] = (
+                "same" if record["current_sha256"] == expected else "changed"
+            )
+        historical.append(record)
+    return checked, historical
+
+
 def run_self_check() -> dict[str, Any]:
     actual = {p.name for p in ROOT.iterdir() if p.is_file()}
     if actual != EXPECTED_FILES:
@@ -90,11 +146,7 @@ def run_self_check() -> dict[str, Any]:
         or shapes["product_adopted"] is not False
     ):
         raise RuntimeError("DOOR1_OBJECT_SHAPES_DRIFT")
-    checked = 0
-    for rel, expected in shapes["protected_input_sha256"].items():
-        if not (REPO / rel).is_file() or sha(REPO / rel) != expected:
-            raise RuntimeError("DOOR1_PROTECTED_INPUT_DRIFT:" + rel)
-        checked += 1
+    checked, historical = check_protected_inputs(shapes)
     for name in IMPLEMENTATION_FILES:
         source = (ROOT / name).read_text(encoding="utf-8")
         tree = ast.parse(source)
@@ -144,9 +196,15 @@ def run_self_check() -> dict[str, Any]:
     return {
         "document_identity": DOCUMENT_IDENTITY,
         "base_main_sha": BASE_MAIN_SHA,
-        "result": "PASS",
+        "result": "FAIL"
+        if any(r["status"] in {"missing", "unreadable"} for r in historical)
+        else "PASS",
         "manifest_verified_files": manifest_count,
         "protected_input_verified_files": checked,
+        "historical_input_evidence": historical,
+        "historical_input_compared_files": sum(
+            r["status"] in {"same", "changed"} for r in historical
+        ),
         "authority_wrote": False,
         "product_adopted": False,
         "network_calls": False,
@@ -157,4 +215,6 @@ def run_self_check() -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    print(json.dumps(run_self_check(), ensure_ascii=False, indent=2))
+    report = run_self_check()
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    sys.exit(0 if report["result"] == "PASS" else 1)
