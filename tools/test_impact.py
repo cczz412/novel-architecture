@@ -96,10 +96,19 @@ def _tests_outside_default_collection(
 
 
 def _individual_pytest_steps(
-    tests: Iterable[str], *, step_prefix: str
+    tests: Iterable[str], *, step_prefix: str, changed_paths: Iterable[str] = ()
 ) -> list[dict[str, Any]]:
+    changed = [PurePosixPath(path) for path in changed_paths]
+
+    def execution_order(test_path: str) -> tuple[bool, str]:
+        component = PurePosixPath(test_path).parent
+        owns_change = any(path.is_relative_to(component) for path in changed)
+        return (not owns_change, test_path)
+
     steps: list[dict[str, Any]] = []
-    for index, test_path in enumerate(sorted(set(tests)), start=1):
+    # A consumer's alphabetically earlier path must not jump ahead of the
+    # changed component's own test. Keep deterministic ordering in each group.
+    for index, test_path in enumerate(sorted(set(tests), key=execution_order), start=1):
         argv = [*LOCKED_COMMAND_PREFIX, "pytest", "-q", test_path]
         steps.append(
             _execution_step(f"{step_prefix}-{index:02d}", argv)
@@ -253,7 +262,7 @@ def build_plan(
             selected_tests, active_policy["default_collection_root"]
         )
         outside_steps = _individual_pytest_steps(
-            outside_default_tests, step_prefix="pytest-outside-default"
+            outside_default_tests, step_prefix="pytest-outside-default", changed_paths=paths
         )
         full_step = _execution_step("pytest-full", PORTABLE_FULL_CHAIN_ARGV)
         if set(paths).intersection(NON_DOWNGRADABLE_PLANNER_PATHS):
@@ -302,7 +311,7 @@ def build_plan(
                 selected_tests, active_policy["default_collection_root"]
             )
             outside_steps = _individual_pytest_steps(
-                outside_default_tests, step_prefix="pytest-outside-default"
+                outside_default_tests, step_prefix="pytest-outside-default", changed_paths=paths
             )
             inside_default_tests = sorted(
                 set(selected_tests) - set(outside_default_tests)
