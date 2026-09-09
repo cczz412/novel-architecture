@@ -31,19 +31,19 @@ EXPECTED_FILES = {
     "TEST_RECEIPT_R01.json",
     "MANIFEST.sha256",
 }
-HISTORICAL_INPUT_PATHS = frozenset(
-    (
-        "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py",
-        "work/ccz142_human_card_vertical_wire_r01/MANIFEST.sha256",
-        "work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py",
-        "work/ccz142_named_chapter_txt_card_r01/MANIFEST.sha256",
-        "work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py",
-        "work/ccz142_current_candidate_read_preview_r01/self_check.py",
-        "work/ccz142_current_candidate_read_preview_r01/MANIFEST.sha256",
-        "governance/agent_ticket_rules.md",
-        "governance/START_HERE.md",
-    )
-)
+# Fixed original evidence from BASE_MAIN_SHA; never refresh from current files.
+HISTORICAL_INPUT_SHA256 = {
+    "work/ccz142_human_card_vertical_wire_r01/test_human_card_vertical_wire.py": "7e239c89d9be4b00a0cf2f45179fe308a8bb5158295e8a896c99091c35aed91d",
+    "work/ccz142_human_card_vertical_wire_r01/MANIFEST.sha256": "25052d7f58aa96e0db6d4a31929cd8fe92c393c3f65282cd75ac77900a7e1c73",
+    "work/ccz142_named_chapter_txt_card_r01/test_named_chapter_txt_card.py": "c57a8e50365d997e938c13889e51c009dc2041ab192b54cc96f6ca0acd57a836",
+    "work/ccz142_named_chapter_txt_card_r01/MANIFEST.sha256": "c294499c3786b687dee07ab31a3817f8a80e08e6e026b35155a79a5093cc9a48",
+    "work/ccz142_current_candidate_read_preview_r01/test_current_read_preview.py": "ee06062a7d3718e5e1afad564beb7fbcc6f3060045fa72aaa972d4124763baed",
+    "work/ccz142_current_candidate_read_preview_r01/self_check.py": "d0609f9d5a60f24ba32e66e859f0f5a8c12fb8d2701888daffffa04b853c5f39",
+    "work/ccz142_current_candidate_read_preview_r01/MANIFEST.sha256": "18c3e7a9506c4725fd58b71e40939d19b48f8385d4732e196c6b3b4c06c7bc13",
+    "governance/agent_ticket_rules.md": "71615bee29b8b543fd8677176bc45c0d000691a1b461629db96c1284ac52ca20",
+    "governance/START_HERE.md": "4e47f940b8edf167054aeb45f614ed0fce6dc1ed81074fdbf6303265573e3791",
+}
+HISTORICAL_INPUT_PATHS = frozenset(HISTORICAL_INPUT_SHA256)
 
 IMPLEMENTATION_FILES = {"build_view.py", "view_render.py", "marks_sidecar.py"}
 FORBIDDEN_IMPORTS = {
@@ -97,6 +97,10 @@ def check_protected_inputs(shapes: dict[str, Any]) -> tuple[int, list[dict[str, 
         or shapes.get("base_main_sha") != BASE_MAIN_SHA
     ):
         raise RuntimeError("DOOR1_HISTORICAL_CLASSIFICATION")
+    if any(
+        protected[rel] != expected for rel, expected in HISTORICAL_INPUT_SHA256.items()
+    ):
+        raise RuntimeError("DOOR1_HISTORICAL_EVIDENCE_DRIFT")
     for metadata in classification.values():
         if (
             not isinstance(metadata, dict)

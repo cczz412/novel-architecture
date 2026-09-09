@@ -987,3 +987,23 @@ def test_existing_package_and_boundary_guards_survive(
         refresh()
     with pytest.raises(RuntimeError, match=errors[guard]):
         checker.run_self_check()
+
+
+@pytest.mark.parametrize("value", [None, "0" * 64])
+@pytest.mark.parametrize(
+    "rel",
+    sorted(
+        json.loads((ROOT / "OBJECT_SHAPES.json").read_text())[
+            "historical_input_evidence"
+        ]
+    ),
+)
+def test_historical_hash_edits_fail_even_with_refreshed_manifest(
+    self_check_copy, rel, value
+):
+    checker, shapes, refresh = self_check_copy
+    shapes["protected_input_sha256"][rel] = value
+    (checker.ROOT / "OBJECT_SHAPES.json").write_text(json.dumps(shapes))
+    refresh()
+    with pytest.raises(RuntimeError, match="DOOR1_HISTORICAL_EVIDENCE_DRIFT"):
+        checker.run_self_check()

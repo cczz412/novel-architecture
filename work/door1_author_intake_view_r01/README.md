@@ -188,7 +188,7 @@ uv run --locked ruff check work/door1_author_intake_view_r01/
 
 `self_check.py` 只核机械事实：本包固定10个文件、9个内容哈希、字段口径及明显禁用入口。原始71条输入路径、哈希和来源基线保存在 `OBJECT_SHAPES.json`，不覆盖旧值。哈希比较不包括未提供的仓库文件。
 
-按 CZ 批准的 [CCZ-188 / #358](https://github.com/cczz412/novel-architecture/issues/358)，其中精确九项上游测试、清单和治理说明归为历史交付证据，分类理由及变化来源见 `historical_input_evidence`。分类只接受点名九项，不按目录通配，也不自动放行有变化的文件。其余62项仍须与原哈希相同；变化时失败并报告路径。
+按 CZ 批准的 [CCZ-188 / #358](https://github.com/cczz412/novel-architecture/issues/358)，其中精确九项上游测试、清单和治理说明归为历史交付证据，分类理由及变化来源见 `historical_input_evidence`。分类只接受点名九项，不按目录通配，也不自动放行有变化的文件。九条原始哈希还与自检代码中保存的原基线值逐项核对；即使误改历史值后重算包清单，也会以 `DOOR1_HISTORICAL_EVIDENCE_DRIFT` 失败。其余62项仍须与原哈希相同；变化时失败并报告路径。
 
 报告中的 `protected_input_verified_files` 只计当前严格校验通过的62项。`historical_input_evidence` 逐项列出路径、原哈希、当前哈希及 `same`／`changed`／`missing`／`unreadable`；`historical_input_compared_files` 只计成功读取并完成对照的历史文件。九项哈希不同不导致自检失败；缺失或不可读时保留全部历史对照行，结果为 `FAIL`，命令退出1，不能算作验证通过。其余保护失败仍抛出原有错误并非零退出。
 
