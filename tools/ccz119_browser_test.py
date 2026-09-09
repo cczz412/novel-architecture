@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 import importlib.util
 import json
 import os
@@ -14,7 +15,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TEST_PATH = "work/ccz142_current_candidate_read_entry_r01/test_entry_browser.py"
-EXPECTED_CASES = 8  # Two checks, desktop/mobile, with/without JavaScript.
+# Pin the approved JUnit identities independently of the collected report.
+EXPECTED_CASE_IDS = tuple(
+    f"work.ccz142_current_candidate_read_entry_r01.test_entry_browser::{test}[{viewport}-{javascript}]"
+    for test in ("test_offline_file_links_without_repo_or_store", "test_memory_render_only")
+    for viewport in ("desktop", "mobile")
+    for javascript in ("no-js", "js")
+)
+EXPECTED_CASES = len(EXPECTED_CASE_IDS)
 TIMEOUT_SECONDS = 180
 
 
@@ -117,10 +125,13 @@ def _read_result(report: Path, returncode: int) -> dict:
     counts["passed"] = (
         counts["collected"] - counts["failed"] - counts["errors"] - counts["skipped"]
     )
+    case_ids = [f"{case.get('classname')}::{case.get('name')}" for case in cases]
     if returncode or counts["failed"] or counts["errors"]:
         status, reason = "FAILED", "PYTEST_FAILED"
     elif counts["collected"] != EXPECTED_CASES or counts["skipped"]:
         status, reason = "FAILED", "INCOMPLETE_BROWSER_CHECK"
+    elif Counter(case_ids) != Counter(EXPECTED_CASE_IDS):
+        status, reason = "FAILED", "BROWSER_CASE_IDENTITY_MISMATCH"
     else:
         status, reason = "PASSED", "ALL_APPROVED_BROWSER_CASES_PASSED"
     return {
@@ -128,6 +139,8 @@ def _read_result(report: Path, returncode: int) -> dict:
         "reason": reason,
         "counts": counts,
         "cases": [case.get("name") for case in cases],
+        "case_ids": case_ids,
+        "expected_case_ids": list(EXPECTED_CASE_IDS),
     }
 
 
