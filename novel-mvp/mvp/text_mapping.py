@@ -7,6 +7,11 @@ import importlib.util
 import json
 from pathlib import Path
 
+try:
+    from . import quote_recovery
+except ImportError:
+    import quote_recovery
+
 
 _SPEC = importlib.util.spec_from_file_location(
     "_c2_c1_text_map_contract",
@@ -78,6 +83,66 @@ def build_evidence(segment: dict, quote: str) -> dict:
     return evidence
 
 
+def build_evidence_v2(segment: dict, quote: str, provider_item: dict) -> dict:
+    snapshot = validate_segment(segment)
+    _adapted, adaptation = quote_recovery.validate_provider_item(provider_item, quote)
+    recovery = None
+    try:
+        base = build_evidence(segment, quote)
+    except ValueError:
+        start, end, changes = quote_recovery.locate_source_lf(quote, snapshot["text"])
+        context = segment["text_map"]
+        left = context["char_map"][segment["start"]]
+        right = context["char_map"][segment["end"] - 1] + 1
+        if not left <= start < end <= right:
+            raise ValueError("RECOVERY_OUTSIDE_RESPONSIBILITY")
+        recovered = snapshot["text"][start:end]
+        base = build_evidence(segment, recovered)
+        recovery = {"rule": quote_recovery.RULE, "quote_recovered": recovered,
+                    "changes": changes}
+    return {**base, "version": "v2", "quote_original": quote,
+            "recovery": recovery, "provider_item": copy.deepcopy(provider_item),
+            "provider_adaptation": copy.deepcopy(adaptation)}
+
+
+def _validate_v2(evidence: dict, snapshot: dict) -> dict:
+    from jsonschema import Draft202012Validator
+
+    schema = json.loads((_CONTRACT.SCHEMA_PATH.parent / "C2_C1_TEXT_MAP_V2.schema.json").read_text())
+    if not Draft202012Validator(schema).is_valid(evidence):
+        raise ValueError("TEXT_MAP_V2_SCHEMA_INVALID")
+    text = snapshot["text"]
+    responsibility = snapshot["responsibility"]
+    context = build_context(text)
+    segment = {**responsibility, "chapter_revision_ref": snapshot["chapter_revision_ref"],
+               "text": context["normalized_text"][responsibility["start"]:responsibility["end"]],
+               "text_map": context}
+    expected = build_evidence_v2(segment, evidence["quote_original"], evidence["provider_item"])
+    if _canonical(expected) != _canonical(evidence):
+        raise ValueError("TEXT_MAP_V2_REPLAY_MISMATCH")
+    base = {k: copy.deepcopy(v) for k, v in evidence.items()
+            if k not in {"recovery", "provider_adaptation", "provider_item"}}
+    base["version"] = "v1"
+    if evidence["recovery"] is not None:
+        base["quote_original"] = evidence["recovery"]["quote_recovered"]
+    return _CONTRACT.validate_mapping(base, snapshot)
+
+
+def _validate_evidence(evidence: object, snapshot: dict) -> dict:
+    if isinstance(evidence, dict) and evidence.get("version") == "v2":
+        return _validate_v2(evidence, snapshot)
+    return _CONTRACT.validate_mapping(evidence, snapshot)
+
+
+def validate_fact_adaptation(fact: dict) -> None:
+    evidence = fact.get("text_map_evidence", {})
+    if evidence.get("version") == "v2":
+        adapted, expected = quote_recovery.validate_provider_item(
+            evidence["provider_item"], evidence["quote_original"])
+        if (expected != evidence["provider_adaptation"] or adapted["text"] != fact["text"]):
+            raise ValueError("PROVIDER_ADAPTATION_VALUE_MISMATCH")
+
+
 def validate_candidate(candidate: dict, segment: dict, *, chapter: dict | None = None) -> dict:
     snapshot = validate_segment(segment)
     if chapter is not None:
@@ -86,7 +151,8 @@ def validate_candidate(candidate: dict, segment: dict, *, chapter: dict | None =
             raise ValueError("C3_TEXT_MAP_CURRENT_CHAPTER_MISMATCH")
         snapshot["text"] = chapter["text"]
     evidence = candidate.get("text_map_evidence")
-    result = _CONTRACT.validate_mapping(evidence, snapshot)
+    result = _validate_evidence(evidence, snapshot)
+    validate_fact_adaptation(candidate)
     if (candidate["quote"] != evidence["quote_original"]
             or candidate["chapter_revision_ref"] != snapshot["chapter_revision_ref"]
             or candidate["seg"] != snapshot["responsibility"]["seg"]):
@@ -102,7 +168,10 @@ def validate_origin_evidence(evidence: object) -> dict:
     """
     from jsonschema import Draft202012Validator
 
-    schema = json.loads(_CONTRACT.SCHEMA_PATH.read_text(encoding="utf-8"))
+    schema_path = _CONTRACT.SCHEMA_PATH
+    if isinstance(evidence, dict) and evidence.get("version") == "v2":
+        schema_path = schema_path.parent / "C2_C1_TEXT_MAP_V2.schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
     if not Draft202012Validator(schema).is_valid(evidence):
         raise ValueError("TEXT_MAP_SCHEMA_INVALID")
     if len(evidence["char_map"]) != len(evidence["normalized_text"]):
@@ -119,7 +188,7 @@ def validate_origin_evidence(evidence: object) -> dict:
             raise ValueError("TEXT_MAP_ORIGIN_PARTITION_INVALID")
         texts.append(text)
         cursor = end
-    return _CONTRACT.validate_mapping(evidence, {
+    return _validate_evidence(evidence, {
         "text": "".join(texts),
         "chapter_revision_ref": evidence["chapter_revision_ref"],
         "responsibility": evidence["responsibility"],

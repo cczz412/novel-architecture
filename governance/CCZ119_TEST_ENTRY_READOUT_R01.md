@@ -1,3 +1,24 @@
+# CCZ-180 合并前复验 R03｜2026-09-09
+
+门1固定哈希阻塞已由独立 PR #359 修复并合并。CZ 本轮同意按 #348、#350、#332 的顺序推进合并；本次在原七文件范围同步 main `134a6397ae55e268ff0470a4c430ba71795f5765`，不关闭执行票或父票。
+
+测试规则表冲突已保留双方全部内容：原分支142条加上 #350 的9条，共151条；其他政策字段逐项相等。相对最新main仍只改原七文件。没有修改原15份测试、依赖、工作流或样张。
+
+本地复验使用锁定Python3.12.12与既有环境，`UV_NO_SYNC=1 UV_OFFLINE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`，命令均走 `uv run --locked`：
+
+- 原14份普通测试按下方R02路径清单，各自独立进程 `pytest -q <路径>`：264通过、0失败/跳过，门1为114通过。该轮组合为原head `09f756e304ccc96abce7d68312aa5863393fcf5c` 加 main `2f8065355437d3a98ff3724b099a40d3b6eef91e`；后续 #348/#350 未修改这些14份原测试及其入口。
+- 浏览器 `python tools/ccz119_browser_test.py`：8通过、0失败/错误/跳过，入口stderr为空；继续使用此前批准的独立Playwright与Chromium，没有安装或下载。测试文件、入口及页面在后续 #348/#350 中未变。
+- 在最终main组合上，`pytest -q tests/test_test_impact.py tests/test_ccz119_browser_test.py tests/test_novel_mvp_quote_recovery_v2.py`：129通过、77子检查通过。
+- 工具与登记复验 `pytest -q tests/test_tool_registry.py tests/test_repository_catalog.py tests/test_current_freshness.py tests/test_repo_slim_inventory.py`：91通过。
+- `pytest -q --ci-lane main-portable` 首次为4541通过、4失败、8跳过、939未选中、1预期失败、179子检查通过（211.44秒）。4失败来自两个文件中的工作区检查：内容冲突虽已修复，Git索引当时仍保留多阶段记录，报告 `TRACKED_LIST_INVALID`。完成 `git add governance/test_policy.json` 后，`git ls-files -u` 为空；不改代码，定向复验 `pytest -q tests/test_drift.py tests/test_tracked_temp.py` 为14通过。未把首次全量写成全部通过；新head仍须通过云端门禁。
+- 四个修改Python文件定向Ruff与相对main的 `git diff --check` 通过。全仓Ruff仍70项，涉及11文件均与main字节一致；不登记为获批旧债。治理索引检查仍因本机缺Z36历史保护件失败，不补入本机材料、不改保护清单。
+
+完整本地日志在容器根 `TEMP/pr332-validation-logs-20260909/`；原失败回执保留如下。GitHub门禁、合并和Linear关系以实时回读为准，本段只记录本地复验。
+
+来源：Codex
+
+---
+
 # CCZ-180 测试入口回执 R02｜2026-09-09
 
 本轮同步 main、保留两边测试规则并修复浏览器退出告警。浏览器8项全部通过且入口stderr为空；14份原测试合计229通过、1失败、0跳过。唯一失败是门1自检的固定输入哈希过期，位于本票写集外，保持Draft，不合并、不关闭，不认定为已批准旧债。

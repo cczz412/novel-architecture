@@ -64,6 +64,87 @@
   },
   "path_rules": [
     {
+      "name": "CCZ-185 explicit recovery v2 novel-mvp/mvp/quote_recovery.py",
+      "pattern": "novel-mvp/mvp/quote_recovery.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_quote_recovery_v2.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-185 explicit recovery v2 novel-mvp/mvp/text_mapping.py",
+      "pattern": "novel-mvp/mvp/text_mapping.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_quote_recovery_v2.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-185 explicit recovery v2 novel-mvp/mvp/extract.py",
+      "pattern": "novel-mvp/mvp/extract.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_quote_recovery_v2.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-185 explicit recovery v2 novel-mvp/mvp/extract_tool.py",
+      "pattern": "novel-mvp/mvp/extract_tool.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_quote_recovery_v2.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-185 explicit recovery v2 novel-mvp/mvp/extract_workspace.py",
+      "pattern": "novel-mvp/mvp/extract_workspace.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_quote_recovery_v2.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-185 explicit recovery v2 novel-mvp/mvp/factstore.py",
+      "pattern": "novel-mvp/mvp/factstore.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_quote_recovery_v2.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-185 explicit recovery v2 novel-mvp/contracts/C2_C1_TEXT_MAP_V2.md",
+      "pattern": "novel-mvp/contracts/C2_C1_TEXT_MAP_V2.md",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_quote_recovery_v2.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-185 explicit recovery v2 novel-mvp/contracts/C2_C1_TEXT_MAP_V2.schema.json",
+      "pattern": "novel-mvp/contracts/C2_C1_TEXT_MAP_V2.schema.json",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_quote_recovery_v2.py"
+      ],
+      "full_chain": false
+    },
+    {
+      "name": "CCZ-185 explicit recovery v2 tests/test_novel_mvp_quote_recovery_v2.py",
+      "pattern": "tests/test_novel_mvp_quote_recovery_v2.py",
+      "modules": [],
+      "tests": [
+        "tests/test_novel_mvp_quote_recovery_v2.py"
+      ],
+      "full_chain": false
+    },
+    {
       "name": "CCZ-180 原位测试入口：authority",
       "pattern": "work/ccz142_candidate_authority_r01/*",
       "modules": [],
