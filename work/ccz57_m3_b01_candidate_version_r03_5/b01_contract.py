@@ -13,11 +13,13 @@ import re
 import tempfile
 import unicodedata
 from copy import deepcopy
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, ClassVar
 
 CONTRACT_VERSION = "r03.5-candidate"
 LEGACY_CONTRACT_VERSION = "r03.3-candidate"
+PRODUCT_CONTRACT_VERSION = "r04-product-candidate"
 CANDIDATE_SCHEMA_ID = "novel-fact-extraction-v2.1"
 CCZ142_EXTRACTION_SOURCE_LANE = "CCZ142_TEXT_EXTRACTION_CANDIDATES"
 CCZ142_EXTRACTION_SOURCE_MODULE = "CCZ-142"
@@ -29,8 +31,10 @@ EVIDENCE_LOCATOR_CONTRACT = "M3_EVIDENCE_LOCATOR"
 SOURCE_MODULE = "M3"
 FIXTURE_ACCESS = "POLICY_FIXTURE_READ_ONLY"
 PRODUCT_READ_ONLY_ACCESS = "PRODUCT_READ_ONLY"
+PRODUCT_CANDIDATE_ACCESS = "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY"
 IMMUTABLE_RETENTION = "CORE_IMMUTABLE_AUDIT"
 FIXTURE_POINTER_NAMESPACE = "FIXTURE_ONLY"
+PRODUCT_POINTER_NAMESPACE = "PRODUCT_CANDIDATE_AUTHORITY"
 WRITE_SET_PREFIX = "work/ccz57_m3_b01_candidate_version_r03_5/"
 COORDINATE_UNIT = "UTF8_BYTE"
 SOURCE_GENERATION_RECORD_TYPE = "M1_ACCEPTED_SOURCE_GENERATION"
@@ -152,11 +156,119 @@ EXPECTED_A_ADMISSION_CREATED_AT = "2026-08-28T03:26:14Z"
 _SEGMENT_WRITER_TOKEN = object()
 _CANDIDATE_WRITER_TOKEN = object()
 _POINTER_WRITER_TOKEN = object()
+_PRODUCT_B01_CAPTURE_TOKEN = object()
 _B_OUTPUT_WRITER_TOKENS = {
     "M3_SEGMENT_INDEX_SNAPSHOT": _SEGMENT_WRITER_TOKEN,
     "M3_CANDIDATE_VERSION": _CANDIDATE_WRITER_TOKEN,
     "M3_CANDIDATE_POINTER_SNAPSHOT": _POINTER_WRITER_TOKEN,
 }
+
+
+@dataclass(frozen=True, slots=True)
+class CandidateAuthorityProfile:
+    """One sealed candidate identity selected by runtime composition."""
+
+    identity: str
+    contract_version: str
+    candidate_access: str
+    pointer_namespace: str
+    pointer_prefix: str
+    candidate_id_prefix: str
+    segment_id_prefix: str
+    allowed_upstream_accesses: frozenset[str]
+    attempt_access: str
+    attempt_source_module: str
+    attempt_contract_version: str
+
+
+FIXTURE_AUTHORITY_PROFILE = CandidateAuthorityProfile(
+    identity="FIXTURE_CANDIDATE_AUTHORITY",
+    contract_version=CONTRACT_VERSION,
+    candidate_access=FIXTURE_ACCESS,
+    pointer_namespace=FIXTURE_POINTER_NAMESPACE,
+    pointer_prefix="fixture:m3_candidate.current",
+    candidate_id_prefix="cv",
+    segment_id_prefix="segidx",
+    allowed_upstream_accesses=frozenset(
+        {FIXTURE_ACCESS, PRODUCT_READ_ONLY_ACCESS}
+    ),
+    attempt_access=FIXTURE_ACCESS,
+    attempt_source_module="A_STAGE_FIXTURE",
+    attempt_contract_version=LEGACY_CONTRACT_VERSION,
+)
+PRODUCT_AUTHORITY_PROFILE = CandidateAuthorityProfile(
+    identity=PRODUCT_POINTER_NAMESPACE,
+    contract_version=PRODUCT_CONTRACT_VERSION,
+    candidate_access=PRODUCT_CANDIDATE_ACCESS,
+    pointer_namespace=PRODUCT_POINTER_NAMESPACE,
+    pointer_prefix="product:m3_candidate.current",
+    candidate_id_prefix="pcv",
+    segment_id_prefix="psegidx",
+    allowed_upstream_accesses=frozenset({PRODUCT_READ_ONLY_ACCESS}),
+    attempt_access=PRODUCT_READ_ONLY_ACCESS,
+    attempt_source_module="CCZ142_READ_ONLY_ADAPTER",
+    attempt_contract_version=PRODUCT_CONTRACT_VERSION,
+)
+AUTHORITY_PROFILES = (FIXTURE_AUTHORITY_PROFILE, PRODUCT_AUTHORITY_PROFILE)
+
+
+def require_authority_profile(
+    profile: CandidateAuthorityProfile,
+) -> CandidateAuthorityProfile:
+    fields = tuple(CandidateAuthorityProfile.__dataclass_fields__)
+    try:
+        supplied = tuple(getattr(profile, field) for field in fields)
+    except AttributeError:
+        _fail("B01_AUTHORITY_PROFILE_UNTRUSTED")
+    for allowed in AUTHORITY_PROFILES:
+        if supplied == tuple(getattr(allowed, field) for field in fields):
+            return allowed
+    _fail("B01_AUTHORITY_PROFILE_UNTRUSTED")
+
+
+def authority_profile_for_record(record: dict[str, Any]) -> CandidateAuthorityProfile:
+    if (
+        record.get("contract_version") == LEGACY_CONTRACT_VERSION
+        and record.get("record_contract_version") == LEGACY_CONTRACT_VERSION
+        and record.get("access") == FIXTURE_ACCESS
+    ):
+        return FIXTURE_AUTHORITY_PROFILE
+    matches = [
+        profile
+        for profile in AUTHORITY_PROFILES
+        if record.get("contract_version") == profile.contract_version
+        and record.get("record_contract_version") == profile.contract_version
+        and record.get("access") == profile.candidate_access
+    ]
+    if len(matches) != 1:
+        _fail("B01_AUTHORITY_PROFILE_MISMATCH", "record")
+    return matches[0]
+
+
+def authority_profile_for_ref(ref: dict[str, Any]) -> CandidateAuthorityProfile:
+    matches = [
+        profile
+        for profile in AUTHORITY_PROFILES
+        if ref.get("contract_version") == profile.contract_version
+        and ref.get("record_contract_version") == profile.contract_version
+        and ref.get("access") == profile.candidate_access
+    ]
+    if len(matches) != 1:
+        _fail("B01_AUTHORITY_PROFILE_MISMATCH", "reference")
+    return matches[0]
+
+
+def authority_profile_for_pointer(
+    pointer: dict[str, Any],
+) -> CandidateAuthorityProfile:
+    matches = [
+        profile
+        for profile in AUTHORITY_PROFILES
+        if pointer.get("pointer_namespace") == profile.pointer_namespace
+    ]
+    if len(matches) != 1:
+        _fail("B01_AUTHORITY_PROFILE_MISMATCH", "pointer")
+    return matches[0]
 
 
 class B01ContractError(ValueError):
@@ -325,7 +437,12 @@ def validate_record(record: dict[str, Any]) -> None:
     if record["contract"] != IMMUTABLE_CONTRACT:
         _fail("B01_IMMUTABLE_ENVELOPE_INVALID", "contract")
     if (
-        record["contract_version"] not in {CONTRACT_VERSION, LEGACY_CONTRACT_VERSION}
+        record["contract_version"]
+        not in {
+            CONTRACT_VERSION,
+            LEGACY_CONTRACT_VERSION,
+            PRODUCT_CONTRACT_VERSION,
+        }
         or record["record_contract_version"] != record["contract_version"]
     ):
         _fail("B01_IMMUTABLE_ENVELOPE_INVALID", "contract version")
@@ -379,7 +496,12 @@ def validate_record_ref(
     if ref["contract"] != RECORD_REF_CONTRACT:
         _fail(code, "contract")
     if (
-        ref["contract_version"] not in {CONTRACT_VERSION, LEGACY_CONTRACT_VERSION}
+        ref["contract_version"]
+        not in {
+            CONTRACT_VERSION,
+            LEGACY_CONTRACT_VERSION,
+            PRODUCT_CONTRACT_VERSION,
+        }
         or ref["record_contract_version"] != ref["contract_version"]
     ):
         _fail(code, "contract version")
@@ -549,13 +671,18 @@ def _resolved_record(
     return matches[0]
 
 
-def validate_source_generation_record(record: dict[str, Any]) -> None:
+def validate_source_generation_record(
+    record: dict[str, Any],
+    *,
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
+) -> None:
+    profile = require_authority_profile(authority_profile)
     validate_record(record)
     if (
         record["contract_version"] != CONTRACT_VERSION
         or record["record_type"] != SOURCE_GENERATION_RECORD_TYPE
         or record["source_module"] != "M1_READ_ONLY_ADAPTER"
-        or record["access"] not in {FIXTURE_ACCESS, PRODUCT_READ_ONLY_ACCESS}
+        or record["access"] not in profile.allowed_upstream_accesses
     ):
         _fail("B01_SOURCE_GENERATION_INVALID", "record identity")
     payload = record["payload"]
@@ -583,14 +710,18 @@ def validate_source_generation_record(record: dict[str, Any]) -> None:
 
 
 def validate_writing_material_record(
-    record: dict[str, Any], *, reference_records: list[dict[str, Any]]
+    record: dict[str, Any],
+    *,
+    reference_records: list[dict[str, Any]],
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> None:
+    profile = require_authority_profile(authority_profile)
     validate_record(record)
     if (
         record["contract_version"] != CONTRACT_VERSION
         or record["record_type"] != WRITING_MATERIAL_RECORD_TYPE
         or record["source_module"] != "M1_READ_ONLY_ADAPTER"
-        or record["access"] not in {FIXTURE_ACCESS, PRODUCT_READ_ONLY_ACCESS}
+        or record["access"] not in profile.allowed_upstream_accesses
     ):
         _fail("B01_WRITING_MATERIAL_INVALID", "record identity")
     payload = record["payload"]
@@ -620,7 +751,10 @@ def validate_writing_material_record(
         expected_type=SOURCE_GENERATION_RECORD_TYPE,
         code="B01_SOURCE_GENERATION_INVALID",
     )
-    validate_source_generation_record(source_generation)
+    validate_source_generation_record(
+        source_generation,
+        authority_profile=profile,
+    )
 
 
 def build_extraction_input_binding(
@@ -629,14 +763,19 @@ def build_extraction_input_binding(
     chapter_revision_ref: dict[str, Any],
     writing_material_refs: list[dict[str, Any]],
     reference_records: list[dict[str, Any]],
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> dict[str, Any]:
+    profile = require_authority_profile(authority_profile)
     source_generation = _resolved_record(
         accepted_source_generation_ref,
         records=reference_records,
         expected_type=SOURCE_GENERATION_RECORD_TYPE,
         code="B01_SOURCE_GENERATION_INVALID",
     )
-    validate_source_generation_record(source_generation)
+    validate_source_generation_record(
+        source_generation,
+        authority_profile=profile,
+    )
     validate_chapter_revision_ref(chapter_revision_ref)
     if source_generation["payload"]["chapter_revision_ref"] != chapter_revision_ref:
         _fail("B01_SOURCE_GENERATION_MISMATCH", "chapter revision")
@@ -659,7 +798,11 @@ def build_extraction_input_binding(
             expected_type=WRITING_MATERIAL_RECORD_TYPE,
             code="B01_WRITING_MATERIAL_INVALID",
         )
-        validate_writing_material_record(material, reference_records=reference_records)
+        validate_writing_material_record(
+            material,
+            reference_records=reference_records,
+            authority_profile=profile,
+        )
         if (
             item["material_kind"] != material["payload"]["material_kind"]
             or material["payload"]["accepted_source_generation_ref"]
@@ -694,8 +837,12 @@ def build_extraction_input_binding(
 
 
 def validate_extraction_input_binding(
-    binding: dict[str, Any], *, reference_records: list[dict[str, Any]]
+    binding: dict[str, Any],
+    *,
+    reference_records: list[dict[str, Any]],
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> None:
+    profile = require_authority_profile(authority_profile)
     _exact_keys(
         binding,
         {
@@ -711,6 +858,7 @@ def validate_extraction_input_binding(
         chapter_revision_ref=binding["chapter_revision_ref"],
         writing_material_refs=binding["writing_material_refs"],
         reference_records=reference_records,
+        authority_profile=profile,
     )
     if rebuilt != binding:
         _fail("B01_INPUT_BINDING_INVALID", "binding hash")
@@ -722,9 +870,12 @@ def stable_segment_index_id(
     revision_no: int,
     revision_text_sha256: str,
     source_generation_hash: str,
+    *,
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> str:
+    profile = require_authority_profile(authority_profile)
     return (
-        f"segidx:{project_scope_id}:{chapter_id}:r{revision_no}:"
+        f"{profile.segment_id_prefix}:{project_scope_id}:{chapter_id}:r{revision_no}:"
         f"{revision_text_sha256[:12]}:{source_generation_hash[:12]}"
     )
 
@@ -743,7 +894,9 @@ def _build_segment_index_snapshot(
     source_module_identity: str,
     segment_inputs: list[dict[str, Any]],
     created_at: str,
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> dict[str, Any]:
+    profile = require_authority_profile(authority_profile)
     validate_chapter_revision_ref(chapter_revision_ref)
     source_generation = _resolved_record(
         accepted_source_generation_ref,
@@ -751,7 +904,10 @@ def _build_segment_index_snapshot(
         expected_type=SOURCE_GENERATION_RECORD_TYPE,
         code="B01_SOURCE_GENERATION_INVALID",
     )
-    validate_source_generation_record(source_generation)
+    validate_source_generation_record(
+        source_generation,
+        authority_profile=profile,
+    )
     if source_generation["payload"]["chapter_revision_ref"] != chapter_revision_ref:
         _fail("B01_SOURCE_GENERATION_MISMATCH", "segment chapter revision")
     if not segment_inputs:
@@ -813,6 +969,7 @@ def _build_segment_index_snapshot(
         revision_no,
         chapter_revision_ref["revision_text_sha256"],
         accepted_source_generation_ref["record_hash"],
+        authority_profile=profile,
     )
     chapter_length_bytes = len(reconstructed_revision.encode("utf-8"))
     payload = {
@@ -834,14 +991,29 @@ def _build_segment_index_snapshot(
         payload=payload,
         created_at=created_at,
         writer_token=_SEGMENT_WRITER_TOKEN,
+        access=profile.candidate_access,
+        contract_version=profile.contract_version,
     )
 
 
-def validate_segment_index_snapshot(record: dict[str, Any]) -> None:
+def validate_segment_index_snapshot(
+    record: dict[str, Any],
+    *,
+    authority_profile: CandidateAuthorityProfile | None = None,
+) -> None:
+    profile = (
+        authority_profile_for_record(record)
+        if authority_profile is None
+        else require_authority_profile(authority_profile)
+    )
     validate_record(record)
     if record["record_type"] != "M3_SEGMENT_INDEX_SNAPSHOT":
         _fail("B01_SEGMENT_INDEX_INVALID", "record type")
-    if record["source_module"] != SOURCE_MODULE or record["access"] != FIXTURE_ACCESS:
+    if (
+        record["contract_version"] != profile.contract_version
+        or record["source_module"] != SOURCE_MODULE
+        or record["access"] != profile.candidate_access
+    ):
         _fail("B01_SEGMENT_INDEX_INVALID", "record policy")
     payload = record["payload"]
     expected = {
@@ -865,16 +1037,17 @@ def validate_segment_index_snapshot(record: dict[str, Any]) -> None:
         expected_source_module="M1_READ_ONLY_ADAPTER",
         expected_contract_version=CONTRACT_VERSION,
     )
-    if payload["accepted_source_generation_ref"]["access"] not in {
-        FIXTURE_ACCESS,
-        PRODUCT_READ_ONLY_ACCESS,
-    }:
+    if (
+        payload["accepted_source_generation_ref"]["access"]
+        not in profile.allowed_upstream_accesses
+    ):
         _fail("B01_SOURCE_GENERATION_INVALID", "access")
     if payload["source_module_identity"] not in {
         "M2_READ_ONLY_ADAPTER",
         "C2_READ_ONLY_ADAPTER",
         "B01_SYNTHETIC_FIXTURE",
         "B01_AUTHOR_WORKSPACE_SOURCE_ADAPTER_R01",
+        "CCZ142_READ_ONLY_ADAPTER",
     }:
         _fail("B01_SEGMENT_SOURCE_MISMATCH")
     chapter_id, revision_no = _segment_id(payload["chapter_revision_ref"])
@@ -884,6 +1057,7 @@ def validate_segment_index_snapshot(record: dict[str, Any]) -> None:
         revision_no,
         payload["chapter_revision_ref"]["revision_text_sha256"],
         payload["accepted_source_generation_ref"]["record_hash"],
+        authority_profile=profile,
     )
     if (
         payload["stable_segment_index_id"] != record["record_id"]
@@ -931,7 +1105,9 @@ def _validate_attempt_refs(
     refs: list[dict[str, Any]],
     *,
     reference_records: list[dict[str, Any]] | None,
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> None:
+    profile = require_authority_profile(authority_profile)
     if not refs:
         _fail("B01_ATTEMPT_REF_INVALID", "root baseline requires evidence")
     for ref in refs:
@@ -940,9 +1116,9 @@ def _validate_attempt_refs(
             code="B01_ATTEMPT_REF_INVALID",
             records=reference_records,
             expected_type="A_RAW_ATTEMPT_RECEIPT",
-            expected_access=FIXTURE_ACCESS,
-            expected_source_module="A_STAGE_FIXTURE",
-            expected_contract_version=LEGACY_CONTRACT_VERSION,
+            expected_access=profile.attempt_access,
+            expected_source_module=profile.attempt_source_module,
+            expected_contract_version=profile.attempt_contract_version,
         )
 
 
@@ -1120,15 +1296,26 @@ def _build_root_candidate_version(
     segment_inputs: list[dict[str, Any]],
     raw_items: list[dict[str, Any]],
     created_at: str,
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> dict[str, Any]:
+    profile = require_authority_profile(authority_profile)
     validate_chapter_revision_ref(chapter_revision_ref)
     if not _is_non_bool_int(seg) or seg < 1:
         _fail("B01_CANDIDATE_VERSION_INVALID", "segment")
-    _validate_attempt_refs(origin_attempt_refs, reference_records=reference_records)
-    validate_extraction_input_binding(
-        extraction_input_binding, reference_records=reference_records
+    _validate_attempt_refs(
+        origin_attempt_refs,
+        reference_records=reference_records,
+        authority_profile=profile,
     )
-    validate_segment_index_snapshot(segment_index_record)
+    validate_extraction_input_binding(
+        extraction_input_binding,
+        reference_records=reference_records,
+        authority_profile=profile,
+    )
+    validate_segment_index_snapshot(
+        segment_index_record,
+        authority_profile=profile,
+    )
     if (
         extraction_input_binding["chapter_revision_ref"] != chapter_revision_ref
         or segment_index_record["payload"]["chapter_revision_ref"]
@@ -1177,7 +1364,8 @@ def _build_root_candidate_version(
         "version_payload_hash": sha256_value(payload_without_hash),
     }
     record_id = (
-        f"cv:{sha256_value(author_workspace_logical_key)[:12]}:"
+        f"{profile.candidate_id_prefix}:"
+        f"{sha256_value(author_workspace_logical_key)[:12]}:"
         f"{payload['version_payload_hash'][:32]}"
     )
     return _make_record(
@@ -1187,6 +1375,8 @@ def _build_root_candidate_version(
         payload=payload,
         created_at=created_at,
         writer_token=_CANDIDATE_WRITER_TOKEN,
+        access=profile.candidate_access,
+        contract_version=profile.contract_version,
     )
 
 
@@ -1195,14 +1385,23 @@ def validate_candidate_version(
     *,
     allow_child: bool = False,
     reference_records: list[dict[str, Any]] | None = None,
+    authority_profile: CandidateAuthorityProfile | None = None,
 ) -> None:
+    profile = (
+        authority_profile_for_record(record)
+        if authority_profile is None
+        else require_authority_profile(authority_profile)
+    )
     validate_record(record)
     if (
-        record["contract_version"] != CONTRACT_VERSION
+        record["contract_version"] != profile.contract_version
         or record["record_type"] != "M3_CANDIDATE_VERSION"
     ):
         _fail("B01_CANDIDATE_VERSION_INVALID", "record type")
-    if record["source_module"] != SOURCE_MODULE or record["access"] != FIXTURE_ACCESS:
+    if (
+        record["source_module"] != SOURCE_MODULE
+        or record["access"] != profile.candidate_access
+    ):
         _fail("B01_CANDIDATE_VERSION_INVALID", "record policy")
     payload = record["payload"]
     expected = {
@@ -1225,7 +1424,9 @@ def validate_candidate_version(
     if reference_records is None:
         _fail("B01_REFERENCE_INTEGRITY_FAILED", "reference records required")
     validate_extraction_input_binding(
-        payload["extraction_input_binding"], reference_records=reference_records
+        payload["extraction_input_binding"],
+        reference_records=reference_records,
+        authority_profile=profile,
     )
     if (
         payload["extraction_input_binding"]["chapter_revision_ref"]
@@ -1237,9 +1438,9 @@ def validate_candidate_version(
         code="B01_SEGMENT_INDEX_INVALID",
         records=reference_records,
         expected_type="M3_SEGMENT_INDEX_SNAPSHOT",
-        expected_access=FIXTURE_ACCESS,
+        expected_access=profile.candidate_access,
         expected_source_module=SOURCE_MODULE,
-        expected_contract_version=CONTRACT_VERSION,
+        expected_contract_version=profile.contract_version,
     )
     segment_records = [
         item
@@ -1249,7 +1450,10 @@ def validate_candidate_version(
     if len(segment_records) != 1:
         _fail("B01_SEGMENT_INDEX_INVALID", "segment reference")
     segment_record = segment_records[0]
-    validate_segment_index_snapshot(segment_record)
+    validate_segment_index_snapshot(
+        segment_record,
+        authority_profile=profile,
+    )
     if (
         segment_record["payload"]["chapter_revision_ref"]
         != payload["chapter_revision_ref"]
@@ -1275,15 +1479,16 @@ def validate_candidate_version(
             payload["parent_candidate_version_ref"],
             code="B01_CANDIDATE_VERSION_INVALID",
             expected_type="M3_CANDIDATE_VERSION",
-            expected_access=FIXTURE_ACCESS,
+            expected_access=profile.candidate_access,
             expected_source_module=SOURCE_MODULE,
-            expected_contract_version=CONTRACT_VERSION,
+            expected_contract_version=profile.contract_version,
         )
     elif payload["origin_commit_intent_ref"] is not None:
         _fail("B01_CHILD_CREATION_OUT_OF_SCOPE")
     _validate_attempt_refs(
         payload["origin_attempt_refs"],
         reference_records=reference_records,
+        authority_profile=profile,
     )
     if not isinstance(payload["items"], list) or not isinstance(
         payload["lineage_index"], list
@@ -1422,11 +1627,24 @@ def validate_candidate_version(
 
 
 def pointer_logical_key(
-    chapter_revision_ref: dict[str, Any], seg: int, input_binding_hash: str
+    chapter_revision_ref: dict[str, Any],
+    seg: int,
+    input_binding_hash: str,
+    *,
+    project_scope_id: str | None = None,
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> str:
+    profile = require_authority_profile(authority_profile)
     chapter_id, revision_no = _segment_id(chapter_revision_ref)
+    project_segment = ""
+    if profile is PRODUCT_AUTHORITY_PROFILE:
+        if not isinstance(project_scope_id, str) or not project_scope_id:
+            _fail("B01_POINTER_SCOPE_MISMATCH", "product project scope")
+        project_segment = (
+            "/" + hashlib.sha256(project_scope_id.encode("utf-8")).hexdigest()
+        )
     return (
-        f"fixture:m3_candidate.current/{CANDIDATE_SCHEMA_ID}/"
+        f"{profile.pointer_prefix}{project_segment}/{CANDIDATE_SCHEMA_ID}/"
         f"{chapter_id}/r{revision_no}/seg{seg}/{input_binding_hash}"
     )
 
@@ -1439,14 +1657,16 @@ def build_live_pointer(
     seg: int,
     input_binding_hash: str,
     candidate_ref: dict[str, Any],
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> dict[str, Any]:
+    profile = require_authority_profile(authority_profile)
     validate_chapter_revision_ref(chapter_revision_ref)
     validate_record_ref(
         candidate_ref,
         expected_type="M3_CANDIDATE_VERSION",
-        expected_access=FIXTURE_ACCESS,
+        expected_access=profile.candidate_access,
         expected_source_module=SOURCE_MODULE,
-        expected_contract_version=CONTRACT_VERSION,
+        expected_contract_version=profile.contract_version,
     )
     if not _is_sha256(input_binding_hash):
         _fail("B01_POINTER_SCOPE_MISMATCH", "input binding hash")
@@ -1456,9 +1676,13 @@ def build_live_pointer(
         "project_scope_id": project_scope_id,
         "author_workspace_logical_key": author_workspace_logical_key,
         "logical_pointer_key": pointer_logical_key(
-            chapter_revision_ref, seg, input_binding_hash
+            chapter_revision_ref,
+            seg,
+            input_binding_hash,
+            project_scope_id=project_scope_id,
+            authority_profile=profile,
         ),
-        "pointer_namespace": FIXTURE_POINTER_NAMESPACE,
+        "pointer_namespace": profile.pointer_namespace,
         "candidate_schema_id": CANDIDATE_SCHEMA_ID,
         "input_binding_hash": input_binding_hash,
         "chapter_revision_ref": deepcopy(chapter_revision_ref),
@@ -1478,7 +1702,9 @@ def _build_pointer_snapshot(
     candidate_ref: dict[str, Any],
     operation_id: str,
     created_at: str,
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> dict[str, Any]:
+    profile = require_authority_profile(authority_profile)
     validate_chapter_revision_ref(chapter_revision_ref)
     live_pointer = build_live_pointer(
         project_scope_id=project_scope_id,
@@ -1487,6 +1713,7 @@ def _build_pointer_snapshot(
         seg=seg,
         input_binding_hash=input_binding_hash,
         candidate_ref=candidate_ref,
+        authority_profile=profile,
     )
     payload_without_hash = {
         **live_pointer,
@@ -1505,6 +1732,8 @@ def _build_pointer_snapshot(
         payload=payload,
         created_at=created_at,
         writer_token=_POINTER_WRITER_TOKEN,
+        access=profile.candidate_access,
+        contract_version=profile.contract_version,
     )
 
 
@@ -1514,11 +1743,18 @@ def _validate_pointer_root_candidate(
     author_workspace_logical_key: str,
     reference_records: list[dict[str, Any]],
     code: str,
+    authority_profile: CandidateAuthorityProfile | None = None,
 ) -> None:
+    profile = (
+        authority_profile_for_record(candidate)
+        if authority_profile is None
+        else require_authority_profile(authority_profile)
+    )
     validate_candidate_version(
         candidate,
         allow_child=True,
         reference_records=reference_records,
+        authority_profile=profile,
     )
     payload = candidate["payload"]
     if (
@@ -1528,7 +1764,8 @@ def _validate_pointer_root_candidate(
     ):
         _fail(code, "pointer target is not a root baseline")
     expected_record_id = (
-        f"cv:{sha256_value(author_workspace_logical_key)[:12]}:"
+        f"{profile.candidate_id_prefix}:"
+        f"{sha256_value(author_workspace_logical_key)[:12]}:"
         f"{payload['version_payload_hash'][:32]}"
     )
     if candidate["record_id"] != expected_record_id:
@@ -1536,12 +1773,24 @@ def _validate_pointer_root_candidate(
 
 
 def validate_pointer_snapshot(
-    record: dict[str, Any], *, records: list[dict[str, Any]] | None = None
+    record: dict[str, Any],
+    *,
+    records: list[dict[str, Any]] | None = None,
+    authority_profile: CandidateAuthorityProfile | None = None,
 ) -> None:
+    profile = (
+        authority_profile_for_record(record)
+        if authority_profile is None
+        else require_authority_profile(authority_profile)
+    )
     validate_record(record)
     if record["record_type"] != "M3_CANDIDATE_POINTER_SNAPSHOT":
         _fail("B01_POINTER_SCOPE_MISMATCH", "record type")
-    if record["source_module"] != SOURCE_MODULE or record["access"] != FIXTURE_ACCESS:
+    if (
+        record["contract_version"] != profile.contract_version
+        or record["source_module"] != SOURCE_MODULE
+        or record["access"] != profile.candidate_access
+    ):
         _fail("B01_POINTER_SCOPE_MISMATCH", "record policy")
     payload = record["payload"]
     expected = {
@@ -1560,7 +1809,7 @@ def validate_pointer_snapshot(
         "snapshot_request_hash",
     }
     _exact_keys(payload, expected, "B01_POINTER_SCOPE_MISMATCH")
-    if payload["pointer_namespace"] != FIXTURE_POINTER_NAMESPACE:
+    if payload["pointer_namespace"] != profile.pointer_namespace:
         _fail("B01_POINTER_SCOPE_MISMATCH")
     validate_chapter_revision_ref(payload["chapter_revision_ref"])
     validate_record_ref(
@@ -1568,9 +1817,9 @@ def validate_pointer_snapshot(
         code="B01_POINTER_SCOPE_MISMATCH",
         records=records,
         expected_type="M3_CANDIDATE_VERSION",
-        expected_access=FIXTURE_ACCESS,
+        expected_access=profile.candidate_access,
         expected_source_module=SOURCE_MODULE,
-        expected_contract_version=CONTRACT_VERSION,
+        expected_contract_version=profile.contract_version,
     )
     if records is not None:
         candidates = [
@@ -1585,6 +1834,7 @@ def validate_pointer_snapshot(
             author_workspace_logical_key=payload["author_workspace_logical_key"],
             reference_records=records,
             code="B01_POINTER_SCOPE_MISMATCH",
+            authority_profile=profile,
         )
         if (
             candidates[0]["payload"]["chapter_revision_ref"]
@@ -1606,6 +1856,8 @@ def validate_pointer_snapshot(
         payload["chapter_revision_ref"],
         payload["seg"],
         payload["input_binding_hash"],
+        project_scope_id=payload["project_scope_id"],
+        authority_profile=profile,
     ):
         _fail("B01_POINTER_SCOPE_MISMATCH", "logical key")
     if not _is_non_bool_int(payload["seg"]) or payload["seg"] < 1:
@@ -1623,10 +1875,12 @@ def _make_lineage_locator(
     *,
     reference_records: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    profile = authority_profile_for_record(candidate_version)
     validate_candidate_version(
         candidate_version,
         allow_child=True,
         reference_records=reference_records,
+        authority_profile=profile,
     )
     candidate_ref = record_ref(candidate_version)
     matches = [
@@ -1639,7 +1893,7 @@ def _make_lineage_locator(
     entry = matches[0]
     locator = {
         "contract": LINEAGE_LOCATOR_CONTRACT,
-        "contract_version": CONTRACT_VERSION,
+        "contract_version": profile.contract_version,
         "candidate_version_ref": candidate_ref,
         "lineage_id": entry["lineage_id"],
         "json_pointer": entry["json_pointer"],
@@ -1668,17 +1922,22 @@ def validate_lineage_locator(
         "locator_hash",
     }
     _exact_keys(locator, expected, "B01_LINEAGE_INDEX_INVALID")
+    profile = (
+        authority_profile_for_record(candidate_version)
+        if candidate_version is not None
+        else authority_profile_for_ref(locator["candidate_version_ref"])
+    )
     if locator["contract"] != LINEAGE_LOCATOR_CONTRACT:
         _fail("B01_LINEAGE_INDEX_INVALID", "locator contract")
-    if locator["contract_version"] != CONTRACT_VERSION:
+    if locator["contract_version"] != profile.contract_version:
         _fail("B01_LINEAGE_INDEX_INVALID", "locator contract version")
     validate_record_ref(
         locator["candidate_version_ref"],
         records=[candidate_version] if candidate_version is not None else None,
         expected_type="M3_CANDIDATE_VERSION",
-        expected_access=FIXTURE_ACCESS,
+        expected_access=profile.candidate_access,
         expected_source_module=SOURCE_MODULE,
-        expected_contract_version=CONTRACT_VERSION,
+        expected_contract_version=profile.contract_version,
     )
     preimage = {key: value for key, value in locator.items() if key != "locator_hash"}
     if locator["locator_hash"] != sha256_value(preimage):
@@ -1690,6 +1949,7 @@ def validate_lineage_locator(
             candidate_version,
             allow_child=True,
             reference_records=reference_records,
+            authority_profile=profile,
         )
         matches = [
             entry
@@ -1723,10 +1983,12 @@ def _make_evidence_locator(
     *,
     reference_records: list[dict[str, Any]],
 ) -> dict[str, Any]:
+    profile = authority_profile_for_record(candidate_version)
     validate_candidate_version(
         candidate_version,
         allow_child=True,
         reference_records=reference_records,
+        authority_profile=profile,
     )
     matches = [
         (index, item)
@@ -1738,7 +2000,7 @@ def _make_evidence_locator(
     index, item = matches[0]
     locator = {
         "contract": EVIDENCE_LOCATOR_CONTRACT,
-        "contract_version": CONTRACT_VERSION,
+        "contract_version": profile.contract_version,
         "candidate_version_ref": record_ref(candidate_version),
         "lineage_id": lineage_id,
         "evidence_json_pointer": f"/items/{index}/evidence",
@@ -1758,6 +2020,7 @@ def validate_evidence_locator(
     candidate_version: dict[str, Any],
     reference_records: list[dict[str, Any]],
 ) -> None:
+    profile = authority_profile_for_record(candidate_version)
     _exact_keys(
         locator,
         {
@@ -1774,22 +2037,23 @@ def validate_evidence_locator(
     )
     if (
         locator["contract"] != EVIDENCE_LOCATOR_CONTRACT
-        or locator["contract_version"] != CONTRACT_VERSION
+        or locator["contract_version"] != profile.contract_version
     ):
         _fail("B01_EVIDENCE_LOCATOR_INVALID", "contract")
     validate_candidate_version(
         candidate_version,
         allow_child=True,
         reference_records=reference_records,
+        authority_profile=profile,
     )
     validate_record_ref(
         locator["candidate_version_ref"],
         code="B01_EVIDENCE_LOCATOR_INVALID",
         records=[candidate_version],
         expected_type="M3_CANDIDATE_VERSION",
-        expected_access=FIXTURE_ACCESS,
+        expected_access=profile.candidate_access,
         expected_source_module=SOURCE_MODULE,
-        expected_contract_version=CONTRACT_VERSION,
+        expected_contract_version=profile.contract_version,
     )
     matches = [
         (index, item)
@@ -1990,7 +2254,12 @@ def make_read_only_child_fixture(
     reference_records: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Build a synthetic child for structural diff fixtures; never publish it."""
-    validate_candidate_version(parent, reference_records=reference_records)
+    profile = authority_profile_for_record(parent)
+    validate_candidate_version(
+        parent,
+        reference_records=reference_records,
+        authority_profile=profile,
+    )
     payload = parent["payload"]
     items: list[dict[str, Any]] = []
     for index, raw in enumerate(raw_items):
@@ -2047,6 +2316,8 @@ def make_read_only_child_fixture(
         payload=child_payload,
         created_at=parent["created_at"],
         writer_token=_CANDIDATE_WRITER_TOKEN,
+        access=profile.candidate_access,
+        contract_version=profile.contract_version,
     )
 
 
@@ -2155,10 +2426,18 @@ def _stage_immutable_record(
 
 
 def validate_live_pointer(
-    pointer: dict[str, Any], *, records: list[dict[str, Any]]
+    pointer: dict[str, Any],
+    *,
+    records: list[dict[str, Any]],
+    authority_profile: CandidateAuthorityProfile | None = None,
 ) -> None:
     _exact_keys(pointer, LIVE_POINTER_KEYS, "B01_POINTER_SCOPE_MISMATCH")
-    if pointer["pointer_namespace"] != FIXTURE_POINTER_NAMESPACE:
+    profile = (
+        authority_profile_for_pointer(pointer)
+        if authority_profile is None
+        else require_authority_profile(authority_profile)
+    )
+    if pointer["pointer_namespace"] != profile.pointer_namespace:
         _fail("B01_POINTER_SCOPE_MISMATCH", "namespace")
     validate_chapter_revision_ref(pointer["chapter_revision_ref"])
     if not _is_non_bool_int(pointer["seg"]) or pointer["seg"] < 1:
@@ -2171,6 +2450,8 @@ def validate_live_pointer(
         pointer["chapter_revision_ref"],
         pointer["seg"],
         pointer["input_binding_hash"],
+        project_scope_id=pointer["project_scope_id"],
+        authority_profile=profile,
     ):
         _fail("B01_POINTER_SCOPE_MISMATCH", "logical key")
     validate_record_ref(
@@ -2178,9 +2459,9 @@ def validate_live_pointer(
         code="B01_REFERENCE_INTEGRITY_FAILED",
         records=records,
         expected_type="M3_CANDIDATE_VERSION",
-        expected_access=FIXTURE_ACCESS,
+        expected_access=profile.candidate_access,
         expected_source_module=SOURCE_MODULE,
-        expected_contract_version=CONTRACT_VERSION,
+        expected_contract_version=profile.contract_version,
     )
     candidates = [
         record
@@ -2194,6 +2475,7 @@ def validate_live_pointer(
         author_workspace_logical_key=pointer["author_workspace_logical_key"],
         reference_records=records,
         code="B01_POINTER_SCOPE_MISMATCH",
+        authority_profile=profile,
     )
     candidate_payload = candidates[0]["payload"]
     if (
@@ -2242,9 +2524,11 @@ class CandidateVersionStore:
         reference_records: list[dict[str, Any]],
         segment_inputs: list[dict[str, Any]],
     ) -> dict[str, Any]:
+        profile = authority_profile_for_record(record)
         validate_candidate_version(
             record,
             reference_records=reference_records,
+            authority_profile=profile,
         )
         segment_records = [
             item
@@ -2266,7 +2550,8 @@ class CandidateVersionStore:
                 _fail("B01_EVIDENCE_BINDING_INVALID", "exact source locations")
         payload_hash = record["payload"]["version_payload_hash"]
         expected_record_id = (
-            f"cv:{sha256_value(author_workspace_logical_key)[:12]}:{payload_hash[:32]}"
+            f"{profile.candidate_id_prefix}:"
+            f"{sha256_value(author_workspace_logical_key)[:12]}:{payload_hash[:32]}"
         )
         if record["record_id"] != expected_record_id:
             _fail("B01_CANDIDATE_VERSION_INVALID", "candidate workspace")
@@ -2329,8 +2614,17 @@ class CandidatePointerSnapshotWriter:
         live_pointer: dict[str, Any],
         all_records: list[dict[str, Any]],
     ) -> dict[str, Any]:
-        validate_pointer_snapshot(pointer_record, records=all_records)
-        validate_live_pointer(live_pointer, records=all_records)
+        profile = authority_profile_for_record(pointer_record)
+        validate_pointer_snapshot(
+            pointer_record,
+            records=all_records,
+            authority_profile=profile,
+        )
+        validate_live_pointer(
+            live_pointer,
+            records=all_records,
+            authority_profile=profile,
+        )
         pointer_key = live_pointer["logical_pointer_key"]
         if pointer_key in state["pointers"]:
             _fail("B01_POINTER_ALREADY_INITIALIZED")
@@ -2361,8 +2655,12 @@ class VersionDiffProjector:
 
 
 def verify_state(
-    state: dict[str, Any], *, reference_records: list[dict[str, Any]]
+    state: dict[str, Any],
+    *,
+    reference_records: list[dict[str, Any]],
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
 ) -> None:
+    profile = require_authority_profile(authority_profile)
     _exact_keys(
         state, {"records", "pointers", "operations"}, "B01_REFERENCE_INTEGRITY_FAILED"
     )
@@ -2371,7 +2669,10 @@ def verify_state(
     for record in records:
         validate_record(record)
         if record["record_type"] == "M3_SEGMENT_INDEX_SNAPSHOT":
-            validate_segment_index_snapshot(record)
+            validate_segment_index_snapshot(
+                record,
+                authority_profile=profile,
+            )
             validate_record_ref(
                 record["payload"]["accepted_source_generation_ref"],
                 code="B01_SOURCE_GENERATION_INVALID",
@@ -2380,23 +2681,32 @@ def verify_state(
                 expected_source_module="M1_READ_ONLY_ADAPTER",
                 expected_contract_version=CONTRACT_VERSION,
             )
-            if record["payload"]["accepted_source_generation_ref"]["access"] not in {
-                FIXTURE_ACCESS,
-                PRODUCT_READ_ONLY_ACCESS,
-            }:
+            if (
+                record["payload"]["accepted_source_generation_ref"]["access"]
+                not in profile.allowed_upstream_accesses
+            ):
                 _fail("B01_SOURCE_GENERATION_INVALID", "access")
         elif record["record_type"] == "M3_CANDIDATE_VERSION":
             validate_candidate_version(
                 record,
                 allow_child=False,
                 reference_records=all_records,
+                authority_profile=profile,
             )
         elif record["record_type"] == "M3_CANDIDATE_POINTER_SNAPSHOT":
-            validate_pointer_snapshot(record, records=all_records)
+            validate_pointer_snapshot(
+                record,
+                records=all_records,
+                authority_profile=profile,
+            )
         else:
             _fail("B01_REFERENCE_INTEGRITY_FAILED", "unexpected persisted record")
     for pointer_key, pointer in state["pointers"].items():
-        validate_live_pointer(pointer, records=all_records)
+        validate_live_pointer(
+            pointer,
+            records=all_records,
+            authority_profile=profile,
+        )
         if pointer["logical_pointer_key"] != pointer_key:
             _fail("B01_POINTER_SCOPE_MISMATCH", "pointer map key")
         snapshots = [
@@ -2488,7 +2798,11 @@ def _build_ccz142_extraction_handoff_payload(
 
 
 class B01Service:
-    __slots__ = ("store", "__open_extraction_admission")
+    __slots__ = (
+        "store",
+        "__open_extraction_admission",
+        "__authority_profile",
+    )
 
     def __init__(self, _store: FixtureStore) -> None:
         _fail("B01_RUNTIME_COMPOSITION_REQUIRED")
@@ -2557,10 +2871,11 @@ class B01Service:
         extraction_admission: object | None = None,
         operation_id: str,
         created_at: str,
-        pointer_namespace: str = FIXTURE_POINTER_NAMESPACE,
+        pointer_namespace: str | None = None,
         crash_point: str | None = None,
         **unexpected_inputs: Any,
     ) -> dict[str, Any]:
+        profile = self.__authority_profile
         if unexpected_inputs:
             if "raw_items" in unexpected_inputs:
                 _fail("B01_EXTRACTION_ADMISSION_REQUIRED", "raw_items")
@@ -2581,7 +2896,7 @@ class B01Service:
             seg=seg,
             origin_attempt_refs=origin_attempt_refs,
         )
-        if pointer_namespace != FIXTURE_POINTER_NAMESPACE:
+        if pointer_namespace is not None and pointer_namespace != profile.pointer_namespace:
             _fail("B01_POINTER_SCOPE_MISMATCH")
         if crash_point == "before_staging":
             _fail("B01_SIMULATED_CRASH", crash_point)
@@ -2590,6 +2905,7 @@ class B01Service:
             chapter_revision_ref=chapter_revision_ref,
             writing_material_refs=writing_material_refs,
             reference_records=reference_records,
+            authority_profile=profile,
         )
         segment_record = SegmentIndexSnapshotWriter.build(
             project_scope_id=project_scope_id,
@@ -2600,12 +2916,20 @@ class B01Service:
             source_module_identity=source_module_identity,
             segment_inputs=segment_inputs,
             created_at=created_at,
+            authority_profile=profile,
         )
-        validate_segment_index_snapshot(segment_record)
+        validate_segment_index_snapshot(
+            segment_record,
+            authority_profile=profile,
+        )
         if seg > len(segment_record["payload"]["segments"]):
             _fail("B01_SEGMENT_INDEX_INVALID", "selected segment")
         state = self.store.read()
-        verify_state(state, reference_records=reference_records)
+        verify_state(
+            state,
+            reference_records=reference_records,
+            authority_profile=profile,
+        )
         staged = deepcopy(state)
         segment_ref = SegmentIndexSnapshotWriter.stage(staged, segment_record)
         normalized_segments = [
@@ -2627,10 +2951,12 @@ class B01Service:
             segment_inputs=segment_inputs,
             raw_items=raw_items,
             created_at=created_at,
+            authority_profile=profile,
         )
         validate_candidate_version(
             candidate_record,
             reference_records=[normalized_segment_record, *reference_records],
+            authority_profile=profile,
         )
         candidate_ref = CandidateVersionStore.stage_root(
             staged,
@@ -2648,9 +2974,14 @@ class B01Service:
             candidate_ref=candidate_ref,
             operation_id=operation_id,
             created_at=created_at,
+            authority_profile=profile,
         )
         all_staged_records = [*reference_records, *staged["records"].values()]
-        validate_pointer_snapshot(pointer_record, records=all_staged_records)
+        validate_pointer_snapshot(
+            pointer_record,
+            records=all_staged_records,
+            authority_profile=profile,
+        )
         request_hash = pointer_record["payload"]["snapshot_request_hash"]
         pointer_key = pointer_record["payload"]["logical_pointer_key"]
         prior_operation = state["operations"].get(operation_id)
@@ -2680,9 +3011,9 @@ class B01Service:
                 code="B01_REFERENCE_INTEGRITY_FAILED",
                 records=list(state["records"].values()),
                 expected_type="M3_CANDIDATE_POINTER_SNAPSHOT",
-                expected_access=FIXTURE_ACCESS,
+                expected_access=profile.candidate_access,
                 expected_source_module=SOURCE_MODULE,
-                expected_contract_version=CONTRACT_VERSION,
+                expected_contract_version=profile.contract_version,
             )
             prior_snapshots = [
                 existing
@@ -2711,6 +3042,7 @@ class B01Service:
             seg=seg,
             input_binding_hash=extraction_input_binding["input_binding_hash"],
             candidate_ref=candidate_ref,
+            authority_profile=profile,
         )
         snapshot_ref = CandidatePointerSnapshotWriter.stage_initialization(
             staged,
@@ -2737,7 +3069,11 @@ class B01Service:
         if crash_point == "after_commit_before_readback":
             _fail("B01_SIMULATED_CRASH_AFTER_COMMIT", crash_point)
         reopened = self.store.read()
-        verify_state(reopened, reference_records=reference_records)
+        verify_state(
+            reopened,
+            reference_records=reference_records,
+            authority_profile=profile,
+        )
         if canonical_bytes(reopened) != canonical_bytes(staged):
             _fail("B01_TRANSACTION_READBACK_INVALID")
         return result
@@ -2745,13 +3081,23 @@ class B01Service:
 
 def _compose_ccz142_b01_runtime(
     store: FixtureStore,
+    *,
+    authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
+    _product_capture_token: object | None = None,
 ) -> tuple[B01Service, Callable[..., object]]:
     """Split source-signing authority from the ordinary B-01 service surface."""
 
     seal, open_admission = _new_extraction_admission_channel()
+    profile = require_authority_profile(authority_profile)
+    if (
+        profile != FIXTURE_AUTHORITY_PROFILE
+        and _product_capture_token is not _PRODUCT_B01_CAPTURE_TOKEN
+    ):
+        _fail("B01_PRODUCT_PROFILE_REQUIRES_AUTHORITY_CAPTURE")
     service = object.__new__(B01Service)
     service.store = store
     service._B01Service__open_extraction_admission = open_admission
+    service._B01Service__authority_profile = profile
 
     def admit_from_trusted_adapter(**kwargs: Any) -> object:
         return seal(_build_ccz142_extraction_handoff_payload(**kwargs))

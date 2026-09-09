@@ -10,6 +10,7 @@ import sqlite3
 import stat
 import sys
 import tempfile
+import threading
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
@@ -23,6 +24,9 @@ for candidate in (REPOSITORY_ROOT, B05_ROOT):
 
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
     B01ContractError,
+    FIXTURE_AUTHORITY_PROFILE,
+    CandidateAuthorityProfile,
+    require_authority_profile,
     validate_candidate_version,
 )
 from b05_contracts import (  # noqa: E402
@@ -58,6 +62,7 @@ RUN_FENCE_KEYS = {
     "expected_state_revision",
 }
 _B06_COMMIT_PUBLISH_TOKEN = object()
+_CANDIDATE_AUTHORITY_STORE_TOKEN = object()
 
 
 def _sha(value: Any) -> bool:
@@ -132,15 +137,36 @@ class B06CommitStore:
         "physical_write_attempts",
         "_database_path",
         "_lock_path",
+        "_authority_profile",
+        "_thread_lock",
     )
 
-    def __init__(self, root: Path, *, failure_point: str | None = None) -> None:
+    def __init__(
+        self,
+        root: Path,
+        *,
+        failure_point: str | None = None,
+        authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
+        _candidate_authority_store_token: object | None = None,
+    ) -> None:
+        profile = require_authority_profile(authority_profile)
+        if (
+            profile != FIXTURE_AUTHORITY_PROFILE
+            and _candidate_authority_store_token is not _CANDIDATE_AUTHORITY_STORE_TOKEN
+        ):
+            fail("B06_PRODUCT_PROFILE_REQUIRES_CANDIDATE_AUTHORITY_STORE")
         self.root = self._guard_storage_path(root)
         self.failure_point = failure_point
+        self._authority_profile = profile
         self.events: list[dict[str, str]] = []
         self.physical_write_attempts: list[dict[str, str]] = []
         self._database_path = self.root / "b06-commit-core.sqlite3"
         self._lock_path = self.root / ".b06-commit.lock"
+        self._thread_lock = threading.RLock()
+
+    @property
+    def authority_profile(self) -> CandidateAuthorityProfile:
+        return self._authority_profile
 
     @staticmethod
     def _guard_storage_path(path: Path) -> Path:
@@ -172,6 +198,7 @@ class B06CommitStore:
                 allow_child=base_candidate["payload"]["parent_candidate_version_ref"]
                 is not None,
                 reference_records=reference_records,
+                authority_profile=self._authority_profile,
             )
         except (B01ContractError, KeyError) as error:
             fail("B06_BOOTSTRAP_CANDIDATE_INVALID", str(error))
@@ -179,6 +206,7 @@ class B06CommitStore:
             live_pointer,
             candidate=base_candidate,
             reference_records=reference_records,
+            authority_profile=self._authority_profile,
         )
         self.root.mkdir(parents=True, exist_ok=True)
         descriptor = os.open(self._lock_path, os.O_CREAT | os.O_RDWR, 0o600)
@@ -233,21 +261,22 @@ class B06CommitStore:
 
     @contextmanager
     def serialization(self) -> Iterator[None]:
-        if not self._lock_path.is_file():
-            fail("B06_STORE_NOT_INITIALIZED")
-        flags = os.O_RDWR
-        if hasattr(os, "O_NOFOLLOW"):
-            flags |= os.O_NOFOLLOW
-        descriptor = os.open(self._lock_path, flags)
-        try:
-            metadata = os.fstat(descriptor)
-            if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
-                fail("B06_COMMIT_LOCK_INVALID")
-            fcntl.flock(descriptor, fcntl.LOCK_EX)
-            yield
-        finally:
-            fcntl.flock(descriptor, fcntl.LOCK_UN)
-            os.close(descriptor)
+        with self._thread_lock:
+            if not self._lock_path.is_file():
+                fail("B06_STORE_NOT_INITIALIZED")
+            flags = os.O_RDWR
+            if hasattr(os, "O_NOFOLLOW"):
+                flags |= os.O_NOFOLLOW
+            descriptor = os.open(self._lock_path, flags)
+            try:
+                metadata = os.fstat(descriptor)
+                if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+                    fail("B06_COMMIT_LOCK_INVALID")
+                fcntl.flock(descriptor, fcntl.LOCK_EX)
+                yield
+            finally:
+                fcntl.flock(descriptor, fcntl.LOCK_UN)
+                os.close(descriptor)
 
     def _inject(self, point: str) -> None:
         if self.failure_point == point:
@@ -616,6 +645,7 @@ class B06CommitService:
                     pointer_before,
                     candidate=base_candidate,
                     reference_records=self.reference_records,
+                    authority_profile=self.store.authority_profile,
                 )
                 if (
                     pointer_before["project_scope_id"] != project_scope_id
@@ -681,7 +711,8 @@ class B06CommitService:
                     if key != "record_hash"
                 }
                 child["record_id"] = (
-                    f"cv:{sha256_value(pointer_before['author_workspace_logical_key'])[:12]}:"
+                    f"{self.store.authority_profile.candidate_id_prefix}:"
+                    f"{sha256_value(pointer_before['author_workspace_logical_key'])[:12]}:"
                     f"{child_payload['version_payload_hash'][:32]}"
                 )
                 child["record_version"] = base_candidate["record_version"] + 1
@@ -693,6 +724,7 @@ class B06CommitService:
                         child,
                         allow_child=True,
                         reference_records=self.reference_records,
+                        authority_profile=self.store.authority_profile,
                     )
                 except B01ContractError as error:
                     fail("B06_CHILD_CANDIDATE_INVALID", str(error))
@@ -703,6 +735,7 @@ class B06CommitService:
                     pointer_after,
                     candidate=child,
                     reference_records=self.reference_records,
+                    authority_profile=self.store.authority_profile,
                 )
                 freshness_after = self._freshness()
                 if canonical_bytes(freshness_after) != canonical_bytes(

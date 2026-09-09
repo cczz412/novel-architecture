@@ -6,6 +6,8 @@
 
 它不是新账本，也不保存提示。每次读取都会重新核对 active route、B-02／policy／gate 新鲜度、live pointer、B-07 run、B-08 对分类／覆盖／segment／pointer／MergeReceipt 的完整 exact-current 判断和 B-01 locator。视图自身还会逐项校验 authority scope 与 current lineage／evidence locator 的标识、合同、ref、JSON pointer 和 hash，并要求全部 hint 共用同一个 route receipt 和 lifecycle head；重算顶层 `view_hash` 也不能掩盖畸形或混合权威。读完得到的 `CurrentCausalHintView` 用完即丢。
 
+Issue #231 让读取器按候选引用自带的身份判断 fixture 或 product，再核对对应 pointer key。它仍然只读且零持久化，不成为新 writer。
+
 ## 入口
 
 - `CurrentCausalHintAuthorityReader.read(request)`：按固定顺序读取并复验权威，读前／读后 fingerprint 不同就失败关闭。

@@ -8,6 +8,7 @@ from typing import Any
 from b04_contracts import (
     FORBIDDEN_B05_TYPES,
     PROJECTOR_MAP,
+    b01_record_ref,
     canonical_bytes,
     exact_keys,
     expected_protected_entries,
@@ -264,7 +265,9 @@ class PatchPreviewProjector:
         preview = {
             "view_type": "DERIVED_RECOMPUTABLE",
             "projector": PROJECTOR_MAP["PatchPreview"],
-            "base_candidate_version_ref": record_ref(context["candidate_version"]),
+            "base_candidate_version_ref": b01_record_ref(
+                context["candidate_version"]
+            ),
             "protection_set_ref": record_ref(protection),
             "patch_ref": record_ref(patch),
             "diagnostic_refs": deepcopy(patch_payload["diagnostic_refs"]),

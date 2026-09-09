@@ -1,0 +1,110 @@
+{
+  "identity": {
+    "authority_identity": "PRODUCT_CANDIDATE_AUTHORITY",
+    "authority_schema_identity": "r02-candidate",
+    "authority_schema_full_layout_guard": true,
+    "migration_control_schema_identity": "ccz142-product-namespace-migration-r04",
+    "migration_control_full_schema_guard": "five exact tables, columns, primary keys and unique indexes",
+    "candidate_contract_version": "r04-product-candidate",
+    "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
+    "authority_store_id": "64 lowercase hexadecimal characters persisted with the store",
+    "storage_locator_hash": "SHA-256 of store id, resolved database path and project scope",
+    "root_record_id_prefix": "pcv:",
+    "segment_record_id_prefix": "psegidx:"
+  },
+  "product_root_ref_example": {
+    "access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "contract": "M3_RECORD_REF",
+    "contract_version": "r04-product-candidate",
+    "record_contract_version": "r04-product-candidate",
+    "record_hash": "f85aef0ca9d9553ce4713fae769581c66140ed7a9c7dbf91b320978990e4bcff",
+    "record_id": "pcv:bb996ed5437f:b2aebe60db74cbcc45cd7511891ffc81",
+    "record_type": "M3_CANDIDATE_VERSION",
+    "record_version": 1,
+    "source_module": "M3"
+  },
+  "product_child_ref_example": {
+    "access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "contract": "M3_RECORD_REF",
+    "contract_version": "r04-product-candidate",
+    "record_contract_version": "r04-product-candidate",
+    "record_hash": "b996479fdd6cab5fd96f3c96b4c2e2dfcf85dcd29a3977499012b05e80699276",
+    "record_id": "pcv:bb996ed5437f:f8d06c0ef1adc433c905250705bde2fd",
+    "record_type": "M3_CANDIDATE_VERSION",
+    "record_version": 2,
+    "source_module": "M3"
+  },
+  "product_pointer_example": {
+    "generation": 2,
+    "logical_pointer_key": "product:m3_candidate.current/0e9acf4860184513a42e8f3475c4c0455da42a234562129f7f60e502b7a2ae2f/novel-fact-extraction-v2.1/product-chapter-001/r1/seg1/65dff7c65900e2b0e59fbef6690f6417d63167fd63c45c5ec32555a20e9db627",
+    "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
+    "target_record_id": "pcv:bb996ed5437f:f8d06c0ef1adc433c905250705bde2fd"
+  },
+  "migration_state_sequence": [
+    "DISCOVERED",
+    "SOURCE_VERIFIED",
+    "TARGET_STAGED",
+    "SHADOW_VERIFIED",
+    "CUTOVER_COMMITTED",
+    "POST_CUTOVER_ACTIVE"
+  ],
+  "migration_target_binding": {
+    "project_scope_id": "product-project-001",
+    "target_authority_store_id": "must equal the staged CandidateAuthorityStore",
+    "target_storage_locator_hash": "must equal the staged database location binding",
+    "target_pointer_key": "must equal the staged product pointer",
+    "read_policy": "POST_CUTOVER_ACTIVE and exact binding only"
+  },
+  "persistent_authority_bindings": {
+    "project_binding": "one project_scope_id maps to one authority_store_id and storage_locator_hash",
+    "pointer_binding": "one project_scope_id plus target_pointer_key maps to the same authority store",
+    "cutover_atomicity": "project binding, pointer binding and CUTOVER_COMMITTED are one SQLite transaction",
+    "multiple_pointers": "allowed only when they use the same project authority store"
+  },
+  "migration_source_evidence": {
+    "reader": "exact read-only CandidateAuthorityStore source",
+    "source_pointer": "reread and validated under source serialization lock",
+    "source_candidate": "exact current candidate and segment index validated from the source store",
+    "source_eligibility": "derived from actual upstream record access and source module identity",
+    "source_semantic_hash": "computed from the validated source candidate and segment index",
+    "caller_claims": "not accepted"
+  },
+  "shadow_verification_binding": {
+    "source_semantic_hash": "computed by rereading the exact source under its lock",
+    "target_semantic_hash": "computed from the exact staged target and must equal source_semantic_hash",
+    "target_authority_store_id": "must equal the staged CandidateAuthorityStore",
+    "target_storage_locator_hash": "must equal the staged database location binding",
+    "target_pointer_key": "must equal the staged product pointer",
+    "target_pointer_generation": "must equal the staged pointer generation",
+    "cutover_recheck": "source and target evidence are recomputed before the cutover transaction"
+  },
+  "pre_cutover_abort": {
+    "state": "ABORTED",
+    "target_visible": false,
+    "legacy_writer_reactivated": false
+  },
+  "synthetic_fixture": {
+    "migration_result": "MIGRATION_SYNTHETIC_FIXTURE_INELIGIBLE",
+    "retention": "READ_ONLY_HISTORY",
+    "product_candidate_created": false
+  },
+  "writer_probe": {
+    "candidate_database_paths": [
+      "candidate-authority/b06-commit-core.sqlite3"
+    ],
+    "candidate_storage_writers": [
+      "CandidateAuthorityStore"
+    ],
+    "plain_B01_product_profile": "B01_PRODUCT_PROFILE_REQUIRES_AUTHORITY_CAPTURE",
+    "plain_B06_product_profile": "B06_PRODUCT_PROFILE_REQUIRES_CANDIDATE_AUTHORITY_STORE",
+    "probe_storage_created": false
+  },
+  "scope": {
+    "gold": false,
+    "formal_fact_writes": 0,
+    "ten_ledger_writes": 0,
+    "model_api_calls": 0,
+    "network_api_calls": 0
+  }
+}

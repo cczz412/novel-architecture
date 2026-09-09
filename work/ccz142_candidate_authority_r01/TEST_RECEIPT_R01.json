@@ -1,10 +1,11 @@
 {
-  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R03-TEST-RECEIPT",
-  "validated_at": "2026-09-03T10:43:29+08:00",
-  "result": "PASS_WITH_PRODUCT_NAMESPACE_BLOCKER",
+  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R04-TEST-RECEIPT",
+  "validated_at": "2026-09-04T14:05:00+08:00",
+  "result": "PASS",
   "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
   "github_issue": 227,
-  "current_main_compatibility_sha": "c2ae148f6dd6ee1731b8c936662b017ba7fcf73c",
+  "current_fix_issue": 231,
+  "current_main_compatibility_sha": "f98609cb0399ba5e182ade501c4d70c8be20ed11",
   "runtime": {
     "python": "3.12.12",
     "environment": "uv --locked",
@@ -16,7 +17,7 @@
   "test_suites": [
     {
       "suite": "ccz142_candidate_authority_r01",
-      "passed": 43,
+      "passed": 45,
       "failed": 0
     },
     {
@@ -51,12 +52,12 @@
     },
     {
       "suite": "B07_local_recovery_stop_r01",
-      "passed": 26,
+      "passed": 39,
       "failed": 0
     },
     {
       "suite": "B08_segment_terminal_r01",
-      "passed": 27,
+      "passed": 29,
       "failed": 0
     },
     {
@@ -66,15 +67,19 @@
     }
   ],
   "totals": {
-    "passed": 566,
+    "passed": 583,
     "failed": 0
   },
   "current_main_compatibility": {
-    "main_sha": "c2ae148f6dd6ee1731b8c936662b017ba7fcf73c",
+    "main_sha": "f98609cb0399ba5e182ade501c4d70c8be20ed11",
+    "merge_commit": "32c12dddbb5e4f37382d8e0ce3f6b2b2925c79e5",
+    "pr_head": "fcc487a05b975c993e229f3d83ad783a0ec5c514",
     "result": "PASS",
-    "patched_tree_passed": 566,
+    "patched_tree_passed": 583,
     "patched_tree_failed": 0,
-    "candidate_authority_or_B01_to_B08_failures": 0
+    "candidate_authority_or_B01_to_B09_failures": 0,
+    "full_repository_pytest": "NOT_RUN_THIS_ROUND",
+    "note": "B07/B08 counts rose with current main; product 41 and B10 50 live in the product-authority receipt."
   },
   "root_acceptance": {
     "multiple_chapters": "PASS",
@@ -127,6 +132,9 @@
     "wrong_column_type": "FAIL_CLOSED_BEFORE_DATA_ACCESS",
     "missing_not_null": "FAIL_CLOSED_BEFORE_DATA_ACCESS",
     "unexpected_default": "FAIL_CLOSED_BEFORE_DATA_ACCESS",
+    "exact_pr230_metadata_gap_upgrade": "PASS_ATOMIC",
+    "upgrade_failure": "FAIL_CLOSED_ZERO_RESIDUE",
+    "legacy_fixture_to_product_relabel": "DENY",
     "migration_source_identity_unique": true
   },
   "scope_assertions": {
@@ -137,7 +145,7 @@
     "FormalFact_writes": 0,
     "formal_current_pointer_writes": 0,
     "ten_ledger_writes": 0,
-    "existing_B01_to_B09_file_changes": 0,
+    "existing_B01_to_B09_file_changes": 3,
     "Linear_writes": 0
   },
   "commands": [
@@ -153,12 +161,13 @@
     "uv run --locked pytest -q work/ccz57_m3_b07_local_recovery_stop_r01/test_b07_local_recovery.py",
     "uv run --locked pytest -q work/ccz57_m3_b08_segment_terminal_r01/test_b08_segment_terminal.py",
     "uv run --locked pytest -q work/ccz57_m3_b09_current_causal_hint_view_r01/test_current_causal_hint_view.py",
-    "uv run --locked python work/ccz142_candidate_authority_r01/self_check.py"
+    "uv run --locked python work/ccz142_candidate_authority_r01/self_check.py",
+    "rebuild onto origin/main@f98609cb0399ba5e182ade501c4d70c8be20ed11 (merge 32c12dddbb5e4f37382d8e0ce3f6b2b2925c79e5), overlay product R05, re-run this package plus B01-B09 in separate processes; 583 passed"
   ],
-  "product_adoption_blocker": {
-    "code": "CURRENT_B01_B06_POINTER_NAMESPACE_IS_FIXTURE_ONLY",
-    "current_value": "FIXTURE_ONLY",
-    "required_future_action": "separately approve and migrate CandidateVersion, pointer and readers to a product namespace and access contract",
-    "draft_pr_may_merge_as_product_adoption": false
+  "profile_boundary": {
+    "default_profile": "FIXTURE_ONLY",
+    "exact_legacy_upgrade_target": "FIXTURE_ONLY",
+    "product_profile_requires_explicit_composition": true,
+    "legacy_upgrade_may_relabel_as_product": false
   }
 }

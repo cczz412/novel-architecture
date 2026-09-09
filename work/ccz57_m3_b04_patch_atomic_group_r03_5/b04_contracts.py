@@ -26,6 +26,7 @@ from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E4
     B01ContractError,
     CANDIDATE_SCHEMA_ID as B01_CANDIDATE_SCHEMA_ID,
     CONTRACT_VERSION as B01_CONTRACT_VERSION,
+    record_ref as b01_record_ref,
     sentence_count,
     validate_candidate_version as b01_validate_candidate_version,
     validate_evidence_locator as b01_validate_evidence_locator,
@@ -540,14 +541,14 @@ def validate_upstream_inputs(
             )
         except B02ContractError as error:
             _b02_failure(error, "diagnostic")
-        if diagnostic["payload"]["base_candidate_version_ref"] != record_ref(base):
+        if diagnostic["payload"]["base_candidate_version_ref"] != b01_record_ref(base):
             fail("B04_DIAGNOSTIC_BASE_MISMATCH")
     for coverage in coverages:
         try:
             b02_validate_coverage_record(coverage, context=context, records=all_records)
         except B02ContractError as error:
             _b02_failure(error, "coverage")
-        if coverage["payload"]["base_candidate_version_ref"] != record_ref(base):
+        if coverage["payload"]["base_candidate_version_ref"] != b01_record_ref(base):
             fail("B04_COVERAGE_BASE_MISMATCH")
     for lifecycle in lifecycle_receipts:
         try:
@@ -814,7 +815,7 @@ def validate_operation(
             if not _coverage_supports_item(coverage, new_item):
                 fail("B04_ADD_COVERAGE_BINDING_MISMATCH")
         expected_lineage = proposed_add_lineage_id(
-            base_candidate_version_ref=record_ref(context["candidate_version"]),
+            base_candidate_version_ref=b01_record_ref(context["candidate_version"]),
             supporting_coverage_refs=coverage_refs,
             atomic_group_id=atomic_group_id,
             group_operation_ordinal=group_operation_ordinal,
@@ -955,7 +956,7 @@ def validate_protection_record(
         or policy["payload"]["protect_accepted_lineage"] is not True
     ):
         fail("B04_PROTECTION_POLICY_INVALID", "disabled")
-    if payload["base_candidate_version_ref"] != record_ref(base):
+    if payload["base_candidate_version_ref"] != b01_record_ref(base):
         fail("B04_PROTECTION_SET_INVALID", "base")
     if payload["protection_policy_ref"] != record_ref(policy):
         fail("B04_PROTECTION_SET_INVALID", "policy")
@@ -1027,7 +1028,8 @@ def validate_source_slice_records(
     payload = record["payload"]
     subject = payload["subject"]
     if (
-        subject["candidate_version_ref"] != record_ref(context["candidate_version"])
+        subject["candidate_version_ref"]
+        != b01_record_ref(context["candidate_version"])
         or subject["lineage_locator"] != operation["target"]
         or subject["evidence_locator"]["lineage_id"] != old_item["lineage_id"]
         or subject["item_hash"] != old_item["item_hash"]
@@ -1117,7 +1119,7 @@ def validate_patch_record(
         fail("B04_PATCH_INVALID", "record_type")
     payload = record["payload"]
     exact_keys(payload, PATCH_PAYLOAD_KEYS, "B04_PATCH_PAYLOAD_INVALID")
-    if payload["base_candidate_version_ref"] != record_ref(base):
+    if payload["base_candidate_version_ref"] != b01_record_ref(base):
         fail("B04_PATCH_BASE_MISMATCH")
     if payload["candidate_schema_id"] != CANDIDATE_SCHEMA_ID:
         fail("B04_CANDIDATE_SCHEMA_MISMATCH")

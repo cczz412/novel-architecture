@@ -18,6 +18,7 @@ from b04_contracts import (
     CANDIDATE_SCHEMA_ID,
     FIXTURE_ACCESS,
     _WRITER_TOKENS,
+    b01_record_ref,
     build_record,
     canonical_bytes,
     expected_protected_entries,
@@ -386,7 +387,7 @@ class ProtectionSetBuilder:
     ) -> dict[str, Any]:
         base = context["candidate_version"]
         payload = {
-            "base_candidate_version_ref": record_ref(base),
+            "base_candidate_version_ref": b01_record_ref(base),
             "protection_policy_ref": record_ref(policy),
             "chapter_revision_ref": deepcopy(base["payload"]["chapter_revision_ref"]),
             "protected_entries": expected_protected_entries(
@@ -620,7 +621,7 @@ class B04Service:
                     source_slice_refs=source_slice_refs,
                 )
             patch_payload = {
-                "base_candidate_version_ref": record_ref(base),
+                "base_candidate_version_ref": b01_record_ref(base),
                 "candidate_schema_id": CANDIDATE_SCHEMA_ID,
                 "diagnostic_refs": [record_ref(item) for item in diagnostics],
                 "coverage_observation_refs": [record_ref(item) for item in coverages],
