@@ -6,6 +6,12 @@ set -euo pipefail
 
 export PATH="/usr/local/bin:${HOME}/.local/bin:${PATH}"
 
+if ! command -v tailscale >/dev/null 2>&1; then
+  # Installer may try to start systemd; Cloud Agent start uses userspace networking instead.
+  curl -fsSL https://tailscale.com/install.sh | sudo sh || true
+  command -v tailscale >/dev/null 2>&1
+fi
+
 if ! command -v uv >/dev/null 2>&1; then
   tmpdir="$(mktemp -d)"
   trap 'rm -rf "${tmpdir}"' EXIT
