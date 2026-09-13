@@ -4254,5 +4254,215 @@ class GovernanceIndexTests(unittest.TestCase):
             self.assertFalse((root / output).exists())
 
 
+
+class CurrentIndexCheckTests(unittest.TestCase):
+    def make_fixture(self, root: Path) -> None:
+        paths = [
+            governance_index.CONTROL_PATH,
+            governance_index.ROUTE_REGISTRY_PATH,
+            governance_index.REGISTRY_SOURCE_PATH,
+            governance_index.DIRECTORY_REGISTRY_PATH,
+            governance_index.DIRECTORY_REGISTRY_SCHEMA_PATH,
+            "governance/module_registry.json",
+        ]
+        for relative in paths:
+            _write_json(root / relative, read_json(ROOT / relative))
+        control = read_json(root / governance_index.CONTROL_PATH)
+        gold_path = control["formal_gold_registry"]["path"]
+        _write_json(root / gold_path, read_json(ROOT / gold_path))
+        source = read_json(root / governance_index.REGISTRY_SOURCE_PATH)
+        registry = governance_index.materialize_registry(root, source, verify_sources=False)
+        documents = governance_index.build_documents(
+            root, control, {}, read_json(root / governance_index.ROUTE_REGISTRY_PATH),
+            registry, read_json(root / governance_index.DIRECTORY_REGISTRY_PATH),
+            include_historical=False,
+        )
+        for relative, text in documents.items():
+            (root / relative).parent.mkdir(parents=True, exist_ok=True)
+            (root / relative).write_text(text, encoding="utf-8")
+        _write_json(root / "governance/dependency_map.json", governance_index.dependency_map(registry))
+
+    def test_current_check_never_probes_historical_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.make_fixture(root)
+            with (
+                patch.object(governance_index, "_path_status", side_effect=AssertionError("payload probe")),
+                patch.object(governance_index, "validate_control_plane", side_effect=AssertionError("legacy control")),
+                patch.object(governance_index, "validate_current_state", side_effect=AssertionError("legacy state")),
+                patch.object(governance_index, "refresh", side_effect=AssertionError("legacy refresh")),
+            ):
+                result = governance_index.check_current_indexes(root)
+            self.assertTrue(result["passed"])
+            self.assertEqual(result["validation_scope"], "current_indexes")
+            self.assertIs(result["historical_payload_verified"], False)
+            self.assertEqual(result["mismatches"], [])
+            self.assertNotIn("governance/index_manifest.json", result["checked_paths"])
+            self.assertFalse((root / "runs").exists())
+            self.assertFalse((root / "reports").exists())
+            self.assertFalse((root / governance_index.CURRENT_STATE_PATH).exists())
+
+    def test_current_generated_drift_and_missing_files_fail(self) -> None:
+        for relative in (
+            "governance/INDEX.md",
+            "governance/indexes/directory_map.md",
+            "governance/indexes/new_file_routing.md",
+            "experiments/INDEX.md",
+            "governance/dependency_map.json",
+        ):
+            for remove in (False, True):
+                with self.subTest(path=relative, remove=remove), tempfile.TemporaryDirectory() as temporary:
+                    root = Path(temporary)
+                    self.make_fixture(root)
+                    if remove:
+                        (root / relative).unlink()
+                    elif relative.endswith(".json"):
+                        _write_json(root / relative, {"drift": True})
+                    else:
+                        (root / relative).write_text("drift\n", encoding="utf-8")
+                    result = governance_index.check_current_indexes(root)
+                    self.assertFalse(result["passed"])
+                    self.assertIn(relative, result["mismatches"])
+
+    def test_invalid_directory_contract_still_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.make_fixture(root)
+            path = root / governance_index.DIRECTORY_REGISTRY_PATH
+            data = read_json(path)
+            data["inherit_to_children_default"] = True
+            _write_json(path, data)
+            with self.assertRaises(governance_index.ArtifactError):
+                governance_index.check_current_indexes(root)
+
+    def test_materialized_module_metadata_must_match_source(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.make_fixture(root)
+            path = root / "governance/module_registry.json"
+            data = read_json(path)
+            data["modules"][0]["input_contract"] = "unapproved drift"
+            _write_json(path, data)
+            result = governance_index.check_current_indexes(root)
+            self.assertFalse(result["passed"])
+            self.assertIn("governance/module_registry.json", result["mismatches"])
+
+    def test_invalid_source_path_still_fails_without_touching_it(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.make_fixture(root)
+            path = root / governance_index.REGISTRY_SOURCE_PATH
+            data = read_json(path)
+            data["modules"][0]["sources"] = ["../../outside-secret"]
+            _write_json(path, data)
+            with self.assertRaises(governance_index.ArtifactError):
+                governance_index.check_current_indexes(root)
+
+    def test_strict_evidence_validation_is_not_changed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.make_fixture(root)
+            self.assertTrue(governance_index.check_current_indexes(root)["passed"])
+            directories = read_json(root / governance_index.DIRECTORY_REGISTRY_PATH)
+            with self.assertRaisesRegex(governance_index.ArtifactError, "目录证据不存在"):
+                governance_index.validate_directory_registry(root, directories)
+            protected = [{"path": "runs/old.json", "sha256": "0" * 64}]
+            with self.assertRaisesRegex(governance_index.ArtifactError, "保护件不存在"):
+                governance_index._validate_protected_refs(root, protected)
+            (root / "runs").mkdir()
+            (root / "runs/old.json").write_text("changed", encoding="utf-8")
+            with self.assertRaisesRegex(governance_index.ArtifactError, "保护件漂移"):
+                governance_index._validate_protected_refs(root, protected)
+
+    def test_cli_scope_and_nonzero_drift(self) -> None:
+        import io
+        from contextlib import redirect_stdout
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.make_fixture(root)
+            for expected_status in (0, 2):
+                if expected_status:
+                    (root / "governance/INDEX.md").write_text("drift", encoding="utf-8")
+                output = io.StringIO()
+                with patch.object(governance_index, "ROOT", root), redirect_stdout(output):
+                    status = governance_index.main(["--check-current"])
+                self.assertEqual(status, expected_status)
+                result = json.loads(output.getvalue())
+                self.assertEqual(result["validation_scope"], "current_indexes")
+                self.assertIs(result["historical_payload_verified"], False)
+            with self.assertRaises(governance_index.ArtifactError):
+                governance_index.main(["--check", "--check-current"])
+
+    def test_current_check_rejects_experiment_symlinks_before_read(self) -> None:
+        for kind in ("root", "directory", "file"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary) / "repo"
+                root.mkdir()
+                self.make_fixture(root)
+                outside = Path(temporary) / "archive"
+                outside.mkdir()
+                _write_json(outside / "experiment.json", {"experiment_id": "must-not-read"})
+                if kind == "root":
+                    (root / "experiments/INDEX.md").unlink()
+                    (root / "experiments").rmdir()
+                    (root / "experiments").symlink_to(outside, target_is_directory=True)
+                    path = root / governance_index.DIRECTORY_REGISTRY_PATH
+                    directories = read_json(path)
+                    next(row for row in directories["directories"] if row["path"] == "experiments")["path_kind"] = "symlink"
+                    _write_json(path, directories)
+                else:
+                    if kind == "directory":
+                        (root / "experiments/linked").symlink_to(outside, target_is_directory=True)
+                    else:
+                        (root / "experiments/linked").mkdir()
+                        (root / "experiments/linked/experiment.json").symlink_to(outside / "experiment.json")
+                original_read = governance_index.read_json
+
+                def guarded_read(path: Path) -> dict:
+                    self.assertNotEqual(path.name, "experiment.json", "followed a symlink before rejecting")
+                    return original_read(path)
+
+                with patch.object(governance_index, "read_json", side_effect=guarded_read):
+                    with self.assertRaisesRegex(governance_index.ArtifactError, "不读取软链"):
+                        governance_index.check_current_indexes(root)
+
+    def test_current_check_rejects_metadata_and_output_symlinks(self) -> None:
+        for relative in (
+            governance_index.CONTROL_PATH,
+            governance_index.DIRECTORY_REGISTRY_SCHEMA_PATH,
+            "config/gold/formal_gold_registry.json",
+            "governance/INDEX.md",
+        ):
+            with self.subTest(path=relative), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary) / "repo"
+                root.mkdir()
+                self.make_fixture(root)
+                target = Path(temporary) / "old-payload"
+                target.write_bytes((root / relative).read_bytes())
+                (root / relative).unlink()
+                (root / relative).symlink_to(target)
+                original_read = Path.read_text
+
+                def guarded_read(path: Path, *args: object, **kwargs: object) -> str:
+                    self.assertNotEqual(path, target)
+                    self.assertNotEqual(path, root / relative, "followed a symlink before rejecting")
+                    return original_read(path, *args, **kwargs)
+
+                with patch.object(Path, "read_text", guarded_read):
+                    with self.assertRaisesRegex(governance_index.ArtifactError, "不读取软链"):
+                        governance_index.check_current_indexes(root)
+    def test_legacy_cli_keeps_strict_generation(self) -> None:
+        import io
+        from contextlib import redirect_stdout
+
+        with (
+            patch.object(governance_index, "generated_mismatches", return_value=["old"]) as strict,
+            patch.object(governance_index, "check_current_indexes", side_effect=AssertionError("wrong mode")),
+            redirect_stdout(io.StringIO()),
+        ):
+            self.assertEqual(governance_index.main(["--check"]), 2)
+        strict.assert_called_once_with(ROOT)
+
 if __name__ == "__main__":
     unittest.main()

@@ -1741,6 +1741,8 @@ def validate_route_registry(
     root: Path,
     registry: dict[str, Any],
     _current_state: dict[str, Any] | None = None,
+    *,
+    verify_evidence: bool = True,
 ) -> None:
     allowed = set(_must_list(registry.get("allowed_statuses"), "allowed_statuses"))
     if allowed != ROUTE_STATUS_VALUES:
@@ -1770,7 +1772,8 @@ def validate_route_registry(
                 if ref.startswith("https://"):
                     continue
                 path_text = ref.split("#", 1)[0]
-                if not resolve_repo_path(root, path_text).exists():
+                _repo_relative_path(path_text, f"{route_id}.evidence_ref")
+                if verify_evidence and not resolve_repo_path(root, path_text).exists():
                     raise ArtifactError(f"路线凭证不存在：{route_id}：{ref}")
 
     program_route = next(
@@ -1791,7 +1794,9 @@ def validate_route_registry(
         raise ArtifactError("路线末事件仍未判死，不得把程序侧整条路线登记为失败")
 
 
-def materialize_registry(root: Path, source: dict[str, Any]) -> dict[str, Any]:
+def materialize_registry(
+    root: Path, source: dict[str, Any], *, verify_sources: bool = True
+) -> dict[str, Any]:
     registry = copy.deepcopy(source)
     modules = _must_list(registry.get("modules"), "modules")
     identities: set[tuple[str, str]] = set()
@@ -1804,10 +1809,16 @@ def materialize_registry(root: Path, source: dict[str, Any]) -> dict[str, Any]:
         if row.get("status") not in STATUS_VALUES:
             raise ArtifactError(f"模块状态非法：{identity}：{row.get('status')}")
         sources = _must_list(row.pop("sources", []), f"{identity}.sources")
-        row["source_refs"] = [_path_status(root, str(path)) for path in sources]
-        missing = [item["path"] for item in row["source_refs"] if not item["exists"]]
-        if missing:
-            raise ArtifactError(f"模块来源缺失：{identity}：{missing}")
+        if verify_sources:
+            row["source_refs"] = [_path_status(root, str(path)) for path in sources]
+            missing = [item["path"] for item in row["source_refs"] if not item["exists"]]
+            if missing:
+                raise ArtifactError(f"模块来源缺失：{identity}：{missing}")
+        else:
+            row["source_refs"] = [
+                {"path": _repo_relative_path(path, f"{identity}.source")}
+                for path in sources
+            ]
     registry["status_counts"] = {
         status: sum(1 for row in modules if row["status"] == status)
         for status in ("可用", "在改", "试验")
@@ -1834,7 +1845,9 @@ def dependency_map(registry: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def validate_directory_registry(root: Path, registry: dict[str, Any]) -> None:
+def validate_directory_registry(
+    root: Path, registry: dict[str, Any], *, verify_evidence: bool = True
+) -> None:
     _reject_unsafe_text(registry, "directory_registry")
     schema = _must_dict(
         read_json(root / DIRECTORY_REGISTRY_SCHEMA_PATH),
@@ -1948,7 +1961,7 @@ def validate_directory_registry(root: Path, registry: dict[str, Any]) -> None:
             raise ArtifactError(f"目录登记缺证据引用：{path}")
         for ref in evidence_refs:
             relative = _repo_relative_path(ref, f"{path}.evidence_ref")
-            if not (root / Path(*PurePosixPath(relative).parts)).exists():
+            if verify_evidence and not (root / Path(*PurePosixPath(relative).parts)).exists():
                 raise ArtifactError(f"目录证据不存在：{path}：{relative}")
 
         accepted = _must_list(row.get("accepted_content"), f"{path}.accepted_content")
@@ -2044,21 +2057,37 @@ def _markdown_path(row: dict[str, Any]) -> str:
     return f"{exists} `{path}`"
 
 
-def discover_registered_experiment_files(root: Path) -> list[Path]:
+def _current_index_path(root: Path, relative: str) -> Path:
+    """当前索引只读取仓内原路径，不沿软链进入历史材料或外部目录。"""
+    path = root
+    for part in PurePosixPath(_repo_relative_path(relative, "current_index.path")).parts:
+        path = path / part
+        if path.is_symlink():
+            raise ArtifactError(f"当前索引不读取软链：{relative}")
+    return path
+
+
+def discover_registered_experiment_files(
+    root: Path, *, reject_symlinks: bool = False
+) -> list[Path]:
     """只返回按合同登记的试验，避免生成页随本机候选目录漂移。"""
 
-    experiments_root = root / "experiments"
+    experiments_root = (
+        _current_index_path(root, "experiments") if reject_symlinks else root / "experiments"
+    )
     if not experiments_root.is_dir():
         return []
 
-    directories = sorted(
-        (
-            path
-            for path in experiments_root.iterdir()
-            if path.is_dir() and not path.name.startswith(("_", "."))
-        ),
-        key=lambda path: path.name,
-    )
+    candidates = [
+        path for path in experiments_root.iterdir() if not path.name.startswith(("_", "."))
+    ]
+    if reject_symlinks:
+        for path in candidates:
+            _current_index_path(root, path.relative_to(root).as_posix())
+    directories = sorted((path for path in candidates if path.is_dir()), key=lambda path: path.name)
+    if reject_symlinks:
+        for path in directories:
+            _current_index_path(root, (path / "experiment.json").relative_to(root).as_posix())
     registered = [
         path / "experiment.json"
         for path in directories
@@ -2067,8 +2096,8 @@ def discover_registered_experiment_files(root: Path) -> list[Path]:
     return registered
 
 
-def render_experiments_index(root: Path) -> str:
-    registered = discover_registered_experiment_files(root)
+def render_experiments_index(root: Path, *, reject_symlinks: bool = False) -> str:
+    registered = discover_registered_experiment_files(root, reject_symlinks=reject_symlinks)
     lines = [
         "# 试验专区索引",
         "",
@@ -2109,12 +2138,17 @@ def build_documents(
     route_registry: dict[str, Any],
     registry: dict[str, Any],
     directory_registry: dict[str, Any],
+    *,
+    include_historical: bool = True,
 ) -> dict[str, str]:
     default = control["current_default"]
     gold = control["current_gold"]
     formal_registry_control = control["formal_gold_registry"]
     formal_registry = _must_dict(
-        read_json(root / formal_registry_control["path"]),
+        read_json(
+            resolve_repo_path(root, formal_registry_control["path"])
+            if include_historical else _current_index_path(root, formal_registry_control["path"])
+        ),
         "formal_gold_registry",
     )
     formal_gold_entries = _must_list(
@@ -2168,6 +2202,14 @@ def build_documents(
 
 来源：Codex
 """
+
+    if not include_historical:
+        return {
+            "governance/INDEX.md": index,
+            "governance/indexes/directory_map.md": render_directory_map(directory_registry),
+            "governance/indexes/new_file_routing.md": render_new_file_routing(directory_registry),
+            "experiments/INDEX.md": render_experiments_index(root, reject_symlinks=True),
+        }
 
     gold_rows = [
         "# 正式金标索引",
@@ -2333,6 +2375,54 @@ def refresh(root: Path = ROOT, output_root: Path | None = None) -> dict[str, Any
     manifest["verification"] = verify_manifest(destination, manifest["outputs"])
     write_json_atomic(destination / "governance/index_manifest.json", manifest)
     return manifest
+
+
+def check_current_indexes(root: Path = ROOT) -> dict[str, Any]:
+    """核对仓内导航与登记元数据，不读取历史原件或认可旧证据哈希。"""
+    root = root.resolve()
+    control = _must_dict(read_json(_current_index_path(root, CONTROL_PATH)), "control_plane")
+    routes = _must_dict(read_json(_current_index_path(root, ROUTE_REGISTRY_PATH)), "route_registry")
+    source = _must_dict(read_json(_current_index_path(root, REGISTRY_SOURCE_PATH)), "module_registry.source")
+    stored = _must_dict(read_json(_current_index_path(root, "governance/module_registry.json")), "module_registry")
+    directories = _must_dict(read_json(_current_index_path(root, DIRECTORY_REGISTRY_PATH)), "directory_registry")
+    _current_index_path(root, DIRECTORY_REGISTRY_SCHEMA_PATH)
+    if source.get("schema_version") != "pipeline-module-registry-v1":
+        raise ArtifactError("模块登记 schema_version 不符")
+    validate_directory_registry(root, directories, verify_evidence=False)
+    validate_route_registry(root, routes, verify_evidence=False)
+    expected = materialize_registry(root, source, verify_sources=False)
+    metadata = copy.deepcopy(stored)
+    for row in _must_list(metadata.get("modules"), "module_registry.modules"):
+        module = _must_dict(row, "module_registry.module")
+        module["source_refs"] = [
+            {"path": _repo_relative_path(_must_dict(ref, "source_ref").get("path"), "source_ref.path")}
+            for ref in _must_list(module.get("source_refs"), "source_refs")
+        ]
+    mismatches = [] if metadata == expected else ["governance/module_registry.json"]
+    documents = build_documents(
+        root, control, {}, routes, expected, directories, include_historical=False
+    )
+    for relative, text in documents.items():
+        path = _current_index_path(root, relative)
+        if not path.is_file() or path.read_text(encoding="utf-8") != text:
+            mismatches.append(relative)
+    dependency_path = "governance/dependency_map.json"
+    path = _current_index_path(root, dependency_path)
+    if not path.is_file() or read_json(path) != dependency_map(expected):
+        mismatches.append(dependency_path)
+    return {
+        "passed": not mismatches,
+        "validation_scope": "current_indexes",
+        "checked_paths": ["governance/module_registry.json", *documents, dependency_path],
+        "mismatches": mismatches,
+        "historical_payload_verified": False,
+        "not_checked": [
+            "历史原件及来源哈希",
+            "CURRENT_STATE 历史执行证据",
+            "历史金标、银标、运行与材料索引",
+            "governance/index_manifest.json 的完整历史生成回执",
+        ],
+    }
 
 
 def generated_mismatches(root: Path = ROOT) -> list[str]:
@@ -5517,6 +5607,10 @@ def acquire_restructure_wave_lock(
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="生成小说流水线治理索引")
     parser.add_argument("--check", action="store_true", help="在临时目录生成并与当前索引逐字比较")
+    parser.add_argument(
+        "--check-current", action="store_true",
+        help="只核对仓内导航和登记元数据，不读取历史材料原件",
+    )
     parser.add_argument("--baseline-plan", type=Path, help="读取第一级仓库重构基线校准计划")
     parser.add_argument("--baseline-output", type=Path, help="把机器校准票写入 TEMP 的新路径")
     parser.add_argument("--wave-plan", type=Path, help="读取第二级精确 Wave 开工计划")
@@ -5560,6 +5654,7 @@ def main(argv: list[str] | None = None) -> int:
     selected_modes = sum(
         (
             bool(args.check),
+            bool(args.check_current),
             bool(args.baseline_plan),
             bool(args.wave_plan),
             bool(args.wave_completion_request),
@@ -5570,6 +5665,10 @@ def main(argv: list[str] | None = None) -> int:
         raise ArtifactError(
             "治理检查、一级票、二级票、完成票和冲突锁模式不能同时使用"
         )
+    if args.check_current:
+        result = check_current_indexes(ROOT)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["passed"] else 2
     if args.baseline_plan:
         receipt = evaluate_restructure_baseline(
             ROOT,

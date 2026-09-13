@@ -499,7 +499,7 @@
           "exists": true,
           "kind": "file",
           "path": "tools/governance_index.py",
-          "sha256": "440ad8c83abecc0c391924c5fa4af85315d221f82c796f900ba92710301842bc"
+          "sha256": "8189132c0a0be53ffd035d9c94bb1a5a42376a11c6196d8f8b3eb49ef70b59cd"
         },
         {
           "exists": true,
@@ -523,7 +523,7 @@
           "exists": true,
           "kind": "file",
           "path": "tests/test_governance_index.py",
-          "sha256": "472a38182015b78da1d9a3277f7b22956c98386c9a408caddee886efcace375a"
+          "sha256": "33cd6459f481b50c7db7c281adb6c46c8a5a7afa3367d73780c6121759caccf5"
         },
         {
           "exists": true,
@@ -613,13 +613,13 @@
           "exists": true,
           "kind": "file",
           "path": "governance/test_policy.json",
-          "sha256": "bb6b850594a1075a649c1d306506c4a3e873bb9216511b45170095ee898ecb2d"
+          "sha256": "16de0d9d4a8c7c6b792ba200763959818cfa2611f448f4b9ba29646104c9823b"
         },
         {
           "exists": true,
           "kind": "file",
           "path": "tests/test_test_impact.py",
-          "sha256": "ced247f9c2099db2bd17165b52d7f0375da196bd846ee18757bc30037433fafa"
+          "sha256": "5f137f5f40a4bdba9582bd6f3bba9b304380fef6011b0f13511d3bf03f098431"
         }
       ],
       "status": "可用",

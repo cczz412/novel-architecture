@@ -14,8 +14,8 @@
   "approved_stable_failure_list_schema": "governance/contracts/approved_stable_failure_list_v1.schema.json",
   "approved_stable_failure_list_checker": "tools/check_approved_failure_list.py",
   "documentation_commands": [
-    "uv run --locked python tools/governance_index.py --check",
-    "uv run --locked python tools/historical_test_replay.py validate"
+    "uv run --locked python tools/governance_index.py --check-current",
+    "uv run --locked python tools/historical_test_replay.py validate --registry-only"
   ],
   "unknown_path_full_chain": true,
   "full_chain_flags": [
