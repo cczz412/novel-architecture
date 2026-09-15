@@ -7,6 +7,7 @@
 | 子区 | 干什么 | 入口 |
 |---|---|---|
 | `book-meta/` | 书目元数据、语料重标等 | [book-meta/README.md](book-meta/README.md) · [INDEX.md](book-meta/INDEX.md) |
+| `novel-sample-library/` | 按题材、梯队与能力选样；目录进仓，内容留本地 | [样本目录](novel-sample-library/README.md) |
 | `survey-inbox/` | 调查角度收件箱（GitHub／短视频讲法） | [survey-inbox/README.md](survey-inbox/README.md) |
 | `agent-playbook/` | 施工情景问答（遇到什么／对／错）；不是执行票 | [agent-playbook/README.md](agent-playbook/README.md) · [目录](agent-playbook/INDEX.md) |
 | `diagnostic-returns/` | 外部诊断回包归档（候选材料） | [diagnostic-returns/README.md](diagnostic-returns/README.md) |
