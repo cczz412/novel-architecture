@@ -105,3 +105,5 @@ uv run --locked ruff check ...
 - 当前正式 Git 只发现根 `AGENTS.md`，没有 tracked nested AGENTS。复杂领域已有 README／CURRENT 就先复用，不因规则多自动新建下级 AGENTS。
 
 来源：Codex
+
+章结构保存与固定读取的只读镜像入口：[正式 R01 镜像](novel-mvp/contracts/CHAPTER_STRUCTURE_SAVE_AND_PINNED_READ_R01.md)；权威仍为镜像声明中的 Notion 页，副本内容禁止就地修改。来源：Codex
