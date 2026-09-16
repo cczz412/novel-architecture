@@ -3,8 +3,8 @@
 真源：Notion 页「章结构保存与固定读取｜正式合同 R01」
 页面地址：https://www.notion.so/3da5cadc4d0f818db55afc75364b5ef5
 页面标识：3da5cadc4d0f818db55afc75364b5ef5
-导出时刻：2026-09-16T17:10:18.357658+00:00
-镜像正文 SHA-256：6ccc816b69bf54071e88e29b2e533cc8416f3feaab2d3d3dc7375ca5fc8dc6d4
+导出时刻：2026-09-16T18:25:06.933729+00:00
+镜像正文 SHA-256：de109a22be0e5db5161100e79a274cfb3224ee9a46a724bc7bdb15abc4c52e7e
 禁止在本文件上修改合同内容。需要改合同时：先在 Notion 页出修订版，再重新导出本文件并更新上面的时刻与 SHA-256。
 本文件内容与 Notion 页不一致时，一律以 Notion 页为准，并立即停下回报。
 <!-- MIRROR-DECLARATION-END -->
@@ -22,6 +22,18 @@
 	- **后续授权**：可按本合同排工程票与代码写集。旧数据仍不迁移；r5 整版、G/H、believes 及强消费者仍未开放。
 	未变：原 F001—F197 基线与 F006 原冲突计数不变；GitHub 工程基线 `c18736ded3388e36acea4ed4911d2a45fc4994fc`。
 	登记：Notion
+</callout>
+<callout icon="🔧" color="orange_bg">
+	**2026-09-17 02:05｜R01.1 窄范围修订（已生效）**
+	CZ 逐字原话（渠道：Notion 聊天，直接对 Notion 说，不是经 Codex 转述）：「都同意」。所答两问为：① 合并 PR #370（R01 只读镜像入仓）；② 出 R01.1 窄范围修订。本条依转正限定一「允许后续按实施发现出修订版，不重走全审」执行，是该限定的首次启用。
+	**修订缘由**：本页 §5 要求提交途中故障须按证据区分 `NOT_COMMITTED`、`COMMITTED`、`UNKNOWN`；而附件汇总 Schema 在 `#/$defs/StructureWriteResponse/allOf/22/then/properties/commit_state/enum` 处对 `STORAGE_IO_ERROR` 只允许 `UNKNOWN`。二者冲突，实施方无法自行选择。Codex 已在锁定环境做最小探针复现：同一份完整错误响应仅替换 `commit_state`，`UNKNOWN` 通过，另两值均被原 Schema 拒绝，且唯一失败点即该枚举。
+	**R01.1 条文（适用范围：仅 ****`STORAGE_IO_ERROR`**** 的 ****`commit_state`**** 取值，不涉及任何其他条款）**
+	1. 该码的 `commit_state` 允许 `UNKNOWN`、`NOT_COMMITTED`、`COMMITTED` 三值；汇总 Schema 中「只允许 `UNKNOWN`」的约束同步放宽为这三值。
+	2. 默认值为 `UNKNOWN`。仅当提交结果证据可信时才允许给出确定值：`COMMITTED` 须回读到该操作已提交的记录；`NOT_COMMITTED` 须确认不存在任何预备物理写入残留。两者均须在响应中留下判定所依据的那一次回读。证据不足一律 `UNKNOWN`，不得推测、不得默认。
+	3. 不变更项：`ERROR` 结果仍不得携带成功业务数据；`COMMIT_READBACK_FAILED` 保持独立含义，不被本条吸收；不新增任何回执字段；其余错误码取值范围不变；本条不涉及段二，不改 `integration_status`，K01—K03 仍为 `BLOCKED`。
+	4. 附件冲突处置：本页附件 ZIP 为历史原件，不重打包、不改哈希（仍为 `3285d9df2c58545b20d6242c45bedf68ce2bed0e7595d0d1099247b5f361fb8a`）。包内 Schema 与本条冲突时，**以本条为准**。
+	**配套动作**：本页为真源，已先改。仓库只读镜像 `novel-mvp/contracts/CHAPTER_STRUCTURE_SAVE_AND_PINNED_READ_R01.md` 须重新导出，更新声明块中的导出时刻与镜像正文 SHA-256，并同步更新 `CHAPTER_STRUCTURE_SAVE_AND_PINNED_READ_R01.MIRROR.json` 的 `exported_at` 与 `mirror_body_sha256`。镜像刷新完成前，不得依据旧镜像实施本条。
+	登记：Notion（CCZ-190 同步登记）
 </callout>
 **原候选身份说明（转正前状态，保留备查）**：EA01—EA03工程边界已由CZ采用；本稿的具体字段、机器名、容量和权限绑定当时仍为合同候选。编制轮次中未改现役合同、产品代码或旧记录，未开票、迁移或运行产品测试。
 CZ原话：“同意 EA01—EA03，按采用稿及上述澄清编制正式合同候选，明确字段、权限和验收；继续不开票、不改代码、不迁移。”原话和采用范围已单独登记；本稿不把此前的Notion建议口令冒充作者批复，也不采用r5整版。
