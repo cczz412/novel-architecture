@@ -30,6 +30,7 @@ LOGICAL_KEY_FILES = {
     "chapter_materials": "chapter_materials.json",
     "chapter_revisions": "chapter_revisions.json",
     "chapter_sources": "chapter_sources.json",
+    "chapter_structures": "chapter_structures.json",
     "chapters": "chapters.json",
     "draft": "draft.json",
     "fact_candidate_runs": "fact_candidate_runs.json",
@@ -1381,6 +1382,32 @@ class AuthorWorkspace:
             binding.author_id,
             binding.project_id,
         )
+
+
+def _structure_commit_footprint(workspace: AuthorWorkspace) -> dict[str, Any]:
+    """Private R01.2 diagnostic: never an API, receipt field or recovery ledger.
+
+    Physical paths remain inside this storage backend. Equality is conservative:
+    any concurrent or staged change prevents a NOT_COMMITTED conclusion.
+    """
+    binding = _author_workspace_binding(workspace)
+    backend = binding.backend
+    project_dir = backend._require_project(binding.author_id, binding.project_id)
+    with backend._exclusive_lock(project_dir):
+        entries: dict[str, str | None] = {}
+        for root, directories, files in os.walk(project_dir, followlinks=False):
+            for name in directories + files:
+                path = Path(root) / name
+                backend._assert_safe_path(path)
+                backend._reject_symlink(path)
+                key = str(path.relative_to(project_dir))
+                if key == ".workspace.lock":
+                    continue
+                entries[key] = None if path.is_dir() else _sha256_bytes(backend._read_bytes(path))
+        return {
+            "entries": entries,
+            "prepared_journal_exists": backend._prepare_journal_path(project_dir).exists(),
+        }
 
 
 class WorkspaceRouter:
