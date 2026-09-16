@@ -22,6 +22,9 @@ RECORD_REF_CONTRACT = "M3_RECORD_REF"
 SOURCE_MODULE = "M3"
 FIXTURE_ACCESS = "POLICY_FIXTURE_READ_ONLY"
 RUN_ACCESS = "RUN_INTERNAL_READ_ONLY"
+PRODUCT_READ_ONLY_ACCESS = "PRODUCT_READ_ONLY"
+PRODUCT_CANDIDATE_CONTRACT_VERSION = "r04-product-candidate"
+PRODUCT_CANDIDATE_ACCESS = "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY"
 RETENTION_CLASS = "CORE_IMMUTABLE_AUDIT"
 WRITE_SET_PREFIX = "work/ccz57_m3_b05_patch_route_r03_5/"
 
@@ -43,6 +46,15 @@ BUILDER_MAP = {
     "M3_PATCH_LIFECYCLE_RECEIPT": "PatchLifecycleBuilder",
 }
 PROJECTOR_MAP = {"PatchRouteAggregateProjection": "PatchAggregateProjector"}
+PRODUCT_CANDIDATE_RECORD_TYPES = {
+    "M3_SEGMENT_INDEX_SNAPSHOT",
+    "M3_CANDIDATE_VERSION",
+    "M3_CANDIDATE_POINTER_SNAPSHOT",
+}
+PRODUCT_SOURCE_RECORD_TYPES = {
+    "M1_ACCEPTED_SOURCE_GENERATION",
+    "M1_WRITING_MATERIAL",
+}
 
 ENVELOPE_KEYS = {
     "contract",
@@ -392,10 +404,24 @@ def validate_record_ref(value: Any, *, expected_type: str | None = None) -> None
     exact_keys(value, RECORD_REF_KEYS, "B05_RECORD_REF_SHAPE_INVALID")
     if value["contract"] != RECORD_REF_CONTRACT:
         fail("B05_RECORD_REF_INVALID", "contract")
-    if value["contract_version"] != CONTRACT_VERSION:
-        fail("B05_RECORD_REF_INVALID", "contract_version")
-    if value["record_contract_version"] != CONTRACT_VERSION:
-        fail("B05_RECORD_REF_INVALID", "record_contract_version")
+    product_candidate = (
+        value["record_type"] in PRODUCT_CANDIDATE_RECORD_TYPES
+        and value["contract_version"] == PRODUCT_CANDIDATE_CONTRACT_VERSION
+        and value["record_contract_version"] == PRODUCT_CANDIDATE_CONTRACT_VERSION
+        and value["access"] == PRODUCT_CANDIDATE_ACCESS
+        and value["source_module"] == SOURCE_MODULE
+    )
+    product_source = (
+        value["record_type"] in PRODUCT_SOURCE_RECORD_TYPES
+        and value["contract_version"] == CONTRACT_VERSION
+        and value["record_contract_version"] == CONTRACT_VERSION
+        and value["access"] == PRODUCT_READ_ONLY_ACCESS
+    )
+    if not product_candidate and not product_source:
+        if value["contract_version"] != CONTRACT_VERSION:
+            fail("B05_RECORD_REF_INVALID", "contract_version")
+        if value["record_contract_version"] != CONTRACT_VERSION:
+            fail("B05_RECORD_REF_INVALID", "record_contract_version")
     if expected_type is not None and value["record_type"] != expected_type:
         fail("B05_RECORD_REF_TYPE_INVALID", str(value["record_type"]))
     if not isinstance(value["record_id"], str) or not value["record_id"]:
@@ -404,7 +430,11 @@ def validate_record_ref(value: Any, *, expected_type: str | None = None) -> None
         fail("B05_RECORD_REF_INVALID", "record_version")
     if not _is_sha(value["record_hash"]):
         fail("B05_RECORD_REF_INVALID", "record_hash")
-    if value["access"] not in {FIXTURE_ACCESS, RUN_ACCESS}:
+    if (
+        not product_candidate
+        and not product_source
+        and value["access"] not in {FIXTURE_ACCESS, RUN_ACCESS}
+    ):
         fail("B05_RECORD_REF_INVALID", "access")
     if not isinstance(value["source_module"], str) or not value["source_module"]:
         fail("B05_RECORD_REF_INVALID", "source_module")
@@ -414,10 +444,18 @@ def validate_immutable_record(record: Any, *, expected_type: str | None = None) 
     exact_keys(record, ENVELOPE_KEYS, "B05_IMMUTABLE_SHAPE_INVALID")
     if record["contract"] != IMMUTABLE_CONTRACT:
         fail("B05_IMMUTABLE_INVALID", "contract")
-    if record["contract_version"] != CONTRACT_VERSION:
-        fail("B05_IMMUTABLE_INVALID", "contract_version")
-    if record["record_contract_version"] != CONTRACT_VERSION:
-        fail("B05_IMMUTABLE_INVALID", "record_contract_version")
+    product_candidate = (
+        record["record_type"] in PRODUCT_CANDIDATE_RECORD_TYPES
+        and record["contract_version"] == PRODUCT_CANDIDATE_CONTRACT_VERSION
+        and record["record_contract_version"] == PRODUCT_CANDIDATE_CONTRACT_VERSION
+        and record["access"] == PRODUCT_CANDIDATE_ACCESS
+        and record["source_module"] == SOURCE_MODULE
+    )
+    if not product_candidate:
+        if record["contract_version"] != CONTRACT_VERSION:
+            fail("B05_IMMUTABLE_INVALID", "contract_version")
+        if record["record_contract_version"] != CONTRACT_VERSION:
+            fail("B05_IMMUTABLE_INVALID", "record_contract_version")
     if expected_type is not None and record["record_type"] != expected_type:
         fail("B05_IMMUTABLE_TYPE_INVALID", str(record["record_type"]))
     if not isinstance(record["record_id"], str) or not record["record_id"]:
@@ -430,7 +468,7 @@ def validate_immutable_record(record: Any, *, expected_type: str | None = None) 
         fail("B05_IMMUTABLE_INVALID", "record_version")
     if record["source_module"] != SOURCE_MODULE:
         fail("B05_IMMUTABLE_INVALID", "source_module")
-    if record["access"] not in {FIXTURE_ACCESS, RUN_ACCESS}:
+    if not product_candidate and record["access"] not in {FIXTURE_ACCESS, RUN_ACCESS}:
         fail("B05_IMMUTABLE_INVALID", "access")
     if record["retention_class"] != RETENTION_CLASS:
         fail("B05_IMMUTABLE_INVALID", "retention_class")

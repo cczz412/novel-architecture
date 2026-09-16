@@ -14,6 +14,8 @@ from threading import Event, Thread
 
 import pytest
 
+import candidate_authority as candidate_authority_module
+
 from candidate_authority import (
     CandidateAuthorityError,
     CandidateAuthorityStore,
@@ -34,6 +36,13 @@ from work.ccz57_m3_b06_commit_core_r01 import fixtures as b06_fixtures
 
 ROOT = Path(__file__).resolve().parent
 PROJECT = "fixture-project-001"
+UPGRADED_METADATA_KEYS = {
+    "authority_identity",
+    "candidate_contract_version",
+    "candidate_access",
+    "pointer_namespace",
+    "authority_store_id",
+}
 
 
 def new_store(
@@ -61,6 +70,15 @@ def publish_root(
         store=store,
         authority_reader=selected_reader,
     ).initialize_root(request)
+
+
+def remove_post_pr230_metadata(store: CandidateAuthorityStore) -> None:
+    with sqlite3.connect(store.database_path) as connection:
+        connection.executemany(
+            "DELETE FROM metadata WHERE key = ?",
+            [(key,) for key in sorted(UPGRADED_METADATA_KEYS)],
+        )
+        connection.commit()
 
 
 def test_public_root_capability_has_no_generic_read_or_commit(tmp_path: Path) -> None:
@@ -718,6 +736,65 @@ def test_reopen_accepts_exact_authority_schema(tmp_path: Path) -> None:
         "current_pointers": 0,
         "merge_receipts": 0,
     }
+
+
+def test_reopen_upgrades_exact_pr230_metadata_gap_before_validation(
+    tmp_path: Path,
+) -> None:
+    authority_root = tmp_path / "authority"
+    store = new_store(authority_root)
+    result = publish_root(store, root_request())
+    before_counts = store.table_counts()
+    before_pointer = store.read_pointer(result["logical_pointer_key"])
+    before_candidate = store.read_candidate(result["candidate_version_ref"])
+    remove_post_pr230_metadata(store)
+
+    reopened = CandidateAuthorityStore(authority_root, project_scope_id=PROJECT)
+
+    assert reopened.table_counts() == before_counts
+    assert reopened.read_pointer(result["logical_pointer_key"]) == before_pointer
+    assert reopened.read_candidate(result["candidate_version_ref"]) == before_candidate
+    assert len(reopened.authority_store_id) == 64
+    with sqlite3.connect(reopened.database_path) as connection:
+        metadata = {
+            row[0]: bytes(row[1]).decode("utf-8")
+            for row in connection.execute(
+                "SELECT key, value FROM metadata WHERE key IN (?, ?, ?, ?, ?)",
+                tuple(sorted(UPGRADED_METADATA_KEYS)),
+            ).fetchall()
+        }
+    assert set(metadata) == UPGRADED_METADATA_KEYS
+    assert metadata["authority_identity"] == "FIXTURE_CANDIDATE_AUTHORITY"
+    assert metadata["candidate_contract_version"] == "r03.5-candidate"
+    assert metadata["candidate_access"] == "POLICY_FIXTURE_READ_ONLY"
+    assert metadata["pointer_namespace"] == "FIXTURE_ONLY"
+
+
+def test_pr230_metadata_upgrade_failure_rolls_back_without_residue(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    authority_root = tmp_path / "authority"
+    store = new_store(authority_root)
+    publish_root(store, root_request())
+    remove_post_pr230_metadata(store)
+    before = file_sha256(store.database_path)
+    monkeypatch.setattr(
+        candidate_authority_module.secrets,
+        "token_hex",
+        lambda _size: "not-a-valid-store-id",
+    )
+
+    with pytest.raises(CandidateAuthorityError, match="AUTHORITY_STORE_ID_INVALID"):
+        CandidateAuthorityStore(authority_root, project_scope_id=PROJECT)
+
+    assert file_sha256(store.database_path) == before
+    with sqlite3.connect(store.database_path) as connection:
+        remaining = connection.execute(
+            "SELECT key FROM metadata WHERE key IN (?, ?, ?, ?, ?)",
+            tuple(sorted(UPGRADED_METADATA_KEYS)),
+        ).fetchall()
+    assert remaining == []
 
 
 @pytest.mark.parametrize(

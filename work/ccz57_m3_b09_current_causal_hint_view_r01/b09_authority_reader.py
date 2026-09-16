@@ -22,13 +22,11 @@ from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E4
     B01ContractError,
     CANDIDATE_SCHEMA_ID,
     CandidateVersionStore,
-    CONTRACT_VERSION as B01_CONTRACT_VERSION,
-    FIXTURE_ACCESS as B01_FIXTURE_ACCESS,
-    FIXTURE_POINTER_NAMESPACE,
     SOURCE_GENERATION_RECORD_TYPE,
     SOURCE_MODULE as B01_SOURCE_MODULE,
     WRITING_MATERIAL_RECORD_TYPE,
     LIVE_POINTER_KEYS,
+    authority_profile_for_ref,
     pointer_logical_key,
     record_ref as b01_record_ref,
     validate_candidate_version,
@@ -393,15 +391,16 @@ class CurrentCausalHintAuthorityReader:
     ) -> dict[str, Any]:
         try:
             validate_record_ref(ref, expected_type="M3_CANDIDATE_VERSION")
+            profile = authority_profile_for_ref(ref)
         except ValueError as error:
             raise B09AuthorityError(
                 "AUTHORITY_REFERENCE_CONFLICT", str(error)
             ) from error
         if (
-            ref["contract_version"] != B01_CONTRACT_VERSION
-            or ref["record_contract_version"] != B01_CONTRACT_VERSION
+            ref["contract_version"] != profile.contract_version
+            or ref["record_contract_version"] != profile.contract_version
             or ref["source_module"] != B01_SOURCE_MODULE
-            or ref["access"] != B01_FIXTURE_ACCESS
+            or ref["access"] != profile.candidate_access
             or not isinstance(ref["record_version"], int)
             or isinstance(ref["record_version"], bool)
         ):
@@ -422,14 +421,14 @@ class CurrentCausalHintAuthorityReader:
             detail="candidate bytes",
         )
         try:
-            validate_immutable_record(candidate, expected_type="M3_CANDIDATE_VERSION")
+            b01_validate_record(candidate)
         except ValueError as error:
             raise B09AuthorityError("AUTHORITY_HASH_MISMATCH", str(error)) from error
         if (
-            candidate["contract_version"] != B01_CONTRACT_VERSION
-            or candidate["record_contract_version"] != B01_CONTRACT_VERSION
+            candidate["contract_version"] != profile.contract_version
+            or candidate["record_contract_version"] != profile.contract_version
             or candidate["source_module"] != B01_SOURCE_MODULE
-            or candidate["access"] != B01_FIXTURE_ACCESS
+            or candidate["access"] != profile.candidate_access
             or not isinstance(candidate["record_version"], int)
             or isinstance(candidate["record_version"], bool)
         ):
@@ -496,6 +495,9 @@ class CurrentCausalHintAuthorityReader:
                 pointer["current_candidate_version_ref"],
                 expected_type="M3_CANDIDATE_VERSION",
             )
+            profile = authority_profile_for_ref(
+                pointer["current_candidate_version_ref"]
+            )
             candidate_ref = record_ref(candidate)
             payload = candidate["payload"]
             input_binding = payload["extraction_input_binding"]
@@ -503,13 +505,15 @@ class CurrentCausalHintAuthorityReader:
                 pointer["chapter_revision_ref"],
                 pointer["seg"],
                 pointer["input_binding_hash"],
+                project_scope_id=pointer["project_scope_id"],
+                authority_profile=profile,
             )
         except (KeyError, TypeError, ValueError) as error:
             raise B09AuthorityError(
                 "AUTHORITY_STATE_INCOHERENT", f"pointer contract: {error}"
             ) from error
         if (
-            pointer["pointer_namespace"] != FIXTURE_POINTER_NAMESPACE
+            pointer["pointer_namespace"] != profile.pointer_namespace
             or pointer["candidate_schema_id"] != CANDIDATE_SCHEMA_ID
             or payload["candidate_schema_id"] != CANDIDATE_SCHEMA_ID
             or not isinstance(pointer["project_scope_id"], str)

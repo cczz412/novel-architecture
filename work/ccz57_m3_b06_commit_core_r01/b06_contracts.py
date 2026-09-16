@@ -15,10 +15,12 @@ if str(REPOSITORY_ROOT) not in sys.path:
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
     CANDIDATE_SCHEMA_ID,
     CONTRACT_VERSION,
-    FIXTURE_POINTER_NAMESPACE,
+    CandidateAuthorityProfile,
+    authority_profile_for_pointer,
     LIVE_POINTER_KEYS,
     SOURCE_MODULE,
     pointer_logical_key,
+    require_authority_profile,
     validate_candidate_version,
 )
 from work.ccz57_m3_b05_patch_route_r03_5.b05_contracts import (  # noqa: E402
@@ -92,10 +94,19 @@ def validate_mutable_pointer(
     *,
     candidate: dict[str, Any],
     reference_records: list[dict[str, Any]],
+    authority_profile: CandidateAuthorityProfile | None = None,
 ) -> None:
     _exact_keys(pointer, LIVE_POINTER_KEYS, "B06_POINTER_SHAPE_INVALID")
+    try:
+        profile = (
+            authority_profile_for_pointer(pointer)
+            if authority_profile is None
+            else require_authority_profile(authority_profile)
+        )
+    except ValueError as error:
+        fail("B06_POINTER_SCOPE_INVALID", str(error))
     if (
-        pointer["pointer_namespace"] != FIXTURE_POINTER_NAMESPACE
+        pointer["pointer_namespace"] != profile.pointer_namespace
         or pointer["candidate_schema_id"] != CANDIDATE_SCHEMA_ID
         or not isinstance(pointer["generation"], int)
         or isinstance(pointer["generation"], bool)
@@ -108,6 +119,7 @@ def validate_mutable_pointer(
             allow_child=candidate["payload"]["parent_candidate_version_ref"]
             is not None,
             reference_records=reference_records,
+            authority_profile=profile,
         )
     except (KeyError, ValueError) as error:
         fail("B06_POINTER_CANDIDATE_INVALID", str(error))
@@ -130,6 +142,8 @@ def validate_mutable_pointer(
             pointer["chapter_revision_ref"],
             pointer["seg"],
             pointer["input_binding_hash"],
+            project_scope_id=pointer["project_scope_id"],
+            authority_profile=profile,
         )
     ):
         fail("B06_POINTER_SCOPE_INVALID")

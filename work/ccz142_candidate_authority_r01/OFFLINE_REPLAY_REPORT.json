@@ -24,8 +24,8 @@
     ],
     "unique_index_sets_frozen": 7
   },
-  "base_main_sha": "c89beb4368b6b79598906bdc27819a16f751155b",
-  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R03-SELF-CHECK",
+  "base_main_sha": "68e13f64e475eece2d7d7cf2e26597335a734129",
+  "document_identity": "CCZ142-CANDIDATE-AUTHORITY-R04-SELF-CHECK",
   "external_calls": {
     "browser_actions": 0,
     "model_api_calls": 0,
@@ -65,11 +65,17 @@
       "candidate_versions": 2,
       "current_pointers": 1,
       "merge_receipts": 1,
-      "metadata": 2
+      "metadata": 7
     },
     "terminal_binds_child": true,
     "terminal_binds_merge_receipt": true,
     "terminal_replay_reused": true
+  },
+  "legacy_metadata_upgrade": {
+    "authority_identity": "FIXTURE_CANDIDATE_AUTHORITY",
+    "authority_store_id_valid": true,
+    "exact_pr230_gap_upgraded": true,
+    "product_relabel_allowed": false
   },
   "migration_guard": {
     "b01_root_and_migration_receipt_one_transaction": true,

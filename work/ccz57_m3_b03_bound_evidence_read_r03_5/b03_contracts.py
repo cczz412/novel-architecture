@@ -25,6 +25,7 @@ from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E4
     B01ContractError,
     CANDIDATE_SCHEMA_ID as B01_SCHEMA_ID,
     CONTRACT_VERSION as B01_CONTRACT_VERSION,
+    PRODUCT_CONTRACT_VERSION as B01_PRODUCT_CONTRACT_VERSION,
     record_ref as b01_record_ref,
     validate_candidate_version as b01_validate_candidate_version,
     validate_evidence_locator as b01_validate_evidence_locator,
@@ -473,7 +474,15 @@ def context_hash(context: dict[str, Any]) -> str:
 
 def _candidate_item(context: dict[str, Any], subject: dict[str, Any]) -> dict[str, Any]:
     candidate = context["candidate_version"]
-    if subject["candidate_version_ref"].get("contract_version") != CONTRACT_VERSION:
+    candidate_contract_version = candidate.get("contract_version")
+    if (
+        candidate_contract_version
+        not in {CONTRACT_VERSION, B01_PRODUCT_CONTRACT_VERSION}
+        or subject["candidate_version_ref"].get("contract_version")
+        != candidate_contract_version
+        or subject["candidate_version_ref"].get("record_contract_version")
+        != candidate_contract_version
+    ):
         fail("B03_CROSS_VERSION_FORBIDDEN")
     if subject["candidate_version_ref"] != b01_record_ref(candidate):
         fail("B03_CANDIDATE_VERSION_DRIFT")

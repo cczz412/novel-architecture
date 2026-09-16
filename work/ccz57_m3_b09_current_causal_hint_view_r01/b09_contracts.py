@@ -14,11 +14,10 @@ if str(REPOSITORY_ROOT) not in sys.path:
 
 from work.ccz57_m3_b01_candidate_version_r03_5.b01_contract import (  # noqa: E402
     B01ContractError,
-    CONTRACT_VERSION as B01_CONTRACT_VERSION,
     EVIDENCE_LOCATOR_CONTRACT,
-    FIXTURE_ACCESS as B01_FIXTURE_ACCESS,
     LINEAGE_LOCATOR_CONTRACT,
     SOURCE_MODULE as B01_SOURCE_MODULE,
+    authority_profile_for_ref as b01_authority_profile_for_ref,
     validate_chapter_revision_ref as b01_validate_chapter_revision_ref,
     validate_lineage_locator as b01_validate_lineage_locator,
     validate_record_ref as b01_validate_record_ref,
@@ -308,12 +307,13 @@ def _validate_canonical_unique(values: Any, code: str) -> None:
 def _validate_lineage_locator(value: Any) -> None:
     _exact_keys(value, LINEAGE_LOCATOR_KEYS, "B09_HINT_LINEAGE_LOCATOR_INVALID")
     try:
+        profile = b01_authority_profile_for_ref(value["candidate_version_ref"])
         b01_validate_lineage_locator(value)
     except (B01ContractError, TypeError, ValueError) as error:
         fail("B09_HINT_LINEAGE_LOCATOR_INVALID", str(error))
     if (
         value["contract"] != LINEAGE_LOCATOR_CONTRACT
-        or value["contract_version"] != B01_CONTRACT_VERSION
+        or value["contract_version"] != profile.contract_version
         or not isinstance(value["lineage_id"], str)
         or re.fullmatch(r"lin_[0-9a-f]{64}", value["lineage_id"]) is None
         or not isinstance(value["json_pointer"], str)
@@ -326,9 +326,13 @@ def _validate_lineage_locator(value: Any) -> None:
 
 def _validate_evidence_locator(value: Any) -> None:
     _exact_keys(value, EVIDENCE_LOCATOR_KEYS, "B09_HINT_EVIDENCE_LOCATOR_INVALID")
+    try:
+        profile = b01_authority_profile_for_ref(value["candidate_version_ref"])
+    except (B01ContractError, TypeError, ValueError) as error:
+        fail("B09_HINT_EVIDENCE_LOCATOR_INVALID", str(error))
     if (
         value["contract"] != EVIDENCE_LOCATOR_CONTRACT
-        or value["contract_version"] != B01_CONTRACT_VERSION
+        or value["contract_version"] != profile.contract_version
         or not isinstance(value["lineage_id"], str)
         or re.fullmatch(r"lin_[0-9a-f]{64}", value["lineage_id"]) is None
         or not isinstance(value["evidence_json_pointer"], str)
@@ -347,9 +351,9 @@ def _validate_evidence_locator(value: Any) -> None:
             value["candidate_version_ref"],
             code="B09_HINT_EVIDENCE_LOCATOR_INVALID",
             expected_type="M3_CANDIDATE_VERSION",
-            expected_access=B01_FIXTURE_ACCESS,
+            expected_access=profile.candidate_access,
             expected_source_module=B01_SOURCE_MODULE,
-            expected_contract_version=B01_CONTRACT_VERSION,
+            expected_contract_version=profile.contract_version,
         )
     except (B01ContractError, TypeError, ValueError) as error:
         fail("B09_HINT_EVIDENCE_LOCATOR_INVALID", str(error))
@@ -383,13 +387,16 @@ def _validate_populated_scope(scope: dict[str, Any]) -> None:
     except (B01ContractError, TypeError, ValueError) as error:
         fail("B09_SCOPE_CHAPTER_REVISION_INVALID", str(error))
     try:
+        profile = b01_authority_profile_for_ref(
+            scope["current_candidate_version_ref"]
+        )
         b01_validate_record_ref(
             scope["current_candidate_version_ref"],
             code="B09_SCOPE_CANDIDATE_REF_INVALID",
             expected_type="M3_CANDIDATE_VERSION",
-            expected_access=B01_FIXTURE_ACCESS,
+            expected_access=profile.candidate_access,
             expected_source_module=B01_SOURCE_MODULE,
-            expected_contract_version=B01_CONTRACT_VERSION,
+            expected_contract_version=profile.contract_version,
         )
     except (B01ContractError, TypeError, ValueError) as error:
         fail("B09_SCOPE_CANDIDATE_REF_INVALID", str(error))

@@ -1,0 +1,171 @@
+{
+  "b09_persistent_writer_count": 0,
+  "candidate_identity": "PRODUCT_CANDIDATE_AUTHORITY",
+  "candidate_storage_writer_count": 1,
+  "deterministic_repeat_equal": true,
+  "formal_fact_writes": 0,
+  "full_chain": {
+    "b02_candidate_ref_matches_b01": true,
+    "b02_real_publisher_record_types": [
+      "M3_COVERAGE_OBSERVATION",
+      "M3_DIAGNOSTIC",
+      "M3_DIAGNOSTIC_RECORDER_IDENTITY"
+    ],
+    "b02_real_publisher_write_events": 3,
+    "b02_records_exercised": 3,
+    "b03_product_subject_validated": true,
+    "b04_candidate_ref_matches_b01": true,
+    "b04_patch_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "39f7867cbe4bddda55263bcd755ab50fb7aedf70f9e3cbfa5997d061cabf3ae5",
+      "record_id": "patch-proposal:740d9d3795502db271d8d9d78970c1de35cb3844ad3390fce21c62edd04eeb0c",
+      "record_type": "M3_PATCH_PROPOSAL",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "b04_preview_projector": "PatchPreviewProjector",
+    "b04_real_writer_record_types": [
+      "M3_CANDIDATE_PROTECTION_SET",
+      "M3_PATCH_PROPOSAL"
+    ],
+    "b05_route_ref": {
+      "access": "POLICY_FIXTURE_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "5992f2ba901b40e4ae2fcd5133ba5f41f5bae2618364b64524a50da3add319c8",
+      "record_id": "patch-route:5b410acc8b00feb7eabb8a0093fa33f57ba8e3a529cfbf5a676f37718a42ca65",
+      "record_type": "M3_PATCH_ROUTE_RECEIPT",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "b06_merge_receipt_ref": {
+      "access": "RUN_INTERNAL_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "54886dc3cb6d0eaa050db0c3604c65170ee45959358a6a11982f85c6bbe1884a",
+      "record_id": "merge-receipt:827443b878ce9704018a5d648fee3b6442168d5c20691c530c1c7489e09fc6ac",
+      "record_type": "M3_CANDIDATE_MERGE_RECEIPT",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "b07_state_revision": 3,
+    "b08_terminal_ref": {
+      "access": "RUN_INTERNAL_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r03.5-candidate",
+      "record_contract_version": "r03.5-candidate",
+      "record_hash": "74fcbe7a8c4ae59432e4c9b7b59d18ba1f9bf19267b238497d0a7382e3453208",
+      "record_id": "segment-terminal:95ad951b99e430a6d7e2e2bd510d20f77ba468f7ba45a73cb73018eb3b09d91d",
+      "record_type": "M3_SEGMENT_CANDIDATE_TERMINAL_RECEIPT",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "b09_reason_code": "NO_ROUTE_TO_B09",
+    "b09_status": "EMPTY",
+    "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "candidate_database_files": 1,
+    "candidate_database_paths": [
+      "candidate-authority/b06-commit-core.sqlite3"
+    ],
+    "candidate_storage_writers": [
+      "CandidateAuthorityStore"
+    ],
+    "child_candidate_ref": {
+      "access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r04-product-candidate",
+      "record_contract_version": "r04-product-candidate",
+      "record_hash": "b996479fdd6cab5fd96f3c96b4c2e2dfcf85dcd29a3977499012b05e80699276",
+      "record_id": "pcv:bb996ed5437f:f8d06c0ef1adc433c905250705bde2fd",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_version": 2,
+      "source_module": "M3"
+    },
+    "child_contract_version": "r04-product-candidate",
+    "formal_tables": [],
+    "formal_writes": 0,
+    "model_api_calls": 0,
+    "network_api_calls": 0,
+    "plain_b01_probe_storage_created": false,
+    "plain_b01_product_profile_result": "B01_PRODUCT_PROFILE_REQUIRES_AUTHORITY_CAPTURE",
+    "plain_b06_probe_storage_created": false,
+    "plain_b06_product_profile_result": "B06_PRODUCT_PROFILE_REQUIRES_CANDIDATE_AUTHORITY_STORE",
+    "pointer_generation": 2,
+    "pointer_key": "product:m3_candidate.current/0e9acf4860184513a42e8f3475c4c0455da42a234562129f7f60e502b7a2ae2f/novel-fact-extraction-v2.1/product-chapter-001/r1/seg1/65dff7c65900e2b0e59fbef6690f6417d63167fd63c45c5ec32555a20e9db627",
+    "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
+    "result": "PASS",
+    "root_candidate_ref": {
+      "access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+      "contract": "M3_RECORD_REF",
+      "contract_version": "r04-product-candidate",
+      "record_contract_version": "r04-product-candidate",
+      "record_hash": "f85aef0ca9d9553ce4713fae769581c66140ed7a9c7dbf91b320978990e4bcff",
+      "record_id": "pcv:bb996ed5437f:b2aebe60db74cbcc45cd7511891ffc81",
+      "record_type": "M3_CANDIDATE_VERSION",
+      "record_version": 1,
+      "source_module": "M3"
+    },
+    "root_contract_version": "r04-product-candidate",
+    "ten_ledger_tables": [],
+    "ten_ledger_writes": 0
+  },
+  "migration_control_schema_guard": {
+    "current_schema_version": "ccz142-product-namespace-migration-r04",
+    "full_table_layouts_frozen": 5,
+    "unknown_schema_preserved": true,
+    "unknown_schema_result": "MIGRATION_CONTROL_SCHEMA_IDENTITY_MISMATCH"
+  },
+  "model_api_calls": 0,
+  "network_api_calls": 0,
+  "pre_cutover_abort": {
+    "access_result": "PRODUCT_NAMESPACE_NOT_ACTIVE",
+    "last_event": {
+      "event": "ABORTED",
+      "payload": {
+        "legacy_writer_reactivated": false,
+        "target_visible": false
+      },
+      "sequence": 4
+    },
+    "state": "ABORTED"
+  },
+  "result": "PASS",
+  "successful_cutover": {
+    "authority_binding_counts": {
+      "authority_pointer_bindings": 1,
+      "authority_project_bindings": 1
+    },
+    "candidate_access": "PRODUCT_CANDIDATE_AUTHORITY_READ_ONLY",
+    "control_schema_objects": [
+      "authority_pointer_bindings",
+      "authority_project_bindings",
+      "metadata",
+      "migration_events",
+      "migration_state"
+    ],
+    "event_sequence": 6,
+    "events": [
+      "DISCOVERED",
+      "SOURCE_VERIFIED",
+      "TARGET_STAGED",
+      "SHADOW_VERIFIED",
+      "CUTOVER_COMMITTED",
+      "POST_CUTOVER_ACTIVE"
+    ],
+    "pointer_generation": 1,
+    "pointer_namespace": "PRODUCT_CANDIDATE_AUTHORITY",
+    "source_semantic_hash": "1ce8c343a32e6412500ab58c5ee8537237a5ea8948921e7ebab54ca4602c247c",
+    "state": "POST_CUTOVER_ACTIVE"
+  },
+  "synthetic_fixture_rejection": {
+    "candidate_store_created": false,
+    "result_code": "MIGRATION_SYNTHETIC_FIXTURE_INELIGIBLE",
+    "state": "REJECTED_READ_ONLY"
+  },
+  "ten_ledger_writes": 0
+}

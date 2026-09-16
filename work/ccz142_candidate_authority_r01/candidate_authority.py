@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import secrets
 import sqlite3
 import sys
 from contextlib import contextmanager
@@ -23,13 +24,19 @@ from b01_contract import (  # noqa: E402
     CCZ142_EXTRACTION_HANDOFF_CONTRACT,
     CCZ142_EXTRACTION_SOURCE_LANE,
     CCZ142_EXTRACTION_SOURCE_MODULE,
-    FIXTURE_POINTER_NAMESPACE,
+    FIXTURE_AUTHORITY_PROFILE,
+    CandidateAuthorityProfile,
+    _PRODUCT_B01_CAPTURE_TOKEN,
     _compose_ccz142_b01_runtime,
     canonical_bytes,
     record_ref,
+    require_authority_profile,
     sha256_value,
 )
-from b06_store import B06CommitStore  # noqa: E402
+from b06_store import (  # noqa: E402
+    _CANDIDATE_AUTHORITY_STORE_TOKEN,
+    B06CommitStore,
+)
 
 ROOT_REQUEST_KEYS = {
     "admission",
@@ -63,6 +70,16 @@ ROOT_RECORD_TYPES = {
 _ROOT_PUBLISH_TOKEN = object()
 _LEGACY_MIGRATION_TOKEN = object()
 AUTHORITY_SCHEMA_ID = b"r02-candidate"
+AUTHORITY_PROFILE_METADATA_KEYS = (
+    "authority_identity",
+    "candidate_contract_version",
+    "candidate_access",
+    "pointer_namespace",
+)
+AUTHORITY_UPGRADE_METADATA_KEYS = (
+    *AUTHORITY_PROFILE_METADATA_KEYS,
+    "authority_store_id",
+)
 AUTHORITY_TABLE_LAYOUTS = {
     "metadata": (
         ("key", "TEXT", 0, None, 1),
@@ -187,10 +204,16 @@ class CandidateAuthorityStore(B06CommitStore):
         *,
         project_scope_id: str,
         root_failure_point: str | None = None,
+        authority_profile: CandidateAuthorityProfile = FIXTURE_AUTHORITY_PROFILE,
     ) -> None:
         if not isinstance(project_scope_id, str) or not project_scope_id:
             fail("PROJECT_SCOPE_INVALID")
-        super().__init__(root)
+        profile = require_authority_profile(authority_profile)
+        super().__init__(
+            root,
+            authority_profile=profile,
+            _candidate_authority_store_token=_CANDIDATE_AUTHORITY_STORE_TOKEN,
+        )
         self.project_scope_id = project_scope_id
         self.root_failure_point = root_failure_point
         self.root_commit_count = 0
@@ -199,6 +222,7 @@ class CandidateAuthorityStore(B06CommitStore):
             if not self._lock_path.is_file():
                 fail("AUTHORITY_LOCK_MISSING")
             with self.serialization():
+                self._upgrade_parent_authority_metadata()
                 self._verify_existing_project_scope()
 
     @staticmethod
@@ -236,6 +260,93 @@ class CandidateAuthorityStore(B06CommitStore):
             if actual_unique_indexes != AUTHORITY_UNIQUE_INDEXES[table]:
                 fail("AUTHORITY_SCHEMA_UNIQUE_INDEX_MISMATCH", table)
 
+    def _expected_profile_metadata(self) -> dict[str, str]:
+        return {
+            "authority_identity": self.authority_profile.identity,
+            "candidate_contract_version": self.authority_profile.contract_version,
+            "candidate_access": self.authority_profile.candidate_access,
+            "pointer_namespace": self.authority_profile.pointer_namespace,
+        }
+
+    @staticmethod
+    def _validated_store_id(row: tuple[Any, ...] | None) -> str:
+        if row is None:
+            fail("AUTHORITY_STORE_ID_MISSING")
+        try:
+            value = bytes(row[0]).decode("utf-8")
+        except (TypeError, UnicodeDecodeError) as error:
+            fail("AUTHORITY_STORE_ID_INVALID", str(error))
+        if len(value) != 64 or any(
+            character not in "0123456789abcdef" for character in value
+        ):
+            fail("AUTHORITY_STORE_ID_INVALID")
+        return value
+
+    def _upgrade_parent_authority_metadata(self) -> None:
+        """Upgrade only the exact metadata gap left by the PR #230 store."""
+
+        with sqlite3.connect(self._database_path) as connection:
+            tables = {
+                row[0]
+                for row in connection.execute(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'"
+                ).fetchall()
+            }
+            if "metadata" not in tables:
+                return
+            self._verify_schema(connection)
+            project_row = connection.execute(
+                "SELECT value FROM metadata WHERE key = 'project_scope_id'"
+            ).fetchone()
+            rows = {
+                key: connection.execute(
+                    "SELECT value FROM metadata WHERE key = ?", (key,)
+                ).fetchone()
+                for key in AUTHORITY_UPGRADE_METADATA_KEYS
+            }
+            missing = {key for key, row in rows.items() if row is None}
+            if not missing:
+                return
+            if missing != set(AUTHORITY_UPGRADE_METADATA_KEYS):
+                fail("AUTHORITY_LEGACY_METADATA_PARTIAL")
+            if project_row is None:
+                fail("AUTHORITY_PROJECT_SCOPE_MISSING")
+            if bytes(project_row[0]) != self.project_scope_id.encode("utf-8"):
+                fail("PROJECT_SCOPE_STORE_MISMATCH")
+            if (
+                self.authority_profile.identity
+                != FIXTURE_AUTHORITY_PROFILE.identity
+            ):
+                fail("AUTHORITY_LEGACY_PROFILE_UPGRADE_FORBIDDEN")
+
+            connection.execute("PRAGMA synchronous=FULL")
+            connection.execute("BEGIN IMMEDIATE")
+            self._verify_schema(connection)
+            locked_rows = {
+                key: connection.execute(
+                    "SELECT value FROM metadata WHERE key = ?", (key,)
+                ).fetchone()
+                for key in AUTHORITY_UPGRADE_METADATA_KEYS
+            }
+            if any(row is not None for row in locked_rows.values()):
+                fail("AUTHORITY_LEGACY_METADATA_CONCURRENT_CHANGE")
+            for key, value in self._expected_profile_metadata().items():
+                connection.execute(
+                    "INSERT INTO metadata(key, value) VALUES (?, ?)",
+                    (key, sqlite3.Binary(value.encode("utf-8"))),
+                )
+            generated_store_id = secrets.token_hex(32).encode("utf-8")
+            connection.execute(
+                "INSERT INTO metadata(key, value) VALUES (?, ?)",
+                ("authority_store_id", sqlite3.Binary(generated_store_id)),
+            )
+            store_id_row = connection.execute(
+                "SELECT value FROM metadata WHERE key = 'authority_store_id'"
+            ).fetchone()
+            self._validated_store_id(store_id_row)
+            self._verify_schema(connection)
+            connection.commit()
+
     def _verify_existing_project_scope(self) -> None:
         with sqlite3.connect(self._database_path) as connection:
             tables = {
@@ -249,11 +360,28 @@ class CandidateAuthorityStore(B06CommitStore):
             row = connection.execute(
                 "SELECT value FROM metadata WHERE key = 'project_scope_id'"
             ).fetchone()
+            profile_rows = {
+                key: connection.execute(
+                    "SELECT value FROM metadata WHERE key = ?", (key,)
+                ).fetchone()
+                for key in AUTHORITY_PROFILE_METADATA_KEYS
+            }
+            store_id_row = connection.execute(
+                "SELECT value FROM metadata WHERE key = 'authority_store_id'"
+            ).fetchone()
             self._verify_schema(connection)
         if row is None:
             fail("AUTHORITY_PROJECT_SCOPE_MISSING")
         if bytes(row[0]) != self.project_scope_id.encode("utf-8"):
             fail("PROJECT_SCOPE_STORE_MISMATCH")
+        expected = self._expected_profile_metadata()
+        if any(
+            profile_rows[key] is None
+            or bytes(profile_rows[key][0]) != value.encode("utf-8")
+            for key, value in expected.items()
+        ):
+            fail("AUTHORITY_PROFILE_STORE_MISMATCH")
+        self._validated_store_id(store_id_row)
 
     def _inject_root_failure(self, point: str) -> None:
         if self.root_failure_point == point:
@@ -330,6 +458,28 @@ class CandidateAuthorityStore(B06CommitStore):
                     )
                 elif bytes(schema_row[0]) != AUTHORITY_SCHEMA_ID:
                     fail("AUTHORITY_SCHEMA_IDENTITY_MISMATCH")
+                profile_metadata = self._expected_profile_metadata()
+                for key, value in profile_metadata.items():
+                    profile_row = connection.execute(
+                        "SELECT value FROM metadata WHERE key = ?", (key,)
+                    ).fetchone()
+                    encoded = value.encode("utf-8")
+                    if profile_row is None:
+                        connection.execute(
+                            "INSERT INTO metadata(key, value) VALUES (?, ?)",
+                            (key, sqlite3.Binary(encoded)),
+                        )
+                    elif bytes(profile_row[0]) != encoded:
+                        fail("AUTHORITY_PROFILE_STORE_MISMATCH", key)
+                generated_store_id = secrets.token_hex(32).encode("utf-8")
+                connection.execute(
+                    "INSERT OR IGNORE INTO metadata(key, value) VALUES (?, ?)",
+                    ("authority_store_id", sqlite3.Binary(generated_store_id)),
+                )
+                store_id_row = connection.execute(
+                    "SELECT value FROM metadata WHERE key = 'authority_store_id'"
+                ).fetchone()
+                self._validated_store_id(store_id_row)
                 self._verify_schema(connection)
                 connection.commit()
 
@@ -339,8 +489,7 @@ class CandidateAuthorityStore(B06CommitStore):
         self.bootstrap_copy_attempt_count += 1
         fail("B06_BOOTSTRAP_COPY_FORBIDDEN")
 
-    @staticmethod
-    def _root_parts(state: dict[str, Any]) -> dict[str, Any]:
+    def _root_parts(self, state: dict[str, Any]) -> dict[str, Any]:
         if set(state) != {"records", "pointers", "operations"}:
             fail("ROOT_STATE_SHAPE_INVALID")
         if len(state["pointers"]) != 1 or len(state["operations"]) != 1:
@@ -371,7 +520,8 @@ class CandidateAuthorityStore(B06CommitStore):
             candidate["record_version"] != 1
             or candidate["payload"]["parent_candidate_version_ref"] is not None
             or pointer["logical_pointer_key"] != pointer_key
-            or pointer["pointer_namespace"] != FIXTURE_POINTER_NAMESPACE
+            or pointer["pointer_namespace"]
+            != self.authority_profile.pointer_namespace
             or pointer["generation"] != 1
             or canonical_bytes(pointer["current_candidate_version_ref"])
             != canonical_bytes(candidate_ref)
@@ -611,6 +761,25 @@ class CandidateAuthorityStore(B06CommitStore):
             "result": _decode(row[3], code="ROOT_RESULT_INVALID"),
         }
 
+    def read_aux_record(self, ref: dict[str, Any]) -> dict[str, Any]:
+        if not isinstance(ref, dict):
+            fail("ROOT_AUX_REF_INVALID")
+        storage_key = (
+            f"{ref.get('record_type')}:{ref.get('record_id')}:"
+            f"{ref.get('record_version')}"
+        )
+        with sqlite3.connect(self._database_path) as connection:
+            row = connection.execute(
+                "SELECT record_json FROM candidate_aux_records WHERE storage_key = ?",
+                (storage_key,),
+            ).fetchone()
+        if row is None:
+            fail("ROOT_AUX_RECORD_NOT_FOUND")
+        record = _decode(row[0], code="ROOT_AUX_RECORD_INVALID")
+        if canonical_bytes(record_ref(record)) != canonical_bytes(ref):
+            fail("ROOT_AUX_REF_MISMATCH")
+        return record
+
     def table_counts(self) -> dict[str, int]:
         with sqlite3.connect(self._database_path) as connection:
             tables = [
@@ -630,6 +799,32 @@ class CandidateAuthorityStore(B06CommitStore):
     @property
     def database_path(self) -> Path:
         return self._database_path
+
+    @property
+    def authority_store_id(self) -> str:
+        with sqlite3.connect(self._database_path) as connection:
+            row = connection.execute(
+                "SELECT value FROM metadata WHERE key = 'authority_store_id'"
+            ).fetchone()
+        if row is None:
+            fail("AUTHORITY_STORE_ID_MISSING")
+        value = bytes(row[0]).decode("utf-8")
+        if (
+            len(value) != 64
+            or any(character not in "0123456789abcdef" for character in value)
+        ):
+            fail("AUTHORITY_STORE_ID_INVALID")
+        return value
+
+    @property
+    def storage_locator_hash(self) -> str:
+        return sha256_value(
+            {
+                "authority_store_id": self.authority_store_id,
+                "database_path": str(self._database_path.resolve()),
+                "project_scope_id": self.project_scope_id,
+            }
+        )
 
     @staticmethod
     def _migration_request_hash(
@@ -1146,7 +1341,11 @@ class CandidateRootInitializer:
         raw_items = prepared.pop("raw_items")
         authority_before = self._authority(request)
         capture = _B01RootCaptureStore()
-        service, admit_extraction = _compose_ccz142_b01_runtime(capture)
+        service, admit_extraction = _compose_ccz142_b01_runtime(
+            capture,
+            authority_profile=self.__store.authority_profile,
+            _product_capture_token=_PRODUCT_B01_CAPTURE_TOKEN,
+        )
         extraction_admission = admit_extraction(
             source_lane=CCZ142_EXTRACTION_SOURCE_LANE,
             source_module=CCZ142_EXTRACTION_SOURCE_MODULE,

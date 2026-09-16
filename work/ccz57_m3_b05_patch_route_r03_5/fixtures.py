@@ -333,23 +333,49 @@ def build_environment(
     unknown_tokens: list[dict[str, Any]] | None = None,
     canonical_add_sort_frozen: bool = True,
     failure_point: str | None = None,
+    b01_scope: dict[str, Any] | None = None,
 ) -> FixtureEnvironment:
-    catalog = json.loads(B01_OBJECT_SHAPES.read_text(encoding="utf-8"))
-    segment_index = deepcopy(
-        next(
+    if b01_scope is None:
+        catalog = json.loads(B01_OBJECT_SHAPES.read_text(encoding="utf-8"))
+        segment_index = deepcopy(
+            next(
+                record
+                for record in catalog["immutable_records"]
+                if record["record_type"] == "M3_SEGMENT_INDEX_SNAPSHOT"
+            )
+        )
+        root_candidate = deepcopy(
+            next(
+                record
+                for record in catalog["immutable_records"]
+                if record["record_type"] == "M3_CANDIDATE_VERSION"
+            )
+        )
+        reference_records = deepcopy(catalog["reference_records"])
+        pointer_snapshot_source = next(
             record
             for record in catalog["immutable_records"]
-            if record["record_type"] == "M3_SEGMENT_INDEX_SNAPSHOT"
+            if record["record_type"] == "M3_CANDIDATE_POINTER_SNAPSHOT"
         )
-    )
-    root_candidate = deepcopy(
-        next(
-            record
-            for record in catalog["immutable_records"]
-            if record["record_type"] == "M3_CANDIDATE_VERSION"
-        )
-    )
-    reference_records = deepcopy(catalog["reference_records"])
+        live_pointer_source = catalog["live_pointer_example"]
+        segment_inputs = deepcopy(SEGMENT_INPUTS)
+    else:
+        required_scope = {
+            "segment_index",
+            "candidate_version",
+            "pointer_snapshot",
+            "live_pointer",
+            "reference_records",
+            "segment_inputs",
+        }
+        if set(b01_scope) != required_scope:
+            raise KeyError("B01_SCOPE_SHAPE_INVALID")
+        segment_index = deepcopy(b01_scope["segment_index"])
+        root_candidate = deepcopy(b01_scope["candidate_version"])
+        reference_records = deepcopy(b01_scope["reference_records"])
+        pointer_snapshot_source = deepcopy(b01_scope["pointer_snapshot"])
+        live_pointer_source = deepcopy(b01_scope["live_pointer"])
+        segment_inputs = deepcopy(b01_scope["segment_inputs"])
     candidate = root_candidate
     if candidate_child:
         raw_items = [
@@ -385,14 +411,8 @@ def build_environment(
     ]
     pointer_snapshot = None
     if not candidate_child:
-        pointer_snapshot = deepcopy(
-            next(
-                record
-                for record in catalog["immutable_records"]
-                if record["record_type"] == "M3_CANDIDATE_POINTER_SNAPSHOT"
-            )
-        )
-    live_pointer = deepcopy(catalog["live_pointer_example"])
+        pointer_snapshot = deepcopy(pointer_snapshot_source)
+    live_pointer = deepcopy(live_pointer_source)
     live_pointer["current_candidate_version_ref"] = record_ref(candidate)
     live_pointer["generation"] = 2 if candidate_child else 1
     if stale_pointer:
@@ -407,7 +427,7 @@ def build_environment(
         "candidate_version": deepcopy(candidate),
         "lineage_locators": deepcopy(lineage_locators),
         "evidence_locators": deepcopy(evidence_locators),
-        "segment_inputs": deepcopy(SEGMENT_INPUTS),
+        "segment_inputs": deepcopy(segment_inputs),
     }
     candidate_payload = candidate["payload"]
     chapter_revision = candidate_payload["chapter_revision_ref"]
@@ -723,7 +743,7 @@ def build_environment(
         reference_records=reference_records,
         lineage_locators=lineage_locators,
         evidence_locators=evidence_locators,
-        segment_inputs=SEGMENT_INPUTS,
+        segment_inputs=segment_inputs,
     )
     b02_reader = B02CurrentScopeReader(records=b02_records)
     policy_reader = PolicyGateReader(
