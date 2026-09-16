@@ -23,6 +23,19 @@ cd "$(git rev-parse --show-toplevel)" && uv run --locked pytest -q
 - 哪些回放测试依赖本机证据、干净副本为何跳过：`tests/local_evidence_registry.json`
 - 模块是否可免重验：`governance/module_registry.json`
 
+## 普通文档不追补历史材料
+
+默认文档计划只执行两项仓内检查：
+
+```bash
+uv run --locked python tools/governance_index.py --check-current
+uv run --locked python tools/historical_test_replay.py validate --registry-only
+```
+
+当前导航和目录派生页、模块元数据及历史回放登记写错，仍返回非零；没有旧 Z36 原件、历史运行目录或同级外置仓，不影响这两项检查。输出明确注明历史材料未核验，不代表旧证据完整、全部索引重生成功或新协议已通过。
+
+完整历史治理检查仍用 `governance_index.py --check`；历史材料验证仍用不带选项的 `historical_test_replay.py validate`。实际 `run`／`materialize` 不接受登记模式，也不会复用普通文档成功去绕开材料验证。现有精确历史节点和本机材料分线不变，不新增 skip／xfail、不删除原件。依据：CZ 2026-09-13 批准的 [#366](https://github.com/cczz412/novel-architecture/issues/366)。
+
 ## 开发测试与 PR 节流
 
 本节是项目共用的执行流程，适用于 Codex、Cursor 和其他工程窗口；不依赖某个 Agent 的个人指令。批准范围见 [CCZ-115 的仅文档工程票 #353](https://github.com/cczz412/novel-architecture/issues/353)，内容归属沿用 [分工 R2](https://app.notion.com/p/3d45cadc4d0f8115b10cc1fb4ba7786f)。机器选测与触发规则仍由现有配置定义。

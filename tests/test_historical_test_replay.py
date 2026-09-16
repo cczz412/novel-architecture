@@ -167,6 +167,132 @@ def _commit(repo: Path) -> str:
     return _git(repo, "rev-parse", "HEAD")
 
 
+def _make_registry_only_repo(tmp_path: Path) -> tuple[Path, dict]:
+    repo = tmp_path / "repo"
+    registry = _registry("a" * 64)
+    _write_json(repo / replay.REGISTRY_RELATIVE, registry)
+    shutil.copy2(ROOT / replay.SCHEMA_RELATIVE, repo / replay.SCHEMA_RELATIVE)
+    (repo / "tests").mkdir()
+    (repo / "tests/test_fake.py").write_text("", encoding="utf-8")
+    return repo, registry
+
+
+@pytest.mark.parametrize("package_status", ["unsealed", "sealed"])
+def test_registry_only_validates_without_historical_materials(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    package_status: str,
+) -> None:
+    repo, registry = _make_registry_only_repo(tmp_path)
+    if package_status == "sealed":
+        registry["source_package"].update(
+            status="sealed", manifest_sha256="b" * 64
+        )
+        _write_json(repo / replay.REGISTRY_RELATIVE, registry)
+    monkeypatch.setattr(replay, "ROOT", repo)
+
+    def reject_material_access(*args: object, **kwargs: object) -> None:
+        pytest.fail("registry-only accessed historical materials")
+
+    for name in ("external_archive_root", "collect_source_files", "validate_package"):
+        monkeypatch.setattr(replay, name, reject_material_access)
+    read_regular_bytes = replay._read_regular_bytes
+    reads: list[Path] = []
+
+    def read_registry_bytes(path: Path, *, code: str) -> bytes:
+        assert path in {repo / replay.REGISTRY_RELATIVE, repo / replay.SCHEMA_RELATIVE}
+        reads.append(path)
+        return read_regular_bytes(path, code=code)
+
+    monkeypatch.setattr(replay, "_read_regular_bytes", read_registry_bytes)
+
+    assert replay.main(["validate", "--registry-only"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result == {
+        "status": "REGISTRY_VALID",
+        "validation_scope": "registry_only",
+        "node_count": 40,
+        "registry_contract_sha256": replay.registry_contract_sha256(registry),
+        "historical_payload_verified": False,
+        "note": "仅验证仓内历史登记结构与语义，未验证历史来源及历史 payload。",
+    }
+    assert set(reads) == {repo / replay.REGISTRY_RELATIVE, repo / replay.SCHEMA_RELATIVE}
+    assert not (tmp_path / "repo_外置仓").exists()
+    assert not (repo / "runs").exists()
+
+
+@pytest.mark.parametrize(
+    ("case", "error_code"),
+    [
+        ("schema", "REGISTRY_SCHEMA_INVALID"),
+        ("decision_sha", "DECISION_SHA_MISMATCH"),
+        ("duplicate_node", "NODEID_DUPLICATE"),
+        ("unknown_root", "SOURCE_UNIT_ROOT_UNKNOWN"),
+        ("unsafe_path", "SOURCE_UNIT_PATH_INVALID"),
+        ("node_count", "NODE_COUNT_MISMATCH"),
+        ("missing_test", "NODEID_TEST_FILE_MISSING"),
+    ],
+)
+def test_registry_only_rejects_invalid_registry(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    case: str,
+    error_code: str,
+) -> None:
+    repo, registry = _make_registry_only_repo(tmp_path)
+    nodeids = registry["groups"][0]["nodeids"]
+    if case == "schema":
+        registry["unexpected"] = True
+    elif case == "decision_sha":
+        registry["decision"]["source_text_sha256"] = "0" * 64
+    elif case == "duplicate_node":
+        nodeids[1] = nodeids[0]
+    elif case == "unknown_root":
+        registry["source_units"][0]["root_id"] = "unknown"
+    elif case == "unsafe_path":
+        registry["source_units"][0]["repo_relative_path"] = "../outside"
+    elif case == "node_count":
+        nodeids.pop()
+    elif case == "missing_test":
+        nodeids[0] = "tests/test_missing.py::test_case"
+    else:
+        raise AssertionError(case)
+    _write_json(repo / replay.REGISTRY_RELATIVE, registry)
+    monkeypatch.setattr(replay, "ROOT", repo)
+
+    assert replay.main(["validate", "--registry-only"]) == 2
+    result = json.loads(capsys.readouterr().out)
+    assert result["status"] == "REJECTED"
+    assert result["error_code"] == error_code
+
+
+def test_default_validate_still_rejects_missing_historical_sources(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repo, _registry_value = _make_registry_only_repo(tmp_path)
+    monkeypatch.setattr(replay, "ROOT", repo)
+    assert replay.main(["validate", "--registry-only"]) == 0
+    capsys.readouterr()
+    assert replay.main(["validate"]) == 2
+    assert json.loads(capsys.readouterr().out) == {
+        "status": "REJECTED",
+        "error_code": "EXTERNAL_ARCHIVE_ROOT_INVALID",
+    }
+
+
+@pytest.mark.parametrize("command", ["run", "materialize"])
+def test_registry_only_option_is_rejected_by_execution_commands(command: str) -> None:
+    with pytest.raises(SystemExit) as exc:
+        replay.main(
+            [command, "--commit", "a" * 40, "--run-id", "test", "--registry-only"]
+        )
+    assert exc.value.code == 2
+
+
 def test_seal_and_materialize_copy_commit_and_fixture_bytes(
     tmp_path: Path,
 ) -> None:
@@ -207,13 +333,31 @@ def test_unsealed_registry_blocks_materialization(tmp_path: Path) -> None:
         )
 
 
-def test_package_payload_drift_is_rejected(tmp_path: Path) -> None:
+def test_package_payload_drift_is_rejected(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     repo, _external = _make_repo(tmp_path)
     registry, package = _seal_registry(repo)
+    assert replay.validate_configuration(repo)["status"] == "VALID"
     payload = package / "payload/runs/local/a.txt"
     payload.write_text("tampered\n", encoding="utf-8")
     with pytest.raises(replay.ReplayError, match="PACKAGE_PAYLOAD_DRIFT"):
         replay.validate_package(repo, registry)
+    monkeypatch.setattr(replay, "ROOT", repo)
+
+    def reject_subprocess(*args: object, **kwargs: object) -> None:
+        pytest.fail("invalid payload must not start a subprocess")
+
+    monkeypatch.setattr(replay.subprocess, "run", reject_subprocess)
+    assert replay.main(["validate", "--registry-only"]) == 0
+    capsys.readouterr()
+    for argv in (["validate"], ["run", "--commit", "a" * 40, "--run-id", "drift"]):
+        assert replay.main(argv) == 2
+        result = json.loads(capsys.readouterr().out)
+        assert result["status"] == "REJECTED"
+        assert result["error_code"] == "PACKAGE_PAYLOAD_DRIFT"
 
 
 def test_source_symlink_is_rejected_before_package_publish(

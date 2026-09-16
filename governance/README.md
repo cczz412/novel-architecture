@@ -33,11 +33,15 @@ cd "$(git rev-parse --show-toplevel)" && uv run --locked pytest -q
 uv run --locked python tools/novel_pipeline.py governance refresh
 ```
 
-只检查生成结果有没有漂移：
+普通文档只检查当前仓内导航、模块元数据和目录索引有没有漂移：
 
 ```bash
-uv run --locked python tools/governance_index.py --check
+uv run --locked python tools/governance_index.py --check-current
 ```
+
+此模式不读取旧实验原件、外置仓或旧材料哈希，不检查旧金标／银标／运行索引和完整历史生成回执；输出明确标记历史材料未核验。目录 Schema、模块元数据、路径身份及当前派生页面漂移仍会失败。历史材料相关的完整生成核验仍可显式运行 `--check`；上面的 `governance refresh` 也保留原严格行为，不用普通文档成功代替历史复验。
+
+默认文档检查的历史回放部分只执行 `tools/historical_test_replay.py validate --registry-only`，核对仓内登记而不读取载荷。不带 `--registry-only` 的 `validate` 和实际 `run` 继续严格核验材料。CZ 2026-09-13 批准拆分，见 [#366](https://github.com/cczz412/novel-architecture/issues/366)。
 
 ## 既有重构工具的使用边界
 

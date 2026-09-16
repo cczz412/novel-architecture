@@ -205,6 +205,13 @@ class TestImpactTests(unittest.TestCase):
         )
         self.assertEqual(plan["scope"], "documentation_only")
         self.assertEqual(len(plan["commands"]), len(plan["execution_steps"]))
+        self.assertEqual(
+            [step["argv"] for step in plan["execution_steps"]],
+            [
+                ["uv", "run", "--locked", "python", "tools/governance_index.py", "--check-current"],
+                ["uv", "run", "--locked", "python", "tools/historical_test_replay.py", "validate", "--registry-only"],
+            ],
+        )
         for step in plan["execution_steps"]:
             self.assertEqual(step["argv"][:3], ["uv", "run", "--locked"])
             self.assertEqual(step["cwd"], "repo_root")

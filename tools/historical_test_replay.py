@@ -1043,8 +1043,19 @@ def seal_package(repo_root: Path = ROOT) -> tuple[Path, str]:
 
 def validate_configuration(
     repo_root: Path = ROOT,
+    *,
+    registry_only: bool = False,
 ) -> dict[str, Any]:
     registry = load_registry(repo_root)
+    if registry_only:
+        return {
+            "status": "REGISTRY_VALID",
+            "validation_scope": "registry_only",
+            "node_count": len(historical_nodeids(registry)),
+            "registry_contract_sha256": registry_contract_sha256(registry),
+            "historical_payload_verified": False,
+            "note": "仅验证仓内历史登记结构与语义，未验证历史来源及历史 payload。",
+        }
     source_files = collect_source_files(repo_root, registry)
     result: dict[str, Any] = {
         "node_count": len(historical_nodeids(registry)),
@@ -1728,7 +1739,14 @@ def build_parser() -> argparse.ArgumentParser:
         description="封存并在隔离副本中回放 S-05-B 历史测试。",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
-    subparsers.add_parser("validate", help="只校验登记册、来源和已封包。")
+    validate_parser = subparsers.add_parser(
+        "validate", help="默认校验登记册、历史来源和已封包。"
+    )
+    validate_parser.add_argument(
+        "--registry-only",
+        action="store_true",
+        help="仅校验仓内登记结构与语义，不读取或验证历史来源和 payload。",
+    )
     subparsers.add_parser("seal", help="复制历史材料到固定外置回放包。")
     for command in ("materialize", "run"):
         command_parser = subparsers.add_parser(
@@ -1754,7 +1772,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         if args.command == "validate":
-            payload = validate_configuration(ROOT)
+            payload = validate_configuration(ROOT, registry_only=args.registry_only)
         elif args.command == "seal":
             _path, manifest_sha = seal_package(ROOT)
             payload = {
