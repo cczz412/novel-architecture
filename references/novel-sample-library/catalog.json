@@ -1,0 +1,2802 @@
+{
+  "catalog_id": "novel-sample-library",
+  "format_version": 1,
+  "snapshot_at": "2026-09-15T10:51:29.986208+08:00",
+  "identity": "SELECTION_METADATA_NOT_GOLD_OR_PRODUCT_EVALUATION",
+  "content_policy": "CATALOG_IN_GIT_SAMPLE_CONTENT_LOCAL_ONLY",
+  "local_binding_policy": "MATCH_CATALOG_REVISION_AND_FILE_BYTES",
+  "tier_meaning": {
+    "A": "优先用：只限已列且有核对依据的用例和版本",
+    "B": "补充用：材料齐，先核具体例子再加入回归",
+    "C": "待准备：尚未完成这轮抽取或来源准入"
+  },
+  "scope_notes": [
+    "书目数量包含已收样本和待准备候选，不是全库完成数。",
+    "A档仅优先使用点名用例；局部核对不代表整本、全部字段或题材已经通过。",
+    "能力标签是已定位用例的用途；空标签表示尚未定位，不表示作品不存在相关内容。",
+    "题材分组用于选样，不是平台官方分类；历史榜单与新书池未核今日排名，也未证明训练未见。",
+    "目录是有日期的材料快照，不保存实时任务状态。取样时本地重新核对版本。",
+    "所有事实句、书稿引文、预期答案、逐条评审和API对照内容只留本地。",
+    "查到编号不授权读取内容、调用API、外发、训练或正式写账。"
+  ],
+  "totals": {
+    "books": 106,
+    "registered_books": 46,
+    "received_books": 38,
+    "selection_only_books": 60,
+    "cases": 57,
+    "starter_cases": 6,
+    "capabilities": 13,
+    "book_tiers": {
+      "A": 34,
+      "B": 4,
+      "C": 68
+    }
+  },
+  "capabilities": [
+    {
+      "id": "SRC",
+      "label": "来源与真假",
+      "purpose": "人物说了什么、旁白写了什么、外部是否核实分开。"
+    },
+    {
+      "id": "KNOW",
+      "label": "人物知情",
+      "purpose": "说出、听到、理解和读者知道的内容分开。"
+    },
+    {
+      "id": "NUM",
+      "label": "数量与单位",
+      "purpose": "保留上界、下界、约数、单位和计数对象。"
+    },
+    {
+      "id": "COND",
+      "label": "条件与例外",
+      "purpose": "保留触发条件、例外、次数、期限和必要条件方向。"
+    },
+    {
+      "id": "PLAN",
+      "label": "打算、承诺与结果",
+      "purpose": "提议、约定、承诺和已发生不能混为一条。"
+    },
+    {
+      "id": "STATE",
+      "label": "状态变化",
+      "purpose": "保存前后状态，不用最新状态抹掉历史。"
+    },
+    {
+      "id": "ONE",
+      "label": "同一对象与去重",
+      "purpose": "同一物件转手、同一动作跨段不得重复计数。"
+    },
+    {
+      "id": "ID",
+      "label": "身份与称呼",
+      "purpose": "保留未知、误认、别名与身份揭示的来源和时点。"
+    },
+    {
+      "id": "POV",
+      "label": "梦境、幻觉与视角",
+      "purpose": "人物所见和所想不直接变成外层客观事实。"
+    },
+    {
+      "id": "TALK",
+      "label": "多人对话归属",
+      "purpose": "把不同说话者的提议、回应和接受分开。"
+    },
+    {
+      "id": "RES",
+      "label": "财物与资源",
+      "purpose": "报价、决定、付款、库存、额度和余额分开。"
+    },
+    {
+      "id": "LINK",
+      "label": "跨章承接",
+      "purpose": "后章补入新贡献，前章当时状态和知识保留。"
+    },
+    {
+      "id": "LONG",
+      "label": "长线疑问与呈现",
+      "purpose": "已写材料里的问题索引不冒充作者未来规划。"
+    }
+  ],
+  "books": [
+    {
+      "book_id": "ccz181-r02-c02-ch01-08",
+      "title": "庆余年",
+      "genre": "历史幻想",
+      "genre_family": "历史古代",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-001",
+        "CASE-002",
+        "CASE-003"
+      ],
+      "capability_tags": [
+        "KNOW",
+        "SRC",
+        "POV",
+        "STATE",
+        "PLAN",
+        "LONG"
+      ],
+      "focus_reviewed_record_count": 12
+    },
+    {
+      "book_id": "ccz181-r02-n01-ch01-08",
+      "title": "七十年代：陆老二家的独生女",
+      "genre": "年代家庭",
+      "genre_family": "年代现实",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-004",
+        "CASE-005",
+        "CASE-006"
+      ],
+      "capability_tags": [
+        "PLAN",
+        "RES",
+        "COND",
+        "NUM",
+        "SRC",
+        "KNOW"
+      ],
+      "focus_reviewed_record_count": 12
+    },
+    {
+      "book_id": "ccz181-r02-n08-ch01-08",
+      "title": "天灾末世，穷鬼一家提前三年囤货",
+      "genre": "末世囤货",
+      "genre_family": "末世生存",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-007",
+        "CASE-008"
+      ],
+      "capability_tags": [
+        "POV",
+        "PLAN",
+        "RES",
+        "LINK",
+        "SRC"
+      ],
+      "focus_reviewed_record_count": 30
+    },
+    {
+      "book_id": "ccz181-r02-c06-ch01-08",
+      "title": "诛仙",
+      "genre": "仙侠修行",
+      "genre_family": "仙侠玄幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-009",
+        "CASE-010",
+        "CASE-011"
+      ],
+      "capability_tags": [
+        "PLAN",
+        "COND",
+        "NUM",
+        "ONE",
+        "LONG"
+      ],
+      "focus_reviewed_record_count": 9
+    },
+    {
+      "book_id": "ccz181-r02-n04-ch01-08",
+      "title": "大秦幼儿园",
+      "genre": "历史脑洞",
+      "genre_family": "历史古代",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-012",
+        "CASE-013",
+        "CASE-014"
+      ],
+      "capability_tags": [
+        "ONE",
+        "RES",
+        "STATE",
+        "ID",
+        "KNOW",
+        "SRC",
+        "PLAN",
+        "LINK"
+      ],
+      "focus_reviewed_record_count": 13
+    },
+    {
+      "book_id": "ccz181-r02-n05-ch01-08",
+      "title": "天幕直播语文课，古人破防了",
+      "genre": "天幕历史",
+      "genre_family": "历史古代",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-015",
+        "CASE-016"
+      ],
+      "capability_tags": [
+        "NUM",
+        "SRC",
+        "RES"
+      ],
+      "focus_reviewed_record_count": 6
+    },
+    {
+      "book_id": "ccz181-r02-c01-ch01-08",
+      "title": "将夜",
+      "genre": "玄幻成长",
+      "genre_family": "仙侠玄幻",
+      "pool": "REGISTERED_46",
+      "tier": "B",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "ccz181-r02-c07-ch01-08",
+      "title": "雪中悍刀行",
+      "genre": "玄幻武侠",
+      "genre_family": "仙侠玄幻",
+      "pool": "REGISTERED_46",
+      "tier": "B",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "book-gaokao-ch01-17",
+      "title": "请勿高考时渡劫",
+      "genre": "都市修仙",
+      "genre_family": "都市异能",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-17",
+      "chapter_material_count": 17,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-017",
+        "CASE-018"
+      ],
+      "capability_tags": [
+        "NUM",
+        "RES",
+        "SRC",
+        "ID"
+      ],
+      "focus_reviewed_record_count": 13
+    },
+    {
+      "book_id": "book-lianqishi-ch01-30",
+      "title": "炼气士不死于无限",
+      "genre": "无限修行",
+      "genre_family": "无限副本",
+      "pool": "REGISTERED_46",
+      "tier": "B",
+      "registered_scope": "01-30",
+      "chapter_material_count": 30,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "book-meikong-ch01-30",
+      "title": "我在美恐科普都市传说",
+      "genre": "都市灵异",
+      "genre_family": "悬疑灵异",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-30",
+      "chapter_material_count": 30,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-019",
+        "CASE-020",
+        "CASE-021"
+      ],
+      "capability_tags": [
+        "TALK",
+        "PLAN",
+        "RES",
+        "NUM",
+        "STATE",
+        "LINK",
+        "COND",
+        "SRC"
+      ],
+      "focus_reviewed_record_count": 9
+    },
+    {
+      "book_id": "book-zhifou-ch01-50",
+      "title": "庶女明兰传（知否）",
+      "genre": "古代家族关系",
+      "genre_family": "历史古代",
+      "pool": "REGISTERED_46",
+      "tier": "B",
+      "registered_scope": "01-50",
+      "chapter_material_count": 50,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "book-fanren-ch01-50",
+      "title": "凡人修仙传",
+      "genre": "仙侠升级",
+      "genre_family": "仙侠玄幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-50",
+      "chapter_material_count": 50,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-022",
+        "CASE-023"
+      ],
+      "capability_tags": [
+        "NUM",
+        "COND",
+        "STATE",
+        "ONE",
+        "RES"
+      ],
+      "focus_reviewed_record_count": 4
+    },
+    {
+      "book_id": "book-guimi-ch01-50",
+      "title": "诡秘之主",
+      "genre": "奇幻悬疑",
+      "genre_family": "奇幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-50",
+      "chapter_material_count": 50,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-054",
+        "CASE-055"
+      ],
+      "capability_tags": [
+        "COND",
+        "PLAN",
+        "RES",
+        "STATE"
+      ],
+      "focus_reviewed_record_count": 3
+    },
+    {
+      "book_id": "book-wuxian-ch01-50",
+      "title": "无限恐怖",
+      "genre": "无限流",
+      "genre_family": "无限副本",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-50（按证据包文件号）",
+      "chapter_material_count": 50,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-024"
+      ],
+      "capability_tags": [
+        "ONE",
+        "LINK"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz181-r02-c03-ch01-08",
+      "title": "奥术神座",
+      "genre": "西幻奥术",
+      "genre_family": "奇幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-025",
+        "CASE-026"
+      ],
+      "capability_tags": [
+        "RES",
+        "NUM",
+        "STATE",
+        "LINK",
+        "SRC"
+      ],
+      "focus_reviewed_record_count": 4
+    },
+    {
+      "book_id": "ccz181-r02-c05-ch01-08",
+      "title": "黎明之剑",
+      "genre": "西幻经营",
+      "genre_family": "奇幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-027",
+        "CASE-028"
+      ],
+      "capability_tags": [
+        "KNOW",
+        "STATE",
+        "NUM",
+        "ONE"
+      ],
+      "focus_reviewed_record_count": 3
+    },
+    {
+      "book_id": "ccz181-r02-n09-ch01-08",
+      "title": "大国重工之从红星造船厂开始",
+      "genre": "工业年代",
+      "genre_family": "年代现实",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-029"
+      ],
+      "capability_tags": [
+        "PLAN",
+        "RES",
+        "LINK"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz181-r02-n12-ch01-08",
+      "title": "1977之大亨崛起",
+      "genre": "都市商战",
+      "genre_family": "年代现实",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-030",
+        "CASE-031"
+      ],
+      "capability_tags": [
+        "NUM",
+        "RES",
+        "ONE",
+        "COND",
+        "LINK",
+        "STATE"
+      ],
+      "focus_reviewed_record_count": 3
+    },
+    {
+      "book_id": "ccz181-r02-n02-ch01-08",
+      "title": "仵作娘子断狱笺",
+      "genre": "古代探案",
+      "genre_family": "历史古代",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-032"
+      ],
+      "capability_tags": [
+        "TALK",
+        "KNOW",
+        "SRC"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz181-r02-n03-ch01-08",
+      "title": "警途",
+      "genre": "现代刑侦",
+      "genre_family": "悬疑灵异",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-036"
+      ],
+      "capability_tags": [
+        "PLAN",
+        "STATE",
+        "SRC"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz181-r02-c04-ch01-08",
+      "title": "深海余烬",
+      "genre": "奇幻悬疑",
+      "genre_family": "奇幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-033"
+      ],
+      "capability_tags": [
+        "COND",
+        "NUM",
+        "PLAN"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz181-r02-c08-ch01-08",
+      "title": "道诡异仙",
+      "genre": "诡异修仙",
+      "genre_family": "仙侠玄幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-034",
+        "CASE-035"
+      ],
+      "capability_tags": [
+        "SRC",
+        "NUM",
+        "RES",
+        "ID"
+      ],
+      "focus_reviewed_record_count": 4
+    },
+    {
+      "book_id": "ccz181-r02-c09-ch01-08",
+      "title": "长夜余火",
+      "genre": "废土科幻",
+      "genre_family": "科幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-037"
+      ],
+      "capability_tags": [
+        "NUM",
+        "PLAN",
+        "COND"
+      ],
+      "focus_reviewed_record_count": 1
+    },
+    {
+      "book_id": "ccz181-r02-c10-ch01-08",
+      "title": "大医凌然",
+      "genre": "现代职业",
+      "genre_family": "年代现实",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-038"
+      ],
+      "capability_tags": [
+        "NUM",
+        "ONE",
+        "SRC"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz181-r02-c11-ch01-08",
+      "title": "回到过去变成猫",
+      "genre": "都市非人视角",
+      "genre_family": "都市异能",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-039"
+      ],
+      "capability_tags": [
+        "KNOW",
+        "ID",
+        "STATE"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz181-r02-c12-ch01-08",
+      "title": "间客",
+      "genre": "科幻",
+      "genre_family": "科幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-040"
+      ],
+      "capability_tags": [
+        "STATE",
+        "ONE",
+        "LINK"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz181-r02-n07-ch01-08",
+      "title": "宇宙数据化，开局觉醒无限复活",
+      "genre": "游戏数据化",
+      "genre_family": "科幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-052",
+        "CASE-053"
+      ],
+      "capability_tags": [
+        "COND",
+        "STATE",
+        "RES",
+        "SRC"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz181-r02-n06-ch01-08",
+      "title": "地窟世界的108张规则牌",
+      "genre": "末世规则",
+      "genre_family": "末世生存",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-056",
+        "CASE-057"
+      ],
+      "capability_tags": [
+        "COND",
+        "NUM",
+        "PLAN",
+        "SRC",
+        "LINK"
+      ],
+      "focus_reviewed_record_count": 3
+    },
+    {
+      "book_id": "ccz181-r02-n10-ch01-08",
+      "title": "1982小山村，从每日情报开始",
+      "genre": "年代乡村",
+      "genre_family": "年代现实",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-042"
+      ],
+      "capability_tags": [
+        "SRC",
+        "POV"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz181-r02-n11-ch01-08",
+      "title": "公路求生：最速传说",
+      "genre": "公路求生",
+      "genre_family": "末世生存",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-08",
+      "chapter_material_count": 8,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-041"
+      ],
+      "capability_tags": [
+        "RES",
+        "NUM",
+        "COND"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz178-r01-nb01-ch01-03",
+      "title": "明末第一驿卒",
+      "genre": "明末历史",
+      "genre_family": "历史古代",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-03",
+      "chapter_material_count": 3,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-043"
+      ],
+      "capability_tags": [
+        "NUM",
+        "COND",
+        "PLAN"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz178-r01-nb02-ch01-03",
+      "title": "全民地仙：开局紫金葫芦辟福地",
+      "genre": "全民修仙",
+      "genre_family": "仙侠玄幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-03",
+      "chapter_material_count": 3,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-044"
+      ],
+      "capability_tags": [
+        "POV",
+        "SRC",
+        "ID"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz178-r01-nb03-ch01-03",
+      "title": "公安局长之扫黑风暴",
+      "genre": "现代刑侦",
+      "genre_family": "悬疑灵异",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-03",
+      "chapter_material_count": 3,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-045"
+      ],
+      "capability_tags": [
+        "SRC",
+        "STATE",
+        "KNOW"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz178-r01-nb04-ch01-03",
+      "title": "七罪副本：她靠怠惰封神",
+      "genre": "无限规则副本",
+      "genre_family": "无限副本",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-03",
+      "chapter_material_count": 3,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-046"
+      ],
+      "capability_tags": [
+        "COND",
+        "SRC",
+        "TALK"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "ccz178-r01-nb05-ch01-03",
+      "title": "异常病理科",
+      "genre": "都市异常",
+      "genre_family": "悬疑灵异",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-03",
+      "chapter_material_count": 3,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-047",
+        "CASE-048"
+      ],
+      "capability_tags": [
+        "PLAN",
+        "LINK",
+        "STATE",
+        "SRC",
+        "ID"
+      ],
+      "focus_reviewed_record_count": 3
+    },
+    {
+      "book_id": "ccz178-r01-nb06-ch01-03",
+      "title": "绝非赛博",
+      "genre": "赛博科幻",
+      "genre_family": "科幻",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-03",
+      "chapter_material_count": 3,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-049"
+      ],
+      "capability_tags": [
+        "SRC",
+        "COND",
+        "LINK"
+      ],
+      "focus_reviewed_record_count": 3
+    },
+    {
+      "book_id": "book-third-face-ch01-10",
+      "title": "第三张脸",
+      "genre": "现代悬疑",
+      "genre_family": "悬疑灵异",
+      "pool": "REGISTERED_46",
+      "tier": "A",
+      "registered_scope": "01-10",
+      "chapter_material_count": 10,
+      "availability_at_snapshot": "RECEIVED_LOCAL",
+      "case_ids": [
+        "CASE-050",
+        "CASE-051"
+      ],
+      "capability_tags": [
+        "STATE",
+        "RES",
+        "LINK",
+        "ID",
+        "POV",
+        "KNOW"
+      ],
+      "focus_reviewed_record_count": 2
+    },
+    {
+      "book_id": "book-northwest-1979-ch01-10",
+      "title": "1979西北往事",
+      "genre": "年代重生",
+      "genre_family": "年代现实",
+      "pool": "REGISTERED_46",
+      "tier": "C",
+      "registered_scope": "01-10",
+      "chapter_material_count": 10,
+      "availability_at_snapshot": "REGISTERED_INPUT_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "book-deep-drowning-ch01-10",
+      "title": "深溺",
+      "genre": "现代关系",
+      "genre_family": "年代现实",
+      "pool": "REGISTERED_46",
+      "tier": "C",
+      "registered_scope": "01-10",
+      "chapter_material_count": 10,
+      "availability_at_snapshot": "REGISTERED_INPUT_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "book-ming-mindvoice-ch01-10",
+      "title": "大明朱允熥，从婴儿开始被听心声",
+      "genre": "历史脑洞",
+      "genre_family": "历史古代",
+      "pool": "REGISTERED_46",
+      "tier": "C",
+      "registered_scope": "01-10",
+      "chapter_material_count": 10,
+      "availability_at_snapshot": "REGISTERED_INPUT_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "book-you-daoxing-ch01-20",
+      "title": "有道行",
+      "genre": "民俗志怪",
+      "genre_family": "悬疑灵异",
+      "pool": "REGISTERED_46",
+      "tier": "C",
+      "registered_scope": "01-20",
+      "chapter_material_count": 20,
+      "availability_at_snapshot": "REGISTERED_INPUT_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "book-spirit-index-ch01-20",
+      "title": "我的精神指数爆炸",
+      "genre": "都市高武",
+      "genre_family": "都市异能",
+      "pool": "REGISTERED_46",
+      "tier": "C",
+      "registered_scope": "01-20",
+      "chapter_material_count": 20,
+      "availability_at_snapshot": "REGISTERED_INPUT_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "book-daqin-ch01-20",
+      "title": "大秦：开局错认始皇当岳丈",
+      "genre": "历史穿越",
+      "genre_family": "历史古代",
+      "pool": "REGISTERED_46",
+      "tier": "C",
+      "registered_scope": "01-20",
+      "chapter_material_count": 20,
+      "availability_at_snapshot": "REGISTERED_INPUT_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "book-dawang-ch01-50",
+      "title": "大王饶命",
+      "genre": "都市灵气",
+      "genre_family": "都市异能",
+      "pool": "REGISTERED_46",
+      "tier": "C",
+      "registered_scope": "01-50",
+      "chapter_material_count": 50,
+      "availability_at_snapshot": "REGISTERED_INPUT_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "book-shenmi-ch01-50",
+      "title": "神秘复苏",
+      "genre": "都市灵异",
+      "genre_family": "悬疑灵异",
+      "pool": "REGISTERED_46",
+      "tier": "C",
+      "registered_scope": "01-50",
+      "chapter_material_count": 50,
+      "availability_at_snapshot": "REGISTERED_INPUT_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R01",
+      "title": "斗破苍穹",
+      "genre": "玄幻升级",
+      "genre_family": "玄幻",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R02",
+      "title": "仙逆",
+      "genre": "仙侠修行",
+      "genre_family": "仙侠",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R03",
+      "title": "盘龙",
+      "genre": "西方奇幻",
+      "genre_family": "奇幻",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R04",
+      "title": "死在火星上",
+      "genre": "硬科幻生存",
+      "genre_family": "硬科幻",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R05",
+      "title": "玄鉴仙族",
+      "genre": "家族修仙",
+      "genre_family": "仙侠",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R06",
+      "title": "女侠且慢",
+      "genre": "武侠江湖",
+      "genre_family": "武侠",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R07",
+      "title": "赘婿",
+      "genre": "历史经营",
+      "genre_family": "历史",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R08",
+      "title": "临高启明",
+      "genre": "历史群像",
+      "genre_family": "历史",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R09",
+      "title": "谍影风云",
+      "genre": "军事谍战",
+      "genre_family": "军事谍战",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R10",
+      "title": "大国重工",
+      "genre": "现实工业",
+      "genre_family": "现实职业",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R11",
+      "title": "亏成首富从游戏开始",
+      "genre": "商业系统",
+      "genre_family": "商业经营",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R12",
+      "title": "全职高手",
+      "genre": "游戏电竞",
+      "genre_family": "游戏电竞",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R13",
+      "title": "篮坛头号黑粉",
+      "genre": "体育竞技",
+      "genre_family": "体育",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R14",
+      "title": "足球之道",
+      "genre": "体育竞技",
+      "genre_family": "体育",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R15",
+      "title": "超神机械师",
+      "genre": "科幻游戏",
+      "genre_family": "科幻",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R16",
+      "title": "卡徒",
+      "genre": "技术奇幻",
+      "genre_family": "科幻",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R17",
+      "title": "第一序列",
+      "genre": "末世生存",
+      "genre_family": "末世",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R18",
+      "title": "末日乐园",
+      "genre": "末世多世界",
+      "genre_family": "无限快穿",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R19",
+      "title": "全球高考",
+      "genre": "无限规则",
+      "genre_family": "无限快穿",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R20",
+      "title": "开端",
+      "genre": "时间循环",
+      "genre_family": "悬疑推理",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R21",
+      "title": "默读",
+      "genre": "刑侦悬疑",
+      "genre_family": "悬疑推理",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R22",
+      "title": "盗墓笔记",
+      "genre": "探险悬疑",
+      "genre_family": "悬疑推理",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R23",
+      "title": "某某",
+      "genre": "校园关系",
+      "genre_family": "都市关系",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R24",
+      "title": "难哄",
+      "genre": "现代言情",
+      "genre_family": "都市关系",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R25",
+      "title": "我爱种田",
+      "genre": "种田经营",
+      "genre_family": "种田经营",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R26",
+      "title": "将进酒",
+      "genre": "古代权谋",
+      "genre_family": "历史",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R27",
+      "title": "我开动物园那些年",
+      "genre": "非人群像",
+      "genre_family": "非人幻想",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R28",
+      "title": "穿进赛博游戏后干掉BOSS成功上位",
+      "genre": "赛博悬疑",
+      "genre_family": "科幻",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R29",
+      "title": "异常生物见闻录",
+      "genre": "非人科幻",
+      "genre_family": "科幻",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:R30",
+      "title": "同时穿越：龙族分身流的龙之众",
+      "genre": "同人多世界",
+      "genre_family": "同人",
+      "pool": "HISTORICAL_RANKED_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N01",
+      "title": "一秒十级，从边关小卒开始横推",
+      "genre": "玄幻升级",
+      "genre_family": "玄幻",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N02",
+      "title": "凡人仙骨",
+      "genre": "仙侠修行",
+      "genre_family": "仙侠",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N03",
+      "title": "不要踏入那片良夜，邪神大人",
+      "genre": "西方奇幻",
+      "genre_family": "奇幻",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N04",
+      "title": "开局兽人转生",
+      "genre": "西方奇幻",
+      "genre_family": "奇幻",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N05",
+      "title": "红颜刀客行",
+      "genre": "武侠江湖",
+      "genre_family": "武侠",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N06",
+      "title": "花和尚从鸠摩智模版开始",
+      "genre": "武侠系统",
+      "genre_family": "武侠",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N07",
+      "title": "万国津梁烬：琉球之殇",
+      "genre": "历史群像",
+      "genre_family": "历史",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N08",
+      "title": "三国：开局益州牧之子",
+      "genre": "历史权谋",
+      "genre_family": "历史",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N09",
+      "title": "五次入伍，我给全军上强度！",
+      "genre": "军事训练",
+      "genre_family": "军事谍战",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N10",
+      "title": "东北往事：野种的母亲",
+      "genre": "年代群像",
+      "genre_family": "军事谍战",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N11",
+      "title": "一百四十分之一",
+      "genre": "现实家庭",
+      "genre_family": "现实职业",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N12",
+      "title": "保姆我在富贵窝里看冷暖",
+      "genre": "现实职业",
+      "genre_family": "现实职业",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N13",
+      "title": "二本没毕业，你怎么登上福布斯了",
+      "genre": "商业经营",
+      "genre_family": "商业经营",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N14",
+      "title": "临水小厨娘",
+      "genre": "种田美食",
+      "genre_family": "种田经营",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N15",
+      "title": "我打篮球的，你给我足球系统？",
+      "genre": "体育系统",
+      "genre_family": "体育",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N16",
+      "title": "夜野玫瑰",
+      "genre": "职业竞技",
+      "genre_family": "都市关系",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N17",
+      "title": "LOL：我也要当陀螺吗？",
+      "genre": "游戏电竞",
+      "genre_family": "游戏电竞",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N18",
+      "title": "全民职业，从死灵法师开始",
+      "genre": "游戏异界",
+      "genre_family": "游戏电竞",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N19",
+      "title": "法师归来，速通地球！",
+      "genre": "科幻混合",
+      "genre_family": "科幻",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N20",
+      "title": "我提前三天被丢进了末世",
+      "genre": "末世生存",
+      "genre_family": "末世",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N21",
+      "title": "全民求生，我的岛屿是世界最后净土",
+      "genre": "末世经营",
+      "genre_family": "末世",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N22",
+      "title": "她鉴宝，她探案",
+      "genre": "刑侦鉴定",
+      "genre_family": "悬疑推理",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N23",
+      "title": "失忆仵作不好惹，高冷皇子追着跑",
+      "genre": "古代悬疑",
+      "genre_family": "悬疑推理",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N24",
+      "title": "流窜诸天的灾厄",
+      "genre": "无限多世界",
+      "genre_family": "无限快穿",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N25",
+      "title": "你不是人渣么？怎么成救世主了",
+      "genre": "快穿关系",
+      "genre_family": "无限快穿",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N26",
+      "title": "入宫即高位，我是陛下表妹我怕谁",
+      "genre": "宫斗宅斗",
+      "genre_family": "古代言情",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N27",
+      "title": "一纸借调，顶头上司竟是我前男友",
+      "genre": "职场言情",
+      "genre_family": "都市关系",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N28",
+      "title": "体面老去？不！老太离婚断亲不再忍",
+      "genre": "现实家庭",
+      "genre_family": "都市关系",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N29",
+      "title": "南部档案：我真不想当张家主事人",
+      "genre": "同人悬疑",
+      "genre_family": "同人",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    },
+    {
+      "book_id": "expansion:N30",
+      "title": "同穿万界后加入主神论坛",
+      "genre": "同人多世界",
+      "genre_family": "同人",
+      "pool": "NEW_POOL_30",
+      "tier": "C",
+      "registered_scope": "尚未选定具体章材料",
+      "chapter_material_count": 0,
+      "availability_at_snapshot": "SELECTION_ONLY",
+      "case_ids": [],
+      "capability_tags": [],
+      "focus_reviewed_record_count": 0
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "CASE-001",
+      "book_id": "ccz181-r02-c02-ch01-08",
+      "label": "人物知情 / 来源与真假",
+      "chapter_materials": [
+        1
+      ],
+      "capability_tags": [
+        "KNOW",
+        "SRC"
+      ],
+      "starter": true,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-002",
+      "book_id": "ccz181-r02-c02-ch01-08",
+      "label": "梦境、幻觉与视角 / 来源与真假 / 状态变化",
+      "chapter_materials": [
+        1
+      ],
+      "capability_tags": [
+        "POV",
+        "SRC",
+        "STATE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-003",
+      "book_id": "ccz181-r02-c02-ch01-08",
+      "label": "打算、承诺与结果 / 长线疑问与呈现",
+      "chapter_materials": [
+        1
+      ],
+      "capability_tags": [
+        "PLAN",
+        "LONG"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-004",
+      "book_id": "ccz181-r02-n01-ch01-08",
+      "label": "打算、承诺与结果 / 财物与资源 / 条件与例外",
+      "chapter_materials": [
+        5,
+        6
+      ],
+      "capability_tags": [
+        "PLAN",
+        "RES",
+        "COND"
+      ],
+      "starter": true,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-005",
+      "book_id": "ccz181-r02-n01-ch01-08",
+      "label": "数量与单位 / 财物与资源 / 来源与真假",
+      "chapter_materials": [
+        5
+      ],
+      "capability_tags": [
+        "NUM",
+        "RES",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-006",
+      "book_id": "ccz181-r02-n01-ch01-08",
+      "label": "人物知情 / 财物与资源",
+      "chapter_materials": [
+        6
+      ],
+      "capability_tags": [
+        "KNOW",
+        "RES"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-007",
+      "book_id": "ccz181-r02-n08-ch01-08",
+      "label": "梦境、幻觉与视角 / 打算、承诺与结果 / 财物与资源",
+      "chapter_materials": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "capability_tags": [
+        "POV",
+        "PLAN",
+        "RES"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-008",
+      "book_id": "ccz181-r02-n08-ch01-08",
+      "label": "打算、承诺与结果 / 跨章承接 / 来源与真假",
+      "chapter_materials": [
+        8
+      ],
+      "capability_tags": [
+        "PLAN",
+        "LINK",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-009",
+      "book_id": "ccz181-r02-c06-ch01-08",
+      "label": "打算、承诺与结果 / 条件与例外",
+      "chapter_materials": [
+        3,
+        7
+      ],
+      "capability_tags": [
+        "PLAN",
+        "COND"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-010",
+      "book_id": "ccz181-r02-c06-ch01-08",
+      "label": "数量与单位 / 同一对象与去重",
+      "chapter_materials": [
+        4,
+        5,
+        6,
+        8
+      ],
+      "capability_tags": [
+        "NUM",
+        "ONE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-011",
+      "book_id": "ccz181-r02-c06-ch01-08",
+      "label": "长线疑问与呈现 / 打算、承诺与结果",
+      "chapter_materials": [
+        3,
+        7
+      ],
+      "capability_tags": [
+        "LONG",
+        "PLAN"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-012",
+      "book_id": "ccz181-r02-n04-ch01-08",
+      "label": "同一对象与去重 / 财物与资源 / 状态变化",
+      "chapter_materials": [
+        6
+      ],
+      "capability_tags": [
+        "ONE",
+        "RES",
+        "STATE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-013",
+      "book_id": "ccz181-r02-n04-ch01-08",
+      "label": "身份与称呼 / 人物知情 / 来源与真假",
+      "chapter_materials": [
+        1,
+        8
+      ],
+      "capability_tags": [
+        "ID",
+        "KNOW",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-014",
+      "book_id": "ccz181-r02-n04-ch01-08",
+      "label": "打算、承诺与结果 / 跨章承接",
+      "chapter_materials": [
+        5,
+        7,
+        8
+      ],
+      "capability_tags": [
+        "PLAN",
+        "LINK"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-015",
+      "book_id": "ccz181-r02-n05-ch01-08",
+      "label": "数量与单位",
+      "chapter_materials": [
+        1,
+        2
+      ],
+      "capability_tags": [
+        "NUM"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-016",
+      "book_id": "ccz181-r02-n05-ch01-08",
+      "label": "来源与真假 / 财物与资源 / 数量与单位",
+      "chapter_materials": [
+        3
+      ],
+      "capability_tags": [
+        "SRC",
+        "RES",
+        "NUM"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-017",
+      "book_id": "book-gaokao-ch01-17",
+      "label": "数量与单位 / 财物与资源 / 来源与真假",
+      "chapter_materials": [
+        14,
+        16
+      ],
+      "capability_tags": [
+        "NUM",
+        "RES",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-018",
+      "book_id": "book-gaokao-ch01-17",
+      "label": "身份与称呼",
+      "chapter_materials": [
+        16
+      ],
+      "capability_tags": [
+        "ID"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-019",
+      "book_id": "book-meikong-ch01-30",
+      "label": "多人对话归属 / 打算、承诺与结果 / 财物与资源",
+      "chapter_materials": [
+        22
+      ],
+      "capability_tags": [
+        "TALK",
+        "PLAN",
+        "RES"
+      ],
+      "starter": true,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-020",
+      "book_id": "book-meikong-ch01-30",
+      "label": "数量与单位 / 状态变化 / 跨章承接",
+      "chapter_materials": [
+        4,
+        14
+      ],
+      "capability_tags": [
+        "NUM",
+        "STATE",
+        "LINK"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-021",
+      "book_id": "book-meikong-ch01-30",
+      "label": "条件与例外 / 来源与真假",
+      "chapter_materials": [
+        1,
+        29
+      ],
+      "capability_tags": [
+        "COND",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-022",
+      "book_id": "book-fanren-ch01-50",
+      "label": "数量与单位 / 条件与例外 / 状态变化",
+      "chapter_materials": [
+        26
+      ],
+      "capability_tags": [
+        "NUM",
+        "COND",
+        "STATE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-023",
+      "book_id": "book-fanren-ch01-50",
+      "label": "数量与单位 / 同一对象与去重 / 财物与资源",
+      "chapter_materials": [
+        27
+      ],
+      "capability_tags": [
+        "NUM",
+        "ONE",
+        "RES"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-024",
+      "book_id": "book-wuxian-ch01-50",
+      "label": "同一对象与去重 / 跨章承接",
+      "chapter_materials": [
+        49,
+        50
+      ],
+      "capability_tags": [
+        "ONE",
+        "LINK"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-025",
+      "book_id": "ccz181-r02-c03-ch01-08",
+      "label": "财物与资源 / 数量与单位 / 状态变化 / 跨章承接",
+      "chapter_materials": [
+        4,
+        7
+      ],
+      "capability_tags": [
+        "RES",
+        "NUM",
+        "STATE",
+        "LINK"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-026",
+      "book_id": "ccz181-r02-c03-ch01-08",
+      "label": "状态变化 / 来源与真假",
+      "chapter_materials": [
+        6,
+        7
+      ],
+      "capability_tags": [
+        "STATE",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-027",
+      "book_id": "ccz181-r02-c05-ch01-08",
+      "label": "人物知情 / 状态变化",
+      "chapter_materials": [
+        3
+      ],
+      "capability_tags": [
+        "KNOW",
+        "STATE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-028",
+      "book_id": "ccz181-r02-c05-ch01-08",
+      "label": "数量与单位 / 同一对象与去重",
+      "chapter_materials": [
+        2
+      ],
+      "capability_tags": [
+        "NUM",
+        "ONE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-029",
+      "book_id": "ccz181-r02-n09-ch01-08",
+      "label": "打算、承诺与结果 / 财物与资源 / 跨章承接",
+      "chapter_materials": [
+        2,
+        3,
+        7
+      ],
+      "capability_tags": [
+        "PLAN",
+        "RES",
+        "LINK"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-030",
+      "book_id": "ccz181-r02-n12-ch01-08",
+      "label": "数量与单位 / 财物与资源 / 同一对象与去重",
+      "chapter_materials": [
+        3
+      ],
+      "capability_tags": [
+        "NUM",
+        "RES",
+        "ONE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-031",
+      "book_id": "ccz181-r02-n12-ch01-08",
+      "label": "条件与例外 / 跨章承接 / 状态变化",
+      "chapter_materials": [
+        6
+      ],
+      "capability_tags": [
+        "COND",
+        "LINK",
+        "STATE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-032",
+      "book_id": "ccz181-r02-n02-ch01-08",
+      "label": "多人对话归属 / 人物知情 / 来源与真假",
+      "chapter_materials": [
+        5
+      ],
+      "capability_tags": [
+        "TALK",
+        "KNOW",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-033",
+      "book_id": "ccz181-r02-c04-ch01-08",
+      "label": "条件与例外 / 数量与单位 / 打算、承诺与结果",
+      "chapter_materials": [
+        6
+      ],
+      "capability_tags": [
+        "COND",
+        "NUM",
+        "PLAN"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-034",
+      "book_id": "ccz181-r02-c08-ch01-08",
+      "label": "来源与真假 / 数量与单位 / 财物与资源",
+      "chapter_materials": [
+        6
+      ],
+      "capability_tags": [
+        "SRC",
+        "NUM",
+        "RES"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-035",
+      "book_id": "ccz181-r02-c08-ch01-08",
+      "label": "身份与称呼 / 来源与真假",
+      "chapter_materials": [
+        8
+      ],
+      "capability_tags": [
+        "ID",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-036",
+      "book_id": "ccz181-r02-n03-ch01-08",
+      "label": "打算、承诺与结果 / 状态变化 / 来源与真假",
+      "chapter_materials": [
+        8
+      ],
+      "capability_tags": [
+        "PLAN",
+        "STATE",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-037",
+      "book_id": "ccz181-r02-c09-ch01-08",
+      "label": "数量与单位 / 打算、承诺与结果 / 条件与例外",
+      "chapter_materials": [
+        6
+      ],
+      "capability_tags": [
+        "NUM",
+        "PLAN",
+        "COND"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-038",
+      "book_id": "ccz181-r02-c10-ch01-08",
+      "label": "数量与单位 / 同一对象与去重 / 来源与真假",
+      "chapter_materials": [
+        4
+      ],
+      "capability_tags": [
+        "NUM",
+        "ONE",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-039",
+      "book_id": "ccz181-r02-c11-ch01-08",
+      "label": "人物知情 / 身份与称呼 / 状态变化",
+      "chapter_materials": [
+        4
+      ],
+      "capability_tags": [
+        "KNOW",
+        "ID",
+        "STATE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-040",
+      "book_id": "ccz181-r02-c12-ch01-08",
+      "label": "状态变化 / 同一对象与去重 / 跨章承接",
+      "chapter_materials": [
+        8
+      ],
+      "capability_tags": [
+        "STATE",
+        "ONE",
+        "LINK"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-041",
+      "book_id": "ccz181-r02-n11-ch01-08",
+      "label": "财物与资源 / 数量与单位 / 条件与例外",
+      "chapter_materials": [
+        7
+      ],
+      "capability_tags": [
+        "RES",
+        "NUM",
+        "COND"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-042",
+      "book_id": "ccz181-r02-n10-ch01-08",
+      "label": "来源与真假 / 梦境、幻觉与视角",
+      "chapter_materials": [
+        8
+      ],
+      "capability_tags": [
+        "SRC",
+        "POV"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-043",
+      "book_id": "ccz178-r01-nb01-ch01-03",
+      "label": "数量与单位 / 条件与例外 / 打算、承诺与结果",
+      "chapter_materials": [
+        3
+      ],
+      "capability_tags": [
+        "NUM",
+        "COND",
+        "PLAN"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-044",
+      "book_id": "ccz178-r01-nb02-ch01-03",
+      "label": "梦境、幻觉与视角 / 来源与真假 / 身份与称呼",
+      "chapter_materials": [
+        1
+      ],
+      "capability_tags": [
+        "POV",
+        "SRC",
+        "ID"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-045",
+      "book_id": "ccz178-r01-nb03-ch01-03",
+      "label": "来源与真假 / 状态变化 / 人物知情",
+      "chapter_materials": [
+        1
+      ],
+      "capability_tags": [
+        "SRC",
+        "STATE",
+        "KNOW"
+      ],
+      "starter": true,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-046",
+      "book_id": "ccz178-r01-nb04-ch01-03",
+      "label": "条件与例外 / 来源与真假 / 多人对话归属",
+      "chapter_materials": [
+        1
+      ],
+      "capability_tags": [
+        "COND",
+        "SRC",
+        "TALK"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-047",
+      "book_id": "ccz178-r01-nb05-ch01-03",
+      "label": "打算、承诺与结果 / 跨章承接 / 状态变化",
+      "chapter_materials": [
+        2,
+        3
+      ],
+      "capability_tags": [
+        "PLAN",
+        "LINK",
+        "STATE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-048",
+      "book_id": "ccz178-r01-nb05-ch01-03",
+      "label": "来源与真假 / 身份与称呼",
+      "chapter_materials": [
+        2
+      ],
+      "capability_tags": [
+        "SRC",
+        "ID"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-049",
+      "book_id": "ccz178-r01-nb06-ch01-03",
+      "label": "来源与真假 / 条件与例外 / 跨章承接",
+      "chapter_materials": [
+        1,
+        2,
+        3
+      ],
+      "capability_tags": [
+        "SRC",
+        "COND",
+        "LINK"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-050",
+      "book_id": "book-third-face-ch01-10",
+      "label": "状态变化 / 财物与资源 / 跨章承接",
+      "chapter_materials": [
+        4,
+        9
+      ],
+      "capability_tags": [
+        "STATE",
+        "RES",
+        "LINK"
+      ],
+      "starter": true,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-051",
+      "book_id": "book-third-face-ch01-10",
+      "label": "身份与称呼 / 梦境、幻觉与视角 / 人物知情",
+      "chapter_materials": [
+        5,
+        10
+      ],
+      "capability_tags": [
+        "ID",
+        "POV",
+        "KNOW"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-052",
+      "book_id": "ccz181-r02-n07-ch01-08",
+      "label": "条件与例外 / 状态变化 / 财物与资源",
+      "chapter_materials": [
+        2
+      ],
+      "capability_tags": [
+        "COND",
+        "STATE",
+        "RES"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-053",
+      "book_id": "ccz181-r02-n07-ch01-08",
+      "label": "条件与例外 / 来源与真假",
+      "chapter_materials": [
+        3
+      ],
+      "capability_tags": [
+        "COND",
+        "SRC"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-054",
+      "book_id": "book-guimi-ch01-50",
+      "label": "条件与例外 / 打算、承诺与结果",
+      "chapter_materials": [
+        19
+      ],
+      "capability_tags": [
+        "COND",
+        "PLAN"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-055",
+      "book_id": "book-guimi-ch01-50",
+      "label": "财物与资源 / 打算、承诺与结果 / 状态变化",
+      "chapter_materials": [
+        50
+      ],
+      "capability_tags": [
+        "RES",
+        "PLAN",
+        "STATE"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-056",
+      "book_id": "ccz181-r02-n06-ch01-08",
+      "label": "条件与例外 / 数量与单位 / 打算、承诺与结果",
+      "chapter_materials": [
+        3
+      ],
+      "capability_tags": [
+        "COND",
+        "NUM",
+        "PLAN"
+      ],
+      "starter": true,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    },
+    {
+      "case_id": "CASE-057",
+      "book_id": "ccz181-r02-n06-ch01-08",
+      "label": "数量与单位 / 来源与真假 / 跨章承接",
+      "chapter_materials": [
+        4,
+        8
+      ],
+      "capability_tags": [
+        "NUM",
+        "SRC",
+        "LINK"
+      ],
+      "starter": false,
+      "review_scope": "LOCAL_FOCUS_REVIEW_ONLY",
+      "answer_location": "LOCAL_ONLY"
+    }
+  ],
+  "missing_task_inputs": [
+    {
+      "capability": "作者未来规划、10—20章与20—40章的区间安排",
+      "missing_input": "作者提供的未来安排＋已采用范围＋尚未发生的明确标志",
+      "status": "SEPARATE_TASK_INPUT_REQUIRED"
+    },
+    {
+      "capability": "工作卡授权、自动选择与撤权",
+      "missing_input": "实际作者会话、工作卡许可和撤权验例",
+      "status": "SEPARATE_TASK_INPUT_REQUIRED"
+    },
+    {
+      "capability": "版本保存、精确回读和改选回滚",
+      "missing_input": "获准结构版本、真实读写入口及运行回执",
+      "status": "SEPARATE_TASK_INPUT_REQUIRED"
+    },
+    {
+      "capability": "剧情修改后的跨章影响检查",
+      "missing_input": "原章＋作者改法＋工作卡方案＋改后版本＋应受影响的条目",
+      "status": "SEPARATE_TASK_INPUT_REQUIRED"
+    },
+    {
+      "capability": "长线创作质量和作者体验",
+      "missing_input": "作者未来目标、实际创作任务和独立效果评价",
+      "status": "SEPARATE_TASK_INPUT_REQUIRED"
+    }
+  ],
+  "catalog_revision": "sha256:2d3e7dd7d074752cc829332e951faebb50917e29a1c4148f473f469a0a3d0702"
+}

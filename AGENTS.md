@@ -29,6 +29,7 @@
 | 看微调结论 | [finetuning/README.md](finetuning/README.md) | 正线已放弃；CURRENT 只是空落点 |
 | 判断能否训练 | `finetuning/CURRENT.json` 的授权字段 | 没有明确许可就是不能训练；正线已关 |
 | 查抽取研究 | `governance/route_registry.json` | 对应实验结果票；产品解释再看 R04 第 04 页 |
+| 按题材、梯队或能力挑小说测试样本 | [样本目录](references/novel-sample-library/README.md) | 云端只选目录版本与用例编号，样本内容留本地；目录不授权 API 调用，也不代表 Gold |
 | 查已验证的工程结论、技术选型或管线骨架 | `references/engineering-ledger/00_READ_ME_FIRST.md` | 按账内指针回正式结果票／冻结合同核对；当前任务状态仍现场读取 Linear／GitHub |
 | 查外部证据、行业经验、冲突或研究缺口 | [CCZ-64](https://linear.app/ccz/issue/CCZ-64) 冻结证据登记 | 需要原文时再按 [survey-inbox](references/survey-inbox/README.md) 的来源卡追原报告；吸收决定回模块票 |
 | 拿不准账本／工具／执行包／权限，或抽取／评测／记忆、需求／产品形态、日常循环／插件／画布／平台／人格标签、规划账／保存对照交棒／状态轴、局部复核／反馈外发／切片验收会不会做歪 | [情景问答](references/agent-playbook/README.md) | [卡片目录](references/agent-playbook/INDEX.md)。只打开对得上的一张；再回它标出的现行 Linear 票或 GitHub 合同核对 |
