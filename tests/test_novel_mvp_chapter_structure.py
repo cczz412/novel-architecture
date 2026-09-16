@@ -24,9 +24,11 @@ from mvp.chapter_structure_contract import (
     load_capacity,
     raw_digest,
     validate_native,
+    validate_content,
 )
 from mvp.chapter_structure_workspace import (
     _StructureKernel,
+    _validate_operation_history,
     apply_structure_write,
     read_structure_versions,
 )
@@ -810,6 +812,12 @@ def test_stage1_capacity_config_missing_is_not_defaulted(tmp_path):
     path.write_text(json.dumps(policy))
     with pytest.raises(StructureError, match="CAPACITY_POLICY_UNAVAILABLE"):
         load_capacity(path)
+    with pytest.raises(StructureError, match="CAPACITY_POLICY_UNAVAILABLE"):
+        _StructureKernel(None, {})
+    broken = load_capacity(CONFIG)
+    broken["owner"] = []
+    with pytest.raises(StructureError, match="CAPACITY_POLICY_UNAVAILABLE"):
+        _StructureKernel(None, broken)
 
 
 def test_stage1_post_fault_recovery_preserves_old_version(env):
@@ -836,3 +844,66 @@ def test_stage1_post_fault_recovery_preserves_old_version(env):
     assert replay["result"]["saved_ref"]["rev"] == 2
     assert read(kernel, first["result"]["saved_ref"])["status"] == "OK"
     assert write(kernel, original)["result"] == first["result"]
+
+
+@pytest.mark.parametrize(
+    "corrupt",
+    [
+        lambda store: store["operations"][-1]["result"].update(latest_rev=2),
+        lambda store: store["branch"].update(created_operation_id="create"),
+        lambda store: store["operations"][-1]["result"]["local_id_map"].pop(),
+        lambda store: store["operations"][-1]["result"].update(
+            lifecycle_status="RETIRED"
+        ),
+    ],
+)
+def test_stage1_object_operation_inconsistency_rejected(env, corrupt):
+    _, ws, kernel = env
+    _, first = register_create(kernel)
+    state = ws.read("chapter_structures")
+    corrupt(state["payload"])
+    with pytest.raises(StructureError):
+        _validate_operation_history(state["payload"])
+    # Even a backend-valid envelope cannot make inconsistent business data valid.
+    ws.commit(
+        "corrupt-operation",
+        {"chapter_structures": state["payload"]},
+        {"chapter_structures": {k: state[k] for k in ("version", "sha256")}},
+    )
+    result = read(kernel, first["result"]["saved_ref"])
+    assert result["reason_code"] == "SOURCE_CORRUPTED"
+    assert result["data"] is None
+
+
+def test_stage1_system_action_is_not_author_attestation(env):
+    _, _, kernel = env
+    register_create(kernel)
+    body = saved_content(kernel)
+    material_id = body["materials"][0]["material_id"]
+    body["source_bindings"] = [
+        dict(
+            binding_id="sb_" + "f" * 32,
+            source_kind="AUTHOR_DECLARATION",
+            source_ref=None,
+            material_refs=[material_id],
+            resolution_status="UNRESOLVED",
+            unresolved_reasons=["OWNER_BINDING_UNAVAILABLE"],
+            details=dict(
+                statement_material_ref=material_id,
+                author_ref={"actor_kind": "AUTHOR", "actor_id": "a_" + "0" * 32},
+                accepted_span_refs=[],
+                scope_text=None,
+                author_attestation_ref=dict(
+                    kind="OWNER_ACTION",
+                    action_contract="fixture",
+                    action_contract_version="v1",
+                    action_id="fixture:action",
+                    actor="SYSTEM",
+                    action_sha256="0" * 64,
+                ),
+            ),
+        )
+    ]
+    assert CONTRACT_TYPES["StructureContent"].is_valid(body)
+    with pytest.raises(StructureError):
+        validate_content(body)

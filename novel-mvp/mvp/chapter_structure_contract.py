@@ -125,7 +125,14 @@ def validate_shape(name: str, value: object) -> None:
 def load_capacity(path: Path) -> dict:
     """Explicit host configuration, never guessed from a request or defaulted."""
     try:
-        policy = decode_request(path.read_bytes())
+        return validate_capacity(path.read_bytes())
+    except OSError as exc:
+        raise StructureError("CAPACITY_POLICY_UNAVAILABLE") from exc
+
+
+def validate_capacity(value: object) -> dict:
+    try:
+        policy = decode_request(value)
         values = [
             policy["owner"][key]
             for key in (
@@ -153,7 +160,7 @@ def load_capacity(path: Path) -> dict:
         ]
         _require(all(type(x) is int and x > 0 for x in values))
         return policy
-    except (OSError, KeyError, StructureError) as exc:
+    except (KeyError, TypeError, StructureError) as exc:
         raise StructureError("CAPACITY_POLICY_UNAVAILABLE") from exc
 
 
@@ -239,6 +246,9 @@ def validate_content(content: dict, self_ref: dict | None = None) -> None:
             actor = details["author_ref"]
             if actor is not None:
                 _require(actor["actor_kind"] == "AUTHOR")
+            attestation = details["author_attestation_ref"]
+            if attestation is not None:
+                _require(attestation["actor"] == "AUTHOR")
             for span in details["accepted_span_refs"]:
                 _require(span["material_ref"] in materials)
                 text = materials[span["material_ref"]]["raw_content"]

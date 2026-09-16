@@ -22,6 +22,7 @@ from .chapter_structure_contract import (
     digest,
     new_id,
     resolve_local_ids,
+    validate_capacity,
     validate_content,
     validate_shape,
     version_digest,
@@ -171,12 +172,108 @@ def _read_shell(request: object, reason: str | None) -> dict:
     }
 
 
+def _validate_operation_history(store):
+    """Rebuild object state from successful actions, without writing or repairing."""
+    objects = {obj["id"]: obj for obj in store["objects"]}
+    cursors = {}
+    issued = {store["branch"]["branch_id"]}
+    for index, op in enumerate(store["operations"]):
+        result = op["result"]
+        action = result["action"]
+        if index == 0:
+            _require(action == "REGISTER_BRANCH")
+            _require(op["operation_id"] == store["branch"]["created_operation_id"])
+            continue
+        _require(action != "REGISTER_BRANCH")
+        object_id = result["object_id"]
+        _require(object_id in objects)
+        obj = objects[object_id]
+        cursor = cursors.get(object_id)
+        old_selected = None if cursor is None else cursor["selected_ref"]
+        if action == "CREATE_OBJECT":
+            _require(cursor is None and object_id not in issued)
+            cursor = dict(
+                latest_rev=0,
+                object_state_version=0,
+                selected_ref=None,
+                lifecycle_status="ACTIVE",
+                retired_operation_id=None,
+                known={array: set() for array in _LOCAL},
+            )
+            cursors[object_id] = cursor
+        else:
+            _require(cursor is not None and cursor["lifecycle_status"] == "ACTIVE")
+        _require(result["previous_selected_ref"] == old_selected)
+        expected_new = set()
+        if action in ("CREATE_OBJECT", "SAVE_VERSION"):
+            next_rev = cursor["latest_rev"] + 1
+            _require(next_rev <= len(obj["versions"]))
+            version = obj["versions"][next_rev - 1]
+            _require(version["save_operation_id"] == op["operation_id"])
+            _require(result["saved_ref"] == version["ref"])
+            _require(result["selected_ref"] == version["ref"])
+            if action == "SAVE_VERSION":
+                _require(
+                    version["structure_content"]
+                    != obj["versions"][next_rev - 2]["structure_content"]
+                )
+            else:
+                expected_new.add(("STRUCTURE_OBJECT", object_id))
+            for array, (key, _prefix, kind, _typ) in _LOCAL.items():
+                current = {item[key] for item in version["structure_content"][array]}
+                expected_new.update(
+                    (kind, item_id) for item_id in current - cursor["known"][array]
+                )
+                cursor["known"][array].update(current)
+            cursor["latest_rev"] = next_rev
+            cursor["selected_ref"] = version["ref"]
+        elif action == "SELECT_VERSION":
+            _require(result["selected_ref"] != old_selected)
+            _require(
+                any(
+                    v["ref"] == result["selected_ref"]
+                    for v in obj["versions"][: cursor["latest_rev"]]
+                )
+            )
+            cursor["selected_ref"] = result["selected_ref"]
+        elif action == "RETIRE_OBJECT":
+            _require(result["selected_ref"] == old_selected)
+            cursor["lifecycle_status"] = "RETIRED"
+            cursor["retired_operation_id"] = op["operation_id"]
+        rows = result["local_id_map"]
+        placeholders = [row["placeholder"] for row in rows]
+        _require(placeholders == sorted(set(placeholders)))
+        _require(len({p.split(":")[1] for p in placeholders}) <= 1)
+        actual_new = {(row["local_kind"], row["resolved_id"]) for row in rows}
+        _require(len(actual_new) == len(rows) and actual_new == expected_new)
+        _require(all(item_id not in issued for _, item_id in actual_new))
+        issued.update(item_id for _, item_id in actual_new)
+        cursor["object_state_version"] += 1
+        for key in (
+            "latest_rev",
+            "object_state_version",
+            "selected_ref",
+            "lifecycle_status",
+        ):
+            _require(result[key] == cursor[key])
+    _require(set(cursors) == set(objects))
+    for object_id, cursor in cursors.items():
+        for key in (
+            "latest_rev",
+            "object_state_version",
+            "selected_ref",
+            "lifecycle_status",
+            "retired_operation_id",
+        ):
+            _require(objects[object_id][key] == cursor[key])
+
+
 class _StructureKernel:
     """Trusted internal persistence component, not a model tool or permission issuer."""
 
     def __init__(self, workspace: AuthorWorkspace, capacity: dict):
         self.workspace = workspace
-        self.capacity = deepcopy(capacity)
+        self.capacity = validate_capacity(capacity)
         self._lock = RLock()
         # Process-local diagnostics of actual checks; not a permanent recovery DB.
         self._io_evidence: list[dict] = []
@@ -242,6 +339,7 @@ class _StructureKernel:
                         _require(op["result"]["saved_ref"] == ref)
                         refs.append(ref)
                     _require(obj["selected_ref"] in refs)
+                _validate_operation_history(store)
             except (StructureError, KeyError, IndexError, TypeError) as exc:
                 raise StructureError("STORAGE_CORRUPT") from exc
         return view, state
