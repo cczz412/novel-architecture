@@ -1,0 +1,5334 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:novel-architecture:chapter-structure-contract-candidate:20260914:r01",
+  "title": "章结构保存、固定读取与私有授权合同候选",
+  "$comment": "EA01-EA03 engineering boundaries approved. Concrete fields/identifiers/limits remain candidate; not an implemented runtime.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/StructureStore"
+    },
+    {
+      "$ref": "#/$defs/StructureWriteRequest"
+    },
+    {
+      "$ref": "#/$defs/StructureWriteResponse"
+    },
+    {
+      "$ref": "#/$defs/StructureReadRequest"
+    },
+    {
+      "$ref": "#/$defs/StructureReadResponse"
+    },
+    {
+      "$ref": "#/$defs/ActionGrant"
+    }
+  ],
+  "$defs": {
+    "LegacyRead_source_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_contract",
+        "source_contract_version",
+        "logical_ledger_name",
+        "object_type",
+        "stable_id",
+        "revision",
+        "logical_content_sha256",
+        "role",
+        "binding_mode",
+        "retired_notice",
+        "compiler_version",
+        "input_basis_sha256"
+      ],
+      "properties": {
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "ledger_entry",
+            "chapter_revision",
+            "projection",
+            "directory_capability_snapshot"
+          ]
+        },
+        "source_contract": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_contract_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_ledger_name": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyRead_ledger_name"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "object_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stable_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "logical_content_sha256": {
+          "$ref": "#/$defs/LegacyRead_sha256"
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_mode": {
+          "type": "string",
+          "enum": [
+            "recorded_pin",
+            "resolved_at_read"
+          ]
+        },
+        "retired_notice": {
+          "type": "boolean"
+        },
+        "compiler_version": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "input_basis_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyRead_sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "LegacyRead_ledger_name": {
+      "type": "string",
+      "enum": [
+        "章节账",
+        "事实账",
+        "人物账",
+        "地点账",
+        "物品账",
+        "势力账",
+        "体系账",
+        "世界规则账",
+        "长线账",
+        "规划账"
+      ]
+    },
+    "LegacyRead_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "LegacyC11_chapter_revision_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_id",
+        "revision_no",
+        "revision_text_sha256"
+      ],
+      "properties": {
+        "chapter_id": {
+          "$ref": "#/$defs/LegacyC11_chapter_id"
+        },
+        "revision_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_text_sha256": {
+          "$ref": "#/$defs/LegacyC11_sha256"
+        }
+      }
+    },
+    "LegacyC11_chapter_id": {
+      "type": "string",
+      "pattern": "^c[0-9]{2,}$"
+    },
+    "LegacyC11_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "LegacyC11_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_id",
+        "revision_no",
+        "revision_text_sha256",
+        "coordinate_basis",
+        "start",
+        "end",
+        "slice_sha256"
+      ],
+      "properties": {
+        "chapter_id": {
+          "$ref": "#/$defs/LegacyC11_chapter_id"
+        },
+        "revision_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_text_sha256": {
+          "$ref": "#/$defs/LegacyC11_sha256"
+        },
+        "coordinate_basis": {
+          "const": "CHAPTER_REVISION_TEXT_UNICODE_CODEPOINT_0_BASED_HALF_OPEN"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "slice_sha256": {
+          "$ref": "#/$defs/LegacyC11_sha256"
+        }
+      }
+    },
+    "LegacyTPS_c10_material_identity_revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "record_contract_version",
+        "material_unit_id",
+        "identity_revision_no",
+        "identity_revision_sha256",
+        "identity_role",
+        "identity_state",
+        "source_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "C10_MATERIAL_IDENTITY_REVISION"
+        },
+        "record_contract_version": {
+          "enum": [
+            "v1",
+            "v2",
+            "v3",
+            "v4"
+          ]
+        },
+        "material_unit_id": {
+          "$ref": "#/$defs/LegacyTPS_non_empty_string"
+        },
+        "identity_revision_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "identity_revision_sha256": {
+          "$ref": "#/$defs/LegacyTPS_sha256"
+        },
+        "identity_role": {
+          "oneOf": [
+            {
+              "enum": [
+                "INTRO",
+                "CHAPTER",
+                "SETTING",
+                "TITLE",
+                "TAGS"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "identity_state": {
+          "enum": [
+            "CONFIRMED",
+            "CANDIDATE",
+            "UNKNOWN"
+          ]
+        },
+        "source_ref": {
+          "$ref": "#/$defs/LegacyTPS_source_ref"
+        }
+      }
+    },
+    "LegacyTPS_non_empty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "LegacyTPS_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "LegacyTPS_source_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "source_sha256",
+        "coordinate_basis",
+        "start",
+        "end",
+        "slice_sha256"
+      ],
+      "properties": {
+        "source_id": {
+          "$ref": "#/$defs/LegacyTPS_non_empty_string"
+        },
+        "source_sha256": {
+          "$ref": "#/$defs/LegacyTPS_sha256"
+        },
+        "coordinate_basis": {
+          "const": "DECODED_UNICODE_CODEPOINT_V1"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "slice_sha256": {
+          "$ref": "#/$defs/LegacyTPS_sha256"
+        }
+      }
+    },
+    "LegacyTPS_owner_action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "action_contract",
+        "action_contract_version",
+        "action_id",
+        "actor",
+        "action_sha256"
+      ],
+      "properties": {
+        "kind": {
+          "const": "OWNER_ACTION"
+        },
+        "action_contract": {
+          "$ref": "#/$defs/LegacyTPS_non_empty_string"
+        },
+        "action_contract_version": {
+          "$ref": "#/$defs/LegacyTPS_non_empty_string"
+        },
+        "action_id": {
+          "$ref": "#/$defs/LegacyTPS_non_empty_string"
+        },
+        "actor": {
+          "enum": [
+            "AUTHOR",
+            "SYSTEM"
+          ]
+        },
+        "action_sha256": {
+          "$ref": "#/$defs/LegacyTPS_sha256"
+        }
+      }
+    },
+    "NonEmptyText": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ShortIdentifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "Sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "SafeUnsignedInteger": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "SafePositiveInteger": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "FactItemRef": {
+      "type": "string",
+      "pattern": "^fi_[0-9a-f]{32}$"
+    },
+    "MaterialRef": {
+      "type": "string",
+      "pattern": "^mt_[0-9a-f]{32}$"
+    },
+    "SourceBindingRef": {
+      "type": "string",
+      "pattern": "^sb_[0-9a-f]{32}$"
+    },
+    "PresentationItemRef": {
+      "type": "string",
+      "pattern": "^pi_[0-9a-f]{32}$"
+    },
+    "ActorRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_kind",
+        "actor_id"
+      ],
+      "properties": {
+        "actor_kind": {
+          "enum": [
+            "AUTHOR",
+            "SYSTEM"
+          ]
+        },
+        "actor_id": {
+          "$ref": "#/$defs/ShortIdentifier"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "actor_kind": {
+                "const": "AUTHOR"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "actor_id": {
+                "type": "string",
+                "pattern": "^a_[0-9a-f]{32}$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "StructureRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_id",
+        "branch_id",
+        "owner",
+        "object_type",
+        "id",
+        "rev",
+        "content_sha256"
+      ],
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "pattern": "^p_[0-9a-f]{32}$"
+        },
+        "branch_id": {
+          "type": "string",
+          "pattern": "^eb_[0-9a-f]{32}$"
+        },
+        "owner": {
+          "const": "CHAPTER_STRUCTURE"
+        },
+        "object_type": {
+          "const": "CHAPTER_STRUCTURE_VERSION"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^cs_[0-9a-f]{32}$"
+        },
+        "rev": {
+          "$ref": "#/$defs/SafePositiveInteger"
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/Sha256"
+        }
+      }
+    },
+    "NativeSourceRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ref_kind",
+            "native_ref"
+          ],
+          "properties": {
+            "ref_kind": {
+              "const": "STRUCTURE_REF"
+            },
+            "native_ref": {
+              "$ref": "#/$defs/StructureRef"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ref_kind",
+            "native_ref"
+          ],
+          "properties": {
+            "ref_kind": {
+              "const": "LEDGER_SOURCE_ITEM"
+            },
+            "native_ref": {
+              "$ref": "#/$defs/LegacyRead_source_item"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ref_kind",
+            "native_ref"
+          ],
+          "properties": {
+            "ref_kind": {
+              "const": "C11_REVISION_REF"
+            },
+            "native_ref": {
+              "$ref": "#/$defs/LegacyC11_chapter_revision_ref"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ref_kind",
+            "native_ref"
+          ],
+          "properties": {
+            "ref_kind": {
+              "const": "C10_MATERIAL_IDENTITY_REF"
+            },
+            "native_ref": {
+              "$ref": "#/$defs/LegacyTPS_c10_material_identity_revision"
+            }
+          }
+        }
+      ]
+    },
+    "MaterialSpanRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "material_ref",
+        "coordinate_basis",
+        "start",
+        "end",
+        "slice_sha256"
+      ],
+      "properties": {
+        "material_ref": {
+          "$ref": "#/$defs/MaterialRef"
+        },
+        "coordinate_basis": {
+          "const": "RECEIVED_MATERIAL_UNICODE_CODEPOINT_0_BASED_HALF_OPEN"
+        },
+        "start": {
+          "$ref": "#/$defs/SafeUnsignedInteger"
+        },
+        "end": {
+          "$ref": "#/$defs/SafePositiveInteger"
+        },
+        "slice_sha256": {
+          "$ref": "#/$defs/Sha256"
+        }
+      }
+    },
+    "ReceivedMaterial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "material_id",
+        "format",
+        "raw_content",
+        "raw_content_sha256",
+        "submitted_by_ref",
+        "received_at",
+        "declared_origin"
+      ],
+      "properties": {
+        "material_id": {
+          "$ref": "#/$defs/MaterialRef"
+        },
+        "format": {
+          "enum": [
+            "PLAIN_TEXT",
+            "RAW_JSON_TEXT"
+          ]
+        },
+        "raw_content": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "raw_content_sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "submitted_by_ref": {
+          "$ref": "#/$defs/ActorRef"
+        },
+        "received_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "declared_origin": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "FactItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "text",
+        "source_refs",
+        "material_refs",
+        "source_binding_refs"
+      ],
+      "properties": {
+        "item_id": {
+          "$ref": "#/$defs/FactItemRef"
+        },
+        "text": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeSourceRef"
+          },
+          "uniqueItems": true
+        },
+        "material_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialRef"
+          },
+          "uniqueItems": true
+        },
+        "source_binding_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceBindingRef"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "SelectedFact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_ref",
+        "seq",
+        "seq_basis"
+      ],
+      "properties": {
+        "item_ref": {
+          "$ref": "#/$defs/FactItemRef"
+        },
+        "seq": {
+          "$ref": "#/$defs/SafePositiveInteger"
+        },
+        "seq_basis": {
+          "const": "author_selected_order"
+        }
+      }
+    },
+    "PresentationItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "text",
+        "member_refs",
+        "material_refs",
+        "source_binding_refs"
+      ],
+      "properties": {
+        "item_id": {
+          "$ref": "#/$defs/PresentationItemRef"
+        },
+        "text": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "member_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FactItemRef"
+          },
+          "uniqueItems": true
+        },
+        "material_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialRef"
+          },
+          "uniqueItems": true
+        },
+        "source_binding_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceBindingRef"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "ProseSourceDetails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_revision_ref",
+        "anchor_ref",
+        "quote"
+      ],
+      "properties": {
+        "chapter_revision_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyC11_chapter_revision_ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "anchor_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyC11_anchor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quote": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "AuthorSourceDetails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statement_material_ref",
+        "author_ref",
+        "accepted_span_refs",
+        "author_attestation_ref",
+        "scope_text"
+      ],
+      "properties": {
+        "statement_material_ref": {
+          "$ref": "#/$defs/MaterialRef"
+        },
+        "author_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ActorRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_span_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialSpanRef"
+          },
+          "uniqueItems": true
+        },
+        "author_attestation_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyTPS_owner_action"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope_text": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "SystemSourceDetails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generator_ref",
+        "generator_version",
+        "input_refs",
+        "candidate_material_ref",
+        "candidate_material_sha256",
+        "producer_action_ref"
+      ],
+      "properties": {
+        "generator_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ActorRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "generator_version": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "input_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeSourceRef"
+          },
+          "uniqueItems": true
+        },
+        "candidate_material_ref": {
+          "$ref": "#/$defs/MaterialRef"
+        },
+        "candidate_material_sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "producer_action_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyTPS_owner_action"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ChapterSourceDetails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "structure_revision_ref",
+        "selected_item_refs",
+        "chapter_closeout_ref",
+        "allowed_scope_text"
+      ],
+      "properties": {
+        "structure_revision_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/StructureRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selected_item_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FactItemRef"
+          },
+          "uniqueItems": true
+        },
+        "chapter_closeout_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyTPS_owner_action"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "allowed_scope_text": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "SourceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "source_kind",
+        "source_ref",
+        "material_refs",
+        "resolution_status",
+        "unresolved_reasons",
+        "details"
+      ],
+      "properties": {
+        "binding_id": {
+          "$ref": "#/$defs/SourceBindingRef"
+        },
+        "source_kind": {
+          "enum": [
+            "PROSE_EXTRACTION",
+            "AUTHOR_DECLARATION",
+            "SYSTEM_PROPOSAL",
+            "CHAPTER_LOCAL_DELTA"
+          ]
+        },
+        "source_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NativeSourceRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "material_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialRef"
+          },
+          "uniqueItems": true
+        },
+        "resolution_status": {
+          "enum": [
+            "RESOLVED",
+            "UNRESOLVED"
+          ]
+        },
+        "unresolved_reasons": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "OWNER_BINDING_UNAVAILABLE",
+              "NATIVE_REFERENCE_UNAVAILABLE",
+              "SOURCE_VERSION_UNAVAILABLE",
+              "SOURCE_LOCATOR_UNAVAILABLE",
+              "SOURCE_BYTES_UNAVAILABLE",
+              "ACTOR_BINDING_UNAVAILABLE",
+              "REFERENCE_FORMAT_UNSUPPORTED",
+              "NUMERIC_RANGE_UNSUPPORTED"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "details": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ProseSourceDetails"
+            },
+            {
+              "$ref": "#/$defs/AuthorSourceDetails"
+            },
+            {
+              "$ref": "#/$defs/SystemSourceDetails"
+            },
+            {
+              "$ref": "#/$defs/ChapterSourceDetails"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "PROSE_EXTRACTION"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/ProseSourceDetails"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "AUTHOR_DECLARATION"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/AuthorSourceDetails"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "SYSTEM_PROPOSAL"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/SystemSourceDetails"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "CHAPTER_LOCAL_DELTA"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/ChapterSourceDetails"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "resolution_status": {
+                "const": "RESOLVED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "unresolved_reasons": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "unresolved_reasons": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "StructureContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "fact_items",
+        "selected_facts",
+        "presentation_items",
+        "materials",
+        "source_bindings",
+        "basis_refs"
+      ],
+      "properties": {
+        "contract": {
+          "const": "CHAPTER_STRUCTURE_CONTENT"
+        },
+        "version": {
+          "const": "chapter-structure-content-v1"
+        },
+        "fact_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FactItem"
+          }
+        },
+        "selected_facts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SelectedFact"
+          }
+        },
+        "presentation_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PresentationItem"
+          }
+        },
+        "materials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReceivedMaterial"
+          }
+        },
+        "source_bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceBinding"
+          }
+        },
+        "basis_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeSourceRef"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "StructureVersionRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "structure_content",
+        "save_operation_id"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/StructureRef"
+        },
+        "save_operation_id": {
+          "$ref": "#/$defs/OperationId"
+        },
+        "structure_content": {
+          "$ref": "#/$defs/StructureContent"
+        }
+      }
+    },
+    "OperationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "RequestId": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 68,
+      "pattern": "^REQ-[A-Za-z0-9._:-]{1,64}$"
+    },
+    "BranchId": {
+      "type": "string",
+      "minLength": 35,
+      "maxLength": 35,
+      "pattern": "^eb_[0-9a-f]{32}$"
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 35,
+      "maxLength": 35,
+      "pattern": "^cs_[0-9a-f]{32}$"
+    },
+    "ActionActorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "ProviderRecordId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "WriteAction": {
+      "enum": [
+        "REGISTER_BRANCH",
+        "CREATE_OBJECT",
+        "SAVE_VERSION",
+        "SELECT_VERSION",
+        "RETIRE_OBJECT"
+      ]
+    },
+    "StructureAction": {
+      "enum": [
+        "REGISTER_BRANCH",
+        "CREATE_OBJECT",
+        "SAVE_VERSION",
+        "SELECT_VERSION",
+        "RETIRE_OBJECT",
+        "READ_PINNED"
+      ]
+    },
+    "NewPlaceholder": {
+      "type": "string",
+      "minLength": 7,
+      "maxLength": 132,
+      "pattern": "^NEW:[A-Za-z0-9_-]{1,64}:[A-Za-z0-9_-]{1,62}$"
+    },
+    "CandidateScope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "ReadReason": {
+      "enum": [
+        "UNAUTHORIZED",
+        "ACCESS_CHANGED",
+        "INVALID_SELECTOR",
+        "INVALID_PIN_SET",
+        "ENTRY_NOT_FOUND",
+        "REVISION_NOT_FOUND",
+        "SHA_MISMATCH",
+        "SOURCE_VERSION_UNSUPPORTED",
+        "CAPABILITY_UNAVAILABLE",
+        "RESULT_TOO_LARGE",
+        "SOURCE_CORRUPTED",
+        "INTERNAL_ERROR"
+      ]
+    },
+    "StructureStore": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "CHAPTER_STRUCTURE_STORE"
+          ],
+          "description": "固定值"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "chapter-structure-store-v1"
+          ],
+          "description": "固定协议版本；仍属拟名"
+        },
+        "workspace_binding": {
+          "$ref": "#/$defs/WorkspaceBinding",
+          "description": "必须等于实际受信 AuthorWorkspace 身份"
+        },
+        "branch": {
+          "$ref": "#/$defs/BranchRegistration",
+          "description": "第一批恰好一个显式登记分支；容器不存在时尚未登记"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StructureObject"
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CommittedStructureOperation"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        }
+      },
+      "required": [
+        "contract",
+        "version",
+        "workspace_binding",
+        "branch",
+        "objects",
+        "operations"
+      ]
+    },
+    "WorkspaceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "author_id": {
+          "type": "string",
+          "minLength": 34,
+          "maxLength": 34,
+          "pattern": "^a_[0-9a-f]{32}$"
+        },
+        "project_id": {
+          "type": "string",
+          "minLength": 34,
+          "maxLength": 34,
+          "pattern": "^p_[0-9a-f]{32}$"
+        }
+      },
+      "required": [
+        "author_id",
+        "project_id"
+      ]
+    },
+    "BranchRegistration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "branch_id": {
+          "$ref": "#/$defs/BranchId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "created_operation_id": {
+          "$ref": "#/$defs/OperationId",
+          "description": "指向唯一 REGISTER_BRANCH 成功记录"
+        }
+      },
+      "required": [
+        "branch_id",
+        "label",
+        "created_operation_id"
+      ]
+    },
+    "StructureObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "branch_id": {
+          "$ref": "#/$defs/BranchId"
+        },
+        "latest_rev": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 256
+        },
+        "object_state_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "selected_ref": {
+          "$ref": "#/$defs/StructureRef",
+          "description": "完整匹配本对象已存一个版本；CREATE默认r1，SAVE默认新版，SELECT按显式目标"
+        },
+        "lifecycle_status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "ACTIVE",
+            "RETIRED"
+          ],
+          "description": "创建ACTIVE；首批只允许单向RETIRE"
+        },
+        "retired_operation_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperationId"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "ACTIVE时null；RETIRED时为本对象唯一 RETIRE_OBJECT 成功动作号"
+        },
+        "last_operation_id": {
+          "$ref": "#/$defs/OperationId",
+          "description": "本对象最近一次改变状态的成功操作；重放不改"
+        },
+        "versions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StructureVersionRecord"
+          },
+          "minItems": 1,
+          "maxItems": 256
+        }
+      },
+      "required": [
+        "id",
+        "branch_id",
+        "latest_rev",
+        "object_state_version",
+        "selected_ref",
+        "lifecycle_status",
+        "retired_operation_id",
+        "last_operation_id",
+        "versions"
+      ]
+    },
+    "ExpectedContainer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "非bool，>=0；是 AuthorWorkspace 逻辑键版本，不是结构rev"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "sha256"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "version": {
+                "const": 0
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sha256": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "sha256": {
+                "$ref": "#/$defs/Sha256"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "StructureWriteRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "CHAPTER_STRUCTURE_WRITE_REQUEST"
+          ],
+          "description": "固定值"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "chapter-structure-write-v1"
+          ],
+          "description": "固定协议版本"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/OperationId",
+          "description": "沿现役 OPERATION_ID_RE：^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$；工作区全局幂等域"
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "REGISTER_BRANCH",
+            "CREATE_OBJECT",
+            "SAVE_VERSION",
+            "SELECT_VERSION",
+            "RETIRE_OBJECT"
+          ],
+          "description": "由此选择唯一 action_input 形状"
+        },
+        "expected_container": {
+          "$ref": "#/$defs/ExpectedContainer",
+          "description": "每个写动作都必填；同已提交操作精确重放先于新CAS判断"
+        },
+        "action_input": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/RegisterBranchInput"
+            },
+            {
+              "$ref": "#/$defs/CreateObjectInput"
+            },
+            {
+              "$ref": "#/$defs/SaveVersionInput"
+            },
+            {
+              "$ref": "#/$defs/SelectVersionInput"
+            },
+            {
+              "$ref": "#/$defs/RetireObjectInput"
+            }
+          ],
+          "description": "按 action 使用下面对应形状，拒绝未知键"
+        }
+      },
+      "required": [
+        "contract",
+        "version",
+        "operation_id",
+        "action",
+        "expected_container",
+        "action_input"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "REGISTER_BRANCH"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action_input": {
+                "$ref": "#/$defs/RegisterBranchInput"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "CREATE_OBJECT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action_input": {
+                "$ref": "#/$defs/CreateObjectInput"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "SAVE_VERSION"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action_input": {
+                "$ref": "#/$defs/SaveVersionInput"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "SELECT_VERSION"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action_input": {
+                "$ref": "#/$defs/SelectVersionInput"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "RETIRE_OBJECT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action_input": {
+                "$ref": "#/$defs/RetireObjectInput"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "RegisterBranchInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "branch_label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      },
+      "required": [
+        "branch_label"
+      ]
+    },
+    "CreateObjectInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "branch_ref": {
+          "$ref": "#/$defs/BranchId"
+        },
+        "structure_content": {
+          "$ref": "#/$defs/StructureContentInput"
+        },
+        "candidate_scope": {
+          "$ref": "#/$defs/CandidateScope"
+        },
+        "new_object_ref": {
+          "$ref": "#/$defs/NewPlaceholder"
+        }
+      },
+      "required": [
+        "branch_ref",
+        "structure_content",
+        "candidate_scope",
+        "new_object_ref"
+      ]
+    },
+    "SaveVersionInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expected_latest_ref": {
+          "$ref": "#/$defs/StructureRef",
+          "description": "既定位对象，也必须精确匹配该对象最大已签发rev；不能拿当前选择替代最新rev"
+        },
+        "expected_object_state_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "expected_selected_ref": {
+          "$ref": "#/$defs/StructureRef",
+          "description": "必须等于当前完整选择引用；比较包括版本与SHA"
+        },
+        "structure_content": {
+          "$ref": "#/$defs/StructureContentInput"
+        },
+        "candidate_scope": {
+          "$ref": "#/$defs/CandidateScope"
+        }
+      },
+      "required": [
+        "expected_latest_ref",
+        "expected_object_state_version",
+        "expected_selected_ref",
+        "structure_content",
+        "candidate_scope"
+      ]
+    },
+    "SelectVersionInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expected_latest_ref": {
+          "$ref": "#/$defs/StructureRef",
+          "description": "既定位对象，也必须精确匹配该对象最大已签发rev；不能拿当前选择替代最新rev"
+        },
+        "expected_object_state_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "expected_selected_ref": {
+          "$ref": "#/$defs/StructureRef",
+          "description": "必须等于当前完整选择引用；比较包括版本与SHA"
+        },
+        "selected_ref": {
+          "$ref": "#/$defs/StructureRef",
+          "description": "必须精确指向同对象已存版本；可以是旧版；等于当前选择时拒绝 SELECTION_UNCHANGED"
+        }
+      },
+      "required": [
+        "expected_latest_ref",
+        "expected_object_state_version",
+        "expected_selected_ref",
+        "selected_ref"
+      ]
+    },
+    "RetireObjectInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expected_latest_ref": {
+          "$ref": "#/$defs/StructureRef",
+          "description": "既定位对象，也必须精确匹配该对象最大已签发rev；不能拿当前选择替代最新rev"
+        },
+        "expected_object_state_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "expected_selected_ref": {
+          "$ref": "#/$defs/StructureRef",
+          "description": "必须等于当前完整选择引用；比较包括版本与SHA"
+        }
+      },
+      "required": [
+        "expected_latest_ref",
+        "expected_object_state_version",
+        "expected_selected_ref"
+      ]
+    },
+    "CommittedStructureOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/OperationId",
+          "description": "全集合唯一"
+        },
+        "request_sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "actor_ref": {
+          "$ref": "#/$defs/ActionActorId",
+          "description": "来自原成功动作受信上下文；值与共享权限类型完全一致"
+        },
+        "actor_kind": {
+          "enum": [
+            "AUTHOR",
+            "CONTROLLED_AGENT"
+          ],
+          "description": "复用共享权限类型，不另扩允许值"
+        },
+        "action_grant_ref": {
+          "$ref": "#/$defs/ProviderRecordId",
+          "description": "保存原成功许可引用，只作来源；重放仍须新验证当前许可"
+        },
+        "result": {
+          "$ref": "#/$defs/StructureOperationResult",
+          "description": "原子随集合提交的稳定业务结果；不内嵌容器SHA或存储generation避免自引用"
+        }
+      },
+      "required": [
+        "operation_id",
+        "request_sha256",
+        "actor_ref",
+        "actor_kind",
+        "action_grant_ref",
+        "result"
+      ]
+    },
+    "StructureOperationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "COMMITTED"
+          ],
+          "description": "只在本记录随当前容器可见后成立"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/OperationId",
+          "description": "等于所属操作记录"
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "REGISTER_BRANCH",
+            "CREATE_OBJECT",
+            "SAVE_VERSION",
+            "SELECT_VERSION",
+            "RETIRE_OBJECT"
+          ],
+          "description": "原成功动作"
+        },
+        "effect": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "BRANCH_REGISTERED",
+            "CANDIDATE_SAVED",
+            "SELECTION_CHANGED",
+            "OBJECT_RETIRED"
+          ],
+          "description": "仅陈述候选工作，不生成采用/结算结果"
+        },
+        "branch_ref": {
+          "$ref": "#/$defs/BranchId"
+        },
+        "object_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "saved_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StructureRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "CREATE/SAVE时为新增版本；其余null"
+        },
+        "previous_selected_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StructureRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "CREATE/REGISTER时null，其余为动作前真实选择"
+        },
+        "selected_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StructureRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "REGISTER时null，其余为本动作后选择；RETIRE保持原选择"
+        },
+        "latest_rev": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "object_state_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lifecycle_status": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "enum": [
+                "ACTIVE",
+                "RETIRED"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "REGISTER时null，其余为动作后状态"
+        },
+        "committed_container_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "local_id_map": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LocalIdMapping"
+          },
+          "minItems": 0,
+          "maxItems": 128
+        }
+      },
+      "required": [
+        "status",
+        "operation_id",
+        "action",
+        "effect",
+        "branch_ref",
+        "object_id",
+        "saved_ref",
+        "previous_selected_ref",
+        "selected_ref",
+        "latest_rev",
+        "object_state_version",
+        "lifecycle_status",
+        "committed_container_version",
+        "local_id_map"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "REGISTER_BRANCH"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "effect": {
+                "const": "BRANCH_REGISTERED"
+              },
+              "object_id": {
+                "type": "null"
+              },
+              "saved_ref": {
+                "type": "null"
+              },
+              "previous_selected_ref": {
+                "type": "null"
+              },
+              "selected_ref": {
+                "type": "null"
+              },
+              "latest_rev": {
+                "type": "null"
+              },
+              "object_state_version": {
+                "type": "null"
+              },
+              "lifecycle_status": {
+                "type": "null"
+              },
+              "local_id_map": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "CREATE_OBJECT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "effect": {
+                "const": "CANDIDATE_SAVED"
+              },
+              "object_id": {
+                "$ref": "#/$defs/ObjectId"
+              },
+              "selected_ref": {
+                "$ref": "#/$defs/StructureRef"
+              },
+              "latest_rev": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 256
+              },
+              "object_state_version": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 4096
+              },
+              "lifecycle_status": {
+                "const": "ACTIVE"
+              },
+              "previous_selected_ref": {
+                "type": "null"
+              },
+              "saved_ref": {
+                "$ref": "#/$defs/StructureRef"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "SAVE_VERSION"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "effect": {
+                "const": "CANDIDATE_SAVED"
+              },
+              "object_id": {
+                "$ref": "#/$defs/ObjectId"
+              },
+              "selected_ref": {
+                "$ref": "#/$defs/StructureRef"
+              },
+              "latest_rev": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 256
+              },
+              "object_state_version": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 4096
+              },
+              "lifecycle_status": {
+                "const": "ACTIVE"
+              },
+              "previous_selected_ref": {
+                "$ref": "#/$defs/StructureRef"
+              },
+              "saved_ref": {
+                "$ref": "#/$defs/StructureRef"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "SELECT_VERSION"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "effect": {
+                "const": "SELECTION_CHANGED"
+              },
+              "object_id": {
+                "$ref": "#/$defs/ObjectId"
+              },
+              "selected_ref": {
+                "$ref": "#/$defs/StructureRef"
+              },
+              "latest_rev": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 256
+              },
+              "object_state_version": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 4096
+              },
+              "lifecycle_status": {
+                "const": "ACTIVE"
+              },
+              "previous_selected_ref": {
+                "$ref": "#/$defs/StructureRef"
+              },
+              "saved_ref": {
+                "type": "null"
+              },
+              "local_id_map": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "RETIRE_OBJECT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "effect": {
+                "const": "OBJECT_RETIRED"
+              },
+              "object_id": {
+                "$ref": "#/$defs/ObjectId"
+              },
+              "selected_ref": {
+                "$ref": "#/$defs/StructureRef"
+              },
+              "latest_rev": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 256
+              },
+              "object_state_version": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 4096
+              },
+              "lifecycle_status": {
+                "const": "RETIRED"
+              },
+              "previous_selected_ref": {
+                "$ref": "#/$defs/StructureRef"
+              },
+              "saved_ref": {
+                "type": "null"
+              },
+              "local_id_map": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ContainerObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "sha256": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "version",
+        "sha256"
+      ]
+    },
+    "StructureWriteResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "CHAPTER_STRUCTURE_WRITE_RESPONSE"
+          ],
+          "description": "固定值"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "chapter-structure-write-v1"
+          ],
+          "description": "固定协议版本"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "OK",
+            "REJECTED",
+            "ERROR"
+          ],
+          "description": "不使用EMPTY掩盖固定对象/分支缺失"
+        },
+        "commit_state": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "NOT_COMMITTED",
+            "COMMITTED",
+            "UNKNOWN"
+          ],
+          "description": "OK必须COMMITTED；REJECTED必须NOT_COMMITTED；ERROR按实际证据选择"
+        },
+        "replayed": {
+          "type": "boolean",
+          "description": "只有OK且已提交同操作精确回读时true"
+        },
+        "result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StructureOperationResult"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "仅OK非null；原提交与同op重放结果逐字一致"
+        },
+        "container_observation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContainerObservation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "OK时为实际回读水位；不是稳定业务结果的一部分；失败null"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StructureWriteError"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "OK时null；其余非null。权限不足不带对象、版本、存在性或来源原文"
+        }
+      },
+      "required": [
+        "contract",
+        "version",
+        "status",
+        "commit_state",
+        "replayed",
+        "result",
+        "container_observation",
+        "error"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "OK"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "$ref": "#/$defs/StructureOperationResult"
+              },
+              "container_observation": {
+                "$ref": "#/$defs/ContainerObservation"
+              },
+              "error": {
+                "type": "null"
+              },
+              "commit_state": {
+                "const": "COMMITTED"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "type": "null"
+              },
+              "container_observation": {
+                "type": "null"
+              },
+              "error": {
+                "$ref": "#/$defs/StructureWriteError"
+              },
+              "replayed": {
+                "const": false
+              },
+              "commit_state": {
+                "const": "NOT_COMMITTED"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ERROR"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "type": "null"
+              },
+              "container_observation": {
+                "type": "null"
+              },
+              "error": {
+                "$ref": "#/$defs/StructureWriteError"
+              },
+              "replayed": {
+                "const": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "INVALID_REQUEST"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "UNAUTHORIZED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "ACCESS_CHANGED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "CAPABILITY_UNAVAILABLE"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "UNSUPPORTED_SCOPE"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "STORE_NOT_INITIALIZED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "BRANCH_ALREADY_REGISTERED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "OBJECT_NOT_FOUND"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "REFERENCE_MISMATCH"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "CONTAINER_CONFLICT"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "OBJECT_STATE_CONFLICT"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "OPERATION_ID_CONFLICT"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "CONTENT_UNCHANGED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "SELECTION_UNCHANGED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "OBJECT_RETIRED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "CAPACITY_EXCEEDED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "CAPACITY_POLICY_UNAVAILABLE"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "ERROR"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "STORAGE_CORRUPT"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "ERROR"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "ID_ALLOCATION_FAILED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "ERROR"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "STORAGE_IO_ERROR"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "ERROR"
+              },
+              "commit_state": {
+                "enum": [
+                  "UNKNOWN",
+                  "NOT_COMMITTED",
+                  "COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "RECOVERY_UNRESOLVED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "ERROR"
+              },
+              "commit_state": {
+                "enum": [
+                  "UNKNOWN"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "COMMIT_READBACK_FAILED"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "ERROR"
+              },
+              "commit_state": {
+                "enum": [
+                  "COMMITTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "SEQ_NOT_TOTAL_ORDER"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              },
+              "commit_state": {
+                "enum": [
+                  "NOT_COMMITTED"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "StructureWriteError": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "INVALID_REQUEST",
+            "UNAUTHORIZED",
+            "ACCESS_CHANGED",
+            "CAPABILITY_UNAVAILABLE",
+            "UNSUPPORTED_SCOPE",
+            "STORE_NOT_INITIALIZED",
+            "BRANCH_ALREADY_REGISTERED",
+            "OBJECT_NOT_FOUND",
+            "REFERENCE_MISMATCH",
+            "CONTAINER_CONFLICT",
+            "OBJECT_STATE_CONFLICT",
+            "OPERATION_ID_CONFLICT",
+            "CONTENT_UNCHANGED",
+            "SELECTION_UNCHANGED",
+            "OBJECT_RETIRED",
+            "CAPACITY_EXCEEDED",
+            "CAPACITY_POLICY_UNAVAILABLE",
+            "STORAGE_CORRUPT",
+            "ID_ALLOCATION_FAILED",
+            "STORAGE_IO_ERROR",
+            "RECOVERY_UNRESOLVED",
+            "COMMIT_READBACK_FAILED",
+            "SEQ_NOT_TOTAL_ORDER"
+          ]
+        },
+        "retryable": {
+          "type": "boolean",
+          "description": "只说明原请求是否可重试；不证明未提交。UNKNOWN必须核恢复状态，不能盲目换号重复创建"
+        }
+      },
+      "required": [
+        "code",
+        "retryable"
+      ]
+    },
+    "StructureReadRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "CHAPTER_STRUCTURE_READ_REQUEST"
+          ],
+          "description": "新独立请求合同"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "chapter-structure-read-v1"
+          ],
+          "description": "只接本新协议；不降级公共v1/v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^REQ-[A-Za-z0-9._:-]{1,64}$",
+          "description": "仅用于关联，不授予权限；原值非法时响应request_id=null"
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "READ_PINNED"
+          ],
+          "description": "固定读取唯一动作"
+        },
+        "structure_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StructureRef"
+          },
+          "minItems": 1,
+          "maxItems": 50,
+          "description": "保持请求顺序；共享完整引用；超过50由限额分类先行拒绝"
+        }
+      },
+      "required": [
+        "contract",
+        "version",
+        "request_id",
+        "action",
+        "structure_refs"
+      ]
+    },
+    "StructureReadResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "CHAPTER_STRUCTURE_READ_RESPONSE"
+          ],
+          "description": "新独立响应合同"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "chapter-structure-read-v1"
+          ],
+          "description": "本合同自己的版本"
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RequestId",
+              "pattern": "^REQ-[A-Za-z0-9._:-]{1,64}$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "OK必须合法且等于请求；错误仅在请求号独立安全校验通过时回显，否则null"
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "READ_PINNED"
+          ],
+          "description": "本版只有READ_PINNED"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "OK",
+            "EMPTY",
+            "REJECTED",
+            "ERROR"
+          ],
+          "description": "四态原义；本动作语义校验禁止实际输出EMPTY"
+        },
+        "reason_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReadReason",
+              "enum": [
+                "UNAUTHORIZED",
+                "ACCESS_CHANGED",
+                "INVALID_SELECTOR",
+                "INVALID_PIN_SET",
+                "ENTRY_NOT_FOUND",
+                "REVISION_NOT_FOUND",
+                "SHA_MISMATCH",
+                "SOURCE_VERSION_UNSUPPORTED",
+                "CAPABILITY_UNAVAILABLE",
+                "RESULT_TOO_LARGE",
+                "SOURCE_CORRUPTED",
+                "INTERNAL_ERROR"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "OK为null；REJECTED/ERROR按状态允许码"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "已按指定版本完整读回结构候选。",
+            "当前请求没有完整查看这些结构候选的许可。",
+            "本次查看许可已变化，本批未交付。",
+            "固定读取请求不符合本合同，本批未交付。",
+            "固定版本引用互相矛盾，本批未交付。",
+            "指定结构对象不存在，本批未交付。",
+            "指定结构版本不存在，本批未交付。",
+            "指定版本摘要不符，本批未交付。",
+            "该结构内容合同版本尚不受支持，本批未交付。",
+            "本次结构固定读取所需的受信能力尚未就绪。",
+            "所选版本完整返回将超出读取限额，请明确减少引用。",
+            "保存的结构版本未通过完整性检查，本批未交付。",
+            "结构固定读取发生内部错误，本批未交付。"
+          ],
+          "description": "必须等于fixed_messages[reason_code or OK]；不得拼接原输入/来源/堆栈"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StructureReadData"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "OK非null；任何失败都为null"
+        },
+        "receipt": {
+          "$ref": "#/$defs/StructureReadReceipt",
+          "description": "所有字段存在；按状态遮蔽"
+        },
+        "limits": {
+          "$ref": "#/$defs/StructureReadLimits",
+          "description": "按实际交付文档计量，包括失败"
+        }
+      },
+      "required": [
+        "contract",
+        "version",
+        "request_id",
+        "action",
+        "status",
+        "reason_code",
+        "message",
+        "data",
+        "receipt",
+        "limits"
+      ],
+      "allOf": [
+        {
+          "not": {
+            "properties": {
+              "status": {
+                "const": "EMPTY"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "OK"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "request_id": {
+                "$ref": "#/$defs/RequestId"
+              },
+              "reason_code": {
+                "type": "null"
+              },
+              "message": {
+                "const": "已按指定版本完整读回结构候选。"
+              },
+              "data": {
+                "$ref": "#/$defs/StructureReadData"
+              },
+              "receipt": {
+                "properties": {
+                  "author_id": {
+                    "type": "string"
+                  },
+                  "project_id": {
+                    "type": "string"
+                  },
+                  "request_sha256": {
+                    "type": "string"
+                  },
+                  "access_basis_sha256": {
+                    "type": "string"
+                  },
+                  "storage_generation": {
+                    "type": "string"
+                  },
+                  "source_manifest": {
+                    "minItems": 1
+                  }
+                }
+              },
+              "limits": {
+                "properties": {
+                  "returned_versions": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 50
+                  },
+                  "business_items": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "REJECTED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reason_code": {
+                "enum": [
+                  "UNAUTHORIZED",
+                  "ACCESS_CHANGED",
+                  "INVALID_SELECTOR",
+                  "INVALID_PIN_SET",
+                  "ENTRY_NOT_FOUND",
+                  "REVISION_NOT_FOUND",
+                  "SHA_MISMATCH",
+                  "SOURCE_VERSION_UNSUPPORTED",
+                  "CAPABILITY_UNAVAILABLE",
+                  "RESULT_TOO_LARGE"
+                ]
+              },
+              "data": {
+                "type": "null"
+              },
+              "receipt": {
+                "properties": {
+                  "author_id": {
+                    "type": "null"
+                  },
+                  "project_id": {
+                    "type": "null"
+                  },
+                  "request_sha256": {
+                    "type": "null"
+                  },
+                  "access_basis_sha256": {
+                    "type": "null"
+                  },
+                  "storage_generation": {
+                    "type": "null"
+                  },
+                  "source_manifest": {
+                    "maxItems": 0
+                  }
+                }
+              },
+              "limits": {
+                "properties": {
+                  "returned_versions": {
+                    "const": 0
+                  },
+                  "business_items": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ERROR"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reason_code": {
+                "enum": [
+                  "SOURCE_CORRUPTED",
+                  "INTERNAL_ERROR"
+                ]
+              },
+              "data": {
+                "type": "null"
+              },
+              "receipt": {
+                "properties": {
+                  "author_id": {
+                    "type": "null"
+                  },
+                  "project_id": {
+                    "type": "null"
+                  },
+                  "request_sha256": {
+                    "type": "null"
+                  },
+                  "access_basis_sha256": {
+                    "type": "null"
+                  },
+                  "storage_generation": {
+                    "type": "null"
+                  },
+                  "source_manifest": {
+                    "maxItems": 0
+                  }
+                }
+              },
+              "limits": {
+                "properties": {
+                  "returned_versions": {
+                    "const": 0
+                  },
+                  "business_items": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "UNAUTHORIZED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "当前请求没有完整查看这些结构候选的许可。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "ACCESS_CHANGED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "本次查看许可已变化，本批未交付。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "INVALID_SELECTOR"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "固定读取请求不符合本合同，本批未交付。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "INVALID_PIN_SET"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "固定版本引用互相矛盾，本批未交付。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "ENTRY_NOT_FOUND"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "指定结构对象不存在，本批未交付。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "REVISION_NOT_FOUND"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "指定结构版本不存在，本批未交付。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "SHA_MISMATCH"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "指定版本摘要不符，本批未交付。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "SOURCE_VERSION_UNSUPPORTED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "该结构内容合同版本尚不受支持，本批未交付。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "CAPABILITY_UNAVAILABLE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "本次结构固定读取所需的受信能力尚未就绪。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "RESULT_TOO_LARGE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "所选版本完整返回将超出读取限额，请明确减少引用。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "SOURCE_CORRUPTED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "保存的结构版本未通过完整性检查，本批未交付。"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "INTERNAL_ERROR"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "message": {
+                "const": "结构固定读取发生内部错误，本批未交付。"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "StructureReadData": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "versions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StructureReadItem"
+          },
+          "minItems": 1,
+          "maxItems": 50,
+          "description": "请求顺序相同，逐字段同ref，非空完整批次"
+        }
+      },
+      "required": [
+        "versions"
+      ]
+    },
+    "StructureReadItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "structure_ref": {
+          "$ref": "#/$defs/StructureRef",
+          "description": "直接引用共享定义，等于同索引请求ref"
+        },
+        "structure_content": {
+          "$ref": "#/$defs/StructureContent",
+          "description": "原样保留本体；按共享类型语义和摘要回验；不返回save_operation_id/operations日志"
+        },
+        "retired_notice": {
+          "type": "boolean",
+          "description": "取自同一读视图的独立objects[].lifecycle_status，不修改本体；RETIRED为true"
+        }
+      },
+      "required": [
+        "structure_ref",
+        "structure_content",
+        "retired_notice"
+      ]
+    },
+    "SourceManifestItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_kind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "CHAPTER_STRUCTURE_VERSION"
+          ],
+          "description": "独立结构来源类型，不进入旧十账枚举"
+        },
+        "structure_ref": {
+          "$ref": "#/$defs/StructureRef",
+          "description": "全七项完整身份，不以聚合摘要代替字段落点"
+        },
+        "binding_mode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "RECORDED_PIN"
+          ],
+          "description": "新合同枚举候选；继承fixed pin含义"
+        }
+      },
+      "required": [
+        "source_kind",
+        "structure_ref",
+        "binding_mode"
+      ]
+    },
+    "StructureReadReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "author_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^a_[0-9a-f]{32}$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "OK等于真实工作区作者；所有失败null"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^p_[0-9a-f]{32}$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "OK等于真实工作区项目及所有refs；所有失败null"
+        },
+        "request_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "OK为SHA256(共享CJ完整已校验请求)；失败null"
+        },
+        "access_basis_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "OK只接受共享权限provider已回验的本次依据摘要；失败null；不依赖response basis或bytes"
+        },
+        "storage_generation": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^g_[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "OK为实际AuthorWorkspace单一读视图水位；不是branch/rev/路径；失败null"
+        },
+        "source_manifest": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceManifestItem"
+          },
+          "minItems": 0,
+          "maxItems": 50,
+          "description": "OK精确覆盖请求/数据且排序；所有失败[]"
+        },
+        "basis_sha256": {
+          "$ref": "#/$defs/Sha256",
+          "description": "按公开响应可重建的唯一basis_preimage计算；失败也实算"
+        }
+      },
+      "required": [
+        "author_id",
+        "project_id",
+        "request_sha256",
+        "access_basis_sha256",
+        "storage_generation",
+        "source_manifest",
+        "basis_sha256"
+      ]
+    },
+    "StructureReadLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "policy_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "enum": [
+            "chapter-structure-read-limit-v1"
+          ],
+          "description": "本新合同的限额标识候选"
+        },
+        "returned_versions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 50,
+          "description": "OK=len(data.versions)；失败0"
+        },
+        "business_items": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "OK为父统一三数组+版本数公式；失败0"
+        },
+        "response_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 262144,
+          "description": "完整最终CJ UTF8字节，含唯一LF和本字段；失败也>0"
+        },
+        "truncated": {
+          "type": "boolean",
+          "enum": [
+            false
+          ],
+          "description": "任何状态均不可截断"
+        }
+      },
+      "required": [
+        "policy_version",
+        "returned_versions",
+        "business_items",
+        "response_bytes",
+        "truncated"
+      ]
+    },
+    "FactItemRefInput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/FactItemRef"
+        },
+        {
+          "$ref": "#/$defs/NewPlaceholder"
+        }
+      ]
+    },
+    "MaterialRefInput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/MaterialRef"
+        },
+        {
+          "$ref": "#/$defs/NewPlaceholder"
+        }
+      ]
+    },
+    "SourceBindingRefInput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SourceBindingRef"
+        },
+        {
+          "$ref": "#/$defs/NewPlaceholder"
+        }
+      ]
+    },
+    "PresentationItemRefInput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/PresentationItemRef"
+        },
+        {
+          "$ref": "#/$defs/NewPlaceholder"
+        }
+      ]
+    },
+    "StructureContentInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract",
+        "version",
+        "fact_items",
+        "selected_facts",
+        "presentation_items",
+        "materials",
+        "source_bindings",
+        "basis_refs"
+      ],
+      "properties": {
+        "contract": {
+          "const": "CHAPTER_STRUCTURE_CONTENT"
+        },
+        "version": {
+          "const": "chapter-structure-content-v1"
+        },
+        "fact_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FactItemInput"
+          }
+        },
+        "selected_facts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SelectedFactInput"
+          }
+        },
+        "presentation_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PresentationItemInput"
+          }
+        },
+        "materials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReceivedMaterialInput"
+          }
+        },
+        "source_bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceBindingInput"
+          }
+        },
+        "basis_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeSourceRef"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "FactItemInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "text",
+        "source_refs",
+        "material_refs",
+        "source_binding_refs"
+      ],
+      "properties": {
+        "item_id": {
+          "$ref": "#/$defs/FactItemRefInput"
+        },
+        "text": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeSourceRef"
+          },
+          "uniqueItems": true
+        },
+        "material_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialRefInput"
+          },
+          "uniqueItems": true
+        },
+        "source_binding_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceBindingRefInput"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "SelectedFactInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_ref",
+        "seq",
+        "seq_basis"
+      ],
+      "properties": {
+        "item_ref": {
+          "$ref": "#/$defs/FactItemRefInput"
+        },
+        "seq": {
+          "$ref": "#/$defs/SafePositiveInteger"
+        },
+        "seq_basis": {
+          "const": "author_selected_order"
+        }
+      }
+    },
+    "PresentationItemInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "text",
+        "member_refs",
+        "material_refs",
+        "source_binding_refs"
+      ],
+      "properties": {
+        "item_id": {
+          "$ref": "#/$defs/PresentationItemRefInput"
+        },
+        "text": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "member_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FactItemRefInput"
+          },
+          "uniqueItems": true
+        },
+        "material_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialRefInput"
+          },
+          "uniqueItems": true
+        },
+        "source_binding_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceBindingRefInput"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "ReceivedMaterialInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "material_id",
+        "format",
+        "raw_content",
+        "raw_content_sha256",
+        "submitted_by_ref",
+        "received_at",
+        "declared_origin"
+      ],
+      "properties": {
+        "material_id": {
+          "$ref": "#/$defs/MaterialRefInput"
+        },
+        "format": {
+          "enum": [
+            "PLAIN_TEXT",
+            "RAW_JSON_TEXT"
+          ]
+        },
+        "raw_content": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "raw_content_sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "submitted_by_ref": {
+          "$ref": "#/$defs/ActorRef"
+        },
+        "received_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "declared_origin": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "SourceBindingInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "source_kind",
+        "source_ref",
+        "material_refs",
+        "resolution_status",
+        "unresolved_reasons",
+        "details"
+      ],
+      "properties": {
+        "binding_id": {
+          "$ref": "#/$defs/SourceBindingRefInput"
+        },
+        "source_kind": {
+          "enum": [
+            "PROSE_EXTRACTION",
+            "AUTHOR_DECLARATION",
+            "SYSTEM_PROPOSAL",
+            "CHAPTER_LOCAL_DELTA"
+          ]
+        },
+        "source_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NativeSourceRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "material_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialRefInput"
+          },
+          "uniqueItems": true
+        },
+        "resolution_status": {
+          "enum": [
+            "RESOLVED",
+            "UNRESOLVED"
+          ]
+        },
+        "unresolved_reasons": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "OWNER_BINDING_UNAVAILABLE",
+              "NATIVE_REFERENCE_UNAVAILABLE",
+              "SOURCE_VERSION_UNAVAILABLE",
+              "SOURCE_LOCATOR_UNAVAILABLE",
+              "SOURCE_BYTES_UNAVAILABLE",
+              "ACTOR_BINDING_UNAVAILABLE",
+              "REFERENCE_FORMAT_UNSUPPORTED",
+              "NUMERIC_RANGE_UNSUPPORTED"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "details": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ProseSourceDetailsInput"
+            },
+            {
+              "$ref": "#/$defs/AuthorSourceDetailsInput"
+            },
+            {
+              "$ref": "#/$defs/SystemSourceDetailsInput"
+            },
+            {
+              "$ref": "#/$defs/ChapterSourceDetailsInput"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "PROSE_EXTRACTION"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/ProseSourceDetailsInput"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "AUTHOR_DECLARATION"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/AuthorSourceDetailsInput"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "SYSTEM_PROPOSAL"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/SystemSourceDetailsInput"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "CHAPTER_LOCAL_DELTA"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/ChapterSourceDetailsInput"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "resolution_status": {
+                "const": "RESOLVED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "unresolved_reasons": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "unresolved_reasons": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "MaterialSpanRefInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "material_ref",
+        "coordinate_basis",
+        "start",
+        "end",
+        "slice_sha256"
+      ],
+      "properties": {
+        "material_ref": {
+          "$ref": "#/$defs/MaterialRefInput"
+        },
+        "coordinate_basis": {
+          "const": "RECEIVED_MATERIAL_UNICODE_CODEPOINT_0_BASED_HALF_OPEN"
+        },
+        "start": {
+          "$ref": "#/$defs/SafeUnsignedInteger"
+        },
+        "end": {
+          "$ref": "#/$defs/SafePositiveInteger"
+        },
+        "slice_sha256": {
+          "$ref": "#/$defs/Sha256"
+        }
+      }
+    },
+    "ProseSourceDetailsInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chapter_revision_ref",
+        "anchor_ref",
+        "quote"
+      ],
+      "properties": {
+        "chapter_revision_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyC11_chapter_revision_ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "anchor_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyC11_anchor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quote": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "AuthorSourceDetailsInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statement_material_ref",
+        "author_ref",
+        "accepted_span_refs",
+        "author_attestation_ref",
+        "scope_text"
+      ],
+      "properties": {
+        "statement_material_ref": {
+          "$ref": "#/$defs/MaterialRefInput"
+        },
+        "author_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ActorRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_span_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialSpanRefInput"
+          },
+          "uniqueItems": true
+        },
+        "author_attestation_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyTPS_owner_action"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope_text": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "SystemSourceDetailsInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generator_ref",
+        "generator_version",
+        "input_refs",
+        "candidate_material_ref",
+        "candidate_material_sha256",
+        "producer_action_ref"
+      ],
+      "properties": {
+        "generator_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ActorRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "generator_version": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "input_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeSourceRef"
+          },
+          "uniqueItems": true
+        },
+        "candidate_material_ref": {
+          "$ref": "#/$defs/MaterialRefInput"
+        },
+        "candidate_material_sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "producer_action_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyTPS_owner_action"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ChapterSourceDetailsInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "structure_revision_ref",
+        "selected_item_refs",
+        "chapter_closeout_ref",
+        "allowed_scope_text"
+      ],
+      "properties": {
+        "structure_revision_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/StructureRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selected_item_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FactItemRefInput"
+          },
+          "uniqueItems": true
+        },
+        "chapter_closeout_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/LegacyTPS_owner_action"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "allowed_scope_text": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "LocalIdMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "placeholder": {
+          "$ref": "#/$defs/NewPlaceholder"
+        },
+        "local_kind": {
+          "enum": [
+            "STRUCTURE_OBJECT",
+            "FACT_ITEM",
+            "MATERIAL",
+            "SOURCE_BINDING",
+            "PRESENTATION_ITEM"
+          ]
+        },
+        "resolved_id": {
+          "type": "string",
+          "minLength": 35,
+          "maxLength": 35,
+          "pattern": "^(cs|fi|mt|sb|pi)_[0-9a-f]{32}$"
+        }
+      },
+      "required": [
+        "placeholder",
+        "local_kind",
+        "resolved_id"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "local_kind": {
+                "const": "STRUCTURE_OBJECT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolved_id": {
+                "type": "string",
+                "minLength": 35,
+                "maxLength": 35,
+                "pattern": "^cs_[0-9a-f]{32}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "local_kind": {
+                "const": "FACT_ITEM"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolved_id": {
+                "type": "string",
+                "minLength": 35,
+                "maxLength": 35,
+                "pattern": "^fi_[0-9a-f]{32}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "local_kind": {
+                "const": "MATERIAL"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolved_id": {
+                "type": "string",
+                "minLength": 35,
+                "maxLength": 35,
+                "pattern": "^mt_[0-9a-f]{32}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "local_kind": {
+                "const": "SOURCE_BINDING"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolved_id": {
+                "type": "string",
+                "minLength": 35,
+                "maxLength": 35,
+                "pattern": "^sb_[0-9a-f]{32}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "local_kind": {
+                "const": "PRESENTATION_ITEM"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolved_id": {
+                "type": "string",
+                "minLength": 35,
+                "maxLength": 35,
+                "pattern": "^pi_[0-9a-f]{32}$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "AuthorityRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_ref": {
+          "$ref": "#/$defs/ProviderRecordId"
+        },
+        "record_kind": {
+          "enum": [
+            "PERMISSION_SNAPSHOT",
+            "FOCUS",
+            "TASK_PERMIT",
+            "WORK_CARD",
+            "AUTHOR_ACTION"
+          ]
+        },
+        "record_ref": {
+          "$ref": "#/$defs/ProviderRecordId"
+        },
+        "record_sha256": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "provider_ref",
+        "record_kind",
+        "record_ref",
+        "record_sha256"
+      ]
+    },
+    "GrantScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "target_mode": {
+          "enum": [
+            "INITIALIZE_BRANCH",
+            "NEW_OBJECT",
+            "EXISTING",
+            "REPLAY_COMMITTED"
+          ]
+        },
+        "structure_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StructureRef"
+          },
+          "minItems": 0,
+          "maxItems": 50,
+          "uniqueItems": true
+        },
+        "creation_operation_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperationId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_new_objects": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "target_mode",
+        "structure_refs",
+        "creation_operation_id",
+        "max_new_objects"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "target_mode": {
+                "const": "INITIALIZE_BRANCH"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "structure_refs": {
+                "maxItems": 0
+              },
+              "creation_operation_id": {
+                "$ref": "#/$defs/OperationId"
+              },
+              "max_new_objects": {
+                "const": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "target_mode": {
+                "const": "NEW_OBJECT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "structure_refs": {
+                "maxItems": 0
+              },
+              "creation_operation_id": {
+                "$ref": "#/$defs/OperationId"
+              },
+              "max_new_objects": {
+                "const": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "target_mode": {
+                "const": "EXISTING"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "structure_refs": {
+                "minItems": 1
+              },
+              "creation_operation_id": {
+                "type": "null"
+              },
+              "max_new_objects": {
+                "const": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "target_mode": {
+                "const": "REPLAY_COMMITTED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "creation_operation_id": {
+                "$ref": "#/$defs/OperationId"
+              },
+              "max_new_objects": {
+                "const": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ActionGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "CHAPTER_STRUCTURE_ACTION_GRANT",
+          "description": ""
+        },
+        "version": {
+          "const": "chapter-structure-access-v1",
+          "description": ""
+        },
+        "grant_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "由注册provider签发的稳定不透明引用；客户端不得自行构造"
+        },
+        "grant_rev": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "不可变grant版本；变更生成新版本或新grant，不改旧快照"
+        },
+        "provider_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "受信宿主登记的provider实例绑定，不是客户端自报名称"
+        },
+        "session_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "真实宿主认证会话的受信引用"
+        },
+        "actor_ref": {
+          "$ref": "#/$defs/ActionActorId",
+          "description": "实际执行主体稳定引用；与真实session或获准delegate绑定"
+        },
+        "actor_kind": {
+          "enum": [
+            "AUTHOR",
+            "CONTROLLED_AGENT"
+          ],
+          "description": ""
+        },
+        "principal_author_id": {
+          "type": "string",
+          "minLength": 34,
+          "maxLength": 34,
+          "pattern": "^a_[0-9a-f]{32}$",
+          "description": "从真实AuthorWorkspace取得，必须与session和PERMISSION_SNAPSHOT一致"
+        },
+        "project_id": {
+          "type": "string",
+          "minLength": 34,
+          "maxLength": 34,
+          "pattern": "^p_[0-9a-f]{32}$",
+          "description": "从真实AuthorWorkspace取得，不得由业务请求覆盖"
+        },
+        "action": {
+          "enum": [
+            "REGISTER_BRANCH",
+            "CREATE_OBJECT",
+            "SAVE_VERSION",
+            "SELECT_VERSION",
+            "RETIRE_OBJECT",
+            "READ_PINNED"
+          ],
+          "description": ""
+        },
+        "audience": {
+          "enum": [
+            "AUTHOR",
+            "MODEL"
+          ],
+          "description": "模型消费必须为MODEL；不能用AUTHOR许可回传模型"
+        },
+        "permission_snapshot_ref": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/AuthorityRecordRef"
+            },
+            {
+              "properties": {
+                "record_kind": {
+                  "const": "PERMISSION_SNAPSHOT"
+                }
+              }
+            }
+          ],
+          "description": "引用现有PERMISSION_SNAPSHOT v1语义的实际不可变权限快照；执行时另查current撤权/范围/策略，不把ref本身当证明"
+        },
+        "effective_focus_ref": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/AuthorityRecordRef"
+            },
+            {
+              "properties": {
+                "record_kind": {
+                  "const": "FOCUS"
+                }
+              }
+            }
+          ],
+          "description": "受信流程解析的当前最小Focus引用；不授予权限"
+        },
+        "task_ref": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/AuthorityRecordRef"
+            },
+            {
+              "properties": {
+                "record_kind": {
+                  "const": "TASK_PERMIT"
+                }
+              }
+            }
+          ],
+          "description": "真实任务许可及其授权版本的受信引用；所有动作非空"
+        },
+        "work_card_ref": {
+          "anyOf": [
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/AuthorityRecordRef"
+                },
+                {
+                  "properties": {
+                    "record_kind": {
+                      "const": "WORK_CARD"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "CREATE/SAVE/SELECT/RETIRE及代理READ必须非空且实际可回验；AUTHOR READ不因查看而强制造写作工作卡"
+        },
+        "author_action_ref": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/AuthorityRecordRef"
+            },
+            {
+              "properties": {
+                "record_kind": {
+                  "const": "AUTHOR_ACTION"
+                }
+              }
+            }
+          ],
+          "description": "可回验的作者当次动作或仍有效的工作流程授权原件；模型建议、候选存在和自报actor不能替代"
+        },
+        "branch_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BranchId"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "REGISTER_BRANCH为null，其他动作必须指向同作者作品下真实登记的eb_分支"
+        },
+        "scope": {
+          "$ref": "#/$defs/GrantScope",
+          "description": "REGISTER/CREATE的NEW精确绑定本operation且上限1；已有对象动作只允许点名refs，不允许通配符、空数组全选或自动扩大"
+        },
+        "operation_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperationId"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "写动作固定本次operation；READ为null。CREATE成功重放授权需绑定原operation和已发对象，不再CREATE NEW"
+        },
+        "request_sha256": {
+          "$ref": "#/$defs/Sha256",
+          "description": "由provider计算并绑定本次业务请求：WRITE按author_id/project_id/actor_ref/actor_kind+完整写请求，READ按完整已校验读请求；具体预像见request_digest_domains。不能接受自报SHA当授权。"
+        },
+        "issued_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+          "description": "受信时钟签发"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+          "description": "必填非null，最多issued_at后300秒，并不得超过session/task/permission更早期限"
+        },
+        "permission_revocation_version": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "签发时的真实权限撤权水位；每次查当前provider/resolver"
+        },
+        "workflow_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "任务/工作卡授权水位；不是将文档中任意数字当真实版本"
+        },
+        "grant_sha256": {
+          "$ref": "#/$defs/Sha256",
+          "description": "按新专属合同规范JSON对除自身外私有grant计算；有hash仍需验证provider签发及当前状态"
+        }
+      },
+      "required": [
+        "contract",
+        "version",
+        "grant_ref",
+        "grant_rev",
+        "provider_ref",
+        "session_ref",
+        "actor_ref",
+        "actor_kind",
+        "principal_author_id",
+        "project_id",
+        "action",
+        "audience",
+        "permission_snapshot_ref",
+        "effective_focus_ref",
+        "task_ref",
+        "work_card_ref",
+        "author_action_ref",
+        "branch_ref",
+        "scope",
+        "operation_id",
+        "request_sha256",
+        "issued_at",
+        "expires_at",
+        "permission_revocation_version",
+        "workflow_version",
+        "grant_sha256"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "actor_kind": {
+                "const": "CONTROLLED_AGENT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "enum": [
+                  "CREATE_OBJECT",
+                  "SAVE_VERSION",
+                  "READ_PINNED"
+                ]
+              },
+              "work_card_ref": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "enum": [
+                  "CREATE_OBJECT",
+                  "SAVE_VERSION",
+                  "SELECT_VERSION",
+                  "RETIRE_OBJECT"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "work_card_ref": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "REGISTER_BRANCH"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_id": {
+                "$ref": "#/$defs/OperationId"
+              },
+              "scope": {
+                "properties": {
+                  "target_mode": {
+                    "enum": [
+                      "INITIALIZE_BRANCH",
+                      "REPLAY_COMMITTED"
+                    ]
+                  },
+                  "max_new_objects": {
+                    "const": 0
+                  },
+                  "structure_refs": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "scope": {
+                      "properties": {
+                        "target_mode": {
+                          "const": "INITIALIZE_BRANCH"
+                        }
+                      }
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "branch_ref": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "branch_ref": {
+                      "$ref": "#/$defs/BranchId"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "else": {
+            "properties": {
+              "branch_ref": {
+                "$ref": "#/$defs/BranchId"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "READ_PINNED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_id": {
+                "type": "null"
+              },
+              "scope": {
+                "properties": {
+                  "target_mode": {
+                    "const": "EXISTING"
+                  },
+                  "structure_refs": {
+                    "minItems": 1
+                  },
+                  "creation_operation_id": {
+                    "type": "null"
+                  },
+                  "max_new_objects": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "operation_id": {
+                "$ref": "#/$defs/OperationId"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "CREATE_OBJECT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scope": {
+                "properties": {
+                  "target_mode": {
+                    "enum": [
+                      "NEW_OBJECT",
+                      "REPLAY_COMMITTED"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "enum": [
+                  "SAVE_VERSION",
+                  "SELECT_VERSION",
+                  "RETIRE_OBJECT"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scope": {
+                "properties": {
+                  "target_mode": {
+                    "enum": [
+                      "EXISTING",
+                      "REPLAY_COMMITTED"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "enum": [
+                  "CREATE_OBJECT",
+                  "SAVE_VERSION",
+                  "SELECT_VERSION",
+                  "RETIRE_OBJECT"
+                ]
+              },
+              "scope": {
+                "properties": {
+                  "target_mode": {
+                    "const": "REPLAY_COMMITTED"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scope": {
+                "properties": {
+                  "structure_refs": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,2564 @@
+{
+  "authority": "Notion R01 + R01.1 + R01.2",
+  "source_catalog_sha256": "ddc53ade082e64aea22cb853611619ab06e06e60bca1250dfec191fbb7f3f935",
+  "effective_schema_sha256": "ab6d84938f62bb4c7bf6f3d444442df0d42b096f10640926724a2b2693004df8",
+  "count": 284,
+  "fields": [
+    {
+      "row_id": "NC001",
+      "definition": "ActorRef",
+      "field_path": "actor_kind",
+      "schema_pointer": "#/$defs/ActorRef/properties/actor_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActorRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC002",
+      "definition": "ActorRef",
+      "field_path": "actor_id",
+      "schema_pointer": "#/$defs/ActorRef/properties/actor_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActorRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC003",
+      "definition": "StructureRef",
+      "field_path": "project_id",
+      "schema_pointer": "#/$defs/StructureRef/properties/project_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC004",
+      "definition": "StructureRef",
+      "field_path": "branch_id",
+      "schema_pointer": "#/$defs/StructureRef/properties/branch_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC005",
+      "definition": "StructureRef",
+      "field_path": "owner",
+      "schema_pointer": "#/$defs/StructureRef/properties/owner",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC006",
+      "definition": "StructureRef",
+      "field_path": "object_type",
+      "schema_pointer": "#/$defs/StructureRef/properties/object_type",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC007",
+      "definition": "StructureRef",
+      "field_path": "id",
+      "schema_pointer": "#/$defs/StructureRef/properties/id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC008",
+      "definition": "StructureRef",
+      "field_path": "rev",
+      "schema_pointer": "#/$defs/StructureRef/properties/rev",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC009",
+      "definition": "StructureRef",
+      "field_path": "content_sha256",
+      "schema_pointer": "#/$defs/StructureRef/properties/content_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC010",
+      "definition": "NativeSourceRef",
+      "field_path": "oneOf/0/ref_kind",
+      "schema_pointer": "#/$defs/NativeSourceRef/oneOf/0/properties/ref_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['NativeSourceRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC011",
+      "definition": "NativeSourceRef",
+      "field_path": "oneOf/0/native_ref",
+      "schema_pointer": "#/$defs/NativeSourceRef/oneOf/0/properties/native_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['NativeSourceRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC012",
+      "definition": "NativeSourceRef",
+      "field_path": "oneOf/1/ref_kind",
+      "schema_pointer": "#/$defs/NativeSourceRef/oneOf/1/properties/ref_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['NativeSourceRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC013",
+      "definition": "NativeSourceRef",
+      "field_path": "oneOf/1/native_ref",
+      "schema_pointer": "#/$defs/NativeSourceRef/oneOf/1/properties/native_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['NativeSourceRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC014",
+      "definition": "NativeSourceRef",
+      "field_path": "oneOf/2/ref_kind",
+      "schema_pointer": "#/$defs/NativeSourceRef/oneOf/2/properties/ref_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['NativeSourceRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC015",
+      "definition": "NativeSourceRef",
+      "field_path": "oneOf/2/native_ref",
+      "schema_pointer": "#/$defs/NativeSourceRef/oneOf/2/properties/native_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['NativeSourceRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC016",
+      "definition": "NativeSourceRef",
+      "field_path": "oneOf/3/ref_kind",
+      "schema_pointer": "#/$defs/NativeSourceRef/oneOf/3/properties/ref_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['NativeSourceRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC017",
+      "definition": "NativeSourceRef",
+      "field_path": "oneOf/3/native_ref",
+      "schema_pointer": "#/$defs/NativeSourceRef/oneOf/3/properties/native_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['NativeSourceRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC018",
+      "definition": "MaterialSpanRef",
+      "field_path": "material_ref",
+      "schema_pointer": "#/$defs/MaterialSpanRef/properties/material_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['MaterialSpanRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC019",
+      "definition": "MaterialSpanRef",
+      "field_path": "coordinate_basis",
+      "schema_pointer": "#/$defs/MaterialSpanRef/properties/coordinate_basis",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['MaterialSpanRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC020",
+      "definition": "MaterialSpanRef",
+      "field_path": "start",
+      "schema_pointer": "#/$defs/MaterialSpanRef/properties/start",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['MaterialSpanRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC021",
+      "definition": "MaterialSpanRef",
+      "field_path": "end",
+      "schema_pointer": "#/$defs/MaterialSpanRef/properties/end",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['MaterialSpanRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC022",
+      "definition": "MaterialSpanRef",
+      "field_path": "slice_sha256",
+      "schema_pointer": "#/$defs/MaterialSpanRef/properties/slice_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['MaterialSpanRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC023",
+      "definition": "ReceivedMaterial",
+      "field_path": "material_id",
+      "schema_pointer": "#/$defs/ReceivedMaterial/properties/material_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterial']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC024",
+      "definition": "ReceivedMaterial",
+      "field_path": "format",
+      "schema_pointer": "#/$defs/ReceivedMaterial/properties/format",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterial']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC025",
+      "definition": "ReceivedMaterial",
+      "field_path": "raw_content",
+      "schema_pointer": "#/$defs/ReceivedMaterial/properties/raw_content",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterial']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC026",
+      "definition": "ReceivedMaterial",
+      "field_path": "raw_content_sha256",
+      "schema_pointer": "#/$defs/ReceivedMaterial/properties/raw_content_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterial']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC027",
+      "definition": "ReceivedMaterial",
+      "field_path": "submitted_by_ref",
+      "schema_pointer": "#/$defs/ReceivedMaterial/properties/submitted_by_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterial']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC028",
+      "definition": "ReceivedMaterial",
+      "field_path": "received_at",
+      "schema_pointer": "#/$defs/ReceivedMaterial/properties/received_at",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterial']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC029",
+      "definition": "ReceivedMaterial",
+      "field_path": "declared_origin",
+      "schema_pointer": "#/$defs/ReceivedMaterial/properties/declared_origin",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterial']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC030",
+      "definition": "FactItem",
+      "field_path": "item_id",
+      "schema_pointer": "#/$defs/FactItem/properties/item_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['FactItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC031",
+      "definition": "FactItem",
+      "field_path": "text",
+      "schema_pointer": "#/$defs/FactItem/properties/text",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['FactItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC032",
+      "definition": "FactItem",
+      "field_path": "source_refs",
+      "schema_pointer": "#/$defs/FactItem/properties/source_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['FactItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC033",
+      "definition": "FactItem",
+      "field_path": "material_refs",
+      "schema_pointer": "#/$defs/FactItem/properties/material_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['FactItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC034",
+      "definition": "FactItem",
+      "field_path": "source_binding_refs",
+      "schema_pointer": "#/$defs/FactItem/properties/source_binding_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['FactItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC035",
+      "definition": "SelectedFact",
+      "field_path": "item_ref",
+      "schema_pointer": "#/$defs/SelectedFact/properties/item_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SelectedFact']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC036",
+      "definition": "SelectedFact",
+      "field_path": "seq",
+      "schema_pointer": "#/$defs/SelectedFact/properties/seq",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SelectedFact']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC037",
+      "definition": "SelectedFact",
+      "field_path": "seq_basis",
+      "schema_pointer": "#/$defs/SelectedFact/properties/seq_basis",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SelectedFact']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC038",
+      "definition": "PresentationItem",
+      "field_path": "item_id",
+      "schema_pointer": "#/$defs/PresentationItem/properties/item_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['PresentationItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC039",
+      "definition": "PresentationItem",
+      "field_path": "text",
+      "schema_pointer": "#/$defs/PresentationItem/properties/text",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['PresentationItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC040",
+      "definition": "PresentationItem",
+      "field_path": "member_refs",
+      "schema_pointer": "#/$defs/PresentationItem/properties/member_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['PresentationItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC041",
+      "definition": "PresentationItem",
+      "field_path": "material_refs",
+      "schema_pointer": "#/$defs/PresentationItem/properties/material_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['PresentationItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC042",
+      "definition": "PresentationItem",
+      "field_path": "source_binding_refs",
+      "schema_pointer": "#/$defs/PresentationItem/properties/source_binding_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['PresentationItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC043",
+      "definition": "ProseSourceDetails",
+      "field_path": "chapter_revision_ref",
+      "schema_pointer": "#/$defs/ProseSourceDetails/properties/chapter_revision_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ProseSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC044",
+      "definition": "ProseSourceDetails",
+      "field_path": "anchor_ref",
+      "schema_pointer": "#/$defs/ProseSourceDetails/properties/anchor_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ProseSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC045",
+      "definition": "ProseSourceDetails",
+      "field_path": "quote",
+      "schema_pointer": "#/$defs/ProseSourceDetails/properties/quote",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ProseSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC046",
+      "definition": "AuthorSourceDetails",
+      "field_path": "statement_material_ref",
+      "schema_pointer": "#/$defs/AuthorSourceDetails/properties/statement_material_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC047",
+      "definition": "AuthorSourceDetails",
+      "field_path": "author_ref",
+      "schema_pointer": "#/$defs/AuthorSourceDetails/properties/author_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC048",
+      "definition": "AuthorSourceDetails",
+      "field_path": "accepted_span_refs",
+      "schema_pointer": "#/$defs/AuthorSourceDetails/properties/accepted_span_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC049",
+      "definition": "AuthorSourceDetails",
+      "field_path": "author_attestation_ref",
+      "schema_pointer": "#/$defs/AuthorSourceDetails/properties/author_attestation_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC050",
+      "definition": "AuthorSourceDetails",
+      "field_path": "scope_text",
+      "schema_pointer": "#/$defs/AuthorSourceDetails/properties/scope_text",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC051",
+      "definition": "SystemSourceDetails",
+      "field_path": "generator_ref",
+      "schema_pointer": "#/$defs/SystemSourceDetails/properties/generator_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC052",
+      "definition": "SystemSourceDetails",
+      "field_path": "generator_version",
+      "schema_pointer": "#/$defs/SystemSourceDetails/properties/generator_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC053",
+      "definition": "SystemSourceDetails",
+      "field_path": "input_refs",
+      "schema_pointer": "#/$defs/SystemSourceDetails/properties/input_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC054",
+      "definition": "SystemSourceDetails",
+      "field_path": "candidate_material_ref",
+      "schema_pointer": "#/$defs/SystemSourceDetails/properties/candidate_material_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC055",
+      "definition": "SystemSourceDetails",
+      "field_path": "candidate_material_sha256",
+      "schema_pointer": "#/$defs/SystemSourceDetails/properties/candidate_material_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC056",
+      "definition": "SystemSourceDetails",
+      "field_path": "producer_action_ref",
+      "schema_pointer": "#/$defs/SystemSourceDetails/properties/producer_action_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC057",
+      "definition": "ChapterSourceDetails",
+      "field_path": "structure_revision_ref",
+      "schema_pointer": "#/$defs/ChapterSourceDetails/properties/structure_revision_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ChapterSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC058",
+      "definition": "ChapterSourceDetails",
+      "field_path": "selected_item_refs",
+      "schema_pointer": "#/$defs/ChapterSourceDetails/properties/selected_item_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ChapterSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC059",
+      "definition": "ChapterSourceDetails",
+      "field_path": "chapter_closeout_ref",
+      "schema_pointer": "#/$defs/ChapterSourceDetails/properties/chapter_closeout_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ChapterSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC060",
+      "definition": "ChapterSourceDetails",
+      "field_path": "allowed_scope_text",
+      "schema_pointer": "#/$defs/ChapterSourceDetails/properties/allowed_scope_text",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ChapterSourceDetails']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC061",
+      "definition": "SourceBinding",
+      "field_path": "binding_id",
+      "schema_pointer": "#/$defs/SourceBinding/properties/binding_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBinding']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC062",
+      "definition": "SourceBinding",
+      "field_path": "source_kind",
+      "schema_pointer": "#/$defs/SourceBinding/properties/source_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBinding']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC063",
+      "definition": "SourceBinding",
+      "field_path": "source_ref",
+      "schema_pointer": "#/$defs/SourceBinding/properties/source_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBinding']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC064",
+      "definition": "SourceBinding",
+      "field_path": "material_refs",
+      "schema_pointer": "#/$defs/SourceBinding/properties/material_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBinding']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC065",
+      "definition": "SourceBinding",
+      "field_path": "resolution_status",
+      "schema_pointer": "#/$defs/SourceBinding/properties/resolution_status",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBinding']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC066",
+      "definition": "SourceBinding",
+      "field_path": "unresolved_reasons",
+      "schema_pointer": "#/$defs/SourceBinding/properties/unresolved_reasons",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBinding']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC067",
+      "definition": "SourceBinding",
+      "field_path": "details",
+      "schema_pointer": "#/$defs/SourceBinding/properties/details",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBinding']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC068",
+      "definition": "StructureContent",
+      "field_path": "contract",
+      "schema_pointer": "#/$defs/StructureContent/properties/contract",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContent']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC069",
+      "definition": "StructureContent",
+      "field_path": "version",
+      "schema_pointer": "#/$defs/StructureContent/properties/version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContent']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC070",
+      "definition": "StructureContent",
+      "field_path": "fact_items",
+      "schema_pointer": "#/$defs/StructureContent/properties/fact_items",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContent']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC071",
+      "definition": "StructureContent",
+      "field_path": "selected_facts",
+      "schema_pointer": "#/$defs/StructureContent/properties/selected_facts",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContent']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC072",
+      "definition": "StructureContent",
+      "field_path": "presentation_items",
+      "schema_pointer": "#/$defs/StructureContent/properties/presentation_items",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContent']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC073",
+      "definition": "StructureContent",
+      "field_path": "materials",
+      "schema_pointer": "#/$defs/StructureContent/properties/materials",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContent']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC074",
+      "definition": "StructureContent",
+      "field_path": "source_bindings",
+      "schema_pointer": "#/$defs/StructureContent/properties/source_bindings",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContent']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC075",
+      "definition": "StructureContent",
+      "field_path": "basis_refs",
+      "schema_pointer": "#/$defs/StructureContent/properties/basis_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContent']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC076",
+      "definition": "StructureVersionRecord",
+      "field_path": "ref",
+      "schema_pointer": "#/$defs/StructureVersionRecord/properties/ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureVersionRecord']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC077",
+      "definition": "StructureVersionRecord",
+      "field_path": "save_operation_id",
+      "schema_pointer": "#/$defs/StructureVersionRecord/properties/save_operation_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureVersionRecord']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC078",
+      "definition": "StructureVersionRecord",
+      "field_path": "structure_content",
+      "schema_pointer": "#/$defs/StructureVersionRecord/properties/structure_content",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureVersionRecord']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC079",
+      "definition": "StructureStore",
+      "field_path": "contract",
+      "schema_pointer": "#/$defs/StructureStore/properties/contract",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureStore']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC080",
+      "definition": "StructureStore",
+      "field_path": "version",
+      "schema_pointer": "#/$defs/StructureStore/properties/version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureStore']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC081",
+      "definition": "StructureStore",
+      "field_path": "workspace_binding",
+      "schema_pointer": "#/$defs/StructureStore/properties/workspace_binding",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureStore']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC082",
+      "definition": "StructureStore",
+      "field_path": "branch",
+      "schema_pointer": "#/$defs/StructureStore/properties/branch",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureStore']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC083",
+      "definition": "StructureStore",
+      "field_path": "objects",
+      "schema_pointer": "#/$defs/StructureStore/properties/objects",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureStore']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC084",
+      "definition": "StructureStore",
+      "field_path": "operations",
+      "schema_pointer": "#/$defs/StructureStore/properties/operations",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureStore']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC085",
+      "definition": "WorkspaceBinding",
+      "field_path": "author_id",
+      "schema_pointer": "#/$defs/WorkspaceBinding/properties/author_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['WorkspaceBinding']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC086",
+      "definition": "WorkspaceBinding",
+      "field_path": "project_id",
+      "schema_pointer": "#/$defs/WorkspaceBinding/properties/project_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['WorkspaceBinding']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC087",
+      "definition": "BranchRegistration",
+      "field_path": "branch_id",
+      "schema_pointer": "#/$defs/BranchRegistration/properties/branch_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['BranchRegistration']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC088",
+      "definition": "BranchRegistration",
+      "field_path": "label",
+      "schema_pointer": "#/$defs/BranchRegistration/properties/label",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['BranchRegistration']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC089",
+      "definition": "BranchRegistration",
+      "field_path": "created_operation_id",
+      "schema_pointer": "#/$defs/BranchRegistration/properties/created_operation_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['BranchRegistration']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC090",
+      "definition": "StructureObject",
+      "field_path": "id",
+      "schema_pointer": "#/$defs/StructureObject/properties/id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureObject']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC091",
+      "definition": "StructureObject",
+      "field_path": "branch_id",
+      "schema_pointer": "#/$defs/StructureObject/properties/branch_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureObject']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC092",
+      "definition": "StructureObject",
+      "field_path": "latest_rev",
+      "schema_pointer": "#/$defs/StructureObject/properties/latest_rev",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureObject']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC093",
+      "definition": "StructureObject",
+      "field_path": "object_state_version",
+      "schema_pointer": "#/$defs/StructureObject/properties/object_state_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureObject']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC094",
+      "definition": "StructureObject",
+      "field_path": "selected_ref",
+      "schema_pointer": "#/$defs/StructureObject/properties/selected_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureObject']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC095",
+      "definition": "StructureObject",
+      "field_path": "lifecycle_status",
+      "schema_pointer": "#/$defs/StructureObject/properties/lifecycle_status",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureObject']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC096",
+      "definition": "StructureObject",
+      "field_path": "retired_operation_id",
+      "schema_pointer": "#/$defs/StructureObject/properties/retired_operation_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureObject']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC097",
+      "definition": "StructureObject",
+      "field_path": "last_operation_id",
+      "schema_pointer": "#/$defs/StructureObject/properties/last_operation_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureObject']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC098",
+      "definition": "StructureObject",
+      "field_path": "versions",
+      "schema_pointer": "#/$defs/StructureObject/properties/versions",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureObject']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC099",
+      "definition": "ExpectedContainer",
+      "field_path": "version",
+      "schema_pointer": "#/$defs/ExpectedContainer/properties/version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ExpectedContainer']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC100",
+      "definition": "ExpectedContainer",
+      "field_path": "sha256",
+      "schema_pointer": "#/$defs/ExpectedContainer/properties/sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ExpectedContainer']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC101",
+      "definition": "StructureWriteRequest",
+      "field_path": "contract",
+      "schema_pointer": "#/$defs/StructureWriteRequest/properties/contract",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC102",
+      "definition": "StructureWriteRequest",
+      "field_path": "version",
+      "schema_pointer": "#/$defs/StructureWriteRequest/properties/version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC103",
+      "definition": "StructureWriteRequest",
+      "field_path": "operation_id",
+      "schema_pointer": "#/$defs/StructureWriteRequest/properties/operation_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC104",
+      "definition": "StructureWriteRequest",
+      "field_path": "action",
+      "schema_pointer": "#/$defs/StructureWriteRequest/properties/action",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC105",
+      "definition": "StructureWriteRequest",
+      "field_path": "expected_container",
+      "schema_pointer": "#/$defs/StructureWriteRequest/properties/expected_container",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC106",
+      "definition": "StructureWriteRequest",
+      "field_path": "action_input",
+      "schema_pointer": "#/$defs/StructureWriteRequest/properties/action_input",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC107",
+      "definition": "RegisterBranchInput",
+      "field_path": "branch_label",
+      "schema_pointer": "#/$defs/RegisterBranchInput/properties/branch_label",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['RegisterBranchInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC108",
+      "definition": "CreateObjectInput",
+      "field_path": "branch_ref",
+      "schema_pointer": "#/$defs/CreateObjectInput/properties/branch_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['CreateObjectInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC109",
+      "definition": "CreateObjectInput",
+      "field_path": "structure_content",
+      "schema_pointer": "#/$defs/CreateObjectInput/properties/structure_content",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['CreateObjectInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC110",
+      "definition": "CreateObjectInput",
+      "field_path": "candidate_scope",
+      "schema_pointer": "#/$defs/CreateObjectInput/properties/candidate_scope",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['CreateObjectInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC111",
+      "definition": "CreateObjectInput",
+      "field_path": "new_object_ref",
+      "schema_pointer": "#/$defs/CreateObjectInput/properties/new_object_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['CreateObjectInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC112",
+      "definition": "SaveVersionInput",
+      "field_path": "expected_latest_ref",
+      "schema_pointer": "#/$defs/SaveVersionInput/properties/expected_latest_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SaveVersionInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC113",
+      "definition": "SaveVersionInput",
+      "field_path": "expected_object_state_version",
+      "schema_pointer": "#/$defs/SaveVersionInput/properties/expected_object_state_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SaveVersionInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC114",
+      "definition": "SaveVersionInput",
+      "field_path": "expected_selected_ref",
+      "schema_pointer": "#/$defs/SaveVersionInput/properties/expected_selected_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SaveVersionInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC115",
+      "definition": "SaveVersionInput",
+      "field_path": "structure_content",
+      "schema_pointer": "#/$defs/SaveVersionInput/properties/structure_content",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SaveVersionInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC116",
+      "definition": "SaveVersionInput",
+      "field_path": "candidate_scope",
+      "schema_pointer": "#/$defs/SaveVersionInput/properties/candidate_scope",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SaveVersionInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC117",
+      "definition": "SelectVersionInput",
+      "field_path": "expected_latest_ref",
+      "schema_pointer": "#/$defs/SelectVersionInput/properties/expected_latest_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SelectVersionInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC118",
+      "definition": "SelectVersionInput",
+      "field_path": "expected_object_state_version",
+      "schema_pointer": "#/$defs/SelectVersionInput/properties/expected_object_state_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SelectVersionInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC119",
+      "definition": "SelectVersionInput",
+      "field_path": "expected_selected_ref",
+      "schema_pointer": "#/$defs/SelectVersionInput/properties/expected_selected_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SelectVersionInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC120",
+      "definition": "SelectVersionInput",
+      "field_path": "selected_ref",
+      "schema_pointer": "#/$defs/SelectVersionInput/properties/selected_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SelectVersionInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC121",
+      "definition": "RetireObjectInput",
+      "field_path": "expected_latest_ref",
+      "schema_pointer": "#/$defs/RetireObjectInput/properties/expected_latest_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['RetireObjectInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC122",
+      "definition": "RetireObjectInput",
+      "field_path": "expected_object_state_version",
+      "schema_pointer": "#/$defs/RetireObjectInput/properties/expected_object_state_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['RetireObjectInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC123",
+      "definition": "RetireObjectInput",
+      "field_path": "expected_selected_ref",
+      "schema_pointer": "#/$defs/RetireObjectInput/properties/expected_selected_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['RetireObjectInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC124",
+      "definition": "CommittedStructureOperation",
+      "field_path": "operation_id",
+      "schema_pointer": "#/$defs/CommittedStructureOperation/properties/operation_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['CommittedStructureOperation']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC125",
+      "definition": "CommittedStructureOperation",
+      "field_path": "request_sha256",
+      "schema_pointer": "#/$defs/CommittedStructureOperation/properties/request_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['CommittedStructureOperation']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC126",
+      "definition": "CommittedStructureOperation",
+      "field_path": "actor_ref",
+      "schema_pointer": "#/$defs/CommittedStructureOperation/properties/actor_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['CommittedStructureOperation']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC127",
+      "definition": "CommittedStructureOperation",
+      "field_path": "actor_kind",
+      "schema_pointer": "#/$defs/CommittedStructureOperation/properties/actor_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['CommittedStructureOperation']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC128",
+      "definition": "CommittedStructureOperation",
+      "field_path": "action_grant_ref",
+      "schema_pointer": "#/$defs/CommittedStructureOperation/properties/action_grant_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['CommittedStructureOperation']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC129",
+      "definition": "CommittedStructureOperation",
+      "field_path": "result",
+      "schema_pointer": "#/$defs/CommittedStructureOperation/properties/result",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['CommittedStructureOperation']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC130",
+      "definition": "StructureOperationResult",
+      "field_path": "status",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/status",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC131",
+      "definition": "StructureOperationResult",
+      "field_path": "operation_id",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/operation_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC132",
+      "definition": "StructureOperationResult",
+      "field_path": "action",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/action",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC133",
+      "definition": "StructureOperationResult",
+      "field_path": "effect",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/effect",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC134",
+      "definition": "StructureOperationResult",
+      "field_path": "branch_ref",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/branch_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC135",
+      "definition": "StructureOperationResult",
+      "field_path": "object_id",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/object_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC136",
+      "definition": "StructureOperationResult",
+      "field_path": "saved_ref",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/saved_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC137",
+      "definition": "StructureOperationResult",
+      "field_path": "previous_selected_ref",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/previous_selected_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC138",
+      "definition": "StructureOperationResult",
+      "field_path": "selected_ref",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/selected_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC139",
+      "definition": "StructureOperationResult",
+      "field_path": "latest_rev",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/latest_rev",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC140",
+      "definition": "StructureOperationResult",
+      "field_path": "object_state_version",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/object_state_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC141",
+      "definition": "StructureOperationResult",
+      "field_path": "lifecycle_status",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/lifecycle_status",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC142",
+      "definition": "StructureOperationResult",
+      "field_path": "committed_container_version",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/committed_container_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC143",
+      "definition": "StructureOperationResult",
+      "field_path": "local_id_map",
+      "schema_pointer": "#/$defs/StructureOperationResult/properties/local_id_map",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureOperationResult']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC144",
+      "definition": "ContainerObservation",
+      "field_path": "version",
+      "schema_pointer": "#/$defs/ContainerObservation/properties/version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ContainerObservation']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC145",
+      "definition": "ContainerObservation",
+      "field_path": "sha256",
+      "schema_pointer": "#/$defs/ContainerObservation/properties/sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ContainerObservation']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC146",
+      "definition": "StructureWriteResponse",
+      "field_path": "contract",
+      "schema_pointer": "#/$defs/StructureWriteResponse/properties/contract",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC147",
+      "definition": "StructureWriteResponse",
+      "field_path": "version",
+      "schema_pointer": "#/$defs/StructureWriteResponse/properties/version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC148",
+      "definition": "StructureWriteResponse",
+      "field_path": "status",
+      "schema_pointer": "#/$defs/StructureWriteResponse/properties/status",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC149",
+      "definition": "StructureWriteResponse",
+      "field_path": "commit_state",
+      "schema_pointer": "#/$defs/StructureWriteResponse/properties/commit_state",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC150",
+      "definition": "StructureWriteResponse",
+      "field_path": "replayed",
+      "schema_pointer": "#/$defs/StructureWriteResponse/properties/replayed",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC151",
+      "definition": "StructureWriteResponse",
+      "field_path": "result",
+      "schema_pointer": "#/$defs/StructureWriteResponse/properties/result",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC152",
+      "definition": "StructureWriteResponse",
+      "field_path": "container_observation",
+      "schema_pointer": "#/$defs/StructureWriteResponse/properties/container_observation",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC153",
+      "definition": "StructureWriteResponse",
+      "field_path": "error",
+      "schema_pointer": "#/$defs/StructureWriteResponse/properties/error",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC154",
+      "definition": "StructureWriteError",
+      "field_path": "code",
+      "schema_pointer": "#/$defs/StructureWriteError/properties/code",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteError']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC155",
+      "definition": "StructureWriteError",
+      "field_path": "retryable",
+      "schema_pointer": "#/$defs/StructureWriteError/properties/retryable",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureWriteError']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC156",
+      "definition": "StructureReadRequest",
+      "field_path": "contract",
+      "schema_pointer": "#/$defs/StructureReadRequest/properties/contract",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC157",
+      "definition": "StructureReadRequest",
+      "field_path": "version",
+      "schema_pointer": "#/$defs/StructureReadRequest/properties/version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC158",
+      "definition": "StructureReadRequest",
+      "field_path": "request_id",
+      "schema_pointer": "#/$defs/StructureReadRequest/properties/request_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC159",
+      "definition": "StructureReadRequest",
+      "field_path": "action",
+      "schema_pointer": "#/$defs/StructureReadRequest/properties/action",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC160",
+      "definition": "StructureReadRequest",
+      "field_path": "structure_refs",
+      "schema_pointer": "#/$defs/StructureReadRequest/properties/structure_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadRequest']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC161",
+      "definition": "StructureReadResponse",
+      "field_path": "contract",
+      "schema_pointer": "#/$defs/StructureReadResponse/properties/contract",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC162",
+      "definition": "StructureReadResponse",
+      "field_path": "version",
+      "schema_pointer": "#/$defs/StructureReadResponse/properties/version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC163",
+      "definition": "StructureReadResponse",
+      "field_path": "request_id",
+      "schema_pointer": "#/$defs/StructureReadResponse/properties/request_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC164",
+      "definition": "StructureReadResponse",
+      "field_path": "action",
+      "schema_pointer": "#/$defs/StructureReadResponse/properties/action",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC165",
+      "definition": "StructureReadResponse",
+      "field_path": "status",
+      "schema_pointer": "#/$defs/StructureReadResponse/properties/status",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC166",
+      "definition": "StructureReadResponse",
+      "field_path": "reason_code",
+      "schema_pointer": "#/$defs/StructureReadResponse/properties/reason_code",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC167",
+      "definition": "StructureReadResponse",
+      "field_path": "message",
+      "schema_pointer": "#/$defs/StructureReadResponse/properties/message",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC168",
+      "definition": "StructureReadResponse",
+      "field_path": "data",
+      "schema_pointer": "#/$defs/StructureReadResponse/properties/data",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC169",
+      "definition": "StructureReadResponse",
+      "field_path": "receipt",
+      "schema_pointer": "#/$defs/StructureReadResponse/properties/receipt",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC170",
+      "definition": "StructureReadResponse",
+      "field_path": "limits",
+      "schema_pointer": "#/$defs/StructureReadResponse/properties/limits",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadResponse']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC171",
+      "definition": "StructureReadData",
+      "field_path": "versions",
+      "schema_pointer": "#/$defs/StructureReadData/properties/versions",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadData']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC172",
+      "definition": "StructureReadItem",
+      "field_path": "structure_ref",
+      "schema_pointer": "#/$defs/StructureReadItem/properties/structure_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC173",
+      "definition": "StructureReadItem",
+      "field_path": "structure_content",
+      "schema_pointer": "#/$defs/StructureReadItem/properties/structure_content",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC174",
+      "definition": "StructureReadItem",
+      "field_path": "retired_notice",
+      "schema_pointer": "#/$defs/StructureReadItem/properties/retired_notice",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC175",
+      "definition": "SourceManifestItem",
+      "field_path": "source_kind",
+      "schema_pointer": "#/$defs/SourceManifestItem/properties/source_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceManifestItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC176",
+      "definition": "SourceManifestItem",
+      "field_path": "structure_ref",
+      "schema_pointer": "#/$defs/SourceManifestItem/properties/structure_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceManifestItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC177",
+      "definition": "SourceManifestItem",
+      "field_path": "binding_mode",
+      "schema_pointer": "#/$defs/SourceManifestItem/properties/binding_mode",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceManifestItem']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC178",
+      "definition": "StructureReadReceipt",
+      "field_path": "author_id",
+      "schema_pointer": "#/$defs/StructureReadReceipt/properties/author_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadReceipt']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC179",
+      "definition": "StructureReadReceipt",
+      "field_path": "project_id",
+      "schema_pointer": "#/$defs/StructureReadReceipt/properties/project_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadReceipt']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC180",
+      "definition": "StructureReadReceipt",
+      "field_path": "request_sha256",
+      "schema_pointer": "#/$defs/StructureReadReceipt/properties/request_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadReceipt']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC181",
+      "definition": "StructureReadReceipt",
+      "field_path": "access_basis_sha256",
+      "schema_pointer": "#/$defs/StructureReadReceipt/properties/access_basis_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadReceipt']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC182",
+      "definition": "StructureReadReceipt",
+      "field_path": "storage_generation",
+      "schema_pointer": "#/$defs/StructureReadReceipt/properties/storage_generation",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadReceipt']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC183",
+      "definition": "StructureReadReceipt",
+      "field_path": "source_manifest",
+      "schema_pointer": "#/$defs/StructureReadReceipt/properties/source_manifest",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadReceipt']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC184",
+      "definition": "StructureReadReceipt",
+      "field_path": "basis_sha256",
+      "schema_pointer": "#/$defs/StructureReadReceipt/properties/basis_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadReceipt']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC185",
+      "definition": "StructureReadLimits",
+      "field_path": "policy_version",
+      "schema_pointer": "#/$defs/StructureReadLimits/properties/policy_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadLimits']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC186",
+      "definition": "StructureReadLimits",
+      "field_path": "returned_versions",
+      "schema_pointer": "#/$defs/StructureReadLimits/properties/returned_versions",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadLimits']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC187",
+      "definition": "StructureReadLimits",
+      "field_path": "business_items",
+      "schema_pointer": "#/$defs/StructureReadLimits/properties/business_items",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadLimits']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC188",
+      "definition": "StructureReadLimits",
+      "field_path": "response_bytes",
+      "schema_pointer": "#/$defs/StructureReadLimits/properties/response_bytes",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadLimits']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC189",
+      "definition": "StructureReadLimits",
+      "field_path": "truncated",
+      "schema_pointer": "#/$defs/StructureReadLimits/properties/truncated",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureReadLimits']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC190",
+      "definition": "StructureContentInput",
+      "field_path": "contract",
+      "schema_pointer": "#/$defs/StructureContentInput/properties/contract",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContentInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC191",
+      "definition": "StructureContentInput",
+      "field_path": "version",
+      "schema_pointer": "#/$defs/StructureContentInput/properties/version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContentInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC192",
+      "definition": "StructureContentInput",
+      "field_path": "fact_items",
+      "schema_pointer": "#/$defs/StructureContentInput/properties/fact_items",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContentInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC193",
+      "definition": "StructureContentInput",
+      "field_path": "selected_facts",
+      "schema_pointer": "#/$defs/StructureContentInput/properties/selected_facts",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContentInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC194",
+      "definition": "StructureContentInput",
+      "field_path": "presentation_items",
+      "schema_pointer": "#/$defs/StructureContentInput/properties/presentation_items",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContentInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC195",
+      "definition": "StructureContentInput",
+      "field_path": "materials",
+      "schema_pointer": "#/$defs/StructureContentInput/properties/materials",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContentInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC196",
+      "definition": "StructureContentInput",
+      "field_path": "source_bindings",
+      "schema_pointer": "#/$defs/StructureContentInput/properties/source_bindings",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContentInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC197",
+      "definition": "StructureContentInput",
+      "field_path": "basis_refs",
+      "schema_pointer": "#/$defs/StructureContentInput/properties/basis_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['StructureContentInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC198",
+      "definition": "FactItemInput",
+      "field_path": "item_id",
+      "schema_pointer": "#/$defs/FactItemInput/properties/item_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['FactItemInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC199",
+      "definition": "FactItemInput",
+      "field_path": "text",
+      "schema_pointer": "#/$defs/FactItemInput/properties/text",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['FactItemInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC200",
+      "definition": "FactItemInput",
+      "field_path": "source_refs",
+      "schema_pointer": "#/$defs/FactItemInput/properties/source_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['FactItemInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC201",
+      "definition": "FactItemInput",
+      "field_path": "material_refs",
+      "schema_pointer": "#/$defs/FactItemInput/properties/material_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['FactItemInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC202",
+      "definition": "FactItemInput",
+      "field_path": "source_binding_refs",
+      "schema_pointer": "#/$defs/FactItemInput/properties/source_binding_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['FactItemInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC203",
+      "definition": "SelectedFactInput",
+      "field_path": "item_ref",
+      "schema_pointer": "#/$defs/SelectedFactInput/properties/item_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SelectedFactInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC204",
+      "definition": "SelectedFactInput",
+      "field_path": "seq",
+      "schema_pointer": "#/$defs/SelectedFactInput/properties/seq",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SelectedFactInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC205",
+      "definition": "SelectedFactInput",
+      "field_path": "seq_basis",
+      "schema_pointer": "#/$defs/SelectedFactInput/properties/seq_basis",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SelectedFactInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC206",
+      "definition": "PresentationItemInput",
+      "field_path": "item_id",
+      "schema_pointer": "#/$defs/PresentationItemInput/properties/item_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['PresentationItemInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC207",
+      "definition": "PresentationItemInput",
+      "field_path": "text",
+      "schema_pointer": "#/$defs/PresentationItemInput/properties/text",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['PresentationItemInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC208",
+      "definition": "PresentationItemInput",
+      "field_path": "member_refs",
+      "schema_pointer": "#/$defs/PresentationItemInput/properties/member_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['PresentationItemInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC209",
+      "definition": "PresentationItemInput",
+      "field_path": "material_refs",
+      "schema_pointer": "#/$defs/PresentationItemInput/properties/material_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['PresentationItemInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC210",
+      "definition": "PresentationItemInput",
+      "field_path": "source_binding_refs",
+      "schema_pointer": "#/$defs/PresentationItemInput/properties/source_binding_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['PresentationItemInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC211",
+      "definition": "ReceivedMaterialInput",
+      "field_path": "material_id",
+      "schema_pointer": "#/$defs/ReceivedMaterialInput/properties/material_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterialInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC212",
+      "definition": "ReceivedMaterialInput",
+      "field_path": "format",
+      "schema_pointer": "#/$defs/ReceivedMaterialInput/properties/format",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterialInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC213",
+      "definition": "ReceivedMaterialInput",
+      "field_path": "raw_content",
+      "schema_pointer": "#/$defs/ReceivedMaterialInput/properties/raw_content",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterialInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC214",
+      "definition": "ReceivedMaterialInput",
+      "field_path": "raw_content_sha256",
+      "schema_pointer": "#/$defs/ReceivedMaterialInput/properties/raw_content_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterialInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC215",
+      "definition": "ReceivedMaterialInput",
+      "field_path": "submitted_by_ref",
+      "schema_pointer": "#/$defs/ReceivedMaterialInput/properties/submitted_by_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterialInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC216",
+      "definition": "ReceivedMaterialInput",
+      "field_path": "received_at",
+      "schema_pointer": "#/$defs/ReceivedMaterialInput/properties/received_at",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterialInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC217",
+      "definition": "ReceivedMaterialInput",
+      "field_path": "declared_origin",
+      "schema_pointer": "#/$defs/ReceivedMaterialInput/properties/declared_origin",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ReceivedMaterialInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC218",
+      "definition": "SourceBindingInput",
+      "field_path": "binding_id",
+      "schema_pointer": "#/$defs/SourceBindingInput/properties/binding_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBindingInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC219",
+      "definition": "SourceBindingInput",
+      "field_path": "source_kind",
+      "schema_pointer": "#/$defs/SourceBindingInput/properties/source_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBindingInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC220",
+      "definition": "SourceBindingInput",
+      "field_path": "source_ref",
+      "schema_pointer": "#/$defs/SourceBindingInput/properties/source_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBindingInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC221",
+      "definition": "SourceBindingInput",
+      "field_path": "material_refs",
+      "schema_pointer": "#/$defs/SourceBindingInput/properties/material_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBindingInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC222",
+      "definition": "SourceBindingInput",
+      "field_path": "resolution_status",
+      "schema_pointer": "#/$defs/SourceBindingInput/properties/resolution_status",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBindingInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC223",
+      "definition": "SourceBindingInput",
+      "field_path": "unresolved_reasons",
+      "schema_pointer": "#/$defs/SourceBindingInput/properties/unresolved_reasons",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBindingInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC224",
+      "definition": "SourceBindingInput",
+      "field_path": "details",
+      "schema_pointer": "#/$defs/SourceBindingInput/properties/details",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SourceBindingInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC225",
+      "definition": "MaterialSpanRefInput",
+      "field_path": "material_ref",
+      "schema_pointer": "#/$defs/MaterialSpanRefInput/properties/material_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['MaterialSpanRefInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC226",
+      "definition": "MaterialSpanRefInput",
+      "field_path": "coordinate_basis",
+      "schema_pointer": "#/$defs/MaterialSpanRefInput/properties/coordinate_basis",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['MaterialSpanRefInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC227",
+      "definition": "MaterialSpanRefInput",
+      "field_path": "start",
+      "schema_pointer": "#/$defs/MaterialSpanRefInput/properties/start",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['MaterialSpanRefInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC228",
+      "definition": "MaterialSpanRefInput",
+      "field_path": "end",
+      "schema_pointer": "#/$defs/MaterialSpanRefInput/properties/end",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['MaterialSpanRefInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC229",
+      "definition": "MaterialSpanRefInput",
+      "field_path": "slice_sha256",
+      "schema_pointer": "#/$defs/MaterialSpanRefInput/properties/slice_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['MaterialSpanRefInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC230",
+      "definition": "ProseSourceDetailsInput",
+      "field_path": "chapter_revision_ref",
+      "schema_pointer": "#/$defs/ProseSourceDetailsInput/properties/chapter_revision_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ProseSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC231",
+      "definition": "ProseSourceDetailsInput",
+      "field_path": "anchor_ref",
+      "schema_pointer": "#/$defs/ProseSourceDetailsInput/properties/anchor_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ProseSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC232",
+      "definition": "ProseSourceDetailsInput",
+      "field_path": "quote",
+      "schema_pointer": "#/$defs/ProseSourceDetailsInput/properties/quote",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ProseSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC233",
+      "definition": "AuthorSourceDetailsInput",
+      "field_path": "statement_material_ref",
+      "schema_pointer": "#/$defs/AuthorSourceDetailsInput/properties/statement_material_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC234",
+      "definition": "AuthorSourceDetailsInput",
+      "field_path": "author_ref",
+      "schema_pointer": "#/$defs/AuthorSourceDetailsInput/properties/author_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC235",
+      "definition": "AuthorSourceDetailsInput",
+      "field_path": "accepted_span_refs",
+      "schema_pointer": "#/$defs/AuthorSourceDetailsInput/properties/accepted_span_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC236",
+      "definition": "AuthorSourceDetailsInput",
+      "field_path": "author_attestation_ref",
+      "schema_pointer": "#/$defs/AuthorSourceDetailsInput/properties/author_attestation_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC237",
+      "definition": "AuthorSourceDetailsInput",
+      "field_path": "scope_text",
+      "schema_pointer": "#/$defs/AuthorSourceDetailsInput/properties/scope_text",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC238",
+      "definition": "SystemSourceDetailsInput",
+      "field_path": "generator_ref",
+      "schema_pointer": "#/$defs/SystemSourceDetailsInput/properties/generator_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC239",
+      "definition": "SystemSourceDetailsInput",
+      "field_path": "generator_version",
+      "schema_pointer": "#/$defs/SystemSourceDetailsInput/properties/generator_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC240",
+      "definition": "SystemSourceDetailsInput",
+      "field_path": "input_refs",
+      "schema_pointer": "#/$defs/SystemSourceDetailsInput/properties/input_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC241",
+      "definition": "SystemSourceDetailsInput",
+      "field_path": "candidate_material_ref",
+      "schema_pointer": "#/$defs/SystemSourceDetailsInput/properties/candidate_material_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC242",
+      "definition": "SystemSourceDetailsInput",
+      "field_path": "candidate_material_sha256",
+      "schema_pointer": "#/$defs/SystemSourceDetailsInput/properties/candidate_material_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC243",
+      "definition": "SystemSourceDetailsInput",
+      "field_path": "producer_action_ref",
+      "schema_pointer": "#/$defs/SystemSourceDetailsInput/properties/producer_action_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['SystemSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC244",
+      "definition": "ChapterSourceDetailsInput",
+      "field_path": "structure_revision_ref",
+      "schema_pointer": "#/$defs/ChapterSourceDetailsInput/properties/structure_revision_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ChapterSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC245",
+      "definition": "ChapterSourceDetailsInput",
+      "field_path": "selected_item_refs",
+      "schema_pointer": "#/$defs/ChapterSourceDetailsInput/properties/selected_item_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ChapterSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC246",
+      "definition": "ChapterSourceDetailsInput",
+      "field_path": "chapter_closeout_ref",
+      "schema_pointer": "#/$defs/ChapterSourceDetailsInput/properties/chapter_closeout_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ChapterSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC247",
+      "definition": "ChapterSourceDetailsInput",
+      "field_path": "allowed_scope_text",
+      "schema_pointer": "#/$defs/ChapterSourceDetailsInput/properties/allowed_scope_text",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ChapterSourceDetailsInput']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC248",
+      "definition": "LocalIdMapping",
+      "field_path": "placeholder",
+      "schema_pointer": "#/$defs/LocalIdMapping/properties/placeholder",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['LocalIdMapping']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC249",
+      "definition": "LocalIdMapping",
+      "field_path": "local_kind",
+      "schema_pointer": "#/$defs/LocalIdMapping/properties/local_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['LocalIdMapping']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC250",
+      "definition": "LocalIdMapping",
+      "field_path": "resolved_id",
+      "schema_pointer": "#/$defs/LocalIdMapping/properties/resolved_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['LocalIdMapping']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "STAGE1_SHAPE_AND_KERNEL"
+    },
+    {
+      "row_id": "NC251",
+      "definition": "AuthorityRecordRef",
+      "field_path": "provider_ref",
+      "schema_pointer": "#/$defs/AuthorityRecordRef/properties/provider_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorityRecordRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC252",
+      "definition": "AuthorityRecordRef",
+      "field_path": "record_kind",
+      "schema_pointer": "#/$defs/AuthorityRecordRef/properties/record_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorityRecordRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC253",
+      "definition": "AuthorityRecordRef",
+      "field_path": "record_ref",
+      "schema_pointer": "#/$defs/AuthorityRecordRef/properties/record_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorityRecordRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC254",
+      "definition": "AuthorityRecordRef",
+      "field_path": "record_sha256",
+      "schema_pointer": "#/$defs/AuthorityRecordRef/properties/record_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['AuthorityRecordRef']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC255",
+      "definition": "GrantScope",
+      "field_path": "target_mode",
+      "schema_pointer": "#/$defs/GrantScope/properties/target_mode",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['GrantScope']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC256",
+      "definition": "GrantScope",
+      "field_path": "structure_refs",
+      "schema_pointer": "#/$defs/GrantScope/properties/structure_refs",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['GrantScope']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC257",
+      "definition": "GrantScope",
+      "field_path": "creation_operation_id",
+      "schema_pointer": "#/$defs/GrantScope/properties/creation_operation_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['GrantScope']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC258",
+      "definition": "GrantScope",
+      "field_path": "max_new_objects",
+      "schema_pointer": "#/$defs/GrantScope/properties/max_new_objects",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['GrantScope']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC259",
+      "definition": "ActionGrant",
+      "field_path": "contract",
+      "schema_pointer": "#/$defs/ActionGrant/properties/contract",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC260",
+      "definition": "ActionGrant",
+      "field_path": "version",
+      "schema_pointer": "#/$defs/ActionGrant/properties/version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC261",
+      "definition": "ActionGrant",
+      "field_path": "grant_ref",
+      "schema_pointer": "#/$defs/ActionGrant/properties/grant_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC262",
+      "definition": "ActionGrant",
+      "field_path": "grant_rev",
+      "schema_pointer": "#/$defs/ActionGrant/properties/grant_rev",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC263",
+      "definition": "ActionGrant",
+      "field_path": "provider_ref",
+      "schema_pointer": "#/$defs/ActionGrant/properties/provider_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC264",
+      "definition": "ActionGrant",
+      "field_path": "session_ref",
+      "schema_pointer": "#/$defs/ActionGrant/properties/session_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC265",
+      "definition": "ActionGrant",
+      "field_path": "actor_ref",
+      "schema_pointer": "#/$defs/ActionGrant/properties/actor_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC266",
+      "definition": "ActionGrant",
+      "field_path": "actor_kind",
+      "schema_pointer": "#/$defs/ActionGrant/properties/actor_kind",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC267",
+      "definition": "ActionGrant",
+      "field_path": "principal_author_id",
+      "schema_pointer": "#/$defs/ActionGrant/properties/principal_author_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC268",
+      "definition": "ActionGrant",
+      "field_path": "project_id",
+      "schema_pointer": "#/$defs/ActionGrant/properties/project_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC269",
+      "definition": "ActionGrant",
+      "field_path": "action",
+      "schema_pointer": "#/$defs/ActionGrant/properties/action",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC270",
+      "definition": "ActionGrant",
+      "field_path": "audience",
+      "schema_pointer": "#/$defs/ActionGrant/properties/audience",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC271",
+      "definition": "ActionGrant",
+      "field_path": "permission_snapshot_ref",
+      "schema_pointer": "#/$defs/ActionGrant/properties/permission_snapshot_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC272",
+      "definition": "ActionGrant",
+      "field_path": "effective_focus_ref",
+      "schema_pointer": "#/$defs/ActionGrant/properties/effective_focus_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC273",
+      "definition": "ActionGrant",
+      "field_path": "task_ref",
+      "schema_pointer": "#/$defs/ActionGrant/properties/task_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC274",
+      "definition": "ActionGrant",
+      "field_path": "work_card_ref",
+      "schema_pointer": "#/$defs/ActionGrant/properties/work_card_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC275",
+      "definition": "ActionGrant",
+      "field_path": "author_action_ref",
+      "schema_pointer": "#/$defs/ActionGrant/properties/author_action_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC276",
+      "definition": "ActionGrant",
+      "field_path": "branch_ref",
+      "schema_pointer": "#/$defs/ActionGrant/properties/branch_ref",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC277",
+      "definition": "ActionGrant",
+      "field_path": "scope",
+      "schema_pointer": "#/$defs/ActionGrant/properties/scope",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC278",
+      "definition": "ActionGrant",
+      "field_path": "operation_id",
+      "schema_pointer": "#/$defs/ActionGrant/properties/operation_id",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC279",
+      "definition": "ActionGrant",
+      "field_path": "request_sha256",
+      "schema_pointer": "#/$defs/ActionGrant/properties/request_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC280",
+      "definition": "ActionGrant",
+      "field_path": "issued_at",
+      "schema_pointer": "#/$defs/ActionGrant/properties/issued_at",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC281",
+      "definition": "ActionGrant",
+      "field_path": "expires_at",
+      "schema_pointer": "#/$defs/ActionGrant/properties/expires_at",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC282",
+      "definition": "ActionGrant",
+      "field_path": "permission_revocation_version",
+      "schema_pointer": "#/$defs/ActionGrant/properties/permission_revocation_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC283",
+      "definition": "ActionGrant",
+      "field_path": "workflow_version",
+      "schema_pointer": "#/$defs/ActionGrant/properties/workflow_version",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    },
+    {
+      "row_id": "NC284",
+      "definition": "ActionGrant",
+      "field_path": "grant_sha256",
+      "schema_pointer": "#/$defs/ActionGrant/properties/grant_sha256",
+      "code_symbol": "chapter_structure_contract.CONTRACT_TYPES['ActionGrant']",
+      "validation_entry": "chapter_structure_contract.validate_shape",
+      "scope": "SHAPE_ONLY_REAL_PROVIDER_UNBOUND"
+    }
+  ]
+}

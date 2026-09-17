@@ -1,0 +1,40 @@
+{
+  "status": "CONCRETE_CANDIDATE_NOT_SCALE_TESTED",
+  "owner": {
+    "container_max_utf8_bytes": 16777216,
+    "objects_max": 128,
+    "versions_per_object_max": 256,
+    "committed_operations_max": 4096,
+    "version_record_max_utf8_bytes": 131072,
+    "write_request_max_utf8_bytes": 262144,
+    "write_response_max_utf8_bytes": 32768,
+    "business_items_per_version_max": 100,
+    "business_items_formula": "1 + len(structure_content.fact_items) + len(structure_content.presentation_items) + len(structure_content.materials)",
+    "status": "CANDIDATE_INITIAL_VALUES_NOT_SCALE_TESTED"
+  },
+  "read": {
+    "max_input_refs": 50,
+    "max_returned_business_items": 100,
+    "max_response_bytes": 262144,
+    "max_saved_revision_bytes_parent_rule": 131072,
+    "saved_revision_bytes_object": "complete StructureRevision {ref,structure_content,save_operation_id}",
+    "version_business_items": "1 + len(structure_content.fact_items) + len(structure_content.presentation_items) + len(structure_content.materials)",
+    "batch_business_items": "sum(version_business_items(v.structure_content) for v in data.versions)",
+    "not_double_counted": [
+      "selected_facts",
+      "source_bindings",
+      "basis_refs",
+      "source_refs",
+      "source_manifest proof duplication"
+    ],
+    "all_fields_count_as_response_bytes": true,
+    "material_json_arrays_recursively_counted_as_business_items": false,
+    "raw_material_is_not_resolved_fact": true,
+    "moving_formal_facts_to_raw_material_does_not_satisfy_fact_aware_use": true,
+    "inclusive_boundaries": true,
+    "over_limit": "REJECTED/RESULT_TOO_LARGE; discard all business data and build/seal/count fresh bounded failure",
+    "automatic_pagination_or_truncation": false
+  },
+  "max_new_id_mappings_per_operation": 128,
+  "grant_max_lifetime_seconds": 300
+}
