@@ -26,6 +26,67 @@ SPEC.loader.exec_module(MODULE)
 CASES = MODULE.load_fixtures(FIXTURE_PATH)
 
 
+def v21_intent_record() -> dict:
+    return copy.deepcopy(next(c["document"] for c in CASES if c["case_id"] == "CL-V21-CONDITION-OPEN"))
+
+
+@pytest.mark.parametrize("version", ["character-ledger-content-v1.1", "character-ledger-content-v2"])
+def test_old_versions_reject_new_intent_fields(version: str) -> None:
+    record = v21_intent_record()
+    record["version"] = version
+    if version.endswith("v1.1"):
+        record.pop("tags")
+        record.pop("tag_groups")
+    with pytest.raises(MODULE.ContractError, match="SCHEMA_INVALID"):
+        MODULE.validate_record(record)
+    for key in ("deadline", "condition", "condition_fact_ref"):
+        record["intent_seq"][0].pop(key)
+    MODULE.validate_record(record)
+
+
+@pytest.mark.parametrize("ref", ["f01", "c001", "AUTHOR_ATTESTATION", "fABC", ""])
+def test_condition_evidence_uses_fact_identity(ref: str) -> None:
+    record = v21_intent_record()
+    record["intent_seq"][0].update(status="落空", condition_fact_ref=ref)
+    with pytest.raises(MODULE.ContractError, match="SCHEMA_INVALID"):
+        MODULE.validate_record(record)
+
+
+def test_deadline_retains_words_and_reuses_story_anchor() -> None:
+    record = v21_intent_record()
+    deadline = record["intent_seq"][0]["deadline"]
+    deadline["story_time"] = {"chapter_revision_ref": {"chapter_id": "c06", "revision_no": 2, "revision_text_sha256": "a" * 64}}
+    assert MODULE.validate_record(record)["intent_seq"][0]["deadline"]["text"] == "天亮前"
+    deadline["story_time"] = {"created_at": "2026-09-26T00:00:00Z"}
+    with pytest.raises(MODULE.ContractError, match="SCHEMA_INVALID"):
+        MODULE.validate_record(record)
+
+
+@pytest.mark.parametrize("key", ["deadline", "condition", "condition_fact_ref"])
+def test_new_intent_fields_are_present_but_nullable(key: str) -> None:
+    record = v21_intent_record()
+    record["intent_seq"][0][key] = None
+    MODULE.validate_record(record)
+    record["intent_seq"][0].pop(key)
+    with pytest.raises(MODULE.ContractError, match="SCHEMA_INVALID"):
+        MODULE.validate_record(record)
+
+
+@pytest.mark.parametrize("key", ["text", "story_time"])
+def test_deadline_requires_original_words_and_explicit_anchor_slot(key: str) -> None:
+    record = v21_intent_record()
+    record["intent_seq"][0]["deadline"].pop(key)
+    with pytest.raises(MODULE.ContractError, match="SCHEMA_INVALID"):
+        MODULE.validate_record(record)
+
+
+def test_v21_preserves_tagged_envelope_contract() -> None:
+    record = v21_intent_record()
+    record.pop("tags")
+    with pytest.raises(MODULE.ContractError, match="SCHEMA_INVALID"):
+        MODULE.validate_record(record)
+
+
 @pytest.mark.parametrize(
     "case",
     CASES,

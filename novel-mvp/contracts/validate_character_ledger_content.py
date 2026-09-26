@@ -20,7 +20,9 @@ ENVELOPE_VALIDATOR_PATH = CONTRACTS_DIR / "validate_ledger_entry_envelope.py"
 CONTRACT_NAME = "CHARACTER_LEDGER_CONTENT"
 CONTRACT_VERSION = "character-ledger-content-v1.1"
 CONTRACT_VERSION_V2 = "character-ledger-content-v2"
-CONTRACT_VERSIONS = (CONTRACT_VERSION, CONTRACT_VERSION_V2)
+CONTRACT_VERSION_V2_1 = "character-ledger-content-v2.1"
+CONTRACT_VERSIONS = (CONTRACT_VERSION, CONTRACT_VERSION_V2, CONTRACT_VERSION_V2_1)
+TAGGED_VERSIONS = (CONTRACT_VERSION_V2, CONTRACT_VERSION_V2_1)
 ENVELOPE_KEYS = (
     "id",
     "source_identity",
@@ -93,7 +95,7 @@ def _parse_datetime(value: str, *, label: str) -> datetime:
 
 def _envelope(document: dict[str, Any]) -> dict[str, Any]:
     keys = list(ENVELOPE_KEYS)
-    if document["version"] == CONTRACT_VERSION_V2:
+    if document["version"] in TAGGED_VERSIONS:
         keys.extend(("tags", "tag_groups"))
     return {key: document[key] for key in keys}
 
@@ -132,7 +134,7 @@ def _validate_interval(value: dict[str, Any], *, label: str) -> None:
 def _nested_attestation_requires_author(record: dict[str, Any], evidence_refs: list[str]) -> None:
     if "AUTHOR_ATTESTATION" not in evidence_refs:
         return
-    allowed_statuses = {"confirmed", "retired"} if record["version"] == CONTRACT_VERSION_V2 else {"confirmed"}
+    allowed_statuses = {"confirmed", "retired"} if record["version"] in TAGGED_VERSIONS else {"confirmed"}
     if (
         record["source_identity"] != "author_declared"
         or record["confirm_status"] not in allowed_statuses
@@ -160,7 +162,7 @@ def validate_record(
             entry_kind="DEFINITION",
             contract_version=(
                 ENVELOPE_VALIDATOR.CONTRACT_VERSION_V2
-                if document["version"] == CONTRACT_VERSION_V2
+                if document["version"] in TAGGED_VERSIONS
                 else ENVELOPE_VALIDATOR.CONTRACT_VERSION_V1
             ),
             allowed_targets=frozenset(
@@ -293,6 +295,14 @@ def _validate_sequences(document: dict[str, Any]) -> None:
         intent_ids.add(item["id"])
         if item["status"] == "兑现" and not item["fulfilled_fact_ref"]:
             raise ContractError(f"FULFILLED_REQUIRES_FACT_REF:{index}")
+
+        if (
+            document["version"] == CONTRACT_VERSION_V2_1
+            and item["condition"] is not None
+            and item["status"] == "落空"
+            and item["condition_fact_ref"] is None
+        ):
+            raise ContractError(f"CONDITIONAL_FAILURE_REQUIRES_FACT_REF:{index}")
 
     choice_ids: set[str] = set()
     for index, item in enumerate(document["choice_seq"]):

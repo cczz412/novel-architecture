@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://local.novel-mvp/contracts/CHARACTER_LEDGER_CONTENT.schema.json",
-  "title": "CHARACTER_LEDGER_CONTENT character-ledger-content-v1.1 / character-ledger-content-v2",
-  "description": "Character definition card plus evidence-bound state, relationships, and four collapsible in-book sequences (desire/ordeal/intent/choice). Version v1 remains readable; v2 requires namespaced tags and tag_groups.",
+  "title": "CHARACTER_LEDGER_CONTENT character-ledger-content-v1.1 / character-ledger-content-v2 / character-ledger-content-v2.1",
+  "description": "Character definition card plus evidence-bound state, relationships, and four collapsible in-book sequences (desire/ordeal/intent/choice). Version v1 remains readable; v2 requires namespaced tags and tag_groups. v2.1 adds nullable deadline, condition and condition evidence to character intents.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -37,7 +37,8 @@
     "version": {
       "enum": [
         "character-ledger-content-v1.1",
-        "character-ledger-content-v2"
+        "character-ledger-content-v2",
+        "character-ledger-content-v2.1"
       ]
     },
     "id": {
@@ -155,9 +156,7 @@
     },
     "intent_seq": {
       "type": "array",
-      "items": {
-        "$ref": "#/$defs/intent_entry"
-      }
+      "items": {}
     },
     "choice_seq": {
       "type": "array",
@@ -667,6 +666,99 @@
           }
         }
       }
+    },
+    "intent_entry_v2_1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "subject_ref",
+        "content",
+        "status",
+        "scope",
+        "source_fact_ref",
+        "fulfilled_fact_ref",
+        "deadline",
+        "condition",
+        "condition_fact_ref"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^INTENT-[0-9]+$"
+        },
+        "subject_ref": {
+          "type": "string",
+          "pattern": "^CH-[0-9]+$"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "未执行",
+            "执行中",
+            "兑现",
+            "落空",
+            "放弃"
+          ]
+        },
+        "scope": {
+          "const": "in_book_character"
+        },
+        "source_fact_ref": {
+          "$ref": "#/$defs/fact_ref"
+        },
+        "fulfilled_fact_ref": {
+          "$ref": "#/$defs/nullable_fact_ref"
+        },
+        "deadline": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/intent_deadline"
+            }
+          ]
+        },
+        "condition": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "condition_fact_ref": {
+          "$ref": "#/$defs/nullable_fact_ref"
+        }
+      }
+    },
+    "intent_deadline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "story_time"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "story_time": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/story_anchor"
+            }
+          ]
+        }
+      }
     }
   },
   "allOf": [
@@ -677,7 +769,10 @@
         ],
         "properties": {
           "version": {
-            "const": "character-ledger-content-v2"
+            "enum": [
+              "character-ledger-content-v2",
+              "character-ledger-content-v2.1"
+            ]
           }
         }
       },
@@ -701,6 +796,36 @@
               ]
             }
           ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "version": {
+            "const": "character-ledger-content-v2.1"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "intent_seq": {
+            "items": {
+              "$ref": "#/$defs/intent_entry_v2_1"
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "intent_seq": {
+            "items": {
+              "$ref": "#/$defs/intent_entry"
+            }
+          }
         }
       }
     }
