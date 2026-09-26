@@ -13,7 +13,7 @@
 - 迁移按项确认：本轮范围是门1、置信度、后端优先三项已核对决定，具体主存与版本查 Notion 迁移登记；未迁内容仍以原 Linear 文档为主存，Notion 只登记指路。登记不等于迁入，不能宣称全库已迁。原始记录和历史保留，读 Notion 不产生施工授权。
 - [`governance/CURRENT_STATE.json`](governance/CURRENT_STATE.json) 是带日期的技术兼容／控制快照，供现有工具读取旧机器字段；它不是全局任务地图，不能据此判断当前谁在做、哪些票被领、最新阻塞或下一张票。
 - 当前版本、路径和候选身份只认 [`governance/current_pointers.json`](governance/current_pointers.json)；它不保存全局任务进度、运行成绩或领票状态，也不替产品或领域 CURRENT 拍板。
-- 新需求和未决问题进入 Linear 所属任务；已核对且可长期复用的决定进入 Notion，任务保留短背景和采用版本链接。完整内容只留一个主存，不要求每项任务在三处各建一份。
+- 作者需求候选先查 [Notion 候选主存](https://app.notion.com/p/3d95cadc4d0f814ea64ae42cb1786771)；具体活动任务和未决问题从 [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)找所属模块。已核对且可长期复用的决定进入 Notion，任务保留短背景和采用版本链接。完整内容只留一个主存，不要求每项任务在三处各建一份。
 - 工程能力只认 GitHub 当前 `main` 上的正式合同、Schema、登记册、测试和已合并代码。Notion 只索引工程合同，不改写合同，也不证明能力已落地。
 - 外部论文、官方文档、行业材料和作者经验先保留来源与 SHA；可复用证据登记到 [CCZ-64](https://linear.app/ccz/issue/CCZ-64)，是否吸收回所属模块票。外部材料不能替 CZ 拍板，也不能直接变成产品合同。
 - 路径职责与新文件落点只认 [`governance/directory_registry.json`](governance/directory_registry.json) 和生成的 [`governance/indexes/new_file_routing.md`](governance/indexes/new_file_routing.md)。
@@ -22,7 +22,7 @@
 
 | 你要做什么 | 第一站 | 需要时的第二站 |
 |---|---|---|
-| 理解产品目标或模块边界 | [Notion 决定与规格入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)与逐项主存登记 | 已落地能力再核 GitHub 正式合同与 `main`；新需求先登记 [CCZ-128](https://linear.app/ccz/issue/CCZ-128) |
+| 理解产品目标或模块边界 | [Notion 决定与规格入口](https://app.notion.com/p/9ee897f5b8e54320a8aeb1f98569f133)与逐项主存登记 | 已落地能力再核 GitHub 正式合同与 `main`；作者需求候选先查 [Notion 候选主存](https://app.notion.com/p/3d95cadc4d0f814ea64ae42cb1786771)，活动任务与未决问题回 [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)找所属模块 |
 | 查当前版本、路径和候选分支 | `governance/current_pointers.json` | 技术兼容快照才看 `governance/CURRENT_STATE.json`；任务进度不从仓库读取 |
 | 理解创作／记忆流程 | Notion 已核对规格；未迁项回登记指向的 Linear 主存 | 再核 GitHub 已落合同；不要从历史设计反推当前产品 |
 | 看产品试跑示例（代码偏旧，不是现行产品） | `novel-mvp/README.md` | `novel-mvp/design/INDEX.md` |
@@ -32,7 +32,7 @@
 | 查已验证的工程结论、技术选型或管线骨架 | `references/engineering-ledger/00_READ_ME_FIRST.md` | 按账内指针回正式结果票／冻结合同核对；当前任务状态仍现场读取 Linear／GitHub |
 | 查外部证据、行业经验、冲突或研究缺口 | [CCZ-64](https://linear.app/ccz/issue/CCZ-64) 冻结证据登记 | 需要原文时再按 [survey-inbox](references/survey-inbox/README.md) 的来源卡追原报告；吸收决定回模块票 |
 | 拿不准账本／工具／执行包／权限，或抽取／评测／记忆、需求／产品形态、日常循环／插件／画布／平台／人格标签、规划账／保存对照交棒／状态轴、局部复核／反馈外发／切片验收会不会做歪 | [情景问答](references/agent-playbook/README.md) | [卡片目录](references/agent-playbook/INDEX.md)。只打开对得上的一张；再回它标出的现行 Linear 票或 GitHub 合同核对 |
-| 查模块长期需求、测试配方或评分维度 | Notion 主存登记；未迁项回原 Linear 文档 | 任务归属可从 [CCZ-128](https://linear.app/ccz/issue/CCZ-128)／[CCZ-83](https://linear.app/ccz/issue/CCZ-83) 追；工程方案、合同、Schema 和测试回 GitHub |
+| 查模块长期需求、测试配方或评分维度 | Notion 主存登记；未迁项回原 Linear 文档 | 当前任务从 [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0)找所属模块；既有归属线索仍可从 [CCZ-128](https://linear.app/ccz/issue/CCZ-128)（已停用，仅查历史、不再收件）／[CCZ-83](https://linear.app/ccz/issue/CCZ-83)追；工程方案、合同、Schema 和测试回 GitHub |
 | 查历史外部调查，避免同类问题重做 | `references/survey-inbox/INDEX.md` | 先对情景问答；仍要对原文时才打开对应 `SI-*` 卡和那一份消化稿。历史报告只作证据与候选先验，不产生执行权 |
 | 接仓库重构任务 | 当前 GitHub 施工 Issue | 回 Linear 核对父子、硬前置、领票和停点；没有明确票与授权就停下 |
 | 找历史外置对象 | `governance/external_archive_registry.json` | 对象登记的 manifest／恢复方式 |
