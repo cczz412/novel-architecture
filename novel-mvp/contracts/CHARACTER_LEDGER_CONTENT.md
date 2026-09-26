@@ -1,10 +1,14 @@
 # CHARACTER_LEDGER_CONTENT · 人物账内容合同
 
-**正式版本：`character-ledger-content-v2`；兼容读取：`character-ledger-content-v1.1`**
+**正式版本：`character-ledger-content-v2.1`；兼容读取：`character-ledger-content-v1.1`／`character-ledger-content-v2`**
 
 一句话用途：用一张可直接编辑的人物定义卡，配一组有证据、有故事时间锚的状态与轻量关系读取面，回答“这个人是谁、在某个故事时点是什么状态”；没有记录时必须明说，不能拿最新状态冒充历史。v1.1 在人物卡上冻结四条可收起子对象序列：渴望／困境／计划／抉择。
 
+依赖的问题键与版本：`抽取.义务存放与到期检查@v1`、`抽取.条件识别与兑现判定@v1`、`抽取.将要归位@v1`；字段命名沿[正式 R01](https://app.notion.com/p/3da5cadc4d0f818db55afc75364b5ef5)，人物计划语义仍归本合同。工程票：[#373](https://github.com/cczz412/novel-architecture/issues/373)。
+
 变更记录：
+
+- `character-ledger-content-v2.1`：依 CZ 2026-09-26 已采用决定，在 `intent_seq` 增加三个可空字段：期限、条件、条件出现依据。v1.1/v2 继续按原形状读取，不自动迁移，也不允许以旧版本接收新字段；writer 默认版本和运行接入不随本合同改变。
 
 - `character-ledger-content-v1`：L2 人物卡＋状态时间线＋轻量关系。
 - `character-ledger-content-v1.1`（[CCZ-109](https://linear.app/ccz/issue/CCZ-109)）：新增 `desire_seq`／`ordeal_seq`／`intent_seq`／`choice_seq`。拍板出处：[CCZ-65](https://linear.app/ccz/issue/CCZ-65) 评论 `60f3fdb8`（三格子字段骨架与状态机）；[GH#110](https://github.com/cczz412/novel-architecture/issues/110#issuecomment-5387771590)（抉择：面临什么／选了什么／代价）。硬约束：每条条目必须有来源 `source_fact_ref`，无事实号不得建条目。计划格子只收书内人物计划。不执行待入位转正。settingstore 人物写入只补四个空序列和版本号，让旧调用过 v1.1 校验；不新增业务写动作。
@@ -89,7 +93,7 @@ created_at/updated_at/rev/note
 
 知情边已经由 [KNOWLEDGE_EDGE.md](KNOWLEDGE_EDGE.md) 冻结为项目级独立稀疏对象集合。它不住人物账本体，也不取得第十一本账户籍；本合同的 `knowledge_edges` 字段继续被 v1.1 Schema 拒绝。
 
-## 5b. 四条子对象序列（v1.1）
+## 5b. 四条子对象序列（v1.1；人物计划 v2.1 扩展）
 
 四个序列都住**这张人物卡**，每人物单独可收起；事实账不复制内容，只由 `source_fact_ref`／兑现类 fact_ref 单向引用。条目 `subject_ref` 必须等于根人物 `id`。
 
@@ -99,7 +103,7 @@ created_at/updated_at/rev/note
 |---|---|---|
 | 渴望 `desire_seq` | `id`（`DESIRE-`）＋主体＋一句话内容＋状态＋来源 fact_ref＋达成 fact_ref＋新渴望链指针 | 活跃／达成／放弃／转化 |
 | 困境 `ordeal_seq` | `id`（`ORDEAL-`）＋主体＋内容＋状态＋来源 fact_ref＋解除 fact_ref | 持续／恶化／解除 |
-| 计划 `intent_seq` | `id`（`INTENT-`）＋主体＋未来内容＋状态＋`scope=in_book_character`＋来源 fact_ref＋兑现 fact_ref | 未执行／执行中／兑现／落空／放弃 |
+| 计划 `intent_seq` | `id`（`INTENT-`）＋主体＋未来内容＋状态＋`scope=in_book_character`＋来源 fact_ref＋兑现 fact_ref；v2.1 另含期限、条件、条件出现依据 | 未执行／执行中／兑现／落空／放弃 |
 | 抉择 `choice_seq` | `id`（`CHOICE-`）＋主体＋面临什么＋选了什么＋代价（无代价写空串）＋来源 fact_ref | 已发生选择，不另设状态机 |
 
 机器字段名：
@@ -117,6 +121,22 @@ created_at/updated_at/rev/note
 | 面临什么 | `faced` |
 | 选了什么 | `chosen` |
 | 代价 | `cost` |
+
+### 人物计划新增三栏（v2.1）
+
+| 用途 | 字段与类型 | 规则 |
+|---|---|---|
+| 期限 | `deadline: object/null` | 无期限为 null；有期限时保存 `{text, story_time}`。`text` 是非空原话，例如“三天后”“马上”“等我回来”；`story_time` 是可空的 §6 单个故事时间锚（不是区间）。能换算且有既有锚依据才填写，不能换算时保留原话、锚为 null，不以章号或系统时间猜造。 |
+| 条件 | `condition: string/null` | 无条件为 null；有条件时保留原话里的前提，不改成人物打算，不补原文未说明的条件。 |
+| 条件出现依据 | `condition_fact_ref: string/null` | 非空沿现有 `^f[0-9]{3,}$`；指向条件已经出现的事实。带条件的计划标“落空”时必填。不能只用记承诺的事实冒充条件已出现，也不由格式校验器猜填。 |
+
+v2.1 条目三个键都要出现，可以为 null；旧版本维持旧字段集合。期限对象的 `text` 与 `story_time` 两键都要出现；这里只复用既有时间锚，没有另建时间体系。
+
+角色自己的“马上要做”与义务进入人物计划；同章已经做完的也记一条并标“兑现”，`fulfilled_fact_ref` 的既有必填规则不变。对别人的要求、正在进行的动作及反事实遗憾不能仅因触发词被写成计划。抽句保留原意，分账才判归位。依据：[将要归位](https://app.notion.com/p/3e75cadc4d0f81d0aaa4d40b2f31f859)、[义务存放与到期检查](https://app.notion.com/p/3e75cadc4d0f81ef9848d972d5490ea6)。
+
+带条件的计划更新先判条件，再判行动：条件没出现保持“未执行”；条件出现且做了标“兑现”并挂兑现事实；条件出现但没做标“落空”并挂条件出现事实。带条件承诺同样处理。无新事实证据不更新，不能把书稿没写行动当成没做的证据。依据：[条件识别与兑现判定](https://app.notion.com/p/3e75cadc4d0f81e6bfe7f41df8def386)、[跨章状态承接](https://app.notion.com/p/3e75cadc4d0f81b994cccffe703fad1c)。
+
+Schema/validator 只核字段形状与引用必填，不读取事实内容，不证明条件真的出现或行动确实落空。事实存在性与语义证据仍由消费方核对。到期提醒、逐章承接、卷末扫描及 writer 接入不由这次离线合同校验实现；导入书不评判原作者，续写后才启用已定到期提醒。
 
 「目的达没达成」只用渴望的 `status`；「达成后新渴望」只用 `next_desire_ref`，不另设概念。
 
@@ -273,7 +293,9 @@ created_at/updated_at/rev/note
 
 ## 12. 实现状态
 
-`UNIFIED_WRITER_SETTINGSTORE_V1__DESIRE_ORDEAL_INTENT_CHOICE_SEQ_V1_1`
+`INTENT_DEADLINE_CONDITION_V2_1_CONTRACT_ONLY__RUNTIME_WIRING_PENDING`
+
+本次 v2.1 只增加离线合同校验；既有 writer 仍按其原版本工作，不宣称 v2.1 已接通。
 
 通过本合同只证明人物内容形状、证据纪律、时间锚、查询边界，以及四条子对象序列已经冻结；落盘走 `settingstore`。不证明人物页、as-of 查询、完整接入 M10/M11，也不证明「待入位」行已经转正。
 
