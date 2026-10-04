@@ -39,6 +39,6 @@ def normalize(document, data):
         # 数组编号无逐字引文，必须有同场景格证据或段标注的逐字引文才能转换。
         for j, pid in enumerate(scene.get('paragraph_ids', [])):
             if (isinstance(pid,int) and not isinstance(pid,bool)) or (isinstance(pid,str) and pid.isdigit()):
-                q = next((p.get('quote') for p in result.get('paragraphs', []) if isinstance(p.get('id'), str) and re.search(r':p0*'+str(int(pid))+r'$', p['id'])), None)
+                q = next((p.get('quote') for p in result.get('paragraphs', []) if isinstance(p.get('id'), str) and re.search(r'(?:^|:)p0*'+str(int(pid))+r'$', p['id'])), None)
                 scene['paragraph_ids'][j] = resolve(pid, q, owned, f'scenes[{i}].paragraph_ids[{j}]')
     return result, conversions
