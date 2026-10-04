@@ -1,6 +1,7 @@
 # 执行身份：Codex
 """方舟文件队列客户端：仅本机网关，有限重试，保存数字和结束状态。"""
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -13,6 +14,17 @@ import uuid
 OUT = Path('/workspace/codex-work/out/管线修复_R03')
 TRANSPORT_RETRIES = 2
 BLOCKED = OUT / 'control/UPSTREAM_BLOCKED.json'
+RECOVERY = OUT / 'control/RECOVERY_CONFIRMED.json'
+
+
+def is_blocked():
+    if not BLOCKED.exists():return False
+    if not RECOVERY.exists():return True
+    try:
+        proof=json.loads(RECOVERY.read_text())
+        return not (proof.get('ok') is True and len(proof.get('probe_jobs',[]))>=2
+                    and proof.get('blocked_sha256')==hashlib.sha256(BLOCKED.read_bytes()).hexdigest())
+    except (ValueError,OSError):return True
 
 
 def summarize_response(response):
@@ -50,7 +62,7 @@ class Client:
             json.dumps(dict(execution_identity='Codex', job_id=self.job, **event), ensure_ascii=False) + '\n')
 
     def call(self, model, messages, parameters, max_tokens=32000):
-        if BLOCKED.exists():
+        if is_blocked():
             raise RuntimeError('已观察到上游额度或限流错误，停止新请求')
         if set(parameters) - {'thinking', 'reasoning_effort'}:
             raise ValueError('仅允许方舟思考控制参数')
@@ -60,7 +72,7 @@ class Client:
             self.base + '/chat/completions', data=json.dumps(payload, ensure_ascii=False).encode(),
             headers={'Content-Type': 'application/json', 'X-PR-Job-ID': self.job})
         for attempt in range(TRANSPORT_RETRIES + 1):
-            if BLOCKED.exists():
+            if is_blocked():
                 raise RuntimeError('已观察到上游额度或限流错误，停止新请求')
             start = time.monotonic()
             try:
