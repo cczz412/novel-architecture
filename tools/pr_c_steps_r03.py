@@ -12,7 +12,7 @@ from pr_layers_v2_r03 import (OUT, MODELS, Client, dump, external, read_book,
 ANNOTATE = '''本步只按原段标写法与感知者，不抽事实，不建计划，不建场景格。
 输出 {"paragraphs":[{"id":输入段号,"main":"叙述带过/动作展开/对话/心理/场景五种中的一种","secondary":null或另一种标签,"viewpoint":明确感知者人物名或全知或切换或null,"quote":本段连续逐字短引,"note":具体短说明或空字符串}]}。
 每个责任段恰好一次。主标签按本段主要表达方式选：叙述带过是概述或交代；动作展开是铺开过程；对话是当场言语；心理是内心过程；场景是环境画面。不能把交代一句动作也一律当展开。副标签只有本段同时展开另一写法才用，没有就null；不能因出现一个心理动词或少量对白机械加副标签。
-视角按这一段谁在看、听、心想或感受，不能按说话人自动选；没有人物感知限定的外部叙述可用全知，证据不足留null，不编人物、不加分析括注。回述对象不是当前感知者。只输出paragraphs数组，不输出scenes或其他层。
+视角按这一段谁在看、听、心想或感受，不能按说话人自动选；没有人物感知限定的外部叙述可用全知，证据不足留null，不编人物、不加分析括注。回述对象不是当前感知者。同章镜头可以延续：不能仅因本段没有看听等动词就自动换成全知，也不能仅因有人物出现就认定他的视角。确有多个感知镜头切换才标切换。read_only_chapter_context只供判断上下文，不能输出其段标注。只输出paragraphs数组，不输出scenes或其他层。
 虚构结构例：{"paragraphs":[{"id":"p001","main":"对话","secondary":null,"viewpoint":null,"quote":"我明天来修木桥","note":""}]}。示例只示结构，不作为标签与视角的语义答案。'''
 SCENES = '''本步只读整章原文摘当前现场的五格，不改写法标注，不抽事实，不建人物计划。
 输出 {"scenes":[{"paragraph_ids":同一现场的原段号数组,"location":[],"light_weather":[],"objects_visuals":[],"sounds_smells":[],"atmosphere":[]}]}。
@@ -27,6 +27,7 @@ def run_c(data,client,model,parameters,folder,receipt,group_size=24,reviewer=Non
         ps=data['paragraphs'][start:start+group_size];g=start//group_size
         scope=dict(data,paragraphs=ps,group=g,facts=[],context_paragraphs=[],owned_paragraph_ids=[p['paragraph_id'] for p in ps])
         material={k:scope[k] for k in ('book_id','chapter','paragraphs','scope_limits','owned_paragraph_ids')}
+        material['read_only_chapter_context']=[p for p in data['paragraphs'] if p['paragraph_id'] not in scope['owned_paragraph_ids']]
         def gate(raw):
             raw=dict(raw,scenes=[])
             return c_gate(raw,scope)
