@@ -75,7 +75,7 @@ class Client:
                                    headers={'Content-Type':'application/json','X-PR-Job-ID':self.job})
         for attempt in range(TRANSPORT_RETRIES+1):
             try:
-                with self.opener.open(req,timeout=200) as response:
+                with self.opener.open(req,timeout=1200) as response:
                     return json.load(response)
             except urllib.error.HTTPError as exc:
                 # 上游正文与请求头不打印；5xx 若网关已 STOP，重试会被拒绝。
@@ -249,7 +249,7 @@ def run_book(args):
     output.mkdir(parents=True,exist_ok=True)
     result=empty_result()
     receipt={'book':args.book,'model':args.model,'round':args.round,'chapters_requested':args.chapters,
-             'completed_chapters':[],'calls':[],'partial':False,'unmeasured':['语义独立复核'],'transport_retry_limit':TRANSPORT_RETRIES,'repair_retry_limit':REPAIR_RETRIES}
+             'completed_chapters':[],'calls':[],'partial':False,'unmeasured':['语义独立复核'],'transport_retry_limit':TRANSPORT_RETRIES,'repair_retry_limit':REPAIR_RETRIES,'code_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
     client=None if args.prepare_only else Client()
     policy=None
     if client:
