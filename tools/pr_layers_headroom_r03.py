@@ -341,6 +341,8 @@ def run(args):
     receipt['replay_source']=args.replay_bc
     receipt['replayed_steps']=[]
     receipt['fresh_steps']=[]
+    receipt['layer_completed_chapters']={k:[] for k in ('A','B','C')}
+    receipt['partial_chapters']=[]
     for n in range(1,args.chapters+1):
         ch=f'{n:02d}';data=read_book(config,ch);folder=output/('ch'+ch);folder.mkdir(exist_ok=True);doc=empty_result();degraded=[]
         try:
@@ -351,6 +353,8 @@ def run(args):
                 raw,pending=replay_or_call(args.replay_bc,ch,label,lambda raw:b_gate(raw,piece),folder,receipt,client,models['B'],policies[models['B']]['parameters'],B_SCHEMA,material,'B',reviewer)
                 b_convert(raw,piece,doc,pending)
                 if pending:degraded.append(label)
+            receipt['layer_completed_chapters']['B'].append(ch)
+            dump(folder/'B_result.json',doc)
             # C按标注组和现场范围独立负责，不沿用B组范围。
             for start in range(0,len(data['paragraphs']),args.c_group):
                 ps=data['paragraphs'][start:start+args.c_group];g=start//args.c_group
@@ -360,6 +364,8 @@ def run(args):
                 raw,pending=replay_or_call(args.replay_bc,ch,label,lambda raw:c_gate(raw,piece),folder,receipt,client,models['C'],policies[models['C']]['parameters'],C_SCHEMA,piece,'C',reviewer)
                 c_convert(raw,piece,doc,pending)
                 if pending:degraded.append('C_g'+str(g))
+            receipt['layer_completed_chapters']['C'].append(ch)
+            dump(folder/'BC_result.json',doc)
             facts=chapter_facts(data,doc)
             common=dict(book_id=data['book_id'],chapter=ch,paragraphs=data['paragraphs'],scope_limits=data['scope_limits'],current_facts=facts,previous_facts=catalog)
             histories={h['plan_key']:h for h in result['review_audit']['plan_history']}
@@ -378,6 +384,7 @@ def run(args):
             raw,pending=task(client,models['A'],policies[models['A']]['parameters'],A_DISCOVER,material,lambda raw:a_gate(raw,'discover',material),folder,'A_discover',receipt,'A',reviewer)
             a_apply(raw,material,doc,result,'discover',pending)
             if pending:degraded.append('A_discover')
+            receipt['layer_completed_chapters']['A'].append(ch)
             # 每段去向来自当前生效事实的位置；未绑定不自动叫无事实。
             for p in data['paragraphs']:
                 pid=p['paragraph_id'];bound=[]
@@ -394,7 +401,13 @@ def run(args):
             print('R03章节交付',args.book,ch,'降级步骤',len(degraded),'黄标',count,flush=True)
             dump(output/'prediction.json',result);dump(output/'run_receipt.json',receipt)
         except Exception as e:
-            receipt['partial']=True;receipt['error']=str(e);dump(folder/'failure.json',dict(error=str(e)));break
+            receipt['partial']=True;receipt['error']=str(e)
+            if ch in receipt['layer_completed_chapters']['B'] and ch in receipt['layer_completed_chapters']['C']:
+                flag(doc,data,'A',None,'本章人物计划未交付，已完成事实与原文材料单独保留；上游或步骤故障不交作者逐条代判')
+                assemble(result,doc)
+                receipt['partial_chapters'].append(dict(chapter=ch,completed_layers=['B','C'],pending_layer='A',error=str(e)))
+                dump(folder/'partial_result.json',doc)
+            dump(folder/'failure.json',dict(error=str(e)));break
     receipt['usage']={k:sum(c['usage'].get(k,0) for c in receipt['calls']) for k in ('prompt_tokens','completion_tokens')}
     dump(output/'prediction.json',result);dump(output/'run_receipt.json',receipt)
     return int(receipt['partial'])
