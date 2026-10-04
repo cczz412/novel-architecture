@@ -317,6 +317,13 @@ def replay_task(source,ch,label,gate,folder,receipt):
     return raw,errs
 
 
+def replay_or_call(source,ch,label,gate,folder,receipt,client,model,parameters,schema,material,layer,reviewer=None):
+    if source and any((external(source)/('ch'+ch)).glob(label+'_response_[01].json')):
+        return replay_task(source,ch,label,gate,folder,receipt)
+    receipt['fresh_steps'].append(dict(chapter=ch,label=label,layer=layer,reason='原响应缺失，补跑本步' if source else '完整新调用'))
+    return task(client,model,parameters,schema,material,gate,folder,label,receipt,layer,reviewer)
+
+
 def run(args):
     output=external(args.out);output.mkdir(parents=True,exist_ok=True)
     config=next(c for c in json.loads((OUT/'books_selected.json').read_text()) if c['code']==args.book)
@@ -327,6 +334,7 @@ def run(args):
     catalog=[]
     receipt['replay_source']=args.replay_bc
     receipt['replayed_steps']=[]
+    receipt['fresh_steps']=[]
     for n in range(1,args.chapters+1):
         ch=f'{n:02d}';data=read_book(config,ch);folder=output/('ch'+ch);folder.mkdir(exist_ok=True);doc=empty_result();degraded=[]
         try:
@@ -334,7 +342,7 @@ def run(args):
                 label='B_g'+str(piece['group'])
                 material={k:v for k,v in piece.items() if k not in ('basis_hashes',)}
                 reviewer=(args.review_model,policies[args.review_model]['parameters']) if args.review_model and args.review_model!=models['B'] else None
-                raw,pending=replay_task(args.replay_bc,ch,label,lambda raw:b_gate(raw,piece),folder,receipt) if args.replay_bc else task(client,models['B'],policies[models['B']]['parameters'],B_SCHEMA,material,lambda raw:b_gate(raw,piece),folder,label,receipt,'B',reviewer)
+                raw,pending=replay_or_call(args.replay_bc,ch,label,lambda raw:b_gate(raw,piece),folder,receipt,client,models['B'],policies[models['B']]['parameters'],B_SCHEMA,material,'B',reviewer)
                 b_convert(raw,piece,doc,pending)
                 if pending:degraded.append(label)
             # C按标注组和现场范围独立负责，不沿用B组范围。
@@ -343,7 +351,7 @@ def run(args):
                 piece=dict(data,paragraphs=ps,owned_paragraph_ids=[p['paragraph_id'] for p in ps],group=g,facts=[],context_paragraphs=[])
                 reviewer=(args.review_model,policies[args.review_model]['parameters']) if args.review_model and args.review_model!=models['C'] else None
                 label='C_g'+str(g)
-                raw,pending=replay_task(args.replay_bc,ch,label,lambda raw:c_gate(raw,piece),folder,receipt) if args.replay_bc else task(client,models['C'],policies[models['C']]['parameters'],C_SCHEMA,piece,lambda raw:c_gate(raw,piece),folder,label,receipt,'C',reviewer)
+                raw,pending=replay_or_call(args.replay_bc,ch,label,lambda raw:c_gate(raw,piece),folder,receipt,client,models['C'],policies[models['C']]['parameters'],C_SCHEMA,piece,'C',reviewer)
                 c_convert(raw,piece,doc,pending)
                 if pending:degraded.append('C_g'+str(g))
             facts=chapter_facts(data,doc)
