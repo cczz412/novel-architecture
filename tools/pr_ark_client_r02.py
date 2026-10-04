@@ -22,7 +22,9 @@ def is_blocked():
     if not RECOVERY.exists():return True
     try:
         proof=json.loads(RECOVERY.read_text())
-        return not (proof.get('ok') is True and len(proof.get('probe_jobs',[]))>=2
+        probes=[r.get('probe',{}) for r in proof.get('receipts',[])]
+        representative=(len(probes)>=2 and all(p.get('ok') is True and p.get('input_utf8_bytes',0)>=40000 and p.get('max_output_tokens',0)>=8000 for p in probes))
+        return not (proof.get('ok') is True and len(proof.get('probe_jobs',[]))>=2 and representative
                     and proof.get('blocked_sha256')==hashlib.sha256(BLOCKED.read_bytes()).hexdigest())
     except (ValueError,OSError):return True
 
