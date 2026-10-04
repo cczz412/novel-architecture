@@ -56,6 +56,10 @@ def run(args):
     receipt=dict(execution_identity='Codex',model=args.model,book=args.book,round=args.round,chapters_requested=8,completed_chapters=[],clean_chapters=[],degraded_chapters=[],rewrites=0,calls=[],partial=False,
         code_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),reused_source=str(source),reused_layers=['A','B'],config=dict(c_group=args.c_group,c_steps=['段标签与感知者','整章现场五格']))
     prior=json.loads((source/'prediction.json').read_text());result=copy.deepcopy(prior);result['C']=[]
+    old_receipt=json.loads((source/'run_receipt.json').read_text())
+    inherited={d['chapter']:[v for v in d.get('steps',[]) if not v.startswith('C')] for d in old_receipt.get('degraded_chapters',[])}
+    receipt['inherited_degraded_steps']=inherited
+    receipt['rewrite_scope']='本轮新增C重写；A/B既有重写须回原回执核对'
     # C旧黄标由新C重判；B/A未改，保留其原黄标与出处。
     result['review_audit']['review_flags']=[f for f in prior['review_audit']['review_flags'] if not str(f.get('flag_id','')).startswith('R03:C:')]
     client=Client()
@@ -65,7 +69,8 @@ def run(args):
             doc,degraded=run_c(data,client,args.model,policy,folder,receipt,args.c_group)
             result['C'].extend(doc['C']);result['review_audit']['review_flags'].extend(doc['review_audit']['review_flags'])
             receipt['completed_chapters'].append(ch)
-            if degraded:receipt['degraded_chapters'].append(dict(chapter=ch,steps=degraded))
+            combined=inherited.get(ch,[])+degraded
+            if combined:receipt['degraded_chapters'].append(dict(chapter=ch,steps=combined,new_c_steps=degraded))
             else:receipt['clean_chapters'].append(ch)
             dump(folder/'result.json',doc)
             dump(output/'prediction.json',result);dump(output/'run_receipt.json',receipt)
