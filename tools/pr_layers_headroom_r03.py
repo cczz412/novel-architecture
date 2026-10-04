@@ -206,12 +206,21 @@ def a_gate(raw,kind,material):
     current={f['local_key'] for f in material['current_facts']};known=current|{f['local_key'] for f in material.get('previous_facts',[])}
     if kind=='discover':
         if not isinstance(raw.get('old_rows'),list) or not isinstance(raw.get('plans'),list):raise ValueError('A发现须old_rows/plans两数组')
-        expected={r['local_key'] for r in material['old_plan_rows']};seen=[r.get('key') for r in raw['old_rows'] if isinstance(r,dict)]
-        if any(not isinstance(k,str) for k in seen):raise ValueError('旧行key须字符串')
-        for key in sorted(expected-set(seen)):err.append(dict(key=key,field='旧召回去向',error='缺失',native_field=next(r.get('native_field') for r in material['old_plan_rows'] if r['local_key']==key)))
-        for key in sorted(set(seen)-expected):err.append(dict(key=key,field='旧召回去向',error='越界'))
+        declared={r['local_key']:r for r in material['old_plan_rows']};expected=set(declared)
+        native=[dict(key=k,native_field=v.get('native_field'),native_value_type=type(v.get('candidate_value')).__name__) for k,v in declared.items()]
+        seen=[]
+        for index,row in enumerate(raw['old_rows']):
+            key=row.get('key') if isinstance(row,dict) else None
+            if not isinstance(key,str):
+                err.append(dict(path=f'old_rows[{index}]',field='key',error='旧行key须字符串',row_type=type(row).__name__,value_type=type(key).__name__,declared_native_fields=native))
+            else:seen.append(key)
+        def old_error(key,error):
+            row=declared.get(key,{})
+            return dict(key=key,field='旧召回去向',error=error,key_type=type(key).__name__,native_field=row.get('native_field'),native_value_type=type(row.get('candidate_value')).__name__ if row else '输入未声明')
+        for key in sorted(expected-set(seen)):err.append(old_error(key,'缺失'))
+        for key in sorted(set(seen)-expected):err.append(old_error(key,'越界'))
         for key in seen:
-            if seen.count(key)>1:err.append(dict(key=key,field='旧召回去向',error='重复'))
+            if seen.count(key)>1:err.append(old_error(key,'重复'))
         for i,r in enumerate(raw['old_rows']):
             if not isinstance(r,dict) or r.get('meaning') not in ('沿用原意','修正原意','非计划保留原类','审查批注','未决'):err.append(dict(path=f'old_rows[{i}]',error='去向meaning值错误'))
         for i,r in enumerate(raw['plans']):
