@@ -116,6 +116,30 @@ def chapter_facts(data,candidate):
     return [{'local_key':f['local_key'],'text':f['text'],'paragraph_ids':f.get('paragraph_ids',[])} for f in data['facts'] if f['local_key'] in kept]+[{k:b.get(k) for k in ('local_key','text','evidence')} for b in candidate['B']]
 
 
+def execute_groups(pieces,call):
+    """仅维持两个在途组；出现失败就不启动下一组，等待已发请求结算。"""
+    results={};failed=[];remaining=iter(pieces);aborted=False
+    with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        running={}
+        for _ in range(WORKERS):
+            p=next(remaining,None)
+            if p is not None:running[pool.submit(call,p)]=p['group']
+        while running:
+            done,_=concurrent.futures.wait(running,return_when=concurrent.futures.FIRST_COMPLETED)
+            for future in done:
+                idx=running.pop(future)
+                try:results[idx]=future.result()
+                except Exception as exc:
+                    failed.append({'group':idx,'error':str(exc)});aborted=True
+            if not aborted:
+                for _ in done:
+                    p=next(remaining,None)
+                    if p is not None:running[pool.submit(call,p)]=p['group']
+        if aborted:
+            failed.extend({'group':p['group'],'error':'前组失败，本组未启动'} for p in remaining)
+    return results,failed
+
+
 def run(args):
     output=external(args.out);output.mkdir(parents=True,exist_ok=True)
     config=next(r for r in json.loads((OUT/'books_selected.json').read_text()) if r['code']==args.book)
@@ -131,14 +155,8 @@ def run(args):
         chapter=empty_result();failed=[]
         pieces=groups(data)
         try:
-            with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
-                futures={pool.submit(bc_call,p,policy,args.model,folder,args.guard):p['group'] for p in pieces}
-                results={}
-                for future in concurrent.futures.as_completed(futures):
-                    idx=futures[future]
-                    try:results[idx]=future.result()
-                    except Exception as exc:failed.append({'group':idx,'error':str(exc)})
-                if failed:raise ValueError('本章有未完成分组：'+json.dumps(failed,ensure_ascii=False))
+            results,failed=execute_groups(pieces,lambda p:bc_call(p,policy,args.model,folder,args.guard))
+            if failed:raise ValueError('本章有未完成分组：'+json.dumps(failed,ensure_ascii=False))
             for idx in sorted(results):
                 part,usages=results[idx];receipt['calls'].extend(usages)
                 chapter['B'].extend(part['B']);chapter['C'].extend(part['C'])
