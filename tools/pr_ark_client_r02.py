@@ -11,13 +11,18 @@ import urllib.parse
 import urllib.request
 import uuid
 
-OUT = Path('/workspace/codex-work/out/管线修复_R03')
+OUT = Path('/workspace/codex-work/out/管线修复_R04')
 TRANSPORT_RETRIES = 2
 BLOCKED = OUT / 'control/UPSTREAM_BLOCKED.json'
 RECOVERY = OUT / 'control/RECOVERY_CONFIRMED.json'
 
 
-def is_blocked():
+OR_MODELS = {'xiaomi/mimo-v2.6-flash', 'xiaomi/mimo-v2.6-pro', 'typesafe/jev-router'}
+
+
+def is_blocked(model=None):
+    if model in OR_MODELS:
+        return False
     if not BLOCKED.exists():return False
     if not RECOVERY.exists():return True
     try:
@@ -64,21 +69,22 @@ class Client:
             json.dumps(dict(execution_identity='Codex', job_id=self.job, **event), ensure_ascii=False) + '\n')
 
     def call(self, model, messages, parameters, max_tokens=32000):
-        if is_blocked():
+        if is_blocked(model):
             raise RuntimeError('已观察到上游额度或限流错误，停止新请求')
-        if set(parameters) - {'thinking', 'reasoning_effort'}:
-            raise ValueError('仅允许方舟思考控制参数')
+        allowed = {'reasoning'} if model in OR_MODELS else {'thinking', 'reasoning_effort'}
+        if set(parameters) - allowed:
+            raise ValueError('思考字段与模型路由不符')
         payload = dict(model=model, messages=messages, max_tokens=max_tokens, temperature=0,
                        response_format={'type': 'json_object'}, **parameters)
         req = urllib.request.Request(
             self.base + '/chat/completions', data=json.dumps(payload, ensure_ascii=False).encode(),
             headers={'Content-Type': 'application/json', 'X-PR-Job-ID': self.job})
         for attempt in range(TRANSPORT_RETRIES + 1):
-            if is_blocked():
+            if is_blocked(model):
                 raise RuntimeError('已观察到上游额度或限流错误，停止新请求')
             start = time.monotonic()
             try:
-                with self.opener.open(req, timeout=1200) as response:
+                with self.opener.open(req, timeout=2400) as response:
                     data = json.load(response)
                 choice = data.get('choices', [{}])[0]
                 content = choice.get('message', {}).get('content') or ''
@@ -101,12 +107,16 @@ class Client:
                 self.trace(dict(model=model, attempt=attempt, http_status=exc.code,
                                 elapsed_s=round(time.monotonic()-start, 3), parameters=parameters))
                 if exc.code in (402, 429):
-                    BLOCKED.parent.mkdir(parents=True, exist_ok=True)
-                    BLOCKED.write_text(json.dumps(dict(execution_identity='Codex', job_id=self.job,
-                                                       model=model, http_status=exc.code,
-                                                       reason='上游额度或限流错误，停止后续请求'),
-                                                  ensure_ascii=False)+'\n')
-                    raise RuntimeError('网关返回 HTTP '+str(exc.code)+'，停止新请求') from None
+                    try:
+                        detail = json.load(exc).get('error', {})
+                    except (ValueError, OSError):
+                        detail = {}
+                    code = detail.get('code', 'budget_or_quota') if isinstance(detail, dict) else detail if isinstance(detail, str) else 'budget_or_quota'
+                    self.trace(dict(model=model, attempt=attempt, http_status=exc.code, error_code=code, retry_after=detail.get('retry_after') if isinstance(detail, dict) else None))
+                    # 本轮窗口由网关管理；不写跨路由永久阻塞，不叠加额度重试。
+                    raise RuntimeError('网关额度阻塞：'+str(code)+'；本作业停止新请求') from None
+                if model in OR_MODELS:
+                    raise RuntimeError('OR网关已承担有限退避，客户端不叠加HTTP重试：'+str(exc.code)) from None
                 if exc.code not in (500, 502, 503, 504) or attempt == TRANSPORT_RETRIES:
                     raise RuntimeError('网关返回 HTTP '+str(exc.code)) from None
                 time.sleep((2, 6)[attempt])
