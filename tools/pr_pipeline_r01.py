@@ -218,15 +218,25 @@ def configure_probe(client,output):
         if metadata is None:
             policies[model]={'usable':False,'reason':'模型目录缺失'};continue
         supported=metadata.get('supported_parameters',[])
-        reasoning={'enabled':False,'exclude':True}
+        capabilities=metadata.get('reasoning') or {}
+        mandatory=capabilities.get('mandatory',False)
+        if mandatory:
+            efforts=capabilities.get('supported_efforts') or []
+            if not efforts:
+                policies[model]={'usable':False,'reason':'强制思考模型未说明可用低档'};continue
+            reasoning={'effort':efforts[-1],'exclude':True}
+        else:
+            reasoning={'enabled':False,'exclude':True}
         try:
-            response=client.call(model,[{'role':'user','content':'虚构测试。只输出 JSON：{"ok":true}。'}],reasoning,max_tokens=128)
+            response=client.call(model,[{'role':'user','content':'虚构测试。只输出 JSON：{"ok":true}。'}],reasoning,max_tokens=2048 if mandatory else 128)
             dump(output/(model.replace('/','_')+'_probe.json'),response)
             detail=response.get('usage',{}).get('completion_tokens_details') or {}
             rt=detail.get('reasoning_tokens')
-            policies[model]={'usable':rt==0,'reasoning':reasoning,'reasoning_tokens':rt,
-                             'supported_parameters':supported,'verified':rt==0,
-                             'reason':'实测关闭思考' if rt==0 else '思考 token 未证明为零，等待核对'}
+            stop=response['choices'][0].get('finish_reason')=='stop'
+            verified=stop and rt is not None and (mandatory or rt==0)
+            policies[model]={'usable':verified,'reasoning':reasoning,'reasoning_tokens':rt,'mandatory':mandatory,
+                             'supported_parameters':supported,'verified':verified,
+                             'reason':'实测最低思考档，不能关闭' if mandatory and verified else '实测关闭思考' if verified else '思考量或结束状态未验证'}
         except Exception as exc:
             policies[model]={'usable':False,'reason':str(exc)}
     dump(output/'reasoning_policy.json',policies)
