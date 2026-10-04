@@ -202,7 +202,7 @@ def c_convert(raw,data,doc,pending):
 
 
 def a_gate(raw,kind,material):
-    err=[];sources={p['paragraph_id']:p['text'] for p in material['paragraphs']}
+    err=[];conversion_log=[];sources={p['paragraph_id']:p['text'] for p in material['paragraphs']}
     current={f['local_key'] for f in material['current_facts']};known=current|{f['local_key'] for f in material.get('previous_facts',[])}
     if kind=='discover':
         if not isinstance(raw.get('old_rows'),list) or not isinstance(raw.get('plans'),list):raise ValueError('A发现须old_rows/plans两数组')
@@ -216,8 +216,13 @@ def a_gate(raw,kind,material):
             if not isinstance(r,dict) or r.get('meaning') not in ('沿用原意','修正原意','非计划保留原类','审查批注','未决'):err.append(dict(path=f'old_rows[{i}]',error='去向meaning值错误'))
         for i,r in enumerate(raw['plans']):
             if isinstance(r,dict):
-                stub, conversions = normalize(dict(add=[dict(evidence=[dict(p=r.get('p'),q=r.get('q'))])]), dict(material,owned_paragraph_ids=list(sources),facts=[]))
-                r['p']=stub['add'][0]['evidence'][0]['p']
+                try:
+                    stub, conversions = normalize(dict(add=[dict(evidence=[dict(p=r.get('p'),q=r.get('q'))])]), dict(material,owned_paragraph_ids=list(sources),facts=[]))
+                    r['p']=stub['add'][0]['evidence'][0]['p']
+                    conversion_log.extend(dict(c,path='plans['+str(i)+'].p') for c in conversions)
+                except ValueError as e:
+                    err.append(dict(path='plans['+str(i)+']',error=str(e)))
+                    continue
             if not isinstance(r,dict):err.append(dict(path=f'plans[{i}]',error='计划须对象'));continue
             if not isinstance(r.get('content'),str) or not r.get('content') or not isinstance(r.get('subject'),str) or not r['subject']:err.append(dict(path=f'plans[{i}]',error='计划正文或主体缺失'))
             if not isinstance(r.get('old_keys'),list) or not set(r['old_keys']).issubset(expected):err.append(dict(path=f'plans[{i}]',error='old_keys须已提供旧召回键数组'))
@@ -243,7 +248,7 @@ def a_gate(raw,kind,material):
             if r.get(field) is not None and r[field] not in known:err.append(dict(path=f'{kind}[{i}]',field=field,error='引用不在有效事实版本'))
         if r.get('status')=='兑现' and not r.get('fulfilled'):err.append(dict(path=f'{kind}[{i}]',error='兑现缺履约事实键'))
         if not isinstance(r.get('basis'),list) or not set(r['basis']).issubset(current):err.append(dict(path=f'{kind}[{i}]',error='basis须本章有效事实键数组'))
-    return raw,err,[]
+    return raw,err,conversion_log
 
 
 def a_apply(raw,material,chapter,prior,kind,pending):
