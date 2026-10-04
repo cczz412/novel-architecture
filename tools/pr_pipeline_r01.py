@@ -139,7 +139,7 @@ def merge_rows(old,new,key):
     return list(result.values())
 
 
-def assemble(result,chapter_result):
+def _assemble(result,chapter_result):
     for k in ('A','B'):
         result[k]=merge_rows(result[k],chapter_result[k],'change_id')
     for k in ('C','unresolved','coverage'):
@@ -171,6 +171,15 @@ def assemble(result,chapter_result):
                 row['plan']['status']=s['status']
                 row['as_of_chapter']=s['chapter']
                 row['candidate_refs']={k:s.get(k) for k in ('source_record_key','fulfilled_record_key','condition_record_key')}
+    return result
+
+
+def assemble(result,chapter_result):
+    # 验证失败时不留半套变动，避免已有历史与当前候选失去对应。
+    candidate=copy.deepcopy(result)
+    _assemble(candidate,chapter_result)
+    result.clear()
+    result.update(candidate)
     return result
 
 
