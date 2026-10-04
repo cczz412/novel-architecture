@@ -1,5 +1,5 @@
 # 执行身份：Codex
-"""分层小任务、有限回传、逐条隔离；实验输出与原文只落本轮外部目录。"""
+"""A生成与不同模型只判复核，共享一次生成重写；每步8千上限。"""
 import argparse
 import copy
 import hashlib
@@ -52,7 +52,7 @@ def task(client,model,policy,schema,material,gate,folder,label,receipt,layer,rev
     original=prompt(schema,material); current=original;last={};initial=None
     errors=[]
     for attempt in range(2):
-        response=client.call(model,current,policy,max_tokens=16000 if layer!='C' else 24000)
+        response=client.call(model,current,policy,max_tokens=8000)
         dump(folder/(label+f'_response_{attempt}.json'),response)
         receipt['calls'].append(dict(layer=layer,model=model,attempt=attempt,usage=response.get('usage',{})))
         try:
@@ -206,12 +206,21 @@ def a_gate(raw,kind,material):
     current={f['local_key'] for f in material['current_facts']};known=current|{f['local_key'] for f in material.get('previous_facts',[])}
     if kind=='discover':
         if not isinstance(raw.get('old_rows'),list) or not isinstance(raw.get('plans'),list):raise ValueError('A发现须old_rows/plans两数组')
-        expected={r['local_key'] for r in material['old_plan_rows']};seen=[r.get('key') for r in raw['old_rows'] if isinstance(r,dict)]
-        if any(not isinstance(k,str) for k in seen):raise ValueError('旧行key须字符串')
-        for key in sorted(expected-set(seen)):err.append(dict(key=key,field='旧召回去向',error='缺失',native_field=next(r.get('native_field') for r in material['old_plan_rows'] if r['local_key']==key)))
-        for key in sorted(set(seen)-expected):err.append(dict(key=key,field='旧召回去向',error='越界'))
+        declared={r['local_key']:r for r in material['old_plan_rows']};expected=set(declared)
+        native=[dict(key=k,native_field=v.get('native_field'),native_value_type=type(v.get('candidate_value')).__name__) for k,v in declared.items()]
+        seen=[]
+        for index,row in enumerate(raw['old_rows']):
+            key=row.get('key') if isinstance(row,dict) else None
+            if not isinstance(key,str):
+                err.append(dict(path=f'old_rows[{index}]',field='key',error='旧行key须字符串',row_type=type(row).__name__,value_type=type(key).__name__,declared_native_fields=native))
+            else:seen.append(key)
+        def old_error(key,error):
+            row=declared.get(key,{})
+            return dict(key=key,field='旧召回去向',error=error,key_type=type(key).__name__,native_field=row.get('native_field'),native_value_type=type(row.get('candidate_value')).__name__ if row else '输入未声明')
+        for key in sorted(expected-set(seen)):err.append(old_error(key,'缺失'))
+        for key in sorted(set(seen)-expected):err.append(old_error(key,'越界'))
         for key in seen:
-            if seen.count(key)>1:err.append(dict(key=key,field='旧召回去向',error='重复'))
+            if seen.count(key)>1:err.append(old_error(key,'重复'))
         for i,r in enumerate(raw['old_rows']):
             if not isinstance(r,dict) or r.get('meaning') not in ('沿用原意','修正原意','非计划保留原类','审查批注','未决'):err.append(dict(path=f'old_rows[{i}]',error='去向meaning值错误'))
         for i,r in enumerate(raw['plans']):
@@ -317,6 +326,13 @@ def replay_task(source,ch,label,gate,folder,receipt):
     return raw,errs
 
 
+def replay_or_call(source,ch,label,gate,folder,receipt,client,model,parameters,schema,material,layer,reviewer=None):
+    if source and any((external(source)/('ch'+ch)).glob(label+'_response_[01].json')):
+        return replay_task(source,ch,label,gate,folder,receipt)
+    receipt['fresh_steps'].append(dict(chapter=ch,label=label,layer=layer,reason='原响应缺失，补跑本步' if source else '完整新调用'))
+    return task(client,model,parameters,schema,material,gate,folder,label,receipt,layer,reviewer)
+
+
 from pr_independent_r03 import task_judged as task
 
 def run(args):
@@ -329,6 +345,7 @@ def run(args):
     catalog=[]
     receipt['replay_source']=args.replay_bc
     receipt['replayed_steps']=[]
+    receipt['fresh_steps']=[]
     for n in range(1,args.chapters+1):
         ch=f'{n:02d}';data=read_book(config,ch);folder=output/('ch'+ch);folder.mkdir(exist_ok=True);doc=empty_result();degraded=[]
         try:
@@ -336,7 +353,7 @@ def run(args):
                 label='B_g'+str(piece['group'])
                 material={k:v for k,v in piece.items() if k not in ('basis_hashes',)}
                 reviewer=(args.review_model,policies[args.review_model]['parameters']) if args.review_model and args.review_model!=models['B'] else None
-                raw,pending=replay_task(args.replay_bc,ch,label,lambda raw:b_gate(raw,piece),folder,receipt) if args.replay_bc else task(client,models['B'],policies[models['B']]['parameters'],B_SCHEMA,material,lambda raw:b_gate(raw,piece),folder,label,receipt,'B',reviewer)
+                raw,pending=replay_or_call(args.replay_bc,ch,label,lambda raw:b_gate(raw,piece),folder,receipt,client,models['B'],policies[models['B']]['parameters'],B_SCHEMA,material,'B',reviewer)
                 b_convert(raw,piece,doc,pending)
                 if pending:degraded.append(label)
             # C按标注组和现场范围独立负责，不沿用B组范围。
@@ -345,7 +362,7 @@ def run(args):
                 piece=dict(data,paragraphs=ps,owned_paragraph_ids=[p['paragraph_id'] for p in ps],group=g,facts=[],context_paragraphs=[])
                 reviewer=(args.review_model,policies[args.review_model]['parameters']) if args.review_model and args.review_model!=models['C'] else None
                 label='C_g'+str(g)
-                raw,pending=replay_task(args.replay_bc,ch,label,lambda raw:c_gate(raw,piece),folder,receipt) if args.replay_bc else task(client,models['C'],policies[models['C']]['parameters'],C_SCHEMA,piece,lambda raw:c_gate(raw,piece),folder,label,receipt,'C',reviewer)
+                raw,pending=replay_or_call(args.replay_bc,ch,label,lambda raw:c_gate(raw,piece),folder,receipt,client,models['C'],policies[models['C']]['parameters'],C_SCHEMA,piece,'C',reviewer)
                 c_convert(raw,piece,doc,pending)
                 if pending:degraded.append('C_g'+str(g))
             facts=chapter_facts(data,doc)
@@ -360,16 +377,12 @@ def run(args):
                 material=dict(common,existing=existing[start:start+args.a_group]);label='A_update'+str(start//args.a_group)
                 reviewer=(args.review_model,policies[args.review_model]['parameters']) if args.review_model and args.review_model!=models['A'] else None
                 raw,pending=task(client,models['A'],policies[models['A']]['parameters'],A_UPDATE,material,lambda raw:a_gate(raw,'update',material),folder,label,receipt,'A',reviewer)
-                for e in pending:
-                    if e.get('independent'):flag(doc,data,'A',e.get('key'),e['error'])
                 a_apply(raw,material,doc,result,'update',pending)
                 if pending:degraded.append(label)
             material=dict(common,old_plan_rows=data['old_plan_rows'],existing=existing)
             reviewer=(args.review_model,policies[args.review_model]['parameters']) if args.review_model and args.review_model!=models['A'] else None
             raw,pending=task(client,models['A'],policies[models['A']]['parameters'],A_DISCOVER,material,lambda raw:a_gate(raw,'discover',material),folder,'A_discover',receipt,'A',reviewer)
             a_apply(raw,material,doc,result,'discover',pending)
-            for e in pending:
-                if e.get('independent'):flag(doc,data,'A',e.get('key'),e['error'])
             if pending:degraded.append('A_discover')
             # 每段去向来自当前生效事实的位置；未绑定不自动叫无事实。
             for p in data['paragraphs']:

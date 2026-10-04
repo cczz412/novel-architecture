@@ -1,7 +1,7 @@
 # 执行身份：Codex
 """不同模型只判点名条目；重写仍由原生成模型承担并共享一次上限。"""
 import json
-from pr_layers_v2_r03 import parse, prompt, task as generate_task, dump
+from pr_layers_headroom_r03 import parse, prompt, task as generate_task, dump
 
 JUDGE = '''你是不同模型的独立复核岗，只判不改。只用输入原文和有效事实，不借已知故事。
 逐个检查review_ids指定的条目；每个编号恰好返回一次。输出 {"reviews":[{"id":指定编号,"decision":"通过/明确错误/不确定","field":具体字段,"reason":本条具体依据,"p":原段号或null,"q":逐字短引或null}]}。
@@ -20,7 +20,7 @@ def judge(client,model,parameters,schema,material,candidate,folder,label,receipt
     messages=prompt(JUDGE,dict(rule_schema=schema,materials=material,candidate=candidate,review_ids=ids))
     current=messages;errors=[];last=[]
     for attempt in range(2):
-        response=client.call(model,current,parameters,max_tokens=16000)
+        response=client.call(model,current,parameters,max_tokens=8000)
         dump(folder/(label+f'_judge_response_{attempt}.json'),response)
         receipt['calls'].append(dict(layer='A复核',model=model,attempt=attempt,independent=True,usage=response.get('usage',{})))
         try:
@@ -50,7 +50,7 @@ def task_judged(client,model,policy,schema,material,gate,folder,label,receipt,la
     issues=[r for r in reviews if r['decision']!='通过']
     task_info=json.loads((folder/(label+'_task.json')).read_text())
     if any(r['decision']=='明确错误' for r in issues) and task_info['rewrites']==0:
-        response=client.call(model,prompt(schema,material)+[dict(role='assistant',content=json.dumps(candidate,ensure_ascii=False)),dict(role='user',content='不同模型逐条判出的明确问题：'+json.dumps(issues,ensure_ascii=False)+'。只修有原文依据的这些问题，其他正确项保持；输出本步骤完整对象。生成重写上限只剩这一次。')],policy,max_tokens=16000)
+        response=client.call(model,prompt(schema,material)+[dict(role='assistant',content=json.dumps(candidate,ensure_ascii=False)),dict(role='user',content='不同模型逐条判出的明确问题：'+json.dumps(issues,ensure_ascii=False)+'。只修有原文依据的这些问题，其他正确项保持；输出本步骤完整对象。生成重写上限只剩这一次。')],policy,max_tokens=8000)
         dump(folder/(label+'_independent_rewrite_response.json'),response)
         receipt['calls'].append(dict(layer='A',model=model,attempt=1,independent_feedback=True,usage=response.get('usage',{})));receipt['rewrites']+=1
         try:
