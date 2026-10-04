@@ -200,6 +200,33 @@ def inherited(path, chapter, layer):
     return out
 
 
+def seed_before(path, chapter):
+    """只取已经交付的早章状态，不从金标或旧召回猜状态。"""
+    out = empty_result()
+    if not path:
+        return out, dict(source='输入旧召回；无可信的前章已交付计划状态', plans=0,
+                         limitation='早章未跑，不把旧召回猜成完整历史；本章仍逐项判断提供的旧召回')
+    p = source(path)
+    doc = json.loads((p / 'prediction.json').read_text())
+    completed = set(json.loads((p / 'run_receipt.json').read_text())['completed_chapters'])
+    for h in doc['review_audit']['plan_history']:
+        states = [s for s in h['states'] if s['chapter'] < chapter and s['chapter'] in completed]
+        if not states:
+            continue
+        out['review_audit']['plan_history'].append(dict(copy.deepcopy(h), states=copy.deepcopy(states)))
+        for r in doc['A']:
+            if r['change_id'] in h['A_change_ids']:
+                row = copy.deepcopy(r)
+                row['as_of_chapter'] = states[-1]['chapter']
+                if row.get('plan'):
+                    row['plan']['status'] = states[-1]['status']
+                    row['candidate_refs'] = {k:states[-1].get(k) for k in ('source_record_key','fulfilled_record_key','condition_record_key')}
+                out['A'].append(row)
+    out['B'] = [copy.deepcopy(r) for r in doc['B'] if r.get('chapter', '99') < chapter]
+    return out, dict(source=str(p), plans=len(out['review_audit']['plan_history']),
+                     limitation='只继承已保存早章状态；来源没交付的计划仍缺失，未重判早章')
+
+
 def run_a(data, doc, prior, catalog, client, model, policy, folder, receipt):
     facts = chapter_facts(data, doc)
     histories = prior['review_audit']['plan_history']
@@ -289,20 +316,31 @@ def run(args):
     policies = json.loads((OUT / 'probe/reasoning_policy.json').read_text())
     models = {k:getattr(args, k.lower() + '_model') or args.model for k in 'ABC'}
     sources = {k:getattr(args, k.lower() + '_source') or args.source for k in 'ABC'}
+    for layer in 'ABC':
+        if layer not in args.layers and sources[layer]:
+            saved = json.loads((source(sources[layer]) / 'run_receipt.json').read_text())
+            models[layer] = saved.get('layer_models', {}).get(layer, saved['model'])
     roles = {'A':{'deepseek-v4.1-flash'}, 'C':{'deepseek-v4.1-flash'}, 'B':{'glm-5.3-flash','xiaomi/mimo-v2.6-flash'}}
     for layer in args.layers:
         if models[layer] not in roles[layer]:
             raise ValueError('生成模型不符合本轮岗位分工：'+layer)
-    receipt = dict(review_model=args.review_model, review_layers=args.review_layers, upgrade_model=args.upgrade_model, policies=policies, dependency_stale_A=('B' in args.layers and 'A' not in args.layers), execution_identity='Codex', book=args.book, model=args.model, layer_models=models, round=args.round, chapters_requested=args.chapters, completed_chapters=[], clean_chapters=[], degraded_chapters=[], calls=[], rewrites=0, checkpoint_hits=0, partial=False, inherited_layers=[k for k in 'ABC' if k not in args.layers], layer_sources=sources, code_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+    selected = getattr(args, 'chapter_ids', None) or [f'{n:02d}' for n in range(1, args.chapters + 1)]
+    selected = sorted(set(f'{int(ch):02d}' for ch in selected))
+    receipt = dict(review_model=args.review_model, review_layers=args.review_layers, upgrade_model=args.upgrade_model, policies=policies, dependency_stale_A=('B' in args.layers and 'A' not in args.layers), execution_identity='Codex', book=args.book, model=args.model, layer_models=models, round=args.round, chapters_requested=len(selected), chapter_ids=selected, score_scope='full_book' if len(selected)==8 else 'chapter_projection', completed_chapters=[], clean_chapters=[], degraded_chapters=[], calls=[], rewrites=0, checkpoint_hits=0, partial=False, inherited_layers=[k for k in 'ABC' if k not in args.layers], layer_sources=sources, code_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
     receipt['b_group_size'] = getattr(args, 'b_group', 16)
     receipt['generation_rewrite_limit'] = 1
     receipt['layer_completed_chapters'] = {k:[] for k in 'ABC'}
     receipt['partial_chapters'] = []
-    result, catalog = empty_result(), []
+    result, seed = seed_before(getattr(args, 'a_seed_source', None), selected[0])
+    receipt['a_start_source'] = seed
+    receipt['a_history_gaps'] = [f'{n:02d}' for n in range(int(selected[0]), int(selected[-1])) if f'{n:02d}' not in selected]
+    catalog = []
+    if result['B']:
+        for n in range(1, int(selected[0])):
+            catalog.extend(chapter_facts(read_book(config, f'{n:02d}'), result))
     result['batch_id'] = 'PR_R04'
     client = Client()
-    for n in range(1, args.chapters + 1):
-        ch = f'{n:02d}'
+    for ch in selected:
         data = read_book(config, ch)
         folder = output / ('ch' + ch)
         folder.mkdir(exist_ok=True)
@@ -397,6 +435,8 @@ def main():
     p.add_argument('--layers', choices=('A','B','C','AB','ABC'), required=True)
     p.add_argument('--round', type=int, choices=range(1,9), required=True)
     p.add_argument('--chapters', type=int, choices=range(1,9), default=8)
+    p.add_argument('--chapter-ids', nargs='+', choices=tuple(f'{n:02d}' for n in range(1,9)))
+    p.add_argument('--a-seed-source')
     p.add_argument('--review-model', choices=('kimi-k2.8-preview',))
     p.add_argument('--review-layers', choices=('A','B','C','ABC'), default='A')
     p.add_argument('--upgrade-model', choices=('xiaomi/mimo-v2.6-pro',))
