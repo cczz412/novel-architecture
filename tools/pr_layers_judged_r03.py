@@ -68,16 +68,6 @@ def task(client,model,policy,schema,material,gate,folder,label,receipt,layer,rev
         if attempt==1:break
         receipt['rewrites']+=1
         current=original+[dict(role='assistant',content=response['choices'][0]['message'].get('content') or '{}'),dict(role='user',content='机检明确错误：'+signature+'。只修这些错误，输出本步完整对象，其他正确内容保留。最多再写一次。')]
-    if reviewer and not err:
-        response=client.call(reviewer[0],original+[dict(role='assistant',content=json.dumps(last,ensure_ascii=False)),dict(role='user',content='执行身份：Codex。你是不同模型的独立复核员。逐项对原文核正文保真、主体、否定推测、计划合法性和履约、视角和场景格。只修有原文依据的错误，正确项原样保留，返回同结构完整JSON；不能按个人偏好重写。')],reviewer[1],max_tokens=24000)
-        dump(folder/(label+'_independent_response.json'),response)
-        receipt['calls'].append(dict(layer=layer,model=reviewer[0],attempt=0,independent=True,usage=response.get('usage',{})))
-        try:
-            reviewed,rerr,rlog=gate(parse(response))
-            dump(folder/(label+'_independent_gate.json'),dict(errors=rerr,conversions=rlog))
-            if not rerr:last=reviewed
-            else:err=rerr
-        except (ValueError,TypeError,KeyError,AttributeError) as e:err=[dict(path=label,error='独立复核格式未通过：'+str(e))]
     dump(folder/(label+'_task.json'),dict(execution_identity='Codex',layer=layer,model=model,rewrite_limit=1,rewrites=len(errors)-1,
         no_progress=bool(err) and initial==json.dumps(err,sort_keys=True,ensure_ascii=False),pending_errors=err))
     return last,err
