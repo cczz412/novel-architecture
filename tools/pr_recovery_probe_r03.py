@@ -13,7 +13,7 @@ def main():
     p.add_argument('--model',choices=MODELS,required=True)
     p.add_argument('--out',required=True)
     p.add_argument('--representative-bytes',type=int,default=0)
-    p.add_argument('--max-output-tokens',type=int,choices=(1000,16000,24000),default=1000)
+    p.add_argument('--max-output-tokens',type=int,choices=(1000,8000,16000,24000),default=1000)
     a=p.parse_args()
     folder=external(a.out)
     folder.mkdir(parents=True,exist_ok=True)
