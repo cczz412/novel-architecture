@@ -257,6 +257,12 @@ def a_gate(raw,kind,material):
             if r.get(field) is not None and r[field] not in known:err.append(dict(path=f'{kind}[{i}]',field=field,error='引用不在有效事实版本'))
         if r.get('status')=='兑现' and not r.get('fulfilled'):err.append(dict(path=f'{kind}[{i}]',error='兑现缺履约事实键'))
         if not isinstance(r.get('basis'),list) or not set(r['basis']).issubset(current):err.append(dict(path=f'{kind}[{i}]',error='basis须本章有效事实键数组'))
+        previous=next((item for item in material.get('existing',[]) if item.get('key')==r.get('key')),None) if kind=='update' else None
+        source=previous.get('source') if previous else r.get('source')
+        if source and r.get('status')=='兑现' and r.get('fulfilled')==source:
+            err.append(dict(path=f'{kind}[{i}]',key=r.get('key'),field='fulfilled',error='兑现引用与发起来源同键，必须给真正履约事实；没有证据不能编造'))
+        if previous and r.get('status') in STATUSES and r.get('status')!=previous['previous_state'].get('status') and isinstance(r.get('basis'),list) and not r['basis']:
+            err.append(dict(path=f'{kind}[{i}]',key=r['key'],field='basis',previous_status=previous['previous_state'].get('status'),current_status=r['status'],error='本章状态有变化但依据为空；必须给本章有效事实键'))
     return raw,err,conversion_log
 
 
@@ -339,7 +345,7 @@ def run(args):
     models={k:getattr(args,k.lower()+'_model') or args.model for k in ('A','B','C')}
     policies=json.loads(external(args.policy).read_text());client=Client();result=empty_result();result['batch_id']='PR_R03'
     receipt=dict(execution_identity='Codex',book=args.book,model=args.model,layer_models=models,round=args.round,chapters_requested=args.chapters,completed_chapters=[],clean_chapters=[],degraded_chapters=[],
-        calls=[],rewrites=0,partial=False,code_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),config=dict(b_group=args.b_group,c_group=args.c_group,a_group=args.a_group,review_model=args.review_model),unmeasured=['已保存正式版本接入','隐含语义人工真值'])
+        calls=[],rewrites=0,partial=False,code_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),config=dict(b_group=args.b_group,c_group=args.c_group,a_group=args.a_group,review_model=args.review_model,max_output_tokens=8000),unmeasured=['已保存正式版本接入','隐含语义人工真值'])
     catalog=[]
     receipt['replay_source']=args.replay_bc
     receipt['replayed_steps']=[]
