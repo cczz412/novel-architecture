@@ -21,7 +21,14 @@ SCENES = '''本步只读整章原文摘当前现场的五格，不改写法标�
 现场可跨前一步写法小组；按场景内容组织，不能每24段机械另建。回忆、讲述、梦境、内层故事提到的环境不当当前现场。不得补常识；一个原文短片段不要重复塞到多格。只输出scenes数组，段号可完整号或输入短号，逐字引文不能用省略号拼接。'''
 
 
+class COutputLimit:
+    def __init__(self,client):self.client=client
+    def call(self,model,messages,parameters,max_tokens):
+        return self.client.call(model,messages,parameters,max_tokens=min(max_tokens,8000))
+
+
 def run_c(data,client,model,parameters,folder,receipt,group_size=24,reviewer=None):
+    client=COutputLimit(client)
     annotations=[];degraded=[]
     for start in range(0,len(data['paragraphs']),group_size):
         ps=data['paragraphs'][start:start+group_size];g=start//group_size
@@ -55,7 +62,7 @@ def run(args):
     config=next(c for c in json.loads((OUT/'books_selected.json').read_text()) if c['code']==args.book)
     policy=json.loads(external(args.policy).read_text())[args.model]['parameters']
     receipt=dict(execution_identity='Codex',model=args.model,book=args.book,round=args.round,chapters_requested=8,completed_chapters=[],clean_chapters=[],degraded_chapters=[],rewrites=0,calls=[],partial=False,
-        code_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),reused_source=str(source),reused_layers=['A','B'],config=dict(c_group=args.c_group,c_steps=['段标签与感知者','整章现场五格']))
+        code_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),reused_source=str(source),reused_layers=['A','B'],config=dict(c_group=args.c_group,c_steps=['段标签与感知者','整章现场五格'],max_output_tokens=8000))
     prior=json.loads((source/'prediction.json').read_text());result=copy.deepcopy(prior);result['C']=[]
     old_receipt=json.loads((source/'run_receipt.json').read_text())
     inherited={d['chapter']:[v for v in d.get('steps',[]) if not v.startswith('C')] for d in old_receipt.get('degraded_chapters',[])}
