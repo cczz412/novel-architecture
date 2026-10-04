@@ -34,7 +34,7 @@ def messages(data):
             '\n输入材料：\n' + json.dumps(compact_materials(data), ensure_ascii=False, separators=(',', ':')))]
 
 
-def decode(response):
+def decode(response, data=None):
     choice = response['choices'][0]
     if choice.get('finish_reason') != 'stop':
         raise ValueError('输出未完整结束，不拼接截断正文')
@@ -43,6 +43,10 @@ def decode(response):
     obj = json.loads(text)
     if not isinstance(obj, dict):
         raise ValueError('顶层必须是对象')
+    if data is not None:
+        from pr_normalize_r03 import normalize
+        obj, conversions = normalize(obj, data)
+        obj['_deterministic_conversions'] = conversions
     for key in ('keep', 'exclude', 'flag', 'replace', 'add', 'paragraphs', 'scenes'):
         if not isinstance(obj.get(key), list):
             raise ValueError('字段' + key + '必须是数组')

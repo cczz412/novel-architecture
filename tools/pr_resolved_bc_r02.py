@@ -34,7 +34,8 @@ def execute(data, output, request):
         usages.append(response.get('usage',{}))
         content = response.get('choices',[{}])[0].get('message',{}).get('content') or ''
         try:
-            raw = decode(response)
+            raw = decode(response,data)
+            dump(output/(part+'_conversions_'+response_kind+'.json'),raw.pop('_deterministic_conversions',[]))
             validate_dispositions(raw,data)
             candidate, structural_pending = convert(raw,data)
         except (ValueError,KeyError,TypeError,AttributeError) as exc:

@@ -10,7 +10,7 @@ import urllib.parse
 import urllib.request
 import uuid
 
-OUT = Path('/workspace/codex-work/out/管线修复_R02')
+OUT = Path('/workspace/codex-work/out/管线修复_R03')
 TRANSPORT_RETRIES = 2
 BLOCKED = OUT / 'control/UPSTREAM_BLOCKED.json'
 
@@ -96,3 +96,9 @@ class Client:
                 if exc.code not in (500, 502, 503, 504) or attempt == TRANSPORT_RETRIES:
                     raise RuntimeError('网关返回 HTTP '+str(exc.code)) from None
                 time.sleep((2, 6)[attempt])
+
+            except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
+                self.trace(dict(model=model,attempt=attempt,http_status=0,error_type=type(exc).__name__))
+                if attempt == TRANSPORT_RETRIES:
+                    raise RuntimeError('传输失败，有限重试已用尽：'+type(exc).__name__) from None
+                time.sleep((2,6)[attempt])

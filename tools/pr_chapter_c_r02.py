@@ -32,7 +32,7 @@ def convert_response(response,data):
     stub=dict(keep=[],exclude=[],flag=[],replace=[],add=[],paragraphs=raw['paragraphs'],scenes=raw['scenes'])
     adapted=copy.deepcopy(response)
     adapted['choices'][0]['message']['content']=json.dumps(stub,ensure_ascii=False)
-    parsed=decode(adapted)
+    parsed=decode(adapted,data)
     expected={p['paragraph_id'] for p in data['paragraphs']}
     seen=[data['book_id']+':ch'+data['chapter']+':'+p['id'] if re.fullmatch(r'p\d+',p.get('id','')) else p.get('id') for p in parsed['paragraphs']]
     if set(seen)!=expected or len(seen)!=len(set(seen)):

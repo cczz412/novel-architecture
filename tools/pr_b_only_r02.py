@@ -30,7 +30,7 @@ def convert_response(response,data):
     raw['paragraphs']=[];raw['scenes']=[]
     adapted=copy.deepcopy(response)
     adapted['choices'][0]['message']['content']=json.dumps(raw,ensure_ascii=False)
-    parsed=decode(adapted)
+    parsed=decode(adapted,data)
     validate_dispositions(parsed,data)
     # 本步骤的责任只有事实；不把刻意延后的C当作模型漏交付。
     scope=dict(data,owned_paragraph_ids=[])

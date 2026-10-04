@@ -29,7 +29,7 @@ def validate(response, materials):
     expected={row['local_key'] for row in materials['old_plan_rows']}
     seen=[row['old_key'] for row in obj['old_plan_rows']]
     if set(seen)!=expected or len(seen)!=len(set(seen)):
-        raise ValueError('本章旧召回行归类有缺失、重复或越界：'+json.dumps(sorted(expected-set(seen)),ensure_ascii=False))
+        raise ValueError('本章旧召回行归类有缺失、重复或越界：'+json.dumps(dict(missing=sorted(expected-set(seen)),extra=sorted(set(seen)-expected),duplicate=sorted({k for k in seen if seen.count(k)>1}),field_types={r['local_key']:type(r.get('candidate_value')).__name__+':'+str(r.get('native_field')) for r in materials['old_plan_rows']}),ensure_ascii=False))
     available={r['change_id'] for r in obj['A']}|{r['change_id'] for r in materials['previous_plans']['A']}
     previous={h['plan_key'] for h in materials['previous_plans']['plan_history']}
     given=set()
