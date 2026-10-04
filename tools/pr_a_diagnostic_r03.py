@@ -1,7 +1,7 @@
 # 执行身份：Codex
 """A状态诊断只写数字与编号，复用原评分器的实体对齐，不替代正式分数。"""
 import argparse
-from collections import Counter
+from collections import Counter, defaultdict
 import importlib.util
 import json
 from pathlib import Path
@@ -45,28 +45,33 @@ def diagnose(gold_path, pred_path, bid, zip_path):
         pp=next((r.get('plan') for r in b['rows'] if r.get('plan')), {})
         for field in ('deadline','condition'):
             count('期限' if field=='deadline' else '条件',gp.get(field)==pp.get(field),ids)
-        gs={s['chapter']:s for s in a['states']}
-        ps={s['chapter']:s for s in b['states']}
+        gs,ps=defaultdict(list),defaultdict(list)
+        for state in a['states']:gs[state['chapter']].append(state)
+        for state in b['states']:ps[state['chapter']].append(state)
         for ch in sorted(set(gs)|set(ps)):
-            aa,bb=gs.get(ch),ps.get(ch)
-            if aa is None or bb is None:
-                counters['历史缺失' if bb is None else '历史多记'] += 1
-                entries.append(dict(gold_id=ids[0],pred_id=ids[1],chapter=ch,field='历史缺失' if bb is None else '历史多记'))
-                continue
-            count('状态',aa.get('status')==bb.get('status'),ids,ch)
-            for field in s.REF_FIELDS:
-                count('引用.'+field,s.reference_equal(aa.get(field),bb.get(field),gr,pr,fmap),ids,ch)
-            count('历史拼接重复',len([v for v in b['states'] if v['chapter']==ch])==1,ids,ch)
-            av,bv=aa.get('change_basis_record_keys') or [],bb.get('change_basis_record_keys') or []
-            remaining=list(bv)
-            for v in av:
-                match=next((j for j,k in enumerate(remaining) if s.reference_equal(v,k,gr,pr,fmap)),None)
-                if match is None:break
-                remaining.pop(match)
-            else:
-                count('状态变化依据',not remaining,ids,ch)
-                continue
-            count('状态变化依据',False,ids,ch)
+            aa,bb=gs[ch],ps[ch]
+            count('历史拼接重复',len(bb)<=1,ids,ch)
+            for index in range(max(len(aa),len(bb))):
+                avalue=aa[index] if index<len(aa) else None
+                bvalue=bb[index] if index<len(bb) else None
+                if avalue is None or bvalue is None:
+                    field='历史缺失' if bvalue is None else '历史多记'
+                    counters[field] += 1
+                    entries.append(dict(gold_id=ids[0],pred_id=ids[1],chapter=ch,state_index=index,field=field))
+                    continue
+                count('状态',avalue.get('status')==bvalue.get('status'),ids,ch)
+                for field in s.REF_FIELDS:
+                    count('引用.'+field,s.reference_equal(avalue.get(field),bvalue.get(field),gr,pr,fmap),ids,ch)
+                av,bv=avalue.get('change_basis_record_keys') or [],bvalue.get('change_basis_record_keys') or []
+                remaining=list(bv)
+                for v in av:
+                    match=next((j for j,k in enumerate(remaining) if s.reference_equal(v,k,gr,pr,fmap)),None)
+                    if match is None:break
+                    remaining.pop(match)
+                else:
+                    count('状态变化依据',not remaining,ids,ch)
+                    continue
+                count('状态变化依据',False,ids,ch)
     return dict(execution_identity='Codex',gold_entities=len(ga),pred_entities=len(pa),aligned_entities=len(pairs),missing_entities=len(missing),extra_entities=len(extra),
                 counters=dict(counters),entries=entries,
                 missing_ids=[ga[i]['id'] for i in missing],extra_ids=[pa[i]['id'] for i in extra],
