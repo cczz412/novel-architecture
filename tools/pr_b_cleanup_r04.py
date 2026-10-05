@@ -1,11 +1,15 @@
 # 执行身份：Codex
 """事实正文的窄清理步骤：只删审稿说明，保留故事内容和原键。"""
 import copy
+from collections import Counter
 import hashlib
+import json
+from pathlib import Path
 import re
 
 import pr_layers_headroom_r03 as gates
-from pr_pipeline_r02 import empty_result
+from pr_pipeline_r02 import empty_result, dump
+from pr_review_r04 import judge
 
 SCHEMA = '''本步只清理已有事实句中的审稿说明，不补漏、不重新抽句、不改写故事。
 只输出五数组keep/exclude/flag/replace/add；exclude与add必须空。每个facts旧键恰好一次。
@@ -79,7 +83,33 @@ def cleanup_gate(raw, material):
     return raw, errors, log
 
 
-def run_cleanup(data, doc, effective_facts, task, client, model, policy, folder, receipt):
+def valid_subset(raw, material):
+    """坏条目单独隔离；只将过窄检查的原键送独立复核。"""
+    facts = {f['local_key']: f for f in material['facts']}
+    candidate = dict(keep=[], exclude=[], flag=[], replace=[], add=[])
+    seen, rejected = set(), []
+    keys = [row.get('key') if isinstance(row, dict) else row for kind in ('keep', 'replace', 'flag')
+            for row in (raw.get(kind, []) if isinstance(raw.get(kind), list) else [])]
+    occurrences = Counter(key for key in keys if isinstance(key, str))
+    for kind in ('keep', 'replace'):
+        for row in raw.get(kind, []) if isinstance(raw.get(kind), list) else []:
+            key = row.get('key') if isinstance(row, dict) else row
+            if not isinstance(key, str) or key not in facts or occurrences[key] != 1 or key in seen:
+                rejected.append(dict(key=key, error='旧键越界或重复'))
+                continue
+            stub = dict(keep=[], exclude=[], flag=[], replace=[], add=[])
+            stub[kind] = [row]
+            _, errors, _ = cleanup_gate(stub, dict(material, facts=[facts[key]]))
+            if errors:
+                rejected.extend(dict(e, key=key) for e in errors)
+                continue
+            seen.add(key)
+            candidate[kind].append(row)
+    selected = dict(material, facts=[f for f in material['facts'] if f['local_key'] in seen])
+    return candidate, selected, rejected
+
+
+def run_cleanup(data, doc, effective_facts, task, client, model, policy, folder, receipt, replay_source=None):
     all_facts = []
     for f in effective_facts:
         f = copy.deepcopy(f)
@@ -98,8 +128,42 @@ def run_cleanup(data, doc, effective_facts, task, client, model, policy, folder,
                         owned_paragraph_ids=sorted(positions), scope_limits=data['scope_limits'],
                         new_key_prefix='unused:cleanup:', review_scope='指定旧句必须清掉审稿说明并保留故事内容；审稿话即使不与故事矛盾也不能通过；无其他段补漏职责')
         label = 'B_cleanup' + str(offset // 24)
-        raw, pending = task(client, model, policy, SCHEMA, material,
-                            lambda v: cleanup_gate(v, material), folder, label, receipt, 'B')
+        if replay_source:
+            origin = Path(replay_source)
+            source_receipt = json.loads((origin / 'run_receipt.json').read_text())
+            if source_receipt['book'] != receipt['book'] or source_receipt.get('b_cleanup_input') != receipt.get('b_cleanup_input'):
+                raise ValueError('清理复放来源书或事实输入版本不一致')
+            origin_done = origin / folder.name / (label + '_done.json')
+            record = json.loads(origin_done.read_text())
+            raw, pending = record['raw'], record['pending']
+            referenced = {r.get('key') if isinstance(r, dict) else r for k in ('keep','flag','replace') for r in raw.get(k, [])}
+            expected = {f['local_key'] for f in facts}
+            if referenced != expected:
+                raise ValueError('复放候选旧键范围与当前材料不一致')
+            dump(folder / (label + '_replay.json'), dict(execution_identity='Codex', source=str(origin_done),
+                 source_sha256=hashlib.sha256(origin_done.read_bytes()).hexdigest(), input_fact_sha256=hashlib.sha256(json.dumps(facts, ensure_ascii=False, sort_keys=True).encode()).hexdigest(), incremental_generation_requests=0))
+        else:
+            raw, pending = task(client, model, policy, SCHEMA, material,
+                                lambda v: cleanup_gate(v, material), folder, label, receipt, 'B')
+            record = json.loads((folder / (label + '_done.json')).read_text()) if (folder / (label + '_done.json')).exists() else {}
+        # 整批机检失败时，坏条目不能阻断其余条目的独立复核。
+        if replay_source or receipt.get('review_model') and not record.get('reviews'):
+            candidate, reviewed_material, rejected = valid_subset(raw, material)
+            review_model = receipt.get('review_model')
+            if not review_model or review_model == model:
+                raise ValueError('清理复放或部分复核必须有独立模型')
+            reviews = judge(client, review_model, receipt['policies'][review_model]['parameters'], SCHEMA,
+                            reviewed_material, candidate, folder, label + '_subset', 'B') if reviewed_material['facts'] else []
+            approved = {r['id'] for r in reviews if r['decision'] == '通过'}
+            accepted = dict(keep=[r for i,r in enumerate(candidate['keep']) if f'keep[{i}]' in approved],
+                            replace=[r for i,r in enumerate(candidate['replace']) if f'replace[{i}]' in approved],
+                            exclude=[], add=[], flag=[])
+            accepted_keys = set(accepted['keep']) | {r['key'] for r in accepted['replace']}
+            accepted['flag'] = [f['local_key'] for f in facts if f['local_key'] not in accepted_keys]
+            pending = rejected + [dict(path=r['id'], error=r['reason'], independent=True, decision=r['decision']) for r in reviews if r['decision'] != '通过']
+            dump(folder / (label + '_subset_done.json'), dict(execution_identity='Codex', raw=accepted, reviews=reviews,
+                 pending=pending, rewrites=0, rejected_keys=sorted(expected - accepted_keys) if replay_source else accepted['flag']))
+            raw = accepted
         # 最终候选仍过窄检查，不让有限重写失败偷偷改变故事。
         fact_by_key = {f['local_key']: f for f in facts}
         for row in raw.get('replace', []):

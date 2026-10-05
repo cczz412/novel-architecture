@@ -78,6 +78,29 @@ def b_gate(raw, data):
     return raw, errors, conversions
 
 
+def guard_b_key_links(doc, data):
+    """引用完全错开时隔离替换，保留旧正文和待核提示，不猜相邻键。"""
+    originals = {f['local_key']: f for f in data['facts']}
+    rejected = []
+    for row in list(doc['B']):
+        keys = row.get('old_record_keys', [])
+        if row.get('operation') != '替换' or len(keys) != 1 or keys[0] not in originals:
+            continue
+        key = keys[0]
+        old_pids = set(originals[key].get('paragraph_ids', []))
+        new_pids = {e['paragraph_id'] for e in row.get('evidence', []) if isinstance(e, dict) and e.get('paragraph_id')}
+        if old_pids and new_pids and not old_pids & new_pids:
+            doc['B'].remove(row)
+            for scope in doc['review_audit']['fact_chapters']:
+                if key in scope.get('revised_old_keys', []):
+                    scope['revised_old_keys'].remove(key)
+                    if key not in scope.setdefault('flagged_old_keys', []):
+                        scope['flagged_old_keys'].append(key)
+            gates.flag(doc, data, 'B', key, '替换引用与这条旧事实的原段完全错开；已隔离替换并保留旧正文，须核原编号或新增事实', sorted(old_pids))
+            rejected.append(dict(key=key, old_paragraph_ids=sorted(old_pids), rejected_paragraph_ids=sorted(new_pids)))
+    return rejected
+
+
 def isolate_metadata(raw, errors):
     raw = copy.deepcopy(raw)
     keys = {e['key'] for e in errors if e.get('field') == '正文框架' and e.get('key')}
@@ -437,7 +460,7 @@ def run(args):
         folder.mkdir(exist_ok=True)
         doc, degraded = empty_result(), []
         try:
-            if 'B' in args.layers and args.b_cleanup_only:
+            if 'B' in args.layers and (args.b_cleanup_only or args.b_key_links_only):
                 assemble(doc, inherited(sources['B'], ch, 'B'))
             elif 'B' in args.layers:
                 for piece in groups(data, getattr(args, 'b_group', 16)):
@@ -450,8 +473,16 @@ def run(args):
             else:
                 assemble(doc, inherited(sources['B'], ch, 'B'))
             if 'B' in args.layers and args.b_cleanup:
-                degraded.extend(run_cleanup(data, doc, chapter_facts(data, doc), task, client,
-                                            models['B'], policies[models['B']]['parameters'], folder, receipt))
+                cleanup_facts = data['facts'] if args.b_cleanup_original else chapter_facts(data, doc)
+                receipt['b_cleanup_input'] = 'original_input' if args.b_cleanup_original else 'effective_facts'
+                degraded.extend(run_cleanup(data, doc, cleanup_facts, task, client,
+                                            models['B'], policies[models['B']]['parameters'], folder, receipt,
+                                            source(args.b_cleanup_replay_source) if args.b_cleanup_replay_source else None))
+            if 'B' in args.layers:
+                key_pending = guard_b_key_links(doc, data)
+                dump(folder / 'B_key_link_guard.json', dict(execution_identity='Codex', rejected=key_pending, incremental_requests=0))
+                if key_pending:
+                    degraded.append('B_key_link_guard')
             receipt['layer_completed_chapters']['B'].append(ch)
             dump(folder / 'layer_B.json', doc)
             if 'C' in args.layers:
@@ -468,7 +499,7 @@ def run(args):
                 assemble(doc, inherited(sources['A'], ch, 'A'))
             receipt['layer_completed_chapters']['A'].append(ch)
             dump(folder / 'layer_A.json', doc)
-            if 'B' in args.layers and not args.b_cleanup_only:
+            if 'B' in args.layers and not (args.b_cleanup_only or args.b_key_links_only):
                 facts = chapter_facts(data, doc)
                 for p in data['paragraphs']:
                     keys = [f['local_key'] for f in facts if p['paragraph_id'] in (f.get('paragraph_ids') or [e['paragraph_id'] for e in f.get('evidence') or []])]
@@ -535,6 +566,9 @@ def main():
     p.add_argument('--b-group', type=int, choices=(16,24), default=16)
     p.add_argument('--b-cleanup', action='store_true')
     p.add_argument('--b-cleanup-only', action='store_true')
+    p.add_argument('--b-key-links-only', action='store_true')
+    p.add_argument('--b-cleanup-original', action='store_true')
+    p.add_argument('--b-cleanup-replay-source')
     p.add_argument('--source')
     for k in 'abc':
         p.add_argument('--' + k + '-source')
@@ -546,6 +580,15 @@ def main():
         if 'B' not in args.layers or not (args.b_source or args.source):
             p.error('只清理B必须选择B层并提供已交付B来源')
         args.b_cleanup = True
+    if args.b_key_links_only:
+        if args.layers != 'B' or not (args.b_source or args.source) or args.b_cleanup:
+            p.error('只核B旧键须选择单独B层、提供来源，且不混用正文清理')
+    if args.b_cleanup_original and ('B' not in args.layers or not args.b_cleanup):
+        p.error('原始旧事实清理必须选择B层并启用清理步骤')
+    if args.b_cleanup and not args.review_model:
+        p.error('正文清理必须提供独立复核模型；清理步骤会自行逐条复核')
+    if args.b_cleanup_replay_source and not args.b_cleanup_only:
+        p.error('清理候选复放只用于独立的B清理步骤')
     return run(args)
 
 
