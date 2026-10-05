@@ -15,7 +15,9 @@ JUDGE = '''你是独立语义复核员，只判，不改写。逐个review_ids�
 通过也要实际比原文；明确错误必须指出原文依据，不能凭表达风格要求同义改写。
 人物计划核是否当下认真提出的可执行行动、主体、窄目标、期限与条件、D-2现场结束、D-3认真可发生的假设回答、来源与真正履约事实。回述、被拒、愿望、内层故事不能误立。
 事实核每个原文原因、情绪、反应、否定、条件、情态、数值、说话/心想归属是否仍在；直引须逐字；正确旧句要保留；元语言、无据补词、纯画面归错层算问题。
+审稿者关于真假、是不是已发生、能不能据此证明的说明，放理由而不能混进事实正文；即使说明谨慎，也要核原段是否真的说过。原段人物自己的否定、判断、猜测仍按归属保留。
 材料核主副写法、感知者而非说话人、当前场景而非回忆、五格类别与逐字摘取，不能把动作当器物、台词内容当声音、个人情绪当环境氛围。
+场景编号scenes[i].scope只核当前现场与段范围；scenes[i].格名[j]只核这一格的单条材料，每个编号只返回一次。
 编号coverage指本步责任范围是否还有漏掉的合格事实/计划/材料；只能以提供原文指出缺失，不能借常识。拿不准说明具体疑点，不返回改写后的正文或账本。
 '''
 
@@ -25,9 +27,14 @@ def digest(value):
 
 
 def identifiers(candidate):
-    return [f'{k}[{i}]' for k, rows in candidate.items() if isinstance(rows, list)
-            and k in ('plans', 'updates', 'old_rows', 'keep', 'exclude', 'flag', 'replace', 'add', 'paragraphs', 'scenes')
-            for i in range(len(rows))] + ['coverage']
+    ids = [f'{k}[{i}]' for k, rows in candidate.items() if isinstance(rows, list)
+           and k in ('plans', 'updates', 'old_rows', 'keep', 'exclude', 'flag', 'replace', 'add', 'paragraphs')
+           for i in range(len(rows))]
+    for i, scene in enumerate(candidate.get('scenes', [])):
+        ids.append(f'scenes[{i}].scope')
+        for field in ('location', 'light_weather', 'objects_visuals', 'sounds_smells', 'atmosphere'):
+            ids.extend(f'scenes[{i}].{field}[{j}]' for j in range(len(scene.get(field, []))))
+    return ids + ['coverage']
 
 
 def judge(client, model, policy, schema, material, candidate, folder, label, layer, ids=None):
@@ -96,10 +103,25 @@ def isolate(candidate, reviews):
     """有明确错误的最终候选不得直接进入有效输出；不确定保留并留具体疑点。"""
     result = copy.deepcopy(candidate)
     by_array = {}
+    scene_fields = {}
+    bad_scopes = set()
     for row in reviews:
+        nested = re.fullmatch(r'scenes\[(\d+)\]\.(\w+)(?:\[(\d+)\])?', row['id'])
+        if row['decision'] == '明确错误' and nested:
+            scene, field, item = nested.groups()
+            if field == 'scope':
+                bad_scopes.add(int(scene))
+            elif item is not None:
+                scene_fields.setdefault((int(scene), field), set()).add(int(item))
+            continue
         match = re.fullmatch(r'(\w+)\[(\d+)\]', row['id'])
         if row['decision'] == '明确错误' and match:
             by_array.setdefault(match[1], set()).add(int(match[2]))
+    for (scene, field), indices in scene_fields.items():
+        values = result['scenes'][scene].get(field, [])
+        result['scenes'][scene][field] = [r for i, r in enumerate(values) if i not in indices]
+    if bad_scopes:
+        result['scenes'] = [r for i, r in enumerate(result['scenes']) if i not in bad_scopes]
     for kind, indices in by_array.items():
         values = result.get(kind, [])
         if kind in ('keep', 'exclude', 'replace'):

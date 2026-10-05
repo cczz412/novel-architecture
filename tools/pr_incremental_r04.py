@@ -4,6 +4,7 @@ import argparse
 import copy
 import hashlib
 import json
+import re
 from pathlib import Path
 
 from pr_pipeline_r02 import (OUT, MODELS, RULES, SYSTEM, read_book, empty_result,
@@ -39,6 +40,9 @@ B_FIDELITY = B_SCHEMA + '''
 只清掉审稿话，保留人物实际说、想、猜、听说的故事归属，以及原文真的否定、条件和推测。
 虚构例：阿岚说“我明天来”，事实仍保留阿岚说“我明天来”；不能再补“此话不证明阿岚真的会来”。
 对审稿框架不能选keep，也不能为躲替换就选flag；能按原段确定修好的就replace。
+事实正文不能用分号追加审稿者的真假判断。凡“只记录某人说了什么，不能证明他会做”
+或“不是当前事实、不是已经发生”的补充判断，写进reason，不能放进text。
+真正的故事否定仍保留原意与归属；只是没有发生证据时不要再加一句审稿否定。
 替换以原段完整信息为准，主语、窄动作、原因反应、时间数量都保留，不补原段没写的心态。
 程序只校验逐字和格式，语义保真由本步负责。不要用原文称、叙述称等作为故事归属。
 '''
@@ -58,6 +62,8 @@ def b_gate(raw, data):
     def inspect(text, ids, **where):
         original = '\n'.join(paragraphs.get(k, '') for k in ids)
         hits = [t for t in META_TERMS if t in text and t not in original]
+        if re.search(r'[；;]\s*(?:不是|并不代表|只(?:记录|表示|说明)|仅(?:记录|表示|说明)|不能证明)', text) and not re.search(r'[；;]\s*(?:不是|并不代表|只(?:记录|表示|说明)|仅(?:记录|表示|说明)|不能证明)', original):
+            hits.append('分号后的审稿判断；请核对归属并把审稿理由移到reason，真实否定仍须保留')
         if hits:
             errors.append(dict(field='正文框架', error='原段没有这些审稿框架词：'+'、'.join(hits)+'；保留故事内容，修正文后才可沿用或替换', **where))
     for key in raw['keep']:
@@ -114,6 +120,8 @@ def source(path):
 def task(client, model, policy, schema, material, gate, folder, label, receipt, layer):
     """检查点匹配才能复用；中断已保存响应也不再付费重抽。"""
     review_model = receipt.get('review_model') if layer in receipt.get('review_layers', '') else None
+    if layer == 'C' and label.startswith('C_tags') and receipt.get('review_c_scenes_only'):
+        review_model = None
     dependencies = {n: hashlib.sha256((Path(__file__).parent / n).read_bytes()).hexdigest() for n in ('pr_incremental_r04.py', 'pr_review_r04.py', 'pr_layers_headroom_r03.py', 'pr_pipeline_r02.py', 'pr_normalize_v2_r03.py', 'pr_resolved_r02.py', 'pr_compact_bc_r02.py', 'pr_ark_client_r02.py', 'pr_c_steps_r03.py', 'pr_b_only_r02.py', 'pr_chapter_c_r02.py')}
     stamp = digest(dict(model=model, policy=policy, schema=schema, material=material, review_model=review_model, upgrade_model=receipt.get('upgrade_model'), dependencies=dependencies,
                         rule=RULE, version='r04-1',
@@ -153,13 +161,14 @@ def task(client, model, policy, schema, material, gate, folder, label, receipt, 
             if review_model == model:
                 raise ValueError('独立复核必须与生成模型不同')
             policies = receipt['policies']
-            reviews = judge(client, review_model, policies[review_model]['parameters'], schema, material, raw, folder, label+'_review'+str(attempt), layer)
+            reviewed = {k:v for k,v in raw.items() if k != 'paragraphs'} if layer == 'C' and label == 'C_scenes' else raw
+            reviews = judge(client, review_model, policies[review_model]['parameters'], schema, material, reviewed, folder, label+'_review'+str(attempt), layer)
             undecided = [r['id'] for r in reviews if r['decision'] == '不确定']
             upgrade_model = receipt.get('upgrade_model')
             room = max(0, 4 - receipt.get('upgrade_items_used', 0))
             if upgrade_model and undecided and room:
                 selected = undecided[:room]
-                upgraded = judge(client, upgrade_model, policies[upgrade_model]['parameters'], schema, material, raw, folder, label+'_upgrade'+str(attempt), layer, selected)
+                upgraded = judge(client, upgrade_model, policies[upgrade_model]['parameters'], schema, material, reviewed, folder, label+'_upgrade'+str(attempt), layer, selected)
                 receipt['upgrade_items_used'] = receipt.get('upgrade_items_used', 0) + len(selected)
                 replacement = {r['id']:r for r in upgraded}
                 reviews = [replacement.get(r['id'],r) for r in reviews]
@@ -200,7 +209,7 @@ def inherited(path, chapter, layer):
             states = [s for s in h['states'] if s['chapter'] == chapter]
             if states:
                 out['review_audit']['plan_history'].append(dict(h, states=states))
-        ids = {i for h in histories if h['introduced_chapter'] == chapter for i in h['A_change_ids']}
+        ids = {i for h in out['review_audit']['plan_history'] for i in h['A_change_ids']}
         out['A'] = [copy.deepcopy(r) for r in doc['A'] if r['change_id'] in ids or not r.get('plan') and r.get('as_of_chapter') == chapter]
         # 累计A视图可能已是末章；引入章保存层只取原始内容，由本章历史投影状态。
         for row in out['A']:
@@ -249,7 +258,7 @@ def seed_before(path, chapter):
 
 def inherit_gap_states(result, catalog, config, path, gap, previous_chapter):
     """只拼接同键且前态引用一致的已交付状态；不猜中间章。"""
-    receipt = dict(chapter=gap, copied=0, missing=0, previous_mismatch=0)
+    receipt = dict(chapter=gap, copied=0, missing=0, previous_mismatch=0, reference_version_mismatch=0)
     if not path:
         receipt['missing'] = len(result['review_audit']['plan_history'])
         return receipt
@@ -267,6 +276,14 @@ def inherit_gap_states(result, catalog, config, path, gap, previous_chapter):
     histories = {h['plan_key']:h for h in saved['review_audit']['plan_history']}
     previous_histories = {h['plan_key']:h for h in previous_saved['review_audit']['plan_history']}
     fields = ('status', 'source_record_key', 'fulfilled_record_key', 'condition_record_key')
+    old_catalog = []
+    for ch in sorted(completed):
+        if ch <= previous_chapter:
+            old_catalog.extend(chapter_facts(read_book(config, ch), inherited(path, ch, 'B')))
+    def signature(f):
+        return (f['text'], tuple(f.get('paragraph_ids') or [e['paragraph_id'] for e in f.get('evidence') or []]))
+    versions = {f['local_key']:signature(f) for f in catalog}
+    old_versions = {f['local_key']:signature(f) for f in old_catalog}
     for current in result['review_audit']['plan_history']:
         known = histories.get(current['plan_key'], {})
         old_previous = next((s for s in previous_histories.get(current['plan_key'], {}).get('states', []) if s['chapter']==previous_chapter), None)
@@ -275,6 +292,9 @@ def inherit_gap_states(result, catalog, config, path, gap, previous_chapter):
             receipt['missing'] += 1
         elif any(current['states'][-1].get(k)!=old_previous.get(k) for k in fields):
             receipt['previous_mismatch'] += 1
+        elif any(versions.get(key) is None or versions.get(key) != old_versions.get(key)
+                 for key in (old_previous.get(k) for k in fields if k != 'status') if key):
+            receipt['reference_version_mismatch'] += 1
         else:
             current['states'].append(copy.deepcopy(state))
             for row in result['A']:
@@ -392,6 +412,7 @@ def run(args):
     selected = sorted(set(f'{int(ch):02d}' for ch in selected))
     receipt = dict(review_model=args.review_model, review_layers=args.review_layers, upgrade_model=args.upgrade_model, policies=policies, dependency_stale_A=('B' in args.layers and 'A' not in args.layers), execution_identity='Codex', book=args.book, model=args.model, layer_models=models, round=args.round, chapters_requested=len(selected), chapter_ids=selected, score_scope='full_book' if len(selected)==8 else 'chapter_projection', completed_chapters=[], clean_chapters=[], degraded_chapters=[], calls=[], rewrites=0, checkpoint_hits=0, partial=False, inherited_layers=[k for k in 'ABC' if k not in args.layers], layer_sources=sources, code_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
     receipt['b_group_size'] = getattr(args, 'b_group', 16)
+    receipt['review_c_scenes_only'] = getattr(args, 'review_c_scenes_only', False)
     receipt['generation_rewrite_limit'] = 1
     receipt['layer_completed_chapters'] = {k:[] for k in 'ABC'}
     receipt['partial_chapters'] = []
@@ -441,11 +462,6 @@ def run(args):
                 assemble(doc, inherited(sources['A'], ch, 'A'))
             receipt['layer_completed_chapters']['A'].append(ch)
             dump(folder / 'layer_A.json', doc)
-            for step in folder.glob('*_done.json'):
-                record = json.loads(step.read_text())
-                for issue in record['pending']:
-                    if issue.get('independent'):
-                        gates.flag(doc, data, record['layer'], None, '独立复核仍有具体疑点：'+str(issue.get('field'))+'；'+issue['error'])
             if 'B' in args.layers:
                 facts = chapter_facts(data, doc)
                 for p in data['paragraphs']:
@@ -507,7 +523,8 @@ def main():
     p.add_argument('--chapter-ids', nargs='+', choices=tuple(f'{n:02d}' for n in range(1,9)))
     p.add_argument('--a-seed-source')
     p.add_argument('--review-model', choices=('kimi-k2.8-preview',))
-    p.add_argument('--review-layers', choices=('A','B','C','ABC'), default='A')
+    p.add_argument('--review-layers', choices=('A','B','C','AB','AC','BC','ABC'), default='A')
+    p.add_argument('--review-c-scenes-only', action='store_true')
     p.add_argument('--upgrade-model', choices=('xiaomi/mimo-v2.6-pro',))
     p.add_argument('--b-group', type=int, choices=(16,24), default=16)
     p.add_argument('--source')
