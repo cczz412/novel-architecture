@@ -15,6 +15,7 @@ import pr_layers_headroom_r03 as gates
 from pr_b_only_r02 import SCHEMA as B_SCHEMA
 from pr_c_steps_r03 import ANNOTATE, SCENES
 from pr_review_r04 import judge, isolate
+from pr_b_cleanup_r04 import run_cleanup
 
 MODELS = (*MODELS, 'xiaomi/mimo-v2.6-flash', 'xiaomi/mimo-v2.6-pro')
 
@@ -122,7 +123,7 @@ def task(client, model, policy, schema, material, gate, folder, label, receipt, 
     review_model = receipt.get('review_model') if layer in receipt.get('review_layers', '') else None
     if layer == 'C' and label.startswith('C_tags') and receipt.get('review_c_scenes_only'):
         review_model = None
-    dependencies = {n: hashlib.sha256((Path(__file__).parent / n).read_bytes()).hexdigest() for n in ('pr_incremental_r04.py', 'pr_review_r04.py', 'pr_layers_headroom_r03.py', 'pr_pipeline_r02.py', 'pr_normalize_v2_r03.py', 'pr_resolved_r02.py', 'pr_compact_bc_r02.py', 'pr_ark_client_r02.py', 'pr_c_steps_r03.py', 'pr_b_only_r02.py', 'pr_chapter_c_r02.py')}
+    dependencies = {n: hashlib.sha256((Path(__file__).parent / n).read_bytes()).hexdigest() for n in ('pr_incremental_r04.py', 'pr_b_cleanup_r04.py', 'pr_review_r04.py', 'pr_layers_headroom_r03.py', 'pr_pipeline_r02.py', 'pr_normalize_v2_r03.py', 'pr_resolved_r02.py', 'pr_compact_bc_r02.py', 'pr_ark_client_r02.py', 'pr_c_steps_r03.py', 'pr_b_only_r02.py', 'pr_chapter_c_r02.py')}
     stamp = digest(dict(model=model, policy=policy, schema=schema, material=material, review_model=review_model, upgrade_model=receipt.get('upgrade_model'), dependencies=dependencies,
                         rule=RULE, version='r04-1',
                         code_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
@@ -194,8 +195,8 @@ def inherited(path, chapter, layer):
     p = source(path)
     doc = json.loads((p / 'prediction.json').read_text())
     receipt = json.loads((p / 'run_receipt.json').read_text())
-    if chapter not in receipt['completed_chapters']:
-        raise ValueError('继承源没有交付本章：' + chapter)
+    if chapter not in receipt.get('layer_completed_chapters', {}).get(layer, receipt['completed_chapters']):
+        raise ValueError('继承源没有交付本章这一层：' + chapter + '/' + layer)
     out = empty_result()
     if layer == 'B':
         out['B'] = [r for r in doc['B'] if r.get('chapter') == chapter]
@@ -436,7 +437,9 @@ def run(args):
         folder.mkdir(exist_ok=True)
         doc, degraded = empty_result(), []
         try:
-            if 'B' in args.layers:
+            if 'B' in args.layers and args.b_cleanup_only:
+                assemble(doc, inherited(sources['B'], ch, 'B'))
+            elif 'B' in args.layers:
                 for piece in groups(data, getattr(args, 'b_group', 16)):
                     label = 'B_g' + str(piece['group'])
                     raw, pending = task(client, models['B'], policies[models['B']]['parameters'], B_FIDELITY, piece, lambda v: b_gate(v, piece), folder, label, receipt, 'B')
@@ -446,6 +449,9 @@ def run(args):
                         degraded.append(label)
             else:
                 assemble(doc, inherited(sources['B'], ch, 'B'))
+            if 'B' in args.layers and args.b_cleanup:
+                degraded.extend(run_cleanup(data, doc, chapter_facts(data, doc), task, client,
+                                            models['B'], policies[models['B']]['parameters'], folder, receipt))
             receipt['layer_completed_chapters']['B'].append(ch)
             dump(folder / 'layer_B.json', doc)
             if 'C' in args.layers:
@@ -462,7 +468,7 @@ def run(args):
                 assemble(doc, inherited(sources['A'], ch, 'A'))
             receipt['layer_completed_chapters']['A'].append(ch)
             dump(folder / 'layer_A.json', doc)
-            if 'B' in args.layers:
+            if 'B' in args.layers and not args.b_cleanup_only:
                 facts = chapter_facts(data, doc)
                 for p in data['paragraphs']:
                     keys = [f['local_key'] for f in facts if p['paragraph_id'] in (f.get('paragraph_ids') or [e['paragraph_id'] for e in f.get('evidence') or []])]
@@ -518,7 +524,7 @@ def main():
     p.add_argument('--model', choices=MODELS, required=True)
     p.add_argument('--out', required=True)
     p.add_argument('--layers', choices=('A','B','C','AB','ABC'), required=True)
-    p.add_argument('--round', type=int, choices=range(1,9), required=True)
+    p.add_argument('--round', type=int, required=True)
     p.add_argument('--chapters', type=int, choices=range(1,9), default=8)
     p.add_argument('--chapter-ids', nargs='+', choices=tuple(f'{n:02d}' for n in range(1,9)))
     p.add_argument('--a-seed-source')
@@ -527,11 +533,20 @@ def main():
     p.add_argument('--review-c-scenes-only', action='store_true')
     p.add_argument('--upgrade-model', choices=('xiaomi/mimo-v2.6-pro',))
     p.add_argument('--b-group', type=int, choices=(16,24), default=16)
+    p.add_argument('--b-cleanup', action='store_true')
+    p.add_argument('--b-cleanup-only', action='store_true')
     p.add_argument('--source')
     for k in 'abc':
         p.add_argument('--' + k + '-source')
         p.add_argument('--' + k + '-model', choices=MODELS)
-    return run(p.parse_args())
+    args = p.parse_args()
+    if args.round < 1:
+        p.error('轮次必须是正整数')
+    if args.b_cleanup_only:
+        if 'B' not in args.layers or not (args.b_source or args.source):
+            p.error('只清理B必须选择B层并提供已交付B来源')
+        args.b_cleanup = True
+    return run(args)
 
 
 if __name__ == '__main__':
