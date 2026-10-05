@@ -9,7 +9,7 @@ from pathlib import Path
 from pr_pipeline_r02 import (OUT, MODELS, RULES, SYSTEM, read_book, empty_result,
                              assemble, dump, external)
 from pr_ark_client_r02 import Client
-from pr_resolved_r02 import groups, chapter_facts
+from pr_resolved_r02 import groups, chapter_facts as _chapter_facts
 import pr_layers_headroom_r03 as gates
 from pr_b_only_r02 import SCHEMA as B_SCHEMA
 from pr_c_steps_r03 import ANNOTATE, SCENES
@@ -20,8 +20,9 @@ MODELS = (*MODELS, 'xiaomi/mimo-v2.6-flash', 'xiaomi/mimo-v2.6-pro')
 RULE = RULES.replace('C 与事实同遍抽：', 'C由单独步骤处理：')
 DISCOVER = gates.A_DISCOVER + '''
 本步old_plan_rows只含意向字段与字段未知的旧召回，其他字段由程序保留。
-输入existing只用于查重，不要求复述历史。计划正文写窄目标动作，主体名只放subject；
-例如虚构人物阿岚说“我明早修木桥”，content写“明早修木桥”，deadline写“明早”。
+输入existing只用于查重，不要求复述历史。计划正文是一句能独立读懂的窄目标，保留主体及具体动作，
+不能只给抽象动作名或去掉目标对象。主体也写在subject，方便对齐。
+虚构例：阿岚说“我明早修木桥”，content保留“阿岚明早要修木桥”的原意，deadline写“明早”。
 旧召回与当前事实必须核原段，不能只因旧行属于意向字段就立计划。
 旧行若来自早章且已经对应已有计划，只说明沿用，不重新建晚章计划。
 '''
@@ -33,11 +34,21 @@ B_FIDELITY = B_SCHEMA + '''
 逐条比原段再决定沿用。替换只修明确错误：元语言、非逐字直引、漏掉的原因反应、
 错误归属、否定/条件/情态丢失。不能为了文风换同义词，不能把可能改为确定。
 一句里独立心声、情绪、反应、原因均要保留；拆句后每个明写片段仍须有事实句承接。
+旧事实是待核粗稿，逐句核原段，不因给了旧键就默认正确。粗稿中的审稿框架和真假免责声明必须替换清理：
+例如“本章叙述称”“此话不证明”“未说明其是否真的做了”，若原段没写，就是审稿者加的话。
+只清掉审稿话，保留人物实际说、想、猜、听说的故事归属，以及原文真的否定、条件和推测。
+虚构例：阿岚说“我明天来”，事实仍保留阿岚说“我明天来”；不能再补“此话不证明阿岚真的会来”。
+对审稿框架不能选keep，也不能为躲替换就选flag；能按原段确定修好的就replace。
+替换以原段完整信息为准，主语、窄动作、原因反应、时间数量都保留，不补原段没写的心态。
 程序只校验逐字和格式，语义保真由本步负责。不要用原文称、叙述称等作为故事归属。
 '''
 
 
-META_TERMS = ('原文', '本章', '本段', '本回叙述', '旁白', '叙述称', '正文', '材料未', '文本未', '不能据此', '无法据此', '不进错率', '待复核', '审稿')
+META_TERMS = ('原文', '本章', '本段', '本回叙述', '旁白', '叙述称', '正文', '材料未', '文本未', '不能据此', '无法据此', '不进错率', '待复核', '审稿', '故事开场', '叙述所给', '此话不证明', '这不证明', '不能证明', '未说明', '未交代', '未证实', '不等于')
+
+
+def chapter_facts(data, candidate):
+    return [f for f in _chapter_facts(data, candidate) if isinstance(f.get("local_key"), str) and isinstance(f.get("text"), str) and f["text"]]
 
 
 def b_gate(raw, data):
@@ -94,9 +105,9 @@ def digest(value):
 
 def source(path):
     p = Path(path).resolve()
-    allowed = [OUT, OUT.parent / '管线修复_R03']
+    allowed = [OUT, OUT.parent / '管线修复_R03', OUT.parent / '管线修复_R02']
     if not any(p.is_relative_to(root) for root in allowed):
-        raise ValueError('继承材料只允许R03或R04交付目录')
+        raise ValueError('继承材料只允许R02至R04已交付目录')
     return p
 
 
@@ -207,8 +218,17 @@ def seed_before(path, chapter):
         return out, dict(source='输入旧召回；无可信的前章已交付计划状态', plans=0,
                          limitation='早章未跑，不把旧召回猜成完整历史；本章仍逐项判断提供的旧召回')
     p = source(path)
-    doc = json.loads((p / 'prediction.json').read_text())
     completed = set(json.loads((p / 'run_receipt.json').read_text())['completed_chapters'])
+    doc = empty_result()
+    snapshots = []
+    for ch in sorted(completed):
+        if ch >= chapter:
+            continue
+        snapshot = p / ('ch' + ch) / 'result.json'
+        if not snapshot.exists():
+            continue
+        assemble(doc, json.loads(snapshot.read_text()))
+        snapshots.append(dict(path=str(snapshot), sha256=hashlib.sha256(snapshot.read_bytes()).hexdigest()))
     for h in doc['review_audit']['plan_history']:
         states = [s for s in h['states'] if s['chapter'] < chapter and s['chapter'] in completed]
         if not states:
@@ -223,8 +243,52 @@ def seed_before(path, chapter):
                     row['candidate_refs'] = {k:states[-1].get(k) for k in ('source_record_key','fulfilled_record_key','condition_record_key')}
                 out['A'].append(row)
     out['B'] = [copy.deepcopy(r) for r in doc['B'] if r.get('chapter', '99') < chapter]
-    return out, dict(source=str(p), plans=len(out['review_audit']['plan_history']),
+    return out, dict(source=str(p), snapshots=snapshots, plans=len(out['review_audit']['plan_history']),
                      limitation='只继承已保存早章状态；来源没交付的计划仍缺失，未重判早章')
+
+
+def inherit_gap_states(result, catalog, config, path, gap, previous_chapter):
+    """只拼接同键且前态引用一致的已交付状态；不猜中间章。"""
+    receipt = dict(chapter=gap, copied=0, missing=0, previous_mismatch=0)
+    if not path:
+        receipt['missing'] = len(result['review_audit']['plan_history'])
+        return receipt
+    p = source(path)
+    gap_snapshot = p / ('ch' + gap) / 'result.json'
+    previous_snapshot = p / ('ch' + previous_chapter) / 'result.json'
+    if not gap_snapshot.exists() or not previous_snapshot.exists():
+        receipt['missing'] = len(result['review_audit']['plan_history'])
+        return receipt
+    saved = json.loads(gap_snapshot.read_text())
+    previous_saved = json.loads(previous_snapshot.read_text())
+    receipt['source_snapshot'] = str(gap_snapshot)
+    receipt['source_sha256'] = hashlib.sha256(gap_snapshot.read_bytes()).hexdigest()
+    completed = json.loads((p / 'run_receipt.json').read_text())['completed_chapters']
+    histories = {h['plan_key']:h for h in saved['review_audit']['plan_history']}
+    previous_histories = {h['plan_key']:h for h in previous_saved['review_audit']['plan_history']}
+    fields = ('status', 'source_record_key', 'fulfilled_record_key', 'condition_record_key')
+    for current in result['review_audit']['plan_history']:
+        known = histories.get(current['plan_key'], {})
+        old_previous = next((s for s in previous_histories.get(current['plan_key'], {}).get('states', []) if s['chapter']==previous_chapter), None)
+        state = next((s for s in known.get('states', []) if s['chapter']==gap), None)
+        if gap not in completed or not state or not old_previous or current['states'][-1]['chapter'] != previous_chapter:
+            receipt['missing'] += 1
+        elif any(current['states'][-1].get(k)!=old_previous.get(k) for k in fields):
+            receipt['previous_mismatch'] += 1
+        else:
+            current['states'].append(copy.deepcopy(state))
+            for row in result['A']:
+                if row.get('change_id') in current['A_change_ids'] and row.get('plan'):
+                    row['plan']['status'] = state['status']
+                    row['as_of_chapter'] = gap
+                    row['candidate_refs'] = {k:state.get(k) for k in fields if k != 'status'}
+            receipt['copied'] += 1
+    # 只供解析旧引用；章范围评分仍排除未跑章的B行。
+    if gap in completed:
+        bridge = inherited(path, gap, 'B')
+        result['B'].extend(bridge['B'])
+        catalog.extend(chapter_facts(read_book(config, gap), bridge))
+    return receipt
 
 
 def run_a(data, doc, prior, catalog, client, model, policy, folder, receipt):
@@ -333,14 +397,19 @@ def run(args):
     receipt['partial_chapters'] = []
     result, seed = seed_before(getattr(args, 'a_seed_source', None), selected[0])
     receipt['a_start_source'] = seed
+    receipt['gap_seed_receipts'] = []
     receipt['a_history_gaps'] = [f'{n:02d}' for n in range(int(selected[0]), int(selected[-1])) if f'{n:02d}' not in selected]
     catalog = []
     if result['B']:
         for n in range(1, int(selected[0])):
-            catalog.extend(chapter_facts(read_book(config, f'{n:02d}'), result))
+            catalog.extend(chapter_facts(read_book(config, f'{n:02d}'), inherited(getattr(args, "a_seed_source", None), f'{n:02d}', "B")))
     result['batch_id'] = 'PR_R04'
     client = Client()
+    previous_selected = selected[0]
     for ch in selected:
+        for missing in range(int(previous_selected)+1, int(ch)):
+            receipt['gap_seed_receipts'].append(inherit_gap_states(result, catalog, config, getattr(args, 'a_seed_source', None), f'{missing:02d}', previous_selected))
+        previous_selected = ch
         data = read_book(config, ch)
         folder = output / ('ch' + ch)
         folder.mkdir(exist_ok=True)
