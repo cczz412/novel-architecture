@@ -144,8 +144,11 @@ class Budget:
         index = len(self.calls) + 1
         write_json(self.output / 'gateway' / ('before_' + str(index) + '.json'), gateway)
         request = {'model': MODELS['review'] if review else MODELS[role], 'messages': messages,
-                   'max_tokens': maximum, 'temperature': 0, 'response_format': {'type': 'json_object'},
-                   'thinking': {'type': 'disabled'}}
+                   'max_tokens': maximum, 'temperature': 0, 'response_format': {'type': 'json_object'}}
+        if request['model'] == 'glm-5.3-flash':
+            request['reasoning_effort'] = 'low'
+        elif request['model'] in ('deepseek-v4.1-flash', 'kimi-k2.8-preview'):
+            request['thinking'] = {'type': 'disabled'}
         path = self.output / 'requests' / ('request_' + str(index) + '.json')
         write_json(path, request)
         event = {'index': index, 'role': role, 'chapter': chapter, 'review': review,
