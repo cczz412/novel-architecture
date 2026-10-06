@@ -82,7 +82,7 @@ class Budget:
             raise Halt('预算超过管线硬顶')
         if config.get('C_mode') != 'program' or config['roles']['C']['max_requests'] != 0:
             raise Halt('C必须走零调用程序版')
-        if not config.get('request_prefix') or not config.get('full_pipeline_reserved'):
+        if not config.get('request_prefix') or not config.get('gateway_job_id', '').startswith(config['request_prefix']) or not config.get('full_pipeline_reserved'):
             raise Halt('请求前缀或整线预留缺失')
         freeze = config['freeze']
         if {row['path']:row['sha256'] for row in freeze['files']} != self.identity['source_sha']:
@@ -152,13 +152,13 @@ class Budget:
                  'model': request['model'], 'reserved_tokens': reservation, 'known_tokens': 0,
                  'state': 'inflight', 'started_at': now(), 'request': str(path),
                  'job_id': self.config['request_prefix'] + role + '_' + chapter + '_' + str(index),
-                 'usage': None}
+                 'usage': None, 'gateway_job_id': self.config['gateway_job_id']}
         self.calls.append(event)
         self.save()
         self.record_event(event)
         url = os.environ['PR_LLM_BASE_URL'].rstrip('/') + '/chat/completions'
         req = urllib.request.Request(url, data=json.dumps(request, ensure_ascii=False).encode(),
-                                     headers={'Content-Type': 'application/json', 'X-PR-Job-ID': event['job_id']})
+                                     headers={'Content-Type': 'application/json', 'X-PR-Job-ID': self.config['gateway_job_id']})
         try:
             opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
             with opener.open(req, timeout=1200) as response:
