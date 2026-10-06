@@ -2,7 +2,7 @@
 """R04-only authorization wrapper, outside the portable pipeline."""
 import os
 from pathlib import Path
-from pipeline_budget25 import Budget, Halt, before, now
+from pipeline_budget25 import Budget, Halt, before, now, check_limits
 from pipeline_source25 import read_json, write_json, digest
 
 class R04Budget(Budget):
@@ -21,6 +21,7 @@ class R04Budget(Budget):
         return super().guard()
 
     def guard_r04(self):
+        check_limits(self.config)
         auth = read_json(self.auth_path)
         if not auth.get('allowed') or not before(auth['stop_new_calls_at']) or not before(auth['deadline']):
             raise Halt('授权未开启或已停新请求')
@@ -42,12 +43,16 @@ class R04Budget(Budget):
         freeze = read_json(self.config['freeze_file'])
         if freeze.get('overall_sha256') != self.config['code_freeze_sha']:
             raise Halt('预算未绑定冻结版本')
+        if not freeze.get('freeze_effective') or not freeze.get('effective'):
+            raise Halt('冻结候选尚未生效')
         for row in freeze['files']:
             if digest(row['path']) != row['sha256']:
                 raise Halt('冻结文件发生变化')
         independent = read_json(self.config['independent_freeze_receipt'])
         if not independent.get('effective') or independent.get('overall_sha256') != freeze['overall_sha256'] or not independent.get('overall_sha_recomputed') or independent.get('reviewer') == 'Codex':
             raise Halt('独立冻结回执未生效')
+        if independent.get('git_commit') != freeze.get('git_commit'):
+            raise Halt('独立冻结回执未绑定候选提交')
         if independent.get('detector_counts') != {'qishi': 0, 'dixian': 0} or independent.get('blind_terms_sha256') != freeze['blind_terms_sha256']:
             raise Halt('独立串检测或词表SHA回执不符')
         blind = read_json(self.config['blind_scan_receipt'])
@@ -108,4 +113,3 @@ class R04Budget(Budget):
         if auth.get('responded_reviews') != receipt['responded_reviews']:
             raise Halt('授权逐条回应登记不同步')
         return auth
-

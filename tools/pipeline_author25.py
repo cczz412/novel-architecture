@@ -28,8 +28,13 @@ def build_views(materials, current):
     views = {name: [] for name in ('人物卡', '别名表', '关系表', '时间表', '回忆块', '安排义务表',
              '物件表', '性格能力表', '计划状态表', '未来安排表', '经济条目', '场景在场表',
              '用餐在场表', '写法视角表', '家庭关系卡', '事实检索', '正文检索')}
+    blocked = []
     for material in materials:
         part = current[material['chapter']]
+        failed_roles = [role for role in ('B', 'J2', 'A') if part.get(role + '_status') != 'complete']
+        if failed_roles:
+            blocked.append({'chapter': material['chapter'], 'upstream_roles': failed_roles})
+            continue
         sections = part.get('J2', {})
         mapping = dict(zip(SECTIONS, ('人物卡', '别名表', '关系表', '时间表', '回忆块', '安排义务表', '物件表', '性格能力表')))
         for section, name in mapping.items():
@@ -88,6 +93,8 @@ def build_views(materials, current):
     # 文本呈现顺序不是推断出来的事件先后。
     registry = sorted({str(r.get('entity', '')) for name in ('人物卡', '物件表') for r in views[name] if r.get('entity')}, key=lambda x: (-len(x), x))
     return {'execution_identity': 'Codex', 'views': views, 'entities': registry,
+            'status': 'blocked_upstream' if blocked else 'complete',
+            'blocked_chapters': blocked, 'complete': not blocked,
             'time_order_policy': '保留原文呈现次序，只有明确关系才说明事件先后',
             'unknown_text': '原文未交代'}
 
@@ -105,6 +112,11 @@ def query(store, question, limit=12):
         store = read_json(store)
     if not isinstance(question, str) or not question.strip():
         raise ValueError('请给自然中文问题')
+    if store.get('status') == 'blocked_upstream':
+        return {'execution_identity': 'Codex', 'question': question, 'status': 'blocked_upstream',
+                'answer': '上游材料尚未保存通过，作者资料暂不能查询。',
+                'blocked_chapters': store.get('blocked_chapters', []), 'paragraph_ids': [],
+                'bounded_rows': 0, 'default_character_card': False}
     limit = min(12, max(1, int(limit)))
     views = store['views']
     entities = [e for e in store.get('entities', []) if e in question]

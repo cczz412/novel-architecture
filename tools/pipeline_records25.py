@@ -175,7 +175,25 @@ def review_apply(role, candidate, review, material, facts=None, previous=None):
         raise ValueError('复核未逐项覆盖或重复')
     for verdict in verdicts:
         check_speaker_claims(verdict, rows, material)
+    patches = review.get('patches')
+    if not isinstance(patches, list):
+        raise ValueError('复核缺修订差量数组')
+    patch_map = {}
+    originals = {row['_id']: row for row in rows}
+    for patch in patches:
+        if not isinstance(patch, dict) or set(patch) != {'id', 'changes'}:
+            raise ValueError('修订只允许编号与改动字段')
+        ident, changes = patch['id'], patch['changes']
+        if ident not in wanted or ident in patch_map or not isinstance(changes, dict) or not changes:
+            raise ValueError('修订编号错指、重复或差量为空')
+        if '_id' in changes or set(changes) - set(originals[ident]):
+            raise ValueError('修订不能改编号或新增未定义字段')
+        if any(originals[ident][k] == v for k, v in changes.items()):
+            raise ValueError('修订差量重复回传未改字段')
+        patch_map[ident] = changes
     by_id = {r['id']: r for r in verdicts}
+    if any(not by_id[ident].get('accept') for ident in patch_map):
+        raise ValueError('拒收条目不能同时提交修订')
     out = copy.deepcopy(candidate)
     removed = []
     fields = ['rows'] if role in ('A', 'B') else list(SECTIONS) if role == 'J2' else ['paragraphs', 'scenes']
@@ -188,8 +206,9 @@ def review_apply(role, candidate, review, material, facts=None, previous=None):
             if not verdict['accept']:
                 removed.append({'id': row['_id'], 'reason': verdict['reason'], 'row': row})
                 continue
-            patch = verdict.get('patch')
-            kept.append(patch if patch is not None else row)
+            if 'patch' in verdict:
+                raise ValueError('旧式全行patch协议已停用')
+            kept.append({**row, **patch_map.get(row['_id'], {})})
         out[field] = kept
     # C被拒行不能用默认全知补齐；保留未完成状态，由调用方披露。
     checked = validate(role, out, material, facts, previous) if role != 'C' or not removed else out

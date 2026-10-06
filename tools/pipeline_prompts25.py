@@ -28,13 +28,16 @@ J2_PROMPT = '''按证据整理事实类资料，每行只表达一个主体的�
 经济只整理明写的收支与物资，不编当前总余额；取用或持有不能自动等于所有权。
 回忆块有起止段与原文锚，未明确先后不排真实时间顺序。小念头不登记为安排。
 输出 {people:[],aliases:[],relations:[],time:[],memories:[],arrangements:[],objects:[],traits:[]}。
-一般行 {entity,aspect,value,layer,ev:[{p,q}]}。
+一般行 {entity,aspect,value,layer,ev:[{p,s}]}。
 relations另给target和relation_type（亲属、合作、冲突、其他、未知），只写明示关系。
-aliases行 {entity,alias,speaker:null或称呼者,scope:段号数组,ev:[{p,q}]}。
-memories行 {start:段号,end:段号,anchor,viewpoint:null或人物,ev:[{p,q}]}。
+aliases行 {entity,alias,speaker:null或称呼者,scope:段号数组,ev:[{p,s}]}。
+memories行 {start:段号,end:段号,anchor,viewpoint:null或人物,ev:[{p,s}]}。
 time的aspect用故事时间、未来安排、作息、过往经历、工作年限、状态、未知。
 people的aspect用身份、经济、年龄、家庭、能力、未知。全部数组必须给出，没有证据可空。
-相邻章的既有材料只作核对，不重复输出旧行，不反写历史。'''
+相邻章的既有材料只作核对，不重复输出旧行，不反写历史。
+p是提交的段号，s是该段给出的句号编号；证据只给1至2个指针，不抄原句，不回传paragraphs。
+单行JSON最多432个UTF8字节，八栏总计最多24行且总JSON最多10800字节。
+完整内容放不下或单行无法完整表达时，只输出 {overflow:true}；不能为凑上限漏项或截掉信息。'''
 C_PROMPT = '''读本章正文标注写法与现场场景，不抽人物计划。
 每段一个主标签、最多一个副标签；标签只能用叙述带过、动作展开、对话、心理、场景。
 视角跟随感知者而不是说话人；不能每段重新默认为全知。没有切换依据时沿用当前镜头。
@@ -49,8 +52,12 @@ REVIEW_PROMPT = '''逐项检查候选和对应原段，不能整体默认放行�
 看不出时拒收并说明，不能因模型已经给出就认定正确。缺来源和超出原意都拒收。
 计划特别核持有人、目标、初始和变化依据；当场小念头不算计划。
 场景特别核在场与提及、去向与到达；观点跟随感知者。不得擅改原文实体异写。
-输出 {verdicts:[{id,accept:true或false,reason,patch:null或修订后的整行}]}。
-每项另给speaker_claims数组，理由主张某人说话时填{entity,p,q}，q为证明署名的逐字叙述短引；无说话归属主张可空。
+输出 {verdicts:[{id,accept:true或false,reason,speaker_claims:[]}],patches:[{id,changes:{被改字段:新值}}]}。
+未改条目不进入patches，只写改动字段，不回传整行或全量候选；不改变id。
+每项裁定（不含说话证明）最多128个UTF8字节，理由用短句；整个patches数组最多1024字节。
+每项另给speaker_claims数组，理由主张某人说话时填{entity,p,s}，s为提交的句号编号；无说话归属主张可空。全部说话证明数组合计最多1024字节。
 同类同主体同来源的重复可拒收，但不同目标不得合并。
-每个给出的候选都要一项裁定，不能补候选、不能换编号，patch仍须有原文证据。'''
+每个给出的候选都要一项裁定，不能补候选、不能换编号，修订仍须有原文证据。
+整包不能完整放进output_bound时，只输出 {overflow:true}，不能漏裁定。
+若一个修订需超出差量上界，只输出 {overflow:true}，不能删掉修订来认定正确。'''
 PROMPTS = {'B': B_PROMPT, 'A': A_PROMPT, 'J2': J2_PROMPT, 'C': C_PROMPT}
