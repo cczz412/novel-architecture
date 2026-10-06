@@ -1,0 +1,77 @@
+{
+  "execution_identity": "Codex",
+  "books": [
+    {
+      "code": "qishi",
+      "archive": "/workspace/codex-work/materials/chatgpt_batches_20260926/batch_04/input_r06/batch_04_input_r06.zip",
+      "book_id": "ccz181-r02-n01-ch01-08",
+      "chapter_count": 8,
+      "record": "/workspace/codex-work/out/管线修复_R04/round_76/J1/material.json",
+      "entity_records": [
+        {
+          "path": "/workspace/codex-work/out/管线修复_R04/round_76/J1/material.json"
+        },
+        {
+          "path": "/workspace/codex-work/out/管线修复_R04/round_77/J2/author_store.json",
+          "views": [
+            "人物卡",
+            "别名表",
+            "物件表",
+            "地点表"
+          ]
+        }
+      ]
+    },
+    {
+      "code": "dixian",
+      "archive": "/workspace/codex-work/inputs/全量推进_R01/batch_08/batch_08_input_r06.zip",
+      "book_id": "ccz178-r01-nb02-ch01-03",
+      "chapter_count": 3,
+      "record": "/workspace/codex-work/out/管线修复_R04/round_76/K1/input_material.json",
+      "entity_records": [
+        {
+          "path": "/workspace/codex-work/out/管线修复_R04/round_76/K1/input_material.json"
+        }
+      ]
+    },
+    {
+      "code": "huidao",
+      "archive": "/workspace/codex-work/materials/chatgpt_batches_20260926/batch_21/input_r06/batch_21_input_r06.zip",
+      "book_id": "ccz181-r02-c11-ch01-08",
+      "chapter_count": 8,
+      "record": "/workspace/codex-work/out/管线修复_R04/round_75/H5/development/material.json",
+      "entity_records": [
+        {
+          "path": "/workspace/codex-work/out/管线修复_R04/round_75/H5/development/material.json",
+          "chapter_book": "huidao"
+        }
+      ]
+    },
+    {
+      "code": "gongan",
+      "archive": "/workspace/codex-work/materials/chatgpt_batches_20260926/single_book_r01/batch_02_b/batch_02_b_input_r06_single.zip",
+      "book_id": "ccz178-r01-nb03-ch01-03",
+      "chapter_count": 8,
+      "record": "/workspace/codex-work/out/管线修复_R04/commands.log",
+      "entity_records": [
+        {
+          "path": "/workspace/codex-work/out/管线修复_R04/round_33/gongan_A_baseline/prediction.json"
+        }
+      ]
+    },
+    {
+      "code": "wuxian",
+      "archive": "/workspace/codex-work/materials/chatgpt_batches_20260926/batch_04/input_r06/batch_04_input_r06.zip",
+      "book_id": "book-wuxian-ch01-50",
+      "chapter_count": 50,
+      "record": "/workspace/codex-work/out/管线修复_R04/commands.log",
+      "entity_records": []
+    }
+  ],
+  "missing": [
+    {
+      "code": "dayi",
+      "reason": "已核R04路径记录中未找到可验证包路径，未使用，未搜索inputs/materials"
+    }
+  ]
+}
