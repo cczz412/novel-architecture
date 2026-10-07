@@ -29,7 +29,9 @@ J2_PROMPT = '''按证据整理事实类资料，每行只表达一个主体的�
 回忆块有起止段与原文锚，未明确先后不排真实时间顺序。小念头不登记为安排。
 输出 {people:[],aliases:[],relations:[],time:[],memories:[],arrangements:[],objects:[],traits:[]}。
 一般行 {entity,aspect,value,layer,ev:[{p,s}]}。
-relations另给target和relation_type（亲属、合作、冲突、其他、未知），只写明示关系。
+relations完整行 {entity,target,relation_type,aspect,value,layer,ev:[{p,s}]}。
+内容value和类别aspect必须是非空字符串；不能只交对象target和关系类型relation_type。
+relation_type只用亲属、合作、冲突、其他、未知；aspect写关系类别，value写证据明示的关系内容。
 aliases行 {entity,alias,speaker:null或称呼者,scope:段号数组,ev:[{p,s}]}。
 memories行 {start:段号,end:段号,anchor,viewpoint:null或人物,ev:[{p,s}]}。
 time的aspect用故事时间、未来安排、作息、过往经历、工作年限、状态、未知。
@@ -54,9 +56,12 @@ REVIEW_PROMPT = '''逐项检查候选和对应原段，不能整体默认放行�
 场景特别核在场与提及、去向与到达；观点跟随感知者。不得擅改原文实体异写。
 输出 {verdicts:[{id,accept:true或false,reason,speaker_claims:[]}],patches:[{id,changes:{被改字段:新值}}]}。
 未改条目不进入patches，只写改动字段，不回传整行或全量候选；不改变id。
+accept=false的拒收条目不能同时进入patches；不能为了过机检更改拒收裁定。
 每项裁定（不含说话证明）最多128个UTF8字节，理由用短句；整个patches数组最多1024字节。
 reason只写核对结论，例如“符合提交原段”，不得写“某人说/道/问/喊/答/叫”式转述当证据。
-speaker_claims默认填[]；仅当对应原句的引号外叙述直接写着“某人说/道/问/喊/答/叫”时才填，不能靠上下文推断署名。
+speaker_claims默认填[]。B复核只从程序提交的speaker_candidates候选数组中勾选完整的{entity,p,s}，不能自由发明人物或指针。
+B的程序候选宽列引号外叙述署名及邻近句，仍须对原文核实；无可用署名或不能判断时明确填[]。
+其他岗位仅当对应原句的引号外叙述直接写着“某人说/道/问/喊/答/叫”时才填，不能靠上下文推断署名。
 p是提交的段号字符串，例如"p012"；s是该段内提交的句号整数，从1开始，不是段序号，也不能填段号或候选号。
 单条证明例：{entity:"某人",p:"p012",s:1}；只有提交原句确有该人物署名时才可使用，例子不代替证据。
 每条speaker_claim最多128个UTF8字节，超长会拒收，不截删人物名或证据指针；全部说话证明数组合计最多1024字节。

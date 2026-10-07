@@ -35,6 +35,9 @@ def validate(role, payload, material, facts=None, previous=None):
         raise ValueError('输出须为对象')
     errors = []
     result = copy.deepcopy(payload)
+    if role == 'A' and result.get('rows') == []:
+        raise ValueError(json.dumps({'id': 'A', 'field': 'rows',
+            'error': '计划候选或复核保存计划为空，阶段未完成；有原文依据才补计划，不能编造'}, ensure_ascii=False))
     groups = [role] if role in ('A', 'B') else list(SECTIONS) if role == 'J2' else ['paragraphs', 'scenes']
     seen = set()
     for group in groups:
@@ -92,8 +95,13 @@ def validate(role, payload, material, facts=None, previous=None):
                             raise ValueError('计划来源主体与持有人不一致')
                         if row['status'] == '兑现' and not row.get('fulfilled'):
                             raise ValueError('兑现缺完成依据')
-                    if role == 'J2' and group == 'relations' and (not row.get('target') or row.get('relation_type') not in ('亲属', '合作', '冲突', '其他', '未知')):
-                        raise ValueError('关系缺对象或明确类型')
+                    if role == 'J2' and group == 'relations':
+                        missing = [name for name in ('value', 'aspect')
+                                   if not isinstance(row.get(name), str) or not row[name].strip()]
+                        if missing:
+                            raise ValueError('关系缺内容(value)或类别(aspect)：' + '、'.join(missing))
+                        if not row.get('target') or row.get('relation_type') not in ('亲属', '合作', '冲突', '其他', '未知'):
+                            raise ValueError('关系缺对象或明确类型')
                     if role == 'J2' and group == 'memories':
                         order = {p['paragraph_id']: n for n, p in enumerate(material['paragraphs'])}
                         if row.get('start') not in order or row.get('end') not in order or order[row['start']] > order[row['end']] or not row.get('anchor'):
@@ -122,7 +130,95 @@ def flatten(role, value):
     return [row for section in (SECTIONS if role == 'J2' else ('paragraphs', 'scenes')) for row in value[section]]
 
 
-def check_speaker_claims(verdict, candidate, material):
+def speaker_candidates(material, candidate):
+    """本章引号外署名宽列：人物到动词最多64字，证据窗口为前后各一句。
+
+    候选是可能的署名，不是裁定；模型只能勾选程序给出的完整指针。
+    引号跨段保持状态，台词中的人物和说话动词不产生署名候选。
+    """
+    from pipeline_output28 import sentences
+    names = set()
+    for row in candidate:
+        for field in ('subject', 'entity'):
+            name = row.get(field)
+            if isinstance(name, str) and name.strip() and name not in ('未知', '无名', '无名说话人'):
+                names.add(name)
+        names.update(name for name in row.get('mentions', []) if isinstance(name, str) and name.strip()
+                     and name not in ('未知', '无名', '无名说话人'))
+    table, units, quote_end = sentences(material), [], None
+    closing = {'“': '”', '「': '」', '『': '』', '"': '"'}
+    for paragraph in material['paragraphs']:
+        masked = []
+        for char in paragraph['text']:
+            if quote_end:
+                masked.append(' ')
+                if char == quote_end:
+                    quote_end = None
+            elif char in closing:
+                quote_end = closing[char]
+                masked.append(' ')
+            else:
+                masked.append(char)
+        offset = 0
+        for number, text in enumerate(table[paragraph['paragraph_id']], 1):
+            plain = ''.join(masked[offset:offset + len(text)])
+            units.append((paragraph['paragraph_id'], number, plain, text))
+            offset += len(text)
+    verbs = re.compile(r'说(?!法|服|明书)|(?<!知|通|铁|大|小)道(?!路|理|具|德)|问(?!题)|喊|答(?!案)|叫|回应|开口|补充|解释|叮嘱')
+    found = set()
+    meaningful = [index for index, (_, _, _, text) in enumerate(units)
+                  if text.strip('“”「」『』"。！？\n \t')]
+    positions = {index: position for position, index in enumerate(meaningful)}
+    for index, (_, _, plain, _) in enumerate(units):
+        for name in sorted(names):
+            for occurrence in re.finditer(re.escape(name), plain):
+                tail = plain[occurrence.end():occurrence.end() + 65]
+                if not any(not re.search(r'[。！？\n]', tail[:verb.start()]) for verb in verbs.finditer(tail)):
+                    continue
+                position = positions[index]
+                for neighbor in meaningful[max(0, position - 1):position + 2]:
+                    p, number, _, _ = units[neighbor]
+                    found.add((name, p, number))
+    order = {p: index for index, p in enumerate(table)}
+    return [{'entity': name, 'p': p, 's': number}
+            for name, p, number in sorted(found, key=lambda x: (order[x[1]], x[2], x[0]))]
+
+
+def speaker_candidate_errors(verdict, candidates, material):
+    """收集本裁定全部失败，不在首个证明处退出。"""
+    from pipeline_output28 import sentences
+    table = sentences(material)
+    allowed = {(c['entity'], c['p'], c['s']) for c in candidates}
+    errors = []
+    def fail(field, detail):
+        errors.append({'verdict_id': verdict.get('id'), 'field': field, 'error': detail,
+                       'legal_example': {'reason': '符合提交原段', 'speaker_claims': []}})
+    claims = verdict.get('speaker_claims')
+    if not isinstance(claims, list):
+        fail('speaker_claims', '复核缺说话归属检查栏')
+        return errors
+    for index, claim in enumerate(claims):
+        field = 'speaker_claims[' + str(index) + ']'
+        if not isinstance(claim, dict):
+            fail(field, '说话证明须为对象')
+            continue
+        entity, p, number = claim.get('entity'), claim.get('p'), claim.get('s')
+        if not isinstance(entity, str) or not entity or not isinstance(p, str) or p not in table or type(number) is not int or not 1 <= number <= len(table[p]):
+            fail(field, '说话证明的人物、段号或句号指针无效')
+        elif claim.get('q') != table[p][number - 1]:
+            fail(field, '还原的说话证明与原句指针不一致')
+        elif (entity, p, number) not in allowed:
+            fail(field, '说话证明不在程序署名候选集合，须改选候选或清空')
+    return errors
+
+
+def check_speaker_claims(verdict, candidate, material, candidates=None):
+    if candidates is not None:
+        errors = speaker_candidate_errors(verdict, candidates, material)
+        if errors:
+            raise ValueError(json.dumps({'kind': 'speaker_candidate_membership', 'errors': errors},
+                                        ensure_ascii=False, separators=(',', ':')))
+        return
     def fail(field, detail):
         raise ValueError(json.dumps({'verdict_id': verdict.get('id'), 'field': field,
                                     'error': detail,
@@ -172,14 +268,30 @@ def deduplicate(role, value):
     return out, removed
 
 
-def review_apply(role, candidate, review, material, facts=None, previous=None):
+def review_apply(role, candidate, review, material, facts=None, previous=None, candidates=None):
     rows = flatten(role, candidate)
     wanted = {r['_id'] for r in rows}
     verdicts = review.get('verdicts')
     if not isinstance(verdicts, list) or len(verdicts) != len(wanted) or {r.get('id') for r in verdicts} != wanted:
         raise ValueError('复核未逐项覆盖或重复')
-    for verdict in verdicts:
-        check_speaker_claims(verdict, rows, material)
+    if role == 'B':
+        candidates = speaker_candidates(material, rows) if candidates is None else candidates
+        errors = [error for verdict in verdicts
+                  for error in speaker_candidate_errors(verdict, candidates, material)]
+        # 署名放宽后原件中的拒收/修订冲突也会露出；同包一起反馈，仍保留原有拒收规则。
+        by_id = {verdict['id']: verdict for verdict in verdicts}
+        if isinstance(review.get('patches'), list):
+            for index, patch in enumerate(review['patches']):
+                if isinstance(patch, dict) and patch.get('id') in by_id and by_id[patch['id']].get('accept') is False:
+                    errors.append({'verdict_id': patch['id'], 'field': 'patches[' + str(index) + ']',
+                                   'error': '拒收条目不能同时提交修订；保留拒收裁定并删除该条差量',
+                                   'legal_example': {'accept': False, 'speaker_claims': [], 'patches': []}})
+        if errors:
+            raise ValueError(json.dumps({'kind': 'speaker_candidate_membership', 'errors': errors},
+                                        ensure_ascii=False, separators=(',', ':')))
+    else:
+        for verdict in verdicts:
+            check_speaker_claims(verdict, rows, material)
     patches = review.get('patches')
     if not isinstance(patches, list):
         raise ValueError('复核缺修订差量数组')
@@ -235,6 +347,8 @@ def facts_output(value, material):
 
 
 def plans_output(value, material, previous):
+    if not value.get('rows'):
+        raise ValueError('保存计划为空，A阶段未完成')
     result = []
     for row in value['rows']:
         stable = row['key'] or 'plan:' + key_for(material['book_id'], material['chapter'], row['subject'], row['content'], row['source'])

@@ -11,7 +11,7 @@ from pipeline_prompts25 import SYSTEM, PROMPTS, REVIEW_PROMPT
 from pipeline_budget25 import Budget, Halt, NetworkPause, RoleLimit, TotalLimit, TruncatedOutput, parse_response, blind_admission
 from pipeline_output28 import (PROTOCOL, OUTPUT_POLICY, REPAIR_MAX_BYTES, OutputOverflow,
     bounded_packets, split_packet, merge_values, hydrate_j2, check_review_shape, pointer_payload, repair_message)
-from pipeline_records25 import validate, flatten, review_apply, facts_output, plans_output, assemble
+from pipeline_records25 import validate, flatten, review_apply, facts_output, plans_output, assemble, speaker_candidates
 from pipeline_author25 import build_views, query
 from pipeline_audit25 import local_closure, structural_checks
 from pipeline_c_program25 import annotate
@@ -66,7 +66,21 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
     if stage['status'] == 'complete':
         if digest(cache) != stage['sha256']:
             raise Halt('同次结果检查点改变')
-        return read_json(cache)['payload']
+        cached = read_json(cache)['payload']
+        if role == 'A':
+            try:
+                if review and not any(v.get('accept') for v in cached.get('verdicts', [])):
+                    raise ValueError('缓存复核没有可保存计划，A阶段未完成')
+                if not review:
+                    if not cached.get('rows'):
+                        raise ValueError('缓存计划候选为空，A阶段未完成')
+                    if checker:
+                        checker(cached, material, payload)
+            except (ValueError, KeyError, TypeError) as exc:
+                stage.update(status='incomplete_machine_check', machine_error=str(exc))
+                write_json(state_path, state)
+                raise
+        return cached
     if stage['status'] == 'failed_truncation':
         raise OutputOverflow('该岗已在一次拆分后失败，不再投递')
     def split_once():
@@ -139,6 +153,8 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
         try:
             decoded = parse_response(raw)
             checked = checker(decoded, material, payload) if checker else decoded
+            if role == 'A' and not review and not checked.get('rows'):
+                raise ValueError('计划候选为空，A阶段未完成；只能补有原文依据的计划')
             write_json(cache, {'payload': checked})
             stage.update(status='complete', sha256=digest(cache))
             write_json(state_path, state)
@@ -152,7 +168,10 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
         except (ValueError, KeyError, TypeError) as exc:
             error = str(exc)
             if len(error.encode()) > REPAIR_MAX_BYTES - 128:
-                error = '多项字段或证据未通过机检；重新核对全部字段和原文指针。'
+                error = (json.dumps({'speaker_claims_all_clear': True,
+                         'error': '署名机检多错；本包全部speaker_claims强制改为[]，reason只写核对结论，保留编号和accept，删除拒收条目差量并保留其他patches'}, ensure_ascii=False)
+                         if review and role == 'B' and 'speaker_candidate_membership' in error
+                         else '多项字段或证据未通过机检；重新核对全部字段和原文指针。')
             stage['machine_error'] = error
             if review:
                 previous_answer = raw.get('choices', [{}])[0].get('message', {}).get('content')
@@ -183,7 +202,8 @@ def check_review_packet(role, candidate, obj, material, packet, facts, previous)
     subset = {**candidate, **{field: [row for row in candidate[field] if row['_id'] in wanted]
                              for field in fields}}
     # 在包内核差量语义，失败走run_stage的一次机检重试，不重发整岗。
-    review_apply(role, subset, checked, material, facts, previous)
+    candidates = speaker_candidates(material, flatten(role, candidate)) if role == 'B' else None
+    review_apply(role, subset, checked, material, facts, previous, candidates=candidates)
     return checked
 
 
@@ -258,6 +278,8 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                                       'input_bound': config['roles'][role]['review_rows_max_bytes'],
                                       'fact_fields': ['key', 'subject', 'text', 'paragraph_ids'],
                                       'facts': fact_map([f for f in facts if f['local_key'] in reference_keys]) if role == 'A' else []}
+                    if role == 'B':
+                        review_payload['speaker_candidates'] = speaker_candidates(material, candidate['rows'])
                     review_result = run_packets(budget, state, state_path, role, material, review_payload,
                         review=True, checker=lambda obj, part_material, packet:
                         check_review_packet(role, candidate, obj, part_material, packet, facts, previous_plans))
@@ -268,6 +290,8 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                         part['facts'] = facts_output(approved, material)
                     elif role == 'A':
                         part['plans'] = plans_output(approved, material, previous_plans)
+                        if not part['plans']:
+                            raise ValueError('保存计划为空，A阶段未完成')
                     part[role + '_status'] = 'complete'
                     status[role_id] = '完成'
                     write_json(state_path, state)

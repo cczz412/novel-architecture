@@ -35,7 +35,12 @@ def repair_message(error):
     message = {'role': 'user', 'content': instruction + error}
     # 预留按实际JSON字节计算，包含引号转义、消息封套和数组分隔符。
     if len(json.dumps(message, ensure_ascii=False).encode()) + 2 > REPAIR_MAX_BYTES:
-        message['content'] = '机检失败，重新核对本包全部字段、编号和原文指针，再给完整JSON。'
+        if 'speaker_candidate_membership' in error or 'speaker_claims_all_clear' in error:
+            message['content'] = ('署名机检多错，详情超出反馈上界：将本包全部裁定的speaker_claims强制改为[]，'
+                                  'reason只写核对结论，保留所有编号和accept；删除拒收条目的patches，'
+                                  '保留其他差量，返回完整本包JSON。')
+        else:
+            message['content'] = '机检失败，重新核对本包全部字段、编号和原文指针，再给完整JSON。'
     return message
 
 
@@ -146,7 +151,7 @@ def check_review_shape(value, rows, material):
             if type(claim['s']) is not int or not 1 <= claim['s'] <= len(table[claim['p']]):
                 raise ValueError(review_shape_error(verdict['id'], field + '.s',
                                  '段号或句号指针无效：s须为该段内的句号整数', material, claim['entity']))
-            hydrated.append({'entity': claim['entity'], **resolve_pointer({'p': claim['p'], 's': claim['s']}, material)})
+            hydrated.append({'entity': claim['entity'], 's': claim['s'], **resolve_pointer({'p': claim['p'], 's': claim['s']}, material)})
         verdict['speaker_claims'] = hydrated
     if claims_size > REVIEW_CLAIMS_MAX_BYTES or size(value) > review_bound(rows):
         raise OutputOverflow('复核说话证明或整体返回超过上界')
