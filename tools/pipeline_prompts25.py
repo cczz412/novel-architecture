@@ -24,7 +24,10 @@ A_PROMPT = '''从本次事实和原段登记人物计划，另核已有计划在
 旧计划主体、目标、状态、来源、期限、条件全未变时可沿用，basis和ev可空；新引入和任何变化必须有本章依据。
 输出 {rows:[{key:null或已给的键,subject,content,status,deadline:null或原话,
 condition:null或原话,source:事实键,fulfilled:null或事实键,condition_ref:null或事实键,
-basis:事实键数组,reason,ev:[{p,q}]}]}。不改已有历史，不输出其他人物序列。'''
+basis:事实键数组,reason,ev:[{p,q}]}]}。不改已有历史，不输出其他人物序列。
+新计划改用种子编号：{key:null,seed_id,content,status,deadline,condition,fulfilled,condition_ref,reason}。
+新计划不要输出subject、source、basis、ev，程序从所选种子接回完整主体、来源和逐字证据。
+已有计划继续按旧行格式；每个分组只处理本包种子和已有计划，不补其他人物。'''
 J2_PROMPT = '''按证据整理事实类资料，每行只表达一个主体的一项内容。
 人物、别名、称谓来源、关系、时间层、回忆块、安排、物件状态、性格分别保存。
 同姓、同首字、共同称谓、别人口吻或相近写法不能直接合并成人物别名。
@@ -74,3 +77,13 @@ p是提交的段号字符串，例如"p012"；s是该段内提交的句号整数
 整包不能完整放进output_bound时，只输出 {overflow:true}，不能漏裁定。
 若一个修订需超出差量上界，只输出 {overflow:true}，不能删掉修订来认定正确。'''
 PROMPTS = {'B': B_PROMPT, 'A': A_PROMPT, 'J2': J2_PROMPT, 'C': C_PROMPT}
+
+J2_SHORT_PROMPT = '''程序已列出候选、来源句号和可用署名证据。逐项核对，不能默认全收。
+items每项按item_fields顺序排列：编号、候选内容、出处、署名表编号。
+candidate是按所属栏目candidate_fields顺序排列的完整内容；pointers是[段号,句号]。
+顶层signed_evidence各项为[说话人,段号,句号]，条目的signed_evidence只列该表编号，从0开始。
+只判断本包候选是否有原段支持，是否重复、时间或归属错误；不得生成新候选、证据、署名或修订。
+输出 {verdicts:[{id,accept:true或false,reason}]}，每个编号只出现一次。
+reason只选一项：符合原段、证据不足、归属不符、时间不符、内容重复、分类不符、内容超出原段、待独立修订。
+拒收后程序另记原因；修订属于独立步骤，不在本包。每项裁定最多128个UTF8字节。
+无法完整交付只输出{overflow:true}，不得漏项或截删。'''

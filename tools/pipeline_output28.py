@@ -9,6 +9,7 @@ from pipeline_records25 import SECTIONS, flatten
 
 PROTOCOL = 'bounded_delta_pointer_v28'
 REPAIR_MAX_BYTES = 6000
+J2_SHORT_REPAIR_MAX_BYTES = 1024
 REVIEW_PATCH_MAX_BYTES = 1024
 REVIEW_CLAIMS_MAX_BYTES = 1024
 REVIEW_CLAIM_MAX_BYTES = 128
@@ -268,3 +269,75 @@ def merge_values(role, values, review=False):
     if role == 'B':
         result['unresolved'] = [row for v in values for row in v.get('unresolved', [])]
     return result
+
+
+def a_grouped_packets(material, payload, stage_bound):
+    """人物不跨组；正文保留，种子、事实和旧计划按人物归组，含一次重试预留。"""
+    from pipeline_prompts25 import SYSTEM, A_PROMPT
+    from pipeline_budget25 import reserve
+    people = {}
+    for seed in payload.get('plan_seeds', []):
+        people.setdefault(seed['subject'], []).append(seed)
+    for row in payload.get('previous_plans', []):
+        people.setdefault(row['subject'], [])
+    if not people:
+        return [(material, payload)]
+    groups = [[], []] if len(people) > 1 else [[]]
+    for subject in sorted(people, key=lambda name: (-len(people[name]), name)):
+        target = min(groups, key=lambda group: sum(len(people[name]) + 1 for name in group))
+        target.append(subject)
+    def packet(names):
+        seeds = [row for row in payload.get('plan_seeds', []) if row['subject'] in names]
+        previous = [row for row in payload.get('previous_plans', []) if row['subject'] in names]
+        refs = {row['source'] for row in seeds} | {row.get(k) for row in previous for k in ('source', 'fulfilled', 'condition_ref')}
+        facts = [row for row in payload.get('facts', []) if row[0] in refs or row[1] in names
+                 or any(name in row[2] for name in names)]
+        value = {**payload, 'facts': facts, 'previous_plans': previous, 'plan_seeds': seeds,
+                 'group_subjects': names}
+        base = [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': A_PROMPT + '\n' + json.dumps(value, ensure_ascii=False, separators=(',', ':'))}]
+        upper = reserve(base + [{'role': 'user', 'content': 'x' * REPAIR_MAX_BYTES}], OUTPUT_POLICY['A']['max_tokens'])
+        return value, upper
+    result = []
+    while groups:
+        names = groups.pop(0)
+        value, upper = packet(names)
+        if upper > stage_bound:
+            if len(names) < 2:
+                raise OutputOverflow('单个人物计划组含重试仍超过预留，不截删材料')
+            middle = len(names) // 2
+            groups[:0] = [names[:middle], names[middle:]]
+            continue
+        result.append((material, value))
+    return result
+
+
+def j2_decision_packets(material, prepared, maximum, stage_bound):
+    """短判断按证据段分组，给每次反馈预留上界，保留所有候选。"""
+    from pipeline_prompts25 import SYSTEM, J2_SHORT_PROMPT
+    from pipeline_budget25 import reserve
+    from pipeline_records25 import j2_wire_payload
+    if not prepared['items']:
+        return []
+    packets, group = [], []
+    count_bound = (math.floor(maximum * 0.6) - 64) // REVIEW_VERDICT_MAX_BYTES
+    def packet(items):
+        value = {'method': prepared['method'], 'items': items}
+        wire = j2_wire_payload(value, material)
+        base = [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': J2_SHORT_PROMPT + '\n' + json.dumps(wire, ensure_ascii=False, separators=(',', ':'))}]
+        # 新结构的反馈只指向三种裁定字段，不再带旧整包答案；JSON转义按两倍预留。
+        upper = reserve(base + [{'role': 'user', 'content': 'x' * (2 * J2_SHORT_REPAIR_MAX_BYTES)}], maximum)
+        return value, upper
+    for item in prepared['items']:
+        value, upper = packet(group + [item])
+        if group and (upper > stage_bound or len(group) >= count_bound):
+            data, _ = packet(group)
+            packets.append((material, data))
+            group = []
+            value, upper = packet([item])
+        if upper > stage_bound:
+            raise OutputOverflow('J2单项短判断材料含重试超预留，不截删')
+        group.append(item)
+    if group:
+        data, _ = packet(group)
+        packets.append((material, data))
+    return packets

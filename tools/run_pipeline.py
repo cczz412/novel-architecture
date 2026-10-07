@@ -7,12 +7,15 @@ import argparse
 import json
 from pathlib import Path
 from pipeline_source25 import chapter_range, digest, read_json, read_sources, write_json
-from pipeline_prompts25 import SYSTEM, PROMPTS, REVIEW_PROMPT
+from pipeline_prompts25 import SYSTEM, PROMPTS, REVIEW_PROMPT, J2_SHORT_PROMPT
 from pipeline_budget25 import Budget, Halt, NetworkPause, RoleLimit, TotalLimit, TruncatedOutput, parse_response, blind_admission
-from pipeline_output28 import (PROTOCOL, OUTPUT_POLICY, REPAIR_MAX_BYTES, OutputOverflow, J2RowOverflow,
-    bounded_packets, split_packet, split_j2_rows, merge_values, hydrate_j2, check_review_shape, pointer_payload, repair_message)
+from pipeline_output28 import (PROTOCOL, OUTPUT_POLICY, REPAIR_MAX_BYTES, J2_SHORT_REPAIR_MAX_BYTES, OutputOverflow, J2RowOverflow,
+    bounded_packets, split_packet, split_j2_rows, merge_values, hydrate_j2, check_review_shape, pointer_payload, repair_message,
+    a_grouped_packets, j2_decision_packets)
 from pipeline_records25 import (validate, flatten, review_apply, facts_output, plans_output, assemble,
-    speaker_candidates, normalize_rejected_patches, normalize_speaker_claims, plan_seeds, check_plan_seed_scope)
+    speaker_candidates, normalize_rejected_patches, normalize_speaker_claims, plan_seeds, check_plan_seed_scope,
+    bind_plan_seeds, j2_program_candidates, j2_prepare_packet, j2_pre_dispatch, j2_short_decisions, j2_apply_short,
+    j2_wire_payload, j2_revision_step)
 from pipeline_author25 import build_views, query
 from pipeline_audit25 import local_closure, structural_checks
 from pipeline_c_program25 import annotate
@@ -61,7 +64,9 @@ def clean_checkpoint(state, calls, gateway_job_id):
 def run_stage(budget, state, state_path, role, material, payload, review=False, checker=None,
               suffix='', split_depth=0):
     name = role + ':' + material['chapter'] + (':review' if review else ':generate') + suffix
-    base = messages(REVIEW_PROMPT if review else PROMPTS[role], payload)
+    short_j2 = role == 'J2' and payload.get('method') == 'program_candidates_short_decisions_v47'
+    base = messages(J2_SHORT_PROMPT if short_j2 else REVIEW_PROMPT if review else PROMPTS[role],
+                    j2_wire_payload(payload, material) if short_j2 else payload)
     stage = state['stages'].setdefault(name, {'attempts': 0, 'status': 'pending'})
     cache = budget.output / 'stages' / (name.replace(':', '_') + '.json')
     if stage.get('local_row_split_failed'):
@@ -70,6 +75,9 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
         if digest(cache) != stage['sha256']:
             raise Halt('同次结果检查点改变')
         cached = read_json(cache)['payload']
+        if short_j2:
+            j2_pre_dispatch(payload, material)
+            j2_short_decisions(cached, payload)
         if role == 'A':
             try:
                 if review and not any(v.get('accept') for v in cached.get('verdicts', [])):
@@ -92,7 +100,13 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             write_json(state_path, state)
             raise OutputOverflow('拆分后的子包仍截断或超界，该岗停止')
         try:
-            children = split_packet(material, payload, review)
+            if short_j2:
+                if len(payload['items']) < 2:
+                    raise OutputOverflow('J2短判断单条无法继续拆包')
+                middle = len(payload['items']) // 2
+                children = [(material, {**payload, 'items': items}) for items in (payload['items'][:middle], payload['items'][middle:])]
+            else:
+                children = split_packet(material, payload, review)
         except OutputOverflow:
             stage.update(status='failed_truncation', split_depth=split_depth)
             write_json(state_path, state)
@@ -107,7 +121,8 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             stage['status'] = 'failed_truncation'
             write_json(state_path, state)
             raise
-        combined = merge_values(role, values, review)
+        combined = ({'verdicts': [v for value in values for v in value['verdicts']]}
+                    if short_j2 else merge_values(role, values, review))
         write_json(cache, {'payload': combined})
         stage.update(status='complete', sha256=digest(cache))
         write_json(state_path, state)
@@ -143,13 +158,20 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             repair = stage.get('machine_error')
             previous_answer = stage.get('machine_answer')
             answer_message = ([{'role': 'assistant', 'content': previous_answer}]
-                              if repair and review and isinstance(previous_answer, str) else [])
-            current_messages = base + answer_message + ([repair_message(repair)] if repair else [])
+                              if repair and review and not short_j2 and isinstance(previous_answer, str) else [])
+            feedback = repair_message(repair) if repair else None
+            if short_j2 and feedback and len(feedback['content'].encode()) > J2_SHORT_REPAIR_MAX_BYTES:
+                feedback = {'role': 'user', 'content': '短判断机检未过。逐项核对全部编号、布尔收拒与单项理由，只交裁定数组；完整错误已在本地记录。'}
+            if role == 'A' and not review and 'group_subjects' in payload and feedback and len(feedback['content'].encode()) > 2048:
+                feedback = {'role': 'user', 'content': '本组计划机检未过。新计划只选本包种子编号，不另写主体、来源或证据；旧计划只用本包已有键；逐项核目标、状态与兑现引用。完整错误已在本地记录。'}
+            current_messages = base + answer_message + ([feedback] if feedback else [])
             def dispatched(index):
                 stage['request_index'] = index
                 write_json(state_path, state)
             pool_reason = ('truncation_split' if split_depth else 'machine_retry' if repair
                            else 'network_resume' if stage.get('network_resumes') else None)
+            if short_j2:
+                j2_pre_dispatch(payload, material)
             raw = budget.send(role, material['chapter'], current_messages, review=review,
                               stage_id=name, on_dispatch=dispatched, pool_reason=pool_reason)
             stage.pop('request_index', None)
@@ -227,10 +249,41 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
 
 def run_packets(budget, state, state_path, role, material, payload, review=False, checker=None):
     maximum = OUTPUT_POLICY['review' if review else role]['max_tokens']
-    packets = bounded_packets(role, material, payload, maximum, review)
+    packets = (a_grouped_packets(material, payload, budget.config['per_stage_reservation']['A:' + material['chapter'] + ':generate'])
+               if role == 'A' and not review and 'per_stage_reservation' in budget.config
+               else bounded_packets(role, material, payload, maximum, review))
     values = [run_stage(budget, state, state_path, role, part, data, review, checker,
                         '.pack' + str(n)) for n, (part, data) in enumerate(packets)]
     return merge_values(role, values, review)
+
+
+def run_j2_short(budget, state, state_path, material, facts):
+    candidate, provenance = j2_program_candidates(material, facts)
+    prepared, blocked = j2_prepare_packet(material, flatten('J2', candidate))
+    if not prepared['items']:
+        raise ValueError('J2没有可发送候选，整岗未完成')
+    audits, decisions = [], []
+    for review in (False, True):
+        maximum = OUTPUT_POLICY['review' if review else 'J2']['max_tokens']
+        bound = budget.config['per_stage_reservation']['J2:' + material['chapter'] + (':review' if review else ':generate')]
+        packets = j2_decision_packets(material, prepared, maximum, bound)
+        values = [run_stage(budget, state, state_path, 'J2', child, packet, review,
+                           lambda value, part, data: j2_short_decisions(value, data), '.pack' + str(n))
+                  for n, (child, packet) in enumerate(packets)]
+        decisions = {'verdicts': [v for value in values for v in value['verdicts']]}
+        approved, rejected = j2_apply_short(candidate, decisions, prepared, material)
+        audits.extend(rejected)
+        candidate = approved
+        prepared, new_blocked = j2_prepare_packet(material, flatten('J2', candidate))
+        blocked.extend(new_blocked)
+        if not prepared['items']:
+            raise ValueError('J2短判断没有可保留资料，整岗未完成')
+    audit_dir = budget.output / 'stages'
+    write_json(audit_dir / ('J2_' + material['chapter'] + '_program_candidates.json'), {'provenance': provenance})
+    write_json(audit_dir / ('J2_' + material['chapter'] + '_rejections.json'), {'rejected': audits + blocked})
+    candidate = j2_revision_step(candidate, [row['id'] for row in audits + blocked], [], material)
+    write_json(audit_dir / ('J2_' + material['chapter'] + '_revisions.json'), {'step': 'independent_revision', 'patches': [], 'note': '短判断不回传修订；拒收资料保留在独立拒收记录'})
+    return candidate, audits + blocked
 
 
 def check_review_packet(role, candidate, obj, material, packet, facts, previous):
@@ -312,11 +365,23 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                     payload.update(previous_people=[{k: r.get(k) for k in ('entity', 'aspect', 'value', 'layer')} for r in previous_people])
                 facts = all_facts + part.get('facts', [])
                 try:
+                    if role == 'J2':
+                        approved, rejected = run_j2_short(budget, state, state_path, material, part.get('facts', []))
+                        part.update(J2=approved, J2_rejected=rejected, J2_status='complete')
+                        status[role_id] = '完成'
+                        write_json(state_path, state)
+                        continue
                     def generation_check(obj, part_material, packet):
                         if role == 'J2':
                             obj = hydrate_j2(obj, part_material)
+                        if role == 'A':
+                            obj = bind_plan_seeds(obj, packet.get('plan_seeds', []))
+                            if 'group_subjects' in packet:
+                                old_keys = {row['key'] for row in packet.get('previous_plans', [])}
+                                if any(row.get('subject') not in packet['group_subjects'] or row.get('key') is not None and row['key'] not in old_keys for row in obj.get('rows', [])):
+                                    raise ValueError('计划越过人物分组或旧计划键不在本包')
                         checked = validate(role, obj, part_material, facts, previous_plans)
-                        return check_plan_seed_scope(checked, plan_seeds(part_material, part.get('facts', [])), previous_plans) if role == 'A' else checked
+                        return check_plan_seed_scope(checked, packet.get('plan_seeds', plan_seeds(part_material, part.get('facts', []))), previous_plans) if role == 'A' else checked
                     candidate = run_packets(budget, state, state_path, role, material, payload,
                         checker=generation_check)
                     candidate = validate(role, candidate, material, facts, previous_plans)

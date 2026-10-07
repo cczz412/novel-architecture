@@ -174,7 +174,269 @@ def check_plan_seed_scope(value, seeds, previous):
     return value
 
 
-def speaker_candidates(material, candidate):
+def bind_plan_seeds(value, seeds):
+    """新协议由模型选种子，主体、来源和证据由程序接回；旧行仍走原严格校验。"""
+    out = copy.deepcopy(value)
+    index = {seed['seed_id']: seed for seed in seeds}
+    for row in out.get('rows', []):
+        ident = row.pop('seed_id', None)
+        if ident is None:
+            continue
+        if ident not in index or row.get('key') is not None:
+            raise ValueError('新计划种子编号未知或与旧计划混用')
+        seed = index[ident]
+        fixed = {k: copy.deepcopy(seed[k]) for k in ('subject', 'source', 'basis', 'ev')}
+        if any(k in row and row[k] != v for k, v in fixed.items()):
+            raise ValueError('模型不得另写与种子冲突的主体、来源或证据')
+        row.update(fixed)
+    return out
+
+
+def b_scoring_projection(prediction):
+    """旧评分合同仅看事实正文；新归属信息完整留附表，原事实仍供后续岗位读取。"""
+    out = copy.deepcopy(prediction)
+    metadata = copy.deepcopy(out.get('B_metadata', []))
+    for row in out.get('B', []):
+        extra = {k: row.pop(k) for k in ('subject', 'kind', 'mentions', 'layer', 'speaker', 'holder', 'subject_text') if k in row}
+        if extra:
+            metadata.append({'local_key': row['local_key'], **extra})
+    if metadata:
+        out['B_metadata'] = metadata
+    return out
+
+
+def j2_program_candidates(material, facts):
+    """逐事实列候选，来源不改写；只给资料类线索，是否收录交短判断。"""
+    from pipeline_output28 import sentences
+    table = sentences(material)
+    seeds = {row['source'] for row in plan_seeds(material, facts)}
+    output = {field: [] for field in SECTIONS}
+    provenance = []
+    for fact in facts:
+        if fact.get('book_id') != material['book_id'] or fact.get('chapter') != material['chapter']:
+            raise ValueError('J2候选事实归章不符')
+        ev, pointers = [], []
+        for item in fact.get('evidence', []):
+            pid = item.get('paragraph_id', '').rsplit(':', 1)[-1]
+            quote = item.get('quote')
+            support = evidence([{'p': pid, 'q': quote}], material)
+            if not support:
+                raise ValueError('J2候选缺来源')
+            ev.append({'p': pid, 'q': quote})
+            numbers = [number for number, sentence in enumerate(table[pid], 1)
+                       if quote in sentence or sentence.strip() and sentence in quote]
+            if not numbers:
+                raise ValueError('J2候选证据不能连接句号指针')
+            pointers.extend({'p': pid, 's': number} for number in numbers)
+        if not ev or not fact.get('subject') or not fact.get('text'):
+            raise ValueError('J2候选缺主体、正文或证据')
+        text = fact['text']
+        targets = [name for name in fact.get('mentions', []) if isinstance(name, str)
+                   and name != fact['subject'] and name in text]
+        naming = re.search(r'(?:又名|小名|绰号|昵称|称为|称作|名叫)[“「『"]?([^，。；！？：:“”「」『』"\s]{1,12})', text)
+        field = ('aliases' if naming else
+                 'memories' if fact.get('layer') == '回忆' else
+                 'arrangements' if fact['local_key'] in seeds else
+                 'relations' if targets and re.search(r'父亲|母亲|父子|母子|兄弟|姐妹|夫妻|亲属|合作|关系', text) else
+                 'time' if re.search(r'\d+\s*(?:年|月|日|点|岁)|上午|中午|晚上|作息', text) else
+                 'objects' if re.search(r'持有|放置|拿着|拿起|交给|交出|取走|收到', text) else
+                 'traits' if fact.get('kind') == '心理' else 'people')
+        row = {'entity': fact['subject'], 'aspect': '未知', 'value': fact['text'],
+               'layer': fact.get('layer', '未知'), 'ev': ev}
+        if field == 'aliases':
+            row = {'entity': fact['subject'], 'alias': naming.group(1), 'speaker': None,
+                   'scope': list(dict.fromkeys(item['p'] for item in ev)), 'ev': ev}
+        elif field == 'relations':
+            row.update(target=targets[0], relation_type='未知')
+        elif field == 'memories':
+            order = {p['paragraph_id']: n for n, p in enumerate(material['paragraphs'])}
+            pids = sorted({item['p'] for item in ev}, key=order.get)
+            row = {'start': pids[0], 'end': pids[-1], 'anchor': text, 'viewpoint': None, 'ev': ev}
+        elif field == 'time':
+            row['aspect'] = '未知'
+        output[field].append(row)
+        provenance.append({'section': field, 'section_index': len(output[field]) - 1,
+                           'source': fact['local_key'], 'pointers': pointers})
+    checked = validate('J2', output, material)
+    for item in provenance:
+        item['id'] = checked[item['section']][item['section_index']]['_id']
+    return checked, provenance
+
+
+def j2_prepare_packet(material, rows):
+    """发送前固化候选、连续出处和可用署名；模型没有证据、修订输出栏。"""
+    from pipeline_output28 import sentences
+    table = sentences(material)
+    speakers = speaker_candidates(material, rows, direct_only=True)
+    units = [(pid, number) for pid, parts in table.items() for number, sentence in enumerate(parts, 1)
+             if sentence.strip('“”「」『』"。！？\n \t')]
+    positions = {point: n for n, point in enumerate(units)}
+    items, blocked = [], []
+    for row in rows:
+        pointers = []
+        evidence(row.get('ev'), material)
+        for ev in row['ev']:
+            numbers = [number for number, sentence in enumerate(table[ev['p']], 1)
+                       if ev['q'] in sentence or sentence.strip() and sentence in ev['q']]
+            if not numbers:
+                raise ValueError('J2候选没有可用句号出处')
+            pointers.extend({'p': ev['p'], 's': number} for number in numbers)
+        signed = [claim for claim in speakers if any(
+            (claim['p'], claim['s']) in positions and (pointer['p'], pointer['s']) in positions
+            and abs(positions[(claim['p'], claim['s'])] - positions[(pointer['p'], pointer['s'])]) <= 1
+            for pointer in pointers)]
+        speaker = row.get('speaker')
+        if speaker is not None and not any(claim['entity'] == speaker for claim in signed):
+            blocked.append({'id': row['_id'], 'reason': '候选说话归属缺署名证据', 'row': copy.deepcopy(row)})
+            continue
+        items.append({'id': row['_id'], 'candidate': copy.deepcopy(row), 'pointers': pointers,
+                      'signed_evidence': signed})
+    return {'method': 'program_candidates_short_decisions_v47', 'items': items}, blocked
+
+
+def j2_pre_dispatch(packet, material, prior_rejections=(), revisions=()):
+    """拒收和修订是独立本地步骤；非法差量或署名在发送前硬拒。"""
+    from pipeline_output28 import resolve_pointer, sentences
+    if set(packet) != {'method', 'items'} or packet.get('method') != 'program_candidates_short_decisions_v47':
+        raise ValueError('短判断发送包只允许程序候选，不携带修订或自由证据')
+    rejected = set(prior_rejections)
+    if any(patch.get('id') in rejected for patch in revisions):
+        raise ValueError('发送前拦截：拒收条目不能进入修订包')
+    if revisions:
+        raise ValueError('短判断包不携带修订；修订须独立处理后重新列候选')
+    ids = set()
+    rows = [item['candidate'] for item in packet['items']]
+    allowed = speaker_candidates(material, rows, direct_only=True)
+    table = sentences(material)
+    units = [(pid, number) for pid, parts in table.items() for number, sentence in enumerate(parts, 1)
+             if sentence.strip('“”「」『』"。！？\n \t')]
+    positions = {point: n for n, point in enumerate(units)}
+    for item in packet['items']:
+        if set(item) != {'id', 'candidate', 'pointers', 'signed_evidence'}:
+            raise ValueError('程序候选包字段无效')
+        if item['id'] in ids or item['id'] != item['candidate']['_id']:
+            raise ValueError('候选编号重复或错指')
+        ids.add(item['id'])
+        evidence(item['candidate']['ev'], material)
+        expected = [{'p': ev['p'], 's': number} for ev in item['candidate']['ev']
+                    for number, sentence in enumerate(table[ev['p']], 1)
+                    if ev['q'] in sentence or sentence.strip() and sentence in ev['q']]
+        if expected != item['pointers']:
+            raise ValueError('发送前拦截：候选证据指针与原行不符')
+        for pointer in item['pointers']:
+            resolve_pointer(pointer, material)
+        for claim in item['signed_evidence']:
+            if claim not in allowed or not any(
+                    (claim['p'], claim['s']) in positions and (pointer['p'], pointer['s']) in positions
+                    and abs(positions[(claim['p'], claim['s'])] - positions[(pointer['p'], pointer['s'])]) <= 1
+                    for pointer in item['pointers']):
+                raise ValueError('发送前拦截：说话人没有程序署名证据')
+        speaker = item['candidate'].get('speaker')
+        if speaker is not None and not any(claim['entity'] == speaker for claim in item['signed_evidence']):
+            raise ValueError('发送前拦截：候选说话归属缺署名证据')
+    return packet
+
+
+def j2_wire_payload(packet, material):
+    """发送视图只带内容及证据指针；完整原行在程序包保留，不重复回传引语。"""
+    from pipeline_output28 import sentences
+    used = {pointer['p'] for item in packet['items'] for pointer in item['pointers']}
+    used.update(claim['p'] for item in packet['items'] for claim in item['signed_evidence'])
+    selected = {(pointer['p'], pointer['s']) for item in packet['items'] for pointer in item['pointers']}
+    selected.update((claim['p'], claim['s']) for item in packet['items'] for claim in item['signed_evidence'])
+    table = sentences(material)
+    source_view = [[pid, [[number, sentence] for number, sentence in enumerate(parts, 1) if (pid, number) in selected]]
+                   for pid, parts in table.items() if pid in used]
+    fields = {section: sorted({k for item in packet['items'] if item['id'].split(':')[0] == section
+                              for k in item['candidate'] if k not in ('ev', '_id')})
+              for section in SECTIONS if any(item['id'].split(':')[0] == section for item in packet['items'])}
+    signatures, items = [], []
+    for item in packet['items']:
+        indexes = []
+        for claim in item['signed_evidence']:
+            signature = [claim['entity'], claim['p'], claim['s']]
+            if signature not in signatures:
+                signatures.append(signature)
+            indexes.append(signatures.index(signature))
+        items.append([item['id'], [item['candidate'].get(k) for k in fields[item['id'].split(':')[0]]],
+                      [[pointer['p'], pointer['s']] for pointer in item['pointers']], indexes])
+    return {'method': packet['method'], 'candidate_fields': fields,
+            'item_fields': ['id', 'candidate', 'pointers', 'signed_evidence'], 'items': items,
+            'signed_evidence': signatures, 'paragraphs': source_view}
+
+
+def j2_revision_step(candidate, rejected_ids, patches, material):
+    """独立修订入口；完整差量留包，拒收资料不能修订后冒充已接受。"""
+    out = copy.deepcopy(candidate)
+    rows = {row['_id']: row for row in flatten('J2', out)}
+    seen = set()
+    for patch in patches:
+        ident = patch.get('id')
+        if ident in set(rejected_ids):
+            raise ValueError('拒收条目不能进入独立修订步骤')
+        changes = patch.get('changes')
+        if (set(patch) != {'id', 'changes'} or ident not in rows or ident in seen
+                or not isinstance(changes, dict) or not changes or '_id' in changes
+                or set(changes) - set(rows[ident])):
+            raise ValueError('独立修订编号或字段无效')
+        seen.add(ident)
+        rows[ident].update(copy.deepcopy(changes))
+    validated = validate('J2', out, material)
+    for field in SECTIONS:
+        for old, row in zip(out[field], validated[field]):
+            row['_id'] = old['_id']
+    prepared, blocked = j2_prepare_packet(material, flatten('J2', validated))
+    if blocked:
+        raise ValueError('独立修订产生无署名候选，未提交')
+    j2_pre_dispatch(prepared, material)
+    return validated
+
+
+def j2_short_decisions(value, packet):
+    """模型只给编号、布尔收拒、短理由；拒收不能携带证据或修订。"""
+    from pipeline_output28 import size, OutputOverflow, REVIEW_VERDICT_MAX_BYTES
+    if value.get('overflow') is True:
+        raise OutputOverflow('J2短判断超过输出上界')
+    if set(value) != {'verdicts'} or not isinstance(value['verdicts'], list):
+        raise ValueError('J2短判断只允许裁定数组，不允许证据或修订')
+    wanted = {item['id'] for item in packet['items']}
+    verdicts = value['verdicts']
+    if len(verdicts) != len(wanted) or {v.get('id') for v in verdicts} != wanted:
+        raise ValueError('J2短判断漏项、重号或错指')
+    for verdict in verdicts:
+        if (set(verdict) != {'id', 'accept', 'reason'} or type(verdict['accept']) is not bool
+                or not isinstance(verdict['reason'], str) or not verdict['reason'].strip()
+                or size(verdict) > REVIEW_VERDICT_MAX_BYTES):
+            raise ValueError('J2裁定只允许编号、收拒和一条短理由')
+        if verdict['reason'] not in ('符合原段', '证据不足', '归属不符', '时间不符', '内容重复',
+                                      '分类不符', '内容超出原段', '待独立修订'):
+            raise ValueError('J2理由须选单项核对结论，不自由生成证据或说话归属')
+    return copy.deepcopy(value)
+
+
+def j2_apply_short(candidate, decisions, packet, material):
+    j2_pre_dispatch(packet, material)
+    checked = j2_short_decisions(decisions, packet)
+    by_id = {v['id']: v for v in checked['verdicts']}
+    out, rejected = {field: [] for field in SECTIONS}, []
+    for field in SECTIONS:
+        for row in candidate[field]:
+            if row['_id'] not in by_id:
+                continue
+            verdict = by_id[row['_id']]
+            if verdict['accept']:
+                out[field].append(copy.deepcopy(row))
+            else:
+                rejected.append({'id': row['_id'], 'reason': verdict['reason'], 'row': copy.deepcopy(row)})
+    # 保留准备时编号，避免复核子包重新编号后错配。
+    validated = validate('J2', out, material)
+    for field in SECTIONS:
+        for old, row in zip(out[field], validated[field]):
+            row['_id'] = old['_id']
+    return validated, rejected
+
+
+def speaker_candidates(material, candidate, direct_only=False):
     """本章引号外署名宽列：人物到动词或冒号引语最多64字，前后各一句。
 
     候选是可能的署名，不是裁定；模型只能勾选程序给出的完整指针。
@@ -222,7 +484,7 @@ def speaker_candidates(material, candidate):
                 if not any(not re.search(r'[。！？\n]', tail[:position]) for position in anchors):
                     continue
                 position = positions[index]
-                for neighbor in meaningful[max(0, position - 1):position + 2]:
+                for neighbor in ([index] if direct_only else meaningful[max(0, position - 1):position + 2]):
                     p, number, _, _ = units[neighbor]
                     found.add((name, p, number))
     order = {p: index for index, p in enumerate(table)}
@@ -511,4 +773,4 @@ def assemble(materials, current):
         pred['coverage'].append({'book_id': material['book_id'], 'chapter': chapter,
                                  'paragraphs_read': len(material['paragraphs']), 'fact_count': len(facts)})
     pred['review_audit']['open_plan_keys'] = [h['plan_key'] for h in pred['review_audit']['plan_history'] if h['states'][-1]['status'] in ('未执行', '执行中')]
-    return pred
+    return b_scoring_projection(pred)
