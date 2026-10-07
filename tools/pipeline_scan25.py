@@ -41,8 +41,6 @@ def counts_only(background, allowed_book_ids, files, terms, release_table=None):
                 rows = data.get('paragraphs') if isinstance(data, dict) else data
                 blocks.extend(r['text'] for r in rows)
                 used.append({'sha256': hashlib.sha256(raw).hexdigest(), 'paragraph_count': len(rows)})
-        if not used:
-            raise ValueError('approved_book_has_no_chapters')
         code = record['code']
         corpora[code] = '\n'.join(blocks)
         entities[code] = set()
@@ -70,8 +68,11 @@ def counts_only(background, allowed_book_ids, files, terms, release_table=None):
                         'released_hit_count': sum(r['count'] for r in scan.get('released_hits', [])),
                         'six_plus_verbatim_hit_count': sum(len(v) for v in scan['six_plus_verbatim_hits'].values())})
     # 仅组装允许输出的数字、布尔值、固定状态及SHA，不转存scans或entities。
-    return {'execution_identity': 'Codex', 'schema': 'detector_counts_v62', 'performed': True,
+    return {'execution_identity': 'Codex', 'schema': 'detector_counts_v63', 'performed': True,
             'counts_only': True, 'scope': 'approved_public_books_only',
+            'effective': not any(r['missing_chapter_count'] for r in receipts),
+            'ineffective_reasons': ['missing_chapters'] if any(r['missing_chapter_count'] for r in receipts) else [],
+            'missing_chapter_count': sum(r['missing_chapter_count'] for r in receipts),
             'book_count': len(reports), 'excluded_book_count': len(excluded),
             'excluded_books': excluded, 'corpus_receipts': receipts, 'reports': reports,
             'all_scanned_hit_counts_zero': all(r['hit_count'] == 0 for r in reports),
@@ -89,12 +90,14 @@ def legacy(args):
     terms=W/'tools/pipeline_terms25.json'
     records=read_json(p)['books']; corpora={}; receipts=[]
     for record in records:
-     blocks=[];used=[]
+     blocks=[];used=[];missing=0
      with zipfile.ZipFile(record['archive']) as package:
       for n in range(1,record['chapter_count']+1):
        chapter=str(n).zfill(2);member='books/'+record['book_id']+'/sources/'+chapter+'_paragraphs.json'
        try:raw=package.read(member)
-       except KeyError:continue
+       except KeyError:
+        missing+=1
+        continue
        data=json.loads(raw); rows=data.get('paragraphs') if isinstance(data,dict) else data
        blocks.extend(r['text'] for r in rows)
        used.append(dict(member=member,sha256=hashlib.sha256(raw).hexdigest(),paragraph_count=len(rows)))
@@ -114,8 +117,10 @@ def legacy(args):
     struct=audit.structural_checks(files);scans=audit.string_scan(files,corpora,entities,read_json(terms)['words'])
     if pathlib.Path(args.release_table).exists():scans=audit.apply_background_releases(scans,files,args.release_table)
     write_json(R/'closure_candidate_v25.json',dict(execution_identity='Codex',files=[dict(path=str(p),sha256=digest(p)) for p in files],dynamic_errors=errors))
-    write_json(R/'string_detection_v25.json',dict(execution_identity='Codex',reports=scans,whitelist_sha256=digest(terms),background_sha256=digest(W/'tools/pipeline_background25.json'),corpus_receipts=receipts,entities={k:sorted(v) for k,v in entities.items()},known_exposure={'provider':'审读侧持表代跑','words_read':False,'self_populated':False},hard_passed=all(scans[k]['hit_count']==0 for k in ['qishi','dixian'])))
+    write_json(R/'string_detection_v25.json',dict(execution_identity='Codex',reports=scans,whitelist_sha256=digest(terms),background_sha256=digest(W/'tools/pipeline_background25.json'),corpus_receipts=receipts,entities={k:sorted(v) for k,v in entities.items()},known_exposure={'provider':'审读侧持表代跑','words_read':False,'self_populated':False},hard_passed=not any(r['missing_chapter_count'] for r in receipts) and all(scans[k]['hit_count']==0 for k in ['qishi','dixian']),effective=not any(r['missing_chapter_count'] for r in receipts),ineffective_reasons=['missing_chapters'] if any(r['missing_chapter_count'] for r in receipts) else []))
     write_json(R/'structural_checks_v25.json',dict(execution_identity='Codex',**struct))
+    if any(r['missing_chapter_count'] for r in receipts):
+     print('coverage_incomplete: missing_chapters',sum(r['missing_chapter_count'] for r in receipts))
     print('closure',len(files),'dynamic errors',errors,'structural',struct['passed'])
     for code,scan in scans.items():
      print(code,'chars',len(corpora[code]),'entities',scan['entity_count'],'candidates',scan['candidate_count'],'hits',scan['hit_count'],'six+',scan['six_plus_passed'])

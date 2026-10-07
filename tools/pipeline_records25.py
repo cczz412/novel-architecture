@@ -313,20 +313,25 @@ def j2_chapter_speakers(material, rows, facts=()):
              if t.strip('“”「」『』"。！？\n \t')]
     # 直接署名沿用已验证的引号外检查，实体集合取整章而非当前拆包。
     direct = speaker_candidates(material, [{'entity': n} for n in names], direct_only=True, strict_j2=True)
-    from pipeline_context52 import speech_table
+    from pipeline_context52 import speech_table, has_speech_clause
     events=speech_table(material,facts,{'people':[{'entity':n} for n in names]})
     result = {'names': sorted(names), 'direct': direct, 'units': units, 'window': J2_NEIGHBOR_SENTENCES,
-              'reported_speech_paragraphs':[r['p'] for r in events if r['speech_event'] and not r['dialogue']]}
+              'reported_speech_paragraphs':[r['p'] for r in events if r['speech_event'] and not r['dialogue']],
+              'rejected_speech_keys':[[p,n] for p,n,t in units if has_speech_clause(t)
+                                      and not any(c['p']==p and c['s']==n for c in direct)]}
     return result
 
 
-def j2_signed_nearby(claims, pointers, positions):
-    """执行身份：Codex；115：本句已有直接署名时，不再借相邻句的其他说话人。"""
+def j2_signed_nearby(claims, pointers, positions, rejected_speech_keys=None):
+    """执行身份：Codex；117：本句已弃签时，邻句名不提供确认依据。"""
+    # 旧调用未传本句判定时，只认同句证据，不能默认准许邻句兜底。
+    has_context=rejected_speech_keys is not None
+    blocked={tuple(key) for key in (rejected_speech_keys or ())}
     selected=[]
     for pointer in pointers:
         key=(pointer['p'],pointer['s'])
         local=[c for c in claims if (c['p'],c['s'])==key]
-        nearby=local or [c for c in claims if key in positions and (c['p'],c['s']) in positions
+        nearby=local or [c for c in claims if has_context and key not in blocked and key in positions and (c['p'],c['s']) in positions
                         and abs(positions[(c['p'],c['s'])]-positions[key])<=1]
         for claim in nearby:
             if claim not in selected:selected.append(claim)
@@ -368,10 +373,11 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
             for option in options:
                 option['nearby'] = [{'p': p, 's': n} for p, n, t in nearby if option['entity'] in t]
                 option['pronoun_reference'] = any(re.search(r'他|她|他们|她们|其', t) for _, _, t in nearby) and bool(option['nearby'])
-            signed = j2_signed_nearby(context['direct'], pointers, positions)
+            signed = j2_signed_nearby(context['direct'], pointers, positions, context['rejected_speech_keys'])
             required = bool(row.get('entity') in ('未知', '无名', '无名说话人') or row.get('requires_speaker') or row.get('speaker') is not None
                             or section == 'aliases' and any(re.search(r'[“「『"]', ev['q']) for ev in row['ev'])
-                            or any(ev['p'] in context.get('reported_speech_paragraphs',[]) for ev in row['ev']))
+                            or any(ev['p'] in context.get('reported_speech_paragraphs',[]) for ev in row['ev'])
+                            or any([x['p'],x['s']] in context['rejected_speech_keys'] for x in pointers))
             selected = row.get('speaker')
             confirmed = not required or selected is not None and any(x['entity'] == selected for x in signed)
             row.update(confirmation_status='已确认' if confirmed else '待核',
@@ -394,7 +400,7 @@ def j2_pre_dispatch_v50(packet, material, prior_rejections=(), revisions=()):
     context = packet['chapter_speakers']
     # 防止把伪造的直接署名表带进子包，人物集合取固定整章上下文。
     recomputed = j2_chapter_speakers(material, [{'entity': n} for n in context['names']])
-    if context['direct'] != recomputed['direct'] or context['units'] != recomputed['units']:
+    if context['direct'] != recomputed['direct'] or context['units'] != recomputed['units'] or context.get('rejected_speech_keys') != recomputed['rejected_speech_keys']:
         raise ValueError('整章署名依据改变')
     fresh, rejected = j2_prepare_packet_v50(material, [x['candidate'] for x in packet['items']], chapter_speakers=context)
     if rejected:
@@ -726,7 +732,7 @@ def speaker_candidates_legacy(material, candidate, direct_only=False, strict_j2=
 
 
 def speaker_candidates(material, candidate, direct_only=False, strict_j2=False):
-    from pipeline_context52 import speech_table, person_pool
+    from pipeline_context52 import speech_table, person_pool, has_speech_clause
     from pipeline_output28 import sentences
     entities={'people':[{'entity':r.get('entity',r.get('subject'))} for r in candidate if r.get('entity',r.get('subject'))]}
     names=person_pool(material,candidate,entities)
@@ -748,7 +754,8 @@ def speaker_candidates(material, candidate, direct_only=False, strict_j2=False):
         for name,p,n in list(found):
             if (p,n) in units:
                 i=units.index((p,n))
-                found.update((name,pp,nn) for pp,nn in units[max(0,i-1):i+2])
+                found.update((name,pp,nn) for pp,nn in units[max(0,i-1):i+2]
+                             if not has_speech_clause(table[pp][nn-1]))
     order={p:i for i,p in enumerate(table)}
     return [{'entity':n,'p':p,'s':s} for n,p,s in sorted(found,key=lambda x:(order[x[1]],x[2],x[0]))]
 

@@ -139,36 +139,60 @@ def speech_trigger_excluded(plain, match):
 SUBJECT_ADVERB = r'(?:但|而|可|于是|随后|随即|此时|这时|忽然|突然|又|却|便|就|也|才|仍|还|只|正|正在|已经|终于|继续|低声|轻声|大声|冷冷|缓缓|慢慢|轻轻|赶紧|连忙|立刻|认真|平静|严肃|悄悄|说完|说罢|完|罢)'
 SUBJECT_QUANTIFIER = r'(?:这|那|这个|那个|这一个|那一个|一)?(?:位|名|个)'
 SUBJECT_LIMITER = r'(?:旁边|前面|后面|左边|右边|身旁|身边|门口|屋里|只有|唯有)'
-SUBJECT_APPOSITION = r'(?:'+RELATIVE+'|'+TITLE+r'|舅舅|舅母|叔叔|婶婶|婶娘|伯母|姨妈|姨母|姑父|舅父|表哥|表姐|表弟|表妹)'
+# 执行身份：Codex；117：领属结构中的名词槽由边界判断，不枚举亲属称谓。
+def nominal_slot(value):
+    return bool(re.fullmatch(r'[\u4e00-\u9fff]{1,8}',value)
+                and not re.search(r'[的地得了着过把将被向对朝给在，。！？]',value))
 
-def subject_prefix_allowed(prefix):
+
+def subject_prefix_allowed(prefix, named=(), base=0):
     lead=prefix.strip()
-    # 代词或无名主体已占主语位置，后面出现的人名不再认作主语。
-    if re.match(r'(?:'+SUBJECT_ADVERB+r')*(?:我|你|您|他|她|它|咱|对方|那人|这人|有人|一人|众人|大家|旁人|(?:一个|一位|一名)(?:人|男人|女人|老人))',lead):
-        return False
-    if re.fullmatch(r'(?:'+SUBJECT_ADVERB+r')*',lead):return True
-    # “的”字定语整体修饰后面的人名；定语内的人名由 clause_subject 排除。
-    if lead.endswith('的'):return True
+    adverbs=r'(?:'+SUBJECT_ADVERB+r')*'
+    if re.fullmatch(adverbs,lead):return True
     qualifier=r'(?:(?:'+SUBJECT_QUANTIFIER+'|'+SUBJECT_LIMITER+r'))?'
-    apposition=r'(?:'+SUBJECT_APPOSITION+r')?'
-    if re.fullmatch(r'(?:'+SUBJECT_ADVERB+r')*'+qualifier+apposition,lead):return True
-    # 定语后可接亲属/身份同位语，但不能把任意尾词当同位语。
+    if re.fullmatch(adverbs+qualifier,lead):return True
+    # 领属者＋的＋名词槽＋当前人名：领属者不是动作主体。
     if '的' in lead:
-        return bool(re.fullmatch(qualifier+apposition,lead.rsplit('的',1)[1]))
-    return False
+        owner,noun=lead.split('的',1)
+        owners={h[3] for h in named if base<=h[0] and h[1]<=base+len(prefix)}
+        if (owner in owners or re.fullmatch(r'(?:我|你|您|他|她|咱)(?:们)?',owner)) and nominal_slot(noun):
+            return True
+    # 前面已有代词主语，不能越过其述语，把后面的姓名改作主语。
+    if re.match(adverbs+r'(?:我|你|您|他|她|它|咱|对方|那人|这人|有人|一人|众人|大家|旁人|(?:一个|一位|一名)(?:人|男人|女人|老人))',lead):
+        return False
+    # 姓名占据分句起点，且后面还有非领属成分，说明这里已有外层主语。
+    for hit in named:
+        if not base<=hit[0] or hit[1]>base+len(prefix):continue
+        before=prefix[:hit[0]-base];after=prefix[hit[1]-base:]
+        if re.fullmatch(adverbs,before.strip()) and after and not after.startswith('的'):
+            return False
+    if lead.endswith('的'):return True
+    # 单独前置的职业标记沿用原识别；领属同位语不使用该表。
+    return bool(re.fullmatch(adverbs+qualifier+TITLE,lead))
+
 
 def clause_subject(clause, base, named, current_clause=False):
-    # 从后向前找完整的主语前缀；先取定语后的中心人名，再排除定语中的人名。
     for hit in reversed(named):
         if not base<=hit[0] or hit[1]>base+len(clause):continue
         prefix=clause[:hit[0]-base];tail=clause[hit[1]-base:]
-        if re.match(r'(?:'+SUBJECT_APPOSITION+r')?的',tail):continue
-        # 姓名是定语内部最后一个实名时，不能越过“的”去替无名中心语署名。
+        if tail.startswith('的'):continue
         boundary=base+clause.rfind('的')
-        if hit[1]<=boundary and not any(hit[1]<=other[0] and other[1]<=boundary for other in named):continue
-        if not subject_prefix_allowed(prefix):continue
+        if hit[1]<=boundary and not any(hit[1]<=other[0] and other[1]<=boundary for other in named):
+            # “的”后没有名词中心语，且紧接言说位：保留外层主语。
+            # 有后置姓名时仍属歧义，不能借此恢复宾语错签。
+            if not (tail.endswith('的') and tail[:-1] and not any(other[0]>hit[0] for other in named if other[1]<=base+len(clause))):
+                continue
+        if not subject_prefix_allowed(prefix,named,base):continue
         return hit
     return None
+
+
+def has_speech_clause(text):
+    """显式言说或叙述冒号引语；纯引语轮次不作为弃签屏障。"""
+    plain=narration(text)
+    if re.search(r'[^\s：:]\s*[:：]\s*[“「『"]',text):return True
+    return any(not speech_trigger_excluded(plain,m) for m in SPEECH.finditer(plain))
+
 
 def subject_before(plain, pos, named):
     start=max(plain.rfind(c,0,pos) for c in '。！？\n')+1
@@ -271,8 +295,13 @@ def speech_table(material, facts=(), entities=None, names=None):
                 event=True
                 prior=[h for h in named if h[1]<=call.start()]
                 if prior:persons=[prior[-1][2]];spans=[{'entity':persons[0],'offset':call.start(),'method':'直接署名'}]
+        # 执行身份：Codex；117：显式言说弃签后，弱依据只进入待核。
+        precision_rejected=bool(named or unresolved_subjects) and has_speech_clause(text) and not any(e['method'] in ('直接署名','引语后署名') for e in spans)
+        pending_speakers=[]
+        if precision_rejected:
+            pending_speakers.extend(persons);persons=[];spans=[]
         # 已存事实有显式上下文认定，仍标为候选，不伪造直接署名。
-        if event and not persons and not unresolved_subjects:
+        if event and not persons and not unresolved_subjects and not precision_rejected:
             for f in facts:
                 if not any(e.get('paragraph_id','').endswith(':'+p['paragraph_id']) for e in f.get('evidence',[])):continue
                 hint=re.search(r'据上下文为([^）)；，。]+)',f.get('text',''))
@@ -280,13 +309,14 @@ def speech_table(material, facts=(), entities=None, names=None):
                     persons=[mapping[hint[1]]];spans=[{'entity':persons[0],'offset':0,'method':'B上下文候选'}];break
         rows.append({'p':p['paragraph_id'],'speaker':list(dict.fromkeys(persons))[-1:], 'speech_event':event,
                      'recipients':list(dict.fromkeys(recipients)), 'evidence':spans,
+                     'precision_rejected':precision_rejected,'pending_speaker_candidates':pending_speakers,
                      'dialogue':bool(spoken),'narration_length':len(plain.strip()),
                      'narrative_people':list(dict.fromkeys(h[2] for h in named)),
                      **({'unresolved_subjects':list(dict.fromkeys(unresolved_subjects))} if unresolved_subjects else {})})
         if named:last_person=named[0][2]
     # 111第3条引用的邻段明示：不跨段猜轮次，不从下段任意人名借署名。
     for i,row in enumerate(rows[:-1]):
-        if row['speaker'] or not row['dialogue']:
+        if row['speaker'] or not row['dialogue'] or row['precision_rejected']:
             continue
         current=material['paragraphs'][i]['text'].strip()
         following=narration(material['paragraphs'][i+1]['text'])
@@ -330,7 +360,10 @@ def speech_table(material, facts=(), entities=None, names=None):
             if not row['speaker'] and not row.get('unresolved_subjects'):
                 other=participants-set(row['recipients']) if row['recipients'] else participants-{previous} if previous else set()
                 if len(other)==1:
-                    row['speaker']=[next(iter(other))];row['evidence']=[{'entity':row['speaker'][0],'offset':0,'method':'双人轮次候选'}]
+                    if row['precision_rejected']:
+                        row['pending_speaker_candidates']=sorted(set(row['pending_speaker_candidates'])|other)
+                    else:
+                        row['speaker']=[next(iter(other))];row['evidence']=[{'entity':row['speaker'][0],'offset':0,'method':'双人轮次候选'}]
             if len(row['speaker'])==1:previous=row['speaker'][0]
         following=None
         for i in reversed(group):
@@ -338,7 +371,10 @@ def speech_table(material, facts=(), entities=None, names=None):
             if not row['speaker'] and following and not row.get('unresolved_subjects'):
                 other=participants-{following}
                 if len(other)==1:
-                    row['speaker']=[next(iter(other))];row['evidence']=[{'entity':row['speaker'][0],'offset':0,'method':'双人轮次候选'}]
+                    if row['precision_rejected']:
+                        row['pending_speaker_candidates']=sorted(set(row['pending_speaker_candidates'])|other)
+                    else:
+                        row['speaker']=[next(iter(other))];row['evidence']=[{'entity':row['speaker'][0],'offset':0,'method':'双人轮次候选'}]
             if len(row['speaker'])==1:following=row['speaker'][0]
     return rows
 
