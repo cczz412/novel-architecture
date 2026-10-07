@@ -123,21 +123,26 @@ def flatten(role, value):
 
 
 def check_speaker_claims(verdict, candidate, material):
+    def fail(field, detail):
+        raise ValueError(json.dumps({'verdict_id': verdict.get('id'), 'field': field,
+                                    'error': detail,
+                                    'legal_example': {'reason': '符合提交原段', 'speaker_claims': []}},
+                                   ensure_ascii=False, separators=(',', ':')))
     claims = verdict.get('speaker_claims')
     if not isinstance(claims, list):
-        raise ValueError('复核缺说话归属检查栏')
+        fail('speaker_claims', '复核缺说话归属检查栏')
     texts = {p['paragraph_id']: p['text'] for p in material['paragraphs']}
     proved = set()
-    for claim in claims:
+    for index, claim in enumerate(claims):
         evidence([{'p': claim.get('p'), 'q': claim.get('q')}], material)
         entity = claim.get('entity')
         if not isinstance(entity, str) or not entity:
-            raise ValueError('说话主体缺失')
+            fail('speaker_claims[' + str(index) + '].entity', '说话主体缺失')
         narration = re.sub(r'“[^”]*”|「[^」]*」|"[^"\n]*"', '', texts[claim['p']])
         pattern = re.escape(entity) + r'(?:轻声|低声|大声|笑着|接着|又|还|便|就|才|却)?(?:说|道|喊|问|答|叫)'
         claim_plain = re.sub(r'“[^”]*”|「[^」]*」|"[^"\n]*"', '', claim['q'])
         if not re.search(pattern, narration) or not re.search(pattern, claim_plain):
-            raise ValueError('复核理由中的说话主体没有署名证据')
+            fail('speaker_claims[' + str(index) + ']', '复核理由中的说话主体没有署名证据')
         proved.add(entity)
     names = set()
     for row in candidate:
@@ -147,7 +152,7 @@ def check_speaker_claims(verdict, candidate, material):
         names.update(x for x in row.get('mentions', []) if isinstance(x, str))
     for name in names:
         if re.search(re.escape(name) + r'(?:说|说道|喊|问|答|叫)', verdict.get('reason', '')) and name not in proved:
-            raise ValueError('复核理由的说话归属没有逐项证据')
+            fail('reason', '复核理由的说话归属没有逐项证据')
 
 
 def deduplicate(role, value):

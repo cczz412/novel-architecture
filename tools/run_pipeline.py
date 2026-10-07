@@ -124,7 +124,10 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             stage['attempts'] += 1
             write_json(state_path, state)
             repair = stage.get('machine_error')
-            current_messages = base + ([repair_message(repair)] if repair else [])
+            previous_answer = stage.get('machine_answer')
+            answer_message = ([{'role': 'assistant', 'content': previous_answer}]
+                              if repair and review and isinstance(previous_answer, str) else [])
+            current_messages = base + answer_message + ([repair_message(repair)] if repair else [])
             def dispatched(index):
                 stage['request_index'] = index
                 write_json(state_path, state)
@@ -151,6 +154,10 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             if len(error.encode()) > REPAIR_MAX_BYTES - 128:
                 error = '多项字段或证据未通过机检；重新核对全部字段和原文指针。'
             stage['machine_error'] = error
+            if review:
+                previous_answer = raw.get('choices', [{}])[0].get('message', {}).get('content')
+                if isinstance(previous_answer, str):
+                    stage['machine_answer'] = previous_answer
             stage['machine_failures'] = stage.get('machine_failures', 0) + 1
             stage['machine_retries'] = min(1, stage['machine_failures'])
             write_json(state_path, state)

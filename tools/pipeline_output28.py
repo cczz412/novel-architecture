@@ -11,6 +11,7 @@ PROTOCOL = 'bounded_delta_pointer_v28'
 REPAIR_MAX_BYTES = 6000
 REVIEW_PATCH_MAX_BYTES = 1024
 REVIEW_CLAIMS_MAX_BYTES = 1024
+REVIEW_CLAIM_MAX_BYTES = 128
 REVIEW_VERDICT_MAX_BYTES = 128
 OUTPUT_POLICY = {
     'B': {'estimated_peak': 6000, 'max_tokens': 9000},
@@ -29,11 +30,22 @@ def size(value):
 
 
 def repair_message(error):
-    message = {'role': 'user', 'content': '机检失败，修正后重给本包JSON：' + error}
+    instruction = ('机检失败：只修指出的坏项及同类字段错误，保留其他裁定、编号、判定和差量，'
+                   '返回完整本包JSON。上次答案的转述不能当原文证据。错误详情：')
+    message = {'role': 'user', 'content': instruction + error}
     # 预留按实际JSON字节计算，包含引号转义、消息封套和数组分隔符。
     if len(json.dumps(message, ensure_ascii=False).encode()) + 2 > REPAIR_MAX_BYTES:
         message['content'] = '机检失败，重新核对本包全部字段、编号和原文指针，再给完整JSON。'
     return message
+
+
+def review_shape_error(ident, field, detail, material, entity='某人'):
+    paragraph = next(iter(sentences(material)), None)
+    example = {'entity': entity, 'p': paragraph, 's': 1}
+    return json.dumps({'verdict_id': ident, 'field': field, 'error': detail,
+                      'legal_pointer_example': example,
+                      'note': '样例只示范指针；原句没有直接署名时speaker_claims填[]，reason只写核对结论。'},
+                     ensure_ascii=False, separators=(',', ':'))
 
 
 def sentences(material):
@@ -113,11 +125,27 @@ def check_review_shape(value, rows, material):
         claims_size += size(claims)
         bare = {**verdict, 'speaker_claims': []}
         if set(verdict) != {'id', 'accept', 'reason', 'speaker_claims'} or size(bare) > REVIEW_VERDICT_MAX_BYTES:
-            raise OutputOverflow('复核单项裁定超过128字节或多交字段')
+            raise ValueError(review_shape_error(verdict['id'], 'reason',
+                                 '复核单项裁定超过128字节或多交字段', material))
         hydrated = []
-        for claim in claims:
+        for index, claim in enumerate(claims):
+            field = 'speaker_claims[' + str(index) + ']'
             if not isinstance(claim, dict) or set(claim) != {'entity', 'p', 's'}:
-                raise ValueError('说话证明须给人物与段号、句号')
+                raise ValueError(review_shape_error(verdict['id'], field,
+                                 '说话证明须给人物与段号、句号', material))
+            if size(claim) > REVIEW_CLAIM_MAX_BYTES:
+                raise ValueError(review_shape_error(verdict['id'], field,
+                                 '单条说话证明超过128字节，拒收且不截删', material))
+            if not isinstance(claim['entity'], str) or not claim['entity']:
+                raise ValueError(review_shape_error(verdict['id'], field + '.entity',
+                                 '说话主体须为非空字符串', material))
+            table = sentences(material)
+            if not isinstance(claim['p'], str) or claim['p'] not in table:
+                raise ValueError(review_shape_error(verdict['id'], field + '.p',
+                                 '段号或句号指针无效：p须为提交的段号字符串', material, claim['entity']))
+            if type(claim['s']) is not int or not 1 <= claim['s'] <= len(table[claim['p']]):
+                raise ValueError(review_shape_error(verdict['id'], field + '.s',
+                                 '段号或句号指针无效：s须为该段内的句号整数', material, claim['entity']))
             hydrated.append({'entity': claim['entity'], **resolve_pointer({'p': claim['p'], 's': claim['s']}, material)})
         verdict['speaker_claims'] = hydrated
     if claims_size > REVIEW_CLAIMS_MAX_BYTES or size(value) > review_bound(rows):
