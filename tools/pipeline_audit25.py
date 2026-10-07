@@ -143,3 +143,61 @@ def string_scan(files, corpora, entities, whitelist):
                          'by_file': by_file, 'six_plus_verbatim_hits': strict_long,
                          'six_plus_passed': not strict_long}
     return reports
+
+
+def apply_background_releases(reports, files, release_table):
+    """原始检测完成后逐处核对审读签名；原候选串、实体和长串判法不变。"""
+    table_path=Path(release_table)
+    table=read_json(table_path)
+    signer=table.get('signer','')
+    if table.get('schema')!='background_string_release_v1' or not signer or signer=='Codex' or not table.get('signed_at'):
+        raise ValueError('背景串放行表缺独立审读签名')
+    for key in ('source_report','judgement_report','basis_decision'):
+        source=table[key]
+        if hashlib.sha256(Path(source['path']).read_bytes()).hexdigest()!=source['sha256']:
+            raise ValueError('背景串放行表出处指纹改变：'+key)
+    entries=table['entries']
+    if table['released_count']!=len(entries):raise ValueError('放行条数不等于清单')
+    paths={str(p):Path(p) for p in files}
+    seen=set();release_rows=[]
+    for entry in entries:
+        literal,relative=entry['literal'],entry['file']
+        if not literal or Path(relative).is_absolute() or '..' in Path(relative).parts:raise ValueError('放行路径或字面无效')
+        construct=entry['location']['construct']
+        key=(relative,literal,construct)
+        if key in seen:raise ValueError('放行条目重复')
+        seen.add(key)
+        matches=[p for p in paths.values() if p.as_posix().endswith('/'+relative)]
+        if len(matches)!=1:raise ValueError('放行文件不在唯一检测闭包内')
+        path=matches[0];text=path.read_text();lines=text.splitlines();tree=ast.parse(text)
+        label=re.match(r'(模块常量|函数)\s+(\w+)',construct)
+        if not label:raise ValueError('放行结构无法重核')
+        kind,name=label.groups()
+        nodes=[n for n in (tree.body if kind=='模块常量' else ast.walk(tree))
+               if (kind=='函数' and isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef)) and n.name==name)
+               or (kind=='模块常量' and isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id==name for t in n.targets))]
+        if len(nodes)!=1:raise ValueError('放行结构不存在或不唯一')
+        node=nodes[0]
+        positions=[{'line':i+1,'column':m.start()+1} for i in range(node.lineno-1,node.end_lineno)
+                   for m in re.finditer(re.escape(literal),lines[i])]
+        # 每条签名只批准原有一处；新增的同词不能连带放行。
+        release_rows.append({'literal':literal,'file':str(path),'construct':construct,'reason':entry['reason'],
+            'signed_location':entry['location'],'current_positions':positions,'released_max_count':min(1,len(positions)),
+            'status':'结构内仍存在' if positions else '字面已由通用规则取代','signer':signer})
+    for book,report in reports.items():
+        report['raw_hit_count']=report['hit_count'];released=[]
+        for file,group in report['by_file'].items():
+            group['raw_count']=group['count'];group['raw_hits']=[dict(h) for h in group['hits']]
+            remaining=[]
+            for hit in group['hits']:
+                approved=[r for r in release_rows if r['file']==file and r['literal']==hit['word']]
+                count=min(hit['count'],sum(r['released_max_count'] for r in approved))
+                if count:released.append({'book':book,'file':file,'literal':hit['word'],'count':count,
+                    'entity':hit['entity'],'signed_entries':approved})
+                if hit['count']>count:remaining.append({**hit,'count':hit['count']-count})
+            group['hits']=remaining;group['count']=sum(h['count'] for h in remaining)
+        report['hit_count']=sum(g['count'] for g in report['by_file'].values())
+        report['released_hits']=released
+        report['release_table']={'path':str(table_path),'sha256':hashlib.sha256(table_path.read_bytes()).hexdigest(),
+            'signer':signer,'signed_at':table['signed_at'],'entries':release_rows,'not_released':table.get('not_released',[])}
+    return reports

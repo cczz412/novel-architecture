@@ -20,6 +20,16 @@ def narration(text):
 def quotes(text):
     return re.findall(QUOTES, text)
 
+def nonverbal_quote(value):
+    """引号只是排版；完成态动作串与无言符号不提供确认署名证据。"""
+    body=value[1:-1].strip()
+    if not re.search(r'[\u4e00-\u9fffA-Za-z0-9]',body):return True
+    # 人称自述、问句、命令和计划仍可能是真发言，保留原署名判法。
+    if re.search(r'我|你|您|咱|[？?！!]|请|别|不要|不能|应该|要|得|会|想|打算',body):return False
+    if SPEECH.search(body):return False
+    actions=re.findall(r'走|跑|站|坐|拿|放|递|推|拉|抓|夹|送|抬|低|转|点头|摇头|挥手|伸手',body)
+    return bool(re.search(r'了|着|过',body) and len(actions)>=2)
+
 def person_pool(material, facts=(), entities=None):
     entities = entities or {}
     raw=set()
@@ -116,7 +126,10 @@ def speech_table(material, facts=(), entities=None, names=None):
     for p in material['paragraphs']:
         text=p['text'];plain=fullplain[position:position+len(text)];position+=len(text)+1;named=mentions(plain,mapping)
         spans=[];persons=[];recipients=[];unresolved_subjects=[]
-        for match in re.finditer(QUOTES,text):
+        quote_spans=list(re.finditer(QUOTES,text))
+        nonverbal=[m for m in quote_spans if nonverbal_quote(m[0])]
+        spoken=[m for m in quote_spans if m not in nonverbal]
+        for match in spoken:
             prefix=plain[:match.start()];suffix=plain[match.end():]
             pre=mentions(prefix,mapping)
             pre=[x for x in pre if not re.search(r'(?:对|向|朝|冲着|对着|看向|看着|望着|回|让|叫|推了把|抱着|抱起|背着|拉着|指着|给)$',prefix[max(0,x[0]-4):x[0]])]
@@ -137,9 +150,10 @@ def speech_table(material, facts=(), entities=None, names=None):
                 term=call[1];r=resolve_title(term,material,names,entities,p['paragraph_id'])
                 if r['referent']:recipients.append(mapping.get(r['referent'],r['referent']))
                 elif term in mapping:recipients.append(mapping[term])
-        event=bool(quotes(text))
+        event=bool(spoken)
         for v in SPEECH.finditer(plain):
             before=plain[:v.start()];after=plain[v.start():]
+            if any(v.end()<=m.start() and re.fullmatch(r'[\s:：，,]*',plain[v.end():m.start()]) for m in nonverbal):continue
             if re.search(r'(?:没|不|别|想|听|据|传|所|啥也没|并未|没有|还想)$',before) or re.match(r'开口就是',after) or re.match(r'说(?:不定|起来|服|法|明书)',after):continue
             if re.search(r'对(?:于)?[^。！？：:，,着过了走回跑\n]{1,12}?来$',before) and re.match(r'说(?:[，,、]|道理)',after):continue
             event=True
@@ -178,7 +192,7 @@ def speech_table(material, facts=(), entities=None, names=None):
                     persons=[mapping[hint[1]]];spans=[{'entity':persons[0],'offset':0,'method':'B上下文候选'}];break
         rows.append({'p':p['paragraph_id'],'speaker':list(dict.fromkeys(persons))[-1:], 'speech_event':event,
                      'recipients':list(dict.fromkeys(recipients)), 'evidence':spans,
-                     'dialogue':bool(quotes(text)),'narration_length':len(plain.strip()),
+                     'dialogue':bool(spoken),'narration_length':len(plain.strip()),
                      'narrative_people':list(dict.fromkeys(h[2] for h in named)),
                      **({'unresolved_subjects':list(dict.fromkeys(unresolved_subjects))} if unresolved_subjects else {})})
         if named:last_person=named[0][2]

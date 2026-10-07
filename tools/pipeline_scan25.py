@@ -4,6 +4,7 @@ sys.dont_write_bytecode=True
 import argparse
 parser=argparse.ArgumentParser(description='按已登记背景语料复跑全文检测，不读取盲词表')
 parser.add_argument('output_dir')
+parser.add_argument('--release-table',default='/workspace/codex-work/out/管线修复_R04/审读/71_背景串放行表.json')
 args=parser.parse_args()
 R=pathlib.Path(args.output_dir);R.mkdir(parents=True,exist_ok=True)
 W=pathlib.Path(__file__).resolve().parents[1]
@@ -36,9 +37,10 @@ for record in records:
 configs=[W/'tools/pipeline_terms25.json',W/'tools/pipeline_background25.json']
 files,errors=audit.local_closure(W/'tools/run_pipeline.py',[],configs)
 struct=audit.structural_checks(files);scans=audit.string_scan(files,corpora,entities,read_json(terms)['words'])
-write_json(R/'closure_candidate_v25.json',dict(files=[dict(path=str(p),sha256=digest(p)) for p in files],dynamic_errors=errors))
-write_json(R/'string_detection_v25.json',dict(reports=scans,whitelist_sha256=digest(terms),background_sha256=digest(W/'tools/pipeline_background25.json'),corpus_receipts=receipts,entities={k:sorted(v) for k,v in entities.items()},known_exposure={'provider':'审读侧持表代跑','words_read':False,'self_populated':False},hard_passed=all(scans[k]['hit_count']==0 for k in ['qishi','dixian'])))
-write_json(R/'structural_checks_v25.json',struct)
+if pathlib.Path(args.release_table).exists():scans=audit.apply_background_releases(scans,files,args.release_table)
+write_json(R/'closure_candidate_v25.json',dict(execution_identity='Codex',files=[dict(path=str(p),sha256=digest(p)) for p in files],dynamic_errors=errors))
+write_json(R/'string_detection_v25.json',dict(execution_identity='Codex',reports=scans,whitelist_sha256=digest(terms),background_sha256=digest(W/'tools/pipeline_background25.json'),corpus_receipts=receipts,entities={k:sorted(v) for k,v in entities.items()},known_exposure={'provider':'审读侧持表代跑','words_read':False,'self_populated':False},hard_passed=all(scans[k]['hit_count']==0 for k in ['qishi','dixian'])))
+write_json(R/'structural_checks_v25.json',dict(execution_identity='Codex',**struct))
 print('closure',len(files),'dynamic errors',errors,'structural',struct['passed'])
 for code,scan in scans.items():
  print(code,'chars',len(corpora[code]),'entities',scan['entity_count'],'candidates',scan['candidate_count'],'hits',scan['hit_count'],'six+',scan['six_plus_passed'])

@@ -416,7 +416,7 @@ def j2_enrich_candidates(material, candidate, facts):
     for p in material['paragraphs']:
         text = p['text']
         for name in context['names']:
-            for match in re.finditer(re.escape(name) + r'(?:的)?(媳妇|妻子|丈夫|父亲|母亲|儿子|女儿|二哥|大哥|老二|老三|小妹)', text):
+            for match in re.finditer(re.escape(name) + r'(?:的)?(媳妇|妻子|丈夫|父亲|母亲|儿子|女儿|[一二三四五六七八九十大]+(?:哥|姐|弟|妹|嫂|叔)|老[一二三四五六七八九十大小]+|小(?:哥|姐|弟|妹))', text):
                 alias = match.group(0)
                 quote = alias
                 common = {'ev': [{'p': p['paragraph_id'], 'q': quote}]}

@@ -66,6 +66,13 @@ def scene_cells(text, p, memory=False):
     for pattern in patterns:
         for m in re.finditer(pattern,plain):
             v=m[1]
+            clause=re.split(r'[，,。！？]',plain[:m.start()])[-1]
+            if re.search(r'差点|险些|几乎|假如|如果|仿佛|好像',clause):continue
+            # 操作对象、远程媒介不是人物所在地点；按前后语法判，不列书内对象名。
+            after=plain[m.end():]
+            if pattern==patterns[0] and (re.match(r'(?:敲|打|输|键入|编辑|浏览|查询|播放|点击)',after)
+                    or re.match(r'(?:点(?:了)?点头|摇(?:了)?摇头|说|问|答|交谈|聊天)',after)
+                    and re.search(r'电|网|通讯|通话|频道|连线',v)):continue
             if len(v)==1 and m.end()<len(plain) and plain[m.end()] in '前边':v+=plain[m.end()]
             location.append(v)
     objects=[]
@@ -94,8 +101,15 @@ def scene_cells(text, p, memory=False):
                 noun=re.match(r'(.{0,28}(?:房间|办公室|屋|房|家|室|厅|院|局|楼|店|馆|站))',v)
                 if noun:v=noun[1]
             if v and v in text:cells[field].append({'text':v,'ev':[{'p':p,'q':v}]})
-    for m in re.finditer(r'([^，。！？]{1,4}?声)(?=响|[，。])|([^，。！？]{1,3}地一声)|([\u4e00-\u9fff]{1,3}一声)',plain):
+    for m in re.finditer(r'([^，。！？]{1,4}?声)(?=响|[，。])|([^，。！？]{1,3}地一声)|(一声(?:厉喝|怒喝|大喊|尖叫|惊呼|叹息|咳嗽|轻笑|冷笑))|([\u4e00-\u9fff]{1,3}一声)',plain):
         value=next(g for g in m.groups() if g)
+        # 心理/感官比喻不落成现场声音；向前看本句即可，不能借后句猜。
+        sentence=re.split(r'[。！？]',plain[:m.end()])[-1]
+        if re.search(r'(?:脑|心|意识|耳)[^。！？]{0,24}(?:嗡|轰|仿佛|好像|似乎)',sentence):continue
+        # “一声+发声动作”要把动作保全，避免切出人物名字的尾巴。
+        if value.endswith('一声'):
+            vocal=re.match(r'厉喝|怒喝|大喊|尖叫|惊呼|叹息|咳嗽|轻笑|冷笑',plain[m.end():])
+            if vocal:value='一声'+vocal[0]
         cells['sounds_smells'].append({'text':value,'ev':[{'p':p,'q':value}]})
     return cells
 
