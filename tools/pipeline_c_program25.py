@@ -8,8 +8,8 @@ CELLS = ('location', 'light_weather', 'objects_visuals', 'sounds_smells', 'atmos
 SCENE_ACTION_FILTER_ENABLED = False
 # 执行身份：Codex；115：只改变主标签，关态保留旧C作逐字对照。
 GENERAL_TAG_RULES_ENABLED = True
-# 执行身份：Codex；117：按否定/情态构件表达原评价式，匹配集合保持不变。
-EVALUATIVE_JUDGMENT = re.compile(r'不(?:配|该|应当|应该)|无可(?:厚非)|凭什么|理应|本该')
+# 执行身份：Codex；118：删除已恢复的整条评价分支，其余抽取判据原样保留。
+EVALUATIVE_JUDGMENT = re.compile(r'不(?:配|该|应当|应该)|凭什么|理应|本该')
 
 
 def narration(text):

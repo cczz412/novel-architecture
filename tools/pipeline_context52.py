@@ -139,10 +139,15 @@ def speech_trigger_excluded(plain, match):
 SUBJECT_ADVERB = r'(?:但|而|可|于是|随后|随即|此时|这时|忽然|突然|又|却|便|就|也|才|仍|还|只|正|正在|已经|终于|继续|低声|轻声|大声|冷冷|缓缓|慢慢|轻轻|赶紧|连忙|立刻|认真|平静|严肃|悄悄|说完|说罢|完|罢)'
 SUBJECT_QUANTIFIER = r'(?:这|那|这个|那个|这一个|那一个|一)?(?:位|名|个)'
 SUBJECT_LIMITER = r'(?:旁边|前面|后面|左边|右边|身旁|身边|门口|屋里|只有|唯有)'
-# 执行身份：Codex；117：领属结构中的名词槽由边界判断，不枚举亲属称谓。
+# 执行身份：Codex；118：完整名词构词才放行；未知词类不当作名词。
 def nominal_slot(value):
-    return bool(re.fullmatch(r'[\u4e00-\u9fff]{1,8}',value)
-                and not re.search(r'[的地得了着过把将被向对朝给在，。！？]',value))
+    if not 1 <= len(value) <= 8:
+        return False
+    # 复用既有称谓识别；亲属组合按辈分/支系修饰、关系语素、名词中心语解析。
+    # 不用任意汉字填充槽，也不列动作词；中心语后还有成分，整槽拒绝。
+    kinship = r'(?:[曾玄高太外堂表姻]*)(?:[伯叔舅姑姨祖]*)(?:[父母兄弟姐妹孙侄甥]|([爸妈爹娘爷奶公婆叔舅姑姨哥姐弟妹])\1)'
+    return bool(re.fullmatch(TITLE, value) or re.fullmatch(RELATIVE, value)
+                or re.fullmatch(kinship, value))
 
 
 def subject_prefix_allowed(prefix, named=(), base=0):
@@ -155,7 +160,9 @@ def subject_prefix_allowed(prefix, named=(), base=0):
     if '的' in lead:
         owner,noun=lead.split('的',1)
         owners={h[3] for h in named if base<=h[0] and h[1]<=base+len(prefix)}
-        if (owner in owners or re.fullmatch(r'(?:我|你|您|他|她|咱)(?:们)?',owner)) and nominal_slot(noun):
+        owner_start = any(re.fullmatch(adverbs + re.escape(name), owner) for name in owners)
+        owner_start = owner_start or bool(re.fullmatch(adverbs + r'(?:我|你|您|他|她|咱)(?:们)?', owner))
+        if owner_start and nominal_slot(noun):
             return True
     # 前面已有代词主语，不能越过其述语，把后面的姓名改作主语。
     if re.match(adverbs+r'(?:我|你|您|他|她|它|咱|对方|那人|这人|有人|一人|众人|大家|旁人|(?:一个|一位|一名)(?:人|男人|女人|老人))',lead):
@@ -210,6 +217,54 @@ def subject_before(plain, pos, named):
         anon=re.search(UNNAMED_SUBJECT,clause)
         if anon and len(clause[:anon.start()].strip(' 　'))<=3 and not re.search(SPEECH_OBJECT,clause[:anon.start()]):return None
     return None
+
+
+def unique_continuation(spans, rows, plain, named):
+    """执行身份：Codex；118：仅沿紧邻的明确说话人承接，不从任意邻句借名。"""
+    if not spans or not rows:
+        return False
+    previous = rows[-1]
+    explicit = [e for e in previous['evidence'] if e['method'] in ('直接署名', '引语后署名', '唯一承接署名')]
+    speakers = {e['entity'] for e in explicit}
+    if len(speakers) != 1 or set(previous['speaker']) != speakers:
+        return False
+    holder = next(iter(speakers))
+    if set(previous['narrative_people']) - speakers or previous.get('unresolved_subjects'):
+        return False
+    for ev in spans:
+        if ev['method'] not in ('主语延续', '代词承接') or ev['entity'] != holder:
+            return False
+        before = plain[:ev['offset']]
+        # 代词前须有本段同一实名主语；上一轮发言者不能单凭距离替代指代证据。
+        if ev['method'] == '代词承接':
+            if {h[2] for h in named if h[1] <= ev['offset']} != speakers:
+                return False
+            named_clauses = [m for m in re.finditer(r'[^，,。！？；;：:]+', before)
+                             if any(m.start() <= h[0] and h[1] <= m.end() for h in named)]
+            last_clause = named_clauses[-1] if named_clauses else None
+            subject = clause_subject(last_clause[0], last_clause.start(), named) if last_clause else None
+            if subject is None or subject[2] != holder:
+                return False
+        if any(h[1] <= ev['offset'] and h[2] != holder for h in named):
+            return False
+        # 多个代词或复数主语不唯一；无名主体也会结束承接。
+        if re.search(r'(?:^|[。！？；;，,])\s*(?:' + SUBJECT_ADVERB + r')*(?:' + UNNAMED_SUBJECT + r')', before) or re.search(r'(?:他|她|它)们', before):
+            return False
+        if len(set(re.findall(r'他|她|它', before))) > 1:
+            return False
+        # 引语起点的偏移包含本次言说词；只剥去紧挨引语的连续言说触发位。
+        antecedent = before.rstrip(' ：:，,')
+        for verb in reversed(list(SPEECH.finditer(antecedent))):
+            if verb.end() == len(antecedent) and not speech_trigger_excluded(antecedent, verb):
+                antecedent = antecedent[:verb.start()].rstrip(' ：:，,')
+            else:
+                break
+        if any(not speech_trigger_excluded(antecedent, v) for v in SPEECH.finditer(antecedent)):
+            return False
+    for ev in spans:
+        ev.update(method='唯一承接署名', antecedent_p=previous['p'],
+                  antecedent_offset=explicit[-1]['offset'])
+    return True
 
 
 def speech_table(material, facts=(), entities=None, names=None):
@@ -295,8 +350,9 @@ def speech_table(material, facts=(), entities=None, names=None):
                 event=True
                 prior=[h for h in named if h[1]<=call.start()]
                 if prior:persons=[prior[-1][2]];spans=[{'entity':persons[0],'offset':call.start(),'method':'直接署名'}]
-        # 执行身份：Codex；117：显式言说弃签后，弱依据只进入待核。
-        precision_rejected=bool(named or unresolved_subjects) and has_speech_clause(text) and not any(e['method'] in ('直接署名','引语后署名') for e in spans)
+        # 执行身份：Codex；118：唯一承接须有紧邻明确言说依据；其他弃签屏障保留。
+        continuation = not unresolved_subjects and unique_continuation(spans, rows, plain, named)
+        precision_rejected=bool(named or unresolved_subjects) and has_speech_clause(text) and not continuation and not any(e['method'] in ('直接署名','引语后署名') for e in spans)
         pending_speakers=[]
         if precision_rejected:
             pending_speakers.extend(persons);persons=[];spans=[]

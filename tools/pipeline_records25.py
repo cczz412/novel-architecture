@@ -323,18 +323,13 @@ def j2_chapter_speakers(material, rows, facts=()):
 
 
 def j2_signed_nearby(claims, pointers, positions, rejected_speech_keys=None):
-    """执行身份：Codex；117：本句已弃签时，邻句名不提供确认依据。"""
-    # 旧调用未传本句判定时，只认同句证据，不能默认准许邻句兜底。
-    has_context=rejected_speech_keys is not None
-    blocked={tuple(key) for key in (rejected_speech_keys or ())}
+    """执行身份：Codex；118：确认只取本句署名；邻句姓名继续留在待核候选。"""
     selected=[]
     for pointer in pointers:
         key=(pointer['p'],pointer['s'])
-        local=[c for c in claims if (c['p'],c['s'])==key]
-        nearby=local or [c for c in claims if has_context and key not in blocked and key in positions and (c['p'],c['s']) in positions
-                        and abs(positions[(c['p'],c['s'])]-positions[key])<=1]
-        for claim in nearby:
-            if claim not in selected:selected.append(claim)
+        for claim in claims:
+            if (claim['p'],claim['s']) == key and claim not in selected:
+                selected.append(claim)
     return selected
 
 
@@ -740,7 +735,7 @@ def speaker_candidates(material, candidate, direct_only=False, strict_j2=False):
     rows=speech_table(material,candidate,entities,names)
     for row in rows:
         for ev in row['evidence']:
-            allowed=('直接署名','引语后署名','紧邻下段明示') if direct_only or strict_j2 else ('直接署名','引语后署名','双人轮次候选','代词承接','B上下文候选')
+            allowed=('直接署名','引语后署名','紧邻下段明示','唯一承接署名') if direct_only or strict_j2 else ('直接署名','引语后署名','双人轮次候选','代词承接','B上下文候选','唯一承接署名')
             if ev['method'] not in allowed:
                 continue  # 轮次和代词推定只能进候选，不冒作直接署名。
             evidence_p=ev.get('support_p',row['p'])
