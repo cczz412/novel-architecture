@@ -11,7 +11,7 @@ TITLE = r'(?:副|大)?(?:书记|局长|厅长|县长|队长|主任|老师|医生
 RELATIVE = r'(?:老|亲|自家|我家|咱们|我|你|他|她)?(?:爸(?:爸)?|妈(?:妈)?|爹娘|父母|爷爷|奶奶|姥姥|姥爷|娘|爹|闺女|儿子|女儿|婆婆|媳妇|姑姑|小姑|大伯|[一二三四五六七八九十大]+(?:哥|姐|弟|妹|嫂|叔)|长辈|大人|老两口|两口子)'
 HUMAN_ACTION = r'放|递|腰板|声音|死|病|勉强|说|问|答|喊|走|坐|站|拿|跑|抱|端|收拾|洗|摸|拉|指|带|领|取|蹲|围|推|接|掏|抓|夹|扯|点头|添|靠近|觉得|心想|知道|看|听|想|笑|冲|皱|安排|要求|穿|抬|瞪|眼|脸|身体|心头|脾气|性格'
 INNER = re.compile(r'心想|觉得|认为|明白|知道|便知|以为|意识到|放(?:在)?心上|记在心头|铁了心|生怕|担心|心疼|理亏|心(?:上|头|里|中|底)|感觉|预感|猜测|暗想|不甘心|郁闷|无力感|发懵|考虑|气得|抓狂|(?:难道|莫非|怎(?:么|样)|哪有)[^。！？]*[？?]')
-SPEECH = re.compile(r'说(?!法|服|明书|不定|起来)|(?<!知|通|铁|大|小)(?<!恶心)道(?!路|理|具|德)|问(?!题)|喊|答(?!案)|回应|开口|补充|解释|叮嘱|呵斥|提醒|招呼|劝|要求|嘱咐|追问|厉喝|嘶吼|骂|回了一句|吐出一句|接听')
+SPEECH = re.compile(r'说(?!法|服|明书|不定|起来)|(?<!知|通|铁|大|小)(?<!恶心)道(?!路|理|具|德)|问(?!题)|喊|答(?!案)|回应|开口|补充|解释|叮嘱|呵斥|提醒|招呼|劝|要求|嘱咐|追问|厉喝|嘶吼|回了一句|吐出一句|接听')
 WITHDRAW = re.compile(r'却|作罢|收回|还是继续|没有|算了|好吧|咽了回去|没说出口|欲言又止|最终没|打断|挂断|没等|来不及')
 
 def narration(text):
@@ -118,6 +118,49 @@ def mentions(text, names):
             hits.append((m.start(),m.end(),v,n));occupied.update(range(m.start(),m.end()))
     return sorted(hits)
 
+SPEECH_EXCLUDED_WORDS = ('难道说', '难道', '莫非', '难不成', '莫不是', '怪不得', '难怪', '按说', '照说', '按理说', '照理说', '论理说', '应该说', '可以说', '换句话说', '也就是说', '就是说', '总的来说', '一般来说', '具体来说', '简单来说', '严格来说', '相对来说', '老实说', '说实话', '说实在的', '说真的', '说白了', '说到底', '说穿了', '话说回来', '不用说', '不消说', '比如说', '譬如说', '说明书', '说明', '小说', '学说', '传说', '解说词', '知道', '味道', '道理', '道路', '街道', '通道', '频道', '轨道', '隧道', '渠道', '管道', '跑道', '车道', '赛道', '走道', '过道', '地道', '霸道', '公道', '门道', '王道', '人道', '大道', '道具', '道德', '道士', '道观', '道长', '道家', '道教', '道法', '道袍', '一道', '两道', '几道', '这道', '那道', '问题', '学问', '疑问', '顾问', '问世', '问津', '答案', '报答', '据说', '听说', '传说中', '写道', '写着', '报道', '信上说', '书上说', '上面说', '上面写', '文件上说', '报纸上说', '新闻里说', '有人说')
+SPEECH_INITIAL_WORDS = ('话说', '再说', '虽说', '要说', '且说', '却说')
+
+# 执行身份：Codex；112：C1″结构主语、R1c与已采用C2词类。
+SPEECH_OBJECT = r'(?:对|向|朝|冲着|对着|看向|看着|望着|回|让|叫|推了把|抱着|抱起|背着|拉着|指着|给|把|将|和|与|跟|被)$'
+UNNAMED_SUBJECT = r'对方|那人|这人|有人|一人|一个人|一个|一位|一名|众人|大家|旁人'
+C3N_ENABLED = False
+
+def speech_trigger_excluded(plain, match):
+    for word in SPEECH_EXCLUDED_WORDS:
+        for hit in re.finditer(re.escape(word),plain):
+            if hit.start()<=match.start() and match.end()<=hit.end():return True
+    for word in SPEECH_INITIAL_WORDS:
+        for hit in re.finditer(r'(?:^|[，,。！？!?；;：:、\s])('+re.escape(word)+')',plain):
+            if hit.start(1)<=match.start() and match.end()<=hit.end(1):return True
+    return False
+
+def clause_subject(clause, base, named):
+    for hit in named:
+        if not base<=hit[0] or hit[1]>base+len(clause):continue
+        prefix=clause[:hit[0]-base];tail=clause[hit[1]-base:]
+        if re.search(SPEECH_OBJECT,prefix) or tail.startswith('的'):continue
+        # 无名主体已先出现时，后面的人名只能作候选，不能越过它取主语。
+        anon=re.search(UNNAMED_SUBJECT,prefix)
+        if anon and len(prefix[:anon.start()].strip())<=3 and not re.search(SPEECH_OBJECT,prefix[:anon.start()]):return None
+        return hit
+    return None
+
+def subject_before(plain, pos, named):
+    start=max(plain.rfind(c,0,pos) for c in '。！？\n')+1
+    clauses=[(start+m.start(),m[0]) for m in re.finditer(r'[^，,；;：:]+',plain[start:pos])]
+    for base,clause in reversed(clauses):
+        hit=clause_subject(clause,base,named)
+        if hit:return hit
+        st=clause.lstrip(' 　')
+        if re.match(r'(?:后者|前者)',st):
+            prev=[x for x in named if start<=x[0]<base]
+            return (prev[-1] if st.startswith('后者') else prev[0]) if prev else None
+        anon=re.search(UNNAMED_SUBJECT,clause)
+        if anon and len(clause[:anon.start()].strip(' 　'))<=3 and not re.search(SPEECH_OBJECT,clause[:anon.start()]):return None
+    return None
+
+
 def speech_table(material, facts=(), entities=None, names=None):
     """署名与对白轮次分开记录；推定轮次不能冒作直接署名证据。"""
     names=names or person_pool(material,facts,entities)
@@ -134,11 +177,12 @@ def speech_table(material, facts=(), entities=None, names=None):
             pre=mentions(prefix,mapping)
             subject_shift=bool(re.search(r'(?:见|看到|看见|望见)[^。！？]{0,8}(?:一个|一位|一名|有人)[^。！？]*[:：]\s*$',prefix))
             if subject_shift:pre=[]
-            pre=[x for x in pre if not re.search(r'(?:对|向|朝|冲着|对着|看向|看着|望着|回|让|叫|推了把|逮着|逮住|拽着|揪着|抱着|抱起|背着|拉着|指着|给)$',prefix[max(0,x[0]-4):x[0]])]
+            pre=[x for x in pre if not re.search(r'(?:对|向|朝|冲着|对着|看向|看着|望着|回|让|叫|推了把|抱着|抱起|背着|拉着|指着|给)$',prefix[max(0,x[0]-4):x[0]])]
             post=mentions(suffix,mapping)
             holder=None;method=None
             if re.search(r'[:：]\s*$',prefix) and pre:
-                holder=pre[-1][2];method='直接署名'
+                subject=subject_before(plain,match.start(),named)
+                if subject:holder=subject[2];method='直接署名'
             elif post:
                 lead=suffix[:post[0][0]].strip(' ，,。')
                 if (not lead and not re.match(r'(?:死|被|已经死)',suffix[post[0][1]:])) or re.fullmatch(r'说完|后者|说罢|(?:公安|副)?'+TITLE,lead):
@@ -154,9 +198,10 @@ def speech_table(material, facts=(), entities=None, names=None):
                 elif term in mapping:recipients.append(mapping[term])
         event=bool(spoken)
         for v in SPEECH.finditer(plain):
+            if speech_trigger_excluded(plain,v):continue
             before=plain[:v.start()];after=plain[v.start():]
             if any(v.end()<=m.start() and re.fullmatch(r'[\s:：，,]*',plain[v.end():m.start()]) for m in nonverbal):continue
-            if re.search(r'(?:没|不|别|想|听|据|传|所|啥也没|并未|没有|还想)$',before) or re.match(r'开口就是',after) or re.match(r'说(?:不定|起来|服|法|明书)',after):continue
+            if re.search(r'(?:没|不|别|想|听|据|传|所|啥也没|并未|没有|还想|(?:没|不|别|未|没有)[再多]{1,2})$',before) or re.match(r'开口就是',after) or re.match(r'说(?:不定|起来|服|法|明书)',after):continue
             if re.search(r'对(?:于)?[^。！？：:，,着过了走回跑\n]{1,12}?来$',before) and re.match(r'说(?:[，,、]|道理)',after):continue
             event=True
             # 106第9条：逗号后的复数亲属主语会结束前一实名主语的延续。
@@ -169,8 +214,15 @@ def speech_table(material, facts=(), entities=None, names=None):
                     persons.append(resolved['referent']);spans.append({'entity':resolved['referent'],'offset':v.start(),'method':'亲属主语别名'})
                 else:unresolved_subjects.append(term)
                 continue
-            eligible=[x for x in named if x[1]<=v.start() and v.start()-x[1]<=64 and not re.search(r'[。！？\n]',plain[x[1]:v.start()])
-                      and not re.search(r'(?:对|向|朝|冲着|对着|看向|看着|望着|回|让|叫|推了把|逮着|逮住|拽着|揪着|抱着|抱起|背着|拉着|指着|给)$',plain[max(0,x[0]-4):x[0]])]
+            subject=subject_before(plain,v.start(),named)
+            if subject is None and not before.strip() and re.match(r'说(?:完|罢)',after):
+                # 句首“说完/说罢”只取同一分句，不能跨逗号借后句的人。
+                tail=re.split(r'[，,；;：:。！？\n]',plain[v.end():],1)[0]
+                subject=clause_subject(tail,v.end(),named)
+                if subject is None and rows and rows[-1]['dialogue'] and len(rows[-1]['speaker'])==1 and not mentions(tail,mapping):
+                    holder=rows[-1]['speaker'][0]
+                    persons.append(holder);spans.append({'entity':holder,'offset':v.start(),'method':'主语延续'})
+            eligible=[subject] if subject else []
             if not persons and eligible:
                 holder=eligible[-1][2];persons.append(holder);spans.append({'entity':holder,'offset':v.start(),'method':'直接署名'})
             elif not persons and re.search(r'(?:他|她|后者)[^。！？]{0,8}$',before) and last_person:
@@ -207,7 +259,7 @@ def speech_table(material, facts=(), entities=None, names=None):
         hits=mentions(following,mapping)
         anonymous_turn=bool(re.search(r'(?:见|看到|看见|望见)[^。！？]{0,8}(?:一个|一位|一名|有人)[^。！？]*[:：]\s*$',narration(current).rstrip()))
         introduced=[h for h in hits if not re.match(r'的',following[h[1]:])]
-        if anonymous_turn and re.match(r'^(?:来人|那人|这人|这个人|那个身影)',following) and len(introduced)==1:
+        if anonymous_turn and re.match(r'^(?:那人|这人|这个人|那个身影)',following) and len(introduced)==1:
             row['speaker']=[introduced[0][2]]
             row['evidence']=[{'entity':introduced[0][2],'offset':0,'method':'紧邻下段明示',
                               'support_p':material['paragraphs'][i+1]['paragraph_id']}]

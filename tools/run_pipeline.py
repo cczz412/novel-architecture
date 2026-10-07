@@ -169,7 +169,8 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
         return combined
     if stage['status'] == 'splitting':
         return split_once()
-    while stage.get('machine_failures', 0) < 2 or stage.get('request_index'):
+    max_attempts=3 if role=='A' else 2
+    while stage.get('machine_failures', 0) < max_attempts or stage.get('request_index'):
         raw = None
         prior_index = stage.get('request_index')
         if prior_index:
@@ -191,8 +192,8 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
                 stage.pop('request_index', None)
                 stage['attempts'] = max(0, stage['attempts'] - 1)
         if raw is None:
-            if stage.get('machine_failures', 0) >= 2:
-                raise ValueError('机检失败已用一次重试')
+            if stage.get('machine_failures', 0) >= max_attempts:
+                raise ValueError('本包可修机检重试已用满')
             stage['attempts'] += 1
             write_json(state_path, state)
             repair = stage.get('machine_error')
@@ -284,9 +285,9 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
                 if isinstance(previous_answer, str):
                     stage['machine_answer'] = previous_answer
             stage['machine_failures'] = stage.get('machine_failures', 0) + 1
-            stage['machine_retries'] = min(1, stage['machine_failures'])
+            stage['machine_retries'] = min(max_attempts-1, stage['machine_failures'])
             write_json(state_path, state)
-            if stage['machine_failures'] >= 2:
+            if stage['machine_failures'] >= max_attempts:
                 stage['status'] = 'incomplete_machine_check'
                 write_json(state_path, state)
                 raise

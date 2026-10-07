@@ -30,9 +30,9 @@ basis:事实键数组,reason,ev:[{p,q}]}]}。不改已有历史，不输出其�
 已有计划继续按旧行格式；每个分组只处理本包种子和已有计划，不补其他人物。
 rows条数上限为本包plan_seeds条数加previous_plans条数；内容不能靠截删来满足上限。'''
 # 执行身份：Codex；按种子和后续判断，正文中的称谓保持原样。
-A_PROMPT = """只处理本包plan_seeds与previous_plans。原段只包含种子及每条至多4个后续，未提供的不能猜。
+A_PROMPT = """只处理本包plan_seeds与previous_plans。后续按距离取到章末或字数帽，未提供的不能猜。
 程序已排除旧事与未说出的短暂念头。说出口的安排仍须判断；被拒或主动收回分别判落空或放弃。
-新计划逐条选seed_id，可选holder必须在subject和receivers中。内容只概括同一目标；条件未发生用未执行且保留condition。
+新计划逐条选seed_id，可选holder必须在plan_holders中。给别人的指令不是发令者自己的计划。内容只概括同一目标；条件未发生用未执行且保留condition。
 状态只用未执行、执行中、兑现、落空、放弃。不得把兑现动作另立为新计划。
 每条核对followups；不能把别人替代目标的行动误认原计划继续执行。pronoun_risk提示核对代词主体。
 旧计划沿用key，有后续必须用本章ev和事实basis解释更新；carried_no_evidence原样沿用，已结历史不能重开。
@@ -90,6 +90,14 @@ p是提交的段号字符串，例如"p012"；s是该段内提交的句号整数
 若一个修订需超出差量上界，只输出 {overflow:true}，不能删掉修订来认定正确。'''
 PROMPTS = {'B': B_PROMPT, 'A': A_PROMPT, 'J2': J2_PROMPT, 'C': C_PROMPT}
 
+# 执行身份：Codex；状态依据放既有差量栏，仍受1024字节上限，不增请求。
+A_STATE_REVIEW = '''\nA复核：候选含state_paragraphs和condition_paragraphs空数组。
+判兑现或落空，必须在patches的changes中填state_paragraphs（依据段号数组）；
+条件已成立且状态不是未执行时还须填condition_paragraphs并核condition_ref。
+依据必须在种子之后、不能是种子自身来源；兑现事实主体必须是计划持有人。
+条件词由程序回填，没有条件成立证据只许未执行。未见依据就标待核，不能因生成行写了兑现便放行。
+新增依据数组同样算在patches的1024字节帽内；不要回传原句或修改程序字段。'''
+
 J2_SHORT_PROMPT = '''程序已列出候选、来源句号和可用署名证据。逐项核对，不能默认全收。
 items每项按item_fields顺序排列：编号、候选内容、出处、署名表编号。
 candidate是按所属栏目candidate_fields顺序排列的完整内容；pointers是[段号,句号]。
@@ -120,6 +128,7 @@ accept只用D1收、D2拒、D0待核；reason只选enum_tables.reason的R号，�
 speaker_claims是可选证明，只选speaker_candidates表中的S号；不确定给[]。不能自己写姓名或指针。
 拒收不能同时修订。修订只改有证据字段，不回整行；状态/类别/时间层/标签仍选对应编号，证据选段号/句号。
 每个候选各一项；不默认全收。每项裁定128字节、证明总计1024字节、差量总计1024字节。装不下交{overflow:true}，不截内容。"""
+REVIEW_PROMPT += A_STATE_REVIEW
 J2_ITEM_PROMPT = """逐项核对程序候选与局部原句，不默认全收。items按item_fields读取；署名候选为本条的S号表。
 只交{verdicts:[{id,accept,reason,speaker:null或S号}]}，全部id各一次。
 accept只选D1收、D2拒、D0待核；reason只选enum_tables.reason的R号。

@@ -5,6 +5,7 @@ import re
 INNER_SIGNALS = ('心想', '觉得', '以为', '意识到', '听见', '看到', '察觉', '发现')
 ACTION = r'(?:站|坐|走|说|问|拿|放|吃|喝)'
 CELLS = ('location', 'light_weather', 'objects_visuals', 'sounds_smells', 'atmosphere')
+SCENE_ACTION_FILTER_ENABLED = False
 
 
 def narration(text):
@@ -13,6 +14,26 @@ def narration(text):
 
 def separator(text):
     return bool(re.fullmatch(r'[\s*＊—_－·。…]+', text))
+
+
+def scene_fragment_issues(material, scenes):
+    """先核原文分句边界，再核缺尾；完整署名和完整声音分句不靠尾字判错。"""
+    texts={p['paragraph_id']:p['text'] for p in material['paragraphs']};issues=[]
+    for scene in scenes:
+        for field in (*CELLS,'present'):
+            for cell in scene.get(field,[]):
+                for ev in cell.get('ev',[]):
+                    value=ev.get('q','').strip();text=texts.get(ev.get('p'),'')
+                    if not value or not re.search(r'(?:说|道|问|喊|答|拿|听到|听见|一声|的|把|将|被|向|和|与)$',value):continue
+                    ends=[m.end() for m in re.finditer(re.escape(value),text)]
+                    at_boundary=any(i==len(text) or text[i] in '，,。！？!?；;：:“”「」『』"\n' for i in ends)
+                    speech_tag=bool(re.search(r'(?:说|道|问|喊|答)$',value) and at_boundary)
+                    complete_sound=bool(re.search(r'(?:嗯|哼|应|叹|吼|喊|叫|笑|咳|啐|哎|唉)(?:了)?一声$',value) and at_boundary)
+                    if speech_tag or complete_sound:continue
+                    dangling=bool(re.search(r'(?:的|把|将|被|向|和|与|听到|听见)$',value))
+                    if not at_boundary or dangling or value.endswith('一声'):
+                        issues.append({'p':ev.get('p'),'field':field,'text':value,'reason':'分句未完整或尾部缺成分'})
+    return issues
 
 
 def hard_evidence(material, person, quote, paragraph, aliases):
@@ -183,6 +204,10 @@ def annotate(material, entities, facts=(), initial_memory=False, j2_complete=Non
                 end=min((i for c in '，,。！？；;：:' if (i:=text.find(c,hit[1]+m.end()))>=0),default=len(text))
                 actions.append({'entity':hit[2],'ev':[{'p':p,'q':text[hit[0]:end]}]})
         psy=bool(INNER.search(plain));cells=scene_cells(text,p,p in memory['paragraph_ids'])
+        # 113：只在开关开启且确有人的动作时抑制地点名词误开场景。
+        if SCENE_ACTION_FILTER_ENABLED and actions:
+            transition=re.search(r'回到|走进|走出|进入|跑到|走到|来到|离开|前往|抵达|翌日|次日|第二天|此时|这时|随后|后来|过了|天亮|天黑',plain)
+            if not transition:cells['location']=[]
         main='对话' if dialogue else '动作展开' if actions else '心理' if psy else '场景' if cells['location'] and len(text)<24 else '叙述带过'
         secondary='心理' if psy and main!='心理' else '动作展开' if dialogue and actions else None
         annotations.append({'p':p,'main_tag':main,'secondary_tag':secondary,'viewpoint':viewpoints[p],

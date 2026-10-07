@@ -74,7 +74,8 @@ def runtime_guard_errors(config):
     pool = config.get('shared_pool', {})
     if pool.get('max_requests') != 3 or pool.get('max_tokens') != 25000 or pool.get('per_role_max_requests') != 3:
         errors.append('shared_pool')
-    if config.get('A_retry_policy', {}).get('max_retries') != 1:
+    # 正式预算不在本轮写集；旧值为1须报不合要求，不能放宽守卫。
+    if config.get('A_retry_policy', {}).get('max_retries') != 2:
         errors.append('A_retry')
     for phase in ('generate','review'):
         calibration=config.get('A_output_calibration',{}).get(phase,{})
@@ -293,6 +294,8 @@ class Budget:
         auth = self.guard()
         if role == 'C' and auth.get('C_calls') == 0:
             raise RoleLimit('本轮C模型调用未授权')
+        if role == 'A' and len(json.dumps(messages,ensure_ascii=False).encode()) > 8192:
+            raise RoleLimit('A实际发送包超过8KB，停止在发送前并保留候选待核')
         limits = self.config['roles'][role]
         payload = json.loads(messages[1]['content'].rsplit('\n', 1)[1]) if self.config.get('token_calibration') else {}
         maximum = request_maximum(self.config, role, review, payload)
@@ -301,13 +304,21 @@ class Budget:
         reservation = reserve(messages, maximum, self.config, role, review)
         retry_policy = self.config.get('A_retry_policy')
         split_from_pool = role == 'A' and self.config.get('runtime_guard') and pool_reason == 'truncation_split'
-        if role == 'A' and retry_policy and pool_reason in ('machine_retry', 'network_resume', 'truncation_split') and not split_from_pool:
+        if role == 'A' and retry_policy and pool_reason == 'network_resume':
+            # 恢复v57网络续发条件；仍由后面的在途、岗位及总预算闸拦截。
             retries=[c for c in self.calls if c['role']=='A' and c.get('pool_reason') in ('machine_retry','network_resume','truncation_split')
                      and not (self.config.get('runtime_guard') and c.get('pool_reason')=='truncation_split')]
-            same_split=(pool_reason=='truncation_split' and retries and all(c.get('pool_reason')=='truncation_split' and str(c.get('stage_id')).split('.split')[0]==str(stage_id).split('.split')[0] for c in retries))
-            if retries and not same_split:
-                raise RoleLimit('A整岗一次重试已用，停止在发送前')
+            if retries:raise RoleLimit('A整岗一次网络续发已用，停止在发送前')
             if not self.config.get('runtime_guard') and reservation > retry_policy['max_group_retry_reservation']:
+                raise RoleLimit('A重试材料超过整岗最大组重试预留，停止在发送前')
+        if role == 'A' and pool_reason in ('machine_retry', 'truncation_split'):
+            group=str(stage_id).split('.split')[0]
+            retries=[c for c in self.calls if c['role']=='A' and c.get('chapter')==chapter
+                     and str(c.get('stage_id')).split('.split')[0]==group
+                     and c.get('pool_reason') in ('machine_retry','truncation_split')]
+            if stage_id is None or len(retries)>=2:
+                raise RoleLimit('A本包最多两次可修失败重试，停止在发送前')
+            if retry_policy and not self.config.get('runtime_guard') and reservation > retry_policy['max_group_retry_reservation']:
                 raise RoleLimit('A重试材料超过整岗最大组重试预留，停止在发送前')
         stage_name = role + ':' + chapter + (':review' if review else ':generate')
         if not self.config.get('runtime_guard') and reservation > self.config['per_stage_reservation'][stage_name]:
@@ -323,9 +334,15 @@ class Budget:
         if n + 1 > min(total['max_requests'], auth['cap_requests']) or used + reservation > min(total['max_tokens'], auth['cap_tokens']):
             raise TotalLimit('总预算不足，停止全部')
         count, spent = self.role_charged(role)
-        if not split_from_pool and (count + 1 > limits['max_requests'] or spent + reservation > limits['max_tokens']):
-            raise RoleLimit(f'无法重试或发送：本岗剩余{limits["max_tokens"]-spent} Token/{limits["max_requests"]-count}次，单次预留{reservation}；各岗硬线不变')
         quota_source, quota_reason = self.request_quota(role, pool_reason, reservation)
+        # 112：旧max字段就是基础次数；追加只走已存在的共享池，不抬总帽。
+        max_requests=limits['max_requests']
+        if self.config.get('shared_pool') and quota_source=='shared_pool':
+            pool=self.config['shared_pool']
+            extra=min(pool['max_requests']-self.shared_usage(),pool['per_role_max_requests']-self.shared_usage(role))
+            max_requests=limits['base_requests']+self.shared_usage(role)+extra
+        if not split_from_pool and (count + 1 > max_requests or spent + reservation > limits['max_tokens']):
+            raise RoleLimit(f'无法重试或发送：本岗剩余{limits["max_tokens"]-spent} Token/{max_requests-count}次，单次预留{reservation}；基础次数及总帽不变')
         if self.config.get('runtime_guard') and quota_source == 'shared_pool':
             pool_used = sum(c.get('known_tokens') if type(c.get('known_tokens')) is int and c['known_tokens'] > 0
                             else c['reserved_tokens'] for c in self.calls if c.get('quota_source') == 'shared_pool')

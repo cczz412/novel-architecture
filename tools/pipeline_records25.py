@@ -119,6 +119,10 @@ def validate(role, payload, material, facts=None, previous=None):
                 errors.append({'id': ident, 'error': str(exc)})
     if role == 'C' and seen != {r['paragraph_id'] for r in material['paragraphs']}:
         errors.append({'id': 'C', 'error': '正文段覆盖不完整'})
+    if role == 'C':
+        from pipeline_c_program25 import scene_fragment_issues
+        errors.extend({'id':'C','error':'场景格半截，不能签发','detail':r}
+                      for r in scene_fragment_issues(material,result.get('scenes',[])))
     if errors:
         raise ValueError(json.dumps(errors, ensure_ascii=False))
     return result
@@ -193,7 +197,7 @@ def bind_plan_seeds(value, seeds):
             raise ValueError('新计划种子编号未知或与旧计划混用')
         seed = index[ident]
         if seed.get('input_method') == 'seed_followup_packets_v52':
-            holders={seed['subject'],*seed.get('receivers',[])}
+            holders=set(seed.get('plan_holders',[seed['subject'],*seed.get('receivers',[])]))
             holder=row.pop('holder',seed['subject'])
             if holder not in holders:raise ValueError('持有人不在种子候选')
             support=seed['ev']+seed.get('followups',[])
@@ -202,6 +206,12 @@ def bind_plan_seeds(value, seeds):
                 raise ValueError('证据段不在种子或后续')
             ev=[{'p':e['p'],'q':e['q']} for e in support if pids is None and e in seed['ev'] or pids is not None and e['p'] in pids]
             row.update(subject=holder,source=seed['source'],basis=copy.deepcopy(seed['basis']),ev=ev,_seed_holders=sorted(holders))
+            row['_seed_paragraphs']=[e['p'] for e in seed['ev']]
+            row['state_paragraphs']=[]
+            row['condition_paragraphs']=[]
+            from pipeline_plan52 import COND
+            conditions=[m[0] for e in seed['ev'] for m in COND.finditer(e['q'])]
+            if conditions:row['condition']='；'.join(dict.fromkeys(conditions))
             continue
         fixed = {k: copy.deepcopy(seed[k]) for k in ('subject', 'source', 'basis', 'ev')}
         if any(k in row and row[k] != v for k, v in fixed.items()):
@@ -303,7 +313,10 @@ def j2_chapter_speakers(material, rows, facts=()):
              if t.strip('“”「」『』"。！？\n \t')]
     # 直接署名沿用已验证的引号外检查，实体集合取整章而非当前拆包。
     direct = speaker_candidates(material, [{'entity': n} for n in names], direct_only=True, strict_j2=True)
-    result = {'names': sorted(names), 'direct': direct, 'units': units, 'window': J2_NEIGHBOR_SENTENCES}
+    from pipeline_context52 import speech_table
+    events=speech_table(material,facts,{'people':[{'entity':n} for n in names]})
+    result = {'names': sorted(names), 'direct': direct, 'units': units, 'window': J2_NEIGHBOR_SENTENCES,
+              'reported_speech_paragraphs':[r['p'] for r in events if r['speech_event'] and not r['dialogue']]}
     return result
 
 
@@ -346,7 +359,8 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
                       (claim['p'], claim['s']) in positions and (x['p'], x['s']) in positions
                       and abs(positions[(claim['p'], claim['s'])] - positions[(x['p'], x['s'])]) <= 1 for x in pointers)]
             required = bool(row.get('entity') in ('未知', '无名', '无名说话人') or row.get('requires_speaker') or row.get('speaker') is not None
-                            or section == 'aliases' and any(re.search(r'[“「『"]', ev['q']) for ev in row['ev']))
+                            or section == 'aliases' and any(re.search(r'[“「『"]', ev['q']) for ev in row['ev'])
+                            or any(ev['p'] in context.get('reported_speech_paragraphs',[]) for ev in row['ev']))
             selected = row.get('speaker')
             confirmed = not required or selected is not None and any(x['entity'] == selected for x in signed)
             row.update(confirmation_status='已确认' if confirmed else '待核',
@@ -1069,6 +1083,12 @@ def protocol_payload57(role, payload, material, review=False):
             seed['source'] = refmap.get(seed['source'], seed['source'])
             seed['basis'] = [refmap.get(x, x) for x in seed.get('basis', [])]
         out['previous_ids'] = {'P'+str(i): p['key'] for i, p in enumerate(payload.get('previous_plans', []), 1)}
+        previous_refmap={v:k for k,v in out['previous_ids'].items()}
+        for row in out.get('rows',[]):
+            for field in ('source','fulfilled','condition_ref'):
+                if row.get(field) is not None:row[field]=refmap.get(row[field],row[field])
+            if 'basis' in row:row['basis']=[refmap.get(v,v) for v in row['basis']]
+            if row.get('key') is not None:row['key']=previous_refmap.get(row['key'],row['key'])
         for i, old in enumerate(out.get('previous_plans', []), 1):
             old['key'] = 'P'+str(i)
     if role == 'C':
@@ -1124,6 +1144,9 @@ def generation_normalize57(role, value, material, packet, facts=(), previous=(),
                         if 'basis' in row:
                             row['basis'] = [wire['fact_ids'][x] for x in row['basis']]
                     row = bind_plan_seeds({'rows': [row]}, packet.get('plan_seeds', []))['rows'][0]
+                    row['state_paragraphs']=[]
+                    row['condition_paragraphs']=[]
+                    if row.get('key') is not None:row.pop('_seed_paragraphs',None)
                 if role == 'B':
                     for f in ('kind', 'layer'):
                         row[f] = enum_value57(f, row.get(f), legacy)
@@ -1200,6 +1223,8 @@ def normalize_decisions57(value, packet, legacy=False):
             out['reason'] = enum_value57('reason', raw.get('reason'), legacy)
             if out['accept'] is None or out['reason'] == '待核':
                 raise ValueError('模型标记待核')
+            if out['accept'] != (out['reason']=='符合原段'):
+                raise ValueError('接受编号与理由编号不一致')
             selected = raw.get('speaker')
             if selected is not None:
                 names = [x['entity'] for x in item.get('speaker_candidates', [])]
@@ -1270,7 +1295,7 @@ def normalize_review57(role, value, rows, material, legacy=False, packet=None):
                 if set(patch) != {'id', 'changes'} or not isinstance(patch['changes'], dict) or not patch['changes']:
                     raise ValueError('差量结构错误')
                 changes = patch['changes']
-                if '_id' in changes or set(changes) - set(by_id[ident]):
+                if any(k.startswith('_') for k in changes) or set(changes) - set(by_id[ident]):
                     raise ValueError('差量字段未知')
                 for field in ('status', 'kind', 'layer', 'main_tag', 'secondary_tag', 'reason'):
                     if field in changes and changes[field] is not None:
@@ -1315,6 +1340,9 @@ def review_apply57(role, candidate, review, material, facts=None, previous=None,
             try:
                 if role == 'C':
                     out[f].append(changed); continue
+                if role == 'A':
+                    from pipeline_plan52 import check_state_structure
+                    check_state_structure(changed,material,facts or [],previous or [])
                 one = {k: [changed] if k == f else [] for k in fields}
                 valid = validate(role, one, material, facts, previous)[f][0]
                 valid['_id'] = ident; out[f].append(valid)
