@@ -11,7 +11,7 @@ TITLE = r'(?:副|大)?(?:书记|局长|厅长|县长|队长|主任|老师|医生
 RELATIVE = r'(?:老|亲|自家|我家|咱们|我|你|他|她)?(?:爸(?:爸)?|妈(?:妈)?|爹娘|父母|爷爷|奶奶|姥姥|姥爷|娘|爹|闺女|儿子|女儿|婆婆|媳妇|姑姑|小姑|大伯|[一二三四五六七八九十大]+(?:哥|姐|弟|妹|嫂|叔)|长辈|大人|老两口|两口子)'
 HUMAN_ACTION = r'放|递|腰板|声音|死|病|勉强|说|问|答|喊|走|坐|站|拿|跑|抱|端|收拾|洗|摸|拉|指|带|领|取|蹲|围|推|接|掏|抓|夹|扯|点头|添|靠近|觉得|心想|知道|看|听|想|笑|冲|皱|安排|要求|穿|抬|瞪|眼|脸|身体|心头|脾气|性格'
 INNER = re.compile(r'心想|觉得|认为|明白|知道|便知|以为|意识到|放(?:在)?心上|记在心头|铁了心|生怕|担心|心疼|理亏|心(?:上|头|里|中|底)|感觉|预感|猜测|暗想|不甘心|郁闷|无力感|发懵|考虑|气得|抓狂|(?:难道|莫非|怎(?:么|样)|哪有)[^。！？]*[？?]')
-SPEECH = re.compile(r'说(?!法|服|明书|不定|起来)|(?<!知|通|铁|大|小)(?<!恶心)道(?!路|理|具|德)|问(?!题)|喊|答(?!案)|回应|开口|补充|解释|叮嘱|呵斥|提醒|招呼|劝|要求|嘱咐|追问|厉喝|嘶吼|回了一句|吐出一句|接听')
+SPEECH = re.compile(r'说(?!法|服|明书|不定|起来)|(?<!知|通|铁|大|小)(?<!恶心)道(?!路|理|具|德)|问(?!题)|喊|答(?!案)|回应|开口|补充|解释|叮嘱|呵斥|提醒|招呼|劝|要求|嘱咐|追问|厉喝|嘶吼|骂|回了一句|吐出一句|接听')
 WITHDRAW = re.compile(r'却|作罢|收回|还是继续|没有|算了|好吧|咽了回去|没说出口|欲言又止|最终没|打断|挂断|没等|来不及')
 
 def narration(text):
@@ -132,7 +132,9 @@ def speech_table(material, facts=(), entities=None, names=None):
         for match in spoken:
             prefix=plain[:match.start()];suffix=plain[match.end():]
             pre=mentions(prefix,mapping)
-            pre=[x for x in pre if not re.search(r'(?:对|向|朝|冲着|对着|看向|看着|望着|回|让|叫|推了把|抱着|抱起|背着|拉着|指着|给)$',prefix[max(0,x[0]-4):x[0]])]
+            subject_shift=bool(re.search(r'(?:见|看到|看见|望见)[^。！？]{0,8}(?:一个|一位|一名|有人)[^。！？]*[:：]\s*$',prefix))
+            if subject_shift:pre=[]
+            pre=[x for x in pre if not re.search(r'(?:对|向|朝|冲着|对着|看向|看着|望着|回|让|叫|推了把|逮着|逮住|拽着|揪着|抱着|抱起|背着|拉着|指着|给)$',prefix[max(0,x[0]-4):x[0]])]
             post=mentions(suffix,mapping)
             holder=None;method=None
             if re.search(r'[:：]\s*$',prefix) and pre:
@@ -141,7 +143,7 @@ def speech_table(material, facts=(), entities=None, names=None):
                 lead=suffix[:post[0][0]].strip(' ，,。')
                 if (not lead and not re.match(r'(?:死|被|已经死)',suffix[post[0][1]:])) or re.fullmatch(r'说完|后者|说罢|(?:公安|副)?'+TITLE,lead):
                     holder=post[0][2];method='引语后署名'
-            if holder is None and re.search(r'[:：]\s*$',prefix) and not pre and re.search(r'(?:他|她)[^。！？]*$',prefix) and last_person:
+            if holder is None and re.search(r'[:：]\s*$',prefix) and not pre and not subject_shift and re.search(r'(?:他|她)[^。！？]*$',prefix) and last_person:
                 holder=last_person;method='代词承接'
             if holder:persons.append(holder);spans.append({'entity':holder,'offset':match.start(),'method':method})
             q=match[0][1:-1]
@@ -168,7 +170,7 @@ def speech_table(material, facts=(), entities=None, names=None):
                 else:unresolved_subjects.append(term)
                 continue
             eligible=[x for x in named if x[1]<=v.start() and v.start()-x[1]<=64 and not re.search(r'[。！？\n]',plain[x[1]:v.start()])
-                      and not re.search(r'(?:对|向|朝|冲着|对着|看向|看着|望着|回|让|叫|推了把|抱着|抱起|背着|拉着|指着|给)$',plain[max(0,x[0]-4):x[0]])]
+                      and not re.search(r'(?:对|向|朝|冲着|对着|看向|看着|望着|回|让|叫|推了把|逮着|逮住|拽着|揪着|抱着|抱起|背着|拉着|指着|给)$',plain[max(0,x[0]-4):x[0]])]
             if not persons and eligible:
                 holder=eligible[-1][2];persons.append(holder);spans.append({'entity':holder,'offset':v.start(),'method':'直接署名'})
             elif not persons and re.search(r'(?:他|她|后者)[^。！？]{0,8}$',before) and last_person:
@@ -196,6 +198,28 @@ def speech_table(material, facts=(), entities=None, names=None):
                      'narrative_people':list(dict.fromkeys(h[2] for h in named)),
                      **({'unresolved_subjects':list(dict.fromkeys(unresolved_subjects))} if unresolved_subjects else {})})
         if named:last_person=named[0][2]
+    # 111第3条引用的邻段明示：不跨段猜轮次，不从下段任意人名借署名。
+    for i,row in enumerate(rows[:-1]):
+        if row['speaker'] or not row['dialogue']:
+            continue
+        current=material['paragraphs'][i]['text'].strip()
+        following=narration(material['paragraphs'][i+1]['text'])
+        hits=mentions(following,mapping)
+        anonymous_turn=bool(re.search(r'(?:见|看到|看见|望见)[^。！？]{0,8}(?:一个|一位|一名|有人)[^。！？]*[:：]\s*$',narration(current).rstrip()))
+        introduced=[h for h in hits if not re.match(r'的',following[h[1]:])]
+        if anonymous_turn and re.match(r'^(?:来人|那人|这人|这个人|那个身影)',following) and len(introduced)==1:
+            row['speaker']=[introduced[0][2]]
+            row['evidence']=[{'entity':introduced[0][2],'offset':0,'method':'紧邻下段明示',
+                              'support_p':material['paragraphs'][i+1]['paragraph_id']}]
+            continue
+        if not re.fullmatch(QUOTES,current):
+            continue
+        explicit=[h for h in hits if not following[:h[0]].strip()
+                  and re.match(r'(?:说完|说罢)',following[h[1]:])]
+        if len(explicit)==1:
+            row['speaker']=[explicit[0][2]]
+            row['evidence']=[{'entity':explicit[0][2],'offset':0,'method':'紧邻下段明示',
+                              'support_p':material['paragraphs'][i+1]['paragraph_id']}]
     # 连续对白轮内两个人才补；长叙述断轮，呼语始终当受话人。
     groups=[];group=[];context=[];group_context=[]
     for i,row in enumerate(rows):

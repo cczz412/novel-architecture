@@ -545,11 +545,13 @@ def j2_wire_payload(packet, material):
                       [[pointer['p'], pointer['s']] for pointer in item['pointers']], indexes])
     if packet['method'] == J2_V50:
         for item, wire in zip(packet['items'], items):
-            wire.append([x['entity'] for x in item['speaker_candidates']])
-        return {'method': packet['method'], 'candidate_fields': fields,
+            wire.append({'S'+str(i): x['entity'] for i, x in enumerate(item['speaker_candidates'], 1)})
+        return {'output_protocol': 'enum_paragraph_v57', 'enum_tables': {k: ENUMS57[k] for k in ('reason', 'accept')},
+                'method': packet['method'], 'candidate_fields': fields,
                 'item_fields': ['id', 'candidate', 'pointers', 'signed_evidence', 'speaker_candidates'],
                 'items': items, 'signed_evidence': signatures, 'paragraphs': source_view}
-    return {'method': packet['method'], 'candidate_fields': fields,
+    return {'output_protocol': 'enum_paragraph_v57', 'enum_tables': {k: ENUMS57[k] for k in ('reason', 'accept')},
+                'method': packet['method'], 'candidate_fields': fields,
             'item_fields': ['id', 'candidate', 'pointers', 'signed_evidence'], 'items': items,
             'signed_evidence': signatures, 'paragraphs': source_view}
 
@@ -581,32 +583,21 @@ def j2_revision_step(candidate, rejected_ids, patches, material):
     return validated
 
 
-def j2_short_decisions(value, packet):
-    """模型只给编号、布尔收拒、短理由；拒收不能携带证据或修订。"""
-    from pipeline_output28 import size, OutputOverflow, REVIEW_VERDICT_MAX_BYTES
+def j2_short_decisions(value, packet, legacy=False):
+    from pipeline_output28 import OutputOverflow
     if value.get('overflow') is True:
         raise OutputOverflow('J2短判断超过输出上界')
-    if set(value) != {'verdicts'} or not isinstance(value['verdicts'], list):
-        raise ValueError('J2短判断只允许裁定数组，不允许证据或修订')
-    wanted = {item['id'] for item in packet['items']}
-    verdicts = value['verdicts']
-    if len(verdicts) != len(wanted) or {v.get('id') for v in verdicts} != wanted:
-        raise ValueError('J2短判断漏项、重号或错指')
-    for verdict in verdicts:
-        if (set(verdict) not in ({'id', 'accept', 'reason'}, {'id', 'accept', 'reason', 'speaker'}) or
-                ('speaker' in verdict and packet.get('method') != J2_V50) or type(verdict['accept']) is not bool
-                or not isinstance(verdict['reason'], str) or not verdict['reason'].strip()
-                or size(verdict) > REVIEW_VERDICT_MAX_BYTES):
-            raise ValueError('J2裁定只允许编号、收拒和一条短理由')
-        if verdict['reason'] not in ('符合原段', '证据不足', '归属不符', '时间不符', '内容重复',
-                                      '分类不符', '内容超出原段', '待独立修订'):
-            raise ValueError('J2理由须选单项核对结论，不自由生成证据或说话归属')
-    return copy.deepcopy(value)
+    return normalize_decisions57(value, packet, legacy=legacy)
 
 
-def j2_apply_short(candidate, decisions, packet, material):
+def j2_apply_short(candidate, decisions, packet, material, normalized=False):
     j2_pre_dispatch(packet, material)
-    checked = j2_short_decisions(decisions, packet)
+    checked = decisions if normalized else j2_short_decisions(decisions, packet)
+    return j2_apply_checked57(candidate, checked, packet, material)
+
+
+def j2_apply_checked57(candidate, checked, packet, material):
+    """内部纯应用层；运行入口先验包，离线历史包也复用这一份判法。"""
     by_id = {v['id']: v for v in checked['verdicts']}
     out, rejected = {field: [] for field in SECTIONS}, []
     for field in SECTIONS:
@@ -614,7 +605,15 @@ def j2_apply_short(candidate, decisions, packet, material):
             if row['_id'] not in by_id:
                 continue
             verdict = by_id[row['_id']]
-            if verdict['accept']:
+            if verdict.get('_pending') or row.get('_normalization_pending'):
+                saved = copy.deepcopy(row)
+                saved.update(confirmation_status='待核', confirmation_reason=verdict.get('_pending_reason', '前轮归一待核'),
+                             _normalization_pending=True)
+                if saved.get('speaker') is not None:
+                    saved['unverified_speaker'] = saved['speaker']
+                saved['speaker'] = None
+                out[field].append(saved)
+            elif verdict['accept']:
                 saved = copy.deepcopy(row)
                 if packet.get('method') == J2_V50:
                     item = next(x for x in packet['items'] if x['id'] == row['_id'])
@@ -710,14 +709,15 @@ def speaker_candidates(material, candidate, direct_only=False, strict_j2=False):
     rows=speech_table(material,candidate,entities,names)
     for row in rows:
         for ev in row['evidence']:
-            allowed=('直接署名','引语后署名') if direct_only or strict_j2 else ('直接署名','引语后署名','双人轮次候选','代词承接','B上下文候选')
+            allowed=('直接署名','引语后署名','紧邻下段明示') if direct_only or strict_j2 else ('直接署名','引语后署名','双人轮次候选','代词承接','B上下文候选')
             if ev['method'] not in allowed:
                 continue  # 轮次和代词推定只能进候选，不冒作直接署名。
-            chunks=table[row['p']];offset=0;number=1
+            evidence_p=ev.get('support_p',row['p'])
+            chunks=table[evidence_p];offset=0;number=1
             for n,t in enumerate(chunks,1):
                 if offset<=ev['offset']<offset+len(t):number=n;break
                 offset+=len(t)
-            found.add((ev['entity'],row['p'],number))
+            found.add((ev['entity'],evidence_p,number))
     if not direct_only and not strict_j2:
         units=[(p,n) for p,ss in table.items() for n,t in enumerate(ss,1) if t.strip('“”「」『』"。！？\n \t')]
         for name,p,n in list(found):
@@ -1015,3 +1015,309 @@ def assemble(materials, current):
                                  'paragraphs_read': len(material['paragraphs']), 'fact_count': len(facts)})
     pred['review_audit']['open_plan_keys'] = [h['plan_key'] for h in pred['review_audit']['plan_history'] if h['states'][-1]['status'] in ('未执行', '执行中')]
     return b_scoring_projection(pred)
+
+
+# 执行身份：Codex；111第1—3条：短编号归一，错误只影响本条。
+ENUMS57 = {
+    'reason': {'R0': '待核', 'R1': '符合原段', 'R2': '证据不足', 'R3': '归属不符',
+               'R4': '时间不符', 'R5': '内容重复', 'R6': '分类不符',
+               'R7': '内容超出原段', 'R8': '待独立修订'},
+    'accept': {'D0': None, 'D1': True, 'D2': False},
+    'status': {'T'+str(i): v for i, v in enumerate(STATUSES, 1)},
+    'kind': {'K'+str(i): v for i, v in enumerate(('事件', '言语', '心理', '状态'), 1)},
+    'layer': {'L'+str(i): v for i, v in enumerate(('现场', '回忆', '恒常', '未知'), 1)},
+    'main_tag': {'C'+str(i): v for i, v in enumerate(TAGS, 1)},
+}
+
+
+def enum_value57(field, value, legacy=False):
+    table = ENUMS57['main_tag' if field == 'secondary_tag' else field]
+    if isinstance(value, str) and value in table:
+        return table[value]
+    if legacy and any(type(value) is type(v) and value == v for v in table.values()):
+        return value
+    if legacy and field == 'reason' and value == '符合提交原段':
+        return '符合原段'
+    raise ValueError('未知'+field+'编号')
+
+
+def protocol_payload57(role, payload, material, review=False):
+    """只生成发送视图；稳定长编号留在程序包，枚举表不取自模型或金标。"""
+    out = copy.deepcopy(payload)
+    out['output_protocol'] = 'enum_paragraph_v57'
+    out['enum_tables'] = {k: copy.deepcopy(ENUMS57[k]) for k in (('reason', 'accept', 'status', 'kind', 'layer', 'main_tag') if review else ('reason', 'status') if role == 'A' else ('kind', 'layer') if role == 'B' else ('main_tag', 'layer'))}
+    if role == 'B' and not review:
+        from pipeline_output28 import pointer_payload
+        out['paragraphs'] = pointer_payload(material)
+    if review:
+        choices = payload.get('speaker_candidates')
+        if choices is None:
+            choices = speaker_candidates(material, payload.get('rows', []), direct_only=True)
+        out['speaker_candidates'] = {'S'+str(i): c for i, c in enumerate(choices, 1)}
+    if role == 'A':
+        for i, seed in enumerate(out.get('plan_seeds', []), 1):
+            seed['seed_id'] = 'N'+str(i)
+            seed['holders'] = {'H'+str(n): v for n, v in enumerate(
+                sorted({seed['subject'], *seed.get('receivers', [])}), 1)}
+        refs = [f[0] for f in payload.get('facts', [])]
+        out['fact_ids'] = {'F'+str(i): key for i, key in enumerate(refs, 1)}
+        # 事实表首列也用短号，保留内容与段号供模型判断。
+        for i, fact in enumerate(out.get('facts', []), 1):
+            fact[0] = 'F'+str(i)
+        refmap = {v: k for k, v in out['fact_ids'].items()}
+        for seed in out.get('plan_seeds', []):
+            seed['source'] = refmap.get(seed['source'], seed['source'])
+            seed['basis'] = [refmap.get(x, x) for x in seed.get('basis', [])]
+        out['previous_ids'] = {'P'+str(i): p['key'] for i, p in enumerate(payload.get('previous_plans', []), 1)}
+        for i, old in enumerate(out.get('previous_plans', []), 1):
+            old['key'] = 'P'+str(i)
+    if role == 'C':
+        from pipeline_context52 import person_pool
+        out['viewpoints'] = {'V0': '全知', 'V1': '第一人称', **{
+            'V'+str(i): n for i, n in enumerate(person_pool(material), 2)}}
+    return out
+
+
+def generation_normalize57(role, value, material, packet, facts=(), previous=(), legacy=False):
+    """旧响应必须显式走离线兼容；未知长号不模糊匹配，也不按行序猜种子。"""
+    from pipeline_output28 import resolve_pointer
+    from pipeline_plan52 import check_local_plans
+    fields = ['rows'] if role in ('A', 'B') else ['paragraphs', 'scenes']
+    result = {f: [] for f in fields}; pending = []; log = []
+    wire = protocol_payload57(role, packet, material)
+    for field in fields:
+        rows = value.get(field)
+        if not isinstance(rows, list):
+            raise ValueError('输出栏目须为数组：'+field)
+        for i, raw in enumerate(rows):
+            row = copy.deepcopy(raw); ident = role+':'+str(i)
+            try:
+                if not isinstance(row, dict):
+                    raise ValueError('条目须为对象')
+                if role == 'A':
+                    if row.get('key') is not None and not legacy:
+                        row['key'] = wire['previous_ids'][row['key']]
+                    if row.get('key') is None:
+                        selected = row.get('seed_id')
+                        short = {'N'+str(n): s for n, s in enumerate(packet.get('plan_seeds', []), 1)}
+                        seed = (next((s for s in packet.get('plan_seeds', []) if s['seed_id'] == selected), None)
+                                if legacy else short.get(selected))
+                        if seed is None:
+                            raise ValueError('未知种子编号，保留待核，不猜长号')
+                        row['seed_id'] = seed['seed_id']
+                        if not legacy:
+                            holders = {'H'+str(n): v for n, v in enumerate(sorted({seed['subject'], *seed.get('receivers', [])}), 1)}
+                            row['holder'] = holders[row['holder']]
+                    row['status'] = enum_value57('status', row.get('status'), legacy)
+                    if legacy:
+                        # 旧A理由是解释文本，不参与状态/收拒；原文单独留在日志，不拿它当通过证据。
+                        log.append({'id': ident, 'field': 'reason', 'before': row.get('reason'),
+                                    'after': '旧响应解释未参与裁定', 'action': 'archive_optional_legacy_explanation'})
+                        row['reason'] = '旧响应解释未参与裁定'
+                    else:
+                        row['reason'] = enum_value57('reason', row.get('reason'))
+                        if row['reason'] == '待核':
+                            raise ValueError('模型标记待核')
+                        for f in ('source', 'fulfilled', 'condition_ref'):
+                            if row.get(f) is not None:
+                                row[f] = wire['fact_ids'][row[f]]
+                        if 'basis' in row:
+                            row['basis'] = [wire['fact_ids'][x] for x in row['basis']]
+                    row = bind_plan_seeds({'rows': [row]}, packet.get('plan_seeds', []))['rows'][0]
+                if role == 'B':
+                    for f in ('kind', 'layer'):
+                        row[f] = enum_value57(f, row.get(f), legacy)
+                if role == 'C' and field == 'paragraphs':
+                    for f in ('main_tag', 'secondary_tag'):
+                        if row.get(f) is not None:
+                            row[f] = enum_value57(f, row[f], legacy)
+                    if not legacy:
+                        row['viewpoint'] = wire['viewpoints'][row['viewpoint']]
+                if 'ev' in row:
+                    row['ev'] = [resolve_pointer(e, material) if set(e) == {'p', 's'} else e for e in row['ev']]
+                    if not legacy and any(set(e) != {'p', 's'} for e in raw.get('ev', [])):
+                        raise ValueError('证据只接受程序段号/句号')
+                if role == 'C':
+                    # C本轮为程序旁路；模型协议仍逐条核，不用默认值补坏段。
+                    if field == 'scenes':
+                        if not legacy:
+                            row['layer'] = enum_value57('layer', row.get('layer'))
+                            for cell_field in ('location', 'light_weather', 'objects_visuals', 'sounds_smells', 'atmosphere', 'present'):
+                                for cell in row.get(cell_field, []):
+                                    cell['ev'] = [resolve_pointer(e, material) for e in cell['ev']]
+                        for cell_field in ('location', 'light_weather', 'objects_visuals', 'sounds_smells', 'atmosphere', 'present'):
+                            for cell in row.get(cell_field, []):
+                                evidence(cell.get('ev'), material)
+                    checked = copy.deepcopy(row)
+                    if field == 'paragraphs':
+                        p = next(p for p in material['paragraphs'] if p['paragraph_id'] == row['p'])
+                        row['quote'] = p['text']
+                        checked = validate('C', {'paragraphs': [row], 'scenes': []}, dict(material, paragraphs=[p]))[field][0]
+                    else:
+                        valid = {p['paragraph_id'] for p in material['paragraphs']}
+                        if not row.get('paragraph_ids') or set(row['paragraph_ids']) - valid:
+                            raise ValueError('场景段号未知')
+                    checked['_id'] = field+':'+str(i)
+                else:
+                    checked = validate(role, {'rows': [row]}, material, facts, previous)['rows'][0]
+                    checked['_id'] = ident
+                    if role == 'A':
+                        check_local_plans({'rows': [checked]}, packet, previous)
+                        check_plan_seed_scope({'rows': [checked]}, packet.get('plan_seeds', []), previous)
+                result[field].append(checked)
+                if not legacy:
+                    log.append({'id': ident, 'before': raw, 'after': checked, 'action': 'decode_numbers'})
+            except (ValueError, KeyError, TypeError, StopIteration) as exc:
+                pending.append({'id': ident, 'status': '待核', 'reason': str(exc), 'row': raw})
+                log.append({'id': ident, 'before': raw, 'after': None, 'action': 'pending', 'error': str(exc)})
+    if role == 'B':
+        result['unresolved'] = copy.deepcopy(value.get('unresolved', []))
+    return result, pending, log
+
+
+def normalize_decisions57(value, packet, legacy=False):
+    """完整保留原裁定；不认识的编号或理由只落待核，不改成收。"""
+    if not isinstance(value, dict) or not isinstance(value.get('verdicts'), list):
+        raise ValueError('裁定须为数组')
+    verdicts = []; log = []; wanted = {x['id'] for x in packet['items']}
+    by_id = {}
+    for raw in value['verdicts']:
+        if not isinstance(raw, dict) or not isinstance(raw.get('id'), str) or raw['id'] not in wanted:
+            log.append({'before': raw, 'after': None, 'action': 'pending_unknown_id'})
+            continue
+        by_id.setdefault(raw['id'], []).append(raw)
+    for item in packet['items']:
+        ident = item['id']; rows = by_id.get(ident, [])
+        raw = rows[0] if len(rows) == 1 else None
+        out = {'id': ident, 'accept': False, 'reason': '待核', 'speaker': None}
+        error = None
+        try:
+            if set(value) != {'verdicts'}:
+                raise ValueError('裁定包含未定义字段')
+            if raw is None:
+                raise ValueError('漏项或重复编号')
+            out['accept'] = enum_value57('accept', raw.get('accept'), legacy)
+            out['reason'] = enum_value57('reason', raw.get('reason'), legacy)
+            if out['accept'] is None or out['reason'] == '待核':
+                raise ValueError('模型标记待核')
+            selected = raw.get('speaker')
+            if selected is not None:
+                names = [x['entity'] for x in item.get('speaker_candidates', [])]
+                if legacy:
+                    if selected not in names:
+                        raise ValueError('署名不在程序候选')
+                    out['speaker'] = selected
+                else:
+                    out['speaker'] = {'S'+str(i): n for i, n in enumerate(names, 1)}[selected]
+            if set(raw) - {'id', 'accept', 'reason', 'speaker'}:
+                raise ValueError('裁定含未定义字段')
+        except (ValueError, KeyError, TypeError) as exc:
+            error = str(exc)
+        if error:
+            # 保留可识别的原收拒，待核标记优先，apply时不能进confirmed。
+            out.update(_pending=True, _pending_reason=error)
+        verdicts.append(out)
+        if error or not legacy:
+            log.append({'id': ident, 'before': raw if raw is not None else rows,
+                        'after': out, 'action': 'pending' if error else 'decode_numbers'})
+    return {'verdicts': verdicts, '_normalization_log': log, '_normalized57': True}
+
+
+def normalize_review57(role, value, rows, material, legacy=False, packet=None):
+    """可选署名坏字段清除；坏裁定或坏差量单条待核，其他裁定照常核。"""
+    from pipeline_output28 import check_review_shape, size, REVIEW_PATCH_MAX_BYTES, REVIEW_CLAIMS_MAX_BYTES
+    value = copy.deepcopy(value)
+    wire = protocol_payload57(role, packet or {'rows': rows}, material, review=True)
+    claims = list(wire['speaker_candidates'].values())
+    items = [{'id': row['_id'], 'speaker_candidates': []} for row in rows]
+    simplified = {'verdicts': [{k: v for k, v in r.items() if k != 'speaker_claims'}
+                             if isinstance(r, dict) else r for r in value.get('verdicts', [])]}
+    result = normalize_decisions57(simplified, {'items': items}, legacy)
+    logs = result.pop('_normalization_log'); result.pop('_normalized57')
+    raws = {r.get('id'): r for r in value.get('verdicts', []) if isinstance(r, dict) and isinstance(r.get('id'), str)}
+    raw_patches = value.get('patches', [])
+    patches_overflow = isinstance(raw_patches, list) and size(raw_patches) > REVIEW_PATCH_MAX_BYTES
+    claim_total = sum(size(r.get('speaker_claims', [])) for r in raws.values())
+    pending = []; checked = []; patches = []; by_id = {r['_id']: r for r in rows}
+    for v in result['verdicts']:
+        ident = v['id']; raw = raws.get(ident, {})
+        rawclaims = raw.get('speaker_claims', [])
+        kept = []
+        if claim_total > REVIEW_CLAIMS_MAX_BYTES:
+            logs.append({'id': ident, 'field': 'speaker_claims', 'before': rawclaims, 'after': [], 'action': 'drop_optional_claims_over_bound'})
+            rawclaims = []
+        for claim in rawclaims if isinstance(rawclaims, list) else [rawclaims]:
+            decoded = claim if legacy else {'S'+str(i): c for i, c in enumerate(claims, 1)}.get(claim) if isinstance(claim, str) else None
+            if decoded in claims:
+                kept.append(copy.deepcopy(decoded))
+            else:
+                logs.append({'id': ident, 'field': 'speaker_claims', 'before': claim,
+                             'after': None, 'action': 'drop_optional_invalid_claim'})
+        v.pop('speaker', None); v['speaker_claims'] = kept
+        ps = value.get('patches', [])
+        own = [p for p in ps if isinstance(p, dict) and p.get('id') == ident] if isinstance(ps, list) else None
+        try:
+            if v.get('_pending'):
+                raise ValueError(v.get('_pending_reason', '裁定待核'))
+            if own and patches_overflow:
+                raise ValueError('差量数组超过既有1024字节上界')
+            if own is None or len(own) > 1:
+                raise ValueError('差量结构错误或重号')
+            if not v['accept'] and own:
+                logs.append({'id': ident, 'before': own, 'after': [], 'action': 'preserve_reject_drop_delta'})
+                own = []
+            for patch in own:
+                if set(patch) != {'id', 'changes'} or not isinstance(patch['changes'], dict) or not patch['changes']:
+                    raise ValueError('差量结构错误')
+                changes = patch['changes']
+                if '_id' in changes or set(changes) - set(by_id[ident]):
+                    raise ValueError('差量字段未知')
+                for field in ('status', 'kind', 'layer', 'main_tag', 'secondary_tag', 'reason'):
+                    if field in changes and changes[field] is not None:
+                        changes[field] = enum_value57(field, changes[field], legacy)
+                if not legacy:
+                    from pipeline_output28 import resolve_pointer
+                    if 'ev' in changes:
+                        changes['ev'] = [resolve_pointer(e, material) for e in changes['ev']]
+                    if 'speaker' in changes and changes['speaker'] is not None:
+                        changes['speaker'] = wire['speaker_candidates'][changes['speaker']]['entity']
+                    if role == 'A':
+                        for f in ('source', 'fulfilled', 'condition_ref'):
+                            if changes.get(f) is not None:
+                                changes[f] = wire['fact_ids'][changes[f]]
+                        if 'basis' in changes:
+                            changes['basis'] = [wire['fact_ids'][x] for x in changes['basis']]
+            one = check_review_shape({'verdicts': [v], 'patches': own}, [by_id[ident]], material)
+            checked.extend(one['verdicts']); patches.extend(one['patches'])
+        except (ValueError, TypeError, KeyError) as exc:
+            pending.append({'id': ident, 'status': '待核', 'reason': str(exc), 'row': by_id[ident], 'raw_verdict': raw})
+            logs.append({'id': ident, 'before': raw, 'after': None, 'action': 'pending', 'error': str(exc)})
+    for p in value.get('patches', []) if isinstance(value.get('patches', []), list) else []:
+        if not isinstance(p, dict) or not isinstance(p.get('id'), str) or p['id'] not in by_id:
+            logs.append({'before': p, 'after': None, 'action': 'pending_unknown_patch_id'})
+    return {'verdicts': checked, 'patches': patches}, pending, logs
+
+
+def review_apply57(role, candidate, review, material, facts=None, previous=None, **kwargs):
+    """归一后的单条裁定独立落盘；未裁定行保留待核，不凭缺省值通过。"""
+    verdicts = {v['id']: v for v in review.get('verdicts', [])}
+    patchmap = {p['id']: p['changes'] for p in review.get('patches', [])}
+    fields = ['rows'] if role in ('A', 'B') else list(SECTIONS) if role == 'J2' else ['paragraphs', 'scenes']
+    out = {f: [] for f in fields}; removed = []
+    for f in fields:
+        for row in candidate[f]:
+            ident = row['_id']; v = verdicts.get(ident)
+            if not v or v.get('_pending'):
+                removed.append({'id': ident, 'status': '待核', 'reason': '裁定无效或缺失', 'row': row}); continue
+            if not v['accept']:
+                removed.append({'id': ident, 'status': '拒收', 'reason': v['reason'], 'row': row}); continue
+            changed = {**copy.deepcopy(row), **patchmap.get(ident, {})}
+            try:
+                if role == 'C':
+                    out[f].append(changed); continue
+                one = {k: [changed] if k == f else [] for k in fields}
+                valid = validate(role, one, material, facts, previous)[f][0]
+                valid['_id'] = ident; out[f].append(valid)
+            except (ValueError, KeyError, TypeError) as exc:
+                removed.append({'id': ident, 'status': '待核', 'reason': str(exc), 'row': row, 'patch': patchmap.get(ident)})
+    return out, removed

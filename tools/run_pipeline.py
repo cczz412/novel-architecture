@@ -23,6 +23,9 @@ from pipeline_context52 import entity_bindings
 from pipeline_records25 import j2_save_partition
 from pipeline_plan52 import plan_candidates, carry_plans, packets as plan_packets52, check_local_plans, METHOD as A_METHOD52, wire_payload, split_seed_packet
 
+from pipeline_records25 import (protocol_payload57, generation_normalize57, normalize_review57,
+                                review_apply57)
+
 ROOT = Path(__file__).resolve().parent
 CODE_FILES = tuple(ROOT / name for name in ('run_pipeline.py', 'pipeline_source25.py',
     'pipeline_prompts25.py', 'pipeline_budget25.py', 'pipeline_records25.py', 'pipeline_author25.py', 'pipeline_audit25.py', 'pipeline_c_program25.py', 'pipeline_output28.py', 'pipeline_context52.py', 'pipeline_plan52.py'))
@@ -69,7 +72,8 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
     name = role + ':' + material['chapter'] + (':review' if review else ':generate') + suffix
     short_j2 = role == 'J2' and payload.get('method') in ('program_candidates_short_decisions_v47', J2_V50)
     base = messages(J2_ITEM_PROMPT if short_j2 and payload.get('method') == J2_V50 else J2_SHORT_PROMPT if short_j2 else REVIEW_PROMPT if review else PROMPTS[role],
-                    j2_wire_payload(payload, material) if short_j2 else wire_payload(payload) if payload.get('input_method')==A_METHOD52 else payload)
+                    j2_wire_payload(payload, material) if short_j2 else protocol_payload57(role,
+                        wire_payload(payload) if payload.get('input_method')==A_METHOD52 else payload, material, review))
     stage = state['stages'].setdefault(name, {'attempts': 0, 'status': 'pending'})
     cache = budget.output / 'stages' / (name.replace(':', '_') + '.json')
     if stage.get('local_row_split_failed'):
@@ -80,7 +84,7 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
         cached = read_json(cache)['payload']
         if short_j2:
             j2_pre_dispatch(payload, material)
-            j2_short_decisions(cached, payload)
+            if not cached.get('_normalized57'): raise Halt('旧裁定缓存需要独立离线归一')
         if role == 'A':
             try:
                 if review and not any(v.get('accept') for v in cached.get('verdicts', [])):
@@ -88,7 +92,7 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
                 if not review:
                     if not cached.get('rows'):
                         raise ValueError('缓存计划候选为空，A阶段未完成')
-                    if checker:
+                    if checker and '_normalization_log' not in cached:
                         checker(cached, material, payload)
             except (ValueError, KeyError, TypeError) as exc:
                 stage.update(status='incomplete_machine_check', machine_error=str(exc))
@@ -157,7 +161,7 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             pending_truncation('拆半没有完整结果，整包待核')
             stage.update(status='failed_truncation',split_errors=failures);write_json(state_path,state)
             raise OutputOverflow('拆半无可保存完整结果；条目已进待核')
-        combined = ({'verdicts': [v for value in values for v in value['verdicts']]}
+        combined = ({'verdicts': [v for value in values for v in value['verdicts']], '_normalized57': True}
                     if short_j2 else merge_values(role, values, review))
         write_json(cache, {'payload': combined})
         stage.update(status='partial_truncation' if failures else 'complete',sha256=digest(cache),split_errors=failures)
@@ -213,16 +217,18 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             stage.pop('request_index', None)
         try:
             decoded = parse_response(raw)
-            if role == 'B' and review:
-                decoded, speech_changes = normalize_speaker_claims(decoded,
-                    payload.get('speaker_candidates', speaker_candidates(material, payload.get('rows', []))), material)
-                if speech_changes:
-                    stage.setdefault('speaker_claim_normalizations', []).extend(speech_changes)
-                decoded, removed = normalize_rejected_patches(decoded)
-                if removed:
-                    stage['rejected_patch_ids_removed'] = removed
-                    stage['rejected_patch_policy'] = 'preserve_reject_drop_conflicting_delta'
             checked = checker(decoded, material, payload) if checker else decoded
+            changes = checked.get('_normalization_log', [])
+            pending = checked.get('_normalization_pending_rows', [])
+            if changes:
+                stage.setdefault('normalization_log', []).extend(changes)
+            if pending:
+                stage['normalization_pending'] = pending
+                part = state.get('chapters', {}).get(material['chapter'])
+                if part is not None:
+                    part.setdefault(role+'_pending', []).extend(dict(r, stage=name) for r in pending)
+            if changes or pending:
+                write_json(state_path, state)
             if role == 'A' and not review and budget.config.get('A_output_calibration'):
                 row_limit = len(payload.get('plan_seeds', [])) + len(payload.get('previous_plans', []))
                 if len(checked.get('rows', [])) > row_limit:
@@ -339,7 +345,7 @@ def run_j2_short(budget, state, state_path, material, facts):
             try:
                 value=run_stage(budget,state,state_path,'J2',child,packet,review,
                                 lambda value,m,data:j2_short_decisions(value,data),'.pack'+str(n))
-                approved,rejected=j2_apply_short(candidate,value,packet,material)
+                approved,rejected=j2_apply_short(candidate,value,packet,material,normalized=True)
             except (RoleLimit,ValueError,KeyError,TypeError,NetworkPause,TotalLimit) as exc:
                 failure={'packet':n,'phase':'review' if review else 'generate','failure_type':type(exc).__name__,'reason':str(exc),
                          'ids':[item['id'] for item in packet['items']]}
@@ -367,21 +373,24 @@ def run_j2_short(budget, state, state_path, material, facts):
 
 
 def check_review_packet(role, candidate, obj, material, packet, facts, previous):
-    candidates = speaker_candidates(material, flatten(role, candidate)) if role == 'B' else None
-    if role == 'B':
-        obj, _ = normalize_speaker_claims(obj, candidates, material)
-        obj, _ = normalize_rejected_patches(obj)
-    checked = check_review_shape(obj, packet['rows'], material)
+    checked, pending, logs = normalize_review57(role, obj, packet['rows'], material, packet=packet)
     wanted = {row['_id'] for row in packet['rows']}
     fields = ('rows',) if role in ('A', 'B') else tuple(candidate)
-    subset = {**candidate, **{field: [row for row in candidate[field] if row['_id'] in wanted]
-                             for field in fields}}
-    # 在包内核差量语义，失败走run_stage的一次机检重试，不重发整岗。
-    approved, _ = review_apply(role, subset, checked, material, facts, previous, candidates=candidates)
-    if role == 'A' and packet.get('input_method') == A_METHOD52:
-        check_local_plans(approved, packet, previous)
-    if role == 'A' and 'plan_seeds' in packet:
-        check_plan_seed_scope(approved, packet['plan_seeds'], previous)
+    subset = {field: [row for row in candidate[field] if row['_id'] in wanted] for field in fields}
+    approved, removed = review_apply57(role, subset, checked, material, facts, previous)
+    bad = {r['id'] for r in pending}
+    pending.extend(r for r in removed if r.get('status') == '待核' and r['id'] not in bad)
+    if role == 'A':
+        for row in approved['rows']:
+            try:
+                check_local_plans({'rows': [row]}, packet, previous)
+                check_plan_seed_scope({'rows': [row]}, packet.get('plan_seeds', []), previous)
+            except (ValueError, KeyError, TypeError) as exc:
+                pending.append({'id': row['_id'], 'status': '待核', 'reason': str(exc), 'row': row})
+    bad = {r['id'] for r in pending}
+    checked['verdicts'] = [v for v in checked['verdicts'] if v['id'] not in bad]
+    checked['patches'] = [p for p in checked['patches'] if p['id'] not in bad]
+    checked.update(_normalization_pending_rows=pending, _normalization_log=logs)
     return checked
 
 
@@ -434,7 +443,7 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                     status[role_id] = '完成'
                     write_json(state_path, state)
                     continue
-                payload = {'paragraphs': paragraphs}
+                payload = {'paragraphs': pointer_payload(material)}
                 seeds = []
                 if role == 'A':
                     prior_refs = {r.get(k) for r in previous_plans for k in ('source', 'fulfilled', 'condition_ref')}
@@ -468,18 +477,9 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                         write_json(state_path, state)
                         continue
                     def generation_check(obj, part_material, packet):
-                        if role == 'J2':
-                            obj = hydrate_j2(obj, part_material)
-                        if role == 'A':
-                            obj = bind_plan_seeds(obj, packet.get('plan_seeds', []))
-                            if 'group_subjects' in packet:
-                                old_keys = {row['key'] for row in packet.get('previous_plans', [])}
-                                if any(row.get('subject') not in packet['group_subjects'] or row.get('key') is not None and row['key'] not in old_keys for row in obj.get('rows', [])):
-                                    raise ValueError('计划越过人物分组或旧计划键不在本包')
-                        if role == 'A' and packet.get('input_method') == A_METHOD52:
-                            check_local_plans(obj, packet, previous_plans)
-                        checked = validate(role, obj, part_material, facts, previous_plans)
-                        return check_plan_seed_scope(checked, packet.get('plan_seeds', plan_seeds(part_material, part.get('facts', []))), previous_plans) if role == 'A' else checked
+                        checked, pending, logs = generation_normalize57(role, obj, part_material, packet, facts, previous_plans)
+                        checked.update(_normalization_pending_rows=pending, _normalization_log=logs)
+                        return checked
                     candidate = run_packets(budget, state, state_path, role, material, payload,
                         checker=generation_check)
                     candidate = validate(role, candidate, material, facts, previous_plans)
@@ -503,11 +503,12 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                     if role=='A' and any(s.get('status')=='partial_truncation' for k,s in state['stages'].items() if k.startswith('A:'+chapter+':review')):
                         ids={v['id'] for v in review_result['verdicts']}
                         reviewed_candidate={**candidate,'rows':[r for r in candidate['rows'] if r['_id'] in ids]}
-                    approved, rejected = review_apply(role, reviewed_candidate, review_result, material, facts, previous_plans)
+                    approved, rejected = review_apply57(role, reviewed_candidate, review_result, material, facts, previous_plans)
                     if role == 'A':
                         check_plan_seed_scope(approved, seeds, previous_plans)
                     part[role] = approved
-                    part[role + '_rejected'] = rejected
+                    part[role + '_rejected'] = [r for r in rejected if r.get('status') != '待核']
+                    part.setdefault(role+'_pending', []).extend(dict(r, stage=role_id) for r in rejected if r.get('status') == '待核')
                     if role == 'B':
                         part['facts'] = facts_output(approved, material)
                         part['entity_resolution'] = entity_bindings(material, part['facts'], part.get('J2', {}))
@@ -515,7 +516,7 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                         part['plans'] = plans_output(approved, material, previous_plans)
                         if not part['plans']:
                             raise ValueError('保存计划为空，A阶段未完成')
-                    incomplete=role=='A' and any(r.get('stage') for r in part.get('A_pending',[]))
+                    incomplete=any(r.get('stage') for r in part.get(role+'_pending',[]))
                     part[role + '_status'] = 'partial' if incomplete else 'complete'
                     status[role_id] = '未完成（部分条目待核）' if incomplete else '完成'
                     write_json(state_path, state)

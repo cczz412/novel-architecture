@@ -103,3 +103,29 @@ reason只选一项：符合原段、证据不足、归属不符、时间不符�
 # 执行身份：Codex；v50短判断加入候选内选择，不放宽署名确认。
 J2_ITEM_PROMPT = """逐项核对程序候选与局部原句，不默认全收。items按item_fields列出编号、内容、句号指针、直接署名表编号、说话人候选。内容按candidate_fields读取。signed_evidence为[人名,段号,句号]，署名索引从0开始。
 只交{verdicts:[{id,accept,reason,speaker:null或候选人物}]}，全部编号各一次。speaker只能选本项speaker_candidates或null。直接署名才可确认；附近人物、B人物、代词回指只供候选选择，没有直接署名保留待核。署名未定仍可收内容为待核，不能牵连同章其他条目。reason只选符合原段、证据不足、归属不符、时间不符、内容重复、分类不符、内容超出原段、待独立修订。拒收不回修订；每项最多128个UTF8字节；装不下交{overflow:true}，不截内容，不漏裁定。"""
+
+# 执行身份：Codex；v57替换控制字段协议，不改四岗位与内容判据。
+A_PROMPT = A_PROMPT.replace('每条至多4个后续', '按人物与距离选出的后续')
+A_PROMPT += """
+控制字段使用enum_tables编号：status选T号、reason选R号；seed_id选N号，holder选所选种子的H号。
+fulfilled/condition_ref只选fact_ids的F号或null；旧计划key用previous_ids的P号，source/basis同样用F号。
+evidence_paragraphs只选提交的段号；程序回填种子长号和逐字证据。认不清选R0，不能编编号。
+content、deadline、condition仍按原文填写；这些正文不是裁定枚举。"""
+B_PROMPT = B_PROMPT.replace("kind只能用事件、言语、心理、状态；layer用现场、回忆、恒常、未知。", "类别和时间层由编号表给出。").replace("ev:[{p,q}]", "ev:[{p,s}]")
+B_PROMPT += """
+kind与layer分别只选enum_tables中的K号和L号；ev只交{p,s}，从paragraphs的段号/句号选证据，不抄q。"""
+REVIEW_PROMPT = """逐项核对候选和原段。内容判断沿用主体/对象、时间层、否定/条件、数量、事实与计划完成状态、现场与去向、感知者规则。
+只交{verdicts:[{id,accept,reason,speaker_claims:[]}],patches:[{id,changes:{}}]}。
+accept只用D1收、D2拒、D0待核；reason只选enum_tables.reason的R号，不能自由写理由。
+speaker_claims是可选证明，只选speaker_candidates表中的S号；不确定给[]。不能自己写姓名或指针。
+拒收不能同时修订。修订只改有证据字段，不回整行；状态/类别/时间层/标签仍选对应编号，证据选段号/句号。
+每个候选各一项；不默认全收。每项裁定128字节、证明总计1024字节、差量总计1024字节。装不下交{overflow:true}，不截内容。"""
+J2_ITEM_PROMPT = """逐项核对程序候选与局部原句，不默认全收。items按item_fields读取；署名候选为本条的S号表。
+只交{verdicts:[{id,accept,reason,speaker:null或S号}]}，全部id各一次。
+accept只选D1收、D2拒、D0待核；reason只选enum_tables.reason的R号。
+直接署名才可确认；附近人物、B人物、代词回指只供候选，没有直接署名保留待核。不能生成姓名、证据或修订。
+每项最多128字节。装不下交{overflow:true}，不截内容，不漏裁定。"""
+J2_SHORT_PROMPT = J2_ITEM_PROMPT
+C_PROMPT += """
+main_tag/secondary_tag用enum_tables中的C号；viewpoint只选viewpoints中的V号；证据只选段号/句号。"""
+PROMPTS.update(A=A_PROMPT, B=B_PROMPT, C=C_PROMPT, J2=J2_ITEM_PROMPT)

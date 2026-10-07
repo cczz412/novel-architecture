@@ -229,14 +229,23 @@ class Budget:
         return sum(r.get('quota_source') == 'shared_pool' for r in self.calls
                    if role is None or r['role'] == role)
 
-    def request_quota(self, role, pool_reason=None):
+    def request_quota(self, role, pool_reason=None, reservation=0):
         pool = self.config.get('shared_pool')
         if pool is None:
             return 'base', None
         limits = self.config['roles'][role]
         base_used = sum(r['role'] == role and r.get('quota_source') == 'base' for r in self.calls)
-        if pool_reason is None and base_used < limits['base_requests']:
-            return 'base', None
+        role_count, role_tokens = self.role_charged(role)
+        own_available = (base_used < limits['base_requests'] and role_count < limits['max_requests']
+                         and role_tokens + reservation <= limits['max_tokens'])
+        # A截断子包继续遵守已锁定的池规则；一般重试先用本岗位余量。
+        if own_available and not (role == 'A' and self.config.get('runtime_guard') and pool_reason == 'truncation_split'):
+            return 'base', pool_reason
+        pool_tokens = sum(r['known_tokens'] if type(r.get('known_tokens')) is int and r['known_tokens'] > 0
+                          else r['reserved_tokens'] for r in self.calls if r.get('quota_source') == 'shared_pool')
+        available = pool['max_tokens'] - pool_tokens
+        if reservation > available:
+            raise RoleLimit(f'无法重试：单次预留{reservation}超过共享池可用{available}；本岗位余量不足')
         if self.config.get('runtime_guard'):
             if pool_reason not in ('machine_retry', 'network_resume', 'truncation_split', 'review_extension'):
                 raise RoleLimit('共享池只用于超帽重试或一次复核扩展')
@@ -315,8 +324,8 @@ class Budget:
             raise TotalLimit('总预算不足，停止全部')
         count, spent = self.role_charged(role)
         if not split_from_pool and (count + 1 > limits['max_requests'] or spent + reservation > limits['max_tokens']):
-            raise RoleLimit('本岗预算不足')
-        quota_source, quota_reason = self.request_quota(role, pool_reason)
+            raise RoleLimit(f'无法重试或发送：本岗剩余{limits["max_tokens"]-spent} Token/{limits["max_requests"]-count}次，单次预留{reservation}；各岗硬线不变')
+        quota_source, quota_reason = self.request_quota(role, pool_reason, reservation)
         if self.config.get('runtime_guard') and quota_source == 'shared_pool':
             pool_used = sum(c.get('known_tokens') if type(c.get('known_tokens')) is int and c['known_tokens'] > 0
                             else c['reserved_tokens'] for c in self.calls if c.get('quota_source') == 'shared_pool')

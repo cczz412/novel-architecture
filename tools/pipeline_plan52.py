@@ -28,7 +28,7 @@ def signal(text):
                 or TIMEQ.search(qs) or YAODE.search(qs) or COND.search(qs) or direct)
 
 def followups(material, seed, marks=(), next_chapter=False):
-    """只选择至多四个后续段；词来自材料频次，未选段不进包。"""
+    """按相关度取基础后续，再覆盖近窗内同一持有人的动作段。"""
     pars=material['paragraphs'];order={p['paragraph_id']:i for i,p in enumerate(pars)}
     ev=seed.get('ev',[]);source=' '.join(e['q'] for e in ev) or seed.get('content','')
     stop=set('这个 那个 一个 自己 他们 她们 什么 怎么 不是 就是 还是 已经 没有 时候 起来 说道 一下 所以 因为 可是 不过 但是 然后'.split())
@@ -40,17 +40,29 @@ def followups(material, seed, marks=(), next_chapter=False):
     names|={n[1:] for n in list(names) if len(n)>=3}
     names.discard('')
     last=-1 if next_chapter else max((order.get(e['p'],-1) for e in ev),default=-1)
-    selected=[]
+    selected=[];base_selected=[]
     for i,p in enumerate(pars):
         if i<=last or p['paragraph_id'] in marks:continue
         text=p['text'];person=any(n in text for n in names)
         keyhits=keys & set(re.findall(r'(?=([\u4e00-\u9fff]{2}))',text))
         near=not next_chapter and i-last<=3
         dialogue=near and bool(quotes(source)) and bool(quotes(text))
-        if not (keyhits or near and (person or dialogue)):continue
+        # 只补已选后续动作的接续句；种子自己的接续不另算一次后续变化。
+        continuation = bool(i and re.match(r'^(?:说完|说罢|随后|随即)',text)
+                            and any(n in pars[i-1]['text'] for n in names)
+                            and any(r[1]==i-1 for r in selected))
+        holder_near = (person or continuation) and i-last<=8 and not next_chapter
+        if not (keyhits or near and (person or dialogue) or holder_near):continue
         selected.append((3*near+2*person+len(keyhits),i,{'p':p['paragraph_id'],'q':text,
              'flags':['pronoun_risk'] if re.match(r'^(?:他|她)',text) and keyhits and not person else []}))
-    return [r for _,_,r in sorted(selected,key=lambda x:(-x[0],x[1]))[:4]]
+        if keyhits or near and (person or dialogue):base_selected.append(selected[-1])
+    ranked=sorted(base_selected,key=lambda x:(-x[0],x[1]))
+    chosen=ranked[:4]
+    # 原四条保留；同人近窗段按距离补齐，最多八条，窗口/条数与书内编号无关。
+    extra=[r for r in selected if r not in chosen and r[1]-last<=8
+           and (any(n in r[2]['q'] for n in names) or re.match(r'^(?:说完|说罢|随后|随即)',r[2]['q']))]
+    chosen.extend(sorted(extra,key=lambda x:x[1])[:max(0,8-len(chosen))])
+    return [r for _,_,r in chosen]
 
 def plan_candidates(material, facts, entities=None, initial_memory=False):
     entities=entities or {};pars=material['paragraphs'];order={p['paragraph_id']:i for i,p in enumerate(pars)}
@@ -160,8 +172,9 @@ def packets(material,payload,review=False):
     if len(result)>2 or any(len(d['plan_seeds'])+len(d['previous_plans'])>8 for _,d in result):
         raise OutputOverflow('A两包无法装入当前候选，停止并保留材料')
     from pipeline_prompts25 import SYSTEM,PROMPTS
+    from pipeline_records25 import protocol_payload57
     for _,data in result:
-        messages=[{'role':'system','content':SYSTEM},{'role':'user','content':PROMPTS['A']+'\n'+json.dumps(wire_payload(data),ensure_ascii=False,separators=(',',':'))}]
+        messages=[{'role':'system','content':SYSTEM},{'role':'user','content':PROMPTS['A']+'\n'+json.dumps(protocol_payload57('A', wire_payload(data), material),ensure_ascii=False,separators=(',',':'))}]
         if len(json.dumps(messages,ensure_ascii=False).encode())>8192:
             raise OutputOverflow('A生成包超过8KB，完整种子候选保留，不发送')
     return result

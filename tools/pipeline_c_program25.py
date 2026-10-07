@@ -77,7 +77,7 @@ def scene_cells(text, p, memory=False):
             location.append(v)
     objects=[]
     patterns=[
-        r'(?:拿着|拿起|拿上|拿出|拿|接过|收拾|带上|指着|围着|端着|端起|提着|扛着|背着|戴着|打开|按下|握住)([^，。！？：]{1,14}?)(?=的手|[，。！？、]|蹲|走|来|在|领|和|呵呵|笑|说|朝|向|$)',
+        r'(?:拿着|拿起|拿上|拿出|拿|接过|收拾|带上|指着|围着|端着|端起|提着|扛着|背着|戴着|打开|按下|握住)([^，。！？：]{1,14}?)(?=的手|[，。！？、]|蹲|走|来|在|领|和|呵呵|笑|说|喊|问|答|朝|向|$)',
         r'(?:取|领|拎|抓)了(?:个|把|只|根|条)?([^，。！？]{1,6}?)(?=[，。！？]|$)',
         r'(?:添|盛|舀)了([^，。！？]{1,14}?)(?=后|[，。！？])',
         r'把([^，。！？]{1,12}?)(?:弄脏|弄湿)',
@@ -110,7 +110,13 @@ def scene_cells(text, p, memory=False):
         if value.endswith('一声'):
             vocal=re.match(r'厉喝|怒喝|大喊|尖叫|惊呼|叹息|咳嗽|轻笑|冷笑',plain[m.end():])
             if vocal:value='一声'+vocal[0]
-        cells['sounds_smells'].append({'text':value,'ev':[{'p':p,'q':value}]})
+        # 声音保留完整分句；截出的语气词/人物名尾巴不能独立成为场景格。
+        left=max(text.rfind(c,0,m.start()) for c in '，,。！？；;')+1
+        ends=[text.find(c,m.end()) for c in '，,。！？；;']
+        right=min((i for i in ends if i>=0),default=len(text))
+        value=text[left:right].strip()
+        if value:
+            cells['sounds_smells'].append({'text':value,'ev':[{'p':p,'q':value}]})
     return cells
 
 
@@ -164,9 +170,8 @@ def annotate(material, entities, facts=(), initial_memory=False, j2_complete=Non
             accepted_blocks.append(block)
             for row in paragraphs[order[start]:order[end]+1]:viewpoints[row['paragraph_id']]=person
     annotations=[];scenes=[];soft=[]
-    if j2_complete is False:
-        confirmed={row['paragraph_id'] for block in accepted_blocks for row in paragraphs[order[block['start']]:order[block['end']]+1]}
-        viewpoints={pid:value if pid in confirmed else '未定（人物账本未完成）' for pid,value in viewpoints.items()}
+    # 111第6条：正文可独立给出的视角不依赖J2整岗成功；有证据的块仍逐块采用。
+    # J2缺失只影响依赖它的块，不把全章覆写为未定。
     action=re.compile(r'(?:站|坐|走|说|问|拿|放|吃|喝|跑|抱|端|收拾|洗|捞|摸|拉|指|带|领|取|割|蹲|围|推|接|掏|抓|夹|扯|点头|添|靠近|递|打开|握住|签下)')
     for row in paragraphs:
         p,text=row['paragraph_id'],row['text'];plain=narration(text)
@@ -175,7 +180,8 @@ def annotate(material, entities, facts=(), initial_memory=False, j2_complete=Non
         for hit in mentions(plain,mapping):
             m=re.match(r'(?:正|正在|已经|还|又|赶紧|便)?'+action.pattern,plain[hit[1]:])
             if m and hit[2] not in [a['entity'] for a in actions]:
-                actions.append({'entity':hit[2],'ev':[{'p':p,'q':text[hit[0]:hit[1]+m.end()]}]})
+                end=min((i for c in '，,。！？；;：:' if (i:=text.find(c,hit[1]+m.end()))>=0),default=len(text))
+                actions.append({'entity':hit[2],'ev':[{'p':p,'q':text[hit[0]:end]}]})
         psy=bool(INNER.search(plain));cells=scene_cells(text,p,p in memory['paragraph_ids'])
         main='对话' if dialogue else '动作展开' if actions else '心理' if psy else '场景' if cells['location'] and len(text)<24 else '叙述带过'
         secondary='心理' if psy and main!='心理' else '动作展开' if dialogue and actions else None
@@ -185,7 +191,7 @@ def annotate(material, entities, facts=(), initial_memory=False, j2_complete=Non
         if actions or any(cells.values()):
             scenes.append({'paragraph_ids':[p],**cells,'present':actions,'tags':[],'layer':'回忆' if p in memory['paragraph_ids'] else '现场'})
     return {'paragraphs':annotations,'scenes':scenes,'chapter_default':default,'soft_signals':soft,
-            'method':'program','model_confirmations':0,'formal':False,'C_mode':'program_bypass0',
+            'method':'program','model_confirmations':0,'formal':False,'C_mode':'program_bypass0','j2_complete':j2_complete,'viewpoint_dependency':'正文独立判断；J2块逐块核证',
             'bypass0_receipt':{'adopted':sum(r['adopted'] for r in receipts),'rejected':sum(not r['adopted'] for r in receipts),
                                'blocks':receipts,'people':names,'viewpoint_blocks':accepted_blocks,'new_requests':0},
             'bypass1':{'enabled':False,'requests':0},'memory_marks':memory,
