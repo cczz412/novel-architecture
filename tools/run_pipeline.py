@@ -9,9 +9,9 @@ from pathlib import Path
 from pipeline_source25 import chapter_range, digest, read_json, read_sources, write_json
 from pipeline_prompts25 import SYSTEM, PROMPTS, REVIEW_PROMPT
 from pipeline_budget25 import Budget, Halt, NetworkPause, RoleLimit, TotalLimit, TruncatedOutput, parse_response, blind_admission
-from pipeline_output28 import (PROTOCOL, OUTPUT_POLICY, REPAIR_MAX_BYTES, OutputOverflow,
-    bounded_packets, split_packet, merge_values, hydrate_j2, check_review_shape, pointer_payload, repair_message)
-from pipeline_records25 import validate, flatten, review_apply, facts_output, plans_output, assemble, speaker_candidates
+from pipeline_output28 import (PROTOCOL, OUTPUT_POLICY, REPAIR_MAX_BYTES, OutputOverflow, J2RowOverflow,
+    bounded_packets, split_packet, split_j2_rows, merge_values, hydrate_j2, check_review_shape, pointer_payload, repair_message)
+from pipeline_records25 import validate, flatten, review_apply, facts_output, plans_output, assemble, speaker_candidates, normalize_rejected_patches
 from pipeline_author25 import build_views, query
 from pipeline_audit25 import local_closure, structural_checks
 from pipeline_c_program25 import annotate
@@ -63,6 +63,8 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
     base = messages(REVIEW_PROMPT if review else PROMPTS[role], payload)
     stage = state['stages'].setdefault(name, {'attempts': 0, 'status': 'pending'})
     cache = budget.output / 'stages' / (name.replace(':', '_') + '.json')
+    if stage.get('local_row_split_failed'):
+        raise ValueError(stage.get('machine_error', 'J2本地条目拆包已失败，不追加请求'))
     if stage['status'] == 'complete':
         if digest(cache) != stage['sha256']:
             raise Halt('同次结果检查点改变')
@@ -152,6 +154,11 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             stage.pop('request_index', None)
         try:
             decoded = parse_response(raw)
+            if role == 'B' and review:
+                decoded, removed = normalize_rejected_patches(decoded)
+                if removed:
+                    stage['rejected_patch_ids_removed'] = removed
+                    stage['rejected_patch_policy'] = 'preserve_reject_drop_conflicting_delta'
             checked = checker(decoded, material, payload) if checker else decoded
             if role == 'A' and not review and not checked.get('rows'):
                 raise ValueError('计划候选为空，A阶段未完成；只能补有原文依据的计划')
@@ -159,6 +166,32 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             stage.update(status='complete', sha256=digest(cache))
             write_json(state_path, state)
             return checked
+        except J2RowOverflow as exc:
+            if role != 'J2' or review:
+                raise
+            # 已收到完整JSON：拆的是返回条目，不再缩原文后花共享池重生成。
+            try:
+                parts = split_j2_rows(decoded)
+                values = [(checker(part, material, payload) if checker else hydrate_j2(part, material))
+                          for part in parts]
+            except (ValueError, KeyError, TypeError) as split_error:
+                stage.update(status='incomplete_machine_check', machine_error=str(split_error),
+                             local_row_split_failed=True, local_row_split_extra_requests=0)
+                write_json(state_path, state)
+                raise
+            child_records = []
+            for n, (part, value) in enumerate(zip(parts, values)):
+                child_cache = cache.with_name(cache.stem + '.rows' + str(n) + '.json')
+                write_json(child_cache, {'payload': value})
+                child_records.append({'path': str(child_cache), 'sha256': digest(child_cache),
+                                      'row_count': sum(len(part[k]) for k in part),
+                                      'compact_bytes': len(json.dumps(part, ensure_ascii=False, separators=(',', ':')).encode())})
+            combined = merge_values(role, values)
+            write_json(cache, {'payload': combined})
+            stage.update(status='complete', sha256=digest(cache), local_row_split=child_records,
+                         local_row_split_reason=str(exc), local_row_split_extra_requests=0)
+            write_json(state_path, state)
+            return combined
         except (TruncatedOutput, OutputOverflow) as exc:
             # 不把截断正文交保存校验，不复发同一大包，也不占普通机检重试次数。
             stage['truncation_error'] = str(exc)
@@ -170,7 +203,8 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             if len(error.encode()) > REPAIR_MAX_BYTES - 128:
                 error = (json.dumps({'speaker_claims_all_clear': True,
                          'error': '署名机检多错；本包全部speaker_claims强制改为[]，reason只写核对结论，保留编号和accept，删除拒收条目差量并保留其他patches'}, ensure_ascii=False)
-                         if review and role == 'B' and 'speaker_candidate_membership' in error
+                         if review and role == 'B' and ('speaker_candidate_membership' in error
+                                                       or 'review_protocol_conflict' in error)
                          else '多项字段或证据未通过机检；重新核对全部字段和原文指针。')
             stage['machine_error'] = error
             if review:
@@ -196,6 +230,8 @@ def run_packets(budget, state, state_path, role, material, payload, review=False
 
 
 def check_review_packet(role, candidate, obj, material, packet, facts, previous):
+    if role == 'B':
+        obj, _ = normalize_rejected_patches(obj)
     checked = check_review_shape(obj, packet['rows'], material)
     wanted = {row['_id'] for row in packet['rows']}
     fields = ('rows',) if role in ('A', 'B') else tuple(candidate)

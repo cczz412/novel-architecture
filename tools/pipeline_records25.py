@@ -268,7 +268,30 @@ def deduplicate(role, value):
     return out, removed
 
 
+def normalize_rejected_patches(review):
+    """明确拒收优先；只删除结构合法且属于该拒收条目的差量，不改原件。"""
+    if not isinstance(review, dict) or not isinstance(review.get('verdicts'), list) or not isinstance(review.get('patches'), list):
+        return review, []
+    verdicts = review['verdicts']
+    if any(not isinstance(v, dict) or not isinstance(v.get('id'), str) for v in verdicts):
+        return review, []
+    if len({v['id'] for v in verdicts}) != len(verdicts):
+        return review, []  # 重复裁定不能据其中一条丢弃差量，交原机检拒绝。
+    rejected = {v['id'] for v in verdicts if v.get('accept') is False}
+    kept, removed = [], []
+    for patch in review['patches']:
+        if (isinstance(patch, dict) and set(patch) == {'id', 'changes'}
+                and isinstance(patch['id'], str) and patch['id'] in rejected
+                and isinstance(patch['changes'], dict) and patch['changes']):
+            removed.append(patch['id'])
+        else:
+            kept.append(patch)
+    return {**copy.deepcopy(review), 'patches': copy.deepcopy(kept)}, removed
+
+
 def review_apply(role, candidate, review, material, facts=None, previous=None, candidates=None):
+    if role == 'B':
+        review, _ = normalize_rejected_patches(review)
     rows = flatten(role, candidate)
     wanted = {r['_id'] for r in rows}
     verdicts = review.get('verdicts')
@@ -278,7 +301,7 @@ def review_apply(role, candidate, review, material, facts=None, previous=None, c
         candidates = speaker_candidates(material, rows) if candidates is None else candidates
         errors = [error for verdict in verdicts
                   for error in speaker_candidate_errors(verdict, candidates, material)]
-        # 署名放宽后原件中的拒收/修订冲突也会露出；同包一起反馈，仍保留原有拒收规则。
+        # 未能安全清除的非法差量仍同包反馈；不能更改拒收裁定。
         by_id = {verdict['id']: verdict for verdict in verdicts}
         if isinstance(review.get('patches'), list):
             for index, patch in enumerate(review['patches']):
@@ -287,7 +310,9 @@ def review_apply(role, candidate, review, material, facts=None, previous=None, c
                                    'error': '拒收条目不能同时提交修订；保留拒收裁定并删除该条差量',
                                    'legal_example': {'accept': False, 'speaker_claims': [], 'patches': []}})
         if errors:
-            raise ValueError(json.dumps({'kind': 'speaker_candidate_membership', 'errors': errors},
+            kind = ('review_protocol_conflict' if any(e['field'].startswith('patches[') for e in errors)
+                    else 'speaker_candidate_membership')
+            raise ValueError(json.dumps({'kind': kind, 'errors': errors},
                                         ensure_ascii=False, separators=(',', ':')))
     else:
         for verdict in verdicts:

@@ -25,6 +25,10 @@ class OutputOverflow(ValueError):
     """完整结果无法放进协议上界；与截断相同，只能拆一次。"""
 
 
+class J2RowOverflow(OutputOverflow):
+    """完整J2返回仅需按条目本地拆包；不再请求更小原文组。"""
+
+
 def size(value):
     return len(json.dumps(value, ensure_ascii=False, separators=(',', ':')).encode())
 
@@ -35,8 +39,9 @@ def repair_message(error):
     message = {'role': 'user', 'content': instruction + error}
     # 预留按实际JSON字节计算，包含引号转义、消息封套和数组分隔符。
     if len(json.dumps(message, ensure_ascii=False).encode()) + 2 > REPAIR_MAX_BYTES:
-        if 'speaker_candidate_membership' in error or 'speaker_claims_all_clear' in error:
-            message['content'] = ('署名机检多错，详情超出反馈上界：将本包全部裁定的speaker_claims强制改为[]，'
+        if ('speaker_candidate_membership' in error or 'speaker_claims_all_clear' in error
+                or 'review_protocol_conflict' in error):
+            message['content'] = ('复核机检多错，详情超出反馈上界：将本包全部裁定的speaker_claims强制改为[]，'
                                   'reason只写核对结论，保留所有编号和accept；删除拒收条目的patches，'
                                   '保留其他差量，返回完整本包JSON。')
         else:
@@ -84,8 +89,10 @@ def hydrate_j2(payload, material):
         raise ValueError('J2须只交八个栏目')
     if any(not isinstance(payload[k], list) for k in SECTIONS):
         raise ValueError('J2栏目须为数组')
-    if sum(len(payload[k]) for k in SECTIONS) > 24 or size(payload) > 10800:
-        raise OutputOverflow('J2超过24行或10800字节返回上界')
+    if sum(len(payload[k]) for k in SECTIONS) > 24:
+        raise J2RowOverflow('J2超过24行返回上界，须按完整条目本地拆包')
+    if size(payload) > 10800:
+        raise OutputOverflow('J2超过10800字节返回上界')
     result = copy.deepcopy(payload)
     for section in SECTIONS:
         if not isinstance(result[section], list):
@@ -100,6 +107,31 @@ def hydrate_j2(payload, material):
                 raise ValueError('J2须给1至2个证据指针')
             row['ev'] = [resolve_pointer(p, material) for p in refs]
     return result
+
+
+def split_j2_rows(payload):
+    """保留八栏及栏内次序；每个子包至多24条，不删条、不截内容。"""
+    if not isinstance(payload, dict) or set(payload) != set(SECTIONS):
+        raise ValueError('J2本地拆包须为完整八栏返回')
+    if any(not isinstance(payload[k], list) for k in SECTIONS):
+        raise ValueError('J2本地拆包栏目须为数组')
+    packets, current, count = [], {k: [] for k in SECTIONS}, 0
+    for section in SECTIONS:
+        for row in payload[section]:
+            if not isinstance(row, dict):
+                raise ValueError('J2本地拆包条目须为对象')
+            if size(row) > 432:
+                raise OutputOverflow('J2本地拆包单行超过432字节，不截删且不追加请求')
+            if count == 24:
+                packets.append(current)
+                current, count = {k: [] for k in SECTIONS}, 0
+            current[section].append(copy.deepcopy(row))
+            count += 1
+    if count or not packets:
+        packets.append(current)
+    if any(sum(len(p[k]) for k in SECTIONS) > 24 or size(p) > 10800 for p in packets):
+        raise OutputOverflow('J2本地拆包仍超界，不追加请求')
+    return packets
 
 
 def review_bound(rows):
