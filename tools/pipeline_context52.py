@@ -135,22 +135,38 @@ def speech_trigger_excluded(plain, match):
             if hit.start(1)<=match.start() and match.end()<=hit.end(1):return True
     return False
 
+# 执行身份：Codex；116：只认完整的主语前缀结构，未命中不签，不以动词表兜底。
+SUBJECT_ADVERB = r'(?:但|而|可|于是|随后|随即|此时|这时|忽然|突然|又|却|便|就|也|才|仍|还|只|正|正在|已经|终于|继续|低声|轻声|大声|冷冷|缓缓|慢慢|轻轻|赶紧|连忙|立刻|认真|平静|严肃|悄悄|说完|说罢|完|罢)'
+SUBJECT_QUANTIFIER = r'(?:这|那|这个|那个|这一个|那一个|一)?(?:位|名|个)'
+SUBJECT_LIMITER = r'(?:旁边|前面|后面|左边|右边|身旁|身边|门口|屋里|只有|唯有)'
+SUBJECT_APPOSITION = r'(?:'+RELATIVE+'|'+TITLE+r'|舅舅|舅母|叔叔|婶婶|婶娘|伯母|姨妈|姨母|姑父|舅父|表哥|表姐|表弟|表妹)'
+
+def subject_prefix_allowed(prefix):
+    lead=prefix.strip()
+    # 代词或无名主体已占主语位置，后面出现的人名不再认作主语。
+    if re.match(r'(?:'+SUBJECT_ADVERB+r')*(?:我|你|您|他|她|它|咱|对方|那人|这人|有人|一人|众人|大家|旁人|(?:一个|一位|一名)(?:人|男人|女人|老人))',lead):
+        return False
+    if re.fullmatch(r'(?:'+SUBJECT_ADVERB+r')*',lead):return True
+    # “的”字定语整体修饰后面的人名；定语内的人名由 clause_subject 排除。
+    if lead.endswith('的'):return True
+    qualifier=r'(?:(?:'+SUBJECT_QUANTIFIER+'|'+SUBJECT_LIMITER+r'))?'
+    apposition=r'(?:'+SUBJECT_APPOSITION+r')?'
+    if re.fullmatch(r'(?:'+SUBJECT_ADVERB+r')*'+qualifier+apposition,lead):return True
+    # 定语后可接亲属/身份同位语，但不能把任意尾词当同位语。
+    if '的' in lead:
+        return bool(re.fullmatch(qualifier+apposition,lead.rsplit('的',1)[1]))
+    return False
+
 def clause_subject(clause, base, named, current_clause=False):
-    for hit in named:
+    # 从后向前找完整的主语前缀；先取定语后的中心人名，再排除定语中的人名。
+    for hit in reversed(named):
         if not base<=hit[0] or hit[1]>base+len(clause):continue
         prefix=clause[:hit[0]-base];tail=clause[hit[1]-base:]
-        if tail.startswith('的'):continue
-        # 执行身份：Codex；115：定语、同位语和限定语不排除主语，只拦紧邻动介词的宾语。
-        adverb=r'\s*(?:(?:但|而|可|于是|随后|随即|此时|这时|忽然|突然|说完|说罢|完|罢)\s*)*'
-        embedded=current_clause and re.fullmatch(adverb+r'(?:只|又|却)?(?:听|见)',prefix)
-        object_prefix=(re.search(SPEECH_OBJECT,prefix)
-                       or re.search(r'(?:搀扶|扶|拦|推|拉|抱|带|碰|找|遇|看|听|见|请)(?:见|到|住|着|起|过|了)?$',prefix))
-        if object_prefix and not embedded:continue
-        # 无名主体已先出现时，后面的人名只能作候选，不能越过它取主语。
-        anon=re.search(UNNAMED_SUBJECT,prefix)
-        if (anon and len(prefix[:anon.start()].strip())<=3
-                and not re.search(SPEECH_OBJECT,prefix[:anon.start()])
-                and prefix[anon.end():].strip() and not prefix.rstrip().endswith('的')):return None
+        if re.match(r'(?:'+SUBJECT_APPOSITION+r')?的',tail):continue
+        # 姓名是定语内部最后一个实名时，不能越过“的”去替无名中心语署名。
+        boundary=base+clause.rfind('的')
+        if hit[1]<=boundary and not any(hit[1]<=other[0] and other[1]<=boundary for other in named):continue
+        if not subject_prefix_allowed(prefix):continue
         return hit
     return None
 
@@ -160,6 +176,9 @@ def subject_before(plain, pos, named):
     for base,clause in reversed(clauses):
         hit=clause_subject(clause,base,named,current_clause=base==clauses[-1][0])
         if hit:return hit
+        # 本分句有姓名但结构不够明确时，不能再借上一分句的姓名署名。
+        if any(base<=h[0] and h[1]<=base+len(clause) for h in named):return None
+        if re.match(r'\s*(?:'+SUBJECT_ADVERB+r')*(?:我|你|您|他|她|它|咱)',clause):return None
         st=clause.lstrip(' 　')
         if re.match(r'(?:后者|前者)',st):
             prev=[x for x in named if start<=x[0]<base]

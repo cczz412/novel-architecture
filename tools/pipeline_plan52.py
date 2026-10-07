@@ -23,7 +23,9 @@ def scheduled_clause(text):
     time=TIMEQ.search(text) or re.search(r'[^，,。！？；;]{1,12}(?:之后|以后|后)',text)
     if not time:return False
     tail=text[time.end():]
-    if re.search(r'昨天|前天|昨晚|刚刚|刚才|曾经|已经|已然|早已|过了',text):return False
+    # 执行身份：Codex；116：“过了＋时段”给出未来起点，不是完成态动作。
+    past_check=re.sub(r'过了(?=(?:'+TIMEQ.pattern+r'))','',text)
+    if re.search(r'昨天|前天|昨晚|刚刚|刚才|曾经|已经|已然|早已|过了',past_check):return False
     # 执行身份：Codex；115：时间安排中的“了”不限定人称，也不限定在句末。
     action=re.search(r'(?:去|来|做|回|带|拿|送|上|下|交|买|卖|吃|喝|炒|洗|写|读|取|还|见|开)'
                      + r'(?!过|着)',tail)
@@ -49,7 +51,7 @@ def signal(text):
     scheduled=scheduled or any(re.search(r'[零一二三四五六七八九十百0-9]{1,4}[年月日周]',c)
                               and re.search(r'之后|以后|后',c) and scheduled_clause(c)
                               for c in re.split(r'[，,。！？；;]',narration(clean)))
-    scheduled=scheduled or any(re.search(r'明天|后天|下周|下月|下个|还要|还得|将要',c) and scheduled_clause(c)
+    scheduled=scheduled or any(re.search(r'明天|后天|下周|下月|下个|还要|还得|将要|过了(?:'+TIMEQ.pattern+r')',c) and scheduled_clause(c)
                               for c in re.split(r'[，,。！？；;]',narration(clean)))
     return bool(strong or INTENT.search(clean) or re.search(r'以后再|将要',clean)
                 or scheduled or YAODE.search(qs) or COND.search(qs) or direct)
