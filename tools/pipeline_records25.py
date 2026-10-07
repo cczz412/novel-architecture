@@ -320,6 +320,19 @@ def j2_chapter_speakers(material, rows, facts=()):
     return result
 
 
+def j2_signed_nearby(claims, pointers, positions):
+    """执行身份：Codex；115：本句已有直接署名时，不再借相邻句的其他说话人。"""
+    selected=[]
+    for pointer in pointers:
+        key=(pointer['p'],pointer['s'])
+        local=[c for c in claims if (c['p'],c['s'])==key]
+        nearby=local or [c for c in claims if key in positions and (c['p'],c['s']) in positions
+                        and abs(positions[(c['p'],c['s'])]-positions[key])<=1]
+        for claim in nearby:
+            if claim not in selected:selected.append(claim)
+    return selected
+
+
 def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
     """逐条准备；坏条拒收、署名不明待核，其余条目仍可发送和保存。"""
     from pipeline_output28 import sentences
@@ -355,9 +368,7 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
             for option in options:
                 option['nearby'] = [{'p': p, 's': n} for p, n, t in nearby if option['entity'] in t]
                 option['pronoun_reference'] = any(re.search(r'他|她|他们|她们|其', t) for _, _, t in nearby) and bool(option['nearby'])
-            signed = [claim for claim in context['direct'] if any(
-                      (claim['p'], claim['s']) in positions and (x['p'], x['s']) in positions
-                      and abs(positions[(claim['p'], claim['s'])] - positions[(x['p'], x['s'])]) <= 1 for x in pointers)]
+            signed = j2_signed_nearby(context['direct'], pointers, positions)
             required = bool(row.get('entity') in ('未知', '无名', '无名说话人') or row.get('requires_speaker') or row.get('speaker') is not None
                             or section == 'aliases' and any(re.search(r'[“「『"]', ev['q']) for ev in row['ev'])
                             or any(ev['p'] in context.get('reported_speech_paragraphs',[]) for ev in row['ev']))

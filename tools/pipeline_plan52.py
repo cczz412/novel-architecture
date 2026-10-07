@@ -23,12 +23,11 @@ def scheduled_clause(text):
     time=TIMEQ.search(text) or re.search(r'[^，,。！？；;]{1,12}(?:之后|以后|后)',text)
     if not time:return False
     tail=text[time.end():]
-    if re.search(r'已经|已然|早已|刚刚|刚才|曾经|过了',tail):return False
-    first_person = re.search(r'^(?:我(?:们)?|咱(?:们)?)',text.strip()) or re.match(r'\s*(?:我(?:们)?|咱(?:们)?)',tail)
-    future_completion = bool(first_person and re.search(r'了[。！!]?$',tail))
+    if re.search(r'昨天|前天|昨晚|刚刚|刚才|曾经|已经|已然|早已|过了',text):return False
+    # 执行身份：Codex；115：时间安排中的“了”不限定人称，也不限定在句末。
     action=re.search(r'(?:去|来|做|回|带|拿|送|上|下|交|买|卖|吃|喝|炒|洗|写|读|取|还|见|开)'
-                     + (r'(?!过|着)' if future_completion else r'(?!了|过|着)'),tail)
-    return bool(action and (future_completion or not re.search(r'(?:了|过)[。！!]?$',tail)))
+                     + r'(?!过|着)',tail)
+    return bool(action and not re.search(r'过[。！!]?$',tail))
 
 def own_arrangement(text):
     """同段给他人的指令不遮住持有人自己的另一条安排。"""

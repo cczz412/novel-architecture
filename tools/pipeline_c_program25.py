@@ -6,6 +6,9 @@ INNER_SIGNALS = ('心想', '觉得', '以为', '意识到', '听见', '看到', 
 ACTION = r'(?:站|坐|走|说|问|拿|放|吃|喝)'
 CELLS = ('location', 'light_weather', 'objects_visuals', 'sounds_smells', 'atmosphere')
 SCENE_ACTION_FILTER_ENABLED = False
+# 执行身份：Codex；115：只改变主标签，关态保留旧C作逐字对照。
+GENERAL_TAG_RULES_ENABLED = True
+EVALUATIVE_JUDGMENT = re.compile(r'不配|无可厚非|凭什么|不该|不应当|不应该|理应|本该')
 
 
 def narration(text):
@@ -13,7 +16,8 @@ def narration(text):
 
 
 def separator(text):
-    return bool(re.fullmatch(r'[\s*＊—_－·。…]+', text))
+    symbols=re.sub(r'\s', '', text)
+    return len(symbols)>=2 and bool(re.fullmatch(r'[*＊—_－·~～-]+', symbols))
 
 
 def scene_fragment_issues(material, scenes):
@@ -209,6 +213,13 @@ def annotate(material, entities, facts=(), initial_memory=False, j2_complete=Non
             transition=re.search(r'回到|走进|走出|进入|跑到|走到|来到|离开|前往|抵达|翌日|次日|第二天|此时|这时|随后|后来|过了|天亮|天黑',plain)
             if not transition:cells['location']=[]
         main='对话' if dialogue else '动作展开' if actions else '心理' if psy else '场景' if cells['location'] and len(text)<24 else '叙述带过'
+        if GENERAL_TAG_RULES_ENABLED:
+            judgment=bool(EVALUATIVE_JUDGMENT.search(plain))
+            pronoun_action=bool(re.match(r'^\s*(?:他们|她们|他|她)(?:(?:正|正在|已经|还|又|赶紧|便|就|也|轻轻|慢慢|立刻|随即|忽然|突然)\s*)*'+action.pattern,plain))
+            psy=psy or judgment
+            if not dialogue:
+                if judgment:main='心理'
+                elif pronoun_action:main='动作展开'
         secondary='心理' if psy and main!='心理' else '动作展开' if dialogue and actions else None
         annotations.append({'p':p,'main_tag':main,'secondary_tag':secondary,'viewpoint':viewpoints[p],
                             'quote':text[:40],'note':'程序旁路0；采用的J2块有原段依据'})

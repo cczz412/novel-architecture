@@ -139,19 +139,18 @@ def clause_subject(clause, base, named, current_clause=False):
     for hit in named:
         if not base<=hit[0] or hit[1]>base+len(clause):continue
         prefix=clause[:hit[0]-base];tail=clause[hit[1]-base:]
-        if re.search(SPEECH_OBJECT,prefix) or tail.startswith('的'):continue
-        # 执行身份：Codex；114：前置成分须能确认为句首状语，不能越过动作取宾语。
-        lead=prefix
-        # “某人的亲属／职务＋姓名”中取同位的姓名，前一姓名仍只是领属修饰。
-        for prior in named:
-            if base<=prior[0]<hit[0] and re.fullmatch(r'的(?:'+RELATIVE+'|'+TITLE+r')',clause[prior[1]-base:hit[0]-base]):
-                lead=clause[:prior[0]-base];break
+        if tail.startswith('的'):continue
+        # 执行身份：Codex；115：定语、同位语和限定语不排除主语，只拦紧邻动介词的宾语。
         adverb=r'\s*(?:(?:但|而|可|于是|随后|随即|此时|这时|忽然|突然|说完|说罢|完|罢)\s*)*'
-        embedded=current_clause and re.fullmatch(adverb+r'(?:只|又|却)?(?:听|见)',lead)
-        if not (re.fullmatch(adverb,lead) or embedded):continue
+        embedded=current_clause and re.fullmatch(adverb+r'(?:只|又|却)?(?:听|见)',prefix)
+        object_prefix=(re.search(SPEECH_OBJECT,prefix)
+                       or re.search(r'(?:搀扶|扶|拦|推|拉|抱|带|碰|找|遇|看|听|见|请)(?:见|到|住|着|起|过|了)?$',prefix))
+        if object_prefix and not embedded:continue
         # 无名主体已先出现时，后面的人名只能作候选，不能越过它取主语。
         anon=re.search(UNNAMED_SUBJECT,prefix)
-        if anon and len(prefix[:anon.start()].strip())<=3 and not re.search(SPEECH_OBJECT,prefix[:anon.start()]):return None
+        if (anon and len(prefix[:anon.start()].strip())<=3
+                and not re.search(SPEECH_OBJECT,prefix[:anon.start()])
+                and prefix[anon.end():].strip() and not prefix.rstrip().endswith('的')):return None
         return hit
     return None
 
