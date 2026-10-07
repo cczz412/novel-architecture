@@ -242,6 +242,8 @@ class Budget:
         # A截断子包继续遵守已锁定的池规则；一般重试先用本岗位余量。
         if own_available and not (role == 'A' and self.config.get('runtime_guard') and pool_reason == 'truncation_split'):
             return 'base', pool_reason
+        if pool_reason == 'network_resume':
+            raise RoleLimit('网络续发只用本岗位额度，不取共享池')
         pool_tokens = sum(r['known_tokens'] if type(r.get('known_tokens')) is int and r['known_tokens'] > 0
                           else r['reserved_tokens'] for r in self.calls if r.get('quota_source') == 'shared_pool')
         available = pool['max_tokens'] - pool_tokens
@@ -308,7 +310,7 @@ class Budget:
             # 恢复v57网络续发条件；仍由后面的在途、岗位及总预算闸拦截。
             retries=[c for c in self.calls if c['role']=='A' and c.get('pool_reason') in ('machine_retry','network_resume','truncation_split')
                      and not (self.config.get('runtime_guard') and c.get('pool_reason')=='truncation_split')]
-            if retries:raise RoleLimit('A整岗一次网络续发已用，停止在发送前')
+            if retries:raise RoleLimit('A整岗一次重试已用，停止在发送前')
             if not self.config.get('runtime_guard') and reservation > retry_policy['max_group_retry_reservation']:
                 raise RoleLimit('A重试材料超过整岗最大组重试预留，停止在发送前')
         if role == 'A' and pool_reason in ('machine_retry', 'truncation_split'):
@@ -334,6 +336,9 @@ class Budget:
         if n + 1 > min(total['max_requests'], auth['cap_requests']) or used + reservation > min(total['max_tokens'], auth['cap_tokens']):
             raise TotalLimit('总预算不足，停止全部')
         count, spent = self.role_charged(role)
+        # 执行身份：Codex；114：续发沿用v57岗位帽，池追加只适用于新请求。
+        if pool_reason == 'network_resume' and (count + 1 > limits['max_requests'] or spent + reservation > limits['max_tokens']):
+            raise RoleLimit(f'无法重试或发送：本岗剩余{limits["max_tokens"]-spent} Token/{limits["max_requests"]-count}次，单次预留{reservation}；各岗硬线不变')
         quota_source, quota_reason = self.request_quota(role, pool_reason, reservation)
         # 112：旧max字段就是基础次数；追加只走已存在的共享池，不抬总帽。
         max_requests=limits['max_requests']

@@ -135,11 +135,20 @@ def speech_trigger_excluded(plain, match):
             if hit.start(1)<=match.start() and match.end()<=hit.end(1):return True
     return False
 
-def clause_subject(clause, base, named):
+def clause_subject(clause, base, named, current_clause=False):
     for hit in named:
         if not base<=hit[0] or hit[1]>base+len(clause):continue
         prefix=clause[:hit[0]-base];tail=clause[hit[1]-base:]
         if re.search(SPEECH_OBJECT,prefix) or tail.startswith('的'):continue
+        # 执行身份：Codex；114：前置成分须能确认为句首状语，不能越过动作取宾语。
+        lead=prefix
+        # “某人的亲属／职务＋姓名”中取同位的姓名，前一姓名仍只是领属修饰。
+        for prior in named:
+            if base<=prior[0]<hit[0] and re.fullmatch(r'的(?:'+RELATIVE+'|'+TITLE+r')',clause[prior[1]-base:hit[0]-base]):
+                lead=clause[:prior[0]-base];break
+        adverb=r'\s*(?:(?:但|而|可|于是|随后|随即|此时|这时|忽然|突然|说完|说罢|完|罢)\s*)*'
+        embedded=current_clause and re.fullmatch(adverb+r'(?:只|又|却)?(?:听|见)',lead)
+        if not (re.fullmatch(adverb,lead) or embedded):continue
         # 无名主体已先出现时，后面的人名只能作候选，不能越过它取主语。
         anon=re.search(UNNAMED_SUBJECT,prefix)
         if anon and len(prefix[:anon.start()].strip())<=3 and not re.search(SPEECH_OBJECT,prefix[:anon.start()]):return None
@@ -150,7 +159,7 @@ def subject_before(plain, pos, named):
     start=max(plain.rfind(c,0,pos) for c in '。！？\n')+1
     clauses=[(start+m.start(),m[0]) for m in re.finditer(r'[^，,；;：:]+',plain[start:pos])]
     for base,clause in reversed(clauses):
-        hit=clause_subject(clause,base,named)
+        hit=clause_subject(clause,base,named,current_clause=base==clauses[-1][0])
         if hit:return hit
         st=clause.lstrip(' 　')
         if re.match(r'(?:后者|前者)',st):
@@ -216,9 +225,16 @@ def speech_table(material, facts=(), entities=None, names=None):
                 continue
             subject=subject_before(plain,v.start(),named)
             if subject is None and not before.strip() and re.match(r'说(?:完|罢)',after):
-                # 句首“说完/说罢”只取同一分句，不能跨逗号借后句的人。
-                tail=re.split(r'[，,；;：:。！？\n]',plain[v.end():],1)[0]
+                # 只取本分句或紧邻下一分句开头的主语，不再跨到更后的分句。
+                parts=re.split(r'([，,；;：:。！？\n])',plain[v.end():],maxsplit=2)
+                tail=parts[0]
                 subject=clause_subject(tail,v.end(),named)
+                if subject is None and len(parts)>=3 and parts[1] in '，,':
+                    following=parts[2];base=v.end()+len(tail)+1
+                    next_subject=clause_subject(following,base,named)
+                    if (next_subject and not following[:next_subject[0]-base].strip()
+                            and not re.search(r'被|遭(?:到|受)?',following)):
+                        subject=next_subject
                 if subject is None and rows and rows[-1]['dialogue'] and len(rows[-1]['speaker'])==1 and not mentions(tail,mapping):
                     holder=rows[-1]['speaker'][0]
                     persons.append(holder);spans.append({'entity':holder,'offset':v.start(),'method':'主语延续'})

@@ -24,8 +24,11 @@ def scheduled_clause(text):
     if not time:return False
     tail=text[time.end():]
     if re.search(r'已经|已然|早已|刚刚|刚才|曾经|过了',tail):return False
-    action=re.search(r'(?:去|来|做|回|带|拿|送|上|下|交|买|卖|吃|喝|炒|洗|写|读|取|还|见|开)(?!了|过|着)',tail)
-    return bool(action and not re.search(r'(?:了|过)[。！!]?$',tail))
+    first_person = re.search(r'^(?:我(?:们)?|咱(?:们)?)',text.strip()) or re.match(r'\s*(?:我(?:们)?|咱(?:们)?)',tail)
+    future_completion = bool(first_person and re.search(r'了[。！!]?$',tail))
+    action=re.search(r'(?:去|来|做|回|带|拿|送|上|下|交|买|卖|吃|喝|炒|洗|写|读|取|还|见|开)'
+                     + (r'(?!过|着)' if future_completion else r'(?!了|过|着)'),tail)
+    return bool(action and (future_completion or not re.search(r'(?:了|过)[。！!]?$',tail)))
 
 def own_arrangement(text):
     """同段给他人的指令不遮住持有人自己的另一条安排。"""
@@ -53,7 +56,7 @@ def signal(text):
                 or scheduled or YAODE.search(qs) or COND.search(qs) or direct)
 
 def followups(material, seed, marks=(), next_chapter=False, max_chars=2400):
-    """后续按距离取到章末、字符帽或首个场景分隔行；不依赖段号写法。"""
+    """后续按距离取到章末或字符帽；同章遇分隔行停止，跨章刷新继续。"""
     from pipeline_c_program25 import separator
     pars=material['paragraphs'];order={p['paragraph_id']:i for i,p in enumerate(pars)}
     ev=seed.get('ev',[]);source=' '.join(e['q'] for e in ev) or seed.get('content','')
@@ -69,7 +72,7 @@ def followups(material, seed, marks=(), next_chapter=False, max_chars=2400):
     selected=[];used=0
     for i,p in enumerate(pars):
         if i<=last:continue
-        if separator(p['text']):break
+        if not next_chapter and separator(p['text']):break
         if p['paragraph_id'] in marks:continue
         text=p['text'];person=any(n in text for n in names)
         keyhits=keys & set(re.findall(r'(?=([\u4e00-\u9fff]{2}))',text))
