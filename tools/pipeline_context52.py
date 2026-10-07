@@ -139,15 +139,20 @@ def speech_trigger_excluded(plain, match):
 SUBJECT_ADVERB = r'(?:但|而|可|于是|随后|随即|此时|这时|忽然|突然|又|却|便|就|也|才|仍|还|只|正|正在|已经|终于|继续|低声|轻声|大声|冷冷|缓缓|慢慢|轻轻|赶紧|连忙|立刻|认真|平静|严肃|悄悄|说完|说罢|完|罢)'
 SUBJECT_QUANTIFIER = r'(?:这|那|这个|那个|这一个|那一个|一)?(?:位|名|个)'
 SUBJECT_LIMITER = r'(?:旁边|前面|后面|左边|右边|身旁|身边|门口|屋里|只有|唯有)'
-# 执行身份：Codex；118：完整名词构词才放行；未知词类不当作名词。
+# 执行身份：Codex；119：复用称谓资源，亲属按修饰、中心语和后缀构词。
 def nominal_slot(value):
     if not 1 <= len(value) <= 8:
         return False
-    # 复用既有称谓识别；亲属组合按辈分/支系修饰、关系语素、名词中心语解析。
-    # 不用任意汉字填充槽，也不列动作词；中心语后还有成分，整槽拒绝。
-    kinship = r'(?:[曾玄高太外堂表姻]*)(?:[伯叔舅姑姨祖]*)(?:[父母兄弟姐妹孙侄甥]|([爸妈爹娘爷奶公婆叔舅姑姨哥姐弟妹])\1)'
-    return bool(re.fullmatch(TITLE, value) or re.fullmatch(RELATIVE, value)
-                or re.fullmatch(kinship, value))
+    if re.fullmatch(TITLE, value) or re.fullmatch(RELATIVE, value):
+        return True
+    # 整槽须解析完：支系/辈分修饰＋亲属中心语（单字或同字重叠）＋名词后缀。
+    # 中心语之后只允许亲、子或亲属关系后缀，不允许任意汉字尾巴。
+    kinship = (r'(?:[曾玄高太外堂表姻伯叔舅姑姨祖]*)(?:[一二三四五六七八九十大小老]+)?'
+               r'(?P<root>[爸妈父母爹娘爷奶公婆伯叔舅姑姨兄哥姐弟妹嫂婶孙侄甥儿女夫妻媳婿])'
+               r'(?:(?P=root)|[亲子]|[夫妇公婆男女娘])?')
+    # 师承、家仆和店铺称谓限通用构词；既有职业名仍由 TITLE 识别。
+    social = r'师[父母兄弟姐妹]|[家男女]仆|家丁|店[主员]|伙计|管家|掌柜|丈夫'
+    return bool(re.fullmatch(kinship, value) or re.fullmatch(social, value))
 
 
 def subject_prefix_allowed(prefix, named=(), base=0):
