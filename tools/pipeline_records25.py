@@ -91,7 +91,7 @@ def validate(role, payload, material, facts=None, previous=None):
                         if (not row.get('basis') and not unchanged) or any(r is not None and r not in keys for r in refs):
                             raise ValueError('计划依据不完整或错指')
                         source_fact = next((f for f in facts if f['local_key'] == row.get('source')), None)
-                        if source_fact is None or source_fact.get('subject') != row['subject']:
+                        if source_fact is None or (source_fact.get('subject') != row['subject'] and row['subject'] not in row.get('_seed_holders', [])):
                             raise ValueError('计划来源主体与持有人不一致')
                         if row['status'] == '兑现' and not row.get('fulfilled'):
                             raise ValueError('兑现缺完成依据')
@@ -162,7 +162,14 @@ def check_plan_seed_scope(value, seeds, previous):
     for row in value['rows']:
         if row.get('key') in old_keys:
             continue
-        matching = [s for s in seeds if s['source'] == row.get('source') and s['subject'] == row.get('subject')]
+        matching = [s for s in seeds if s['source'] == row.get('source') and
+                    row.get('subject') in {s['subject'],*s.get('receivers',[])}]
+        if matching and matching[0].get('input_method') == 'seed_followup_packets_v52':
+            allowed=[e for seed in matching for e in seed['ev']+seed.get('followups',[])]
+            if row.get('source') not in row.get('basis',[]) or not row.get('ev') or any(not any(
+                e.get('p')==a['p'] and isinstance(e.get('q'),str) and e['q'] and e['q'] in a['q'] for a in allowed) for e in row.get('ev',[])):
+                errors.append({'id':row.get('_id'),'error':'证据不在本包种子或后续'})
+            continue
         if (not matching or row.get('source') not in row.get('basis', [])
                 or not row.get('ev') or any(not any(e.get('p') == support['p']
                     and isinstance(e.get('q'), str) and e['q'] and e['q'] in support['q']
@@ -185,6 +192,17 @@ def bind_plan_seeds(value, seeds):
         if ident not in index or row.get('key') is not None:
             raise ValueError('新计划种子编号未知或与旧计划混用')
         seed = index[ident]
+        if seed.get('input_method') == 'seed_followup_packets_v52':
+            holders={seed['subject'],*seed.get('receivers',[])}
+            holder=row.pop('holder',seed['subject'])
+            if holder not in holders:raise ValueError('持有人不在种子候选')
+            support=seed['ev']+seed.get('followups',[])
+            pids=row.pop('evidence_paragraphs',None)
+            if pids is not None and (not pids or set(pids)-{e['p'] for e in support}):
+                raise ValueError('证据段不在种子或后续')
+            ev=[{'p':e['p'],'q':e['q']} for e in support if pids is None and e in seed['ev'] or pids is not None and e['p'] in pids]
+            row.update(subject=holder,source=seed['source'],basis=copy.deepcopy(seed['basis']),ev=ev,_seed_holders=sorted(holders))
+            continue
         fixed = {k: copy.deepcopy(seed[k]) for k in ('subject', 'source', 'basis', 'ev')}
         if any(k in row and row[k] != v for k, v in fixed.items()):
             raise ValueError('模型不得另写与种子冲突的主体、来源或证据')
@@ -263,8 +281,168 @@ def j2_program_candidates(material, facts):
     return checked, provenance
 
 
-def j2_prepare_packet(material, rows):
+
+J2_V50 = 'program_candidates_itemwise_v50'
+J2_NEIGHBOR_SENTENCES = 3
+
+
+def j2_chapter_speakers(material, rows, facts=()):
+    """整章宽列候选；邻近与代词回指只是候选，只有直接署名可确认。"""
+    from pipeline_output28 import sentences
+    names = set()
+    for row in list(rows) + list(facts):
+        for k in ('subject', 'entity', 'target', 'speaker'):
+            v = row.get(k)
+            if isinstance(v, str) and v.strip() and v not in ('未知', '无名', '无名说话人'):
+                names.add(v)
+        names.update(x for x in row.get('mentions', []) if isinstance(x, str) and x.strip())
+    texts = '\n'.join(p['text'] for p in material['paragraphs'])
+    names = {n for n in names if n in texts or any(n == f.get('subject') or n in f.get('mentions', []) for f in facts)}
+    table = sentences(material)
+    units = [[p, n, t] for p, parts in table.items() for n, t in enumerate(parts, 1)
+             if t.strip('“”「」『』"。！？\n \t')]
+    # 直接署名沿用已验证的引号外检查，实体集合取整章而非当前拆包。
+    direct = speaker_candidates(material, [{'entity': n} for n in names], direct_only=True, strict_j2=True)
+    result = {'names': sorted(names), 'direct': direct, 'units': units, 'window': J2_NEIGHBOR_SENTENCES}
+    return result
+
+
+def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
+    """逐条准备；坏条拒收、署名不明待核，其余条目仍可发送和保存。"""
+    from pipeline_output28 import sentences
+    table = sentences(material)
+    context = chapter_speakers or j2_chapter_speakers(material, rows, facts)
+    positions = {(p, n): i for i, (p, n, _) in enumerate(context['units'])}
+    items, rejected = [], []
+    texts = '\n'.join(p['text'] for p in material['paragraphs'])
+    for original in rows:
+        row = copy.deepcopy(original)
+        ident = row.get('_id', '未知条目')
+        try:
+            section = ident.split(':')[0]
+            if section not in SECTIONS:
+                raise ValueError('栏目无效')
+            one = {f: [row] if f == section else [] for f in SECTIONS}
+            checked = validate('J2', one, material)[section][0]
+            checked['_id'] = ident
+            row = checked
+            for k in ('entity', 'target'):
+                if row.get(k) and row[k] not in ('未知', '无名', '无名说话人') and row[k] not in context['names'] and row[k] not in texts:
+                    raise ValueError('条目指向本章不存在的人物')
+            pointers = [{'p': ev['p'], 's': n} for ev in row['ev']
+                        for n, t in enumerate(table[ev['p']], 1)
+                        if ev['q'] in t or t.strip() and t in ev['q']]
+            if not pointers:
+                raise ValueError('证据无法连接句号')
+            at = [positions[(x['p'], x['s'])] for x in pointers if (x['p'], x['s']) in positions]
+            nearby = [(p, n, t) for i, (p, n, t) in enumerate(context['units'])
+                      if any(abs(i - pos) <= context['window'] for pos in at)]
+            # 已存B人物也入宽候选；程序不把“附近出现”直接判成说话人。
+            options = [{'entity': name, 'origin': '已存B或整章人物'} for name in context['names']]
+            for option in options:
+                option['nearby'] = [{'p': p, 's': n} for p, n, t in nearby if option['entity'] in t]
+                option['pronoun_reference'] = any(re.search(r'他|她|他们|她们|其', t) for _, _, t in nearby) and bool(option['nearby'])
+            signed = [claim for claim in context['direct'] if any(
+                      (claim['p'], claim['s']) in positions and (x['p'], x['s']) in positions
+                      and abs(positions[(claim['p'], claim['s'])] - positions[(x['p'], x['s'])]) <= 1 for x in pointers)]
+            required = bool(row.get('entity') in ('未知', '无名', '无名说话人') or row.get('requires_speaker') or row.get('speaker') is not None
+                            or section == 'aliases' and any(re.search(r'[“「『"]', ev['q']) for ev in row['ev']))
+            selected = row.get('speaker')
+            confirmed = not required or selected is not None and any(x['entity'] == selected for x in signed)
+            row.update(confirmation_status='已确认' if confirmed else '待核',
+                       confirmation_reason=None if confirmed else '说话人未定/待核', requires_speaker=required)
+            if not confirmed:
+                row['unverified_speaker'] = selected if selected is not None else row.get('unverified_speaker')
+                row['speaker'] = None
+            items.append({'id': ident, 'candidate': row, 'pointers': pointers,
+                          'signed_evidence': signed, 'speaker_candidates': options})
+        except (ValueError, TypeError, KeyError) as exc:
+            rejected.append({'id': ident, 'reason': str(exc), 'row': original,
+                             'paragraph_ids': [e.get('p') for e in original.get('ev', [])]})
+    return {'method': J2_V50, 'items': items, 'chapter_speakers': context}, rejected
+
+
+def j2_pre_dispatch_v50(packet, material, prior_rejections=(), revisions=()):
+    """整章依据随包传递；程序重新核本包单条，不因拆包丢整章人物。"""
+    if any(p.get('id') in set(prior_rejections) for p in revisions) or revisions:
+        raise ValueError('拒收条目不能进入修订包；修订须独立处理')
+    context = packet['chapter_speakers']
+    # 防止把伪造的直接署名表带进子包，人物集合取固定整章上下文。
+    recomputed = j2_chapter_speakers(material, [{'entity': n} for n in context['names']])
+    if context['direct'] != recomputed['direct'] or context['units'] != recomputed['units']:
+        raise ValueError('整章署名依据改变')
+    fresh, rejected = j2_prepare_packet_v50(material, [x['candidate'] for x in packet['items']], chapter_speakers=context)
+    if rejected:
+        raise ValueError('发送包仍含未分流的不合规条目')
+    if len({x['id'] for x in packet['items']}) != len(packet['items']):
+        raise ValueError('候选编号重复')
+    for old, new in zip(packet['items'], fresh['items']):
+        for key in ('id', 'pointers', 'signed_evidence', 'speaker_candidates'):
+            if old[key] != new[key]:
+                raise ValueError('程序候选或整章证据被改写')
+    return packet
+
+
+def j2_partition_saved(candidate):
+    """已复核条目分确认与待核；待核不进入确认资料或评分确认输入。"""
+    confirmed = {f: [] for f in SECTIONS}
+    pending = []
+    for f in SECTIONS:
+        for row in candidate[f]:
+            if row.get('confirmation_status') == '待核':
+                pending.append({'section': f, 'id': row['_id'], 'status': '待核',
+                                'reason': row.get('confirmation_reason'), 'row': copy.deepcopy(row)})
+            else:
+                confirmed[f].append(copy.deepcopy(row))
+    return confirmed, pending
+
+
+def j2_save_partition(confirmed, pending, rejected):
+    """保存前按编号消除旧待核残留；确认与拒收冲突不能静默覆盖。"""
+    confirmed_ids={r['_id'] for r in flatten('J2',confirmed)}
+    rejected=list({r['id']:r for r in rejected}.values())
+    rejected_ids={r['id'] for r in rejected}
+    if confirmed_ids & rejected_ids:raise ValueError('J2同一编号同时确认和拒收')
+    pending=list({r['id']:r for r in pending if r['id'] not in confirmed_ids|rejected_ids}.values())
+    pending_ids={r['id'] for r in pending}
+    assert not confirmed_ids & pending_ids and not rejected_ids & pending_ids
+    return confirmed,pending,rejected
+
+
+def j2_enrich_candidates(material, candidate, facts):
+    """最小别名与关系候选，仅列可逐字回查的称谓线索，不自动合并实体。"""
+    out = copy.deepcopy(candidate)
+    context = j2_chapter_speakers(material, flatten('J2', out), facts)
+    for p in material['paragraphs']:
+        text = p['text']
+        for name in context['names']:
+            for match in re.finditer(re.escape(name) + r'(?:的)?(媳妇|妻子|丈夫|父亲|母亲|儿子|女儿|二哥|大哥|老二|老三|小妹)', text):
+                alias = match.group(0)
+                quote = alias
+                common = {'ev': [{'p': p['paragraph_id'], 'q': quote}]}
+                out['aliases'].append({'entity': name, 'alias': alias, 'speaker': None,
+                                      'scope': [p['paragraph_id']], 'confirmation_status': '待核',
+                                      'requires_speaker': True, **common})
+                out['relations'].append({'entity': name, 'target': alias, 'relation_type': '亲属',
+                    'aspect': '称谓关系候选', 'value': alias, 'layer': '未知',
+                    'confirmation_status': '待核', 'requires_speaker': True, **common})
+    for f in SECTIONS:
+        for n, row in enumerate(out[f]):
+            row['_id'] = f + ':' + str(n)
+    # 言语类事实仍要求署名；未知的aspect保留，不靠填分类制造内容进步。
+    by_source = {fact['text']: fact for fact in facts}
+    for row in flatten('J2', out):
+        fact = by_source.get(row.get('value'))
+        if fact and fact.get('kind') == '言语':
+            row['requires_speaker'] = True
+            row['speaker'] = fact.get('speaker')
+    return out
+
+
+def j2_prepare_packet(material, rows, facts=(), chapter_speakers=None, itemwise=False):
     """发送前固化候选、连续出处和可用署名；模型没有证据、修订输出栏。"""
+    if itemwise:
+        return j2_prepare_packet_v50(material, rows, facts, chapter_speakers)
     from pipeline_output28 import sentences
     table = sentences(material)
     speakers = speaker_candidates(material, rows, direct_only=True)
@@ -291,13 +469,16 @@ def j2_prepare_packet(material, rows):
             continue
         items.append({'id': row['_id'], 'candidate': copy.deepcopy(row), 'pointers': pointers,
                       'signed_evidence': signed})
-    return {'method': 'program_candidates_short_decisions_v47', 'items': items}, blocked
+    return {'method': 'program_candidates_short_decisions_v47', 'items': items,
+            'chapter_speakers': j2_chapter_speakers(material, rows)}, blocked
 
 
 def j2_pre_dispatch(packet, material, prior_rejections=(), revisions=()):
     """拒收和修订是独立本地步骤；非法差量或署名在发送前硬拒。"""
+    if packet.get('method') == J2_V50:
+        return j2_pre_dispatch_v50(packet, material, prior_rejections, revisions)
     from pipeline_output28 import resolve_pointer, sentences
-    if set(packet) != {'method', 'items'} or packet.get('method') != 'program_candidates_short_decisions_v47':
+    if set(packet) not in ({'method', 'items'}, {'method', 'items', 'chapter_speakers'}) or packet.get('method') != 'program_candidates_short_decisions_v47':
         raise ValueError('短判断发送包只允许程序候选，不携带修订或自由证据')
     rejected = set(prior_rejections)
     if any(patch.get('id') in rejected for patch in revisions):
@@ -306,7 +487,9 @@ def j2_pre_dispatch(packet, material, prior_rejections=(), revisions=()):
         raise ValueError('短判断包不携带修订；修订须独立处理后重新列候选')
     ids = set()
     rows = [item['candidate'] for item in packet['items']]
-    allowed = speaker_candidates(material, rows, direct_only=True)
+    context = packet.get('chapter_speakers')
+    allowed = (j2_chapter_speakers(material, [{'entity': n} for n in context['names']])['direct']
+               if context else speaker_candidates(material, rows, direct_only=True))
     table = sentences(material)
     units = [(pid, number) for pid, parts in table.items() for number, sentence in enumerate(parts, 1)
              if sentence.strip('“”「」『』"。！？\n \t')]
@@ -360,6 +543,12 @@ def j2_wire_payload(packet, material):
             indexes.append(signatures.index(signature))
         items.append([item['id'], [item['candidate'].get(k) for k in fields[item['id'].split(':')[0]]],
                       [[pointer['p'], pointer['s']] for pointer in item['pointers']], indexes])
+    if packet['method'] == J2_V50:
+        for item, wire in zip(packet['items'], items):
+            wire.append([x['entity'] for x in item['speaker_candidates']])
+        return {'method': packet['method'], 'candidate_fields': fields,
+                'item_fields': ['id', 'candidate', 'pointers', 'signed_evidence', 'speaker_candidates'],
+                'items': items, 'signed_evidence': signatures, 'paragraphs': source_view}
     return {'method': packet['method'], 'candidate_fields': fields,
             'item_fields': ['id', 'candidate', 'pointers', 'signed_evidence'], 'items': items,
             'signed_evidence': signatures, 'paragraphs': source_view}
@@ -404,7 +593,8 @@ def j2_short_decisions(value, packet):
     if len(verdicts) != len(wanted) or {v.get('id') for v in verdicts} != wanted:
         raise ValueError('J2短判断漏项、重号或错指')
     for verdict in verdicts:
-        if (set(verdict) != {'id', 'accept', 'reason'} or type(verdict['accept']) is not bool
+        if (set(verdict) not in ({'id', 'accept', 'reason'}, {'id', 'accept', 'reason', 'speaker'}) or
+                ('speaker' in verdict and packet.get('method') != J2_V50) or type(verdict['accept']) is not bool
                 or not isinstance(verdict['reason'], str) or not verdict['reason'].strip()
                 or size(verdict) > REVIEW_VERDICT_MAX_BYTES):
             raise ValueError('J2裁定只允许编号、收拒和一条短理由')
@@ -425,9 +615,25 @@ def j2_apply_short(candidate, decisions, packet, material):
                 continue
             verdict = by_id[row['_id']]
             if verdict['accept']:
-                out[field].append(copy.deepcopy(row))
+                saved = copy.deepcopy(row)
+                if packet.get('method') == J2_V50:
+                    item = next(x for x in packet['items'] if x['id'] == row['_id'])
+                    saved = copy.deepcopy(item['candidate'])
+                    if saved.get('requires_speaker') or verdict.get('speaker') is not None:
+                        saved['requires_speaker'] = True
+                        selected = verdict.get('speaker')
+                        in_candidates = any(x['entity'] == selected for x in item['speaker_candidates'])
+                        direct = any(x['entity'] == selected for x in item['signed_evidence'])
+                        if selected is not None and in_candidates and direct:
+                            saved.update(speaker=selected, confirmation_status='已确认', confirmation_reason=None)
+                        else:
+                            saved.update(speaker=None, confirmation_status='待核',
+                                         confirmation_reason='说话人未定/待核',
+                                         unverified_speaker=selected if selected is not None else saved.get('unverified_speaker'))
+                out[field].append(saved)
             else:
-                rejected.append({'id': row['_id'], 'reason': verdict['reason'], 'row': copy.deepcopy(row)})
+                rejected.append({'id': row['_id'], 'reason': verdict['reason'], 'row': copy.deepcopy(row),
+                                 'paragraph_ids': [e['p'] for e in row['ev']]})
     # 保留准备时编号，避免复核子包重新编号后错配。
     validated = validate('J2', out, material)
     for field in SECTIONS:
@@ -436,7 +642,7 @@ def j2_apply_short(candidate, decisions, packet, material):
     return validated, rejected
 
 
-def speaker_candidates(material, candidate, direct_only=False):
+def speaker_candidates_legacy(material, candidate, direct_only=False, strict_j2=False):
     """本章引号外署名宽列：人物到动词或冒号引语最多64字，前后各一句。
 
     候选是可能的署名，不是裁定；模型只能勾选程序给出的完整指针。
@@ -480,7 +686,10 @@ def speaker_candidates(material, candidate, direct_only=False):
             for occurrence in re.finditer(re.escape(name), plain):
                 tail = plain[occurrence.end():occurrence.end() + 65]
                 colon_quotes = re.finditer(r'[:：]\s*[“「『"]', original[occurrence.end():occurrence.end() + 65])
-                anchors = [v.start() for v in verbs.finditer(tail)] + [q.start() for q in colon_quotes]
+                # 只排除“对（于）X来说”；动作后的“走过来说…”仍是言语。
+                comparison = {m.end() - 1 for m in re.finditer(r'对(?:于)?[^。！？：:，,\n]{1,64}?来说', plain)}
+                anchors = [v.start() for v in verbs.finditer(tail)
+                           if occurrence.end() + v.start() not in comparison] + [q.start() for q in colon_quotes]
                 if not any(not re.search(r'[。！？\n]', tail[:position]) for position in anchors):
                     continue
                 position = positions[index]
@@ -490,6 +699,33 @@ def speaker_candidates(material, candidate, direct_only=False):
     order = {p: index for index, p in enumerate(table)}
     return [{'entity': name, 'p': p, 's': number}
             for name, p, number in sorted(found, key=lambda x: (order[x[1]], x[2], x[0]))]
+
+
+def speaker_candidates(material, candidate, direct_only=False, strict_j2=False):
+    from pipeline_context52 import speech_table, person_pool
+    from pipeline_output28 import sentences
+    entities={'people':[{'entity':r.get('entity',r.get('subject'))} for r in candidate if r.get('entity',r.get('subject'))]}
+    names=person_pool(material,candidate,entities)
+    table=sentences(material);found=set()
+    rows=speech_table(material,candidate,entities,names)
+    for row in rows:
+        for ev in row['evidence']:
+            allowed=('直接署名','引语后署名') if direct_only or strict_j2 else ('直接署名','引语后署名','双人轮次候选','代词承接','B上下文候选')
+            if ev['method'] not in allowed:
+                continue  # 轮次和代词推定只能进候选，不冒作直接署名。
+            chunks=table[row['p']];offset=0;number=1
+            for n,t in enumerate(chunks,1):
+                if offset<=ev['offset']<offset+len(t):number=n;break
+                offset+=len(t)
+            found.add((ev['entity'],row['p'],number))
+    if not direct_only and not strict_j2:
+        units=[(p,n) for p,ss in table.items() for n,t in enumerate(ss,1) if t.strip('“”「」『』"。！？\n \t')]
+        for name,p,n in list(found):
+            if (p,n) in units:
+                i=units.index((p,n))
+                found.update((name,pp,nn) for pp,nn in units[max(0,i-1):i+2])
+    order={p:i for i,p in enumerate(table)}
+    return [{'entity':n,'p':p,'s':s} for n,p,s in sorted(found,key=lambda x:(order[x[1]],x[2],x[0]))]
 
 
 def normalize_speaker_claims(review, candidates, material):
@@ -730,11 +966,16 @@ def assemble(materials, current):
             'identity': 'OFFLINE_SAMPLE_DELTA_NOT_FORMAL_LEDGER',
             'basis': 'EXTRACTION_R6_INTENT_V2_1_PR374_INPUT_R06',
             'A': [], 'B': [], 'C': [], 'coverage': [], 'unresolved': [],
+            'J2_confirmation_audit': [],
             'review_audit': {k: [] for k in ('old_plan_rows', 'fact_chapters', 'source_chapters', 'plan_history', 'open_plan_keys', 'review_flags')}}
     for material in materials:
         chapter = material['chapter']
         part = current[chapter]
         facts = part.get('facts', [])
+        pred['J2_confirmation_audit'].append({'chapter': chapter,
+            'confirmed': sum(len(part.get('J2', {}).get(f, [])) for f in SECTIONS),
+            'pending': len(part.get('J2_pending', [])), 'rejected': len(part.get('J2_rejected', [])),
+            'pending_scoring_policy': '未确认，不计对；A/B/C原评分输入与评分器保持'})
         pred['B'].extend(facts)
         pred['review_audit']['fact_chapters'].append({'book_id': material['book_id'], 'chapter': chapter, 'kept_old_keys': [], 'revised_old_keys': [], 'excluded_nonstory_keys': [], 'flagged_old_keys': []})
         audit_rows = []

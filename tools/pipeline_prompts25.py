@@ -27,7 +27,19 @@ condition:null或原话,source:事实键,fulfilled:null或事实键,condition_re
 basis:事实键数组,reason,ev:[{p,q}]}]}。不改已有历史，不输出其他人物序列。
 新计划改用种子编号：{key:null,seed_id,content,status,deadline,condition,fulfilled,condition_ref,reason}。
 新计划不要输出subject、source、basis、ev，程序从所选种子接回完整主体、来源和逐字证据。
-已有计划继续按旧行格式；每个分组只处理本包种子和已有计划，不补其他人物。'''
+已有计划继续按旧行格式；每个分组只处理本包种子和已有计划，不补其他人物。
+rows条数上限为本包plan_seeds条数加previous_plans条数；内容不能靠截删来满足上限。'''
+# 执行身份：Codex；按种子和后续判断，正文中的称谓保持原样。
+A_PROMPT = """只处理本包plan_seeds与previous_plans。原段只包含种子及每条至多4个后续，未提供的不能猜。
+程序已排除旧事与未说出的短暂念头。说出口的安排仍须判断；被拒或主动收回分别判落空或放弃。
+新计划逐条选seed_id，可选holder必须在subject和receivers中。内容只概括同一目标；条件未发生用未执行且保留condition。
+状态只用未执行、执行中、兑现、落空、放弃。不得把兑现动作另立为新计划。
+每条核对followups；不能把别人替代目标的行动误认原计划继续执行。pronoun_risk提示核对代词主体。
+旧计划沿用key，有后续必须用本章ev和事实basis解释更新；carried_no_evidence原样沿用，已结历史不能重开。
+新行交{key:null,seed_id,holder,content,status,deadline:null或原话,condition:null或原话,
+fulfilled:null或事实键,condition_ref:null或事实键,reason,evidence_paragraphs:段号数组}。
+程序接回subject/source/basis/ev。旧行仍交{key,subject,content,status,deadline,condition,source,fulfilled,condition_ref,basis,reason,ev:[{p,q}]}。
+输出{rows:[]}，每个种子或旧计划最多一行；没有依据不编造，不能截删内容凑上限。"""
 J2_PROMPT = '''按证据整理事实类资料，每行只表达一个主体的一项内容。
 人物、别名、称谓来源、关系、时间层、回忆块、安排、物件状态、性格分别保存。
 同姓、同首字、共同称谓、别人口吻或相近写法不能直接合并成人物别名。
@@ -87,3 +99,7 @@ candidate是按所属栏目candidate_fields顺序排列的完整内容；pointer
 reason只选一项：符合原段、证据不足、归属不符、时间不符、内容重复、分类不符、内容超出原段、待独立修订。
 拒收后程序另记原因；修订属于独立步骤，不在本包。每项裁定最多128个UTF8字节。
 无法完整交付只输出{overflow:true}，不得漏项或截删。'''
+
+# 执行身份：Codex；v50短判断加入候选内选择，不放宽署名确认。
+J2_ITEM_PROMPT = """逐项核对程序候选与局部原句，不默认全收。items按item_fields列出编号、内容、句号指针、直接署名表编号、说话人候选。内容按candidate_fields读取。signed_evidence为[人名,段号,句号]，署名索引从0开始。
+只交{verdicts:[{id,accept,reason,speaker:null或候选人物}]}，全部编号各一次。speaker只能选本项speaker_candidates或null。直接署名才可确认；附近人物、B人物、代词回指只供候选选择，没有直接署名保留待核。署名未定仍可收内容为待核，不能牵连同章其他条目。reason只选符合原段、证据不足、归属不符、时间不符、内容重复、分类不符、内容超出原段、待独立修订。拒收不回修订；每项最多128个UTF8字节；装不下交{overflow:true}，不截内容，不漏裁定。"""

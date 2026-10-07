@@ -48,37 +48,131 @@ def carry_blocks(material, default, blocks):
     return values
 
 
-def annotate(material, entities):
-    people = {r['entity'] for r in entities.get('people', []) if r.get('entity')}
-    aliases = {r['alias']: r['entity'] for r in entities.get('aliases', []) if r.get('alias') and r.get('entity') in people}
-    names = {name: name for name in people}
-    names.update(aliases)
-    # 本轮没有模型确认的镜头块；软线索只记录，不决定人物标签。
-    body = '\n'.join(narration(r['text']) for r in material['paragraphs'])
-    default = '第一人称' if re.search(r'(?:^|[。！？\n])\s*我(?:的|们|在|走|说|看|想)', body) else '全知'
-    viewpoints = carry_blocks(material, default, [])
-    annotations, scenes, soft = [], [], []
-    for row in material['paragraphs']:
-        p, text = row['paragraph_id'], row['text']; plain = narration(text)
-        quote = text[:min(40, len(text))]
-        dialogue = bool(re.search(r'“[^”]+”|「[^」]+」|『[^』]+』|"[^"\n]+"', text))
-        actions = []
-        for name, entity in sorted(names.items(), key=lambda item: -len(item[0])):
-            match = re.search(re.escape(name) + r'(?:正|正在|已经|还|又)?' + ACTION, plain)
-            if match and not any(a['entity'] == entity for a in actions):
-                actions.append({'entity': entity, 'ev': [{'p': p, 'q': text[match.start():match.end()]}]})
-        annotations.append({'p': p, 'main_tag': '对话' if dialogue else '动作展开' if actions else '叙述带过',
-                            'secondary_tag': '动作展开' if dialogue and actions else None,
-                            'viewpoint': viewpoints[p], 'quote': quote, 'note': '程序版；未确认内心候选不提升人物视角'})
-        for signal in INNER_SIGNALS:
-            if signal in plain:
-                soft.append({'p': p, 'signal': signal, 'confirmed': False})
-        # 明写的到达/所在地点才记格；不把愿望、将去、比喻补成已到场景。
-        match = re.search(r'(?:正在|身处|走进|进入)([^，。！？；“”「」\s]{2,16})(?:里|内)', plain)
-        cells = {name: [] for name in CELLS}
-        if match:
-            cells['location'] = [{'text': match[1], 'ev': [{'p': p, 'q': text[match.start():match.end()]}]}]
-        if actions or match:
-            scenes.append({'paragraph_ids': [p], **cells, 'present': actions, 'tags': [], 'layer': '未知'})
-    return {'paragraphs': annotations, 'scenes': scenes, 'chapter_default': default, 'soft_signals': soft,
-            'method': 'program', 'model_confirmations': 0, 'formal': False}
+def scene_cells(text, p, memory=False):
+    """按通用动作、方位与机构后缀取格；每格保留原句。"""
+    cells={k:[] for k in CELLS}
+    if memory:return cells
+    plain=narration(text)
+    location=[]
+    short=bool(len(text)<=20 and re.fullmatch(r'(?:[\u4e00-\u9fff]{1,10}(?:村|大队|镇|县|乡|屯|庄|街)[，。]?)+',text))
+    if short:location.append(text)
+    patterns=[
+        r'在([^，。！？的\s]{1,6}?)[上里下边](?!来|去|上班|工作|读书)',
+        r'(?:回到|走进|进入|跑到|走到|来到|凑到|端上|抱上|端去|靠近|进)([^，。！？\s]{1,3}?)(?=边|里|前|[，。]|时|去|$)',
+        r'(?:回到|走进|走出|进入|端去|进)([^，。！？\s]{1,8}?(?:屋|房|家|室|局|厅|院))',
+        r'往[^，。！？]{0,12}?(?:的)?([^的，。！？]{2})里[走去]',
+        r'混在([^，。！？]{1,5})里',
+        r'^(?:此时[，,])?\s*([^，。！？]{1,28}(?:办公室|室|局|厅|院|宿舍|店|馆|楼|站))[，,]']
+    for pattern in patterns:
+        for m in re.finditer(pattern,plain):
+            v=m[1]
+            if len(v)==1 and m.end()<len(plain) and plain[m.end()] in '前边':v+=plain[m.end()]
+            location.append(v)
+    objects=[]
+    patterns=[
+        r'(?:拿着|拿起|拿上|拿出|拿|接过|收拾|带上|指着|围着|端着|端起|提着|扛着|背着|戴着|打开|按下|握住)([^，。！？：]{1,14}?)(?=的手|[，。！？、]|蹲|走|来|在|领|和|呵呵|笑|说|朝|向|$)',
+        r'(?:取|领|拎|抓)了(?:个|把|只|根|条)?([^，。！？]{1,6}?)(?=[，。！？]|$)',
+        r'(?:添|盛|舀)了([^，。！？]{1,14}?)(?=后|[，。！？])',
+        r'把([^，。！？]{1,12}?)(?:弄脏|弄湿)',
+        r'(?:将|把)([^，。！？]{1,12}?)(?:扔|塞|折好|装袋)',
+        r'(?:塞进|扔在)([^，。！？]{1,12}?)(?=[，。！？]|上|里|$)',
+        r'递(?:过来)?(?:一份|一张|一个)?([^，。！？]{1,5}?)[，。]',
+        r'按下([^，。！？]{1,6}?(?:键|开关|按钮))',
+    ]
+    for pattern in patterns:objects.extend(m[1] for m in re.finditer(pattern,text))
+    def clean(value):
+        value=re.sub(r'^(?:他|她|你|我)的','',value).strip()
+        value=re.sub(r'^(?:将|把)','',value);value=re.sub(r'全都$','',value)
+        return value if value and not re.search(r'他|她|你|我|没|了|多少|气势',value) and not re.match(r'的|去|来|对方|一[看听想问说]',value) else None
+    for field,values in [('location',location),('objects_visuals',objects)]:
+        for value in dict.fromkeys(values):
+            v=clean(value)
+            if field=='objects_visuals' and v and re.fullmatch(r'[上下左右前后里外旁边面]+',v):continue
+            if field=='location' and v:
+                if re.fullmatch(r'[上下左右前后里外旁边]+',v) or re.match(r'(?:一|两|几)(?:个|名|位|份|张)',v):continue
+                # 地点后缀之后的动作不能连进地点格，不列书内专用动作词。
+                noun=re.match(r'(.{0,28}(?:房间|办公室|屋|房|家|室|厅|院|局|楼|店|馆|站))',v)
+                if noun:v=noun[1]
+            if v and v in text:cells[field].append({'text':v,'ev':[{'p':p,'q':v}]})
+    for m in re.finditer(r'([^，。！？]{1,4}?声)(?=响|[，。])|([^，。！？]{1,3}地一声)|([\u4e00-\u9fff]{1,3}一声)',plain):
+        value=next(g for g in m.groups() if g)
+        cells['sounds_smells'].append({'text':value,'ev':[{'p':p,'q':value}]})
+    return cells
+
+
+def annotate(material, entities, facts=(), initial_memory=False, j2_complete=None):
+    from collections import Counter
+    from pipeline_context52 import person_pool, name_map, mentions, INNER, memory_marks
+    names=person_pool(material,facts,entities);mapping=name_map(material,names,entities)
+    memory=memory_marks(material,entities,initial_memory)
+    paragraphs=material['paragraphs'];order={p['paragraph_id']:i for i,p in enumerate(paragraphs)}
+    default='第一人称' if re.search(r'(?:^|[。！？\n])\s*我(?:的|们|在|走|说|看|想)','\n'.join(narration(p['text']) for p in paragraphs)) else '全知'
+    binds={};last=None
+    for p in paragraphs:
+        plain=narration(p['text']);hits=mentions(plain,mapping)
+        if p['paragraph_id'] in memory['paragraph_ids']:continue
+        for sig in INNER.finditer(plain):
+            near=[h for h in hits if h[1]<=sig.start() and sig.start()-h[1]<=10]
+            if near:binds.setdefault(p['paragraph_id'],near[-1][2])
+            elif last and re.search(r'(?:他|她|自己)[^。！？]{0,40}$',plain[:sig.start()]):binds.setdefault(p['paragraph_id'],last)
+        if hits:last=hits[0][2]
+    segments=[];segment=[]
+    for p in paragraphs:
+        new_scene=separator(p['text']) or re.match(r'^(?:此时[，,])?\s*[^，。！？]{1,28}(?:办公室|宿舍|会议室)[，,]',narration(p['text']))
+        if new_scene and segment:segments.append(segment);segment=[]
+        segment.append(p)
+    if segment:segments.append(segment)
+    viewpoints={}
+    for segment in segments:
+        local={p['paragraph_id']:binds[p['paragraph_id']] for p in segment if p['paragraph_id'] in binds}
+        counts=Counter(local.values())
+        character_mode=bool(counts and max(counts.values())>=2 and max(counts.values())/sum(counts.values())>=.6)
+        current=next(iter(local.values()),default) if character_mode else default
+        for p in segment:
+            if separator(p['text']):current=default
+            if character_mode and p['paragraph_id'] in local:current=local[p['paragraph_id']]
+            viewpoints[p['paragraph_id']]=current
+    receipts=[];accepted_blocks=[]
+    for block in entities.get('memories',[])+entities.get('viewpoint_blocks',[]):
+        start,end,person=block.get('start'),block.get('end'),block.get('viewpoint',block.get('person'))
+        if start not in order or end not in order or order[start]>order[end]:
+            receipts.append({'block':block,'adopted':False,'reason':'范围不在本章'});continue
+        if not person:
+            receipts.append({'block':block,'adopted':False,'reason':'未给人物视角'});continue
+        evidence_rows=[]
+        for row in paragraphs[order[start]:order[end]+1]:
+            plain=narration(row['text'])
+            if any(re.search(re.escape(n)+r'.{0,10}(?:'+INNER.pattern+')',plain) for n,v in mapping.items() if v==person):
+                evidence_rows.append(row['paragraph_id'])
+        accepted=bool(evidence_rows)
+        receipts.append({'block':block,'adopted':accepted,'evidence_paragraphs':evidence_rows,'reason':'块内有持有人内心原句' if accepted else '缺引号外持有人证据'})
+        if accepted:
+            accepted_blocks.append(block)
+            for row in paragraphs[order[start]:order[end]+1]:viewpoints[row['paragraph_id']]=person
+    annotations=[];scenes=[];soft=[]
+    if j2_complete is False:
+        confirmed={row['paragraph_id'] for block in accepted_blocks for row in paragraphs[order[block['start']]:order[block['end']]+1]}
+        viewpoints={pid:value if pid in confirmed else '未定（人物账本未完成）' for pid,value in viewpoints.items()}
+    action=re.compile(r'(?:站|坐|走|说|问|拿|放|吃|喝|跑|抱|端|收拾|洗|捞|摸|拉|指|带|领|取|割|蹲|围|推|接|掏|抓|夹|扯|点头|添|靠近|递|打开|握住|签下)')
+    for row in paragraphs:
+        p,text=row['paragraph_id'],row['text'];plain=narration(text)
+        dialogue=bool(re.search(r'“[^”]+”|「[^」]+」|『[^』]+』|"[^"\n]+"',text))
+        actions=[]
+        for hit in mentions(plain,mapping):
+            m=re.match(r'(?:正|正在|已经|还|又|赶紧|便)?'+action.pattern,plain[hit[1]:])
+            if m and hit[2] not in [a['entity'] for a in actions]:
+                actions.append({'entity':hit[2],'ev':[{'p':p,'q':text[hit[0]:hit[1]+m.end()]}]})
+        psy=bool(INNER.search(plain));cells=scene_cells(text,p,p in memory['paragraph_ids'])
+        main='对话' if dialogue else '动作展开' if actions else '心理' if psy else '场景' if cells['location'] and len(text)<24 else '叙述带过'
+        secondary='心理' if psy and main!='心理' else '动作展开' if dialogue and actions else None
+        annotations.append({'p':p,'main_tag':main,'secondary_tag':secondary,'viewpoint':viewpoints[p],
+                            'quote':text[:40],'note':'程序旁路0；采用的J2块有原段依据'})
+        soft.extend({'p':p,'signal':m[0],'confirmed':False} for m in INNER.finditer(plain))
+        if actions or any(cells.values()):
+            scenes.append({'paragraph_ids':[p],**cells,'present':actions,'tags':[],'layer':'回忆' if p in memory['paragraph_ids'] else '现场'})
+    return {'paragraphs':annotations,'scenes':scenes,'chapter_default':default,'soft_signals':soft,
+            'method':'program','model_confirmations':0,'formal':False,'C_mode':'program_bypass0',
+            'bypass0_receipt':{'adopted':sum(r['adopted'] for r in receipts),'rejected':sum(not r['adopted'] for r in receipts),
+                               'blocks':receipts,'people':names,'viewpoint_blocks':accepted_blocks,'new_requests':0},
+            'bypass1':{'enabled':False,'requests':0},'memory_marks':memory,
+            'scene_receipt':{'count':len(scenes),'empty_reason':'没有格或人物动作' if not scenes else None}}

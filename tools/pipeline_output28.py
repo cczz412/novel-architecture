@@ -271,6 +271,56 @@ def merge_values(role, values, review=False):
     return result
 
 
+
+A_LOCAL_METHOD = 'seed_local_excerpts_v50'
+A_LOCAL_PARAGRAPH_WINDOW = 1
+A_SEEDS_PER_GROUP = OUTPUT_POLICY['A']['estimated_peak'] // 200
+
+
+def a_local_payload(material, payload, review=False):
+    """只送种子/候选所在段前后各一段；原章在本地继续用于逐字校验。"""
+    seeds = payload.get('plan_seeds', [])
+    rows = payload.get('rows', []) if review else []
+    refs = {e['p'] for r in seeds + rows for e in r.get('ev', [])}
+    # 旧计划本章变化证据从本包相关事实连接，跨章来源不伪装成本章段号。
+    refs.update(pid.rsplit(':', 1)[-1] for f in payload.get('facts', []) for pid in f[3]
+                if ':ch' + material['chapter'] + ':' in pid)
+    paragraphs = material['paragraphs']
+    selected = {j for i, p in enumerate(paragraphs) if p['paragraph_id'] in refs
+                for j in range(max(0, i - A_LOCAL_PARAGRAPH_WINDOW), min(len(paragraphs), i + A_LOCAL_PARAGRAPH_WINDOW + 1))}
+    local = dict(material, paragraphs=[p for i, p in enumerate(paragraphs) if i in selected])
+    data = {**payload, 'paragraphs': pointer_payload(local) if review else [[p['paragraph_id'], p['text']] for p in local['paragraphs']],
+            'input_method': A_LOCAL_METHOD, 'paragraph_window': A_LOCAL_PARAGRAPH_WINDOW}
+    return material, data
+
+
+def a_local_packets(material, payload, stage_bound, review=False):
+    """组数由种子数决定，旧计划只交一个组；复核按候选原输入上界分组。"""
+    if review:
+        packets = bounded_packets('A', material, payload, OUTPUT_POLICY['review']['max_tokens'], True)
+        result = []
+        for m, data in packets:
+            refs = {r.get(k) for r in data['rows'] for k in ('source', 'fulfilled', 'condition_ref')} | {k for r in data['rows'] for k in r.get('basis', [])}
+            data['plan_seeds'] = [s for s in payload.get('plan_seeds', []) if s['source'] in refs]
+            data['facts'] = [f for f in payload.get('facts', []) if f[0] in refs]
+            result.append(a_local_payload(m, data, True))
+        return result
+    seeds = payload.get('plan_seeds', [])
+    groups = [seeds[i:i + A_SEEDS_PER_GROUP] for i in range(0, len(seeds), A_SEEDS_PER_GROUP)] or [[]]
+    old = list(payload.get('previous_plans', []))
+    result = []
+    for n, group in enumerate(groups):
+        names = {s['subject'] for s in group}
+        previous = [r for r in old if r['subject'] in names or n == len(groups) - 1]
+        old = [r for r in old if r not in previous]
+        refs = {s['source'] for s in group} | {r.get(k) for r in previous for k in ('source', 'fulfilled', 'condition_ref')}
+        data = {**payload, 'plan_seeds': group, 'previous_plans': previous,
+                'facts': [f for f in payload.get('facts', []) if f[0] in refs],
+                'group_subjects': sorted(names | {r['subject'] for r in previous})}
+        result.append(a_local_payload(material, data))
+    return result
+
+
 def a_grouped_packets(material, payload, stage_bound):
     """人物不跨组；正文保留，种子、事实和旧计划按人物归组，含一次重试预留。"""
     from pipeline_prompts25 import SYSTEM, A_PROMPT
@@ -311,9 +361,9 @@ def a_grouped_packets(material, payload, stage_bound):
     return result
 
 
-def j2_decision_packets(material, prepared, maximum, stage_bound):
+def j2_decision_packets(material, prepared, maximum, stage_bound, config=None, review=False):
     """短判断按证据段分组，给每次反馈预留上界，保留所有候选。"""
-    from pipeline_prompts25 import SYSTEM, J2_SHORT_PROMPT
+    from pipeline_prompts25 import SYSTEM, J2_SHORT_PROMPT, J2_ITEM_PROMPT
     from pipeline_budget25 import reserve
     from pipeline_records25 import j2_wire_payload
     if not prepared['items']:
@@ -321,11 +371,12 @@ def j2_decision_packets(material, prepared, maximum, stage_bound):
     packets, group = [], []
     count_bound = (math.floor(maximum * 0.6) - 64) // REVIEW_VERDICT_MAX_BYTES
     def packet(items):
-        value = {'method': prepared['method'], 'items': items}
+        value = {**prepared, 'items': items}
         wire = j2_wire_payload(value, material)
-        base = [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': J2_SHORT_PROMPT + '\n' + json.dumps(wire, ensure_ascii=False, separators=(',', ':'))}]
+        base = [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': (J2_ITEM_PROMPT if prepared['method'] == 'program_candidates_itemwise_v50' else J2_SHORT_PROMPT) + '\n' + json.dumps(wire, ensure_ascii=False, separators=(',', ':'))}]
         # 新结构的反馈只指向三种裁定字段，不再带旧整包答案；JSON转义按两倍预留。
-        upper = reserve(base + [{'role': 'user', 'content': 'x' * (2 * J2_SHORT_REPAIR_MAX_BYTES)}], maximum)
+        upper = reserve(base + [{'role': 'user', 'content': 'x' * (2 * J2_SHORT_REPAIR_MAX_BYTES)}], maximum,
+                        config, 'J2', review)
         return value, upper
     for item in prepared['items']:
         value, upper = packet(group + [item])

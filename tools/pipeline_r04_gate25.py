@@ -2,7 +2,7 @@
 """R04-only authorization wrapper, outside the portable pipeline."""
 import os
 from pathlib import Path
-from pipeline_budget25 import Budget, Halt, before, now, check_limits
+from pipeline_budget25 import Budget, Halt, before, now, check_limits, runtime_guard_errors
 from pipeline_source25 import read_json, write_json, digest
 
 class R04Budget(Budget):
@@ -64,7 +64,10 @@ class R04Budget(Budget):
         if independent.get('blind_terms_new_hits', independent.get('blind_terms_hit_count')) != 0:
             raise Halt('独立盲测词表新命中不为零')
         proof = read_json(self.config['reservation_proof'])
-        if not proof['passed'] or not proof.get('full_ABC_reservation'):
+        if self.config.get('runtime_guard'):
+            errors = runtime_guard_errors(self.config)
+            if errors: raise Halt('运行期守门配置不完整：' + ','.join(errors))
+        elif not proof['passed'] or not proof.get('full_ABC_reservation'):
             raise Halt('整线A/B/C预留证明未齐')
         window = auth['windows'].get(proof['authorization_window'])
         if not window or window['book'] != proof['book_code'] or window['chapters'] != ['ch' + c for c in self.config['chapters']]:
