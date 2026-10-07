@@ -41,7 +41,15 @@ def repair_message(error):
     if len(json.dumps(message, ensure_ascii=False).encode()) + 2 > REPAIR_MAX_BYTES:
         if ('speaker_candidate_membership' in error or 'speaker_claims_all_clear' in error
                 or 'review_protocol_conflict' in error):
-            message['content'] = ('复核机检多错，详情超出反馈上界：将本包全部裁定的speaker_claims强制改为[]，'
+            try:
+                details = json.loads(error)
+                failed_ids = list(dict.fromkeys(e.get('verdict_id') for e in details.get('errors', [])
+                                               if isinstance(e, dict) and isinstance(e.get('verdict_id'), str)))
+            except (ValueError, AttributeError):
+                failed_ids = []
+            message['content'] = ('speaker_claims_all_clear；复核机检多错，全部失败编号：'
+                                  + json.dumps(failed_ids, ensure_ascii=False, separators=(',', ':'))
+                                  + '。将本包全部裁定的speaker_claims强制改为[]，'
                                   'reason只写核对结论，保留所有编号和accept；删除拒收条目的patches，'
                                   '保留其他差量，返回完整本包JSON。')
         else:

@@ -130,8 +130,52 @@ def flatten(role, value):
     return [row for section in (SECTIONS if role == 'J2' else ('paragraphs', 'scenes')) for row in value[section]]
 
 
+def plan_seeds(material, facts):
+    """只从本章已存事实及逐字证据宽列线索；不替模型裁定计划或状态。"""
+    paragraphs = {p['full_id']: p for p in material['paragraphs']}
+    signal = re.compile(r'计划|打算|准备|决定|安排|约定|承诺|答应|叮嘱|保证|必须|需要|'
+                        r'今晚|晚上|明天|后天|下午|下周|下月|开学|以后|将要|要|得|轮到')
+    seeds, seen = [], set()
+    for fact in facts:
+        subject, source = fact.get('subject'), fact.get('local_key')
+        if (fact.get('book_id') != material['book_id'] or fact.get('chapter') != material['chapter']
+                or not isinstance(subject, str) or not subject.strip()
+                or subject in ('未知', '无名', '无名说话人') or not isinstance(source, str) or source in seen):
+            continue
+        ev = []
+        for item in fact.get('evidence', []):
+            paragraph, quote = paragraphs.get(item.get('paragraph_id')), item.get('quote')
+            if paragraph and isinstance(quote, str) and quote.strip() and quote in paragraph['text']:
+                ev.append({'p': paragraph['paragraph_id'], 'q': quote})
+        if not ev or not signal.search(str(fact.get('text', '')) + ''.join(e['q'] for e in ev)):
+            continue
+        seen.add(source)
+        seeds.append({'seed_id': 'seed:' + key_for(source, ev), 'subject': subject,
+                      'source': source, 'basis': [source], 'content_hint': fact.get('text'), 'ev': ev})
+    return seeds
+
+
+def check_plan_seed_scope(value, seeds, previous):
+    """新计划须连接程序种子的主体、来源和证据；原计划仍按既有历史合同核对。"""
+    old_keys = {row['key'] for row in previous}
+    errors = []
+    for row in value['rows']:
+        if row.get('key') in old_keys:
+            continue
+        matching = [s for s in seeds if s['source'] == row.get('source') and s['subject'] == row.get('subject')]
+        if (not matching or row.get('source') not in row.get('basis', [])
+                or not row.get('ev') or any(not any(e.get('p') == support['p']
+                    and isinstance(e.get('q'), str) and e['q'] and e['q'] in support['q']
+                    for seed in matching for support in seed['ev']) for e in row.get('ev', []))):
+            errors.append({'id': row.get('_id'), 'field': 'source/basis/ev',
+                           'error': '新计划须使用本章程序种子的同一主体、事实来源和逐字证据，不能补无依据计划'})
+    if errors:
+        raise ValueError(json.dumps(errors, ensure_ascii=False))
+    return value
+
+
 def speaker_candidates(material, candidate):
-    """本章引号外署名宽列：人物到动词最多64字，证据窗口为前后各一句。
+    """本章引号外署名宽列：人物到动词或冒号引语最多64字，前后各一句。
 
     候选是可能的署名，不是裁定；模型只能勾选程序给出的完整指针。
     引号跨段保持状态，台词中的人物和说话动词不产生署名候选。
@@ -169,11 +213,13 @@ def speaker_candidates(material, candidate):
     meaningful = [index for index, (_, _, _, text) in enumerate(units)
                   if text.strip('“”「」『』"。！？\n \t')]
     positions = {index: position for position, index in enumerate(meaningful)}
-    for index, (_, _, plain, _) in enumerate(units):
+    for index, (_, _, plain, original) in enumerate(units):
         for name in sorted(names):
             for occurrence in re.finditer(re.escape(name), plain):
                 tail = plain[occurrence.end():occurrence.end() + 65]
-                if not any(not re.search(r'[。！？\n]', tail[:verb.start()]) for verb in verbs.finditer(tail)):
+                colon_quotes = re.finditer(r'[:：]\s*[“「『"]', original[occurrence.end():occurrence.end() + 65])
+                anchors = [v.start() for v in verbs.finditer(tail)] + [q.start() for q in colon_quotes]
+                if not any(not re.search(r'[。！？\n]', tail[:position]) for position in anchors):
                     continue
                 position = positions[index]
                 for neighbor in meaningful[max(0, position - 1):position + 2]:
@@ -182,6 +228,41 @@ def speaker_candidates(material, candidate):
     order = {p: index for index, p in enumerate(table)}
     return [{'entity': name, 'p': p, 's': number}
             for name, p, number in sorted(found, key=lambda x: (order[x[1]], x[2], x[0]))]
+
+
+def normalize_speaker_claims(review, candidates, material):
+    """补缺省空栏，清除结构合法但不在候选内的证明；不改裁定、理由或差量。"""
+    from pipeline_output28 import sentences, size, REVIEW_CLAIM_MAX_BYTES
+    if not isinstance(review, dict) or not isinstance(review.get('verdicts'), list):
+        return review, []
+    table = sentences(material)
+    allowed = {(c['entity'], c['p'], c['s']) for c in candidates}
+    result, changes = copy.deepcopy(review), []
+    for verdict in result['verdicts']:
+        if not isinstance(verdict, dict):
+            continue  # 结构错误仍由原机检拒绝。
+        if 'speaker_claims' not in verdict:
+            verdict['speaker_claims'] = []
+            changes.append({'verdict_id': verdict.get('id'), 'field': 'speaker_claims',
+                            'action': 'default_empty'})
+            continue
+        if not isinstance(verdict['speaker_claims'], list):
+            continue
+        kept = []
+        for index, claim in enumerate(verdict['speaker_claims']):
+            # 指针错误、单项超界和额外字段仍交原机检；不借规范化绕过这些保护。
+            valid = (isinstance(claim, dict) and set(claim) == {'entity', 'p', 's'}
+                     and size(claim) <= REVIEW_CLAIM_MAX_BYTES
+                     and isinstance(claim['entity'], str) and bool(claim['entity'])
+                     and isinstance(claim['p'], str) and claim['p'] in table
+                     and type(claim['s']) is int and 1 <= claim['s'] <= len(table[claim['p']]))
+            if valid and (claim['entity'], claim['p'], claim['s']) not in allowed:
+                changes.append({'verdict_id': verdict.get('id'), 'field': f'speaker_claims[{index}]',
+                                'action': 'drop_outside_candidates', 'claim': copy.deepcopy(claim)})
+            else:
+                kept.append(claim)
+        verdict['speaker_claims'] = kept
+    return result, changes
 
 
 def speaker_candidate_errors(verdict, candidates, material):

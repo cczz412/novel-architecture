@@ -11,7 +11,8 @@ from pipeline_prompts25 import SYSTEM, PROMPTS, REVIEW_PROMPT
 from pipeline_budget25 import Budget, Halt, NetworkPause, RoleLimit, TotalLimit, TruncatedOutput, parse_response, blind_admission
 from pipeline_output28 import (PROTOCOL, OUTPUT_POLICY, REPAIR_MAX_BYTES, OutputOverflow, J2RowOverflow,
     bounded_packets, split_packet, split_j2_rows, merge_values, hydrate_j2, check_review_shape, pointer_payload, repair_message)
-from pipeline_records25 import validate, flatten, review_apply, facts_output, plans_output, assemble, speaker_candidates, normalize_rejected_patches
+from pipeline_records25 import (validate, flatten, review_apply, facts_output, plans_output, assemble,
+    speaker_candidates, normalize_rejected_patches, normalize_speaker_claims, plan_seeds, check_plan_seed_scope)
 from pipeline_author25 import build_views, query
 from pipeline_audit25 import local_closure, structural_checks
 from pipeline_c_program25 import annotate
@@ -155,6 +156,10 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
         try:
             decoded = parse_response(raw)
             if role == 'B' and review:
+                decoded, speech_changes = normalize_speaker_claims(decoded,
+                    payload.get('speaker_candidates', speaker_candidates(material, payload.get('rows', []))), material)
+                if speech_changes:
+                    stage.setdefault('speaker_claim_normalizations', []).extend(speech_changes)
                 decoded, removed = normalize_rejected_patches(decoded)
                 if removed:
                     stage['rejected_patch_ids_removed'] = removed
@@ -201,8 +206,7 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
         except (ValueError, KeyError, TypeError) as exc:
             error = str(exc)
             if len(error.encode()) > REPAIR_MAX_BYTES - 128:
-                error = (json.dumps({'speaker_claims_all_clear': True,
-                         'error': '署名机检多错；本包全部speaker_claims强制改为[]，reason只写核对结论，保留编号和accept，删除拒收条目差量并保留其他patches'}, ensure_ascii=False)
+                error = (repair_message(error)['content']
                          if review and role == 'B' and ('speaker_candidate_membership' in error
                                                        or 'review_protocol_conflict' in error)
                          else '多项字段或证据未通过机检；重新核对全部字段和原文指针。')
@@ -230,7 +234,9 @@ def run_packets(budget, state, state_path, role, material, payload, review=False
 
 
 def check_review_packet(role, candidate, obj, material, packet, facts, previous):
+    candidates = speaker_candidates(material, flatten(role, candidate)) if role == 'B' else None
     if role == 'B':
+        obj, _ = normalize_speaker_claims(obj, candidates, material)
         obj, _ = normalize_rejected_patches(obj)
     checked = check_review_shape(obj, packet['rows'], material)
     wanted = {row['_id'] for row in packet['rows']}
@@ -238,8 +244,9 @@ def check_review_packet(role, candidate, obj, material, packet, facts, previous)
     subset = {**candidate, **{field: [row for row in candidate[field] if row['_id'] in wanted]
                              for field in fields}}
     # 在包内核差量语义，失败走run_stage的一次机检重试，不重发整岗。
-    candidates = speaker_candidates(material, flatten(role, candidate)) if role == 'B' else None
-    review_apply(role, subset, checked, material, facts, previous, candidates=candidates)
+    approved, _ = review_apply(role, subset, checked, material, facts, previous, candidates=candidates)
+    if role == 'A' and 'plan_seeds' in packet:
+        check_plan_seed_scope(approved, packet['plan_seeds'], previous)
     return checked
 
 
@@ -294,10 +301,13 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                     write_json(state_path, state)
                     continue
                 payload = {'paragraphs': paragraphs}
+                seeds = []
                 if role == 'A':
                     prior_refs = {r.get(k) for r in previous_plans for k in ('source', 'fulfilled', 'condition_ref')}
                     relevant_facts = part.get('facts', []) + [f for f in all_facts if f['local_key'] in prior_refs]
-                    payload.update(fact_fields=['key', 'subject', 'text', 'paragraph_ids'], facts=fact_map(relevant_facts), previous_plans=plan_summary(previous_plans))
+                    seeds = plan_seeds(material, part.get('facts', []))
+                    payload.update(fact_fields=['key', 'subject', 'text', 'paragraph_ids'], facts=fact_map(relevant_facts),
+                                   previous_plans=plan_summary(previous_plans), plan_seeds=seeds)
                 if role == 'J2':
                     payload.update(previous_people=[{k: r.get(k) for k in ('entity', 'aspect', 'value', 'layer')} for r in previous_people])
                 facts = all_facts + part.get('facts', [])
@@ -305,10 +315,13 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                     def generation_check(obj, part_material, packet):
                         if role == 'J2':
                             obj = hydrate_j2(obj, part_material)
-                        return validate(role, obj, part_material, facts, previous_plans)
+                        checked = validate(role, obj, part_material, facts, previous_plans)
+                        return check_plan_seed_scope(checked, plan_seeds(part_material, part.get('facts', [])), previous_plans) if role == 'A' else checked
                     candidate = run_packets(budget, state, state_path, role, material, payload,
                         checker=generation_check)
                     candidate = validate(role, candidate, material, facts, previous_plans)
+                    if role == 'A':
+                        check_plan_seed_scope(candidate, seeds, previous_plans)
                     reference_keys = {r.get(k) for r in candidate.get('rows', []) for k in ('source', 'fulfilled', 'condition_ref')} | {key for r in candidate.get('rows', []) for key in r.get('basis', [])}
                     review_payload = {'paragraphs': pointer_payload(material), 'rows': flatten(role, candidate), 'role': role,
                                       'input_bound': config['roles'][role]['review_rows_max_bytes'],
@@ -316,10 +329,14 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                                       'facts': fact_map([f for f in facts if f['local_key'] in reference_keys]) if role == 'A' else []}
                     if role == 'B':
                         review_payload['speaker_candidates'] = speaker_candidates(material, candidate['rows'])
+                    elif role == 'A':
+                        review_payload['plan_seeds'] = seeds
                     review_result = run_packets(budget, state, state_path, role, material, review_payload,
                         review=True, checker=lambda obj, part_material, packet:
                         check_review_packet(role, candidate, obj, part_material, packet, facts, previous_plans))
                     approved, rejected = review_apply(role, candidate, review_result, material, facts, previous_plans)
+                    if role == 'A':
+                        check_plan_seed_scope(approved, seeds, previous_plans)
                     part[role] = approved
                     part[role + '_rejected'] = rejected
                     if role == 'B':
