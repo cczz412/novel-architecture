@@ -132,7 +132,7 @@ REVIEW_PROMPT += A_STATE_REVIEW
 J2_ITEM_PROMPT = """逐项核对程序候选与局部原句，不默认全收。items按item_fields读取；署名候选为本条的S号表。
 只交{verdicts:[{id,accept,reason,speaker:null或S号}]}，全部id各一次。
 accept只选D1收、D2拒、D0待核；reason只选enum_tables.reason的R号。
-直接署名才可确认；附近人物、B人物、代词回指只供候选，没有直接署名保留待核。不能生成姓名、证据或修订。
+署名复核：每个S号绑定{entity,p,s}，表示候选人物及依据的原文句号；选一个S号就同时选了人和句号。只在原句确实写明该人是这条动作的主语或引语说话人时选，不能只看名字出现过。“让”“叫”只触发核对，使役或中间隔着别的动作仍按原句选人；转述他人的要求不能选外层叙述者。都不是或拿不准填null。无引号叙述须与持有人一致，引语及称谓允许说话人不同。程序核证据连接后才确认。不能生成姓名、证据或修订。
 每项最多128字节。装不下交{overflow:true}，不截内容，不漏裁定。"""
 J2_SHORT_PROMPT = J2_ITEM_PROMPT
 C_PROMPT += """
