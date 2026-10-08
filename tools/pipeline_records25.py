@@ -342,9 +342,15 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
     # 执行身份：Codex；131：触发词只决定送不送复核，不决定确认。
     from pipeline_context52 import SPEECH, SPEECH_OBJECT, INNER, has_speech_clause, mentions, subject_before, clause_subject
     requirement_verbs = re.compile(r'叫|让(?!给)|吩咐|命令|逼|催|要求')
+    # 执行身份：Codex；133：这些词只拦退门，不提供任何确认依据。
+    exit_demands = re.compile(r'要求|要|让|叫|逼|催|吩咐|命令')
+    exit_reports = re.compile(r'告诉|嚷|喊|说|觉得|认为|以为')
     # 执行身份：Codex；132：退门须有可重算的事情主语，缺姓名不算证据。
     def non_speech_structure(plain, quoted, requirements, named):
         if quoted or has_speech_clause(plain) or re.search(r'[:：]', plain):
+            return None
+        # 同一行的每句证据都会核；任何一句有明确发令者，整行不得退门。
+        if any(subject_before(plain, v.start(), named) for v in exit_demands.finditer(plain)):
             return None
         witnesses = []
         for verb in requirements:
@@ -353,12 +359,19 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
             start = max(plain.rfind(c, 0, verb.start()) for c in '，,；;。！？!?') + 1
             stop = min((p for c in '，,；;。！？!?' if (p := plain.find(c, verb.end())) >= 0), default=len(plain))
             prefix, tail = plain[start:verb.start()], plain[verb.end():stop]
+            before_event = plain[:verb.start()]
+            if re.search(r'听说|据说|有人说', before_event):
+                return None
+            for report in exit_reports.finditer(before_event):
+                if (any(h[1] <= report.start() for h in named)
+                        or re.search(r'我|你|您|他|她|它|咱|自己|前者|后者', before_event[:report.start()])):
+                    return None
             # “某事让某人明白……”：事情名词占主语位，人物是使役宾语，
             # 心理结果沿用原定位器的 INNER；不能仅因出现“让”就退门。
-            event = re.fullmatch(r'\s*(?:(?:也)?因为)?(.+(?:(?:这|那)(?:件)?事|的事))\s*', prefix)
+            event = re.fullmatch(r'\s*(?:(?:也)?因为)?((?:这|那)件事|.+(?:(?:这|那)(?:件)?事|的事))\s*', prefix)
             recipient = next((h for h in named if h[0] >= verb.end() and h[1] <= stop
                               and not plain[verb.end():h[0]].strip()
-                              and INNER.match(plain[h[1]:stop].lstrip())), None)
+                              and INNER.match(re.sub(r'^\s*(?:很|更|有点)?\s*', '', plain[h[1]:stop]))), None)
             if event and recipient and not any(h[0] <= start and h[1] >= verb.start() for h in named):
                 # 用既有主语定位确认事情名词占位；其前不能藏一位发令者。
                 left, right = start + event.start(1), start + event.end(1)
@@ -506,9 +519,8 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
                 row['_speaker_gate_before'] = {'status': row.get('confirmation_status', '已确认'),
                                                'reason': row.get('confirmation_reason')}
             content = ' '.join(str(row.get(k) or '') for k in ('value', 'aspect', 'alias', 'anchor'))
-            content_names = mentions(content, {name: name for name in context['names']})
-            content_demand = any(v.group() not in ('让', '叫') or subject_before(content, v.start(), content_names)
-                                 for v in requirement_verbs.finditer(content))
+            # 条目写了要求就不能退门；省略主语不等于没有要求。
+            content_demand = bool(exit_demands.search(content))
             if not source_non_speech or has_speech_clause(content) or content_demand:
                 non_speech = []
             # 进门只准备候选；已有speaker字符串不能替带句号的复核选择。
