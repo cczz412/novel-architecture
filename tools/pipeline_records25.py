@@ -340,8 +340,42 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
     from pipeline_output28 import sentences
     table = sentences(material)
     # 执行身份：Codex；131：触发词只决定送不送复核，不决定确认。
-    from pipeline_context52 import SPEECH, SPEECH_OBJECT, mentions, subject_before, clause_subject
+    from pipeline_context52 import SPEECH, SPEECH_OBJECT, INNER, has_speech_clause, mentions, subject_before, clause_subject
     requirement_verbs = re.compile(r'叫|让(?!给)|吩咐|命令|逼|催|要求')
+    # 执行身份：Codex；132：退门须有可重算的事情主语，缺姓名不算证据。
+    def non_speech_structure(plain, quoted, requirements, named):
+        if quoted or has_speech_clause(plain) or re.search(r'[:：]', plain):
+            return None
+        witnesses = []
+        for verb in requirements:
+            if verb.group() != '让':
+                return None
+            start = max(plain.rfind(c, 0, verb.start()) for c in '，,；;。！？!?') + 1
+            stop = min((p for c in '，,；;。！？!?' if (p := plain.find(c, verb.end())) >= 0), default=len(plain))
+            prefix, tail = plain[start:verb.start()], plain[verb.end():stop]
+            # “某事让某人明白……”：事情名词占主语位，人物是使役宾语，
+            # 心理结果沿用原定位器的 INNER；不能仅因出现“让”就退门。
+            event = re.fullmatch(r'\s*(?:(?:也)?因为)?(.+(?:(?:这|那)(?:件)?事|的事))\s*', prefix)
+            recipient = next((h for h in named if h[0] >= verb.end() and h[1] <= stop
+                              and not plain[verb.end():h[0]].strip()
+                              and INNER.match(plain[h[1]:stop].lstrip())), None)
+            if event and recipient and not any(h[0] <= start and h[1] >= verb.start() for h in named):
+                # 用既有主语定位确认事情名词占位；其前不能藏一位发令者。
+                left, right = start + event.start(1), start + event.end(1)
+                event_hit = (left, right, event.group(1), event.group(1))
+                if clause_subject(plain[left:verb.start()], left, [event_hit]) != event_hit:
+                    return None
+                witnesses.append({'kind': 'event_subject', 'subject_span': [left, right],
+                                  'verb_span': [verb.start(), verb.end()],
+                                  'recipient_span': [recipient[0], recipient[1]]})
+            elif witnesses and re.fullmatch(r'\s*(?:没|没有|未)', prefix) and re.fullmatch(r'.+的事\s*', tail):
+                # 同句后续“没让……的事”是名词短语；须以前面的事情主语为凭。
+                # 明示人名/代词或无“的事”的要求句都不能走这条。
+                witnesses.append({'kind': 'nominal_event', 'span': [start, stop],
+                                  'verb_span': [verb.start(), verb.end()]})
+            else:
+                return None
+        return witnesses
     source_sentences = {}
     quote_pairs = {'“': '”', '「': '」', '『': '』', '‘': '’', '"': '"', "'": "'"}
     for p, parts in table.items():
@@ -386,11 +420,13 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
             holder = row.get('entity')
             source_rows = [(x, source_sentences.get((x['p'], x['s']))) for x in pointers]
             direct = j2_signed_nearby(context['direct'], pointers, positions, context['rejected_speech_keys'])
-            signed, options = [], []
+            signed, options, non_speech = [], [], []
+            source_non_speech = bool(source_rows)
             direct_quote, speech_seen, requirement_seen, colon_quote = False, False, False, False
             appellation = section == 'aliases' or (section == 'relations' and row.get('aspect') == '称谓关系候选')
             for pointer, source in source_rows:
                 if source is None:
+                    source_non_speech = False
                     continue
                 text, plain, quoted = source
                 direct_quote = direct_quote or quoted
@@ -411,6 +447,14 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
                                     not plain[v.end():hit[0]].strip()
                                     and re.match(r'\s*(?:[，,。！？!?；;]|$)', plain[hit[1]:])
                                     for hit in named if hit[0] >= v.end()))]
+                # 退门选项也带句号。它是待核选择，不是已签名人物。
+                non_speech_option = {'entity': {'entity': None, **pointer}}
+                if non_speech_option not in options:
+                    options.append(non_speech_option)
+                witness = non_speech_structure(plain, quoted, requirements, named)
+                source_non_speech = source_non_speech and witness is not None
+                if witness:
+                    non_speech.append({'choice': {'entity': None, **pointer}, 'structure': witness})
                 requirement_seen = requirement_seen or bool(requirements)
                 speech_seen = speech_seen or bool(SPEECH.search(plain))
                 colon_quote = colon_quote or any(re.match(r'[^，,。！？!?；;：:]*[:：]', plain[v.end():])
@@ -431,9 +475,18 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
                     subject = subject_before(plain, end, subjects)
                     # 言说后另有明示主语时，外层叙述者不能替内层动作作证。
                     for verb in SPEECH.finditer(plain[:end]):
+                        # 外层本身是要求，后面的姓名是被要求的人，不和外层争署名。
+                        if any(v.start() == verb.start() and v.end() == verb.end() for v in requirements):
+                            continue
                         nested = clause_subject(plain[verb.end():end], verb.end(), named)
                         if nested and (subject is None or nested[2] != subject[2]):
                             # 现有定位同时给出外层与内层主体，不能把其中一个冒作确定证据。
+                            subject = None
+                            break
+                    # 要求里又转给另一人发要求时，不能借外层替内层签名。
+                    for previous, verb in zip(requirements, requirements[1:]):
+                        nested = clause_subject(plain[previous.end():verb.start()], previous.end(), named)
+                        if nested and (subject is None or nested[2] != subject[2]):
                             subject = None
                             break
                     claims = []
@@ -448,6 +501,16 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
             required = bool(holder in ('未知', '无名', '无名说话人') or row.get('requires_speaker')
                             or row.get('speaker') is not None or requirement_seen or implicit_gate)
             selected = row.get('speaker')
+            # 保留进门前结果，跨生成/复核两轮传递；退门不得抹掉其他待核原因。
+            if '_speaker_gate_before' not in row:
+                row['_speaker_gate_before'] = {'status': row.get('confirmation_status', '已确认'),
+                                               'reason': row.get('confirmation_reason')}
+            content = ' '.join(str(row.get(k) or '') for k in ('value', 'aspect', 'alias', 'anchor'))
+            content_names = mentions(content, {name: name for name in context['names']})
+            content_demand = any(v.group() not in ('让', '叫') or subject_before(content, v.start(), content_names)
+                                 for v in requirement_verbs.finditer(content))
+            if not source_non_speech or has_speech_clause(content) or content_demand:
+                non_speech = []
             # 进门只准备候选；已有speaker字符串不能替带句号的复核选择。
             row.update(confirmation_status='待核' if required else '已确认',
                        confirmation_reason='说话人未定/待核' if required else None, requires_speaker=required)
@@ -455,7 +518,8 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
                 row['unverified_speaker'] = selected if selected is not None else row.get('unverified_speaker')
                 row['speaker'] = None
             items.append({'id': ident, 'candidate': row, 'pointers': pointers,
-                          'signed_evidence': signed, 'speaker_candidates': options})
+                          'signed_evidence': signed, 'speaker_candidates': options,
+                          'non_speech_evidence': non_speech})
         except (ValueError, TypeError, KeyError) as exc:
             rejected.append({'id': ident, 'reason': str(exc), 'row': original,
                              'paragraph_ids': [e.get('p') for e in original.get('ev', [])]})
@@ -746,7 +810,15 @@ def j2_apply_checked57(candidate, checked, packet, material):
                                     quoted = True
                         appellation = field == 'aliases' or (field == 'relations' and saved.get('aspect') == '称谓关系候选')
                         holder_ok = quoted or appellation or proof.get('entity') == saved.get('entity')
-                        if in_candidates and pointed and linked and holder_ok:
+                        # 执行身份：Codex；132：非言说选择从原句重算，不信包外带的退门依据。
+                        exit_proved = bool(not blocked and fresh['items'] and any(
+                            x['choice'] == proof for x in fresh['items'][0]['non_speech_evidence']))
+                        holder_known = saved.get('entity') not in ('未知', '无名', '无名说话人')
+                        if in_candidates and pointed and proof.get('entity') is None and exit_proved and holder_known:
+                            before = saved['_speaker_gate_before']
+                            saved.update(speaker=None, requires_speaker=False,
+                                         confirmation_status=before['status'], confirmation_reason=before['reason'])
+                        elif in_candidates and pointed and linked and holder_ok:
                             saved.update(speaker=proof['entity'], confirmation_status='已确认', confirmation_reason=None)
                         else:
                             saved.update(speaker=None, confirmation_status='待核',
