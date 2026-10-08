@@ -350,7 +350,7 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
         for hit in exit_demands.finditer(value):
             before=value[:hit.start()];tail=value[hit.end():]
             clause=re.split(r'[，,。！？!?；;：:]',before)[-1]
-            if re.search(r'(?:当年|那年|曾经|过去|回忆|记恨)',clause) and not re.search(r'现在|此刻|马上',clause):
+            if re.search(r'(?:当年|那年|曾经|过去|回忆)',clause) and not re.search(r'现在|此刻|马上',clause):
                 continue
             if hit.group() in ('让','许') and re.search(r'没(?:有)?|未',clause[-2:]):
                 continue
@@ -447,9 +447,20 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
             for k in ('entity', 'target'):
                 if row.get(k) and row[k] not in ('未知', '无名', '无名说话人') and row[k] not in context['names'] and row[k] not in texts:
                     raise ValueError('条目指向本章不存在的人物')
-            pointers = [{'p': ev['p'], 's': n} for ev in row['ev']
-                        for n, t in enumerate(table[ev['p']], 1)
-                        if ev['q'] in t or t.strip() and t in ev['q']]
+            # 执行身份：Codex；摘句跨过句号时按字符交集定位，不能只命中尾部闭引号。
+            evidence_ranges={}
+            for ev in row['ev']:
+                evidence_ranges.setdefault(ev['p'],[]).extend(
+                    (m.start(),m.end()) for m in re.finditer(re.escape(ev['q']),''.join(table[ev['p']])))
+            pointers=[]
+            for pid,ranges in evidence_ranges.items():
+                offset=0
+                for n,text in enumerate(table[pid],1):
+                    fragments=[text[max(0,a-offset):min(len(text),b-offset)] for a,b in ranges
+                               if max(a,offset)<min(b,offset+len(text))]
+                    if any(t.strip('“”「」『』‘’\"\'。！？!?，,：:；; \n') for t in fragments):
+                        pointers.append({'p':pid,'s':n})
+                    offset+=len(text)
             # 执行身份：Codex；131：S号绑定人物与句号，不给整章所有人重复占位。
             # entity在候选表中存完整选择对象；现有发送与解码原样传递它。
             holder = row.get('entity')
@@ -557,33 +568,35 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
             # 执行身份：Codex；每个选择绑定人物、角色、原句范围和署名依据。
             # 候选可宽列；verified 只由原文结构计算，不由模型或持有人字段决定。
             evidence_groups=[]
-            def add_group(entity, role, span, basis, verified, method):
+            def add_group(entity, role, span, basis, verified, method, tier=None, window=()):
                 if not span:return
                 choice={'entity':entity,'p':span[0][0],'s':span[0][1],
                         'role':role,'span':span,'basis':basis}
-                entry={'choice':choice,'verified':bool(verified),'method':method}
+                entry={'choice':choice,'verified':bool(verified),'method':method,
+                       'tier':tier or ('program' if verified else None),'window':list(window)}
                 same=next((g for g in evidence_groups if g['choice']==choice),None)
                 if same:same['verified']=same['verified'] or bool(verified)
                 else:evidence_groups.append(entry)
             pointed_keys={(x['p'],x['s']) for x in pointers}
             def overlaps_evidence(group):
                 for p,n,a,b in group['span']:
-                    sentence=table[p][n-1];fragment=sentence[a:b]
-                    if not fragment.strip('“”「」『』‘’\"\'。！？!?，,：:；; \n'):continue
-                    for ev in row['ev']:
-                        if ev['p']!=p:continue
-                        for match in re.finditer(re.escape(ev['q']),sentence):
-                            if max(a,match.start())<min(b,match.end()):return True
-                        if sentence.strip() and sentence in ev['q']:return True
+                    sentence=table[p][n-1];offset=sum(map(len,table[p][:n-1]))
+                    for left,right in evidence_ranges.get(p,[]):
+                        lo,hi=max(a,left-offset),min(b,right-offset)
+                        if lo<hi and sentence[lo:hi].strip('“”「」『』‘’\"\'。！？!?，,：:；; \n'):return True
                 return False
             touching=[g for g in quote_groups if overlaps_evidence(g)]
             role='speaker' if touching or appellation and speech_seen else 'requester' if content_demand or requirement_seen else 'evaluator' if INNER.search(content) else 'fact_holder'
             for group in touching:
-                entities=set(group['candidates'])
-                if holder in context['names']:entities.add(holder)
+                # 执行身份：Codex；乙档从合法窗口来源生成候选，不把仅被提到的人或持有人塞入S表。
+                entities=set(group['candidates']) if group['entity'] is not None else set(group.get('model_basis',{}))
+                if group['entity'] is not None and holder in context['names']:entities.add(holder)
                 for name in sorted(entities):
+                    model_eligible=group['entity'] is None and name in group.get('model_basis',{})
                     add_group(name,'speaker',group['span'],group['basis'] if name==group['entity'] else group['candidate_basis'].get(name,[]),
-                              name==group['entity'],group['method'])
+                              name==group['entity'],'bounded_dialogue_review' if model_eligible else group['method'],
+                              'model' if model_eligible else 'program' if name==group['entity'] else None,
+                              group['window'] if model_eligible else ())
             if not touching:
                 for pointer,source in source_rows:
                     if source is None:continue
@@ -812,10 +825,15 @@ def j2_wire_payload(packet, material):
                 for p,n,_,_ in choice.get('span',[])+choice.get('basis',[]):
                     used.add(p);selected.add((p,n))
     table = sentences(material)
+    for item in packet['items']:
+        for group in item.get('evidence_groups',[]):
+            if group.get('tier')=='model':
+                for pid in group['window']:
+                    used.add(pid);selected.update((pid,n) for n in range(1,len(table[pid])+1))
     source_view = [[pid, [[number, sentence] for number, sentence in enumerate(parts, 1) if (pid, number) in selected]]
                    for pid, parts in table.items() if pid in used]
     fields = {section: sorted({k for item in packet['items'] if item['id'].split(':')[0] == section
-                              for k in item['candidate'] if k not in ('ev', '_id', 'attribution', 'evaluation_source')})
+                              for k in item['candidate'] if k not in ('ev', '_id', 'attribution', 'evaluation_source', '_source_review')})
               for section in SECTIONS if any(item['id'].split(':')[0] == section for item in packet['items'])}
     signatures, items = [], []
     for item in packet['items']:
@@ -828,7 +846,7 @@ def j2_wire_payload(packet, material):
         items.append([item['id'], [item['candidate'].get(k) for k in fields[item['id'].split(':')[0]]],
                       [[pointer['p'], pointer['s']] for pointer in item['pointers']], indexes])
     if packet['method'] == J2_V50:
-        spans=[]
+        spans=[];modes=[]
         for item, wire in zip(packet['items'], items):
             choices={}
             for i,x in enumerate(item['speaker_candidates'],1):
@@ -837,11 +855,14 @@ def j2_wire_payload(packet, material):
                     span=choice.get(key,[])
                     if span not in spans:spans.append(span)
                     indexes.append(spans.index(span))
-                choices['S'+str(i)]=[choice['entity'],choice['role'],*indexes]
+                group=next(g for g in item['evidence_groups'] if g['choice']==choice)
+                mode=[group['tier'],group['window']]
+                if mode not in modes:modes.append(mode)
+                choices['S'+str(i)]=[choice['entity'],choice['role'],*indexes,modes.index(mode)]
             wire.append(choices)
         return {'output_protocol': 'enum_paragraph_v57', 'enum_tables': {k: ENUMS57[k] for k in ('reason', 'accept')},
                 'method': packet['method'], 'candidate_fields': fields,
-                'source_choice_fields':['entity','role','span','basis'],'source_spans':spans,
+                'source_choice_fields':['entity','role','span','basis','source_mode'],'source_spans':spans,'source_modes':modes,
                 'item_fields': ['id', 'candidate', 'pointers', 'signed_evidence', 'speaker_candidates'],
                 'items': items, 'signed_evidence': signatures, 'paragraphs': source_view}
     return {'output_protocol': 'enum_paragraph_v57', 'enum_tables': {k: ENUMS57[k] for k in ('reason', 'accept')},
@@ -937,7 +958,14 @@ def j2_apply_checked57(candidate, checked, packet, material):
                         evaluation_ok=not (speaker_role and field=='traits' and proof.get('entity')!=saved.get('entity'))
                         quote_coverage=not speaker_role or bool(not blocked and fresh['items'] and all(
                             g['choice']['span']==proof.get('span') for g in fresh['items'][0]['evidence_groups'] if g['choice']['role']=='speaker'))
-                        linked=in_candidates and pointed and group and group['verified'] and quote_coverage
+                        # 执行身份：Codex；乙档只核候选与局部原文约束，人物判断由复核承担。
+                        linked=in_candidates and pointed and group and (group['verified'] or group.get('tier')=='model') and quote_coverage
+                        saved.pop('_source_review',None)
+                        if linked:
+                            saved['_source_review']={'tier':group['tier'],'method':group['method'],
+                                                     'source':proof['entity'],'role':proof['role'],
+                                                     'span':proof['span'],'basis':proof['basis'],
+                                                     'window':group['window']}
                         if linked and proof['role']=='not_speech' and saved.get('entity') not in ('未知','无名','无名说话人'):
                             saved.update(speaker=None,requires_speaker=False,confirmation_status=before['status'],confirmation_reason=before['reason'])
                         elif linked and proof['role']==source_role and holder_ok and memory_ok and evaluation_ok and not other_pending:

@@ -305,7 +305,7 @@ def speech_table(material, facts=(), entities=None, names=None, source_groups=Fa
         mapping={n:n for n in (names or person_pool(material,facts,entities))}
         units=[(p,n,t) for p,parts in table.items() for n,t in enumerate(parts,1)
                if t.strip('“”「」『』\"。！？\n \t')]
-        groups=[]
+        groups=[];layouts={}
         def slices(pid, begin, end):
             result=[];offset=0
             for n,t in enumerate(table[pid],1):
@@ -327,6 +327,7 @@ def speech_table(material, facts=(), entities=None, names=None, source_groups=Fa
             plain=list(text)
             for a,b in blocks:plain[a:b]=' '*(b-a)
             plain=''.join(plain);named=mentions(plain,mapping)
+            layouts[pid]={'index':pi,'text':text,'plain':plain,'named':named,'blocks':blocks}
             for a,b in blocks:
                 span=slices(pid,a,b);support=[];person=None;method=None
                 # 当前引语前的叙述只能回到上一个引语末端，不能跨越另一轮发言。
@@ -370,7 +371,48 @@ def speech_table(material, facts=(), entities=None, names=None, source_groups=Fa
                 candidates=set(candidate_basis)
                 if person:candidates.add(person)
                 groups.append({'kind':'speech','span':span,'basis':support,'entity':person,
-                               'method':method,'candidates':sorted(candidates),'candidate_basis':candidate_basis})
+                               'method':method,'candidates':sorted(candidates),'candidate_basis':candidate_basis,
+                               'start':a,'end':b,'closed':bool(text[b-1:b]==pairs[text[a]])})
+        # 执行身份：Codex；甲档只接未闭引号。闭合的两轮发言不能靠相邻升级为甲。
+        by_paragraph={p: [g for g in groups if g['span'][0][0]==p] for p in table}
+        order=list(table)
+        for group in groups:
+            pid=group['span'][0][0];layout=layouts[pid];i=layout['index']
+            previous=by_paragraph[order[i-1]] if i else []
+            if (group['entity'] is None and group['start']==0 and previous
+                    and previous[-1]['end']==len(layouts[order[i-1]]['text'])
+                    and not previous[-1]['closed'] and previous[-1]['entity']):
+                group.update(entity=previous[-1]['entity'],basis=previous[-1]['basis'],method='unclosed_continuation')
+                group['candidates']=sorted(set(group['candidates'])|{group['entity']})
+            group['tier']='program' if group['entity'] is not None else None
+            group['model_basis']={};group['window']=order[max(0,i-1):i+2]
+            if group['entity'] is not None or layout['plain'].strip():continue
+            target=(i,group['start'])
+            # 乙档来源只能是窗口内原本有署名的发言者或叙述主语。
+            # 不能从前一段的模型推断、条目持有人或回忆锚点接力借名。
+            def offer(name, point, basis):
+                low,high=sorted((point,target))
+                if any(low<(layouts[g['span'][0][0]]['index'],g['start'])<high
+                       and g['entity'] and g['entity']!=name for g in groups):return
+                group['model_basis'].setdefault(name,[])
+                for piece in basis:
+                    if piece not in group['model_basis'][name]:group['model_basis'][name].append(piece)
+            for near in group['window']:
+                info=layouts[near];ni=info['index']
+                if not info['text'].strip():continue
+                for origin in by_paragraph[near]:
+                    # 只读原始同段署名；跨段承接得来的来源不是窗口内的实名。
+                    if (origin is not group and origin['entity'] and origin['basis']
+                            and all(piece[0]==near for piece in origin['basis'])):
+                        offer(origin['entity'],(ni,origin['start']),origin['basis'])
+                for clause in re.finditer(r'[^，,。！？!?；;：:]+',info['plain']):
+                    hit=clause_subject(clause[0],clause.start(),info['named'],current_clause=True)
+                    if hit:offer(hit[2],(ni,hit[0]),slices(near,hit[0],clause.end()))
+            # 没有可读内容的隔段不构成对话窗口；不越过它寻找候选。
+            if not layout['text'].strip():group['model_basis']={}
+            for name,basis in group['model_basis'].items():
+                group['candidate_basis'][name]=basis
+            group['candidates']=sorted(set(group['candidates'])|set(group['model_basis']))
         return groups
     names=names or person_pool(material,facts,entities)
     mapping=name_map(material,names,entities)
