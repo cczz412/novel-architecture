@@ -138,3 +138,18 @@ J2_SHORT_PROMPT = J2_ITEM_PROMPT
 C_PROMPT += """
 main_tag/secondary_tag用enum_tables中的C号；viewpoint只选viewpoints中的V号；证据只选段号/句号。"""
 PROMPTS.update(A=A_PROMPT, B=B_PROMPT, C=C_PROMPT, J2=J2_ITEM_PROMPT)
+
+# 执行身份：Codex；127：仅A换成分栏短判断，B/J2/C与共用复核原文不动。
+A_WIDE_PROMPT = """从plan_seeds宽列候选中读计划，不把候选当结论。
+每种子只交一行{seed_id,holder_column,holder,content,status,fulfilled:null,condition_ref:null}，顶层{rows:[]}。
+seed_id抄N号；holder_column选issuer发令者、executor执行者或recipient受话人；holder只抄该栏H号。
+谁安排、谁执行、话对谁说分别判断；别把发令者自动当执行者。content逐字摘取该种子ev所在段内的计划内容。
+status选T1未执行、T2执行中、T3兑现、T4落空、T5放弃；不能判断交T0，程序留待核。
+发出指令不等于目标兑现；T3必须用fulfilled抄后续已保存事实的F号，条件成立用condition_ref的F号。
+只见指令或允诺仍是T1；条件未成立不能当完成。未给的原文不能猜，不扩写内容，不回长编号或原段。
+已有计划按previous_plans每项交原格式一行，key抄P号；每包总行数不超过种子数加旧计划数且最多8行。
+装不下交{overflow:true}，不漏行、不截删；后续复核会独立查持有人、状态和证据连接。"""
+A_WIDE_REVIEW_PROMPT = REVIEW_PROMPT + """
+A宽列复核：issuer是发令候选、executor是执行候选、recipient是受话候选；宽列不证明身份。
+独立判断计划持有人与摘句是否一致。发令、答应、交代只证明计划被提出，不证明目标兑现。
+状态依据必须来自包内已保存事实的F号和对应后续段；来源种子不能充作完成证据。"""

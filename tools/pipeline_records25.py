@@ -166,8 +166,9 @@ def check_plan_seed_scope(value, seeds, previous):
     for row in value['rows']:
         if row.get('key') in old_keys:
             continue
+        from pipeline_plan52 import seed_holders
         matching = [s for s in seeds if s['source'] == row.get('source') and
-                    row.get('subject') in {s['subject'],*s.get('receivers',[])}]
+                    row.get('subject') in seed_holders(s)]
         if matching and matching[0].get('input_method') == 'seed_followup_packets_v52':
             allowed=[e for seed in matching for e in seed['ev']+seed.get('followups',[])]
             if row.get('source') not in row.get('basis',[]) or not row.get('ev') or any(not any(
@@ -197,7 +198,8 @@ def bind_plan_seeds(value, seeds):
             raise ValueError('新计划种子编号未知或与旧计划混用')
         seed = index[ident]
         if seed.get('input_method') == 'seed_followup_packets_v52':
-            holders=set(seed.get('plan_holders',[seed['subject'],*seed.get('receivers',[])]))
+            from pipeline_plan52 import seed_holders
+            holders=seed_holders(seed) if 'candidate_columns' in seed else set(seed.get('plan_holders',[seed['subject'],*seed.get('receivers',[])]))
             holder=row.pop('holder',seed['subject'])
             if holder not in holders:raise ValueError('持有人不在种子候选')
             support=seed['ev']+seed.get('followups',[])
@@ -1082,10 +1084,16 @@ def protocol_payload57(role, payload, material, review=False):
             choices = speaker_candidates(material, payload.get('rows', []), direct_only=True)
         out['speaker_candidates'] = {'S'+str(i): c for i, c in enumerate(choices, 1)}
     if role == 'A':
+        from pipeline_plan52 import seed_holders
         for i, seed in enumerate(out.get('plan_seeds', []), 1):
             seed['seed_id'] = 'N'+str(i)
             seed['holders'] = {'H'+str(n): v for n, v in enumerate(
-                sorted({seed['subject'], *seed.get('receivers', [])}), 1)}
+                sorted(seed_holders(seed)), 1)}
+            if 'candidate_columns' in seed:
+                holder_ids = {name: key for key, name in seed['holders'].items()}
+                seed['candidate_columns'] = {column: [holder_ids[n] for n in names]
+                                             for column, names in seed['candidate_columns'].items()}
+                seed.pop('candidate_sources', None)
         refs = [f[0] for f in payload.get('facts', [])]
         out['fact_ids'] = {'F'+str(i): key for i, key in enumerate(refs, 1)}
         # 事实表首列也用短号，保留内容与段号供模型判断。
@@ -1128,6 +1136,7 @@ def generation_normalize57(role, value, material, packet, facts=(), previous=(),
                 if not isinstance(row, dict):
                     raise ValueError('条目须为对象')
                 if role == 'A':
+                    wide_row = not legacy and 'holder_column' in row
                     if row.get('key') is not None and not legacy:
                         row['key'] = wire['previous_ids'][row['key']]
                     if row.get('key') is None:
@@ -1139,8 +1148,20 @@ def generation_normalize57(role, value, material, packet, facts=(), previous=(),
                             raise ValueError('未知种子编号，保留待核，不猜长号')
                         row['seed_id'] = seed['seed_id']
                         if not legacy:
-                            holders = {'H'+str(n): v for n, v in enumerate(sorted({seed['subject'], *seed.get('receivers', [])}), 1)}
+                            from pipeline_plan52 import seed_holders
+                            holders = {'H'+str(n): v for n, v in enumerate(sorted(seed_holders(seed)), 1)}
                             row['holder'] = holders[row['holder']]
+                        if wide_row:
+                            column = row.pop('holder_column')
+                            if row['holder'] not in seed.get('candidate_columns', {}).get(column, []):
+                                raise ValueError('持有人不在所选栏位')
+                            if not isinstance(row.get('content'), str) or not row['content'].strip() or not any(row['content'] in e['q'] for e in seed['ev']):
+                                raise ValueError('计划内容必须逐字摘自种子窗口')
+                            allowed = {'seed_id', 'holder', 'key', 'content', 'status', 'fulfilled', 'condition_ref'}
+                            if set(row) - allowed:
+                                raise ValueError('宽列短判断含未定义字段')
+                            row.update(key=None, deadline=None, condition=None, reason='R1')
+                            row.setdefault('fulfilled', None); row.setdefault('condition_ref', None)
                     row['status'] = enum_value57('status', row.get('status'), legacy)
                     if legacy:
                         # 旧A理由是解释文本，不参与状态/收拒；原文单独留在日志，不拿它当通过证据。

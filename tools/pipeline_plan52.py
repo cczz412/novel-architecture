@@ -179,6 +179,43 @@ def carry_plans(material, previous, memory):
         rows.append(row)
     return rows
 
+# 执行身份：Codex；127：A独用宽列，不改变B/J2所用署名或原种子判断。
+def wide_plan_context(material, context, facts):
+    """把人物列成待选择栏位；候选出现不等于该人物就是计划持有人。"""
+    from pipeline_records25 import speaker_candidates
+    result = copy.deepcopy(context)
+    names = person_pool(material, facts)
+    mapping = name_map(material, names)
+    signed = speaker_candidates(material, [{'entity': n} for n in names], direct_only=True)
+    for seed in result['seeds'] + result['pending']:
+        window = seed['ev'] + seed.get('followups', [])
+        pids = {e['p'] for e in window}
+        local = {h[2] for e in window for h in mentions(e['q'], mapping)}
+        supplied = {seed['subject'], *seed.get('receivers', [])} - {'待核', '未知', '', None}
+        direct = {c['entity'] for c in signed if c['p'] in {e['p'] for e in seed['ev']}}
+        available = local | supplied | direct
+        seed['candidate_columns'] = {
+            'issuer': sorted(direct | ({seed['subject']} & available)),
+            'executor': sorted(available),
+            'recipient': sorted((available - direct) | set(seed.get('receivers', []))),
+        }
+        seed['candidate_sources'] = {'saved_B_people': names,
+                                     'signed_evidence': [c for c in signed if c['p'] in pids]}
+    # 原来只有“持有人待核”的线索可以交模型选栏；回忆、撤回念头仍留原待核。
+    promoted = [s for s in result['pending'] if s['flags'] == ['持有人待核'] and s['candidate_columns']['executor']]
+    for seed in promoted:
+        seed['flags'] = []; seed['send'] = True
+    result['seeds'].extend(promoted)
+    result['pending'] = [s for s in result['pending'] if s not in promoted]
+    return result
+
+
+def seed_holders(seed):
+    if 'candidate_columns' in seed:
+        return set().union(*map(set, seed['candidate_columns'].values()))
+    return {seed['subject'], *seed.get('receivers', [])}
+
+
 def packets(material,payload,review=False):
     from pipeline_output28 import pointer_payload,size,OutputOverflow
     seeds=payload.get('plan_seeds',[]);old=payload.get('previous_plans',[])
@@ -192,17 +229,19 @@ def packets(material,payload,review=False):
         data={'input_method':METHOD,'paragraphs':pointer_payload(local) if review else [[p['paragraph_id'],p['text']] for p in local['paragraphs']],
               'plan_seeds':group,'previous_plans':previous,'facts':facts,'fact_fields':['key','subject','text','paragraph_ids'],
               'group_subjects':sorted({s['subject'] for s in group}|{n for s in group for n in s.get('receivers',[])}|{r['subject'] for r in previous})}
+        if any('candidate_columns' in s for s in group):data['wide_candidates_v73'] = True
         if rows is not None:data.update(rows=rows,role='A',input_bound=payload.get('input_bound',24000))
         return material,data
     def bounded_build(group,previous,rows=None):
-        from pipeline_prompts25 import SYSTEM,PROMPTS,REVIEW_PROMPT
+        from pipeline_prompts25 import SYSTEM,PROMPTS,REVIEW_PROMPT,A_WIDE_PROMPT,A_WIDE_REVIEW_PROMPT
         from pipeline_records25 import protocol_payload57
         group=copy.deepcopy(group);previous=copy.deepcopy(previous)
         order={p['paragraph_id']:i for i,p in enumerate(material['paragraphs'])}
         trimmed=[]
         while True:
             mat,data=build(group,previous,rows)
-            messages=[{'role':'system','content':SYSTEM},{'role':'user','content':(REVIEW_PROMPT if review else PROMPTS['A'])+'\n'+json.dumps(protocol_payload57('A',wire_payload(data),material,review),ensure_ascii=False,separators=(',',':'))}]
+            instruction = (A_WIDE_REVIEW_PROMPT if review else A_WIDE_PROMPT) if data.get('wide_candidates_v73') else (REVIEW_PROMPT if review else PROMPTS['A'])
+            messages=[{'role':'system','content':SYSTEM},{'role':'user','content':instruction+'\n'+json.dumps(protocol_payload57('A',wire_payload(data),material,review),ensure_ascii=False,separators=(',',':'))}]
             if len(json.dumps(messages,ensure_ascii=False).encode())<=8192:
                 data['_packet_trimmed_followups']=trimmed
                 return mat,data
@@ -261,6 +300,7 @@ def wire_payload(payload):
     data=copy.deepcopy(payload)
     data.pop('_packet_trimmed_followups',None)
     for seed in data.get('plan_seeds',[]):
+        seed.pop('candidate_sources', None)
         for key in ('input_method','send','backfill','holder_candidates'):seed.pop(key,None)
         for field in ('ev','followups'):
             seed[field]=[{k:v for k,v in e.items() if k!='q'} for e in seed.get(field,[])]
@@ -302,7 +342,7 @@ def check_local_plans(value, packet, previous):
     seeds=packet.get('plan_seeds',[]);old={p['key']:p for p in previous}
     allowed={e['p'] for s in seeds for e in s['ev']+s.get('followups',[])}
     allowed|={e['p'] for r in packet.get('previous_plans',[]) for e in r.get('followups',[])}
-    holders={s['subject'] for s in seeds}|{n for s in seeds for n in s.get('receivers',[])}
+    holders=set().union(*(seed_holders(s) for s in seeds)) if seeds else set()
     for row in value['rows']:
         if row.get('key') in old:
             prior=old[row['key']];carry=next((r for r in packet.get('previous_plans',[]) if r['key']==row['key']),{})
