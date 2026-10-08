@@ -1211,11 +1211,23 @@ def generation_normalize57(role, value, material, packet, facts=(), previous=(),
     return result, pending, log
 
 
+# 执行身份：Codex；124：只容错accept的确定语义，不放宽其他编号。
+def normalize_accept70(value):
+    if type(value) is bool:
+        return ('D1', 'bool_true') if value else ('D2', 'bool_false')
+    if value is None:
+        return 'D0', 'null'
+    if isinstance(value, str) and value in ENUMS57['accept']:
+        return value, None
+    raise ValueError('未知accept编号')
+
+
 def normalize_decisions57(value, packet, legacy=False):
     """完整保留原裁定；不认识的编号或理由只落待核，不改成收。"""
     if not isinstance(value, dict) or not isinstance(value.get('verdicts'), list):
         raise ValueError('裁定须为数组')
     verdicts = []; log = []; wanted = {x['id'] for x in packet['items']}
+    accept_normalized = {'bool_true': 0, 'bool_false': 0, 'null': 0}
     by_id = {}
     for raw in value['verdicts']:
         if not isinstance(raw, dict) or not isinstance(raw.get('id'), str) or raw['id'] not in wanted:
@@ -1232,7 +1244,12 @@ def normalize_decisions57(value, packet, legacy=False):
                 raise ValueError('裁定包含未定义字段')
             if raw is None:
                 raise ValueError('漏项或重复编号')
-            out['accept'] = enum_value57('accept', raw.get('accept'), legacy)
+            accept_code, normalized_kind = normalize_accept70(raw.get('accept'))
+            out['accept'] = ENUMS57['accept'][accept_code]
+            if normalized_kind:
+                accept_normalized[normalized_kind] += 1
+            if normalized_kind == 'null':
+                raise ValueError('模型未给明确裁定')
             out['reason'] = enum_value57('reason', raw.get('reason'), legacy)
             if out['accept'] is None or out['reason'] == '待核':
                 raise ValueError('模型标记待核')
@@ -1258,7 +1275,8 @@ def normalize_decisions57(value, packet, legacy=False):
         if error or not legacy:
             log.append({'id': ident, 'before': raw if raw is not None else rows,
                         'after': out, 'action': 'pending' if error else 'decode_numbers'})
-    return {'verdicts': verdicts, '_normalization_log': log, '_normalized57': True}
+    return {'verdicts': verdicts, '_normalization_log': log, '_normalized57': True,
+            'accept_normalized': accept_normalized}
 
 
 def normalize_review57(role, value, rows, material, legacy=False, packet=None):
@@ -1333,7 +1351,8 @@ def normalize_review57(role, value, rows, material, legacy=False, packet=None):
     for p in value.get('patches', []) if isinstance(value.get('patches', []), list) else []:
         if not isinstance(p, dict) or not isinstance(p.get('id'), str) or p['id'] not in by_id:
             logs.append({'before': p, 'after': None, 'action': 'pending_unknown_patch_id'})
-    return {'verdicts': checked, 'patches': patches}, pending, logs
+    return {'verdicts': checked, 'patches': patches,
+            'accept_normalized': result['accept_normalized']}, pending, logs
 
 
 def review_apply57(role, candidate, review, material, facts=None, previous=None, **kwargs):

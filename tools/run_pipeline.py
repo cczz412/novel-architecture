@@ -161,8 +161,12 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
             pending_truncation('拆半没有完整结果，整包待核')
             stage.update(status='failed_truncation',split_errors=failures);write_json(state_path,state)
             raise OutputOverflow('拆半无可保存完整结果；条目已进待核')
-        combined = ({'verdicts': [v for value in values for v in value['verdicts']], '_normalized57': True}
+        from pipeline_output28 import merge_accept_counts70
+        combined = ({'verdicts': [v for value in values for v in value['verdicts']], '_normalized57': True,
+                     'accept_normalized': merge_accept_counts70(values)}
                     if short_j2 else merge_values(role, values, review))
+        if 'accept_normalized' in combined:
+            stage['accept_normalized'] = combined['accept_normalized']
         write_json(cache, {'payload': combined})
         stage.update(status='partial_truncation' if failures else 'complete',sha256=digest(cache),split_errors=failures)
         write_json(state_path, state)
@@ -219,6 +223,8 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
         try:
             decoded = parse_response(raw)
             checked = checker(decoded, material, payload) if checker else decoded
+            if 'accept_normalized' in checked:
+                stage['accept_normalized'] = checked['accept_normalized']
             changes = checked.get('_normalization_log', [])
             pending = checked.get('_normalization_pending_rows', [])
             if changes:

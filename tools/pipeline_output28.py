@@ -260,10 +260,19 @@ def split_packet(material, payload, review):
     return result
 
 
+# 执行身份：Codex；124：父包汇总已处理子包，不重复计数原响应。
+def merge_accept_counts70(values):
+    return {key: sum(value.get('accept_normalized', {}).get(key, 0) for value in values)
+            for key in ('bool_true', 'bool_false', 'null')}
+
+
 def merge_values(role, values, review=False):
     if review:
-        return {'verdicts': [r for v in values for r in v['verdicts']],
-                'patches': [r for v in values for r in v['patches']]}
+        result = {'verdicts': [r for v in values for r in v['verdicts']],
+                  'patches': [r for v in values for r in v['patches']]}
+        if any('accept_normalized' in value for value in values):
+            result['accept_normalized'] = merge_accept_counts70(values)
+        return result
     fields = SECTIONS if role == 'J2' else ('rows',)
     result = {field: [row for v in values for row in v[field]] for field in fields}
     if role == 'B':
