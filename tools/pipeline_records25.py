@@ -343,14 +343,33 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
     from pipeline_context52 import SPEECH, SPEECH_OBJECT, INNER, has_speech_clause, mentions, subject_before, clause_subject
     requirement_verbs = re.compile(r'叫|让(?!给)|吩咐|命令|逼|催|要求')
     # 执行身份：Codex；133：这些词只拦退门，不提供任何确认依据。
-    exit_demands = re.compile(r'要求|要|让|叫|逼|催|吩咐|命令')
+    exit_demands = re.compile(r'要求|要|让|叫|逼|催|吩咐|命令|不许')
+    # 执行身份：Codex；先核动词所在短语，不把普通词里的单字当成要求。
+    def demands(value):
+        hits=[]
+        for hit in exit_demands.finditer(value):
+            before=value[:hit.start()];tail=value[hit.end():]
+            clause=re.split(r'[，,。！？!?；;：:]',before)[-1]
+            if re.search(r'(?:当年|那年|曾经|过去|回忆|记恨)',clause) and not re.search(r'现在|此刻|马上',clause):
+                continue
+            if hit.group() in ('让','许') and re.search(r'没(?:有)?|未',clause[-2:]):
+                continue
+            if hit.group()=='要':
+                # 要作要求动词，前面须是分句开头或完整主语及修饰语。
+                from pipeline_context52 import SUBJECT_ADVERB
+                people='|'.join(re.escape(n) for n in context['names'])
+                prefix=r'\s*(?:(?:'+people+r'|他|她|你|您|我|咱们))?(?:'+SUBJECT_ADVERB+r')*'
+                if not re.fullmatch(prefix,clause):continue
+                if not tail.strip():continue
+            hits.append(hit)
+        return hits
     exit_reports = re.compile(r'告诉|嚷|喊|说|觉得|认为|以为')
     # 执行身份：Codex；132：退门须有可重算的事情主语，缺姓名不算证据。
     def non_speech_structure(plain, quoted, requirements, named):
         if quoted or has_speech_clause(plain) or re.search(r'[:：]', plain):
             return None
         # 同一行的每句证据都会核；任何一句有明确发令者，整行不得退门。
-        if any(subject_before(plain, v.start(), named) for v in exit_demands.finditer(plain)):
+        if any(subject_before(plain, v.start(), named) for v in demands(plain)):
             return None
         witnesses = []
         for verb in requirements:
@@ -408,6 +427,9 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
                     quoted = quoted or bool(closing and char.strip())
             source_sentences[p, n] = (text, ''.join(plain), quoted)
     context = chapter_speakers or j2_chapter_speakers(material, rows, facts)
+    # 执行身份：Codex；同段完整引语共用来源，宽列候选与可核证据分开。
+    from pipeline_context52 import speech_table, subject_prefix_allowed
+    quote_groups=speech_table(material, names=context['names'], source_groups=True)
     positions = {(p, n): i for i, (p, n, _) in enumerate(context['units'])}
     items, rejected = [], []
     texts = '\n'.join(p['text'] for p in material['paragraphs'])
@@ -520,7 +542,10 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
                                                'reason': row.get('confirmation_reason')}
             content = ' '.join(str(row.get(k) or '') for k in ('value', 'aspect', 'alias', 'anchor'))
             # 条目写了要求就不能退门；省略主语不等于没有要求。
-            content_demand = bool(exit_demands.search(content))
+            content_demand = bool(demands(content))
+            if content_demand and non_speech_structure(content,False,list(requirement_verbs.finditer(content)),
+                                                       mentions(content,{n:n for n in context['names']})):
+                content_demand=False
             if not source_non_speech or has_speech_clause(content) or content_demand:
                 non_speech = []
             # 进门只准备候选；已有speaker字符串不能替带句号的复核选择。
@@ -529,9 +554,85 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
             if required:
                 row['unverified_speaker'] = selected if selected is not None else row.get('unverified_speaker')
                 row['speaker'] = None
+            # 执行身份：Codex；每个选择绑定人物、角色、原句范围和署名依据。
+            # 候选可宽列；verified 只由原文结构计算，不由模型或持有人字段决定。
+            evidence_groups=[]
+            def add_group(entity, role, span, basis, verified, method):
+                if not span:return
+                choice={'entity':entity,'p':span[0][0],'s':span[0][1],
+                        'role':role,'span':span,'basis':basis}
+                entry={'choice':choice,'verified':bool(verified),'method':method}
+                same=next((g for g in evidence_groups if g['choice']==choice),None)
+                if same:same['verified']=same['verified'] or bool(verified)
+                else:evidence_groups.append(entry)
+            pointed_keys={(x['p'],x['s']) for x in pointers}
+            def overlaps_evidence(group):
+                for p,n,a,b in group['span']:
+                    sentence=table[p][n-1];fragment=sentence[a:b]
+                    if not fragment.strip('“”「」『』‘’\"\'。！？!?，,：:；; \n'):continue
+                    for ev in row['ev']:
+                        if ev['p']!=p:continue
+                        for match in re.finditer(re.escape(ev['q']),sentence):
+                            if max(a,match.start())<min(b,match.end()):return True
+                        if sentence.strip() and sentence in ev['q']:return True
+                return False
+            touching=[g for g in quote_groups if overlaps_evidence(g)]
+            role='speaker' if touching or appellation and speech_seen else 'requester' if content_demand or requirement_seen else 'evaluator' if INNER.search(content) else 'fact_holder'
+            for group in touching:
+                entities=set(group['candidates'])
+                if holder in context['names']:entities.add(holder)
+                for name in sorted(entities):
+                    add_group(name,'speaker',group['span'],group['basis'] if name==group['entity'] else group['candidate_basis'].get(name,[]),
+                              name==group['entity'],group['method'])
+            if not touching:
+                for pointer,source in source_rows:
+                    if source is None:continue
+                    text,plain,_=source;named=mentions(plain,{n:n for n in context['names']})
+                    span=[[pointer['p'],pointer['s'],0,len(text)]]
+                    claims=[c['entity'] for c in signed if all(c[k]==pointer[k] for k in ('p','s'))]
+                    # 连续分句只扩展明确回指；有内外转述冲突时仍使用原来空的署名结果。
+                    subject=subject_before(plain,len(plain.rstrip('。！？!?')),named,continuous=True)
+                    nested=any(clause_subject(plain[v.end():],v.end(),named) for v in SPEECH.finditer(plain)
+                               if v.group() in ('说','解释','答','回应'))
+                    reqs=list(demands(plain))
+                    transferred=any(clause_subject(plain[a.end():b.start()],a.end(),named) for a,b in zip(reqs,reqs[1:]))
+                    if subject and not nested and not transferred and not re.match(r'\s*(?:的|被|遭)',plain[subject[1]:]):claims.append(subject[2])
+                    event_subjects=[subject_before(plain,v.start(),named,continuous=True) for v in SPEECH.finditer(plain)]
+                    event_subjects=[h for h in event_subjects if h and not re.match(r'\s*(?:的|被|遭)',plain[h[1]:])]
+                    if not nested and not transferred and len({h[2] for h in event_subjects})==1:
+                        claims.append(event_subjects[0][2])
+                    # “说完”承接上一轮明确署名，受事位置的人名不接管主语。
+                    if not claims and re.match(r'\s*说(?:完|罢)',plain):
+                        index=positions.get((pointer['p'],pointer['s']),0)
+                        prior=context['units'][index-1] if index else None
+                        previous=[g for g in quote_groups if prior and any(x[:2]==prior[:2] for x in g['span']) and g['entity']]
+                        if len(previous)==1 and all(re.search(SPEECH_OBJECT,plain[:h[0]]) for h in named):
+                            claims.append(previous[0]['entity'])
+                    local=set(h[2] for h in named)|set(claims)
+                    index=positions.get((pointer['p'],pointer['s']))
+                    if index is not None:
+                        for _,_,near in context['units'][max(0,index-1):index+2]:local.update(h[2] for h in mentions(near,{n:n for n in context['names']}))
+                    if holder in context['names']:local.add(holder)
+                    for name in sorted(local):
+                        add_group(name,role,span,span,name in claims,'narrative_subject')
+                    if role=='requester':
+                        for verb in demands(plain):
+                            recipients=[h for h in named if h[0]>=verb.end() and not plain[verb.end():h[0]].strip()]
+                            for hit in recipients:add_group(hit[2],'actor',span,span,True,'request_recipient')
+            for exit_proof in non_speech:
+                point=exit_proof['choice'];text=source_sentences[point['p'],point['s']][0]
+                span=[[point['p'],point['s'],0,len(text)]]
+                add_group(None,'not_speech',span,span,True,'event_subject')
+            # 即使无法退门也保留该选项，让模型可以明确作答，程序再核。
+            for pointer,source in source_rows:
+                if source:
+                    span=[[pointer['p'],pointer['s'],0,len(source[0])]]
+                    add_group(None,'not_speech',span,span,False,'unproved_exit')
+            options=[{'entity':g['choice']} for g in evidence_groups]
             items.append({'id': ident, 'candidate': row, 'pointers': pointers,
                           'signed_evidence': signed, 'speaker_candidates': options,
-                          'non_speech_evidence': non_speech})
+                          'non_speech_evidence': non_speech,'source_role':role,
+                          'evidence_groups':evidence_groups})
         except (ValueError, TypeError, KeyError) as exc:
             rejected.append({'id': ident, 'reason': str(exc), 'row': original,
                              'paragraph_ids': [e.get('p') for e in original.get('ev', [])]})
@@ -553,7 +654,7 @@ def j2_pre_dispatch_v50(packet, material, prior_rejections=(), revisions=()):
     if len({x['id'] for x in packet['items']}) != len(packet['items']):
         raise ValueError('候选编号重复')
     for old, new in zip(packet['items'], fresh['items']):
-        for key in ('id', 'pointers', 'signed_evidence', 'speaker_candidates'):
+        for key in ('id', 'pointers', 'signed_evidence', 'speaker_candidates', 'source_role', 'evidence_groups', 'non_speech_evidence'):
             if old[key] != new[key]:
                 raise ValueError('程序候选或整章证据被改写')
     return packet
@@ -703,11 +804,18 @@ def j2_wire_payload(packet, material):
     used.update(claim['p'] for item in packet['items'] for claim in item['signed_evidence'])
     selected = {(pointer['p'], pointer['s']) for item in packet['items'] for pointer in item['pointers']}
     selected.update((claim['p'], claim['s']) for item in packet['items'] for claim in item['signed_evidence'])
+    # 执行身份：Codex；候选跨度和依据句一并发送，不只发送摘句。
+    for item in packet['items']:
+        for option in item.get('speaker_candidates',[]):
+            choice=option['entity']
+            if isinstance(choice,dict):
+                for p,n,_,_ in choice.get('span',[])+choice.get('basis',[]):
+                    used.add(p);selected.add((p,n))
     table = sentences(material)
     source_view = [[pid, [[number, sentence] for number, sentence in enumerate(parts, 1) if (pid, number) in selected]]
                    for pid, parts in table.items() if pid in used]
     fields = {section: sorted({k for item in packet['items'] if item['id'].split(':')[0] == section
-                              for k in item['candidate'] if k not in ('ev', '_id')})
+                              for k in item['candidate'] if k not in ('ev', '_id', 'attribution', 'evaluation_source')})
               for section in SECTIONS if any(item['id'].split(':')[0] == section for item in packet['items'])}
     signatures, items = [], []
     for item in packet['items']:
@@ -720,10 +828,20 @@ def j2_wire_payload(packet, material):
         items.append([item['id'], [item['candidate'].get(k) for k in fields[item['id'].split(':')[0]]],
                       [[pointer['p'], pointer['s']] for pointer in item['pointers']], indexes])
     if packet['method'] == J2_V50:
+        spans=[]
         for item, wire in zip(packet['items'], items):
-            wire.append({'S'+str(i): x['entity'] for i, x in enumerate(item['speaker_candidates'], 1)})
+            choices={}
+            for i,x in enumerate(item['speaker_candidates'],1):
+                choice=x['entity'];indexes=[]
+                for key in ('span','basis'):
+                    span=choice.get(key,[])
+                    if span not in spans:spans.append(span)
+                    indexes.append(spans.index(span))
+                choices['S'+str(i)]=[choice['entity'],choice['role'],*indexes]
+            wire.append(choices)
         return {'output_protocol': 'enum_paragraph_v57', 'enum_tables': {k: ENUMS57[k] for k in ('reason', 'accept')},
                 'method': packet['method'], 'candidate_fields': fields,
+                'source_choice_fields':['entity','role','span','basis'],'source_spans':spans,
                 'item_fields': ['id', 'candidate', 'pointers', 'signed_evidence', 'speaker_candidates'],
                 'items': items, 'signed_evidence': signatures, 'paragraphs': source_view}
     return {'output_protocol': 'enum_paragraph_v57', 'enum_tables': {k: ENUMS57[k] for k in ('reason', 'accept')},
@@ -796,45 +914,41 @@ def j2_apply_checked57(candidate, checked, packet, material):
                     saved = copy.deepcopy(item['candidate'])
                     if saved.get('requires_speaker') or verdict.get('speaker') is not None:
                         saved['requires_speaker'] = True
-                        # 执行身份：Codex；131：核选人、句号、原文连接与既有持有人规则。
-                        selected = verdict.get('speaker')
-                        proof = selected if isinstance(selected, dict) else {}
-                        complete = set(proof) == {'entity', 'p', 's'} and type(proof.get('s')) is int
-                        in_candidates = complete and any(x['entity'] == proof for x in item['speaker_candidates'])
-                        pointed = complete and {'p': proof['p'], 's': proof['s']} in item['pointers']
-                        # 旧包也从原文重建，不信外带的署名表。
-                        fresh, blocked = j2_prepare_packet_v50(material, [item['candidate']],
-                                                             chapter_speakers=packet.get('chapter_speakers'))
-                        linked = bool(not blocked and fresh['items'] and proof in fresh['items'][0]['signed_evidence'])
-                        from pipeline_output28 import sentences
-                        source = sentences(material).get(proof.get('p'), []) if complete else []
-                        quoted = False
-                        closing = []
-                        pairs = {'“': '”', '「': '」', '『': '』', '‘': '’', '"': '"', "'": "'"}
-                        for number, text in enumerate(source, 1):
-                            for char in text:
-                                inside = bool(closing)
-                                if closing and char == closing[-1]:
-                                    closing.pop()
-                                elif char in pairs:
-                                    closing.append(pairs[char])
-                                if number == proof['s'] and (inside or closing):
-                                    quoted = True
-                        appellation = field == 'aliases' or (field == 'relations' and saved.get('aspect') == '称谓关系候选')
-                        holder_ok = quoted or appellation or proof.get('entity') == saved.get('entity')
-                        # 执行身份：Codex；132：非言说选择从原句重算，不信包外带的退门依据。
-                        exit_proved = bool(not blocked and fresh['items'] and any(
-                            x['choice'] == proof for x in fresh['items'][0]['non_speech_evidence']))
-                        holder_known = saved.get('entity') not in ('未知', '无名', '无名说话人')
-                        if in_candidates and pointed and proof.get('entity') is None and exit_proved and holder_known:
-                            before = saved['_speaker_gate_before']
-                            saved.update(speaker=None, requires_speaker=False,
-                                         confirmation_status=before['status'], confirmation_reason=before['reason'])
-                        elif in_candidates and pointed and linked and holder_ok:
-                            saved.update(speaker=proof['entity'], confirmation_status='已确认', confirmation_reason=None)
+                        # 执行身份：Codex；不相信外带角色或跨度，按原文重建后精确匹配。
+                        selected=verdict.get('speaker')
+                        proof=selected if isinstance(selected,dict) else {}
+                        complete=set(proof)=={'entity','p','s','role','span','basis'} and type(proof.get('s')) is int
+                        in_candidates=complete and any(x['entity']==proof for x in item['speaker_candidates'])
+                        fresh,blocked=j2_prepare_packet_v50(material,[item['candidate']],chapter_speakers=packet.get('chapter_speakers'))
+                        group=next((g for g in fresh['items'][0]['evidence_groups'] if g['choice']==proof),None) if not blocked and fresh['items'] else None
+                        pointed=in_candidates and bool({(x['p'],x['s']) for x in item['pointers']} & {(x[0],x[1]) for x in proof['span']})
+                        source_role=fresh['items'][0]['source_role'] if not blocked and fresh['items'] else None
+                        before=saved['_speaker_gate_before']
+                        other_pending=before['status']=='待核' and before.get('reason') not in (None,'说话人未定/待核','署名证据未连上/待核','说话人与持有人不一致/待核')
+                        speaker_role=proof.get('role')=='speaker'
+                        holder_ok=speaker_role or proof.get('entity')==saved.get('entity')
+                        # 回忆证据留在声明的跨度内，显式视角不能借另一人的发言证明。
+                        memory_ok=True
+                        if field=='memories' and in_candidates:
+                            order={p['paragraph_id']:i for i,p in enumerate(material['paragraphs'])}
+                            memory_ok=all(order[saved['start']]<=order[x[0]]<=order[saved['end']] for x in proof['span'])
+                            memory_ok=memory_ok and saved.get('viewpoint') in (None,'',proof.get('entity'))
+                        # 别人说的性格判断只能保存为待核评价，不能把评价冒作已坐实的性格。
+                        evaluation_ok=not (speaker_role and field=='traits' and proof.get('entity')!=saved.get('entity'))
+                        quote_coverage=not speaker_role or bool(not blocked and fresh['items'] and all(
+                            g['choice']['span']==proof.get('span') for g in fresh['items'][0]['evidence_groups'] if g['choice']['role']=='speaker'))
+                        linked=in_candidates and pointed and group and group['verified'] and quote_coverage
+                        if linked and proof['role']=='not_speech' and saved.get('entity') not in ('未知','无名','无名说话人'):
+                            saved.update(speaker=None,requires_speaker=False,confirmation_status=before['status'],confirmation_reason=before['reason'])
+                        elif linked and proof['role']==source_role and holder_ok and memory_ok and evaluation_ok and not other_pending:
+                            saved.update(speaker=proof['entity'] if speaker_role or proof['role']=='requester' else None,
+                                         confirmation_status='已确认',confirmation_reason=None,
+                                         attribution={'role':proof['role'],'source':proof['entity'],'holder':saved.get('entity'),
+                                                      'span':proof['span'],'basis':proof['basis']})
                         else:
-                            saved.update(speaker=None, confirmation_status='待核',
-                                         confirmation_reason='署名证据未连上/待核' if holder_ok else '说话人与持有人不一致/待核',
+                            if linked and speaker_role and field=='traits':
+                                saved['evaluation_source']={'entity':proof['entity'],'span':proof['span'],'basis':proof['basis']}
+                            saved.update(speaker=None,confirmation_status='待核',confirmation_reason='来源角色或连续跨度未核实/待核',
                                          unverified_speaker=proof.get('entity') or saved.get('unverified_speaker'))
                 out[field].append(saved)
             else:

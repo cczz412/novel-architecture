@@ -206,7 +206,31 @@ def has_speech_clause(text):
     return any(not speech_trigger_excluded(plain,m) for m in SPEECH.finditer(plain))
 
 
-def subject_before(plain, pos, named):
+def subject_before(plain, pos, named, continuous=False):
+    # 执行身份：Codex；连续分句模式仅供 J2 证据组使用，旧调用保持原判法。
+    if continuous:
+        start=max(plain.rfind(c,0,pos) for c in '。！？\n')+1
+        clauses=[(start+m.start(),m[0]) for m in re.finditer(r'[^，,；;：:]+',plain[start:pos])]
+        previous=None
+        for base,clause in clauses:
+            local=[h for h in named if base<=h[0] and h[1]<=base+len(clause)]
+            ref=re.match(r'\s*(?:'+SUBJECT_ADVERB+r')*(前者|后者|他|她|它)(?!们)',clause)
+            if ref:
+                antecedents=[h for h in named if start<=h[0]<base]
+                unique=list(dict.fromkeys(h[2] for h in antecedents))
+                if ref[1] in ('前者','后者') and len(unique)==2:
+                    entity=unique[0 if ref[1]=='前者' else -1]
+                    previous=next(h for h in antecedents if h[2]==entity)
+                elif len(unique)==1:
+                    previous=antecedents[-1]
+                else:previous=None
+                continue
+            hit=clause_subject(clause,base,named,current_clause=True)
+            if hit:previous=hit
+            elif local and not all(re.search(SPEECH_OBJECT,plain[:h[0]]) for h in local):previous=None
+            elif re.match(r'\s*(?:有人|另一个人|大家|众人|他们|她们)',clause):previous=None
+        return previous
+
     start=max(plain.rfind(c,0,pos) for c in '。！？\n')+1
     clauses=[(start+m.start(),m[0]) for m in re.finditer(r'[^，,；;：:]+',plain[start:pos])]
     for base,clause in reversed(clauses):
@@ -272,8 +296,82 @@ def unique_continuation(spans, rows, plain, named):
     return True
 
 
-def speech_table(material, facts=(), entities=None, names=None):
+def speech_table(material, facts=(), entities=None, names=None, source_groups=False):
     """署名与对白轮次分开记录；推定轮次不能冒作直接署名证据。"""
+    # 执行身份：Codex；J2 按引号定位连续跨度；其他调用仍返回旧对白表。
+    if source_groups:
+        from pipeline_output28 import sentences
+        table=sentences(material)
+        mapping={n:n for n in (names or person_pool(material,facts,entities))}
+        units=[(p,n,t) for p,parts in table.items() for n,t in enumerate(parts,1)
+               if t.strip('“”「」『』\"。！？\n \t')]
+        groups=[]
+        def slices(pid, begin, end):
+            result=[];offset=0
+            for n,t in enumerate(table[pid],1):
+                a,b=max(begin,offset),min(end,offset+len(t))
+                if a<b:result.append([pid,n,a-offset,b-offset])
+                offset+=len(t)
+            return result
+        pairs={'“':'”','「':'」','『':'』','‘':'’','"':'"',"'":"'"}
+        for pi,para in enumerate(material['paragraphs']):
+            pid=para['paragraph_id'];text=''.join(table[pid]);stack=[];opened=None;blocks=[]
+            for at,char in enumerate(text):
+                if stack and char==stack[-1]:
+                    stack.pop()
+                    if not stack:blocks.append((opened,at+1));opened=None
+                elif char in pairs:
+                    if not stack:opened=at
+                    stack.append(pairs[char])
+            if opened is not None:blocks.append((opened,len(text)))
+            plain=list(text)
+            for a,b in blocks:plain[a:b]=' '*(b-a)
+            plain=''.join(plain);named=mentions(plain,mapping)
+            for a,b in blocks:
+                span=slices(pid,a,b);support=[];person=None;method=None
+                # 当前引语前的叙述只能回到上一个引语末端，不能跨越另一轮发言。
+                boundary=max([0]+[y for x,y in blocks if y<=a])
+                prefix=plain[boundary:a]
+                local=[(x-boundary,y-boundary,n,l) for x,y,n,l in named if x>=boundary and y<=a]
+                subject=subject_before(prefix,len(prefix),local,continuous=True)
+                anonymous_shift=bool(re.search(r'(?:见|看到|看见|望见)[^。！？]{0,8}(?:一个|一位|一名|有人)',prefix))
+                if anonymous_shift:subject=None
+                if subject and prefix[subject[1]:].strip(' ，,：:'):
+                    person=subject[2];support=slices(pid,boundary+subject[0],a);method='attached_narration'
+                if person is None and not anonymous_shift:
+                    # 句号后的引语紧贴一条动作句；须只有一个明确人物且没有另一轮引语。
+                    adjacent=[h for h in local if not prefix[:h[0]].strip()]
+                    if len(local)==1 and adjacent and prefix[adjacent[0][1]:].strip(' ，,。！？：:'):
+                        person=adjacent[0][2];support=slices(pid,boundary+adjacent[0][0],a);method='attached_action'
+                if person is None:
+                    after=plain[b:];post=mentions(after,mapping)
+                    if post and not after[:post[0][0]].strip(' ，,') and SPEECH.match(after[post[0][1]:]):
+                        person=post[0][2];support=slices(pid,b,b+post[0][1]+1);method='post_speech'
+                body=text[a+1:b].rstrip('”」』’\"\'')
+                identified=[h for h in mentions(body,mapping)
+                            if re.fullmatch(r'\s*我(?:叫|是)',body[:h[0]])
+                            and re.match(r'[，,。！？!？\s]|$',body[h[1]:])]
+                if len(identified)==1 and (person is None or person==identified[0][2]):
+                    person=identified[0][2];support=slices(pid,a+1,a+1+identified[0][1]);method='self_introduction'
+                if person is None and a==0 and pi:
+                    prev=material['paragraphs'][pi-1];prevtext=prev['text'];prevnamed=mentions(prevtext,mapping)
+                    if not any(ch in prevtext for ch in pairs) and len(prevnamed)==1:
+                        hit=prevnamed[0]
+                        subj=clause_subject(prevtext,0,prevnamed)
+                        # 接邻段动作或明示发言，禁止仅凭一个人名搭接。
+                        if subj==hit and (re.search(HUMAN_ACTION,prevtext[hit[1]:]) or SPEECH.search(prevtext[hit[1]:])):
+                            person=hit[2];support=slices(prev['paragraph_id'],0,len(''.join(table[prev['paragraph_id']])));method='adjacent_narration'
+                keys={(p,n) for p,n,_,_ in span}
+                indexes=[i for i,(p,n,t) in enumerate(units) if (p,n) in keys]
+                nearby=units[max(0,min(indexes)-1):max(indexes)+2] if indexes else []
+                candidate_basis={}
+                for p,n,t in nearby:
+                    for x,y,name,_ in mentions(t,mapping):candidate_basis.setdefault(name,[]).append([p,n,x,y])
+                candidates=set(candidate_basis)
+                if person:candidates.add(person)
+                groups.append({'kind':'speech','span':span,'basis':support,'entity':person,
+                               'method':method,'candidates':sorted(candidates),'candidate_basis':candidate_basis})
+        return groups
     names=names or person_pool(material,facts,entities)
     mapping=name_map(material,names,entities)
     rows=[];last_person=None;fullplain=narration('\n'.join(p['text'] for p in material['paragraphs']));position=0
