@@ -832,8 +832,11 @@ def j2_wire_payload(packet, material):
                     used.add(pid);selected.update((pid,n) for n in range(1,len(table[pid])+1))
     source_view = [[pid, [[number, sentence] for number, sentence in enumerate(parts, 1) if (pid, number) in selected]]
                    for pid, parts in table.items() if pid in used]
+    # 执行身份：Codex；只在发送视图去掉旧裁定及内部理由，本地原行不动。
     fields = {section: sorted({k for item in packet['items'] if item['id'].split(':')[0] == section
-                              for k in item['candidate'] if k not in ('ev', '_id', 'attribution', 'evaluation_source', '_source_review')})
+                              for k in item['candidate'] if not k.startswith('_') and k not in (
+                                  'ev', 'attribution', 'evaluation_source', 'confirmation_status',
+                                  'confirmation_reason', 'requires_speaker', 'speaker', 'unverified_speaker')})
               for section in SECTIONS if any(item['id'].split(':')[0] == section for item in packet['items'])}
     signatures, items = [], []
     for item in packet['items']:

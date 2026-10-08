@@ -315,11 +315,20 @@ def run_packets(budget, state, state_path, role, material, payload, review=False
 
 
 def run_j2_short(budget, state, state_path, material, facts):
+    # 执行身份：Codex；来源原件先保存，跳过生成收拒，直接交复核。
+    import copy
     candidate, provenance = j2_program_candidates(material, facts)
     candidate = j2_enrich_candidates(material, candidate, facts)
     prepared, blocked = j2_prepare_packet(material, flatten('J2', candidate), facts=facts, itemwise=True)
     audits = list(blocked)
-    part = state.get('chapters', {}).get(material['chapter'])
+    part = state.setdefault('chapters', {}).setdefault(material['chapter'], {})
+    source_items = [item for item in prepared['items'] if item['candidate'].get('requires_speaker')]
+    source_ids = {item['id'] for item in source_items}
+    originals = {row['_id']: copy.deepcopy(row) for row in flatten('J2', candidate) if row['_id'] in source_ids}
+    if 'J2_source_originals' in part and part['J2_source_originals'] != originals:
+        raise Halt('来源原件与检查点不同，停止续跑，保留已有原件')
+    part.update(J2_source_originals=originals, J2_direct_review_ids=[item['id'] for item in source_items])
+    initial_order = [item['id'] for item in prepared['items']]
     reviewed = {f: [] for f in candidate}
     awaiting = {}
     failures = []
@@ -335,7 +344,8 @@ def run_j2_short(budget, state, state_path, material, facts):
                     J2_counts={'confirmed':sum(map(len,confirmed.values())), 'pending':len(pending), 'rejected':len(rejected)})
         write_json(state_path,state)
     def wait_row(item, reason, review, n, failure_type=None):
-        row=dict(item['candidate'],confirmation_status='待核',confirmation_reason=reason)
+        row=copy.deepcopy(item['candidate'])
+        row.update(confirmation_status='待核',confirmation_reason=reason)
         if row.get('speaker') is not None:
             row['unverified_speaker']=row['speaker'];row['speaker']=None
         awaiting[item['id']]={'section':item['id'].split(':')[0], 'id':item['id'], 'status':'待核',
@@ -346,6 +356,11 @@ def run_j2_short(budget, state, state_path, material, facts):
                          'reason':'没有可处理候选，不能冒称完成','ids':[]})
         save_partial()
         return {f:[] for f in candidate},audits
+    for item in prepared['items']:
+        direct = item['id'] in source_ids
+        wait_row(item, '来源原件直接交复核，未经过生成轮' if direct else '原件已保存，等待生成轮', direct, None)
+    save_partial()
+    prepared = {**prepared, 'items': [item for item in prepared['items'] if item['id'] not in source_ids]}
     for review in (False, True):
         maximum=OUTPUT_POLICY['review' if review else 'J2']['max_tokens']
         bound=budget.config['per_stage_reservation']['J2:'+material['chapter']+(':review' if review else ':generate')]
@@ -372,6 +387,12 @@ def run_j2_short(budget, state, state_path, material, facts):
                 else:
                     for row in approved[field]:wait_row({'id':row['_id'],'candidate':row},'生成轮已判，仍待复核',False,n)
             save_partial()
+        if not review:
+            # 不把原件伪装成生成已通过，也不清除原有归一待核标记。
+            by_id = {row['_id']: row for row in flatten('J2', approved_all)}
+            by_id.update({item['id']: copy.deepcopy(item['candidate']) for item in source_items})
+            approved_all = {field: [by_id[ident] for ident in initial_order
+                                    if ident in by_id and ident.split(':')[0] == field] for field in candidate}
         candidate=approved_all
         prepared,new_blocked=j2_prepare_packet(material,flatten('J2',candidate),facts=facts,
                                                chapter_speakers=prepared['chapter_speakers'],itemwise=True)

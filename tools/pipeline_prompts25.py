@@ -129,11 +129,13 @@ speaker_claims是可选证明，只选speaker_candidates表中的S号；不确�
 拒收不能同时修订。修订只改有证据字段，不回整行；状态/类别/时间层/标签仍选对应编号，证据选段号/句号。
 每个候选各一项；不默认全收。每项裁定128字节、证明总计1024字节、差量总计1024字节。装不下交{overflow:true}，不截内容。"""
 REVIEW_PROMPT += A_STATE_REVIEW
-J2_ITEM_PROMPT = """逐项核对程序候选与局部原句，不默认全收。items按item_fields读取；署名候选为本条的S号表。
-只交{verdicts:[{id,accept,reason,speaker:null或S号}]}，全部id各一次。
-accept只选D1收、D2拒、D0待核；reason只选enum_tables.reason的R号。
-署名按完整引语块或连续原句核来源。每条候选的S号按source_choice_fields记录人物、角色、内容跨度和署名依据；后两项是source_spans从0起的索引，跨度每项为[段号,句号,起始字符,结束字符]，结束位置不含该字符。speaker是发言者，requester是提要求者，actor是做事者，evaluator是评价者，fact_holder是事实持有人，not_speech表示非言说事实。角色不能混签；请求者不是做事者，评价来源不等于事实持有人。按引号边界核同一人跨句发言；闭引号后另有人接话必须断开。引语中提到姓名不等于自报姓名；代词有歧义答null。非言说事实回到原持有人规则；回忆核记录跨度和视角，不补持有人。旧事里的没让、不让、不许不当当前要求；需要、重要等普通词不按单字算要求。选not_speech也要核原文和条目都没有当前要求。都不是或拿不准填speaker:null，不能只因候选出现过就选。source_mode是source_modes从0起的索引，每项为[档位,可用段号]，别的条目带来的段落不能借用。档位分program（甲，程序核格式）、model（乙，须判断意思）和null（无合格来源）。乙只看当前引语所在段及前后紧邻各一段，须是同一段对话，中间不能隔第三个署名人；来源只选窗口内原本署名的人或叙述主语，不从条目、锚点或前段推断借人。引号各自闭合时不能仅因相邻认定续说；同一窗口可能有多位候选，拿不准答null。程序会再核短号、角色、逐字原文及连续跨度，乙的确认会单独记录；其他待核原因继续保留。只回原有四字段，不生成姓名、证据或修订。
-每项最多128字节。装不下交{overflow:true}，不截内容，不漏裁定。"""
+# 执行身份：Codex；生成只核普通内容，来源原件由复核一次判完。
+J2_ITEM_PROMPT = """核对候选与本条原文，不默认全收。生成轮只收到不需核来源的条目，判断内容；复核轮同时判断内容与来源，来源原件没有生成轮的收拒结论。
+items按item_fields读取，内容按candidate_fields读取。只交{verdicts:[{id,accept,reason,speaker:null或S号}]}，每个id一次，不改内容。accept选D1收、D2拒、D0待核；reason选enum_tables.reason的R号。内容有依据但来源拿不准，用D1/R1和speaker:null；内容本身拿不准用D0/R0；内容确实无据才用D2及对应理由，不能仅因来源未定拒内容。
+来源只选本条speaker_candidates的S号。source_choice_fields依次是人物、角色、内容跨度、依据跨度、来源模式；跨度和模式分别索引source_spans、source_modes，从0起。跨度为[段号,句号,起始字符,结束字符]，不含结束字符。signed_evidence为[人名,段号,句号]，条目只列其从0起的索引。
+speaker是发言者，requester是提要求者，actor是做事者，evaluator是评价者，fact_holder是持有人，not_speech是非言说事实。发言者不必是持有人；要求者不能冒作做事者，评价不能冒作已坐实的性格。非言说事实核原持有人；回忆核记录跨度和视角。旧事不当当前要求，普通词不按单字算要求。
+source_modes为[档位,可用段号]：program由程序核格式；model须判断意思，只用本段及紧邻前后各一段，且在同一段对话里。中间出现第三个署名人必须断开，别的条目带来的段落不能借用。按引号与换人边界判断续说，不能只因相邻认同一人。人选须是窗口里的署名人或叙述主语；引语中提到姓名不等于自报，代词有歧义填null。选not_speech也须核条目和原文都没有当前要求。没有合适来源就填null。程序另核短号、角色、原文跨度，模型档单独留痕。
+只回四字段，每项最多128字节；装不下交{overflow:true}，不截内容，不漏裁定。"""
 J2_SHORT_PROMPT = J2_ITEM_PROMPT
 C_PROMPT += """
 main_tag/secondary_tag用enum_tables中的C号；viewpoint只选viewpoints中的V号；证据只选段号/句号。"""
