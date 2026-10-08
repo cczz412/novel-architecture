@@ -216,6 +216,51 @@ def seed_holders(seed):
     return {seed['subject'], *seed.get('receivers', [])}
 
 
+def model_payload(payload, material, review=False):
+    """执行身份：Codex；128：A复核共用原句/事实表，长号映射只留本地。"""
+    from pipeline_records25 import protocol_payload57
+    data = protocol_payload57('A', wire_payload(payload), material, review)
+    if not review or not payload.get('wide_candidates_v73'):
+        return data
+    data.pop('fact_ids', None)
+    data.pop('previous_ids', None)
+    for key in ('input_bound', 'group_subjects', 'wide_candidates_v73',
+                'input_method', 'role', 'output_protocol'):
+        data.pop(key, None)
+    data['enum_tables'] = {key: data['enum_tables'][key] for key in ('reason', 'accept', 'status')}
+    table = {p: dict(parts) for p, parts in data['paragraphs']}
+    for fact in data['facts']:
+        fact[3] = [p.rsplit(':', 1)[-1] for p in fact[3]]
+    for seed in data['plan_seeds']:
+        for key in ('subject', 'receivers', 'plan_holders', 'content', 'flags'):
+            # 主体列已在holders/candidate_columns，种子原内容由source事实表保留。
+            seed.pop(key, None)
+        if 'candidate_columns' in seed:
+            fields = ['issuer', 'executor', 'recipient']
+            data['candidate_columns_fields'] = fields
+            seed['candidate_columns'] = [seed['candidate_columns'][key] for key in fields]
+    for row in data['rows']:
+        content = row.get('content')
+        match = next(({'p': p, 's': n} for p, parts in table.items()
+                      for n, text in parts.items() if text == content), None)
+        if match:
+            row.pop('content')
+            row['content_ref'] = match
+        for key in ('key', 'deadline', 'condition', 'fulfilled', 'condition_ref'):
+            if row.get(key) is None:
+                row.pop(key, None)
+    # 表头只写一次，值逐项原样保留；不拆字串，不省证据或状态字段。
+    for name in ('plan_seeds', 'rows', 'previous_plans'):
+        records = data[name]
+        if not records and name == 'previous_plans':
+            data.pop(name)
+            continue
+        fields = list(dict.fromkeys(key for row in records for key in row))
+        data[name + '_fields'] = fields
+        data[name] = [[row.get(key) for key in fields] for row in records]
+    return data
+
+
 def packets(material,payload,review=False):
     from pipeline_output28 import pointer_payload,size,OutputOverflow
     seeds=payload.get('plan_seeds',[]);old=payload.get('previous_plans',[])
@@ -241,7 +286,7 @@ def packets(material,payload,review=False):
         while True:
             mat,data=build(group,previous,rows)
             instruction = (A_WIDE_REVIEW_PROMPT if review else A_WIDE_PROMPT) if data.get('wide_candidates_v73') else (REVIEW_PROMPT if review else PROMPTS['A'])
-            messages=[{'role':'system','content':SYSTEM},{'role':'user','content':instruction+'\n'+json.dumps(protocol_payload57('A',wire_payload(data),material,review),ensure_ascii=False,separators=(',',':'))}]
+            messages=[{'role':'system','content':SYSTEM},{'role':'user','content':instruction+'\n'+json.dumps(model_payload(data,material,review),ensure_ascii=False,separators=(',',':'))}]
             if len(json.dumps(messages,ensure_ascii=False).encode())<=8192:
                 data['_packet_trimmed_followups']=trimmed
                 return mat,data

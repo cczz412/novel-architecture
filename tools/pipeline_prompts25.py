@@ -149,7 +149,14 @@ status选T1未执行、T2执行中、T3兑现、T4落空、T5放弃；不能判�
 只见指令或允诺仍是T1；条件未成立不能当完成。未给的原文不能猜，不扩写内容，不回长编号或原段。
 已有计划按previous_plans每项交原格式一行，key抄P号；每包总行数不超过种子数加旧计划数且最多8行。
 装不下交{overflow:true}，不漏行、不截删；后续复核会独立查持有人、状态和证据连接。"""
-A_WIDE_REVIEW_PROMPT = REVIEW_PROMPT + """
-A宽列复核：issuer是发令候选、executor是执行候选、recipient是受话候选；宽列不证明身份。
-独立判断计划持有人与摘句是否一致。发令、答应、交代只证明计划被提出，不证明目标兑现。
-状态依据必须来自包内已保存事实的F号和对应后续段；来源种子不能充作完成证据。"""
+# 执行身份：Codex；128：只替换A复核说明，共用复核及B/J2/C提示不变。
+A_WIDE_REVIEW_PROMPT = """逐条独立核计划的持有人、目标、否定、条件、数量、时间与证据，不默认收。
+各表按同名_fields表头读；paragraphs原句共用，content_ref指逐字相同的句子。缺省可空字段为null。
+issuer发令/executor执行/recipient受话只是候选。新计划content须逐字摘自种子；缺原文不猜。
+旧计划未变可沿用；变化须本章证据，已结不重开。
+发令或答应不等于兑现；兑现须连后续事实F号，来源种子不算。条件未成立不得判兑现或落空。
+交{verdicts:[{id,accept,reason,speaker_claims:[]}],patches:[{id,changes:{}}]}，每个_id一裁定。
+accept用D1收/D2拒/D0待核，reason用R号；未知不猜、不转收。状态用T号，事实用F号，证据用{p,s}。
+speaker_claims只选有直接证据的S号，否则空，不借邻句姓名。
+裁定每项≤128字节，patches合计≤1024字节，只交变化，不回整行、不改id；拒收或未改不附patches。
+证据不足拒或待核；装不下交{overflow:true}，不漏项。"""

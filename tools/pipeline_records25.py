@@ -371,10 +371,13 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
                 option['nearby'] = [{'p': p, 's': n} for p, n, t in nearby if option['entity'] in t]
                 option['pronoun_reference'] = any(re.search(r'他|她|他们|她们|其', t) for _, _, t in nearby) and bool(option['nearby'])
             signed = j2_signed_nearby(context['direct'], pointers, positions, context['rejected_speech_keys'])
+            # 执行身份：Codex；128第3条：叙述/转述不因言说词被要求认说话人。
+            # 显式说话人仍需核验；隐式署名要求只来自证据句中的直接引语。
+            direct_quote = any(re.search(r'[“「『"]', ev['q']) for ev in row['ev'])
             required = bool(row.get('entity') in ('未知', '无名', '无名说话人') or row.get('requires_speaker') or row.get('speaker') is not None
-                            or section == 'aliases' and any(re.search(r'[“「『"]', ev['q']) for ev in row['ev'])
+                            or direct_quote and (section == 'aliases'
                             or any(ev['p'] in context.get('reported_speech_paragraphs',[]) for ev in row['ev'])
-                            or any([x['p'],x['s']] in context['rejected_speech_keys'] for x in pointers))
+                            or any([x['p'],x['s']] in context['rejected_speech_keys'] for x in pointers)))
             selected = row.get('speaker')
             confirmed = not required or selected is not None and any(x['entity'] == selected for x in signed)
             row.update(confirmation_status='已确认' if confirmed else '待核',

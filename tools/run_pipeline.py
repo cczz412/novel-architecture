@@ -7,7 +7,7 @@ import argparse
 import json
 from pathlib import Path
 from pipeline_source25 import chapter_range, digest, read_json, read_sources, write_json
-from pipeline_prompts25 import SYSTEM, PROMPTS, REVIEW_PROMPT, J2_SHORT_PROMPT, J2_ITEM_PROMPT
+from pipeline_prompts25 import SYSTEM, PROMPTS, REVIEW_PROMPT, J2_SHORT_PROMPT, J2_ITEM_PROMPT, A_WIDE_PROMPT, A_WIDE_REVIEW_PROMPT
 from pipeline_budget25 import Budget, Halt, NetworkPause, RoleLimit, TotalLimit, TruncatedOutput, parse_response, blind_admission, complete_truncated_rows
 from pipeline_output28 import (PROTOCOL, OUTPUT_POLICY, REPAIR_MAX_BYTES, J2_SHORT_REPAIR_MAX_BYTES, OutputOverflow, J2RowOverflow,
     bounded_packets, split_packet, split_j2_rows, merge_values, hydrate_j2, check_review_shape, pointer_payload, repair_message,
@@ -71,8 +71,11 @@ def run_stage(budget, state, state_path, role, material, payload, review=False, 
               suffix='', split_depth=0):
     name = role + ':' + material['chapter'] + (':review' if review else ':generate') + suffix
     short_j2 = role == 'J2' and payload.get('method') in ('program_candidates_short_decisions_v47', J2_V50)
-    base = messages(J2_ITEM_PROMPT if short_j2 and payload.get('method') == J2_V50 else J2_SHORT_PROMPT if short_j2 else REVIEW_PROMPT if review else PROMPTS[role],
-                    j2_wire_payload(payload, material) if short_j2 else protocol_payload57(role,
+    # 执行身份：Codex；128：A宽列沿用生成/复核两轮，实发视图与装包估算共用。
+    from pipeline_plan52 import model_payload as a_model_payload
+    wide_a = role == 'A' and payload.get('wide_candidates_v73')
+    base = messages(A_WIDE_REVIEW_PROMPT if wide_a and review else A_WIDE_PROMPT if wide_a else J2_ITEM_PROMPT if short_j2 and payload.get('method') == J2_V50 else J2_SHORT_PROMPT if short_j2 else REVIEW_PROMPT if review else PROMPTS[role],
+                    a_model_payload(payload, material, review) if wide_a else j2_wire_payload(payload, material) if short_j2 else protocol_payload57(role,
                         wire_payload(payload) if payload.get('input_method')==A_METHOD52 else payload, material, review))
     stage = state['stages'].setdefault(name, {'attempts': 0, 'status': 'pending'})
     cache = budget.output / 'stages' / (name.replace(':', '_') + '.json')
@@ -457,6 +460,8 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                     relevant_facts = part.get('facts', []) + [f for f in all_facts if f['local_key'] in prior_refs]
                     plan_context = plan_candidates(material, part.get('facts', []), part.get('J2', {}),
                         any(state['chapters'][m['chapter']].get('A_memory', {}).get('open_at_end') for m in materials if m['chapter'] < chapter))
+                    from pipeline_plan52 import wide_plan_context
+                    plan_context = wide_plan_context(material, plan_context, part.get('facts', []))
                     seeds = plan_context['seeds']
                     part['A_seed_candidates']=seeds
                     part['A_pending'] = [r for r in part.get('A_pending', []) if r.get('stage')] + plan_context['pending']
