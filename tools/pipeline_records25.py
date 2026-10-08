@@ -341,6 +341,8 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
     table = sentences(material)
     # 执行身份：Codex；129：原文定位与引号状态先固定，摘句不参与引语判断。
     from pipeline_context52 import SPEECH, SUBJECT_ADVERB, mentions, subject_before, clause_subject
+    # 执行身份：Codex；130：要求也须点名；只扩本门，不改共用言说词表。
+    requirement_verbs = re.compile(r'叫|让(?!给)|吩咐|命令|逼|催|要求')
     source_sentences = {}
     quote_pairs = {'“': '”', '「': '」', '『': '』', '‘': '’', '"': '"', "'": "'"}
     for p, parts in table.items():
@@ -393,6 +395,7 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
             holder = row.get('entity')
             source_rows = [(x, source_sentences.get((x['p'], x['s']))) for x in pointers]
             owner_proved, direct_quote, speech_seen = bool(holder and source_rows), False, False
+            requirement_seen, colon_quote = False, False
             for pointer, source in source_rows:
                 if source is None:
                     owner_proved = False
@@ -400,17 +403,27 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
                 text, plain, quoted = source
                 direct_quote = direct_quote or quoted
                 named = mentions(plain, {name: name for name in context['names']})
-                verbs = list(SPEECH.finditer(plain))
+                # “叫＋名称＋分句结束”没有要求动作；名称取本章候选，不列专名。
+                requirements = [v for v in requirement_verbs.finditer(plain)
+                                if not (v.group() == '叫' and any(
+                                    not plain[v.end():hit[0]].strip()
+                                    and re.match(r'\s*(?:[，,。！？!?；;]|$)', plain[hit[1]:])
+                                    for hit in named if hit[0] >= v.end()))]
+                requirement_seen = requirement_seen or bool(requirements)
+                verbs = sorted({(v.start(), v.end()): v for v in
+                                list(SPEECH.finditer(plain)) + requirements}.values(), key=lambda v: v.start())
                 speech_seen = speech_seen or bool(verbs)
                 owners = []
                 for verb in verbs:
+                    # 冒号是否引出整句不依赖主语；省主语的要求仍须进门。
+                    colon = bool(re.match(r'[^，,。！？!?；;：:]*[:：]', plain[verb.end():]))
+                    colon_quote = colon_quote or colon
                     subject = subject_before(plain, verb.start(), named)
                     # 主语与言说之间仅沿用已有副词结构；不跨动作、被动或另一个人。
                     if subject and re.fullmatch(r'\s*(?:' + SUBJECT_ADVERB + r')*\s*',
                                                 plain[subject[1]:verb.start()]):
                         owners.append(subject[2])
-                        if re.match(r'\s*[:：]', plain[verb.end():]):
-                            direct_quote = True
+                        if colon or requirement_verbs.fullmatch(verb.group()):
                             claim = {'entity': subject[2], **pointer}
                             if claim not in signed:
                                 signed.append(claim)
@@ -425,18 +438,20 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
                 same_sentence_signature = any(x['entity'] == holder and x['p'] == pointer['p']
                                               and x['s'] == pointer['s'] and holder in plain for x in signed)
                 owner_proved = owner_proved and (owned or same_sentence_signature and not verbs)
-            implicit_gate = bool(not source_rows or direct_quote or speech_seen
+            implicit_gate = bool(not source_rows or direct_quote or colon_quote or speech_seen
                                  or any(ev['p'] in context.get('reported_speech_paragraphs', []) for ev in row['ev'])
                                  or any([x['p'], x['s']] in context['rejected_speech_keys'] for x in pointers))
-            if implicit_gate:
-                # 后续保存仍用这份署名证据，不能让复核另选一个人绕过持有人核对。
+            appellation = section == 'aliases' or (section == 'relations' and row.get('aspect') == '称谓关系候选')
+            if implicit_gate and not direct_quote and not appellation:
+                # 执行身份：Codex；130：只对无引号叙述查持有人。
+                # 引语与称谓保留本句直接署名，复核可点出持有人以外的说话人。
                 signed = [x for x in signed if x['entity'] == holder
                           and any(p['p'] == x['p'] and p['s'] == x['s'] and source
                                   and holder in source[1] for p, source in source_rows)]
-                if not direct_quote and not owner_proved:
+                if not owner_proved:
                     signed = []
             required = bool(holder in ('未知', '无名', '无名说话人') or row.get('requires_speaker')
-                            or row.get('speaker') is not None or direct_quote
+                            or row.get('speaker') is not None or direct_quote or colon_quote or requirement_seen
                             or implicit_gate and not owner_proved)
             selected = row.get('speaker')
             confirmed = not required or selected is not None and any(x['entity'] == selected for x in signed)
