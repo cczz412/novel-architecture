@@ -250,7 +250,7 @@ J2_REVIEW = '''逐条核对原件、候选和原文。来源原件直接交到�
 核内容、分类、主体、对象、时间、否定条件、言语归属和证据。来源未知与内容错误分别说明。
 输出 {verdicts:[{id,accept:true或false或null,reason,section,row,speaker:null或来源人物}]}。
 必须逐个回答输入 id；不造新编号。section 只能是 people,aliases,relations,time,memories,arrangements,objects,traits。
-已有分类时 row 沿用候选结构；section=null 表示尚未分类的原件，请选择八类之一并补齐该类字段。有错误可按原文修正内容、分类和证据，但不能增删原件编号。ev 用 {p,s:句号}、{p,s:原句} 或原有 {p,q}；原句必须在指定段落逐字找到。
+已有分类时 row 沿用候选结构；来源原件默认 section=people、aspect=言语，可按原文改成别的分类并补齐该类字段；section=null 表示尚未分类的原件，请选择八类之一并补齐该类字段。有错误可按原文修正内容、分类和证据，但不能增删原件编号。ev 用 {p,s:句号}、{p,s:原句} 或原有 {p,q}；原句必须在指定段落逐字找到。
 一般行需要 entity,aspect,value,layer；关系另要 target,relation_type；别名要 entity,alias,scope,speaker；回忆要 start,end,anchor,viewpoint。
 无法确认填 accept=null；明确不符填 false。speaker 只说明来源，不替内容裁定；不因程序候选存在就默认正确。'''
 
@@ -306,6 +306,9 @@ def attribution_state(row, item, selected):
     return row
 
 
+SOURCE_DEFAULT_SECTION = 'people'
+
+
 def text_j2(material, facts, call, save):
     from pipeline_records25 import j2_prepare_packet_v50
     candidates=[]
@@ -314,10 +317,15 @@ def text_j2(material, facts, call, save):
                            'value':fact['text'],'layer':fact.get('layer','未知'),
                            'ev':[{'p':e['paragraph_id'].rsplit(':',1)[-1],'q':e['quote']} for e in fact['evidence']],
                            'requires_speaker':fact.get('kind')=='言语'})
+        if fact.get('kind')=='言语':
+            # Grok Bot 作业外 v107：原文言语默认按人物／言语送复核，复核可改分类。
+            candidates[-1]['aspect']='言语'
     # This existing code is retained solely for program attribution and source delivery.
     prepared, blocked = j2_prepare_packet_v50(material, candidates, facts=facts,
-                                                  sections={r['_id']:None for r in candidates})
+                                                  sections={r['_id']:(SOURCE_DEFAULT_SECTION if r['requires_speaker'] else None) for r in candidates})
     source_items = [x for x in prepared['items'] if x['candidate'].get('requires_speaker')]
+    for x in source_items:
+        x['section']=SOURCE_DEFAULT_SECTION
     originals = {x['id']:copy.deepcopy(next(r for r in candidates if r['_id']==x['id'])) for x in source_items}
     save('J2:'+material['chapter']+':source_originals', {'originals':originals})
     ordinary = [x for x in prepared['items'] if not x['candidate'].get('requires_speaker')]
@@ -387,9 +395,20 @@ def text_j2(material, facts, call, save):
                 if not verdict['accept']:
                     rejected.append({'id':ident,'status':'拒收','reason':verdict.get('reason'),'row':original});continue
                 section=verdict.get('section',item.get('section'))
-                row=j2_row(section,verdict.get('row',item['candidate']),material,ident)
+                try:
+                    row=j2_row(section,verdict.get('row',item['candidate']),material,ident)
+                except (ValueError,TypeError,KeyError) as exc:
+                    if ident not in originals:
+                        raise
+                    # Grok Bot 作业外 v107：来源原件的改分类不合格时，按默认人物／言语保存原件，分类另记待核，不连带署名。
+                    pending.append({'id':ident,'section':section,'status':'待核','reason':'复核改分类未通过机械检查，已按默认人物/言语保存原件：'+str(exc),
+                                    'row':verdict.get('row'),'classification_only':True})
+                    section=SOURCE_DEFAULT_SECTION
+                    row=j2_row(section,{k:v for k,v in original.items() if not k.startswith('_') and k!='requires_speaker'},material,ident)
                 # Recompute program proof against the saved content, not the earlier unpatched row.
-                fresh, bad=j2_prepare_packet_v50(material,[row],facts=facts,sections={ident:section})
+                # Grok Bot 作业外 v107：来源原件改成别的分类时，署名证明仍按默认人物/言语原件计算，分类不影响程序署名。
+                proof_row=row if (section==SOURCE_DEFAULT_SECTION or ident not in originals) else j2_row(SOURCE_DEFAULT_SECTION,{k:v for k,v in original.items() if not k.startswith('_') and k!='requires_speaker'},material,ident)
+                fresh, bad=j2_prepare_packet_v50(material,[proof_row],facts=facts,sections={ident:SOURCE_DEFAULT_SECTION if ident in originals else section})
                 proof_item=fresh['items'][0] if not bad and fresh['items'] else {'candidate':row}
                 row=attribution_state(row,proof_item,verdict.get('speaker'))
                 if row['confirmation_status']=='待核':
