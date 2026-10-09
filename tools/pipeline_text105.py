@@ -129,21 +129,39 @@ def paragraph_packets(material, maximum=4200, count=28):
     return [dict(material, paragraphs=rows) for rows in groups]
 
 
+def a_payload(material, facts, previous):
+    """Build the exact payload used both for packet sizing and dispatch."""
+    pids = {p['full_id'] for p in material['paragraphs']}
+    refs = {p.get(k) for p in previous for k in ('source', 'fulfilled', 'condition_ref')} | {k for p in previous for k in p.get('basis', [])}
+    local = [f for f in facts if f['local_key'] in refs or any(e['paragraph_id'] in pids for e in f['evidence'])]
+    local = list({f['local_key']: f for f in local}.values())
+    return {'paragraphs': pointer_payload(material),
+            'facts': [{k:f.get(k) for k in ('local_key','text','subject','kind','layer')} for f in local],
+            'previous_plans': [{k:p.get(k) for k in ('key','subject','content','status','source','fulfilled','condition_ref','basis','deadline','condition','reason','ev')} for p in previous]}
+
+
+def a_packets(material, facts, previous):
+    """Keep whole paragraphs and attached facts within the existing wire guard."""
+    groups, group = [], []
+    for row in material['paragraphs']:
+        child = dict(material, paragraphs=group + [row])
+        size = len(json.dumps(messages('A', a_payload(child, facts, previous)), ensure_ascii=False).encode())
+        if group and (len(group) >= 28 or size > 8192):
+            groups.append(dict(material, paragraphs=group))
+            group = []
+        group.append(row)
+    if group:
+        groups.append(dict(material, paragraphs=group))
+    return groups
+
+
 def text_ab(role, material, call, save, facts=(), previous=()):
     """The callback owns transport and budget. Every raw response is saved before checking."""
     collected, pending, rejected = [], [], []
-    groups = paragraph_packets(material, maximum=8000, count=56) if role=='B' else paragraph_packets(material)
+    groups = paragraph_packets(material, maximum=8000, count=56) if role=='B' else a_packets(material, facts, previous)
     for n, child in enumerate(groups):
         prefix = role + ':' + material['chapter'] + ':' + str(n)
-        pids = {p['full_id'] for p in child['paragraphs']}
-        local = [f for f in facts if any(e['paragraph_id'] in pids for e in f['evidence'])]
-        payload = {'paragraphs': pointer_payload(child)}
-        if role == 'A':
-            # Earlier plans are supplied as records, never turned into scripted seeds.
-            refs = {p.get(k) for p in previous for k in ('source', 'fulfilled', 'condition_ref')} | {k for p in previous for k in p.get('basis', [])}
-            local = list({f['local_key']: f for f in list(local) + [f for f in facts if f['local_key'] in refs]}.values())
-            payload.update(facts=[{k:f.get(k) for k in ('local_key','text','subject','kind','layer')} for f in local],
-                           previous_plans=[{k:p.get(k) for k in ('key','subject','content','status','source','fulfilled','condition_ref','basis','deadline','condition','reason','ev')} for p in previous])
+        payload = a_payload(child, facts, previous) if role == 'A' else {'paragraphs': pointer_payload(child)}
         request_messages = messages(role, payload)
         if role == 'A' and len(json.dumps(request_messages, ensure_ascii=False).encode()) > 8192:
             pending.append({'id':prefix,'status':'待核','reason':'A材料超过现行8KB上限，未发送','row':payload})
