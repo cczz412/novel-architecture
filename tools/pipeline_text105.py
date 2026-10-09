@@ -109,6 +109,99 @@ def pointer_invalid_count(candidate):
     return sum(1 for r in candidate['_normalization_pending_rows'] if POINTER_INVALID in r.get('reason', ''))
 
 
+def c_checked(payload, material):
+    """Grok Bot 作业外 v109：C 校验出错时只把出错的格或段降级为待核，其余照常签发，不再中止整条线。"""
+    work = copy.deepcopy(payload)
+    pending = []
+    for _ in range(8):
+        # 不是对象的场景或段级行先逐条降级，免得后续核对因格式崩掉整章。
+        for field, level in (('scenes', 'scene'), ('paragraphs', 'paragraph')):
+            if isinstance(work.get(field), list):
+                bad = [(i, r) for i, r in enumerate(work[field]) if not isinstance(r, dict)]
+                pending.extend({'id': field + ':' + str(i), 'level': level, 'status': '待核', 'reason': '条目须为对象', 'row': r} for i, r in bad)
+                work[field] = [r for r in work[field] if isinstance(r, dict)]
+        for i, scene in enumerate(work.get('scenes', []) if isinstance(work.get('scenes'), list) else []):
+            for name in ('location', 'light_weather', 'objects_visuals', 'sounds_smells', 'atmosphere', 'present'):
+                if isinstance(scene.get(name), list):
+                    bad = []
+                    for c in scene[name]:
+                        try:
+                            if not isinstance(c, dict):
+                                raise ValueError('场景格须为对象')
+                            evidence(c.get('ev'), material)
+                        except (ValueError, TypeError, KeyError, AttributeError) as exc:
+                            bad.append(c)
+                            pending.append({'id': 'scenes:' + str(i) + ':' + name, 'level': 'cell', 'status': '待核', 'reason': str(exc) or '场景格证据无效', 'field': name, 'row': c})
+                    scene[name] = [c for c in scene[name] if not any(c is b for b in bad)]
+        try:
+            return validate('C', work, material), pending
+        except (TypeError, AttributeError, KeyError) as exc:
+            errors = [{'id': 'C', 'error': '校验格式异常：' + str(exc)}]
+        except ValueError as exc:
+            try:
+                errors = json.loads(str(exc))
+            except ValueError:
+                errors = [{'id': 'C', 'error': str(exc)}]
+            if not isinstance(errors, list):
+                errors = [{'id': 'C', 'error': str(exc)}]
+        # 降级或缺标注的段只记待核，不连带使覆盖它的场景失效；覆盖不完整只因这些段时照常签发其余部分。
+        rows_now = work.get('paragraphs') if isinstance(work.get('paragraphs'), list) else []
+        uncovered = [r['paragraph_id'] for r in material['paragraphs'] if r['paragraph_id'] not in {x.get('p') for x in rows_now}]
+        marked = {x.get('paragraph_id') for x in pending if x['level'] == 'paragraph'}
+        pending.extend({'id': 'paragraphs:' + pid, 'level': 'paragraph', 'status': '待核', 'reason': '正文段缺标注', 'paragraph_id': pid, 'row': None}
+                       for pid in uncovered if pid not in marked)
+        others = [e for e in errors if not (isinstance(e, dict) and e.get('id') == 'C' and e.get('error') == '正文段覆盖不完整')]
+        if uncovered and not others and isinstance(work.get('scenes'), list):
+            result = copy.deepcopy(work)
+            for group in ('paragraphs', 'scenes'):
+                for index, row in enumerate(result[group]):
+                    row['_id'] = group + ':' + str(index)
+            return result, pending
+        errors = others
+        progressed = False
+        for err in errors:
+            ident, detail = str(err.get('id')), err.get('detail')
+            if ident == 'C' and isinstance(detail, dict):
+                for scene in work.get('scenes', []):
+                    # 同一轮前面已降级的场景记为 None，跳过；格不是数组或格不是对象的交给下一轮逐项降级。
+                    if not isinstance(scene, dict) or not isinstance(scene.get(detail.get('field')), list):
+                        continue
+                    cells = scene[detail.get('field')]
+                    keep = [c for c in cells if not (isinstance(c, dict) and any(isinstance(e, dict) and e.get('p') == detail.get('p') and str(e.get('q', '')).strip() == detail.get('text') for e in c.get('ev', []) if isinstance(c.get('ev'), list)))]
+                    for cell in cells:
+                        if cell not in keep:
+                            pending.append({'id': (scene.get('_id') or 'scene') + ':' + str(detail.get('field')), 'level': 'cell', 'status': '待核',
+                                            'reason': err.get('error'), 'paragraph_id': detail.get('p'), 'field': detail.get('field'), 'row': cell})
+                            progressed = True
+                    scene[detail.get('field')] = keep
+            elif ident.startswith('scenes:'):
+                index = int(ident.split(':')[1])
+                scenes = work.get('scenes', [])
+                if index < len(scenes) and scenes[index] is not None:
+                    pending.append({'id': ident, 'level': 'scene', 'status': '待核', 'reason': err.get('error'), 'row': scenes[index]})
+                    scenes[index] = None
+                    progressed = True
+            elif ident.startswith('paragraphs:'):
+                index = int(ident.split(':')[1])
+                rows = work.get('paragraphs', [])
+                if index < len(rows) and rows[index] is not None:
+                    row = rows[index]
+                    pid = row.get('p') if isinstance(row, dict) else None
+                    pending.append({'id': ident, 'level': 'paragraph', 'status': '待核', 'reason': err.get('error'), 'paragraph_id': pid, 'row': row})
+                    rows[index] = None
+                    progressed = True
+        work['scenes'] = [r for r in work.get('scenes', []) if r is not None]
+        work['paragraphs'] = [r for r in work.get('paragraphs', []) if r is not None]
+        if not progressed:
+            break
+    # 仍过不了：整章 C 记待核，原件保留，不中止整条线。
+    pending.append({'id': 'C', 'level': 'chapter', 'status': '待核', 'reason': 'C 校验无法逐格降级，整章原件保留待核', 'row': payload})
+    empty = {k: v for k, v in copy.deepcopy(payload).items() if k not in ('paragraphs', 'scenes')}
+    empty.update(paragraphs=[], scenes=[])
+    empty.setdefault('memory_marks', {'open_at_end': False})
+    return empty, pending
+
+
 def generation(role, value, material, packet, facts=(), previous=()):
     if not isinstance(value, dict) or not isinstance(value.get('rows'), list):
         raise ValueError('缺少条目数组')
@@ -500,7 +593,8 @@ def run(materials, call, save):
         if not part['facts']:
             part.update(A_status='blocked_upstream',J2_status='blocked_upstream',
                         A_pending=[],J2_pending=[],J2={f:[] for f in SECTIONS},plans=[])
-            part['C']=validate('C',annotate(material,{},part['facts'],initial_memory,j2_complete=False),material)
+            part['C'],part['C_pending']=c_checked(annotate(material,{},part['facts'],initial_memory,j2_complete=False),material)
+            part['C_status']='partial' if part['C_pending'] else 'complete'
             initial_memory=part['C']['memory_marks']['open_at_end']
             save('chapter:'+ch+':complete',part)
             continue
@@ -525,7 +619,9 @@ def run(materials, call, save):
                 part['A_status']='partial'
         previous=list({p['key']:p for p in part['plans']}.values())
         # The C implementation and its parameters are unchanged.
-        part['C']=validate('C',annotate(material,j,part['facts'],initial_memory,j2_complete=True),material)
+        # Grok Bot 作业外 v109：C 校验出错只降级出错的格或段为待核，不中止整条线。
+        part['C'],part['C_pending']=c_checked(annotate(material,j,part['facts'],initial_memory,j2_complete=True),material)
+        part['C_status']='partial' if part['C_pending'] else 'complete'
         initial_memory=part['C']['memory_marks']['open_at_end']
         part['C_mode']='program_bypass0'
         save('chapter:'+ch+':complete',part)
@@ -540,6 +636,10 @@ def run(materials, call, save):
                 author['views']['待核资料'].append({'id':item['id'],'chapter':material['chapter'],
                     'source_layer':role,'confirmation_status':'待核','confirmation_reason':item['reason'],
                     'original':copy.deepcopy(item['row']),'paragraph_ids':[]})
+        for item in current[material['chapter']].get('C_pending',[]):
+            author['views']['待核资料'].append({'id':item['id'],'chapter':material['chapter'],
+                'source_layer':'C','confirmation_status':'待核','confirmation_reason':item['reason'],
+                'original':copy.deepcopy(item['row']),'paragraph_ids':[item['paragraph_id']] if item.get('paragraph_id') else []})
     # Material version travels with every human-facing row and is checked on author action.
     versions={m['chapter']:m.get('source_sha256') or hashlib.sha256(json.dumps(m,sort_keys=True,ensure_ascii=False).encode()).hexdigest() for m in materials}
     for name, rows in author['views'].items():
