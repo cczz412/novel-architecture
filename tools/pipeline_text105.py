@@ -360,7 +360,7 @@ def run(materials, call, save):
             row.update(confirmation_status='待核',default_usable=False,author_retractable=True)
         all_facts.extend(part['facts'])
         save('chapter:'+ch+':B',part)
-        if part['B_status']!='complete' or not part['facts']:
+        if not part['facts']:
             part.update(A_status='blocked_upstream',J2_status='blocked_upstream',
                         A_pending=[],J2_pending=[],J2={f:[] for f in SECTIONS},plans=[])
             part['C']=validate('C',annotate(material,{},part['facts'],initial_memory,j2_complete=False),material)
