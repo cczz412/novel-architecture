@@ -335,7 +335,7 @@ def j2_signed_nearby(claims, pointers, positions, rejected_speech_keys=None):
     return selected
 
 
-def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
+def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None, sections=None):
     """逐条准备；坏条拒收、署名不明待核，其余条目仍可发送和保存。"""
     from pipeline_output28 import sentences
     table = sentences(material)
@@ -437,13 +437,19 @@ def j2_prepare_packet_v50(material, rows, facts=(), chapter_speakers=None):
         row = copy.deepcopy(original)
         ident = row.get('_id', '未知条目')
         try:
-            section = ident.split(':')[0]
-            if section not in SECTIONS:
-                raise ValueError('栏目无效')
-            one = {f: [row] if f == section else [] for f in SECTIONS}
-            checked = validate('J2', one, material)[section][0]
-            checked['_id'] = ident
-            row = checked
+            # 执行身份：Codex；显式未分类原件只准备署名，不替模型选择栏目。
+            section = (sections or {}).get(ident, ident.split(':')[0])
+            if section is None:
+                evidence(row.get('ev'), material)
+                if not row.get('entity') or not row.get('value'):
+                    raise ValueError('未分类事实缺主体或内容')
+            else:
+                if section not in SECTIONS:
+                    raise ValueError('栏目无效')
+                one = {f: [row] if f == section else [] for f in SECTIONS}
+                checked = validate('J2', one, material)[section][0]
+                checked['_id'] = ident
+                row = checked
             for k in ('entity', 'target'):
                 if row.get(k) and row[k] not in ('未知', '无名', '无名说话人') and row[k] not in context['names'] and row[k] not in texts:
                     raise ValueError('条目指向本章不存在的人物')

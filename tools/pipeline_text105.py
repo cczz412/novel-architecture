@@ -217,7 +217,7 @@ def text_ab(role, material, call, save, facts=(), previous=()):
 
 J2_TEXT = '''按原文整理人物、别名、关系、时间、回忆块、安排、物品、特征。
 内容判断和归类由你逐条做。不要把提到、猜测、愿望写成已发生事实，不靠同姓或称谓相近合并人物。
-每条输入原件保留 id。输出 {rows:[{id,section,row}]}，section 只能是 people,aliases,relations,time,memories,arrangements,objects,traits。
+输入 original 是尚未分类的事实，编号不表示分类；由你选择栏目并填写 aspect，不照抄成品行。每条输入原件保留 id。输出 {rows:[{id,section,row}]}，section 只能是 people,aliases,relations,time,memories,arrangements,objects,traits。
 一般 row={entity,aspect,value,layer,ev:[{p,s}]}；关系还要 target,relation_type（亲属/合作/冲突/其他/未知）。
 别名 row={entity,alias,speaker:null或称呼者,scope:[段号],ev:[{p,s}]}；回忆 row={start,end,anchor,viewpoint:null或人物,ev:[{p,s}]}。
 没有依据不能补；不能表达的原件在 unresolved:[{id,reason}] 中说明。每个 id 必须出现在 rows 或 unresolved 一次。
@@ -226,7 +226,7 @@ J2_REVIEW = '''逐条核对原件、候选和原文。来源原件直接交到�
 核内容、分类、主体、对象、时间、否定条件、言语归属和证据。来源未知与内容错误分别说明。
 输出 {verdicts:[{id,accept:true或false或null,reason,section,row,speaker:null或来源人物}]}。
 必须逐个回答输入 id；不造新编号。section 只能是 people,aliases,relations,time,memories,arrangements,objects,traits。
-row 沿用候选结构；有错误可按原文修正内容、分类和证据，但不能增删原件编号。ev 用 {p,s} 或原有 {p,q}。
+已有分类时 row 沿用候选结构；section=null 表示尚未分类的原件，请选择八类之一并补齐该类字段。有错误可按原文修正内容、分类和证据，但不能增删原件编号。ev 用 {p,s:句号}、{p,s:原句} 或原有 {p,q}；原句必须在指定段落逐字找到。
 一般行需要 entity,aspect,value,layer；关系另要 target,relation_type；别名要 entity,alias,scope,speaker；回忆要 start,end,anchor,viewpoint。
 无法确认填 accept=null；明确不符填 false。speaker 只说明来源，不替内容裁定；不因程序候选存在就默认正确。'''
 
@@ -240,7 +240,20 @@ def j2_row(section, raw, material, ident):
     if section not in SECTIONS or not isinstance(raw, dict):
         raise ValueError('资料分类或条目格式无效')
     row = copy.deepcopy(raw)
-    row['ev'] = [resolve_pointer(e, material) if set(e)=={'p','s'} else e for e in row.get('ev', [])]
+    converted = []
+    for ev in row.get('ev', []):
+        if not isinstance(ev, dict):
+            raise ValueError('证据格式无效')
+        if set(ev) == {'p', 's'}:
+            if isinstance(ev['s'], str):
+                ev = {'p': ev['p'], 'q': ev['s']}
+                evidence([ev], material)
+            else:
+                ev = resolve_pointer(ev, material)
+        elif set(ev) != {'p', 'q'}:
+            raise ValueError('证据格式无效')
+        converted.append(ev)
+    row['ev'] = converted
     checked = validate('J2', {f:[row] if f==section else [] for f in SECTIONS}, material)[section][0]
     checked['_id'] = ident
     return checked
@@ -273,17 +286,18 @@ def text_j2(material, facts, call, save):
     from pipeline_records25 import j2_prepare_packet_v50
     candidates=[]
     for i, fact in enumerate(facts):
-        candidates.append({'_id':'people:'+str(i), 'entity':fact['subject'],'aspect':'未知',
+        candidates.append({'_id':'fact:'+str(i), 'entity':fact['subject'],
                            'value':fact['text'],'layer':fact.get('layer','未知'),
                            'ev':[{'p':e['paragraph_id'].rsplit(':',1)[-1],'q':e['quote']} for e in fact['evidence']],
                            'requires_speaker':fact.get('kind')=='言语'})
     # This existing code is retained solely for program attribution and source delivery.
-    prepared, blocked = j2_prepare_packet_v50(material, candidates, facts=facts)
+    prepared, blocked = j2_prepare_packet_v50(material, candidates, facts=facts,
+                                                  sections={r['_id']:None for r in candidates})
     source_items = [x for x in prepared['items'] if x['candidate'].get('requires_speaker')]
     originals = {x['id']:copy.deepcopy(next(r for r in candidates if r['_id']==x['id'])) for x in source_items}
     save('J2:'+material['chapter']+':source_originals', {'originals':originals})
     ordinary = [x for x in prepared['items'] if not x['candidate'].get('requires_speaker')]
-    pending=[{'id':x['id'],'section':x['id'].split(':')[0],'status':'待核','reason':x['reason'],'row':x['row']} for x in blocked]
+    pending=[{'id':x['id'],'section':None,'status':'待核','reason':x['reason'],'row':x['row']} for x in blocked]
     rejected=[]; output={f:[] for f in SECTIONS}; review_items=list(source_items)
     for n in range(0,len(ordinary),16):
         items=ordinary[n:n+16]; ids={x['id'] for x in items}
@@ -310,10 +324,10 @@ def text_j2(material, facts, call, save):
                 item['candidate']=j2_row(r['section'],r['row'],material,ident)
                 item['section']=r['section']; review_items.append(item)
             except (ValueError,TypeError,KeyError) as exc:
-                pending.append({'id':ident,'section':'people','status':'待核','reason':str(exc),'row':item['candidate']})
+                pending.append({'id':ident,'section':None,'status':'待核','reason':str(exc),'row':item['candidate']})
         for item in items:
             if item['id'] not in seen:
-                pending.append({'id':item['id'],'section':'people','status':'待核',
+                pending.append({'id':item['id'],'section':None,'status':'待核',
                     'reason':'生成编号重复，所有变体保留' if item['id'] in repeated else '生成缺答或模型待核',
                     'row':item['candidate'],'response_variants':[r for r in rows if isinstance(r,dict) and r.get('id')==item['id']]})
         save(prefix+':saved',{'review_items':review_items,'pending':pending})
@@ -324,12 +338,12 @@ def text_j2(material, facts, call, save):
         positions={i for i,p in enumerate(material['paragraphs']) if p['paragraph_id'] in selected}
         nearby={k for i in positions for k in range(max(0,i-1),min(len(material['paragraphs']),i+2))}
         child=dict(material,paragraphs=[p for i,p in enumerate(material['paragraphs']) if i in nearby])
-        payload={'paragraphs':pointer_payload(child),'items':[{'id':x['id'],'section':x.get('section','people'),
+        payload={'paragraphs':pointer_payload(child),'items':[{'id':x['id'],'section':x.get('section'),
                  'candidate':{k:v for k,v in x['candidate'].items() if not k.startswith('_') and k not in ('confirmation_status','confirmation_reason','requires_speaker','unverified_speaker')},
                  'original':originals.get(x['id']), 'direct_source_review':x['id'] in originals} for x in items]}
         prefix='J2:'+material['chapter']+':review:'+str(n//16)
         # Save every original and its pending position before dispatch.
-        waiting=[{'id':x['id'],'section':x.get('section','people'),'status':'待核','reason':'已保存，等待复核','row':x['candidate']} for x in items]
+        waiting=[{'id':x['id'],'section':x.get('section'),'status':'待核','reason':'已保存，等待复核','row':x['candidate']} for x in items]
         save(prefix+':before',{'pending':pending+waiting,'confirmed':output,'rejected':rejected})
         raw=call('J2',material['chapter'],j2_messages(payload,True),True,prefix)
         save(prefix+':original',{'payload':raw})
@@ -348,10 +362,10 @@ def text_j2(material, facts, call, save):
                     raise ValueError('裁定格式无效')
                 if not verdict['accept']:
                     rejected.append({'id':ident,'status':'拒收','reason':verdict.get('reason'),'row':original});continue
-                section=verdict.get('section',item.get('section','people'))
+                section=verdict.get('section',item.get('section'))
                 row=j2_row(section,verdict.get('row',item['candidate']),material,ident)
                 # Recompute program proof against the saved content, not the earlier unpatched row.
-                fresh, bad=j2_prepare_packet_v50(material,[row],facts=facts)
+                fresh, bad=j2_prepare_packet_v50(material,[row],facts=facts,sections={ident:section})
                 proof_item=fresh['items'][0] if not bad and fresh['items'] else {'candidate':row}
                 row=attribution_state(row,proof_item,verdict.get('speaker'))
                 if row['confirmation_status']=='待核':
@@ -359,7 +373,7 @@ def text_j2(material, facts, call, save):
                 else:
                     output[section].append(row)
             except (ValueError,KeyError,TypeError) as exc:
-                pending.append({'id':ident,'section':item.get('section','people'),'status':'待核','reason':str(exc),'row':original})
+                pending.append({'id':ident,'section':item.get('section'),'status':'待核','reason':str(exc),'row':original})
         save(prefix+':saved',{'confirmed':output,'pending':pending,'rejected':rejected})
     return output,pending,rejected,originals
 
