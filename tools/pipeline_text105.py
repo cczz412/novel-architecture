@@ -3,6 +3,7 @@
 import copy
 import hashlib
 import json
+import re
 
 from pipeline_records25 import SECTIONS, STATUSES, evidence, validate
 from pipeline_output28 import pointer_payload, resolve_pointer
@@ -71,6 +72,41 @@ def mechanical_row(role, raw, material, facts=(), previous=()):
     if row['status'] == '兑现' and not row.get('fulfilled'):
         raise ValueError('兑现缺完成依据编号')
     return row
+
+
+POINTER_INVALID = '段号或句号指针无效'
+
+
+def b_normalize_pointers(value, material):
+    """Grok Bot 作业外 v109：B 生成把段号写成整数或数字串时，按本包段号唯一对上的才规范成原段号；对不上的原样留给机检。"""
+    if not isinstance(value, dict) or not isinstance(value.get('rows'), list):
+        return value, []
+    out = copy.deepcopy(value)
+    numbers = {}
+    for row in material['paragraphs']:
+        m = re.fullmatch(r'[A-Za-z]*0*(\d+)', str(row['paragraph_id']))
+        if m:
+            numbers.setdefault(int(m.group(1)), []).append(row['paragraph_id'])
+    log = []
+    for row in out['rows']:
+        if not isinstance(row, dict) or not isinstance(row.get('ev'), list):
+            continue
+        for ev in row['ev']:
+            if not isinstance(ev, dict) or 'p' not in ev:
+                continue
+            p = ev['p']
+            if isinstance(p, bool):
+                continue
+            if isinstance(p, int) or (isinstance(p, str) and re.fullmatch(r'\d+', p.strip())):
+                hits = numbers.get(int(p), [])
+                if len(hits) == 1:
+                    log.append({'from': p, 'to': hits[0]})
+                    ev['p'] = hits[0]
+    return out, log
+
+
+def pointer_invalid_count(candidate):
+    return sum(1 for r in candidate['_normalization_pending_rows'] if POINTER_INVALID in r.get('reason', ''))
 
 
 def generation(role, value, material, packet, facts=(), previous=()):
@@ -188,7 +224,28 @@ def text_ab(role, material, call, save, facts=(), previous=()):
             pending.append({'id':prefix,'status':'待核','reason':'上游未回答，完整原文保留','row':payload})
             continue
         try:
-            candidate = generation(role, raw, child, payload, facts, previous)
+            if role == 'B':
+                # Grok Bot 作业外 v109：整数段号先规范；仍有指针对不上的，原样重投一次，取指针失败更少的一份。
+                fixed, plog = b_normalize_pointers(raw, child)
+                candidate = generation(role, fixed, child, payload, facts, previous)
+                candidate['_normalization_log'] = plog
+                if pointer_invalid_count(candidate):
+                    retry_raw = call(role, material['chapter'], request_messages, False, prefix + ':generate_retry')
+                    save(prefix + ':original_retry', {'payload': retry_raw, 'material': child})
+                    if not retry_raw.get('_upstream_unanswered'):
+                        try:
+                            rfixed, rlog = b_normalize_pointers(retry_raw, child)
+                            retry = generation(role, rfixed, child, payload, facts, previous)
+                            retry['_normalization_log'] = rlog
+                            if pointer_invalid_count(retry) < pointer_invalid_count(candidate):
+                                retry['_pointer_retry'] = {'used': True, 'first_invalid': pointer_invalid_count(candidate)}
+                                candidate = retry
+                            else:
+                                candidate['_pointer_retry'] = {'used': False, 'retry_invalid': pointer_invalid_count(retry)}
+                        except (ValueError, KeyError, TypeError) as exc:
+                            candidate['_pointer_retry'] = {'used': False, 'retry_error': str(exc)}
+            else:
+                candidate = generation(role, raw, child, payload, facts, previous)
         except (ValueError, KeyError, TypeError) as exc:
             pending.append({'id':prefix,'status':'待核','reason':str(exc),'row':raw})
             continue
