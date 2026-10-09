@@ -155,7 +155,11 @@ def text_ab(role, material, call, save, facts=(), previous=()):
         if raw.get('_upstream_unanswered'):
             pending.append({'id':prefix,'status':'待核','reason':'上游未回答，完整原文保留','row':payload})
             continue
-        candidate = generation(role, raw, child, payload, facts, previous)
+        try:
+            candidate = generation(role, raw, child, payload, facts, previous)
+        except (ValueError, KeyError, TypeError) as exc:
+            pending.append({'id':prefix,'status':'待核','reason':str(exc),'row':raw})
+            continue
         pending.extend(candidate['_normalization_pending_rows'])
         save(prefix + ':candidate', candidate)
         if not candidate['rows']:
@@ -173,7 +177,11 @@ def text_ab(role, material, call, save, facts=(), previous=()):
             continue
         review = call(role, material['chapter'], review_messages, True, prefix + ':review')
         save(prefix + ':review_original', {'payload':review})
-        approved, removed = review_result(role, candidate, review, child, facts, previous)
+        try:
+            approved, removed = review_result(role, candidate, review, child, facts, previous)
+        except (ValueError, KeyError, TypeError) as exc:
+            pending.extend({'id':r['_id'],'status':'待核','reason':str(exc),'row':r} for r in candidate['rows'])
+            continue
         collected.extend(approved['rows'])
         pending.extend(r for r in removed if r['status'] == '待核')
         rejected.extend(r for r in removed if r['status'] == '拒收')
@@ -269,10 +277,15 @@ def text_j2(material, facts, call, save):
         raw=call('J2',material['chapter'],j2_messages(payload),False,prefix)
         save(prefix+':original',{'payload':raw})
         seen=set()
-        for r in raw.get('rows',[]):
+        rows=raw.get('rows',[]) if isinstance(raw.get('rows',[]),list) else []
+        repeated={ident for ident in ids if sum(isinstance(r,dict) and r.get('id')==ident for r in rows)>1}
+        unknown=[r for r in rows if not isinstance(r,dict) or r.get('id') not in ids]
+        save(prefix+':format_audit',{'duplicate_ids':sorted(repeated),'unknown_rows':unknown,'original_response':raw})
+        for r in rows:
+            if not isinstance(r,dict):continue
             ident=r.get('id')
-            if ident not in ids or ident in seen:
-                raise ValueError('J2生成编号未知或重复')
+            if ident not in ids or ident in repeated:
+                continue
             seen.add(ident)
             item=copy.deepcopy(next(x for x in items if x['id']==ident))
             try:
@@ -282,7 +295,9 @@ def text_j2(material, facts, call, save):
                 pending.append({'id':ident,'section':'people','status':'待核','reason':str(exc),'row':item['candidate']})
         for item in items:
             if item['id'] not in seen:
-                pending.append({'id':item['id'],'section':'people','status':'待核','reason':'生成缺答或模型待核','row':item['candidate']})
+                pending.append({'id':item['id'],'section':'people','status':'待核',
+                    'reason':'生成编号重复，所有变体保留' if item['id'] in repeated else '生成缺答或模型待核',
+                    'row':item['candidate'],'response_variants':[r for r in rows if isinstance(r,dict) and r.get('id')==item['id']]})
         save(prefix+':saved',{'review_items':review_items,'pending':pending})
     for n in range(0,len(review_items),16):
         items=review_items[n:n+16]; ids={x['id'] for x in items}
@@ -300,11 +315,11 @@ def text_j2(material, facts, call, save):
         save(prefix+':before',{'pending':pending+waiting,'confirmed':output,'rejected':rejected})
         raw=call('J2',material['chapter'],j2_messages(payload,True),True,prefix)
         save(prefix+':original',{'payload':raw})
-        verdicts=raw.get('verdicts',[])
-        answered=[r.get('id') for r in verdicts]
-        if set(answered)-ids or len(answered)!=len(set(answered)):
-            raise ValueError('J2复核编号未知或重复')
-        byid={v['id']:v for v in verdicts}
+        verdicts=raw.get('verdicts',[]) if isinstance(raw.get('verdicts',[]),list) else []
+        repeated={ident for ident in ids if sum(isinstance(v,dict) and v.get('id')==ident for v in verdicts)>1}
+        save(prefix+':format_audit',{'duplicate_ids':sorted(repeated),
+            'unknown_rows':[v for v in verdicts if not isinstance(v,dict) or v.get('id') not in ids],'original_response':raw})
+        byid={v['id']:v for v in verdicts if isinstance(v,dict) and v.get('id') in ids and v['id'] not in repeated}
         for item in items:
             ident=item['id']; verdict=byid.get(ident)
             original=originals.get(ident,item['candidate'])
