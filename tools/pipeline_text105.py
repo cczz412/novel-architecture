@@ -401,10 +401,12 @@ def text_j2(material, facts, call, save):
                     if ident not in originals:
                         raise
                     # Grok Bot 作业外 v107：来源原件的改分类不合格时，按默认人物／言语保存原件，分类另记待核，不连带署名。
-                    pending.append({'id':ident,'section':section,'status':'待核','reason':'复核改分类未通过机械检查，已按默认人物/言语保存原件：'+str(exc),
-                                    'row':verdict.get('row'),'classification_only':True})
+                    # 待核资料里的 row 必须是可逐字连接的保存件；复核提议原样放在 proposed_row，不作证据。
+                    proposed_section=section
                     section=SOURCE_DEFAULT_SECTION
                     row=j2_row(section,{k:v for k,v in original.items() if not k.startswith('_') and k!='requires_speaker'},material,ident)
+                    pending.append({'id':ident,'section':proposed_section,'status':'待核','reason':'复核改分类未通过机械检查，已按默认人物/言语保存原件：'+str(exc),
+                                    'row':copy.deepcopy(row),'proposed_row':verdict.get('row'),'classification_only':True})
                 # Recompute program proof against the saved content, not the earlier unpatched row.
                 # Grok Bot 作业外 v107：来源原件改成别的分类时，署名证明仍按默认人物/言语原件计算，分类不影响程序署名。
                 proof_row=row if (section==SOURCE_DEFAULT_SECTION or ident not in originals) else j2_row(SOURCE_DEFAULT_SECTION,{k:v for k,v in original.items() if not k.startswith('_') and k!='requires_speaker'},material,ident)
