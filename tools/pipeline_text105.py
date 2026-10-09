@@ -50,8 +50,11 @@ def mechanical_row(role, raw, material, facts=(), previous=()):
         for k in ('source', 'fulfilled', 'condition_ref', 'basis'):
             if k not in row:
                 row[k] = copy.deepcopy(old.get(k))
-        if row.get('basis') is None:
-            row['basis'] = []
+        # 真跑补修：模型把没给它的来源、依据写成 null 或 []，同样视为未写，沿用旧值；写了别的键照常核对。
+        if row.get('source') is None:
+            row['source'] = old.get('source')
+        if not row.get('basis'):
+            row['basis'] = copy.deepcopy(old.get('basis') or [])
     if not row.get('subject') or not row.get('content') or row.get('status') not in STATUSES:
         raise ValueError('计划字段缺失或状态不在约定表')
     if not isinstance(row.get('basis'), list) or not isinstance(row.get('reason'), str):
