@@ -66,7 +66,7 @@ def build_views(materials, current):
         for section, name in mapping.items():
             for row in sections.get(section, []):
                 item = {**row, 'chapter': material['chapter'], 'evidence': evidence(row['ev'], material),
-                        'confirmation_status': '已确认', 'chapter_incomplete': bool(failed_roles)}
+                        'confirmation_status': row.get('confirmation_status', '已确认'), 'chapter_incomplete': bool(failed_roles)}
                 item['paragraph_ids'] = [e['paragraph_id'] for e in item['evidence']]
                 if section=='people' and re.search(r'^(?:未知|无名|未定)|据上下文|推断',str(row.get('entity',''))):
                     views['待核资料'].append({**item,'source_layer':'J2','confirmation_status':'待核','confirmation_reason':'人物身份尚未确认，保留原条目待核'})

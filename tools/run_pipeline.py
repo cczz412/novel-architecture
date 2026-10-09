@@ -28,7 +28,7 @@ from pipeline_records25 import (protocol_payload57, generation_normalize57, norm
 
 ROOT = Path(__file__).resolve().parent
 CODE_FILES = tuple(ROOT / name for name in ('run_pipeline.py', 'pipeline_source25.py',
-    'pipeline_prompts25.py', 'pipeline_budget25.py', 'pipeline_records25.py', 'pipeline_author25.py', 'pipeline_audit25.py', 'pipeline_c_program25.py', 'pipeline_output28.py', 'pipeline_context52.py', 'pipeline_plan52.py'))
+    'pipeline_prompts25.py', 'pipeline_budget25.py', 'pipeline_records25.py', 'pipeline_author25.py', 'pipeline_audit25.py', 'pipeline_c_program25.py', 'pipeline_output28.py', 'pipeline_context52.py', 'pipeline_plan52.py', 'pipeline_text105.py'))
 PROMPT_FILES = (ROOT / 'pipeline_prompts25.py',)
 CONFIG_FILES = (ROOT / 'pipeline_terms25.json', ROOT / 'pipeline_background25.json')
 
@@ -440,6 +440,33 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
         write_json(output / 'structure_check.json', report)
         return report
     budget = Budget(budget_file, output, input_package, tuple(dict.fromkeys((*CODE_FILES, *PROMPT_FILES, *CONFIG_FILES))))
+    # 执行身份：Codex；148/150 收口：生产默认走文字内容判断，旧函数仅供旧回归。
+    from pipeline_text105 import run as run_text_pipeline
+    def text_save(name, value):
+        write_json(output / 'text_stages' / (name.replace(':', '_') + '.json'), value)
+    def text_call(role, chapter, prompt, review, stage_id):
+        cache = output / 'text_responses' / (stage_id.replace(':', '_') + '.json')
+        identity = {'run': budget.identity, 'messages': prompt, 'role': role, 'review': review}
+        if cache.exists():
+            stored = read_json(cache)
+            if stored['identity'] != identity:
+                raise Halt('文字任务缓存版本不同，停止续跑')
+            return parse_response(stored['response'])
+        if any(c.get('stage_id') == stage_id for c in budget.calls):
+            raise NetworkPause('本阶段已有请求记录，须核清原回包，不自动重发')
+        raw = budget.send(role, chapter, prompt, review=review, stage_id=stage_id)
+        write_json(cache, {'identity': identity, 'response': raw})
+        return parse_response(raw)
+    result = run_text_pipeline(materials, text_call, text_save)
+    for name in ('prediction', 'author_store'):
+        write_json(output / (name + '.json'), result[name])
+    write_json(output / 'checkpoint.json', {'identity': budget.identity, 'chapters': result['chapters'], 'method': result['method']})
+    write_json(output / 'run_status.json', {'complete': result['complete'], 'method': result['method'],
+        'requests': budget.spent()[0], 'charged_tokens': budget.spent()[1], 'C_mode': 'program', 'eligible_for_blind': False})
+    budget.close('文字任务整线已保存')
+    return {'complete': result['complete'], 'method': result['method']}
+
+    # 历史实现保留供旧断言定位，不再是 execute 的可达生产分支。
     state_path = output / 'checkpoint.json'
     state = read_json(state_path) if state_path.exists() else {'identity': budget.identity, 'stages': {}, 'chapters': {}, 'started_at': budget.calls[0]['started_at'] if budget.calls else None}
     if state['identity'] != budget.identity:
