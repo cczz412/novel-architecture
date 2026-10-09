@@ -19,6 +19,7 @@ OUTPUT_POLICY = {
     'A': {'estimated_peak': 2400, 'max_tokens': 3600},
     'J2': {'estimated_peak': 12000, 'max_tokens': 18000},
     'review': {'estimated_peak': 9000, 'max_tokens': 13500},
+    'C': {'estimated_peak': 6000, 'max_tokens': 9000},  # Grok Bot 作业外 v110：纯文字 C 照 B 的生产参数
 }
 
 

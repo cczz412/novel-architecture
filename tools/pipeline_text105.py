@@ -202,6 +202,80 @@ def c_checked(payload, material):
     return empty, pending
 
 
+# Grok Bot 作业外 v110：C 退回纯文字（164 验证版）。模型只被告知要抽什么；程序只做段号覆盖、逐字证据、逐格降级、标签简称归一；视角一律标黄。
+C_TEXT_PROMPT = '''给每个原文段做写法标注，并抽出现场场景。
+paragraphs：每个提交段一条，{p,main_tag,secondary_tag,viewpoint,quote}。p 是段号；main_tag 主标签、secondary_tag 副标签（没有填 null），只能用：叙述带过、动作展开、对话、心理、场景；viewpoint 是本段透过谁的感知来叙述，写人物名，没有固定人物写全知；quote 是本段一处连续逐字短引。
+scenes：每个现场场景一条，{paragraph_ids,location,light_weather,objects_visuals,sounds_smells,atmosphere,present,tags,layer}。paragraph_ids 是该场景覆盖的段号；location 地点、light_weather 光线天气、objects_visuals 物件与可见画面、sounds_smells 声音气味、atmosphere 氛围，各为数组，每格 {text,ev:[{p,q}]}；present 在场人物 [{entity,ev:[{p,q}]}]；tags 填 []；layer 用现场、回忆或未知。q 是该段连续逐字原文。
+输出 {paragraphs:[...],scenes:[...]}。'''
+C_TAG_ALIAS = {'动作': '动作展开', '叙述': '叙述带过', '对白': '对话', '心理活动': '心理', '场景描写': '场景', '环境': '场景', '描写': '场景'}
+C_TEXT_METHOD = 'text_c_v110'
+
+
+def c_text_messages(material):
+    payload = {'paragraphs': [[p['paragraph_id'], p['text']] for p in material['paragraphs']]}
+    return [{'role': 'system', 'content': '只用提交的小说原文，输出合法JSON。'},
+            {'role': 'user', 'content': C_TEXT_PROMPT + '\n' + json.dumps(payload, ensure_ascii=False, separators=(',', ':'))}]
+
+
+def c_text_normalize(value):
+    """标签简称归一（只换约定表里的简称，计数留痕），不碰其他内容。"""
+    out = copy.deepcopy(value)
+    log = []
+    for row in out.get('paragraphs', []) if isinstance(out.get('paragraphs'), list) else []:
+        if not isinstance(row, dict):
+            continue
+        for k in ('main_tag', 'secondary_tag'):
+            if row.get(k) in C_TAG_ALIAS:
+                log.append({'p': row.get('p'), 'field': k, 'from': row[k], 'to': C_TAG_ALIAS[row[k]]})
+                row[k] = C_TAG_ALIAS[row[k]]
+    return out, log
+
+
+def c_text_packet(material, call, save, tag, split_ok=True):
+    prefix = 'C:' + material['chapter'] + ':' + tag
+    save(prefix + ':before', {'material': material, 'status': '待答'})
+    raw = call('C', material['chapter'], c_text_messages(material), False, prefix + ':generate')
+    save(prefix + ':original', {'payload': raw, 'material': material})
+    ok = isinstance(raw, dict) and not raw.get('_upstream_unanswered') and isinstance(raw.get('paragraphs'), list)
+    if not ok:
+        if split_ok and len(material['paragraphs']) > 1 and not (isinstance(raw, dict) and raw.get('_upstream_unanswered')):
+            half = len(material['paragraphs']) // 2
+            return (c_text_packet(dict(material, paragraphs=material['paragraphs'][:half]), call, save, tag + 'a', False) +
+                    c_text_packet(dict(material, paragraphs=material['paragraphs'][half:]), call, save, tag + 'b', False))
+        reason = '上游未回答，C 本包待核' if isinstance(raw, dict) and raw.get('_upstream_unanswered') else 'C 回包缺段数组，本包待核'
+        return [(material, None, reason)]
+    return [(material, raw, None)]
+
+
+def c_text(material, call, save):
+    """整章一包；回包不可用才对半拆一次。返回与旧 C 同形的签发件和逐格待核。"""
+    paragraphs, scenes, pending, alias_log = [], [], [], []
+    for packet, raw, reason in c_text_packet(material, call, save, '0'):
+        if raw is None:
+            pending.extend({'id': 'paragraphs:' + p['paragraph_id'], 'level': 'paragraph', 'status': '待核', 'reason': reason,
+                            'paragraph_id': p['paragraph_id'], 'row': None} for p in packet['paragraphs'])
+            continue
+        value, log = c_text_normalize(raw)
+        alias_log.extend(log)
+        value.setdefault('scenes', [])
+        value['memory_marks'] = {'paragraph_ids': [], 'open_at_end': False, 'starts': []}
+        checked, cell_pending = c_checked(value, packet)
+        paragraphs.extend(checked.get('paragraphs', []))
+        scenes.extend(checked.get('scenes', []))
+        pending.extend(cell_pending)
+    for index, row in enumerate(paragraphs):
+        row['_id'] = 'paragraphs:' + str(index)
+        # 视角一律标黄：只作待核提示，不进严格门槛，不作程序已核。
+        row.update(viewpoint_status='待核', viewpoint_card_color='yellow')
+    for index, row in enumerate(scenes):
+        row['_id'] = 'scenes:' + str(index)
+    result = {'paragraphs': paragraphs, 'scenes': scenes, 'method': C_TEXT_METHOD, 'model_confirmations': 0,
+              'C_mode': 'text_v110', 'memory_marks': {'paragraph_ids': [], 'open_at_end': False, 'starts': []},
+              'viewpoint_policy': '视角一律标黄待核', 'alias_normalized': alias_log}
+    save('C:' + material['chapter'] + ':saved', {'C': result, 'pending': pending})
+    return result, pending
+
+
 def generation(role, value, material, packet, facts=(), previous=()):
     if not isinstance(value, dict) or not isinstance(value.get('rows'), list):
         raise ValueError('缺少条目数组')
@@ -578,9 +652,8 @@ def text_j2(material, facts, call, save):
 
 def run(materials, call, save):
     from pipeline_records25 import facts_output, plans_output, assemble
-    from pipeline_c_program25 import annotate
     from pipeline_author25 import build_views
-    current={}; all_facts=[]; previous=[]; initial_memory=False
+    current={}; all_facts=[]; previous=[]
     for material in materials:
         ch=material['chapter']; part={}; current[ch]=part
         b,pending,rejected=text_ab('B',material,call,save)
@@ -593,9 +666,8 @@ def run(materials, call, save):
         if not part['facts']:
             part.update(A_status='blocked_upstream',J2_status='blocked_upstream',
                         A_pending=[],J2_pending=[],J2={f:[] for f in SECTIONS},plans=[])
-            part['C'],part['C_pending']=c_checked(annotate(material,{},part['facts'],initial_memory,j2_complete=False),material)
+            part['C'],part['C_pending']=c_text(material,call,save)
             part['C_status']='partial' if part['C_pending'] else 'complete'
-            initial_memory=part['C']['memory_marks']['open_at_end']
             save('chapter:'+ch+':complete',part)
             continue
         j,pending,rejected,originals=text_j2(material,part['facts'],call,save)
@@ -619,11 +691,10 @@ def run(materials, call, save):
                 part['A_status']='partial'
         previous=list({p['key']:p for p in part['plans']}.values())
         # The C implementation and its parameters are unchanged.
-        # Grok Bot 作业外 v109：C 校验出错只降级出错的格或段为待核，不中止整条线。
-        part['C'],part['C_pending']=c_checked(annotate(material,j,part['facts'],initial_memory,j2_complete=True),material)
+        # Grok Bot 作业外 v110：C 退回纯文字（164），校验出错仍按 v109 逐格降级。
+        part['C'],part['C_pending']=c_text(material,call,save)
         part['C_status']='partial' if part['C_pending'] else 'complete'
-        initial_memory=part['C']['memory_marks']['open_at_end']
-        part['C_mode']='program_bypass0'
+        part['C_mode']='text_v110'
         save('chapter:'+ch+':complete',part)
     prediction=assemble(materials,current)
     for role in ('A','B'):

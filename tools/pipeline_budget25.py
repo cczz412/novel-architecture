@@ -11,7 +11,8 @@ from pipeline_source25 import digest, read_json, write_json
 from pipeline_output28 import OUTPUT_POLICY, REPAIR_MAX_BYTES
 
 MODELS = {'B': 'glm-5.3-flash', 'A': 'deepseek-v4.1-flash',
-          'J2': 'deepseek-v4.1-flash', 'review': 'kimi-k2.8-preview'}
+          'J2': 'deepseek-v4.1-flash', 'review': 'kimi-k2.8-preview',
+          'C': 'glm-5.3-flash'}  # Grok Bot 作业外 v110：C 退回纯文字，用抽句岗同一模型
 WINDOW_REQUEST_CAPS = {'T5c': 26, 'blind': 34}
 TOKEN_CAP = 300000
 BLIND_ADMISSION_TOKENS = 150000
