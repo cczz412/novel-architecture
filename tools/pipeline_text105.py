@@ -18,7 +18,7 @@ A_PROMPT = '''阅读原文和事实，登记人物明确说出的安排、持续
 自己想做、别人要求、已经接受、开始执行、完成或受阻分别判断；当场短暂念头不算持续计划。
 持有人是要执行目标的人，不能把发令者自动当持有人。不按某个动词决定状态。
 状态只用未执行、执行中、兑现、落空、放弃。条件没发生不算落空；窄目标已有完成证据才兑现。
-未提供的历史不猜。旧计划继续使用原 key；已结历史不重开；没有本章变化可原样沿用。
+未提供的历史不猜。旧计划只给 key、主体、内容、状态、期限、条件，其来源和依据由程序保留；更新时用原 key，未写的来源和依据沿用旧值。已结历史不重开；没有本章变化可原样沿用。
 新计划 key=null，source 和 basis 指向已提供事实的键；变化写明依据，未知期限和条件用 null。
 输出 {rows:[{key,subject,content,status,deadline,condition,source,fulfilled,condition_ref,basis:[],reason,ev:[{p,s}]}]}。
 fulfilled 为完成事实键或 null，condition_ref 为条件事实键或 null。没有可登记内容时交空 rows，不编造。
@@ -45,6 +45,13 @@ def mechanical_row(role, raw, material, facts=(), previous=()):
     old = next((p for p in previous if p['key'] == row.get('key')), None)
     if row.get('key') is not None and old is None:
         raise ValueError('旧计划编号未提供')
+    if old:
+        # Grok Bot 作业外 v107：旧计划只送续写字段；模型没写的来源和依据键沿用旧版，写了的照常核对。
+        for k in ('source', 'fulfilled', 'condition_ref', 'basis'):
+            if k not in row:
+                row[k] = copy.deepcopy(old.get(k))
+        if row.get('basis') is None:
+            row['basis'] = []
     if not row.get('subject') or not row.get('content') or row.get('status') not in STATUSES:
         raise ValueError('计划字段缺失或状态不在约定表')
     if not isinstance(row.get('basis'), list) or not isinstance(row.get('reason'), str):
@@ -129,15 +136,19 @@ def paragraph_packets(material, maximum=4200, count=28):
     return [dict(material, paragraphs=rows) for rows in groups]
 
 
+A_CARRY_FIELDS = ('key', 'subject', 'content', 'status', 'deadline', 'condition')
+
+
 def a_payload(material, facts, previous):
     """Build the exact payload used both for packet sizing and dispatch."""
     pids = {p['full_id'] for p in material['paragraphs']}
     refs = {p.get(k) for p in previous for k in ('source', 'fulfilled', 'condition_ref')} | {k for p in previous for k in p.get('basis', [])}
-    local = [f for f in facts if f['local_key'] in refs or any(e['paragraph_id'] in pids for e in f['evidence'])]
+    # Grok Bot 作业外 v107：只带本包段落的事实；旧计划只带续写必需字段，来源、依据、理由和旧证据由程序保留。
+    local = [f for f in facts if any(e['paragraph_id'] in pids for e in f['evidence'])]
     local = list({f['local_key']: f for f in local}.values())
     return {'paragraphs': pointer_payload(material),
             'facts': [{k:f.get(k) for k in ('local_key','text','subject','kind','layer')} for f in local],
-            'previous_plans': [{k:p.get(k) for k in ('key','subject','content','status','source','fulfilled','condition_ref','basis','deadline','condition','reason','ev')} for p in previous]}
+            'previous_plans': [{k:p.get(k) for k in A_CARRY_FIELDS} for p in previous]}
 
 
 def a_packets(material, facts, previous):
@@ -157,7 +168,7 @@ def a_packets(material, facts, previous):
 
 def text_ab(role, material, call, save, facts=(), previous=()):
     """The callback owns transport and budget. Every raw response is saved before checking."""
-    collected, pending, rejected = [], [], []
+    collected, pending, rejected, carried = [], [], [], set()
     groups = paragraph_packets(material, maximum=8000, count=56) if role=='B' else a_packets(material, facts, previous)
     for n, child in enumerate(groups):
         prefix = role + ':' + material['chapter'] + ':' + str(n)
@@ -179,9 +190,14 @@ def text_ab(role, material, call, save, facts=(), previous=()):
             pending.append({'id':prefix,'status':'待核','reason':str(exc),'row':raw})
             continue
         pending.extend(candidate['_normalization_pending_rows'])
+        if role == 'A':
+            # Grok Bot 作业外 v107：原样沿用的旧计划（字段与旧版相同、无本章证据）不再送复核，由程序按旧版保留。
+            echo = [r for r in candidate['rows'] if a_unchanged_echo(r, previous)]
+            carried.update(r['key'] for r in echo)
+            candidate['rows'] = [r for r in candidate['rows'] if r not in echo]
         save(prefix + ':candidate', candidate)
         if not candidate['rows']:
-            if role == 'A':
+            if role == 'A' and not echo:
                 pending.append({'id':prefix,'status':'待核','reason':'模型未返回计划，未证明没有计划','row':raw})
             continue
         review_payload = {**payload, 'rows': [{k:v for k,v in r.items() if k not in ('confirmation_status','default_usable','author_retractable')} for r in candidate['rows']], 'role': role}
@@ -212,7 +228,15 @@ def text_ab(role, material, call, save, facts=(), previous=()):
             pending.append({'id':row['_id'],'status':'待核','reason':'跨包重复编号，保留原件','row':row})
         else:
             unique[key] = row
-    return {'rows':list(unique.values())}, pending, rejected
+    result = {'rows':list(unique.values())}
+    if role == 'A':
+        result['carried'] = sorted(carried - set(unique))
+    return result, pending, rejected
+
+
+def a_unchanged_echo(row, previous):
+    old = next((p for p in previous if p['key'] == row.get('key')), None)
+    return bool(old) and not row.get('ev') and all(row.get(k) == old.get(k) for k in A_CARRY_FIELDS)
 
 
 J2_TEXT = '''按原文整理人物、别名、关系、时间、回忆块、安排、物品、特征。
@@ -408,6 +432,10 @@ def run(materials, call, save):
         # No missing old object is silently removed from the current version.
         returned={p['key'] for p in part['plans']}
         for old in previous:
+            if old['key'] in set(a.get('carried', [])) - returned:
+                # Grok Bot 作业外 v107：模型明确原样沿用，旧版连同原确认状态带入本章，不新增待核。
+                kept=copy.deepcopy(old)
+                part['plans'].append(kept); continue
             if old['key'] not in returned:
                 preserved=copy.deepcopy(old)
                 preserved.update(confirmation_status='待核',confirmation_reason='本章未答旧计划，保留上版',default_usable=False)
