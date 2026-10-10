@@ -637,6 +637,29 @@ def call_rejected_split(call, ch, items, build, review, stage, key):
     return merged, lost
 
 
+def j2_rejection_kind(verdict, section):
+    """执行身份：Codex；只接受明确属实且仅改类的裁定，未知措辞保守拒收。"""
+    reason = verdict.get('reason')
+    if not isinstance(reason, str):
+        return 'ambiguous'
+    clauses = [c.strip() for c in re.split(r'[，,、。；;\n]+', reason) if c.strip()]
+    supported = r'(?:内容|事实|原意|描述)(?:属实|有据|与原文相符|符合原文)|与原文相符'
+    category = (r'(?:只是|仅|仅仅)?分类(?:不合|不对|不符|错误|有误)'
+                r'|(?:只是|仅)?(?:这|该)?(?:段|条)?(?:不是|不属于|不应归入|不该放在)(?:回忆|回忆段|这一栏|traits|arrangements|memories)'
+                r'|(?:予以|应当|应)?保留(?:原意|内容|原件)?(?:并|但需|后)?改类'
+                r'|(?:应|建议|需)?(?:改入|改为|归入)(?:people|aliases|relations|time|memories|arrangements|objects|traits)')
+    content_error = r'(?:内容|事实|证据|原意|描述)(?:不实|不符|有误|错误|不足|存疑)|(?:原文无依据|无原文依据)'
+    if any(re.search(content_error, c) for c in clauses):
+        return 'content_rejected'
+    # section 是现有结构化改类建议；单有改类建议不等于事实属实。
+    changed = verdict.get('section') in SECTIONS and verdict['section'] != section
+    positive = any(re.fullmatch(supported, c) for c in clauses)
+    classification = changed or any(re.fullmatch(category, c) for c in clauses)
+    if positive and classification and all(re.fullmatch(supported, c) or re.fullmatch(category, c) for c in clauses):
+        return 'classification_only'
+    return 'ambiguous'
+
+
 def text_j2(material, facts, call, save):
     from pipeline_records25 import j2_prepare_packet_v50
     candidates=[]
@@ -728,7 +751,18 @@ def text_j2(material, facts, call, save):
                 if type(verdict.get('accept')) is not bool:
                     raise ValueError('裁定格式无效')
                 if not verdict['accept']:
-                    rejected.append({'id':ident,'status':'拒收','reason':verdict.get('reason'),'row':original});continue
+                    kind = j2_rejection_kind(verdict, item.get('section'))
+                    if kind == 'classification_only':
+                        kept = copy.deepcopy(original)
+                        kept.update(confirmation_status='待核', default_usable=False, author_retractable=True)
+                        pending.append({'id':ident,'section':item.get('section'),'status':'待核',
+                                        'reason':'复核仅改分类，内容属实，保留原件待核：'+verdict['reason'],
+                                        'row':kept,'proposed_section':verdict.get('section'),
+                                        'proposed_row':copy.deepcopy(verdict.get('row')),'classification_only':True})
+                    else:
+                        rejected.append({'id':ident,'status':'拒收','reason':verdict.get('reason'),
+                                         'row':original,'rejection_kind':kind})
+                    continue
                 section=verdict.get('section',item.get('section'))
                 try:
                     row=j2_row(section,verdict.get('row',item['candidate']),material,ident)
@@ -779,7 +813,9 @@ def run(materials, call, save):
             save('chapter:'+ch+':complete',part)
             continue
         j,pending,rejected,originals=text_j2(material,part['facts'],call,save)
-        part.update(J2=j,J2_pending=pending,J2_rejected=rejected,J2_source_originals=originals,J2_status='complete')
+        part.update(J2=j,J2_pending=pending,J2_rejected=rejected,J2_source_originals=originals,J2_status='complete',
+                    J2_rejection_counts={kind:sum(r.get('rejection_kind') == kind for r in rejected)
+                                         for kind in ('content_rejected', 'ambiguous')})
         save('chapter:'+ch+':J2',part)
         a,pending,rejected=text_ab('A',material,call,save,all_facts,previous)
         part.update(A=a,A_pending=pending,A_rejected=rejected,A_status='partial' if pending else 'complete')
