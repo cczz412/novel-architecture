@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-10-10T10:32:15.877156+08:00",
+  "updated_at": "2026-10-10T10:34:04.318612+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -8923,5 +8923,53 @@
     "reported_unregistered_paths": 61,
     "count_explanation": "61包含一个已记录的兼容软链接；测试与scope只登记普通实体，实补60个。",
     "source_review_method": "AST静态接口、调用点、根层导入和测试文本引用；未运行业务脚本。"
+  },
+  "r04_entry_points": {
+    "execution_identity": "Codex",
+    "scope": "R04 at f2cd14ed893db1ff9957b22ff5486b8cf201a9b2",
+    "production_entry": "tools/run_pipeline.py",
+    "production_implementation": "tools/pipeline_text105.py",
+    "workspace_orchestrator": "tools/gb_orchestrate_r04.py",
+    "repository_menu": "tools/novel_pipeline.py",
+    "switch_evidence": {
+      "commit": "12fff02bd922ca7ae9580800542433a183d0192a",
+      "file": "tools/run_pipeline.py",
+      "function": "execute",
+      "fact": "调用文字管线并在保存后返回，后面的旧分支不再可达；未读取提交提及的148/150材料。"
+    },
+    "historical_reproducers": [
+      "tools/ark_smoke_r02.py",
+      "tools/gb_orchestrate_r04.py",
+      "tools/or_smoke_r04.py",
+      "tools/pipeline_audit_wrapper25.py",
+      "tools/pipeline_gateway_read25.py",
+      "tools/pipeline_j2_route85_selftest.py",
+      "tools/pipeline_r04_gate25.py",
+      "tools/pipeline_scan25.py",
+      "tools/pr_a_diagnostic_r03.py",
+      "tools/pr_ark_client_r02.py",
+      "tools/pr_availability_r01.py",
+      "tools/pr_c_steps_r03.py",
+      "tools/pr_compact_r02.py",
+      "tools/pr_global_c_r02.py",
+      "tools/pr_guarded_r02.py",
+      "tools/pr_headroom_r02.py",
+      "tools/pr_incremental_r04.py",
+      "tools/pr_layers_headroom_r03.py",
+      "tools/pr_layers_judged_r03.py",
+      "tools/pr_layers_r03.py",
+      "tools/pr_layers_v2_r03.py",
+      "tools/pr_pipeline_r01.py",
+      "tools/pr_pipeline_r02.py",
+      "tools/pr_probe_route_r01.py",
+      "tools/pr_recovery_probe_r03.py",
+      "tools/pr_replay_diagnostic_r03.py",
+      "tools/pr_resolved_r02.py",
+      "tools/pr_split_r01.py",
+      "tools/pr_split_r02.py",
+      "tools/pr_typed_r02.py",
+      "tools/pr_v105_run_r04.py"
+    ],
+    "boundary": "仅说明R04起点代码的入口；其他范围的生产默认待确认；不授权运行。"
   }
 }
