@@ -69,7 +69,8 @@ def main(argv=None):
   print(now().isoformat(),s,flush=True)
  def checkpoint(name,value):save(J/'pipeline'/(name.replace(':','_')+'.json'),value)
  files=list(run_pipeline.CODE_FILES)+[TOOLS/'pr_v105_run_r04.py',Path(__file__).resolve()]
- code={str(p):sha(p) for p in files}
+ from pipeline_common.a_fact_judge import checkpoint_identity
+ code={**{str(p):sha(p) for p in files}, **checkpoint_identity()}
  manifest=J/'runtime_integrity.json'
  if manifest.exists():assert read(manifest)['files']==code,'代码版本不同，停止续跑'
  else:save(manifest,{'files':code,'purpose':'本轮入口与生产函数投前投后完整性核对'})

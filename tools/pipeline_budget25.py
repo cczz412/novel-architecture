@@ -216,7 +216,8 @@ class Budget:
     def __init__(self, budget_path, output, archive, code_files):
         self.path, self.output = Path(budget_path), Path(output)
         self.config = read_json(self.path)
-        self.identity = {'budget_sha': digest(self.path), 'input_sha': digest(archive),
+        from pipeline_common.a_fact_judge import checkpoint_identity
+        self.identity = {**checkpoint_identity(), 'budget_sha': digest(self.path), 'input_sha': digest(archive),
                          'gateway_job_id': self.config.get('gateway_job_id'),
                          'checkpoint_protocol': 'v29_owned_shared_pool',
                          'source_sha': {str(p): digest(p) for p in code_files}}
