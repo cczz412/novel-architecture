@@ -38,7 +38,7 @@ JUDGE_PROMPT = """逐条判断提交的候选是不是人物明示的未来行�
 status 为 {value,basis:[],fulfilled:null}，value 只能是未执行、执行中、兑现、落空、放弃。
 basis 用提供的事实序号；状态变化指出后文哪条事实；同条同时叙述打算及结果可用自身序号。
 兑现必须指出完成事实的序号 fulfilled。条件没有发生不算落空。不凭常识补状态，没看到后续只按现有证据判断。
-不是计划时后三项用 null。输出 {rows:[{is_plan,subject,content,status}]}。
+不是计划时后三项用 null。输出 {rows:[{n,is_plan,subject,content,status}]}，n 原样抄候选序号，只作位置对齐，不是内容判断。
 不写事实编号、计划编号、source、key、理由或原文证据；程序会填写来源。"""
 
 
@@ -180,6 +180,26 @@ def pending_row(ident, reason, row):
     return {'id': ident, 'status': '待核', 'reason': reason, 'row': copy.deepcopy(row)}
 
 
+def align_answers(group, answers):
+    """Ordinal is transport metadata. Never guess positions in a partial reply."""
+    if not isinstance(answers, list):
+        return [], group, {'method': 'missing_rows', 'ignored_answers': 0}
+    if len(answers) == len(group) and all(isinstance(x, dict) and 'n' not in x for x in answers):
+        return list(zip(group, answers)), [], {'method': 'exact_order', 'ignored_answers': 0}
+    by_n = {}
+    for answer in answers:
+        if isinstance(answer, dict) and type(answer.get('n')) is int:
+            by_n.setdefault(answer['n'], []).append(answer)
+    aligned, missing = [], []
+    for item in group:
+        matches = by_n.get(item['n'], [])
+        if len(matches) == 1:
+            aligned.append((item, matches[0]))
+        else:
+            missing.append(item)
+    return aligned, missing, {'method': 'candidate_ordinal', 'ignored_answers': len(answers) - len(aligned)}
+
+
 def ask_packets(universe, config, material, call, save, prefix, old=None):
     """Use the v112 transport markers: caller retries unchanged, then split once."""
     from pipeline_text105 import upstream_rejected, rejected_reason, loss_flag, unanswered_reason
@@ -204,8 +224,22 @@ def ask_packets(universe, config, material, call, save, prefix, old=None):
             yield group, visible, None, {**pending_row(stage, why, payload), **loss_flag(why)}
         elif not isinstance(raw, dict) or raw.get('_upstream_unanswered'):
             yield group, visible, None, pending_row(stage, unanswered_reason(raw, '，完整候选保留'), payload)
-        else:
+        elif old is not None:
             yield group, visible, raw, None
+        else:
+            aligned, missing, receipt = align_answers(group, raw.get('rows'))
+            save(stage + ':alignment', {'execution_identity': EXECUTION_IDENTITY, **receipt,
+                                       'adopted': [item['n'] for item, _ in aligned],
+                                       'missing': [item['n'] for item in missing], 'retry': split_done})
+            if aligned:
+                yield [item for item, _ in aligned], visible, {**raw, 'rows': [answer for _, answer in aligned]}, None
+            if missing and not split_done:
+                # Singleton packets preserve the original ordinal and use the same budgeted callback.
+                queue[0:0] = [(tag + ':retry:' + str(item['n']), [item], True) for item in missing]
+            elif missing:
+                for item in missing:
+                    yield [item], visible, None, pending_row(stage + ':' + str(item['n']),
+                        '拆包重问后仍无法按候选序号对齐，完整候选保留', {'candidate': wire_fact(item), 'response': raw})
 
 
 def filter_review(raw):
