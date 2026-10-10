@@ -208,6 +208,41 @@ def ask_packets(universe, config, material, call, save, prefix, old=None):
             yield group, visible, raw, None
 
 
+def filter_review(raw):
+    """Keep only the four decisions; retain the untouched raw reply in the receipt."""
+    clean = copy.deepcopy(raw)
+    discarded = []
+    patches = []
+    for patch in clean.get('patches', []):
+        changes = patch['changes']
+        if not isinstance(changes, dict):
+            raise ValueError('复核修改必须是对象')
+        allowed = {}
+        for key, value in changes.items():
+            if key in ('is_plan', 'subject', 'content', 'status'):
+                allowed[key] = value
+            else:
+                discarded.append({'id': patch.get('id'), 'field': key})
+        if 'is_plan' in allowed:
+            is_plan = allowed.pop('is_plan')
+            if type(is_plan) is not bool:
+                raise ValueError('复核是否计划必须是布尔值')
+            verdict = next((v for v in clean['verdicts'] if v.get('id') == patch.get('id')), None)
+            if verdict is None:
+                raise ValueError('复核修改缺少对应裁定')
+            verdict['accept'] = is_plan
+            if not is_plan:
+                allowed = {}
+        if allowed:
+            patches.append({**patch, 'changes': allowed})
+    clean['patches'] = patches
+    counts = {}
+    for item in discarded:
+        counts[item['field']] = counts.get(item['field'], 0) + 1
+    return clean, {'execution_identity': EXECUTION_IDENTITY, 'discarded_field_count': len(discarded),
+                   'discarded_by_field': counts, 'discarded': discarded}
+
+
 def review_rows(rows, material, facts, previous, config, call, save, prefix):
     from pipeline_text105 import review_result, upstream_rejected, rejected_reason, loss_flag, A_CARRY_FIELDS, unanswered_reason
     approved, pending, rejected = [], [], []
@@ -249,10 +284,9 @@ def review_rows(rows, material, facts, previous, config, call, save, prefix):
         try:
             if not isinstance(raw, dict) or raw.get('_upstream_unanswered'):
                 raise ValueError(unanswered_reason(raw, '，复核候选保留'))
-            for patch in raw.get('patches', []):
-                if set(patch.get('changes', {})) & {'source', 'basis', 'fulfilled', 'condition_ref', 'ev'}:
-                    raise ValueError('复核试图改写程序绑定的来源或依据，候选保留待核')
-            ok, removed = review_result('A', {'rows': part}, raw, material, facts, previous)
+            filtered, receipt = filter_review(raw)
+            save(stage + ':patch_filter', receipt)
+            ok, removed = review_result('A', {'rows': part}, filtered, material, facts, previous)
             approved.extend(ok['rows'])
             pending.extend(r for r in removed if r['status'] == '待核')
             rejected.extend(r for r in removed if r['status'] == '拒收')
