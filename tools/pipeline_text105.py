@@ -386,14 +386,25 @@ def a_packets(material, facts, previous):
 UPSTREAM_REJECTED = '上游拒收'
 
 
+# Grok Bot 作业外 v112：回包损坏（编排已原样重投一次仍解析失败）与上游拒收走同一条对半拆投路径，标签分开。
+RESPONSE_CORRUPT = '回包损坏'
+
+
 def upstream_rejected(raw):
-    return isinstance(raw, dict) and bool(raw.get('_upstream_rejected'))
+    """需要对半拆投的失败：上游拒收（HTTP 400）或回包损坏（重投后仍解析失败）。"""
+    return isinstance(raw, dict) and bool(raw.get('_upstream_rejected') or raw.get('_response_corrupt'))
 
 
 def rejected_reason(raw, after_split, what='本包原文未抽取，完整原文保留'):
-    why = str(raw.get('_upstream_reason') or 'HTTP 400') if isinstance(raw, dict) else 'HTTP 400'
-    how = '整包对半拆开各投一次后本半包仍被拒' if after_split else '本包只剩一条无法再拆'
-    return UPSTREAM_REJECTED + '（' + why + '）：' + how + '，' + what + '，待核'
+    corrupt = isinstance(raw, dict) and bool(raw.get('_response_corrupt'))
+    why = str(raw.get('_upstream_reason') or ('解析失败' if corrupt else 'HTTP 400')) if isinstance(raw, dict) else 'HTTP 400'
+    how = ('整包对半拆开各投一次后本半包仍' + ('损坏' if corrupt else '被拒')) if after_split else '本包只剩一条无法再拆'
+    return (RESPONSE_CORRUPT if corrupt else UPSTREAM_REJECTED) + '（' + why + '）：' + how + '，' + what + '，待核'
+
+
+def loss_flag(reason):
+    """待核条目的丢失标记：回包损坏与上游拒收分开记，作者视图据此显示。"""
+    return {'response_corrupt': True} if str(reason).startswith(RESPONSE_CORRUPT) else {'upstream_rejected': True}
 
 
 def text_ab(role, material, call, save, facts=(), previous=()):
@@ -420,8 +431,9 @@ def text_ab(role, material, call, save, facts=(), previous=()):
                 queue[0:0] = [(tag + 'a', dict(child, paragraphs=child['paragraphs'][:half]), True),
                               (tag + 'b', dict(child, paragraphs=child['paragraphs'][half:]), True)]
                 continue
-            pending.append({'id':prefix,'status':'待核','reason':rejected_reason(raw, split_done),'row':payload,
-                            'upstream_rejected':True,'paragraph_ids':[p['paragraph_id'] for p in child['paragraphs']]})
+            why = rejected_reason(raw, split_done)
+            pending.append({'id':prefix,'status':'待核','reason':why,'row':payload,
+                            **loss_flag(why),'paragraph_ids':[p['paragraph_id'] for p in child['paragraphs']]})
             continue
         if raw.get('_upstream_unanswered'):
             pending.append({'id':prefix,'status':'待核','reason':'上游未回答，完整原文保留','row':payload})
@@ -490,7 +502,8 @@ def text_ab(role, material, call, save, facts=(), previous=()):
                 pending.extend({'id':r['_id'],'status':'待核','reason':'复核超过8KB，完整候选保留','row':r} for r in part['rows'])
                 continue
             if upstream_rejected(review):
-                pending.extend({'id':r['_id'],'status':'待核','reason':rejected_reason(review, split_done, '复核未答，完整候选保留'),'row':r,'upstream_rejected':True} for r in part['rows'])
+                why = rejected_reason(review, split_done, '复核未答，完整候选保留')
+                pending.extend({'id':r['_id'],'status':'待核','reason':why,'row':r,**loss_flag(why)} for r in part['rows'])
                 continue
             try:
                 ok_part, removed = review_result(role, part, review, child, facts, previous)
@@ -665,7 +678,7 @@ def text_j2(material, facts, call, save):
                 pending.append({'id':item['id'],'section':None,'status':'待核',
                     'reason':lost.get(item['id']) or ('生成编号重复，所有变体保留' if item['id'] in repeated else '生成缺答或模型待核'),
                     'row':item['candidate'],'response_variants':[r for r in rows if isinstance(r,dict) and r.get('id')==item['id']],
-                    **({'upstream_rejected':True} if item['id'] in lost else {})})
+                    **(loss_flag(lost[item['id']]) if item['id'] in lost else {})})
         save(prefix+':saved',{'review_items':review_items,'pending':pending})
     for n in range(0,len(review_items),16):
         items=review_items[n:n+16]; ids={x['id'] for x in items}
@@ -695,7 +708,7 @@ def text_j2(material, facts, call, save):
             original=originals.get(ident,item['candidate'])
             try:
                 if ident in lost:
-                    pending.append({'id':ident,'section':item.get('section'),'status':'待核','reason':lost[ident],'row':original,'upstream_rejected':True});continue
+                    pending.append({'id':ident,'section':item.get('section'),'status':'待核','reason':lost[ident],'row':original,**loss_flag(lost[ident])});continue
                 if not verdict or verdict.get('accept') is None:
                     raise ValueError('复核缺答或待核')
                 if type(verdict.get('accept')) is not bool:
@@ -788,7 +801,7 @@ def run(materials, call, save):
                 author['views']['待核资料'].append({'id':item['id'],'chapter':material['chapter'],
                     'source_layer':role,'confirmation_status':'待核','confirmation_reason':item['reason'],
                     'original':copy.deepcopy(item['row']),'paragraph_ids':list(item.get('paragraph_ids',[])),
-                    'upstream_rejected':bool(item.get('upstream_rejected'))})
+                    'upstream_rejected':bool(item.get('upstream_rejected')),'response_corrupt':bool(item.get('response_corrupt'))})
         for item in current[material['chapter']].get('C_pending',[]):
             author['views']['待核资料'].append({'id':item['id'],'chapter':material['chapter'],
                 'source_layer':'C','confirmation_status':'待核','confirmation_reason':item['reason'],

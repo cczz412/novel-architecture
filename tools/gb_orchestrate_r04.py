@@ -2,6 +2,8 @@
 """Grok Bot 作业外整线编排：经本地网关逐条投递生产 text.run 的请求，挂起题原样重投一次。
 
 v111 第2处：网关已结、入口报 HTTP 400 的回成 _upstream_rejected，交生产代码对半拆投。
+v112：回包解析失败与上游未回答分开——解析失败先原样重投一次（计入总量闸）；重投仍解析失败回 _response_corrupt，
+交生产代码按上游拒收同一路径对半拆投，仍不行标“回包损坏”待核。
 v111 第3处：任何新投（含挂起重投）之前都先核“成功回答总数上限”，上限按 --cap-root 下各本 run/result.json 合计；
 到上限就不投，阶段记 budget_cap_unsent，不再出现重投绕过总量闸的情况。
 用法：python3 tools/gb_orchestrate_r04.py --job-dir DIR --source ZIP --book BOOK --chapters 01,02 --prefix r04_v111gb_x_ \
@@ -18,7 +20,7 @@ ROOT=Path(os.environ.get('GB_R04_ROOT','/workspace/codex-work/out/管线修复_R
 V5=ROOT/'job_R04_v105';G=ROOT/'gateway'
 GATEWAY_CODE=Path(os.environ.get('GB_GATEWAY_CODE','/workspace/codex-work/bin/ark_gateway_r04.py'))
 LEDGER_BASE={'requests':686,'ok':677,'failed':9};LEDGER_COST=0.00624921  # v108 起作业外各轮之前的网关累计
-OWN_PREFIXES=('r04_v108gb_','r04_v109gb_','r04_v110gb_','r04_v111gb_')
+OWN_PREFIXES=('r04_v108gb_','r04_v109gb_','r04_v110gb_','r04_v111gb_','r04_v112gb_')
 
 def now():return datetime.datetime.now(datetime.timezone.utc)
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
@@ -76,7 +78,7 @@ def main(argv=None):
  normalizer=SimpleNamespace(max_tokens=18000)
  result=read(J/'result.json') if (J/'result.json').exists() else {'execution_identity':'Grok Bot 作业外','gateway_jobs':[],'status':'running'}
  stages={x['stage_id']:x for x in result['gateway_jobs']}
- CAPPED=[];NOT_SENT=[]
+ CAPPED=[];NOT_SENT=[];PARSE_FAILED=[]
  def capped(stage):
   if used_successes(a.cap_root,J,result)>=a.cap:
    CAPPED.append(stage);return True
@@ -91,6 +93,8 @@ def main(argv=None):
   assert clean['max_tokens']==body['max_tokens'] and reservation<=60000,(stage,reservation)
   if role=='A':assert len(json.dumps(messages,ensure_ascii=False).encode())<=8192
   digest=hashlib.sha256(json.dumps(body,ensure_ascii=False,sort_keys=True).encode()).hexdigest()
+  fresh=lambda:{'stage_id':stage,'job_id':a.prefix+str(len(result['gateway_jobs'])+1).zfill(2),'body':body,'body_sha256':digest,
+                'code_sha256':code,'reserved_tokens':reservation,'role':role,'review':review,'chapter':ch}
   if stage in stages:
    row=stages[stage]
    assert row['body_sha256']==digest,'同编号材料已改变'
@@ -99,7 +103,8 @@ def main(argv=None):
     response=read(p)['response']
     try:return parse_response(response)
     except Exception as e:
-     checkpoint(stage+':parse_failure',{'response':response,'error':str(e)});return {'_upstream_unanswered':True}
+     checkpoint(stage+':parse_failure',{'response':response,'error':str(e),'job_id':row['job_id']})
+     return parse_failed(stage,row,str(e),fresh)
    if row.get('upstream_hung') and not row.get('retry_of'):
     if capped(stage):return {'_upstream_unanswered':True}  # v111：重投同样受总量闸
     retry={k:v for k,v in row.items() if k not in ('upstream_hung','settled','answer','job','submitted_at','wall_deadline')}
@@ -115,13 +120,25 @@ def main(argv=None):
    stages[stage]=row;result['gateway_jobs'].append(row);save(J/'result.json',result)
    response=read(next(d/row['job_id']/'response.json' for d in RESP_DIRS if (d/row['job_id']/'response.json').exists()))['response']
    try:return parse_response(response)
-   except Exception as e:  # 复用回包与本轮回包同样处理：解析失败（含输出截断）记待核，不中止整线
-    checkpoint(stage+':parse_failure',{'response':response,'error':str(e)});return {'_upstream_unanswered':True}
+   except Exception as e:  # 复用回包与本轮回包同样处理：解析失败（含输出截断）先原样重投一次，不中止整线
+    checkpoint(stage+':parse_failure',{'response':response,'error':str(e),'job_id':row['job_id']})
+    return parse_failed(stage,row,str(e),fresh)
   if not ALLOW_NEW or not stage.startswith(ALLOW_NEW):
    NOT_SENT.append(stage);return {'_upstream_unanswered':True}
   if capped(stage):return {'_upstream_unanswered':True}
-  raise NextRequest({'stage_id':stage,'job_id':a.prefix+str(len(result['gateway_jobs'])+1).zfill(2),'body':body,'body_sha256':digest,
-                     'code_sha256':code,'reserved_tokens':reservation,'role':role,'review':review,'chapter':ch})
+  raise NextRequest(fresh())
+ def parse_failed(stage,row,error,fresh):
+  """v112：回包到了但解析不了（坏 JSON、截断等）≠ 上游没回答。第一次原样重投；已是重投的回 _response_corrupt。"""
+  if row.get('retry_of'):
+   PARSE_FAILED.append({'stage':stage,'job_id':row['job_id'],'after_retry':True,'error':error})
+   return {'_upstream_unanswered':True,'_response_corrupt':True,
+           '_upstream_reason':'原样重投后仍解析失败：'+error[:160]}
+  PARSE_FAILED.append({'stage':stage,'job_id':row['job_id'],'after_retry':False,'error':error})
+  if capped(stage):  # 重投同样受总量闸；投不了就按回包损坏交生产代码，子包同样受闸
+   return {'_upstream_unanswered':True,'_response_corrupt':True,
+           '_upstream_reason':'解析失败且已到成功回答上限未重投：'+error[:160]}
+  retry=fresh();retry.update(retry_of=row['job_id'],retry_reason='回包解析失败原样重投一次')
+  raise NextRequest(retry)
  def gateway_check():
   t0=time.time()
   while read(G/'pending.json') and time.time()-t0<900:time.sleep(10)  # v111：等网关自行超时清掉在途（最长 15 分钟），不手改
@@ -148,7 +165,7 @@ def main(argv=None):
    try:
     final=text.run(materials,call,checkpoint)
     save(J/'prediction.json',final['prediction']);save(J/'author_store.json',final['author_store'])
-    result.update(not_sent_stages=NOT_SENT,budget_cap_unsent_stages=CAPPED,status='pipeline_finished',pipeline_complete=final['complete'])
+    result.update(not_sent_stages=NOT_SENT,budget_cap_unsent_stages=CAPPED,parse_failures=PARSE_FAILED,status='pipeline_finished',pipeline_complete=final['complete'])
     update_usage();note(a.book+' 整线装配结束，完整状态：'+str(final['complete']));return 0
    except NextRequest as nr:
     row=nr.data
