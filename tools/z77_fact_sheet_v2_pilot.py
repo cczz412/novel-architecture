@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 执行身份：Codex
 """第77道：事实说明书注入包 v2 与三章复验隔离运行器。
 
 主采样只跑第3、13、19章各一次。主回包若只有事件句超长或证据锚 ID
@@ -17,6 +18,7 @@ import re
 import shutil
 from collections import Counter
 from pathlib import Path
+from pipeline_common.artifacts import DeferredExternalPath
 from typing import Any, Mapping
 
 import z68_revised_request_pilot as z68
@@ -49,10 +51,7 @@ RETRY_EVENT_KEYS = {"event", "anchors"}
 
 SOURCE_EXAMPLES = ROOT / "reports/Z74A_正反例换皮候选_20260721/三联例候选.json"
 SOURCE_EXAMPLES_SHA256 = "16648bf988501c9b0968e41e4aef51b36d0b0c47ec9e1c47900c3dbfe3fcb945"
-SOURCE_SANDBOX = Path(
-    "/Users/a1234/挣钱/小说架构_外置仓/TEMP外置_20260720/"
-    "CZ_EXTRA_事实说明书三章沙箱_20260721"
-)
+SOURCE_SANDBOX = DeferredExternalPath("Z77_SOURCE_SANDBOX")
 SOURCE_V1_BLOCK = SOURCE_SANDBOX / "runs/manual_pos/prompt_candidates/manual_pos_example_block.txt"
 SOURCE_V1_BLOCK_SHA256 = "f646b0c410bde57abb0fb26ed638a5021384ac41a6f9b6e369b8a6a4c3ea9bca"
 SOURCE_ARM2_ADJUDICATION = SOURCE_SANDBOX / "adjudication_manual_pos.json"
