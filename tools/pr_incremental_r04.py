@@ -133,6 +133,19 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
 
 
+BOUND_BOOK = None  # Grok Bot 作业外 v111（外部审查⑦）：分层继承绑定本次书号，由 run() 设定
+
+
+def bound_receipt(p):
+    """读继承源回执并核书号；未绑定或书号不同一律停止，不跨书继承。"""
+    receipt = json.loads((Path(p) / 'run_receipt.json').read_text())
+    if BOUND_BOOK is None:
+        raise ValueError('继承前须先绑定本次书号')
+    if receipt.get('book') != BOUND_BOOK:
+        raise ValueError('继承源书号与本次不一致：' + str(receipt.get('book')) + ' ≠ ' + str(BOUND_BOOK))
+    return receipt
+
+
 def source(path):
     p = Path(path).resolve()
     allowed = [OUT, OUT.parent / '管线修复_R03', OUT.parent / '管线修复_R02']
@@ -222,8 +235,8 @@ def task(client, model, policy, schema, material, gate, folder, label, receipt, 
 
 def inherited(path, chapter, layer):
     p = source(path)
+    receipt = bound_receipt(p)
     doc = json.loads((p / 'prediction.json').read_text())
-    receipt = json.loads((p / 'run_receipt.json').read_text())
     if chapter not in receipt.get('layer_completed_chapters', {}).get(layer, receipt['completed_chapters']):
         raise ValueError('继承源没有交付本章这一层：' + chapter + '/' + layer)
     out = empty_result()
@@ -257,7 +270,7 @@ def seed_before(path, chapter):
         return out, dict(source='输入旧召回；无可信的前章已交付计划状态', plans=0,
                          limitation='早章未跑，不把旧召回猜成完整历史；本章仍逐项判断提供的旧召回')
     p = source(path)
-    completed = set(json.loads((p / 'run_receipt.json').read_text())['completed_chapters'])
+    completed = set(bound_receipt(p)['completed_chapters'])
     doc = empty_result()
     snapshots = []
     for ch in sorted(completed):
@@ -427,12 +440,14 @@ def run(args):
     output = external(args.out)
     output.mkdir(parents=True, exist_ok=True)
     config = next(c for c in json.loads((OUT / 'books_selected.json').read_text()) if c['code'] == args.book)
+    global BOUND_BOOK
+    BOUND_BOOK = args.book
     policies = json.loads((OUT / 'probe/reasoning_policy.json').read_text())
     models = {k:getattr(args, k.lower() + '_model') or args.model for k in 'ABC'}
     sources = {k:getattr(args, k.lower() + '_source') or args.source for k in 'ABC'}
     for layer in 'ABC':
         if layer not in args.layers and sources[layer]:
-            saved = json.loads((source(sources[layer]) / 'run_receipt.json').read_text())
+            saved = bound_receipt(source(sources[layer]))
             models[layer] = saved.get('layer_models', {}).get(layer, saved['model'])
     roles = {'A':{'deepseek-v4.1-flash'}, 'C':{'deepseek-v4.1-flash'}, 'B':{'glm-5.3-flash','xiaomi/mimo-v2.6-flash'}}
     for layer in args.layers:

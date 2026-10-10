@@ -49,19 +49,34 @@ def read_sources(archive, book_id, chapters):
             paragraphs = data.get("paragraphs") if isinstance(data, dict) else data
             if not isinstance(paragraphs, list):
                 raise ValueError("正文段落不是数组")
+            # Grok Bot 作业外 v111（外部审查⑦）：书号、章号与输入一致性硬校验；带了就必须对得上。
+            prefix = book_id + ":ch" + chapter + ":"
+            if isinstance(data, dict):
+                if "source_key" in data and data["source_key"] != book_id + ":ch" + chapter:
+                    raise ValueError("正文来源书号或章号与请求不一致")
+                if "original_sha256" in data and hashlib.sha256(str(data.get("text", "")).encode()).hexdigest() != data["original_sha256"]:
+                    raise ValueError("正文全文与登记指纹不一致")
             cleaned = []
             seen = set()
             for index, row in enumerate(paragraphs, 1):
+                if not isinstance(row, dict):
+                    raise ValueError("正文段落须为对象")
                 full = str(row.get("paragraph_id", ""))
                 short = full.rsplit(":", 1)[-1] if full else "p" + str(index).zfill(3)
                 if not re.fullmatch(r"p\d+", short) or short in seen:
                     raise ValueError("正文段号无效或重复")
+                if ":" in full and full != prefix + short:
+                    raise ValueError("段号所属书号或章号与请求不一致：" + full)
+                if "paragraph_number" in row and row["paragraph_number"] != index:
+                    raise ValueError("段序号与位置不一致：" + full)
+                if isinstance(data, dict) and isinstance(data.get("text"), str) and isinstance(row.get("start"), int) and isinstance(row.get("end"), int) \
+                        and data["text"][row["start"]:row["end"]] != row.get("text"):
+                    raise ValueError("段落内容与全文位置不一致：" + full)
                 seen.add(short)
                 text = row.get("text")
                 if not isinstance(text, str):
                     raise ValueError("正文内容不是字符串")
-                cleaned.append({"paragraph_id": short, "full_id": full or
-                                book_id + ":ch" + chapter + ":" + short, "text": text})
+                cleaned.append({"paragraph_id": short, "full_id": prefix + short, "text": text})
             if not cleaned:
                 raise ValueError("正文段落为空")
             result.append({"book_id": book_id, "chapter": chapter,
