@@ -90,6 +90,23 @@ def followups(material, seed, marks=(), next_chapter=False, max_chars=2400):
         used+=len(text)
     return [r for _,_,r in selected]
 
+GOAL_FILLER = re.compile(r'(?:我们|你们|他们|她们|咱们|我|你|他|她|咱|自己|一定|还|也|就|要|得|想|会|再|先|又|便|了|着|过|的|地|把|去|来|给|让|和|跟|与|一下|一起)')
+
+
+def seed_goal(seed, names=()):
+    """Grok Bot 作业外 v111（外部审查④）：从种子段的计划信号分句取目标字面（去人名、代词、信号词、时间词、虚词），返回二字片段集合；取不到为空集。"""
+    text = seed['ev'][0]['q'] if seed.get('ev') else ''
+    clauses = [c for c in re.split(r'[，,。！？!?；;：:“”"\n]', text)
+               if STRONG.search(c) or INTENT.search(c) or YAODE.search(c) or COND.search(c) or DIRECT.search(c) or scheduled_clause(c)]
+    core = ''.join(clauses) or text
+    for n in sorted({n for n in names if isinstance(n, str) and n} | {seed.get('subject') or ''}, key=len, reverse=True):
+        if n:
+            core = core.replace(n, '')
+    core = GOAL_FILLER.sub('', TIMEQ.sub('', STRONG.sub('', core)))
+    han = ''.join(re.findall(r'[\u4e00-\u9fff]', core))
+    return {han[i:i + 2] for i in range(len(han) - 1)}
+
+
 def plan_candidates(material, facts, entities=None, initial_memory=False):
     entities=entities or {};pars=material['paragraphs'];order={p['paragraph_id']:i for i,p in enumerate(pars)}
     table={p['paragraph_id']:p for p in pars};names=person_pool(material,facts,entities);mapping=name_map(material,names,entities)
@@ -152,19 +169,23 @@ def plan_candidates(material, facts, entities=None, initial_memory=False):
                 row['flags'].append(reason);row['send']=False;pending.append(row)
             else:
                 row['send']=True;seeds.append(row)
-    # 同人相邻种子合并；不把整条事实的跨段证据一起塞入。
-    merged=[]
+    # 同人相邻且同一目标的种子才合并；目标不同（字面目标无交集）各自成种子。不把整条事实的跨段证据一起塞入。
+    merged=[];goals={}
     for s in sorted(seeds,key=lambda s:order[s['ev'][0]['p']]):
+        goal=seed_goal(s,names)
         target=next((x for x in reversed(merged) if x['subject']==s['subject']
-                     and order[s['ev'][0]['p']]-max(order[e['p']] for e in x['ev'])<=2),None)
+                     and order[s['ev'][0]['p']]-max(order[e['p']] for e in x['ev'])<=2
+                     and (not goal or not goals[x['seed_id']] or goal & goals[x['seed_id']])),None)
         if target:
+            goals[target['seed_id']]|=goal
             target['ev'].extend(e for e in s['ev'] if e not in target['ev']);target['basis']=list(dict.fromkeys(target['basis']+s['basis']))
             target['receivers']=sorted(set(target['receivers']+s['receivers']))
             target['holder_candidates']=sorted(set(target['holder_candidates']+s['holder_candidates']))
             target['plan_holders']=sorted(set(target['plan_holders']+s['plan_holders']))
             target['condition_evidence'].extend(e for e in s['condition_evidence'] if e not in target['condition_evidence'])
             target['followups']=followups(material,target,memory['paragraph_ids'])
-        else:merged.append(s)
+        else:
+            merged.append(s);goals[s['seed_id']]=set(goal)
     return {'seeds':merged,'pending':pending,'memory':memory,'names':names,'speeches':speeches}
 
 def carry_plans(material, previous, memory):
