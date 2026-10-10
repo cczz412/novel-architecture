@@ -7,7 +7,7 @@ from pr_evidence_guard_r02 import inspect
 from pr_pipeline_r02 import dump
 
 
-def execute(data, output, request):
+def execute(data, output, request, usage_sink=None):
     part = 'g' + str(data['group'])
     original = messages(data)
     current = original
@@ -19,6 +19,8 @@ def execute(data, output, request):
     initial_signature = None
     for _ in range(3):
         response = request(current)
+        if usage_sink is not None:
+            usage_sink(response.get('usage', {}))
         name = part + ('_response.json' if response_kind=='original' else '_'+response_kind+'_repair_response.json')
         dump(output/name,response)
         usages.append(response.get('usage',{}))
@@ -64,5 +66,5 @@ def execute(data, output, request):
     return best,usages
 
 
-def bc_call(data,policy,model,output,guard):
-    return execute(data,output,lambda current:Client().call(model,current,policy['parameters'],max_tokens=12000))
+def bc_call(data,policy,model,output,guard,usage_sink=None):
+    return execute(data,output,lambda current:Client().call(model,current,policy['parameters'],max_tokens=12000),usage_sink=usage_sink)

@@ -141,10 +141,10 @@ def run(args):
         chapter=empty_result();failed=[]
         pieces=groups(data)
         try:
-            results,failed=execute_groups(pieces,lambda p:bc_call(p,policy,args.model,folder,args.guard))
+            results,failed=execute_groups(pieces,lambda p:bc_call(p,policy,args.model,folder,args.guard,usage_sink=receipt['calls'].append))
             if failed:raise ValueError('本章有未完成分组：'+json.dumps(failed,ensure_ascii=False))
             for idx in sorted(results):
-                part,usages=results[idx];receipt['calls'].extend(usages)
+                part,usages=results[idx]
                 chapter['B'].extend(part['B']);chapter['C'].extend(part['C'])
                 for k in ('fact_chapters','source_chapters','review_flags'):chapter['review_audit'][k].extend(part['review_audit'][k])
             keys=[r.get('local_key') for r in chapter['B'] if r.get('local_key')]
@@ -152,8 +152,8 @@ def run(args):
             materials=dict(book_id=data['book_id'],chapter=ch,paragraphs=data['paragraphs'],old_plan_rows=data['old_plan_rows'],scope_limits=data['scope_limits'],
                 current_effective_facts=chapter_facts(data,chapter),previous_plans={'A':result['A'],'plan_history':result['review_audit']['plan_history']},
                 new_plan_prefix=f"PR:plan:{data['book_id']}:ch{ch}:")
-            response=Client().call(args.model,prompt(materials,A_FORMAT),policy['parameters'],max_tokens=32000)
-            dump(folder/'A_response.json',response);receipt['calls'].append(response.get('usage',{}))
+            response=Client().call(args.model,prompt(materials,A_FORMAT),policy['parameters'],max_tokens=32000,usage_sink=receipt['calls'].append)
+            dump(folder/'A_response.json',response)
             obj=parse_parts(response,('A','old_plan_rows','plan_history','open_plan_keys','review_flags'))
             chapter['A']=obj['A']
             for k in ('old_plan_rows','plan_history','open_plan_keys'):chapter['review_audit'][k]=obj[k]

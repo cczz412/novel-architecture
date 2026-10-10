@@ -51,7 +51,7 @@ def validate(response, materials):
 
 
 class Client(ArkClient):
-    def call(self,model,messages,parameters,max_tokens=32000):
+    def call(self,model,messages,parameters,max_tokens=32000,usage_sink=None):
         materials=json.loads(messages[1]['content'].rsplit('\n输入材料：\n',1)[-1])
         folder=OUT/'format_attempts'/self.job/uuid.uuid4().hex
         folder.mkdir(parents=True,exist_ok=True)
@@ -59,6 +59,8 @@ class Client(ArkClient):
         current=messages
         for retry in range(2):
             response=super().call(model,current,parameters,max_tokens=max_tokens)
+            if usage_sink is not None:
+                usage_sink(response.get('usage',{}))
             (folder/('attempt_'+str(retry)+'_response.json')).write_text(json.dumps(response,ensure_ascii=False,indent=2)+'\n')
             try:
                 obj,conversions=validate(response,materials)
