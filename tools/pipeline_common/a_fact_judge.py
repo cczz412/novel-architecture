@@ -1,4 +1,5 @@
 # 执行身份：Codex
+# 实验，未达线：默认关闭；A 维持旧路径并交作者确认。本路径保留，不再迭代。
 """Opt-in A fact judging. Transport and model policy remain with the caller."""
 import copy
 import hashlib

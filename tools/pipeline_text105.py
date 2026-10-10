@@ -826,7 +826,7 @@ def text_j2(material, facts, call, save):
 
 def run(materials, call, save):
     from pipeline_records25 import facts_output, plans_output, assemble
-    from pipeline_author25 import build_views
+    from pipeline_author25 import build_views, A_YELLOW_NOTICE
     current={}; all_facts=[]; previous=[]
     for material in materials:
         ch=material['chapter']; part={}; current[ch]=part
@@ -898,6 +898,8 @@ def run(materials, call, save):
                 'original':copy.deepcopy(item['row']),'paragraph_ids':[item['paragraph_id']] if item.get('paragraph_id') else []})
     author['pending_reason_counts'] = dict(reason_counts)
     for row in author['views']['待核资料']:
+        if row.get('source_layer') == 'A':
+            row.update(card_label='A 黄卡', confirmation_notice=A_YELLOW_NOTICE)
         code = pending_reason_code(row.get('confirmation_reason'))
         if code:
             row['reason_code'] = code

@@ -6,6 +6,9 @@ from pipeline_source25 import read_json
 from pipeline_records25 import SECTIONS, evidence
 from pipeline_context52 import person_pool, narration, speech_table
 
+# 执行身份：Codex；A 只作候选，展示标记不参与模型请求。
+A_YELLOW_NOTICE = 'A 层计划为候选，召回有限，默认不可用，请逐条确认；确认后仍可撤回。'
+
 J2_VIEWS=('人物卡','别名表','关系表','时间表','回忆块','安排义务表','物件表','性格能力表','经济条目','家庭关系卡','说话人')
 UNKNOWN_TEXT={'原文未交代':'原文未交代','该层未完成':'本章该层未完成，暂无结果','待核':'有待核条目 {n} 条'}
 
@@ -95,6 +98,9 @@ def build_views(materials, current):
             if any(not layer_status.get(ch,{}).get('J2',False) for ch in item['subject_j2_chapters']):
                 item.update(fallback=True,confirmation_status='未经人物账本确认',fallback_label='未经人物账本确认')
                 item.update(entity='未知主体（人物账本未完成）',subject='未知主体（人物账本未完成）',original_subject_unconfirmed=row['subject'])
+            item.update(source_layer='A', card_color='yellow', card_label='A 黄卡',
+                        default_usable=False, author_retractable=True,
+                        confirmation_status='待核', confirmation_notice=A_YELLOW_NOTICE)
             views['计划状态表'].append(item)
             if row['status'] in ('未执行', '执行中'):
                 views['未来安排表'].append(item)
@@ -227,6 +233,10 @@ def build_views(materials, current):
                 if layer_status[ch]['A']:continue
                 older=[c for c in chapters if c<ch and layer_status[c]['A']]
                 labels.append('截至 ch'+older[-1]+'，ch'+ch+' 未更新' if older else '部分：ch'+ch+' A 未完成')
+        if name == '计划状态表':
+            labels.insert(0, A_YELLOW_NOTICE)
+            view_status[name].update(card_color='yellow', default_usable=False,
+                                     author_retractable=True, notice=A_YELLOW_NOTICE)
         view_status[name]['label']='；'.join(labels)
     return {'execution_identity': 'Codex', 'views': views, 'entities': registry,'view_status':view_status,
             'layer_status':layer_status,'chapters':chapters,
@@ -433,7 +443,7 @@ def query(store, question, limit=12, chapters=None):
     meta['relevant_pending_count']=len(relevant_pending)
     meta['requested_views']=sorted(requested)
     if '计划状态表' in requested:
-        meta['plan_reading_note']='计划状态以计划表及其截至时间为准；事实中的念头、未说出的话不自动当作未来待办。'
+        meta['plan_reading_note']=A_YELLOW_NOTICE + '计划状态以计划表及其截至时间为准；事实中的念头、未说出的话不自动当作未来待办。'
     meta['query_scope_labels']=['部分：ch'+ch+' A 未完成' for ch in selected_chapters if relevant=={'计划状态表'} and not store.get('layer_status',{}).get(ch,{}).get('A',True)]
     return {'execution_identity': 'Codex', **meta, 'question': question,'status':store.get('status','complete'),
             'prompt_category':category,'unknown_text':prompt,'fallback_count':sum(bool(r['data'].get('fallback')) for r in rows),
