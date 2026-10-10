@@ -17,7 +17,7 @@ from types import SimpleNamespace
 sys.dont_write_bytecode=True
 TOOLS=Path(__file__).resolve().parent
 sys.path.insert(0,str(TOOLS))
-from pipeline_common.local_paths import external_path
+from pipeline_common.artifacts import external_path
 ROOT=external_path('GB_R04_ROOT')
 V5=ROOT/'job_R04_v105';G=ROOT/'gateway'
 GATEWAY_CODE=external_path('GB_GATEWAY_CODE')

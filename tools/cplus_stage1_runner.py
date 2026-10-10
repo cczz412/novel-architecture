@@ -7,7 +7,7 @@
 """
 
 from __future__ import annotations
-from pipeline_common.local_paths import external_path
+from pipeline_common.artifacts import external_path
 
 import argparse
 import hashlib

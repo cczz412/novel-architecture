@@ -20,7 +20,7 @@ import re
 import shutil
 from collections import Counter, defaultdict
 from pathlib import Path
-from pipeline_common.local_paths import external_path
+from pipeline_common.artifacts import external_path
 from typing import Any
 
 

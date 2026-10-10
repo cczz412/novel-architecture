@@ -1059,7 +1059,7 @@
       "primary_identity": "reusable_component",
       "primary_identity_label": "可复用组件",
       "status": "active_component_layer",
-      "python_file_count": 5,
+      "python_file_count": 4,
       "human_command": "不直接作为总入口；由治理索引、检查员、测试计划、模型横向试验、只读仓库目录与统一入口导入。",
       "inputs": [
         "本地 JSON、路径与工件清单",
@@ -8936,7 +8936,7 @@
     "source_review_method": "AST静态接口、调用点、根层导入和测试文本引用；未运行业务脚本。",
     "path_migration": {
       "execution_identity": "Codex",
-      "external_path_helper": "tools/pipeline_common/local_paths.py",
+      "external_path_helper": "tools/pipeline_common/artifacts.py",
       "background_example": "tools/pipeline_background25.example.json",
       "environment_example": "tools/local_paths.example.json",
       "remaining_fixed_path_files": [

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # 执行身份：Codex
 """R06 代用基线与有限修复；样本输入输出只在外部交付目录。"""
-from pipeline_common.local_paths import external_path
+from pipeline_common.artifacts import external_path
 import argparse
 import copy
 import hashlib

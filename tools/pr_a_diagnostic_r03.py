@@ -1,6 +1,6 @@
 # 执行身份：Codex
 """A状态诊断只写数字与编号，复用原评分器的实体对齐，不替代正式分数。"""
-from pipeline_common.local_paths import external_path
+from pipeline_common.artifacts import external_path
 import argparse
 from collections import Counter, defaultdict
 import importlib.util

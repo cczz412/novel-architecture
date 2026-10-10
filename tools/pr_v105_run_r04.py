@@ -1,6 +1,6 @@
 # 执行身份：Codex
 """One request per authorized file-protocol job, using production parameters."""
-from pipeline_common.local_paths import external_path
+from pipeline_common.artifacts import external_path
 import sys
 sys.dont_write_bytecode=True
 import datetime,hashlib,json,os
