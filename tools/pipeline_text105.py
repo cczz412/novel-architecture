@@ -121,6 +121,14 @@ def c_checked(payload, material):
                 pending.extend({'id': field + ':' + str(i), 'level': level, 'status': '待核', 'reason': '条目须为对象', 'row': r} for i, r in bad)
                 work[field] = [r for r in work[field] if isinstance(r, dict)]
         for i, scene in enumerate(work.get('scenes', []) if isinstance(work.get('scenes'), list) else []):
+            for name in ('location', 'light_weather', 'objects_visuals', 'sounds_smells', 'atmosphere', 'present', 'tags'):
+                # Grok Bot 作业外 v111：字段不是数组（如整句字符串）只把该字段降为待核、置空，不连带整个场景或整章。
+                if name not in scene or scene[name] is None:
+                    scene[name] = []
+                elif not isinstance(scene[name], list):
+                    pending.append({'id': 'scenes:' + str(i) + ':' + name, 'level': 'field', 'status': '待核',
+                                    'reason': '场景字段须为数组，原值保留待核', 'field': name, 'row': scene[name]})
+                    scene[name] = []
             for name in ('location', 'light_weather', 'objects_visuals', 'sounds_smells', 'atmosphere', 'present'):
                 if isinstance(scene.get(name), list):
                     bad = []
