@@ -69,6 +69,9 @@ def c_text_reserve(materials, config=None):
     maximum = OUTPUT_POLICY['C']['max_tokens']
     rows = []
     for m in materials:
+        from pipeline_common import c_viewpoint
+        if c_viewpoint.settings()['mode'] != 'legacy':
+            m = c_viewpoint.with_prior_context(m, materials)
         paras = m['paragraphs']
         half = len(paras) // 2
         packets = [paras] + ([paras[:half], paras[half:]] if len(paras) > 1 else [])

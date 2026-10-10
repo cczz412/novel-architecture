@@ -161,3 +161,19 @@ def c_text(material, call, save):
     save('C:' + material['chapter'] + ':saved', {'C': result, 'pending': pending})
     return result, pending
 
+
+PROMPT = '''给每个原文段做写法标注，并抽出现场场景。
+paragraphs：每个提交段一条，{p,main_tag,secondary_tag,viewpoint,quote,viewpoint_basis}。p 是段号；main_tag 主标签、secondary_tag 副标签（没有填 null），只能用：叙述带过、动作展开、对话、心理、场景；quote 是本段一处连续逐字短引。
+
+视角回答叙述透过谁的感知，不是本段谁出场、谁说话或谁出现最多。先看整包叙述的延续，再判断本段是否切换。
+人物有限视角（limited）：叙述贴着一个人物的所见、所闻和所想。第三人称也可以是人物视角。环境段、对话段或本段没写心理，不足以切成全知；没有切换依据时延续同一镜头。
+全知（omniscient）：有明确依据说明叙述者知道当前感知人物无法知道的事，或越过人物感知限制。多个人物轮流各占一章不等于全知。不能因为人物名找不到、只有外景或没有心理描写就写全知。
+第一人称（first_person）：先确认叙述中的“我”，排除人物台词、引用信件和嵌套故事里的“我”。viewpoint 要写叙述者姓名，不能只写“第一人称”。
+材料不足（undetermined）：无法判断叙述方式或叙述者姓名时，viewpoint 写“未定”，不要硬猜。
+
+viewpoint_context 只提供程序从已提交的本章或前章找出的自报姓名候选及原句。它不是全书默认，也不是已确认身份。模型必须判断是否真的指当前叙述者；当前章明显换人时，可以否认候选。不得用前文候选压过本章视角切换。候选缺失、冲突或不能确认时，第一人称姓名写未定。
+viewpoint_basis 每段一项：{kind,evidence:[{p,q}],narrator_confirmed}。kind 只能用 limited、omniscient、first_person、undetermined。evidence 给本包能支持视角判断的连续原句，p 为段号、q 为逐字短引，可以引用本包相邻段；不把一句人物出场当成视角证明。narrator_confirmed 只有明确确认唯一候选就是当前第一人称叙述者时才写 true，其他写 false。全知的 viewpoint 写全知；人物视角写人物名。
+
+scenes：每个现场场景一条，{paragraph_ids,location,light_weather,objects_visuals,sounds_smells,atmosphere,present,tags,layer}。paragraph_ids 是该场景覆盖的段号；location 地点、light_weather 光线天气、objects_visuals 物件与可见画面、sounds_smells 声音气味、atmosphere 氛围，各为数组，每格 {text,ev:[{p,q}]}；present 在场人物 [{entity,ev:[{p,q}]}]；tags 填 []；layer 用现场、回忆或未知。q 是该段连续逐字原文。
+输出 {paragraphs:[...],scenes:[...]}。'''
+

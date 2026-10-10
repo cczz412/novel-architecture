@@ -5,6 +5,8 @@ import hashlib
 import json
 import re
 
+from pipeline_common import c_viewpoint
+
 from pipeline_records25 import SECTIONS, STATUSES, evidence, validate
 from pipeline_output28 import pointer_payload, resolve_pointer
 
@@ -223,6 +225,8 @@ C_TEXT_METHOD = 'text_c_v110'
 
 
 def c_text_messages(material):
+    if c_viewpoint.settings()['mode'] != 'legacy':
+        return c_viewpoint.messages(material)
     payload = {'paragraphs': [[p['paragraph_id'], p['text']] for p in material['paragraphs']]}
     return [{'role': 'system', 'content': '只用提交的小说原文，输出合法JSON。'},
             {'role': 'user', 'content': C_TEXT_PROMPT + '\n' + json.dumps(payload, ensure_ascii=False, separators=(',', ':'))}]
@@ -262,6 +266,8 @@ def c_text_packet(material, call, save, tag, split_ok=True):
 
 def c_text(material, call, save):
     """整章一包；回包不可用才对半拆一次。返回与旧 C 同形的签发件和逐格待核。"""
+    if c_viewpoint.settings()['mode'] != 'legacy':
+        return c_viewpoint.c_text(material, call, save)
     paragraphs, scenes, pending, alias_log = [], [], [], []
     for packet, raw, reason in c_text_packet(material, call, save, '0'):
         if raw is None:
@@ -877,7 +883,10 @@ def run(materials, call, save):
             part['A_empty_reason'] = None
             part['A_failure_reasons'] = [{'reason':'B 事实未完成或缺少事实，A 尚未判断',
                                          'reason_code':'blocked_upstream'}]
-            part['C'],part['C_pending']=c_text(material,call,save)
+            if c_viewpoint.settings()['mode'] != 'legacy':
+                part['C'],part['C_pending']=c_text(c_viewpoint.with_prior_context(material,materials),call,save)
+            else:
+                part['C'],part['C_pending']=c_text(material,call,save)
             part['C_status']='partial' if part['C_pending'] else 'complete'
             save('chapter:'+ch+':complete',part)
             continue
@@ -906,7 +915,10 @@ def run(materials, call, save):
         previous=list({p['key']:p for p in part['plans']}.values())
         # The C implementation and its parameters are unchanged.
         # Grok Bot 作业外 v110：C 退回纯文字（164），校验出错仍按 v109 逐格降级。
-        part['C'],part['C_pending']=c_text(material,call,save)
+        if c_viewpoint.settings()['mode'] != 'legacy':
+            part['C'],part['C_pending']=c_text(c_viewpoint.with_prior_context(material,materials),call,save)
+        else:
+            part['C'],part['C_pending']=c_text(material,call,save)
         part['C_status']='partial' if part['C_pending'] else 'complete'
         part['C_mode']='text_v110'
         save('chapter:'+ch+':complete',part)
