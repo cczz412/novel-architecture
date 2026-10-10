@@ -11,7 +11,9 @@
     "NOVEL_LAB_ROOT": "<absolute-lab-root>",
     "NOVEL_CORPUS_ROOT": "<absolute-corpus-root>",
     "NOVEL_DOWNLOADS_ROOT": "<absolute-downloads-directory>",
-    "Z77_SOURCE_SANDBOX": "<absolute-z77-source-sandbox>"
+    "Z77_SOURCE_SANDBOX": "<absolute-z77-source-sandbox>",
+    "Z80_ZHIHU_CACHE": "<absolute-source-cache-file>",
+    "Z80_FANREN_CACHE": "<absolute-source-cache-file>"
   },
   "diagnostic_package_args": [
     "--source",

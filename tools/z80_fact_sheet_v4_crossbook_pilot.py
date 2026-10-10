@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 执行身份：Codex
 """第80道：事实说明书注入包 v4 定点修复与三组顺序复验。
 
 v4 以第79道正式留档的 v3 候选为只读底稿，只新增三条 system 规则。
@@ -16,6 +17,7 @@ import os
 import shutil
 from collections import Counter
 from pathlib import Path
+from pipeline_common.artifacts import DeferredExternalPath
 from typing import Any, Mapping
 
 import z68_revised_request_pilot as z68
@@ -120,15 +122,8 @@ SEMANTIC_GATE_KEYS = {
     ),
 }
 
-ZHIHU_CACHE = Path(
-    "/Users/a1234/挣钱/小说101-downloads/05_感情关系/"
-    "庶女明兰传（知否？知否？应是绿肥红瘦）/chapters_cache/"
-    "033_卷一 故园今日海棠开，只有名花苦幽独 第33回 生存环境改善指南.txt"
-)
-FANREN_CACHE = Path(
-    "/Users/a1234/挣钱/小说101-downloads/07_历史世界规则/凡人修仙传/"
-    "chapters_cache/0030_第30章 枭雄末路.txt"
-)
+ZHIHU_CACHE = DeferredExternalPath("Z80_ZHIHU_CACHE")
+FANREN_CACHE = DeferredExternalPath("Z80_FANREN_CACHE")
 ZHIHU_DRAFT = ROOT / (
     "reports/Z74B_五本结构层金标底稿_v1.1_20260721/"
     "B01_知否_库存第0033单元_结构层银标底稿v1.2.json"

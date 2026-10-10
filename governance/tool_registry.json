@@ -8939,12 +8939,7 @@
       "external_path_helper": "tools/pipeline_common/artifacts.py",
       "background_example": "tools/pipeline_background25.example.json",
       "environment_example": "tools/local_paths.example.json",
-      "remaining_fixed_path_files": [
-        "tools/pr_ark_client_r02.py",
-        "tools/z74b_gold_draft_pipeline.py",
-        "tools/z77_fact_sheet_v2_pilot.py",
-        "tools/z80_fact_sheet_v4_crossbook_pilot.py"
-      ],
+      "remaining_fixed_path_files": [],
       "limitation": "原客户端禁止修改；金标生成及绑定历史金标材料和固定指纹的旧试点未在本轮迁移。"
     }
   },
