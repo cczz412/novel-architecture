@@ -477,6 +477,7 @@ def run(args):
     for ch in selected:
         for missing in range(int(previous_selected)+1, int(ch)):
             receipt['gap_seed_receipts'].append(inherit_gap_states(result, catalog, config, getattr(args, 'a_seed_source', None), f'{missing:02d}', previous_selected))
+            previous_selected = f'{missing:02d}'
         previous_selected = ch
         data = read_book(config, ch)
         folder = output / ('ch' + ch)
