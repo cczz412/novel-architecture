@@ -170,12 +170,42 @@ def _split_corrupt_call(call, save):
     return wrapped
 
 
+SCENE_ABSENCE = re.compile(
+    r'(?:(?:原文|文中|本段|本章)(?:中)?)?'
+    r'(?:未(?:明确|具体)?(?:提及|描写|说明|交代)|未明写|未写|没有(?:提及|描写|说明|信息)|无(?:信息)?|不详)'
+)
+SCENE_TEXT_FIELDS = ('location', 'light_weather', 'objects_visuals', 'sounds_smells', 'atmosphere')
+
+
+def _clean_scene_placeholders(value):
+    """Remove only whole absence statements; keep mixed or substantive cells."""
+    log = []
+    for index, scene in enumerate(value.get('scenes', [])):
+        if not isinstance(scene, dict):
+            continue
+        for field in SCENE_TEXT_FIELDS:
+            cells = scene.get(field)
+            if not isinstance(cells, list):
+                continue
+            kept = []
+            for cell in cells:
+                text = cell.get('text') if isinstance(cell, dict) else None
+                if isinstance(text, str) and SCENE_ABSENCE.fullmatch(text.strip().rstrip('。.!！')):
+                    log.append({'scene': index, 'field': field, 'original': copy.deepcopy(cell),
+                                'reason': '整格只表示原文没有信息', 'execution_identity': EXECUTION_IDENTITY})
+                else:
+                    kept.append(cell)
+            scene[field] = kept
+    return log
+
+
 def c_text(material, call, save):
     from pipeline_text105 import c_text_packet, c_text_normalize, c_checked
     # Preserve the whole chapter's candidates when a rejected packet is split.
     context = narrator_context(material)
     prepared = dict(material, **{CONTEXT_KEY: context})
     paragraphs, scenes, pending, alias_log = [], [], [], []
+    scene_cleanup = []
     missing_from_answer = []
     for packet, raw, reason in c_text_packet(prepared, _split_corrupt_call(call, save), save, '0'):
         if raw is None:
@@ -187,6 +217,7 @@ def c_text(material, call, save):
         value, log = c_text_normalize(raw)
         alias_log.extend(log)
         value.setdefault('scenes', [])
+        scene_cleanup.extend(_clean_scene_placeholders(value))
         value['memory_marks'] = {'paragraph_ids': [], 'open_at_end': False, 'starts': []}
         checked, cell_pending = c_checked(value, packet)
         paragraphs.extend(_check_viewpoint(row, packet, context)
@@ -207,6 +238,7 @@ def c_text(material, call, save):
             value, log = c_text_normalize(raw)
             alias_log.extend(log)
             value.setdefault('scenes', [])
+            scene_cleanup.extend(_clean_scene_placeholders(value))
             value['memory_marks'] = {'paragraph_ids': [], 'open_at_end': False, 'starts': []}
             checked, cell_pending = c_checked(value, packet)
             recovered = {row['p'] for row in checked.get('paragraphs', [])}
@@ -225,6 +257,7 @@ def c_text(material, call, save):
               'memory_marks': {'paragraph_ids': [], 'open_at_end': False, 'starts': []},
               'viewpoint_policy': '视角一律标黄待核；材料不足不默认全知',
               'viewpoint_context': context, 'alias_normalized': alias_log}
+    result['scene_placeholder_cleanup'] = scene_cleanup
     save('C:' + material['chapter'] + ':saved', {'C': result, 'pending': pending})
     return result, pending
 
