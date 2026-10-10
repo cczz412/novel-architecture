@@ -1,6 +1,7 @@
 # 执行身份：Codex
 """不同模型只判点名条目；重写仍由原生成模型承担并共享一次上限。"""
 import json
+from pr_review_r04 import isolate
 from pr_layers_headroom_r03 import parse, prompt, task as generate_task, dump
 
 JUDGE = '''你是不同模型的独立复核岗，只判不改。只用输入原文和有效事实，不借已知故事。
@@ -63,4 +64,4 @@ def task_judged(client,model,policy,schema,material,gate,folder,label,receipt,la
         except (ValueError,TypeError,KeyError,AttributeError) as e:pending.append(dict(error='独立判断回传后的重写结构失败：'+str(e)))
     pending.extend(dict(path=r['id'],field=r.get('field'),error=r['reason'],independent=True,decision=r['decision']) for r in issues)
     dump(folder/(label+'_independent_pending.json'),dict(execution_identity='Codex',generator=model,reviewer=reviewer[0],pending=pending,shared_generation_rewrite_limit=1))
-    return candidate,pending
+    return isolate(candidate, reviews),pending
