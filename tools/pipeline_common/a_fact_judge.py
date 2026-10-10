@@ -107,3 +107,167 @@ def packets(universe, config, old=None):
     if group:
         groups.append(group)
     return groups
+
+
+
+def fact_ev(fact, material):
+    ids = {p['full_id']: p['paragraph_id'] for p in material['paragraphs']}
+    return [{'p': ids[e['paragraph_id']], 'q': e['quote']} for e in fact.get('evidence', [])
+            if e.get('paragraph_id') in ids]
+
+
+def refs_to_facts(numbers, visible):
+    if not isinstance(numbers, list) or any(type(n) is not int for n in numbers):
+        raise ValueError('依据必须是程序提供的事实序号数组')
+    lookup = {x['n']: x['fact'] for x in visible}
+    if any(n not in lookup for n in numbers):
+        raise ValueError('依据序号未提供')
+    return [lookup[n] for n in numbers]
+
+
+def judged_row(raw, item, visible, material):
+    from pipeline_text105 import mechanical_row
+    if not isinstance(raw, dict) or type(raw.get('is_plan')) is not bool:
+        raise ValueError('是否计划缺答或不是布尔值')
+    if not raw['is_plan']:
+        return None
+    status = raw.get('status')
+    if not isinstance(status, dict):
+        raise ValueError('计划状态缺失')
+    basis = refs_to_facts(status.get('basis'), visible)
+    if not basis:
+        raise ValueError('计划状态缺依据序号')
+    fulfilled = status.get('fulfilled')
+    completion = refs_to_facts([fulfilled], visible) if fulfilled is not None else []
+    source = item['fact']
+    evidence_facts = [source] + basis + completion
+    ev = []
+    for fact in evidence_facts:
+        for e in fact_ev(fact, material):
+            if e not in ev:
+                ev.append(e)
+    # Deliberately whitelist the four decisions: model-written IDs/provenance are ignored.
+    row = {'key': None, 'subject': raw.get('subject'), 'content': raw.get('content'),
+           'status': status.get('value'), 'source': source['local_key'],
+           'basis': list(dict.fromkeys(f['local_key'] for f in basis)),
+           'fulfilled': completion[0]['local_key'] if completion else None,
+           'deadline': None, 'condition': None, 'condition_ref': None,
+           'reason': '由模型逐条判断，程序按事实序号补齐来源与状态依据', 'ev': ev}
+    row = mechanical_row('A', row, material, [x['fact'] for x in visible])
+    ident = hashlib.sha256(json.dumps([source['local_key'], row['subject'], row['content']], ensure_ascii=False).encode()).hexdigest()[:16]
+    row.update(_id='A:' + material['chapter'] + ':fact:' + ident,
+               confirmation_status='待核', default_usable=False, author_retractable=True)
+    return row
+
+
+def pending_row(ident, reason, row):
+    return {'id': ident, 'status': '待核', 'reason': reason, 'row': copy.deepcopy(row)}
+
+
+def ask_packets(universe, config, material, call, save, prefix, old=None):
+    """Use the v112 transport markers: caller retries unchanged, then split once."""
+    from pipeline_text105 import upstream_rejected, rejected_reason, loss_flag
+    queue = [(str(i), group, False) for i, group in enumerate(packets(universe, config, old))]
+    while queue:
+        tag, group, split_done = queue.pop(0)
+        stage = prefix + ':' + tag
+        msg, visible = packet_messages(group, universe, config, old)
+        payload = json.loads(msg[-1]['content'].rsplit('\n', 1)[-1])
+        save(stage + ':before', {'execution_identity': EXECUTION_IDENTITY, 'payload': payload, 'settings': config})
+        if wire_size(msg) > MAX_BYTES:
+            yield group, visible, None, pending_row(stage, '单条材料超过8KB，完整候选保留，未发送', payload)
+            continue
+        raw = call('A', material['chapter'], msg, False, stage + ':generate')
+        save(stage + ':original', {'execution_identity': EXECUTION_IDENTITY, 'payload': raw})
+        if upstream_rejected(raw):
+            if not split_done and len(group) > 1:
+                half = len(group) // 2
+                queue[0:0] = [(tag + 'a', group[:half], True), (tag + 'b', group[half:], True)]
+                continue
+            why = rejected_reason(raw, split_done, '完整计划判断材料保留')
+            yield group, visible, None, {**pending_row(stage, why, payload), **loss_flag(why)}
+        elif not isinstance(raw, dict) or raw.get('_upstream_unanswered'):
+            yield group, visible, None, pending_row(stage, '上游未回答，完整候选保留', payload)
+        else:
+            yield group, visible, raw, None
+
+
+def review_rows(rows, material, facts, previous, config, call, save, prefix):
+    from pipeline_text105 import messages, review_result, upstream_rejected, rejected_reason, loss_flag, A_CARRY_FIELDS
+    approved, pending, rejected = [], [], []
+    def build(part):
+        refs = {r.get(k) for r in part for k in ('source', 'fulfilled', 'condition_ref')} | {k for r in part for k in r['basis']}
+        selected = [f for f in facts if f['local_key'] in refs and fact_ev(f, material)]
+        pids = {e['p'] for f in selected for e in fact_ev(f, material)}
+        payload = {'role': 'A', 'rows': part,
+                   'paragraphs': [[p['paragraph_id'], p['text']] for p in material['paragraphs'] if p['paragraph_id'] in pids],
+                   'facts': [{k: f.get(k) for k in ('local_key', 'text', 'subject', 'kind', 'layer')} for f in selected],
+                   'previous_plans': [{k: p.get(k) for k in A_CARRY_FIELDS} for p in previous if p['key'] in {r.get('key') for r in part}]}
+        msg = messages('A', payload, True)
+        msg[1]['content'] = (policy_prompt(config) + '\n持有人按谁要去做判断，条件威胁属于放话方。'
+                             '来源和依据由程序绑定；不要修订编号、来源、依据和证据。\n' + msg[1]['content'])
+        return msg
+    queue = [(rows, prefix, False)] if rows else []
+    while queue:
+        part, stage, split_done = queue.pop(0)
+        msg = build(part)
+        if wire_size(msg) > MAX_BYTES:
+            if len(part) > 1:
+                half = len(part) // 2
+                queue[0:0] = [(part[:half], stage + ':a', split_done), (part[half:], stage + ':b', split_done)]
+            else:
+                pending.append(pending_row(part[0]['_id'], '单条复核材料超过8KB，完整候选保留，未发送', part[0]))
+            continue
+        raw = call('A', material['chapter'], msg, True, stage)
+        save(stage + ':original', {'execution_identity': EXECUTION_IDENTITY, 'payload': raw})
+        if upstream_rejected(raw) and not split_done and len(part) > 1:
+            half = len(part) // 2
+            queue[0:0] = [(part[:half], stage + ':split_a', True), (part[half:], stage + ':split_b', True)]
+            continue
+        if upstream_rejected(raw):
+            why = rejected_reason(raw, split_done, '复核未答，完整候选保留')
+            pending.extend({**pending_row(r['_id'], why, r), **loss_flag(why)} for r in part)
+            continue
+        try:
+            if not isinstance(raw, dict) or raw.get('_upstream_unanswered'):
+                raise ValueError('复核未回答')
+            for patch in raw.get('patches', []):
+                if set(patch.get('changes', {})) & {'source', 'basis', 'fulfilled', 'condition_ref', 'ev'}:
+                    raise ValueError('复核试图改写程序绑定的来源或依据，候选保留待核')
+            ok, removed = review_result('A', {'rows': part}, raw, material, facts, previous)
+            approved.extend(ok['rows'])
+            pending.extend(r for r in removed if r['status'] == '待核')
+            rejected.extend(r for r in removed if r['status'] == '拒收')
+        except (ValueError, KeyError, TypeError, AttributeError) as exc:
+            pending.extend(pending_row(r['_id'], str(exc), r) for r in part)
+    return approved, pending, rejected
+
+
+def run(material, call, save, facts=(), previous=()):
+    config = settings()
+    universe = candidates(material, facts)
+    rows, pending, rejected = [], [], []
+    prefix = 'A:' + material['chapter'] + ':fact_judge'
+    save(prefix + ':candidates', {'execution_identity': EXECUTION_IDENTITY, 'settings': config,
+                                'candidates': universe, 'policy': 'all_current_facts'})
+    for group, visible, raw, failure in ask_packets(universe, config, material, call, save, prefix):
+        if failure:
+            pending.append(failure)
+            continue
+        answers = raw.get('rows')
+        if not isinstance(answers, list) or len(answers) != len(group):
+            pending.append(pending_row(prefix, '逐条判断缺答或条数不符，整包保留', raw))
+            continue
+        for item, answer in zip(group, answers):
+            try:
+                row = judged_row(answer, item, visible, material)
+                if row:
+                    rows.append(row)
+            except (ValueError, KeyError, TypeError, AttributeError) as exc:
+                pending.append(pending_row(prefix + ':' + str(item['n']), str(exc), answer))
+    unique = {r['_id']: r for r in rows}
+    rows, more_pending, rejected = review_rows(list(unique.values()), material, facts, previous, config, call, save, prefix + ':review')
+    pending.extend(more_pending)
+    result = {'rows': rows, 'carried': []}
+    save(prefix + ':saved', {'execution_identity': EXECUTION_IDENTITY, 'approved': result, 'pending': pending, 'rejected': rejected})
+    return result, pending, rejected

@@ -412,6 +412,9 @@ def loss_flag(reason):
 
 def text_ab(role, material, call, save, facts=(), previous=()):
     """The callback owns transport and budget. Every raw response is saved before checking."""
+    from pipeline_common.a_fact_judge import settings, run as fact_judge
+    if role == 'A' and settings()['mode'] == 'fact_judge':
+        return fact_judge(material, call, save, facts, previous)
     collected, pending, rejected, carried = [], [], [], set()
     groups = paragraph_packets(material, maximum=8000, count=56) if role=='B' else a_packets(material, facts, previous)
     queue = [(str(n), child, False) for n, child in enumerate(groups)]
