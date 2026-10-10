@@ -113,7 +113,10 @@ def main(argv=None):
   if old:
    row={'stage_id':stage,'job_id':old[-1]['job_id'],'body_sha256':digest,'settled':True,'reused_from_v105':True,'note':'请求体 sha256 与已答同阶段逐字节一致，复用回包，未新发'}
    stages[stage]=row;result['gateway_jobs'].append(row);save(J/'result.json',result)
-   return parse_response(read(next(d/row['job_id']/'response.json' for d in RESP_DIRS if (d/row['job_id']/'response.json').exists()))['response'])
+   response=read(next(d/row['job_id']/'response.json' for d in RESP_DIRS if (d/row['job_id']/'response.json').exists()))['response']
+   try:return parse_response(response)
+   except Exception as e:  # 复用回包与本轮回包同样处理：解析失败（含输出截断）记待核，不中止整线
+    checkpoint(stage+':parse_failure',{'response':response,'error':str(e)});return {'_upstream_unanswered':True}
   if not ALLOW_NEW or not stage.startswith(ALLOW_NEW):
    NOT_SENT.append(stage);return {'_upstream_unanswered':True}
   if capped(stage):return {'_upstream_unanswered':True}
