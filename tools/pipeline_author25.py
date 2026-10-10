@@ -189,7 +189,8 @@ def build_views(materials, current):
             full = next(p['full_id'] for p in material['paragraphs'] if p['paragraph_id'] == row['p'])
             item={**row, 'paragraph_ids':[full],'chapter':material['chapter']}
             viewpoint = row.get('viewpoint')
-            direct = (c.get('C_mode') == 'text_v110' or c.get('method') == 'text_c_v110'
+            direct = (c.get('C_mode') in ('text_v110', 'viewpoint_evidence_v123')
+                      or c.get('method') in ('text_c_v110', 'text_c_viewpoint_evidence_v123')
                       or viewpoint in (None, '', '全知', '第一人称', '未定')
                       or isinstance(viewpoint, str) and viewpoint in narration(paragraph_text[full]))
             item['viewpoint_j2_chapters'] = [] if direct else [material['chapter']]
