@@ -28,7 +28,7 @@ def require_checkpoint(previous, current):
 
 
 # Only explicit, standalone self-naming statements are candidates. No name dictionary.
-SELF_NAME = re.compile(r'(?:^|(?<=[。！？\n]))\s*(?P<quote>我(?:名叫|叫)(?![了着过])(?P<name>[\u4e00-\u9fff]{2,6})[。！？])')
+SELF_NAME = re.compile(r'(?:^|(?<=[。！？\n]))\s*(?P<quote>我(?:名叫|叫)(?![了着过你我他她它]|住[你我他她它]|(?:一|两|几)声|起来|出声)(?P<name>[\u4e00-\u9fff]{2,6})[。！？，、])')
 MAX_CONTEXT_CANDIDATES = 8
 MAX_EVIDENCE_PER_CANDIDATE = 2
 SPECIAL_VIEWPOINTS = {'全知', '第一人称', '第二人称', '第三人称', '未定', '未知'}
