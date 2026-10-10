@@ -141,13 +141,42 @@ def _check_viewpoint(row, material, context):
     return row
 
 
+def _split_corrupt_call(call, save):
+    """Turn the offline driver's unsent parse retry into the existing split signal.
+
+    The driver is deliberately not imported: normal production callbacks and
+    all other deferred requests keep their original behavior.
+    """
+    def wrapped(role, chapter, messages, review, stage):
+        try:
+            return call(role, chapter, messages, review, stage)
+        except Exception as exc:
+            retry = getattr(exc, 'data', None)
+            if not (type(exc).__name__ == 'NextRequest'
+                    and isinstance(retry, dict)
+                    and role == 'C' and not review
+                    and retry.get('role') == role
+                    and retry.get('stage_id') == stage
+                    and retry.get('retry_of')
+                    and retry.get('retry_reason') == '回包解析失败原样重投一次'):
+                raise
+            save(stage + ':corrupt_split', {
+                'execution_identity': EXECUTION_IDENTITY,
+                'response_job_id': retry['retry_of'],
+                'action': '解析失败，沿用对半拆一次；不投同包重试',
+            })
+            return {'_upstream_unanswered': True, '_response_corrupt': True,
+                    '_upstream_reason': '回包解析失败，跳过同包重投'}
+    return wrapped
+
+
 def c_text(material, call, save):
     from pipeline_text105 import c_text_packet, c_text_normalize, c_checked
     # Preserve the whole chapter's candidates when a rejected packet is split.
     context = narrator_context(material)
     prepared = dict(material, **{CONTEXT_KEY: context})
     paragraphs, scenes, pending, alias_log = [], [], [], []
-    for packet, raw, reason in c_text_packet(prepared, call, save, '0'):
+    for packet, raw, reason in c_text_packet(prepared, _split_corrupt_call(call, save), save, '0'):
         if raw is None:
             pending.extend({'id': 'paragraphs:' + p['paragraph_id'], 'level': 'paragraph',
                             'status': '待核', 'reason': reason,
