@@ -201,7 +201,10 @@ def review_rows(rows, material, facts, previous, config, call, save, prefix):
         refs = {r.get(k) for r in part for k in ('source', 'fulfilled', 'condition_ref')} | {k for r in part for k in r['basis']}
         selected = [f for f in facts if f['local_key'] in refs and fact_ev(f, material)]
         pids = {e['p'] for f in selected for e in fact_ev(f, material)}
-        payload = {'role': 'A', 'rows': part,
+        wire_rows = [{k: v for k, v in r.items() if k not in
+                      ('_prior_evidence', '_prior_reason', 'evidence', 'confirmation_status',
+                       'confirmation_reason', 'default_usable', 'author_retractable')} for r in part]
+        payload = {'role': 'A', 'rows': wire_rows,
                    'paragraphs': [[p['paragraph_id'], p['text']] for p in material['paragraphs'] if p['paragraph_id'] in pids],
                    'facts': [{k: f.get(k) for k in ('local_key', 'text', 'subject', 'kind', 'layer')} for f in selected],
                    'previous_plans': [{k: p.get(k) for k in A_CARRY_FIELDS} for p in previous if p['key'] in {r.get('key') for r in part}]}
