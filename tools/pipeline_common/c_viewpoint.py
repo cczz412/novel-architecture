@@ -28,17 +28,30 @@ def require_checkpoint(previous, current):
 
 
 # Only explicit, standalone self-naming statements are candidates. No name dictionary.
-SELF_NAME = re.compile(r'(?:^|(?<=[。！？\n]))\s*(?P<quote>我(?:名叫|叫)(?P<name>[\u4e00-\u9fff]{2,6})[。！？])')
+SELF_NAME = re.compile(r'(?:^|(?<=[。！？\n]))\s*(?P<quote>我(?:名叫|叫)(?![了着过])(?P<name>[\u4e00-\u9fff]{2,6})[。！？])')
 MAX_CONTEXT_CANDIDATES = 8
 MAX_EVIDENCE_PER_CANDIDATE = 2
 SPECIAL_VIEWPOINTS = {'全知', '第一人称', '第二人称', '第三人称', '未定', '未知'}
 
 
 def _declarations(material):
+    open_quotes = []
+    pairs = {'“': '”', '「': '」', '『': '』', '‘': '’'}
     for paragraph in material['paragraphs']:
         text = paragraph['text']
-        # Deliberately narrow: quoted speech and embedded quoted narration are not proof.
-        if any(mark in text for mark in '“”「」『』"'):
+        # Deliberately narrow: quoted paragraphs and continued quotes are not proof.
+        in_quote = bool(open_quotes)
+        for char in text:
+            if char in pairs:
+                open_quotes.append(pairs[char])
+            elif char == '"':
+                if open_quotes and open_quotes[-1] == char:
+                    open_quotes.pop()
+                else:
+                    open_quotes.append(char)
+            elif open_quotes and char == open_quotes[-1]:
+                open_quotes.pop()
+        if in_quote or any(mark in text for mark in '“”「」『』‘’"'):
             continue
         for match in SELF_NAME.finditer(text):
             yield match['name'], {'chapter': material['chapter'],
