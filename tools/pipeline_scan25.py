@@ -103,7 +103,7 @@ def legacy(args):
        blocks.extend(r['text'] for r in rows)
        used.append(dict(member=member,sha256=hashlib.sha256(raw).hexdigest(),paragraph_count=len(rows)))
      corpora[record['code']]='\n'.join(blocks)
-     receipts.append(dict(**record,members=used,text_length=len(corpora[record['code']]),pipeline_steps=0))
+     receipts.append(dict(record,members=used,missing_chapter_count=missing,text_length=len(corpora[record['code']]),pipeline_steps=0))
     entities={code:set() for code in corpora}
     for record in records:
      for item in record.get('entity_records', []):
