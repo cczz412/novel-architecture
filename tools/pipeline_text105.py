@@ -311,6 +311,8 @@ def generation(role, value, material, packet, facts=(), previous=()):
 def review_result(role, candidate, review, material, facts=(), previous=()):
     if not isinstance(review.get('verdicts'), list) or not isinstance(review.get('patches', []), list):
         raise ValueError('缺少裁定数组')
+    if role == 'A' and any(not isinstance(v, dict) for v in review['verdicts'] + review.get('patches', [])):
+        raise ValueError('回包损坏：裁定或修订条目不是对象')
     wanted = {r['_id'] for r in candidate['rows']}
     ids = [v.get('id') for v in review['verdicts']]
     patches = [p.get('id') for p in review.get('patches', [])]
@@ -462,6 +464,10 @@ def text_ab(role, material, call, save, facts=(), previous=()):
             pending.append({'id':prefix,'status':'待核','reason':why,'row':payload,
                             **loss_flag(why),'paragraph_ids':[p['paragraph_id'] for p in child['paragraphs']]})
             continue
+        if role == 'A' and not isinstance(raw, dict):
+            pending.append({'id':prefix,'status':'待核','reason':RESPONSE_CORRUPT + '：响应不是对象',
+                            'row':raw,'response_corrupt':True})
+            continue
         if raw.get('_upstream_unanswered'):
             pending.append({'id':prefix,'status':'待核','reason':unanswered_reason(raw, '，完整原文保留'),'row':payload})
             continue
@@ -493,7 +499,8 @@ def text_ab(role, material, call, save, facts=(), previous=()):
             else:
                 candidate = generation(role, raw, child, payload, facts, previous)
         except (ValueError, KeyError, TypeError) as exc:
-            pending.append({'id':prefix,'status':'待核','reason':str(exc),'row':raw})
+            pending.append({'id':prefix,'status':'待核','reason':str(exc),'row':raw,
+                            **({'response_corrupt':True} if role == 'A' else {})})
             continue
         pending.extend(candidate['_normalization_pending_rows'])
         if role == 'A':
@@ -502,9 +509,11 @@ def text_ab(role, material, call, save, facts=(), previous=()):
             carried.update(r['key'] for r in echo)
             candidate['rows'] = [r for r in candidate['rows'] if r not in echo]
         save(prefix + ':candidate', candidate)
+        # 执行身份：Codex；合法空 rows 表示本包无计划，失败仍由待核和拒收记录说明。
+        if role == 'A' and candidate.get('unresolved'):
+            pending.append({'id':prefix,'status':'待核','reason':'模型仍有未决判断，未判完',
+                            'row':copy.deepcopy(candidate['unresolved'])})
         if not candidate['rows']:
-            if role == 'A' and not echo:
-                pending.append({'id':prefix,'status':'待核','reason':'模型未返回计划，未证明没有计划','row':raw})
             continue
         def review_once(rows, stage):
             part = dict(candidate, rows=rows)
@@ -539,10 +548,15 @@ def text_ab(role, material, call, save, facts=(), previous=()):
             if isinstance(review, dict) and review.get('_upstream_unanswered'):
                 pending.extend({'id':r['_id'],'status':'待核','reason':unanswered_reason(review, '，复核候选保留'),'row':r} for r in part['rows'])
                 continue
+            if role == 'A' and not isinstance(review, dict):
+                pending.extend({'id':r['_id'],'status':'待核','reason':RESPONSE_CORRUPT + '：复核响应不是对象',
+                                'row':r,'response_corrupt':True} for r in part['rows'])
+                continue
             try:
                 ok_part, removed = review_result(role, part, review, child, facts, previous)
             except (ValueError, KeyError, TypeError) as exc:
-                pending.extend({'id':r['_id'],'status':'待核','reason':str(exc),'row':r} for r in part['rows'])
+                pending.extend({'id':r['_id'],'status':'待核','reason':str(exc),'row':r,
+                                **({'response_corrupt':True} if role == 'A' else {})} for r in part['rows'])
                 continue
             approved['rows'].extend(ok_part['rows'])
             pending.extend(r for r in removed if r['status'] == '待核')
@@ -824,6 +838,26 @@ def text_j2(material, facts, call, save):
     return output,pending,rejected,originals
 
 
+
+def a_completion(part):
+    """执行身份：Codex；完成只说明判完，A 黄卡仍须作者确认。"""
+    failures = []
+    if part.get('B_status') != 'complete':
+        failures.append({'reason': 'B 事实未完成', 'reason_code': 'blocked_upstream'})
+    for item in part.get('A_pending', []):
+        code = item.get('reason_code') or pending_reason_code(item.get('reason'))
+        if not code:
+            code = 'response_corrupt' if item.get('response_corrupt') else 'upstream_rejected' if item.get('upstream_rejected') else None
+        failures.append({'reason': item.get('reason') or 'A 判断未完成',
+                         **({'reason_code': code} if code else {})})
+    for item in part.get('A_rejected', []):
+        failures.append({'reason': '复核拒收：' + str(item.get('reason') or '未说明原因')})
+    complete = not failures
+    return {'A_status': 'complete' if complete else 'partial',
+            'A_empty_reason': 'no_plans_after_full_judgement' if complete and not part.get('plans') else None,
+            'A_failure_reasons': failures}
+
+
 def run(materials, call, save):
     from pipeline_records25 import facts_output, plans_output, assemble
     from pipeline_author25 import build_views, A_YELLOW_NOTICE
@@ -840,6 +874,9 @@ def run(materials, call, save):
         if not part['facts']:
             part.update(A_status='blocked_upstream',J2_status='blocked_upstream',
                         A_pending=[],J2_pending=[],J2={f:[] for f in SECTIONS},plans=[])
+            part['A_empty_reason'] = None
+            part['A_failure_reasons'] = [{'reason':'B 事实未完成或缺少事实，A 尚未判断',
+                                         'reason_code':'blocked_upstream'}]
             part['C'],part['C_pending']=c_text(material,call,save)
             part['C_status']='partial' if part['C_pending'] else 'complete'
             save('chapter:'+ch+':complete',part)
@@ -865,6 +902,7 @@ def run(materials, call, save):
                 part['plans'].append(preserved)
                 part['A_pending'].append({'id':old['key'],'status':'待核','reason':'旧计划缺答，未覆盖旧版','row':preserved})
                 part['A_status']='partial'
+        part.update(a_completion(part))
         previous=list({p['key']:p for p in part['plans']}.values())
         # The C implementation and its parameters are unchanged.
         # Grok Bot 作业外 v110：C 退回纯文字（164），校验出错仍按 v109 逐格降级。
