@@ -164,7 +164,14 @@ def build_views(materials, current):
         for row in c.get('paragraphs', []):
             full = next(p['full_id'] for p in material['paragraphs'] if p['paragraph_id'] == row['p'])
             item={**row, 'paragraph_ids':[full],'chapter':material['chapter']}
-            if j2_missing:item.update(viewpoint='未定（人物账本未完成）',fallback=True,fallback_label='未经人物账本确认')
+            viewpoint = row.get('viewpoint')
+            direct = (c.get('C_mode') == 'text_v110' or c.get('method') == 'text_c_v110'
+                      or viewpoint in (None, '', '全知', '第一人称', '未定')
+                      or isinstance(viewpoint, str) and viewpoint in narration(paragraph_text[full]))
+            item['viewpoint_j2_chapters'] = [] if direct else [material['chapter']]
+            if j2_missing and item['viewpoint_j2_chapters']:
+                item.update(original_viewpoint_unconfirmed=viewpoint, viewpoint='未定（人物账本未完成）',
+                            viewpoint_status='待核', fallback=True, fallback_label='未经人物账本确认')
             views['写法视角表'].append(item)
         for row in c.get('scenes', []):
             presence = [{'entity': p['entity'], 'evidence': evidence(p['ev'], material)} for p in row.get('present', [])]
@@ -207,8 +214,10 @@ def build_views(materials, current):
     for name,rows in views.items():
         deps=['J2'] if name in J2_VIEWS else ['A','J2'] if name in ('计划状态表','未来安排表') else ['C','J2'] if name in ('写法视角表','场景在场表','用餐在场表') else ['B'] if name=='事实检索' else []
         j2_label='J2（未知主体回填）' if name in ('计划状态表','未来安排表') else 'J2（视角）' if name=='写法视角表' else 'J2（在场人物）' if name in ('场景在场表','用餐在场表') else 'J2'
-        missing=[{'chapter':ch,'layer':j2_label if dep=='J2' else dep} for ch in chapters for dep in deps if not layer_status[ch][dep]]
-        completed=[ch for ch in chapters if all(layer_status[ch][d] for d in deps)]
+        viewpoint_deps = {ch for row in rows for ch in row.get('viewpoint_j2_chapters', [])} if name == '写法视角表' else set(chapters)
+        missing=[{'chapter':ch,'layer':j2_label if dep=='J2' else dep} for ch in chapters for dep in deps
+                 if not layer_status[ch][dep] and (dep != 'J2' or ch in viewpoint_deps)]
+        completed=[ch for ch in chapters if not any(m['chapter'] == ch for m in missing)]
         view_status[name]={'status':'完整' if not missing else '部分' if completed else '未完成','missing':missing,
              'complete_chapters':completed,'pending_count':sum(r.get('chapter') in chapters for r in views['待核资料']) if 'J2'in deps else 0,
              'fallback_count':sum(bool(r.get('fallback')) for r in rows)}
