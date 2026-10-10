@@ -584,7 +584,8 @@ def memory_marks(material, entities=None, initial=False):
     marked=set();open_block=initial;started=[]
     for i,p in enumerate(paragraphs):
         plain=narration(p['text']).strip()
-        if re.fullmatch(r'[\s*＊—_－·。…]+',p['text']) or initial and open_block and re.match(r'^(?:此时|这时|等|午饭|下午|晚上|“)',p['text']) and not re.search(r'自从|当初|以前|曾经',plain):
+        # Grok Bot 作业外 v111（外部审查③）：回到现场的退出条件对本章开启与跨章继承的回忆一视同仁，不再只认 initial。
+        if re.fullmatch(r'[\s*＊—_－·。…]+',p['text']) or open_block and re.match(r'^(?:此时|这时|等|午饭|下午|晚上|“)',p['text']) and not re.search(r'自从|当初|以前|曾经',plain):
             open_block=False;initial=False
         if re.match(r'^(?:当初|自从|那时|以前|曾经|那年|小时候|[\u4e00-\u9fff]{1,4}自从)',plain):
             open_block=True;started.append(p['paragraph_id'])
