@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-09-08T07:14:16+08:00",
+  "updated_at": "2026-10-10T10:38:35.867812+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -23,8 +23,8 @@
   },
   "scope": {
     "root_entity_definition": "tools/ 根层、非软链、后缀为 .py 的普通文件。",
-    "root_entity_count": 112,
-    "root_visible_python_entry_count": 113,
+    "root_entity_count": 172,
+    "root_visible_python_entry_count": 173,
     "component_layer_count": 2,
     "partition_notes": [
       {
@@ -462,6 +462,546 @@
         "violation": "点名单文件测试入口按#326冻结路径放入tools根层；其固定测试路径不满足通用工具无批次写死门槛。初始冻结写集遗漏登记册，全量测试发现漏登。",
         "current_disposition": "只补专用身份登记与计数，不将其包装成通用工具；原测试和路径均不迁移。",
         "follow_up": "保留#326限定的离线、无下载、缺件不算通过边界；未来归并或迁移须另获批准。"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/ark_smoke_r02.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/gb_orchestrate_r04.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/or_smoke_r04.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_audit25.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_audit_wrapper25.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_author25.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_budget25.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_c_program25.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_context52.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_gateway_read25.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_j2_route85_selftest.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_output28.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_plan52.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_prompts25.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_query25.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_r04_gate25.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_records25.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_scan25.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_source25.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pipeline_text105.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_a_checked_r02.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_a_diagnostic_r03.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_a_projection_r03.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_ark_client_r02.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_availability_r01.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_b_cleanup_r04.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_b_only_r02.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_c_steps_r03.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_chapter_c_r02.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_checked_client_r02.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_compact_bc_r02.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_compact_r02.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_evidence_guard_r02.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_global_c_r02.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_guarded_bc_r02.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_guarded_r02.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_headroom_r02.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_incremental_r04.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_independent_r03.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_layers_headroom_r03.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_layers_judged_r03.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_layers_r03.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_layers_v2_r03.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_normalize_r03.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_normalize_v2_r03.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_pipeline_r01.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_pipeline_r02.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_probe_route_r01.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_recovery_probe_r03.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_replay_diagnostic_r03.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_resolved_bc_r02.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_resolved_r02.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_review_r04.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_shape_guard_r02.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_split_r01.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_split_r02.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_step_flow_r02.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_typed_r02.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/pr_v105_run_r04.py",
+        "violation": "进入 tools 根层时未同步登记。批次专用脚本也不符合根层放置规则。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
+      },
+      {
+        "detected_at": "2026-10-10T10:32:15.877156+08:00",
+        "task_id": "R04_v113pr",
+        "path": "tools/run_pipeline.py",
+        "violation": "进入 tools 根层时未同步登记。",
+        "current_disposition": "补登记并保留原位置；本轮不授权运行或生产晋升。",
+        "follow_up": "本轮不搬移文件。以后若整理目录，应先核调用方并另有明确任务。",
+        "execution_identity": "Codex"
       }
     ]
   },
@@ -524,12 +1064,14 @@
       "inputs": [
         "本地 JSON、路径与工件清单",
         "模型横向试验阶段规格、供应商配置与冻结请求包",
-        "当前状态、模型调用档、实验路线、仓外对象、取件卡、工具身份与 Git 索引"
+        "当前状态、模型调用档、实验路线、仓外对象、取件卡、工具身份与 Git 索引",
+        "外部路径环境变量；仅解析绝对路径，不打开目标内容"
       ],
       "outputs": [
         "统一读写、清单与工件校验结果",
         "隔离的模型候选样张、运输账、机械闸与横向成绩单",
-        "不落盘的仓库用途导航、候选模型零件表、实验／仓外对象摘要与体积分布"
+        "不落盘的仓库用途导航、候选模型零件表、实验／仓外对象摘要与体积分布",
+        "外部路径对象，或包含变量名的配置错误"
       ],
       "network_or_model": {
         "network": "conditional",
@@ -543,7 +1085,15 @@
         "tools/test_impact.py",
         "experiments/model_benchmarks/",
         "tools/chatgpt_review_pack.py",
-        "tools/simple_pack.py"
+        "tools/simple_pack.py",
+        "tools/ark_smoke_r02.py",
+        "tools/or_smoke_r04.py",
+        "tools/pr_pipeline_r01.py",
+        "tools/pr_v105_run_r04.py",
+        "tools/gb_orchestrate_r04.py",
+        "tools/pr_a_diagnostic_r03.py",
+        "tools/cplus_stage1_runner.py",
+        "tools/build_p2_production_prerequisites.py"
       ],
       "test_references": [
         "tests/test_pipeline_artifacts.py",
@@ -561,7 +1111,8 @@
         "experiments/model_benchmarks/README.md"
       ],
       "next_confirmed_consumer": "CZ 已明确后续会持续切换多个供应商与模型做同阶段横向试验，并要求整个仓库按用途好找路、好调取。",
-      "retirement_condition_and_compatibility_boundary": "现役公共工件层；批次路径只能进入阶段规格单；仓库目录只从现有真源即时派生，不得保存第二份总账、接受任意路径或探测受保护对象。"
+      "retirement_condition_and_compatibility_boundary": "现役公共工件层；批次路径只能进入阶段规格单；仓库目录只从现有真源即时派生，不得保存第二份总账、接受任意路径或探测受保护对象。",
+      "execution_identity": "Codex"
     }
   ],
   "compatibility_aliases": [
@@ -574,9 +1125,9 @@
     }
   ],
   "identity_summary": {
-    "reusable_component": 22,
-    "batch_reproducer": 83,
-    "active_entry": 3,
+    "reusable_component": 50,
+    "batch_reproducer": 114,
+    "active_entry": 4,
     "retired_compat": 4,
     "pending": 0
   },
@@ -4620,6 +5171,3824 @@
       "review_needed": false,
       "admitted_by": "ISSUE_326",
       "tool_id": "TOOL-112"
+    },
+    {
+      "tool_id": "TOOL-113",
+      "path": "tools/ark_smoke_r02.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "按固定模型表发送连通题，保存 R02 探测结果。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "顶层流程中的环境变量和固定探测参数"
+      ],
+      "outputs": [
+        "按固定模型表发送连通题，保存 R02 探测结果。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/ark_smoke_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [],
+        "io_calls": [
+          "json.dumps",
+          "json.dumps(body).encode",
+          "json.load",
+          "open",
+          "open(OUT, 'w').write",
+          "urllib.request.urlopen"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-114",
+      "path": "tools/gb_orchestrate_r04.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "Grok Bot 作业外整线编排：经本地网关逐条投递生产 text.run 的请求，挂起题原样重投一次。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：now, sha, read, ok_count, used_successes, http_rejected, NextRequest, main"
+      ],
+      "outputs": [
+        "Grok Bot 作业外整线编排：经本地网关逐条投递生产 text.run 的请求，挂起题原样重投一次。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/gb_orchestrate_r04.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_budget25.py",
+          "tools/pipeline_output28.py",
+          "tools/pipeline_source25.py",
+          "tools/pipeline_text105.py",
+          "tools/run_pipeline.py"
+        ],
+        "interfaces": [
+          "now",
+          "sha",
+          "read",
+          "ok_count",
+          "used_successes",
+          "http_rejected",
+          "NextRequest",
+          "main"
+        ],
+        "io_calls": [
+          "(J / 'progress_notes.md').open",
+          "Path(p).read_bytes",
+          "Path(p).read_text",
+          "f.write",
+          "hashlib.sha256(Path(p).read_bytes()).hexdigest",
+          "hashlib.sha256(json.dumps(body, ensure_ascii=False, sort_keys=True).encode()).hexdigest",
+          "json.dumps",
+          "json.dumps(body, ensure_ascii=False, sort_keys=True).encode",
+          "json.dumps(messages, ensure_ascii=False).encode",
+          "json.loads",
+          "log.read_text",
+          "read",
+          "read_sources",
+          "spec.loader.exec_module",
+          "text.run",
+          "tmp.write_text",
+          "write_json"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-115",
+      "path": "tools/or_smoke_r04.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "按固定模型表发送连通题，保存 R04 探测结果。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "顶层流程中的环境变量和固定探测参数"
+      ],
+      "outputs": [
+        "按固定模型表发送连通题，保存 R04 探测结果。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/or_smoke_r04.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [],
+        "io_calls": [
+          "json.dumps",
+          "json.dumps(body).encode",
+          "json.load",
+          "open",
+          "open(OUT, 'w').write",
+          "urllib.request.urlopen"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-116",
+      "path": "tools/pipeline_audit25.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "静态检查本地代码依赖，并对显式提供的输入做字符串检查。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：local_closure, structural_checks, cleaned, long_grams, collect_entities, string_scan, apply_background_releases"
+      ],
+      "outputs": [
+        "静态检查本地代码依赖，并对显式提供的输入做字符串检查。"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "仅静态检查到本地处理；本轮未运行。"
+      },
+      "current_consumers": [
+        "tools/pipeline_scan25.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_audit25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_source25.py"
+        ],
+        "interfaces": [
+          "local_closure",
+          "structural_checks",
+          "cleaned",
+          "long_grams",
+          "collect_entities",
+          "string_scan",
+          "apply_background_releases"
+        ],
+        "io_calls": [
+          "Path(source['path']).read_bytes",
+          "file.read_text",
+          "hashlib.sha256(Path(source['path']).read_bytes()).hexdigest",
+          "hashlib.sha256(table_path.read_bytes()).hexdigest",
+          "p.read_text",
+          "path.read_text",
+          "read_json",
+          "table_path.read_bytes"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-117",
+      "path": "tools/pipeline_audit_wrapper25.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "给 R04 运行加读取审计与专用预算包装，保存运行审计回执。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：hook"
+      ],
+      "outputs": [
+        "给 R04 运行加读取审计与专用预算包装，保存运行审计回执。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_audit_wrapper25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_r04_gate25.py",
+          "tools/run_pipeline.py"
+        ],
+        "interfaces": [
+          "hook"
+        ],
+        "io_calls": [
+          "(OUTPUT / 'runtime_audit.json').write_text",
+          "Path(path).read_bytes",
+          "hashlib.sha256(Path(path).read_bytes()).hexdigest",
+          "json.dumps",
+          "run_pipeline.main"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-118",
+      "path": "tools/pipeline_author25.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "从本轮记录生成有界的证据检索视图。A 计划为黄卡，召回有限，默认不可用，须由作者逐条确认；字段存在不代表内容能力已验收。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：build_views, grams, query_views, query"
+      ],
+      "outputs": [
+        "从本轮记录生成有界的证据检索视图。A 计划为黄卡，召回有限，默认不可用，须由作者逐条确认；字段存在不代表内容能力已验收。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pipeline_query25.py",
+        "tools/pipeline_text105.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_author25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_context52.py",
+          "tools/pipeline_records25.py",
+          "tools/pipeline_source25.py"
+        ],
+        "interfaces": [
+          "build_views",
+          "grams",
+          "query_views",
+          "query"
+        ],
+        "io_calls": [
+          "json.dumps",
+          "read_json"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-119",
+      "path": "tools/pipeline_budget25.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "计算岗位预留、超限停发并对未知用量保守计账。输入 Token 按字节估算，实际超出预留须等回包发现；绝不超额还需网关守门证据。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：now, before, input_estimate, reserve, request_maximum, c_text_reserve, apply_c_text_reserve, c_reserve_caps, c_mode_error, runtime_guard_errors, Halt, RoleLimit"
+      ],
+      "outputs": [
+        "计算岗位预留、超限停发并对未知用量保守计账。输入 Token 按字节估算，实际超出预留须等回包发现；绝不超额还需网关守门证据。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/gb_orchestrate_r04.py",
+        "tools/pipeline_gateway_read25.py",
+        "tools/pipeline_output28.py",
+        "tools/pipeline_r04_gate25.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_budget25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_output28.py",
+          "tools/pipeline_source25.py",
+          "tools/pipeline_text105.py"
+        ],
+        "interfaces": [
+          "now",
+          "before",
+          "input_estimate",
+          "reserve",
+          "request_maximum",
+          "c_text_reserve",
+          "apply_c_text_reserve",
+          "c_reserve_caps",
+          "c_mode_error",
+          "runtime_guard_errors",
+          "Halt",
+          "RoleLimit",
+          "TotalLimit",
+          "NetworkPause",
+          "TruncatedOutput",
+          "check_limits",
+          "blind_admission",
+          "blind_role_limits",
+          "Budget",
+          "NoRedirect",
+          "parse_response",
+          "complete_truncated_rows"
+        ],
+        "io_calls": [
+          "TruncatedOutput",
+          "json.dumps",
+          "json.dumps(messages, ensure_ascii=False).encode",
+          "json.dumps(request, ensure_ascii=False).encode",
+          "json.load",
+          "json.loads",
+          "opener.open",
+          "payload.get",
+          "read_json",
+          "runtime_guard_errors",
+          "self.calls.append",
+          "urllib.request.build_opener",
+          "write_json"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-120",
+      "path": "tools/pipeline_c_program25.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "从显式原段和事实提取材料标记，保留不确定项。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：narration, separator, scene_fragment_issues, hard_evidence, carry_blocks, scene_cells, annotate"
+      ],
+      "outputs": [
+        "从显式原段和事实提取材料标记，保留不确定项。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pipeline_plan52.py",
+        "tools/pipeline_records25.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_c_program25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_context52.py"
+        ],
+        "interfaces": [
+          "narration",
+          "separator",
+          "scene_fragment_issues",
+          "hard_evidence",
+          "carry_blocks",
+          "scene_cells",
+          "annotate"
+        ],
+        "io_calls": [],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-121",
+      "path": "tools/pipeline_context52.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "从当前提供的事实与原段取人物、称谓和对白线索；不包含书内映射。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：narration, quotes, nonverbal_quote, person_pool, resolve_title, name_map, mentions, speech_trigger_excluded, nominal_slot, subject_prefix_allowed, clause_subject, has_speech_clause"
+      ],
+      "outputs": [
+        "从当前提供的事实与原段取人物、称谓和对白线索；不包含书内映射。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pipeline_author25.py",
+        "tools/pipeline_c_program25.py",
+        "tools/pipeline_plan52.py",
+        "tools/pipeline_records25.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_context52.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_output28.py"
+        ],
+        "interfaces": [
+          "narration",
+          "quotes",
+          "nonverbal_quote",
+          "person_pool",
+          "resolve_title",
+          "name_map",
+          "mentions",
+          "speech_trigger_excluded",
+          "nominal_slot",
+          "subject_prefix_allowed",
+          "clause_subject",
+          "has_speech_clause",
+          "subject_before",
+          "unique_continuation",
+          "speech_table",
+          "memory_marks",
+          "entity_bindings"
+        ],
+        "io_calls": [
+          "call.start",
+          "hashlib.sha256(json.dumps(facts, ensure_ascii=False, sort_keys=True).encode()).hexdigest",
+          "json.dumps",
+          "json.dumps(facts, ensure_ascii=False, sort_keys=True).encode"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-122",
+      "path": "tools/pipeline_gateway_read25.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "通过 HTTP 读取网关预算并保存回执，不发模型请求。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "顶层流程中的环境变量和固定探测参数"
+      ],
+      "outputs": [
+        "通过 HTTP 读取网关预算并保存回执，不发模型请求。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_gateway_read25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_budget25.py",
+          "tools/pipeline_source25.py"
+        ],
+        "interfaces": [],
+        "io_calls": [
+          "reader.get_budget",
+          "write_json"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-123",
+      "path": "tools/pipeline_j2_route85_selftest.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "用固定虚构输入和假调用核验 v85 直接复核路线。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：model_tier_policy, fixture, exercise, run"
+      ],
+      "outputs": [
+        "用固定虚构输入和假调用核验 v85 直接复核路线。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_j2_route85_selftest.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_prompts25.py",
+          "tools/pipeline_records25.py",
+          "tools/run_pipeline.py"
+        ],
+        "interfaces": [
+          "model_tier_policy",
+          "fixture",
+          "exercise",
+          "run"
+        ],
+        "io_calls": [
+          "(root / 'result.json').write_text",
+          "calls.append",
+          "entry.run_j2_short",
+          "json.dumps",
+          "json.loads",
+          "path.write_text",
+          "rec.j2_wire_payload",
+          "run",
+          "state_path.read_text"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-124",
+      "path": "tools/pipeline_output28.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "有界返回协议、正文指针和一次拆分；不发请求。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：OutputOverflow, J2RowOverflow, size, repair_message, review_shape_error, sentences, pointer_payload, resolve_pointer, hydrate_j2, split_j2_rows, review_bound, check_review_shape"
+      ],
+      "outputs": [
+        "有界返回协议、正文指针和一次拆分；不发请求。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/gb_orchestrate_r04.py",
+        "tools/pipeline_budget25.py",
+        "tools/pipeline_context52.py",
+        "tools/pipeline_plan52.py",
+        "tools/pipeline_records25.py",
+        "tools/pipeline_text105.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_output28.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_budget25.py",
+          "tools/pipeline_prompts25.py",
+          "tools/pipeline_records25.py"
+        ],
+        "interfaces": [
+          "OutputOverflow",
+          "J2RowOverflow",
+          "size",
+          "repair_message",
+          "review_shape_error",
+          "sentences",
+          "pointer_payload",
+          "resolve_pointer",
+          "hydrate_j2",
+          "split_j2_rows",
+          "review_bound",
+          "check_review_shape",
+          "bounded_packets",
+          "split_packet",
+          "merge_accept_counts70",
+          "merge_values",
+          "a_local_payload",
+          "a_local_packets",
+          "a_grouped_packets",
+          "j2_decision_packets"
+        ],
+        "io_calls": [
+          "a_local_payload",
+          "j2_wire_payload",
+          "json.dumps",
+          "json.dumps(message, ensure_ascii=False).encode",
+          "json.dumps(value, ensure_ascii=False, separators=(',', ':')).encode",
+          "json.loads",
+          "payload.get",
+          "pointer_payload"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-125",
+      "path": "tools/pipeline_plan52.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "段级计划线索、后续证据配对和发送包；不判断模型语义成绩。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：scheduled_clause, own_arrangement, signal, followups, seed_goal, plan_candidates, carry_plans, wide_plan_context, seed_holders, model_payload, packets, wire_payload"
+      ],
+      "outputs": [
+        "段级计划线索、后续证据配对和发送包；不判断模型语义成绩。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pipeline_records25.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_plan52.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_c_program25.py",
+          "tools/pipeline_context52.py",
+          "tools/pipeline_output28.py",
+          "tools/pipeline_prompts25.py",
+          "tools/pipeline_records25.py"
+        ],
+        "interfaces": [
+          "scheduled_clause",
+          "own_arrangement",
+          "signal",
+          "followups",
+          "seed_goal",
+          "plan_candidates",
+          "carry_plans",
+          "wide_plan_context",
+          "seed_holders",
+          "model_payload",
+          "packets",
+          "wire_payload",
+          "split_seed_packet",
+          "check_local_plans",
+          "check_state_structure"
+        ],
+        "io_calls": [
+          "json.dumps",
+          "json.dumps(messages, ensure_ascii=False).encode",
+          "model_payload",
+          "payload.get",
+          "pointer_payload",
+          "protocol_payload57",
+          "wire_payload"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-126",
+      "path": "tools/pipeline_prompts25.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "提供中性岗位指令与返回格式，供生产模块组装消息。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "顶层流程中的环境变量和固定探测参数"
+      ],
+      "outputs": [
+        "提供中性岗位指令与返回格式，供生产模块组装消息。"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "仅静态检查到本地处理；本轮未运行。"
+      },
+      "current_consumers": [
+        "tools/pipeline_j2_route85_selftest.py",
+        "tools/pipeline_output28.py",
+        "tools/pipeline_plan52.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_prompts25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [],
+        "io_calls": [],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-127",
+      "path": "tools/pipeline_query25.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "读取已生成的作者资料和自然问句，保存零模型调用的回放结果。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：main"
+      ],
+      "outputs": [
+        "读取已生成的作者资料和自然问句，保存零模型调用的回放结果。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_query25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_author25.py",
+          "tools/pipeline_source25.py"
+        ],
+        "interfaces": [
+          "main"
+        ],
+        "io_calls": [
+          "read_json",
+          "write_json"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-128",
+      "path": "tools/pipeline_r04_gate25.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "读取 R04 授权与回执，检查指定作业的运行条件。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：R04Budget"
+      ],
+      "outputs": [
+        "读取 R04 授权与回执，检查指定作业的运行条件。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pipeline_audit_wrapper25.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_r04_gate25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "虽有下游调用，但核心绑定 R04 的控制文件或授权字段；按批次专用规则登记，不当作通用组件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_budget25.py",
+          "tools/pipeline_source25.py"
+        ],
+        "interfaces": [
+          "R04Budget"
+        ],
+        "io_calls": [
+          "Path(file).read_text",
+          "read_json",
+          "runtime_guard_errors",
+          "write_json"
+        ],
+        "reason": "虽有下游调用，但核心绑定 R04 的控制文件或授权字段；按批次专用规则登记，不当作通用组件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-129",
+      "path": "tools/pipeline_records25.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "核验来源证据、更新记录，并装配本轮作者资料。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：key_for, evidence, validate, flatten, plan_seeds, check_plan_seed_scope, bind_plan_seeds, b_scoring_projection, j2_program_candidates, j2_chapter_speakers, j2_signed_nearby, j2_prepare_packet_v50"
+      ],
+      "outputs": [
+        "核验来源证据、更新记录，并装配本轮作者资料。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pipeline_author25.py",
+        "tools/pipeline_j2_route85_selftest.py",
+        "tools/pipeline_output28.py",
+        "tools/pipeline_plan52.py",
+        "tools/pipeline_text105.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_records25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_c_program25.py",
+          "tools/pipeline_context52.py",
+          "tools/pipeline_output28.py",
+          "tools/pipeline_plan52.py"
+        ],
+        "interfaces": [
+          "key_for",
+          "evidence",
+          "validate",
+          "flatten",
+          "plan_seeds",
+          "check_plan_seed_scope",
+          "bind_plan_seeds",
+          "b_scoring_projection",
+          "j2_program_candidates",
+          "j2_chapter_speakers",
+          "j2_signed_nearby",
+          "j2_prepare_packet_v50",
+          "j2_pre_dispatch_v50",
+          "j2_partition_saved",
+          "j2_save_partition",
+          "j2_enrich_candidates",
+          "j2_prepare_packet",
+          "j2_pre_dispatch",
+          "j2_wire_payload",
+          "j2_revision_step",
+          "j2_short_decisions",
+          "j2_apply_short",
+          "j2_apply_checked57",
+          "speaker_candidates_legacy",
+          "speaker_candidates",
+          "normalize_speaker_claims",
+          "speaker_candidate_errors",
+          "check_speaker_claims",
+          "deduplicate",
+          "normalize_rejected_patches",
+          "review_apply",
+          "facts_output",
+          "plans_output",
+          "assemble",
+          "enum_value57",
+          "protocol_payload57",
+          "generation_normalize57",
+          "normalize_accept70",
+          "normalize_decisions57",
+          "normalize_review57",
+          "review_apply57"
+        ],
+        "io_calls": [
+          "json.dumps",
+          "json.dumps(parts, ensure_ascii=False, separators=(',', ':')).encode",
+          "payload.get",
+          "pointer_payload",
+          "protocol_payload57"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-130",
+      "path": "tools/pipeline_scan25.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "旧全文报告与公开书目白名单计数模式；计数模式不保存命中串或实体。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：counts_only, legacy, main"
+      ],
+      "outputs": [
+        "旧全文报告与公开书目白名单计数模式；计数模式不保存命中串或实体。"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "仅静态检查到本地处理；本轮未运行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_scan25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_audit25.py",
+          "tools/pipeline_source25.py"
+        ],
+        "interfaces": [
+          "counts_only",
+          "legacy",
+          "main"
+        ],
+        "io_calls": [
+          "handle.write",
+          "json.dumps",
+          "json.loads",
+          "output.open",
+          "package.read",
+          "read_json",
+          "write_json"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-131",
+      "path": "tools/pipeline_source25.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "按调用方指定的成员读取输入压缩包，并提供 JSON 与摘要函数。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：digest, read_json, write_json, chapter_range, read_sources"
+      ],
+      "outputs": [
+        "按调用方指定的成员读取输入压缩包，并提供 JSON 与摘要函数。"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "仅静态检查到本地处理；本轮未运行。"
+      },
+      "current_consumers": [
+        "tools/gb_orchestrate_r04.py",
+        "tools/pipeline_audit25.py",
+        "tools/pipeline_author25.py",
+        "tools/pipeline_budget25.py",
+        "tools/pipeline_gateway_read25.py",
+        "tools/pipeline_query25.py",
+        "tools/pipeline_r04_gate25.py",
+        "tools/pipeline_scan25.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_source25.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [
+          "digest",
+          "read_json",
+          "write_json",
+          "chapter_range",
+          "read_sources"
+        ],
+        "io_calls": [
+          "Path(path).open",
+          "Path(path).read_text",
+          "hashlib.sha256(package.read(member)).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "package.read",
+          "path.write_text",
+          "stream.read"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-132",
+      "path": "tools/pipeline_text105.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "执行文字管线的岗位生成、复核和机械证据检查，输出资料候选。A 默认使用 fact_judge；同两本书本地判真错率 56.0%，旧路径 73.9%，未独立审读，仍挂黄卡并交作者确认；可设 PIPELINE_A_MODE=legacy 切回。C 视角待作者确认。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：messages, mechanical_row, b_normalize_pointers, pointer_invalid_count, c_checked, c_text_messages, c_text_normalize, c_text_packet, c_text, generation, review_result, paragraph_packets"
+      ],
+      "outputs": [
+        "执行文字管线的岗位生成、复核和机械证据检查，输出资料候选。A 默认使用 fact_judge；同两本书本地判真错率 56.0%，旧路径 73.9%，未独立审读，仍挂黄卡并交作者确认；可设 PIPELINE_A_MODE=legacy 切回。C 视角待作者确认。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/gb_orchestrate_r04.py",
+        "tools/pipeline_budget25.py",
+        "tools/run_pipeline.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pipeline_text105.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_author25.py",
+          "tools/pipeline_output28.py",
+          "tools/pipeline_records25.py"
+        ],
+        "interfaces": [
+          "messages",
+          "mechanical_row",
+          "b_normalize_pointers",
+          "pointer_invalid_count",
+          "c_checked",
+          "c_text_messages",
+          "c_text_normalize",
+          "c_text_packet",
+          "c_text",
+          "generation",
+          "review_result",
+          "paragraph_packets",
+          "a_payload",
+          "a_packets",
+          "upstream_rejected",
+          "rejected_reason",
+          "loss_flag",
+          "text_ab",
+          "a_unchanged_echo",
+          "j2_messages",
+          "j2_row",
+          "attribution_state",
+          "call_rejected_split",
+          "text_j2",
+          "run",
+          "author_decision"
+        ],
+        "io_calls": [
+          "a_payload",
+          "call",
+          "call_rejected_split",
+          "copy.deepcopy(payload).items",
+          "gen_payload",
+          "hashlib.sha256(json.dumps(m, sort_keys=True, ensure_ascii=False).encode()).hexdigest",
+          "hashlib.sha256(json.dumps(raw, sort_keys=True, ensure_ascii=False).encode()).hexdigest",
+          "hashlib.sha256(json.dumps(result, sort_keys=True, ensure_ascii=False).encode()).hexdigest",
+          "hashlib.sha256(json.dumps(row, sort_keys=True, ensure_ascii=False).encode()).hexdigest",
+          "json.dumps",
+          "json.dumps(group + [row], ensure_ascii=False).encode",
+          "json.dumps(m, sort_keys=True, ensure_ascii=False).encode",
+          "json.dumps(messages('A', a_payload(child, facts, previous)), ensure_ascii=False).encode",
+          "json.dumps(raw, sort_keys=True, ensure_ascii=False).encode",
+          "json.dumps(request_messages, ensure_ascii=False).encode",
+          "json.dumps(result, sort_keys=True, ensure_ascii=False).encode",
+          "json.dumps(review_messages, ensure_ascii=False).encode",
+          "json.dumps(row, sort_keys=True, ensure_ascii=False).encode",
+          "json.loads",
+          "payload.items",
+          "pointer_payload",
+          "rev_payload"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-133",
+      "path": "tools/pr_a_checked_r02.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "人物计划步骤先核对可装配字段；一次重写超限仍停止，不代判计划。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：validate, Client"
+      ],
+      "outputs": [
+        "人物计划步骤先核对可装配字段；一次重写超限仍停止，不代判计划。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_global_c_r02.py",
+        "tools/pr_headroom_r02.py",
+        "tools/pr_resolved_r02.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_a_checked_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_shape_guard_r02.py"
+        ],
+        "interfaces": [
+          "validate",
+          "Client"
+        ],
+        "io_calls": [
+          "(folder / 'summary.json').write_text",
+          "(folder / ('attempt_' + str(retry) + '_response.json')).write_text",
+          "json.dumps",
+          "json.loads",
+          "super().call"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-134",
+      "path": "tools/pr_a_diagnostic_r03.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "A状态诊断只写数字与编号，复用原评分器的实体对齐，不替代正式分数。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：diagnose, main"
+      ],
+      "outputs": [
+        "A状态诊断只写数字与编号，复用原评分器的实体对齐，不替代正式分数。"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "仅静态检查到本地处理；本轮未运行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_a_diagnostic_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [
+          "diagnose",
+          "main"
+        ],
+        "io_calls": [
+          "json.dumps",
+          "out.write_text",
+          "s.load_context",
+          "s.read_json",
+          "spec.loader.exec_module"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-135",
+      "path": "tools/pr_a_projection_r03.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "计划候选的原文位置保留立项章，当前状态与跨章承接由历史承担。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：preserve_origin, assemble"
+      ],
+      "outputs": [
+        "计划候选的原文位置保留立项章，当前状态与跨章承接由历史承担。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_a_projection_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_pipeline_r02.py"
+        ],
+        "interfaces": [
+          "preserve_origin",
+          "assemble"
+        ],
+        "io_calls": [],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-136",
+      "path": "tools/pr_ark_client_r02.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "方舟文件队列客户端：仅本机网关，有限重试，保存数字和结束状态。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：is_blocked, summarize_response, Client"
+      ],
+      "outputs": [
+        "方舟文件队列客户端：仅本机网关，有限重试，保存数字和结束状态。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_a_checked_r02.py",
+        "tools/pr_b_only_r02.py",
+        "tools/pr_chapter_c_r02.py",
+        "tools/pr_checked_client_r02.py",
+        "tools/pr_compact_bc_r02.py",
+        "tools/pr_guarded_bc_r02.py",
+        "tools/pr_incremental_r04.py",
+        "tools/pr_layers_headroom_r03.py",
+        "tools/pr_layers_judged_r03.py",
+        "tools/pr_layers_r03.py",
+        "tools/pr_layers_v2_r03.py",
+        "tools/pr_pipeline_r02.py",
+        "tools/pr_recovery_probe_r03.py",
+        "tools/pr_resolved_bc_r02.py",
+        "tools/pr_step_flow_r02.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_ark_client_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "虽有下游调用，但核心绑定 R04 的控制文件或授权字段；按批次专用规则登记，不当作通用组件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [
+          "is_blocked",
+          "summarize_response",
+          "Client"
+        ],
+        "io_calls": [
+          "(folder / (uuid.uuid4().hex + '.json')).write_text",
+          "BLOCKED.read_bytes",
+          "RECOVERY.read_text",
+          "hashlib.sha256(BLOCKED.read_bytes()).hexdigest",
+          "json.dumps",
+          "json.dumps(payload, ensure_ascii=False).encode",
+          "json.load",
+          "json.load(exc).get",
+          "json.loads",
+          "self.opener.open",
+          "urllib.request.build_opener"
+        ],
+        "reason": "虽有下游调用，但核心绑定 R04 的控制文件或授权字段；按批次专用规则登记，不当作通用组件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-137",
+      "path": "tools/pr_availability_r01.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "仅一次极短虚构请求，区分上游整组不可用与长请求拒绝。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "顶层流程中的环境变量和固定探测参数"
+      ],
+      "outputs": [
+        "仅一次极短虚构请求，区分上游整组不可用与长请求拒绝。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_availability_r01.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_pipeline_r01.py"
+        ],
+        "interfaces": [],
+        "io_calls": [
+          "(OUT / 'probe/reasoning_policy.json').read_text",
+          "Client().call",
+          "dump",
+          "json.loads"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-138",
+      "path": "tools/pr_b_cleanup_r04.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "事实正文的窄清理步骤：只删审稿说明，保留故事内容和原键。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：suspicious, deletion_only, cleanup_gate, valid_subset, run_cleanup"
+      ],
+      "outputs": [
+        "事实正文的窄清理步骤：只删审稿说明，保留故事内容和原键。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_incremental_r04.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_b_cleanup_r04.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_layers_headroom_r03.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_review_r04.py"
+        ],
+        "interfaces": [
+          "suspicious",
+          "deletion_only",
+          "cleanup_gate",
+          "valid_subset",
+          "run_cleanup"
+        ],
+        "io_calls": [
+          "(folder / (label + '_done.json')).read_text",
+          "(origin / 'run_receipt.json').read_text",
+          "dump",
+          "hashlib.sha256(json.dumps(facts, ensure_ascii=False, sort_keys=True).encode()).hexdigest",
+          "hashlib.sha256(origin_done.read_bytes()).hexdigest",
+          "json.dumps",
+          "json.dumps(facts, ensure_ascii=False, sort_keys=True).encode",
+          "json.loads",
+          "origin_done.read_bytes",
+          "origin_done.read_text"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-139",
+      "path": "tools/pr_b_only_r02.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "事实仍按16段分组；原文材料改由同遍的完整章步骤处理。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：messages, convert_response, bc_call"
+      ],
+      "outputs": [
+        "事实仍按16段分组；原文材料改由同遍的完整章步骤处理。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_global_c_r02.py",
+        "tools/pr_incremental_r04.py",
+        "tools/pr_layers_headroom_r03.py",
+        "tools/pr_layers_judged_r03.py",
+        "tools/pr_layers_r03.py",
+        "tools/pr_layers_v2_r03.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_b_only_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_compact_bc_r02.py",
+          "tools/pr_evidence_guard_r02.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_resolved_bc_r02.py",
+          "tools/pr_step_flow_r02.py"
+        ],
+        "interfaces": [
+          "messages",
+          "convert_response",
+          "bc_call"
+        ],
+        "io_calls": [
+          "Client().call",
+          "execute",
+          "json.dumps",
+          "json.loads"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-140",
+      "path": "tools/pr_c_steps_r03.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "C层拆成逐段写法/感知者，再整章现场五格；对照时复用已有A/B。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：COutputLimit, run_c, run, main"
+      ],
+      "outputs": [
+        "C层拆成逐段写法/感知者，再整章现场五格；对照时复用已有A/B。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_incremental_r04.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_c_steps_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_layers_v2_r03.py"
+        ],
+        "interfaces": [
+          "COutputLimit",
+          "run_c",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "(source / 'prediction.json').read_text",
+          "(source / 'run_receipt.json').read_text",
+          "Path(__file__).read_bytes",
+          "dump",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "json.loads",
+          "read_book",
+          "run",
+          "run_c",
+          "self.client.call"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-141",
+      "path": "tools/pr_chapter_c_r02.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "原文材料读本章完整原文，不把场景边界裁成事实小组。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：messages, convert_response, c_call"
+      ],
+      "outputs": [
+        "原文材料读本章完整原文，不把场景边界裁成事实小组。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_global_c_r02.py",
+        "tools/pr_layers_headroom_r03.py",
+        "tools/pr_layers_judged_r03.py",
+        "tools/pr_layers_r03.py",
+        "tools/pr_layers_v2_r03.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_chapter_c_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_compact_bc_r02.py",
+          "tools/pr_evidence_guard_r02.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_step_flow_r02.py"
+        ],
+        "interfaces": [
+          "messages",
+          "convert_response",
+          "c_call"
+        ],
+        "io_calls": [
+          "Client().call",
+          "execute",
+          "json.dumps",
+          "json.loads"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-142",
+      "path": "tools/pr_checked_client_r02.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "分步输出的格式检查；最多一次具体错误回传，不拼接残缺正文。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：Client"
+      ],
+      "outputs": [
+        "分步输出的格式检查；最多一次具体错误回传，不拼接残缺正文。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_compact_r02.py",
+        "tools/pr_guarded_r02.py",
+        "tools/pr_typed_r02.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_checked_client_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_shape_guard_r02.py"
+        ],
+        "interfaces": [
+          "Client"
+        ],
+        "io_calls": [
+          "(folder / 'summary.json').write_text",
+          "(folder / ('attempt_' + str(retry) + '_response.json')).write_text",
+          "json.dumps",
+          "super().call"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-143",
+      "path": "tools/pr_compact_bc_r02.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "简化模型输入输出；程序只填写来源身份和明确去向，不默补事实。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：full_pid, compact_materials, messages, decode, convert, bc_call"
+      ],
+      "outputs": [
+        "简化模型输入输出；程序只填写来源身份和明确去向，不默补事实。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_b_only_r02.py",
+        "tools/pr_chapter_c_r02.py",
+        "tools/pr_compact_r02.py",
+        "tools/pr_guarded_bc_r02.py",
+        "tools/pr_layers_headroom_r03.py",
+        "tools/pr_layers_judged_r03.py",
+        "tools/pr_layers_r03.py",
+        "tools/pr_layers_v2_r03.py",
+        "tools/pr_resolved_bc_r02.py",
+        "tools/pr_step_flow_r02.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_compact_bc_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_normalize_r03.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_shape_guard_r02.py"
+        ],
+        "interfaces": [
+          "full_pid",
+          "compact_materials",
+          "messages",
+          "decode",
+          "convert",
+          "bc_call"
+        ],
+        "io_calls": [
+          "Client().call",
+          "dump",
+          "json.dumps",
+          "json.loads"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-144",
+      "path": "tools/pr_compact_r02.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse_parts, groups, prompt, audit_missing, make_bc, chapter_facts, execute_groups, run, main"
+      ],
+      "outputs": [
+        "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_compact_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_checked_client_r02.py",
+          "tools/pr_compact_bc_r02.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_shape_guard_r02.py"
+        ],
+        "interfaces": [
+          "parse_parts",
+          "groups",
+          "prompt",
+          "audit_missing",
+          "make_bc",
+          "chapter_facts",
+          "execute_groups",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Client().call",
+          "Path(__file__).read_bytes",
+          "Path(sys.modules['pr_compact_bc_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes",
+          "bc_call",
+          "concurrent.futures.ThreadPoolExecutor",
+          "dump",
+          "execute_groups",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_compact_bc_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "read_book",
+          "receipt['calls'].append",
+          "receipt['calls'].extend",
+          "run",
+          "running.pop"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-145",
+      "path": "tools/pr_evidence_guard_r02.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "只核对可确定的段号与逐字引文；不靠词表判故事含义。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：inspect"
+      ],
+      "outputs": [
+        "只核对可确定的段号与逐字引文；不靠词表判故事含义。"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "仅静态检查到本地处理；本轮未运行。"
+      },
+      "current_consumers": [
+        "tools/pr_b_only_r02.py",
+        "tools/pr_chapter_c_r02.py",
+        "tools/pr_guarded_bc_r02.py",
+        "tools/pr_resolved_bc_r02.py",
+        "tools/pr_step_flow_r02.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_evidence_guard_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [
+          "inspect"
+        ],
+        "io_calls": [],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-146",
+      "path": "tools/pr_global_c_r02.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse_parts, groups, prompt, audit_missing, make_bc, chapter_facts, execute_groups, run, main"
+      ],
+      "outputs": [
+        "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_global_c_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_a_checked_r02.py",
+          "tools/pr_b_only_r02.py",
+          "tools/pr_chapter_c_r02.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_shape_guard_r02.py"
+        ],
+        "interfaces": [
+          "parse_parts",
+          "groups",
+          "prompt",
+          "audit_missing",
+          "make_bc",
+          "chapter_facts",
+          "execute_groups",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Client().call",
+          "Path(__file__).read_bytes",
+          "Path(sys.modules['pr_a_checked_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_b_only_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_chapter_c_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_compact_bc_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_evidence_guard_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_step_flow_r02'].__file__).read_bytes",
+          "bc_call",
+          "c_call",
+          "concurrent.futures.ThreadPoolExecutor",
+          "dump",
+          "execute_groups",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_a_checked_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_b_only_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_chapter_c_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_compact_bc_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_evidence_guard_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_step_flow_r02'].__file__).read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "read_book",
+          "receipt['calls'].append",
+          "receipt['calls'].extend",
+          "run",
+          "running.pop"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-147",
+      "path": "tools/pr_guarded_bc_r02.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "每组格式、逐字引用各最多重写一次；仍有疑问保留候选并标黄。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：execute, bc_call"
+      ],
+      "outputs": [
+        "每组格式、逐字引用各最多重写一次；仍有疑问保留候选并标黄。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_guarded_r02.py",
+        "tools/pr_headroom_r02.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_guarded_bc_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_compact_bc_r02.py",
+          "tools/pr_evidence_guard_r02.py",
+          "tools/pr_pipeline_r02.py"
+        ],
+        "interfaces": [
+          "execute",
+          "bc_call"
+        ],
+        "io_calls": [
+          "Client().call",
+          "dump",
+          "execute",
+          "json.dumps"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-148",
+      "path": "tools/pr_guarded_r02.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse_parts, groups, prompt, audit_missing, make_bc, chapter_facts, execute_groups, run, main"
+      ],
+      "outputs": [
+        "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_guarded_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_checked_client_r02.py",
+          "tools/pr_guarded_bc_r02.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_shape_guard_r02.py"
+        ],
+        "interfaces": [
+          "parse_parts",
+          "groups",
+          "prompt",
+          "audit_missing",
+          "make_bc",
+          "chapter_facts",
+          "execute_groups",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Client().call",
+          "Path(__file__).read_bytes",
+          "Path(sys.modules['pr_compact_bc_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_evidence_guard_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_guarded_bc_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes",
+          "bc_call",
+          "concurrent.futures.ThreadPoolExecutor",
+          "dump",
+          "execute_groups",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_compact_bc_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_evidence_guard_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_guarded_bc_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "read_book",
+          "receipt['calls'].append",
+          "receipt['calls'].extend",
+          "run",
+          "running.pop"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-149",
+      "path": "tools/pr_headroom_r02.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse_parts, groups, prompt, audit_missing, make_bc, chapter_facts, execute_groups, run, main"
+      ],
+      "outputs": [
+        "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_headroom_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_a_checked_r02.py",
+          "tools/pr_guarded_bc_r02.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_shape_guard_r02.py"
+        ],
+        "interfaces": [
+          "parse_parts",
+          "groups",
+          "prompt",
+          "audit_missing",
+          "make_bc",
+          "chapter_facts",
+          "execute_groups",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Client().call",
+          "Path(__file__).read_bytes",
+          "Path(sys.modules['pr_a_checked_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_compact_bc_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_evidence_guard_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_guarded_bc_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes",
+          "bc_call",
+          "concurrent.futures.ThreadPoolExecutor",
+          "dump",
+          "execute_groups",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_a_checked_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_compact_bc_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_evidence_guard_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_guarded_bc_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "read_book",
+          "receipt['calls'].append",
+          "receipt['calls'].extend",
+          "run",
+          "running.pop"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-150",
+      "path": "tools/pr_incremental_r04.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "R04增量抽取：三层独立保存、有限重写、输入指纹检查点。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：chapter_facts, b_gate, guard_b_key_links, isolate_metadata, pending_flags, digest, bound_receipt, source, task, inherited, seed_before, inherit_gap_states"
+      ],
+      "outputs": [
+        "R04增量抽取：三层独立保存、有限重写、输入指纹检查点。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_incremental_r04.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_b_cleanup_r04.py",
+          "tools/pr_b_only_r02.py",
+          "tools/pr_c_steps_r03.py",
+          "tools/pr_layers_headroom_r03.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_resolved_r02.py",
+          "tools/pr_review_r04.py"
+        ],
+        "interfaces": [
+          "chapter_facts",
+          "b_gate",
+          "guard_b_key_links",
+          "isolate_metadata",
+          "pending_flags",
+          "digest",
+          "bound_receipt",
+          "source",
+          "task",
+          "inherited",
+          "seed_before",
+          "inherit_gap_states",
+          "run_a",
+          "run_c",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "(OUT / 'probe/reasoning_policy.json').read_text",
+          "(Path(__file__).parent / n).read_bytes",
+          "(Path(p) / 'run_receipt.json').read_text",
+          "(folder / ('layer_' + completed[index] + '.json')).read_text",
+          "(folder / (label + '_input.json')).read_text",
+          "(p / 'prediction.json').read_text",
+          "(p / 'run_receipt.json').read_text",
+          "(p.parent / (p.name.rsplit('_response_', 1)[0] + '_input.json')).read_text",
+          "Path(__file__).read_bytes",
+          "Path(gates.__file__).read_bytes",
+          "client.call",
+          "done.read_text",
+          "dump",
+          "gap_snapshot.read_bytes",
+          "gap_snapshot.read_text",
+          "hashlib.sha256((Path(__file__).parent / n).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(gates.__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(gap_snapshot.read_bytes()).hexdigest",
+          "hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True).encode()).hexdigest",
+          "hashlib.sha256(snapshot.read_bytes()).hexdigest",
+          "json.dumps",
+          "json.dumps(value, ensure_ascii=False, sort_keys=True).encode",
+          "json.loads",
+          "json.loads(p.read_text()).get",
+          "p.read_text",
+          "path.read_text",
+          "previous_snapshot.read_text",
+          "read_book",
+          "run",
+          "run_a",
+          "run_c",
+          "run_cleanup",
+          "snapshot.read_bytes",
+          "snapshot.read_text"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-151",
+      "path": "tools/pr_independent_r03.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "仅供导入此组件的后期旧入口：不同模型只判点名条目；原生成模型共享一次重写。不是全部入口的统一保证。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：review_ids, judge, task_judged"
+      ],
+      "outputs": [
+        "仅供导入此组件的后期旧入口：不同模型只判点名条目；原生成模型共享一次重写。不是全部入口的统一保证。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_layers_judged_r03.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_independent_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_layers_headroom_r03.py"
+        ],
+        "interfaces": [
+          "review_ids",
+          "judge",
+          "task_judged"
+        ],
+        "io_calls": [
+          "(folder / (label + '_task.json')).read_text",
+          "client.call",
+          "dump",
+          "json.dumps",
+          "json.loads",
+          "receipt['calls'].append"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-152",
+      "path": "tools/pr_layers_headroom_r03.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "输出上限8千的可用性候选；其余分层、编号检查与有限重写沿用v2。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse, prompt, flag, task, b_gate, b_convert, c_gate, c_convert, a_gate, a_apply, replay_task, replay_or_call"
+      ],
+      "outputs": [
+        "输出上限8千的可用性候选；其余分层、编号检查与有限重写沿用v2。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_b_cleanup_r04.py",
+        "tools/pr_incremental_r04.py",
+        "tools/pr_independent_r03.py",
+        "tools/pr_review_r04.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_layers_headroom_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_b_only_r02.py",
+          "tools/pr_chapter_c_r02.py",
+          "tools/pr_compact_bc_r02.py",
+          "tools/pr_normalize_v2_r03.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_resolved_r02.py"
+        ],
+        "interfaces": [
+          "parse",
+          "prompt",
+          "flag",
+          "task",
+          "b_gate",
+          "b_convert",
+          "c_gate",
+          "c_convert",
+          "a_gate",
+          "a_apply",
+          "replay_task",
+          "replay_or_call",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Path(__file__).read_bytes",
+          "client.call",
+          "dump",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(path.read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "path.read_bytes",
+          "path.read_text",
+          "read_book",
+          "receipt['calls'].append",
+          "replay_or_call",
+          "run"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-153",
+      "path": "tools/pr_layers_judged_r03.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "此旧入口使用不同模型只判复核，并共享一次生成重写；不代表五参数文字入口的重试上限。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse, prompt, flag, task, b_gate, b_convert, c_gate, c_convert, a_gate, a_apply, replay_task, replay_or_call"
+      ],
+      "outputs": [
+        "此旧入口使用不同模型只判复核，并共享一次生成重写；不代表五参数文字入口的重试上限。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_layers_judged_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_b_only_r02.py",
+          "tools/pr_chapter_c_r02.py",
+          "tools/pr_compact_bc_r02.py",
+          "tools/pr_independent_r03.py",
+          "tools/pr_normalize_v2_r03.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_resolved_r02.py"
+        ],
+        "interfaces": [
+          "parse",
+          "prompt",
+          "flag",
+          "task",
+          "b_gate",
+          "b_convert",
+          "c_gate",
+          "c_convert",
+          "a_gate",
+          "a_apply",
+          "replay_task",
+          "replay_or_call",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Path(__file__).read_bytes",
+          "client.call",
+          "dump",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(path.read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "path.read_bytes",
+          "path.read_text",
+          "read_book",
+          "receipt['calls'].append",
+          "replay_or_call",
+          "run"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-154",
+      "path": "tools/pr_layers_r03.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "分层小任务、有限回传、逐条隔离；实验输出与原文只落本轮外部目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse, prompt, flag, task, b_gate, b_convert, c_gate, c_convert, a_gate, a_apply, run, main"
+      ],
+      "outputs": [
+        "分层小任务、有限回传、逐条隔离；实验输出与原文只落本轮外部目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_layers_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_b_only_r02.py",
+          "tools/pr_chapter_c_r02.py",
+          "tools/pr_compact_bc_r02.py",
+          "tools/pr_normalize_r03.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_resolved_r02.py"
+        ],
+        "interfaces": [
+          "parse",
+          "prompt",
+          "flag",
+          "task",
+          "b_gate",
+          "b_convert",
+          "c_gate",
+          "c_convert",
+          "a_gate",
+          "a_apply",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Path(__file__).read_bytes",
+          "client.call",
+          "dump",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "read_book",
+          "receipt['calls'].append",
+          "run"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-155",
+      "path": "tools/pr_layers_v2_r03.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "分层小任务、有限回传、逐条隔离；实验输出与原文只落本轮外部目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse, prompt, flag, task, b_gate, b_convert, c_gate, c_convert, a_gate, a_apply, replay_task, replay_or_call"
+      ],
+      "outputs": [
+        "分层小任务、有限回传、逐条隔离；实验输出与原文只落本轮外部目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_c_steps_r03.py",
+        "tools/pr_replay_diagnostic_r03.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_layers_v2_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_b_only_r02.py",
+          "tools/pr_chapter_c_r02.py",
+          "tools/pr_compact_bc_r02.py",
+          "tools/pr_normalize_v2_r03.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_resolved_r02.py"
+        ],
+        "interfaces": [
+          "parse",
+          "prompt",
+          "flag",
+          "task",
+          "b_gate",
+          "b_convert",
+          "c_gate",
+          "c_convert",
+          "a_gate",
+          "a_apply",
+          "replay_task",
+          "replay_or_call",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Path(__file__).read_bytes",
+          "client.call",
+          "dump",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(path.read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "path.read_bytes",
+          "path.read_text",
+          "read_book",
+          "receipt['calls'].append",
+          "replay_or_call",
+          "run"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-156",
+      "path": "tools/pr_normalize_r03.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "只转换唯一输入段、逐字证据、责任范围同时通过的整数段号。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：normalize"
+      ],
+      "outputs": [
+        "只转换唯一输入段、逐字证据、责任范围同时通过的整数段号。"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "仅静态检查到本地处理；本轮未运行。"
+      },
+      "current_consumers": [
+        "tools/pr_compact_bc_r02.py",
+        "tools/pr_layers_r03.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_normalize_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [
+          "normalize"
+        ],
+        "io_calls": [],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-157",
+      "path": "tools/pr_normalize_v2_r03.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "只有唯一输入段、逐字证据、责任范围同时通过才转换数字或短号。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：normalize"
+      ],
+      "outputs": [
+        "只有唯一输入段、逐字证据、责任范围同时通过才转换数字或短号。"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "仅静态检查到本地处理；本轮未运行。"
+      },
+      "current_consumers": [
+        "tools/pr_layers_headroom_r03.py",
+        "tools/pr_layers_judged_r03.py",
+        "tools/pr_layers_v2_r03.py",
+        "tools/pr_review_r04.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_normalize_v2_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [
+          "normalize"
+        ],
+        "io_calls": [],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-158",
+      "path": "tools/pr_pipeline_r01.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "R06 代用基线与有限修复；样本输入输出只在外部交付目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：dump, external, Client, parse_response, old_rows_for_chapter, read_book, messages_for, empty_result, merge_rows, _assemble, assemble, check_quote_guard"
+      ],
+      "outputs": [
+        "R06 代用基线与有限修复；样本输入输出只在外部交付目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_availability_r01.py",
+        "tools/pr_probe_route_r01.py",
+        "tools/pr_split_r01.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_pipeline_r01.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [
+          "dump",
+          "external",
+          "Client",
+          "parse_response",
+          "old_rows_for_chapter",
+          "read_book",
+          "messages_for",
+          "empty_result",
+          "merge_rows",
+          "_assemble",
+          "assemble",
+          "check_quote_guard",
+          "configure_probe",
+          "run_book",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Path(__file__).read_bytes",
+          "client.call",
+          "dump",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(json.dumps(after, sort_keys=True, ensure_ascii=False).encode()).hexdigest",
+          "hashlib.sha256(json.dumps(errors, sort_keys=True, ensure_ascii=False).encode()).hexdigest",
+          "hashlib.sha256(z.read(n)).hexdigest",
+          "json.dumps",
+          "json.dumps(after, sort_keys=True, ensure_ascii=False).encode",
+          "json.dumps(errors, sort_keys=True, ensure_ascii=False).encode",
+          "json.dumps(messages, ensure_ascii=False).encode",
+          "json.dumps(payload, ensure_ascii=False).encode",
+          "json.load",
+          "json.loads",
+          "path.write_text",
+          "read_book",
+          "receipt['calls'].append",
+          "run.add_argument",
+          "run_book",
+          "self.opener.open",
+          "urllib.request.build_opener",
+          "z.read"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-159",
+      "path": "tools/pr_pipeline_r02.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "R06 代用基线与有限修复；样本输入输出只在外部交付目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：dump, external, parse_response, old_rows_for_chapter, read_book, messages_for, empty_result, merge_rows, _assemble, assemble, check_quote_guard, configure_probe"
+      ],
+      "outputs": [
+        "R06 代用基线与有限修复；样本输入输出只在外部交付目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_a_projection_r03.py",
+        "tools/pr_b_cleanup_r04.py",
+        "tools/pr_b_only_r02.py",
+        "tools/pr_chapter_c_r02.py",
+        "tools/pr_compact_bc_r02.py",
+        "tools/pr_compact_r02.py",
+        "tools/pr_global_c_r02.py",
+        "tools/pr_guarded_bc_r02.py",
+        "tools/pr_guarded_r02.py",
+        "tools/pr_headroom_r02.py",
+        "tools/pr_incremental_r04.py",
+        "tools/pr_layers_headroom_r03.py",
+        "tools/pr_layers_judged_r03.py",
+        "tools/pr_layers_r03.py",
+        "tools/pr_layers_v2_r03.py",
+        "tools/pr_recovery_probe_r03.py",
+        "tools/pr_resolved_bc_r02.py",
+        "tools/pr_resolved_r02.py",
+        "tools/pr_review_r04.py",
+        "tools/pr_split_r02.py",
+        "tools/pr_step_flow_r02.py",
+        "tools/pr_typed_r02.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_pipeline_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py"
+        ],
+        "interfaces": [
+          "dump",
+          "external",
+          "parse_response",
+          "old_rows_for_chapter",
+          "read_book",
+          "messages_for",
+          "empty_result",
+          "merge_rows",
+          "_assemble",
+          "assemble",
+          "check_quote_guard",
+          "configure_probe",
+          "run_book",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Path(__file__).read_bytes",
+          "client.call",
+          "dump",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(json.dumps(after, sort_keys=True, ensure_ascii=False).encode()).hexdigest",
+          "hashlib.sha256(json.dumps(errors, sort_keys=True, ensure_ascii=False).encode()).hexdigest",
+          "hashlib.sha256(z.read(n)).hexdigest",
+          "json.dumps",
+          "json.dumps(after, sort_keys=True, ensure_ascii=False).encode",
+          "json.dumps(errors, sort_keys=True, ensure_ascii=False).encode",
+          "json.dumps(messages, ensure_ascii=False).encode",
+          "json.loads",
+          "path.write_text",
+          "read_book",
+          "receipt['calls'].append",
+          "run.add_argument",
+          "run_book",
+          "z.read"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-160",
+      "path": "tools/pr_probe_route_r01.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "只用虚构文本有限探测既定 DeepSeek 的低档／格式兼容性。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "顶层流程中的环境变量和固定探测参数"
+      ],
+      "outputs": [
+        "只用虚构文本有限探测既定 DeepSeek 的低档／格式兼容性。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_probe_route_r01.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_pipeline_r01.py"
+        ],
+        "interfaces": [],
+        "io_calls": [
+          "client.opener.open",
+          "dump",
+          "json.dumps",
+          "json.dumps(payload, ensure_ascii=False).encode",
+          "json.load",
+          "json.loads",
+          "p.read_text"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-161",
+      "path": "tools/pr_recovery_probe_r03.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "限流等待后的单次虚构探测；只能由文件网关作业执行。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：main"
+      ],
+      "outputs": [
+        "限流等待后的单次虚构探测；只能由文件网关作业执行。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_recovery_probe_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_pipeline_r02.py"
+        ],
+        "interfaces": [
+          "main"
+        ],
+        "io_calls": [
+          "Client().call",
+          "dump"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-162",
+      "path": "tools/pr_replay_diagnostic_r03.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "完整旧响应的机械恢复诊断；缺少的A状态只报缺口，不请求模型。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：main"
+      ],
+      "outputs": [
+        "完整旧响应的机械恢复诊断；缺少的A状态只报缺口，不请求模型。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_replay_diagnostic_r03.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_layers_v2_r03.py"
+        ],
+        "interfaces": [
+          "main"
+        ],
+        "io_calls": [
+          "(output / 'run_receipt.json').read_text",
+          "(source / 'run_receipt.json').read_text",
+          "Path(__file__).read_bytes",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "json.loads",
+          "pipeline.dump",
+          "pipeline.run"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-163",
+      "path": "tools/pr_resolved_bc_r02.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "每组格式、逐字引用各最多重写一次；仍有疑问保留候选并标黄。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：validate_dispositions, execute, bc_call"
+      ],
+      "outputs": [
+        "每组格式、逐字引用各最多重写一次；仍有疑问保留候选并标黄。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_b_only_r02.py",
+        "tools/pr_resolved_r02.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_resolved_bc_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_compact_bc_r02.py",
+          "tools/pr_evidence_guard_r02.py",
+          "tools/pr_pipeline_r02.py"
+        ],
+        "interfaces": [
+          "validate_dispositions",
+          "execute",
+          "bc_call"
+        ],
+        "io_calls": [
+          "Client().call",
+          "dump",
+          "execute",
+          "json.dumps"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-164",
+      "path": "tools/pr_resolved_r02.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse_parts, groups, prompt, audit_missing, make_bc, chapter_facts, execute_groups, run, main"
+      ],
+      "outputs": [
+        "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_incremental_r04.py",
+        "tools/pr_layers_headroom_r03.py",
+        "tools/pr_layers_judged_r03.py",
+        "tools/pr_layers_r03.py",
+        "tools/pr_layers_v2_r03.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_resolved_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_a_checked_r02.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_resolved_bc_r02.py",
+          "tools/pr_shape_guard_r02.py"
+        ],
+        "interfaces": [
+          "parse_parts",
+          "groups",
+          "prompt",
+          "audit_missing",
+          "make_bc",
+          "chapter_facts",
+          "execute_groups",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Client().call",
+          "Path(__file__).read_bytes",
+          "Path(sys.modules['pr_a_checked_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_compact_bc_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_evidence_guard_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes",
+          "Path(sys.modules['pr_resolved_bc_r02'].__file__).read_bytes",
+          "bc_call",
+          "concurrent.futures.ThreadPoolExecutor",
+          "dump",
+          "execute_groups",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_a_checked_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_compact_bc_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_evidence_guard_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_resolved_bc_r02'].__file__).read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "read_book",
+          "receipt['calls'].append",
+          "receipt['calls'].extend",
+          "run",
+          "running.pop"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-165",
+      "path": "tools/pr_review_r04.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "跨模型只判；逐字依据过闸才回传，生成与反馈共用一次重写。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：digest, identifiers, judge, isolate"
+      ],
+      "outputs": [
+        "跨模型只判；逐字依据过闸才回传，生成与反馈共用一次重写。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_b_cleanup_r04.py",
+        "tools/pr_incremental_r04.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_review_r04.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_layers_headroom_r03.py",
+          "tools/pr_normalize_v2_r03.py",
+          "tools/pr_pipeline_r02.py"
+        ],
+        "interfaces": [
+          "digest",
+          "identifiers",
+          "judge",
+          "isolate"
+        ],
+        "io_calls": [
+          "client.call",
+          "done.read_text",
+          "dump",
+          "hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True).encode()).hexdigest",
+          "json.dumps",
+          "json.dumps(value, ensure_ascii=False, sort_keys=True).encode",
+          "json.loads",
+          "meta.read_text",
+          "path.read_text"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-166",
+      "path": "tools/pr_shape_guard_r02.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "只修输出形状，不补故事内容；错误位置用于最多一次格式重写。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：decode"
+      ],
+      "outputs": [
+        "只修输出形状，不补故事内容；错误位置用于最多一次格式重写。"
+      ],
+      "network_or_model": {
+        "network": "none",
+        "model": "none",
+        "note": "仅静态检查到本地处理；本轮未运行。"
+      },
+      "current_consumers": [
+        "tools/pr_a_checked_r02.py",
+        "tools/pr_checked_client_r02.py",
+        "tools/pr_compact_bc_r02.py",
+        "tools/pr_compact_r02.py",
+        "tools/pr_global_c_r02.py",
+        "tools/pr_guarded_r02.py",
+        "tools/pr_headroom_r02.py",
+        "tools/pr_resolved_r02.py",
+        "tools/pr_typed_r02.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_shape_guard_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [
+          "decode"
+        ],
+        "io_calls": [
+          "json.loads"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-167",
+      "path": "tools/pr_split_r01.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse_parts, groups, prompt, audit_missing, make_bc, bc_call, chapter_facts, execute_groups, run, main"
+      ],
+      "outputs": [
+        "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_split_r01.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_pipeline_r01.py"
+        ],
+        "interfaces": [
+          "parse_parts",
+          "groups",
+          "prompt",
+          "audit_missing",
+          "make_bc",
+          "bc_call",
+          "chapter_facts",
+          "execute_groups",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Client().call",
+          "Path(__file__).read_bytes",
+          "Path(sys.modules['pr_pipeline_r01'].__file__).read_bytes",
+          "bc_call",
+          "concurrent.futures.ThreadPoolExecutor",
+          "dump",
+          "execute_groups",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_pipeline_r01'].__file__).read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "read_book",
+          "receipt['calls'].append",
+          "receipt['calls'].extend",
+          "run",
+          "running.pop"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-168",
+      "path": "tools/pr_split_r02.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse_parts, groups, prompt, audit_missing, make_bc, bc_call, chapter_facts, execute_groups, run, main"
+      ],
+      "outputs": [
+        "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_split_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_pipeline_r02.py"
+        ],
+        "interfaces": [
+          "parse_parts",
+          "groups",
+          "prompt",
+          "audit_missing",
+          "make_bc",
+          "bc_call",
+          "chapter_facts",
+          "execute_groups",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Client().call",
+          "Path(__file__).read_bytes",
+          "Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes",
+          "bc_call",
+          "concurrent.futures.ThreadPoolExecutor",
+          "dump",
+          "execute_groups",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "read_book",
+          "receipt['calls'].append",
+          "receipt['calls'].extend",
+          "run",
+          "running.pop"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-169",
+      "path": "tools/pr_step_flow_r02.py",
+      "primary_identity": "reusable_component",
+      "primary_identity_label": "可复用组件",
+      "status": "active_component",
+      "status_label": "组件职责已登记",
+      "purpose": "每组格式、逐字引用各最多重写一次；仍有疑问保留候选并标黄。",
+      "human_command": "由登记的下游导入；接口见文件内函数。",
+      "inputs": [
+        "见文件接口：execute"
+      ],
+      "outputs": [
+        "每组格式、逐字引用各最多重写一次；仍有疑问保留候选并标黄。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/pr_b_only_r02.py",
+        "tools/pr_chapter_c_r02.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_step_flow_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_ark_client_r02.py",
+          "tools/pr_compact_bc_r02.py",
+          "tools/pr_evidence_guard_r02.py",
+          "tools/pr_pipeline_r02.py"
+        ],
+        "interfaces": [
+          "execute"
+        ],
+        "io_calls": [
+          "dump",
+          "json.dumps"
+        ],
+        "reason": "以传入的数据、调用函数或明确输入文件为边界；已查到下游导入或独立查询接口。只登记复用职责，不代表通过全部通用工具准入条件。"
+      }
+    },
+    {
+      "tool_id": "TOOL-170",
+      "path": "tools/pr_typed_r02.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：parse_parts, groups, prompt, audit_missing, make_bc, bc_call, chapter_facts, execute_groups, run, main"
+      ],
+      "outputs": [
+        "针对长输出截断的分组候选；输入内容只读，结果只放外部交付目录。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_typed_r02.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pr_checked_client_r02.py",
+          "tools/pr_pipeline_r02.py",
+          "tools/pr_shape_guard_r02.py"
+        ],
+        "interfaces": [
+          "parse_parts",
+          "groups",
+          "prompt",
+          "audit_missing",
+          "make_bc",
+          "bc_call",
+          "chapter_facts",
+          "execute_groups",
+          "run",
+          "main"
+        ],
+        "io_calls": [
+          "(OUT / 'books_selected.json').read_text",
+          "Client().call",
+          "Path(__file__).read_bytes",
+          "Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes",
+          "bc_call",
+          "concurrent.futures.ThreadPoolExecutor",
+          "dump",
+          "execute_groups",
+          "external(args.policy).read_text",
+          "hashlib.sha256(Path(__file__).read_bytes()).hexdigest",
+          "hashlib.sha256(Path(sys.modules['pr_pipeline_r02'].__file__).read_bytes()).hexdigest",
+          "json.dumps",
+          "json.loads",
+          "read_book",
+          "receipt['calls'].append",
+          "receipt['calls'].extend",
+          "run",
+          "running.pop"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-171",
+      "path": "tools/pr_v105_run_r04.py",
+      "primary_identity": "batch_reproducer",
+      "primary_identity_label": "批次复现器",
+      "status": "experimental_not_promoted",
+      "status_label": "批次专用·保留复现",
+      "purpose": "按 v105 作业文件协议发送一次获批请求并保存响应。",
+      "human_command": "按该脚本参数和单独获批的批次配置运行；本轮不执行。",
+      "inputs": [
+        "见文件接口：sha, save, main"
+      ],
+      "outputs": [
+        "按 v105 作业文件协议发送一次获批请求并保存响应。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [],
+      "last_use_clues": [
+        "tools/pr_v105_run_r04.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [],
+        "interfaces": [
+          "sha",
+          "save",
+          "main"
+        ],
+        "io_calls": [
+          "Path(p).read_bytes",
+          "hashlib.sha256(Path(p).read_bytes()).hexdigest",
+          "hashlib.sha256(json.dumps(body, ensure_ascii=False, sort_keys=True).encode()).hexdigest",
+          "json.dumps",
+          "json.dumps(body, ensure_ascii=False).encode",
+          "json.dumps(body, ensure_ascii=False, sort_keys=True).encode",
+          "json.load",
+          "json.loads",
+          "opener.open",
+          "p.read_text",
+          "p.write_text",
+          "urllib.request.build_opener"
+        ],
+        "reason": "固定轮次、实验编排或探测用途；CLI/顶层流程读取该批输入并输出回执。保留复现职责，实际再次运行需要另有授权。"
+      }
+    },
+    {
+      "tool_id": "TOOL-172",
+      "path": "tools/run_pipeline.py",
+      "primary_identity": "active_entry",
+      "primary_identity_label": "现役总入口",
+      "status": "active_entry",
+      "status_label": "R04生产入口",
+      "purpose": "接收输入包、书号、章节范围、输出目录和预算文件，运行文字管线并保存候选；A 与 C 视角是黄卡，不代表全自动内容验收。",
+      "human_command": "python tools/run_pipeline.py <输入包> <书号> <章节范围> <输出目录> <预算文件>",
+      "inputs": [
+        "见文件接口：messages, fact_map, plan_summary, clean_checkpoint, run_stage, run_packets, run_j2_short, check_review_packet, execute, main"
+      ],
+      "outputs": [
+        "接收输入包、书号、章节范围、输出目录和预算文件，运行文字管线并保存候选；A 与 C 视角是黄卡，不代表全自动内容验收。"
+      ],
+      "network_or_model": {
+        "network": "conditional",
+        "model": "conditional",
+        "note": "静态依赖含请求或预算读取能力，不表示每个函数都会联网；本轮未执行。"
+      },
+      "current_consumers": [
+        "tools/gb_orchestrate_r04.py",
+        "tools/pipeline_audit_wrapper25.py",
+        "tools/pipeline_j2_route85_selftest.py"
+      ],
+      "consumer_evidence_rule": "仅 tools 根层 Python 的静态导入；不把文字引用视为真实运行。",
+      "test_references": [
+        "tests/test_novel_mvp_m3_admission.py",
+        "tests/test_v02_c12_7_segmented_cache_smoke.py",
+        "tests/test_zbatch_cutover.py"
+      ],
+      "last_use_clues": [
+        "tools/run_pipeline.py"
+      ],
+      "next_confirmed_consumer": null,
+      "retirement_condition_and_compatibility_boundary": "main 接收五个位置参数；execute 直接调用 pipeline_text105.run。依据工作树起点代码和本地提交历史，只确认 R04 范围的生产入口。",
+      "review_needed": false,
+      "execution_identity": "Codex",
+      "classification_evidence": {
+        "local_imports": [
+          "tools/pipeline_audit25.py",
+          "tools/pipeline_author25.py",
+          "tools/pipeline_budget25.py",
+          "tools/pipeline_c_program25.py",
+          "tools/pipeline_context52.py",
+          "tools/pipeline_output28.py",
+          "tools/pipeline_plan52.py",
+          "tools/pipeline_prompts25.py",
+          "tools/pipeline_records25.py",
+          "tools/pipeline_source25.py",
+          "tools/pipeline_text105.py"
+        ],
+        "interfaces": [
+          "messages",
+          "fact_map",
+          "plan_summary",
+          "clean_checkpoint",
+          "run_stage",
+          "run_packets",
+          "run_j2_short",
+          "check_review_packet",
+          "execute",
+          "main"
+        ],
+        "io_calls": [
+          "(out / 'run.log').open",
+          "(out / 'run_command.txt').write_text",
+          "a_model_payload",
+          "complete_truncated_rows",
+          "execute",
+          "failed_payload.get",
+          "j2_wire_payload",
+          "json.dumps",
+          "json.dumps(part, ensure_ascii=False, separators=(',', ':')).encode",
+          "log.write",
+          "payload.get",
+          "payload.update",
+          "pending_truncation",
+          "pointer_payload",
+          "protocol_payload57",
+          "read_json",
+          "read_sources",
+          "run_j2_short",
+          "run_packets",
+          "run_stage",
+          "run_text_pipeline",
+          "self.log.write",
+          "self.terminal.write",
+          "wire_payload",
+          "write_json"
+        ],
+        "reason": "main 接收五个位置参数；execute 直接调用 pipeline_text105.run。依据工作树起点代码和本地提交历史，只确认 R04 范围的生产入口。"
+      }
     }
-  ]
+  ],
+  "execution_identity": "Codex",
+  "r04_cleanup_metadata": {
+    "execution_identity": "Codex",
+    "task_id": "job_R04_v113pr",
+    "base_commit": "f2cd14ed893db1ff9957b22ff5486b8cf201a9b2",
+    "new_regular_entities": 60,
+    "reported_unregistered_paths": 61,
+    "count_explanation": "61包含一个已记录的兼容软链接；测试与scope只登记普通实体，实补60个。",
+    "source_review_method": "AST静态接口、调用点、根层导入和测试文本引用；未运行业务脚本。",
+    "path_migration": {
+      "execution_identity": "Codex",
+      "external_path_helper": "tools/pipeline_common/artifacts.py",
+      "background_example": "tools/pipeline_background25.example.json",
+      "environment_example": "tools/local_paths.example.json",
+      "remaining_fixed_path_files": [],
+      "limitation": "原客户端禁止修改；金标生成及绑定历史金标材料和固定指纹的旧试点未在本轮迁移。"
+    }
+  },
+  "r04_entry_points": {
+    "execution_identity": "Codex",
+    "scope": "R04 at f2cd14ed893db1ff9957b22ff5486b8cf201a9b2",
+    "production_entry": "tools/run_pipeline.py",
+    "production_implementation": "tools/pipeline_text105.py",
+    "workspace_orchestrator": "tools/gb_orchestrate_r04.py",
+    "repository_menu": "tools/novel_pipeline.py",
+    "switch_evidence": {
+      "commit": "12fff02bd922ca7ae9580800542433a183d0192a",
+      "file": "tools/run_pipeline.py",
+      "function": "execute",
+      "fact": "调用文字管线并在保存后返回，后面的旧分支不再可达；未读取提交提及的148/150材料。"
+    },
+    "historical_reproducers": [
+      "tools/ark_smoke_r02.py",
+      "tools/gb_orchestrate_r04.py",
+      "tools/or_smoke_r04.py",
+      "tools/pipeline_audit_wrapper25.py",
+      "tools/pipeline_gateway_read25.py",
+      "tools/pipeline_j2_route85_selftest.py",
+      "tools/pipeline_r04_gate25.py",
+      "tools/pipeline_scan25.py",
+      "tools/pr_a_diagnostic_r03.py",
+      "tools/pr_ark_client_r02.py",
+      "tools/pr_availability_r01.py",
+      "tools/pr_c_steps_r03.py",
+      "tools/pr_compact_r02.py",
+      "tools/pr_global_c_r02.py",
+      "tools/pr_guarded_r02.py",
+      "tools/pr_headroom_r02.py",
+      "tools/pr_incremental_r04.py",
+      "tools/pr_layers_headroom_r03.py",
+      "tools/pr_layers_judged_r03.py",
+      "tools/pr_layers_r03.py",
+      "tools/pr_layers_v2_r03.py",
+      "tools/pr_pipeline_r01.py",
+      "tools/pr_pipeline_r02.py",
+      "tools/pr_probe_route_r01.py",
+      "tools/pr_recovery_probe_r03.py",
+      "tools/pr_replay_diagnostic_r03.py",
+      "tools/pr_resolved_r02.py",
+      "tools/pr_split_r01.py",
+      "tools/pr_split_r02.py",
+      "tools/pr_typed_r02.py",
+      "tools/pr_v105_run_r04.py"
+    ],
+    "boundary": "只说明 R04 的五参数入口，不授权运行。A 默认 fact_judge，与 C 视角均为黄卡；A 可设 PIPELINE_A_MODE=legacy 切回旧路径。资料视图为有界证据检索，不代表内容能力已验收。"
+  }
 }

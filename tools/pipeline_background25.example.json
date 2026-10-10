@@ -1,0 +1,19 @@
+{
+  "execution_identity": "Codex",
+  "example_only": true,
+  "books": [
+    {
+      "code": "EXAMPLE",
+      "archive": "<absolute-input-archive.zip>",
+      "book_id": "example-book",
+      "chapter_count": 1,
+      "record": "<absolute-record.json>",
+      "entity_records": [
+        {
+          "path": "<absolute-record.json>"
+        }
+      ]
+    }
+  ],
+  "missing": []
+}

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 执行身份：Codex
 """第74道 B 线：零调用生成五本结构层金标候选底稿。
 
 边界只有两条：
@@ -18,6 +19,7 @@ import json
 import re
 import tempfile
 from pathlib import Path
+from pipeline_common.artifacts import DeferredExternalPath
 from typing import Any
 
 
@@ -25,8 +27,8 @@ ROOT = Path(__file__).resolve().parents[1]
 THIS_FILE = Path(__file__).resolve()
 DEFAULT_OUTPUT_DIR = ROOT / "reports/Z74B_五本结构层金标底稿_v1.1_20260721"
 CANDIDATE_ROOT = ROOT / "TEMP/五本金标候选_前50章两步法材料_统一待处理_20260720"
-DOWNLOADS = Path("/Users/a1234/Downloads")
-TRUTH_ROOT = Path("/Users/a1234/挣钱/小说101-downloads")
+DOWNLOADS = DeferredExternalPath("NOVEL_DOWNLOADS_ROOT")
+TRUTH_ROOT = DeferredExternalPath("NOVEL_CORPUS_ROOT")
 
 
 BOOK_SPECS: tuple[dict[str, Any], ...] = (

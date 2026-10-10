@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 执行身份：Codex
 """归档外部诊断回包，并生成只含 Markdown 的可审计 ZIP。"""
 
 from __future__ import annotations
@@ -13,11 +14,7 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
-DEFAULT_SOURCES = (
-    Path("/Users/a1234/Downloads/小说逐章证据_API高精度方案包"),
-    Path("/Users/a1234/Downloads/LLM中性原子事件诊断包"),
-    Path("/Users/a1234/Downloads/第3章LLM请求诊断_修正版与抽取结果"),
-)
+DEFAULT_SOURCES: tuple[Path, ...] = ()
 ZIP_NAME = "小说中性原子事件诊断_三问法_全MD_20260720.zip"
 PACKAGE_ROOT = "小说中性原子事件诊断_三问法_全MD_20260720"
 SKIPPED_NAMES = {".DS_Store"}
@@ -339,7 +336,9 @@ def main() -> int:
     parser.add_argument("--source", action="append", type=Path)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    sources = tuple(args.source) if args.source else DEFAULT_SOURCES
+    if not args.source:
+        parser.error("请用 --source 明确指定输入目录；可重复传入")
+    sources = tuple(args.source)
     if args.check:
         print(json.dumps(verify(sources, args.target), ensure_ascii=False, sort_keys=True))
     else:

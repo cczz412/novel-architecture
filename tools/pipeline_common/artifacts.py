@@ -1,3 +1,4 @@
+# 执行身份：Codex
 """公共工件壳：稳定 JSON、SHA-256 与清单核验。"""
 
 from __future__ import annotations
@@ -485,3 +486,58 @@ def write_verified_zip(
     except Exception:
         temporary.unlink(missing_ok=True)
         raise
+
+
+def external_path(variable: str) -> Path:
+    value = os.environ.get(variable, '').strip()
+    if not value:
+        raise ValueError(f'请设置外部路径环境变量 {variable}；真实目录不要写进仓库')
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        raise ValueError(f'外部路径环境变量 {variable} 必须是绝对路径')
+    return Path(os.path.normpath(str(path)))
+
+
+class DeferredExternalPath(os.PathLike):
+    """Keep imports configuration-free; resolve external paths only on use."""
+
+    def __init__(self, variable: str, parts: tuple = ()):
+        self.variable = variable
+        self.parts = parts
+
+    def _path(self) -> Path:
+        return external_path(self.variable).joinpath(*self.parts)
+
+    def __fspath__(self) -> str:
+        return str(self._path())
+
+    def __str__(self) -> str:
+        return os.fspath(self)
+
+    def __repr__(self) -> str:
+        return f"DeferredExternalPath({self.variable!r}, {self.parts!r})"
+
+    def __truediv__(self, part):
+        return type(self)(self.variable, self.parts + (part,))
+
+    def __getattr__(self, name):
+        if name.startswith("__"):
+            raise AttributeError(name)
+        return getattr(self._path(), name)
+
+
+def external_book_codes(variable: str, expected_count: int) -> tuple[str, ...]:
+    """执行身份：Codex。旧入口的书目名单由获批作业提供；缺省不允许选书。"""
+    raw = os.environ.get(variable)
+    if raw is None:
+        return ()
+    try:
+        codes = json.loads(raw)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{variable} 须为书目代号的 JSON 数组") from exc
+    if (not isinstance(codes, list) or len(codes) != expected_count
+            or any(not isinstance(code, str) or not code or not code.isascii()
+                   or not all(c.isalnum() or c in '_-' for c in code) for code in codes)
+            or len(set(codes)) != len(codes)):
+        raise ValueError(f"{variable} 须含 {expected_count} 个不重复的书目代号")
+    return tuple(codes)

@@ -1,0 +1,404 @@
+# 执行身份：Codex
+"""有界返回协议、正文指针和一次拆分；不发请求。"""
+import copy
+import json
+import math
+import re
+
+from pipeline_records25 import SECTIONS, flatten
+
+PROTOCOL = 'bounded_delta_pointer_v28'
+REPAIR_MAX_BYTES = 6000
+J2_SHORT_REPAIR_MAX_BYTES = 1024
+REVIEW_PATCH_MAX_BYTES = 1024
+REVIEW_CLAIMS_MAX_BYTES = 1024
+REVIEW_CLAIM_MAX_BYTES = 128
+REVIEW_VERDICT_MAX_BYTES = 128
+OUTPUT_POLICY = {
+    'B': {'estimated_peak': 6000, 'max_tokens': 9000},
+    'A': {'estimated_peak': 2400, 'max_tokens': 3600},
+    'J2': {'estimated_peak': 12000, 'max_tokens': 18000},
+    'review': {'estimated_peak': 9000, 'max_tokens': 13500},
+    'C': {'estimated_peak': 6000, 'max_tokens': 9000},  # Grok Bot 作业外 v110：纯文字 C 照 B 的生产参数
+}
+
+
+class OutputOverflow(ValueError):
+    """完整结果无法放进协议上界；与截断相同，只能拆一次。"""
+
+
+class J2RowOverflow(OutputOverflow):
+    """完整J2返回仅需按条目本地拆包；不再请求更小原文组。"""
+
+
+def size(value):
+    return len(json.dumps(value, ensure_ascii=False, separators=(',', ':')).encode())
+
+
+def repair_message(error):
+    instruction = ('机检失败：只修指出的坏项及同类字段错误，保留其他裁定、编号、判定和差量，'
+                   '返回完整本包JSON。上次答案的转述不能当原文证据。错误详情：')
+    message = {'role': 'user', 'content': instruction + error}
+    # 预留按实际JSON字节计算，包含引号转义、消息封套和数组分隔符。
+    if len(json.dumps(message, ensure_ascii=False).encode()) + 2 > REPAIR_MAX_BYTES:
+        if ('speaker_candidate_membership' in error or 'speaker_claims_all_clear' in error
+                or 'review_protocol_conflict' in error):
+            try:
+                details = json.loads(error)
+                failed_ids = list(dict.fromkeys(e.get('verdict_id') for e in details.get('errors', [])
+                                               if isinstance(e, dict) and isinstance(e.get('verdict_id'), str)))
+            except (ValueError, AttributeError):
+                failed_ids = []
+            message['content'] = ('speaker_claims_all_clear；复核机检多错，全部失败编号：'
+                                  + json.dumps(failed_ids, ensure_ascii=False, separators=(',', ':'))
+                                  + '。将本包全部裁定的speaker_claims强制改为[]，'
+                                  'reason只写核对结论，保留所有编号和accept；删除拒收条目的patches，'
+                                  '保留其他差量，返回完整本包JSON。')
+        else:
+            message['content'] = '机检失败，重新核对本包全部字段、编号和原文指针，再给完整JSON。'
+    return message
+
+
+def review_shape_error(ident, field, detail, material, entity='某人'):
+    paragraph = next(iter(sentences(material)), None)
+    example = {'entity': entity, 'p': paragraph, 's': 1}
+    return json.dumps({'verdict_id': ident, 'field': field, 'error': detail,
+                      'legal_pointer_example': example,
+                      'note': '样例只示范指针；原句没有直接署名时speaker_claims填[]，reason只写核对结论。'},
+                     ensure_ascii=False, separators=(',', ':'))
+
+
+def sentences(material):
+    result = {}
+    for paragraph in material['paragraphs']:
+        # 按原文连续切句；不改字、不丢空白，句号从1开始。
+        chunks = re.findall(r'.*?[。！？\n]+|.+$', paragraph['text'], re.S)
+        result[paragraph['paragraph_id']] = chunks or [paragraph['text']]
+    return result
+
+
+def pointer_payload(material):
+    return [[p, [[i, text] for i, text in enumerate(parts, 1)]]
+            for p, parts in sentences(material).items()]
+
+
+def resolve_pointer(pointer, material):
+    if not isinstance(pointer, dict) or set(pointer) != {'p', 's'}:
+        raise ValueError('引用只允许段号和句号指针')
+    p, number = pointer['p'], pointer['s']
+    table = sentences(material)
+    if p not in table or type(number) is not int or not 1 <= number <= len(table[p]):
+        raise ValueError('段号或句号指针无效')
+    return {'p': p, 'q': table[p][number - 1]}
+
+
+def hydrate_j2(payload, material):
+    if payload.get('overflow') is True:
+        raise OutputOverflow('J2完整内容超出当前段组上界')
+    if set(payload) != set(SECTIONS):
+        raise ValueError('J2须只交八个栏目')
+    if any(not isinstance(payload[k], list) for k in SECTIONS):
+        raise ValueError('J2栏目须为数组')
+    if sum(len(payload[k]) for k in SECTIONS) > 24:
+        raise J2RowOverflow('J2超过24行返回上界，须按完整条目本地拆包')
+    if size(payload) > 10800:
+        raise OutputOverflow('J2超过10800字节返回上界')
+    result = copy.deepcopy(payload)
+    for section in SECTIONS:
+        if not isinstance(result[section], list):
+            raise ValueError('J2栏目须为数组')
+        for row in result[section]:
+            if not isinstance(row, dict):
+                raise ValueError('J2条目须为对象')
+            if size(row) > 432:
+                raise OutputOverflow('J2单行超过432字节，不截删内容')
+            refs = row.get('ev')
+            if not isinstance(refs, list) or not 1 <= len(refs) <= 2:
+                raise ValueError('J2须给1至2个证据指针')
+            row['ev'] = [resolve_pointer(p, material) for p in refs]
+    return result
+
+
+def split_j2_rows(payload):
+    """保留八栏及栏内次序；每个子包至多24条，不删条、不截内容。"""
+    if not isinstance(payload, dict) or set(payload) != set(SECTIONS):
+        raise ValueError('J2本地拆包须为完整八栏返回')
+    if any(not isinstance(payload[k], list) for k in SECTIONS):
+        raise ValueError('J2本地拆包栏目须为数组')
+    packets, current, count = [], {k: [] for k in SECTIONS}, 0
+    for section in SECTIONS:
+        for row in payload[section]:
+            if not isinstance(row, dict):
+                raise ValueError('J2本地拆包条目须为对象')
+            if size(row) > 432:
+                raise OutputOverflow('J2本地拆包单行超过432字节，不截删且不追加请求')
+            if count == 24:
+                packets.append(current)
+                current, count = {k: [] for k in SECTIONS}, 0
+            current[section].append(copy.deepcopy(row))
+            count += 1
+    if count or not packets:
+        packets.append(current)
+    if any(sum(len(p[k]) for k in SECTIONS) > 24 or size(p) > 10800 for p in packets):
+        raise OutputOverflow('J2本地拆包仍超界，不追加请求')
+    return packets
+
+
+def review_bound(rows):
+    return 128 + len(rows) * REVIEW_VERDICT_MAX_BYTES + REVIEW_PATCH_MAX_BYTES + REVIEW_CLAIMS_MAX_BYTES
+
+
+def check_review_shape(value, rows, material):
+    if value.get('overflow') is True:
+        raise OutputOverflow('复核差量超出当前条目组上界')
+    if set(value) != {'verdicts', 'patches'}:
+        raise ValueError('复核只交裁定与差量，不回传全量')
+    if not isinstance(value['verdicts'], list) or not isinstance(value['patches'], list):
+        raise ValueError('复核裁定和差量须为数组')
+    wanted = {r['_id'] for r in rows}
+    verdicts = value['verdicts']
+    if len(verdicts) != len(wanted) or {r.get('id') for r in verdicts} != wanted:
+        raise ValueError('当前条目组复核漏项、错号或重复')
+    if size(value['patches']) > REVIEW_PATCH_MAX_BYTES:
+        raise OutputOverflow('修订差量超过1024字节')
+    claims_size = 0
+    result = copy.deepcopy(value)
+    for verdict in result['verdicts']:
+        if type(verdict.get('accept')) is not bool or not isinstance(verdict.get('reason'), str) or not verdict['reason']:
+            raise ValueError('复核裁定缺布尔判定或理由')
+        claims = verdict.get('speaker_claims')
+        if not isinstance(claims, list):
+            raise ValueError('复核缺说话归属检查栏')
+        claims_size += size(claims)
+        bare = {**verdict, 'speaker_claims': []}
+        if set(verdict) != {'id', 'accept', 'reason', 'speaker_claims'} or size(bare) > REVIEW_VERDICT_MAX_BYTES:
+            raise ValueError(review_shape_error(verdict['id'], 'reason',
+                                 '复核单项裁定超过128字节或多交字段', material))
+        hydrated = []
+        for index, claim in enumerate(claims):
+            field = 'speaker_claims[' + str(index) + ']'
+            if not isinstance(claim, dict) or set(claim) != {'entity', 'p', 's'}:
+                raise ValueError(review_shape_error(verdict['id'], field,
+                                 '说话证明须给人物与段号、句号', material))
+            if size(claim) > REVIEW_CLAIM_MAX_BYTES:
+                raise ValueError(review_shape_error(verdict['id'], field,
+                                 '单条说话证明超过128字节，拒收且不截删', material))
+            if not isinstance(claim['entity'], str) or not claim['entity']:
+                raise ValueError(review_shape_error(verdict['id'], field + '.entity',
+                                 '说话主体须为非空字符串', material))
+            table = sentences(material)
+            if not isinstance(claim['p'], str) or claim['p'] not in table:
+                raise ValueError(review_shape_error(verdict['id'], field + '.p',
+                                 '段号或句号指针无效：p须为提交的段号字符串', material, claim['entity']))
+            if type(claim['s']) is not int or not 1 <= claim['s'] <= len(table[claim['p']]):
+                raise ValueError(review_shape_error(verdict['id'], field + '.s',
+                                 '段号或句号指针无效：s须为该段内的句号整数', material, claim['entity']))
+            hydrated.append({'entity': claim['entity'], 's': claim['s'], **resolve_pointer({'p': claim['p'], 's': claim['s']}, material)})
+        verdict['speaker_claims'] = hydrated
+    if claims_size > REVIEW_CLAIMS_MAX_BYTES or size(value) > review_bound(rows):
+        raise OutputOverflow('复核说话证明或整体返回超过上界')
+    return result
+
+
+def bounded_packets(role, material, payload, maximum, review=False):
+    """先分有界输入，再为每包留至少40%的输出余量。"""
+    if maximum != OUTPUT_POLICY['review' if review else role]['max_tokens']:
+        raise ValueError('输出上限须使用v28余量表')
+    ceiling = math.floor(maximum * 0.6)
+    if review:
+        rows = payload['rows']
+        count = max(1, (ceiling - 128 - REVIEW_PATCH_MAX_BYTES - REVIEW_CLAIMS_MAX_BYTES) // REVIEW_VERDICT_MAX_BYTES)
+        if any(len(str(r.get('_id', '')).encode()) > 32 for r in rows):
+            raise ValueError('候选编号超过协议上界')
+        groups, group, group_bytes = [], [], 2
+        input_bound = payload.get('input_bound', 23000)
+        for row in rows:
+            row_bytes = size(row) + 1
+            if row_bytes + 2 > input_bound:
+                raise OutputOverflow('单条复核材料超过输入上界，不截删')
+            if group and (len(group) >= count or group_bytes + row_bytes > input_bound):
+                groups.append(group)
+                group, group_bytes = [], 2
+            group.append(row)
+            group_bytes += row_bytes
+        if group or not groups:
+            groups.append(group)
+        return [(material, {**payload, 'rows': group, 'protocol': PROTOCOL,
+                           'output_bound': review_bound(group)}) for group in groups]
+    if role != 'J2':
+        return [(material, payload)]
+    # 24行×432字节 + 八栏封套432字节 = 10800；恰为18000的60%。
+    if ceiling < 10800:
+        raise ValueError('J2输出余量不足')
+    groups, group, weight = [], [], 0
+    for p in material['paragraphs']:
+        addition = len(p['text'].encode())
+        if group and (len(group) >= 36 or weight + addition > 6000):
+            groups.append(group)
+            group, weight = [], 0
+        group.append(p)
+        weight += addition
+    if group:
+        groups.append(group)
+    return [(dict(material, paragraphs=group), {**payload,
+             'paragraphs': pointer_payload(dict(material, paragraphs=group)),
+             'protocol': PROTOCOL, 'output_bound': 10800, 'max_rows': 24}) for group in groups]
+
+
+def split_packet(material, payload, review):
+    units = payload['rows'] if review else material['paragraphs']
+    if len(units) < 2:
+        raise OutputOverflow('单条或单段无法继续拆分')
+    middle = len(units) // 2
+    result = []
+    for group in (units[:middle], units[middle:]):
+        if review:
+            result.append((material, {**payload, 'rows': group, 'output_bound': review_bound(group)}))
+        else:
+            child = dict(material, paragraphs=group)
+            paragraphs = pointer_payload(child) if payload.get('protocol') == PROTOCOL else [[p['paragraph_id'], p['text']] for p in group]
+            result.append((child, {**payload, 'paragraphs': paragraphs}))
+    return result
+
+
+# 执行身份：Codex；124：父包汇总已处理子包，不重复计数原响应。
+def merge_accept_counts70(values):
+    return {key: sum(value.get('accept_normalized', {}).get(key, 0) for value in values)
+            for key in ('bool_true', 'bool_false', 'null')}
+
+
+def merge_values(role, values, review=False):
+    if review:
+        result = {'verdicts': [r for v in values for r in v['verdicts']],
+                  'patches': [r for v in values for r in v['patches']]}
+        if any('accept_normalized' in value for value in values):
+            result['accept_normalized'] = merge_accept_counts70(values)
+        return result
+    fields = SECTIONS if role == 'J2' else ('rows',)
+    result = {field: [row for v in values for row in v[field]] for field in fields}
+    if role == 'B':
+        result['unresolved'] = [row for v in values for row in v.get('unresolved', [])]
+    return result
+
+
+
+A_LOCAL_METHOD = 'seed_local_excerpts_v50'
+A_LOCAL_PARAGRAPH_WINDOW = 1
+A_SEEDS_PER_GROUP = OUTPUT_POLICY['A']['estimated_peak'] // 200
+
+
+def a_local_payload(material, payload, review=False):
+    """只送种子/候选所在段前后各一段；原章在本地继续用于逐字校验。"""
+    seeds = payload.get('plan_seeds', [])
+    rows = payload.get('rows', []) if review else []
+    refs = {e['p'] for r in seeds + rows for e in r.get('ev', [])}
+    # 旧计划本章变化证据从本包相关事实连接，跨章来源不伪装成本章段号。
+    refs.update(pid.rsplit(':', 1)[-1] for f in payload.get('facts', []) for pid in f[3]
+                if ':ch' + material['chapter'] + ':' in pid)
+    paragraphs = material['paragraphs']
+    selected = {j for i, p in enumerate(paragraphs) if p['paragraph_id'] in refs
+                for j in range(max(0, i - A_LOCAL_PARAGRAPH_WINDOW), min(len(paragraphs), i + A_LOCAL_PARAGRAPH_WINDOW + 1))}
+    local = dict(material, paragraphs=[p for i, p in enumerate(paragraphs) if i in selected])
+    data = {**payload, 'paragraphs': pointer_payload(local) if review else [[p['paragraph_id'], p['text']] for p in local['paragraphs']],
+            'input_method': A_LOCAL_METHOD, 'paragraph_window': A_LOCAL_PARAGRAPH_WINDOW}
+    return material, data
+
+
+def a_local_packets(material, payload, stage_bound, review=False):
+    """组数由种子数决定，旧计划只交一个组；复核按候选原输入上界分组。"""
+    if review:
+        packets = bounded_packets('A', material, payload, OUTPUT_POLICY['review']['max_tokens'], True)
+        result = []
+        for m, data in packets:
+            refs = {r.get(k) for r in data['rows'] for k in ('source', 'fulfilled', 'condition_ref')} | {k for r in data['rows'] for k in r.get('basis', [])}
+            data['plan_seeds'] = [s for s in payload.get('plan_seeds', []) if s['source'] in refs]
+            data['facts'] = [f for f in payload.get('facts', []) if f[0] in refs]
+            result.append(a_local_payload(m, data, True))
+        return result
+    seeds = payload.get('plan_seeds', [])
+    groups = [seeds[i:i + A_SEEDS_PER_GROUP] for i in range(0, len(seeds), A_SEEDS_PER_GROUP)] or [[]]
+    old = list(payload.get('previous_plans', []))
+    result = []
+    for n, group in enumerate(groups):
+        names = {s['subject'] for s in group}
+        previous = [r for r in old if r['subject'] in names or n == len(groups) - 1]
+        old = [r for r in old if r not in previous]
+        refs = {s['source'] for s in group} | {r.get(k) for r in previous for k in ('source', 'fulfilled', 'condition_ref')}
+        data = {**payload, 'plan_seeds': group, 'previous_plans': previous,
+                'facts': [f for f in payload.get('facts', []) if f[0] in refs],
+                'group_subjects': sorted(names | {r['subject'] for r in previous})}
+        result.append(a_local_payload(material, data))
+    return result
+
+
+def a_grouped_packets(material, payload, stage_bound):
+    """人物不跨组；正文保留，种子、事实和旧计划按人物归组，含一次重试预留。"""
+    from pipeline_prompts25 import SYSTEM, A_PROMPT
+    from pipeline_budget25 import reserve
+    people = {}
+    for seed in payload.get('plan_seeds', []):
+        people.setdefault(seed['subject'], []).append(seed)
+    for row in payload.get('previous_plans', []):
+        people.setdefault(row['subject'], [])
+    if not people:
+        return [(material, payload)]
+    groups = [[], []] if len(people) > 1 else [[]]
+    for subject in sorted(people, key=lambda name: (-len(people[name]), name)):
+        target = min(groups, key=lambda group: sum(len(people[name]) + 1 for name in group))
+        target.append(subject)
+    def packet(names):
+        seeds = [row for row in payload.get('plan_seeds', []) if row['subject'] in names]
+        previous = [row for row in payload.get('previous_plans', []) if row['subject'] in names]
+        refs = {row['source'] for row in seeds} | {row.get(k) for row in previous for k in ('source', 'fulfilled', 'condition_ref')}
+        facts = [row for row in payload.get('facts', []) if row[0] in refs or row[1] in names
+                 or any(name in row[2] for name in names)]
+        value = {**payload, 'facts': facts, 'previous_plans': previous, 'plan_seeds': seeds,
+                 'group_subjects': names}
+        base = [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': A_PROMPT + '\n' + json.dumps(value, ensure_ascii=False, separators=(',', ':'))}]
+        upper = reserve(base + [{'role': 'user', 'content': 'x' * REPAIR_MAX_BYTES}], OUTPUT_POLICY['A']['max_tokens'])
+        return value, upper
+    result = []
+    while groups:
+        names = groups.pop(0)
+        value, upper = packet(names)
+        if upper > stage_bound:
+            if len(names) < 2:
+                raise OutputOverflow('单个人物计划组含重试仍超过预留，不截删材料')
+            middle = len(names) // 2
+            groups[:0] = [names[:middle], names[middle:]]
+            continue
+        result.append((material, value))
+    return result
+
+
+def j2_decision_packets(material, prepared, maximum, stage_bound, config=None, review=False):
+    """短判断按证据段分组，给每次反馈预留上界，保留所有候选。"""
+    from pipeline_prompts25 import SYSTEM, J2_SHORT_PROMPT, J2_ITEM_PROMPT
+    from pipeline_budget25 import reserve
+    from pipeline_records25 import j2_wire_payload
+    if not prepared['items']:
+        return []
+    packets, group = [], []
+    count_bound = (math.floor(maximum * 0.6) - 64) // REVIEW_VERDICT_MAX_BYTES
+    def packet(items):
+        value = {**prepared, 'items': items}
+        wire = j2_wire_payload(value, material)
+        base = [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': (J2_ITEM_PROMPT if prepared['method'] == 'program_candidates_itemwise_v50' else J2_SHORT_PROMPT) + '\n' + json.dumps(wire, ensure_ascii=False, separators=(',', ':'))}]
+        # 新结构的反馈只指向三种裁定字段，不再带旧整包答案；JSON转义按两倍预留。
+        upper = reserve(base + [{'role': 'user', 'content': 'x' * (2 * J2_SHORT_REPAIR_MAX_BYTES)}], maximum,
+                        config, 'J2', review)
+        return value, upper
+    for item in prepared['items']:
+        value, upper = packet(group + [item])
+        if group and (upper > stage_bound or len(group) >= count_bound):
+            data, _ = packet(group)
+            packets.append((material, data))
+            group = []
+            value, upper = packet([item])
+        if upper > stage_bound:
+            raise OutputOverflow('J2单项短判断材料含重试超预留，不截删')
+        group.append(item)
+    if group:
+        data, _ = packet(group)
+        packets.append((material, data))
+    return packets

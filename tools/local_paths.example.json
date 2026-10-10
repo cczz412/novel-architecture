@@ -1,0 +1,23 @@
+{
+  "execution_identity": "Codex",
+  "example_only": true,
+  "usage": "示意文件，不自动加载。运行方在外部设置环境变量，或传入已有命令参数。",
+  "environment": {
+    "PR_WORKSPACE_ROOT": "<absolute-workspace-root>",
+    "GB_R04_ROOT": "<absolute-r04-output-root>",
+    "GB_GATEWAY_CODE": "<absolute-gateway-script.py>",
+    "PIPELINE_BACKGROUND_CONFIG": "<absolute-background-config.json>",
+    "PIPELINE_RELEASE_TABLE": "<absolute-release-table.json>",
+    "NOVEL_LAB_ROOT": "<absolute-lab-root>",
+    "NOVEL_CORPUS_ROOT": "<absolute-corpus-root>",
+    "NOVEL_DOWNLOADS_ROOT": "<absolute-downloads-directory>",
+    "Z77_SOURCE_SANDBOX": "<absolute-z77-source-sandbox>",
+    "Z80_ZHIHU_CACHE": "<absolute-source-cache-file>",
+    "Z80_FANREN_CACHE": "<absolute-source-cache-file>"
+  },
+  "diagnostic_package_args": [
+    "--source",
+    "<absolute-source-directory>"
+  ],
+  "legacy_client_note": "旧客户端输出根由 GB_R04_ROOT 提供；导入时不解析，使用路径时检查。"
+}

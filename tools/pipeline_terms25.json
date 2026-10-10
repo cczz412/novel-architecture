@@ -1,0 +1,25 @@
+{
+  "execution_identity": "Codex",
+  "words": [
+    {
+      "word": "发生变化",
+      "reason": "普通变化描述，不是人物或物件名称",
+      "registered_by": "Codex"
+    },
+    {
+      "word": "已经给出",
+      "reason": "通用程序判断措辞，不是故事情节",
+      "registered_by": "Codex"
+    },
+    {
+      "word": "去的地方",
+      "reason": "通用地点与去向表达，不是地名",
+      "registered_by": "Codex"
+    },
+    {
+      "word": "人说话时",
+      "reason": "通用言语归属语法，不是实体名称或固定情节",
+      "registered_by": "Codex"
+    }
+  ]
+}

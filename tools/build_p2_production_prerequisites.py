@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 执行身份：Codex
 """Build the P2 production-canonical prerequisite ledger without training.
 
 The script is intentionally conservative:
@@ -19,12 +20,13 @@ import re
 import shutil
 from collections import Counter, defaultdict
 from pathlib import Path
+from pipeline_common.artifacts import external_path
 from typing import Any
 
 
-REPO = Path("/Users/a1234/挣钱/小说架构")
-LAB = Path("/Users/a1234/挣钱/小说架构_隔离实验")
-CORPUS = Path("/Users/a1234/挣钱/小说101-downloads")
+REPO = Path(__file__).resolve().parents[1]
+LAB = external_path('NOVEL_LAB_ROOT')
+CORPUS = external_path('NOVEL_CORPUS_ROOT')
 NEWBOOK = CORPUS / "_newbook_rank_20260804/books"
 
 A_PATH = REPO / "TEMP/chatgpt_review_cycles/T5_R04_A_V27_PRUNED_CANDIDATE_20260807_R01/candidate/train_v2_7_a_pruned_candidate.jsonl"
