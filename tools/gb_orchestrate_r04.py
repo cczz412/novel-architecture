@@ -17,10 +17,10 @@ from types import SimpleNamespace
 sys.dont_write_bytecode=True
 TOOLS=Path(__file__).resolve().parent
 sys.path.insert(0,str(TOOLS))
-from pipeline_common.artifacts import external_path
-ROOT=external_path('GB_R04_ROOT')
+from pipeline_common.artifacts import DeferredExternalPath
+ROOT=DeferredExternalPath('GB_R04_ROOT')
 V5=ROOT/'job_R04_v105';G=ROOT/'gateway'
-GATEWAY_CODE=external_path('GB_GATEWAY_CODE')
+GATEWAY_CODE=DeferredExternalPath('GB_GATEWAY_CODE')
 LEDGER_BASE={'requests':686,'ok':677,'failed':9};LEDGER_COST=0.00624921  # v108 起作业外各轮之前的网关累计
 OWN_PREFIXES=('r04_v108gb_','r04_v109gb_','r04_v110gb_','r04_v111gb_','r04_v112gb_')
 
