@@ -169,3 +169,6 @@ venv/
 # 执行身份：Codex；本机真实背景配置与路径清单不得入仓。
 /tools/pipeline_background25.json
 /tools/*.local.json
+
+# 执行身份：Codex；作业产物只留在仓库外的 out 目录。
+/work/job_*/
