@@ -87,7 +87,7 @@ def legacy(args):
     W=pathlib.Path(__file__).resolve().parents[1]
     import pipeline_audit25 as audit
     from pipeline_source25 import read_json,write_json,digest
-    p=W/'tools/pipeline_background25.json'
+    p=pathlib.Path(args.background)
     terms=W/'tools/pipeline_terms25.json'
     records=read_json(p)['books']; corpora={}; receipts=[]
     for record in records:
@@ -113,12 +113,12 @@ def legacy(args):
       if item.get('chapter_book'):
        obj=[row for row in obj['chapters'] if row.get('book')==item['chapter_book']]
       entities[record['code']].update(audit.collect_entities(obj))
-    configs=[W/'tools/pipeline_terms25.json',W/'tools/pipeline_background25.json']
+    configs=[terms,p]
     files,errors=audit.local_closure(W/'tools/run_pipeline.py',[],configs)
     struct=audit.structural_checks(files);scans=audit.string_scan(files,corpora,entities,read_json(terms)['words'])
     if pathlib.Path(args.release_table).exists():scans=audit.apply_background_releases(scans,files,args.release_table)
     write_json(R/'closure_candidate_v25.json',dict(execution_identity='Codex',files=[dict(path=str(p),sha256=digest(p)) for p in files],dynamic_errors=errors))
-    write_json(R/'string_detection_v25.json',dict(execution_identity='Codex',reports=scans,whitelist_sha256=digest(terms),background_sha256=digest(W/'tools/pipeline_background25.json'),corpus_receipts=receipts,entities={k:sorted(v) for k,v in entities.items()},known_exposure={'provider':'审读侧持表代跑','words_read':False,'self_populated':False},hard_passed=not any(r['missing_chapter_count'] for r in receipts) and all(scans[k]['hit_count']==0 for k in ['qishi','dixian']),effective=not any(r['missing_chapter_count'] for r in receipts),ineffective_reasons=['missing_chapters'] if any(r['missing_chapter_count'] for r in receipts) else []))
+    write_json(R/'string_detection_v25.json',dict(execution_identity='Codex',reports=scans,whitelist_sha256=digest(terms),background_sha256=digest(p),corpus_receipts=receipts,entities={k:sorted(v) for k,v in entities.items()},known_exposure={'provider':'审读侧持表代跑','words_read':False,'self_populated':False},hard_passed=not any(r['missing_chapter_count'] for r in receipts) and all(scans[k]['hit_count']==0 for k in ['qishi','dixian']),effective=not any(r['missing_chapter_count'] for r in receipts),ineffective_reasons=['missing_chapters'] if any(r['missing_chapter_count'] for r in receipts) else []))
     write_json(R/'structural_checks_v25.json',dict(execution_identity='Codex',**struct))
     if any(r['missing_chapter_count'] for r in receipts):
      print('coverage_incomplete: missing_chapters',sum(r['missing_chapter_count'] for r in receipts))
