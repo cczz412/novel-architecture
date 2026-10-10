@@ -4,6 +4,7 @@
 import sys
 sys.dont_write_bytecode = True
 import argparse
+import os
 import json
 from pathlib import Path
 from pipeline_source25 import chapter_range, digest, read_json, read_sources, write_json
@@ -30,7 +31,17 @@ ROOT = Path(__file__).resolve().parent
 CODE_FILES = tuple(ROOT / name for name in ('run_pipeline.py', 'pipeline_source25.py',
     'pipeline_prompts25.py', 'pipeline_budget25.py', 'pipeline_records25.py', 'pipeline_author25.py', 'pipeline_audit25.py', 'pipeline_c_program25.py', 'pipeline_output28.py', 'pipeline_context52.py', 'pipeline_plan52.py', 'pipeline_text105.py'))
 PROMPT_FILES = (ROOT / 'pipeline_prompts25.py',)
-CONFIG_FILES = (ROOT / 'pipeline_terms25.json', ROOT / 'pipeline_background25.json')
+CONFIG_FILES = (ROOT / 'pipeline_terms25.json',)
+
+def configured_files():
+    value = os.environ.get('PIPELINE_BACKGROUND_CONFIG', '').strip()
+    if not value:
+        raise Halt('请设置外部背景配置 PIPELINE_BACKGROUND_CONFIG；仓库只提供示例')
+    path = Path(value).expanduser()
+    if not path.is_absolute() or not path.is_file():
+        raise Halt('外部背景配置 PIPELINE_BACKGROUND_CONFIG 必须指向已有文件的绝对路径')
+    return (*CONFIG_FILES, path)
+
 
 
 def messages(instruction, payload):
@@ -439,7 +450,7 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
                   'pipeline_steps_run': False, 'gold_read': False}
         write_json(output / 'structure_check.json', report)
         return report
-    budget = Budget(budget_file, output, input_package, tuple(dict.fromkeys((*CODE_FILES, *PROMPT_FILES, *CONFIG_FILES))))
+    budget = Budget(budget_file, output, input_package, tuple(dict.fromkeys((*CODE_FILES, *PROMPT_FILES, *configured_files()))))
     # 执行身份：Codex；148/150 收口：生产默认走文字内容判断，旧函数仅供旧回归。
     from pipeline_text105 import run as run_text_pipeline
     def text_save(name, value):

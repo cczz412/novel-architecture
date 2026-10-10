@@ -2,7 +2,7 @@
   "schema_version": "governance-tool-registry-v1",
   "registry_id": "Z87-tool-identity-registry",
   "registered_at": "2026-07-22T07:38:00+08:00",
-  "updated_at": "2026-10-10T10:34:04.318612+08:00",
+  "updated_at": "2026-10-10T10:38:35.867812+08:00",
   "authority": {
     "work_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-05",
     "adjudication_order": "https://app.notion.com/p/3d80c8bc0efe458ebb487a7297e654dc#2026-07-22-07-58",
@@ -1059,17 +1059,19 @@
       "primary_identity": "reusable_component",
       "primary_identity_label": "可复用组件",
       "status": "active_component_layer",
-      "python_file_count": 4,
+      "python_file_count": 5,
       "human_command": "不直接作为总入口；由治理索引、检查员、测试计划、模型横向试验、只读仓库目录与统一入口导入。",
       "inputs": [
         "本地 JSON、路径与工件清单",
         "模型横向试验阶段规格、供应商配置与冻结请求包",
-        "当前状态、模型调用档、实验路线、仓外对象、取件卡、工具身份与 Git 索引"
+        "当前状态、模型调用档、实验路线、仓外对象、取件卡、工具身份与 Git 索引",
+        "外部路径环境变量；仅解析绝对路径，不打开目标内容"
       ],
       "outputs": [
         "统一读写、清单与工件校验结果",
         "隔离的模型候选样张、运输账、机械闸与横向成绩单",
-        "不落盘的仓库用途导航、候选模型零件表、实验／仓外对象摘要与体积分布"
+        "不落盘的仓库用途导航、候选模型零件表、实验／仓外对象摘要与体积分布",
+        "外部路径对象，或包含变量名的配置错误"
       ],
       "network_or_model": {
         "network": "conditional",
@@ -1083,7 +1085,15 @@
         "tools/test_impact.py",
         "experiments/model_benchmarks/",
         "tools/chatgpt_review_pack.py",
-        "tools/simple_pack.py"
+        "tools/simple_pack.py",
+        "tools/ark_smoke_r02.py",
+        "tools/or_smoke_r04.py",
+        "tools/pr_pipeline_r01.py",
+        "tools/pr_v105_run_r04.py",
+        "tools/gb_orchestrate_r04.py",
+        "tools/pr_a_diagnostic_r03.py",
+        "tools/cplus_stage1_runner.py",
+        "tools/build_p2_production_prerequisites.py"
       ],
       "test_references": [
         "tests/test_pipeline_artifacts.py",
@@ -1101,7 +1111,8 @@
         "experiments/model_benchmarks/README.md"
       ],
       "next_confirmed_consumer": "CZ 已明确后续会持续切换多个供应商与模型做同阶段横向试验，并要求整个仓库按用途好找路、好调取。",
-      "retirement_condition_and_compatibility_boundary": "现役公共工件层；批次路径只能进入阶段规格单；仓库目录只从现有真源即时派生，不得保存第二份总账、接受任意路径或探测受保护对象。"
+      "retirement_condition_and_compatibility_boundary": "现役公共工件层；批次路径只能进入阶段规格单；仓库目录只从现有真源即时派生，不得保存第二份总账、接受任意路径或探测受保护对象。",
+      "execution_identity": "Codex"
     }
   ],
   "compatibility_aliases": [
@@ -8922,7 +8933,20 @@
     "new_regular_entities": 60,
     "reported_unregistered_paths": 61,
     "count_explanation": "61包含一个已记录的兼容软链接；测试与scope只登记普通实体，实补60个。",
-    "source_review_method": "AST静态接口、调用点、根层导入和测试文本引用；未运行业务脚本。"
+    "source_review_method": "AST静态接口、调用点、根层导入和测试文本引用；未运行业务脚本。",
+    "path_migration": {
+      "execution_identity": "Codex",
+      "external_path_helper": "tools/pipeline_common/local_paths.py",
+      "background_example": "tools/pipeline_background25.example.json",
+      "environment_example": "tools/local_paths.example.json",
+      "remaining_fixed_path_files": [
+        "tools/pr_ark_client_r02.py",
+        "tools/z74b_gold_draft_pipeline.py",
+        "tools/z77_fact_sheet_v2_pilot.py",
+        "tools/z80_fact_sheet_v4_crossbook_pilot.py"
+      ],
+      "limitation": "原客户端禁止修改；金标生成及绑定历史金标材料和固定指纹的旧试点未在本轮迁移。"
+    }
   },
   "r04_entry_points": {
     "execution_identity": "Codex",

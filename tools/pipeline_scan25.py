@@ -1,6 +1,7 @@
 # 执行身份：Codex
 """旧全文报告与公开书目白名单计数模式；计数模式不保存命中串或实体。"""
 import argparse
+import os
 import hashlib
 import json
 import pathlib
@@ -136,10 +137,14 @@ def main():
     parser.add_argument('--allow-book-id', action='append', default=[])
     parser.add_argument('--counts-out')
     root = pathlib.Path(__file__).resolve().parents[1]
-    parser.add_argument('--background', default=str(root / 'tools/pipeline_background25.json'))
+    parser.add_argument('--background', default=os.environ.get('PIPELINE_BACKGROUND_CONFIG'))
     parser.add_argument('--terms', default=str(root / 'tools/pipeline_terms25.json'))
-    parser.add_argument('--release-table', default='/workspace/codex-work/out/管线修复_R04/审读/71_背景串放行表.json')
+    parser.add_argument('--release-table', default=os.environ.get('PIPELINE_RELEASE_TABLE'))
     args = parser.parse_args()
+    if not args.background:
+        parser.error('请用 --background 或 PIPELINE_BACKGROUND_CONFIG 提供外部背景配置')
+    if not args.release_table:
+        parser.error('请用 --release-table 或 PIPELINE_RELEASE_TABLE 提供外部放行表')
     if not args.counts_only:
         if not args.output_dir:
             parser.error('output_dir required for legacy mode')

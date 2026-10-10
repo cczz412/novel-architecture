@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 执行身份：Codex
 """T5 R04 C+ 阶段 1：三个零训练单变量根因证伪。
 
 运行顺序固定：A stage1 41 题、C stage1 41 题、A final 22 个触顶案
@@ -6,6 +7,7 @@
 """
 
 from __future__ import annotations
+from pipeline_common.local_paths import external_path
 
 import argparse
 import hashlib
@@ -25,7 +27,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-LAB = Path("/Users/a1234/挣钱/小说架构_隔离实验")
+LAB = external_path('NOVEL_LAB_ROOT')
 UPSTREAM = LAB / "T5_R04_A_C_FORMAT_COMPARE_20260807_R01"
 MODEL = LAB / "models/Qwen3-4B-Instruct-2507_cdbee75f"
 EXPERIMENT_ID = "T5_R04_CPLUS_20260807_R01"

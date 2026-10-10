@@ -1,7 +1,9 @@
+# 执行身份：Codex
+from pipeline_common.local_paths import external_path
 # 执行身份：Grok Bot（调度者）：经本地网关对 OpenRouter 三个模型各发一次极小虚构请求（只读 PR_LLM_BASE_URL，不用密钥）。
 import json, os, time, urllib.request
 BASE, JOB = os.environ['PR_LLM_BASE_URL'].rstrip('/'), os.environ['PR_JOB_ID']
-OUT = '/workspace/codex-work/out/管线修复_R04/probe/or_smoke.json'
+OUT = external_path('PR_WORKSPACE_ROOT') / 'out/管线修复_R04/probe/or_smoke.json'
 PARAMS = {'xiaomi/mimo-v2.6-flash': {'reasoning': {'enabled': False}}, 'xiaomi/mimo-v2.6-pro': {'reasoning': {'enabled': False}},
           'typesafe/jev-router': {}}
 rows = []

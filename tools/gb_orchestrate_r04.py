@@ -1,3 +1,4 @@
+# 执行身份：Codex
 # 执行身份：Grok Bot 作业外 v111——作业外整线编排（由 job_R04_v110/orchestrate_v110.py 收编入库）
 """Grok Bot 作业外整线编排：经本地网关逐条投递生产 text.run 的请求，挂起题原样重投一次。
 
@@ -16,9 +17,10 @@ from types import SimpleNamespace
 sys.dont_write_bytecode=True
 TOOLS=Path(__file__).resolve().parent
 sys.path.insert(0,str(TOOLS))
-ROOT=Path(os.environ.get('GB_R04_ROOT','/workspace/codex-work/out/管线修复_R04'))
+from pipeline_common.local_paths import external_path
+ROOT=external_path('GB_R04_ROOT')
 V5=ROOT/'job_R04_v105';G=ROOT/'gateway'
-GATEWAY_CODE=Path(os.environ.get('GB_GATEWAY_CODE','/workspace/codex-work/bin/ark_gateway_r04.py'))
+GATEWAY_CODE=external_path('GB_GATEWAY_CODE')
 LEDGER_BASE={'requests':686,'ok':677,'failed':9};LEDGER_COST=0.00624921  # v108 起作业外各轮之前的网关累计
 OWN_PREFIXES=('r04_v108gb_','r04_v109gb_','r04_v110gb_','r04_v111gb_','r04_v112gb_')
 

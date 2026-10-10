@@ -1,5 +1,6 @@
 # 执行身份：Codex
 """A状态诊断只写数字与编号，复用原评分器的实体对齐，不替代正式分数。"""
+from pipeline_common.local_paths import external_path
 import argparse
 from collections import Counter, defaultdict
 import importlib.util
@@ -9,7 +10,7 @@ import sys
 
 
 def diagnose(gold_path, pred_path, bid, zip_path):
-    spec = importlib.util.spec_from_file_location('readonly_score', '/workspace/codex-work/bin/score_pipeline.py')
+    spec = importlib.util.spec_from_file_location('readonly_score', external_path('PR_WORKSPACE_ROOT') / 'bin/score_pipeline.py')
     s = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = s
     spec.loader.exec_module(s)
@@ -83,7 +84,7 @@ def main():
     for name in ('gold','pred','bid','input-zip','out'):p.add_argument('--'+name,required=True)
     a=p.parse_args()
     out=Path(a.out).resolve()
-    if not out.is_relative_to(Path('/workspace/codex-work/out/管线修复_R03/a_state_diagnostic')):raise ValueError('诊断输出仅本轮指定目录')
+    if not out.is_relative_to(external_path('PR_WORKSPACE_ROOT') / 'out/管线修复_R03/a_state_diagnostic'):raise ValueError('诊断输出仅本轮指定目录')
     result=diagnose(a.gold,a.pred,a.bid,a.input_zip)
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')

@@ -8,7 +8,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
-W = Path('/workspace/codex-work/work/管线修复_R04/novel-architecture')
+W = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(W / 'tools'))
 import pipeline_records25 as rec
 import run_pipeline as entry

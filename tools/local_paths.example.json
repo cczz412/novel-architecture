@@ -1,0 +1,19 @@
+{
+  "execution_identity": "Codex",
+  "example_only": true,
+  "usage": "示意文件，不自动加载。运行方在外部设置环境变量，或传入已有命令参数。",
+  "environment": {
+    "PR_WORKSPACE_ROOT": "<absolute-workspace-root>",
+    "GB_R04_ROOT": "<absolute-r04-output-root>",
+    "GB_GATEWAY_CODE": "<absolute-gateway-script.py>",
+    "PIPELINE_BACKGROUND_CONFIG": "<absolute-background-config.json>",
+    "PIPELINE_RELEASE_TABLE": "<absolute-release-table.json>",
+    "NOVEL_LAB_ROOT": "<absolute-lab-root>",
+    "NOVEL_CORPUS_ROOT": "<absolute-corpus-root>"
+  },
+  "diagnostic_package_args": [
+    "--source",
+    "<absolute-source-directory>"
+  ],
+  "legacy_client_note": "pr_ark_client_r02.py 本轮禁止修改，旧客户端与 pr_pipeline_r02.py 暂时仍共用原固定根。"
+}

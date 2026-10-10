@@ -1,7 +1,9 @@
+# 执行身份：Codex
+from pipeline_common.local_paths import external_path
 # 执行身份：Grok Bot（调度者）：经本地网关对 5 个模型各发一次极小虚构请求（只读 PR_LLM_BASE_URL，不用密钥）。
 import json, os, time, urllib.request
 BASE, JOB = os.environ['PR_LLM_BASE_URL'].rstrip('/'), os.environ['PR_JOB_ID']
-OUT = '/workspace/codex-work/out/管线修复_R02/probe/smoke_gateway.json'
+OUT = external_path('PR_WORKSPACE_ROOT') / 'out/管线修复_R02/probe/smoke_gateway.json'
 PARAMS = {'kimi-k2.8-preview': {'thinking': {'type': 'disabled'}}, 'glm-5.3-flash': {'reasoning_effort': 'low'},
           'deepseek-v4.1-flash': {'thinking': {'type': 'disabled'}}, 'doubao-seed-2.0-mini': {'thinking': {'type': 'disabled'}},
           'doubao-seed-2.1-lite': {'thinking': {'type': 'disabled'}}}

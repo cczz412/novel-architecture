@@ -165,3 +165,7 @@ venv/
 
 # ST-001 frozen legacy table lives in the sibling archive.
 /side-tracks/tracks/ST-001_corpus_relabel/tables/corpus_relabel.csv
+
+# 执行身份：Codex；本机真实背景配置与路径清单不得入仓。
+/tools/pipeline_background25.json
+/tools/*.local.json

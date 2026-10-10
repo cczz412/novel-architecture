@@ -1,12 +1,13 @@
 # 执行身份：Codex
 """One request per authorized file-protocol job, using production parameters."""
+from pipeline_common.local_paths import external_path
 import sys
 sys.dont_write_bytecode=True
 import datetime,hashlib,json,os
 from pathlib import Path
 import urllib.request,urllib.parse
 
-ROOT=Path('/workspace/codex-work/out/管线修复_R04/job_R04_v105')
+ROOT=external_path('PR_WORKSPACE_ROOT') / 'out/管线修复_R04/job_R04_v105'
 
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def save(p,x):

@@ -16,7 +16,8 @@ import zipfile
 
 BOOKS=('gongan','dayi','qishi')
 MODELS=('glm-5.3-flash','deepseek-v4.1-flash','kimi-k2.8-preview')
-OUT=Path('/workspace/codex-work/out/管线修复_R04')
+# 与旧客户端共用输出根；该客户端的外部配置迁移另行处理。
+from pr_ark_client_r02 import OUT
 AUDIT=('old_plan_rows','fact_chapters','source_chapters','plan_history','open_plan_keys','review_flags')
 STATUSES=('未执行','执行中','兑现','落空','放弃')
 TAGS=('叙述带过','动作展开','对话','心理','场景')

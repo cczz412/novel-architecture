@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # 执行身份：Codex
 """R06 代用基线与有限修复；样本输入输出只在外部交付目录。"""
+from pipeline_common.local_paths import external_path
 import argparse
 import copy
 import hashlib
@@ -16,7 +17,7 @@ import zipfile
 
 BOOKS=('gongan','dayi','qishi')
 MODELS=('z-ai/glm-5.3-flash','z-ai/glm-5.3-flashx','deepseek/deepseek-v4.1-flash','moonshotai/kimi-k3')
-OUT=Path('/workspace/codex-work/out/管线修复_R01')
+OUT=external_path('PR_WORKSPACE_ROOT') / 'out/管线修复_R01'
 AUDIT=('old_plan_rows','fact_chapters','source_chapters','plan_history','open_plan_keys','review_flags')
 STATUSES=('未执行','执行中','兑现','落空','放弃')
 TAGS=('叙述带过','动作展开','对话','心理','场景')
