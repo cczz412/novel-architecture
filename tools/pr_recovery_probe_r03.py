@@ -18,7 +18,7 @@ def main():
     folder=external(a.out)
     folder.mkdir(parents=True,exist_ok=True)
     # 只有这个单次虚构探测跳过客户端旧阻塞；网关保险照常强制。
-    client_module.is_blocked=lambda:False
+    client_module.is_blocked=lambda model=None:False
     client_module.BLOCKED=folder/'probe_blocked.json'
     policy={'reasoning_effort':'low'} if a.model=='glm-5.3-flash' else {'thinking':{'type':'disabled'}}
     text='执行身份：Codex。虚构连通性探测，不含任何小说。只返回JSON：{"ready":true}'
