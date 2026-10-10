@@ -176,6 +176,7 @@ def c_text(material, call, save):
     context = narrator_context(material)
     prepared = dict(material, **{CONTEXT_KEY: context})
     paragraphs, scenes, pending, alias_log = [], [], [], []
+    missing_from_answer = []
     for packet, raw, reason in c_text_packet(prepared, _split_corrupt_call(call, save), save, '0'):
         if raw is None:
             pending.extend({'id': 'paragraphs:' + p['paragraph_id'], 'level': 'paragraph',
@@ -192,6 +193,30 @@ def c_text(material, call, save):
                           for row in checked.get('paragraphs', []))
         scenes.extend(checked.get('scenes', []))
         pending.extend(cell_pending)
+        accepted = {row['p'] for row in checked.get('paragraphs', [])}
+        missing_from_answer.extend(p for p in packet['paragraphs']
+                                   if p['paragraph_id'] not in accepted)
+    # Only parsed answers with uncovered rows get one supplemental packet.
+    # Failed whole packets keep the existing split/fallback and budget behavior.
+    if missing_from_answer:
+        supplement = dict(prepared, paragraphs=missing_from_answer)
+        for packet, raw, reason in c_text_packet(
+                supplement, _split_corrupt_call(call, save), save, 'missing', False):
+            if raw is None:
+                continue
+            value, log = c_text_normalize(raw)
+            alias_log.extend(log)
+            value.setdefault('scenes', [])
+            value['memory_marks'] = {'paragraph_ids': [], 'open_at_end': False, 'starts': []}
+            checked, cell_pending = c_checked(value, packet)
+            recovered = {row['p'] for row in checked.get('paragraphs', [])}
+            paragraphs.extend(_check_viewpoint(row, packet, context)
+                              for row in checked.get('paragraphs', []))
+            scenes.extend(checked.get('scenes', []))
+            pending = [row for row in pending
+                       if not (row['level'] == 'paragraph'
+                               and row.get('paragraph_id') in recovered)]
+            pending.extend(cell_pending)
     for group, rows in (('paragraphs', paragraphs), ('scenes', scenes)):
         for index, row in enumerate(rows):
             row['_id'] = group + ':' + str(index)
