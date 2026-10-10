@@ -5,13 +5,14 @@ import hashlib
 import json
 import os
 from pathlib import Path
+from pipeline_common.artifacts import DeferredExternalPath
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
 
-OUT = Path('/workspace/codex-work/out/管线修复_R04')
+OUT = DeferredExternalPath('GB_R04_ROOT')
 TRANSPORT_RETRIES = 2
 BLOCKED = OUT / 'control/UPSTREAM_BLOCKED.json'
 RECOVERY = OUT / 'control/RECOVERY_CONFIRMED.json'

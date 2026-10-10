@@ -496,3 +496,31 @@ def external_path(variable: str) -> Path:
     if not path.is_absolute():
         raise ValueError(f'外部路径环境变量 {variable} 必须是绝对路径')
     return Path(os.path.normpath(str(path)))
+
+
+class DeferredExternalPath(os.PathLike):
+    """Keep imports configuration-free; resolve external paths only on use."""
+
+    def __init__(self, variable: str, parts: tuple = ()):
+        self.variable = variable
+        self.parts = parts
+
+    def _path(self) -> Path:
+        return external_path(self.variable).joinpath(*self.parts)
+
+    def __fspath__(self) -> str:
+        return str(self._path())
+
+    def __str__(self) -> str:
+        return os.fspath(self)
+
+    def __repr__(self) -> str:
+        return f"DeferredExternalPath({self.variable!r}, {self.parts!r})"
+
+    def __truediv__(self, part):
+        return type(self)(self.variable, self.parts + (part,))
+
+    def __getattr__(self, name):
+        if name.startswith("__"):
+            raise AttributeError(name)
+        return getattr(self._path(), name)

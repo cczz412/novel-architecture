@@ -15,5 +15,5 @@
     "--source",
     "<absolute-source-directory>"
   ],
-  "legacy_client_note": "pr_ark_client_r02.py 本轮禁止修改，旧客户端与 pr_pipeline_r02.py 暂时仍共用原固定根。"
+  "legacy_client_note": "旧客户端输出根由 GB_R04_ROOT 提供；导入时不解析，使用路径时检查。"
 }
