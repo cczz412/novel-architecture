@@ -48,6 +48,9 @@ def test_c_view_completeness(mode, case):
     assert part == before
     status = store['view_status']['写法视角表']
     chapter = status['chapter_status']['01']
+    if case != 'empty':
+        assert store['view_status']['场景在场表']['status'] == '完整'
+        assert store['view_status']['用餐在场表']['status'] == '完整'
     if case in ('complete', 'scene_field'):
         assert status['status'] == '完整'
         assert status['pending_count'] == status['missing_count'] == 0

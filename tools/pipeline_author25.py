@@ -275,7 +275,7 @@ def build_views(materials, current):
                   for reason, pids in sorted(reasons.items())]
         label = ('不完整、原因未知' if unknown_ids else '不完整') + f'：缺 {len(missing_ids)} 段，待核 {len(pending_ids) + len(unknown_ids)} 段'
         if unknown_ids:
-            label += f'；另有 {len(unknown_ids)} 个待核段号无法对应原文'
+            label += f'；其中 {len(unknown_ids)} 个待核段号无法对应原文'
         if groups:
             label += '；' + '；'.join(g['reason'] + ' ' + str(g['count']) + ' 段（' + '、'.join(g['paragraph_ids']) + '）' for g in groups)
         c_chapter_status[ch] = {'status': '完整' if complete else '不完整',
@@ -283,9 +283,6 @@ def build_views(materials, current):
                                'pending_count': len(pending_ids) + len(unknown_ids), 'pending_paragraph_ids': sorted(pending_ids),
                                'unmatched_pending_count': len(unknown_ids), 'reason_groups': groups,
                                'label': '完整' if complete else label}
-        # 空章沿用原来的未完成显示；非空章按段核对，待核也不能称完整。
-        if ids or unknown_ids:
-            layer_status[ch]['C'] = complete
     view_status={}
     for name,rows in views.items():
         deps=['J2'] if name in J2_VIEWS else ['A','J2'] if name in ('计划状态表','未来安排表') else ['C','J2'] if name in ('写法视角表','场景在场表','用餐在场表') else ['B'] if name=='事实检索' else []
@@ -293,6 +290,11 @@ def build_views(materials, current):
         viewpoint_deps = {ch for row in rows for ch in row.get('viewpoint_j2_chapters', [])} if name == '写法视角表' else set(chapters)
         missing=[{'chapter':ch,'layer':j2_label if dep=='J2' else dep} for ch in chapters for dep in deps
                  if not layer_status[ch][dep] and (dep != 'J2' or ch in viewpoint_deps)]
+        if name == '写法视角表':
+            # 仅补这张表的段落状态；空章沿用旧显示，场景等其他表不受影响。
+            missing.extend({'chapter': ch, 'layer': 'C'} for ch in chapters
+                           if c_chapter_status[ch]['status'] != '完整'
+                           and not any(m['chapter'] == ch and m['layer'] == 'C' for m in missing))
         completed=[ch for ch in chapters if not any(m['chapter'] == ch for m in missing)]
         view_status[name]={'status':'完整' if not missing else '部分' if completed else '未完成','missing':missing,
              'complete_chapters':completed,'pending_count':sum(r.get('chapter') in chapters for r in views['待核资料']) if 'J2'in deps else 0,
