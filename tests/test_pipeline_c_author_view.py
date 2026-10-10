@@ -20,7 +20,7 @@ def fixture(mode, count=3):
 
 @pytest.mark.parametrize('mode', ['text_v110', 'viewpoint_evidence_v123'])
 @pytest.mark.parametrize('case', ['one_missing', 'many_reasons', 'pending_only', 'complete',
-                                  'mismatched', 'empty', 'yellow_row', 'duplicate', 'full_id'])
+                                  'mismatched', 'empty', 'yellow_row', 'duplicate', 'full_id', 'scene_field', 'malformed_pending'])
 def test_c_view_completeness(mode, case):
     material, part = fixture(mode, 0 if case == 'empty' else 3)
     if case in ('one_missing', 'many_reasons', 'duplicate', 'full_id'):
@@ -39,12 +39,16 @@ def test_c_view_completeness(mode, case):
         part['C_pending'] *= 2
     if case == 'full_id':
         part['C_pending'][0]['paragraph_id'] = 'fictional133:ch01:p003'
+    if case == 'scene_field':
+        part['C_pending'] = [{'level': 'field', 'row': '窗边', 'reason': '字段格式不符'}]
+    if case == 'malformed_pending':
+        part['C_pending'] = [{'level': 'paragraph', 'row': '坏格式', 'reason': '回包解析失败'}]
     before = copy.deepcopy(part)
     store = build_views([material], {'01': part})
     assert part == before
     status = store['view_status']['写法视角表']
     chapter = status['chapter_status']['01']
-    if case == 'complete':
+    if case in ('complete', 'scene_field'):
         assert status['status'] == '完整'
         assert status['pending_count'] == status['missing_count'] == 0
     elif case == 'empty':
@@ -55,8 +59,9 @@ def test_c_view_completeness(mode, case):
         assert status['pending_count'] == (2 if case == 'many_reasons' else 1)
         assert status['missing_count'] == (2 if case == 'many_reasons' else 1 if case in ('one_missing', 'duplicate', 'full_id') else 0)
         assert '不完整' in status['label']
-        if case == 'mismatched':
-            assert '原因未知' in status['label'] and 'p999' in status['label']
+        if case in ('mismatched', 'malformed_pending'):
+            assert ('p999' if case == 'mismatched' else '未提供段号') in status['label']
+            assert '原因未知' in status['label']
             assert chapter['unmatched_pending_count'] == 1
         elif case == 'many_reasons':
             assert chapter['reason_groups'] == [

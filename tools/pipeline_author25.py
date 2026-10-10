@@ -249,7 +249,10 @@ def build_views(materials, current):
         def add_reason(reason, pid):
             reasons.setdefault(reason, set()).add(pid)
         for pending in part.get('C_pending', []):
-            raw = pending.get('paragraph_id') or pending.get('row', {}).get('p')
+            if pending.get('level') in ('field', 'scene'):
+                continue  # 场景字段待核仍在待核资料中，不冒充段落视角待核。
+            pending_row = pending.get('row')
+            raw = pending.get('paragraph_id') or (pending_row.get('p') if isinstance(pending_row, dict) else None)
             pid = aliases.get(raw)
             if pid is None:
                 unknown = str(raw or '未提供段号')
