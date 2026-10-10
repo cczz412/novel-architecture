@@ -43,6 +43,22 @@ def build_views(materials, current):
     chapters=[m['chapter'] for m in materials]
     paragraph_text={p['full_id']:p['text'] for m in materials for p in m['paragraphs']}
     layer_status={ch:{r:current[ch].get(r+'_status')=='complete' if r!='C' else bool(current[ch].get('C',{}).get('paragraphs')) for r in ('A','B','J2','C')} for ch in chapters}
+    # 执行身份：Codex；章状态独立于计划条目，空章也有可见说明。
+    a_chapter_status = {}
+    for ch in chapters:
+        part = current[ch]
+        reasons = [r['reason'] for r in part.get('A_failure_reasons', [])]
+        if not reasons and not layer_status[ch]['A']:
+            reasons = [r.get('reason') or 'A 判断未完成' for r in part.get('A_pending', [])]
+            reasons += ['复核拒收：' + str(r.get('reason') or '未说明原因') for r in part.get('A_rejected', [])]
+        if layer_status[ch]['A'] and part.get('A_empty_reason') == 'no_plans_after_full_judgement':
+            label = '本章已判完，无计划'
+        elif layer_status[ch]['A']:
+            label = '本章已判完，有计划'
+        else:
+            label = '未完成：' + '；'.join(dict.fromkeys(reasons or ['上游材料未完成']))
+        a_chapter_status[ch] = {'status': part.get('A_status'), 'label': label,
+                                'empty_reason': part.get('A_empty_reason'), 'reasons': reasons}
     for material in materials:
         part = current[material['chapter']]
         time_hints={};time_anchor=None
@@ -236,9 +252,12 @@ def build_views(materials, current):
                 older=[c for c in chapters if c<ch and layer_status[c]['A']]
                 labels.append('截至 ch'+older[-1]+'，ch'+ch+' 未更新' if older else '部分：ch'+ch+' A 未完成')
         if name == '计划状态表':
+            labels.extend('ch' + ch + ' ' + item['label'] for ch, item in a_chapter_status.items()
+                          if item['empty_reason'] or not layer_status[ch]['A'])
             labels.insert(0, A_YELLOW_NOTICE)
             view_status[name].update(card_color='yellow', default_usable=False,
-                                     author_retractable=True, notice=A_YELLOW_NOTICE)
+                                     author_retractable=True, notice=A_YELLOW_NOTICE,
+                                     chapter_status=a_chapter_status)
         view_status[name]['label']='；'.join(labels)
     return {'execution_identity': 'Codex', 'views': views, 'entities': registry,'view_status':view_status,
             'layer_status':layer_status,'chapters':chapters,
@@ -445,6 +464,7 @@ def query(store, question, limit=12, chapters=None):
     meta['relevant_pending_count']=len(relevant_pending)
     meta['requested_views']=sorted(requested)
     if '计划状态表' in requested:
+        meta['plan_chapter_status'] = {ch: item for ch, item in store.get('view_status', {}).get('计划状态表', {}).get('chapter_status', {}).items() if ch in selected_chapters}
         meta['plan_reading_note']=A_YELLOW_NOTICE + '计划状态以计划表及其截至时间为准；事实中的念头、未说出的话不自动当作未来待办。'
     meta['query_scope_labels']=['部分：ch'+ch+' A 未完成' for ch in selected_chapters if relevant=={'计划状态表'} and not store.get('layer_status',{}).get(ch,{}).get('A',True)]
     return {'execution_identity': 'Codex', **meta, 'question': question,'status':store.get('status','complete'),
