@@ -12,7 +12,7 @@ MAX_BYTES = 8192
 
 
 def settings():
-    mode = os.environ.get('PIPELINE_A_MODE', 'legacy')
+    mode = os.environ.get('PIPELINE_A_MODE', 'fact_judge')
     brief = os.environ.get('PIPELINE_A_INCLUDE_BRIEF', 'true')
     if mode not in ('legacy', 'fact_judge'):
         raise ValueError('PIPELINE_A_MODE 只能是 legacy 或 fact_judge')
@@ -23,7 +23,7 @@ def settings():
 
 def checkpoint_identity():
     config = settings()
-    # Preserve the default legacy identity shape; every nondefault combination differs.
+    # Preserve the historical legacy identity shape; other combinations stay distinct.
     return {} if config == {'mode': 'legacy', 'include_brief': True} else {'a_settings': config}
 
 
