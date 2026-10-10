@@ -99,12 +99,12 @@ def valid_subset(raw, material):
                 continue
             stub = dict(keep=[], exclude=[], flag=[], replace=[], add=[])
             stub[kind] = [row]
-            _, errors, _ = cleanup_gate(stub, dict(material, facts=[facts[key]]))
+            normalized, errors, _ = cleanup_gate(stub, dict(material, facts=[facts[key]]))
             if errors:
                 rejected.extend(dict(e, key=key) for e in errors)
                 continue
             seen.add(key)
-            candidate[kind].append(row)
+            candidate[kind].extend(normalized[kind])
     selected = dict(material, facts=[f for f in material['facts'] if f['local_key'] in seen])
     return candidate, selected, rejected
 
