@@ -1,4 +1,5 @@
 # 执行身份：Codex
+# 执行身份：Codex；v117 配置身份单独保存，不混入文件哈希。
 # 执行身份：Grok Bot 作业外 v111——作业外整线编排（由 job_R04_v110/orchestrate_v110.py 收编入库）
 """Grok Bot 作业外整线编排：经本地网关逐条投递生产 text.run 的请求，挂起题原样重投一次。
 
@@ -69,11 +70,14 @@ def main(argv=None):
   print(now().isoformat(),s,flush=True)
  def checkpoint(name,value):save(J/'pipeline'/(name.replace(':','_')+'.json'),value)
  files=list(run_pipeline.CODE_FILES)+[TOOLS/'pr_v105_run_r04.py',Path(__file__).resolve()]
- from pipeline_common.a_fact_judge import checkpoint_identity
- code={**{str(p):sha(p) for p in files}, **checkpoint_identity()}
+ from pipeline_common.a_fact_judge import checkpoint_identity, require_checkpoint
+ code={str(p):sha(p) for p in files}
+ a_identity=checkpoint_identity()
  manifest=J/'runtime_integrity.json'
- if manifest.exists():assert read(manifest)['files']==code,'代码版本不同，停止续跑'
- else:save(manifest,{'files':code,'purpose':'本轮入口与生产函数投前投后完整性核对'})
+ if manifest.exists():
+  assert read(manifest)['files']==code,'代码版本不同，停止续跑'
+  require_checkpoint(read(manifest).get('a_identity',{}),a_identity)
+ else:save(manifest,{'files':code,'a_identity':a_identity,'purpose':'本轮入口与生产函数投前投后完整性核对'})
  materials=read_sources(a.source,a.book,a.chapters.split(','))
  save(J/'public_materials.json',{'materials':materials,'archive_sha256':sha(a.source)})
  spec=importlib.util.spec_from_file_location('gateway_normalize_only',GATEWAY_CODE)
@@ -177,6 +181,7 @@ def main(argv=None):
     if row['stage_id'] not in stages or row.get('retry_of'):
      gateway_check()
      assert all(sha(p)==v for p,v in code.items()),'投前代码变化'
+     require_checkpoint(a_identity,checkpoint_identity())
      assert used_successes(a.cap_root,J,result)<a.cap,'总量闸：已到成功回答上限'
      row['submitted_at']=now().isoformat();row['wall_deadline']=(now()+datetime.timedelta(minutes=10)).isoformat()
      request_path=V5/'requests'/(row['job_id']+'.json');save(request_path,row)

@@ -139,6 +139,8 @@ def judged_row(raw, item, visible, material):
         raise ValueError('计划状态缺依据序号')
     fulfilled = status.get('fulfilled')
     completion = refs_to_facts([fulfilled], visible) if fulfilled is not None else []
+    if any(not isinstance(raw.get(k), str) or not raw[k].strip() for k in ('subject', 'content')):
+        raise ValueError('持有人和内容必须是非空文字')
     source = item['fact']
     evidence_facts = [source] + basis + completion
     ev = []
@@ -318,6 +320,34 @@ def advance_plans(previous, universe, config, material, facts, call, save, prefi
             carried.append(old['key'])
     return rows, carried, pending, rejected
 
+
+
+def advance_new(rows, universe, config, material, facts, call, save, prefix):
+    """Follow later chapter facts as bounded status-only questions, without new IDs."""
+    result, pending = [], []
+    for index, row in enumerate(rows):
+        current = copy.deepcopy(row)
+        source_positions = [x['n'] for x in universe if x['fact']['local_key'] == row['source']]
+        # The generation already saw this source and at most two following facts.
+        later = [x for x in universe if x['n'] > max(source_positions)]
+        if current['status'] not in ('兑现', '落空', '放弃') and later:
+            for group, visible, raw, failure in ask_packets(later, config, material, call, save, prefix + ':' + str(index), row):
+                if failure:
+                    pending.append(failure)
+                    continue
+                answers = raw.get('rows')
+                if not isinstance(answers, list) or len(answers) != 1:
+                    pending.append(pending_row(prefix, '本章后续状态缺答，保留当前判断', raw))
+                    continue
+                try:
+                    current = update_status(current, answers[0], visible, material, facts)
+                    if current['status'] in ('兑现', '落空', '放弃'):
+                        break
+                except (ValueError, TypeError, KeyError, AttributeError) as exc:
+                    pending.append(pending_row(prefix + ':' + str(index), str(exc), raw))
+        result.append(current)
+    return result, pending
+
 def run(material, call, save, facts=(), previous=()):
     config = settings()
     universe = candidates(material, facts)
@@ -340,8 +370,15 @@ def run(material, call, save, facts=(), previous=()):
                     rows.append(row)
             except (ValueError, KeyError, TypeError, AttributeError) as exc:
                 pending.append(pending_row(prefix + ':' + str(item['n']), str(exc), answer))
-    unique = {r['_id']: r for r in rows}
-    rows, more_pending, rejected = review_rows(list(unique.values()), material, facts, previous, config, call, save, prefix + ':review')
+    unique = {}
+    for row in rows:
+        if row['_id'] in unique and unique[row['_id']] != row:
+            pending.append(pending_row(row['_id'], '同一来源出现冲突判断，保留原件待核', row))
+            continue
+        unique[row['_id']] = row
+    rows, later_pending = advance_new(list(unique.values()), universe, config, material, facts, call, save, prefix + ':later')
+    pending.extend(later_pending)
+    rows, more_pending, rejected = review_rows(rows, material, facts, previous, config, call, save, prefix + ':review')
     pending.extend(more_pending)
     updated, carried, old_pending, old_rejected = advance_plans(previous, universe, config, material, facts, call, save, prefix + ':carry')
     rows.extend(updated)

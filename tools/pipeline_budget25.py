@@ -242,6 +242,9 @@ class Budget:
         write_json(self.output / 'closed.json', {'closed_at': now(), 'closed_reason': reason})
 
     def guard(self):
+        from pipeline_common.a_fact_judge import checkpoint_identity
+        if {k: self.identity[k] for k in ('a_settings',) if k in self.identity} != checkpoint_identity():
+            raise Halt('跑中 A 路径或计划口径改变')
         config = self.config
         if config.get('runtime_guard'):
             errors = runtime_guard_errors(config)
