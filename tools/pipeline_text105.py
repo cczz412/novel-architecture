@@ -136,6 +136,9 @@ def c_checked(payload, material):
                         try:
                             if not isinstance(c, dict):
                                 raise ValueError('场景格须为对象')
+                            # Grok Bot 作业外 v112 第2处：非“在场”格缺文字（只有 ev）时只降该格为待核，免得整本拼装时 KeyError 'text' 崩掉。
+                            if name != 'present' and not (isinstance(c.get('text'), str) and c['text'].strip()):
+                                raise ValueError('场景格缺文字')
                             evidence(c.get('ev'), material)
                         except (ValueError, TypeError, KeyError, AttributeError) as exc:
                             bad.append(c)
