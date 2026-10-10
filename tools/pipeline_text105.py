@@ -246,10 +246,12 @@ def c_text_packet(material, call, save, tag, split_ok=True):
     save(prefix + ':original', {'payload': raw, 'material': material})
     ok = isinstance(raw, dict) and not raw.get('_upstream_unanswered') and isinstance(raw.get('paragraphs'), list)
     if not ok:
-        if split_ok and len(material['paragraphs']) > 1 and not (isinstance(raw, dict) and raw.get('_upstream_unanswered')):
+        if split_ok and len(material['paragraphs']) > 1 and (upstream_rejected(raw) or not (isinstance(raw, dict) and raw.get('_upstream_unanswered'))):
             half = len(material['paragraphs']) // 2
             return (c_text_packet(dict(material, paragraphs=material['paragraphs'][:half]), call, save, tag + 'a', False) +
                     c_text_packet(dict(material, paragraphs=material['paragraphs'][half:]), call, save, tag + 'b', False))
+        if upstream_rejected(raw):
+            return [(material, None, rejected_reason(raw, not split_ok, 'C 本包未标注'))]
         reason = '上游未回答，C 本包待核' if isinstance(raw, dict) and raw.get('_upstream_unanswered') else 'C 回包缺段数组，本包待核'
         return [(material, None, reason)]
     return [(material, raw, None)]
@@ -380,12 +382,28 @@ def a_packets(material, facts, previous):
     return groups
 
 
+# Grok Bot 作业外 v111：上游拒收（HTTP 400）——整包对半拆开各投一次；仍被拒的那半包标“上游拒收”待核，写明原因进作者视图，不静默消失。
+UPSTREAM_REJECTED = '上游拒收'
+
+
+def upstream_rejected(raw):
+    return isinstance(raw, dict) and bool(raw.get('_upstream_rejected'))
+
+
+def rejected_reason(raw, after_split, what='本包原文未抽取，完整原文保留'):
+    why = str(raw.get('_upstream_reason') or 'HTTP 400') if isinstance(raw, dict) else 'HTTP 400'
+    how = '整包对半拆开各投一次后本半包仍被拒' if after_split else '本包只剩一条无法再拆'
+    return UPSTREAM_REJECTED + '（' + why + '）：' + how + '，' + what + '，待核'
+
+
 def text_ab(role, material, call, save, facts=(), previous=()):
     """The callback owns transport and budget. Every raw response is saved before checking."""
     collected, pending, rejected, carried = [], [], [], set()
     groups = paragraph_packets(material, maximum=8000, count=56) if role=='B' else a_packets(material, facts, previous)
-    for n, child in enumerate(groups):
-        prefix = role + ':' + material['chapter'] + ':' + str(n)
+    queue = [(str(n), child, False) for n, child in enumerate(groups)]
+    while queue:
+        tag, child, split_done = queue.pop(0)
+        prefix = role + ':' + material['chapter'] + ':' + tag
         payload = a_payload(child, facts, previous) if role == 'A' else {'paragraphs': pointer_payload(child)}
         request_messages = messages(role, payload)
         if role == 'A' and len(json.dumps(request_messages, ensure_ascii=False).encode()) > 8192:
@@ -395,6 +413,16 @@ def text_ab(role, material, call, save, facts=(), previous=()):
         save(prefix + ':before', {'material':child,'payload':payload,'status':'待答'})
         raw = call(role, material['chapter'], request_messages, False, prefix + ':generate')
         save(prefix + ':original', {'payload': raw, 'material': child})
+        if upstream_rejected(raw):
+            if not split_done and len(child['paragraphs']) > 1:
+                half = len(child['paragraphs']) // 2
+                save(prefix + ':rejected_split', {'reason': raw.get('_upstream_reason'), 'halves': [tag + 'a', tag + 'b']})
+                queue[0:0] = [(tag + 'a', dict(child, paragraphs=child['paragraphs'][:half]), True),
+                              (tag + 'b', dict(child, paragraphs=child['paragraphs'][half:]), True)]
+                continue
+            pending.append({'id':prefix,'status':'待核','reason':rejected_reason(raw, split_done),'row':payload,
+                            'upstream_rejected':True,'paragraph_ids':[p['paragraph_id'] for p in child['paragraphs']]})
+            continue
         if raw.get('_upstream_unanswered'):
             pending.append({'id':prefix,'status':'待核','reason':'上游未回答，完整原文保留','row':payload})
             continue
@@ -435,25 +463,44 @@ def text_ab(role, material, call, save, facts=(), previous=()):
             if role == 'A' and not echo:
                 pending.append({'id':prefix,'status':'待核','reason':'模型未返回计划，未证明没有计划','row':raw})
             continue
-        review_payload = {**payload, 'rows': [{k:v for k,v in r.items() if k not in ('confirmation_status','default_usable','author_retractable')} for r in candidate['rows']], 'role': role}
-        if role=='A':
-            review_refs={r.get(k) for r in candidate['rows'] for k in ('source','fulfilled','condition_ref')} | {k for r in candidate['rows'] for k in r.get('basis',[])}
-            review_payload['facts']=[f for f in payload['facts'] if f['local_key'] in review_refs]
-            review_payload['previous_plans']=[p for p in payload['previous_plans'] if p['key'] in {r.get('key') for r in candidate['rows']}]
-        review_messages = messages(role, review_payload, True)
-        if role == 'A' and len(json.dumps(review_messages, ensure_ascii=False).encode()) > 8192:
+        def review_once(rows, stage):
+            part = dict(candidate, rows=rows)
+            review_payload = {**payload, 'rows': [{k:v for k,v in r.items() if k not in ('confirmation_status','default_usable','author_retractable')} for r in rows], 'role': role}
+            if role=='A':
+                review_refs={r.get(k) for r in rows for k in ('source','fulfilled','condition_ref')} | {k for r in rows for k in r.get('basis',[])}
+                review_payload['facts']=[f for f in payload['facts'] if f['local_key'] in review_refs]
+                review_payload['previous_plans']=[p for p in payload['previous_plans'] if p['key'] in {r.get('key') for r in rows}]
+            review_messages = messages(role, review_payload, True)
+            if role == 'A' and len(json.dumps(review_messages, ensure_ascii=False).encode()) > 8192:
+                return part, None
+            review = call(role, material['chapter'], review_messages, True, stage)
+            save(stage + '_original', {'payload':review})
+            return part, review
+        part, review = review_once(candidate['rows'], prefix + ':review')
+        if review is None:
             pending.extend({'id':r['_id'],'status':'待核','reason':'复核超过8KB，完整候选保留','row':r} for r in candidate['rows'])
             continue
-        review = call(role, material['chapter'], review_messages, True, prefix + ':review')
-        save(prefix + ':review_original', {'payload':review})
-        try:
-            approved, removed = review_result(role, candidate, review, child, facts, previous)
-        except (ValueError, KeyError, TypeError) as exc:
-            pending.extend({'id':r['_id'],'status':'待核','reason':str(exc),'row':r} for r in candidate['rows'])
-            continue
+        parts = [(part, review, False)]
+        if upstream_rejected(review) and len(candidate['rows']) > 1:
+            half = len(candidate['rows']) // 2
+            parts = [review_once(rows, prefix + ':review:split_' + t) + (True,) for t, rows in (('a', candidate['rows'][:half]), ('b', candidate['rows'][half:]))]
+        approved = {'rows': []}
+        for part, review, split_done in parts:
+            if review is None:
+                pending.extend({'id':r['_id'],'status':'待核','reason':'复核超过8KB，完整候选保留','row':r} for r in part['rows'])
+                continue
+            if upstream_rejected(review):
+                pending.extend({'id':r['_id'],'status':'待核','reason':rejected_reason(review, split_done, '复核未答，完整候选保留'),'row':r,'upstream_rejected':True} for r in part['rows'])
+                continue
+            try:
+                ok_part, removed = review_result(role, part, review, child, facts, previous)
+            except (ValueError, KeyError, TypeError) as exc:
+                pending.extend({'id':r['_id'],'status':'待核','reason':str(exc),'row':r} for r in part['rows'])
+                continue
+            approved['rows'].extend(ok_part['rows'])
+            pending.extend(r for r in removed if r['status'] == '待核')
+            rejected.extend(r for r in removed if r['status'] == '拒收')
         collected.extend(approved['rows'])
-        pending.extend(r for r in removed if r['status'] == '待核')
-        rejected.extend(r for r in removed if r['status'] == '拒收')
         save(prefix + ':saved', {'approved':approved,'pending':pending,'rejected':rejected})
     # Duplicate output does not erase either source record.
     unique = {}
@@ -544,6 +591,25 @@ def attribution_state(row, item, selected):
 SOURCE_DEFAULT_SECTION = 'people'
 
 
+def call_rejected_split(call, ch, items, build, review, stage, key):
+    """Grok Bot 作业外 v111：J2 一包被上游拒收时对半拆开各投一次；返回合并回包与仍被拒的条目（附拒收原因）。"""
+    raw = call('J2', ch, build(items), review, stage)
+    if not upstream_rejected(raw):
+        return raw, {}
+    if len(items) < 2:
+        return {key: []}, {x['id']: rejected_reason(raw, False, '本条原件保留') for x in items}
+    half = len(items) // 2
+    merged, lost = {key: []}, {}
+    for tag, part in (('a', items[:half]), ('b', items[half:])):
+        sub = call('J2', ch, build(part), review, stage + ':split_' + tag)
+        if upstream_rejected(sub):
+            lost.update({x['id']: rejected_reason(sub, True, '本条原件保留') for x in part})
+        elif isinstance(sub, dict) and isinstance(sub.get(key), list):
+            merged[key].extend(sub[key])
+    merged['_rejected_split'] = True
+    return merged, lost
+
+
 def text_j2(material, facts, call, save):
     from pipeline_records25 import j2_prepare_packet_v50
     candidates=[]
@@ -568,12 +634,14 @@ def text_j2(material, facts, call, save):
     rejected=[]; output={f:[] for f in SECTIONS}; review_items=list(source_items)
     for n in range(0,len(ordinary),16):
         items=ordinary[n:n+16]; ids={x['id'] for x in items}
-        pids={e['p'] for x in items for e in x['candidate']['ev']}
-        child=dict(material,paragraphs=[p for p in material['paragraphs'] if p['paragraph_id'] in pids])
-        payload={'paragraphs':pointer_payload(child),'items':[{'id':x['id'],'original':next(r for r in candidates if r['_id']==x['id'])} for x in items]}
+        def gen_payload(part):
+            pids={e['p'] for x in part for e in x['candidate']['ev']}
+            child=dict(material,paragraphs=[p for p in material['paragraphs'] if p['paragraph_id'] in pids])
+            return {'paragraphs':pointer_payload(child),'items':[{'id':x['id'],'original':next(r for r in candidates if r['_id']==x['id'])} for x in part]}
+        payload=gen_payload(items)
         prefix='J2:'+material['chapter']+':generate:'+str(n//16)
         save(prefix+':before',{'payload':payload,'status':'待答'})
-        raw=call('J2',material['chapter'],j2_messages(payload),False,prefix)
+        raw,lost=call_rejected_split(call,material['chapter'],items,lambda part:j2_messages(gen_payload(part)),False,prefix,'rows')
         save(prefix+':original',{'payload':raw})
         seen=set()
         rows=raw.get('rows',[]) if isinstance(raw.get('rows',[]),list) else []
@@ -595,24 +663,27 @@ def text_j2(material, facts, call, save):
         for item in items:
             if item['id'] not in seen:
                 pending.append({'id':item['id'],'section':None,'status':'待核',
-                    'reason':'生成编号重复，所有变体保留' if item['id'] in repeated else '生成缺答或模型待核',
-                    'row':item['candidate'],'response_variants':[r for r in rows if isinstance(r,dict) and r.get('id')==item['id']]})
+                    'reason':lost.get(item['id']) or ('生成编号重复，所有变体保留' if item['id'] in repeated else '生成缺答或模型待核'),
+                    'row':item['candidate'],'response_variants':[r for r in rows if isinstance(r,dict) and r.get('id')==item['id']],
+                    **({'upstream_rejected':True} if item['id'] in lost else {})})
         save(prefix+':saved',{'review_items':review_items,'pending':pending})
     for n in range(0,len(review_items),16):
         items=review_items[n:n+16]; ids={x['id'] for x in items}
-        # Include complete local source paragraphs and adjacent paragraphs as context, not rewritten summaries.
-        selected={e['p'] for x in items for e in x['candidate']['ev']}
-        positions={i for i,p in enumerate(material['paragraphs']) if p['paragraph_id'] in selected}
-        nearby={k for i in positions for k in range(max(0,i-1),min(len(material['paragraphs']),i+2))}
-        child=dict(material,paragraphs=[p for i,p in enumerate(material['paragraphs']) if i in nearby])
-        payload={'paragraphs':pointer_payload(child),'items':[{'id':x['id'],'section':x.get('section'),
+        def rev_payload(part):
+            # Include complete local source paragraphs and adjacent paragraphs as context, not rewritten summaries.
+            selected={e['p'] for x in part for e in x['candidate']['ev']}
+            positions={i for i,p in enumerate(material['paragraphs']) if p['paragraph_id'] in selected}
+            nearby={k for i in positions for k in range(max(0,i-1),min(len(material['paragraphs']),i+2))}
+            child=dict(material,paragraphs=[p for i,p in enumerate(material['paragraphs']) if i in nearby])
+            return {'paragraphs':pointer_payload(child),'items':[{'id':x['id'],'section':x.get('section'),
                  'candidate':{k:v for k,v in x['candidate'].items() if not k.startswith('_') and k not in ('confirmation_status','confirmation_reason','requires_speaker','unverified_speaker')},
-                 'original':originals.get(x['id']), 'direct_source_review':x['id'] in originals} for x in items]}
+                 'original':originals.get(x['id']), 'direct_source_review':x['id'] in originals} for x in part]}
+        payload=rev_payload(items)
         prefix='J2:'+material['chapter']+':review:'+str(n//16)
         # Save every original and its pending position before dispatch.
         waiting=[{'id':x['id'],'section':x.get('section'),'status':'待核','reason':'已保存，等待复核','row':x['candidate']} for x in items]
         save(prefix+':before',{'pending':pending+waiting,'confirmed':output,'rejected':rejected})
-        raw=call('J2',material['chapter'],j2_messages(payload,True),True,prefix)
+        raw,lost=call_rejected_split(call,material['chapter'],items,lambda part:j2_messages(rev_payload(part),True),True,prefix,'verdicts')
         save(prefix+':original',{'payload':raw})
         verdicts=raw.get('verdicts',[]) if isinstance(raw.get('verdicts',[]),list) else []
         repeated={ident for ident in ids if sum(isinstance(v,dict) and v.get('id')==ident for v in verdicts)>1}
@@ -623,6 +694,8 @@ def text_j2(material, facts, call, save):
             ident=item['id']; verdict=byid.get(ident)
             original=originals.get(ident,item['candidate'])
             try:
+                if ident in lost:
+                    pending.append({'id':ident,'section':item.get('section'),'status':'待核','reason':lost[ident],'row':original,'upstream_rejected':True});continue
                 if not verdict or verdict.get('accept') is None:
                     raise ValueError('复核缺答或待核')
                 if type(verdict.get('accept')) is not bool:
@@ -714,7 +787,8 @@ def run(materials, call, save):
             for item in current[material['chapter']].get(role+'_pending',[]):
                 author['views']['待核资料'].append({'id':item['id'],'chapter':material['chapter'],
                     'source_layer':role,'confirmation_status':'待核','confirmation_reason':item['reason'],
-                    'original':copy.deepcopy(item['row']),'paragraph_ids':[]})
+                    'original':copy.deepcopy(item['row']),'paragraph_ids':list(item.get('paragraph_ids',[])),
+                    'upstream_rejected':bool(item.get('upstream_rejected'))})
         for item in current[material['chapter']].get('C_pending',[]):
             author['views']['待核资料'].append({'id':item['id'],'chapter':material['chapter'],
                 'source_layer':'C','confirmation_status':'待核','confirmation_reason':item['reason'],

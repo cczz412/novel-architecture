@@ -1,6 +1,7 @@
 # 执行身份：Grok Bot 作业外 v111——作业外整线编排（由 job_R04_v110/orchestrate_v110.py 收编入库）
 """Grok Bot 作业外整线编排：经本地网关逐条投递生产 text.run 的请求，挂起题原样重投一次。
 
+v111 第2处：网关已结、入口报 HTTP 400 的回成 _upstream_rejected，交生产代码对半拆投。
 v111 第3处：任何新投（含挂起重投）之前都先核“成功回答总数上限”，上限按 --cap-root 下各本 run/result.json 合计；
 到上限就不投，阶段记 budget_cap_unsent，不再出现重投绕过总量闸的情况。
 用法：python3 tools/gb_orchestrate_r04.py --job-dir DIR --source ZIP --book BOOK --chapters 01,02 --prefix r04_v111gb_x_ \
@@ -33,6 +34,11 @@ def used_successes(cap_root, own_dir, own_result):
   for q in sorted(Path(cap_root).glob('*/run/result.json')):
    if q.parent.resolve()!=Path(own_dir).resolve():total+=ok_count(read(q))
  return total
+
+def http_rejected(job_id):
+ """网关已结、无回包且入口报 HTTP 400：上游拒收（内容审核等），区别于挂起与其他失败。"""
+ log=G/'outbox'/job_id/'stderr.log'
+ return log.exists() and 'HTTP Error 400' in log.read_text(errors='replace')
 
 class NextRequest(Exception):
  def __init__(self,data):self.data=data
@@ -99,6 +105,8 @@ def main(argv=None):
     retry={k:v for k,v in row.items() if k not in ('upstream_hung','settled','answer','job','submitted_at','wall_deadline')}
     retry.update(job_id=a.prefix+str(len(result['gateway_jobs'])+1).zfill(2),retry_of=row['job_id'],retry_reason='挂起题原样重投一次')
     raise NextRequest(retry)
+   if row.get('settled') and http_rejected(row['job_id']):
+    return {'_upstream_unanswered':True,'_upstream_rejected':True,'_upstream_reason':'HTTP 400 Bad Request'}  # v111 第2处：上游拒收交生产代码对半拆投
    if row.get('settled') or row.get('upstream_hung'):return {'_upstream_unanswered':True}
    raise NextRequest(row)
   old=[x for x in OLD if x['stage_id']==stage and x['body_sha256']==digest and x.get('settled') and any((d/x['job_id']/'response.json').exists() for d in RESP_DIRS)]
