@@ -453,6 +453,7 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
     budget = Budget(budget_file, output, input_package, tuple(dict.fromkeys((*CODE_FILES, *PROMPT_FILES, *configured_files()))))
     # 执行身份：Codex；148/150 收口：生产默认走文字内容判断，旧函数仅供旧回归。
     from pipeline_text105 import run as run_text_pipeline
+    from pipeline_common.c_viewpoint import settings as c_viewpoint_settings
     def text_save(name, value):
         write_json(output / 'text_stages' / (name.replace(':', '_') + '.json'), value)
     def text_call(role, chapter, prompt, review, stage_id):
@@ -473,7 +474,9 @@ def execute(input_package, book_id, chapters, output_dir, budget_file):
         write_json(output / (name + '.json'), result[name])
     write_json(output / 'checkpoint.json', {'identity': budget.identity, 'chapters': result['chapters'], 'method': result['method']})
     write_json(output / 'run_status.json', {'complete': result['complete'], 'method': result['method'],
-        'requests': budget.spent()[0], 'charged_tokens': budget.spent()[1], 'C_mode': 'program', 'eligible_for_blind': False})
+        'requests': budget.spent()[0], 'charged_tokens': budget.spent()[1], 'C_mode': 'text',
+        'C_viewpoint_mode': c_viewpoint_settings()['mode'],
+        'eligible_for_blind': False})
     budget.close('文字任务整线已保存')
     return {'complete': result['complete'], 'method': result['method']}
 
