@@ -6295,13 +6295,13 @@
       "primary_identity_label": "可复用组件",
       "status": "active_component",
       "status_label": "组件职责已登记",
-      "purpose": "执行文字管线的岗位生成、复核和机械证据检查，输出资料候选。A 维持旧路径并标黄；fact_judge 为实验，未达线，默认关闭，保留且不再迭代。C 视角待作者确认。",
+      "purpose": "执行文字管线的岗位生成、复核和机械证据检查，输出资料候选。A 默认使用 fact_judge；同两本书本地判真错率 56.0%，旧路径 73.9%，未独立审读，仍挂黄卡并交作者确认；可设 PIPELINE_A_MODE=legacy 切回。C 视角待作者确认。",
       "human_command": "由登记的下游导入；接口见文件内函数。",
       "inputs": [
         "见文件接口：messages, mechanical_row, b_normalize_pointers, pointer_invalid_count, c_checked, c_text_messages, c_text_normalize, c_text_packet, c_text, generation, review_result, paragraph_packets"
       ],
       "outputs": [
-        "执行文字管线的岗位生成、复核和机械证据检查，输出资料候选。A 维持旧路径并标黄；fact_judge 为实验，未达线，默认关闭，保留且不再迭代。C 视角待作者确认。"
+        "执行文字管线的岗位生成、复核和机械证据检查，输出资料候选。A 默认使用 fact_judge；同两本书本地判真错率 56.0%，旧路径 73.9%，未独立审读，仍挂黄卡并交作者确认；可设 PIPELINE_A_MODE=legacy 切回。C 视角待作者确认。"
       ],
       "network_or_model": {
         "network": "conditional",
@@ -8989,6 +8989,6 @@
       "tools/pr_typed_r02.py",
       "tools/pr_v105_run_r04.py"
     ],
-    "boundary": "只说明 R04 的五参数入口，不授权运行。A 旧路径与 C 视角为黄卡；fact_judge 是实验，未达线，默认关闭。资料视图为有界证据检索，不代表内容能力已验收。"
+    "boundary": "只说明 R04 的五参数入口，不授权运行。A 默认 fact_judge，与 C 视角均为黄卡；A 可设 PIPELINE_A_MODE=legacy 切回旧路径。资料视图为有界证据检索，不代表内容能力已验收。"
   }
 }

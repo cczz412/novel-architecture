@@ -1,6 +1,8 @@
 # 执行身份：Codex
-# 实验，未达线：默认关闭；A 维持旧路径并交作者确认。本路径保留，不再迭代。
-"""Opt-in A fact judging. Transport and model policy remain with the caller."""
+# 默认 A 路径（CZ 2026-10-10 16:49 拍板）。同两本书本地判真错率 56.0%，旧路径 73.9%。
+# 比旧路径好，但仍远高于 10% 线；未独立审读，仍挂黄卡交作者确认。
+# 设置 PIPELINE_A_MODE=legacy 可切回旧路径。
+"""Default A fact judging with an explicit legacy fallback. Transport and model policy remain with the caller."""
 import copy
 import hashlib
 import json
