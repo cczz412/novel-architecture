@@ -235,6 +235,54 @@ def build_views(materials, current):
                     'paragraph_ids': sorted({p for r in component for p in r['paragraph_ids']})})
     # 文本呈现顺序不是推断出来的事件先后。
     registry = sorted({str(r.get('entity', '')) for name in ('人物卡', '物件表') for r in views[name] if r.get('entity')}, key=lambda x: (-len(x), x))
+    # 执行身份：Codex；仅供作者显示，按原文段号核对覆盖和待核，不改 C 结果。
+    c_chapter_status = {}
+    for material in materials:
+        ch = material['chapter']
+        part = current[ch]
+        ids = {p['paragraph_id'] for p in material['paragraphs']}
+        aliases = {p['full_id']: p['paragraph_id'] for p in material['paragraphs']}
+        aliases.update({pid: pid for pid in ids})
+        rows = [r for r in views['写法视角表'] if r['chapter'] == ch]
+        missing_ids = ids - {r['p'] for r in rows}
+        pending_ids, unknown_ids, reasons = set(), set(), {}
+        def add_reason(reason, pid):
+            reasons.setdefault(reason, set()).add(pid)
+        for pending in part.get('C_pending', []):
+            raw = pending.get('paragraph_id') or pending.get('row', {}).get('p')
+            pid = aliases.get(raw)
+            if pid is None:
+                unknown = str(raw or '未提供段号')
+                unknown_ids.add(unknown)
+                add_reason('原因未知（待核段号对不上原文）', unknown)
+            else:
+                pending_ids.add(pid)
+                add_reason(pending.get('reason') or '原因未知', pid)
+        for row in rows:
+            if row.get('viewpoint_status') == '待核' or row.get('confirmation_status') == '待核':
+                pending_ids.add(row['p'])
+                add_reason(row.get('viewpoint_pending_reason') or row.get('confirmation_reason')
+                           or row.get('fallback_label') or '视角待作者确认', row['p'])
+        explained = set().union(*reasons.values()) if reasons else set()
+        for pid in missing_ids - explained:
+            add_reason('正文段缺标注', pid)
+        pending_ids.update(missing_ids)
+        complete = not (missing_ids or pending_ids or unknown_ids)
+        groups = [{'reason': reason, 'count': len(pids), 'paragraph_ids': sorted(pids)}
+                  for reason, pids in sorted(reasons.items())]
+        label = ('不完整、原因未知' if unknown_ids else '不完整') + f'：缺 {len(missing_ids)} 段，待核 {len(pending_ids) + len(unknown_ids)} 段'
+        if unknown_ids:
+            label += f'；另有 {len(unknown_ids)} 个待核段号无法对应原文'
+        if groups:
+            label += '；' + '；'.join(g['reason'] + ' ' + str(g['count']) + ' 段（' + '、'.join(g['paragraph_ids']) + '）' for g in groups)
+        c_chapter_status[ch] = {'status': '完整' if complete else '不完整',
+                               'missing_count': len(missing_ids), 'missing_paragraph_ids': sorted(missing_ids),
+                               'pending_count': len(pending_ids) + len(unknown_ids), 'pending_paragraph_ids': sorted(pending_ids),
+                               'unmatched_pending_count': len(unknown_ids), 'reason_groups': groups,
+                               'label': '完整' if complete else label}
+        # 空章沿用原来的未完成显示；非空章按段核对，待核也不能称完整。
+        if ids or unknown_ids:
+            layer_status[ch]['C'] = complete
     view_status={}
     for name,rows in views.items():
         deps=['J2'] if name in J2_VIEWS else ['A','J2'] if name in ('计划状态表','未来安排表') else ['C','J2'] if name in ('写法视角表','场景在场表','用餐在场表') else ['B'] if name=='事实检索' else []
@@ -259,6 +307,15 @@ def build_views(materials, current):
             view_status[name].update(card_color='yellow', default_usable=False,
                                      author_retractable=True, notice=A_YELLOW_NOTICE,
                                      chapter_status=a_chapter_status)
+        if name == '写法视角表':
+            summary = [c_chapter_status[ch] for ch in chapters]
+            view_status[name].update(
+                missing_count=sum(item['missing_count'] for item in summary),
+                pending_count=sum(item['pending_count'] for item in summary),
+                unmatched_pending_count=sum(item['unmatched_pending_count'] for item in summary),
+                chapter_status=c_chapter_status)
+            labels.extend('ch' + ch + ' ' + item['label'] for ch, item in c_chapter_status.items()
+                          if item['status'] != '完整')
         view_status[name]['label']='；'.join(labels)
     return {'execution_identity': 'Codex', 'views': views, 'entities': registry,'view_status':view_status,
             'layer_status':layer_status,'chapters':chapters,
