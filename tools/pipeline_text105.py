@@ -537,6 +537,14 @@ def a_unchanged_echo(row, previous):
     return bool(old) and not row.get('ev') and all(row.get(k) == old.get(k) for k in A_CARRY_FIELDS)
 
 
+# 执行身份：Codex；v115：生成与复核共用分类边界，普通事实保留原意。
+J2_CLASSIFICATION = '''分类边界：
+traits 只收原文有稳定性依据的长期性格、稳定身份、惯常习惯、相对稳定的外貌或能力；一时的情绪、动作、想法、评价不能据此归入 traits。不能只凭 layer=恒常、一个形容词或单次表现推断稳定特征；他人当场评价保留评价者与语境，不升格成人物固有特征。
+arrangements 要有明确约定、计划、分工或预先布置的原文依据；普通动作、仪式进程、所在或藏身地点本身不是安排。按明确安排执行可保留安排及进度，但不能从动作倒推未写出的计划。
+例如：“沐砚此刻害怕”“沐砚推开门”不属 traits；“沐砚向来谨慎”可属 traits。“沐砚走到门边”不属 arrangements；“沐砚与禾苓约好明日会合”可属 arrangements。
+分类不合但事实有据时，保留原意和证据，改入 people，aspect 写情绪、动作、想法、评价、位置或进程等实际内容，或按证据归入其余合适栏目；不把分类错等同于事实错，不丢弃原件。无法判断分类时，生成填 unresolved，复核填 accept=null 并说明原因。'''
+
+
 J2_TEXT = '''按原文整理人物、别名、关系、时间、回忆块、安排、物品、特征。
 内容判断和归类由你逐条做。不要把提到、猜测、愿望写成已发生事实，不靠同姓或称谓相近合并人物。
 输入 original 是尚未分类的事实，编号不表示分类；由你选择栏目并填写 aspect，不照抄成品行。每条输入原件保留 id。输出 {rows:[{id,section,row}]}，section 只能是 people,aliases,relations,time,memories,arrangements,objects,traits。
@@ -555,7 +563,7 @@ J2_REVIEW = '''逐条核对原件、候选和原文。来源原件直接交到�
 
 def j2_messages(payload, review=False):
     return [{'role':'system','content':'只用提交的小说原文，输出合法JSON。'},
-            {'role':'user','content':(J2_REVIEW if review else J2_TEXT)+'\n'+json.dumps(payload,ensure_ascii=False,separators=(',',':'))}]
+            {'role':'user','content':(J2_REVIEW if review else J2_TEXT)+'\n'+J2_CLASSIFICATION+'\n'+json.dumps(payload,ensure_ascii=False,separators=(',',':'))}]
 
 
 def j2_row(section, raw, material, ident):
