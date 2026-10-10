@@ -181,6 +181,9 @@ def pending_row(ident, reason, row):
     from pipeline_text105 import pending_reason_code
     result = {'id': ident, 'status': '待核', 'reason': reason, 'row': copy.deepcopy(row)}
     code = pending_reason_code(reason)
+    if str(reason).startswith('回包损坏'):
+        result['response_corrupt'] = True
+        code = 'response_corrupt'
     if code:
         result['reason_code'] = code
     return result
@@ -228,7 +231,9 @@ def ask_packets(universe, config, material, call, save, prefix, old=None):
                 continue
             why = rejected_reason(raw, split_done, '完整计划判断材料保留')
             yield group, visible, None, {**pending_row(stage, why, payload), **loss_flag(why)}
-        elif not isinstance(raw, dict) or raw.get('_upstream_unanswered'):
+        elif not isinstance(raw, dict):
+            yield group, visible, None, {**pending_row(stage, '回包损坏：响应不是对象', raw), 'response_corrupt': True}
+        elif raw.get('_upstream_unanswered'):
             yield group, visible, None, pending_row(stage, unanswered_reason(raw, '，完整候选保留'), payload)
         elif old is not None:
             yield group, visible, raw, None
@@ -245,7 +250,7 @@ def ask_packets(universe, config, material, call, save, prefix, old=None):
             elif missing:
                 for item in missing:
                     yield [item], visible, None, pending_row(stage + ':' + str(item['n']),
-                        '拆包重问后仍无法按候选序号对齐，完整候选保留', {'candidate': wire_fact(item), 'response': raw})
+                        '回包损坏：拆包重问后仍无法按候选序号对齐，完整候选保留', {'candidate': wire_fact(item), 'response': raw})
 
 
 def filter_review(raw):
@@ -322,7 +327,9 @@ def review_rows(rows, material, facts, previous, config, call, save, prefix):
             pending.extend({**pending_row(r['_id'], why, r), **loss_flag(why)} for r in part)
             continue
         try:
-            if not isinstance(raw, dict) or raw.get('_upstream_unanswered'):
+            if not isinstance(raw, dict):
+                raise ValueError('回包损坏：复核响应不是对象')
+            if raw.get('_upstream_unanswered'):
                 raise ValueError(unanswered_reason(raw, '，复核候选保留'))
             filtered, receipt = filter_review(raw)
             save(stage + ':patch_filter', receipt)
@@ -331,7 +338,8 @@ def review_rows(rows, material, facts, previous, config, call, save, prefix):
             pending.extend(r for r in removed if r['status'] == '待核')
             rejected.extend(r for r in removed if r['status'] == '拒收')
         except (ValueError, KeyError, TypeError, AttributeError) as exc:
-            pending.extend(pending_row(r['_id'], str(exc), r) for r in part)
+            why = str(exc) if isinstance(exc, ValueError) else '回包损坏：复核格式无效'
+            pending.extend(pending_row(r['_id'], why, r) for r in part)
     return approved, pending, rejected
 
 
@@ -519,6 +527,9 @@ def run(material, call, save, facts=(), previous=()):
     rows.extend(updated)
     pending.extend(old_pending)
     rejected.extend(old_rejected)
-    result = {'rows': rows, 'carried': carried}
+    # 执行身份：Codex；这里只记录 A 判完情况，章完成还须由调用方核对 B。
+    result = {'rows': rows, 'carried': carried,
+              'judgement_complete': not pending and not rejected,
+              'empty_reason': 'no_plans_after_full_judgement' if not rows and not carried and not pending and not rejected else None}
     save(prefix + ':saved', {'execution_identity': EXECUTION_IDENTITY, 'approved': result, 'pending': pending, 'rejected': rejected})
     return result, pending, rejected
