@@ -255,7 +255,7 @@ def c_text_packet(material, call, save, tag, split_ok=True):
                     c_text_packet(dict(material, paragraphs=material['paragraphs'][half:]), call, save, tag + 'b', False))
         if upstream_rejected(raw):
             return [(material, None, rejected_reason(raw, not split_ok, 'C 本包未标注'))]
-        reason = '上游未回答，C 本包待核' if isinstance(raw, dict) and raw.get('_upstream_unanswered') else 'C 回包缺段数组，本包待核'
+        reason = unanswered_reason(raw, '，C 本包待核') if isinstance(raw, dict) and raw.get('_upstream_unanswered') else 'C 回包缺段数组，本包待核'
         return [(material, None, reason)]
     return [(material, raw, None)]
 
@@ -393,12 +393,30 @@ UPSTREAM_REJECTED = '上游拒收'
 RESPONSE_CORRUPT = '回包损坏'
 
 
+# 执行身份：Codex；v118：未投与已投未答只改本地原因，不进入模型请求。
+BUDGET_UNSENT = '预算用尽未投'
+
+
+def unanswered_reason(raw, suffix=''):
+    return (BUDGET_UNSENT if isinstance(raw, dict) and raw.get('_budget_exhausted_not_sent') else '上游未回答') + suffix
+
+
+def pending_reason_code(reason):
+    if str(reason).startswith(BUDGET_UNSENT):
+        return 'budget_exhausted_not_sent'
+    if str(reason).startswith('上游未回答'):
+        return 'upstream_unanswered'
+    return None
+
+
 def upstream_rejected(raw):
     """需要对半拆投的失败：上游拒收（HTTP 400）或回包损坏（重投后仍解析失败）。"""
     return isinstance(raw, dict) and bool(raw.get('_upstream_rejected') or raw.get('_response_corrupt'))
 
 
 def rejected_reason(raw, after_split, what='本包原文未抽取，完整原文保留'):
+    if isinstance(raw, dict) and raw.get('_budget_exhausted_not_sent'):
+        return BUDGET_UNSENT + '，' + what + '，待核'
     corrupt = isinstance(raw, dict) and bool(raw.get('_response_corrupt'))
     why = str(raw.get('_upstream_reason') or ('解析失败' if corrupt else 'HTTP 400')) if isinstance(raw, dict) else 'HTTP 400'
     how = ('整包对半拆开各投一次后本半包仍' + ('损坏' if corrupt else '被拒')) if after_split else '本包只剩一条无法再拆'
@@ -407,6 +425,9 @@ def rejected_reason(raw, after_split, what='本包原文未抽取，完整原文
 
 def loss_flag(reason):
     """待核条目的丢失标记：回包损坏与上游拒收分开记，作者视图据此显示。"""
+    code = pending_reason_code(reason)
+    if code:
+        return {'reason_code': code}
     return {'response_corrupt': True} if str(reason).startswith(RESPONSE_CORRUPT) else {'upstream_rejected': True}
 
 
@@ -442,7 +463,7 @@ def text_ab(role, material, call, save, facts=(), previous=()):
                             **loss_flag(why),'paragraph_ids':[p['paragraph_id'] for p in child['paragraphs']]})
             continue
         if raw.get('_upstream_unanswered'):
-            pending.append({'id':prefix,'status':'待核','reason':'上游未回答，完整原文保留','row':payload})
+            pending.append({'id':prefix,'status':'待核','reason':unanswered_reason(raw, '，完整原文保留'),'row':payload})
             continue
         try:
             if role == 'B':
@@ -453,6 +474,10 @@ def text_ab(role, material, call, save, facts=(), previous=()):
                 if pointer_invalid_count(candidate):
                     retry_raw = call(role, material['chapter'], request_messages, False, prefix + ':generate_retry')
                     save(prefix + ':original_retry', {'payload': retry_raw, 'material': child})
+                    if retry_raw.get('_upstream_unanswered'):
+                        pending.append({'id':prefix+':generate_retry','status':'待核',
+                                        'reason':unanswered_reason(retry_raw, '，指针重投未完成，首轮原件保留'),
+                                        'row':copy.deepcopy(raw)})
                     if not retry_raw.get('_upstream_unanswered'):
                         try:
                             rfixed, rlog = b_normalize_pointers(retry_raw, child)
@@ -510,6 +535,9 @@ def text_ab(role, material, call, save, facts=(), previous=()):
             if upstream_rejected(review):
                 why = rejected_reason(review, split_done, '复核未答，完整候选保留')
                 pending.extend({'id':r['_id'],'status':'待核','reason':why,'row':r,**loss_flag(why)} for r in part['rows'])
+                continue
+            if isinstance(review, dict) and review.get('_upstream_unanswered'):
+                pending.extend({'id':r['_id'],'status':'待核','reason':unanswered_reason(review, '，复核候选保留'),'row':r} for r in part['rows'])
                 continue
             try:
                 ok_part, removed = review_result(role, part, review, child, facts, previous)
@@ -622,6 +650,8 @@ def call_rejected_split(call, ch, items, build, review, stage, key):
     """Grok Bot 作业外 v111：J2 一包被上游拒收时对半拆开各投一次；返回合并回包与仍被拒的条目（附拒收原因）。"""
     raw = call('J2', ch, build(items), review, stage)
     if not upstream_rejected(raw):
+        if isinstance(raw, dict) and raw.get('_upstream_unanswered'):
+            return {key: []}, {x['id']: unanswered_reason(raw, '，本条原件保留') for x in items}
         return raw, {}
     if len(items) < 2:
         return {key: []}, {x['id']: rejected_reason(raw, False, '本条原件保留') for x in items}
@@ -631,6 +661,8 @@ def call_rejected_split(call, ch, items, build, review, stage, key):
         sub = call('J2', ch, build(part), review, stage + ':split_' + tag)
         if upstream_rejected(sub):
             lost.update({x['id']: rejected_reason(sub, True, '本条原件保留') for x in part})
+        elif isinstance(sub, dict) and sub.get('_upstream_unanswered'):
+            lost.update({x['id']: unanswered_reason(sub, '，本条原件保留') for x in part})
         elif isinstance(sub, dict) and isinstance(sub.get(key), list):
             merged[key].extend(sub[key])
     merged['_rejected_split'] = True
@@ -844,6 +876,14 @@ def run(materials, call, save):
     for role in ('A','B'):
         for row in prediction[role]:
             row.update(confirmation_status='待核',default_usable=False,author_retractable=True)
+    reason_counts = {'budget_exhausted_not_sent': 0, 'upstream_unanswered': 0}
+    for part in current.values():
+        for role in ('A', 'B', 'J2', 'C'):
+            for item in part.get(role + '_pending', []):
+                code = pending_reason_code(item.get('reason'))
+                if code:
+                    item['reason_code'] = code
+                    reason_counts[code] += 1
     author=build_views(materials,current)
     for material in materials:
         for role in ('A','B'):
@@ -856,6 +896,11 @@ def run(materials, call, save):
             author['views']['待核资料'].append({'id':item['id'],'chapter':material['chapter'],
                 'source_layer':'C','confirmation_status':'待核','confirmation_reason':item['reason'],
                 'original':copy.deepcopy(item['row']),'paragraph_ids':[item['paragraph_id']] if item.get('paragraph_id') else []})
+    author['pending_reason_counts'] = dict(reason_counts)
+    for row in author['views']['待核资料']:
+        code = pending_reason_code(row.get('confirmation_reason'))
+        if code:
+            row['reason_code'] = code
     # Material version travels with every human-facing row and is checked on author action.
     versions={m['chapter']:m.get('source_sha256') or hashlib.sha256(json.dumps(m,sort_keys=True,ensure_ascii=False).encode()).hexdigest() for m in materials}
     for name, rows in author['views'].items():
@@ -866,7 +911,7 @@ def run(materials, call, save):
                 program=row.get('confirmation_status')=='程序已核'
                 row.update(confirmation_status='程序已核' if program else '待核',
                            default_usable=program,author_retractable=True,card_color='green' if program else 'yellow')
-    result={'method':METHOD,'chapters':current,'prediction':prediction,'author_store':author,
+    result={'method':METHOD,'pending_reason_counts':reason_counts,'chapters':current,'prediction':prediction,'author_store':author,
             'complete':all(p.get(r+'_status')=='complete' for p in current.values() for r in ('A','B','J2'))}
     save('final',result)
     return result

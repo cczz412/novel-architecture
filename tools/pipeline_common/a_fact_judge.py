@@ -168,7 +168,7 @@ def pending_row(ident, reason, row):
 
 def ask_packets(universe, config, material, call, save, prefix, old=None):
     """Use the v112 transport markers: caller retries unchanged, then split once."""
-    from pipeline_text105 import upstream_rejected, rejected_reason, loss_flag
+    from pipeline_text105 import upstream_rejected, rejected_reason, loss_flag, unanswered_reason
     queue = [(str(i), group, False) for i, group in enumerate(packets(universe, config, old))]
     while queue:
         tag, group, split_done = queue.pop(0)
@@ -189,13 +189,13 @@ def ask_packets(universe, config, material, call, save, prefix, old=None):
             why = rejected_reason(raw, split_done, '完整计划判断材料保留')
             yield group, visible, None, {**pending_row(stage, why, payload), **loss_flag(why)}
         elif not isinstance(raw, dict) or raw.get('_upstream_unanswered'):
-            yield group, visible, None, pending_row(stage, '上游未回答，完整候选保留', payload)
+            yield group, visible, None, pending_row(stage, unanswered_reason(raw, '，完整候选保留'), payload)
         else:
             yield group, visible, raw, None
 
 
 def review_rows(rows, material, facts, previous, config, call, save, prefix):
-    from pipeline_text105 import messages, review_result, upstream_rejected, rejected_reason, loss_flag, A_CARRY_FIELDS
+    from pipeline_text105 import messages, review_result, upstream_rejected, rejected_reason, loss_flag, A_CARRY_FIELDS, unanswered_reason
     approved, pending, rejected = [], [], []
     def build(part):
         refs = {r.get(k) for r in part for k in ('source', 'fulfilled', 'condition_ref')} | {k for r in part for k in r['basis']}
@@ -235,7 +235,7 @@ def review_rows(rows, material, facts, previous, config, call, save, prefix):
             continue
         try:
             if not isinstance(raw, dict) or raw.get('_upstream_unanswered'):
-                raise ValueError('复核未回答')
+                raise ValueError(unanswered_reason(raw, '，复核候选保留'))
             for patch in raw.get('patches', []):
                 if set(patch.get('changes', {})) & {'source', 'basis', 'fulfilled', 'condition_ref', 'ev'}:
                     raise ValueError('复核试图改写程序绑定的来源或依据，候选保留待核')

@@ -113,7 +113,7 @@ def main(argv=None):
      checkpoint(stage+':parse_failure',{'response':response,'error':str(e),'job_id':row['job_id']})
      return parse_failed(stage,row,str(e),fresh)
    if row.get('upstream_hung') and not row.get('retry_of'):
-    if capped(stage):return {'_upstream_unanswered':True}  # v111：重投同样受总量闸
+    if capped(stage):return {'_upstream_unanswered':True,'_budget_exhausted_not_sent':True}  # v111：重投同样受总量闸
     retry={k:v for k,v in row.items() if k not in ('upstream_hung','settled','answer','job','submitted_at','wall_deadline')}
     retry.update(job_id=a.prefix+str(len(result['gateway_jobs'])+1).zfill(2),retry_of=row['job_id'],retry_reason='挂起题原样重投一次')
     raise NextRequest(retry)
@@ -132,7 +132,7 @@ def main(argv=None):
     return parse_failed(stage,row,str(e),fresh)
   if not ALLOW_NEW or not stage.startswith(ALLOW_NEW):
    NOT_SENT.append(stage);return {'_upstream_unanswered':True}
-  if capped(stage):return {'_upstream_unanswered':True}
+  if capped(stage):return {'_upstream_unanswered':True,'_budget_exhausted_not_sent':True}
   raise NextRequest(fresh())
  def parse_failed(stage,row,error,fresh):
   """v112：回包到了但解析不了（坏 JSON、截断等）≠ 上游没回答。第一次原样重投；已是重投的回 _response_corrupt。"""
@@ -141,8 +141,8 @@ def main(argv=None):
    return {'_upstream_unanswered':True,'_response_corrupt':True,
            '_upstream_reason':'原样重投后仍解析失败：'+error[:160]}
   PARSE_FAILED.append({'stage':stage,'job_id':row['job_id'],'after_retry':False,'error':error})
-  if capped(stage):  # 重投同样受总量闸；投不了就按回包损坏交生产代码，子包同样受闸
-   return {'_upstream_unanswered':True,'_response_corrupt':True,
+  if capped(stage):  # 重投同样受总量闸；保留损坏审计，待核理由优先说明未投
+   return {'_upstream_unanswered':True,'_response_corrupt':True,'_budget_exhausted_not_sent':True,
            '_upstream_reason':'解析失败且已到成功回答上限未重投：'+error[:160]}
   retry=fresh();retry.update(retry_of=row['job_id'],retry_reason='回包解析失败原样重投一次')
   raise NextRequest(retry)
@@ -172,7 +172,8 @@ def main(argv=None):
    try:
     final=text.run(materials,call,checkpoint)
     save(J/'prediction.json',final['prediction']);save(J/'author_store.json',final['author_store'])
-    result.update(not_sent_stages=NOT_SENT,budget_cap_unsent_stages=CAPPED,parse_failures=PARSE_FAILED,status='pipeline_finished',pipeline_complete=final['complete'])
+    result.update(not_sent_stages=NOT_SENT,budget_cap_unsent_stages=CAPPED,budget_cap_unsent_count=len(set(CAPPED)),
+                  pending_reason_counts=final.get('pending_reason_counts',{}),parse_failures=PARSE_FAILED,status='pipeline_finished',pipeline_complete=final['complete'])
     update_usage();note(a.book+' 整线装配结束，完整状态：'+str(final['complete']));return 0
    except NextRequest as nr:
     row=nr.data
