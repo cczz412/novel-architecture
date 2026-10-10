@@ -5,6 +5,7 @@ import copy
 import hashlib
 import json
 import os
+import unicodedata
 
 EXECUTION_IDENTITY = 'Codex'
 MAX_BYTES = 8192
@@ -432,6 +433,49 @@ def advance_new(rows, universe, config, material, facts, call, save, prefix):
         result.append(current)
     return result, pending
 
+
+def merge_plans(rows, material, facts):
+    """Merge same-holder chapter plans; source facts survive in basis and receipts."""
+    def normalized(text):
+        return ''.join(c for c in unicodedata.normalize('NFKC', text)
+                       if not c.isspace() and not unicodedata.category(c).startswith('P'))
+    paragraph_order = {p['full_id']: i for i, p in enumerate(material['paragraphs'])}
+    paragraph_text = {p['full_id']: p['text'] for p in material['paragraphs']}
+    positions = {}
+    for fact in facts:
+        positions[fact['local_key']] = max(
+            ((paragraph_order[e['paragraph_id']], paragraph_text[e['paragraph_id']].find(e['quote']))
+             for e in fact.get('evidence', []) if e['paragraph_id'] in paragraph_order), default=(-1, -1))
+    def rank(row):
+        return max((positions.get(k, (-1, -1)) for k in
+                    (row.get('basis') or []) + [row.get('fulfilled')]), default=(-1, -1))
+    groups = {}
+    for row in rows:
+        # Holder stays exact; only content undergoes generic punctuation/width/space cleanup.
+        groups.setdefault((row['subject'], normalized(row['content'])), []).append(row)
+    result, merged = [], []
+    for group in groups.values():
+        if len(group) == 1:
+            result.append(group[0])
+            continue
+        row = copy.deepcopy(group[0])
+        latest = max(group, key=rank)
+        row['status'], row['fulfilled'] = latest['status'], latest.get('fulfilled')
+        sources = list(dict.fromkeys(r['source'] for r in group))
+        row['_merged_sources'] = sources
+        row['basis'] = list(dict.fromkeys([k for r in group for k in r['basis']] + sources))
+        row['ev'] = []
+        for original in group:
+            for ev in original['ev']:
+                if ev not in row['ev']:
+                    row['ev'].append(copy.deepcopy(ev))
+        result.append(row)
+        merged.append({'kept_id': row['_id'], 'member_ids': [r['_id'] for r in group],
+                       'sources': sources, 'status_from': latest['_id'], 'status_position': rank(latest)})
+    return result, {'execution_identity': EXECUTION_IDENTITY, 'merged_count': len(rows) - len(result),
+                    'groups': merged}
+
+
 def run(material, call, save, facts=(), previous=()):
     config = settings()
     universe = candidates(material, facts)
@@ -464,6 +508,8 @@ def run(material, call, save, facts=(), previous=()):
     pending.extend(later_pending)
     rows, more_pending, rejected = review_rows(rows, material, facts, previous, config, call, save, prefix + ':review')
     pending.extend(more_pending)
+    rows, merge_receipt = merge_plans(rows, material, facts)
+    save(prefix + ':dedup', merge_receipt)
     updated, carried, old_pending, old_rejected = advance_plans(previous, universe, config, material, facts, call, save, prefix + ':carry')
     rows.extend(updated)
     pending.extend(old_pending)
