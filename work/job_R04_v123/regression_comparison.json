@@ -1,0 +1,413 @@
+{
+  "execution_identity": "Codex",
+  "before_tag": "v123base",
+  "before_attempt": "r2",
+  "after_tag": "v123",
+  "groups": [
+    {
+      "group": "v105_v112",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "check_portable_paths",
+      "before_exit": 1,
+      "after_exit": 1,
+      "no_regression": true
+    },
+    {
+      "group": "check_recovery_signature",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "v114",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "v115",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "v117",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_a118",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_b118",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_a_yellow",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_leak_cleanup",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "v120",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "v121",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "legacy18",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_v105_compat",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_v106",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_a",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_j2",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_fix3",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_v107_a",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_v107_j2",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_v107_run",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_v107_views",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_v109_b",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_v109_c",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_v110_c",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_v111",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_v111_pr",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "selftest_gb_v112",
+      "before_exit": 0,
+      "after_exit": 0,
+      "no_regression": true
+    },
+    {
+      "group": "regression",
+      "before_exit": 1,
+      "after_exit": 1,
+      "no_regression": true
+    }
+  ],
+  "case_reports": [
+    {
+      "path": "selftest_a118.json",
+      "before_passed": 14,
+      "before_total": 14,
+      "after_passed": 14,
+      "after_total": 14,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "selftest_a_yellow.json",
+      "before_passed": 19,
+      "before_total": 19,
+      "after_passed": 19,
+      "after_total": 19,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "selftest_b118.json",
+      "before_passed": 26,
+      "before_total": 26,
+      "after_passed": 26,
+      "after_total": 26,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "selftest_leak_cleanup.json",
+      "before_passed": 12,
+      "before_total": 12,
+      "after_passed": 12,
+      "after_total": 12,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "selftest_result.json",
+      "before_passed": 25,
+      "before_total": 25,
+      "after_passed": 25,
+      "after_total": 25,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "selftest_v121.json",
+      "before_passed": 39,
+      "before_total": 39,
+      "after_passed": 39,
+      "after_total": 39,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/budget_regression.json",
+      "before_passed": true,
+      "before_total": null,
+      "after_passed": true,
+      "after_total": null,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/duplicate_id_regression.json",
+      "before_passed": 4,
+      "before_total": 4,
+      "after_passed": 4,
+      "after_total": 4,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_a_result.json",
+      "before_passed": 7,
+      "before_total": 7,
+      "after_passed": 7,
+      "after_total": 7,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_b_result.json",
+      "before_passed": 4,
+      "before_total": 4,
+      "after_passed": 4,
+      "after_total": 4,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_fix3_result.json",
+      "before_passed": 6,
+      "before_total": 6,
+      "after_passed": 6,
+      "after_total": 6,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_v107_a_result.json",
+      "before_passed": 14,
+      "before_total": 14,
+      "after_passed": 14,
+      "after_total": 14,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_v107_j2_result.json",
+      "before_passed": 8,
+      "before_total": 8,
+      "after_passed": 8,
+      "after_total": 8,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_v107_run_result.json",
+      "before_passed": 3,
+      "before_total": 3,
+      "after_passed": 3,
+      "after_total": 3,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_v107_views_result.json",
+      "before_passed": 3,
+      "before_total": 3,
+      "after_passed": 3,
+      "after_total": 3,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_v109_b_result.json",
+      "before_passed": 9,
+      "before_total": 9,
+      "after_passed": 9,
+      "after_total": 9,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_v109_c_result.json",
+      "before_passed": 13,
+      "before_total": 13,
+      "after_passed": 13,
+      "after_total": 13,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_v110_c_result.json",
+      "before_passed": 9,
+      "before_total": 9,
+      "after_passed": 9,
+      "after_total": 9,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_v111_pr_result.json",
+      "before_passed": 11,
+      "before_total": 11,
+      "after_passed": 11,
+      "after_total": 11,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_v111_result.json",
+      "before_passed": 17,
+      "before_total": 17,
+      "after_passed": 17,
+      "after_total": 17,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_gb_v112_result.json",
+      "before_passed": 10,
+      "before_total": 10,
+      "after_passed": 10,
+      "after_total": 10,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_j2_result.json",
+      "before_passed": 13,
+      "before_total": 13,
+      "after_passed": 13,
+      "after_total": 13,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "offline/selftest_result.json",
+      "before_passed": 18,
+      "before_total": 18,
+      "after_passed": 18,
+      "after_total": 18,
+      "new_failed_case_ids": [],
+      "no_regression": true
+    },
+    {
+      "path": "v120",
+      "before_passed": 12,
+      "before_total": 12,
+      "after_passed": 12,
+      "after_total": 12,
+      "no_regression": true
+    },
+    {
+      "path": "v115",
+      "before_passed": 57,
+      "before_total": 57,
+      "after_passed": 57,
+      "after_total": 57,
+      "no_regression": true
+    }
+  ],
+  "no_regression": true,
+  "known_baseline_failures": [
+    "check_portable_paths 缺文件",
+    "regression.py 读取作业外材料被护栏拒绝"
+  ],
+  "completed_at": "2026-10-10T17:11:29.484326+08:00"
+}

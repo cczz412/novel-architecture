@@ -1,0 +1,263 @@
+{
+  "execution_identity": "Codex",
+  "tag": "v123base_r2",
+  "real_requests": 0,
+  "handwritten_responses": true,
+  "cases": [
+    {
+      "id": "legacy_unset_all_layers_wire_and_output",
+      "status": "passed"
+    },
+    {
+      "id": "legacy_explicit_all_layers_wire_and_output",
+      "status": "passed"
+    },
+    {
+      "id": "legacy_known_failure_types_are_not_corrected",
+      "status": "passed"
+    },
+    {
+      "id": "first_person_program_candidate",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "limited_person_not_forced_to_omniscient",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "first_person_resolves_name_after_model_confirmation",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "true_omniscient_keeps_omniscient",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "candidate_missing_stays_pending",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "candidate_conflict_stays_pending",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "candidate_unconfirmed_stays_pending",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "candidate_generic_label_stays_pending",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "dialogue_self_introduction_not_narrator_proof",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "chapter_departs_from_prior_narrator_reference",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "prior_only_same_book_no_future_contamination",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "split_retains_whole_chapter_candidate",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "invalid_basis_false_quote",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "invalid_basis_wrong_p",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "invalid_basis_missing",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "invalid_basis_bad_type",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "invalid_basis_omni_with_name",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "invalid_basis_person_with_omni",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "invalid_basis_label_only",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "switch_default_checkpoint_and_invalid_mode",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "evidence_mode_no_extra_requests_ABJ2_unchanged",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    },
+    {
+      "id": "author_preserves_name_and_explains_pending",
+      "status": "skipped",
+      "reason": "修前没有新开关"
+    }
+  ],
+  "passed": 3,
+  "skipped": 22,
+  "total": 25,
+  "wire_proofs": [
+    {
+      "case": "unset",
+      "role": "A",
+      "identical": true,
+      "requests": 2,
+      "sha256": "227df95c287190d31df0cbfb129baa40c6f498fb808c4533b81a46192f612be9"
+    },
+    {
+      "case": "unset",
+      "role": "B",
+      "identical": true,
+      "requests": 2,
+      "sha256": "92aa6a6af744481fa9c2050bf0080a6ecf9ca387723e6f21a606dbe18674c780"
+    },
+    {
+      "case": "unset",
+      "role": "J2",
+      "identical": true,
+      "requests": 2,
+      "sha256": "fc1507eee1ef3e103c0740a0273b70b2134d723d949cb56e4c27fee453d03a4d"
+    },
+    {
+      "case": "unset",
+      "role": "C",
+      "identical": true,
+      "requests": 1,
+      "sha256": "9d66fe4089619c6a158c37dc263d5c31172d1777b6253184f396fdbc9464c7d0"
+    },
+    {
+      "case": "legacy",
+      "role": "A",
+      "identical": true,
+      "requests": 2,
+      "sha256": "227df95c287190d31df0cbfb129baa40c6f498fb808c4533b81a46192f612be9"
+    },
+    {
+      "case": "legacy",
+      "role": "B",
+      "identical": true,
+      "requests": 2,
+      "sha256": "92aa6a6af744481fa9c2050bf0080a6ecf9ca387723e6f21a606dbe18674c780"
+    },
+    {
+      "case": "legacy",
+      "role": "J2",
+      "identical": true,
+      "requests": 2,
+      "sha256": "fc1507eee1ef3e103c0740a0273b70b2134d723d949cb56e4c27fee453d03a4d"
+    },
+    {
+      "case": "legacy",
+      "role": "C",
+      "identical": true,
+      "requests": 1,
+      "sha256": "9d66fe4089619c6a158c37dc263d5c31172d1777b6253184f396fdbc9464c7d0"
+    }
+  ],
+  "examples": {
+    "before_first_person": {
+      "paragraphs": [
+        {
+          "p": "p001",
+          "main_tag": "叙述带过",
+          "secondary_tag": null,
+          "viewpoint": "第一人称",
+          "quote": "我推开门，只听见自己的脚步声。",
+          "viewpoint_basis": {
+            "kind": "first_person",
+            "evidence": [
+              {
+                "p": "p001",
+                "q": "我推开门，只听见自己的脚步声。"
+              }
+            ],
+            "narrator_confirmed": false
+          },
+          "_id": "paragraphs:0",
+          "viewpoint_status": "待核",
+          "viewpoint_card_color": "yellow"
+        }
+      ],
+      "scenes": [],
+      "method": "text_c_v110",
+      "model_confirmations": 0,
+      "C_mode": "text_v110",
+      "memory_marks": {
+        "paragraph_ids": [],
+        "open_at_end": false,
+        "starts": []
+      },
+      "viewpoint_policy": "视角一律标黄待核",
+      "alias_normalized": []
+    },
+    "before_limited_as_omni": {
+      "paragraphs": [
+        {
+          "p": "p001",
+          "main_tag": "叙述带过",
+          "secondary_tag": null,
+          "viewpoint": "全知",
+          "quote": "霁棠只看见木门。门外如何，他并不知道。",
+          "viewpoint_basis": {
+            "kind": "omniscient",
+            "evidence": [
+              {
+                "p": "p001",
+                "q": "霁棠只看见木门。门外如何，他并不知道。"
+              }
+            ],
+            "narrator_confirmed": false
+          },
+          "_id": "paragraphs:0",
+          "viewpoint_status": "待核",
+          "viewpoint_card_color": "yellow"
+        }
+      ],
+      "scenes": [],
+      "method": "text_c_v110",
+      "model_confirmations": 0,
+      "C_mode": "text_v110",
+      "memory_marks": {
+        "paragraph_ids": [],
+        "open_at_end": false,
+        "starts": []
+      },
+      "viewpoint_policy": "视角一律标黄待核",
+      "alias_normalized": []
+    }
+  }
+}

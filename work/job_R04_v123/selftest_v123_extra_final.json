@@ -1,0 +1,100 @@
+{
+  "execution_identity": "Codex",
+  "real_requests": 0,
+  "cases": [
+    {
+      "id": "both_entrypoints_deny_switch_both_directions_and_freeze_new_code",
+      "passed": true
+    },
+    {
+      "id": "production_body_constructor_and_all_layer_byte_proofs",
+      "passed": true
+    },
+    {
+      "id": "legacy_function_bodies_and_original_prompts_unchanged",
+      "passed": true
+    },
+    {
+      "id": "legacy_split_rejection_and_unanswered_bytes_outputs",
+      "passed": true
+    },
+    {
+      "id": "reserve_uses_same_cross_chapter_evidence_as_runtime",
+      "passed": true
+    },
+    {
+      "id": "whole_pipeline_C_receives_prior_context_even_when_B_is_blocked",
+      "passed": true
+    },
+    {
+      "id": "context_bound_and_documented_lexical_ambiguity",
+      "passed": true
+    }
+  ],
+  "passed": 7,
+  "total": 7,
+  "details": {
+    "production_body_ast_unchanged": true,
+    "end_to_end_wire_proofs": [
+      {
+        "case": "unset",
+        "role": "A",
+        "identical": true,
+        "requests": 2,
+        "sha256": "227df95c287190d31df0cbfb129baa40c6f498fb808c4533b81a46192f612be9"
+      },
+      {
+        "case": "unset",
+        "role": "B",
+        "identical": true,
+        "requests": 2,
+        "sha256": "92aa6a6af744481fa9c2050bf0080a6ecf9ca387723e6f21a606dbe18674c780"
+      },
+      {
+        "case": "unset",
+        "role": "J2",
+        "identical": true,
+        "requests": 2,
+        "sha256": "fc1507eee1ef3e103c0740a0273b70b2134d723d949cb56e4c27fee453d03a4d"
+      },
+      {
+        "case": "unset",
+        "role": "C",
+        "identical": true,
+        "requests": 1,
+        "sha256": "9d66fe4089619c6a158c37dc263d5c31172d1777b6253184f396fdbc9464c7d0"
+      },
+      {
+        "case": "legacy",
+        "role": "A",
+        "identical": true,
+        "requests": 2,
+        "sha256": "227df95c287190d31df0cbfb129baa40c6f498fb808c4533b81a46192f612be9"
+      },
+      {
+        "case": "legacy",
+        "role": "B",
+        "identical": true,
+        "requests": 2,
+        "sha256": "92aa6a6af744481fa9c2050bf0080a6ecf9ca387723e6f21a606dbe18674c780"
+      },
+      {
+        "case": "legacy",
+        "role": "J2",
+        "identical": true,
+        "requests": 2,
+        "sha256": "fc1507eee1ef3e103c0740a0273b70b2134d723d949cb56e4c27fee453d03a4d"
+      },
+      {
+        "case": "legacy",
+        "role": "C",
+        "identical": true,
+        "requests": 1,
+        "sha256": "9d66fe4089619c6a158c37dc263d5c31172d1777b6253184f396fdbc9464c7d0"
+      }
+    ],
+    "legacy_function_bodies_and_prompts_unchanged": true,
+    "reserve_matches_split_requests": true,
+    "lexical_limit": "只提取显式自报姓名形式；句法相似或没有引号的嵌套叙述仍须模型判断，不能当成语义确认。"
+  }
+}
