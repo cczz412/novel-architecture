@@ -1,5 +1,6 @@
 # 执行身份：Codex
 """完整旧响应的机械恢复诊断；缺少的A状态只报缺口，不请求模型。"""
+from pipeline_common.artifacts import external_book_codes
 import argparse, hashlib, json
 from pathlib import Path
 from types import SimpleNamespace
@@ -10,7 +11,7 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument('--source',required=True)
     p.add_argument('--out',required=True)
-    p.add_argument('--book',required=True,choices=('gongan','dayi','qishi'))
+    p.add_argument('--book',required=True,choices=external_book_codes('PR_LEGACY_BOOK_CODES', 3))
     p.add_argument('--model',required=True,choices=pipeline.MODELS)
     a=p.parse_args()
     source=pipeline.external(a.source);output=pipeline.external(a.out)

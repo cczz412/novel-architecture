@@ -1,5 +1,6 @@
 # 执行身份：Codex
 """C层拆成逐段写法/感知者，再整章现场五格；对照时复用已有A/B。"""
+from pipeline_common.artifacts import external_book_codes
 import argparse
 import copy
 import hashlib
@@ -93,7 +94,7 @@ def main():
     p.add_argument('--source',required=True);p.add_argument('--out',required=True);p.add_argument('--book',required=True);p.add_argument('--model',choices=MODELS,required=True)
     p.add_argument('--round',type=int,required=True);p.add_argument('--c-group',type=int,default=24);p.add_argument('--policy',default=str(OUT/'probe/reasoning_policy.json'))
     a=p.parse_args()
-    if a.book not in ('gongan','dayi','qishi'):p.error('C拆法对照仅开发集')
+    if a.book not in external_book_codes('PR_LEGACY_BOOK_CODES', 3):p.error('C拆法对照仅开发集')
     return run(a)
 
 

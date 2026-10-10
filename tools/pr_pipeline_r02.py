@@ -14,7 +14,8 @@ import urllib.parse
 import urllib.request
 import zipfile
 
-BOOKS=('gongan','dayi','qishi')
+from pipeline_common.artifacts import external_book_codes
+BOOKS = external_book_codes('PR_LEGACY_BOOK_CODES', 3)
 MODELS=('glm-5.3-flash','deepseek-v4.1-flash','kimi-k2.8-preview')
 # 与旧客户端共用输出根；该客户端的外部配置迁移另行处理。
 from pr_ark_client_r02 import OUT

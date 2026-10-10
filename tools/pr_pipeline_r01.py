@@ -15,7 +15,8 @@ import urllib.parse
 import urllib.request
 import zipfile
 
-BOOKS=('gongan','dayi','qishi')
+from pipeline_common.artifacts import external_book_codes
+BOOKS = external_book_codes('PR_LEGACY_BOOK_CODES', 3)
 MODELS=('z-ai/glm-5.3-flash','z-ai/glm-5.3-flashx','deepseek/deepseek-v4.1-flash','moonshotai/kimi-k3')
 OUT=external_path('PR_WORKSPACE_ROOT') / 'out/管线修复_R01'
 AUDIT=('old_plan_rows','fact_chapters','source_chapters','plan_history','open_plan_keys','review_flags')

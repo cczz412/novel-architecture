@@ -524,3 +524,20 @@ class DeferredExternalPath(os.PathLike):
         if name.startswith("__"):
             raise AttributeError(name)
         return getattr(self._path(), name)
+
+
+def external_book_codes(variable: str, expected_count: int) -> tuple[str, ...]:
+    """执行身份：Codex。旧入口的书目名单由获批作业提供；缺省不允许选书。"""
+    raw = os.environ.get(variable)
+    if raw is None:
+        return ()
+    try:
+        codes = json.loads(raw)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{variable} 须为书目代号的 JSON 数组") from exc
+    if (not isinstance(codes, list) or len(codes) != expected_count
+            or any(not isinstance(code, str) or not code or not code.isascii()
+                   or not all(c.isalnum() or c in '_-' for c in code) for code in codes)
+            or len(set(codes)) != len(codes)):
+        raise ValueError(f"{variable} 须含 {expected_count} 个不重复的书目代号")
+    return tuple(codes)

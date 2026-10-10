@@ -1,5 +1,6 @@
 # 执行身份：Codex
 """R04增量抽取：三层独立保存、有限重写、输入指纹检查点。"""
+from pipeline_common.artifacts import external_book_codes
 import argparse
 import copy
 import hashlib
@@ -575,7 +576,7 @@ def run(args):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('--book', choices=('gongan','dayi','qishi','tianmu','tianzai'), required=True)
+    p.add_argument('--book', choices=external_book_codes('PR_INCREMENTAL_BOOK_CODES', 5), required=True)
     p.add_argument('--model', choices=MODELS, required=True)
     p.add_argument('--out', required=True)
     p.add_argument('--layers', choices=('A','B','C','AB','ABC'), required=True)
