@@ -29,7 +29,7 @@ from pipeline_records25 import (protocol_payload57, generation_normalize57, norm
 
 ROOT = Path(__file__).resolve().parent
 CODE_FILES = tuple(ROOT / name for name in ('run_pipeline.py', 'pipeline_source25.py',
-    'pipeline_prompts25.py', 'pipeline_budget25.py', 'pipeline_records25.py', 'pipeline_author25.py', 'pipeline_audit25.py', 'pipeline_c_program25.py', 'pipeline_output28.py', 'pipeline_context52.py', 'pipeline_plan52.py', 'pipeline_text105.py', 'pipeline_common/a_fact_judge.py'))
+    'pipeline_prompts25.py', 'pipeline_budget25.py', 'pipeline_records25.py', 'pipeline_author25.py', 'pipeline_audit25.py', 'pipeline_c_program25.py', 'pipeline_output28.py', 'pipeline_context52.py', 'pipeline_plan52.py', 'pipeline_text105.py', 'pipeline_common/a_fact_judge.py', 'pipeline_common/c_viewpoint.py'))
 PROMPT_FILES = (ROOT / 'pipeline_prompts25.py',)
 CONFIG_FILES = (ROOT / 'pipeline_terms25.json',)
 

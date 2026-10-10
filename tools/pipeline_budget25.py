@@ -217,7 +217,8 @@ class Budget:
         self.path, self.output = Path(budget_path), Path(output)
         self.config = read_json(self.path)
         from pipeline_common.a_fact_judge import checkpoint_identity
-        self.identity = {**checkpoint_identity(), 'budget_sha': digest(self.path), 'input_sha': digest(archive),
+        from pipeline_common.c_viewpoint import checkpoint_identity as c_identity
+        self.identity = {**checkpoint_identity(), **c_identity(), 'budget_sha': digest(self.path), 'input_sha': digest(archive),
                          'gateway_job_id': self.config.get('gateway_job_id'),
                          'checkpoint_protocol': 'v29_owned_shared_pool',
                          'source_sha': {str(p): digest(p) for p in code_files}}
@@ -245,6 +246,9 @@ class Budget:
         from pipeline_common.a_fact_judge import checkpoint_identity
         if {k: self.identity[k] for k in ('a_settings',) if k in self.identity} != checkpoint_identity():
             raise Halt('跑中 A 路径或计划口径改变')
+        from pipeline_common.c_viewpoint import checkpoint_identity as c_identity
+        if {k: self.identity[k] for k in ('c_viewpoint_settings',) if k in self.identity} != c_identity():
+            raise Halt('跑中 C 视角方法改变')
         config = self.config
         if config.get('runtime_guard'):
             errors = runtime_guard_errors(config)
