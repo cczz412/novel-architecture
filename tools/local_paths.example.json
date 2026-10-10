@@ -9,7 +9,8 @@
     "PIPELINE_BACKGROUND_CONFIG": "<absolute-background-config.json>",
     "PIPELINE_RELEASE_TABLE": "<absolute-release-table.json>",
     "NOVEL_LAB_ROOT": "<absolute-lab-root>",
-    "NOVEL_CORPUS_ROOT": "<absolute-corpus-root>"
+    "NOVEL_CORPUS_ROOT": "<absolute-corpus-root>",
+    "NOVEL_DOWNLOADS_ROOT": "<absolute-downloads-directory>"
   },
   "diagnostic_package_args": [
     "--source",
