@@ -243,6 +243,81 @@ def review_rows(rows, material, facts, previous, config, call, save, prefix):
     return approved, pending, rejected
 
 
+
+
+def update_status(old, answer, visible, material, facts):
+    from pipeline_text105 import mechanical_row
+    if answer is None or answer == []:
+        return copy.deepcopy(old)
+    if not isinstance(answer, dict):
+        raise ValueError('旧计划状态回答必须是对象')
+    status = answer.get('status')
+    if status is None or status == [] or status == old['status']:
+        return copy.deepcopy(old)
+    basis = refs_to_facts(answer.get('basis'), visible)
+    if not basis:
+        raise ValueError('旧计划状态变化缺本章证据，沿用旧值')
+    fulfilled = answer.get('fulfilled')
+    completion = refs_to_facts([fulfilled], visible) if fulfilled not in (None, []) else []
+    if status == '兑现' and not completion:
+        raise ValueError('兑现缺本章完成依据，沿用旧值')
+    row = copy.deepcopy(old)
+    row['status'] = status
+    row['basis'] = list(dict.fromkeys((old.get('basis') or []) + [f['local_key'] for f in basis]))
+    if completion:
+        row['fulfilled'] = completion[0]['local_key']
+    row['ev'] = []
+    for fact in basis + completion:
+        for e in fact_ev(fact, material):
+            if e not in row['ev']:
+                row['ev'].append(e)
+    if not row['ev']:
+        raise ValueError('旧计划状态变化缺本章证据，沿用旧值')
+    row['_prior_evidence'] = copy.deepcopy(old.get('evidence', old.get('ev', [])))
+    row['_prior_reason'] = old.get('reason')
+    return mechanical_row('A', row, material, facts, [old])
+
+
+def advance_plans(previous, universe, config, material, facts, call, save, prefix):
+    """One small status-only step per open plan and bounded fact packet."""
+    rows, carried, pending, rejected = [], [], [], []
+    for index, old in enumerate(previous):
+        if old['status'] in ('兑现', '落空', '放弃'):
+            carried.append(old['key'])
+            continue
+        current = copy.deepcopy(old)
+        answered = True
+        for group, visible, raw, failure in ask_packets(universe, config, material, call, save, prefix + ':' + str(index), old):
+            if failure:
+                pending.append(failure)
+                answered = False
+                continue
+            answers = raw.get('rows')
+            if not isinstance(answers, list) or len(answers) != 1:
+                pending.append(pending_row(prefix, '旧计划缺答，保留旧值', raw))
+                answered = False
+                continue
+            try:
+                candidate = update_status(current, answers[0], visible, material, facts)
+                if candidate == current:
+                    continue
+                candidate['_id'] = old.get('_id') or 'A:' + material['chapter'] + ':carry:' + str(index)
+                ok, missing, removed = review_rows([candidate], material, facts, [old], config, call, save,
+                                                  prefix + ':' + str(index) + ':status:' + str(group[0]['n']) + ':review')
+                pending.extend(missing)
+                rejected.extend(removed)
+                if ok:
+                    current = ok[0]
+                    if current['status'] in ('兑现', '落空', '放弃'):
+                        break
+            except (ValueError, TypeError, KeyError, AttributeError) as exc:
+                pending.append(pending_row(prefix + ':' + str(index), str(exc), raw))
+        if current != old:
+            rows.append(current)
+        elif answered:
+            carried.append(old['key'])
+    return rows, carried, pending, rejected
+
 def run(material, call, save, facts=(), previous=()):
     config = settings()
     universe = candidates(material, facts)
@@ -268,6 +343,10 @@ def run(material, call, save, facts=(), previous=()):
     unique = {r['_id']: r for r in rows}
     rows, more_pending, rejected = review_rows(list(unique.values()), material, facts, previous, config, call, save, prefix + ':review')
     pending.extend(more_pending)
-    result = {'rows': rows, 'carried': []}
+    updated, carried, old_pending, old_rejected = advance_plans(previous, universe, config, material, facts, call, save, prefix + ':carry')
+    rows.extend(updated)
+    pending.extend(old_pending)
+    rejected.extend(old_rejected)
+    result = {'rows': rows, 'carried': carried}
     save(prefix + ':saved', {'execution_identity': EXECUTION_IDENTITY, 'approved': result, 'pending': pending, 'rejected': rejected})
     return result, pending, rejected
