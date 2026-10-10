@@ -161,6 +161,8 @@ def task(client, model, policy, schema, material, gate, folder, label, receipt, 
         review_model = None
     dependencies = {n: hashlib.sha256((Path(__file__).parent / n).read_bytes()).hexdigest() for n in ('pr_incremental_r04.py', 'pr_b_cleanup_r04.py', 'pr_review_r04.py', 'pr_layers_headroom_r03.py', 'pr_pipeline_r02.py', 'pr_normalize_v2_r03.py', 'pr_resolved_r02.py', 'pr_compact_bc_r02.py', 'pr_ark_client_r02.py', 'pr_c_steps_r03.py', 'pr_b_only_r02.py', 'pr_chapter_c_r02.py')}
     stamp = digest(dict(model=model, policy=policy, schema=schema, material=material, review_model=review_model, upgrade_model=receipt.get('upgrade_model'), dependencies=dependencies,
+                        review_parameters=receipt['policies'][review_model]['parameters'] if review_model else None,
+                        upgrade_parameters=receipt['policies'][receipt['upgrade_model']]['parameters'] if review_model and receipt.get('upgrade_model') else None,
                         rule=RULE, version='r04-1',
                         code_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                         gate_sha256=hashlib.sha256(Path(gates.__file__).read_bytes()).hexdigest()))
