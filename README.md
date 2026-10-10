@@ -1,5 +1,8 @@
 # 小说架构实验仓
 
+<!-- 执行身份：Codex；任务：job_R04_v119 -->
+R04 提供小说资料候选和有界的证据检索。人物计划与 C 层视角都是黄卡，须由作者逐条确认；入口可运行不代表内容能力已经验收。入口、限制和实验开关见[工具说明](tools/README.md)。
+
 > 整体任务进度现场读取 [Linear 总入口](https://linear.app/ccz/document/4ddff334d4f0) 与 [GitHub](https://github.com/cczz412/novel-architecture)；仓库的[治理索引](governance/INDEX.md)只负责稳定寻路，[技术兼容快照](governance/CURRENT_STATE.json)只供现有工具读取带日期的控制字段，当前版本、路径与候选身份只走 [current pointers](governance/current_pointers.json)。根 README 不抄当前票态、领票、模型或成绩。
 
 ✅ 你可以直接理解成：这个仓库一边打磨“大纲中枢”，一边把设计放进真实小说里做可回放的实验。
