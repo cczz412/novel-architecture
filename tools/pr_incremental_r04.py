@@ -162,6 +162,7 @@ def task(client, model, policy, schema, material, gate, folder, label, receipt, 
     messages = [dict(role='system', content=SYSTEM), dict(role='user', content=RULE + '\n' + schema + '\n输入材料：\n' + json.dumps(material, ensure_ascii=False, separators=(',', ':')))]
     original = messages
     raw, errors, first, reviews = {}, [], None, []
+    kept = None  # Grok Bot 作业外 v111（外部审查②）：候选与其复核结论绑在一起保存；重写版解析失败时保留旧候选与旧拒收
     upgrade_before = receipt.get('upgrade_items_used', 0)
     for attempt in range(2):
         reviews = []
@@ -180,6 +181,9 @@ def task(client, model, policy, schema, material, gate, folder, label, receipt, 
         except (ValueError, TypeError, KeyError, AttributeError) as exc:
             errors = [dict(path=label, error=str(exc))]
             conversions = []
+            if kept is not None:
+                raw, reviews = copy.deepcopy(kept['raw']), copy.deepcopy(kept['reviews'])
+                errors = copy.deepcopy(kept['errors']) + [dict(path=label, error=str(exc), rewrite_parse_failed=True, kept_attempt=kept['attempt'])]
         dump(folder / (label + f'_gate_{attempt}.json'), dict(execution_identity='Codex', errors=errors, conversions=conversions))
         if not errors and review_model:
             if review_model == model:
@@ -197,6 +201,8 @@ def task(client, model, policy, schema, material, gate, folder, label, receipt, 
                 replacement = {r['id']:r for r in upgraded}
                 reviews = [replacement.get(r['id'],r) for r in reviews]
             errors.extend(dict(path=r['id'], field=r.get('field'), error=r['reason'], independent=True, decision=r['decision']) for r in reviews if r['decision'] != '通过')
+        if reviews and not any(e.get('rewrite_parse_failed') for e in errors):
+            kept = dict(raw=copy.deepcopy(raw), reviews=copy.deepcopy(reviews), errors=copy.deepcopy(errors), attempt=attempt)
         signature = digest(errors)
         if first is None:
             first = signature
