@@ -71,6 +71,12 @@ def resolve_title(term, material, names, entities=None, paragraph=None):
         matches={n for n in proper if n[0]==term[0] and not re.search(TITLE+'$',n) and not n.endswith(('哥','姐','叔','婶'))}
         if not matches and term in names:matches={term}
         if not matches:matches={n for n in proper if n[0]==term[0] and re.search(TITLE+'$',n)}
+        # Grok Bot 作业外 v111（外部审查⑤）：同姓加称谓只给候选；原文有紧邻同位（称谓+全名或全名+称谓）这类明确身份对应才确认。
+        if len(matches)==1 and term not in matches:
+            n=next(iter(matches))
+            if not re.search(re.escape(term)+r'[，,]?'+re.escape(n)+'|'+re.escape(n)+r'[，,]?'+re.escape(term),text):
+                return {'referent':None,'method':'R2 同姓称谓候选','status':'待核','candidates':[n]}
+            return {'referent':n,'method':'R2 同位确认','status':'已确认'}
     if len(matches)!=1:
         matches={n for n in proper if len(term)>=2 and len(n)>=3 and n[1:]==term and not re.fullmatch(r'[一二三四五六七八九十]嫂',term)};method='R3'
     if len(matches)!=1:
