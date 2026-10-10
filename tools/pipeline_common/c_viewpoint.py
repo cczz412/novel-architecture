@@ -12,8 +12,8 @@ METHOD = 'text_c_viewpoint_evidence_v123'
 
 def settings():
     mode = os.environ.get('PIPELINE_C_VIEWPOINT_MODE', 'legacy')
-    if mode not in ('legacy', 'evidence'):
-        raise ValueError('PIPELINE_C_VIEWPOINT_MODE 只能是 legacy 或 evidence')
+    if mode not in ('legacy', 'evidence', 'evidence_deepseek'):
+        raise ValueError('PIPELINE_C_VIEWPOINT_MODE 只能是 legacy、evidence 或 evidence_deepseek')
     return {'mode': mode, 'version': 1}
 
 

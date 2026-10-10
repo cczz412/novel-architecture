@@ -13,6 +13,11 @@ from pipeline_output28 import OUTPUT_POLICY, REPAIR_MAX_BYTES
 MODELS = {'B': 'glm-5.3-flash', 'A': 'deepseek-v4.1-flash',
           'J2': 'deepseek-v4.1-flash', 'review': 'kimi-k2.8-preview',
           'C': 'glm-5.3-flash'}  # Grok Bot 作业外 v110：C 退回纯文字，用抽句岗同一模型
+# 执行身份：Codex；实验模式在进程启动时选择，原岗位与默认值保持不变。
+# Request construction retains its existing model-specific parameter handling.
+if os.environ.get('PIPELINE_C_VIEWPOINT_MODE', 'legacy') == 'evidence_deepseek':
+    MODELS = {**MODELS, 'C': 'deepseek-v4.1-flash'}
+
 WINDOW_REQUEST_CAPS = {'T5c': 26, 'blind': 34}
 TOKEN_CAP = 300000
 BLIND_ADMISSION_TOKENS = 150000
