@@ -920,7 +920,10 @@ def run(materials, call, save):
         else:
             part['C'],part['C_pending']=c_text(material,call,save)
         part['C_status']='partial' if part['C_pending'] else 'complete'
-        part['C_mode']='text_v110'
+        if c_viewpoint.settings()['mode'] != 'legacy':
+            part['C_mode']='viewpoint_evidence_v123'
+        else:
+            part['C_mode']='text_v110'
         save('chapter:'+ch+':complete',part)
     prediction=assemble(materials,current)
     for role in ('A','B'):
