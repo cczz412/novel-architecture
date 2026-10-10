@@ -31,7 +31,9 @@ def input_estimate(messages, config=None, role=None, review=False):
     calibration = (config or {}).get('token_calibration')
     if not calibration:
         return size + 1024  # 历史预算兼容；新草案必须登记实测系数。
-    coefficient = calibration['roles']['review' if review else role]
+    roles = calibration['roles']
+    # Grok Bot 作业外 v111：纯文字 C 与 B 同模型同参数，未单独登记系数时沿用 B 的实测系数。
+    coefficient = roles['review' if review else ('B' if role == 'C' and 'C' not in roles else role)]
     if role == 'A' and review:
         a_coefficient = calibration['roles']['A']
         if (a_coefficient['k_numerator'] * coefficient['k_denominator'] >
@@ -57,6 +59,59 @@ def request_maximum(config, role, review, payload):
     return max(observed['observed_max_times_2'], count * observed.get('single_row_reasonable_tokens',observed.get('single_row_measured_upper_tokens',0)))
 
 
+# Grok Bot 作业外 v111：C 已退回纯文字（每章一包，回包不可用或上游拒收时对半拆一次），旧“C 必须 0 请求”改为每章按实际预留登记。
+C_TEXT_REQUESTS_PER_CHAPTER = 3  # 整章一包 + 对半两包
+
+
+def c_text_reserve(materials, config=None):
+    """每章 C 的实际预留：整章一包与对半两包的请求预留（输入估计 + C 输出上限）相加。"""
+    from pipeline_text105 import c_text_messages
+    maximum = OUTPUT_POLICY['C']['max_tokens']
+    rows = []
+    for m in materials:
+        paras = m['paragraphs']
+        half = len(paras) // 2
+        packets = [paras] + ([paras[:half], paras[half:]] if len(paras) > 1 else [])
+        rows.append({'chapter': m['chapter'], 'requests': len(packets),
+                     'tokens': sum(reserve(c_text_messages(dict(m, paragraphs=part)), maximum, config, 'C') for part in packets)})
+    return {'per_chapter': rows, 'max_requests': sum(r['requests'] for r in rows), 'max_tokens': sum(r['tokens'] for r in rows),
+            'max_completion_per_call': maximum, 'method': 'text_c_v110 每章整包+对半两包'}
+
+
+def apply_c_text_reserve(config, materials):
+    """把每章 C 预留写进正式预算：C 岗帽等于各章预留之和，总帽在 A/B/J2 原值上加 C 预留。"""
+    out = json.loads(json.dumps(config))
+    c = c_text_reserve(materials, out)
+    out['C_mode'] = 'text'
+    out['C_reserve'] = c
+    out['roles']['C'] = dict(out['roles'].get('C', {}), max_requests=c['max_requests'], max_tokens=c['max_tokens'],
+                             max_completion_per_call=c['max_completion_per_call'], base_requests=c['max_requests'], max_shared_requests=0)
+    out['total'] = {'max_requests': 26 + c['max_requests'], 'max_tokens': 300000 + c['max_tokens']}
+    return out
+
+
+def c_reserve_caps(config):
+    """返回登记的 C 预留（请求, Token）；未按纯文字每章登记则返回 None。"""
+    c = config.get('C_reserve')
+    if config.get('C_mode') != 'text' or not isinstance(c, dict) or not isinstance(c.get('per_chapter'), list):
+        return None
+    rows = c['per_chapter']
+    if [r.get('chapter') for r in rows] != list(config.get('chapters', [])):
+        return None
+    if any(type(r.get('requests')) is not int or type(r.get('tokens')) is not int or r['requests'] < 1 or r['tokens'] <= 0 for r in rows):
+        return None
+    if c.get('max_requests') != sum(r['requests'] for r in rows) or c.get('max_tokens') != sum(r['tokens'] for r in rows):
+        return None
+    return c['max_requests'], c['max_tokens']
+
+
+def c_mode_error(config):
+    caps = c_reserve_caps(config)
+    if caps is None or config['roles']['C']['max_requests'] != caps[0] or config['roles']['C']['max_tokens'] != caps[1]:
+        return 'C须按纯文字每章实际预留登记'
+    return None
+
+
 def runtime_guard_errors(config):
     """检查新守门配置；未知估计不能当已证明的上界。"""
     guard = config.get('runtime_guard', {})
@@ -66,11 +121,15 @@ def runtime_guard_errors(config):
             errors.append(name)
     if not config.get('token_calibration'):
         errors.append('token_calibration')
-    for role, requests, tokens in (('B',8,110000), ('J2',8,120000), ('A',7,45000), ('C',0,0)):
+    caps = c_reserve_caps(config)
+    if caps is None:
+        errors.append('C_reserve')
+    c_requests, c_tokens = caps or (None, None)
+    for role, requests, tokens in (('B',8,110000), ('J2',8,120000), ('A',7,45000), ('C',c_requests,c_tokens)):
         item = config.get('roles', {}).get(role, {})
-        if item.get('max_requests') != requests or item.get('max_tokens') != tokens:
+        if requests is None or item.get('max_requests') != requests or item.get('max_tokens') != tokens:
             errors.append('role_cap:' + role)
-    if config.get('total') != {'max_requests':26, 'max_tokens':300000}:
+    if caps is None or config.get('total') != {'max_requests':26 + c_requests, 'max_tokens':300000 + c_tokens}:
         errors.append('total_cap')
     pool = config.get('shared_pool', {})
     if pool.get('max_requests') != 3 or pool.get('max_tokens') != 25000 or pool.get('per_role_max_requests') != 3:
@@ -113,7 +172,8 @@ def check_limits(config):
     values = list(total.values()) + [r[k] for r in roles.values() for k in ('max_requests', 'max_tokens')]
     if any(type(v) is not int or v < 0 for v in values):
         raise Halt('预算上限须为非负整数')
-    if total['max_requests'] > WINDOW_REQUEST_CAPS[window] or total['max_tokens'] > TOKEN_CAP:
+    caps = c_reserve_caps(config) or (0, 0)  # C 另按每章预留登记，不挤占 A/B/J2 的窗口硬顶
+    if total['max_requests'] - caps[0] > WINDOW_REQUEST_CAPS[window] or total['max_tokens'] - caps[1] > TOKEN_CAP:
         raise Halt('预算超过窗口硬顶')
     if sum(r['max_tokens'] for r in roles.values()) > total['max_tokens']:
         raise Halt('岗位Token分配超过总硬顶')
@@ -130,7 +190,7 @@ def check_limits(config):
             raise Halt('单岗请求额度超过基础额度加3次共享池')
     elif sum(r['max_requests'] for r in roles.values()) > total['max_requests']:
         raise Halt('岗位请求分配超过总硬顶')
-    return {'cap_requests': total['max_requests'], 'cap_tokens': total['max_tokens'], 'C_calls': 0}
+    return {'cap_requests': total['max_requests'], 'cap_tokens': total['max_tokens'], 'C_calls': caps[0]}
 
 
 def blind_admission(complete, roles, tokens, empty_roles):
@@ -191,8 +251,8 @@ class Budget:
         if digest(self.path) != self.identity['budget_sha']:
             raise Halt('跑中预算文件改变')
         limits = check_limits(config)
-        if config.get('C_mode') != 'program' or config['roles']['C']['max_requests'] != 0:
-            raise Halt('C必须走零调用程序版')
+        if c_mode_error(config):
+            raise Halt(c_mode_error(config))
         if not config.get('request_prefix') or not config.get('gateway_job_id', '').startswith(config['request_prefix']) or not config.get('full_pipeline_reserved'):
             raise Halt('请求前缀或整线预留缺失')
         freeze = config['freeze']
