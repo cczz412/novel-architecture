@@ -178,7 +178,12 @@ def judged_row(raw, item, visible, material):
 
 
 def pending_row(ident, reason, row):
-    return {'id': ident, 'status': '待核', 'reason': reason, 'row': copy.deepcopy(row)}
+    from pipeline_text105 import pending_reason_code
+    result = {'id': ident, 'status': '待核', 'reason': reason, 'row': copy.deepcopy(row)}
+    code = pending_reason_code(reason)
+    if code:
+        result['reason_code'] = code
+    return result
 
 
 def align_answers(group, answers):
